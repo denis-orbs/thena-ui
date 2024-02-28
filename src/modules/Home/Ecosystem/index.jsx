@@ -14,7 +14,7 @@ const data = ['Partners', 'Grants', 'Audits']
 const partnerLogos = [
   { url: '/images/home/ecosystem/partners/ankr.svg' },
   { url: '/images/home/ecosystem/partners/frax.svg' },
-  { url: '/images/home/ecosystem/partners/lista.png' },
+  { url: '/images/home/ecosystem/partners/listadao.svg' },
   { url: '/images/home/ecosystem/partners/orbs.svg' },
   { url: '/images/home/ecosystem/partners/radiant.svg' },
   { url: '/images/home/ecosystem/partners/symmio.svg' },
@@ -78,27 +78,15 @@ function Ecosystem() {
           </div>
         </div>
         <div className='mt-14 flex w-full flex-wrap items-center justify-center -space-x-14 space-y-6 px-[38px]'>
-          <div className='flex w-full flex-col gap-5 md:gap-6'>
-            <div className='flex items-center justify-center gap-6 md:gap-14'>
-              {logos.slice(0, 5).map((logo, index) => (
-                <HomeImage
-                  className='min-h-[28px] w-fit object-contain'
-                  src={logo.url}
-                  alt={`Logo ${index + 1}`}
-                  key={`first-${index}`}
-                />
-              ))}
-            </div>
-            <div className='flex items-center justify-center gap-6 md:gap-14'>
-              {logos.slice(5).map((logo, index) => (
-                <HomeImage
-                  className={cn('min-h-[28px] w-fit object-contain')}
-                  src={logo.url}
-                  alt={`Logo ${index + 6}`}
-                  key={`second-${index}`}
-                />
-              ))}
-            </div>
+          <div className='flex w-full flex-wrap items-center justify-center gap-6 lg:max-w-[1000px] lg:gap-14'>
+            {logos.map((logo, index) => (
+              <HomeImage
+                className='min-h-[28px] w-fit object-contain'
+                src={logo.url}
+                alt={`Logo ${index + 1}`}
+                key={`first-${index}`}
+              />
+            ))}
           </div>
         </div>
       </div>
