@@ -1,3 +1,4 @@
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import dynamic from 'next/dynamic'
@@ -50,6 +51,7 @@ export const metadata = {
 export const revalidate = 30
 
 export default function RootLayout({ children }) {
+  const analyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
   return (
     <html lang='en'>
       <body>
@@ -64,6 +66,7 @@ export default function RootLayout({ children }) {
         <Analytics />
         <div id='widget-dom-id' />
       </body>
+      <GoogleAnalytics gaId={analyticsId} />
     </html>
   )
 }

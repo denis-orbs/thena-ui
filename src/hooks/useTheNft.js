@@ -18,7 +18,7 @@ const getFloorPrice = async () => {
   const hardcoded = true
   if (hardcoded) return null
   try {
-    const apiKey = process.env.REACT_APP_NFT_MARKET_API_KEY
+    const apiKey = process.env.NEXT_PUBLIC_NFT_MARKET_API_KEY
     const response = await fetch('https://api.element.market/openapi/v1/collection/stats?collection_slug=thenian', {
       method: 'get',
       headers: {
