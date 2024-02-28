@@ -1,0 +1,50 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_pair", "type": "address" },
+      { "internalType": "address", "name": "_account", "type": "address" }
+    ],
+    "name": "getPairAccount",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "pair_address", "type": "address" },
+          { "internalType": "uint256", "name": "claimable0", "type": "uint256" },
+          { "internalType": "uint256", "name": "claimable1", "type": "uint256" },
+          { "internalType": "uint256", "name": "account_lp_balance", "type": "uint256" },
+          { "internalType": "uint256", "name": "account_gauge_balance", "type": "uint256" },
+          { "internalType": "uint256", "name": "account_gauge_earned", "type": "uint256" }
+        ],
+        "internalType": "struct PairAPI.UserInfo",
+        "name": "_UserInfo",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_pair", "type": "address" },
+      { "internalType": "address", "name": "_account", "type": "address" }
+    ],
+    "name": "getPairSimpleAccount",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "pair_address", "type": "address" },
+          { "internalType": "uint256", "name": "claimable0", "type": "uint256" },
+          { "internalType": "uint256", "name": "claimable1", "type": "uint256" },
+          { "internalType": "uint256", "name": "account_lp_balance", "type": "uint256" },
+          { "internalType": "uint256", "name": "account_gauge_balance", "type": "uint256" },
+          { "internalType": "uint256", "name": "account_gauge_earned", "type": "uint256" }
+        ],
+        "internalType": "struct PairAPISimple.UserInfo",
+        "name": "_UserInfo",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

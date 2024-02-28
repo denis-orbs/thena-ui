@@ -1,0 +1,132 @@
+[
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "uint8", "name": "version", "type": "uint8" }],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" },
+      { "internalType": "address[]", "name": "pairs", "type": "address[]" }
+    ],
+    "name": "getExpectedClaimForNextEpochAddress",
+    "outputs": [
+      {
+        "components": [
+          {
+            "components": [
+              { "internalType": "address[]", "name": "tokens", "type": "address[]" },
+              { "internalType": "uint256[]", "name": "decimals", "type": "uint256[]" },
+              { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }
+            ],
+            "internalType": "struct RewardAPI.Bribes[]",
+            "name": "bribes",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct RewardAPI.Rewards[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "internalType": "address[]", "name": "pairs", "type": "address[]" }
+    ],
+    "name": "getExpectedClaimForNextEpochId",
+    "outputs": [
+      {
+        "components": [
+          {
+            "components": [
+              { "internalType": "address[]", "name": "tokens", "type": "address[]" },
+              { "internalType": "uint256[]", "name": "decimals", "type": "uint256[]" },
+              { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }
+            ],
+            "internalType": "struct RewardAPI.Bribes[]",
+            "name": "bribes",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct RewardAPI.Rewards[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "pair", "type": "address" }],
+    "name": "getPairBribe",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address[]", "name": "tokens", "type": "address[]" },
+          { "internalType": "uint256[]", "name": "decimals", "type": "uint256[]" },
+          { "internalType": "uint256[]", "name": "amounts", "type": "uint256[]" }
+        ],
+        "internalType": "struct RewardAPI.Bribes[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_voter", "type": "address" }],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pairFactory",
+    "outputs": [{ "internalType": "contract IPairFactory", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_owner", "type": "address" }],
+    "name": "setOwner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_voter", "type": "address" }],
+    "name": "setVoter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "underlyingToken",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "voter",
+    "outputs": [{ "internalType": "contract IVoter", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

@@ -1,0 +1,9 @@
+.axis-bottom line {
+  display: none;
+}
+
+.axis-bottom text {
+  color: #685770;
+  transform: translateY(5px);
+  font-size: 12px;
+}
