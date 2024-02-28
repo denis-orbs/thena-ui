@@ -25,7 +25,7 @@ export default function SpecificPoolPage({ params }) {
   const { push } = useRouter()
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
-  const pool = useMemo(() => pairs.find(ele => ele.address.toLowerCase() === address.toLowerCase()), [pairs, address])
+  const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [pairs, address])
   const userPools = pool ? pool.subpools.filter(ele => ele.account.totalLp.gt(0)) : []
   if (isLoading || !pool) {
     return <Loading />
@@ -62,7 +62,7 @@ export default function SpecificPoolPage({ params }) {
               <div className='flex gap-1'>
                 <TextIconButton
                   Icon={AnalyticsIcon}
-                  onClick={() => push(`/analytics/pairs/${pool.address}`)}
+                  onClick={() => push(`/analytics/pairs/${pool?.address}`)}
                   data-tooltip-id='analytics-tooltip'
                 />
                 <CustomTooltip id='analytics-tooltip' className='rounded-md !py-2' place='top'>
@@ -70,7 +70,7 @@ export default function SpecificPoolPage({ params }) {
                 </CustomTooltip>
                 <TextIconButton
                   Icon={ExternalIcon}
-                  onClick={() => goScan(networkId, pool.address)}
+                  onClick={() => goScan(networkId, pool?.address)}
                   data-tooltip-id='contract-tooltip'
                 />
                 <CustomTooltip id='contract-tooltip' className='rounded-md !py-2' place='top'>
@@ -100,10 +100,10 @@ export default function SpecificPoolPage({ params }) {
         </div>
         <div className='flex flex-col gap-4'>
           <h2>My position</h2>
-          {userPools.length > 0 ? (
+          {userPools && userPools.length > 0 ? (
             <div className='grid grid-cols-1 gap-4'>
               {userPools.map(sub => (
-                <Position pool={sub} key={sub.address} />
+                <Position pool={sub} key={sub?.address} />
               ))}
             </div>
           ) : (
