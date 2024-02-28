@@ -8,14 +8,17 @@ import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import IconGroup from '@/components/icongroup'
+import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
 import Selection from '@/components/selection'
+import Skeleton from '@/components/skeleton'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
+import { useVaults } from '@/context/vaultsContext'
 import { formatAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
@@ -77,6 +80,7 @@ export default function PoolsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const { push } = useRouter()
   const { pairs } = usePairs()
+  const vaults = useVaults()
 
   const filteredPools = useMemo(() => {
     let final
@@ -138,8 +142,6 @@ export default function PoolsPage() {
       }),
     [filteredPools, sort],
   )
-
-  const trendingPools = useMemo(() => pairs.sort((a, b) => b.highApr - a.lowApr).slice(0, 4), [pairs])
 
   const finalPools = useMemo(
     () =>
@@ -210,56 +212,66 @@ export default function PoolsPage() {
   useEffect(() => {
     setCurrentPage(1)
   }, [filter, strategy, searchText, isInactive])
+  console.log('vaults :>> ', vaults)
 
   return (
     <div>
       <div className='flex items-center justify-between'>
-        <h2>Trending Pools</h2>
+        <h2>THE Single Sided Vaults</h2>
       </div>
       <div className='mt-4 flex items-center gap-8 overflow-auto pb-4'>
-        {trendingPools.map(trending => (
-          <Box
-            className='flex w-full cursor-pointer flex-col gap-4'
-            key={trending.address}
-            onClick={() => push(`/pools/${trending.address}`)}
-          >
-            <div className='flex items-start justify-between gap-4'>
-              <div className='flex items-center gap-3'>
-                <IconGroup
-                  className='-space-x-3'
-                  classNames={{
-                    image: 'outline-4 w-10 h-10',
-                  }}
-                  logo1={trending.token0.logoURI}
-                  logo2={trending.token1.logoURI}
-                />
-                <div className='flex flex-col'>
-                  <TextHeading className='text-lg'>{trending.symbol}</TextHeading>
-                  <TextSubHeading>Fee: {trending.fee}%</TextSubHeading>
+        {vaults.length > 0 ? (
+          vaults.map(trending => (
+            <Box
+              className='flex w-full cursor-pointer flex-col gap-4'
+              key={trending.address}
+              onClick={() => push(`/pools/${trending.algebra}`)}
+            >
+              <div className='flex items-start justify-between gap-4'>
+                <div className='flex items-center gap-3'>
+                  <IconGroup
+                    className='-space-x-3'
+                    classNames={{
+                      image: 'outline-4 w-10 h-10',
+                    }}
+                    logo1={trending.token0.logoURI}
+                    logo2={trending.token1.logoURI}
+                  />
+                  <div className='flex flex-col'>
+                    <div className='flex items-start gap-5'>
+                      <TextHeading className='text-lg'>{trending.symbol}</TextHeading>
+                      <NeutralBadge className='text-nowrap'>ICHI</NeutralBadge>
+                    </div>
+                    <Paragraph className='text-sm'>{PAIR_TYPES.LSD}</Paragraph>
+                  </div>
                 </div>
               </div>
-              <NeutralBadge className='text-nowrap'>{trending.type}</NeutralBadge>
-            </div>
-            <div className='flex flex-col gap-2'>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='text-sm'>APR</Paragraph>
-                <TextHeading className='text-sm'>{trending.apr}</TextHeading>
+              <div className='flex flex-col gap-2'>
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='text-sm'>Deposit Token</Paragraph>
+                  <div className='flex items-center gap-1'>
+                    <CircleImage className='h-4 w-4' src={trending.allowed.logoURI} alt='thena logo' />
+                    <TextHeading className='text-sm'>{trending.allowed.symbol}</TextHeading>
+                  </div>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='text-sm'>APR</Paragraph>
+                  <TextHeading className='text-sm'>{formatAmount(trending.gauge.apr)}%</TextHeading>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='text-sm'>TVL</Paragraph>
+                  <TextHeading className='text-sm'>${formatAmount(trending.gauge.tvl)}</TextHeading>
+                </div>
               </div>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='text-sm'>TVL</Paragraph>
-                <TextHeading className='text-sm'>${formatAmount(trending.tvlUSD)}</TextHeading>
-              </div>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='text-sm'>Volume</Paragraph>
-                <TextHeading className='text-sm'>${formatAmount(trending.dayVolume)}</TextHeading>
-              </div>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='text-sm'>Fees</Paragraph>
-                <TextHeading className='text-sm'>${formatAmount(trending.dayFees)}</TextHeading>
-              </div>
-            </div>
-          </Box>
-        ))}
+            </Box>
+          ))
+        ) : (
+          <>
+            {[0, 1, 2, 3, 4].map(ele => (
+              <Skeleton className='h-[160px] w-[280px]' key={`${ele}-single`} />
+            ))}
+          </>
+        )}
       </div>
       <div className='mt-6 flex flex-col gap-4'>
         <div className='flex items-center justify-between'>

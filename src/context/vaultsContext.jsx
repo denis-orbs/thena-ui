@@ -118,6 +118,7 @@ export function VaultsContextProvider({ children }) {
           pooled1: vault.totalSupply ? reserve1.times(vault.gaugeSupply).div(vault.totalSupply) : ZERO_VALUE,
         },
         account: user,
+        algebra: vault.algebraAddress,
       }
     })
   }, [data, userInfo, assets, error, userError])

@@ -12,6 +12,7 @@ export const ICHI_VAULTS = {
       allowed1: false,
       gaugeAddress: '0xba445618FFcb3edD639304D145e423a57C33E871',
       rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      algebraAddress: '0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8',
     },
     // USDT/THE (USDT)
     {
@@ -23,6 +24,7 @@ export const ICHI_VAULTS = {
       allowed1: false,
       gaugeAddress: '0xa95186c80DF0438D4ECbF7DF3DA6b6153bA9b8d6',
       rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      algebraAddress: '0x98a0004b8e9fe161369528a2e07de56c15a27d76',
     },
     // ETH/THE (ETH)
     {
@@ -34,6 +36,7 @@ export const ICHI_VAULTS = {
       allowed1: false,
       gaugeAddress: '0x2F92bcC2dA319262Ba4DDc46D883B23F7E121BB2',
       rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      algebraAddress: '0x752328a1e16d38933789860b8c09f6f2cc6c63d6',
     },
     // USDC/THE (USDC)
     {
@@ -45,6 +48,7 @@ export const ICHI_VAULTS = {
       allowed1: false,
       gaugeAddress: '0xCf2071cc2F8f53f611E528F7558CFcaB5e64541a',
       rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      algebraAddress: '0x7c0b5d39765b221810d477e8f02d47a9badf018a',
     },
     // BTCB/THE (BTCB)
     {
@@ -56,6 +60,7 @@ export const ICHI_VAULTS = {
       allowed1: false,
       gaugeAddress: '0xe6519bab9DBd868Df05584C898Ef3c60fABC3b0C',
       rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      algebraAddress: '0x246505db95e5a60d8524d52b9ed3dbaf6ee2584f',
     },
   ],
   [ChainId.OPBNB]: [
@@ -69,6 +74,7 @@ export const ICHI_VAULTS = {
       allowed1: false,
       gaugeAddress: '0xBa07006D008c84c38b64FCD1693678094894aCEE',
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
+      algebraAddress: '0xa7e84de1f48743143223ba17153ea88732490cd2',
     },
     // ETH/BTCB (ETH)
     {
@@ -80,6 +86,7 @@ export const ICHI_VAULTS = {
       allowed1: true,
       gaugeAddress: '0xc8e249785A9022E5E4cCD8447F2F19F3Fb9579b8',
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
+      algebraAddress: '0xa7e84de1f48743143223ba17153ea88732490cd2',
     },
     // BNB/USDT (USDT)
     {
@@ -91,6 +98,7 @@ export const ICHI_VAULTS = {
       allowed1: true,
       gaugeAddress: '0x2A5052fb2a561c5abc547F0F194a5FC39575A661',
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
+      algebraAddress: '0xdc83c475dab357b6c3cd66e1a16cfdab08992560',
     },
     // USDT/ETH (USDT)
     {
@@ -102,6 +110,7 @@ export const ICHI_VAULTS = {
       allowed1: false,
       gaugeAddress: '0xd87a62559659301f39d197709407281bE7b3a15E',
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
+      algebraAddress: '0x2c8d50474decffbae19cb2af02d646897b2b869c',
     },
     // BNB/ETH (BNB)
     {
@@ -113,6 +122,7 @@ export const ICHI_VAULTS = {
       allowed1: false,
       gaugeAddress: '0xeC7Ef2340cA18D268C3F564af2F24587F7D399Ba',
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
+      algebraAddress: '0x55ce9b92f2d0a842e639c354d72f2e85c5382e5f',
     },
     // // BTCB/USDT (BTCB)
     // {
