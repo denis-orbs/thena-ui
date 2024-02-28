@@ -82,7 +82,7 @@ function Ecosystem() {
             <div className='flex items-center justify-center gap-6 md:gap-14'>
               {logos.slice(0, 5).map((logo, index) => (
                 <HomeImage
-                  className='w-fit object-contain'
+                  className='min-h-[28px] w-fit object-contain'
                   src={logo.url}
                   alt={`Logo ${index + 1}`}
                   key={`first-${index}`}
@@ -92,7 +92,7 @@ function Ecosystem() {
             <div className='flex items-center justify-center gap-6 md:gap-14'>
               {logos.slice(5).map((logo, index) => (
                 <HomeImage
-                  className={cn('min-h-[18px] object-contain', index === 2 && 'min-h-[28px]')}
+                  className={cn('min-h-[28px] w-fit object-contain')}
                   src={logo.url}
                   alt={`Logo ${index + 6}`}
                   key={`second-${index}`}
