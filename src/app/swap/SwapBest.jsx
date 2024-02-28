@@ -57,7 +57,7 @@ export default function SwapBest({
     isLoading: lhQuotePending,
   } = liquidityHub.useQuoteQuery(fromAsset, toAsset, debouncedAmount, bestTrade?.outAmounts[0])
   const isDexTrade = liquidityHub.useIsDexTrade(bestTrade?.outAmounts[0], lhQuote?.outAmount, lhQuoteError)
-  const quotePending = bestTradePending && lhQuotePending
+  const quotePending = bestTradePending || lhQuotePending
   const outAmount = quotePending ? '' : isDexTrade ? bestTrade?.outAmounts[0] : lhQuote?.outAmount || ''
   const toAmount = useMemo(() => {
     if (outAmount && toAsset) {
