@@ -17,6 +17,8 @@ import useDebounce from '@/hooks/useDebounce'
 import { useOdosQuoteSwap, useOdosSwap } from '@/hooks/useSwap'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import { liquidityHub } from '@/modules/LiquidityHub'
+import { LiquidityHubRouting } from '@/modules/LiquidityHub/components'
 import TxnSettings from '@/modules/SettingsModal'
 import SwapChart from '@/modules/SwapChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
@@ -44,18 +46,50 @@ export default function SwapBest({
   const debouncedAmount = useDebounce(fromAmount)
   const {
     data: bestTrade,
-    isLoading: quotePending,
+    isLoading: bestTradePending,
     mutate,
   } = useOdosQuoteSwap(account, fromAsset, toAsset, debouncedAmount, slippage, networkId)
   const { onOdosSwap, swapPending } = useOdosSwap()
-
+  const { mutate: onLHSwap, isLoading: LHSwapPending } = liquidityHub.useSwap()
+  const {
+    data: lhQuote,
+    error: lhQuoteError,
+    isLoading: lhQuotePending,
+  } = liquidityHub.useQuoteQuery(fromAsset, toAsset, debouncedAmount, bestTrade?.outAmounts[0])
+  const isDexTrade = liquidityHub.useIsDexTrade(bestTrade?.outAmounts[0], lhQuote?.outAmount, lhQuoteError)
+  const quotePending = bestTradePending && lhQuotePending
+  const outAmount = quotePending ? '' : isDexTrade ? bestTrade?.outAmounts[0] : lhQuote?.outAmount || ''
   const toAmount = useMemo(() => {
-    const outAmount = quotePending ? '' : bestTrade?.outAmounts[0]
     if (outAmount && toAsset) {
       return fromWei(outAmount, toAsset.decimals).toString(10)
     }
     return ''
-  }, [quotePending, bestTrade, toAsset])
+  }, [toAsset, outAmount])
+
+  const minimumReceived = useMemo(() => {
+    if (!toAsset || !outAmount) return ''
+    if (isDexTrade) {
+      return `${formatAmount(
+        fromWei(outAmount, toAsset.decimals)
+          .times(100 - slippage)
+          .div(100),
+      )} ${toAsset.symbol}`
+    }
+    return `${formatAmount(fromWei(outAmount, toAsset.decimals))} ${toAsset.symbol}`
+  }, [outAmount, toAsset, slippage, isDexTrade])
+
+  const priceImpact = useMemo(() => {
+    if (quotePending) return 0
+    if (isDexTrade) {
+      return !bestTrade ? 0 : Math.abs(bestTrade.priceImpact)
+    }
+    if (fromAsset && toAsset && fromAmount && toAmount) {
+      const fromInUsd = new BigNumber(fromAmount).times(fromAsset.price)
+      const toInUsd = new BigNumber(toAmount).times(toAsset.price)
+      return new BigNumber(((fromInUsd - toInUsd) / fromInUsd) * 100).toNumber()
+    }
+    return 0
+  }, [isDexTrade, bestTrade, fromAsset, toAsset, fromAmount, toAmount, quotePending])
 
   // const selections = useMemo(
   //   () => [
@@ -83,8 +117,6 @@ export default function SwapBest({
   //   ],
   //   [pathname, push],
   // )
-
-  const priceImpact = useMemo(() => (!bestTrade ? 0 : Math.abs(bestTrade.priceImpact)), [bestTrade])
 
   const percents = useMemo(
     () => [
@@ -124,8 +156,35 @@ export default function SwapBest({
   // )
 
   const handleSwap = useCallback(() => {
-    onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => setFromAmount(''))
-  }, [fromAsset, toAsset, fromAmount, toAmount, bestTrade, onOdosSwap])
+    const dexOutAmount = bestTrade?.outAmounts[0]
+    liquidityHub.analytics.initSwap({
+      fromAsset,
+      toAsset,
+      fromAmount,
+      toAmount,
+      slippage,
+      lhQuote,
+      dexOutAmount,
+      isDexTrade,
+    })
+    if (isDexTrade) {
+      onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => setFromAmount(''))
+    } else {
+      onLHSwap({ fromAsset, toAsset, fromAmount, setFromAddress, quote: lhQuote, callback: () => setFromAmount('') })
+    }
+  }, [
+    fromAsset,
+    toAsset,
+    fromAmount,
+    toAmount,
+    bestTrade,
+    onOdosSwap,
+    onLHSwap,
+    setFromAddress,
+    isDexTrade,
+    lhQuote,
+    slippage,
+  ])
 
   const btnMsg = useMemo(() => {
     if (!account) {
@@ -223,7 +282,7 @@ export default function SwapBest({
             />
           </div>
         </div>
-        {bestTrade && (
+        {toAmount && (
           <div className='flex flex-col gap-2 py-3'>
             <div className='flex items-center justify-between'>
               <TextHeading>Rate</TextHeading>
@@ -233,9 +292,7 @@ export default function SwapBest({
             </div>
             <div className='flex items-center justify-between'>
               <TextHeading>Minimum received</TextHeading>
-              <Paragraph>
-                {formatAmount(new BigNumber(toAmount).times(100 - slippage).div(100))} {toAsset.symbol}
-              </Paragraph>
+              <Paragraph>{minimumReceived}</Paragraph>
             </div>
             <div className='flex items-center justify-between'>
               <TextHeading>Price Impact</TextHeading>
@@ -252,7 +309,7 @@ export default function SwapBest({
         {account ? (
           <EmphasisButton
             className='mt-3 w-full'
-            disabled={!fromAmount || quotePending || swapPending || wrapPending || btnMsg.isError}
+            disabled={!fromAmount || quotePending || swapPending || LHSwapPending || wrapPending || btnMsg.isError}
             onClick={() => {
               if (priceImpact > 5) {
                 setIsWarning(true)
@@ -305,9 +362,12 @@ export default function SwapBest({
                   <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
                 </div>
               </div>
-              <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
-                {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
-              </div>
+              {isDexTrade && (
+                <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
+                  {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
+                </div>
+              )}
+              {!!lhQuote?.outAmount && !isDexTrade && <LiquidityHubRouting />}
             </div>
           )}
         </Box>

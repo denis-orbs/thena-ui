@@ -7,6 +7,8 @@ import Selection from '@/components/selection'
 import { useSettings } from '@/state/settings/hooks'
 import { SettingsIcon } from '@/svgs'
 
+import { LiquidityHubSettings } from '../LiquidityHub/components'
+
 const slipageTolerance = ['0.1', '0.5', '1.00']
 
 function TxnSettings() {
@@ -56,7 +58,7 @@ function TxnSettings() {
               />
             </div>
           </div>
-          <div className='flex h-20 flex-col items-start justify-start gap-3 self-stretch'>
+          <div className='flex flex-col items-start justify-start gap-3 self-stretch'>
             <p className='text-lg font-medium'>Transaction deadline</p>
             <Input
               classNames={{
@@ -68,6 +70,7 @@ function TxnSettings() {
               max={50}
             />
           </div>
+          <LiquidityHubSettings />
         </ModalBody>
       </Modal>
     </>

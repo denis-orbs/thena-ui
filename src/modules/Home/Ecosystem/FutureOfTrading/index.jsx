@@ -93,7 +93,7 @@ export function FutureOfTrading() {
             window.open('https://thena.gitbook.io/thena/the-tokenomics/initial-supply-and-emissions-schedule', '_blank')
           }}
         >
-          Whitepaper
+          Tokenomics
         </TrailingButton>
       </div>
 

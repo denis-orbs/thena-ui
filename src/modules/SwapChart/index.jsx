@@ -118,7 +118,9 @@ function SwapChart({ asset0, asset1, currentSwapPrice }) {
           ) : (
             <Skeleton className='h-[28px] w-[150px]' />
           )}
-          {valueToDisplay ? (
+          {error ? (
+            <TextHeading className='text-xl'>-</TextHeading>
+          ) : valueToDisplay ? (
             <div className='flex items-center gap-2'>
               <TextHeading className='text-xl'>{valueToDisplay && formatAmount(valueToDisplay, false, 4)}</TextHeading>
               {isChangePositive ? (

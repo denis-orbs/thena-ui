@@ -62,7 +62,7 @@ export const useTxn = () => {
         })
         successToast('Transaction confirmed', hash, networkId)
         console.log('txnReceipt :>> ', txnReceipt)
-        return true
+        return hash
       } catch (error) {
         updateTxn({
           key,

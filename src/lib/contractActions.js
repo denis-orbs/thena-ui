@@ -2,6 +2,7 @@ import {
   multicall,
   readContract,
   sendTransaction,
+  signTypedData,
   simulateContract,
   waitForTransactionReceipt,
   writeContract,
@@ -56,3 +57,5 @@ export const simulateCall = async (contract, functionName, args = [], chainId = 
   })
   return res.result
 }
+
+export const signCall = async data => await signTypedData(wagmiConfig, data)

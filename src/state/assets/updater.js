@@ -8,11 +8,11 @@ import useSWRImmutable from 'swr/immutable'
 import { formatEther, formatUnits } from 'viem'
 
 import { ERC20Abi } from '@/constant/abi'
-import Contracts from '@/constant/contracts'
 import { wagmiConfig } from '@/context/Web3Modal'
 import { fetchAssets } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import useWallet from '@/lib/wallets/useWallet'
+import { liquidityHub } from '@/modules/LiquidityHub'
 
 import { updateAssets } from './actions'
 import { useChainSettings } from '../settings/hooks'
@@ -54,31 +54,23 @@ function Updater() {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const dispatch = useDispatch()
-  const { data: assets, error, isLoading } = useSWRImmutable('assets api', { fetcher: fetchAssets })
+  const { liquidityHubEnabled } = liquidityHub.useLiquidtyHubSettings()
+  const {
+    data: assets,
+    error,
+    isLoading,
+  } = useSWRImmutable(['assets api', networkId, liquidityHubEnabled], async () => {
+    const data = await fetchAssets(networkId, liquidityHubEnabled)
+    return data
+  })
 
   const fetchInfo = useCallback(async () => {
     if (!assets || error || isLoading) return
 
-    const wbnbPrice = assets.find(
-      asset => asset.address.toLowerCase() === Contracts.WBNB[networkId].toLowerCase(),
-    )?.price
-    const nativeBNB = {
-      address: 'BNB',
-      name: 'Binance Coin',
-      symbol: 'BNB',
-      decimals: 18,
-      logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
-      price: wbnbPrice,
-    }
-    const filteredAssets = assets.filter(item => item.chainId === networkId)
-    filteredAssets.unshift(nativeBNB)
-    let result = filteredAssets.map(item => ({
-      ...item,
-      balance: 0,
-    }))
+    let result = assets
     if (account) {
       try {
-        const data = await fetchUserAssetsData(filteredAssets, account, networkId)
+        const data = await fetchUserAssetsData(assets, account, networkId)
         const sortedData = data.sort((a, b) => {
           if (new BigNumber(a.balance).times(a.price).lt(new BigNumber(b.balance).times(b.price))) return 1
           if (new BigNumber(a.balance).times(a.price).gt(new BigNumber(b.balance).times(b.price))) return -1

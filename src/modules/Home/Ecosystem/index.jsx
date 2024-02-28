@@ -39,10 +39,10 @@ function Ecosystem() {
         arr = partnerLogos
         break
       case data[1]:
-        arr = auditLogos
+        arr = grantLogos
         break
       case data[2]:
-        arr = grantLogos
+        arr = auditLogos
         break
 
       default:

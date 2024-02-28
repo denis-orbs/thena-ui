@@ -190,7 +190,7 @@ export default function PoolsPage() {
         tvl: <Paragraph>${formatAmount(pool.tvlUSD)}</Paragraph>,
         volume: <Paragraph>${formatAmount(pool.dayVolume)}</Paragraph>,
         fee: <Paragraph>${formatAmount(pool.dayFees)}</Paragraph>,
-        action: <EmphasisButton onClick={() => push(`/pools/${pool.address}`)}>Manage</EmphasisButton>,
+        action: <EmphasisButton onClick={() => push(`/pools/${pool.address}`)}>Details</EmphasisButton>,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData), push],
