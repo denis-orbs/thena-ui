@@ -164,33 +164,33 @@ function Footer() {
       </div>
       <div className='fixed bottom-[37px] left-[50%] z-[100] flex translate-x-[-50%] transform items-center space-x-5 rounded-full border border-white/[0.04] bg-[rgba(41,25,47,0.20)] px-4 py-[11px] backdrop-blur-[20px] lg:hidden'>
         <AnimatedIcon
-          externalLink='https://www.google.com/'
+          externalLink='https://www.coingecko.com/en/coins/thena'
           /* eslint-disable */
-          hoverData={`THE: $0.14 <span class='text-[#48D54E]'>+1.12%</span>`}
+          hoverData={`Coingecko`}
           /* eslint-enable */
           icon='/images/footer/dinasourmb.svg'
           iconColored='/images/footer/dinasourcolored.svg'
         />
         <AnimatedIcon
-          externalLink='https://twitter.com/'
+          externalLink='https://twitter.com/ThenaFi_'
           hoverData='X'
           icon='/images/footer/xmb.svg'
           iconColored='/images/footer/xcolored.svg'
         />
         <AnimatedIcon
-          externalLink='https://discord.com/'
+          externalLink='https://discord.gg/thena'
           hoverData='Discord'
           icon='/images/footer/discordmb.svg'
           iconColored='/images/footer/discordcolored.svg'
         />
         <AnimatedIcon
-          externalLink='https://www.google.com/'
+          externalLink='https://medium.com/@ThenaFi'
           hoverData='Medium'
           icon='/images/footer/vectormb.svg'
           iconColored='/images/footer/vectorcolored.svg'
         />
         <AnimatedIcon
-          externalLink='https://www.google.com/'
+          externalLink='https://t.me/Thena_Fi'
           hoverData='Telegram'
           icon='/images/footer/telegrammb.svg'
           iconColored='/images/footer/telegramcolored.svg'
