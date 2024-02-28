@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
-import { useDisconnect, useSwitchChain } from 'wagmi'
+import { useDisconnect } from 'wagmi'
 
 import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
@@ -167,14 +167,13 @@ function Header() {
   const { open } = useWeb3Modal()
   const { account, chainId } = useWallet()
   const { disconnect } = useDisconnect()
-  const { networkId } = useChainSettings()
-  const { switchChain } = useSwitchChain()
+  const { networkId, updateNetwork } = useChainSettings()
 
   useEffect(() => {
-    if (account && chainId !== networkId) {
-      switchChain({ chainId: networkId })
+    if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
+      updateNetwork(chainId)
     }
-  }, [account, chainId, networkId, switchChain, disconnect])
+  }, [account, chainId, networkId, updateNetwork])
 
   const menus = useMemo(
     () => [

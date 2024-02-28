@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { ChainId } from 'thena-sdk-core'
+import { useAccount, useSwitchChain } from 'wagmi'
 
 import { closeWallet, openWallet, switchNetwork, updateDeadline, updateSlippage } from './actions'
 
@@ -43,12 +44,17 @@ export const useSettings = () => {
 export const useChainSettings = () => {
   const { networkId } = useSelector(state => state.settings)
   const dispatch = useDispatch()
+  const { address, chainId } = useAccount()
+  const { switchChain } = useSwitchChain()
 
   const updateNetwork = useCallback(
     val => {
+      if (address && val !== chainId) {
+        switchChain({ chainId: val })
+      }
       dispatch(switchNetwork(val))
     },
-    [dispatch],
+    [dispatch, address, chainId, switchChain],
   )
 
   return { networkId: networkId || ChainId.BSC, updateNetwork }
