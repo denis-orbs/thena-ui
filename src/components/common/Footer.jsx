@@ -61,36 +61,37 @@ const footerSocialLinks = [
     url: 'https://www.coingecko.com/en/coins/thena',
   },
 ]
-const footerLinks = [
-  [
-    {
-      link: 'About us',
-      url: '/',
-    },
-    {
-      link: 'Learn more',
-      url: '/',
-    },
-    {
-      link: 'THE story',
-      url: '/',
-    },
-  ],
-  [
-    {
-      link: 'Contact',
-      url: '/',
-    },
-    {
-      link: 'Terms of Service',
-      url: '/',
-    },
-    {
-      link: 'Privacy Policy',
-      url: '/',
-    },
-  ],
-]
+const footerLinks = [[], []]
+// const footerLinks = [
+//   [
+//     {
+//       link: 'About us',
+//       url: '/',
+//     },
+//     {
+//       link: 'Learn more',
+//       url: '/',
+//     },
+//     {
+//       link: 'THE story',
+//       url: '/',
+//     },
+//   ],
+//   [
+//     {
+//       link: 'Contact',
+//       url: '/',
+//     },
+//     {
+//       link: 'Terms of Service',
+//       url: '/',
+//     },
+//     {
+//       link: 'Privacy Policy',
+//       url: '/',
+//     },
+//   ],
+// ]
 function Footer() {
   const { push } = useRouter()
 
