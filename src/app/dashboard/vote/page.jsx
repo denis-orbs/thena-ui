@@ -25,6 +25,7 @@ import useWallet from '@/lib/wallets/useWallet'
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
+import MobileTable from './MobileTable'
 import NotConnected from '../NotConnected'
 
 const sortOptions = [
@@ -277,6 +278,7 @@ export default function VotePage() {
         ),
         action: (
           <Input
+            className='w-full'
             min={0}
             step={1}
             val={percent[pool.address] || ''}
@@ -349,6 +351,10 @@ export default function VotePage() {
     }
   }, [veTHEId, veTHEs])
 
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [isVoted, searchText])
+
   return (
     <div className='flex flex-col gap-4'>
       <h2>Vote</h2>
@@ -395,7 +401,16 @@ export default function VotePage() {
                   label='Voted Only'
                 />
               </div>
-              <div className='flex w-full flex-col gap-4 lg:w-auto lg:flex-row lg:gap-2'>
+              <div className='flex w-full flex-col-reverse gap-4 lg:w-auto lg:flex-row lg:gap-2'>
+                <div className='flex items-center justify-between gap-2 lg:hidden'>
+                  <Paragraph>Sort by</Paragraph>
+                  <Dropdown
+                    data={sortOptions.slice(0, sortOptions.length - 1)}
+                    selected={sort ? `${sort.label}` : ''}
+                    setSelected={ele => setSort(ele)}
+                    placeHolder='Select sort'
+                  />
+                </div>
                 <Toggle
                   className='hidden lg:flex'
                   checked={isVoted}
@@ -417,10 +432,17 @@ export default function VotePage() {
               </div>
             </div>
             <Table
+              className='hidden lg:flex'
               sortOptions={sortOptions}
               data={finalPools}
               sort={sort}
               setSort={setSort}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+            />
+            <MobileTable
+              sortOptions={sortOptions}
+              data={finalPools}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
             />
