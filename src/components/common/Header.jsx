@@ -24,7 +24,7 @@ import Tabs from '../tabs'
 import { TextHeading, TextSubHeading } from '../typography'
 
 const data = [
-  { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'Binance Smart Chain' },
+  { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
 ]
 
