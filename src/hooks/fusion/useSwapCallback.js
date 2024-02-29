@@ -12,7 +12,6 @@ import { isZero } from '@/lib/fusion'
 import { SwapRouter } from '@/lib/fusion/entities/swapRouter'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
 /**
@@ -116,10 +115,9 @@ export function useSwapCallback(
   deadline,
 ) {
   const [pending, setPending] = useState(false)
-  const { account } = useWallet()
-  const { networkId } = useChainSettings()
+  const { account, chainId } = useWallet()
   const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
-  const swapCalls = useSwapCallArguments(trade, allowedSlippage, account, timestamp, networkId)
+  const swapCalls = useSwapCallArguments(trade, allowedSlippage, account, timestamp, chainId)
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
   const publicClient = usePublicClient()
 
@@ -136,10 +134,10 @@ export function useSwapCallback(
     setPending(true)
 
     let isApproved = true
-    const fusionRouterAddress = Contracts.fusionRouter[networkId]
+    const fusionRouterAddress = Contracts.fusionRouter[chainId]
     if (!inputCurrency.isNative) {
-      const inputTokenContract = getERC20Contract(inputCurrency.address, networkId)
-      const allowance = await readCall(inputTokenContract, 'allowance', [account, fusionRouterAddress])
+      const inputTokenContract = getERC20Contract(inputCurrency.address, chainId)
+      const allowance = await readCall(inputTokenContract, 'allowance', [account, fusionRouterAddress], chainId)
       isApproved = fromWei(allowance, inputCurrency.decimals).gte(trade.inputAmount.toExact())
     }
     startTxn({
@@ -161,7 +159,7 @@ export function useSwapCallback(
       },
     })
     if (!isApproved) {
-      const inputTokenContract = getERC20Contract(inputCurrency.address, networkId)
+      const inputTokenContract = getERC20Contract(inputCurrency.address, chainId)
       if (!(await writeTxn(key, approveuuid, inputTokenContract, 'approve', [fusionRouterAddress, maxUint256]))) {
         setPending(false)
         return
@@ -238,7 +236,7 @@ export function useSwapCallback(
       key,
       final: 'Swap Successful',
     })
-  }, [trade, publicClient, account, swapCalls, networkId, startTxn, endTxn, writeTxn, sendTxn])
+  }, [trade, publicClient, account, swapCalls, chainId, startTxn, endTxn, writeTxn, sendTxn])
 
   return { pending, callback: onFusionSwap }
 }

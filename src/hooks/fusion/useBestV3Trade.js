@@ -134,7 +134,6 @@ export const useBestV3TradeExactOut = (currencyIn, amountOut) => {
       ]),
     [amountOut, routes],
   )
-  console.log('quoteExactOutInputs :>> ', quoteExactOutInputs)
 
   const { data: quotesResults, isLoading } = useSWRImmutable(
     Boolean(quoteExactOutInputs && quoteExactOutInputs.length > 0) && ['fusion/quoteExactOutput', quoteExactOutInputs],
