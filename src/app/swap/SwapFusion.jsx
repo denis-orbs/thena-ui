@@ -302,7 +302,7 @@ export default function SwapFusion({
         )}
       </Box>
       <div className='flex w-full max-w-[920px] flex-col gap-4'>
-        <SwapChart asset0={fromAsset} asset1={toAsset} />
+        <SwapChart asset0={toAsset} asset1={fromAsset} />
         <Box className='flex flex-col gap-4'>
           <div className='flex justify-between'>
             <TextHeading className='text-xl'>Order Routing</TextHeading>

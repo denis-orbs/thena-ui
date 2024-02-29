@@ -107,8 +107,8 @@ function SwapChart({ asset0, asset1, currentSwapPrice }) {
                 classNames={{
                   image: 'outline-[2px] w-6 h-6',
                 }}
-                logo1={asset0.logoURI}
-                logo2={asset1.logoURI}
+                logo1={asset1.logoURI}
+                logo2={asset0.logoURI}
               />
 
               <TextHeading className='text-xl'>
@@ -122,7 +122,7 @@ function SwapChart({ asset0, asset1, currentSwapPrice }) {
             <TextHeading className='text-xl'>-</TextHeading>
           ) : valueToDisplay ? (
             <div className='flex items-center gap-2'>
-              <TextHeading className='text-xl'>{valueToDisplay && formatAmount(valueToDisplay, false, 4)}</TextHeading>
+              <TextHeading className='text-xl'>{valueToDisplay && formatAmount(valueToDisplay, false, 5)}</TextHeading>
               {isChangePositive ? (
                 <GreenBadge>{changePercentage}%</GreenBadge>
               ) : (
