@@ -159,7 +159,7 @@ export const useStakeNft = () => {
 
       setPending(true)
       if (!isApproved) {
-        const isSuccess = await writeTxn(key, approveuuid, nftStakingContract, 'setApprovalForAll', [
+        const isSuccess = await writeTxn(key, approveuuid, theNFTContract, 'setApprovalForAll', [
           newStakingAddress,
           true,
         ])
