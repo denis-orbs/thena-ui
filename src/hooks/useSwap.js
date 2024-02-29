@@ -50,7 +50,7 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
         ],
         userAddr: getAddress(account || zeroAddress), // checksummed user address
         slippageLimitPercent: slippage, // set your slippage limit percentage (1 = 1%),
-        referralCode: 0, // referral code (recommended)
+        referralCode: 121015208, // referral code (recommended)
         sourceWhitelist: ['Wrapped BNB', 'Thena Stable', 'Thena Volatile', 'Thena Fusion'],
         pathVizImage: true,
         disableRFQs: true,
