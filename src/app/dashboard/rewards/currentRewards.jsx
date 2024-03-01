@@ -20,31 +20,25 @@ const sortOptions = [
   {
     label: 'ID',
     value: 'id',
-    width: 'min-w-[180px] w-[30%]',
-    isDesc: true,
-  },
-  {
-    label: 'Your position',
-    value: 'position',
-    width: 'min-w-[120px] w-[20%]',
+    width: 'lg:w-[30%]',
     isDesc: true,
   },
   {
     label: 'Type of reward',
     value: 'type',
-    width: 'min-w-[130px] w-[20%]',
+    width: 'lg:w-[30%]',
     isDesc: true,
   },
   {
     label: 'Tokens',
     value: 'tokens',
-    width: 'min-w-[120px] flex-1',
+    width: 'lg:flex-1',
     isDesc: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'min-w-[100px] lg:min-w-[116px]',
+    width: 'lg:w-fit',
     disabled: true,
   },
 ]
@@ -69,7 +63,6 @@ export default function CurrentRewards({ rewards, currentMutate }) {
                 <TextHeading>veTHE #{pool.id}</TextHeading>
               </div>
             ),
-            position: <Paragraph>{formatAmount(pool.voting_amount)} veTHE</Paragraph>,
             type: <Paragraph>Rebase</Paragraph>,
             tokens: (
               <div className='flex items-center gap-1'>
@@ -81,7 +74,11 @@ export default function CurrentRewards({ rewards, currentMutate }) {
               </div>
             ),
             action: (
-              <EmphasisButton onClick={() => onClaimRebase(pool, () => updateVeTHEs())} disabled={rebasePending}>
+              <EmphasisButton
+                className='w-full lg:w-fit'
+                onClick={() => onClaimRebase(pool, () => updateVeTHEs())}
+                disabled={rebasePending}
+              >
                 Claim
               </EmphasisButton>
             ),
@@ -104,7 +101,6 @@ export default function CurrentRewards({ rewards, currentMutate }) {
               </div>
             </div>
           ),
-          position: <Paragraph>${formatAmount(pool.account.totalUsd)}</Paragraph>,
           type: <Paragraph>Bribes + Fees</Paragraph>,
           tokens: (
             <div className='flex items-center gap-1'>
@@ -121,7 +117,11 @@ export default function CurrentRewards({ rewards, currentMutate }) {
             </div>
           ),
           action: (
-            <EmphasisButton onClick={() => onClaimBribes(pool, () => currentMutate())} disabled={bribePending}>
+            <EmphasisButton
+              className='w-full lg:w-fit'
+              onClick={() => onClaimBribes(pool, () => currentMutate())}
+              disabled={bribePending}
+            >
               Claim
             </EmphasisButton>
           ),
@@ -139,7 +139,6 @@ export default function CurrentRewards({ rewards, currentMutate }) {
       setSort={setSort}
       currentPage={currentPage}
       setCurrentPage={setCurrentPage}
-      isAction
     />
   ) : (
     <NoRewards />

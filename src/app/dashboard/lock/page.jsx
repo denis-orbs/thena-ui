@@ -26,37 +26,37 @@ const sortOptions = [
   {
     label: 'Lock veTHE ID',
     value: 'id',
-    width: 'min-w-[150px] w-[18%]',
+    width: 'lg:w-[18%]',
     isDesc: true,
   },
   {
     label: 'Lock value',
     value: 'value',
-    width: 'min-w-[100px] w-[18%]',
+    width: 'lg:w-[18%]',
     isDesc: true,
   },
   {
     label: 'Locked amount',
     value: 'amount',
-    width: 'min-w-[130px] w-[18%]',
+    width: 'lg:w-[18%]',
     isDesc: true,
   },
   {
     label: 'Lock expire',
     value: 'expire',
-    width: 'min-w-[120px] w-[18%]',
+    width: 'lg:w-[18%]',
     isDesc: true,
   },
   {
     label: 'Votes used',
     value: 'used',
-    width: 'min-w-[150px] flex-1',
+    width: 'lg:flex-1',
     isDesc: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'min-w-[100px] lg:min-w-[150px]',
+    width: 'lg:w-[150px]',
     disabled: true,
   },
 ]
@@ -140,7 +140,6 @@ export default function LockPage() {
         action: veTHE.voting_amount.isZero() ? (
           <SecondaryButton
             disabled={pending}
-            responsive
             onClick={() => {
               onWithdrawLock(veTHE, () => {
                 updateVeTHEs()
@@ -151,7 +150,7 @@ export default function LockPage() {
           </SecondaryButton>
         ) : (
           <EmphasisButton
-            responsive
+            className='w-full lg:w-fit'
             onClick={() => {
               setSelectedId(veTHE.id)
               setIsManageOpen(true)

@@ -12,37 +12,37 @@ const sortOptions = [
   {
     label: 'Name',
     value: 'name',
-    width: 'min-w-[180px] w-[20%]',
+    width: 'lg:w-[20%]',
     isDesc: true,
   },
   {
     label: 'Liquidity',
     value: 'liquidity',
-    width: 'min-w-[100px] w-[16%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
   {
     label: 'Volume (24h)',
     value: 'dayVolume',
-    width: 'min-w-[130px] w-[16%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
   {
     label: 'Volume (7d)',
     value: 'weekVolume',
-    width: 'min-w-[130px] w-[16%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
   {
     label: 'Fees (24h)',
     value: 'dayFees',
-    width: 'min-w-[130px] w-[16%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
   {
     label: 'Fees (7d)',
     value: 'weekFees',
-    width: 'min-w-[130px] w-[16%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
 ]

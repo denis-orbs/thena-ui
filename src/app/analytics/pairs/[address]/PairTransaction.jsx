@@ -363,31 +363,31 @@ const sortOptions = [
   {
     label: 'Action',
     value: 'action',
-    width: 'min-w-[180px] w-[20%]',
+    width: 'lg:w-[20%]',
     isDesc: true,
   },
   {
     label: 'Total Value',
     value: 'total',
-    width: 'min-w-[100px] w-[16%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
   {
     label: 'Asset Amount',
     value: 'token0',
-    width: 'min-w-[130px] w-[16%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
   {
     label: 'Asset Amount',
     value: 'token1',
-    width: 'min-w-[130px] w-[16%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
   {
     label: 'Account',
     value: 'account',
-    width: 'min-w-[130px] w-[16%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
   {

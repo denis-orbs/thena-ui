@@ -13,31 +13,31 @@ const sortOptions = [
   {
     label: 'Asset',
     value: 'asset',
-    width: 'min-w-[150px] w-[24%]',
+    width: 'lg:w-[24%]',
     isDesc: true,
   },
   {
     label: 'Value',
     value: 'price',
-    width: 'min-w-[100px] w-[19%]',
+    width: 'lg:w-[19%]',
     isDesc: true,
   },
   {
     label: 'Price change',
     value: 'priceChange',
-    width: 'min-w-[130px] w-[19%]',
+    width: 'lg:w-[19%]',
     isDesc: true,
   },
   {
     label: 'Volume (24h)',
     value: 'volume',
-    width: 'min-w-[120px] w-[19%]',
+    width: 'lg:w-[19%]',
     isDesc: true,
   },
   {
     label: 'Liquidity',
     value: 'liquidity',
-    width: 'min-w-[150px] flex-1',
+    width: 'lg:flex-1',
     isDesc: true,
   },
 ]

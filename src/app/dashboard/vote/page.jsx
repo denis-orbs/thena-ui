@@ -25,50 +25,49 @@ import useWallet from '@/lib/wallets/useWallet'
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
-import MobileTable from './MobileTable'
 import NotConnected from '../NotConnected'
 
 const sortOptions = [
   {
     label: 'Pair',
     value: 'pair',
-    width: 'min-w-[200px] w-[20%]',
+    width: 'lg:w-[20%]',
     isDesc: true,
   },
   {
     label: 'APR',
     value: 'apr',
-    width: 'min-w-[100px] w-[14%]',
+    width: 'lg:w-[14%]',
     isDesc: true,
   },
   {
     label: 'Total Votes',
     value: 'votes',
-    width: 'min-w-[100px] w-[14%]',
+    width: 'lg:w-[14%]',
     isDesc: true,
   },
   {
     label: 'Rewards',
     value: 'rewards',
-    width: 'min-w-[150px] w-[14%]',
+    width: 'lg:w-[14%]',
     isDesc: true,
   },
   {
     label: 'Reward estimate',
     value: 'estimate',
-    width: 'min-w-[180px] w-[14%]',
+    width: 'lg:w-[14%]',
     isDesc: true,
   },
   {
     label: 'Your vote',
     value: 'your',
-    width: 'min-w-[120px] flex-1',
+    width: 'lg:w-[14%]',
     isDesc: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'min-w-[180px] lg:min-w-[200px] w-[200px]',
+    width: 'lg:w-[200px]',
     disabled: true,
   },
 ]
@@ -432,17 +431,10 @@ export default function VotePage() {
               </div>
             </div>
             <Table
-              className='hidden lg:flex'
               sortOptions={sortOptions}
               data={finalPools}
               sort={sort}
               setSort={setSort}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-            <MobileTable
-              sortOptions={sortOptions}
-              data={finalPools}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
             />

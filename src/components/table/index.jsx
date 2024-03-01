@@ -29,7 +29,7 @@ function PaginateCell({ children, className, active, onClick }) {
 
 function TableCell({ children, className, ...rest }) {
   return (
-    <div className={cn('flex items-center gap-3 self-stretch bg-neutral-900 px-3 py-5 lg:p-5', className)} {...rest}>
+    <div className={cn('flex items-start gap-3 self-stretch p-3 lg:items-center lg:p-5', className)} {...rest}>
       {children}
     </div>
   )
@@ -53,15 +53,10 @@ function Table({
   return (
     <div className={cn('reltaive flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
       <div className='overflow-x-auto'>
-        <div className='flex w-full min-w-max items-center border-b border-neutral-700'>
+        <div className='hidden w-full min-w-max items-center border-b border-neutral-700 lg:flex'>
           {sortOptions.map((option, idx) => (
             <TableCell
-              className={cn(
-                'gap-1',
-                !notAction && 'border-neutral-700 last:sticky last:right-0 last:border-l',
-                !option.disabled && 'cursor-pointer',
-                option.width,
-              )}
+              className={cn('gap-1', !option.disabled && 'cursor-pointer', option.width)}
               key={`header-${idx}`}
               onClick={() => {
                 if (!option.disabled) {
@@ -87,24 +82,24 @@ function Table({
         {data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
           <div
             className={cn(
-              'group flex w-full items-center rounded-lg hover:bg-neutral-800',
+              'flex w-full flex-wrap items-start rounded-lg border-b border-neutral-700 hover:bg-neutral-800 lg:flex-nowrap lg:items-center lg:border-0',
               ele.onRowClick && 'cursor-pointer',
             )}
             onClick={() => ele.onRowClick && ele.onRowClick()}
-            key={`pair-${eleIdx}`}
+            key={`table-row-${eleIdx}`}
           >
-            {sortOptions.map((cell, cellIdx) => (
-              <TableCell
-                className={cn(
-                  'group-hover:bg-neutral-800',
-                  !notAction && 'border-neutral-700 last:sticky last:right-0 last:border-l',
-                  cell.width,
-                )}
-                key={`${cell.value}-${cellIdx}`}
-              >
+            <TableCell className={cn('flex w-full', sortOptions[0].width)}>{ele[sortOptions[0].value]}</TableCell>
+            {sortOptions.slice(1, sortOptions.length - (notAction ? 0 : 1)).map((cell, cellIdx) => (
+              <TableCell className={cn('flex w-1/2 flex-col lg:flex-row', cell.width)} key={`${cell.value}-${cellIdx}`}>
+                <TextHeading className='lg:hidden'>{cell.label}</TextHeading>
                 {ele[cell.value]}
               </TableCell>
             ))}
+            {!notAction && (
+              <TableCell className={cn('flex w-full flex-col', sortOptions[sortOptions.length - 1].width)}>
+                {ele[sortOptions[sortOptions.length - 1].value]}
+              </TableCell>
+            )}
           </div>
         ))}
       </div>

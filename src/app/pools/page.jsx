@@ -29,37 +29,37 @@ const sortOptions = [
   {
     label: 'Pair',
     value: 'pair',
-    width: 'min-w-[200px] w-[25%]',
+    width: 'lg:w-[25%]',
     isDesc: true,
   },
   {
     label: 'APR',
     value: 'apr',
-    width: 'min-w-[100px] w-[20%]',
+    width: 'lg:w-[20%]',
     isDesc: true,
   },
   {
     label: 'TVL',
     value: 'tvl',
-    width: 'min-w-[100px] w-[15%]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
     label: 'Volume (24h)',
     value: 'volume',
-    width: 'min-w-[150px] w-[15%]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
     label: 'Fees (24h)',
     value: 'fee',
-    width: 'min-w-[180px] flex-1',
+    width: 'lg:flex-1',
     isDesc: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'min-w-[115px] lg:min-w-[135px]',
+    width: 'lg:w-[135px]',
     disabled: true,
   },
 ]
@@ -194,7 +194,11 @@ export default function PoolsPage() {
         tvl: <Paragraph>${formatAmount(pool.tvlUSD)}</Paragraph>,
         volume: <Paragraph>${formatAmount(pool.dayVolume)}</Paragraph>,
         fee: <Paragraph>${formatAmount(pool.dayFees)}</Paragraph>,
-        action: <EmphasisButton onClick={() => push(`/pools/${pool.address}`)}>Details</EmphasisButton>,
+        action: (
+          <EmphasisButton className='w-full lg:w-fit' onClick={() => push(`/pools/${pool.address}`)}>
+            Details
+          </EmphasisButton>
+        ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData), push],
@@ -301,6 +305,15 @@ export default function PoolsPage() {
               toggleId='active'
               label='Inactive pools'
             />
+            <div className='flex items-center justify-between gap-2 lg:hidden'>
+              <Paragraph>Sort by</Paragraph>
+              <Dropdown
+                data={sortOptions.slice(0, sortOptions.length - 1)}
+                selected={sort ? `${sort.label}` : ''}
+                setSelected={ele => setSort(ele)}
+                placeHolder='Select sort'
+              />
+            </div>
           </div>
           <PrimaryButton className='w-full lg:w-auto' onClick={() => setIsOpen(true)}>
             Add liquidity

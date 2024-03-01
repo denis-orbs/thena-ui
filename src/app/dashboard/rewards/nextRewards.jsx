@@ -15,25 +15,19 @@ const sortOptions = [
   {
     label: 'ID',
     value: 'id',
-    width: 'min-w-[180px] w-[30%]',
-    isDesc: true,
-  },
-  {
-    label: 'Your position',
-    value: 'position',
-    width: 'min-w-[120px] w-[20%]',
+    width: 'lg:w-[30%]',
     isDesc: true,
   },
   {
     label: 'Type of reward',
     value: 'type',
-    width: 'min-w-[130px] w-[20%]',
+    width: 'lg:w-[30%]',
     isDesc: true,
   },
   {
     label: 'Tokens',
     value: 'tokens',
-    width: 'min-w-[120px] flex-1',
+    width: 'lg:w-fit',
     isDesc: true,
   },
 ]
@@ -61,7 +55,6 @@ export default function NextRewards({ rewards }) {
             </div>
           </div>
         ),
-        position: <Paragraph>${formatAmount(pool.account.totalUsd)}</Paragraph>,
         type: <Paragraph>Bribes + Fees</Paragraph>,
         tokens: (
           <div className='flex items-center gap-1'>
