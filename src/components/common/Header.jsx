@@ -175,6 +175,21 @@ function Header() {
     }
   }, [account, chainId, networkId, updateNetwork])
 
+  useEffect(() => {
+    if (window?.MetaCRMWidget?.manualConnectWallet) {
+      window.MetaCRMWidget.manualConnectWallet(account)
+    }
+
+    const handleConnectWidget = () => {
+      window.MetaCRMWidget.manualConnectWallet(account)
+    }
+    document.addEventListener('MetaCRMLoaded', handleConnectWidget)
+
+    return () => {
+      document.removeEventListener('MetaCRMLoaded', handleConnectWidget)
+    }
+  }, [account])
+
   const menus = useMemo(
     () => [
       {
