@@ -52,10 +52,10 @@ export const getTokenBestTvlProtocol = async (tokenAddress, chainId) => {
   return bestProtocol
 }
 
-const getTokenDerivedUSDCPrices = async (tokenAddress, blocks, endpoint, isFusion) => {
+const getTokenDerivedUSDCPrices = async (tokenAddress, blocks, endpoint, isFusion, chainId) => {
   const rawPrices = await multiQuery(
     getDerivedPricesQueryConstructor,
-    getDerivedPrices(tokenAddress, blocks, isFusion),
+    getDerivedPrices(tokenAddress, blocks, isFusion, chainId),
     endpoint,
     200,
   )
@@ -149,8 +149,20 @@ export const fetchDerivedPriceData = async (
   }
   blocks.pop() // the bsc graph is 32 block behind so pop the last
   const [token0DerivedUSD, token1DerivedUSD] = await Promise.all([
-    getTokenDerivedUSDCPrices(token0Address, blocks, SWAP_INFO_BY_CHAIN[chainId][protocol0], protocol0 === PROTOCOL[1]),
-    getTokenDerivedUSDCPrices(token1Address, blocks, SWAP_INFO_BY_CHAIN[chainId][protocol1], protocol1 === PROTOCOL[1]),
+    getTokenDerivedUSDCPrices(
+      token0Address,
+      blocks,
+      SWAP_INFO_BY_CHAIN[chainId][protocol0],
+      protocol0 === PROTOCOL[1],
+      chainId,
+    ),
+    getTokenDerivedUSDCPrices(
+      token1Address,
+      blocks,
+      SWAP_INFO_BY_CHAIN[chainId][protocol1],
+      protocol1 === PROTOCOL[1],
+      chainId,
+    ),
   ])
   return { token0DerivedUSD, token1DerivedUSD }
 }

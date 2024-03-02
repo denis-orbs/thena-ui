@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request'
+import { ChainId } from 'thena-sdk-core'
 
 export const getTVL = (tokenAddress, isFusion) => gql`
   query DerivedTokenPriceTVL {
@@ -8,11 +9,11 @@ export const getTVL = (tokenAddress, isFusion) => gql`
   }
 `
 
-export const getDerivedPrices = (tokenAddress, blocks, isFusion) =>
+export const getDerivedPrices = (tokenAddress, blocks, isFusion, chainId) =>
   blocks.map(
     block => `
     t${block.timestamp}:token(id:"${tokenAddress}", block: { number: ${block.number}}) {
-        derivedUSD: ${isFusion ? 'derivedBnb' : 'derivedETH'}
+        derivedUSD: ${isFusion ? (chainId === ChainId.BSC ? 'derivedMatic' : 'derivedBnb') : 'derivedETH'}
       }
     `,
   )

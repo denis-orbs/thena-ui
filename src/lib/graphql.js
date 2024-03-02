@@ -8,7 +8,7 @@ export const v1GraphUrl = {
 }
 
 export const fusionGraphUrl = {
-  [ChainId.BSC]: 'https://api.thegraph.com/subgraphs/name/thenaursa/thena-fusion',
+  [ChainId.BSC]: 'https://api.thegraph.com/subgraphs/name/iliaazhel/thena-info',
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion',
 }
