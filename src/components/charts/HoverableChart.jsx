@@ -9,7 +9,7 @@ import Tabs from '../tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 
 function HoverableChart({ chartData, protocolData, valueProperty, title, ChartComponent }) {
-  const [period, setPeriod] = useState(0)
+  const [period, setPeriod] = useState(1)
   const [hover, setHover] = useState()
   const [dateHover, setDateHover] = useState()
 
