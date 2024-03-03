@@ -41,7 +41,7 @@ function TxnSettings() {
           setPopup(false)
         }}
         width={480}
-        title='Trasaction settings'
+        title='Transaction settings'
       >
         <ModalBody>
           <div className='flex w-full flex-col items-start justify-start gap-3'>
