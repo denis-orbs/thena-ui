@@ -32,7 +32,7 @@ export default function SpecificPoolPage({ params }) {
   }
 
   return (
-    <div className='flex w-full items-start gap-12'>
+    <div className='flex w-full flex-col items-start gap-12 lg:flex-row'>
       <div className='flex w-full flex-col gap-10'>
         <div>
           <div>
@@ -118,7 +118,7 @@ export default function SpecificPoolPage({ params }) {
           )}
         </div>
       </div>
-      <div className='hidden min-w-[564px] lg:block'>
+      <div className='w-full lg:min-w-[564px]'>
         <div className='mb-5 flex items-center gap-2'>
           {currentStep === 2 && <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(1)} />}
           <h2>Add Liquidity</h2>

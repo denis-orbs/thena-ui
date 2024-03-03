@@ -247,7 +247,7 @@ export default function SwapFusion({
             </div>
             <div className='flex items-center justify-between'>
               <TextHeading>
-                {bestTrade.tradeType === TradeType.EXACT_INPUT ? 'Minimum received' : 'Maximum Sold'}
+                {bestTrade.tradeType === TradeType.EXACT_INPUT ? 'Minimum Received' : 'Maximum Sold'}
               </TextHeading>
               <Paragraph>
                 {bestTrade.tradeType === TradeType.EXACT_INPUT

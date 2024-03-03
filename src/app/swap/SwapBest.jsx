@@ -284,7 +284,7 @@ export default function SwapBest({
               </Paragraph>
             </div>
             <div className='flex items-center justify-between'>
-              <TextHeading>Minimum received</TextHeading>
+              <TextHeading>Minimum Received</TextHeading>
               <Paragraph>{minimumReceived}</Paragraph>
             </div>
             <div className='flex items-center justify-between'>
