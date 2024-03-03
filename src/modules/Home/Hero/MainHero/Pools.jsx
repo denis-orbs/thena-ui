@@ -129,7 +129,7 @@ export function Pools() {
           id='pools-active-pools'
         >
           <TextHeading className='font-archia text-[8px] font-semibold text-neutral-50 sm:text-xs md:text-lg'>
-            Active pools
+            Active Pools
           </TextHeading>
         </motion.span>
         <motion.span

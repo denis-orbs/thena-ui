@@ -53,13 +53,13 @@ const sortOptions = [
     isDesc: true,
   },
   {
-    label: 'Reward estimate',
+    label: 'Reward Estimate',
     value: 'estimate',
     width: 'lg:w-[14%]',
     isDesc: true,
   },
   {
-    label: 'Your vote',
+    label: 'My Vote',
     value: 'your',
     width: 'lg:w-[14%]',
     isDesc: true,
@@ -264,7 +264,7 @@ export default function VotePage() {
         estimate: (
           <div className='flex flex-col'>
             <Paragraph>${formatAmount(pool.votes.perRewards)}</Paragraph>
-            <TextSubHeading className='text-base leading-tight'>Per 1000 votes</TextSubHeading>
+            <TextSubHeading className='text-base leading-tight'>per 1000 votes</TextSubHeading>
           </div>
         ),
         your: (
@@ -364,18 +364,18 @@ export default function VotePage() {
               <div className='flex items-center gap-1'>
                 <TextHeading className='text-2xl'>${formatAmount(expectedRewards)}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>Expected rewards</Paragraph>
+              <Paragraph className='text-sm'>Expected Rewards</Paragraph>
             </Box>
             <Box className='flex w-full flex-col gap-2'>
               <div className='flex items-center gap-1'>
                 <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
                 <TextHeading className='text-2xl'>{veTHE ? formatAmount(veTHE.voting_amount) : '-'}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>veTHE balance</Paragraph>
+              <Paragraph className='text-sm'>veTHE Balance</Paragraph>
             </Box>
             <Box className='flex w-full flex-col gap-2'>
               <TextHeading className='text-2xl'>{`$${formatAmount(voteEmssions)}`}</TextHeading>
-              <Paragraph className='text-sm'>Emissions / % of vote</Paragraph>
+              <Paragraph className='text-sm'>Emissions / % of Vote</Paragraph>
             </Box>
             <Box className='flex w-full flex-col gap-2'>
               <TextHeading className='text-2xl'>{`${formatAmount(avgApr)}%`}</TextHeading>
@@ -385,7 +385,7 @@ export default function VotePage() {
               <TextHeading className='text-2xl'>
                 {days}d {hours}h {mins}m
               </TextHeading>
-              <Paragraph className='text-sm'>Epoch {epoch} ends in </Paragraph>
+              <Paragraph className='text-sm'>Epoch {epoch} Ends in </Paragraph>
             </Box>
           </div>
           <div className='flex flex-col gap-4'>

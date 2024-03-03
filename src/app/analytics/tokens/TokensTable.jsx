@@ -23,7 +23,7 @@ const sortOptions = [
     isDesc: true,
   },
   {
-    label: 'Price change',
+    label: 'Price Change',
     value: 'priceChange',
     width: 'lg:w-[19%]',
     isDesc: true,

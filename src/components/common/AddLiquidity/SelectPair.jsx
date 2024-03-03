@@ -31,7 +31,7 @@ export default function SelectPair({
       {
         content: (
           <div className='flex flex-1 flex-col gap-1'>
-            <TextHeading>Concentrated liquidity</TextHeading>
+            <TextHeading>Concentrated Liquidity</TextHeading>
             <Paragraph className='text-sm'>
               Liquidity that is allocated within a custom price range. You can either set this range manually or choose
               one of the ALM options that manage your liquidity.

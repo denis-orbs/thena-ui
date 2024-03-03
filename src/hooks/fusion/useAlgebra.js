@@ -42,7 +42,7 @@ export const useAlgebraAdd = () => {
       }
       startTxn({
         key,
-        title: 'Add liquidity',
+        title: 'Add Liquidity',
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {

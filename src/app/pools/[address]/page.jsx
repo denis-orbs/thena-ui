@@ -99,7 +99,7 @@ export default function SpecificPoolPage({ params }) {
           </Box>
         </div>
         <div className='flex flex-col gap-4'>
-          <h2>My position</h2>
+          <h2>My Position</h2>
           {userPools && userPools.length > 0 ? (
             <div className='grid grid-cols-1 gap-4'>
               {userPools.map(sub => (
@@ -112,7 +112,7 @@ export default function SpecificPoolPage({ params }) {
                 <InfoCircleWhite className='h-4 w-4' />
               </Highlight>
               <div className='flex flex-col items-center gap-3'>
-                <h2>No position found</h2>
+                <h2>No Position Found</h2>
               </div>
             </div>
           )}

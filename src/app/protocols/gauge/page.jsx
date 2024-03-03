@@ -32,7 +32,7 @@ export default function GaugePage() {
         <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => push('/protocols')}>
           Back
         </TextButton>
-        <h2>Add gauge</h2>
+        <h2>Add Gauge</h2>
       </div>
       <div className='grid grid-cols-1 gap-8 lg:grid-cols-2'>
         <div className='flex flex-col gap-4'>

@@ -71,7 +71,7 @@ export const useGammaAdd = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: 'Add liquidity',
+        title: 'Add Liquidity',
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
@@ -210,7 +210,7 @@ export const useGammaAddAndStake = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: 'Add liquidity',
+        title: 'Add Liquidity',
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {

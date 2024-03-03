@@ -39,7 +39,7 @@ export const useV1Add = () => {
       }
       startTxn({
         key,
-        title: 'Add liquidity',
+        title: 'Add Liquidity',
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {
@@ -157,7 +157,7 @@ export const useV1AddAndStake = () => {
       }
       startTxn({
         key,
-        title: 'Add liquidity',
+        title: 'Add Liquidity',
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {

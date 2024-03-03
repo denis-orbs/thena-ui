@@ -131,7 +131,7 @@ export default function AnalyticsPage() {
       </div>
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <TextHeading>Top pairs</TextHeading>
+          <TextHeading>Top Pairs</TextHeading>
           <EmphasisButton
             onClick={() => {
               push('/analytics/pairs')

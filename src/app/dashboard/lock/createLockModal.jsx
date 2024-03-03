@@ -88,7 +88,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
   return (
     <Modal
       isOpen={popup}
-      title='Create a new lock'
+      title='Create a New Lock'
       closeModal={() => {
         setPopup(false)
       }}
@@ -98,7 +98,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
         <BalanceInput title='Amount' asset={theAsset} amount={amount} onAmountChange={setAmount} autoFocus />
         <div className='flex flex-col gap-2'>
           <div className='flex flex-col items-start justify-between gap-1 lg:flex-row lg:items-center'>
-            <p className='font-medium text-white'>Lock until</p>
+            <p className='font-medium text-white'>Lock Until</p>
             <Tabs data={periods} />
           </div>
 
@@ -118,7 +118,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
           />
         </div>
         <div className='my-3 flex items-center justify-between'>
-          <Paragraph>veTHE voting power</Paragraph>
+          <Paragraph>veTHE Voting Power</Paragraph>
           <TextHeading>{votingPower}</TextHeading>
         </div>
       </ModalBody>
@@ -137,7 +137,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
             })
           }}
         >
-          Create new lock
+          Create New Lock
         </PrimaryButton>
       </ModalFooter>
     </Modal>

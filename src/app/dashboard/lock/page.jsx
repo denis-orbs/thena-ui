@@ -30,25 +30,25 @@ const sortOptions = [
     isDesc: true,
   },
   {
-    label: 'Lock value',
+    label: 'Lock Value',
     value: 'value',
     width: 'lg:w-[18%]',
     isDesc: true,
   },
   {
-    label: 'Locked amount',
+    label: 'Locked Amount',
     value: 'amount',
     width: 'lg:w-[18%]',
     isDesc: true,
   },
   {
-    label: 'Lock expire',
+    label: 'Lock Expire',
     value: 'expire',
     width: 'lg:w-[18%]',
     isDesc: true,
   },
   {
-    label: 'Votes used',
+    label: 'Votes Used',
     value: 'used',
     width: 'lg:flex-1',
     isDesc: true,
@@ -184,12 +184,12 @@ export default function LockPage() {
                 className='min-w-fit'
                 onClick={() => goToDoc('https://thena.gitbook.io/thena/the-tokenomics/vethe')}
               >
-                Learn more
+                Learn More
               </TertiaryButton>
             </Info>
           </div>
           <div className='mb-4 mt-10 flex items-center justify-between'>
-            <TextHeading className='text-xl'>Locked positions</TextHeading>
+            <TextHeading className='text-xl'>Locked Positions</TextHeading>
             {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>Create Lock</PrimaryButton>}
           </div>
           {isLoading ? (

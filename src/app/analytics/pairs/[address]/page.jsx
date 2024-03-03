@@ -86,7 +86,7 @@ export default function PairDetailPage({ params }) {
                   push(`/pools/${pair.address}`)
                 }}
               >
-                Add liquidity
+                Add Liquidity
               </SecondaryButton>
               <PrimaryButton>Swap</PrimaryButton>
             </div>

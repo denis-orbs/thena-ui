@@ -34,7 +34,7 @@ import { InfoCircleWhite } from '@/svgs'
 import NotConnected from './NotConnected'
 
 export const FILTERS = {
-  All: 'All positions',
+  All: 'All Positions',
   ICHI: 'ICHI',
   Gamma: 'Gamma',
   DefiEdge: 'DefiEdge',
@@ -145,14 +145,14 @@ export default function HoldingsPage() {
                 <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
                 <TextHeading className='text-2xl'>{formatAmount(theAsset?.balance || 0)}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>THE holdings</Paragraph>
+              <Paragraph className='text-sm'>THE Holdings</Paragraph>
             </Box>
             <Box className='flex w-full flex-col gap-2'>
               <div className='flex items-center gap-1'>
                 <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
                 <TextHeading className='text-2xl'>{formatAmount(veTHEholdings)}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>veTHE holdings</Paragraph>
+              <Paragraph className='text-sm'>veTHE Holdings</Paragraph>
             </Box>
             <Box className='flex w-full items-center justify-between'>
               <div className='flex-col gap-2'>
@@ -160,7 +160,7 @@ export default function HoldingsPage() {
                   <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
                   <TextHeading className='text-2xl'>{formatAmount(totalFarmed)}</TextHeading>
                 </div>
-                <Paragraph className='text-sm'>THE farmed</Paragraph>
+                <Paragraph className='text-sm'>THE Farmed</Paragraph>
               </div>
               {networkId === ChainId.BSC && farmedPools.length > 0 && (
                 <div
@@ -180,25 +180,25 @@ export default function HoldingsPage() {
               <div className='flex items-center gap-1'>
                 <TextHeading className='text-2xl'>${formatAmount(totalCurrentUsd)}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>Voting rewards</Paragraph>
+              <Paragraph className='text-sm'>Voting Rewards</Paragraph>
             </Box>
             <Box className='flex w-full flex-col gap-2'>
               <div className='flex items-center gap-1'>
                 <TextHeading className='text-2xl'>${formatAmount(totalExpectedUsd)}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>Next epoch rewards</Paragraph>
+              <Paragraph className='text-sm'>Next Epoch Rewards</Paragraph>
             </Box>
           </div>
           <div className='flex flex-col gap-4'>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center justify-between'>
-                <TextHeading className='text-xl'>My positions</TextHeading>
+                <TextHeading className='text-xl'>My Positions</TextHeading>
                 <Toggle
                   className='lg:hidden'
                   checked={stakedOnly}
                   onChange={() => setStakedOnly(!stakedOnly)}
                   toggleId='active'
-                  label='Staked only'
+                  label='Staked Only'
                 />
               </div>
               <div className='flex w-full flex-col gap-4 lg:w-auto lg:flex-row lg:gap-2'>
@@ -217,7 +217,7 @@ export default function HoldingsPage() {
                   checked={stakedOnly}
                   onChange={() => setStakedOnly(!stakedOnly)}
                   toggleId='active'
-                  label='Staked only'
+                  label='Staked Only'
                 />
               </div>
             </div>
@@ -240,14 +240,14 @@ export default function HoldingsPage() {
                   <InfoCircleWhite className='h-4 w-4' />
                 </Highlight>
                 <div className='flex flex-col items-center gap-3'>
-                  <h2>No position found</h2>
+                  <h2>No Position Found</h2>
                   <Paragraph className='mt-3 text-center'>
                     Currently, there are no positions to display.
                     <br />
                     Add liquidity to get started!
                   </Paragraph>
                 </div>
-                <PrimaryButton onClick={() => push('/pools')}>Explore pools</PrimaryButton>
+                <PrimaryButton onClick={() => push('/pools')}>Explore Pools</PrimaryButton>
               </div>
             )}
           </div>

@@ -40,7 +40,7 @@ export const useDefiedgeAdd = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: 'Add liquidity',
+        title: 'Add Liquidity',
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
@@ -151,7 +151,7 @@ export const useDefiedgeAddAndStake = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: 'Add liquidity',
+        title: 'Add Liquidity',
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {

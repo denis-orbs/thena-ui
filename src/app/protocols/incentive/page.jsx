@@ -68,7 +68,7 @@ export default function IncentivePage() {
         <h2>Voting Incentive</h2>
       </div>
       <div className='flex flex-col gap-4'>
-        <TextHeading className='text-xl'>Top incentives</TextHeading>
+        <TextHeading className='text-xl'>Top Incentives</TextHeading>
         <div className='grid grid-cols-1 gap-2 lg:grid-cols-4 lg:gap-8 '>
           {topPools.map(pool => (
             <Box className='flex items-center justify-between' key={`incentive-${pool.address}`}>

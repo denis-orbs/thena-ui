@@ -49,7 +49,7 @@ export default function MergeManage({ selected }) {
           <div className='flex flex-col gap-2'>
             <div className='flex items-center justify-between'>
               <TextHeading>Merge From</TextHeading>
-              <Paragraph>veTHE balance: {veTHE ? formatAmount(veTHE.voting_amount) : '-'}</Paragraph>
+              <Paragraph>veTHE Balance: {veTHE ? formatAmount(veTHE.voting_amount) : '-'}</Paragraph>
             </div>
             <Dropdown
               className='w-full'
@@ -62,7 +62,7 @@ export default function MergeManage({ selected }) {
           <div className='flex flex-col gap-2'>
             <div className='flex items-center justify-between'>
               <TextHeading>veTHE ID</TextHeading>
-              <Paragraph>veTHE balance: {formatAmount(selected.voting_amount)}</Paragraph>
+              <Paragraph>veTHE Balance: {formatAmount(selected.voting_amount)}</Paragraph>
             </div>
             <Input type='text' val={`veTHE #${selected.id}`} readOnly />
           </div>

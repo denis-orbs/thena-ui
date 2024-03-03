@@ -49,14 +49,14 @@ export default function RewardsPage() {
   const typeSelections = useMemo(
     () => [
       {
-        label: 'Current epoch',
+        label: 'Current Epoch',
         active: !isExpected,
         onClickHandler: () => {
           setIsExpected(false)
         },
       },
       {
-        label: 'Next epoch',
+        label: 'Next Epoch',
         active: isExpected,
         onClickHandler: () => {
           setIsExpected(true)

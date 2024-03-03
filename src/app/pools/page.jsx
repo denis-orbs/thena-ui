@@ -276,13 +276,13 @@ export default function PoolsPage() {
       )}
       <div className='mt-6 flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <TextHeading className='text-xl'>{isInactive ? 'Inactive' : 'Active'} pools</TextHeading>
+          <TextHeading className='text-xl'>{isInactive ? 'Inactive' : 'Active'} Pools</TextHeading>
           <Toggle
             className='lg:hidden'
             checked={isInactive}
             onChange={() => setIsInactive(!isInactive)}
             toggleId='active'
-            label='Inactive pools'
+            label='Inactive Pools'
           />
         </div>
         <div className='flex flex-col items-center justify-between gap-4 lg:flex-row'>
@@ -303,7 +303,7 @@ export default function PoolsPage() {
               checked={isInactive}
               onChange={() => setIsInactive(!isInactive)}
               toggleId='active'
-              label='Inactive pools'
+              label='Inactive Pools'
             />
             <div className='flex items-center justify-between gap-2 lg:hidden'>
               <Paragraph>Sort by</Paragraph>
@@ -316,7 +316,7 @@ export default function PoolsPage() {
             </div>
           </div>
           <PrimaryButton className='w-full lg:w-auto' onClick={() => setIsOpen(true)}>
-            Add liquidity
+            Add Liquidity
           </PrimaryButton>
         </div>
         <Table

@@ -70,7 +70,7 @@ export default function TokenDetailPage({ params }) {
                   window.open(`${SCAN_URLS[networkId]}/address/${token.address}`, '_blank')
                 }}
               />
-              <SecondaryButton>Add liquidity</SecondaryButton>
+              <SecondaryButton>Add Liquidity</SecondaryButton>
               <PrimaryButton>Swap</PrimaryButton>
             </div>
           </div>

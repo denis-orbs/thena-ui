@@ -202,17 +202,17 @@ function Header() {
             onClickHandler: () => push('/swap'),
           },
           {
-            heading: 'Trade perps',
+            heading: 'Trade Perps',
             subheading: ' Trade perpetual contracts with leverage',
             onClickHandler: () => window.open('https://alpha.thena.fi', '_blank'),
           },
           {
-            heading: 'Cross-chain',
+            heading: 'Cross-Chain',
             subheading: 'Trade across different blockchains',
             onClickHandler: () => push('/swap/cross'),
           },
           {
-            heading: 'Buy crypto',
+            heading: 'Buy Crypto',
             subheading: 'On-ramp from fiat to crypto',
             onClickHandler: () => push('/swap/buy'),
           },

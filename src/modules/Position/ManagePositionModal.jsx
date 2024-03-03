@@ -49,7 +49,7 @@ export default function ManagePositionModal({ popup, setPopup, strategy }) {
         <RemovePosition strategy={strategy} setPopup={setPopup} isManage />
       ) : (
         <>
-          <p className='px-3 pt-3 font-medium text-white lg:px-6'>Add liquidity options</p>
+          <p className='px-3 pt-3 font-medium text-white lg:px-6'>Add Liquidity Options</p>
           <AddLiquidity pool={strategy} currentStep={currentStep} isModal />
         </>
       )}

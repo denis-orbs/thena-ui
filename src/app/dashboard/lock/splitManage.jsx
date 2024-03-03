@@ -118,7 +118,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
               <div className='flex items-center justify-between'>
                 <TextHeading>Token {idx + 1}</TextHeading>
                 <Paragraph>
-                  veTHE amount: {formatAmount(selected.voting_amount.times(validNumber(item)).div(100))}
+                  veTHE Amount: {formatAmount(selected.voting_amount.times(validNumber(item)).div(100))}
                 </Paragraph>
               </div>
               <Input
@@ -145,7 +145,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
           ))}
         </div>
         <div className='my-3 flex items-center justify-between'>
-          <Paragraph>Total split amount</Paragraph>
+          <Paragraph>Total Split Amount</Paragraph>
           <TextHeading>{total}%</TextHeading>
         </div>
       </ModalBody>

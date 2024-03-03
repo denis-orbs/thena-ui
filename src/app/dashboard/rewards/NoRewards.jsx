@@ -16,10 +16,10 @@ export function NoRewards() {
         <InfoCircleWhite className='h-4 w-4' />
       </Highlight>
       <div className='flex flex-col items-center gap-3'>
-        <h2>No rewards found</h2>
-        <Paragraph className='mt-3 text-center'>No rewards to display</Paragraph>
+        <h2>No Rewards Found</h2>
+        <Paragraph className='mt-3 text-center'>No Rewards to Display</Paragraph>
       </div>
-      <PrimaryButton onClick={() => push('/dashboard/vote')}>Explore votes</PrimaryButton>
+      <PrimaryButton onClick={() => push('/dashboard/vote')}>Explore Votes</PrimaryButton>
     </div>
   )
 }

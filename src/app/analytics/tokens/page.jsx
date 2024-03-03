@@ -41,7 +41,7 @@ export default function AnalyticsTokensPage() {
         <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => push('/analytics')}>
           Back
         </TextButton>
-        <h2>Top movers</h2>
+        <h2>Top Movers</h2>
         <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>
           {topMovers.map(asset => (
             <Box className='flex items-start justify-between' key={`asset-${asset.address}`}>

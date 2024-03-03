@@ -41,7 +41,7 @@ export default function ProtocolsPage() {
               )
             }}
           >
-            Learn more
+            Learn More
           </EmphasisButton>
         </Neutral>
         <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>

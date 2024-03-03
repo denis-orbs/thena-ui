@@ -24,7 +24,7 @@ const sortOptions = [
     isDesc: true,
   },
   {
-    label: 'Type of reward',
+    label: 'Type of Reward',
     value: 'type',
     width: 'lg:w-[30%]',
     isDesc: true,

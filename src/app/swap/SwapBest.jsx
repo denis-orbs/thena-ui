@@ -187,17 +187,10 @@ export default function SwapBest({
   ])
 
   const btnMsg = useMemo(() => {
-    if (!account) {
-      return {
-        isError: true,
-        label: 'CONNECT WALLET',
-      }
-    }
-
     if (!fromAsset || !toAsset) {
       return {
         isError: true,
-        label: 'Select a token',
+        label: 'Select a Token',
       }
     }
 
@@ -240,7 +233,7 @@ export default function SwapBest({
       isError: false,
       label: 'Swap',
     }
-  }, [account, fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap])
+  }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap])
 
   return (
     <>
@@ -341,7 +334,7 @@ export default function SwapBest({
               onClick={() => mutate()}
               LeadingIcon={RefreshIcon}
             >
-              Refresh quote
+              Refresh Quote
             </TextButton>
           </div>
           {quotePending ? (

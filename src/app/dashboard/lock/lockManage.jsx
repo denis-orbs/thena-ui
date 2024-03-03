@@ -122,7 +122,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
           <div className='flex flex-col gap-5'>
             <div className='flex flex-col gap-2'>
               <div className='flex flex-col items-start justify-between gap-1 lg:flex-row lg:items-center'>
-                <p className='font-medium text-white'>Lock until</p>
+                <p className='font-medium text-white'>Lock Until</p>
                 <Tabs data={periods} />
               </div>
 
@@ -142,7 +142,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
               />
             </div>
             <div className='my-3 flex items-center justify-between'>
-              <Paragraph>New veTHE voting power</Paragraph>
+              <Paragraph>New veTHE Voting Power</Paragraph>
               <div>
                 <TextHeading>{formatAmount(extendVotingPower)}&nbsp;</TextHeading>
                 <span className='font-medium text-success-600'>
@@ -155,7 +155,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
           <div className='flex flex-col gap-5'>
             <BalanceInput title='Amount' asset={theAsset} amount={amount} onAmountChange={setAmount} autoFocus />
             <div className='my-3 flex items-center justify-between'>
-              <Paragraph>New veTHE voting power</Paragraph>
+              <Paragraph>New veTHE Voting Power</Paragraph>
               <div>
                 <TextHeading>{formatAmount(lockVotingPower)}&nbsp;</TextHeading>
                 <span className='font-medium text-success-600'>
@@ -183,7 +183,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
                 })
               }}
             >
-              Extend duration
+              Extend Duration
             </SecondaryButton>
             <PrimaryButton
               className='w-full'
@@ -206,7 +206,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
                 })
               }}
             >
-              Max lock
+              Max Lock
             </PrimaryButton>
           </>
         ) : (
@@ -225,7 +225,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
               })
             }}
           >
-            Increase amount
+            Increase Amount
           </PrimaryButton>
         )}
       </ModalFooter>

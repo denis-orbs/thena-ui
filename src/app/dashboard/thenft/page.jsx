@@ -79,9 +79,9 @@ export default function TheNftPage() {
           </TertiaryButton>
         </Info>
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
-          <InfoBox value={formatAmount(totalStaked)} title='Total theNFT staked' />
+          <InfoBox value={formatAmount(totalStaked)} title='Total theNFT Staked' />
           <InfoBox value={`${formatAmount(apr)}%`} title='Floor Price APR' />
-          <InfoBox value={`$${formatAmount(lastEarnings)}`} title='Last EPOCH Earnings' />
+          <InfoBox value={`$${formatAmount(lastEarnings)}`} title='Last Epoch Earnings' />
         </div>
       </div>
       {account ? (
@@ -114,7 +114,7 @@ export default function TheNftPage() {
             </div>
           </div>
           <div className='flex flex-col gap-4'>
-            <TextHeading className='text-xl'>My collection</TextHeading>
+            <TextHeading className='text-xl'>My Collection</TextHeading>
             {yourNfts && yourNfts.length > 0 ? (
               <div className='flex gap-4 overflow-auto pb-4 lg:grid lg:grid-cols-4'>
                 {yourNfts.map((nft, idx) => (
@@ -183,7 +183,7 @@ export default function TheNftPage() {
         <NotConnected />
       )}
       <div className='flex flex-col gap-4'>
-        <TextHeading className='text-xl'>How to stake?</TextHeading>
+        <TextHeading className='text-xl'>How to Stake?</TextHeading>
         <div className='grid grid-cols-1 gap-10 lg:grid-cols-3'>
           <div className='flex flex-col items-center gap-3'>
             <Highlight className='bg-primary-600'>

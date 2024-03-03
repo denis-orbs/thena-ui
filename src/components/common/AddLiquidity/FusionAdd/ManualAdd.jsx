@@ -44,7 +44,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo }) {
       }}
       className='w-full'
     >
-      Add liquidity
+      Add Liquidity
     </PrimaryButton>
   )
 }

@@ -307,7 +307,7 @@ export default function SwapFusion({
           <div className='flex justify-between'>
             <TextHeading className='text-xl'>Order Routing</TextHeading>
             <TextButton className='text-xs' iconClassName='lg:h-4 lg:w-4' LeadingIcon={RefreshIcon}>
-              Refresh quote
+              Refresh Quote
             </TextButton>
           </div>
           {bestV3TradeExactIn.isLoading ? (

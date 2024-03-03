@@ -281,7 +281,7 @@ export default function V1Add({
                 }}
                 className='w-full'
               >
-                Add liquidity
+                Add Liquidity
               </SecondaryButton>
               {strategy && strategy.gauge.address !== zeroAddress && (
                 <PrimaryButton
@@ -291,7 +291,7 @@ export default function V1Add({
                   }}
                   className='w-full'
                 >
-                  Add liquidity & stake
+                  Add Liquidity & Stake
                 </PrimaryButton>
               )}
             </>

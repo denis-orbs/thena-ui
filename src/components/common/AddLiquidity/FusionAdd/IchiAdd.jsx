@@ -139,7 +139,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
               }}
               className='w-full'
             >
-              Add liquidity & stake
+              Add Liquidity & Stake
             </PrimaryButton>
           ) : (
             <PrimaryButton className='w-full' onClick={() => open()}>
