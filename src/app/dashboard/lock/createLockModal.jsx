@@ -10,6 +10,7 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PERIOD_LEVELS } from '@/constant'
+import { useMutateAssets } from '@/context/assetsContext'
 import { useCreateLock } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
@@ -26,6 +27,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
   const [amount, setAmount] = useState('')
   const [periodLevel, setPeriodLevel] = useState(0)
   const { onCreateLock, pending } = useCreateLock(amount, selectedDate)
+  const mutateAssets = useMutateAssets()
 
   const periods = useMemo(
     () =>
@@ -133,6 +135,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
             }
             onCreateLock(amount, selectedDate, () => {
               updateVeTHEs()
+              mutateAssets()
               onClear()
             })
           }}

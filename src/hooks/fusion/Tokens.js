@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { BNB, ChainId, Token } from 'thena-sdk-core'
 
-import { useAssets } from '@/state/assets/hooks'
+import { useAssets } from '@/context/assetsContext'
 import { useChainSettings } from '@/state/settings/hooks'
 
 // undefined if invalid or does not exist

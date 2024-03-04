@@ -3,10 +3,10 @@ import useSWRImmutable from 'swr/immutable'
 
 import { algebraAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
+import { useAssets } from '@/context/assetsContext'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getAlgebraNPMContract } from '@/lib/contracts'
 import useWallet from '@/lib/wallets/useWallet'
-import { useAssets } from '@/state/assets/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const initialState = []

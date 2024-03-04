@@ -13,6 +13,7 @@ import TokenInput from '@/components/input/TokenInput'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useAssets, useMutateAssets } from '@/context/assetsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useBestV3TradeExactIn, useBestV3TradeExactOut } from '@/hooks/fusion/useBestV3Trade'
 import { useSwapCallback } from '@/hooks/fusion/useSwapCallback'
@@ -22,7 +23,6 @@ import { formatAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnSettings from '@/modules/SettingsModal'
 import SwapChart from '@/modules/SwapChart'
-import { useAssets } from '@/state/assets/hooks'
 import { Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
 import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
@@ -49,6 +49,7 @@ export default function SwapFusion({
   const inCurrency = useCurrency(fromAsset ? fromAsset.address : undefined)
   const outCurrency = useCurrency(toAsset ? toAsset.address : undefined)
   const assets = useAssets()
+  const mutateAssets = useMutateAssets()
 
   const showWrap = useMemo(() => isWrap || isUnwrap, [isWrap, isUnwrap])
 
@@ -289,7 +290,7 @@ export default function SwapFusion({
               } else if (isUnwrap) {
                 onUnwrap(parsedAmount?.toExact())
               } else {
-                swapCallback()
+                swapCallback(mutateAssets)
               }
             }}
           >

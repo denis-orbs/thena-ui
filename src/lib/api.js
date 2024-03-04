@@ -4,6 +4,8 @@ import { ChainId } from 'thena-sdk-core/dist'
 import Contracts from '@/constant/contracts'
 import { liquidityHub } from '@/modules/LiquidityHub'
 
+import { ZERO_VALUE } from './utils'
+
 const backendApi = 'https://api.thena.fi/api/v1'
 
 export const fetchAssets = async (networkId, liquidityHubEnabled) => {
@@ -39,7 +41,8 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
     assets.unshift(nativeBNB)
     return assets.map(item => ({
       ...item,
-      balance: 0,
+      chainId: networkId,
+      balance: ZERO_VALUE,
     }))
   } catch (ex) {
     console.error('get assets had error', ex)

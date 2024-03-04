@@ -2,11 +2,11 @@ import React, { createContext, useContext, useMemo } from 'react'
 import useSWRImmutable from 'swr/immutable'
 
 import { PAIR_TYPES } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 import { fetchUserVaultsData } from '@/lib/vaults/fetchUserVaults'
 import { fetchVaultsData } from '@/lib/vaults/fetchVaults'
 import useWallet from '@/lib/wallets/useWallet'
-import { useAssets } from '@/state/assets/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const VaultsContext = createContext([])

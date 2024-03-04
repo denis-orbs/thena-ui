@@ -121,122 +121,126 @@ export function useSwapCallback(
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
   const publicClient = usePublicClient()
 
-  const onFusionSwap = useCallback(async () => {
-    const key = uuidv4()
-    const approveuuid = uuidv4()
-    const swapuuid = uuidv4()
-    const inputCurrency = trade.inputAmount.currency
-    const outputCurrency = trade.outputAmount.currency
-    const inputSymbol = inputCurrency.symbol
-    const outputSymbol = outputCurrency.symbol
-    const inputAmount = trade.inputAmount.toSignificant(4)
-    const outputAmount = trade.outputAmount.toSignificant(4)
-    setPending(true)
+  const onFusionSwap = useCallback(
+    async callback => {
+      const key = uuidv4()
+      const approveuuid = uuidv4()
+      const swapuuid = uuidv4()
+      const inputCurrency = trade.inputAmount.currency
+      const outputCurrency = trade.outputAmount.currency
+      const inputSymbol = inputCurrency.symbol
+      const outputSymbol = outputCurrency.symbol
+      const inputAmount = trade.inputAmount.toSignificant(4)
+      const outputAmount = trade.outputAmount.toSignificant(4)
+      setPending(true)
 
-    let isApproved = true
-    const fusionRouterAddress = Contracts.fusionRouter[chainId]
-    if (!inputCurrency.isNative) {
-      const inputTokenContract = getERC20Contract(inputCurrency.address, chainId)
-      const allowance = await readCall(inputTokenContract, 'allowance', [account, fusionRouterAddress], chainId)
-      isApproved = fromWei(allowance, inputCurrency.decimals).gte(trade.inputAmount.toExact())
-    }
-    startTxn({
-      key,
-      title: `Swap ${inputSymbol} for ${outputSymbol}`,
-      transactions: {
-        ...(!isApproved && {
-          [approveuuid]: {
-            desc: `Approve ${inputSymbol}`,
+      let isApproved = true
+      const fusionRouterAddress = Contracts.fusionRouter[chainId]
+      if (!inputCurrency.isNative) {
+        const inputTokenContract = getERC20Contract(inputCurrency.address, chainId)
+        const allowance = await readCall(inputTokenContract, 'allowance', [account, fusionRouterAddress], chainId)
+        isApproved = fromWei(allowance, inputCurrency.decimals).gte(trade.inputAmount.toExact())
+      }
+      startTxn({
+        key,
+        title: `Swap ${inputSymbol} for ${outputSymbol}`,
+        transactions: {
+          ...(!isApproved && {
+            [approveuuid]: {
+              desc: `Approve ${inputSymbol}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [swapuuid]: {
+            desc: `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`,
             status: TXN_STATUS.START,
             hash: null,
           },
-        }),
-        [swapuuid]: {
-          desc: `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`,
-          status: TXN_STATUS.START,
-          hash: null,
         },
-      },
-    })
-    if (!isApproved) {
-      const inputTokenContract = getERC20Contract(inputCurrency.address, chainId)
-      if (!(await writeTxn(key, approveuuid, inputTokenContract, 'approve', [fusionRouterAddress, maxUint256]))) {
+      })
+      if (!isApproved) {
+        const inputTokenContract = getERC20Contract(inputCurrency.address, chainId)
+        if (!(await writeTxn(key, approveuuid, inputTokenContract, 'approve', [fusionRouterAddress, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      }
+      const estimatedCalls = await Promise.all(
+        swapCalls.map(call => {
+          const { address, calldata, value } = call
+
+          const tx =
+            !value || isZero(value)
+              ? { account, to: address, data: calldata }
+              : {
+                  account,
+                  to: address,
+                  data: calldata,
+                  value,
+                }
+
+          return publicClient
+            .estimateGas(tx)
+            .then(gasEstimate => ({
+              call,
+              gasEstimate,
+            }))
+            .catch(gasError => {
+              console.debug('Gas estimate failed, trying eth_call to extract error', call)
+
+              return publicClient
+                .call(tx)
+                .then(result => {
+                  console.debug('Unexpected successful call after failed estimate gas', call, gasError, result)
+                  return {
+                    call,
+                    error: new Error('Unexpected issue with estimating the gas. Please try again.'),
+                  }
+                })
+                .catch(callError => {
+                  console.debug('Call threw error', call, callError)
+                  return {
+                    call,
+                    error: new Error(swapErrorToUserReadableMessage(callError)),
+                  }
+                })
+            })
+        }),
+      )
+
+      // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
+      let bestCallOption = estimatedCalls.find(
+        (el, ix, list) => 'gasEstimate' in el && (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
+      )
+
+      // check if any calls errored with a recognizable error
+      if (!bestCallOption) {
+        const errorCalls = estimatedCalls.filter(call => 'error' in call)
+        if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error
+        const firstNoErrorCall = estimatedCalls.find(call => !('error' in call))
+        if (!firstNoErrorCall) throw new Error('Unexpected error. Could not estimate gas for the swap.')
+        bestCallOption = firstNoErrorCall
+      }
+      const {
+        call: { calldata, value },
+      } = bestCallOption
+
+      if (!(await sendTxn(key, swapuuid, fusionRouterAddress, calldata, value))) {
         setPending(false)
         return
       }
-    }
-    const estimatedCalls = await Promise.all(
-      swapCalls.map(call => {
-        const { address, calldata, value } = call
 
-        const tx =
-          !value || isZero(value)
-            ? { account, to: address, data: calldata }
-            : {
-                account,
-                to: address,
-                data: calldata,
-                value,
-              }
-
-        return publicClient
-          .estimateGas(tx)
-          .then(gasEstimate => ({
-            call,
-            gasEstimate,
-          }))
-          .catch(gasError => {
-            console.debug('Gas estimate failed, trying eth_call to extract error', call)
-
-            return publicClient
-              .call(tx)
-              .then(result => {
-                console.debug('Unexpected successful call after failed estimate gas', call, gasError, result)
-                return {
-                  call,
-                  error: new Error('Unexpected issue with estimating the gas. Please try again.'),
-                }
-              })
-              .catch(callError => {
-                console.debug('Call threw error', call, callError)
-                return {
-                  call,
-                  error: new Error(swapErrorToUserReadableMessage(callError)),
-                }
-              })
-          })
-      }),
-    )
-
-    // a successful estimation is a bignumber gas estimate and the next call is also a bignumber gas estimate
-    let bestCallOption = estimatedCalls.find(
-      (el, ix, list) => 'gasEstimate' in el && (ix === list.length - 1 || 'gasEstimate' in list[ix + 1]),
-    )
-
-    // check if any calls errored with a recognizable error
-    if (!bestCallOption) {
-      const errorCalls = estimatedCalls.filter(call => 'error' in call)
-      if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error
-      const firstNoErrorCall = estimatedCalls.find(call => !('error' in call))
-      if (!firstNoErrorCall) throw new Error('Unexpected error. Could not estimate gas for the swap.')
-      bestCallOption = firstNoErrorCall
-    }
-    const {
-      call: { calldata, value },
-    } = bestCallOption
-
-    if (!(await sendTxn(key, swapuuid, fusionRouterAddress, calldata, value))) {
       setPending(false)
-      return
-    }
 
-    setPending(false)
-
-    endTxn({
-      key,
-      final: 'Swap Successful',
-    })
-  }, [trade, publicClient, account, swapCalls, chainId, startTxn, endTxn, writeTxn, sendTxn])
+      endTxn({
+        key,
+        final: 'Swap Successful',
+      })
+      callback()
+    },
+    [trade, publicClient, account, swapCalls, chainId, startTxn, endTxn, writeTxn, sendTxn],
+  )
 
   return { pending, callback: onFusionSwap }
 }

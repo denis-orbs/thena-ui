@@ -2,7 +2,7 @@
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import BigNumber from 'bignumber.js'
-import { Fragment, useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { Alert } from '@/components/alert'
 import Box from '@/components/box'
@@ -13,6 +13,7 @@ import TokenInput from '@/components/input/TokenInput'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useMutateAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useOdosQuoteSwap, useOdosSwap } from '@/hooks/useSwap'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
@@ -49,6 +50,7 @@ export default function SwapBest({
     isLoading: bestTradePending,
     mutate,
   } = useOdosQuoteSwap(account, fromAsset, toAsset, debouncedAmount, slippage, networkId)
+  const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { mutate: onLHSwap, isLoading: LHSwapPending } = liquidityHub.useSwap()
   const {
@@ -168,9 +170,22 @@ export default function SwapBest({
       isDexTrade,
     })
     if (isDexTrade) {
-      onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => setFromAmount(''))
+      onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => {
+        setFromAmount('')
+        mutateAssets()
+      })
     } else {
-      onLHSwap({ fromAsset, toAsset, fromAmount, setFromAddress, quote: lhQuote, callback: () => setFromAmount('') })
+      onLHSwap({
+        fromAsset,
+        toAsset,
+        fromAmount,
+        setFromAddress,
+        quote: lhQuote,
+        callback: () => {
+          setFromAmount('')
+          mutateAssets()
+        },
+      })
     }
   }, [
     fromAsset,
@@ -184,6 +199,7 @@ export default function SwapBest({
     isDexTrade,
     lhQuote,
     slippage,
+    mutateAssets,
   ])
 
   const btnMsg = useMemo(() => {

@@ -8,6 +8,7 @@ import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { pairAPIAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
+import { useAssets } from '@/context/assetsContext'
 import { useExtraRewardsInfo } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import { fetchPools } from '@/lib/api'
@@ -16,7 +17,6 @@ import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 import { updatePools } from './actions'
-import { useAssets } from '../assets/hooks'
 import { useChainSettings } from '../settings/hooks'
 
 const fetchUserFusions = async (url, account, pools, chainId) => {

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
-import { useAssets } from '@/state/assets/hooks'
+import { useAssets } from '@/context/assetsContext'
 
 import ChooseStrategy from './ChooseStrategy'
 import FusionAdd from './FusionAdd'

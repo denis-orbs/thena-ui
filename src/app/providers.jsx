@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import { ToastContainer, Zoom } from 'react-toastify'
 import { SWRConfig } from 'swr'
 
+import { AssetsContextProvider } from '@/context/assetsContext'
 import { FusionsContextProvider } from '@/context/fusionsContext'
 import { ManualsContextProvider } from '@/context/manualsContext'
 import { PairsContextProvider } from '@/context/pairsContext'
@@ -16,19 +17,21 @@ import store from '@/state'
 
 function ContextProviders({ children }) {
   return (
-    <VaultsContextProvider>
-      <PairsContextProvider>
-        <FusionsContextProvider>
-          <ManualsContextProvider>
-            <TokensContextProvider>
-              <VeTHEsContextProvider>
-                <RewardsContextProvider>{children}</RewardsContextProvider>
-              </VeTHEsContextProvider>
-            </TokensContextProvider>
-          </ManualsContextProvider>
-        </FusionsContextProvider>
-      </PairsContextProvider>
-    </VaultsContextProvider>
+    <AssetsContextProvider>
+      <VaultsContextProvider>
+        <PairsContextProvider>
+          <FusionsContextProvider>
+            <ManualsContextProvider>
+              <TokensContextProvider>
+                <VeTHEsContextProvider>
+                  <RewardsContextProvider>{children}</RewardsContextProvider>
+                </VeTHEsContextProvider>
+              </TokensContextProvider>
+            </ManualsContextProvider>
+          </FusionsContextProvider>
+        </PairsContextProvider>
+      </VaultsContextProvider>
+    </AssetsContextProvider>
   )
 }
 

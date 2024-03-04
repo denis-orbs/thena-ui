@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { useAssets } from '@/state/assets/hooks'
+import { useAssets } from '@/context/assetsContext'
 
 export const useCurrencyLogo = currency => {
   const assets = useAssets()

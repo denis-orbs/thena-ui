@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
 import { WBNB } from 'thena-sdk-core'
 
+import { useAssets } from '@/context/assetsContext'
 import { cn, formatAmount } from '@/lib/utils'
-import { useAssets } from '@/state/assets/hooks'
 
 import AssetDropdown from '../dropdown/AssetDropdown'
 import IconGroup from '../icongroup'

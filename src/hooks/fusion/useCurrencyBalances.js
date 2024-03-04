@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { BNB, CurrencyAmount, JSBI } from 'thena-sdk-core'
 
+import { useAssets } from '@/context/assetsContext'
 import { toWei } from '@/lib/utils'
-import { useAssets } from '@/state/assets/hooks'
 
 export function useCurrencyBalances(currencies) {
   const assets = useAssets()

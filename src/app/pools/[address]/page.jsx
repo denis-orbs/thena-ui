@@ -43,14 +43,14 @@ export default function SpecificPoolPage({ params }) {
               <div className='flex space-x-4'>
                 <IconGroup
                   classNames={{
-                    image: 'w-[48px] lg:w-[56px]',
+                    image: 'w-[36px] lg:w-[56px]',
                   }}
                   logo1={pool.token0.logoURI}
                   logo2={pool.token1.logoURI}
                 />
                 <div className='flex flex-col gap-2'>
                   <div className='flex items-center gap-3'>
-                    <TextHeading className='text-4xl'>{pool.symbol}</TextHeading>
+                    <TextHeading className='text-2xl lg:text-4xl'>{pool.symbol}</TextHeading>
                     <NeutralBadge>{pool.type}</NeutralBadge>
                   </div>
                   <div className='flex items-center gap-0.5'>

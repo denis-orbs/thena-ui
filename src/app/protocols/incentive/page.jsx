@@ -13,6 +13,7 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import BalanceInput from '@/components/input/BalanceInput'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useMutateAssets } from '@/context/assetsContext'
 import { useBribeAdd } from '@/hooks/useProtocols'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
@@ -31,6 +32,7 @@ export default function IncentivePage() {
   const [pair, setPair] = useState(null)
   const [asset, setAsset] = useState(null)
   const { open } = useWeb3Modal()
+  const mutateAssets = useMutateAssets()
   const pools = usePools()
   const poolsWithGauge = useMemo(() => pools.filter(pool => pool && pool.gauge.address !== zeroAddress), [pools])
   const { onBribeAdd, pending } = useBribeAdd()
@@ -163,6 +165,7 @@ export default function IncentivePage() {
                     setAmount('')
                     setPair(null)
                     setAsset(null)
+                    mutateAssets()
                   })
                 }}
               >

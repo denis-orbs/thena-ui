@@ -2,7 +2,6 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { FLUSH, PAUSE, PERSIST, persistReducer, PURGE, REGISTER, REHYDRATE } from 'redux-persist'
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 
-import assetsReducer from './assets/reducer'
 import fusionReducer from './fusion/reducer'
 import poolsReducer from './pools/reducer'
 import settingsReducer from './settings/reducer'
@@ -21,7 +20,7 @@ const createNoopStorage = () => ({
 })
 
 const storage = typeof window !== 'undefined' ? createWebStorage('local') : createNoopStorage()
-const PERSISTED_KEYS = ['transactions', 'settings', 'assets', 'pools']
+const PERSISTED_KEYS = ['transactions', 'settings', 'pools']
 
 const persistConfig = {
   key: 'primary',
@@ -35,7 +34,6 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     settings: settingsReducer,
-    assets: assetsReducer,
     pools: poolsReducer,
     transactions: transactionsReducer,
     fusion: fusionReducer,

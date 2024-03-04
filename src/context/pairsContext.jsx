@@ -3,9 +3,9 @@ import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import { fetchBscPairs, fetchOpPairs } from '@/lib/api'
 import { formatAmount } from '@/lib/utils'
-import { useAssets } from '@/state/assets/hooks'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 

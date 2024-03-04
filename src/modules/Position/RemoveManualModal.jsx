@@ -63,7 +63,7 @@ export default function RemoveManualModal({
   return (
     <Modal
       isOpen={popup}
-      title='Remove position'
+      title='Remove Position'
       closeModal={() => {
         setPopup(false)
       }}

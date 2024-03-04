@@ -8,12 +8,12 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import BalanceInput from '@/components/input/BalanceInput'
 import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useAssets } from '@/context/assetsContext'
 import { useIchiManage } from '@/hooks/fusion/useIchi'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import PoolTitle from '@/modules/PoolTitle'
-import { useAssets } from '@/state/assets/hooks'
 import { useSettings } from '@/state/settings/hooks'
 
 export default function IchiAdd({ strategy, isAdd, isModal }) {

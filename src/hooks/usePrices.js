@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import Contracts from '@/constant/contracts'
-import { useAssets } from '@/state/assets/hooks'
+import { useAssets } from '@/context/assetsContext'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const usePrices = () => {

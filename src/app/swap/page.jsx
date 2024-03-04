@@ -5,8 +5,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import Contracts from '@/constant/contracts'
+import { useAssets } from '@/context/assetsContext'
 import { useWrap } from '@/hooks/useSwap'
-import { useAssets } from '@/state/assets/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import SwapBest from './SwapBest'
@@ -24,7 +24,7 @@ export default function SwapPage() {
   const { onWrap, onUnwrap, pending: wrapPending } = useWrap()
 
   useEffect(() => {
-    if (assets.length === 0) return
+    if (!assets || !assets.length) return
     const inputCurrency = searchParams.get('inputCurrency')
     const outputCurrency = searchParams.get('outputCurrency')
     const from = inputCurrency

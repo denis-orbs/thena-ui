@@ -3,8 +3,8 @@ import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 
 import { UNKNOWN_LOGO } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import { fetchTopTokens } from '@/lib/api'
-import { useAssets } from '@/state/assets/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const initialState = {

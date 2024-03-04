@@ -5,10 +5,10 @@ import { ChainId } from 'thena-sdk-core'
 
 import { rewardsAPIAbi, veTHEApiAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
+import { useAssets } from '@/context/assetsContext'
 import { callMulti } from '@/lib/contractActions'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { useAssets } from '@/state/assets/hooks'
 import { usePoolsWithGauge } from '@/state/pools/hooks'
 
 const rewardsContext = React.createContext({

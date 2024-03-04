@@ -10,6 +10,7 @@ import Selection from '@/components/selection'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PERIOD_LEVELS } from '@/constant'
+import { useMutateAssets } from '@/context/assetsContext'
 import { useExtendLock, useIncreaseLock } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
@@ -25,6 +26,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
   const [amount, setAmount] = useState('')
   const [periodLevel, setPeriodLevel] = useState(0)
 
+  const mutateAssets = useMutateAssets()
   const { onExtend, pending: extendPending } = useExtendLock()
   const { onIncreaseAmount, pending: increasePending } = useIncreaseLock()
 
@@ -222,6 +224,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
                 setAmount('')
                 setSelectedDate(minDate)
                 updateVeTHEs()
+                mutateAssets()
               })
             }}
           >
