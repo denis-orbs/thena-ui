@@ -359,7 +359,7 @@ const getTokens = async liquidityHubEnabled => {
   }
   try {
     const data = await fetch(TOKEN_LIST).then(res => res.json())
-    return data.tokens
+    return data.tokens.map(it => ({ ...it, extended: true }))
   } catch (error) {
     return []
   }
@@ -470,7 +470,6 @@ const useSubmitTransaction = () => {
         if (!swap.txHash) {
           throw new Error('Missing txHash')
         }
-
         const tx = await waitCall(swap.txHash)
         updateTxn({
           key: TX_UPDATER_KEYS.key,
@@ -505,7 +504,7 @@ const useSwap = () => {
   const { startTxn, writeTxn, updateTxn, endTxn } = useTxn()
 
   return useMutation({
-    mutationFn: async ({ fromAsset, toAsset, fromAmount, setFromAddress, quote, callback }) => {
+    mutationFn: async ({ fromAsset, toAsset, fromAmount, setFromAddress, outAmount, quote, callback }) => {
       if (!quote) {
         return
       }
@@ -516,7 +515,7 @@ const useSwap = () => {
       const outTokenAddress = isNativeOut ? zeroAddress : toAsset.address
 
       const inAmountBN = amountBN(fromAsset, fromAmount).toString()
-      const toAmount = amountUi(toAsset, new BN(quote?.outAmount))
+      const toAmount = amountUi(toAsset, new BN(outAmount))
 
       const tokenContract = getERC20Contract(inTokenAddress, chainId)
       const allowance = await readCall(tokenContract, 'allowance', [account, permit2Address])
@@ -598,8 +597,6 @@ const useSwap = () => {
         status: TXN_STATUS.WAITING,
       })
       try {
-        process.env.DEBUG = 'web3-candies'
-
         const { permitData } = quote
         const populated = await _TypedDataEncoder.resolveNames(
           permitData.domain,
