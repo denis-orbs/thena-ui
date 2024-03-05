@@ -60,6 +60,7 @@ const FUSION_DAY_DATAS = gql`
       date
       totalValueLockedUSD
       volumeUSD
+      untrackedVolumeUSD
       priceUSD
     }
   }
@@ -75,7 +76,7 @@ const getFusionChartData = async (chainId, address, skip = 0) => {
     const data = tokenDayDatas.map(ele => ({
       date: Number(ele.date),
       tvlUSD: parseFloat(ele.totalValueLockedUSD),
-      dailyVolumeUSD: parseFloat(ele.volumeUSD),
+      dailyVolumeUSD: parseFloat(ele.volumeUSD) || parseFloat(ele.untrackedVolumeUSD),
       priceUSD: parseFloat(ele.priceUSD),
     }))
     return { data, error: false }

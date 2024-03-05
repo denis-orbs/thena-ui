@@ -39,6 +39,7 @@ const FUSION_DAY_DATAS = gql`
       date
       feesUSD
       volumeUSD
+      untrackedVolumeUSD
       tvlUSD
     }
   }
@@ -73,7 +74,7 @@ const getFusionChartData = async (chainId, address, skip) => {
     })
     const data = poolDayDatas.map(ele => ({
       date: ele.date,
-      dayVolume: parseFloat(ele.volumeUSD),
+      dayVolume: parseFloat(ele.volumeUSD) || parseFloat(ele.untrackedVolumeUSD),
       tvlUSD: parseFloat(ele.tvlUSD),
       dayFees: parseFloat(ele.feesUSD),
     }))
