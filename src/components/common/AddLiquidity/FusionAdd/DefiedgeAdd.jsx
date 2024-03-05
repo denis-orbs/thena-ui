@@ -1,14 +1,13 @@
 'use client'
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWRImmutable from 'swr/immutable'
 import { JSBI, WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
-import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { useFusionPairs } from '@/context/fusionsContext'
@@ -50,7 +49,6 @@ const fetchDefiedgePair = async (chainId, strategy) => {
 }
 
 export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
-  const [isZapper, setIsZapper] = useState(false)
   const fusionPairs = useFusionPairs()
   const baseCurrency = useCurrency(strategy.token0.address)
   const quoteCurrency = useCurrency(strategy.token1.address)
@@ -84,26 +82,6 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
     {
       refreshInterval: 0,
     },
-  )
-
-  const addSelections = useMemo(
-    () => [
-      {
-        label: 'Default',
-        active: !isZapper,
-        onClickHandler: () => {
-          setIsZapper(false)
-        },
-      },
-      {
-        label: 'Zapper',
-        active: isZapper,
-        onClickHandler: () => {
-          setIsZapper(true)
-        },
-      },
-    ],
-    [isZapper],
   )
 
   const price = useMemo(() => {
@@ -171,76 +149,69 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         <div className='flex flex-col gap-5'>
           {isAdd && strategy && <PoolTitle strategy={strategy} />}
-          <Selection data={addSelections} isFull />
-          {isZapper ? (
-            <div className='flex flex-col gap-5'>Coming soon</div>
-          ) : (
-            <div className='flex flex-col'>
-              <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-              <div className='mt-5 flex flex-col gap-4'>
-                <TextHeading className='text-lg'>Reserve Info</TextHeading>
-                <div className='flex flex-col gap-3'>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token0)} Amount</Paragraph>
-                    <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token1)} Amount</Paragraph>
-                    <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
-                  </div>
+          <div className='flex flex-col'>
+            <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
+            <div className='mt-5 flex flex-col gap-4'>
+              <TextHeading className='text-lg'>Reserve Info</TextHeading>
+              <div className='flex flex-col gap-3'>
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token0)} Amount</Paragraph>
+                  <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
                 </div>
-              </div>
-              <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-                <TextHeading className='text-lg'>My Info</TextHeading>
-                <div className='flex flex-col gap-3'>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>Pooled Liquidity</Paragraph>
-                    <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>Staked Liquidity</Paragraph>
-                    <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
-                  </div>
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token1)} Amount</Paragraph>
+                  <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
                 </div>
               </div>
             </div>
-          )}
+            <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+              <TextHeading className='text-lg'>My Info</TextHeading>
+              <div className='flex flex-col gap-3'>
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='font-medium'>Pooled Liquidity</Paragraph>
+                  <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='font-medium'>Staked Liquidity</Paragraph>
+                  <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      {!isZapper && (
-        <div
-          className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row', isModal && 'px-3 lg:px-6')}
-        >
-          {account ? (
-            <>
-              <SecondaryButton
-                disabled={pending}
+      <div
+        className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row', isModal && 'px-3 lg:px-6')}
+      >
+        {account ? (
+          <>
+            <SecondaryButton
+              disabled={pending}
+              onClick={() => {
+                onAddLiquidity()
+              }}
+              className='w-full'
+            >
+              Add Liquidity
+            </SecondaryButton>
+            {strategy && strategy.gauge.address !== zeroAddress && (
+              <PrimaryButton
+                disabled={pendingStake}
                 onClick={() => {
-                  onAddLiquidity()
+                  onAddLiquidityAndStake()
                 }}
                 className='w-full'
               >
-                Add Liquidity
-              </SecondaryButton>
-              {strategy && strategy.gauge.address !== zeroAddress && (
-                <PrimaryButton
-                  disabled={pendingStake}
-                  onClick={() => {
-                    onAddLiquidityAndStake()
-                  }}
-                  className='w-full'
-                >
-                  Add Liquidity & Stake
-                </PrimaryButton>
-              )}
-            </>
-          ) : (
-            <PrimaryButton className='w-full' onClick={() => open()}>
-              Connect Wallet
-            </PrimaryButton>
-          )}
-        </div>
-      )}
+                Add Liquidity & Stake
+              </PrimaryButton>
+            )}
+          </>
+        ) : (
+          <PrimaryButton className='w-full' onClick={() => open()}>
+            Connect Wallet
+          </PrimaryButton>
+        )}
+      </div>
     </>
   )
 }

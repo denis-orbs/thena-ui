@@ -166,7 +166,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
           {isAdd && strategy && <PoolTitle strategy={strategy} />}
           <Selection data={addSelections} isFull />
           {isZapper ? (
-            <div className='flex flex-col gap-5'>Coming soon</div>
+            <div className='flex flex-col gap-5'>Coming Soon!</div>
           ) : (
             <div className='flex flex-col'>
               <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />

@@ -194,7 +194,7 @@ export default function V1Add({
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
         <Selection data={addSelections} isFull />
         {isZapper ? (
-          <div className='flex flex-col gap-5'>Coming soon!</div>
+          <div className='flex flex-col gap-5'>Coming Soon!</div>
         ) : (
           <div className='flex flex-col'>
             <div className='mb-5 flex flex-col gap-2'>
