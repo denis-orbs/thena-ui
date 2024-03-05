@@ -339,7 +339,7 @@ export const useGammaRemove = () => {
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
   const onGammaRemove = useCallback(
-    async (pool, amount) => {
+    async (pool, amount, callback) => {
       const key = uuidv4()
       const removeuuid = uuidv4()
       startTxn({
@@ -347,7 +347,7 @@ export const useGammaRemove = () => {
         title: 'Remove position',
         transactions: {
           [removeuuid]: {
-            desc: 'Remove position',
+            desc: `Remove ${pool.symbol} Gamma LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -367,6 +367,7 @@ export const useGammaRemove = () => {
         setPending(false)
         return
       }
+      callback()
       onFieldAInput('')
       onFieldBInput('')
       endTxn({

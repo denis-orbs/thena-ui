@@ -331,13 +331,17 @@ export const useV1Remove = () => {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const removeuuid = uuidv4()
+      const claimuuid = uuidv4()
       const routerAddress = Contracts.solidlyRouter[chainId]
       const lpContract = getERC20Contract(pair.address, chainId)
       const allowance = await readCall(lpContract, 'allowance', [account, routerAddress], chainId)
       const isApproved = fromWei(allowance).gte(withdrawAmount)
+      const shouldClaim =
+        (pair.account.token0claimable.gt(0) || pair.account.token1claimable.gt(0)) &&
+        pair.account.walletBalance.eq(withdrawAmount)
       startTxn({
         key,
-        title: 'Remove position',
+        title: shouldClaim ? 'Remove and Claim' : 'Remove position',
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
@@ -351,6 +355,13 @@ export const useV1Remove = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
+          ...(shouldClaim && {
+            [claimuuid]: {
+              desc: 'Claim fees',
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
         },
       })
 
@@ -398,6 +409,14 @@ export const useV1Remove = () => {
       if (!(await writeTxn(key, removeuuid, routerContract, func, params))) {
         setPending(false)
         return
+      }
+
+      if (shouldClaim) {
+        const pairContract = getPairContract(pair.address, chainId)
+        if (!(await writeTxn(key, claimuuid, pairContract, 'claimFees', []))) {
+          setPending(false)
+          return
+        }
       }
 
       endTxn({

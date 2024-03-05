@@ -273,7 +273,7 @@ export const useDefiedgeRemove = () => {
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
   const onDefiedgeRemove = useCallback(
-    async (pool, amount) => {
+    async (pool, amount, callback) => {
       const key = uuidv4()
       const removeuuid = uuidv4()
       startTxn({
@@ -300,6 +300,7 @@ export const useDefiedgeRemove = () => {
       })
       onFieldAInput('')
       onFieldBInput('')
+      callback()
       setPending(false)
     },
     [startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput],

@@ -47,19 +47,24 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
     return null
   }, [amount, balance])
 
+  const callback = useCallback(() => {
+    setAmount('')
+    setPopup(false)
+  }, [setPopup])
+
   const onRemoveLiquidity = useCallback(() => {
     if (errorMsg) {
       warnToast(errorMsg, 'warn')
       return
     }
     if (['Stable', 'Volatile'].includes(strategy.title)) {
-      onV1Remove(strategy, amount, slippage, deadline, firstAmount, secondAmount, () => setAmount(''))
+      onV1Remove(strategy, amount, slippage, deadline, firstAmount, secondAmount, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
-      onGammaRemove(strategy, amount)
+      onGammaRemove(strategy, amount, callback)
     } else if (strategy.title === 'ICHI') {
-      onIchiRemove(strategy, amount)
+      onIchiRemove(strategy, amount, callback)
     } else if (strategy.title === 'DefiEdge') {
-      onDefiedgeRemove(strategy, amount)
+      onDefiedgeRemove(strategy, amount, callback)
     }
   }, [
     strategy,
@@ -69,6 +74,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
     firstAmount,
     secondAmount,
     errorMsg,
+    callback,
     onV1Remove,
     onGammaRemove,
     onIchiRemove,

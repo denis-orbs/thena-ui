@@ -53,7 +53,7 @@ function Hero() {
           <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>Audited by</span>
           <HomeImage alt='zepplin logo' src='/images/home/hero/z.svg' />
         </div>
-        <h1 className='mt-[26px] w-full text-center font-archia text-4xl font-semibold leading-10 tracking-[-1.08px] lg:text-7xl lg:leading-[88px] lg:tracking-[-2.16px]'>
+        <h1 className='z-30 mt-[26px] w-full text-center font-archia text-4xl font-semibold leading-10 tracking-[-1.08px] lg:text-7xl lg:leading-[88px] lg:tracking-[-2.16px]'>
           THE ULTIMATE
           <br />
           Decentralized Exchange

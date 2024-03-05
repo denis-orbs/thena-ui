@@ -273,7 +273,7 @@ export const useIchiRemove = () => {
   const { startTxn, endTxn, writeTxn } = useTxn()
 
   const onIchiRemove = useCallback(
-    async (pool, amount) => {
+    async (pool, amount, callback) => {
       const key = uuidv4()
       const removeuuid = uuidv4()
       startTxn({
@@ -298,6 +298,7 @@ export const useIchiRemove = () => {
         key,
         final: 'Liquidity Remove Successful',
       })
+      callback()
       setPending(false)
     },
     [account, startTxn, writeTxn, endTxn, networkId],

@@ -78,23 +78,25 @@ export const useGuageUnstake = () => {
     async (pair, amount, callback) => {
       const key = uuidv4()
       const unstakeuuid = uuidv4()
+      const shouldHarvest = pair.account.earnedUsd.gt(0) && pair.account.gaugeBalance.eq(amount)
 
       setPending(true)
 
       startTxn({
         key,
-        title: `Unstake ${pair.symbol}`,
+        title: shouldHarvest ? 'Unstake and Harvest' : 'Unstake LP',
         transactions: {
           [unstakeuuid]: {
-            desc: 'Unstake LP',
+            desc: shouldHarvest ? 'Unstake and Harvest' : 'Unstake LP',
             status: TXN_STATUS.START,
             hash: null,
           },
         },
       })
       const gaugeContract = getGaugeContract(pair.gauge.address, chainId)
-      const params = [toWei(amount, pair.decimals).toFixed(0)]
-      if (!(await writeTxn(key, unstakeuuid, gaugeContract, 'withdraw', params))) {
+      const params = shouldHarvest ? [] : [toWei(amount, pair.decimals).toFixed(0)]
+      const func = shouldHarvest ? 'withdrawAllAndHarvest' : 'withdraw'
+      if (!(await writeTxn(key, unstakeuuid, gaugeContract, func, params))) {
         setPending(false)
         return
       }
