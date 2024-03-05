@@ -189,6 +189,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
             </SecondaryButton>
             <PrimaryButton
               className='w-full'
+              disabled={extendPending}
               onClick={() => {
                 let period
                 if (periodLevel === 3) {

@@ -233,6 +233,7 @@ export const TAX_ASSETS = {
     '0x9a7b04fd5788ea39819723e7eb9ef5f609bc57ab', // cpTHE
     '0x5dbcb073bedb36a411b5dd9b23b47ccbb5f7238f', // cpTHENA
     '0xa7266989b0df675cc8257d53b6bc1358faf6626a', // IPAD
+    '0xa1a020d3b354d6460ee3c272976f213160bd6b1c', // FS
   ],
   [ChainId.OPBNB]: [],
 }
