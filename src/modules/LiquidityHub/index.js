@@ -403,7 +403,7 @@ const useQuoteQuery = (fromAsset, toAsset, fromAmount = '', dexAmountOut = '') =
       LhQuote({
         inToken: fromAsset.address,
         outToken: toAsset.address,
-        inAmount: amountBN(fromAsset, fromAmount).toString(),
+        inAmount: amountBN(fromAsset, fromAmount).dp(0).toString(),
         dexAmountOut,
         slippage,
         account,

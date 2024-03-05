@@ -61,10 +61,13 @@ export default function SwapBest({
   const isDexTrade = liquidityHub.useIsDexTrade(bestTrade?.outAmounts[0], lhQuote?.outAmount, lhQuoteError)
   const quotePending = bestTradePending || lhQuotePending
   const isLHToken = fromAsset?.extended || toAsset?.extended
-  const outAmount = quotePending ? '' : isLHToken ? lhQuote?.outAmount : bestTrade?.outAmounts[0] || ''
+  const outAmount = useMemo(
+    () => (quotePending ? '' : isLHToken || !bestTrade ? lhQuote?.outAmount : bestTrade?.outAmounts[0] || ''),
+    [quotePending, isLHToken, lhQuote, bestTrade],
+  )
 
   const toAmount = useMemo(() => {
-    if (outAmount && toAsset) {
+    if (outAmount && Number(outAmount) > 0 && toAsset) {
       return fromWei(outAmount, toAsset.decimals).toString(10)
     }
     return ''
@@ -80,8 +83,8 @@ export default function SwapBest({
 
   const priceImpact = useMemo(() => {
     if (quotePending) return 0
-    if (!isLHToken) {
-      return !bestTrade ? 0 : Math.abs(bestTrade.priceImpact)
+    if (!isLHToken && bestTrade) {
+      return Math.abs(bestTrade.priceImpact)
     }
     if (fromAsset && toAsset && fromAmount && toAmount) {
       const fromInUsd = new BigNumber(fromAmount).times(fromAsset.price)
@@ -140,21 +143,6 @@ export default function SwapBest({
     [fromAsset, setFromAmount],
   )
 
-  // const getTokenFromAddress = useCallback(
-  //   address => {
-  //     if (
-  //       ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'].includes(
-  //         address.toLowerCase(),
-  //       )
-  //     ) {
-  //       return assets.find(asset => asset.address === 'BNB')
-  //     }
-  //     const found = assets.find(asset => asset.address.toLowerCase() === address.toLowerCase())
-  //     return found
-  //   },
-  //   [assets],
-  // )
-
   const handleSwap = useCallback(() => {
     const dexOutAmount = bestTrade?.outAmounts[0]
     liquidityHub.analytics.initSwap({
@@ -178,7 +166,7 @@ export default function SwapBest({
         toAsset,
         fromAmount,
         setFromAddress,
-        outAmount: isLHToken ? lhQuote.outAmount : bestTrade?.outAmounts[0],
+        outAmount,
         quote: lhQuote,
         callback: () => {
           setFromAmount('')
@@ -194,13 +182,12 @@ export default function SwapBest({
     bestTrade,
     onOdosSwap,
     onLHSwap,
+    outAmount,
     setFromAddress,
     isDexTrade,
-    bestTrade?.outAmounts[0],
     slippage,
     mutateAssets,
     lhQuote,
-    isLHToken,
   ])
 
   const btnMsg = useMemo(() => {
@@ -384,7 +371,7 @@ export default function SwapBest({
                   {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
                 </div>
               )}
-              {!!lhQuote?.outAmount && !isDexTrade && <LiquidityHubRouting />}
+              {!!lhQuote?.outAmount && Number(lhQuote?.outAmount) > 0 && !isDexTrade && <LiquidityHubRouting />}
             </div>
           )}
         </Box>
