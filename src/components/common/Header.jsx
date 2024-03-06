@@ -11,7 +11,8 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
 import { SizeTypes } from '@/constant/type'
-import { cn, formatAddress, goToDoc } from '@/lib/utils'
+import usePrices from '@/hooks/usePrices'
+import { cn, formatAddress, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -20,8 +21,9 @@ import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, PowerIcon } from '@/svg
 import Logo from '~/logo.svg'
 
 import CircleImage from '../image/CircleImage'
+import Skeleton from '../skeleton'
 import Tabs from '../tabs'
-import { TextHeading, TextSubHeading } from '../typography'
+import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 
 const data = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
@@ -168,6 +170,7 @@ function Header() {
   const { account, chainId } = useWallet()
   const { disconnect } = useDisconnect()
   const { networkId, updateNetwork } = useChainSettings()
+  const prices = usePrices()
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
@@ -350,7 +353,7 @@ function Header() {
     <div>
       <header className='fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl lg:h-[92px]'>
         <div className='flex items-center justify-between self-stretch p-4 backdrop-blur-xl lg:px-10 lg:pb-6 lg:pt-3'>
-          <div className='relative inline-flex items-center gap-20'>
+          <div className='relative inline-flex items-center gap-[60px] xl:gap-20'>
             <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
             <div className='relative hidden items-center justify-center gap-1 lg:inline-flex'>
               {menus.map((item, idx) => (
@@ -424,6 +427,14 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
+            <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:px-3 lg:py-2.5'>
+              <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
+              {prices.THE > 0 ? (
+                <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
+              ) : (
+                <Skeleton className='h-5 w-10' />
+              )}
+            </div>
             <ChainSelect />
             <OutlinedButton responsive onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               Enter ALPHA
@@ -433,7 +444,7 @@ function Header() {
                 <EmphasisButton responsive className='hidden lg:inline-flex' onClick={onConnect}>
                   {formatAddress(account)}
                 </EmphasisButton>
-                <TextIconButton Icon={PowerIcon} onClick={onDisconnect} />
+                <TextIconButton className='hidden lg:flex' Icon={PowerIcon} onClick={onDisconnect} />
               </>
             ) : (
               <PrimaryButton responsive onClick={onConnect}>
