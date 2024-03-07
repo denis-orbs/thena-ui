@@ -286,17 +286,15 @@ export default function ChooseStrategy({
                   </div>
                 )}
               </div>
-              {!mintInfo.noLiquidity && (
-                <div className='-mb-2 flex items-center justify-center'>
-                  <TextHeading className='text-sm'>
-                    {`Current Price: ${currentPrice} ${unwrappedSymbol(quoteCurrency)} per ${unwrappedSymbol(
-                      baseCurrency,
-                    )}`}
-                  </TextHeading>
-                </div>
-              )}
-              {!mintInfo.noLiquidity && (
-                <div className='mt-0'>
+              {!mintInfo.noLiquidity && strategyData && (
+                <>
+                  <div className='-mb-2 flex items-center justify-center'>
+                    <TextHeading className='text-sm'>
+                      {`Current Price: ${currentPrice} ${unwrappedSymbol(quoteCurrency)} per ${unwrappedSymbol(
+                        baseCurrency,
+                      )}`}
+                    </TextHeading>
+                  </div>
                   <LiquidityChartRangeInput
                     currencyA={baseCurrency ?? undefined}
                     currencyB={quoteCurrency ?? undefined}
@@ -310,7 +308,7 @@ export default function ChooseStrategy({
                     interactive={false}
                     handleShow={!!strategy}
                   />
-                </div>
+                </>
               )}
             </div>
           ) : (
