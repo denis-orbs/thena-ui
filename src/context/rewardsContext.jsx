@@ -149,7 +149,7 @@ function RewardsContextProvider({ children }) {
       .map((pool, index) => {
         const result = {}
         // bribes
-        if (!next[index].length) {
+        if (!next[index] || !next[index].length) {
           return {
             ...pool,
             rewards: Object.values(result),
