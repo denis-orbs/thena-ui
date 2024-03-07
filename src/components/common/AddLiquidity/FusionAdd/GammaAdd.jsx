@@ -3,7 +3,7 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
@@ -80,7 +80,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   const { onGammaAdd, pending } = useGammaAdd()
   const { onGammaAddAndStake, pendingStake } = useGammaAddAndStake()
   const dispatch = useDispatch()
-  const { data: preset } = useSWRImmutable(
+  const { data: preset } = useSWR(
     strategy && ['gamma/info', strategy.address],
     () => fetchGammaInfo(networkId, strategy),
     {

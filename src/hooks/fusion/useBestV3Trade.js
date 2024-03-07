@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { encodeRouteToPath, Trade } from 'thena-fusion-sdk'
 import { CurrencyAmount, TradeType } from 'thena-sdk-core'
 
@@ -38,7 +38,7 @@ export const useBestV3TradeExactIn = (amountIn, currencyOut) => {
     [amountIn, routes],
   )
 
-  const { data: quotesResults, isLoading } = useSWRImmutable(
+  const { data: quotesResults, isLoading } = useSWR(
     Boolean(quoteExactInInputs && quoteExactInInputs.length > 0) && ['fusion/quoteExactInput', quoteExactInInputs],
     async () => {
       const res = await callMulti(
@@ -52,9 +52,6 @@ export const useBestV3TradeExactIn = (amountIn, currencyOut) => {
       )
 
       return res
-    },
-    {
-      refreshInterval: 30000,
     },
   )
 
@@ -135,7 +132,7 @@ export const useBestV3TradeExactOut = (currencyIn, amountOut) => {
     [amountOut, routes],
   )
 
-  const { data: quotesResults, isLoading } = useSWRImmutable(
+  const { data: quotesResults, isLoading } = useSWR(
     Boolean(quoteExactOutInputs && quoteExactOutInputs.length > 0) && ['fusion/quoteExactOutput', quoteExactOutInputs],
     async () => {
       const res = await callMulti(

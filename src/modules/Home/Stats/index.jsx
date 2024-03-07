@@ -2,7 +2,7 @@
 
 import { gql } from 'graphql-request'
 import { useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import Skeleton from '@/components/skeleton'
@@ -47,7 +47,7 @@ const fetchStats = async () => {
 }
 
 function Stats() {
-  const { data: chartData } = useSWRImmutable('thena total stats', () => fetchStats())
+  const { data: chartData } = useSWR('thena total stats', () => fetchStats())
 
   const statsData = useMemo(
     () => [

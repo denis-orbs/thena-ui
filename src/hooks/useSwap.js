@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { useCallback, useState } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
 import { getAddress, maxUint256, zeroAddress } from 'viem'
@@ -19,7 +19,7 @@ const Connectors =
 const quoteUrl = 'https://api.odos.xyz/sor/quote/v2'
 
 export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippage, networkId) => {
-  const res = useSWRImmutable(
+  const res = useSWR(
     fromAsset &&
       toAsset &&
       networkId === ChainId.BSC &&
@@ -168,7 +168,7 @@ export const useOdosSwap = () => {
 }
 
 export const useBestQuoteSwap = (fromAddress, toAddress, fromAmount, slippage, networkId) =>
-  useSWRImmutable(
+  useSWR(
     Boolean(
       fromAddress &&
         toAddress &&

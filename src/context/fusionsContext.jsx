@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 
 import { poolAbi } from '@/constant/abi/fusion'
 import { callMulti } from '@/lib/contractActions'
@@ -50,7 +50,7 @@ function FusionsContextProvider({ children }) {
     if (!data.length) return []
     return data.filter(ele => ele.isFusion)
   }, [pairs, networkId])
-  const { data } = useSWRImmutable(
+  const { data } = useSWR(
     fusionPairs.length > 0 ? ['fusion/pairs', networkId] : null,
     () => fetchFusionInfo(fusionPairs, networkId),
     {

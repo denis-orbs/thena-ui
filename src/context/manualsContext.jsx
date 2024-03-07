@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 
 import { algebraAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
@@ -53,7 +53,7 @@ function ManualsContextProvider({ children }) {
   const { networkId } = useChainSettings()
   const assets = useAssets()
   const { account } = useWallet()
-  const { data, mutate } = useSWRImmutable(
+  const { data, mutate } = useSWR(
     account && networkId ? ['manuals/info', networkId, account] : null,
     () => fetchManualInfo(account, networkId),
     {

@@ -1,7 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
@@ -97,7 +97,7 @@ const fetchPairChartData = async (chainId, pair) => {
 
 export default function PairChart({ pair }) {
   const { networkId } = useChainSettings()
-  const { data: chartData } = useSWRImmutable(
+  const { data: chartData } = useSWR(
     pair && ['analytics/pair/chart', pair.address],
     () => fetchPairChartData(networkId, pair),
     {

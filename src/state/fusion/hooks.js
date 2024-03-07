@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import {
   encodeSqrtRatioX96,
   nearestUsableTick,
@@ -162,14 +162,11 @@ export const useV3DerivedMintInfo = (
     presetRange,
   } = useV3MintState()
   const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : []
-  const { data: gammaData } = useSWRImmutable(
+  const { data: gammaData } = useSWR(
     presetRange && presetRange.address && gammaCurrencies.length > 0
       ? ['gamma/depositAmounts', presetRange.address, currencyA, currencyB, chainId]
       : null,
     () => fetchGammaDepositAmounts(presetRange.address, gammaCurrencies, chainId),
-    {
-      refreshInterval: 0,
-    },
   )
 
   const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A

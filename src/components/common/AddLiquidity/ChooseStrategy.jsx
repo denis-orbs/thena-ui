@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -110,7 +110,7 @@ export default function ChooseStrategy({
 
   const dispatch = useDispatch()
   const { networkId } = useChainSettings()
-  const { data: preset } = useSWRImmutable(
+  const { data: preset } = useSWR(
     strategy && pair && ['strategy/info', strategy.address],
     () => fetchStrategyInfo(networkId, strategy, pair.currentTick),
     {

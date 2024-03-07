@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import React, { useContext, useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core/dist'
 
 import { readCall } from '@/lib/contractActions'
@@ -46,7 +46,7 @@ async function fetchUserVeTHEs([_, account, chainId]) {
 
 function VeTHEsContextProvider({ children }) {
   const { account, chainId } = useWallet()
-  const { data, isLoading, error, mutate } = useSWRImmutable(
+  const { data, isLoading, error, mutate } = useSWR(
     account && chainId === ChainId.BSC ? ['vethes api', account, chainId] : null,
     {
       fetcher: fetchUserVeTHEs,

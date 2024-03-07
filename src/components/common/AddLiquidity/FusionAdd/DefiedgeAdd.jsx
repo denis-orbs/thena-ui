@@ -3,7 +3,7 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
@@ -65,7 +65,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
   const { onDefiedgeAdd, pending } = useDefiedgeAdd()
   const { onDefiedgeAddAndStake, pendingStake } = useDefiedgeAddAndStake()
   const dispatch = useDispatch()
-  const { data: pairAddress } = useSWRImmutable(
+  const { data: pairAddress } = useSWR(
     strategy && ['defiedge/pair', strategy.address],
     () => fetchDefiedgePair(networkId, strategy),
     {
@@ -76,7 +76,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
     () => fusionPairs.find(ele => pairAddress && pairAddress.toLowerCase() === ele.address),
     [fusionPairs, pairAddress],
   )
-  const { data: preset } = useSWRImmutable(
+  const { data: preset } = useSWR(
     strategy && pair && ['defiedge/info', strategy.address],
     () => fetchDefiedgeInfo(networkId, strategy, pair.globalState.tick),
     {

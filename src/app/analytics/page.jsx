@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import React, { useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import PercentBadge from '@/components/badges/PercentBadge'
@@ -25,7 +25,7 @@ import TokensTable from './tokens/TokensTable'
 
 export default function AnalyticsPage() {
   const { networkId } = useChainSettings()
-  const { data: stats } = useSWRImmutable(
+  const { data: stats } = useSWR(
     'stats api',
     { fetcher: fetchStats },
     {

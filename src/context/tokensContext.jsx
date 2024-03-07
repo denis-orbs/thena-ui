@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import { UNKNOWN_LOGO } from '@/constant'
@@ -22,14 +22,14 @@ const TokensContext = createContext(initialState)
 
 function TokensContextProvider({ children }) {
   const { networkId } = useChainSettings()
-  const { data: bscTokens, isLoading: bscLoading } = useSWRImmutable(
+  const { data: bscTokens, isLoading: bscLoading } = useSWR(
     networkId === ChainId.BSC ? ['bsc top tokens api', ChainId.BSC] : null,
     { fetcher: fetchTopTokens },
     {
       refreshInterval: 60000,
     },
   )
-  const { data: opTokens, isLoading: opLoading } = useSWRImmutable(
+  const { data: opTokens, isLoading: opLoading } = useSWR(
     networkId === ChainId.OPBNB ? ['op top tokens api', ChainId.OPBNB] : null,
     { fetcher: fetchTopTokens },
     {

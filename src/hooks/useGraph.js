@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import { fromPairs } from 'lodash'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 
 import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { fusionClient, v1Client } from '@/lib/graphql'
@@ -154,7 +154,7 @@ const fetchGlobalChartData = async chainId => {
 
 export const useGlobalChartData = () => {
   const { networkId } = useChainSettings()
-  const { data: chartData } = useSWRImmutable(['analytics/global', networkId], () => fetchGlobalChartData(networkId), {
+  const { data: chartData } = useSWR(['analytics/global', networkId], () => fetchGlobalChartData(networkId), {
     refreshInterval: 0,
   })
   return chartData ?? undefined

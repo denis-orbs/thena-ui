@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import React, { useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import { rewardsAPIAbi, veTHEApiAbi } from '@/constant/abi'
@@ -61,7 +61,7 @@ function RewardsContextProvider({ children }) {
     data: current,
     error: currentError,
     mutate: currentMutate,
-  } = useSWRImmutable(
+  } = useSWR(
     account && gaugeAddresses.length > 0 && chainId === ChainId.BSC ? ['current rewards api', account] : null,
     ([url, acc]) => fetchCurrentRewards(url, acc, chainId, gaugeAddresses),
     {
@@ -72,7 +72,7 @@ function RewardsContextProvider({ children }) {
     data: next,
     error: nextError,
     mutate: nextMutate,
-  } = useSWRImmutable(
+  } = useSWR(
     account && gaugeAddresses.length > 0 && chainId === ChainId.BSC ? ['next rewards api', account] : null,
     ([url, acc]) => fetchNextRewards(url, acc, chainId, gaugeAddresses),
     {

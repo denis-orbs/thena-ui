@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import React, { useContext, useMemo, useState } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { maxUint128 } from 'viem'
@@ -54,7 +54,7 @@ export default function ManualPosition({ pool }) {
   const { mutateManual } = useContext(ManualsContext)
   const { account, chainId } = useWallet()
   const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId } = pool
-  const { data: fees, mutate } = useSWRImmutable(
+  const { data: fees, mutate } = useSWR(
     account && tokenId ? ['manuals/fee', tokenId, account, chainId] : null,
     () => fetchManualInfo(account, tokenId, chainId),
     {

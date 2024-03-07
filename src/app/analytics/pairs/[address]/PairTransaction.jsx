@@ -3,7 +3,7 @@
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import { useMemo, useState } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
@@ -403,7 +403,7 @@ export default function TransactionTable({ pairs, isFusion }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [filter, setFilter] = useState(TXN_TYPE.All)
   const { networkId } = useChainSettings()
-  const { data: txnData } = useSWRImmutable(
+  const { data: txnData } = useSWR(
     pairs && pairs.length > 0 && ['analytics/pair/transaction', pairs[0]],
     () => fetchPairTransaction(networkId, pairs, isFusion),
     {

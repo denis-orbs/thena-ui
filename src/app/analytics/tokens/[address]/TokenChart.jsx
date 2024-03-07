@@ -2,7 +2,7 @@
 
 import { gql } from 'graphql-request'
 import { useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
@@ -106,7 +106,7 @@ const fetchTokenChartData = async (chainId, token) => {
 
 export default function TokenChart({ token }) {
   const { networkId } = useChainSettings()
-  const { data: chartData } = useSWRImmutable(
+  const { data: chartData } = useSWR(
     token && ['analytics/token/chart', token.address],
     () => fetchTokenChartData(networkId, token),
     {

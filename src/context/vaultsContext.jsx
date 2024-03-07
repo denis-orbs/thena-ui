@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
@@ -15,10 +15,10 @@ export function VaultsContextProvider({ children }) {
   const { networkId } = useChainSettings()
   const { account } = useWallet()
   const assets = useAssets()
-  const { data, error } = useSWRImmutable(['vaults/total', networkId], () => fetchVaultsData(networkId), {
+  const { data, error } = useSWR(['vaults/total', networkId], () => fetchVaultsData(networkId), {
     refreshInterval: 60000,
   })
-  const { data: userInfo, error: userError } = useSWRImmutable(
+  const { data: userInfo, error: userError } = useSWR(
     account ? ['vaults/user', account, networkId] : null,
     () => fetchUserVaultsData(account, networkId),
     {

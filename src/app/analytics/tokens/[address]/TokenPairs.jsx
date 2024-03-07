@@ -2,7 +2,7 @@
 
 import { gql } from 'graphql-request'
 import { useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 
 import { TextHeading } from '@/components/typography'
 import { usePairs } from '@/context/pairsContext'
@@ -73,7 +73,7 @@ const fetchTokenPairsData = async (chainId, token) => {
 export default function TokenPairs({ token }) {
   const { pairs } = usePairs()
   const { networkId } = useChainSettings()
-  const { data } = useSWRImmutable(
+  const { data } = useSWR(
     token && ['analytics/token/pairs', token.address],
     () => fetchTokenPairsData(networkId, token),
     {
