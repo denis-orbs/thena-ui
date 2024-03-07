@@ -25,9 +25,10 @@ export const useGuageStake = () => {
 
       const allowance = await readCall(lpContract, 'allowance', [account, pair.gauge.address])
       const isApproved = fromWei(allowance).gte(amount)
+
       startTxn({
         key,
-        title: `Stake ${pair.symbol}`,
+        title: 'Stake LP',
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
@@ -37,7 +38,7 @@ export const useGuageStake = () => {
             },
           }),
           [stakeuuid]: {
-            desc: 'Stake LP',
+            desc: `Stake ${pair.symbol} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
