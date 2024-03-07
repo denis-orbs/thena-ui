@@ -195,7 +195,7 @@ export default function PoolsPage() {
           <div className='flex items-center gap-1'>
             <Paragraph>${formatAmount(pool.tvlUSD)}</Paragraph>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
-            <CustomTooltip className='min-w-[130px]' id={`tvl-${pool.address}`}>
+            <CustomTooltip id={`tvl-${pool.address}`}>
               <div className='flex flex-col gap-1'>
                 <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
                 <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
