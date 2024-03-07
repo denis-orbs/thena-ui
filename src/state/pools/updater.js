@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
+import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
@@ -81,7 +82,7 @@ function Updater() {
   const extraRewardsInfo = useExtraRewardsInfo()
   const { networkId } = useChainSettings()
   const { data: pools } = useSWR(['pools api', networkId], { fetcher: fetchPools })
-  const { data: userInfos } = useSWR(account && pools ? ['pools user api', account, networkId] : null, url =>
+  const { data: userInfos } = useSWRImmutable(account && pools ? ['pools user api', account, networkId] : null, url =>
     fetchUserFusions(url, account, pools, networkId),
   )
   const { data: poolsWithAllowed } = useSWR(pools && pools.length > 0 ? ['vaults/allowed', networkId] : null, url =>

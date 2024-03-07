@@ -1,7 +1,7 @@
 import { getBalance } from '@wagmi/core'
 import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useMemo } from 'react'
-import useSWR from 'swr'
+import useSWRImmutable from 'swr/immutable'
 import { formatEther, formatUnits } from 'viem'
 
 import { ERC20Abi } from '@/constant/abi'
@@ -57,11 +57,11 @@ function AssetsContextProvider({ children }) {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const { liquidityHubEnabled } = liquidityHub.useLiquidtyHubSettings()
-  const { data: assets } = useSWR(['assets/total', networkId, liquidityHubEnabled], async () => {
+  const { data: assets } = useSWRImmutable(['assets/total', networkId, liquidityHubEnabled], async () => {
     const data = await fetchAssets(networkId, liquidityHubEnabled)
     return data
   })
-  const { data: userAssets, mutate: mutateAssets } = useSWR(
+  const { data: userAssets, mutate: mutateAssets } = useSWRImmutable(
     assets && assets.length > 0 && account && ['assets/user', account, networkId],
     async () => {
       const data = await fetchUserAssetsData(assets, account, networkId)
