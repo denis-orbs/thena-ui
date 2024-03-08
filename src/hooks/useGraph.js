@@ -89,16 +89,6 @@ const FUSION_DAY_DATAS = gql`
   }
 `
 
-const ALGEBRA_DAY_DATAS = gql`
-  query overviewCharts($startTime: Int!, $skip: Int!) {
-    algebraDayDatas(first: 1000, skip: $skip, where: { date_gte: $startTime }, orderBy: date, orderDirection: asc) {
-      date
-      volumeUSD
-      tvlUSD
-    }
-  }
-`
-
 const getV1OverviewChartData = async (chainId, skip) => {
   try {
     const { dayDatas } = await v1Client[chainId].request(V1_DAY_DATAS, {
@@ -119,11 +109,11 @@ const getV1OverviewChartData = async (chainId, skip) => {
 
 const getFusionOverviewChartData = async (chainId, skip) => {
   try {
-    const res = await fusionClient[chainId].request(chainId === 56 ? ALGEBRA_DAY_DATAS : FUSION_DAY_DATAS, {
+    const res = await fusionClient[chainId].request(FUSION_DAY_DATAS, {
       startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })
-    const result = chainId === 56 ? res.algebraDayDatas : res.fusionDayDatas
+    const result = res.fusionDayDatas
     const data = result.map(ele => ({
       date: ele.date,
       volumeUSD: parseFloat(ele.volumeUSD),
