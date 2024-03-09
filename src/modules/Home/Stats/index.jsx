@@ -70,16 +70,16 @@ function Stats() {
         description: 'Total Value Locked',
         svg: '/images/home/stats/dollar.svg',
       },
-      // {
-      //   value: chartData ? `${formatAmount(chartData.txCount, true)}` : null,
-      //   description: 'Total Swaps Made',
-      //   svg: '/images/home/stats/repeat.svg',
-      // },
       {
-        value: chartData ? `$${formatAmount(chartData.revenueData, true)}` : null,
-        description: 'Total Revenue',
-        svg: '/images/home/stats/dollar.svg',
+        value: chartData ? `${formatAmount(chartData.txCount, true)}` : null,
+        description: 'Total Swaps Made',
+        svg: '/images/home/stats/repeat.svg',
       },
+      // {
+      //   value: chartData ? `$${formatAmount(chartData.revenueData, true)}` : null,
+      //   description: 'Total Revenue',
+      //   svg: '/images/home/stats/dollar.svg',
+      // },
     ],
     [chartData],
   )
