@@ -97,7 +97,7 @@ export default function TheNftPage() {
                     }}
                     disabled={pending}
                   >
-                    Claim fees
+                    Claim Fees
                   </SecondaryButton>
                 )}
                 <EmphasisButton onClick={() => setIsManageOpen(true)}>Manage</EmphasisButton>
