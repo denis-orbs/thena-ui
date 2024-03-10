@@ -75,7 +75,6 @@ const fetchGaugeSupply = async chainId => {
 }
 
 export const fetchVaultsData = async chainId => {
-  if (ICHI_VAULTS[chainId].length === 0) return []
   const [totalSupply, totalAmounts, reward2, reward0, reward1, gaugeSupply] = await Promise.all([
     fetchTotalSupply(chainId),
     fetchTotalAmounts(chainId),
@@ -84,14 +83,17 @@ export const fetchVaultsData = async chainId => {
     fetchGaugeReward1(chainId),
     fetchGaugeSupply(chainId),
   ])
-  return ICHI_VAULTS[chainId].map((vault, index) => ({
-    ...vault,
-    totalSupply: totalSupply[index],
-    reserve0: totalAmounts[index][0],
-    reserve1: totalAmounts[index][1],
-    rewardRate2: reward2[index],
-    rewardRate0: reward0[index],
-    rewardRate1: reward1[index],
-    gaugeSupply: gaugeSupply[index],
-  }))
+  return {
+    vaults: ICHI_VAULTS[chainId].map((vault, index) => ({
+      ...vault,
+      totalSupply: totalSupply[index],
+      reserve0: totalAmounts[index][0],
+      reserve1: totalAmounts[index][1],
+      rewardRate2: reward2[index],
+      rewardRate0: reward0[index],
+      rewardRate1: reward1[index],
+      gaugeSupply: gaugeSupply[index],
+    })),
+    chainId,
+  }
 }

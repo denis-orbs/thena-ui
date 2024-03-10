@@ -23,8 +23,8 @@ export const RPC_PROVIDERS = {
 }
 
 export const SCAN_URLS = {
-  [ChainId.BSC]: 'https://bscscan.com/',
-  [ChainId.OPBNB]: 'https://opbnb.bscscan.com/',
+  [ChainId.BSC]: 'https://bscscan.com',
+  [ChainId.OPBNB]: 'https://opbnb.bscscan.com',
 }
 
 export const TXN_STATUS = {
