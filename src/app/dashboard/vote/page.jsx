@@ -25,8 +25,6 @@ import useWallet from '@/lib/wallets/useWallet'
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
-import NotConnected from '../NotConnected'
-
 const sortOptions = [
   {
     label: 'Pair',
@@ -357,148 +355,141 @@ export default function VotePage() {
   return (
     <div className='flex flex-col gap-4'>
       <h2>Vote</h2>
-      {account ? (
-        <div className='flex flex-col gap-10'>
-          <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
-            <Box className='flex w-full flex-col gap-2'>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-2xl'>${formatAmount(expectedRewards)}</TextHeading>
-              </div>
-              <Paragraph className='text-sm'>Expected Rewards</Paragraph>
-            </Box>
-            <Box className='flex w-full flex-col gap-2'>
-              <div className='flex items-center gap-1'>
-                <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
-                <TextHeading className='text-2xl'>{veTHE ? formatAmount(veTHE.voting_amount) : '-'}</TextHeading>
-              </div>
-              <Paragraph className='text-sm'>veTHE Balance</Paragraph>
-            </Box>
-            <Box className='flex w-full flex-col gap-2'>
-              <TextHeading className='text-2xl'>{`$${formatAmount(voteEmssions)}`}</TextHeading>
-              <Paragraph className='text-sm'>Emissions / % of Vote</Paragraph>
-            </Box>
-            <Box className='flex w-full flex-col gap-2'>
-              <TextHeading className='text-2xl'>{`${formatAmount(avgApr)}%`}</TextHeading>
-              <Paragraph className='text-sm'>Average Voting APR</Paragraph>
-            </Box>
-            <Box className='flex w-full flex-col gap-2'>
-              <TextHeading className='text-2xl'>
-                {days}d {hours}h {mins}m
-              </TextHeading>
-              <Paragraph className='text-sm'>Epoch {epoch} Ends in </Paragraph>
-            </Box>
-          </div>
-          <div className='flex flex-col gap-4'>
-            <div className='flex flex-col items-center justify-between gap-4 lg:flex-row'>
-              <div className='flex w-full items-center justify-between lg:w-fit'>
-                <TextHeading className='text-xl'>Votes</TextHeading>
-                <Toggle
-                  className='lg:hidden'
-                  checked={isVoted}
-                  onChange={() => setIsVoted(!isVoted)}
-                  toggleId='voted'
-                  label='Voted Only'
-                />
-              </div>
-              <div className='flex w-full flex-col-reverse gap-4 lg:w-auto lg:flex-row lg:gap-2'>
-                <div className='flex items-center justify-between gap-2 lg:hidden'>
-                  <Paragraph>Sort by</Paragraph>
-                  <Dropdown
-                    data={sortOptions.slice(0, sortOptions.length - 1)}
-                    selected={sort ? `${sort.label}` : ''}
-                    setSelected={ele => setSort(ele)}
-                    placeHolder='Select sort'
-                  />
-                </div>
-                <Toggle
-                  className='hidden lg:flex'
-                  checked={isVoted}
-                  onChange={() => setIsVoted(!isVoted)}
-                  toggleId='active'
-                  label='Voted Only'
-                />
-                <Dropdown
-                  className='w-full lg:w-[220px]'
-                  data={veTHEs.map(item => ({
-                    ...item,
-                    label: `veTHE #${item.id}`,
-                  }))}
-                  selected={veTHE ? `veTHE #${veTHE.id}` : ''}
-                  setSelected={ele => setVeTHEId(ele.id)}
-                  placeHolder='Select veTHE'
-                />
-                <SearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
-              </div>
+      <div className='flex flex-col gap-10'>
+        <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
+          <Box className='flex w-full flex-col gap-2'>
+            <div className='flex items-center gap-1'>
+              <TextHeading className='text-2xl'>{account ? `$${formatAmount(expectedRewards)}` : '-'} </TextHeading>
             </div>
-            <Table
-              sortOptions={sortOptions}
-              data={finalPools}
-              sort={sort}
-              setSort={setSort}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-          </div>
-          {account && (
-            <div className='fixed bottom-0 left-0 right-0 z-30 mx-auto w-full items-center bg-neutral-700 px-5 py-3 lg:bottom-8 lg:flex lg:w-fit lg:rounded-lg'>
-              <div className='flex items-center justify-center'>
-                <TextHeading>Voting Power Used:&nbsp;</TextHeading>
-                <span
-                  className={cn(
-                    'font-medium',
-                    veTHE && veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600',
-                  )}
-                >
-                  {veTHE && veTHE.votedCurrentEpoch ? 'YES' : 'NO'}
-                </span>
+            <Paragraph className='text-sm'>Expected Rewards</Paragraph>
+          </Box>
+          <Box className='flex w-full flex-col gap-2'>
+            <div className='flex items-center gap-1'>
+              <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+              <TextHeading className='text-2xl'>{veTHE ? formatAmount(veTHE.voting_amount) : '-'}</TextHeading>
+            </div>
+            <Paragraph className='text-sm'>veTHE Balance</Paragraph>
+          </Box>
+          <Box className='flex w-full flex-col gap-2'>
+            <TextHeading className='text-2xl'>{`$${formatAmount(voteEmssions)}`}</TextHeading>
+            <Paragraph className='text-sm'>Emissions / % of Vote</Paragraph>
+          </Box>
+          <Box className='flex w-full flex-col gap-2'>
+            <TextHeading className='text-2xl'>{`${formatAmount(avgApr)}%`}</TextHeading>
+            <Paragraph className='text-sm'>Average Voting APR</Paragraph>
+          </Box>
+          <Box className='flex w-full flex-col gap-2'>
+            <TextHeading className='text-2xl'>
+              {days}d {hours}h {mins}m
+            </TextHeading>
+            <Paragraph className='text-sm'>Epoch {epoch} Ends in </Paragraph>
+          </Box>
+        </div>
+        <div className='flex flex-col gap-4'>
+          <div className='flex flex-col items-center justify-between gap-4 lg:flex-row'>
+            <div className='flex w-full items-center justify-between lg:w-fit'>
+              <TextHeading className='text-xl'>Votes</TextHeading>
+              <Toggle
+                className='lg:hidden'
+                checked={isVoted}
+                onChange={() => setIsVoted(!isVoted)}
+                toggleId='voted'
+                label='Voted Only'
+              />
+            </div>
+            <div className='flex w-full flex-col-reverse gap-4 lg:w-auto lg:flex-row lg:gap-2'>
+              <div className='flex items-center justify-between gap-2 lg:hidden'>
+                <Paragraph>Sort by</Paragraph>
+                <Dropdown
+                  data={sortOptions.slice(0, sortOptions.length - 1)}
+                  selected={sort ? `${sort.label}` : ''}
+                  setSelected={ele => setSort(ele)}
+                  placeHolder='Select sort'
+                />
               </div>
-              <div className='ml-0 mt-3 flex flex-col gap-2 lg:ml-2 lg:mt-0 lg:flex-row'>
-                <PrimaryButton
-                  className='px-2.5 py-2'
-                  disabled={votePending}
+              <Toggle
+                className='hidden lg:flex'
+                checked={isVoted}
+                onChange={() => setIsVoted(!isVoted)}
+                toggleId='active'
+                label='Voted Only'
+              />
+              <Dropdown
+                className='w-full lg:w-[220px]'
+                data={veTHEs.map(item => ({
+                  ...item,
+                  label: `veTHE #${item.id}`,
+                }))}
+                selected={veTHE ? `veTHE #${veTHE.id}` : ''}
+                setSelected={ele => setVeTHEId(ele.id)}
+                placeHolder='Select veTHE'
+              />
+              <SearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
+            </div>
+          </div>
+          <Table
+            sortOptions={sortOptions}
+            data={finalPools}
+            sort={sort}
+            setSort={setSort}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        </div>
+        {account && (
+          <div className='fixed bottom-0 left-0 right-0 z-30 mx-auto w-full items-center bg-neutral-700 px-5 py-3 lg:bottom-8 lg:flex lg:w-fit lg:rounded-lg'>
+            <div className='flex items-center justify-center'>
+              <TextHeading>Voting Power Used:&nbsp;</TextHeading>
+              <span
+                className={cn('font-medium', veTHE && veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600')}
+              >
+                {veTHE && veTHE.votedCurrentEpoch ? 'YES' : 'NO'}
+              </span>
+            </div>
+            <div className='ml-0 mt-3 flex flex-col gap-2 lg:ml-2 lg:mt-0 lg:flex-row'>
+              <PrimaryButton
+                className='px-2.5 py-2'
+                disabled={votePending}
+                onClick={() => {
+                  if (errorMsg) {
+                    warnToast(errorMsg)
+                    return
+                  }
+                  onVote(veTHE.id, percent, () => {
+                    updateVeTHEs()
+                  })
+                }}
+              >
+                Cast Votes
+              </PrimaryButton>
+              <div className='flex gap-2'>
+                <TextButton
+                  className='w-full px-2.5 py-2'
                   onClick={() => {
-                    if (errorMsg) {
-                      warnToast(errorMsg)
-                      return
-                    }
-                    onVote(veTHE.id, percent, () => {
+                    onReset(veTHE.id, () => {
                       updateVeTHEs()
                     })
                   }}
+                  disabled={!veTHE || !veTHE.voted || resetPending}
                 >
-                  Cast Votes
-                </PrimaryButton>
-                <div className='flex gap-2'>
-                  <TextButton
-                    className='w-full px-2.5 py-2'
-                    onClick={() => {
-                      onReset(veTHE.id, () => {
-                        updateVeTHEs()
-                      })
-                    }}
-                    disabled={!veTHE || !veTHE.voted || resetPending}
-                  >
-                    Reset
-                  </TextButton>
-                  <TextButton
-                    className='w-full px-2.5 py-2'
-                    onClick={() => {
-                      onPoke(veTHE.id, () => {
-                        updateVeTHEs()
-                      })
-                    }}
-                    disabled={!veTHE || !veTHE.voted || pokePending}
-                  >
-                    Revote
-                  </TextButton>
-                </div>
+                  Reset
+                </TextButton>
+                <TextButton
+                  className='w-full px-2.5 py-2'
+                  onClick={() => {
+                    onPoke(veTHE.id, () => {
+                      updateVeTHEs()
+                    })
+                  }}
+                  disabled={!veTHE || !veTHE.voted || pokePending}
+                >
+                  Revote
+                </TextButton>
               </div>
             </div>
-          )}
-        </div>
-      ) : (
-        <NotConnected />
-      )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
