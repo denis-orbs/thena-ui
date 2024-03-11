@@ -20,7 +20,7 @@
     "@tanstack/react-query": "^5.17.19",
     "@vercel/analytics": "^1.1.4",
     "@vercel/speed-insights": "^1.0.2",
-    "@web3modal/wagmi": "^4.0.11",
+    "@web3modal/wagmi": "^4.0.13",
     "bignumber.js": "^9.1.2",
     "clsx": "^2.0.0",
     "css-box-model": "^1.2.1",
