@@ -8,7 +8,7 @@ export const useCurrencyLogo = currency => {
     () =>
       currency && assets
         ? assets.find(
-            asset => asset.address.toLowerCase() === (currency.address ? currency.address.toLowerCase() : 'BNB'),
+            asset => asset.address.toLowerCase() === (currency.address ? currency.address.toLowerCase() : 'bnb'),
           ).logoURI
         : null,
     [assets, currency],
@@ -21,7 +21,7 @@ export const useCurrencyPrice = currency => {
     () =>
       currency && assets
         ? assets.find(
-            asset => asset.address.toLowerCase() === (currency.address ? currency.address.toLowerCase() : 'BNB'),
+            asset => asset.address.toLowerCase() === (currency.address ? currency.address.toLowerCase() : 'bnb'),
           ).price
         : null,
     [assets, currency],
