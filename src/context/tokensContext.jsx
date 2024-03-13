@@ -64,7 +64,7 @@ const useTokens = () => {
     const result = data
       .sort((a, b) => b.volume - a.volume)
       .map(token => {
-        const found = assets.find(ele => ele.address === token.address)
+        const found = assets.find(ele => ele.address.toLowerCase() === token.address)
         return {
           ...token,
           symbol: token.symbol === 'WBNB' ? 'BNB' : token.symbol,

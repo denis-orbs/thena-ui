@@ -34,8 +34,8 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
   }, [assets, pool, firstAsset, secondAsset, pairType])
 
   useEffect(() => {
-    setFirstAsset(assets.find(ele => ele.address === firstAddress))
-    setSecondAsset(assets.find(ele => ele.address === secondAddress))
+    setFirstAsset(assets.find(ele => ele.address.toLowerCase() === firstAddress))
+    setSecondAsset(assets.find(ele => ele.address.toLowerCase() === secondAddress))
   }, [assets, firstAddress, secondAddress])
 
   useEffect(() => () => (init = false), [])

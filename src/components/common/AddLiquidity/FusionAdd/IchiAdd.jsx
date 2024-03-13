@@ -23,7 +23,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
   const assets = useAssets()
   const { slippage } = useSettings()
   const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
-  const depositToken = assets.find(ele => ele.address === strategy.allowed.address)
+  const depositToken = assets.find(ele => ele.address.toLowerCase() === strategy.allowed.address)
 
   const isDouble = useMemo(() => depositToken.symbol === 'WBNB', [depositToken])
 

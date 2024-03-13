@@ -7,7 +7,9 @@ export const useCurrencyLogo = currency => {
   return useMemo(
     () =>
       currency && assets
-        ? assets.find(asset => asset.address === (currency.address ? currency.address.toLowerCase() : 'BNB')).logoURI
+        ? assets.find(
+            asset => asset.address.toLowerCase() === (currency.address ? currency.address.toLowerCase() : 'BNB'),
+          ).logoURI
         : null,
     [assets, currency],
   )
@@ -18,7 +20,9 @@ export const useCurrencyPrice = currency => {
   return useMemo(
     () =>
       currency && assets
-        ? assets.find(asset => asset.address === (currency.address ? currency.address.toLowerCase() : 'BNB')).price
+        ? assets.find(
+            asset => asset.address.toLowerCase() === (currency.address ? currency.address.toLowerCase() : 'BNB'),
+          ).price
         : null,
     [assets, currency],
   )
@@ -28,7 +32,7 @@ export const useLogoFromAddress = address => {
   const assets = useAssets()
   return useMemo(
     () =>
-      assets.find(asset => asset.address === address?.toLowerCase())?.logoURI ||
+      assets.find(asset => asset.address.toLowerCase() === address?.toLowerCase())?.logoURI ||
       'https://cdn.thena.fi/assets/UKNOWN.png',
     [assets, address],
   )

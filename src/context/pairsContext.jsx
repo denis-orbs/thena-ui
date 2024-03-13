@@ -71,8 +71,8 @@ const usePairs = () => {
     }
     const result = data
       .map(ele => {
-        const asset0 = assets.find(asset => asset.address === ele.token0)
-        const asset1 = assets.find(asset => asset.address === ele.token1)
+        const asset0 = assets.find(asset => asset.address.toLowerCase() === ele.token0)
+        const asset1 = assets.find(asset => asset.address.toLowerCase() === ele.token1)
         const symbol0 = asset0?.symbol === 'WBNB' ? 'BNB' : asset0?.symbol || 'UNKNOWN'
         const symbol1 = asset1?.symbol === 'WBNB' ? 'BNB' : asset1?.symbol || 'UNKNOWN'
         return {

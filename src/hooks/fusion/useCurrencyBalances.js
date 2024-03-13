@@ -14,7 +14,7 @@ export function useCurrencyBalances(currencies) {
         if (currency.isToken) {
           const { address } = currency
           if (!address) return undefined
-          const found = assets.find(asset => asset.address === address.toLowerCase())
+          const found = assets.find(asset => asset.address.toLowerCase() === address.toLowerCase())
           const amount =
             found && found.balance ? JSBI.BigInt(toWei(found.balance, found.decimals).toString(10)) : undefined
           return amount ? CurrencyAmount.fromRawAmount(currency, amount) : undefined

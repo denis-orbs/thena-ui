@@ -68,8 +68,8 @@ function ManualsContextProvider({ children }) {
       }
     }
     const positions = data.map(ele => {
-      const asset0 = assets.find(asset => asset.address === ele.token0Address.toLowerCase())
-      const asset1 = assets.find(asset => asset.address === ele.token1Address.toLowerCase())
+      const asset0 = assets.find(asset => asset.address.toLowerCase() === ele.token0Address.toLowerCase())
+      const asset1 = assets.find(asset => asset.address.toLowerCase() === ele.token1Address.toLowerCase())
       return {
         ...ele,
         type: 'Manual',

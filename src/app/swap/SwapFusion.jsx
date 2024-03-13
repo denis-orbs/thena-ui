@@ -338,7 +338,7 @@ export default function SwapFusion({
                     <div className='relative flex grow px-3'>
                       <div className='flex w-full justify-between space-x-4 overflow-hidden before:content-[""] after:content-[""]'>
                         {bestTrade.route.tokenPath.slice(1).map((token, idx) => {
-                          const found = assets.find(ele => ele.address === token.address.toLowerCase())
+                          const found = assets.find(ele => ele.address.toLowerCase() === token.address.toLowerCase())
                           return (
                             <div
                               className='h-fit w-fit space-y-1 rounded bg-neutral-600 px-2 py-2'
