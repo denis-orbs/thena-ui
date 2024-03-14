@@ -107,7 +107,7 @@ export const useTheNftAccountInfo = () => {
   const royaltyContract = getRoyaltyContract()
   const { account } = useWallet()
   const prices = usePrices()
-  const { data, mutate } = useSWR(['thenft user info', account], url =>
+  const { data, isLoading, mutate } = useSWR(['thenft user info', account], url =>
     fetchAccountInfo(url, account, theNftContract, royaltyContract, nftStakingContract),
   )
 
@@ -119,6 +119,7 @@ export const useTheNftAccountInfo = () => {
     stakedIds: data?.stakedIds ?? [],
     pendingReward: data?.pendingReward.times(prices.THE) ?? new BigNumber(0),
     pendingAmount: data?.pendingReward ?? new BigNumber(0),
+    userLoading: isLoading,
     mutate,
   }
 }

@@ -9,6 +9,7 @@ import Box from '@/components/box'
 import { EmphasisButton, SecondaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import NextImage from '@/components/image/NextImage'
+import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useNftFeesClaim, useNftRoyaltyClaim, useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
@@ -23,15 +24,19 @@ import NotConnected from '../NotConnected'
 function InfoBox({ value, title, amount }) {
   return (
     <Box className='flex flex-col gap-2'>
-      <div className='flex items-center gap-2'>
-        <TextHeading className='text-2xl'>{value}</TextHeading>
-        {amount && (
-          <>
-            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='thenft-rewards' />
-            <CustomTooltip id='thenft-rewards'>{amount}</CustomTooltip>
-          </>
-        )}
-      </div>
+      {value ? (
+        <div className='flex items-center gap-2'>
+          <TextHeading className='text-2xl'>{value}</TextHeading>
+          {amount && (
+            <>
+              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='thenft-rewards' />
+              <CustomTooltip id='thenft-rewards'>{amount}</CustomTooltip>
+            </>
+          )}
+        </div>
+      ) : (
+        <Skeleton className='h-[32px] w-[100px]' />
+      )}
       <Paragraph className='text-sm'>{title}</Paragraph>
     </Box>
   )
@@ -49,8 +54,17 @@ export default function TheNftPage() {
   const [isManageOpen, setIsManageOpen] = useState(false)
   const { account } = useWallet()
   const { totalStaked, apr, lastEarnings } = useTheNftInfo()
-  const { stakedIds, walletIds, pendingReward, pendingAmount, claimable, claimableUSD, isOriginal, mutate } =
-    useTheNftAccountInfo()
+  const {
+    stakedIds,
+    walletIds,
+    pendingReward,
+    pendingAmount,
+    claimable,
+    claimableUSD,
+    isOriginal,
+    userLoading,
+    mutate,
+  } = useTheNftAccountInfo()
   const { data: yourNfts } = useSWR(['thenft image info', [...walletIds, ...stakedIds].length], url =>
     fetchNftInfo(url, [...walletIds, ...stakedIds]),
   )
@@ -79,9 +93,9 @@ export default function TheNftPage() {
           </TertiaryButton>
         </Info>
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
-          <InfoBox value={formatAmount(totalStaked)} title='Total theNFT Staked' />
-          <InfoBox value={`${formatAmount(apr)}%`} title='Floor Price APR' />
-          <InfoBox value={`$${formatAmount(lastEarnings)}`} title='Last Epoch Earnings' />
+          <InfoBox value={totalStaked > 0 ? formatAmount(totalStaked) : null} title='Total theNFT Staked' />
+          <InfoBox value={apr ? `${formatAmount(apr)}%` : null} title='Floor Price APR' />
+          <InfoBox value={lastEarnings ? `$${formatAmount(lastEarnings)}` : null} title='Last Epoch Earnings' />
         </div>
       </div>
       {account ? (
@@ -104,10 +118,10 @@ export default function TheNftPage() {
               </div>
             </div>
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
-              <InfoBox value={formatAmount(stakedIds.length)} title='My Stake' />
-              <InfoBox value={formatAmount(walletIds.length)} title='theNFTs in Wallet' />
+              <InfoBox value={userLoading ? null : formatAmount(stakedIds.length)} title='My Stake' />
+              <InfoBox value={userLoading ? null : formatAmount(walletIds.length)} title='theNFTs in Wallet' />
               <InfoBox
-                value={`$${formatAmount(pendingReward)}`}
+                value={userLoading ? null : `$${formatAmount(pendingReward)}`}
                 amount={`${formatAmount(pendingAmount)} THE`}
                 title='Claimable Fees'
               />
