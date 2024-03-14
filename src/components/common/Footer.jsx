@@ -145,7 +145,7 @@ function Footer() {
                   onClick={() => window.open('https://twitter.com/ThenaFi_', '_blank')}
                 >
                   <NextImage className='w-fit' alt='linear gradient line' src='/images/footer/xbig.svg' />
-                  <span className='text-sm leading-5'>Follow us for new updates</span>
+                  <span className='text-sm leading-5'>Follow us for more</span>
                 </div>
               </div>
             </div>
