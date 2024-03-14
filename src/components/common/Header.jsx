@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 import { useDisconnect } from 'wagmi'
 
-import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
 import { SizeTypes } from '@/constant/type'
@@ -20,6 +20,7 @@ import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, PowerIcon } from '@/svg
 
 import Logo from '~/logo.svg'
 
+import ConnectButton from '../buttons/ConnectButton'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
@@ -447,9 +448,7 @@ function Header() {
                 <TextIconButton className='hidden lg:flex' Icon={PowerIcon} onClick={onDisconnect} />
               </>
             ) : (
-              <PrimaryButton responsive onClick={onConnect}>
-                Connect Wallet
-              </PrimaryButton>
+              <ConnectButton className='hidden lg:flex' />
             )}
             <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
           </div>
@@ -522,7 +521,7 @@ function Header() {
                     </TextButton>
                   </>
                 ) : (
-                  <PrimaryButton onClick={onConnect}>Connect Wallet</PrimaryButton>
+                  <ConnectButton />
                 )}
               </ModalFooter>
             </>

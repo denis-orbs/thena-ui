@@ -1,12 +1,12 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import BigNumber from 'bignumber.js'
 import { useCallback, useMemo, useState } from 'react'
 
 import { Alert } from '@/components/alert'
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, TextButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import NextImage from '@/components/image/NextImage'
 import TokenInput from '@/components/input/TokenInput'
@@ -40,7 +40,6 @@ export default function SwapBest({
 }) {
   const [fromAmount, setFromAmount] = useState('')
   const [isWarning, setIsWarning] = useState(false)
-  const { open } = useWeb3Modal()
   const { account } = useWallet()
   const { slippage } = useSettings()
   const { networkId } = useChainSettings()
@@ -329,9 +328,7 @@ export default function SwapBest({
             {btnMsg.label}
           </EmphasisButton>
         ) : (
-          <PrimaryButton className='mt-3 w-full' onClick={() => open()}>
-            Connect Wallet
-          </PrimaryButton>
+          <ConnectButton className='mt-3 w-full' />
         )}
       </Box>
       <div className='flex w-full max-w-[920px] flex-col gap-4'>

@@ -1,9 +1,9 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import React, { useCallback } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import { useAlgebraAdd } from '@/hooks/fusion/useAlgebra'
 import { warnToast } from '@/lib/notify'
 import useWallet from '@/lib/wallets/useWallet'
@@ -12,7 +12,6 @@ import { useSettings } from '@/state/settings/hooks'
 
 export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo }) {
   const { account } = useWallet()
-  const { open } = useWeb3Modal()
   const { errorMessage } = mintInfo
   const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
   const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
@@ -29,11 +28,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo }) {
   }, [errorMessage, baseCurrency, quoteCurrency, amountA, amountB, mintInfo, slippage, deadline, onAlgebraAdd])
 
   if (!account) {
-    return (
-      <PrimaryButton className='w-full' onClick={() => open()}>
-        Connect Wallet
-      </PrimaryButton>
-    )
+    return <ConnectButton className='w-full' />
   }
 
   return (

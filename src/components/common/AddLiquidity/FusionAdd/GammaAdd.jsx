@@ -1,6 +1,5 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
@@ -8,6 +7,7 @@ import { JSBI, WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
@@ -68,7 +68,6 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   const baseCurrency = useCurrency(strategy.token0.address)
   const quoteCurrency = useCurrency(strategy.token1.address)
   const { account } = useWallet()
-  const { open } = useWeb3Modal()
   const { networkId } = useChainSettings()
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
@@ -228,9 +227,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
               )}
             </>
           ) : (
-            <PrimaryButton className='w-full' onClick={() => open()}>
-              Connect Wallet
-            </PrimaryButton>
+            <ConnectButton className='w-full' />
           )}
         </div>
       )}

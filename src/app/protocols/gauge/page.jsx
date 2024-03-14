@@ -1,12 +1,12 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useRouter } from 'next/navigation'
 import React, { useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import { Neutral } from '@/components/alert'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useGaugeAdd } from '@/hooks/useProtocols'
@@ -21,7 +21,6 @@ export default function GaugePage() {
   const { push } = useRouter()
   const { account } = useWallet()
   const [selected, setSelected] = useState(null)
-  const { open } = useWeb3Modal()
   const { onGaugeAdd, pending } = useGaugeAdd()
   const pools = usePools()
   const poolsWithoutGauge = useMemo(() => pools.filter(pair => pair && pair.gauge.address === zeroAddress), [pools])
@@ -80,7 +79,7 @@ export default function GaugePage() {
               Confirm Gauge
             </PrimaryButton>
           ) : (
-            <PrimaryButton onClick={() => open()}>Connect Wallet</PrimaryButton>
+            <ConnectButton />
           )}
         </div>
         <Neutral className='flex flex-col items-start gap-2'>

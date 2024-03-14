@@ -1,11 +1,11 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import BalanceInput from '@/components/input/BalanceInput'
 import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -31,7 +31,6 @@ export default function V1Add({
   const [firstAmount, setFirstAmount] = useState('')
   const [secondAmount, setSecondAmount] = useState('')
   const { account } = useWallet()
-  const { open } = useWeb3Modal()
   const { networkId } = useChainSettings()
   const { slippage, deadline } = useSettings()
   const { onV1Add, pending } = useV1Add()
@@ -296,9 +295,7 @@ export default function V1Add({
               )}
             </>
           ) : (
-            <PrimaryButton className='w-full' onClick={() => open()}>
-              Connect Wallet
-            </PrimaryButton>
+            <ConnectButton className='w-full' />
           )}
         </div>
       )}

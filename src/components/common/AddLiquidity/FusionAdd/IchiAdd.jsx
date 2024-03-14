@@ -1,10 +1,10 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import BigNumber from 'bignumber.js'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import BalanceInput from '@/components/input/BalanceInput'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
@@ -19,7 +19,6 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
   const [amount, setAmount] = useState('')
   const { onIchiAddAndStake, pending } = useIchiManage()
   const { account } = useWallet()
-  const { open } = useWeb3Modal()
   const assets = useAssets()
   const { slippage } = useSettings()
   const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
@@ -114,9 +113,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
             Add Liquidity & Stake
           </PrimaryButton>
         ) : (
-          <PrimaryButton className='w-full' onClick={() => open()}>
-            Connect Wallet
-          </PrimaryButton>
+          <ConnectButton className='w-full' />
         )}
       </div>
     </>

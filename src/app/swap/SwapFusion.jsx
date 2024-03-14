@@ -1,12 +1,12 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
-import { Fragment, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { JSBI, Percent, TradeType } from 'thena-sdk-core'
 
 import { Alert } from '@/components/alert'
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, TextButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import NextImage from '@/components/image/NextImage'
 import TokenInput from '@/components/input/TokenInput'
@@ -45,7 +45,6 @@ export default function SwapFusion({
   const [typedValue, setTypedValue] = useState('')
   const { slippage, deadline } = useSettings()
   const { account } = useWallet()
-  const { open } = useWeb3Modal()
   const inCurrency = useCurrency(fromAsset ? fromAsset.address : undefined)
   const outCurrency = useCurrency(toAsset ? toAsset.address : undefined)
   const assets = useAssets()
@@ -297,9 +296,7 @@ export default function SwapFusion({
             {btnMsg.label}
           </EmphasisButton>
         ) : (
-          <PrimaryButton className='mt-3 w-full' onClick={() => open()}>
-            Connect Wallet
-          </PrimaryButton>
+          <ConnectButton className='mt-3 w-full' />
         )}
       </Box>
       <div className='flex w-full max-w-[920px] flex-col gap-4'>

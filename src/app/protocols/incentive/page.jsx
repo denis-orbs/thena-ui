@@ -1,6 +1,5 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useRouter } from 'next/navigation'
 import React, { useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
@@ -9,6 +8,7 @@ import { Neutral } from '@/components/alert'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import BalanceInput from '@/components/input/BalanceInput'
@@ -31,7 +31,6 @@ export default function IncentivePage() {
   const { account } = useWallet()
   const [pair, setPair] = useState(null)
   const [asset, setAsset] = useState(null)
-  const { open } = useWeb3Modal()
   const mutateAssets = useMutateAssets()
   const pools = usePools()
   const poolsWithGauge = useMemo(() => pools.filter(pool => pool && pool.gauge.address !== zeroAddress), [pools])
@@ -172,7 +171,7 @@ export default function IncentivePage() {
                 Confirm Voting Incentive
               </PrimaryButton>
             ) : (
-              <PrimaryButton onClick={() => open()}>Connect Wallet</PrimaryButton>
+              <ConnectButton />
             )}
           </div>
           <Neutral className='flex h-fit flex-col items-start justify-start gap-2'>
