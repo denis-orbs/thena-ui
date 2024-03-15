@@ -9,7 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { siteConfig } from '@/constant/config'
-import { Web3Modal } from '@/context/Web3Modal'
+import { RainbowWallet } from '@/lib/wallets/RainbowWallet'
 
 import Loading from './loading'
 import { Providers } from './providers'
@@ -55,14 +55,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang='en'>
       <body>
-        <Web3Modal>
+        <RainbowWallet>
           <Providers>
             <Updaters />
             <Header />
             <Suspense fallback={<Loading />}>{children}</Suspense>
             <SpeedInsights />
           </Providers>
-        </Web3Modal>
+        </RainbowWallet>
         <Analytics />
         <div id='widget-dom-id' />
       </body>
