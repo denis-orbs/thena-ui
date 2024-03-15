@@ -1,22 +1,24 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { AuthCoreEvent, getLatestAuthType, isSocialAuthType, particleAuth } from '@particle-network/auth-core'
+import { useConnect as useParticleConnect } from '@particle-network/auth-core-modal'
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
-import { useDisconnect } from 'wagmi'
+import { useConnect, useDisconnect } from 'wagmi'
 
-import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
+import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
 import { SizeTypes } from '@/constant/type'
 import usePrices from '@/hooks/usePrices'
-import { cn, formatAddress, formatAmount, goToDoc } from '@/lib/utils'
+import { cn, formatAmount, goToDoc } from '@/lib/utils'
+import { particleWagmiWallet } from '@/lib/wallets/ParticleWallet/particleWagmiWallet'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, PowerIcon } from '@/svgs'
+import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon } from '@/svgs'
 
 import Logo from '~/logo.svg'
 
@@ -167,11 +169,29 @@ function Header() {
   const router = useRouter()
   const { push } = router
   const pathname = usePathname()
-  const { open } = useWeb3Modal()
   const { account, chainId } = useWallet()
-  const { disconnect } = useDisconnect()
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
+  // start: fix social auth login
+  const { connect } = useConnect()
+  const { connectionStatus } = useParticleConnect()
+  const { disconnect } = useDisconnect()
+
+  useEffect(() => {
+    if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
+      connect({
+        connector: particleWagmiWallet({ socialType: getLatestAuthType() }),
+      })
+    }
+    const onDisconnect = () => {
+      disconnect()
+    }
+    particleAuth.on(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
+    return () => {
+      particleAuth.off(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
+    }
+  }, [connect, connectionStatus, disconnect])
+  // end: fix social auth login
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
@@ -332,14 +352,6 @@ function Header() {
     setIsOpen(false)
   }
 
-  const onConnect = useCallback(() => {
-    open()
-  }, [open])
-
-  const onDisconnect = useCallback(() => {
-    disconnect()
-  }, [disconnect])
-
   useEffect(() => {
     // Prefetch the dashboard page
     router.prefetch('/')
@@ -440,16 +452,7 @@ function Header() {
             <OutlinedButton responsive onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               Enter ALPHA
             </OutlinedButton>
-            {account ? (
-              <>
-                <EmphasisButton responsive className='hidden lg:inline-flex' onClick={onConnect}>
-                  {formatAddress(account)}
-                </EmphasisButton>
-                <TextIconButton className='hidden lg:flex' Icon={PowerIcon} onClick={onDisconnect} />
-              </>
-            ) : (
-              <ConnectButton className='hidden lg:flex' />
-            )}
+            <ConnectButton className='hidden lg:flex' />
             <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
           </div>
         </div>
@@ -513,16 +516,7 @@ function Header() {
                 <OutlinedButton onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
                   Enter ALPHA
                 </OutlinedButton>
-                {account ? (
-                  <>
-                    <EmphasisButton onClick={onConnect}>{formatAddress(account)}</EmphasisButton>
-                    <TextButton LeadingIcon={PowerIcon} onClick={onDisconnect}>
-                      Disconnect
-                    </TextButton>
-                  </>
-                ) : (
-                  <ConnectButton />
-                )}
+                <ConnectButton />
               </ModalFooter>
             </>
           )}

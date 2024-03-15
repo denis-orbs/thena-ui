@@ -9,7 +9,7 @@ import {
 } from '@wagmi/core'
 import { ChainId } from 'thena-sdk-core/dist'
 
-import { wagmiConfig } from '@/context/Web3Modal'
+import { wagmiConfig } from '@/lib/wallets/RainbowWallet'
 
 export const callMulti = async contracts => {
   const res = await multicall(wagmiConfig, {
