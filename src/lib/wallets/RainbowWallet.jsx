@@ -1,7 +1,19 @@
 'use client'
 
 import { connectorsForWallets, darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit'
-import { coinbaseWallet, metaMaskWallet, rabbyWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets'
+import {
+  bitgetWallet,
+  coin98Wallet,
+  coinbaseWallet,
+  imTokenWallet,
+  ledgerWallet,
+  metaMaskWallet,
+  okxWallet,
+  rabbyWallet,
+  tokenPocketWallet,
+  trustWallet,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ChainId } from 'thena-sdk-core/dist'
 import { bsc, opBNB } from 'viem/chains'
@@ -10,8 +22,6 @@ import { cookieStorage, createConfig, createStorage, http, WagmiProvider } from 
 import '@rainbow-me/rainbowkit/styles.css'
 
 import { getRpcUrl } from '@/lib/utils'
-
-import { particleGoogleWallet, particleTwitterWallet, particleWallet } from './ParticleWallet'
 
 const queryClient = new QueryClient()
 
@@ -22,16 +32,12 @@ const chains = [bsc, opBNB]
 const connectors = connectorsForWallets(
   [
     {
-      groupName: 'Recommended',
-      wallets: [
-        particleGoogleWallet,
-        particleTwitterWallet,
-        particleWallet,
-        metaMaskWallet,
-        coinbaseWallet,
-        rabbyWallet,
-        walletConnectWallet,
-      ],
+      groupName: 'Popular',
+      wallets: [metaMaskWallet, rabbyWallet, coinbaseWallet, walletConnectWallet],
+    },
+    {
+      groupName: 'More',
+      wallets: [trustWallet, okxWallet, tokenPocketWallet, ledgerWallet, bitgetWallet, coin98Wallet, imTokenWallet],
     },
   ],
   {
