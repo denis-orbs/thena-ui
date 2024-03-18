@@ -7,10 +7,11 @@ import { formatEther, formatUnits } from 'viem'
 import { ERC20Abi } from '@/constant/abi'
 import { fetchAssets } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
-import { wagmiConfig } from '@/lib/wallets/RainbowWallet'
 import useWallet from '@/lib/wallets/useWallet'
 import { liquidityHub } from '@/modules/LiquidityHub'
 import { useChainSettings } from '@/state/settings/hooks'
+
+import { wagmiConfig } from './Web3Modal'
 
 const initialState = {
   mutateAssets: () => {},

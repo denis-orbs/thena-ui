@@ -1,12 +1,9 @@
 'use client'
 
-import { AuthCoreEvent, getLatestAuthType, isSocialAuthType, particleAuth } from '@particle-network/auth-core'
-import { useConnect as useParticleConnect } from '@particle-network/auth-core-modal'
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
-import { useConnect, useDisconnect } from 'wagmi'
 
 import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
@@ -14,7 +11,6 @@ import Modal, { ModalFooter } from '@/components/modal'
 import { SizeTypes } from '@/constant/type'
 import usePrices from '@/hooks/usePrices'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
-import { particleWagmiWallet } from '@/lib/wallets/ParticleWallet/particleWagmiWallet'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -172,26 +168,6 @@ function Header() {
   const { account, chainId } = useWallet()
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
-  // start: fix social auth login
-  const { connect } = useConnect()
-  const { connectionStatus } = useParticleConnect()
-  const { disconnect } = useDisconnect()
-
-  useEffect(() => {
-    if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
-      connect({
-        connector: particleWagmiWallet({ socialType: getLatestAuthType() }),
-      })
-    }
-    const onDisconnect = () => {
-      disconnect()
-    }
-    particleAuth.on(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
-    return () => {
-      particleAuth.off(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
-    }
-  }, [connect, connectionStatus, disconnect])
-  // end: fix social auth login
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
