@@ -16,6 +16,7 @@ import InfoIcon from '~/svgs/info-circle.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
 import InfoCirclePrimary from '~/svgs/info-circle-primary.svg'
 import InfoCircleWhite from '~/svgs/info-circle-white.svg'
+import LangIcon from '~/svgs/lang.svg'
 import LockIcon from '~/svgs/lock.svg'
 import MergeIcon from '~/svgs/merge.svg'
 import MinusIcon from '~/svgs/minus.svg'
@@ -55,6 +56,7 @@ export {
   InfoCirclePrimary,
   InfoCircleWhite,
   InfoIcon,
+  LangIcon,
   LockIcon,
   MergeIcon,
   MinusIcon,

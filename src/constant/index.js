@@ -22,6 +22,11 @@ export const RPC_PROVIDERS = {
   [ChainId.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
 }
 
+export const LOCALES = {
+  en: 'en',
+  zh: 'zh',
+}
+
 export const SCAN_URLS = {
   [ChainId.BSC]: 'https://bscscan.com',
   [ChainId.OPBNB]: 'https://opbnb.bscscan.com',

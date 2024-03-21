@@ -151,7 +151,7 @@ export const useV3DerivedMintInfo = (
   // override for existing position
   existingPosition,
 ) => {
-  const { chainId, account } = useWallet()
+  const { chainId } = useWallet()
   const {
     independentField,
     typedValue,
@@ -543,11 +543,6 @@ export const useV3DerivedMintInfo = (
 
   let errorMessage
   let errorCode
-
-  if (!account) {
-    errorMessage = 'Connect Wallet'
-    errorCode = errorCode ?? 0
-  }
 
   if (poolState === PoolState.INVALID) {
     errorMessage = errorMessage ?? 'Invalid pair'

@@ -1,9 +1,12 @@
 'use client'
 
+import { NextIntlClientProvider } from 'next-intl'
+import { useMemo } from 'react'
 import { Provider } from 'react-redux'
 import { ToastContainer, Zoom } from 'react-toastify'
 import { SWRConfig } from 'swr'
 
+import { LOCALES } from '@/constant'
 import { AssetsContextProvider } from '@/context/assetsContext'
 import { FusionsContextProvider } from '@/context/fusionsContext'
 import { ManualsContextProvider } from '@/context/manualsContext'
@@ -12,8 +15,11 @@ import { RewardsContextProvider } from '@/context/rewardsContext'
 import { TokensContextProvider } from '@/context/tokensContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
 import { VeTHEsContextProvider } from '@/context/veTHEsContext'
+import enMessage from '@/lang/en.json'
+import zhMessage from '@/lang/zh.json'
 import { swrGCMiddleware } from '@/lib/swrMiddlewares'
 import store from '@/state'
+import { useLocaleSettings } from '@/state/settings/hooks'
 
 function ContextProviders({ children }) {
   return (
@@ -32,6 +38,17 @@ function ContextProviders({ children }) {
         </PairsContextProvider>
       </VaultsContextProvider>
     </AssetsContextProvider>
+  )
+}
+
+function IntlProvider({ children }) {
+  const { locale } = useLocaleSettings()
+
+  const messages = useMemo(() => (locale === LOCALES.en ? enMessage : zhMessage), [locale])
+  return (
+    <NextIntlClientProvider locale={locale} messages={messages} timeZone='America/Los_Angeles'>
+      {children}
+    </NextIntlClientProvider>
   )
 }
 
@@ -78,26 +95,28 @@ export function Providers({ children }) {
     //   }}
     // >
     <Provider store={store}>
-      <SWRConfig
-        value={{
-          refreshInterval: 30000,
-          refreshWhenHidden: false,
-          refreshWhenOffline: false,
-          use: [swrGCMiddleware],
-        }}
-      >
-        <ToastContainer
-          className='notify-class'
-          position='bottom-left'
-          theme='dark'
-          closeOnClick={false}
-          transition={Zoom}
-          autoClose={5000}
-          hideProgressBar
-          closeButton={false}
-        />
-        <ContextProviders>{children}</ContextProviders>
-      </SWRConfig>
+      <IntlProvider>
+        <SWRConfig
+          value={{
+            refreshInterval: 30000,
+            refreshWhenHidden: false,
+            refreshWhenOffline: false,
+            use: [swrGCMiddleware],
+          }}
+        >
+          <ToastContainer
+            className='notify-class'
+            position='bottom-left'
+            theme='dark'
+            closeOnClick={false}
+            transition={Zoom}
+            autoClose={5000}
+            hideProgressBar
+            closeButton={false}
+          />
+          <ContextProviders>{children}</ContextProviders>
+        </SWRConfig>
+      </IntlProvider>
     </Provider>
     // </AuthCoreContextProvider>
   )

@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 
 import { Alert } from '@/components/alert'
@@ -38,6 +39,7 @@ export default function SwapBest({
   onUnwrap,
   wrapPending,
 }) {
+  const t = useTranslations()
   const [fromAmount, setFromAmount] = useState('')
   const [isWarning, setIsWarning] = useState(false)
   const { account } = useWallet()
@@ -249,7 +251,7 @@ export default function SwapBest({
     <>
       <Box className='w-full max-w-[480px]'>
         <div className='mb-3 flex items-center justify-between'>
-          <h2>Swap</h2>
+          <h2>{t('Swap')}</h2>
           <div className='flex items-center gap-2'>
             {/* <Selection data={selections} /> */}
             <TxnSettings />

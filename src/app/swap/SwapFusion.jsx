@@ -99,13 +99,6 @@ export default function SwapFusion({
   }, [isExactIn, showWrap, parsedAmounts, independentField, typedValue])
 
   const btnMsg = useMemo(() => {
-    if (!account) {
-      return {
-        isError: true,
-        label: 'Connect Wallet',
-      }
-    }
-
     if (!fromAsset || !toAsset) {
       return {
         isError: true,
@@ -152,7 +145,7 @@ export default function SwapFusion({
       isError: false,
       label: 'Swap',
     }
-  }, [account, fromAsset, toAsset, parsedAmount, parsedAmounts, bestTrade, isWrap, isUnwrap])
+  }, [fromAsset, toAsset, parsedAmount, parsedAmounts, bestTrade, isWrap, isUnwrap])
 
   const onInputFieldChange = val => {
     setIndependentField(Field.CURRENCY_A)

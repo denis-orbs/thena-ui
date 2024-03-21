@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ChainId } from 'thena-sdk-core'
 import { useAccount, useSwitchChain } from 'wagmi'
 
-import { closeWallet, openWallet, switchNetwork, updateDeadline, updateSlippage } from './actions'
+import { closeWallet, openWallet, switchNetwork, updateDeadline, updateLocale, updateSlippage } from './actions'
 
 export const useWalletModal = () => {
   const { isWalletOpen } = useSelector(state => state.settings)
@@ -58,4 +58,18 @@ export const useChainSettings = () => {
   )
 
   return { networkId: networkId || ChainId.BSC, updateNetwork }
+}
+
+export const useLocaleSettings = () => {
+  const { locale } = useSelector(state => state.settings)
+  const dispatch = useDispatch()
+
+  const updateLanguage = useCallback(
+    val => {
+      dispatch(updateLocale(val))
+    },
+    [dispatch],
+  )
+
+  return { locale, updateLanguage }
 }

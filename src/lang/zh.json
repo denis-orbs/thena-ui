@@ -1,0 +1,32 @@
+{
+  "Header": {
+    "Swap": "兑换",
+    "Spot Trade": "現貨交易",
+    "Easy and user-friendly trading interface": "简单易用交易界面",
+    "Trade Perps": "Trade Perps",
+    "Trade perpetual contracts with leverage": "Trade perpetual contracts with leverage",
+    "Cross-Chain": "跨链桥",
+    "Trade across different blockchains": "跨链交易",
+    "Buy Crypto": "购买加密货币",
+    "On-ramp from fiat to crypto": "用法定货币购买加密货币",
+    "Pools": "流动性池",
+    "Dashboard": "仪表板",
+    "More": "更多",
+    "Analytics": "分析",
+    "See platform data": "查看平台数据",
+    "Protocols": "协议",
+    "Add gauges and voting incentives": "增加Gauge和投票激励",
+    "Docs": "文档",
+    "Learn more about THENA": "了解更多关于THENA的信息",
+    "Chain": "链",
+    "BNB Chain": "BNB 链",
+    "opBNB": "opBNB",
+    "Enter ALPHA": "进入ALPHA",
+    "Connect Wallet": "连接钱包",
+    "My Assets": "我的资产",
+    "Lock": "锁仓",
+    "Vote": "投票",
+    "Rewards": "奖励",
+    "theNFT": "theNFT"
+  }
+}

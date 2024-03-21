@@ -1,0 +1,32 @@
+{
+  "Header": {
+    "Swap": "Swap",
+    "Spot Trade": "Spot Trade",
+    "Easy and user-friendly trading interface": "Easy and user-friendly trading interface",
+    "Trade Perps": "Trade Perps",
+    "Trade perpetual contracts with leverage": "Trade perpetual contracts with leverage",
+    "Cross-Chain": "Cross-Chain",
+    "Trade across different blockchains": "Trade across different blockchains",
+    "Buy Crypto": "Buy Crypto",
+    "On-ramp from fiat to crypto": "On-ramp from fiat to crypto",
+    "Pools": "Pools",
+    "Dashboard": "Dashboard",
+    "More": "More",
+    "Analytics": "Analytics",
+    "See platform data": "See platform data",
+    "Protocols": "Protocols",
+    "Add gauges and voting incentives": "Add gauges and voting incentives",
+    "Docs": "Docs",
+    "Learn more about THENA": "Learn more about THENA",
+    "Chain": "Chain",
+    "BNB Chain": "BNB Chain",
+    "opBNB": "opBNB",
+    "Enter ALPHA": "Enter ALPHA",
+    "Connect Wallet": "Connect Wallet",
+    "My Assets": "My Assets",
+    "Lock": "Lock",
+    "Vote": "Vote",
+    "Rewards": "Rewards",
+    "theNFT": "theNFT"
+  }
+}
