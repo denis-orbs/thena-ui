@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React from 'react'
 import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -227,12 +228,14 @@ const cardsData = [
   },
 ]
 function Scenes() {
+  const t = useTranslations('Home')
+
   return (
     <div className='relative w-full lg:pb-[130px]'>
       <HomeImage alt='background' src='/images/home/scenes/bg.png' className='absolute top-0 w-full' />
       <div className='container relative z-20 mx-auto flex flex-col items-center justify-center pb-8 lg:pb-20'>
         <HomeImage className='mb-6 w-fit' alt='scenes' src='/images/home/scenes/1.png' />
-        <Heading heading='Behind THE Scenes' wrapperStyles='items-center' title='FOUNDERS' />
+        <Heading heading={t('Behind THE Scenes')} wrapperStyles='items-center' title={t('FOUNDERS')} />
       </div>
       {/*  */}
       <div className='3xl:max-w-[2000px] relative ml-auto w-full max-w-[1320px] pl-10 xl:px-0 2xl:max-w-[1520px]'>
@@ -277,12 +280,12 @@ function Scenes() {
                       <HomeImage className='h-10 w-10' alt={`profile of ${item.name}`} src={item.profilePic} />
                       <div className=''>
                         <p className='text-xl font-semibold leading-6 tracking-[-0.8px]'>{item.name}</p>
-                        <p className='text-base leading-6 tracking-[-0.48px] text-[#3AAFF8]'>{item.position}</p>
+                        <p className='text-base leading-6 tracking-[-0.48px] text-[#3AAFF8]'>{t(item.position)}</p>
                       </div>
                     </div>
                   </div>
                   <p className='mt-8 text-base leading-6 tracking-[-0.48px] text-white/[0.45] transition-all duration-300 ease-in-out group-hover:mt-7 group-hover:text-white'>
-                    {item.description}
+                    {t(item.name)}
                   </p>
                 </div>
               </div>

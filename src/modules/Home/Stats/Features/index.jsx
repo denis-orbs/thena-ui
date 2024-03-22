@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 
 import { TrailingButton } from '@/components/buttons/Button'
@@ -50,13 +51,13 @@ function FeatureScroller({ setFeature, currentFeatureIndex }) {
 export function Features() {
   const [feature, setFeature] = useState(features[0])
   const { push } = useRouter()
+  const t = useTranslations('Home')
 
   const featuresInfo = {
     introduction: {
       heading: 'Spot and Leverage Trading',
-      title: 'Introducing THENA',
-      description:
-        'Trade hundreds of spot and perpetual pairs with up to 60x leverage – permissionless and non-custodial.',
+      title: 'INTRODUCING THENA',
+      description: 'Spot Description',
       buttonAction: '',
       background: '',
       label: 'Trade Now',
@@ -66,9 +67,8 @@ export function Features() {
     },
     stake_and_earn: {
       heading: 'Stake and Earn',
-      title: 'Introducing THENA',
-      description:
-        'Stake your digital assets to create revenue streams. From concentrated liquidity to Single Token Vaults that make DeFi easy – there’s something for everyone.',
+      title: 'PASSIVE INCOME',
+      description: 'Stake Description',
       buttonAction: '',
       label: 'Learn More',
       action: () => {
@@ -77,9 +77,8 @@ export function Features() {
     },
     thena_core: {
       heading: 'The Social Layer',
-      title: 'Introducing THENA',
-      description:
-        'A growth hacking tool for protocols, a money-making machine for influencers, and a gamified DeFi experience for you. Host your own trading competition, follow your friends, and have fun.',
+      title: 'SOCIALFI MEETS TRADING',
+      description: 'Social Description',
       buttonAction: '',
       label: 'Coming Soon',
       action: () => {},
@@ -105,8 +104,8 @@ export function Features() {
             >
               <Heading
                 headingExtraSytles='lg:text-4xl lg:leading-[40px] xl:text-[45px] xl:leading-[56px]'
-                heading={featuresInfo[feature].heading}
-                title={featuresInfo[feature].title}
+                heading={t(featuresInfo[feature].heading)}
+                title={t(featuresInfo[feature].title)}
               />
             </motion.div>
             <motion.p
@@ -116,7 +115,7 @@ export function Features() {
               key={`${feature}-desc`}
               className='mt-4 leading-6 text-white/[0.35]'
             >
-              {`${featuresInfo[feature].description}`}
+              {t(featuresInfo[feature].description)}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, filter: 'blur(10px)' }}
@@ -125,7 +124,7 @@ export function Features() {
               key={`${feature}-cta`}
             >
               <TrailingButton onClick={featuresInfo[feature].action} className='mt-10'>
-                {featuresInfo[feature].label}
+                {t(featuresInfo[feature].label)}
               </TrailingButton>
             </motion.div>
           </div>

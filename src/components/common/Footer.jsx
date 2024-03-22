@@ -3,6 +3,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import Logo from '~/logo.svg'
@@ -94,6 +95,7 @@ const footerLinks = [[], []]
 // ]
 function Footer() {
   const { push } = useRouter()
+  const t = useTranslations('Footer')
 
   const onLogoClick = () => {
     push('/')
@@ -107,7 +109,7 @@ function Footer() {
             <div className='flex flex-col justify-between'>
               <div>
                 <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
-                <p className='mt-4 text-xs leading-4 text-white/50'>© 2024 THENA. All rights reserved.</p>
+                <p className='mt-4 text-xs leading-4 text-white/50'>© {t('All rights reserved')}</p>
               </div>
               <div className='mt-4 flex items-center space-x-3 lg:mt-0'>
                 {footerSocialLinks.map((item, idx) => (
@@ -145,7 +147,7 @@ function Footer() {
                   onClick={() => window.open('https://twitter.com/ThenaFi_', '_blank')}
                 >
                   <NextImage className='w-fit' alt='linear gradient line' src='/images/footer/xbig.svg' />
-                  <span className='text-sm leading-5'>Follow us for more</span>
+                  <span className='text-sm leading-5'>{t('Follow us for More')}</span>
                 </div>
               </div>
             </div>

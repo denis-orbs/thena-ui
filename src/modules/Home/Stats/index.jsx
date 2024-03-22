@@ -1,6 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
@@ -57,6 +58,7 @@ const fetchStats = async () => {
 
 function Stats() {
   const { data: chartData } = useSWR('thena total stats', () => fetchStats())
+  const t = useTranslations('Home')
 
   const statsData = useMemo(
     () => [
@@ -91,7 +93,7 @@ function Stats() {
         className='absolute -mt-6 w-full backdrop-blur-[20px] lg:-mt-[180px]'
       />
       <div className='relative z-40 mx-auto max-w-[1152px] px-10 pt-[150px] xl:px-0 xl:pt-[422px]'>
-        <Heading heading='THENA in Numbers' wrapperStyles='items-center' />
+        <Heading heading={t('THENA in Numbers')} wrapperStyles='items-center' />
         <div className='flex flex-col justify-center space-y-10 pb-20 pt-12 lg:flex-row lg:items-center lg:space-x-[136px] lg:space-y-0 lg:py-14'>
           {statsData.map((item, idx) => (
             <div key={idx} className='flex items-start space-x-5'>
@@ -106,7 +108,7 @@ function Stats() {
                 />
               </div>
               <div className='flex flex-col gap-3'>
-                <p className='text-base leading-4 tracking-[-0.64px] text-white/40'>{item.description}</p>
+                <p className='text-base leading-4 tracking-[-0.64px] text-white/40'>{t(item.description)}</p>
                 {item.value ? (
                   <p className='font-archia text-xl font-semibold leading-[14px] tracking-[-0.8px] lg:text-4xl lg:leading-[25px] lg:tracking-[1.44px]'>
                     {item.value}

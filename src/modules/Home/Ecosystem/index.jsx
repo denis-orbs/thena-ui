@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -32,6 +33,7 @@ const grantLogos = [
 
 function Ecosystem() {
   const [ecosystem, setEcoSystem] = useState(data[0])
+  const t = useTranslations('Home')
   const logos = useMemo(() => {
     let arr = []
     switch (ecosystem) {
@@ -59,7 +61,7 @@ function Ecosystem() {
       </div>
       <div className='relative z-10 flex flex-col items-center justify-center px-11 py-16 lg:pb-[204px] lg:pt-[217px] xl:px-0'>
         <div className='mx-auto w-full  max-w-[700px]'>
-          <Heading heading='THE Ecosystem' title='Backed by the best' wrapperStyles='items-center' />
+          <Heading heading={t('THE Ecosystem')} title={t('Backed by the best')} wrapperStyles='items-center' />
           <div className='mt-6 flex items-center justify-center space-x-3.5 lg:mt-8'>
             {data.map((item, idx) => (
               <div
@@ -72,7 +74,7 @@ function Ecosystem() {
                 )}
                 key={idx}
               >
-                {item}
+                {t(item)}
               </div>
             ))}
           </div>
