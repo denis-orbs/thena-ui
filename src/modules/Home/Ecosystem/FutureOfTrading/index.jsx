@@ -71,7 +71,7 @@ const prtocolsData = [
 ]
 export function FutureOfTrading() {
   const [tradingData, setTradingData] = useState('Tokenomics')
-  const t = useTranslations('Home')
+  const t = useTranslations()
 
   return (
     <div className='mx-auto flex max-w-[1171px] flex-col items-center justify-center xl:flex-row xl:items-start xl:space-x-[151px]'>

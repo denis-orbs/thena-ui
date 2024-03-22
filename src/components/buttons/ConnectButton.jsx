@@ -12,7 +12,7 @@ import { EmphasisButton, PrimaryButton } from './Button'
 export default function ConnectButton({ className }) {
   const { open } = useWeb3Modal()
   const { account } = useWallet()
-  const t = useTranslations('Header')
+  const t = useTranslations()
 
   if (account) {
     return (

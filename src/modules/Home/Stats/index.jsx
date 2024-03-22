@@ -58,7 +58,7 @@ const fetchStats = async () => {
 
 function Stats() {
   const { data: chartData } = useSWR('thena total stats', () => fetchStats())
-  const t = useTranslations('Home')
+  const t = useTranslations()
 
   const statsData = useMemo(
     () => [

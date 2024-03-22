@@ -33,7 +33,7 @@ const grantLogos = [
 
 function Ecosystem() {
   const [ecosystem, setEcoSystem] = useState(data[0])
-  const t = useTranslations('Home')
+  const t = useTranslations()
   const logos = useMemo(() => {
     let arr = []
     switch (ecosystem) {

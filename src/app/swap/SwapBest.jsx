@@ -125,23 +125,23 @@ export default function SwapBest({
   const percents = useMemo(
     () => [
       {
-        label: '10%',
+        label: t('10%'),
         onClickHandler: () => setFromAmount(fromAsset.balance.times(0.1).toString(10)),
       },
       {
-        label: '25%',
+        label: t('25%'),
         onClickHandler: () => setFromAmount(fromAsset.balance.times(0.25).toString(10)),
       },
       {
-        label: '50%',
+        label: t('50%'),
         onClickHandler: () => setFromAmount(fromAsset.balance.times(0.5).toString(10)),
       },
       {
-        label: 'Max',
+        label: t('Max'),
         onClickHandler: () => setFromAmount(fromAsset.balance.toString(10)),
       },
     ],
-    [fromAsset, setFromAmount],
+    [fromAsset, setFromAmount, t],
   )
 
   const handleSwap = useCallback(() => {
@@ -195,57 +195,57 @@ export default function SwapBest({
     if (!fromAsset || !toAsset) {
       return {
         isError: true,
-        label: 'Select a Token',
+        label: t('Select a Token'),
       }
     }
 
     if (isInvalidAmount(fromAmount)) {
       return {
         isError: true,
-        label: 'Enter an amount',
+        label: t('Enter an amount'),
       }
     }
 
     if (quotePending) {
       return {
         isError: false,
-        label: 'Fetching price',
+        label: t('Fetching Quotes'),
       }
     }
 
     if (fromAsset.balance && fromAsset.balance.lt(fromAmount)) {
       return {
         isError: true,
-        label: `Insufficient ${fromAsset.symbol} balance`,
+        label: t('Insufficient Balance'),
       }
     }
 
     if (isWrap) {
       return {
         isError: false,
-        label: 'Wrap',
+        label: t('Wrap'),
       }
     }
 
     if (isUnwrap) {
       return {
         isError: false,
-        label: 'Unwrap',
+        label: t('Unwrap'),
       }
     }
 
     if (!toAmount) {
       return {
         isError: true,
-        label: 'Insufficient liquidity for this trade',
+        label: t('Insufficient liquidity for this trade'),
       }
     }
 
     return {
       isError: false,
-      label: 'Swap',
+      label: t('Swap'),
     }
-  }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap, quotePending])
+  }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap, quotePending, t])
 
   return (
     <>
@@ -290,23 +290,26 @@ export default function SwapBest({
         {toAmount && (
           <div className='flex flex-col gap-2 py-3'>
             <div className='flex items-center justify-between'>
-              <TextHeading>Rate</TextHeading>
+              <TextHeading>{t('Rate')}</TextHeading>
               <Paragraph>
-                {`${formatAmount(new BigNumber(toAmount).div(fromAmount))} ${toAsset.symbol} per ${fromAsset.symbol}`}
+                {`${formatAmount(new BigNumber(toAmount).div(fromAmount))} ${t('assetA per assetB', {
+                  symbolA: toAsset.symbol,
+                  symbolB: fromAsset.symbol,
+                })}`}
               </Paragraph>
             </div>
             <div className='flex items-center justify-between'>
-              <TextHeading>Minimum Received</TextHeading>
+              <TextHeading>{t('Minimum Received')}</TextHeading>
               <Paragraph>{minimumReceived}</Paragraph>
             </div>
             <div className='flex items-center justify-between'>
-              <TextHeading>Price Impact</TextHeading>
+              <TextHeading>{t('Price Impact')}</TextHeading>
               <Paragraph>{formatAmount(priceImpact)}%</Paragraph>
             </div>
             {priceImpact > 5 && (
               <Alert>
                 <InfoIcon className='h-4 w-4 stroke-error-600' />
-                <p>Price impact too high!</p>
+                <p>{t('Price impact too high')}</p>
               </Alert>
             )}
           </div>
@@ -337,14 +340,14 @@ export default function SwapBest({
         <SwapChart asset0={toAsset} asset1={fromAsset} />
         <Box className='flex flex-col gap-4'>
           <div className='flex justify-between'>
-            <TextHeading className='text-xl'>Order Routing</TextHeading>
+            <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
             <TextButton
               className='text-xs'
               iconClassName='lg:h-4 lg:w-4'
               onClick={() => mutate()}
               LeadingIcon={RefreshIcon}
             >
-              Refresh Quote
+              {t('Refresh Quote')}
             </TextButton>
           </div>
           {quotePending ? (

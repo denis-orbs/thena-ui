@@ -11,7 +11,7 @@ import HomeImage from '../Common/HomeImage'
 
 function Hero() {
   const { push } = useRouter()
-  const t = useTranslations('Home')
+  const t = useTranslations()
 
   return (
     <>

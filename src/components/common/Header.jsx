@@ -229,7 +229,7 @@ function Header() {
   const { account, chainId } = useWallet()
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
-  const t = useTranslations('Header')
+  const t = useTranslations()
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {

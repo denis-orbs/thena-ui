@@ -8,7 +8,7 @@ import { CommunityStars } from './CommunityStars'
 import { MainCommunityIllustration } from './MainCommunityIllustration'
 
 function Community() {
-  const t = useTranslations('Home')
+  const t = useTranslations()
 
   return (
     <div className='relative mx-auto flex max-h-[1152px] flex-col items-center justify-center overflow-hidden px-10 py-[80px] md:py-[138px]'>

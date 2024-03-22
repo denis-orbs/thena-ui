@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
 import { formatAmount } from '@/lib/utils'
@@ -18,6 +19,7 @@ function TokenInput({
   disabled = false,
 }) {
   const [tokenPopup, setTokenPopup] = useState(false)
+  const t = useTranslations()
 
   return (
     <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
@@ -40,7 +42,9 @@ function TokenInput({
       </div>
       <div className='flex items-center justify-between gap-2'>
         <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-        <TextSubHeading>Balance: {formatAmount(asset?.balance)}</TextSubHeading>
+        <TextSubHeading>
+          {t('Balance')}: {formatAmount(asset?.balance)}
+        </TextSubHeading>
       </div>
       <TokenModal
         popup={tokenPopup}

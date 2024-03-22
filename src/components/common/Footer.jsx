@@ -95,7 +95,7 @@ const footerLinks = [[], []]
 // ]
 function Footer() {
   const { push } = useRouter()
-  const t = useTranslations('Footer')
+  const t = useTranslations()
 
   const onLogoClick = () => {
     push('/')

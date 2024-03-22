@@ -228,7 +228,7 @@ const cardsData = [
   },
 ]
 function Scenes() {
-  const t = useTranslations('Home')
+  const t = useTranslations()
 
   return (
     <div className='relative w-full lg:pb-[130px]'>

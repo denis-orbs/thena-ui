@@ -12,7 +12,7 @@ import { Heading } from './Common/Heading'
 import HomeImage from './Common/HomeImage'
 
 function Updates() {
-  const t = useTranslations('Home')
+  const t = useTranslations()
 
   const { data } = useSWRImmutable(
     'home/medium',

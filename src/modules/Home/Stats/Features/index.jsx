@@ -51,7 +51,7 @@ function FeatureScroller({ setFeature, currentFeatureIndex }) {
 export function Features() {
   const [feature, setFeature] = useState(features[0])
   const { push } = useRouter()
-  const t = useTranslations('Home')
+  const t = useTranslations()
 
   const featuresInfo = {
     introduction: {

@@ -84,7 +84,7 @@ const futureBeyond = [
 ]
 
 function Build() {
-  const t = useTranslations('Home')
+  const t = useTranslations()
 
   return (
     <div className='mx-auto w-full max-w-[1152px] px-6 xl:px-0'>
