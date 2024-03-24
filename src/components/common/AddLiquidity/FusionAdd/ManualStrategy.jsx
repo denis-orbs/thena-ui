@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
@@ -44,6 +45,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
     undefined,
   )
   const { ticksAtLimit, invertPrice } = mintInfo
+  const t = useTranslations()
 
   const dispatch = useDispatch()
   const activePreset = useActivePreset()
@@ -249,11 +251,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       />
       {mintInfo.noLiquidity && (
         <div className='flex flex-col gap-3'>
-          <Info className='text-sm'>
-            This pool must be initialized before you can add liquidity. To initialize, select a starting price for the
-            pool. Then, enter your liquidity price range and deposit amount. Gas fees will be higher than usual due to
-            the initialization transaction.
-          </Info>
+          <Info className='text-sm'>{t('Initialize warning')}</Info>
           <div className='flex items-center justify-between'>
             <TextHeading className='w-1/2'>Starting {baseCurrency?.symbol} Price:</TextHeading>
             <Input
@@ -299,7 +297,11 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       {!mintInfo.noLiquidity && (
         <div className='-mb-2 flex items-center justify-center'>
           <TextHeading className='text-sm'>
-            {`Current Price: ${currentPrice} ${unwrappedSymbol(quoteCurrency)} per ${unwrappedSymbol(baseCurrency)}`}
+            {t('Current Price: [price] [symbolA] [symbolB]', {
+              price: currentPrice,
+              symbolA: unwrappedSymbol(quoteCurrency),
+              symbolB: unwrappedSymbol(baseCurrency),
+            })}
           </TextHeading>
         </div>
       )}
@@ -365,7 +367,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
       <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} />
       <CustomTooltip id='price-tooltip' className='max-w-[320px]'>
-        <TextHeading className='tex t-sm'>Price Range Info</TextHeading>
+        <TextHeading className='text-sm'>{t('Price Range Info')}</TextHeading>
       </CustomTooltip>
     </div>
   )

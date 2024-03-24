@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
@@ -35,6 +36,7 @@ export default function IncentivePage() {
   const pools = usePools()
   const poolsWithGauge = useMemo(() => pools.filter(pool => pool && pool.gauge.address !== zeroAddress), [pools])
   const { onBribeAdd, pending } = useBribeAdd()
+  const t = useTranslations()
 
   const topPools = useMemo(
     () => pools.sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber()).slice(0, 4),
@@ -64,12 +66,12 @@ export default function IncentivePage() {
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-4'>
         <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => push('/protocols')}>
-          Back
+          {t('Back')}
         </TextButton>
-        <h2>Voting Incentive</h2>
+        <h2>{t('Voting Incentive')}</h2>
       </div>
       <div className='flex flex-col gap-4'>
-        <TextHeading className='text-xl'>Top Incentives</TextHeading>
+        <TextHeading className='text-xl'>{t('Top Incentives')}</TextHeading>
         <div className='grid grid-cols-1 gap-2 lg:grid-cols-4 lg:gap-8 '>
           {topPools.map(pool => (
             <Box className='flex items-center justify-between' key={`incentive-${pool.address}`}>
@@ -93,11 +95,11 @@ export default function IncentivePage() {
         </div>
       </div>
       <div className='flex flex-col gap-4'>
-        <TextHeading className='text-xl'>Add Incentive</TextHeading>
+        <TextHeading className='text-xl'>{t('Add Incentive')}</TextHeading>
         <div className='grid grid-cols-1 gap-8 lg:grid-cols-2'>
           <div className='flex flex-col gap-4'>
             <div className='flex flex-col gap-2'>
-              <TextHeading>Pair</TextHeading>
+              <TextHeading>{t('Pair')}</TextHeading>
               <div
                 className='flex cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'
                 onClick={() => setPairOpen(!pairOpen)}
@@ -114,11 +116,11 @@ export default function IncentivePage() {
                     />
                     <div className='flex items-end gap-2'>
                       <TextHeading>{pair.symbol}</TextHeading>
-                      <Paragraph className='text-sm'>{pair.title}</Paragraph>
+                      <Paragraph className='text-sm'>{t(pair.title)}</Paragraph>
                     </div>
                   </div>
                 ) : (
-                  <p className='text-neutral-400'>Select Pair</p>
+                  <p className='text-neutral-400'>{t('Select Pair')}</p>
                 )}
                 <ChevronDownIcon
                   className={cn(
@@ -129,7 +131,7 @@ export default function IncentivePage() {
               </div>
             </div>
             <div className='flex flex-col gap-2'>
-              <TextHeading>Reward Asset</TextHeading>
+              <TextHeading>{t('Reward Asset')}</TextHeading>
               <div
                 className='flex cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'
                 onClick={() => setTokenOpen(!tokenOpen)}
@@ -140,7 +142,7 @@ export default function IncentivePage() {
                     <TextHeading>{asset.symbol}</TextHeading>
                   </div>
                 ) : (
-                  <p className='text-neutral-400'>Select Asset</p>
+                  <p className='text-neutral-400'>{t('Select Asset')}</p>
                 )}
                 <ChevronDownIcon
                   className={cn(
@@ -168,20 +170,15 @@ export default function IncentivePage() {
                   })
                 }}
               >
-                Confirm Voting Incentive
+                {t('Confirm Voting Incentive')}
               </PrimaryButton>
             ) : (
               <ConnectButton />
             )}
           </div>
           <Neutral className='flex h-fit flex-col items-start justify-start gap-2'>
-            <TextHeading className='text-xl'>What is a voting incentive?</TextHeading>
-            <Paragraph>
-              To encourage votes towards specific pools, protocols or projects may deposit additional rewards or
-              incentives into those pools' gauges. These incentives are designed to attract more voting power by
-              offering token holders higher potential returns for their votes. Essentially, the more voting power a
-              gauge receives, the more THE emissions are allocated to the liquidity pool.
-            </Paragraph>
+            <TextHeading className='text-xl'>{t('What is a Voting Incentive')}</TextHeading>
+            <Paragraph>{t('Voting Incentive Description')}</Paragraph>
           </Neutral>
         </div>
       </div>

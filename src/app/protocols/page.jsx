@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { Neutral } from '@/components/alert'
@@ -11,24 +12,21 @@ import { InfoIcon } from '@/svgs'
 
 export default function ProtocolsPage() {
   const { push } = useRouter()
+  const t = useTranslations()
+
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-6'>
         <div className='flex flex-col gap-2'>
-          <h2>Protocols</h2>
-          <Paragraph>Add a Gauge</Paragraph>
+          <h2>{t('Protocols')}</h2>
+          <Paragraph>{t('Add a Gauge')}</Paragraph>
         </div>
         <Neutral className='justify-between lg:p-8'>
           <div className='flex items-center gap-4'>
             <InfoIcon className='h-4 w-4 min-w-fit stroke-neutral-600 lg:h-8 lg:w-8' />
             <div className='flex flex-col gap-2'>
-              <TextHeading className='text-xl'>What are Gauges?</TextHeading>
-              <Paragraph>
-                Gauges are used to measure voting power. veTHE holders can allocate their voting power to different
-                liquidity pools through these gauges. This voting determines how the protocol’s emissions or rewards are
-                distributed among the pools. The more voting power a pool has via the gauge, the larger the share of THE
-                rewards it receives.
-              </Paragraph>
+              <TextHeading className='text-xl'>{t('What are Gauges')}</TextHeading>
+              <Paragraph>{t('Gauges Description')}</Paragraph>
             </div>
           </div>
           <EmphasisButton
@@ -41,23 +39,23 @@ export default function ProtocolsPage() {
               )
             }}
           >
-            Learn More
+            {t('Learn More')}
           </EmphasisButton>
         </Neutral>
         <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
           <Box className='flex items-center justify-between gap-2'>
             <div className='flex flex-col gap-2'>
-              <TextHeading className='text-lg'>Gauge</TextHeading>
-              <Paragraph>Create a new gauge which can be used for staking and voting.</Paragraph>
+              <TextHeading className='text-lg'>{t('Gauge')}</TextHeading>
+              <Paragraph>{t('Create New Gauge')}</Paragraph>
             </div>
-            <SecondaryButton onClick={() => push('/protocols/gauge')}>Add</SecondaryButton>
+            <SecondaryButton onClick={() => push('/protocols/gauge')}>{t('Add')}</SecondaryButton>
           </Box>
           <Box className='flex items-center justify-between gap-2'>
             <div className='flex flex-col gap-2'>
-              <TextHeading className='text-lg'>Voting Incentive</TextHeading>
-              <Paragraph>Add a bribe reward for an existing gauge to incentivize votes on it.</Paragraph>
+              <TextHeading className='text-lg'>{t('Voting Incentive')}</TextHeading>
+              <Paragraph>{t('Add a bribe reward for an existing gauge to incentivize votes on it')}</Paragraph>
             </div>
-            <SecondaryButton onClick={() => push('/protocols/incentive')}>Add</SecondaryButton>
+            <SecondaryButton onClick={() => push('/protocols/incentive')}>{t('Add')}</SecondaryButton>
           </Box>
         </div>
       </div>

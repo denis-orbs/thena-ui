@@ -176,7 +176,7 @@ export default function LockPage() {
 
   return (
     <div className='flex flex-col gap-4'>
-      <h2>Lock</h2>
+      <h2>{t('Lock')}</h2>
       {account ? (
         <div className='flex flex-col'>
           <div className='flex flex-col gap-4'>

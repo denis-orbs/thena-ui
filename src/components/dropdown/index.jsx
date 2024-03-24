@@ -32,7 +32,7 @@ function Dropdown({ className, data, selected, setSelected, placeHolder }) {
           input: cn('cursor-pointer caret-transparent', className),
         }}
         type='text'
-        val={selected}
+        val={t(selected)}
         onClick={() => setOpen(!open)}
         placeholder={t(placeHolder)}
         TrailingIcon={

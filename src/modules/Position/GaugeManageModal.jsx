@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
@@ -10,6 +11,7 @@ import { isInvalidAmount } from '@/lib/utils'
 
 export default function GaugeManageModal({ popup, setPopup, pair, balance, title, onGaugeManage, pending, label }) {
   const [amount, setAmount] = useState('')
+  const t = useTranslations()
 
   const errorMsg = useMemo(() => {
     if (isInvalidAmount(amount)) {
@@ -47,7 +49,7 @@ export default function GaugeManageModal({ popup, setPopup, pair, balance, title
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <TextButton className='w-full' onClick={() => setPopup(false)}>
-          Cancel
+          {t('Cancel')}
         </TextButton>
         <PrimaryButton
           className='w-full'
@@ -62,7 +64,7 @@ export default function GaugeManageModal({ popup, setPopup, pair, balance, title
             })
           }}
         >
-          {label}
+          {t(label)}
         </PrimaryButton>
       </ModalFooter>
     </Modal>

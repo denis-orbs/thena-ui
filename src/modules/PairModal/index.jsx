@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import IconGroup from '@/components/icongroup'
@@ -7,6 +8,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 
 function PairModal({ popup, setPopup, setSelected, pools }) {
   const [searchText, setSearchText] = useState('')
+  const t = useTranslations()
 
   const filteredPools = useMemo(
     () =>
@@ -30,17 +32,11 @@ function PairModal({ popup, setPopup, setSelected, pools }) {
       title='Select Pair'
     >
       <div className='mb-3 inline-flex w-full flex-col gap-4 px-6 py-3'>
-        <SearchInput
-          className='w-full'
-          val={searchText}
-          setVal={setSearchText}
-          placeholder='Search by symbol or address'
-          autoFocus
-        />
+        <SearchInput className='w-full' val={searchText} setVal={setSearchText} autoFocus />
       </div>
       <div className='h-px w-full border border-neutral-700' />
       <div className='flex flex-col gap-2 p-3'>
-        <Paragraph className='px-3'>Pairs</Paragraph>
+        <Paragraph className='px-3'>{t('Pairs')}</Paragraph>
         <div className='max-h-[340px] overflow-auto'>
           {filteredPools.map(pool => (
             <div
@@ -62,7 +58,7 @@ function PairModal({ popup, setPopup, setSelected, pools }) {
                 />
                 <div className='flex flex-col'>
                   <TextHeading>{pool.symbol}</TextHeading>
-                  <Paragraph className='text-sm'>{pool.title}</Paragraph>
+                  <Paragraph className='text-sm'>{t(pool.title)}</Paragraph>
                 </div>
               </div>
             </div>

@@ -292,7 +292,7 @@ export default function SwapBest({
             <div className='flex items-center justify-between'>
               <TextHeading>{t('Rate')}</TextHeading>
               <Paragraph>
-                {`${formatAmount(new BigNumber(toAmount).div(fromAmount))} ${t('assetA per assetB', {
+                {`${formatAmount(new BigNumber(toAmount).div(fromAmount))} ${t('[symbolA] per [symbolB]', {
                   symbolA: toAsset.symbol,
                   symbolB: fromAsset.symbol,
                 })}`}

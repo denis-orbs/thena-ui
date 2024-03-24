@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import CircleImage from '@/components/image/CircleImage'
@@ -41,6 +42,7 @@ function TokenModal({
   const { account } = useWallet()
   const baseAssets = useAssets()
   const { networkId } = useChainSettings()
+  const t = useTranslations()
 
   const filteredAssets = useMemo(
     () =>
@@ -81,7 +83,7 @@ function TokenModal({
           placeholder='Search by Name, Symbol or Address'
           autoFocus
         />
-        <Paragraph>Trending Assets</Paragraph>
+        <Paragraph>{t('Trending Assets')}</Paragraph>
         <div className='flex flex-wrap gap-2'>
           {trendingAssets.map((item, idx) => (
             <div
@@ -110,7 +112,7 @@ function TokenModal({
       </div>
       <div className='h-px w-full border border-neutral-700' />
       <div className='flex flex-col gap-2 p-3'>
-        <Paragraph className='px-3'>Assets</Paragraph>
+        <Paragraph className='px-3'>{t('Assets')}</Paragraph>
         <div className='max-h-[340px] overflow-auto'>
           {filteredAssets.map((item, idx) => (
             <div
@@ -147,7 +149,7 @@ function TokenModal({
                           />
                         )}
                         <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md !py-2'>
-                          <TextHeading className='text-xs'>Add to wallet</TextHeading>
+                          <TextHeading className='text-xs'>{t('Add to Wallet')}</TextHeading>
                         </CustomTooltip>
                         <ExternalIcon
                           className='h-3 w-3 stroke-neutral-400 hover:stroke-neutral-50'
@@ -159,7 +161,7 @@ function TokenModal({
                           data-tooltip-id={`contract-tooltip-${idx}`}
                         />
                         <CustomTooltip id={`contract-tooltip-${idx}`} className='rounded-md !py-2' place='top'>
-                          <TextHeading className='text-xs'>Contract address</TextHeading>
+                          <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
                         </CustomTooltip>
                       </div>
                     )}

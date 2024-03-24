@@ -162,7 +162,7 @@ export default function PoolsPage() {
             />
             <div className='flex flex-col'>
               <TextHeading>{pool.symbol}</TextHeading>
-              <Paragraph className='text-sm'>{pool.type}</Paragraph>
+              <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
             </div>
           </div>
         ),
@@ -209,12 +209,12 @@ export default function PoolsPage() {
         fee: <Paragraph>${formatAmount(pool.dayFees)}</Paragraph>,
         action: (
           <EmphasisButton className='w-full lg:w-fit' onClick={() => push(`/pools/${pool.address}`)}>
-            Details
+            {t('Manage')}
           </EmphasisButton>
         ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(sortedData), push],
+    [JSON.stringify(sortedData), push, t],
   )
   const strategySelections = useMemo(
     () =>
@@ -329,7 +329,7 @@ export default function PoolsPage() {
             </div>
           </div>
           <PrimaryButton className='w-full lg:w-auto' onClick={() => setIsOpen(true)}>
-            Add Liquidity
+            {t('Add Liquidity')}
           </PrimaryButton>
         </div>
         <Table

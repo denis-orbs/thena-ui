@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { GreenBadge } from '@/components/badges/Badge'
@@ -18,6 +19,8 @@ export default function Staked({ pool }) {
   const [addPopup, setAddPopup] = useState(false)
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
   const { onGaugeHarvest, pending } = useGuageHarvset()
+  const t = useTranslations()
+
   const token0Percent = useMemo(() => {
     const token0InUsd = pool.account.staked0.times(pool.token0.price)
     return token0InUsd.div(pool.account.stakedUsd).times(100).toFixed(2)
@@ -38,33 +41,37 @@ export default function Staked({ pool }) {
             <TextSubHeading>{pool.title}</TextSubHeading>
           </div>
         </div>
-        <GreenBadge>Staked</GreenBadge>
+        <GreenBadge>{t('Staked')}</GreenBadge>
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>APR</Paragraph>
+          <Paragraph className='text-sm'>{t('APR')}</Paragraph>
           <TextHeading>{formatAmount(pool.gauge.apr)}%</TextHeading>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>Total value in USD</Paragraph>
+          <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
           <TextHeading>${formatAmount(pool.account.stakedUsd)}</TextHeading>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>{pool.token0.symbol} deposit</Paragraph>
+          <Paragraph className='text-sm'>
+            {pool.token0.symbol} {t('Deposit')}
+          </Paragraph>
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(pool.account.staked0)}`}</TextHeading>
             <TextSubHeading>{`(${formatAmount(token0Percent)}%)`}</TextSubHeading>
           </div>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>{pool.token1.symbol} deposit</Paragraph>
+          <Paragraph className='text-sm'>
+            {pool.token1.symbol} {t('Deposit')}
+          </Paragraph>
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(pool.account.staked1)}`}</TextHeading>
             <TextSubHeading>({formatAmount(100 - token0Percent)}%)</TextSubHeading>
           </div>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>Net return</Paragraph>
+          <Paragraph className='text-sm'>{t('Net Return')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(pool.account.earnedUsd)}</TextHeading>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool.address}`} />
@@ -82,14 +89,14 @@ export default function Staked({ pool }) {
       </div>
       <div className='mt-auto flex w-full gap-3'>
         <TextButton className='w-full' onClick={() => setPopup(true)}>
-          Unstake
+          {t('Unstake')}
         </TextButton>
         <OutlinedButton
           className='w-full'
           onClick={() => onGaugeHarvest(pool)}
           disabled={pending || pool.account.earnedUsd.isZero()}
         >
-          Harvest
+          {t('Harvest')}
         </OutlinedButton>
         <EmphasisButton
           className='w-full'
@@ -97,7 +104,7 @@ export default function Staked({ pool }) {
             setAddPopup(true)
           }}
         >
-          Add
+          {t('Add')}
         </EmphasisButton>
       </div>
       <GaugeManageModal

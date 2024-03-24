@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
@@ -23,20 +24,22 @@ export default function GaugePage() {
   const [selected, setSelected] = useState(null)
   const { onGaugeAdd, pending } = useGaugeAdd()
   const pools = usePools()
+  const t = useTranslations()
+
   const poolsWithoutGauge = useMemo(() => pools.filter(pair => pair && pair.gauge.address === zeroAddress), [pools])
 
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-4'>
         <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => push('/protocols')}>
-          Back
+          {t('Back')}
         </TextButton>
-        <h2>Add Gauge</h2>
+        <h2>{t('Add Gauge')}</h2>
       </div>
       <div className='grid grid-cols-1 gap-8 lg:grid-cols-2'>
         <div className='flex flex-col gap-4'>
           <div className='flex flex-col gap-2'>
-            <TextHeading>Pair</TextHeading>
+            <TextHeading>{t('Pair')}</TextHeading>
             <div
               className='flex cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'
               onClick={() => setIsOpen(!isOpen)}
@@ -53,11 +56,11 @@ export default function GaugePage() {
                   />
                   <div className='flex items-end gap-2'>
                     <TextHeading>{selected.symbol}</TextHeading>
-                    <Paragraph className='text-sm'>{selected.title}</Paragraph>
+                    <Paragraph className='text-sm'>{t(selected.title)}</Paragraph>
                   </div>
                 </div>
               ) : (
-                <p className='text-neutral-400'>Select Pair</p>
+                <p className='text-neutral-400'>{t('Select Pair')}</p>
               )}
               <ChevronDownIcon
                 className={cn(
@@ -76,20 +79,15 @@ export default function GaugePage() {
                 })
               }}
             >
-              Confirm Gauge
+              {t('Confirm Gauge')}
             </PrimaryButton>
           ) : (
             <ConnectButton />
           )}
         </div>
         <Neutral className='flex flex-col items-start gap-2'>
-          <TextHeading className='text-xl'>What are Gauges?</TextHeading>
-          <Paragraph>
-            Gauges are used to measure voting power. veTHE holders can allocate their voting power to different
-            liquidity pools through these gauges. This voting determines how the protocol’s emissions or rewards are
-            distributed among the pools. The more voting power a pool has via the gauge, the larger the share of THE
-            rewards it receives.
-          </Paragraph>
+          <TextHeading className='text-xl'>{t('What are Gauges')}</TextHeading>
+          <Paragraph>{t('Gauges Description')}</Paragraph>
         </Neutral>
       </div>
       <PairModal popup={isOpen} setPopup={setIsOpen} setSelected={setSelected} pools={poolsWithoutGauge} />
