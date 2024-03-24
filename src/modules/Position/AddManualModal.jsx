@@ -167,7 +167,7 @@ export default function AddManualModal({
 
   const errorMessage = useMemo(() => {
     if (!parsedAmounts[Field.CURRENCY_A] || !parsedAmounts[Field.CURRENCY_B]) {
-      return 'Invalid amount'
+      return 'Invalid Amount'
     }
 
     const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts

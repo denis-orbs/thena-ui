@@ -558,7 +558,7 @@ export const useV3DerivedMintInfo = (
     (!parsedAmounts[Field.CURRENCY_A] && !depositADisabled) ||
     (!parsedAmounts[Field.CURRENCY_B] && !depositBDisabled)
   ) {
-    errorMessage = errorMessage ?? 'Invalid amount'
+    errorMessage = errorMessage ?? 'Invalid Amount'
     errorCode = errorCode ?? 3
   }
 

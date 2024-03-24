@@ -39,7 +39,7 @@ async function fetchUserVeTHEs([_, account, chainId]) {
         weight: fromWei(ele.weight),
         weightPercent: totalWeight > 0 ? new BigNumber(ele.weight).div(totalWeight).times(100) : new BigNumber(0),
       })),
-      expire: diff > 0 ? `Expires in ${diff} days` : `Expired ${diff * -1} days ago`,
+      expire: diff,
     }
   })
 }

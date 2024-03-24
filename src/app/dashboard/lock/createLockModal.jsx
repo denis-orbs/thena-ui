@@ -1,6 +1,7 @@
 'use client'
 
 import dayjs from 'dayjs'
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -28,6 +29,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
   const [periodLevel, setPeriodLevel] = useState(0)
   const { onCreateLock, pending } = useCreateLock(amount, selectedDate)
   const mutateAssets = useMutateAssets()
+  const t = useTranslations()
 
   const periods = useMemo(
     () =>
@@ -73,10 +75,10 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
 
   const errorMsg = useMemo(() => {
     if (isInvalidAmount(amount)) {
-      return 'Invalid amount'
+      return 'Invalid Amount'
     }
     if (!theAsset || theAsset.balance.lt(amount)) {
-      return 'Insufficient balance'
+      return 'Insufficient Balance'
     }
     return null
   }, [amount, theAsset])
@@ -90,7 +92,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
   return (
     <Modal
       isOpen={popup}
-      title='Create a New Lock'
+      title='Create New Lock'
       closeModal={() => {
         setPopup(false)
       }}
@@ -100,7 +102,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
         <BalanceInput title='Amount' asset={theAsset} amount={amount} onAmountChange={setAmount} autoFocus />
         <div className='flex flex-col gap-2'>
           <div className='flex flex-col items-start justify-between gap-1 lg:flex-row lg:items-center'>
-            <p className='font-medium text-white'>Lock Until</p>
+            <p className='font-medium text-white'>{t('Lock Until')}</p>
             <Tabs data={periods} />
           </div>
 
@@ -120,7 +122,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
           />
         </div>
         <div className='my-3 flex items-center justify-between'>
-          <Paragraph>veTHE Voting Power</Paragraph>
+          <Paragraph>{t('veTHE Voting Power')}</Paragraph>
           <TextHeading>{votingPower}</TextHeading>
         </div>
       </ModalBody>
@@ -140,7 +142,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
             })
           }}
         >
-          Create New Lock
+          {t('Create New Lock')}
         </PrimaryButton>
       </ModalFooter>
     </Modal>

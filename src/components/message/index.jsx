@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 import { ChainId } from 'thena-sdk-core'
 import { bsc, opBNB } from 'viem/chains'
@@ -61,6 +62,8 @@ export function ErrorMessage({ closeToast, title, desc }) {
 }
 
 export function WarnMessage({ closeToast, desc }) {
+  const t = useTranslations()
+
   return (
     <div className='flex items-start justify-between gap-4'>
       <div className='flex items-center gap-4'>
@@ -69,8 +72,8 @@ export function WarnMessage({ closeToast, desc }) {
         </Highlight>
         <div>
           <div className='flex flex-col gap-1'>
-            <TextHeading>Warning</TextHeading>
-            {desc && <Paragraph className='text-sm'>{desc}</Paragraph>}
+            <TextHeading>{t('Warning')}</TextHeading>
+            {desc && <Paragraph className='text-sm'>{t(desc)}</Paragraph>}
           </div>
         </div>
       </div>

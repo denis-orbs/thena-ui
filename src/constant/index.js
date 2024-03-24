@@ -216,7 +216,7 @@ export const PERIOD_LEVELS = [
 
 export const PAIR_TYPES = {
   All: 'All Pools',
-  LSD: 'Conc. Liquidity',
+  LSD: 'Conc Liquidity',
   STABLE: 'Stable',
   CLASSIC: 'Classic',
 }

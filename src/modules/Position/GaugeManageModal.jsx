@@ -13,10 +13,10 @@ export default function GaugeManageModal({ popup, setPopup, pair, balance, title
 
   const errorMsg = useMemo(() => {
     if (isInvalidAmount(amount)) {
-      return 'Invalid amount'
+      return 'Invalid Amount'
     }
     if (!balance || balance.lt(amount)) {
-      return 'Insufficient balance'
+      return 'Insufficient Balance'
     }
     return null
   }, [amount, balance])

@@ -3,12 +3,14 @@ import { createChart } from 'lightweight-charts'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { formatAmount } from '@/lib/utils'
+import { useLocaleSettings } from '@/state/settings/hooks'
 
 import Skeleton from '../skeleton'
 
 function BarChart({ data, setHoverValue, setHoverDate }) {
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
+  const { locale } = useLocaleSettings()
 
   const transformedData = useMemo(() => {
     if (data) {
@@ -86,7 +88,15 @@ function BarChart({ data, setHoverValue, setHoverDate }) {
       if (newSeries && param) {
         const timestamp = param.time
         if (!timestamp) return
-        const time = dayjs(timestamp).format('MMM D, YYYY')
+        const now = new Date(timestamp)
+        const time = `${now.toLocaleString(locale, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZone: 'UTC',
+        })} (UTC)`
         const parsed = param.seriesData.get(newSeries)?.value ?? 0
         if (setHoverValue) setHoverValue(parsed)
         if (setHoverDate) setHoverDate(time)
@@ -99,7 +109,7 @@ function BarChart({ data, setHoverValue, setHoverDate }) {
     return () => {
       chart.remove()
     }
-  }, [transformedData, setHoverValue, setHoverDate])
+  }, [transformedData, setHoverValue, setHoverDate, locale])
 
   const handleMouseLeave = useCallback(() => {
     if (setHoverValue) setHoverValue(undefined)

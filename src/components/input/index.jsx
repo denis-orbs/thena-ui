@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -11,8 +12,11 @@ function Input({
   TrailingIcon,
   TrailingButton,
   type = 'number',
+  placeholder = '0',
   ...rest
 }) {
+  const t = useTranslations()
+
   return (
     <div className={cn('relative flex items-center', className)}>
       <input
@@ -24,7 +28,7 @@ function Input({
           TrailingIcon || suffix ? 'pr-7' : 'pr-3',
           classNames?.input,
         )}
-        placeholder='0'
+        placeholder={t(placeholder)}
         value={val}
         {...rest}
       />

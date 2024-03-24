@@ -1,6 +1,6 @@
 'use client'
 
-import dayjs from 'dayjs'
+import { useTranslations } from 'next-intl'
 import { memo, useEffect, useMemo, useState } from 'react'
 
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
@@ -10,6 +10,7 @@ import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { formatAmount, wrappedAddress } from '@/lib/utils'
+import { useLocaleSettings } from '@/state/settings/hooks'
 
 import { PairDataTimeWindow } from './fetch'
 import { useFetchPairPrices } from './hooks'
@@ -18,6 +19,8 @@ import { getTimeWindowChange } from './utils'
 
 function SwapChart({ asset0, asset1, currentSwapPrice }) {
   const [timeWindow, setTimeWindow] = useState()
+  const t = useTranslations()
+  const { locale } = useLocaleSettings()
 
   const { data: pairPrices = [], error } = useFetchPairPrices({
     token0Address: wrappedAddress(asset0),
@@ -53,43 +56,49 @@ function SwapChart({ asset0, asset1, currentSwapPrice }) {
 
   const currentDate = useMemo(() => {
     if (!hoverDate) {
-      return dayjs().format('MMM D, YYYY HH:mm (UTC)')
+      return new Date().toLocaleString(locale, {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
     }
     return null
-  }, [hoverDate])
+  }, [hoverDate, locale])
 
   const periods = useMemo(
     () => [
       {
-        label: '24H',
+        label: t('24H'),
         active: timeWindow === PairDataTimeWindow.DAY,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.DAY)
         },
       },
       {
-        label: '1W',
+        label: t('1W'),
         active: timeWindow === PairDataTimeWindow.WEEK,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.WEEK)
         },
       },
       {
-        label: '1M',
+        label: t('1M'),
         active: timeWindow === PairDataTimeWindow.MONTH,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.MONTH)
         },
       },
       {
-        label: '1Y',
+        label: t('1Y'),
         active: timeWindow === PairDataTimeWindow.YEAR,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.YEAR)
         },
       },
     ],
-    [timeWindow],
+    [timeWindow, t],
   )
 
   useEffect(() => {
@@ -143,6 +152,7 @@ function SwapChart({ asset0, asset1, currentSwapPrice }) {
         ) : (
           <SwapLineChart
             data={pairPrices}
+            locale={locale}
             setHoverValue={setHoverValue}
             setHoverDate={setHoverDate}
             timeWindow={timeWindow}

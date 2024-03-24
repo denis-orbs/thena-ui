@@ -43,10 +43,10 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
 
   const errorMsg = useMemo(() => {
     if (isInvalidAmount(amount)) {
-      return 'Invalid amount'
+      return 'Invalid Amount'
     }
     if (balance.lt(amount)) {
-      return 'Insufficient balance'
+      return 'Insufficient Balance'
     }
     return null
   }, [balance, amount])

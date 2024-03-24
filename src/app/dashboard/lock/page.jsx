@@ -1,6 +1,7 @@
 'use client'
 
 import dayjs from 'dayjs'
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { Info } from '@/components/alert'
@@ -24,7 +25,7 @@ import NotConnected from '../NotConnected'
 
 const sortOptions = [
   {
-    label: 'Lock veTHE ID',
+    label: 'veTHE ID',
     value: 'id',
     width: 'lg:w-[18%]',
     isDesc: true,
@@ -74,6 +75,7 @@ export default function LockPage() {
   const theAsset = useMemo(() => assets.find(asset => asset.address === Contracts.THE[networkId]), [assets, networkId])
   const selected = useMemo(() => veTHEs.find(veTHE => veTHE.id === selectedId), [veTHEs, selectedId])
   const { onWithdrawLock, pending } = useWithdrawLock()
+  const t = useTranslations()
 
   const sortedData = useMemo(
     () =>
@@ -129,12 +131,16 @@ export default function LockPage() {
         expire: (
           <div className='flex flex-col'>
             <Paragraph>{dayjs.unix(veTHE.lockedEnd).format('MMM D, YYYY')}</Paragraph>
-            <TextSubHeading>{veTHE.expire}</TextSubHeading>
+            <TextSubHeading>
+              {veTHE.expire > 0
+                ? t('Expires in [x] days', { x: veTHE.expire })
+                : `Expired ${veTHE.expire * -1} days ago`}
+            </TextSubHeading>
           </div>
         ),
         used: (
           <Paragraph className={veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600'}>
-            {veTHE.votedCurrentEpoch ? 'Yes' : 'No'}
+            {veTHE.votedCurrentEpoch ? t('Yes') : t('No')}
           </Paragraph>
         ),
         action: veTHE.voting_amount.isZero() ? (
@@ -146,7 +152,7 @@ export default function LockPage() {
               })
             }}
           >
-            Withdraw
+            {t('Withdraw')}
           </SecondaryButton>
         ) : (
           <EmphasisButton
@@ -156,12 +162,12 @@ export default function LockPage() {
               setIsManageOpen(true)
             }}
           >
-            Manage
+            {t('Manage')}
           </EmphasisButton>
         ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(sortedData), theAsset],
+    [JSON.stringify(sortedData), theAsset, t],
   )
 
   const openModal = () => {
@@ -176,21 +182,18 @@ export default function LockPage() {
           <div className='flex flex-col gap-4'>
             <Info className='justify-between lg:p-8'>
               <InfoCirclePrimary className='h-4 w-4 min-w-fit lg:h-8 lg:w-8' />
-              <p>
-                Lock THE into veTHE to earn and govern. Vote with veTHE to earn bribes and trading fees. veTHE can be
-                transferred, merged and split. You can hold multiple positions.
-              </p>
+              <p>{t('Lock THE Desciption')}</p>
               <TertiaryButton
                 className='min-w-fit'
                 onClick={() => goToDoc('https://thena.gitbook.io/thena/the-tokenomics/vethe')}
               >
-                Learn More
+                {t('Learn More')}
               </TertiaryButton>
             </Info>
           </div>
           <div className='mb-4 mt-10 flex items-center justify-between'>
-            <TextHeading className='text-xl'>Locked Positions</TextHeading>
-            {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>Create Lock</PrimaryButton>}
+            <TextHeading className='text-xl'>{t('Locked Positions')}</TextHeading>
+            {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>{t('Create Lock')}</PrimaryButton>}
           </div>
           {isLoading ? (
             <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
@@ -211,10 +214,10 @@ export default function LockPage() {
                 <InfoCircleWhite className='h-4 w-4' />
               </Highlight>
               <div className='flex flex-col items-center gap-3'>
-                <h2>No veTHE found</h2>
-                <Paragraph className='mt-3 text-center'>You have no voting power.</Paragraph>
+                <h2>{t('No veTHE found')}</h2>
+                <Paragraph className='mt-3 text-center'>{t('You have no voting power')}</Paragraph>
               </div>
-              <PrimaryButton onClick={openModal}>Get veTHE</PrimaryButton>
+              <PrimaryButton onClick={openModal}>{t('Get veTHE')}</PrimaryButton>
             </div>
           )}
         </div>

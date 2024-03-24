@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -49,6 +50,7 @@ function Table({
   hidePagination = false,
 }) {
   const pageCount = Math.ceil(data.length / PAGE_SIZE)
+  const t = useTranslations()
 
   return (
     <div className={cn('reltaive flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
@@ -67,7 +69,7 @@ function Table({
                 }
               }}
             >
-              <TextHeading className='text-sm'>{option.label}</TextHeading>
+              <TextHeading className='text-sm'>{t(option.label)}</TextHeading>
               {sort.value === option.value && (
                 <ArrowDownIcon
                   className={cn(

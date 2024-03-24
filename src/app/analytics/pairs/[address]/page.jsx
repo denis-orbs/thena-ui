@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -25,6 +26,8 @@ export default function PairDetailPage({ params }) {
   const { push } = useRouter()
   const { networkId } = useChainSettings()
   const { pairs, isLoading } = usePairs()
+  const t = useTranslations()
+
   const pair = useMemo(
     () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
     [pairs, address],
@@ -41,7 +44,7 @@ export default function PairDetailPage({ params }) {
       <div className='flex flex-col gap-6'>
         <div className='flex flex-col gap-4'>
           <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => push('/analytics')}>
-            Analytics
+            {t('Analytics')}
           </TextButton>
           <div className='flex flex-col items-start  justify-between gap-4 lg:flex-row lg:items-end'>
             <div className='flex w-full items-center gap-4'>
@@ -56,11 +59,13 @@ export default function PairDetailPage({ params }) {
               <div className='flex w-full flex-col gap-0.5 lg:gap-2'>
                 <div className='flex items-center justify-between gap-3 lg:justify-start'>
                   <TextHeading className='text-xl leading-normal lg:text-3xl'>{pair.symbol}</TextHeading>
-                  <NeutralBadge>{pair.subpools.length} pools</NeutralBadge>
+                  <NeutralBadge>
+                    {pair.subpools.length} {t('Pools')}
+                  </NeutralBadge>
                 </div>
                 <div className='flex w-full justify-between'>
                   <div className='flex items-center gap-0.5'>
-                    <Paragraph className='text-sm'>Fee:</Paragraph>
+                    <Paragraph className='text-sm'>{t('Fee')}:</Paragraph>
                     <TextHeading className='text-sm'>{pair.fee}%</TextHeading>
                   </div>
                   <TextIconButton
@@ -86,9 +91,9 @@ export default function PairDetailPage({ params }) {
                   push(`/pools/${pair.address}`)
                 }}
               >
-                Add Liquidity
+                {t('Add Liquidity')}
               </SecondaryButton>
-              <PrimaryButton>Swap</PrimaryButton>
+              <PrimaryButton>{t('Swap')}</PrimaryButton>
             </div>
           </div>
         </div>
@@ -99,7 +104,7 @@ export default function PairDetailPage({ params }) {
                 <CircleImage className='h-6 w-6' src={pair.token0.logoURI} alt='thena token' />
                 <TextHeading className='text-2xl'>{formatAmount(pair.reserve0)}</TextHeading>
               </div>
-              <Paragraph>Total {pair.token0.symbol} locked</Paragraph>
+              <Paragraph>{t('Total [symbol] Locked', { symbol: pair.token0.symbol })}</Paragraph>
             </div>
             <NeutralBadge>
               1 {pair.token0.symbol} = {formatAmount(pair.token0.derived / pair.token1.derived)} {pair.token1.symbol}
@@ -111,7 +116,7 @@ export default function PairDetailPage({ params }) {
                 <CircleImage className='h-6 w-6' src={pair.token1.logoURI} alt='thena token' />
                 <TextHeading className='text-2xl'>{formatAmount(pair.reserve1)}</TextHeading>
               </div>
-              <Paragraph>Total {pair.token1.symbol} locked</Paragraph>
+              <Paragraph>{t('Total [symbol] Locked', { symbol: pair.token1.symbol })}</Paragraph>
             </div>
             <NeutralBadge>
               1 {pair.token1.symbol} = {formatAmount(pair.token1.derived / pair.token0.derived)} {pair.token0.symbol}

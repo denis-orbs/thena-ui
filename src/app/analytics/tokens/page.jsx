@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import PercentBadge from '@/components/badges/PercentBadge'
@@ -20,6 +21,8 @@ export default function AnalyticsTokensPage() {
   const [searchText, setSearchText] = useState('')
   const { push } = useRouter()
   const { tokens, isLoading } = useTokens()
+  const t = useTranslations()
+
   const filteredTokens = useMemo(
     () => (tokens ? tokens.filter(token => token.symbol.toLowerCase().includes(searchText.toLowerCase())) : []),
     [tokens, searchText],
@@ -35,13 +38,14 @@ export default function AnalyticsTokensPage() {
       </div>
     )
   }
+
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-4'>
         <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => push('/analytics')}>
-          Back
+          {t('Back')}
         </TextButton>
-        <h2>Top Movers</h2>
+        <h2>{t('Top Movers')}</h2>
         <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>
           {topMovers.map(asset => (
             <Box className='flex items-start justify-between' key={`asset-${asset.address}`}>
@@ -59,8 +63,8 @@ export default function AnalyticsTokensPage() {
       </div>
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <TextHeading className='text-xl'>Assets</TextHeading>
-          <SearchInput val={searchText} setVal={setSearchText} placeholder='Search' />
+          <TextHeading className='text-xl'>{t('Assets')}</TextHeading>
+          <SearchInput val={searchText} setVal={setSearchText} />
         </div>
         <TokensTable data={filteredTokens} />
       </div>

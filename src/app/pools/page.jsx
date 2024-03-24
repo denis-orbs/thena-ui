@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
@@ -83,6 +84,7 @@ export default function PoolsPage() {
   const { pairs } = usePairs()
   const vaults = useVaults()
   const { networkId } = useChainSettings()
+  const t = useTranslations()
 
   const filteredPools = useMemo(() => {
     let final
@@ -235,7 +237,7 @@ export default function PoolsPage() {
       {vaults.length > 0 && (
         <>
           <div className='flex items-center justify-between'>
-            <h2>{networkId === ChainId.BSC ? 'THE Single Sided Vaults' : 'Single Sided Vaults'} </h2>
+            <h2>{networkId === ChainId.BSC ? t('THE Single Sided Vaults') : t('Single Sided Vaults')} </h2>
           </div>
           <div className='mt-4 flex items-center gap-8 overflow-auto pb-4'>
             {vaults.map(trending => (
@@ -259,24 +261,24 @@ export default function PoolsPage() {
                         <TextHeading className='text-lg'>{trending.symbol}</TextHeading>
                         <NeutralBadge className='text-nowrap'>ICHI</NeutralBadge>
                       </div>
-                      <Paragraph className='text-sm'>{PAIR_TYPES.LSD}</Paragraph>
+                      <Paragraph className='text-sm'>{t(PAIR_TYPES.LSD)}</Paragraph>
                     </div>
                   </div>
                 </div>
                 <div className='flex flex-col gap-2'>
                   <div className='flex items-center justify-between'>
-                    <Paragraph className='text-sm'>Deposit Token</Paragraph>
+                    <Paragraph className='text-sm'>{t('Deposit Token')}</Paragraph>
                     <div className='flex items-center gap-1'>
                       <CircleImage className='h-4 w-4' src={trending.allowed.logoURI} alt='thena logo' />
                       <TextHeading className='text-sm'>{trending.allowed.symbol}</TextHeading>
                     </div>
                   </div>
                   <div className='flex items-center justify-between'>
-                    <Paragraph className='text-sm'>APR</Paragraph>
+                    <Paragraph className='text-sm'>{t('APR')}</Paragraph>
                     <TextHeading className='text-sm'>{formatAmount(trending.gauge.apr)}%</TextHeading>
                   </div>
                   <div className='flex items-center justify-between'>
-                    <Paragraph className='text-sm'>TVL</Paragraph>
+                    <Paragraph className='text-sm'>{t('TVL')}</Paragraph>
                     <TextHeading className='text-sm'>${formatAmount(trending.gauge.tvl)}</TextHeading>
                   </div>
                 </div>
@@ -287,7 +289,7 @@ export default function PoolsPage() {
       )}
       <div className='mt-6 flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <TextHeading className='text-xl'>{isInactive ? 'Inactive' : 'Active'} Pools</TextHeading>
+          <TextHeading className='text-xl'>{isInactive ? t('Inactive Pools') : t('Active Pools')}</TextHeading>
           <Toggle
             className='lg:hidden'
             checked={isInactive}

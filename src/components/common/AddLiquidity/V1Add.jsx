@@ -124,7 +124,7 @@ export default function V1Add({
 
   const errorMsg = useMemo(() => {
     if (isInvalidAmount(firstAmount) || isInvalidAmount(secondAmount)) {
-      return 'Invalid amount'
+      return 'Invalid Amount'
     }
     if (firstAsset.balance.lt(firstAmount)) {
       return `Insufficient ${firstAsset.symbol} balance`

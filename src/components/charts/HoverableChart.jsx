@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { useTranslations } from 'next-intl'
 import { memo, useEffect, useMemo, useState } from 'react'
 
 import { formatAmount } from '@/lib/utils'
@@ -12,6 +13,7 @@ function HoverableChart({ chartData, protocolData, valueProperty, title, ChartCo
   const [period, setPeriod] = useState(1)
   const [hover, setHover] = useState()
   const [dateHover, setDateHover] = useState()
+  const t = useTranslations()
 
   // Getting latest data to display on top of chart when not hovered
   useEffect(() => {
@@ -80,7 +82,7 @@ function HoverableChart({ chartData, protocolData, valueProperty, title, ChartCo
     <Box>
       <div className='flex items-start justify-between'>
         <div className='flex flex-col gap-1'>
-          <Paragraph>{title}</Paragraph>
+          <Paragraph>{t(title)}</Paragraph>
           {Number(hover) > -1 ? ( // sometimes data is 0
             <TextHeading className='text-2xl'>${formatAmount(hover)}</TextHeading>
           ) : (

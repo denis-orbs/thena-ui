@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
 import AddLiquidity from '@/components/common/AddLiquidity'
@@ -9,6 +10,7 @@ const STEPS = ['Select Pair', 'Choose Strategy', 'Add Liquidity']
 
 export default function AddLiquidityModal({ popup, setPopup }) {
   const [currentStep, setCurrentStep] = useState(0)
+  const t = useTranslations()
 
   return (
     <Modal
@@ -16,7 +18,7 @@ export default function AddLiquidityModal({ popup, setPopup }) {
       closeModal={() => {
         setPopup(false)
       }}
-      title={STEPS[currentStep]}
+      title={t(STEPS[currentStep])}
       isBack={currentStep > 0}
       onClickHandler={() => {
         if (currentStep > 0) {

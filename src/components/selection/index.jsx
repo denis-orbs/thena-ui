@@ -1,8 +1,11 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { cn } from '@/lib/utils'
 
 function SelectionItem({ className, item, isFull, isSmall }) {
+  const t = useTranslations()
+
   return (
     <button
       type='button'
@@ -20,7 +23,7 @@ function SelectionItem({ className, item, isFull, isSmall }) {
       )}
       onClick={item.onClickHandler}
     >
-      {item.label}
+      {t(item.label)}
     </button>
   )
 }

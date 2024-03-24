@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import ReactModal from 'react-modal'
 
@@ -34,6 +35,8 @@ function Modal({
   onClickHandler = null,
   ...rest
 }) {
+  const t = useTranslations()
+
   const customStyles = useMemo(
     () => ({
       overlay: {
@@ -91,7 +94,7 @@ function Modal({
           {isBack && (
             <TextIconButton Icon={ArrowLeftIcon} className='mr-2' onClick={() => onClickHandler && onClickHandler()} />
           )}
-          <div className='font-archia text-xl font-semibold text-neutral-50 lg:text-3xl'>{title}</div>
+          <div className='font-archia text-xl font-semibold text-neutral-50 lg:text-3xl'>{t(title)}</div>
         </div>
         <TextIconButton Icon={XIcon} onClick={closeModal} />
       </div>

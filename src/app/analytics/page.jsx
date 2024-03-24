@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
@@ -36,6 +37,8 @@ export default function AnalyticsPage() {
   const { pairs } = usePairs()
   const { push } = useRouter()
   const { tokens } = useTokens()
+  const t = useTranslations()
+
   const totalStats = useMemo(
     () =>
       !stats
@@ -45,10 +48,11 @@ export default function AnalyticsPage() {
           : stats.find(ele => ele.type === 'op-total'),
     [networkId, stats],
   )
+
   return (
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-4'>
-        <h2>Analytics</h2>
+        <h2>{t('Analytics')}</h2>
         <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
           <HoverableChart
             chartData={chartData}
@@ -80,7 +84,7 @@ export default function AnalyticsPage() {
                 </>
               )}
             </div>
-            <Paragraph className='text-sm'>TVL</Paragraph>
+            <Paragraph className='text-sm'>{t('TVL')}</Paragraph>
           </Box>
           <Box className='flex flex-col gap-2'>
             <div className='flex items-start justify-between'>
@@ -96,7 +100,7 @@ export default function AnalyticsPage() {
                 </>
               )}
             </div>
-            <Paragraph className='text-sm'>Volume (24h)</Paragraph>
+            <Paragraph className='text-sm'>{t('Volume (24h)')}</Paragraph>
           </Box>
           <Box className='flex flex-col gap-2'>
             <div className='flex items-start justify-between'>
@@ -112,32 +116,32 @@ export default function AnalyticsPage() {
                 </>
               )}
             </div>
-            <Paragraph className='text-sm'>Fees (24h)</Paragraph>
+            <Paragraph className='text-sm'>{t('Fees (24h)')}</Paragraph>
           </Box>
         </div>
       </div>
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <TextHeading>Top Assets</TextHeading>
+          <TextHeading>{t('Top Assets')}</TextHeading>
           <EmphasisButton
             onClick={() => {
               push('/analytics/tokens')
             }}
           >
-            View All
+            {t('View All')}
           </EmphasisButton>
         </div>
         <TokensTable data={tokens} hidePagination />
       </div>
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <TextHeading>Top Pairs</TextHeading>
+          <TextHeading>{t('Top Pairs')}</TextHeading>
           <EmphasisButton
             onClick={() => {
               push('/analytics/pairs')
             }}
           >
-            View All
+            {t('View All')}
           </EmphasisButton>
         </div>
         <PairsTable data={pairs} hidePagination />

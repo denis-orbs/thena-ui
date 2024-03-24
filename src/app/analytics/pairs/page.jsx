@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { TextButton } from '@/components/buttons/Button'
@@ -16,6 +17,8 @@ export default function AnalyticsPairsPage() {
   const [searchText, setSearchText] = useState('')
   const { push } = useRouter()
   const { pairs, isLoading } = usePairs()
+  const t = useTranslations()
+
   const filteredPairs = useMemo(
     () => (pairs ? pairs.filter(pair => pair.symbol.toLowerCase().includes(searchText.toLowerCase())) : []),
     [pairs, searchText],
@@ -31,12 +34,12 @@ export default function AnalyticsPairsPage() {
     <div className='flex flex-col gap-10'>
       <div className='flex flex-col gap-4'>
         <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => push('/analytics')}>
-          Back
+          {t('Back')}
         </TextButton>
       </div>
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <TextHeading className='text-xl'>Pairs</TextHeading>
+          <TextHeading className='text-xl'>{t('Pairs')}</TextHeading>
           <SearchInput val={searchText} setVal={setSearchText} placeholder='Search' />
         </div>
         <PairsTable data={filteredPairs} />

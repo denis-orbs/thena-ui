@@ -2,6 +2,7 @@
 
 import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
@@ -61,6 +62,7 @@ export default function HoldingsPage() {
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
   const farmedPools = pools.filter(item => item.account.gaugeEarned.gt(0))
   const { onGaugeAllHarvest, pending } = useGuageAllHarvset()
+  const t = useTranslations()
 
   const theAsset = useMemo(() => assets.find(asset => asset.address === Contracts.THE[networkId]), [assets, networkId])
 
@@ -192,7 +194,7 @@ export default function HoldingsPage() {
           <div className='flex flex-col gap-4'>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center justify-between'>
-                <TextHeading className='text-xl'>My Positions</TextHeading>
+                <TextHeading className='text-xl'>{t('My Positions')}</TextHeading>
                 <Toggle
                   className='lg:hidden'
                   checked={stakedOnly}
@@ -240,7 +242,7 @@ export default function HoldingsPage() {
                   <InfoCircleWhite className='h-4 w-4' />
                 </Highlight>
                 <div className='flex flex-col items-center gap-3'>
-                  <h2>No Position Found</h2>
+                  <h2>{t('No Position Found')}</h2>
                   <Paragraph className='mt-3 text-center'>
                     Currently, there are no positions to display.
                     <br />

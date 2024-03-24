@@ -52,10 +52,10 @@ export default function IncentivePage() {
       return 'BNB not available'
     }
     if (isInvalidAmount(amount)) {
-      return 'Invalid amount'
+      return 'Invalid Amount'
     }
     if (asset.balance.lt(amount)) {
-      return 'Insufficient balance'
+      return 'Insufficient Balance'
     }
     return null
   }, [pair, asset, amount])
