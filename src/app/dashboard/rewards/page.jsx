@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
 import React, { useContext, useMemo, useState } from 'react'
 
 import { Info } from '@/components/alert'
@@ -28,6 +29,7 @@ export default function RewardsPage() {
   const { rewards: veRewards, currentMutate } = current
   const { rewards: expectedRewards } = next
   const { onClaimAll, pending: allPending } = useClaimAll()
+  const t = useTranslations()
 
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
 
@@ -70,15 +72,15 @@ export default function RewardsPage() {
     <div className='flex flex-col gap-4'>
       <div className='flex flex-col items-center justify-between gap-4 lg:flex-row'>
         <div className='flex flex-col gap-2'>
-          <h2>Rewards</h2>
-          <Paragraph>Claim your voting incentives, fees and veTHE rebase here.</Paragraph>
+          <h2>{t('Rewards')}</h2>
+          <Paragraph>{t('Rewards Description')}</Paragraph>
         </div>
         {account && (
           <Info className='flex w-auto justify-between lg:w-[550px] lg:p-8'>
             <div className='flex items-center gap-4'>
               <CoinsStackedIcon className='h-4 w-4 min-w-fit stroke-primary-600 lg:h-8 lg:w-8' />
               <p className='text-base leading-tight lg:text-xl'>
-                Total Rewards: ${formatAmount(isExpected ? totalExpectedUsd : totalUsd)}
+                {t('Total Rewards:')} ${formatAmount(isExpected ? totalExpectedUsd : totalUsd)}
               </p>
             </div>
             {!isExpected && (
@@ -89,7 +91,7 @@ export default function RewardsPage() {
                 }}
                 disabled={allPending || totalUsd.isZero()}
               >
-                Claim all rewards
+                {t('Claim All')}
               </TertiaryButton>
             )}
           </Info>

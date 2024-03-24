@@ -118,7 +118,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
           {percentArr.map((item, idx) => (
             <div className='flex flex-col gap-2' key={`split${idx}`}>
               <div className='flex items-center justify-between'>
-                <TextHeading>{t('Token [Token number]', { x: idx + 1 })}</TextHeading>
+                <TextHeading>{t('Token [x]', { x: idx + 1 })}</TextHeading>
                 <Paragraph>
                   veTHE {t('Amount')}: {formatAmount(selected.voting_amount.times(validNumber(item)).div(100))}
                 </Paragraph>

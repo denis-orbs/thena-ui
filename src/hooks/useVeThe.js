@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -14,6 +15,7 @@ export const useCreateLock = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const handleCreate = useCallback(
     async (amount, date, callback) => {
@@ -29,17 +31,17 @@ export const useCreateLock = () => {
       const isApproved = fromWei(allowance).gte(amount)
       startTxn({
         key,
-        title: 'Lock your THE',
+        title: t('Lock your THE'),
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: 'Approve THE',
+              desc: `${t('Approve')} THE`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [createuuid]: {
-            desc: `Lock your THE until ${unlockString}`,
+            desc: t('Lock your THE until [date]', { date: unlockString }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -72,7 +74,7 @@ export const useCreateLock = () => {
       callback()
       setPending(false)
     },
-    [account, chainId, startTxn, writeTxn, endTxn],
+    [account, chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onCreateLock: handleCreate, pending }
@@ -82,6 +84,7 @@ export const useExtendLock = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { chainId } = useWallet()
+  const t = useTranslations()
 
   const onExtend = useCallback(
     async (veTheId, selectedDate, callback) => {
@@ -91,10 +94,10 @@ export const useExtendLock = () => {
       const unlockTime = dayjs(selectedDate).diff(dayjs(), 'second') + 100
       startTxn({
         key,
-        title: 'Extend lock duration',
+        title: t('Extend Lock Duration'),
         transactions: {
           [extenduuid]: {
-            desc: `Extend lock duration on veTHE #${veTheId}`,
+            desc: t('Extend Lock Duration'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -116,7 +119,7 @@ export const useExtendLock = () => {
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, writeTxn, chainId],
+    [startTxn, endTxn, writeTxn, chainId, t],
   )
 
   return { onExtend, pending }
@@ -126,6 +129,7 @@ export const useIncreaseLock = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onIncreaseAmount = useCallback(
     async (id, amount, callback) => {
@@ -141,17 +145,17 @@ export const useIncreaseLock = () => {
       const isApproved = fromWei(allowance).gte(amount)
       startTxn({
         key,
-        title: 'Increase lock amount',
+        title: t('Increase Lock Amount'),
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: 'Approve THE',
+              desc: `${t('Approve')} THE`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [increaseuuid]: {
-            desc: `Increase lock amount on veTHE #${id}`,
+            desc: 'Increase Lock Amount',
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -177,7 +181,7 @@ export const useIncreaseLock = () => {
       callback()
       setPending(false)
     },
-    [account, chainId, startTxn, writeTxn, endTxn],
+    [account, chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onIncreaseAmount, pending }
@@ -187,6 +191,7 @@ export const useMerge = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onMerge = useCallback(
     async (from, to, callback) => {
@@ -197,24 +202,24 @@ export const useMerge = () => {
       const mergeuuid = uuidv4()
       startTxn({
         key,
-        title: 'Merge veTHE',
+        title: t('Merge veTHE'),
         transactions: {
           ...(from.voted && {
             [resetuuid]: {
-              desc: 'Reset Votes',
+              desc: t('Reset Votes'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(from.rebase_amount.gt(0) && {
             [rebaseuuid]: {
-              desc: 'Claim rebase',
+              desc: t('Claim Rebase'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [mergeuuid]: {
-            desc: `Merge veTHE #${from.id} to veTHE #${to.id}`,
+            desc: t('Merge veTHE #[id1] to veTHE #[id2]', { id1: from.id, id2: to.id }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -253,7 +258,7 @@ export const useMerge = () => {
       callback()
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn],
+    [chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onMerge, pending }
@@ -263,6 +268,7 @@ export const useSplit = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onSplit = useCallback(
     async (from, weights, callback) => {
@@ -273,24 +279,24 @@ export const useSplit = () => {
       const splituuid = uuidv4()
       startTxn({
         key,
-        title: `Split veTHE #${from.id}`,
+        title: t('Split veTHE #[id]', { id: from.id }),
         transactions: {
           ...(from.voted && {
             [resetuuid]: {
-              desc: 'Reset Votes',
+              desc: t('Reset Votes'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(from.rebase_amount.gt(0) && {
             [rebaseuuid]: {
-              desc: 'Claim rebase',
+              desc: t('Claim Rebase'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [splituuid]: {
-            desc: 'Split veTHE',
+            desc: t('Split veTHE'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -329,7 +335,7 @@ export const useSplit = () => {
       callback()
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn],
+    [chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onSplit, pending }
@@ -339,6 +345,7 @@ export const useTransfer = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onTransfer = useCallback(
     async (from, to, callback) => {
@@ -347,17 +354,17 @@ export const useTransfer = () => {
       const transferuuid = uuidv4()
       startTxn({
         key,
-        title: 'Transfer veTHE',
+        title: t('Transfer veTHE'),
         transactions: {
           ...(from.voted && {
             [resetuuid]: {
-              desc: 'Reset Votes',
+              desc: t('Reset Votes'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [transferuuid]: {
-            desc: `Transfer veTHE #${from.id}`,
+            desc: t('Transfer veTHE #[id]', { id: from.id }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -388,7 +395,7 @@ export const useTransfer = () => {
       callback()
       setPending(false)
     },
-    [account, chainId, startTxn, writeTxn, endTxn],
+    [account, chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onTransfer, pending }
@@ -398,6 +405,7 @@ export const useWithdrawLock = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { chainId } = useWallet()
+  const t = useTranslations()
 
   const onWithdrawLock = useCallback(
     async (veThe, callback) => {
@@ -406,17 +414,17 @@ export const useWithdrawLock = () => {
       const withdrawuuid = uuidv4()
       startTxn({
         key,
-        title: `Withdraw veTHE #${veThe.id}`,
+        title: t('Withdraw veTHE [id]', { id: veThe.id }),
         transactions: {
           ...(veThe.voted && {
             [resetuuid]: {
-              desc: 'Reset Votes',
+              desc: t('Reset Votes'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [withdrawuuid]: {
-            desc: `Withdraw veTHE #${veThe.id}`,
+            desc: t('Withdraw veTHE [id]', { id: veThe.id }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -447,7 +455,7 @@ export const useWithdrawLock = () => {
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, writeTxn, chainId],
+    [startTxn, endTxn, writeTxn, chainId, t],
   )
 
   return { onWithdrawLock, pending }
@@ -457,6 +465,7 @@ export const useVote = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { chainId } = useWallet()
+  const t = useTranslations()
 
   const handleVote = useCallback(
     async (veTheId, votes, callback) => {
@@ -464,10 +473,10 @@ export const useVote = () => {
       const voteuuid = uuidv4()
       startTxn({
         key,
-        title: 'Cast Votes',
+        title: t('Cast Votes'),
         transactions: {
           [voteuuid]: {
-            desc: `Cast Votes using veTHE #${veTheId}`,
+            desc: t('Cast Votes'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -499,7 +508,7 @@ export const useVote = () => {
       callback()
       setPending(false)
     },
-    [startTxn, endTxn, writeTxn, chainId],
+    [startTxn, endTxn, writeTxn, chainId, t],
   )
 
   return { onVote: handleVote, pending }
@@ -509,6 +518,7 @@ export const useReset = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { chainId } = useWallet()
+  const t = useTranslations()
 
   const handleReset = useCallback(
     async (veTheId, callback) => {
@@ -516,10 +526,10 @@ export const useReset = () => {
       const resetuuid = uuidv4()
       startTxn({
         key,
-        title: 'Reset Votes',
+        title: t('Reset Votes'),
         transactions: {
           [resetuuid]: {
-            desc: `Reset Votes for veTHE #${veTheId}`,
+            desc: t('Reset Votes'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -541,7 +551,7 @@ export const useReset = () => {
       callback()
       setPending(false)
     },
-    [startTxn, endTxn, writeTxn, chainId],
+    [startTxn, endTxn, writeTxn, chainId, t],
   )
 
   return { onReset: handleReset, pending }
@@ -551,6 +561,7 @@ export const usePoke = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { chainId } = useWallet()
+  const t = useTranslations()
 
   const handlePoke = useCallback(
     async (veTheId, callback) => {
@@ -558,10 +569,10 @@ export const usePoke = () => {
       const pokeuuid = uuidv4()
       startTxn({
         key,
-        title: 'Revote',
+        title: t('Revote'),
         transactions: {
           [pokeuuid]: {
-            desc: `Revote using veTHE #${veTheId}`,
+            desc: t('Revote'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -583,7 +594,7 @@ export const usePoke = () => {
       callback()
       setPending(false)
     },
-    [startTxn, endTxn, writeTxn, chainId],
+    [startTxn, endTxn, writeTxn, chainId, t],
   )
 
   return { onPoke: handlePoke, pending }
@@ -593,6 +604,7 @@ export const useClaimBribes = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const handleClaimBribes = useCallback(
     async (pool, callback) => {
@@ -655,21 +667,21 @@ export const useClaimBribes = () => {
       const feeuuid = uuidv4()
       if (bribeTokens.length > 0) {
         result[bribesuuid] = {
-          desc: 'Claim Bribes',
+          desc: t('Claim Incentives'),
           status: TXN_STATUS.START,
           hash: null,
         }
       }
       if (feeTokens.length > 0) {
         result[feeuuid] = {
-          desc: 'Claim Fees',
+          desc: t('Claim Fees'),
           status: TXN_STATUS.START,
           hash: null,
         }
       }
       startTxn({
         key,
-        title: 'Claim Bribes + Fees',
+        title: t('Claim Incentives + Fees'),
         transactions: result,
       })
       setPending(true)
@@ -697,7 +709,7 @@ export const useClaimBribes = () => {
       setPending(false)
       callback()
     },
-    [account, startTxn, endTxn, writeTxn, chainId],
+    [account, startTxn, endTxn, writeTxn, chainId, t],
   )
 
   return { onClaimBribes: handleClaimBribes, pending }
@@ -707,6 +719,7 @@ export const useClaimRebase = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const handleClaimRebase = useCallback(
     async (veTHE, callback) => {
@@ -714,10 +727,10 @@ export const useClaimRebase = () => {
       const veClaimuuid = uuidv4()
       startTxn({
         key,
-        title: 'Claim rebase',
+        title: t('Claim Rebase'),
         transactions: {
           [veClaimuuid]: {
-            desc: `Claim rebase for veTHE #${veTHE.id}`,
+            desc: t('Claim Rebase'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -739,7 +752,7 @@ export const useClaimRebase = () => {
       setPending(false)
       callback()
     },
-    [chainId, startTxn, endTxn, writeTxn],
+    [chainId, startTxn, endTxn, writeTxn, t],
   )
 
   return { onClaimRebase: handleClaimRebase, pending }
@@ -749,6 +762,7 @@ export const useClaimAll = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const handleClaimAll = useCallback(
     async (veRewards, veTHEs, callback) => {
@@ -762,21 +776,21 @@ export const useClaimAll = () => {
       const txns = {
         ...(bribeRewards.length > 0 && {
           [bribesuuid]: {
-            desc: 'Claim bribes',
+            desc: t('Claim Incentives'),
             status: TXN_STATUS.START,
             hash: null,
           },
         }),
         ...(feeRewards.length > 0 && {
           [feeuuid]: {
-            desc: 'Claim fees',
+            desc: t('Claim Fees'),
             status: TXN_STATUS.START,
             hash: null,
           },
         }),
         ...(veTHEs.length > 0 && {
           [veuuid]: {
-            desc: 'Claim rebases',
+            desc: t('Claim Rebases'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -784,7 +798,7 @@ export const useClaimAll = () => {
       }
       startTxn({
         key,
-        title: 'Claim All Rewards',
+        title: 'Claim All',
         transactions: txns,
       })
 
@@ -830,7 +844,7 @@ export const useClaimAll = () => {
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, writeTxn, chainId],
+    [startTxn, endTxn, writeTxn, chainId, t],
   )
 
   return { onClaimAll: handleClaimAll, pending }
