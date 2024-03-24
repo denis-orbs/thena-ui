@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { cn } from '@/lib/utils'
@@ -5,6 +6,8 @@ import { cn } from '@/lib/utils'
 import { Paragraph } from '../typography'
 
 function Toggle({ className, onChange, toggleId, label, checked }) {
+  const t = useTranslations()
+
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
       <label htmlFor={toggleId} className='relative inline-flex cursor-pointer items-center'>
@@ -27,7 +30,7 @@ function Toggle({ className, onChange, toggleId, label, checked }) {
           )}
         />
       </label>
-      <Paragraph>{label}</Paragraph>
+      <Paragraph>{t(label)}</Paragraph>
     </div>
   )
 }

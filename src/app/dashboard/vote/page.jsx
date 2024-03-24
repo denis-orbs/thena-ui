@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
@@ -86,6 +87,7 @@ export default function VotePage() {
   const { onVote, pending: votePending } = useVote()
   const { onReset, pending: resetPending } = useReset()
   const { onPoke, pending: pokePending } = usePoke()
+  const t = useTranslations()
 
   const veTHE = useMemo(() => (veTHEId ? veTHEs.find(item => item.id === veTHEId) : null), [veTHEs, veTHEId])
 
@@ -262,7 +264,7 @@ export default function VotePage() {
         estimate: (
           <div className='flex flex-col'>
             <Paragraph>${formatAmount(pool.votes.perRewards)}</Paragraph>
-            <TextSubHeading className='text-base leading-tight'>per 1000 votes</TextSubHeading>
+            <TextSubHeading className='text-base leading-tight'>{t('Per 1000 Votes')}</TextSubHeading>
           </div>
         ),
         your: (
@@ -304,14 +306,14 @@ export default function VotePage() {
                   })
                 }}
               >
-                Max
+                {t('Max')}
               </EmphasisButton>
             }
           />
         ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(sortedPools), JSON.stringify(percent)],
+    [JSON.stringify(sortedPools), JSON.stringify(percent), t],
   )
 
   const expectedRewards = useMemo(
@@ -354,41 +356,41 @@ export default function VotePage() {
 
   return (
     <div className='flex flex-col gap-4'>
-      <h2>Vote</h2>
+      <h2>{t('Vote')}</h2>
       <div className='flex flex-col gap-10'>
         <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
           <Box className='flex w-full flex-col gap-2'>
             <div className='flex items-center gap-1'>
               <TextHeading className='text-2xl'>{account ? `$${formatAmount(expectedRewards)}` : '-'} </TextHeading>
             </div>
-            <Paragraph className='text-sm'>Expected Rewards</Paragraph>
+            <Paragraph className='text-sm'>{t('Expected Rewards')}</Paragraph>
           </Box>
           <Box className='flex w-full flex-col gap-2'>
             <div className='flex items-center gap-1'>
               <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
               <TextHeading className='text-2xl'>{veTHE ? formatAmount(veTHE.voting_amount) : '-'}</TextHeading>
             </div>
-            <Paragraph className='text-sm'>veTHE Balance</Paragraph>
+            <Paragraph className='text-sm'>{t('veTHE Balance')}</Paragraph>
           </Box>
           <Box className='flex w-full flex-col gap-2'>
             <TextHeading className='text-2xl'>{`$${formatAmount(voteEmssions)}`}</TextHeading>
-            <Paragraph className='text-sm'>Emissions / % of Vote</Paragraph>
+            <Paragraph className='text-sm'>{t('Emissions vote')}</Paragraph>
           </Box>
           <Box className='flex w-full flex-col gap-2'>
             <TextHeading className='text-2xl'>{`${formatAmount(avgApr)}%`}</TextHeading>
-            <Paragraph className='text-sm'>Average Voting APR</Paragraph>
+            <Paragraph className='text-sm'>{t('Average Voting APR')}</Paragraph>
           </Box>
           <Box className='flex w-full flex-col gap-2'>
             <TextHeading className='text-2xl'>
               {days}d {hours}h {mins}m
             </TextHeading>
-            <Paragraph className='text-sm'>Epoch {epoch} Ends in </Paragraph>
+            <Paragraph className='text-sm'>{t('EPOCH [epoch] Ends in', { epoch })}</Paragraph>
           </Box>
         </div>
         <div className='flex flex-col gap-4'>
           <div className='flex flex-col items-center justify-between gap-4 lg:flex-row'>
             <div className='flex w-full items-center justify-between lg:w-fit'>
-              <TextHeading className='text-xl'>Votes</TextHeading>
+              <TextHeading className='text-xl'>{t('Votes')}</TextHeading>
               <Toggle
                 className='lg:hidden'
                 checked={isVoted}
@@ -439,11 +441,11 @@ export default function VotePage() {
         {account && (
           <div className='fixed bottom-0 left-0 right-0 z-30 mx-auto w-full items-center bg-neutral-700 px-5 py-3 lg:bottom-8 lg:flex lg:w-fit lg:rounded-lg'>
             <div className='flex items-center justify-center'>
-              <TextHeading>Voting Power Used:&nbsp;</TextHeading>
+              <TextHeading>{t('Voting Power Used')}:&nbsp;</TextHeading>
               <span
                 className={cn('font-medium', veTHE && veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600')}
               >
-                {veTHE && veTHE.votedCurrentEpoch ? 'YES' : 'NO'}
+                {t(veTHE && veTHE.votedCurrentEpoch ? 'Yes' : 'No')}
               </span>
             </div>
             <div className='ml-0 mt-3 flex flex-col gap-2 lg:ml-2 lg:mt-0 lg:flex-row'>
@@ -460,7 +462,7 @@ export default function VotePage() {
                   })
                 }}
               >
-                Cast Votes
+                {t('Cast Votes')}
               </PrimaryButton>
               <div className='flex gap-2'>
                 <TextButton
@@ -472,7 +474,7 @@ export default function VotePage() {
                   }}
                   disabled={!veTHE || !veTHE.voted || resetPending}
                 >
-                  Reset
+                  {t('Reset')}
                 </TextButton>
                 <TextButton
                   className='w-full px-2.5 py-2'
@@ -483,7 +485,7 @@ export default function VotePage() {
                   }}
                   disabled={!veTHE || !veTHE.voted || pokePending}
                 >
-                  Revote
+                  {t('Revote')}
                 </TextButton>
               </div>
             </div>
