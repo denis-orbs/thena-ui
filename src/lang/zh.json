@@ -343,7 +343,7 @@
   "Claimable Fees": "可领取的费用",
   "Manage theNFTs": "管理 theNFT",
   "Select your theNFT": "选择您的 theNFT",
-  "Clear all": "全部清除",
+  "Clear All": "全部清除",
   "My Collection": "我的收藏",
   "You have no theNFT in your collection": "您的收藏中没有 theNFT",
   "Start Passive Income": "通过拥有并质押 theNFT 开始获得被动收入。",
@@ -355,6 +355,7 @@
   "Connect Description": "在BNB链上连接您兼容的DeFi钱包。",
   "Stake theNFT": "质押 theNFT",
   "Select Description": "选择您的 theNFT 并将其质押。您可以随时取消质押。",
+  "Earn Income": "质押收入",
   "Let THE rewards flow in": "让 THE 奖励源源不断。",
   "Top Assets": "热门资产",
   "Value": "价值",
@@ -409,11 +410,15 @@
   "Claim Incentives": "领取激励",
   "Claim Fees": "领取费用",
   "Claim Incentives + Fees": "领取激励和费用",
+  "Select theNFT": "选择 theNFT",
+  "Select All": "全部选择",
 
   "Trade Perps": "Trade Perps",
   "Trade perpetual contracts with leverage": "Trade perpetual contracts with leverage",
   "Trade Now": "Trade Now",
   "Audited by": "Audited by",
   "Total [symbol] Locked": "Total {symbol} Locked",
-  "Type of Reward": "Type of Reward"
+  "Type of Reward": "Type of Reward",
+  "Staked": "Staked",
+  "Not Staked": "Not Staked"
 }

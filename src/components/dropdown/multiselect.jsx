@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -11,6 +12,7 @@ import Input from '../input'
 function MultiSelect({ className, data, selected, setSelected, placeHolder }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
+  const t = useTranslations()
 
   const handleCheckBox = item => {
     const temp = [...selected]
@@ -43,7 +45,7 @@ function MultiSelect({ className, data, selected, setSelected, placeHolder }) {
         type='text'
         val={selected}
         onClick={() => setOpen(!open)}
-        placeholder={placeHolder}
+        placeholder={t(placeHolder)}
         TrailingIcon={
           <ChevronDownIcon
             className={cn('transfrom transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}

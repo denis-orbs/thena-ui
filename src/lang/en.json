@@ -343,7 +343,7 @@
   "Claimable Fees": "Claimable Fees",
   "Manage theNFTs": "Manage theNFTs",
   "Select your theNFT": "Select your theNFT",
-  "Clear all": "Clear all",
+  "Clear All": "Clear All",
   "My Collection": "My Collection",
   "You have no theNFT in your collection": "You have no theNFT in your collection",
   "Start Passive Income": "Start earning passive income by owning & staking a theNFT.",
@@ -355,6 +355,7 @@
   "Connect Description": "Connect your compatible DeFi wallet using BNB Chain.",
   "Stake theNFT": "Stake theNFT",
   "Select Description": "Select your theNFT(s) and stake them. You can unstake at any time.",
+  "Earn Income": "Earn Income",
   "Let THE rewards flow in": "Let THE rewards flow in.",
   "Top Assets": "Top Assets",
   "Value": "Value",
@@ -409,11 +410,15 @@
   "Claim Incentives": "Claim Incentives",
   "Claim Fees": "Claim Fees",
   "Claim Incentives + Fees": "Claim Incentives + Fees",
+  "Select theNFT": "Select theNFT",
+  "Select All": "Select All",
 
   "Trade Perps": "Trade Perps",
   "Trade perpetual contracts with leverage": "Trade perpetual contracts with leverage",
   "Trade Now": "Trade Now",
   "Audited by": "Audited by",
   "Total [symbol] Locked": "Total {symbol} Locked",
-  "Type of Reward": "Type of Reward"
+  "Type of Reward": "Type of Reward",
+  "Staked": "Staked",
+  "Not Staked": "Not Staked"
 }
