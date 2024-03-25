@@ -219,6 +219,8 @@ function LanguageSelect() {
   )
 }
 
+const showLanguage = false
+
 function Header() {
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
@@ -487,7 +489,7 @@ function Header() {
               )}
             </div>
             <ChainSelect t={t} />
-            <LanguageSelect />
+            {showLanguage && <LanguageSelect />}
             <OutlinedButton className='hidden lg:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton>
