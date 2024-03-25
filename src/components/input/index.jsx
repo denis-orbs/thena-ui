@@ -28,7 +28,7 @@ function Input({
           TrailingIcon || suffix ? 'pr-7' : 'pr-3',
           classNames?.input,
         )}
-        placeholder={!Number(placeholder) ? placeholder : t(placeholder)}
+        placeholder={!Number(placeholder) ? t(placeholder) : placeholder}
         value={val}
         {...rest}
       />
