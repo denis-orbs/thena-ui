@@ -156,11 +156,16 @@ export default function SwapBest({
       dexOutAmount,
       isDexTrade,
     })
-    if (isDexTrade) {
+
+    const dexSwap = () => {
       onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => {
         setFromAmount('')
         mutateAssets()
       })
+    }
+
+    if (isDexTrade) {
+      dexSwap()
     } else {
       onLHSwap({
         fromAsset,
@@ -169,6 +174,7 @@ export default function SwapBest({
         setFromAddress,
         outAmount,
         quote: lhQuote,
+        fallback: dexSwap,
         callback: () => {
           setFromAmount('')
           mutateAssets()

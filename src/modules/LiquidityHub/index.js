@@ -29,7 +29,7 @@ const TOKEN_LIST = 'https://lhthena.s3.us-east-2.amazonaws.com/token-list-lh.jso
 const zero = BN(0)
 
 // analytics
-const ANALYTICS_VERSION = 0.1
+const ANALYTICS_VERSION = 0.3
 const TX_UPDATER_KEYS = {
   key: uuidv4(),
   swapuuid: uuidv4(),
@@ -43,15 +43,6 @@ const initialAnalyticsData = {
   partner: PARTNER,
   chainId: CHAIN_ID,
   isClobTrade: false,
-  isNotClobTradeReason: 'null',
-  firstFailureSessionId: 'null',
-  clobDexPriceDiffPercent: 'null',
-  approvalState: 'null',
-  signatureState: 'null',
-  swapState: 'null',
-  wrapState: 'null',
-  onChainClobSwapState: 'null',
-  userWasApprovedBeforeTheTrade: 'null',
   isDexTrade: false,
   version: ANALYTICS_VERSION,
 }
@@ -291,7 +282,11 @@ const LhQuote = async args => {
         inToken: isNative(args.inToken) ? zeroAddress : args.inToken,
         outToken: isNative(args.outToken) ? zeroAddress : args.outToken,
         inAmount: args.inAmount,
-        outAmount: !dexOutAmount ? '-1' : new BN(dexOutAmount).gt(0) ? dexOutAmount : '0',
+        outAmount: !dexOutAmount
+          ? '-1'
+          : new BN(dexOutAmount).gt(0)
+            ? BN(dexOutAmount).decimalPlaces(0).toString()
+            : '0',
         user: args.account,
         slippage: args.slippage,
         qs: encodeURIComponent(window.location.hash),
@@ -501,7 +496,7 @@ const useSwap = () => {
   const count = counter()
   const submitTx = useSubmitTransaction()
   const { incrementFailures } = useStore()
-  const { startTxn, writeTxn, updateTxn, endTxn } = useTxn()
+  const { startTxn, writeTxn, updateTxn, endTxn, closeTxn } = useTxn()
 
   return useMutation({
     mutationFn: async ({ fromAsset, toAsset, fromAmount, setFromAddress, outAmount, quote, callback }) => {
@@ -643,9 +638,15 @@ const useSwap = () => {
       callback()
       return tx
     },
-    onError: () => {
+    onError: (error, args) => {
       incrementFailures()
       analytics.onClobFailure()
+      // fallback to dex swap if LH fails, only if both assets are not extended
+      const isRejected = error?.message.toLowerCase().includes('user rejected')
+      if (!args.fromAsset.extended && !args.toAsset.extended && !isRejected) {
+        closeTxn()
+        args.fallback()
+      }
     },
   })
 }
