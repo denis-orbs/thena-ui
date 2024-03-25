@@ -10,6 +10,7 @@ export default function useWallet() {
   return useMemo(
     () => ({
       account: chainId === networkId ? address : null,
+      isWrong: chainId && chainId !== networkId,
       active: isConnected,
       connector,
       chainId,

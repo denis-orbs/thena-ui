@@ -36,7 +36,7 @@ export default function ManagePositionModal({ popup, setPopup, strategy }) {
   return (
     <Modal
       isOpen={popup}
-      title='Manage position'
+      title='Manage Position'
       closeModal={() => {
         setPopup(false)
       }}
