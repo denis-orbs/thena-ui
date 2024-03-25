@@ -61,6 +61,7 @@ export default function MergeManage({ selected }) {
               selected={veTHE ? `veTHE #${veTHE.id}` : ''}
               setSelected={setVeTHE}
               placeHolder='Make a selection'
+              isLocale={false}
             />
           </div>
           <div className='flex flex-col gap-2'>
