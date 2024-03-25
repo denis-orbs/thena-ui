@@ -7,12 +7,20 @@ import React from 'react'
 import { formatAddress } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
-import { EmphasisButton, PrimaryButton } from './Button'
+import { EmphasisButton, PrimaryButton, SecondaryButton } from './Button'
 
 export default function ConnectButton({ className }) {
   const { open } = useWeb3Modal()
-  const { account } = useWallet()
+  const { account, isWrong } = useWallet()
   const t = useTranslations()
+
+  if (isWrong) {
+    return (
+      <SecondaryButton className={className} onClick={() => open()}>
+        {t('Wrong Network')}
+      </SecondaryButton>
+    )
+  }
 
   if (account) {
     return (
