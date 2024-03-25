@@ -445,15 +445,14 @@
   "Unstake theNFTs": "质押theNFTs",
   "Wrong Network": "网络错误",
   "Manage Position": "管理仓位",
-
-  "Trade Perps": "Trade Perps",
-  "Trade perpetual contracts with leverage": "Trade perpetual contracts with leverage",
-  "Audited by": "Audited by",
-  "Total [symbol] Locked": "Total {symbol} Locked",
-  "Type of Reward": "Type of Reward",
-  "Add a bribe reward for an existing gauge to incentivize votes on it": "Add a bribe reward for an existing gauge to incentivize votes on it.",
-  "Choose Category": "Choose Category",
-  "Sort By": "Sort By",
-  "Out of Range": "Out of Range",
-  "In Range": "In Range"
+  "Trade Perps": "交易永续合约",
+  "Trade perpetual contracts with leverage": "使用杠杆交易永续合约",
+  "Audited by": "审计由",
+  "Total [symbol] Locked": "总 【Symbol】锁定数量",
+  "Type of Reward": "奖励类型",
+  "Add a bribe reward for an existing gauge to incentivize votes on it": "为现有的Gauge添加贿赂奖励以激励对其投票。",
+  "Choose Category": "选择类别",
+  "Sort By": "排序方式",
+  "Out of Range": "超出范围",
+  "In Range": "在范围内"
 }
