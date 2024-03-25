@@ -406,7 +406,6 @@ export default function VotePage() {
                   data={sortOptions.slice(0, sortOptions.length - 1)}
                   selected={sort ? `${sort.label}` : ''}
                   setSelected={ele => setSort(ele)}
-                  placeHolder='Select Sort'
                 />
               </div>
               <Toggle
