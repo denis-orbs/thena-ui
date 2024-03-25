@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { PrimaryBadge } from '@/components/badges/Badge'
@@ -23,6 +24,8 @@ export default function NotStaked({ pool }) {
   const [managePopup, setManagePopup] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGuageStake()
   const { onClaimFees, pending: feesPending } = useClaimFees()
+  const t = useTranslations()
+
   const walletUsd = useMemo(() => pool.account.totalUsd.minus(pool.account.stakedUsd), [pool])
   const token0Amount = useMemo(() => pool.account.total0.minus(pool.account.staked0), [pool])
   const token1Amount = useMemo(() => pool.account.total1.minus(pool.account.staked1), [pool])
@@ -54,7 +57,7 @@ export default function NotStaked({ pool }) {
             <TextSubHeading>{pool.title}</TextSubHeading>
           </div>
         </div>
-        <PrimaryBadge>Not Staked</PrimaryBadge>
+        <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
@@ -62,18 +65,22 @@ export default function NotStaked({ pool }) {
           <TextHeading>{formatAmount(pool.gauge.apr)}%</TextHeading>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>Total value in USD</Paragraph>
+          <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
           <TextHeading>${formatAmount(pool.account.totalUsd.minus(pool.account.stakedUsd))}</TextHeading>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>{pool.token0.symbol} deposit</Paragraph>
+          <Paragraph className='text-sm'>
+            {pool.token0.symbol} {t('Deposit')}
+          </Paragraph>
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(token0Amount)}`}</TextHeading>
             <TextSubHeading>{`(${formatAmount(token0Percent)}%)`}</TextSubHeading>
           </div>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>{pool.token1.symbol} deposit</Paragraph>
+          <Paragraph className='text-sm'>
+            {pool.token1.symbol} {t('Deposit')}
+          </Paragraph>
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(token1Amount)}`}</TextHeading>
             <TextSubHeading>({formatAmount(100 - token0Percent)}%)</TextSubHeading>
@@ -81,7 +88,7 @@ export default function NotStaked({ pool }) {
         </div>
         {isLegacy && (
           <div className='flex items-center justify-between'>
-            <Paragraph className='text-sm'>Claimable fees</Paragraph>
+            <Paragraph className='text-sm'>{t('Claimable Fees')}</Paragraph>
             <div className='flex items-center gap-1'>
               <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
               <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool.address}`} />
@@ -99,7 +106,7 @@ export default function NotStaked({ pool }) {
       </div>
       <div className='mt-auto flex w-full gap-3'>
         <TextButton className='w-full' onClick={() => setPopup(true)}>
-          Stake
+          {t('Stake')}
         </TextButton>
         {isLegacy ? (
           <>
@@ -108,19 +115,19 @@ export default function NotStaked({ pool }) {
               onClick={() => onClaimFees(pool)}
               disabled={feesInUsd.isZero() || feesPending}
             >
-              Claim
+              {t('Claim')}
             </OutlinedButton>
             <EmphasisButton className='w-full' onClick={() => setManagePopup(true)}>
-              Manage
+              {t('Manage')}
             </EmphasisButton>
           </>
         ) : (
           <>
             <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
-              Remove
+              {t('Remove')}
             </OutlinedButton>
             <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
-              Add
+              {t('Add')}
             </EmphasisButton>
           </>
         )}

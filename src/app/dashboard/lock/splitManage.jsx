@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -19,6 +20,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
   const [isCustom, setIsCustom] = useState(false)
   const [percentArr, setPercentArr] = useState([])
   const { onSplit, pending } = useSplit()
+  const t = useTranslations()
 
   const lockSelections = useMemo(
     () => [
@@ -83,7 +85,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
       return 'All the fields must be filled.'
     }
     if (total !== 100) {
-      return 'Total split amount must be 100%.'
+      return 'Total Split Amount must be 100%.'
     }
     return null
   }, [percentArr, total])
@@ -92,12 +94,12 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
     <>
       <ModalBody>
         <div className='flex flex-col gap-2'>
-          <TextHeading>Split veTHE #{selected.id} into</TextHeading>
+          <TextHeading>{t('Split veTHE #[Number] into', { id: selected.id })}</TextHeading>
           <Selection data={lockSelections} isFull />
         </div>
         {isCustom && (
           <div className='flex flex-col gap-2 border-b border-neutral-700 pb-5'>
-            <TextHeading>Received tokens</TextHeading>
+            <TextHeading>{t('Received Tokens')}</TextHeading>
             <Input
               val={customInput}
               onChange={e => {
@@ -116,9 +118,9 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
           {percentArr.map((item, idx) => (
             <div className='flex flex-col gap-2' key={`split${idx}`}>
               <div className='flex items-center justify-between'>
-                <TextHeading>Token {idx + 1}</TextHeading>
+                <TextHeading>{t('Token [x]', { x: idx + 1 })}</TextHeading>
                 <Paragraph>
-                  veTHE Amount: {formatAmount(selected.voting_amount.times(validNumber(item)).div(100))}
+                  veTHE {t('Amount')}: {formatAmount(selected.voting_amount.times(validNumber(item)).div(100))}
                 </Paragraph>
               </div>
               <Input
@@ -144,8 +146,8 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
             </div>
           ))}
         </div>
-        <div className='my-3 flex items-center justify-between'>
-          <Paragraph>Total Split Amount</Paragraph>
+        <div className='flex items-center justify-between'>
+          <Paragraph>{t('Total Split Amount')}</Paragraph>
           <TextHeading>{total}%</TextHeading>
         </div>
       </ModalBody>
@@ -164,7 +166,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
           }}
           disabled={pending}
         >
-          Split
+          {t('Split')}
         </PrimaryButton>
       </ModalFooter>
     </>

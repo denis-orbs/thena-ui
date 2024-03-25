@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 import useSWR from 'swr'
 
@@ -22,6 +23,8 @@ import NftModal from './nftModal'
 import NotConnected from '../NotConnected'
 
 function InfoBox({ value, title, amount }) {
+  const t = useTranslations()
+
   return (
     <Box className='flex flex-col gap-2'>
       {value ? (
@@ -37,7 +40,7 @@ function InfoBox({ value, title, amount }) {
       ) : (
         <Skeleton className='h-[32px] w-[100px]' />
       )}
-      <Paragraph className='text-sm'>{title}</Paragraph>
+      <Paragraph className='text-sm'>{t(title)}</Paragraph>
     </Box>
   )
 }
@@ -50,6 +53,7 @@ const fetchNftInfo = async (url, nftIds) => {
     id: nftIds[idx],
   }))
 }
+
 export default function TheNftPage() {
   const [isManageOpen, setIsManageOpen] = useState(false)
   const { account } = useWallet()
@@ -70,6 +74,7 @@ export default function TheNftPage() {
   )
   const { onHarvest, pending } = useNftFeesClaim()
   const { onRoyaltyClaim, pending: royaltyPending } = useNftRoyaltyClaim()
+  const t = useTranslations()
 
   return (
     <div className='flex flex-col gap-10'>
@@ -79,8 +84,8 @@ export default function TheNftPage() {
           <div className='flex items-center gap-4'>
             <PiggyIcon className='h-4 w-4 min-w-fit lg:h-8 lg:w-8' />
             <div className='flex flex-col gap-2'>
-              <p className='hidden text-xl font-medium lg:block'>Passive Income by Staking theNFT</p>
-              <p>Stake Your theNFT for Trading Fees and Royalties</p>
+              <p className='hidden text-xl font-medium lg:block'>{t('Passive Income by Staking theNFT')}</p>
+              <p>{t('Stake Your theNFT for Trading Fees and Royalties')}</p>
             </div>
           </div>
           <TertiaryButton
@@ -89,7 +94,7 @@ export default function TheNftPage() {
               window.open('https://element.market/collections/thenian', '_blank')
             }}
           >
-            Buy theNFT
+            {t('Buy theNFT')}
           </TertiaryButton>
         </Info>
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
@@ -102,7 +107,7 @@ export default function TheNftPage() {
         <>
           <div className='flex flex-col gap-4'>
             <div className='flex items-center justify-between'>
-              <TextHeading className='text-xl'>Stake</TextHeading>
+              <TextHeading className='text-xl'>{t('Stake')}</TextHeading>
               <div className='flex items-center gap-4'>
                 {pendingAmount.gt(0) && (
                   <SecondaryButton
@@ -111,10 +116,10 @@ export default function TheNftPage() {
                     }}
                     disabled={pending}
                   >
-                    Claim Fees
+                    {t('Claim Fees')}
                   </SecondaryButton>
                 )}
-                <EmphasisButton onClick={() => setIsManageOpen(true)}>Manage</EmphasisButton>
+                <EmphasisButton onClick={() => setIsManageOpen(true)}>{t('Manage')}</EmphasisButton>
               </div>
             </div>
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
@@ -128,7 +133,7 @@ export default function TheNftPage() {
             </div>
           </div>
           <div className='flex flex-col gap-4'>
-            <TextHeading className='text-xl'>My Collection</TextHeading>
+            <TextHeading className='text-xl'>{t('My Collection')}</TextHeading>
             {yourNfts && yourNfts.length > 0 ? (
               <div className='flex gap-4 overflow-auto pb-4 lg:grid lg:grid-cols-4'>
                 {yourNfts.map((nft, idx) => (
@@ -137,9 +142,9 @@ export default function TheNftPage() {
                       <NextImage className='w-full min-w-[200px] rounded-lg' src={nft.image} alt='' />
                       <div className='absolute right-1 top-2'>
                         {stakedIds.includes(nft.id) ? (
-                          <GreenBadge>Staked</GreenBadge>
+                          <GreenBadge>{t('Staked')}</GreenBadge>
                         ) : (
-                          <NeutralBadge>Not staked</NeutralBadge>
+                          <NeutralBadge>{t('Not Staked')}</NeutralBadge>
                         )}
                       </div>
                     </div>
@@ -151,22 +156,19 @@ export default function TheNftPage() {
               </div>
             ) : (
               <div className='my-16 flex flex-col gap-2 text-center'>
-                <TextHeading>You have no theNFT in your collection</TextHeading>
-                <Paragraph className='text-sm'>Start earning passive income by owning & staking a theNFT.</Paragraph>
+                <TextHeading>{t('You have no theNFT in your collection')}</TextHeading>
+                <Paragraph className='text-sm'>{t('Start Passive Income')}</Paragraph>
               </div>
             )}
           </div>
           <div className='flex flex-col gap-4'>
-            <TextHeading className='text-xl'>Royalties</TextHeading>
+            <TextHeading className='text-xl'>{t('Royalties')}</TextHeading>
             <Neutral className='flex-col lg:flex-row'>
               <div className='flex items-center gap-4'>
                 <CoinsStackedIcon className='h-4 w-4 min-w-fit stroke-neutral-400 lg:h-8 lg:w-8' />
                 <div className='flex flex-col gap-2'>
-                  <TextHeading className='hidden text-xl lg:block'>Claim theNFT minter royalties</TextHeading>
-                  <Paragraph>
-                    The original minters of the 1734 theNFTs earn 2% from the secondary sales of theNFTs, seeded to this
-                    pool weekly.
-                  </Paragraph>
+                  <TextHeading className='hidden text-xl lg:block'>{t('Claim theNFT minter royalties')}</TextHeading>
+                  <Paragraph>{t('Original minters')}</Paragraph>
                 </div>
               </div>
               {isOriginal && (
@@ -186,7 +188,7 @@ export default function TheNftPage() {
                     }}
                     disabled={royaltyPending || claimable.isZero()}
                   >
-                    Claim
+                    {t('Claim')}
                   </EmphasisButton>
                 </div>
               )}
@@ -197,15 +199,15 @@ export default function TheNftPage() {
         <NotConnected />
       )}
       <div className='flex flex-col gap-4'>
-        <TextHeading className='text-xl'>How to Stake?</TextHeading>
+        <TextHeading className='text-xl'>{t('How to Stake')}</TextHeading>
         <div className='grid grid-cols-1 gap-10 lg:grid-cols-3'>
           <div className='flex flex-col items-center gap-3'>
             <Highlight className='bg-primary-600'>
               <WalletIcon className='h-4 w-4' />
             </Highlight>
             <div className='flex flex-col space-y-1 text-center'>
-              <TextHeading>Connect your wallet</TextHeading>
-              <Paragraph className='text-sm'>Connect your compatible DeFi wallet using BNB Chain.</Paragraph>
+              <TextHeading>{t('Connect your wallet')}</TextHeading>
+              <Paragraph className='text-sm'>{t('Connect Description')}</Paragraph>
             </div>
           </div>
           <div className='flex flex-col items-center gap-3'>
@@ -213,10 +215,8 @@ export default function TheNftPage() {
               <BankIcon className='h-4 w-4' />
             </Highlight>
             <div className='flex flex-col space-y-1 text-center'>
-              <TextHeading>Stake theNFT</TextHeading>
-              <Paragraph className='text-sm'>
-                Select your theNFT(s) and stake them. You can unstake at any time.
-              </Paragraph>
+              <TextHeading>{t('Stake theNFT')}</TextHeading>
+              <Paragraph className='text-sm'>{t('Select Description')}</Paragraph>
             </div>
           </div>
           <div className='flex flex-col items-center gap-3'>
@@ -224,8 +224,8 @@ export default function TheNftPage() {
               <PiggySecondIcon className='h-4 w-4' />
             </Highlight>
             <div className='flex flex-col space-y-1 text-center'>
-              <TextHeading>Earn income</TextHeading>
-              <Paragraph className='text-sm'>Let THE rewards flow in.</Paragraph>
+              <TextHeading>{t('Earn Income')}</TextHeading>
+              <Paragraph className='text-sm'>{t('Let THE rewards flow in')}</Paragraph>
             </div>
           </div>
         </div>

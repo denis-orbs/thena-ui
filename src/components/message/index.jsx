@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 import { ChainId } from 'thena-sdk-core'
 import { bsc, opBNB } from 'viem/chains'
@@ -10,6 +11,8 @@ import Highlight from '../highlight'
 import { Paragraph, TextHeading } from '../typography'
 
 export function SuccessMessage({ closeToast, title, desc, hash = null, chainId }) {
+  const t = useTranslations()
+
   return (
     <div className='flex items-start justify-between gap-4'>
       <div className='flex items-center gap-4'>
@@ -17,8 +20,8 @@ export function SuccessMessage({ closeToast, title, desc, hash = null, chainId }
           <CheckGradientIcon className='h-4 w-4' />
         </Highlight>
         <div className='w-full'>
-          <TextHeading>{title}</TextHeading>
-          {desc && <Paragraph className='text-sm'>{desc}</Paragraph>}
+          <TextHeading>{t(title)}</TextHeading>
+          {desc && <Paragraph className='text-sm'>{t(desc)}</Paragraph>}
           {hash && (
             <EmphasisButton
               className='mt-2 p-2 text-xs'
@@ -31,7 +34,7 @@ export function SuccessMessage({ closeToast, title, desc, hash = null, chainId }
                 )
               }}
             >
-              See transaction
+              {t('See Transaction')}
             </EmphasisButton>
           )}
         </div>
@@ -42,6 +45,8 @@ export function SuccessMessage({ closeToast, title, desc, hash = null, chainId }
 }
 
 export function ErrorMessage({ closeToast, title, desc }) {
+  const t = useTranslations()
+
   return (
     <div className='flex items-start justify-between gap-4'>
       <div className='flex items-center gap-4'>
@@ -50,8 +55,8 @@ export function ErrorMessage({ closeToast, title, desc }) {
         </Highlight>
         <div>
           <div className='flex flex-col gap-1'>
-            <TextHeading>{title}</TextHeading>
-            {desc && <Paragraph className='text-sm'>{desc}</Paragraph>}
+            <TextHeading>{t(title)}</TextHeading>
+            {desc && <Paragraph className='text-sm'>{t(desc)}</Paragraph>}
           </div>
         </div>
       </div>
@@ -61,6 +66,8 @@ export function ErrorMessage({ closeToast, title, desc }) {
 }
 
 export function WarnMessage({ closeToast, desc }) {
+  const t = useTranslations()
+
   return (
     <div className='flex items-start justify-between gap-4'>
       <div className='flex items-center gap-4'>
@@ -69,8 +76,8 @@ export function WarnMessage({ closeToast, desc }) {
         </Highlight>
         <div>
           <div className='flex flex-col gap-1'>
-            <TextHeading>Warning</TextHeading>
-            {desc && <Paragraph className='text-sm'>{desc}</Paragraph>}
+            <TextHeading>{t('Warning')}</TextHeading>
+            {desc && <Paragraph className='text-sm'>{t(desc)}</Paragraph>}
           </div>
         </div>
       </div>

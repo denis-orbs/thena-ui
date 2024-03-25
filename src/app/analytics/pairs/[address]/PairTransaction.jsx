@@ -2,6 +2,7 @@
 
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
+import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
@@ -334,23 +335,31 @@ const getFusionTransactions = async (chainId, pairs) => {
   }
 }
 
-const getTransactionType = (event, symbol0, symbol1) => {
+const getTransactionType = (event, symbol0, symbol1, t) => {
   const formattedS0 = symbol0?.length > 8 ? `${symbol0.slice(0, 7)}...` : symbol0
   const formattedS1 = symbol1?.length > 8 ? `${symbol1.slice(0, 7)}...` : symbol1
   switch (event) {
     case TXN_TYPE.ADD:
-      return `Add ${formattedS0} and ${formattedS1}`
+      return t('Add [symbolA] and [symbolB]', {
+        symbolA: formattedS0,
+        symbolB: formattedS1,
+      })
     case TXN_TYPE.REMOVE:
-      return `Remove ${formattedS0} and ${formattedS1}`
+      return t('Remove [symbolA] and [symbolB]', {
+        symbolA: formattedS0,
+        symbolB: formattedS1,
+      })
     case TXN_TYPE.SWAP:
-      return `Swap ${formattedS0} for ${formattedS1}`
+      return t('Swap [symbolA] for [symbolB]', {
+        symbolA: formattedS0,
+        symbolB: formattedS1,
+      })
     default:
       return ''
   }
 }
 
 const fetchPairTransaction = async (chainId, pairs, isFusion) => {
-  console.log('fetch pair transaction data ======================')
   if (isFusion) {
     const { data: fusiondata } = await getFusionTransactions(chainId, pairs)
     return fusiondata
@@ -403,6 +412,8 @@ export default function TransactionTable({ pairs, isFusion }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [filter, setFilter] = useState(TXN_TYPE.All)
   const { networkId } = useChainSettings()
+  const t = useTranslations()
+
   const { data: txnData } = useSWR(
     pairs && pairs.length > 0 && ['analytics/pair/transaction', pairs[0]],
     () => fetchPairTransaction(networkId, pairs, isFusion),
@@ -414,11 +425,11 @@ export default function TransactionTable({ pairs, isFusion }) {
   const filters = useMemo(
     () =>
       Object.values(TXN_TYPE).map(ele => ({
-        label: ele,
+        label: t(ele),
         active: filter === ele,
         onClickHandler: () => setFilter(ele),
       })),
-    [filter],
+    [filter, t],
   )
 
   const sortedData = useMemo(
@@ -466,7 +477,7 @@ export default function TransactionTable({ pairs, isFusion }) {
               goScan(networkId, item.hash, true)
             }}
           >
-            {getTransactionType(item.type, item.token1Symbol, item.token0Symbol)}
+            {getTransactionType(item.type, item.token1Symbol, item.token0Symbol, t)}
           </div>
         ),
         total: <Paragraph>${formatAmount(item.amountUSD, true)}</Paragraph>,
@@ -493,13 +504,13 @@ export default function TransactionTable({ pairs, isFusion }) {
         time: <Paragraph>{formatTime(item.timestamp)}</Paragraph>,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(sortedData)],
+    [JSON.stringify(sortedData), t],
   )
 
   return (
     <div className='flex flex-col gap-6'>
       <div className='flex flex-col gap-4'>
-        <TextHeading className='text-xl'>Transactions</TextHeading>
+        <TextHeading className='text-xl'>{t('Transactions')}</TextHeading>
         <Tabs data={filters} size={SizeTypes.Medium} className='w-fit' />
       </div>
       <Table

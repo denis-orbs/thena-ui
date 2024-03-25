@@ -2,6 +2,7 @@
 
 import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
@@ -61,6 +62,7 @@ export default function HoldingsPage() {
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
   const farmedPools = pools.filter(item => item.account.gaugeEarned.gt(0))
   const { onGaugeAllHarvest, pending } = useGuageAllHarvset()
+  const t = useTranslations()
 
   const theAsset = useMemo(() => assets.find(asset => asset.address === Contracts.THE[networkId]), [assets, networkId])
 
@@ -136,7 +138,7 @@ export default function HoldingsPage() {
 
   return (
     <div className='flex flex-col gap-4'>
-      <h2>Assets</h2>
+      <h2>{t('Assets')}</h2>
       {account ? (
         <div className='flex flex-col gap-10'>
           <div className='flex flex-col items-center gap-2 lg:flex-row lg:gap-6'>
@@ -145,14 +147,14 @@ export default function HoldingsPage() {
                 <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
                 <TextHeading className='text-2xl'>{formatAmount(theAsset?.balance || 0)}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>THE Holdings</Paragraph>
+              <Paragraph className='text-sm'>{t('THE Holdings')}</Paragraph>
             </Box>
             <Box className='flex w-full flex-col gap-2'>
               <div className='flex items-center gap-1'>
                 <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
                 <TextHeading className='text-2xl'>{formatAmount(veTHEholdings)}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>veTHE Holdings</Paragraph>
+              <Paragraph className='text-sm'>{t('veTHE Holdings')}</Paragraph>
             </Box>
             <Box className='flex w-full items-center justify-between'>
               <div className='flex-col gap-2'>
@@ -160,7 +162,7 @@ export default function HoldingsPage() {
                   <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
                   <TextHeading className='text-2xl'>{formatAmount(totalFarmed)}</TextHeading>
                 </div>
-                <Paragraph className='text-sm'>THE Farmed</Paragraph>
+                <Paragraph className='text-sm'>{t('THE Farmed')}</Paragraph>
               </div>
               {networkId === ChainId.BSC && farmedPools.length > 0 && (
                 <div
@@ -172,7 +174,7 @@ export default function HoldingsPage() {
                     if (!pending) onGaugeAllHarvest(farmedPools)
                   }}
                 >
-                  Harvest
+                  {t('Harvest')}
                 </div>
               )}
             </Box>
@@ -180,19 +182,19 @@ export default function HoldingsPage() {
               <div className='flex items-center gap-1'>
                 <TextHeading className='text-2xl'>${formatAmount(totalCurrentUsd)}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>Voting Rewards</Paragraph>
+              <Paragraph className='text-sm'>{t('Voting Rewards')}</Paragraph>
             </Box>
             <Box className='flex w-full flex-col gap-2'>
               <div className='flex items-center gap-1'>
                 <TextHeading className='text-2xl'>${formatAmount(totalExpectedUsd)}</TextHeading>
               </div>
-              <Paragraph className='text-sm'>Next Epoch Rewards</Paragraph>
+              <Paragraph className='text-sm'>{t('Next Epoch Rewards')}</Paragraph>
             </Box>
           </div>
           <div className='flex flex-col gap-4'>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center justify-between'>
-                <TextHeading className='text-xl'>My Positions</TextHeading>
+                <TextHeading className='text-xl'>{t('My Positions')}</TextHeading>
                 <Toggle
                   className='lg:hidden'
                   checked={stakedOnly}
@@ -210,7 +212,7 @@ export default function HoldingsPage() {
                   }))}
                   selected={filter}
                   setSelected={ele => setFilter(ele.label)}
-                  placeHolder='Choose category'
+                  placeHolder='Choose Category'
                 />
                 <Toggle
                   className='hidden lg:flex'
@@ -240,14 +242,14 @@ export default function HoldingsPage() {
                   <InfoCircleWhite className='h-4 w-4' />
                 </Highlight>
                 <div className='flex flex-col items-center gap-3'>
-                  <h2>No Position Found</h2>
+                  <h2>{t('No Position Found')}</h2>
                   <Paragraph className='mt-3 text-center'>
-                    Currently, there are no positions to display.
+                    {t('No positions to display')}
                     <br />
-                    Add liquidity to get started!
+                    {t('Add liquidity to get started')}
                   </Paragraph>
                 </div>
-                <PrimaryButton onClick={() => push('/pools')}>Explore Pools</PrimaryButton>
+                <PrimaryButton onClick={() => push('/pools')}>{t('Explore Pools')}</PrimaryButton>
               </div>
             )}
           </div>

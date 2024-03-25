@@ -1,3 +1,6 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { LoadingIndicator } from '@/components/loadingIndicator'
@@ -46,7 +49,7 @@ const q3_q4Data = [
     value: 'ARENA V1',
   },
   {
-    value: 'ALPHA V0.X on opBNB',
+    value: 'ALPHA V0 opBNB',
   },
 
   {
@@ -81,11 +84,13 @@ const futureBeyond = [
 ]
 
 function Build() {
+  const t = useTranslations()
+
   return (
     <div className='mx-auto w-full max-w-[1152px] px-6 xl:px-0'>
       <div className='relative flex w-full flex-col items-center justify-center'>
         <Illustration />
-        <Heading heading='Build with THENA' wrapperStyles='items-center absolute bottom-20' title='ROADMAP' />
+        <Heading heading={t('Build with THENA')} wrapperStyles='items-center absolute bottom-20' title={t('ROADMAP')} />
       </div>
       <div className='-mt-10 flex w-full flex-row md:mt-0 lg:flex-col'>
         <div className='relative w-0.5 bg-[#1B1624] lg:h-0.5 lg:w-full'>
@@ -109,7 +114,7 @@ function Build() {
                   {q2Data.map((item, idx) => (
                     <div className='flex items-center justify-between py-3' key={idx}>
                       <p className='text-[13px] font-medium leading-6 tracking-[-0.48px] text-white/[0.65] lg:text-base lg:text-white/[0.85]'>
-                        {item.value}
+                        {t(item.value)}
                       </p>
                       {item.icon && (
                         <>
@@ -140,7 +145,7 @@ function Build() {
                     {q3_q4Data.map((item, idx) => (
                       <div className='flex items-center justify-between py-3' key={idx}>
                         <p className='text-[13px] font-medium leading-6 tracking-[-0.48px] text-white/[0.65] lg:text-base lg:text-white/[0.85]'>
-                          {item.value}
+                          {t(item.value)}
                         </p>
                         {item.icon && (
                           <>
@@ -171,7 +176,7 @@ function Build() {
                   {futureBeyond.map((item, idx) => (
                     <div className='flex items-center justify-between py-3' key={idx}>
                       <p className='text-[13px] font-medium leading-6 tracking-[-0.48px] text-white/[0.65] lg:text-base lg:text-white/[0.85]'>
-                        {item.value}
+                        {t(item.value)}
                       </p>
                       {item.icon && (
                         <>

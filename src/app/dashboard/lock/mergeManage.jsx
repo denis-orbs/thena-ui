@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -16,6 +17,7 @@ import { formatAmount } from '@/lib/utils'
 export default function MergeManage({ selected }) {
   const [veTHE, setVeTHE] = useState(null)
   const { veTHEs, updateVeTHEs } = useVeTHEsContext()
+  const t = useTranslations()
 
   const { onMerge, pending } = useMerge()
 
@@ -48,8 +50,10 @@ export default function MergeManage({ selected }) {
         <div className='flex flex-col gap-5'>
           <div className='flex flex-col gap-2'>
             <div className='flex items-center justify-between'>
-              <TextHeading>Merge From</TextHeading>
-              <Paragraph>veTHE Balance: {veTHE ? formatAmount(veTHE.voting_amount) : '-'}</Paragraph>
+              <TextHeading>{t('Merge From')}</TextHeading>
+              <Paragraph>
+                veTHE {t('Balance')}: {veTHE ? formatAmount(veTHE.voting_amount) : '-'}
+              </Paragraph>
             </div>
             <Dropdown
               className='w-full'
@@ -62,13 +66,15 @@ export default function MergeManage({ selected }) {
           <div className='flex flex-col gap-2'>
             <div className='flex items-center justify-between'>
               <TextHeading>veTHE ID</TextHeading>
-              <Paragraph>veTHE Balance: {formatAmount(selected.voting_amount)}</Paragraph>
+              <Paragraph>
+                veTHE {t('Balance')}: {formatAmount(selected.voting_amount)}
+              </Paragraph>
             </div>
             <Input type='text' val={`veTHE #${selected.id}`} readOnly />
           </div>
           {veTHE && (
             <div className='my-3 flex items-center justify-between'>
-              <Paragraph>veTHE #{selected.id} Balance Will Be:</Paragraph>
+              <Paragraph>{t('veTHE #[Number] Balance Will Be:', { id: selected.id })}</Paragraph>
               <div>
                 <TextHeading>{formatAmount(votingPower)}&nbsp;</TextHeading>
                 <span className='font-medium text-success-600'>
@@ -93,7 +99,7 @@ export default function MergeManage({ selected }) {
             })
           }}
         >
-          Merge
+          {t('Merge')}
         </PrimaryButton>
       </ModalFooter>
     </>

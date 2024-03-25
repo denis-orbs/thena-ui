@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
@@ -14,11 +15,12 @@ export const useGaugeAdd = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onGaugeAdd = useCallback(
     async (pool, callback) => {
       if (!pool) {
-        warnToast('Select pair')
+        warnToast('Select Pair')
         return
       }
       const voterContract = getVoterContract(chainId)
@@ -34,10 +36,10 @@ export const useGaugeAdd = () => {
       const adduuid = uuidv4()
       startTxn({
         key,
-        title: 'Add gauge',
+        title: t('Add Gauge'),
         transactions: {
           [adduuid]: {
-            desc: `Add gauge for ${pool.symbol}`,
+            desc: t('Add Gauge'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -59,7 +61,7 @@ export const useGaugeAdd = () => {
       callback()
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn],
+    [chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onGaugeAdd, pending }
@@ -69,6 +71,7 @@ export const useBribeAdd = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onBribeAdd = useCallback(
     async (pool, asset, amount, callback) => {
@@ -82,17 +85,17 @@ export const useBribeAdd = () => {
       setPending(true)
       startTxn({
         key,
-        title: 'Add bribe',
+        title: t('Add Incentive'),
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: `Approve ${asset.symbol}`,
+              desc: `${t('Approve')} ${asset.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [bribeuuid]: {
-            desc: 'Add bribe',
+            desc: t('Add Incentive'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -120,7 +123,7 @@ export const useBribeAdd = () => {
       callback()
       setPending(false)
     },
-    [account, chainId, startTxn, writeTxn, endTxn],
+    [account, chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onBribeAdd, pending }

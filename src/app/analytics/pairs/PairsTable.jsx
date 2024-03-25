@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import IconGroup from '@/components/icongroup'
@@ -51,6 +52,7 @@ export default function PairsTable({ data, hidePagination = false }) {
   const [sort, setSort] = useState(sortOptions[1])
   const [currentPage, setCurrentPage] = useState(1)
   const { push } = useRouter()
+  const t = useTranslations()
 
   const sortedData = useMemo(
     () =>
@@ -100,7 +102,7 @@ export default function PairsTable({ data, hidePagination = false }) {
             />
             <div className='flex flex-col'>
               <TextHeading>{item.symbol}</TextHeading>
-              <Paragraph className='text-sm'>{item.type}</Paragraph>
+              <Paragraph className='text-sm'>{t(item.type)}</Paragraph>
             </div>
           </div>
         ),

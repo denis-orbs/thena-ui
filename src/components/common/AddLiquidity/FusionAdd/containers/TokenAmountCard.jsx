@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import { WBNB } from 'thena-sdk-core'
 
@@ -30,6 +31,7 @@ export function TokenAmountCard({
   const wBnbBalance = useCurrencyBalance(WBNB[networkId])
   const logoURI = useCurrencyLogo(currency)
   const price = useCurrencyPrice(currency)
+  const t = useTranslations()
 
   const isDouble = useMemo(
     () =>
@@ -81,13 +83,13 @@ export function TokenAmountCard({
           <Highlight>
             <LockIcon className='h-4 w-4' />
           </Highlight>
-          <Paragraph>Price is outside specified price range.</Paragraph>
-          <Paragraph>Single-asset deposit only.</Paragraph>
+          <Paragraph>{t('The market price is outside')}</Paragraph>
+          <Paragraph>{t('Single-asset deposit only')}</Paragraph>
         </div>
       ) : (
         <div className='flex flex-col gap-2'>
           <div className='flex items-center justify-between'>
-            <p className='font-medium text-white'>{title}</p>
+            <p className='font-medium text-white'>{t(title)}</p>
             <Tabs data={percents} />
           </div>
           <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
@@ -128,7 +130,9 @@ export function TokenAmountCard({
             </div>
             <div className='flex items-center justify-between gap-2'>
               <TextSubHeading>${formatAmount(value * price)}</TextSubHeading>
-              <TextSubHeading>Balance: {balanceString}</TextSubHeading>
+              <TextSubHeading>
+                {t('Balance')}: {balanceString}
+              </TextSubHeading>
             </div>
           </div>
           {/* {errorMsg && (

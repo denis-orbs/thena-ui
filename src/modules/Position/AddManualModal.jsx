@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 import { Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
@@ -35,6 +36,7 @@ export default function AddManualModal({
   const [independentField, setIndependentField] = useState(Field.CURRENCY_A)
   const { asset0, asset1, tickLower, tickUpper, tokenId } = pool
   const { slippage, deadline } = useSettings()
+  const t = useTranslations()
 
   const tokenA = useToken(asset0.address)
   const tokenB = useToken(asset1.address)
@@ -167,7 +169,7 @@ export default function AddManualModal({
 
   const errorMessage = useMemo(() => {
     if (!parsedAmounts[Field.CURRENCY_A] || !parsedAmounts[Field.CURRENCY_B]) {
-      return 'Invalid amount'
+      return 'Invalid Amount'
     }
 
     const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts
@@ -211,7 +213,7 @@ export default function AddManualModal({
   return (
     <Modal
       isOpen={popup}
-      title='Add position'
+      title='Add Liquidity'
       closeModal={() => {
         setPopup(false)
       }}
@@ -230,35 +232,44 @@ export default function AddManualModal({
                 {unwrappedSymbol(pool.asset0)}/{unwrappedSymbol(pool.asset1)}
               </TextHeading>
               <Paragraph className='text-xs'>
-                #{pool.tokenId} / {(_fusion?.fee || 0) / 10000}% Fee
+                #{pool.tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
               </Paragraph>
             </div>
           </div>
-          {outOfRange ? <PrimaryBadge>Out of Range</PrimaryBadge> : <GreenBadge>In Range</GreenBadge>}
+          {outOfRange ? <PrimaryBadge>{t('Out of Range')}</PrimaryBadge> : <GreenBadge>{t('In Range')}</GreenBadge>}
         </div>
         <div className='flex flex-col gap-3'>
-          <Paragraph className='text-sm'>Selected Range</Paragraph>
+          <Paragraph className='text-sm'>{t('Selected Range')}</Paragraph>
           <div className='grid grid-cols-2 gap-4'>
             <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
-              <TextSubHeading className='text-xs'>Min Price</TextSubHeading>
+              <TextSubHeading className='text-xs'>{t('Min Price')}</TextSubHeading>
               <TextHeading>{formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)}</TextHeading>
               <Paragraph className='text-[10px]'>
-                {unwrappedSymbol(asset1)} per {unwrappedSymbol(asset0)}
+                {t('[symbolA] per [symbolB]', {
+                  symbolA: unwrappedSymbol(asset1),
+                  symbolB: unwrappedSymbol(asset0),
+                })}
               </Paragraph>
             </div>
             <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
-              <TextSubHeading className='text-xs'>Max Price</TextSubHeading>
+              <TextSubHeading className='text-xs'>{t('Max Price')}</TextSubHeading>
               <TextHeading>{formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)}</TextHeading>
               <Paragraph className='text-[10px]'>
-                {unwrappedSymbol(asset1)} per {unwrappedSymbol(asset0)}
+                {t('[symbolA] per [symbolB]', {
+                  symbolA: unwrappedSymbol(asset1),
+                  symbolB: unwrappedSymbol(asset0),
+                })}
               </Paragraph>
             </div>
           </div>
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
-            <TextSubHeading className='text-xs'>Current Price</TextSubHeading>
+            <TextSubHeading className='text-xs'>{t('Current Price')}</TextSubHeading>
             <TextHeading>{_fusion?.token0Price.toSignificant(6)}</TextHeading>
             <Paragraph className='text-[10px]'>
-              {unwrappedSymbol(asset1)} per {unwrappedSymbol(asset0)}
+              {t('[symbolA] per [symbolB]', {
+                symbolA: unwrappedSymbol(asset1),
+                symbolB: unwrappedSymbol(asset0),
+              })}
             </Paragraph>
           </div>
         </div>
@@ -270,7 +281,7 @@ export default function AddManualModal({
             maxAmount={maxAmounts[Field.CURRENCY_A]}
             liquidityRangeType={FusionRangeType.MANUAL_RANGE}
             locked={depositADisabled}
-            title='Asset 1'
+            title={`${t('Asset')} 1`}
           />
           <TokenAmountCard
             currency={currencyB}
@@ -279,16 +290,16 @@ export default function AddManualModal({
             maxAmount={maxAmounts[Field.CURRENCY_B]}
             liquidityRangeType={FusionRangeType.MANUAL_RANGE}
             locked={depositBDisabled}
-            title='Asset 2'
+            title={`${t('Asset')} 2`}
           />
         </div>
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <TextButton className='w-full' onClick={() => setPopup(false)}>
-          Cancel
+          {t('Cancel')}
         </TextButton>
         <PrimaryButton className='w-full' disabled={pending} onClick={() => onAddLiquidity()}>
-          Add
+          {t('Add')}
         </PrimaryButton>
       </ModalFooter>
     </Modal>

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
@@ -26,6 +27,7 @@ function RangePart({
   title,
 }) {
   const [localTokenValue, setLocalTokenValue] = useState('')
+  const t = useTranslations()
 
   const dispatch = useDispatch()
 
@@ -62,7 +64,7 @@ function RangePart({
   return (
     <div className='flex items-center justify-between rounded-xl border border-neutral-700 px-4 py-3'>
       <div className='flex flex-col gap-1.5'>
-        <TextSubHeading className='text-xs'>{title}</TextSubHeading>
+        <TextSubHeading className='text-xs'>{t(title)}</TextSubHeading>
         <input
           type='number'
           className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
@@ -77,7 +79,10 @@ function RangePart({
           disabled={disabled || locked}
         />
         <Paragraph className='text-[10px]'>
-          {unwrappedSymbol(tokenB)} per {unwrappedSymbol(tokenA)}
+          {t('[symbolA] per [symbolB]', {
+            symbolA: unwrappedSymbol(tokenB),
+            symbolB: unwrappedSymbol(tokenA),
+          })}
         </Paragraph>
       </div>
       <div className='flex flex-col gap-2'>
@@ -135,7 +140,7 @@ export function RangeSelector({
         tokenA={currencyA}
         tokenB={currencyB}
         disabled={disabled}
-        title='Minimum Price'
+        title='Min Price'
       />
       <RangePart
         value={mintInfo.ticksAtLimit[Bound.UPPER] ? '∞' : rightPrice?.toSignificant(5) ?? ''}
@@ -149,7 +154,7 @@ export function RangeSelector({
         tokenB={currencyB ?? undefined}
         initialPrice={mintInfo.price}
         disabled={disabled}
-        title='Maximum Price'
+        title='Max Price'
       />
     </div>
   )

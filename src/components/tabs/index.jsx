@@ -1,9 +1,12 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { SizeTypes } from '@/constant/type'
 import { cn } from '@/lib/utils'
 
 function TabItem({ className, item, size }) {
+  const t = useTranslations()
+
   return (
     <button
       type='button'
@@ -21,7 +24,7 @@ function TabItem({ className, item, size }) {
       )}
       onClick={item.onClickHandler}
     >
-      {item.label}
+      {t(item.label)}
     </button>
   )
 }

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import { TrailingButton } from '@/components/buttons/Button'
@@ -14,8 +15,7 @@ const tradingDataObject = {
       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry',
   },
   Tokenomics: {
-    description:
-      'THENA uses a self-optimizing ve3,3 based system designed to sustainably reward all contributing participants.',
+    description: 'THE Tokenomics Content',
   },
 }
 
@@ -52,48 +52,44 @@ const codeHtmlMobile = `<p>terraform {  <br>
 const prtocolsData = [
   {
     icon: '/images/home/stats/ec22.png',
-    heading: 'Step 1',
+    heading: 'STEP 1',
     title: 'Request Gauge Whitelisting',
-    description:
-      'Protocols that seek to open a gauge to be voted on have to request a whitelisting by presenting a proposal.',
+    description: 'STEP 1 Description',
   },
   {
     icon: '/images/home/stats/ec23.png',
-    heading: 'Step 2',
+    heading: 'STEP 2',
     title: 'Add a Voting Incentive',
-    description:
-      'Once the gauge has been initiated, anyone can add incentives with just a few clicks. The incentives are set per epoch, which lasts for 7 days.',
+    description: 'STEP 2 Description',
   },
   {
     icon: '/images/home/stats/ec24.png',
-    heading: 'Step 3',
+    heading: 'STEP 3',
     title: 'Receive Emissions',
-    description: 'The emissions are distributed to the gauges for the new epoch based on votes from veTHE holders.',
+    description: 'STEP 3 Description',
   },
 ]
 export function FutureOfTrading() {
   const [tradingData, setTradingData] = useState('Tokenomics')
+  const t = useTranslations()
 
   return (
     <div className='mx-auto flex max-w-[1171px] flex-col items-center justify-center xl:flex-row xl:items-start xl:space-x-[151px]'>
       <div className='mt-24 flex w-full max-w-[313px] flex-col items-center justify-center lg:mt-[100px] lg:max-w-[368px] xl:items-start xl:justify-start '>
         <Heading
-          heading='Collaborative Liquidity Layer'
-          title='HOW IT WORKS'
+          heading={t('Collaborative Liquidity Layer')}
+          title={t('HOW IT WORKS')}
           wrapperStyles='items-center xl:items-start'
           headingExtraSytles='text-center xl:text-start'
         />
-        <p className='mt-6 text-center leading-6 text-white/[0.55] xl:text-start'>
-          THENA is a community-driven decentralized exchange, powered by a self-optimizing ve3,3 model, serving BNB
-          Chain projects with their liquidity needs.
-        </p>
+        <p className='mt-6 text-center leading-6 text-white/[0.55] xl:text-start'>{t('How description')}</p>
         <TrailingButton
           className='mt-7 lg:mt-12'
           onClick={() => {
             window.open('https://thena.gitbook.io/thena/the-tokenomics/initial-supply-and-emissions-schedule', '_blank')
           }}
         >
-          Tokenomics
+          {t('Tokenomics')}
         </TrailingButton>
       </div>
 
@@ -196,7 +192,7 @@ export function FutureOfTrading() {
                       </svg>
                     </div>
                   </div>
-                  <span>THE Tokenomics</span>
+                  <span>{t('THE Tokenomics')}</span>
                 </div>
                 <div
                   onClick={() => {
@@ -234,7 +230,7 @@ export function FutureOfTrading() {
                       </svg>
                     </div>
                   </div>
-                  <span>Protocols</span>
+                  <span>{t('Protocols')}</span>
                 </div>
               </div>
               <div
@@ -264,7 +260,7 @@ export function FutureOfTrading() {
                 {tradingDataObject[tradingData]?.description && (
                   <div className='w-full px-6 xl:px-0'>
                     <div className='border-l-2 border-[#BE01B7] pl-5 font-medium leading-6 xl:text-xl xl:leading-7'>
-                      {tradingDataObject[tradingData]?.description}
+                      {t(tradingDataObject[tradingData]?.description)}
                     </div>
                   </div>
                 )}
@@ -316,11 +312,11 @@ export function FutureOfTrading() {
                               <Heading
                                 titleExtraStyles='!text-sm !font-figtree'
                                 headingExtraSytles='!text-base lg:!text-xl font-medium !leading-6 w-full'
-                                title={item.heading}
-                                heading={item.title}
+                                title={t(item.heading)}
+                                heading={t(item.title)}
                               />
                               <p className='mt-1 text-[13px] leading-5 text-white/[0.45] xl:text-sm'>
-                                {item.description}
+                                {t(item.description)}
                               </p>
                             </div>
                           </div>

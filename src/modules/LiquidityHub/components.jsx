@@ -1,5 +1,7 @@
 /* eslint-disable class-methods-use-this */
 
+import { useTranslations } from 'next-intl'
+
 import NextImage from '@/components/image/NextImage'
 import Toggle from '@/components/toggle'
 
@@ -44,7 +46,7 @@ function OrbsLogo() {
 
 function OrbsLink({ children, href }) {
   return (
-    <a href={href} target='_blank' rel='noreferrer'>
+    <a href={href} className='font-medium text-primary-100' target='_blank' rel='noreferrer'>
       {children}
     </a>
   )
@@ -52,6 +54,7 @@ function OrbsLink({ children, href }) {
 
 export function LiquidityHubSettings() {
   const { liquidityHubEnabled, updateLiquidityHubEnabled } = usePersistedStore()
+  const t = useTranslations()
 
   return (
     <div className='w-full'>
@@ -65,7 +68,7 @@ export function LiquidityHubSettings() {
           <OrbsLink href='https://www.orbs.com'>Orbs</OrbsLink>, may provide better price by aggregating liquidity from
           multiple sources.{' '}
           <span>
-            <OrbsLink href='https://www.orbs.com/liquidity-hub/'>For more info.</OrbsLink>
+            <OrbsLink href='https://www.orbs.com/liquidity-hub/'>{t('Learn More')}</OrbsLink>
           </span>
         </p>
       </div>

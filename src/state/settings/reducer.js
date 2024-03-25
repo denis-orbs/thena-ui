@@ -2,13 +2,16 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { ChainId } from 'thena-sdk-core'
 
-import { closeWallet, openWallet, switchNetwork, updateDeadline, updateSlippage } from './actions'
+import { LOCALES } from '@/constant'
+
+import { closeWallet, openWallet, switchNetwork, updateDeadline, updateLocale, updateSlippage } from './actions'
 
 export const initialState = {
   networkId: ChainId.BSC,
   isWalletOpen: false,
   slippage: 0.5,
   deadline: 20,
+  locale: LOCALES.en,
 }
 
 export default createReducer(initialState, builder =>
@@ -32,5 +35,9 @@ export default createReducer(initialState, builder =>
     .addCase(updateDeadline, (state, { payload }) => ({
       ...state,
       deadline: payload,
+    }))
+    .addCase(updateLocale, (state, { payload }) => ({
+      ...state,
+      locale: payload,
     })),
 )

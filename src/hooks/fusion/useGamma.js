@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
@@ -13,7 +14,7 @@ import {
   getWBNBContract,
 } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, fromWei, toWei } from '@/lib/utils'
+import { fromWei, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -24,6 +25,7 @@ export const useGammaAdd = () => {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
@@ -71,31 +73,31 @@ export const useGammaAdd = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: 'Add Liquidity',
+        title: t('Add Liquidity'),
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
-              desc: `Wrap ${formatAmount(fromWei(amountToWrap.toString(10)))} BNB for WBNB`,
+              desc: t('Wrap'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isFirstApproved && {
             [approve1uuid]: {
-              desc: `Approve ${baseCurrency.symbol}`,
+              desc: `${t('Approve')} ${baseCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isSecondApproved && {
             [approve2uuid]: {
-              desc: `Approve ${quoteCurrency.symbol}`,
+              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [supplyuuid]: {
-            desc: 'Add Liquidity',
+            desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -150,7 +152,7 @@ export const useGammaAdd = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput],
+    [account, startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput, t],
   )
 
   return { onGammaAdd, pending }
@@ -161,6 +163,7 @@ export const useGammaAddAndStake = () => {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
+  const t = useTranslations()
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
@@ -210,41 +213,41 @@ export const useGammaAddAndStake = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: 'Add Liquidity',
+        title: t('Add Liquidity'),
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
-              desc: `Wrap ${formatAmount(fromWei(amountToWrap.toString(10)))} BNB for WBNB`,
+              desc: t('Wrap'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isFirstApproved && {
             [approve1uuid]: {
-              desc: `Approve ${baseCurrency.symbol}`,
+              desc: `${t('Approve')} ${baseCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isSecondApproved && {
             [approve2uuid]: {
-              desc: `Approve ${quoteCurrency.symbol}`,
+              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [supplyuuid]: {
-            desc: 'Add Liquidity',
+            desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
           [approve3uuid]: {
-            desc: 'Approve LP',
+            desc: `${t('Approve')} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
           [stakeuuid]: {
-            desc: 'Stake LP',
+            desc: `${t('Stake')} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -324,7 +327,7 @@ export const useGammaAddAndStake = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, updateTxn, endTxn, networkId, onFieldAInput, onFieldBInput],
+    [account, startTxn, writeTxn, updateTxn, endTxn, networkId, onFieldAInput, onFieldBInput, t],
   )
 
   return { onGammaAddAndStake, pending }
@@ -335,6 +338,7 @@ export const useGammaRemove = () => {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
@@ -344,10 +348,10 @@ export const useGammaRemove = () => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: 'Remove position',
+        title: t('Remove Liquidity'),
         transactions: {
           [removeuuid]: {
-            desc: `Remove ${pool.symbol} Gamma LP`,
+            desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -376,7 +380,7 @@ export const useGammaRemove = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput],
+    [account, startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput, t],
   )
 
   return { onGammaRemove, pending }

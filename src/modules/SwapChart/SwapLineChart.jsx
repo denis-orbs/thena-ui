@@ -8,7 +8,7 @@ import { formatAmount } from '@/lib/utils'
 
 import { PairDataTimeWindow } from './fetch'
 
-function SwapLineChart({ data, setHoverValue, setHoverDate, timeWindow }) {
+function SwapLineChart({ data, locale, setHoverValue, setHoverDate, timeWindow }) {
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
 
@@ -97,7 +97,15 @@ function SwapLineChart({ data, setHoverValue, setHoverDate, timeWindow }) {
       if (newSeries && param) {
         const timestamp = param.time
         if (!timestamp) return
-        const time = dayjs(timestamp).format('MMM D, YYYY HH:mm (UTC)')
+        const now = new Date(timestamp)
+        const time = `${now.toLocaleString(locale, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZone: 'UTC',
+        })} (UTC)`
         const parsed = param.seriesData.get(newSeries)?.value ?? 0
         if (setHoverValue) setHoverValue(parsed)
         if (setHoverDate) setHoverDate(time)
@@ -110,7 +118,7 @@ function SwapLineChart({ data, setHoverValue, setHoverDate, timeWindow }) {
     return () => {
       chart.remove()
     }
-  }, [transformedData, setHoverValue, setHoverDate, timeWindow])
+  }, [transformedData, setHoverValue, setHoverDate, timeWindow, locale])
 
   const handleMouseLeave = useCallback(() => {
     if (setHoverValue) setHoverValue(undefined)

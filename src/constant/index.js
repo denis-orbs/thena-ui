@@ -22,6 +22,11 @@ export const RPC_PROVIDERS = {
   [ChainId.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
 }
 
+export const LOCALES = {
+  en: 'en',
+  zh: 'zh',
+}
+
 export const SCAN_URLS = {
   [ChainId.BSC]: 'https://bscscan.com',
   [ChainId.OPBNB]: 'https://opbnb.bscscan.com',
@@ -211,7 +216,7 @@ export const PERIOD_LEVELS = [
 
 export const PAIR_TYPES = {
   All: 'All Pools',
-  LSD: 'Conc. Liquidity',
+  LSD: 'Conc Liquidity',
   STABLE: 'Stable',
   CLASSIC: 'Classic',
 }

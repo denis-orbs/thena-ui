@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import { cn, formatAmount } from '@/lib/utils'
@@ -8,6 +9,7 @@ import Tabs from '../tabs'
 import { TextSubHeading } from '../typography'
 
 function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus = false }) {
+  const t = useTranslations()
   const percents = useMemo(
     () => [
       {
@@ -33,7 +35,7 @@ function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus =
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center justify-between'>
-        <p className='font-medium text-white'>{title}</p>
+        <p className='font-medium text-white'>{t(title)}</p>
         <Tabs data={percents} />
       </div>
       <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
@@ -73,7 +75,9 @@ function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus =
         </div>
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(pair.lpPrice * amount)}</TextSubHeading>
-          <TextSubHeading>Balance: {formatAmount(balance)}</TextSubHeading>
+          <TextSubHeading>
+            {t('Balance')}: {formatAmount(balance)}
+          </TextSubHeading>
         </div>
       </div>
       {/* {errorMsg && (

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -50,6 +51,7 @@ export default function CurrentRewards({ rewards, currentMutate }) {
   const { onClaimBribes, pending: bribePending } = useClaimBribes()
   const { onClaimRebase, pending: rebasePending } = useClaimRebase()
   const { updateVeTHEs } = useVeTHEsContext()
+  const t = useTranslations()
 
   const finalVeTHEs = useMemo(
     () =>
@@ -63,7 +65,7 @@ export default function CurrentRewards({ rewards, currentMutate }) {
                 <TextHeading>veTHE #{pool.id}</TextHeading>
               </div>
             ),
-            type: <Paragraph>Rebase</Paragraph>,
+            type: <Paragraph>{t('Rebase')}</Paragraph>,
             tokens: (
               <div className='flex items-center gap-1'>
                 <Paragraph>${formatAmount(pool.rebase_amount.times(prices.THE))}</Paragraph>
@@ -79,7 +81,7 @@ export default function CurrentRewards({ rewards, currentMutate }) {
                 onClick={() => onClaimRebase(pool, () => updateVeTHEs())}
                 disabled={rebasePending}
               >
-                Claim
+                {t('Claim')}
               </EmphasisButton>
             ),
           }
@@ -97,11 +99,11 @@ export default function CurrentRewards({ rewards, currentMutate }) {
               />
               <div className='flex flex-col'>
                 <TextHeading>{pool.symbol}</TextHeading>
-                <Paragraph className='text-sm'>{pool.title}</Paragraph>
+                <Paragraph className='text-sm'>{t(pool.title)}</Paragraph>
               </div>
             </div>
           ),
-          type: <Paragraph>Bribes + Fees</Paragraph>,
+          type: <Paragraph>{`${t('Incentives')} + ${t('Fees')}`}</Paragraph>,
           tokens: (
             <div className='flex items-center gap-1'>
               <Paragraph>${formatAmount(pool.totalUsd)}</Paragraph>
@@ -122,13 +124,13 @@ export default function CurrentRewards({ rewards, currentMutate }) {
               onClick={() => onClaimBribes(pool, () => currentMutate())}
               disabled={bribePending}
             >
-              Claim
+              {t('Claim')}
             </EmphasisButton>
           ),
         }
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(rewards), prices.THE],
+    [JSON.stringify(rewards), prices.THE, t],
   )
 
   return rewards.length > 0 ? (

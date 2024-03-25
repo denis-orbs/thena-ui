@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import { WBNB } from 'thena-sdk-core'
 
@@ -14,15 +15,17 @@ import Tabs from '../tabs'
 import { TextSubHeading } from '../typography'
 
 function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChange, title, autoFocus = false }) {
-  const max = useMemo(() => (!maxBalance ? asset?.balance : maxBalance), [asset, maxBalance])
   const assets = useAssets()
+  const t = useTranslations()
+
+  const max = useMemo(() => (!maxBalance ? asset?.balance : maxBalance), [asset, maxBalance])
   const data = useMemo(
     () => assets.filter(item => item.address === 'BNB' || item.address === WBNB[item.chainId].address.toLowerCase()),
     [assets],
   )
   // const errorMsg = useMemo(() => {
   //   if (!asset || maxBalance.lt(amount)) {
-  //     return 'Insufficient balance'
+  //     return 'Insufficient Balance'
   //   }
   //   return null
   // }, [amount, asset])
@@ -47,6 +50,7 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
     ],
     [asset, max, onAmountChange],
   )
+
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center justify-between'>
@@ -96,7 +100,9 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
         </div>
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-          <TextSubHeading>Balance: {formatAmount(max)}</TextSubHeading>
+          <TextSubHeading>
+            {t('Balance')}: {formatAmount(max)}
+          </TextSubHeading>
         </div>
       </div>
       {/* {errorMsg && (

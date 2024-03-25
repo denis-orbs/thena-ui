@@ -1,8 +1,11 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { cn } from '@/lib/utils'
 
 function SelectionItem({ className, item, isFull, isSmall }) {
+  const t = useTranslations()
+
   return (
     <button
       type='button'
@@ -20,7 +23,7 @@ function SelectionItem({ className, item, isFull, isSmall }) {
       )}
       onClick={item.onClickHandler}
     >
-      {item.label}
+      {typeof item.label === 'number' ? `${item.label}%` : t(item.label)}
     </button>
   )
 }
@@ -28,8 +31,8 @@ function SelectionItem({ className, item, isFull, isSmall }) {
 function Selection({ className, data, isFull = false, isSmall = false }) {
   return (
     <div className={cn('inline-flex items-center justify-center gap-0.5 rounded-lg bg-neutral-800 p-1', className)}>
-      {data.map(item => (
-        <SelectionItem item={item} key={item.label} isFull={isFull} isSmall={isSmall} />
+      {data.map((item, idx) => (
+        <SelectionItem item={item} key={`selection-${idx}`} isFull={isFull} isSmall={isSmall} />
       ))}
     </div>
   )

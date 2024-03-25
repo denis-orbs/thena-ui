@@ -1,6 +1,7 @@
 'use client'
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { formatAddress } from '@/lib/utils'
@@ -11,6 +12,7 @@ import { EmphasisButton, PrimaryButton } from './Button'
 export default function ConnectButton({ className }) {
   const { open } = useWeb3Modal()
   const { account } = useWallet()
+  const t = useTranslations()
 
   if (account) {
     return (
@@ -22,7 +24,7 @@ export default function ConnectButton({ className }) {
 
   return (
     <PrimaryButton className={className} onClick={() => open()}>
-      Connect Wallet
+      {t('Connect Wallet')}
     </PrimaryButton>
   )
 }

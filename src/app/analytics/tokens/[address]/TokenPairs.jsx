@@ -1,6 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -73,6 +74,8 @@ const fetchTokenPairsData = async (chainId, token) => {
 export default function TokenPairs({ token }) {
   const { pairs } = usePairs()
   const { networkId } = useChainSettings()
+  const t = useTranslations()
+
   const { data } = useSWR(
     token && ['analytics/token/pairs', token.address],
     () => fetchTokenPairsData(networkId, token),
@@ -84,9 +87,12 @@ export default function TokenPairs({ token }) {
     if (!data || !pairs) return []
     return pairs.filter(ele => data.includes(ele.address))
   }, [data, pairs])
+
   return (
     <div className='flex flex-col gap-6'>
-      <TextHeading className='text-xl'>{token?.symbol} Pairs</TextHeading>
+      <TextHeading className='text-xl'>
+        {token?.symbol} {t('Pairs')}
+      </TextHeading>
       <PairsTable data={filteredPairs} />
     </div>
   )

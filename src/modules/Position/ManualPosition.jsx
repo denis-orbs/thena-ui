@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
 import React, { useContext, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
@@ -61,6 +62,7 @@ export default function ManualPosition({ pool }) {
       refreshInterval: 60000,
     },
   )
+  const t = useTranslations()
   const { pending, onAlgebraBurn } = useAlgebraBurn()
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
@@ -141,39 +143,43 @@ export default function ManualPosition({ pool }) {
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </TextHeading>
             <Paragraph className='text-xs'>
-              #{pool.tokenId} / {(_fusion?.fee || 0) / 10000}% Fee
+              #{pool.tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
             </Paragraph>
           </div>
         </div>
         {!Number(liquidity) ? (
-          <YellowBadge>Closed</YellowBadge>
+          <YellowBadge>{t('Closed')}</YellowBadge>
         ) : outOfRange ? (
-          <PrimaryBadge>Out of Range</PrimaryBadge>
+          <PrimaryBadge>{t('Out of Range')}</PrimaryBadge>
         ) : (
-          <GreenBadge>In Range</GreenBadge>
+          <GreenBadge>{t('In Range')}</GreenBadge>
         )}
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>Total value in USD</Paragraph>
+          <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
           <TextHeading>${formatAmount(fiatValueOfLiquidity)}</TextHeading>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>{unwrappedSymbol(asset0)} deposit</Paragraph>
+          <Paragraph className='text-sm'>
+            {unwrappedSymbol(asset0)} {t('Deposit')}
+          </Paragraph>
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(amount0)}`}</TextHeading>
             {Number(liquidity) > 0 && <TextSubHeading>{`(${formatAmount(firstPercent)}%)`}</TextSubHeading>}
           </div>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>{unwrappedSymbol(asset1)} deposit</Paragraph>
+          <Paragraph className='text-sm'>
+            {unwrappedSymbol(asset1)} {t('Deposit')}
+          </Paragraph>
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(amount1)}`}</TextHeading>
             {Number(liquidity) > 0 && <TextSubHeading>({formatAmount(100 - firstPercent)}%)</TextSubHeading>}
           </div>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>Claimable fees</Paragraph>
+          <Paragraph className='text-sm'>{t('Claimable Fees')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
             {feesInUsd.gt(0) && <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />}
@@ -183,38 +189,47 @@ export default function ManualPosition({ pool }) {
             </CustomTooltip>
           </div>
         </div>
-        <Paragraph className='text-sm'>Price Range</Paragraph>
+        <Paragraph className='text-sm'>{t('Price Range')}</Paragraph>
         <div className='grid grid-cols-2 gap-4'>
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
-            <TextSubHeading className='text-xs'>Min Price</TextSubHeading>
+            <TextSubHeading className='text-xs'>{t('Min Price')}</TextSubHeading>
             <TextHeading>{formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)}</TextHeading>
             <Paragraph className='text-[10px]'>
-              {unwrappedSymbol(asset1)} per {unwrappedSymbol(asset0)}
+              {t('[symbolA] per [symbolB]', {
+                symbolA: unwrappedSymbol(asset1),
+                symbolB: unwrappedSymbol(asset0),
+              })}
             </Paragraph>
           </div>
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
-            <TextSubHeading className='text-xs'>Max Price</TextSubHeading>
+            <TextSubHeading className='text-xs'>{t('Max Price')}</TextSubHeading>
             <TextHeading>{formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)}</TextHeading>
             <Paragraph className='text-[10px]'>
-              {unwrappedSymbol(asset1)} per {unwrappedSymbol(asset0)}
+              {t('[symbolA] per [symbolB]', {
+                symbolA: unwrappedSymbol(asset1),
+                symbolB: unwrappedSymbol(asset0),
+              })}
             </Paragraph>
           </div>
         </div>
         <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
-          <TextSubHeading className='text-xs'>Current Price</TextSubHeading>
+          <TextSubHeading className='text-xs'>{t('Current Price')}</TextSubHeading>
           <TextHeading>{_fusion?.token0Price.toSignificant(6)}</TextHeading>
           <Paragraph className='text-[10px]'>
-            {unwrappedSymbol(asset1)} per {unwrappedSymbol(asset0)}
+            {t('[symbolA] per [symbolB]', {
+              symbolA: unwrappedSymbol(asset1),
+              symbolB: unwrappedSymbol(asset0),
+            })}
           </Paragraph>
         </div>
       </div>
       <div className='flex w-full gap-3'>
         <TextButton className='w-full' disabled={!fees || feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
-          Claim
+          {t('Claim')}
         </TextButton>
         {Number(liquidity) > 0 ? (
           <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
-            Remove
+            {t('Remove')}
           </OutlinedButton>
         ) : (
           <OutlinedButton
@@ -222,11 +237,11 @@ export default function ManualPosition({ pool }) {
             onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
             disabled={pending}
           >
-            Burn
+            {t('Burn')}
           </OutlinedButton>
         )}
         <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
-          Add
+          {t('Add')}
         </EmphasisButton>
       </div>
       <ClaimModal

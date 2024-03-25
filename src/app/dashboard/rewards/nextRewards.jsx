@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import IconGroup from '@/components/icongroup'
@@ -35,6 +36,7 @@ const sortOptions = [
 export default function NextRewards({ rewards }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState({})
+  const t = useTranslations()
 
   const finalVeTHEs = useMemo(
     () =>
@@ -51,11 +53,11 @@ export default function NextRewards({ rewards }) {
             />
             <div className='flex flex-col'>
               <TextHeading>{pool.symbol}</TextHeading>
-              <Paragraph className='text-sm'>{pool.title}</Paragraph>
+              <Paragraph className='text-sm'>{t(pool.title)}</Paragraph>
             </div>
           </div>
         ),
-        type: <Paragraph>Bribes + Fees</Paragraph>,
+        type: <Paragraph>{`${t('Incentives')} + ${t('Fees')}`}</Paragraph>,
         tokens: (
           <div className='flex items-center gap-1'>
             <Paragraph>${formatAmount(pool.totalUsd)}</Paragraph>
@@ -72,7 +74,7 @@ export default function NextRewards({ rewards }) {
         ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(rewards)],
+    [JSON.stringify(rewards), t],
   )
 
   return rewards.length > 0 ? (

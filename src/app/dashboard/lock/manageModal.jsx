@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import Highlight from '@/components/highlight'
@@ -22,6 +23,7 @@ const ManageTypes = {
 
 export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVeTHEs }) {
   const [type, setType] = useState(null)
+  const t = useTranslations()
 
   const typesData = useMemo(
     () => [
@@ -32,11 +34,8 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
               <LockIcon className='h-4 w-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
-              <TextHeading>Lock</TextHeading>
-              <Paragraph className='text-sm'>
-                You can increase your voting power by extending your lock duration (once per epoch) or adding more $THE
-                to your locked position.
-              </Paragraph>
+              <TextHeading>{t('Lock')}</TextHeading>
+              <Paragraph className='text-sm'>{t('Lock Description')}</Paragraph>
             </div>
           </div>
         ),
@@ -51,11 +50,8 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
               <MergeIcon className='h-4 w-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
-              <TextHeading>Merge</TextHeading>
-              <Paragraph className='text-sm'>
-                Use this option if you would like to merge two locked positions into one. Since voting rewards are tied
-                to your wallet, you will not lose them after the merge.
-              </Paragraph>
+              <TextHeading>{t('Merge')}</TextHeading>
+              <Paragraph className='text-sm'>{t('Merge Description')}</Paragraph>
             </div>
           </div>
         ),
@@ -70,11 +66,8 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
               <SplitIcon className='h-4 w-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
-              <TextHeading>Split</TextHeading>
-              <Paragraph className='text-sm'>
-                You can split your veTHE into smaller locked positions. Only whole numbers are accepted when entering
-                the amounts. Since voting rewards are tied to your wallet, you will not lose them after the split.
-              </Paragraph>
+              <TextHeading>{t('Split')}</TextHeading>
+              <Paragraph className='text-sm'>{t('Split Description')}</Paragraph>
             </div>
           </div>
         ),
@@ -89,11 +82,8 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
               <TransferIcon className='h-4 w-4' />
             </Highlight>
             <div className='flex flex-col gap-1'>
-              <TextHeading>Transfer</TextHeading>
-              <Paragraph className='text-sm'>
-                You can transfer your veTHE to another wallet here. Since voting rewards are tied to your wallet, you
-                will not lose them after the transfer.
-              </Paragraph>
+              <TextHeading>{t('Transfer')}</TextHeading>
+              <Paragraph className='text-sm'>{t('Transfer Description')}</Paragraph>
             </div>
           </div>
         ),
@@ -102,7 +92,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         },
       },
     ],
-    [setType],
+    [setType, t],
   )
 
   return (
@@ -111,12 +101,13 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
       closeModal={() => {
         setPopup(false)
       }}
-      title={type ?? `Manage veTHE #${veTHE?.id}`}
+      title={type ?? t('Manage veTHE #[Number]', { id: veTHE?.id })}
       isBack={!!type}
       onClickHandler={() => {
         setType(null)
       }}
       onAfterClose={() => setType(null)}
+      isIntl={!type}
     >
       {!type && (
         <ModalBody>

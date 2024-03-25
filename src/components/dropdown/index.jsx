@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -10,6 +11,7 @@ import Input from '../input'
 function Dropdown({ className, data, selected, setSelected, placeHolder }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
+  const t = useTranslations()
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -30,7 +32,7 @@ function Dropdown({ className, data, selected, setSelected, placeHolder }) {
           input: cn('cursor-pointer caret-transparent', className),
         }}
         type='text'
-        val={selected}
+        val={t(selected)}
         onClick={() => setOpen(!open)}
         placeholder={placeHolder}
         TrailingIcon={
@@ -61,7 +63,7 @@ function Dropdown({ className, data, selected, setSelected, placeHolder }) {
               setOpen(false)
             }}
           >
-            <p>{item.label}</p>
+            <p>{t(item.label)}</p>
           </div>
         ))}
       </div>

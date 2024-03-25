@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -15,6 +16,7 @@ export default function NftModal({ popup, setPopup, walletIds, stakedIds, mutate
   const [unstakingIds, setUnStakingIds] = useState([])
   const { onStake, pending: stakePending } = useStakeNft()
   const { onUnstake, pending: unstakePending } = useUnstakeNft()
+  const t = useTranslations()
 
   const stakeSelections = useMemo(
     () => [
@@ -54,14 +56,14 @@ export default function NftModal({ popup, setPopup, walletIds, stakedIds, mutate
         {isUnstake ? (
           <div className='flex flex-col gap-2'>
             <div className='flex items-center justify-between'>
-              <TextHeading>Select your theNFT</TextHeading>
+              <TextHeading>{t('Select your theNFT')}</TextHeading>
               <div
                 className='cursor-pointer text-primary-600'
                 onClick={() => {
                   setUnStakingIds(unstakingIds.length === stakedIds.length ? [] : stakedIds)
                 }}
               >
-                {unstakingIds.length === stakedIds.length ? 'Clear all' : 'Select all'}
+                {t(unstakingIds.length === stakedIds.length ? 'Clear All' : 'Select All')}
               </div>
             </div>
             <MultiSelect
@@ -74,14 +76,14 @@ export default function NftModal({ popup, setPopup, walletIds, stakedIds, mutate
         ) : (
           <div className='flex flex-col gap-2'>
             <div className='flex items-center justify-between'>
-              <TextHeading>Select your theNFT</TextHeading>
+              <TextHeading>{t('Select your theNFT')}</TextHeading>
               <div
                 className='cursor-pointer text-primary-600'
                 onClick={() => {
                   setStakingsIds(stakingIds.length === walletIds.length ? [] : walletIds)
                 }}
               >
-                {stakingIds.length === walletIds.length ? 'Clear all' : 'Select all'}
+                {t(stakingIds.length === walletIds.length ? 'Clear All' : 'Select All')}
               </div>
             </div>
             <MultiSelect
@@ -105,7 +107,7 @@ export default function NftModal({ popup, setPopup, walletIds, stakedIds, mutate
             }}
             disabled={!unstakingIds.length || unstakePending}
           >
-            Unstake
+            {t('Unstake')}
           </PrimaryButton>
         ) : (
           <PrimaryButton
@@ -118,7 +120,7 @@ export default function NftModal({ popup, setPopup, walletIds, stakedIds, mutate
             }}
             disabled={!stakingIds.length || stakePending}
           >
-            Stake
+            {t('Stake')}
           </PrimaryButton>
         )}
       </ModalFooter>

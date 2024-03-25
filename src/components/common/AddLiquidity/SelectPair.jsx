@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -25,17 +26,15 @@ export default function SelectPair({
 }) {
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false)
   const [isFirstSelected, setIsFirstSelected] = useState(false)
+  const t = useTranslations()
 
   const poolTypesData = useMemo(
     () => [
       {
         content: (
           <div className='flex flex-1 flex-col gap-1'>
-            <TextHeading>Concentrated Liquidity</TextHeading>
-            <Paragraph className='text-sm'>
-              Liquidity that is allocated within a custom price range. You can either set this range manually or choose
-              one of the ALM options that manage your liquidity.
-            </Paragraph>
+            <TextHeading>{t('Concentrated Liquidity')}</TextHeading>
+            <Paragraph className='text-sm'>{t('Conc Desc')}</Paragraph>
           </div>
         ),
         active: pairType === PAIR_TYPES.LSD,
@@ -46,10 +45,8 @@ export default function SelectPair({
       {
         content: (
           <div className='flex flex-1 flex-col gap-1'>
-            <TextHeading>Stable</TextHeading>
-            <Paragraph className='text-sm'>
-              Curve V1 type of stable pools where you provide liquidity for stable coins in 50/50 ratio.
-            </Paragraph>
+            <TextHeading>{t('Stable')}</TextHeading>
+            <Paragraph className='text-sm'>{t('Stable Desc')}</Paragraph>
           </div>
         ),
         active: pairType === PAIR_TYPES.STABLE,
@@ -60,11 +57,8 @@ export default function SelectPair({
       {
         content: (
           <div className='flex flex-1 flex-col gap-1'>
-            <TextHeading>Classic</TextHeading>
-            <Paragraph className='text-sm'>
-              Uniswap V2 type of volatile pools designed for uncorrelated pairs where you provide liquidity in the ratio
-              determined by the asset balances in the pool.
-            </Paragraph>
+            <TextHeading>{t('Classic')}</TextHeading>
+            <Paragraph className='text-sm'>{t('Classic Desc')}</Paragraph>
           </div>
         ),
         active: pairType === PAIR_TYPES.CLASSIC,
@@ -73,14 +67,14 @@ export default function SelectPair({
         },
       },
     ],
-    [pairType, setPairType],
+    [pairType, setPairType, t],
   )
 
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         <div className='flex flex-col gap-2'>
-          <TextHeading>Select Pair</TextHeading>
+          <TextHeading>{t('Select Pair')}</TextHeading>
           <div className='grid grid-cols-2 gap-4'>
             <Input
               classNames={{
@@ -95,7 +89,8 @@ export default function SelectPair({
                 fromAsset ? <CircleImage src={fromAsset.logoURI} alt='thena token logo' width={20} height={20} /> : null
               }
               TrailingIcon={<ChevronDownIcon className={cn(isTokenModalOpen && 'rotate-180')} />}
-              placeholder={fromAsset?.symbol || 'Select Asset'}
+              val={fromAsset?.symbol}
+              placeholder='Select Asset'
               readOnly
             />
             <Input
@@ -111,13 +106,14 @@ export default function SelectPair({
                 toAsset ? <CircleImage src={toAsset.logoURI} alt='thena token logo' width={20} height={20} /> : null
               }
               TrailingIcon={<ChevronDownIcon className={cn(isTokenModalOpen && 'rotate-180')} />}
-              placeholder={toAsset?.symbol || 'Select Asset'}
+              val={toAsset?.symbol}
+              placeholder='Select Asset'
               readOnly
             />
           </div>
         </div>
         <div className='flex flex-col gap-3'>
-          <TextHeading>Pool Type</TextHeading>
+          <TextHeading>{t('Pool Type')}</TextHeading>
           <Selector data={poolTypesData} />
         </div>
       </div>
@@ -131,7 +127,7 @@ export default function SelectPair({
             setCurrentStep(1)
           }}
         >
-          Continue
+          {t('Continue')}
         </EmphasisButton>
       </div>
       <TokenModal

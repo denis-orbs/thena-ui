@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { JSBI, Percent } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
@@ -16,6 +17,7 @@ export const useAlgebraAdd = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, writeTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onAlgebraAdd = useCallback(
     async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline) => {
@@ -42,24 +44,24 @@ export const useAlgebraAdd = () => {
       }
       startTxn({
         key,
-        title: 'Add Liquidity',
+        title: t('Add Liquidity'),
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {
-              desc: `Approve ${baseCurrency.symbol}`,
+              desc: `${t('Approve')} ${baseCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isSecondApproved && {
             [approve2uuid]: {
-              desc: `Approve ${quoteCurrency.symbol}`,
+              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [adduuid]: {
-            desc: 'Add Liquidity',
+            desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -100,7 +102,7 @@ export const useAlgebraAdd = () => {
       })
       setPending(false)
     },
-    [account, startTxn, endTxn, writeTxn, sendTxn, chainId],
+    [account, startTxn, endTxn, writeTxn, sendTxn, chainId, t],
   )
 
   return { onAlgebraAdd, pending }
@@ -110,6 +112,7 @@ export const useAlgebraClaim = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onAlgebraClaim = useCallback(
     async (tokenId, feeValue0, feeValue1, callback) => {
@@ -117,10 +120,10 @@ export const useAlgebraClaim = () => {
       const claimuuid = uuidv4()
       startTxn({
         key,
-        title: 'Claim fees',
+        title: t('Claim Fees'),
         transactions: {
           [claimuuid]: {
-            desc: `Claim ${feeValue0.currency.symbol}/${feeValue1.currency.symbol} Fees`,
+            desc: t('Claim Fees'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -146,7 +149,7 @@ export const useAlgebraClaim = () => {
       setPending(false)
       callback()
     },
-    [account, startTxn, endTxn, sendTxn, chainId],
+    [account, startTxn, endTxn, sendTxn, chainId, t],
   )
 
   return { onAlgebraClaim, pending }
@@ -156,6 +159,7 @@ export const useAlgebraRemove = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onAlgebraRemove = useCallback(
     async (tokenId, position, liquidityPercentage, feeValue0, feeValue1, slippage, deadline, callback) => {
@@ -163,10 +167,10 @@ export const useAlgebraRemove = () => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: 'Remove position',
+        title: t('Remove Liquidity'),
         transactions: {
           [removeuuid]: {
-            desc: `Remove ${feeValue0.currency.symbol}/${feeValue1.currency.symbol} position`,
+            desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -199,7 +203,7 @@ export const useAlgebraRemove = () => {
       setPending(false)
       callback()
     },
-    [account, startTxn, endTxn, sendTxn, chainId],
+    [account, startTxn, endTxn, sendTxn, chainId, t],
   )
 
   return { onAlgebraRemove, pending }
@@ -209,6 +213,7 @@ export const useAlgebraBurn = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onAlgebraBurn = useCallback(
     async (tokenId, callback) => {
@@ -216,10 +221,10 @@ export const useAlgebraBurn = () => {
       const burnuuid = uuidv4()
       startTxn({
         key,
-        title: `Burn NFT #${tokenId}`,
+        title: `${t('Burn')} NFT #${tokenId}`,
         transactions: {
           [burnuuid]: {
-            desc: `Burn NFT #${tokenId}`,
+            desc: `${t('Burn')} NFT #${tokenId}`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -240,7 +245,7 @@ export const useAlgebraBurn = () => {
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, sendTxn, chainId],
+    [startTxn, endTxn, sendTxn, chainId, t],
   )
 
   return { onAlgebraBurn, pending }
@@ -250,6 +255,7 @@ export const useAlgebraIncrease = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onAlgebraIncrease = useCallback(
     async (amountA, amountB, position, depositADisabled, depositBDisabled, slippage, deadline, tokenId, callback) => {
@@ -277,24 +283,24 @@ export const useAlgebraIncrease = () => {
       const adduuid = uuidv4()
       startTxn({
         key,
-        title: 'Add position',
+        title: t('Add Liquidity'),
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {
-              desc: `Approve ${baseCurrency.symbol}`,
+              desc: `${t('Approve')} ${baseCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isSecondApproved && {
             [approve2uuid]: {
-              desc: `Approve ${quoteCurrency.symbol}`,
+              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [adduuid]: {
-            desc: `Add position for NFT #${tokenId}`,
+            desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -330,12 +336,12 @@ export const useAlgebraIncrease = () => {
       }
       endTxn({
         key,
-        final: 'Added Position',
+        final: 'Added Liquidity',
       })
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, writeTxn, sendTxn, account, chainId],
+    [startTxn, endTxn, writeTxn, sendTxn, account, chainId, t],
   )
 
   return { onAlgebraIncrease, pending }

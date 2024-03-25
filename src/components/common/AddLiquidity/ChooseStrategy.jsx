@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
@@ -92,6 +93,7 @@ export default function ChooseStrategy({
 }) {
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
+  const t = useTranslations()
 
   const pair = useMemo(() => {
     const found = (pairs ?? []).find(
@@ -187,11 +189,11 @@ export default function ChooseStrategy({
             <TextHeading>{GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}</TextHeading>
             <div className='mt-1 flex gap-2'>
               <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>APR:</TextHeading>
+                <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
                 <Paragraph className='text-sm'>{formatAmount(sub.gauge.apr)}%</Paragraph>
               </div>
               <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>TVL:</TextHeading>
+                <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
                 <Paragraph className='text-sm'>${formatAmount(sub.gauge.tvl)}</Paragraph>
               </div>
             </div>
@@ -204,9 +206,13 @@ export default function ChooseStrategy({
             ))}
           {sub.title === 'ICHI' &&
             (strategy?.address === sub.address ? (
-              <PrimaryBadge>{sub.allowed.symbol} Deposit</PrimaryBadge>
+              <PrimaryBadge>
+                {sub.allowed.symbol} {t('Deposit')}
+              </PrimaryBadge>
             ) : (
-              <NeutralBadge>{sub.allowed.symbol} Deposit</NeutralBadge>
+              <NeutralBadge>
+                {sub.allowed.symbol} {t('Deposit')}
+              </NeutralBadge>
             ))}
         </div>
       ),
@@ -215,7 +221,7 @@ export default function ChooseStrategy({
         setStrategy(sub)
       },
     }))
-  }, [pair, strategy, setStrategy])
+  }, [pair, strategy, setStrategy, t])
 
   const autoSelections = useMemo(
     () => [
@@ -264,7 +270,7 @@ export default function ChooseStrategy({
         <div className='flex flex-col gap-5'>
           <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between'>
-              <TextHeading>Management</TextHeading>
+              <TextHeading>{t('Management')}</TextHeading>
               <InfoIcon className='h-4 w-4 cursor-pointer stroke-neutral-400' data-tooltip-id='management-tooltip' />
             </div>
             <Selection data={autoSelections} isFull />
@@ -272,7 +278,7 @@ export default function ChooseStrategy({
           {isAutomatic ? (
             <div className='flex flex-col gap-5'>
               <div className='flex flex-col gap-3'>
-                <TextHeading>Strategy</TextHeading>
+                <TextHeading>{t('Strategy')}</TextHeading>
                 {strategyData ? (
                   <Selector data={strategyData} selected={strategy} setSelected={setStrategy} />
                 ) : (
@@ -281,7 +287,7 @@ export default function ChooseStrategy({
                       <InfoCircleWhite className='h-4 w-4' />
                     </Highlight>
                     <div className='flex flex-col items-center gap-3'>
-                      <h2>No strategy found</h2>
+                      <h2>{t('No strategy found')}</h2>
                     </div>
                   </div>
                 )}
@@ -290,9 +296,11 @@ export default function ChooseStrategy({
                 <>
                   <div className='-mb-2 flex items-center justify-center'>
                     <TextHeading className='text-sm'>
-                      {`Current Price: ${currentPrice} ${unwrappedSymbol(quoteCurrency)} per ${unwrappedSymbol(
-                        baseCurrency,
-                      )}`}
+                      {t('Current Price: [price] [symbolA] [symbolB]', {
+                        price: currentPrice,
+                        symbolA: unwrappedSymbol(quoteCurrency),
+                        symbolB: unwrappedSymbol(baseCurrency),
+                      })}
                     </TextHeading>
                   </div>
                   <LiquidityChartRangeInput
@@ -329,23 +337,15 @@ export default function ChooseStrategy({
               setCurrentStep(2)
             }}
           >
-            Continue
+            {t('Continue')}
           </EmphasisButton>
         </div>
       )}
       <CustomTooltip id='management-tooltip' className='max-w-[320px]'>
         <div className='flex flex-col gap-2'>
-          <TextHeading className='text-sm'>How to Choose a Strategy?</TextHeading>
-          <Paragraph className='text-xs'>
-            Automatic Strategy: If you are new to concentrated liquidity, select one of the available Concentrated
-            Liquidity Automated Market Maker (CLAMM) options where your liquidity is managed automatically to stay in
-            range. When you provide liquidity, you will begin earning emissions.
-          </Paragraph>
-          <Paragraph className='text-xs'>
-            Manual Strategy: Only use if you are experienced in providing concentrated liquidity. You can determine a
-            custom price range and will earn swap fees as long as the price of the assets stays in that range. If out of
-            range, you will not earn any reward until you re-adjust your position accordingly.
-          </Paragraph>
+          <TextHeading className='text-sm'>{t('How to Choose a Strategy')}</TextHeading>
+          <Paragraph className='text-xs'>{t('Automatic Strategy')}</Paragraph>
+          <Paragraph className='text-xs'>{t('Manual Strategy')}</Paragraph>
         </div>
       </CustomTooltip>
     </>

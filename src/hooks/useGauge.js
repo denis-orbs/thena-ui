@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
@@ -13,6 +14,7 @@ export const useGuageStake = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onGaugeStake = useCallback(
     async (pair, amount, callback) => {
@@ -28,17 +30,17 @@ export const useGuageStake = () => {
 
       startTxn({
         key,
-        title: 'Stake LP',
+        desc: `${t('Stake')} LP`,
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: 'Approve LP',
+              desc: `${t('Approve')} LP`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [stakeuuid]: {
-            desc: `Stake ${pair.symbol} LP`,
+            desc: `${t('Stake')} ${pair.symbol} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -64,7 +66,7 @@ export const useGuageStake = () => {
       setPending(false)
       callback()
     },
-    [account, chainId, startTxn, writeTxn, endTxn],
+    [account, chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onGaugeStake, pending }
@@ -74,6 +76,7 @@ export const useGuageUnstake = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onGaugeUnstake = useCallback(
     async (pair, amount, callback) => {
@@ -85,10 +88,10 @@ export const useGuageUnstake = () => {
 
       startTxn({
         key,
-        title: shouldHarvest ? 'Unstake and Harvest' : 'Unstake LP',
+        title: shouldHarvest ? t('Unstake and Harvest') : `${t('Unstake')} LP`,
         transactions: {
           [unstakeuuid]: {
-            desc: shouldHarvest ? 'Unstake and Harvest' : 'Unstake LP',
+            desc: shouldHarvest ? t('Unstake and Harvest') : `${t('Unstake')} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -109,7 +112,7 @@ export const useGuageUnstake = () => {
       setPending(false)
       callback()
     },
-    [chainId, startTxn, writeTxn, endTxn],
+    [chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onGaugeUnstake, pending }
@@ -119,6 +122,7 @@ export const useGuageHarvset = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onGaugeHarvest = useCallback(
     async pair => {
@@ -129,10 +133,10 @@ export const useGuageHarvset = () => {
 
       startTxn({
         key,
-        title: 'Harvest rewards',
+        title: t('Harvest Rewards'),
         transactions: {
           [harvestuuid]: {
-            desc: 'Harvest rewards',
+            desc: t('Harvest Rewards'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -150,7 +154,7 @@ export const useGuageHarvset = () => {
       })
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn],
+    [chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onGaugeHarvest, pending }
@@ -160,6 +164,7 @@ export const useGuageAllHarvset = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onGaugeAllHarvest = useCallback(
     async pairs => {
@@ -170,10 +175,10 @@ export const useGuageAllHarvset = () => {
 
       startTxn({
         key,
-        title: 'Harvest farmed rewards',
+        title: t('Harvest Rewards'),
         transactions: {
           [harvestuuid]: {
-            desc: `Harvest farmed rewards (${pairs.length})`,
+            desc: `${t('Harvest Rewards')} (${pairs.length})`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -192,7 +197,7 @@ export const useGuageAllHarvset = () => {
       })
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn],
+    [chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onGaugeAllHarvest, pending }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { TrailingButton } from '@/components/buttons/Button'
@@ -10,6 +11,8 @@ import HomeImage from '../Common/HomeImage'
 
 function Hero() {
   const { push } = useRouter()
+  const t = useTranslations()
+
   return (
     <>
       <div className='absolute w-full lg:-mt-[92px]'>
@@ -50,19 +53,19 @@ function Hero() {
             window.open('https://blog.openzeppelin.com/retro-thena-audit', '_blank')
           }}
         >
-          <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>Audited by</span>
+          <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Audited by')}</span>
           <HomeImage alt='zepplin logo' src='/images/home/hero/z.svg' />
         </div>
         <h1 className='z-30 mt-[26px] w-full text-center font-archia text-4xl font-semibold leading-10 tracking-[-1.08px] lg:text-7xl lg:leading-[88px] lg:tracking-[-2.16px]'>
-          THE ULTIMATE
+          {t('THE ULTIMATE')}
           <br />
-          Decentralized Exchange
+          {t('Decentralized Exchange')}
           {/* <RotatingHeading />
           <br />
           with THENA Finance */}
         </h1>
         <TrailingButton className='z-30 mt-8 lg:mt-10' onClick={() => push('/swap')}>
-          Trade Now
+          {t('Trade Now')}
         </TrailingButton>
         <MainHero />
       </div>

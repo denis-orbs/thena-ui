@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -11,6 +12,8 @@ import { Heading } from './Common/Heading'
 import HomeImage from './Common/HomeImage'
 
 function Updates() {
+  const t = useTranslations()
+
   const { data } = useSWRImmutable(
     'home/medium',
     async () => {
@@ -40,8 +43,8 @@ function Updates() {
       <div className='flex flex-col items-center justify-center'>
         <div className='w-full max-w-[506px] px-10 xl:px-0'>
           <Heading
-            title='Updates'
-            heading='Insights from THENA'
+            title={t('UPDATES')}
+            heading={t('Insights from THENA')}
             wrapperStyles='items-center'
             headingExtraSytles='text-center'
           />

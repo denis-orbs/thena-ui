@@ -11,7 +11,7 @@ export default function AddPositionModal({ popup, setPopup, strategy }) {
   return (
     <Modal
       isOpen={popup}
-      title='Add position'
+      title='Add Liquidity'
       closeModal={() => {
         setPopup(false)
       }}

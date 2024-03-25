@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
@@ -21,6 +22,7 @@ import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/s
 
 export default function SpecificPoolPage({ params }) {
   const [currentStep, setCurrentStep] = useState(1)
+  const t = useTranslations()
   const { address } = params
   const { push } = useRouter()
   const { pairs, isLoading } = usePairs()
@@ -37,7 +39,7 @@ export default function SpecificPoolPage({ params }) {
         <div>
           <div>
             <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/pools')}>
-              Pools
+              {t('Pools')}
             </TextButton>
             <div className='mt-4 flex items-end justify-between'>
               <div className='flex space-x-4'>
@@ -51,10 +53,10 @@ export default function SpecificPoolPage({ params }) {
                 <div className='flex flex-col gap-2'>
                   <div className='flex items-center gap-3'>
                     <TextHeading className='text-2xl lg:text-4xl'>{pool.symbol}</TextHeading>
-                    <NeutralBadge>{pool.type}</NeutralBadge>
+                    <NeutralBadge>{t(pool.type)}</NeutralBadge>
                   </div>
                   <div className='flex items-center gap-0.5'>
-                    <Paragraph>Fee:</Paragraph>
+                    <Paragraph>{t('Fee')}:</Paragraph>
                     <TextHeading className='text-sm'>{pool.fee}%</TextHeading>
                   </div>
                 </div>
@@ -66,7 +68,7 @@ export default function SpecificPoolPage({ params }) {
                   data-tooltip-id='analytics-tooltip'
                 />
                 <CustomTooltip id='analytics-tooltip' className='rounded-md !py-2' place='top'>
-                  <TextHeading className='text-xs'>Analytics</TextHeading>
+                  <TextHeading className='text-xs'>{t('Analytics')}</TextHeading>
                 </CustomTooltip>
                 <TextIconButton
                   Icon={ExternalIcon}
@@ -74,7 +76,7 @@ export default function SpecificPoolPage({ params }) {
                   data-tooltip-id='contract-tooltip'
                 />
                 <CustomTooltip id='contract-tooltip' className='rounded-md !py-2' place='top'>
-                  <TextHeading className='text-xs'>Contract address</TextHeading>
+                  <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
                 </CustomTooltip>
               </div>
             </div>
@@ -82,24 +84,24 @@ export default function SpecificPoolPage({ params }) {
           <Box className='mt-10 grid grid-cols-2 gap-5 lg:grid-cols-4'>
             <div className='flex w-full flex-col gap-2'>
               <TextHeading>{pool.apr}</TextHeading>
-              <Paragraph>APR</Paragraph>
+              <Paragraph>{t('APR')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>
               <TextHeading>${formatAmount(pool.tvlUSD)}</TextHeading>
-              <Paragraph>TVL</Paragraph>
+              <Paragraph>{t('TVL')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>
               <TextHeading>${formatAmount(pool.dayVolume)}</TextHeading>
-              <Paragraph>Volume (24h)</Paragraph>
+              <Paragraph>{t('Volume (24h)')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>
               <TextHeading>${formatAmount(pool.dayFees)}</TextHeading>
-              <Paragraph>Fees (24h)</Paragraph>
+              <Paragraph>{t('Fees (24h)')}</Paragraph>
             </div>
           </Box>
         </div>
         <div className='flex flex-col gap-4'>
-          <h2>My Position</h2>
+          <h2>{t('My Positions')}</h2>
           {userPools && userPools.length > 0 ? (
             <div className='grid grid-cols-1 gap-4'>
               {userPools.map(sub => (
@@ -112,7 +114,7 @@ export default function SpecificPoolPage({ params }) {
                 <InfoCircleWhite className='h-4 w-4' />
               </Highlight>
               <div className='flex flex-col items-center gap-3'>
-                <h2>No Position Found</h2>
+                <h2>{t('No Position Found')}</h2>
               </div>
             </div>
           )}
@@ -121,7 +123,7 @@ export default function SpecificPoolPage({ params }) {
       <div className='w-full lg:min-w-[564px]'>
         <div className='mb-5 flex items-center gap-2'>
           {currentStep === 2 && <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(1)} />}
-          <h2>Add Liquidity</h2>
+          <h2>{t('Add Liquidity')}</h2>
         </div>
         <AddLiquidity pool={pool} currentStep={currentStep} setCurrentStep={setCurrentStep} />
       </div>

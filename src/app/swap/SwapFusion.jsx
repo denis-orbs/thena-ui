@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import { JSBI, Percent, TradeType } from 'thena-sdk-core'
 
@@ -49,6 +50,7 @@ export default function SwapFusion({
   const outCurrency = useCurrency(toAsset ? toAsset.address : undefined)
   const assets = useAssets()
   const mutateAssets = useMutateAssets()
+  const t = useTranslations()
 
   const showWrap = useMemo(() => isWrap || isUnwrap, [isWrap, isUnwrap])
 
@@ -99,13 +101,6 @@ export default function SwapFusion({
   }, [isExactIn, showWrap, parsedAmounts, independentField, typedValue])
 
   const btnMsg = useMemo(() => {
-    if (!account) {
-      return {
-        isError: true,
-        label: 'Connect Wallet',
-      }
-    }
-
     if (!fromAsset || !toAsset) {
       return {
         isError: true,
@@ -152,7 +147,7 @@ export default function SwapFusion({
       isError: false,
       label: 'Swap',
     }
-  }, [account, fromAsset, toAsset, parsedAmount, parsedAmounts, bestTrade, isWrap, isUnwrap])
+  }, [fromAsset, toAsset, parsedAmount, parsedAmounts, bestTrade, isWrap, isUnwrap])
 
   const onInputFieldChange = val => {
     setIndependentField(Field.CURRENCY_A)
@@ -193,7 +188,7 @@ export default function SwapFusion({
     <>
       <Box className='w-full max-w-[480px]'>
         <div className='mb-3 flex items-center justify-between'>
-          <h2>Swap</h2>
+          <h2>{t('Swap')}</h2>
           <div className='flex items-center gap-2'>
             {/* <Selection data={selections} /> */}
             <TxnSettings />
@@ -236,13 +231,16 @@ export default function SwapFusion({
         {bestTrade && !showWrap && (
           <div className='flex flex-col gap-2 py-3'>
             <div className='flex items-center justify-between'>
-              <TextHeading>Rate</TextHeading>
+              <TextHeading>{t('Rate')}</TextHeading>
               <Paragraph>
                 {`${
                   Number(bestTrade.executionPrice.toSignificant()) === 0
                     ? 0
                     : bestTrade.executionPrice.invert().toSignificant(4)
-                } ${fromAsset.symbol} per ${toAsset.symbol}`}
+                } ${t('[symbolA] per [symbolB]', {
+                  symbolA: fromAsset.symbol,
+                  symbolB: toAsset.symbol,
+                })}`}
               </Paragraph>
             </div>
             <div className='flex items-center justify-between'>
@@ -260,19 +258,19 @@ export default function SwapFusion({
               </Paragraph>
             </div>
             <div className='flex items-center justify-between'>
-              <TextHeading>Liquidity Provider Fee</TextHeading>
+              <TextHeading>{t('Liquidity Provider Fee')}</TextHeading>
               <Paragraph>
                 {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${realizedLPFee.currency.symbol}` : '-'}
               </Paragraph>
             </div>
             <div className='flex items-center justify-between'>
-              <TextHeading>Price Impact</TextHeading>
+              <TextHeading>{t('Price Impact')}</TextHeading>
               <Paragraph>{formatAmount(priceImpactInNumber)}%</Paragraph>
             </div>
             {priceImpactInNumber > 5 && (
               <Alert>
                 <InfoIcon className='h-4 w-4 stroke-error-600' />
-                <p>Price impact too high!</p>
+                <p>{t('Price impact too high')}</p>
               </Alert>
             )}
           </div>

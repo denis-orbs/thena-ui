@@ -2,19 +2,21 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
+import { LOCALES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import usePrices from '@/hooks/usePrices'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
-import { useChainSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon } from '@/svgs'
+import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
+import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, LangIcon } from '@/svgs'
 
 import Logo from '~/logo.svg'
 
@@ -24,17 +26,22 @@ import Skeleton from '../skeleton'
 import Tabs from '../tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 
-const data = [
+const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
 ]
 
-function ChainSelect() {
+const langs = [
+  { img: '/images/en.png', lang: LOCALES.en, label: 'English' },
+  { img: '/images/zh.png', lang: LOCALES.zh, label: 'Chinese' },
+]
+
+function ChainSelect({ t }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
   const { networkId, updateNetwork } = useChainSettings()
 
-  const selected = useMemo(() => data[networkId === ChainId.BSC ? 0 : 1], [networkId])
+  const selected = useMemo(() => chains[networkId === ChainId.BSC ? 0 : 1], [networkId])
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -67,7 +74,7 @@ function ChainSelect() {
           !open && 'invisible opacity-0',
         )}
       >
-        {data.map((item, idx) => (
+        {chains.map((item, idx) => (
           <div
             className={cn(
               'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
@@ -82,8 +89,8 @@ function ChainSelect() {
             }}
           >
             <div className='flex items-center gap-2'>
-              <CircleImage src={item.img} alt='' className='h-4 w-4' />
-              <TextHeading className='text-nowrap'>{item.label}</TextHeading>
+              <CircleImage src={item.img} alt='' className='h-5 w-5' />
+              <TextHeading className='text-nowrap'>{t(item.label)}</TextHeading>
             </div>
           </div>
         ))}
@@ -92,12 +99,12 @@ function ChainSelect() {
   )
 }
 
-function ChainMobileSelect() {
+function ChainMobileSelect({ t }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
   const { networkId, updateNetwork } = useChainSettings()
 
-  const selected = useMemo(() => data[networkId === ChainId.BSC ? 0 : 1], [networkId])
+  const selected = useMemo(() => chains[networkId === ChainId.BSC ? 0 : 1], [networkId])
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -133,7 +140,7 @@ function ChainMobileSelect() {
           !open && 'invisible opacity-0',
         )}
       >
-        {data.map((item, idx) => (
+        {chains.map((item, idx) => (
           <div
             className={cn(
               'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
@@ -149,7 +156,7 @@ function ChainMobileSelect() {
           >
             <div className='flex items-center gap-2'>
               <CircleImage src={item.img} alt='' className='h-4 w-4' />
-              <TextHeading className='text-nowrap'>{item.label}</TextHeading>
+              <TextHeading className='text-nowrap'>{t(item.label)}</TextHeading>
             </div>
           </div>
         ))}
@@ -157,6 +164,62 @@ function ChainMobileSelect() {
     </div>
   )
 }
+
+function LanguageSelect() {
+  const [open, setOpen] = useState(false)
+  const wrapperRef = useRef(null)
+  const { locale, updateLanguage } = useLocaleSettings()
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [wrapperRef])
+
+  return (
+    <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
+      <TextIconButton Icon={LangIcon} onClick={() => setOpen(!open)} />
+      <div
+        className={cn(
+          'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
+          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow',
+          'transition-all duration-150 ease-out',
+          !open && 'invisible opacity-0',
+        )}
+      >
+        {langs.map((item, idx) => (
+          <div
+            className={cn(
+              'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
+              'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
+            )}
+            key={`dropdown-${idx}`}
+            onClick={async () => {
+              if (locale !== item.lang) {
+                updateLanguage(item.lang)
+              }
+              setOpen(false)
+            }}
+          >
+            <div className='flex items-center gap-2'>
+              <CircleImage src={item.img} alt='' className='h-5 w-5' />
+              <TextHeading className='text-nowrap'>{item.label}</TextHeading>
+              {locale === item.lang && <div className='h-2 w-2 rounded-full bg-primary-600' />}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const showLanguage = false
 
 function Header() {
   const [selected, setSelected] = useState(null)
@@ -168,6 +231,7 @@ function Header() {
   const { account, chainId } = useWallet()
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
+  const t = useTranslations()
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
@@ -198,12 +262,12 @@ function Header() {
         sub: [
           {
             heading: 'Spot Trade',
-            subheading: 'Easy & user-friendly trading interface',
+            subheading: 'Easy and user-friendly trading interface',
             onClickHandler: () => push('/swap'),
           },
           {
             heading: 'Trade Perps',
-            subheading: ' Trade perpetual contracts with leverage',
+            subheading: 'Trade perpetual contracts with leverage',
             onClickHandler: () => window.open('https://alpha.thena.fi', '_blank'),
           },
           {
@@ -247,12 +311,12 @@ function Header() {
             ? [
                 {
                   heading: 'Analytics',
-                  subheading: 'See the data of the platform & pairs',
+                  subheading: 'See platform data',
                   onClickHandler: () => push('/analytics'),
                 },
                 {
                   heading: 'Protocols',
-                  subheading: 'Add bribes & voting incentives',
+                  subheading: 'Add gauges and voting incentives',
                   onClickHandler: () => push('/protocols'),
                 },
                 {
@@ -266,7 +330,7 @@ function Header() {
             : [
                 {
                   heading: 'Analytics',
-                  subheading: 'See the data of the platform & pairs',
+                  subheading: 'See platform data',
                   onClickHandler: () => push('/analytics'),
                 },
                 {
@@ -369,7 +433,7 @@ function Header() {
                       )}
                       onClick={() => item.onClickHandler && item.onClickHandler()}
                     >
-                      {item.label}
+                      {t(item.label)}
                     </span>
                   </div>
                   {item.sub && (
@@ -404,8 +468,8 @@ function Header() {
                               }
                             }}
                           >
-                            <TextHeading>{subitem.heading}</TextHeading>
-                            <TextSubHeading>{subitem.subheading}</TextSubHeading>
+                            <TextHeading>{t(subitem.heading)}</TextHeading>
+                            <TextSubHeading>{t(subitem.subheading)}</TextSubHeading>
                           </div>
                         ))}
                       </div>
@@ -424,9 +488,10 @@ function Header() {
                 <Skeleton className='h-5 w-10' />
               )}
             </div>
-            <ChainSelect />
-            <OutlinedButton responsive onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
-              Enter ALPHA
+            <ChainSelect t={t} />
+            {showLanguage && <LanguageSelect />}
+            <OutlinedButton className='hidden lg:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
+              {t('Enter ALPHA')}
             </OutlinedButton>
             <ConnectButton className='hidden lg:flex' />
             <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
@@ -461,8 +526,8 @@ function Header() {
                       }
                     }}
                   >
-                    <TextHeading>{submenu.heading}</TextHeading>
-                    <TextSubHeading>{submenu.subheading}</TextSubHeading>
+                    <TextHeading>{t(submenu.heading)}</TextHeading>
+                    <TextSubHeading>{t(submenu.subheading)}</TextSubHeading>
                   </div>
                 ))}
             </div>
@@ -488,9 +553,9 @@ function Header() {
                 ))}
               </div>
               <ModalFooter className='flex flex-col gap-2'>
-                <ChainMobileSelect />
+                <ChainMobileSelect t={t} />
                 <OutlinedButton onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
-                  Enter ALPHA
+                  {t('Enter ALPHA')}
                 </OutlinedButton>
                 <ConnectButton />
               </ModalFooter>
