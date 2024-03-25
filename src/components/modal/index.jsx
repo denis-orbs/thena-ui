@@ -33,6 +33,7 @@ function Modal({
   width = null,
   isBack = false,
   onClickHandler = null,
+  isIntl,
   ...rest
 }) {
   const t = useTranslations()
@@ -95,7 +96,7 @@ function Modal({
             <TextIconButton Icon={ArrowLeftIcon} className='mr-2' onClick={() => onClickHandler && onClickHandler()} />
           )}
           <div className='font-archia text-xl font-semibold text-neutral-50 lg:text-3xl'>
-            {title && typeof title === 'string' && t(title)}
+            {isIntl ? title : title && typeof title === 'string' && t(title)}
           </div>
         </div>
         <TextIconButton Icon={XIcon} onClick={closeModal} />

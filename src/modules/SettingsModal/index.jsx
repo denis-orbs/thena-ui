@@ -11,7 +11,7 @@ import { SettingsIcon } from '@/svgs'
 
 import { LiquidityHubSettings } from '../LiquidityHub/components'
 
-const slipageTolerance = ['0.1', '0.5', '1.00']
+const slipageTolerance = [0.1, 0.5, 1]
 
 function TxnSettings() {
   const [popup, setPopup] = useState(false)
@@ -22,7 +22,7 @@ function TxnSettings() {
   const selections = useMemo(
     () =>
       slipageTolerance.map(ele => ({
-        label: `${ele}%`,
+        label: ele,
         active: slippage === Number(ele),
         onClickHandler: () => {
           updateSlippage(Number(ele))
@@ -45,7 +45,7 @@ function TxnSettings() {
           setPopup(false)
         }}
         width={480}
-        title={t('Transaction Settings')}
+        title='Transaction Settings'
       >
         <ModalBody>
           <div className='flex w-full flex-col items-start justify-start gap-3'>

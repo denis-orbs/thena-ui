@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
@@ -128,6 +129,7 @@ export const useStakeNft = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { account } = useWallet()
+  const t = useTranslations()
 
   const handleStake = useCallback(
     async (ids, callback) => {
@@ -140,17 +142,17 @@ export const useStakeNft = () => {
       const isApproved = await readCall(theNFTContract, 'isApprovedForAll', [account, newStakingAddress])
       startTxn({
         key,
-        title: 'Stake your theNFTs',
+        title: t('Stake theNFTs'),
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: 'Approve theNFT',
+              desc: `${t('Approve')} theNFT`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [stakeuuid]: {
-            desc: `Stake ${ids.length} theNFT`,
+            desc: t('Stake theNFTs'),
             status: TXN_STATUS.START,
           },
         },
@@ -180,7 +182,7 @@ export const useStakeNft = () => {
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, writeTxn, account],
+    [startTxn, endTxn, writeTxn, account, t],
   )
 
   return { onStake: handleStake, pending }
@@ -189,6 +191,7 @@ export const useStakeNft = () => {
 export const useUnstakeNft = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const handleUnstake = useCallback(
     async (ids, callback) => {
@@ -196,10 +199,10 @@ export const useUnstakeNft = () => {
       const unstakeuuid = uuidv4()
       startTxn({
         key,
-        title: 'Unstake your theNFTs',
+        title: t('Unstake theNFTs'),
         transactions: {
           [unstakeuuid]: {
-            desc: `Unstake ${ids.length} theNFT`,
+            desc: t('Unstake theNFTs'),
             status: TXN_STATUS.START,
           },
         },
@@ -220,7 +223,7 @@ export const useUnstakeNft = () => {
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, writeTxn],
+    [startTxn, endTxn, writeTxn, t],
   )
 
   return { onUnstake: handleUnstake, pending }
@@ -229,16 +232,17 @@ export const useUnstakeNft = () => {
 export const useNftFeesClaim = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const handleHarvest = useCallback(async () => {
     const key = uuidv4()
     const harvestuuid = uuidv4()
     startTxn({
       key,
-      title: 'Claim Fees',
+      title: t('Claim Fees'),
       transactions: {
         [harvestuuid]: {
-          desc: 'Claim Fees',
+          desc: t('Claim Fees'),
           status: TXN_STATUS.START,
           hash: null,
         },
@@ -258,7 +262,7 @@ export const useNftFeesClaim = () => {
       final: 'Claim Successful',
     })
     setPending(false)
-  }, [startTxn, endTxn, writeTxn])
+  }, [startTxn, endTxn, writeTxn, t])
 
   return { onHarvest: handleHarvest, pending }
 }
@@ -267,6 +271,7 @@ export const useNftRoyaltyClaim = () => {
   const [pending, setPending] = useState(false)
   const { account } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const handleRoyaltyClaim = useCallback(
     async callback => {
@@ -274,10 +279,10 @@ export const useNftRoyaltyClaim = () => {
       const harvestuuid = uuidv4()
       startTxn({
         key,
-        title: 'Claim Royalty Fees',
+        title: t('Claim Fees'),
         transactions: {
           [harvestuuid]: {
-            desc: 'Claim Royalty Fees',
+            desc: t('Claim Fees'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -299,7 +304,7 @@ export const useNftRoyaltyClaim = () => {
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, writeTxn, account],
+    [startTxn, endTxn, writeTxn, account, t],
   )
 
   return { onRoyaltyClaim: handleRoyaltyClaim, pending }

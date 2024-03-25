@@ -17,6 +17,7 @@ export const useAlgebraAdd = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, writeTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onAlgebraAdd = useCallback(
     async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline) => {
@@ -43,24 +44,24 @@ export const useAlgebraAdd = () => {
       }
       startTxn({
         key,
-        title: 'Add Liquidity',
+        title: t('Add Liquidity'),
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {
-              desc: `Approve ${baseCurrency.symbol}`,
+              desc: `${t('Approve')} ${baseCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isSecondApproved && {
             [approve2uuid]: {
-              desc: `Approve ${quoteCurrency.symbol}`,
+              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [adduuid]: {
-            desc: 'Add Liquidity',
+            desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -101,7 +102,7 @@ export const useAlgebraAdd = () => {
       })
       setPending(false)
     },
-    [account, startTxn, endTxn, writeTxn, sendTxn, chainId],
+    [account, startTxn, endTxn, writeTxn, sendTxn, chainId, t],
   )
 
   return { onAlgebraAdd, pending }
@@ -111,6 +112,7 @@ export const useAlgebraClaim = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onAlgebraClaim = useCallback(
     async (tokenId, feeValue0, feeValue1, callback) => {
@@ -118,10 +120,10 @@ export const useAlgebraClaim = () => {
       const claimuuid = uuidv4()
       startTxn({
         key,
-        title: 'Claim Fees',
+        title: t('Claim Fees'),
         transactions: {
           [claimuuid]: {
-            desc: `Claim ${feeValue0.currency.symbol}/${feeValue1.currency.symbol} Fees`,
+            desc: t('Claim Fees'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -147,7 +149,7 @@ export const useAlgebraClaim = () => {
       setPending(false)
       callback()
     },
-    [account, startTxn, endTxn, sendTxn, chainId],
+    [account, startTxn, endTxn, sendTxn, chainId, t],
   )
 
   return { onAlgebraClaim, pending }
@@ -157,6 +159,7 @@ export const useAlgebraRemove = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onAlgebraRemove = useCallback(
     async (tokenId, position, liquidityPercentage, feeValue0, feeValue1, slippage, deadline, callback) => {
@@ -164,10 +167,10 @@ export const useAlgebraRemove = () => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: 'Remove Liquidity',
+        title: t('Remove Liquidity'),
         transactions: {
           [removeuuid]: {
-            desc: `Remove ${feeValue0.currency.symbol}/${feeValue1.currency.symbol} position`,
+            desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -200,7 +203,7 @@ export const useAlgebraRemove = () => {
       setPending(false)
       callback()
     },
-    [account, startTxn, endTxn, sendTxn, chainId],
+    [account, startTxn, endTxn, sendTxn, chainId, t],
   )
 
   return { onAlgebraRemove, pending }

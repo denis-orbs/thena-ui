@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
@@ -9,7 +10,7 @@ import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
-import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -88,6 +89,7 @@ export const useOdosSwap = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onOdosSwap = useCallback(
     async (fromAsset, toAsset, fromAmount, toAmount, quote, callback) => {
@@ -104,19 +106,17 @@ export const useOdosSwap = () => {
       }
       startTxn({
         key,
-        title: `Swap ${fromAsset.symbol} for ${toAsset.symbol}`,
+        title: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: `Approve ${fromAsset.symbol}`,
+              desc: `${t('Approve')} ${fromAsset.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [swapuuid]: {
-            desc: `Swap ${formatAmount(fromAmount)} ${fromAsset.symbol} for ${formatAmount(toAmount)} ${
-              toAsset.symbol
-            }`,
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -161,7 +161,7 @@ export const useOdosSwap = () => {
       setPending(false)
       callback()
     },
-    [account, chainId, startTxn, writeTxn, endTxn, sendTxn],
+    [account, chainId, startTxn, writeTxn, endTxn, sendTxn, t],
   )
 
   return { onOdosSwap, pending }
@@ -202,6 +202,7 @@ export const useBestSwap = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
+  const t = useTranslations()
 
   const onBestSwap = useCallback(
     async (fromAsset, toAsset, fromAmount, toAmount, slippage, callback) => {
@@ -218,19 +219,17 @@ export const useBestSwap = () => {
       }
       startTxn({
         key,
-        title: `Swap ${fromAsset.symbol} for ${toAsset.symbol}`,
+        title: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: `Approve ${fromAsset.symbol}`,
+              desc: `${t('Approve')} ${fromAsset.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [swapuuid]: {
-            desc: `Swap ${formatAmount(fromAmount)} ${fromAsset.symbol} for ${formatAmount(toAmount)} ${
-              toAsset.symbol
-            }`,
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -277,7 +276,7 @@ export const useBestSwap = () => {
       setPending(false)
       callback()
     },
-    [account, chainId, startTxn, writeTxn, sendTxn, endTxn],
+    [account, chainId, startTxn, writeTxn, sendTxn, endTxn, t],
   )
 
   return { onBestSwap, pending }
@@ -287,6 +286,7 @@ export const useWrap = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onWrap = useCallback(
     async amount => {
@@ -297,10 +297,10 @@ export const useWrap = () => {
 
       startTxn({
         key,
-        title: 'Wrap BNB for WBNB',
+        title: t('Wrap'),
         transactions: {
           [wrapuuid]: {
-            desc: `Wrap ${formatAmount(amount)} BNB for WBNB`,
+            desc: t('Wrap'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -318,7 +318,7 @@ export const useWrap = () => {
       })
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn],
+    [chainId, startTxn, writeTxn, endTxn, t],
   )
 
   const onUnwrap = useCallback(
@@ -330,10 +330,10 @@ export const useWrap = () => {
 
       startTxn({
         key,
-        title: 'Unwrap WBNB for BNB',
+        title: t('Unwrap'),
         transactions: {
           [unwrapuuid]: {
-            desc: `Unwrap ${formatAmount(amount)} WBNB for BNB`,
+            desc: t('Unwrap'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -351,7 +351,7 @@ export const useWrap = () => {
       })
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn],
+    [chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onWrap, onUnwrap, pending }

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { TradeType } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
@@ -120,6 +121,7 @@ export function useSwapCallback(
   const swapCalls = useSwapCallArguments(trade, allowedSlippage, account, timestamp, chainId)
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
   const publicClient = usePublicClient()
+  const t = useTranslations()
 
   const onFusionSwap = useCallback(
     async callback => {
@@ -130,8 +132,8 @@ export function useSwapCallback(
       const outputCurrency = trade.outputAmount.currency
       const inputSymbol = inputCurrency.symbol
       const outputSymbol = outputCurrency.symbol
-      const inputAmount = trade.inputAmount.toSignificant(4)
-      const outputAmount = trade.outputAmount.toSignificant(4)
+      // const inputAmount = trade.inputAmount.toSignificant(4)
+      // const outputAmount = trade.outputAmount.toSignificant(4)
       setPending(true)
 
       let isApproved = true
@@ -143,17 +145,17 @@ export function useSwapCallback(
       }
       startTxn({
         key,
-        title: `Swap ${inputSymbol} for ${outputSymbol}`,
+        title: t('Swap [symbolA] for [symbolB]', { symbolA: inputSymbol, symbolB: outputSymbol }),
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: `Approve ${inputSymbol}`,
+              desc: `${t('Approve')} ${inputSymbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [swapuuid]: {
-            desc: `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`,
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: inputSymbol, symbolB: outputSymbol }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -239,7 +241,7 @@ export function useSwapCallback(
       })
       callback()
     },
-    [trade, publicClient, account, swapCalls, chainId, startTxn, endTxn, writeTxn, sendTxn],
+    [trade, publicClient, account, swapCalls, chainId, startTxn, endTxn, writeTxn, sendTxn, t],
   )
 
   return { pending, callback: onFusionSwap }

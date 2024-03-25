@@ -30,7 +30,7 @@ function Toggle({ className, onChange, toggleId, label, checked }) {
           )}
         />
       </label>
-      <Paragraph>{t(label)}</Paragraph>
+      <Paragraph>{label && t(label)}</Paragraph>
     </div>
   )
 }

@@ -1,6 +1,5 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
 import { memo, useEffect, useMemo, useState } from 'react'
 
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
@@ -19,7 +18,6 @@ import { getTimeWindowChange } from './utils'
 
 function SwapChart({ asset0, asset1, currentSwapPrice }) {
   const [timeWindow, setTimeWindow] = useState()
-  const t = useTranslations()
   const { locale } = useLocaleSettings()
 
   const { data: pairPrices = [], error } = useFetchPairPrices({
@@ -70,35 +68,35 @@ function SwapChart({ asset0, asset1, currentSwapPrice }) {
   const periods = useMemo(
     () => [
       {
-        label: t('24H'),
+        label: '24H',
         active: timeWindow === PairDataTimeWindow.DAY,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.DAY)
         },
       },
       {
-        label: t('1W'),
+        label: '1W',
         active: timeWindow === PairDataTimeWindow.WEEK,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.WEEK)
         },
       },
       {
-        label: t('1M'),
+        label: '1M',
         active: timeWindow === PairDataTimeWindow.MONTH,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.MONTH)
         },
       },
       {
-        label: t('1Y'),
+        label: '1Y',
         active: timeWindow === PairDataTimeWindow.YEAR,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.YEAR)
         },
       },
     ],
-    [timeWindow, t],
+    [timeWindow],
   )
 
   useEffect(() => {

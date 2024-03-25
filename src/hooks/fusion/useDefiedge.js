@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
@@ -5,7 +6,7 @@ import { maxUint256 } from 'viem'
 import { TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
 import { getDefiedgeStrategyContract, getERC20Contract, getGaugeContract, getWBNBContract } from '@/lib/contracts'
-import { formatAmount, fromWei, toWei } from '@/lib/utils'
+import { fromWei, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -16,6 +17,7 @@ export const useDefiedgeAdd = () => {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
@@ -40,31 +42,31 @@ export const useDefiedgeAdd = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: 'Add Liquidity',
+        title: t('Add Liquidity'),
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
-              desc: `Wrap ${formatAmount(fromWei(amountToWrap.toString(10)))} BNB for WBNB`,
+              desc: t('Wrap'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isFirstApproved && {
             [approve1uuid]: {
-              desc: `Approve ${baseCurrency.symbol}`,
+              desc: `${t('Approve')} ${baseCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isSecondApproved && {
             [approve2uuid]: {
-              desc: `Approve ${quoteCurrency.symbol}`,
+              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [supplyuuid]: {
-            desc: 'Add Liquidity',
+            desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -114,7 +116,7 @@ export const useDefiedgeAdd = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput],
+    [account, startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput, t],
   )
 
   return { onDefiedgeAdd, pending }
@@ -125,6 +127,7 @@ export const useDefiedgeAddAndStake = () => {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
+  const t = useTranslations()
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
@@ -151,41 +154,41 @@ export const useDefiedgeAddAndStake = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: 'Add Liquidity',
+        title: t('Add Liquidity'),
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
-              desc: `Wrap ${formatAmount(fromWei(amountToWrap.toString(10)))} BNB for WBNB`,
+              desc: t('Wrap'),
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isFirstApproved && {
             [approve1uuid]: {
-              desc: `Approve ${baseCurrency.symbol}`,
+              desc: `${t('Approve')} ${baseCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isSecondApproved && {
             [approve2uuid]: {
-              desc: `Approve ${quoteCurrency.symbol}`,
+              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [supplyuuid]: {
-            desc: 'Add Liquidity',
+            desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
           [approve3uuid]: {
-            desc: 'Approve LP',
+            desc: `${t('Approve')} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
           [stakeuuid]: {
-            desc: 'Stake LP',
+            desc: `${t('Stake')} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -260,7 +263,7 @@ export const useDefiedgeAddAndStake = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, updateTxn, endTxn, networkId, onFieldAInput, onFieldBInput],
+    [account, startTxn, writeTxn, updateTxn, endTxn, networkId, onFieldAInput, onFieldBInput, t],
   )
 
   return { onDefiedgeAddAndStake, pending }
@@ -271,6 +274,7 @@ export const useDefiedgeRemove = () => {
   const { networkId } = useChainSettings()
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
+  const t = useTranslations()
 
   const onDefiedgeRemove = useCallback(
     async (pool, amount, callback) => {
@@ -278,10 +282,10 @@ export const useDefiedgeRemove = () => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: 'Remove Liquidity',
+        title: t('Remove Liquidity'),
         transactions: {
           [removeuuid]: {
-            desc: 'Remove Liquidity',
+            desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -303,7 +307,7 @@ export const useDefiedgeRemove = () => {
       callback()
       setPending(false)
     },
-    [startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput],
+    [startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput, t],
   )
 
   return { onDefiedgeRemove, pending }

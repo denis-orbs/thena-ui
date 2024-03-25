@@ -45,10 +45,10 @@ export default function IncentivePage() {
 
   const errorMsg = useMemo(() => {
     if (!pair) {
-      return 'Select pair'
+      return 'Select Pair'
     }
     if (!asset) {
-      return 'Select reward token'
+      return 'Select Asset'
     }
     if (asset.address === 'BNB') {
       return 'BNB not available'

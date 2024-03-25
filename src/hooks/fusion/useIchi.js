@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
@@ -14,7 +15,7 @@ import {
   getWBNBContract,
 } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, fromWei, toWei } from '@/lib/utils'
+import { fromWei, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
@@ -24,6 +25,7 @@ export const useIchiManage = () => {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
+  const t = useTranslations()
 
   const onIchiAdd = useCallback(
     async (vault, amount, slippage) => {
@@ -55,17 +57,17 @@ export const useIchiManage = () => {
       setPending(true)
       startTxn({
         key,
-        title: `Deposit ${depositToken.symbol} in the vault`,
+        title: `${t('Deposit')} ${depositToken.symbol}`,
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: `Approve ${depositToken.symbol}`,
+              desc: `${t('Approve')} ${depositToken.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [supplyuuid]: {
-            desc: `Deposit ${depositToken.symbol}`,
+            desc: `${t('Deposit')} ${depositToken.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -112,7 +114,7 @@ export const useIchiManage = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, endTxn, networkId],
+    [account, startTxn, writeTxn, endTxn, networkId, t],
   )
 
   const onIchiAddAndStake = useCallback(
@@ -148,34 +150,34 @@ export const useIchiManage = () => {
       setPending(true)
       startTxn({
         key,
-        title: 'Deposit and stake',
+        title: t('Deposit and Stake'),
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
-              desc: `Wrap ${formatAmount(amountToWrap)} BNB for WBNB`,
+              desc: t('Wrap'),
               status: TXN_STATUS.WAITING,
               hash: null,
             },
           }),
           ...(!isApproved && {
             [approveuuid]: {
-              desc: `Approve ${depositToken.symbol}`,
+              desc: `${t('Approve')} ${depositToken.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [supplyuuid]: {
-            desc: `Deposit ${depositToken.symbol}`,
+            desc: `${t('Deposit')} ${depositToken.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
           },
           [approve1uuid]: {
-            desc: 'Approve LP',
+            desc: `${t('Approve')} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
           [stakeuuid]: {
-            desc: 'Stake LP',
+            desc: `${t('Stake')} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -260,7 +262,7 @@ export const useIchiManage = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, endTxn, updateTxn, networkId],
+    [account, startTxn, writeTxn, endTxn, updateTxn, networkId, t],
   )
 
   return { onIchiAdd, onIchiAddAndStake, pending }
@@ -271,6 +273,7 @@ export const useIchiRemove = () => {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onIchiRemove = useCallback(
     async (pool, amount, callback) => {
@@ -278,10 +281,10 @@ export const useIchiRemove = () => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: 'Remove Liquidity',
+        title: t('Remove Liquidity'),
         transactions: {
           [removeuuid]: {
-            desc: 'Remove Liquidity',
+            desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -301,7 +304,7 @@ export const useIchiRemove = () => {
       callback()
       setPending(false)
     },
-    [account, startTxn, writeTxn, endTxn, networkId],
+    [account, startTxn, writeTxn, endTxn, networkId, t],
   )
 
   return { onIchiRemove, pending }

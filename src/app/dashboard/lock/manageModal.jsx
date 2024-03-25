@@ -107,6 +107,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
         setType(null)
       }}
       onAfterClose={() => setType(null)}
+      isIntl={!type}
     >
       {!type && (
         <ModalBody>

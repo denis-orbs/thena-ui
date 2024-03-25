@@ -76,7 +76,7 @@ export default function SpecificPoolPage({ params }) {
                   data-tooltip-id='contract-tooltip'
                 />
                 <CustomTooltip id='contract-tooltip' className='rounded-md !py-2' place='top'>
-                  <TextHeading className='text-xs'>{t('Contract address')}</TextHeading>
+                  <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
                 </CustomTooltip>
               </div>
             </div>
