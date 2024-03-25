@@ -157,7 +157,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs }) {
           </div>
         ) : (
           <div className='flex flex-col gap-5'>
-            <BalanceInput title='Amount' asset={theAsset} amount={amount} onAmountChange={setAmount} autoFocus />
+            <BalanceInput title={t('Amount')} asset={theAsset} amount={amount} onAmountChange={setAmount} autoFocus />
             <div className='my-3 flex items-center justify-between'>
               <Paragraph>{t('New veTHE Voting Power')}</Paragraph>
               <div>

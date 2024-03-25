@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useCallback } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -17,6 +18,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo }) {
   const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
   const { onAlgebraAdd, pending } = useAlgebraAdd()
   const { slippage, deadline } = useSettings()
+  const t = useTranslations()
 
   const onAddLiquidity = useCallback(() => {
     if (errorMessage) {
@@ -39,7 +41,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo }) {
       }}
       className='w-full'
     >
-      Add Liquidity
+      {t('Add Liquidity')}
     </PrimaryButton>
   )
 }

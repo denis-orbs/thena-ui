@@ -212,7 +212,7 @@ export default function HoldingsPage() {
                   }))}
                   selected={filter}
                   setSelected={ele => setFilter(ele.label)}
-                  placeHolder='Choose category'
+                  placeHolder='Choose Category'
                 />
                 <Toggle
                   className='hidden lg:flex'

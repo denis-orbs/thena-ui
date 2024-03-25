@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
@@ -71,6 +72,8 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
       refreshInterval: 0,
     },
   )
+  const t = useTranslations()
+
   const pair = useMemo(
     () => fusionPairs.find(ele => pairAddress && pairAddress.toLowerCase() === ele.address),
     [fusionPairs, pairAddress],
@@ -151,27 +154,31 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
           <div className='flex flex-col'>
             <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
             <div className='mt-5 flex flex-col gap-4'>
-              <TextHeading className='text-lg'>Reserve Info</TextHeading>
+              <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
               <div className='flex flex-col gap-3'>
                 <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token0)} Amount</Paragraph>
+                  <Paragraph className='font-medium'>
+                    {unwrappedSymbol(strategy.token0)} {t('Amount')}
+                  </Paragraph>
                   <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
                 </div>
                 <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token1)} Amount</Paragraph>
+                  <Paragraph className='font-medium'>
+                    {unwrappedSymbol(strategy.token1)} {t('Amount')}
+                  </Paragraph>
                   <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
                 </div>
               </div>
             </div>
             <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-              <TextHeading className='text-lg'>My Info</TextHeading>
+              <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
               <div className='flex flex-col gap-3'>
                 <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>Pooled Liquidity</Paragraph>
+                  <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
                   <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
                 </div>
                 <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>Staked Liquidity</Paragraph>
+                  <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
                   <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
                 </div>
               </div>
@@ -191,7 +198,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
               }}
               className='w-full'
             >
-              Add Liquidity
+              {t('Add Liquidity')}
             </SecondaryButton>
             {strategy && strategy.gauge.address !== zeroAddress && (
               <PrimaryButton
@@ -201,7 +208,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
                 }}
                 className='w-full'
               >
-                Add Liquidity & Stake
+                {t('Add Liquidity & Stake')}
               </PrimaryButton>
             )}
           </>

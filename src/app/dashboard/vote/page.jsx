@@ -235,7 +235,7 @@ export default function VotePage() {
               <div className='flex flex-col gap-1'>
                 {pool.gauge.bribes && pool.gauge.bribes.bribe && (
                   <>
-                    <TextHeading>Voting Incentives</TextHeading>
+                    <TextHeading>{t('Voting Incentives')}</TextHeading>
                     <div className='flex flex-col'>
                       {pool.gauge.bribes.bribe.map((bribe, idx) => (
                         <Paragraph key={`bribe-${idx}`}>
@@ -247,7 +247,7 @@ export default function VotePage() {
                 )}
                 {pool.gauge.bribes && pool.gauge.bribes.fee && (
                   <>
-                    <TextHeading>Projected Fees</TextHeading>
+                    <TextHeading>{t('Projected Fees')}</TextHeading>
                     <div className='flex flex-col'>
                       {pool.gauge.bribes.fee.map((fee, idx) => (
                         <Paragraph key={`fee-${idx}`}>
@@ -401,12 +401,12 @@ export default function VotePage() {
             </div>
             <div className='flex w-full flex-col-reverse gap-4 lg:w-auto lg:flex-row lg:gap-2'>
               <div className='flex items-center justify-between gap-2 lg:hidden'>
-                <Paragraph>Sort by</Paragraph>
+                <Paragraph>Sort By</Paragraph>
                 <Dropdown
                   data={sortOptions.slice(0, sortOptions.length - 1)}
                   selected={sort ? `${sort.label}` : ''}
                   setSelected={ele => setSort(ele)}
-                  placeHolder='Select sort'
+                  placeHolder='Select Sort'
                 />
               </div>
               <Toggle

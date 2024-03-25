@@ -69,7 +69,9 @@ function Table({
                 }
               }}
             >
-              <TextHeading className='text-sm'>{t(option.label)}</TextHeading>
+              <TextHeading className='text-sm'>
+                {option.label && typeof option.label === 'string' ? t(option.label) : option.label}
+              </TextHeading>
               {sort.value === option.value && (
                 <ArrowDownIcon
                   className={cn(
@@ -93,7 +95,7 @@ function Table({
             <TableCell className={cn('flex w-full', sortOptions[0].width)}>{ele[sortOptions[0].value]}</TableCell>
             {sortOptions.slice(1, sortOptions.length - (notAction ? 0 : 1)).map((cell, cellIdx) => (
               <TableCell className={cn('flex w-1/2 flex-col lg:flex-row', cell.width)} key={`${cell.value}-${cellIdx}`}>
-                <TextHeading className='lg:hidden'>{cell.label}</TextHeading>
+                <TextHeading className='lg:hidden'>{t(cell.label)}</TextHeading>
                 {ele[cell.value]}
               </TableCell>
             ))}

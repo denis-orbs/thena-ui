@@ -89,7 +89,8 @@ export default function SelectPair({
                 fromAsset ? <CircleImage src={fromAsset.logoURI} alt='thena token logo' width={20} height={20} /> : null
               }
               TrailingIcon={<ChevronDownIcon className={cn(isTokenModalOpen && 'rotate-180')} />}
-              placeholder={fromAsset?.symbol || t('Select Asset')}
+              val={fromAsset?.symbol}
+              placeholder='Select Asset'
               readOnly
             />
             <Input
@@ -105,7 +106,8 @@ export default function SelectPair({
                 toAsset ? <CircleImage src={toAsset.logoURI} alt='thena token logo' width={20} height={20} /> : null
               }
               TrailingIcon={<ChevronDownIcon className={cn(isTokenModalOpen && 'rotate-180')} />}
-              placeholder={toAsset?.symbol || t('Select Asset')}
+              val={toAsset?.symbol}
+              placeholder='Select Asset'
               readOnly
             />
           </div>

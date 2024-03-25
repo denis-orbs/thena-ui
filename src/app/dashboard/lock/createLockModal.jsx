@@ -99,7 +99,7 @@ export default function CreateLockModal({ popup, setPopup, theAsset, updateVeTHE
       onAfterClose={onClear}
     >
       <ModalBody>
-        <BalanceInput title='Amount' asset={theAsset} amount={amount} onAmountChange={setAmount} autoFocus />
+        <BalanceInput title={t('Amount')} asset={theAsset} amount={amount} onAmountChange={setAmount} autoFocus />
         <div className='flex flex-col gap-2'>
           <div className='flex flex-col items-start justify-between gap-1 lg:flex-row lg:items-center'>
             <p className='font-medium text-white'>{t('Lock Until')}</p>

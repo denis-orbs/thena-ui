@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
+import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
@@ -17,6 +18,7 @@ export const useV1Add = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onV1Add = useCallback(
     async (firstAsset, secondAsset, firstAmount, secondAmount, isStable, slippage, deadline, callback) => {
@@ -39,24 +41,24 @@ export const useV1Add = () => {
       }
       startTxn({
         key,
-        title: 'Add Liquidity',
+        title: t('Add Liquidity'),
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {
-              desc: `Approve ${firstAsset.symbol}`,
+              desc: `${t('Approve')} ${firstAsset.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isSecondApproved && {
             [approve2uuid]: {
-              desc: `Approve ${secondAsset.symbol}`,
+              desc: `${t('Approve')} ${secondAsset.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [adduuid]: {
-            desc: 'Add Liquidity',
+            desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -123,7 +125,7 @@ export const useV1Add = () => {
       callback()
       setPending(false)
     },
-    [account, chainId, startTxn, writeTxn, endTxn],
+    [account, chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onV1Add, pending }
@@ -133,6 +135,7 @@ export const useV1AddAndStake = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
+  const t = useTranslations()
 
   const onV1AddAndStake = useCallback(
     async (pair, firstAsset, secondAsset, firstAmount, secondAmount, isStable, slippage, deadline, callback) => {
@@ -157,34 +160,34 @@ export const useV1AddAndStake = () => {
       }
       startTxn({
         key,
-        title: 'Add Liquidity',
+        title: t('Add Liquidity'),
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {
-              desc: `Approve ${firstAsset.symbol}`,
+              desc: `${t('Approve')} ${firstAsset.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           ...(!isSecondApproved && {
             [approve2uuid]: {
-              desc: `Approve ${secondAsset.symbol}`,
+              desc: `${t('Approve')} ${secondAsset.symbol}`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [adduuid]: {
-            desc: 'Add Liquidity',
+            desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
           [approve3uuid]: {
-            desc: 'Approve LP',
+            desc: `${t('Approve')} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
           [stakeuuid]: {
-            desc: 'Stake LP',
+            desc: `${t('Stake')} LP`,
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -274,7 +277,7 @@ export const useV1AddAndStake = () => {
       callback()
       setPending(false)
     },
-    [account, chainId, startTxn, writeTxn, endTxn, updateTxn],
+    [account, chainId, startTxn, writeTxn, endTxn, updateTxn, t],
   )
 
   return { onV1AddAndStake, pending }
@@ -284,6 +287,7 @@ export const useClaimFees = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onClaimFees = useCallback(
     async pair => {
@@ -294,10 +298,10 @@ export const useClaimFees = () => {
 
       startTxn({
         key,
-        title: 'Claim fees',
+        title: t('Claim Fees'),
         transactions: {
           [claimuuid]: {
-            desc: `Claim fees for ${pair.symbol}`,
+            desc: t('Claim Fees'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -315,7 +319,7 @@ export const useClaimFees = () => {
       })
       setPending(false)
     },
-    [chainId, startTxn, writeTxn, endTxn],
+    [chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onClaimFees, pending }
@@ -325,6 +329,7 @@ export const useV1Remove = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
 
   const onV1Remove = useCallback(
     async (pair, withdrawAmount, slippage, deadline, firstAmount, secondAmount, callback) => {
@@ -341,23 +346,23 @@ export const useV1Remove = () => {
         pair.account.walletBalance.eq(withdrawAmount)
       startTxn({
         key,
-        title: shouldClaim ? 'Remove and Claim' : 'Remove position',
+        title: shouldClaim ? 'Remove and Claim' : t('Remove Liquidity'),
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
-              desc: 'Approve LP',
+              desc: `${t('Approve')} LP`,
               status: TXN_STATUS.START,
               hash: null,
             },
           }),
           [removeuuid]: {
-            desc: 'Remove Liquidity',
+            desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
           ...(shouldClaim && {
             [claimuuid]: {
-              desc: 'Claim fees',
+              desc: t('Claim Fees'),
               status: TXN_STATUS.START,
               hash: null,
             },
@@ -426,7 +431,7 @@ export const useV1Remove = () => {
       callback()
       setPending(false)
     },
-    [account, chainId, startTxn, writeTxn, endTxn],
+    [account, chainId, startTxn, writeTxn, endTxn, t],
   )
 
   return { onV1Remove, pending }

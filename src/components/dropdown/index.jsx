@@ -34,7 +34,7 @@ function Dropdown({ className, data, selected, setSelected, placeHolder }) {
         type='text'
         val={t(selected)}
         onClick={() => setOpen(!open)}
-        placeholder={t(placeHolder)}
+        placeholder={placeHolder}
         TrailingIcon={
           <ChevronDownIcon
             className={cn('transfrom transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}

@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { maxAmountSpend } from '@/lib/fusion'
@@ -9,6 +10,7 @@ import { TokenAmountCard } from './TokenAmountCard'
 export function EnterAmounts({ currencyA, currencyB, mintInfo }) {
   const { independentField, typedValue, liquidityRangeType } = useV3MintState()
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const t = useTranslations()
 
   // get formatted amounts
   const formattedAmounts = {
@@ -34,7 +36,7 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo }) {
         maxAmount={maxAmounts[Field.CURRENCY_A]}
         locked={mintInfo.depositADisabled}
         liquidityRangeType={liquidityRangeType}
-        title='Asset 1'
+        title={`${t('Asset')} 1`}
       />
       <TokenAmountCard
         currency={currencyB}
@@ -43,7 +45,7 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo }) {
         maxAmount={maxAmounts[Field.CURRENCY_B]}
         locked={mintInfo.depositBDisabled}
         liquidityRangeType={liquidityRangeType}
-        title='Asset 2'
+        title={`${t('Asset')} 2`}
       />
     </div>
   )

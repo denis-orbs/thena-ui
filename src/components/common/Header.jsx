@@ -347,35 +347,35 @@ function Header() {
   const submenus = useMemo(() => {
     const subs = [
       {
-        label: t('My Assets'),
+        label: 'My Assets',
         active: pathname === '/dashboard',
         onClickHandler: () => {
           push('/dashboard')
         },
       },
       {
-        label: t('Lock'),
+        label: 'Lock',
         active: pathname === '/dashboard/lock',
         onClickHandler: () => {
           push('/dashboard/lock')
         },
       },
       {
-        label: t('Vote'),
+        label: 'Vote',
         active: pathname === '/dashboard/vote',
         onClickHandler: () => {
           push('/dashboard/vote')
         },
       },
       {
-        label: t('Rewards'),
+        label: 'Rewards',
         active: pathname === '/dashboard/rewards',
         onClickHandler: () => {
           push('/dashboard/rewards')
         },
       },
       {
-        label: t('theNFT'),
+        label: 'theNFT',
         active: pathname === '/dashboard/thenft',
         onClickHandler: () => {
           push('/dashboard/thenft')
@@ -383,7 +383,7 @@ function Header() {
       },
     ]
     return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
-  }, [pathname, push, networkId, t])
+  }, [pathname, push, networkId])
 
   const onLogoClick = () => {
     push('/')

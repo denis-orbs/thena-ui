@@ -17,7 +17,7 @@ export default function ClaimModal({ popup, setPopup, pool, feeValue0, feeValue1
   return (
     <Modal
       isOpen={popup}
-      title='Claim fees'
+      title='Claim Fees'
       closeModal={() => {
         setPopup(false)
       }}

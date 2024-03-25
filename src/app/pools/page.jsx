@@ -308,7 +308,7 @@ export default function PoolsPage() {
               }))}
               selected={filter}
               setSelected={ele => setFilter(ele.label)}
-              placeHolder='Choose category'
+              placeHolder='Choose Category'
             />
             {filter === PAIR_TYPES.LSD && <Selection data={strategySelections} isFull />}
             <Toggle
@@ -319,12 +319,12 @@ export default function PoolsPage() {
               label='Inactive Pools'
             />
             <div className='flex items-center justify-between gap-2 lg:hidden'>
-              <Paragraph>Sort by</Paragraph>
+              <Paragraph>{t('Sort By')}</Paragraph>
               <Dropdown
                 data={sortOptions.slice(0, sortOptions.length - 1)}
                 selected={sort ? `${sort.label}` : ''}
                 setSelected={ele => setSort(ele)}
-                placeHolder='Select sort'
+                placeHolder='Select Sort'
               />
             </div>
           </div>

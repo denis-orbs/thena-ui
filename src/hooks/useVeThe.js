@@ -817,7 +817,7 @@ export const useClaimAll = () => {
         }
       }
 
-      // claim fees
+      // Claim Fees
       if (feeRewards.length > 0) {
         const fees = feeRewards.map(item => item.gauge.fee)
         const feeTokens = feeRewards.map(item => item.rewards.map(token => token.address))

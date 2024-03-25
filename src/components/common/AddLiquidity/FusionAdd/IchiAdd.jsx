@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -23,6 +24,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
   const { slippage } = useSettings()
   const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
   const depositToken = assets.find(ele => ele.address.toLowerCase() === strategy.allowed.address)
+  const t = useTranslations()
 
   const isDouble = useMemo(() => depositToken.symbol === 'WBNB', [depositToken])
 
@@ -65,34 +67,38 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
         <div className='flex flex-col gap-4'>
           <BalanceInput
-            title='Asset'
+            title={t('Asset')}
             asset={depositToken}
             maxBalance={isDouble ? balance : null}
             amount={amount}
             onAmountChange={setAmount}
           />
           <div className='flex flex-col gap-4'>
-            <TextHeading className='text-lg'>Reserve Info</TextHeading>
+            <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token0)} Amount</Paragraph>
+                <Paragraph className='font-medium'>
+                  {unwrappedSymbol(strategy.token0)} {t('Amount')}
+                </Paragraph>
                 <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
               </div>
               <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token1)} Amount</Paragraph>
+                <Paragraph className='font-medium'>
+                  {unwrappedSymbol(strategy.token1)} {t('Amount')}
+                </Paragraph>
                 <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
               </div>
             </div>
           </div>
           <div className='flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-            <TextHeading className='text-lg'>My Info</TextHeading>
+            <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>Pooled Liquidity</Paragraph>
+                <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
                 <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
               </div>
               <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>Staked Liquidity</Paragraph>
+                <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
                 <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
               </div>
             </div>
@@ -110,7 +116,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
             }}
             className='w-full'
           >
-            Add Liquidity & Stake
+            {t('Add Liquidity & Stake')}
           </PrimaryButton>
         ) : (
           <ConnectButton className='w-full' />

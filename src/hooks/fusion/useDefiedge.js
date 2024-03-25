@@ -278,10 +278,10 @@ export const useDefiedgeRemove = () => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: 'Remove position',
+        title: 'Remove Liquidity',
         transactions: {
           [removeuuid]: {
-            desc: 'Remove position',
+            desc: 'Remove Liquidity',
             status: TXN_STATUS.START,
             hash: null,
           },

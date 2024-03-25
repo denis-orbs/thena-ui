@@ -152,7 +152,7 @@ export default function IncentivePage() {
                 />
               </div>
             </div>
-            {asset && <BalanceInput title='Asset' asset={asset} amount={amount} onAmountChange={setAmount} />}
+            {asset && <BalanceInput title={t('Asset')} asset={asset} amount={amount} onAmountChange={setAmount} />}
 
             {account ? (
               <PrimaryButton

@@ -1,13 +1,15 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph } from '@/components/typography'
-import { formatAmount } from '@/lib/utils'
 import { InfoCircleWhite } from '@/svgs'
 
-function WarningModal({ popup, setPopup, priceImpact, handleSwap }) {
+function WarningModal({ popup, setPopup, handleSwap }) {
+  const t = useTranslations()
+
   return (
     <Modal
       isOpen={popup}
@@ -23,13 +25,8 @@ function WarningModal({ popup, setPopup, priceImpact, handleSwap }) {
             <InfoCircleWhite className='h-4 w-4' />
           </Highlight>
           <div className='flex flex-col items-center gap-3'>
-            <h2>High price impact!</h2>
-            <Paragraph className='mt-3 text-center'>
-              Your order will incur a{' '}
-              <span className='font-medium text-error-600'>{formatAmount(priceImpact)}% price impact</span>.
-              <br />
-              Are you sure you want to continue?
-            </Paragraph>
+            <h2>{t('Price impact too high')}</h2>
+            <Paragraph className='mt-3 text-center'>{t('Are you sure you want to continue')}</Paragraph>
           </div>
         </div>
       </ModalBody>
@@ -41,10 +38,10 @@ function WarningModal({ popup, setPopup, priceImpact, handleSwap }) {
             setPopup(false)
           }}
         >
-          Swap anyway
+          {t('Swap Anyway')}
         </TextButton>
         <PrimaryButton className='w-full' onClick={() => setPopup(false)}>
-          Cancel
+          {t('Cancel')}
         </PrimaryButton>
       </ModalFooter>
     </Modal>

@@ -253,20 +253,25 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
         <div className='flex flex-col gap-3'>
           <Info className='text-sm'>{t('Initialize warning')}</Info>
           <div className='flex items-center justify-between'>
-            <TextHeading className='w-1/2'>Starting {baseCurrency?.symbol} Price:</TextHeading>
+            <TextHeading className='w-1/2'>
+              {t('Starting [symbol] Price:', { symbol: baseCurrency?.symbol })}
+            </TextHeading>
             <Input
               classNames={{
                 input: 'w-full pr-[150px]',
               }}
               val={startPriceTypedValue}
               onChange={e => onStartPriceInput(e.target.value)}
-              suffix={`${quoteCurrency?.symbol} per ${baseCurrency?.symbol}`}
+              suffix={t('[symbolA] per [symbolB]', {
+                symbolA: quoteCurrency?.symbol,
+                symbolB: baseCurrency?.symbol,
+              })}
             />
           </div>
         </div>
       )}
       <div className='flex items-center justify-between'>
-        <TextHeading>Price Range</TextHeading>
+        <TextHeading>{t('Price Range')}</TextHeading>
         <Selection data={assetSelections} isSmall />
       </div>
       <RangeSelector
@@ -284,16 +289,10 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
         disabled={!startPriceTypedValue && !mintInfo.price}
       />
       {activePreset === Presets.FULL && fullRangeWarningShown && (
-        <Warning className='text-sm'>Full range position may earn less than concentrated position.</Warning>
+        <Warning className='text-sm'>{t('Full range position')}</Warning>
       )}
-      {mintInfo.outOfRange && (
-        <Warning className='text-sm'>
-          Your position will not earn fees or be used in trades until the market price moves into your range.
-        </Warning>
-      )}
-      {mintInfo.invalidRange && (
-        <Warning className='text-sm'>Invalid range selected. The min price must be lower than the max price.</Warning>
-      )}
+      {mintInfo.outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
+      {mintInfo.invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
       {!mintInfo.noLiquidity && (
         <div className='-mb-2 flex items-center justify-center'>
           <TextHeading className='text-sm'>
@@ -322,14 +321,16 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       )}
       <div className='grid grid-cols-2 gap-4'>
         <div className='flex flex-col justify-center gap-1.5 rounded-md bg-neutral-800 px-4 py-3'>
-          <TextHeading className='text-sm'>{mintInfo.noLiquidity ? 'New pool' : 'Current Pool'}</TextHeading>
+          <TextHeading className='text-sm'>{t(mintInfo.noLiquidity ? 'New pool' : 'Current Pool')}</TextHeading>
           <div className='w-fit rounded-md bg-neutral-700 p-2'>
-            <TextHeading className='text-sm'>{feeString} fee</TextHeading>
+            <TextHeading className='text-sm'>
+              {feeString} {t('Fee')}
+            </TextHeading>
           </div>
         </div>
         <div className='flex flex-col gap-3'>
           <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'>
-            <TextHeading className='text-sm'>Risk</TextHeading>
+            <TextHeading className='text-sm'>{t('Risk')}</TextHeading>
             {_risk && (
               <div className='flex items-center gap-2'>
                 {[1, 2, 3, 4, 5].map((_, i) => (
@@ -346,7 +347,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
           </div>
           <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'>
             <div className='mt-1 flex items-center justify-between'>
-              <TextHeading className='text-sm'>Profit</TextHeading>
+              <TextHeading className='text-sm'>{t('Profit')}</TextHeading>
               {_risk && (
                 <div className='flex items-center gap-2'>
                   {[1, 2, 3, 4, 5].map((_, i) => (

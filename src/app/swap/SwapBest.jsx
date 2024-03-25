@@ -125,23 +125,23 @@ export default function SwapBest({
   const percents = useMemo(
     () => [
       {
-        label: t('10%'),
+        label: '10%',
         onClickHandler: () => setFromAmount(fromAsset.balance.times(0.1).toString(10)),
       },
       {
-        label: t('25%'),
+        label: '25%',
         onClickHandler: () => setFromAmount(fromAsset.balance.times(0.25).toString(10)),
       },
       {
-        label: t('50%'),
+        label: '50%',
         onClickHandler: () => setFromAmount(fromAsset.balance.times(0.5).toString(10)),
       },
       {
-        label: t('Max'),
+        label: 'Max',
         onClickHandler: () => setFromAmount(fromAsset.balance.toString(10)),
       },
     ],
-    [fromAsset, setFromAmount, t],
+    [fromAsset, setFromAmount],
   )
 
   const handleSwap = useCallback(() => {

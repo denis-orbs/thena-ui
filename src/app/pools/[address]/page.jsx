@@ -123,7 +123,7 @@ export default function SpecificPoolPage({ params }) {
       <div className='w-full lg:min-w-[564px]'>
         <div className='mb-5 flex items-center gap-2'>
           {currentStep === 2 && <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(1)} />}
-          <h2>Add Liquidity</h2>
+          <h2>{t('Add Liquidity')}</h2>
         </div>
         <AddLiquidity pool={pool} currentStep={currentStep} setCurrentStep={setCurrentStep} />
       </div>

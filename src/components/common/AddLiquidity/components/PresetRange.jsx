@@ -1,11 +1,10 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import Selection from '@/components/selection'
-import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { InfoIcon } from '@/svgs'
 
 const PresetProfits = {
   VERY_LOW: 'VERY_LOW',
@@ -17,6 +16,7 @@ const PresetProfits = {
 export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection }) {
   // const [init, setInit] = useState(false)
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const t = useTranslations()
 
   const ranges = useMemo(() => {
     if (isStablecoinPair) {
@@ -35,7 +35,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
     return [
       {
         type: Presets.FULL,
-        title: 'Full range',
+        title: 'Full Range',
         min: 0,
         max: Infinity,
         risk: PresetProfits.VERY_LOW,
@@ -88,13 +88,9 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
   return (
     <div className='flex flex-col gap-3'>
       <div className='flex items-center justify-between'>
-        <TextHeading>Range Type</TextHeading>
-        <InfoIcon className='h-4 w-4 cursor-pointer stroke-neutral-400' data-tooltip-id='price-tooltip' />
+        <TextHeading>{t('Range Type')}</TextHeading>
       </div>
       <Selection data={rangeSelections} isFull />
-      <CustomTooltip id='price-tooltip' className='max-w-[320px]'>
-        <TextHeading className='tex t-sm'>Range Type Info</TextHeading>
-      </CustomTooltip>
     </div>
   )
 }

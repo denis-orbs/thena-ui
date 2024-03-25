@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
@@ -36,6 +37,7 @@ export default function V1Add({
   const { onV1Add, pending } = useV1Add()
   const { onV1AddAndStake, pending: stakePending } = useV1AddAndStake()
   const { pairs } = usePairs()
+  const t = useTranslations()
 
   const pair = useMemo(
     () =>
@@ -193,19 +195,19 @@ export default function V1Add({
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
         <Selection data={addSelections} isFull />
         {isZapper ? (
-          <div className='flex flex-col gap-5'>Coming Soon!</div>
+          <div className='flex flex-col gap-5'>{t('Coming Soon')}</div>
         ) : (
           <div className='flex flex-col'>
             <div className='mb-5 flex flex-col gap-2'>
               <BalanceInput
-                title='Asset 1'
+                title={`${t('Asset')} 1`}
                 asset={firstAsset}
                 setAsset={isFromBNB ? setFirstAddress : null}
                 amount={firstAmount}
                 onAmountChange={onFirstChange}
               />
               <BalanceInput
-                title='Asset 2'
+                title={`${t('Asset')} 2`}
                 asset={secondAsset}
                 setAsset={isToBNB ? setSecondAddress : null}
                 amount={secondAmount}
@@ -215,27 +217,31 @@ export default function V1Add({
             {strategy ? (
               <>
                 <div className='flex flex-col gap-4'>
-                  <TextHeading className='text-lg'>Reserve Info</TextHeading>
+                  <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
                   <div className='flex flex-col gap-3'>
                     <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token0)} Amount</Paragraph>
+                      <Paragraph className='font-medium'>
+                        {unwrappedSymbol(strategy.token0)} {t('Amount')}
+                      </Paragraph>
                       <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
                     </div>
                     <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>{unwrappedSymbol(strategy.token1)} Amount</Paragraph>
+                      <Paragraph className='font-medium'>
+                        {unwrappedSymbol(strategy.token1)} {t('Amount')}
+                      </Paragraph>
                       <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
                     </div>
                   </div>
                 </div>
                 <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-                  <TextHeading className='text-lg'>My Info</TextHeading>
+                  <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
                   <div className='flex flex-col gap-3'>
                     <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>Pooled Liquidity</Paragraph>
+                      <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
                       <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
                     </div>
                     <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>Staked Liquidity</Paragraph>
+                      <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
                       <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
                     </div>
                   </div>
@@ -243,11 +249,14 @@ export default function V1Add({
               </>
             ) : (
               <div className='flex flex-col gap-4'>
-                <TextHeading className='text-lg'>Starting Liquidity Info</TextHeading>
+                <TextHeading className='text-lg'>{t('Starting Liquidity Info')}</TextHeading>
                 <div className='flex flex-col gap-3'>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>
-                      {firstAsset?.symbol} per {secondAsset?.symbol}
+                      {t('[symbolA] per [symbolB]', {
+                        symbolA: firstAsset?.symbol,
+                        symbolB: secondAsset?.symbol,
+                      })}
                     </Paragraph>
                     <Paragraph>
                       {firstAmount && secondAmount ? formatAmount(firstAmount / secondAmount) : '-'}
@@ -255,7 +264,10 @@ export default function V1Add({
                   </div>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>
-                      {secondAsset?.symbol} per {firstAsset?.symbol}
+                      {t('[symbolA] per [symbolB]', {
+                        symbolA: secondAsset?.symbol,
+                        symbolB: firstAsset?.symbol,
+                      })}
                     </Paragraph>
                     <Paragraph>
                       {firstAmount && secondAmount ? formatAmount(secondAmount / firstAmount) : '-'}
@@ -280,7 +292,7 @@ export default function V1Add({
                 }}
                 className='w-full'
               >
-                Add Liquidity
+                {t('Add Liquidity')}
               </SecondaryButton>
               {strategy && strategy.gauge.address !== zeroAddress && (
                 <PrimaryButton
@@ -290,7 +302,7 @@ export default function V1Add({
                   }}
                   className='w-full'
                 >
-                  Add Liquidity & Stake
+                  {t('Add Liquidity & Stake')}
                 </PrimaryButton>
               )}
             </>
