@@ -126,7 +126,7 @@ function ChainMobileSelect({ t }) {
       >
         <div className='flex items-center gap-2'>
           <CircleImage src={selected.img} alt='' className='h-5 w-5' />
-          <TextHeading>{selected.label}</TextHeading>
+          <TextHeading>{t(selected.label)}</TextHeading>
         </div>
         <ChevronDownIcon
           className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
@@ -183,7 +183,7 @@ function LanguageSelect() {
   }, [wrapperRef])
 
   return (
-    <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
+    <div className={cn('relative')} ref={wrapperRef}>
       <TextIconButton Icon={LangIcon} onClick={() => setOpen(!open)} />
       <div
         className={cn(
@@ -218,8 +218,6 @@ function LanguageSelect() {
     </div>
   )
 }
-
-const showLanguage = false
 
 function Header() {
   const [selected, setSelected] = useState(null)
@@ -489,7 +487,7 @@ function Header() {
               )}
             </div>
             <ChainSelect t={t} />
-            {showLanguage && <LanguageSelect />}
+            <LanguageSelect />
             <OutlinedButton className='hidden lg:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton>
@@ -511,6 +509,7 @@ function Header() {
               onLogoClick()
             }
           }}
+          isIntl={!selected}
         >
           {selected ? (
             <div className='inline-flex w-full flex-col items-start justify-start gap-3 p-3'>
@@ -547,7 +546,7 @@ function Header() {
                       }
                     }}
                   >
-                    <p className='font-medium text-neutral-200'>{menu.label}</p>
+                    <p className='font-medium text-neutral-200'>{t(menu.label)}</p>
                     {menu.sub && <ArrowRightIcon className='h-4 w-4' />}
                   </div>
                 ))}
