@@ -449,7 +449,7 @@
   "Trade Perps": "交易永续合约",
   "Trade perpetual contracts with leverage": "使用杠杆交易永续合约",
   "Audited by": "审计由",
-  "Total [symbol] Locked": "总 【Symbol】锁定数量",
+  "Total [symbol] Locked": "总 {symbol}锁定数量",
   "Type of Reward": "奖励类型",
   "Add a bribe reward for an existing gauge to incentivize votes on it": "为现有的Gauge添加贿赂奖励以激励对其投票。",
   "Choose Category": "选择类别",
