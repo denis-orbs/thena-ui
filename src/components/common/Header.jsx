@@ -16,7 +16,7 @@ import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, LangIcon } from '@/svgs'
+import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon } from '@/svgs'
 
 import Logo from '~/logo.svg'
 
@@ -182,9 +182,11 @@ function LanguageSelect() {
     }
   }, [wrapperRef])
 
+  const selected = useMemo(() => langs.find(ele => ele.lang === locale), [locale])
+
   return (
     <div className={cn('relative')} ref={wrapperRef}>
-      <TextIconButton Icon={LangIcon} onClick={() => setOpen(!open)} />
+      <CircleImage className='mx-2 h-5 w-5 cursor-pointer' src={selected.img} onClick={() => setOpen(!open)} />
       <div
         className={cn(
           'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
