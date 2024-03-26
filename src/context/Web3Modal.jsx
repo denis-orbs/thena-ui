@@ -1,6 +1,7 @@
 'use client'
 
-import { AuthCoreContextProvider } from '@particle-network/auth-core-modal'
+import { AuthCoreContextProvider, PromptSettingType } from '@particle-network/auth-core-modal'
+import { BNBChain, opBNB as particleOpBNB } from '@particle-network/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { ChainId } from 'thena-sdk-core/dist'
@@ -115,6 +116,8 @@ export function Web3Modal({ children, initialState }) {
         clientKey: process.env.NEXT_PUBLIC_PARTICLE_CLIENT_KEY,
         appId: process.env.NEXT_PUBLIC_PARTICLE_APP_ID,
         themeType: 'dark',
+        fiatCoin: 'USD',
+        language: 'en',
         customStyle: {
           logo: 'https://cdn.thena.fi/assets/THE.png',
           projectName: 'THENA',
@@ -143,8 +146,15 @@ export function Web3Modal({ children, initialState }) {
             },
           },
         },
+        promptSettingConfig: {
+          promptPaymentPasswordSettingWhenSign: PromptSettingType.first,
+          promptMasterPasswordSettingWhenLogin: PromptSettingType.first,
+        },
         wallet: {
           visible: false,
+          customStyle: {
+            supportChains: [BNBChain, particleOpBNB],
+          },
         },
       }}
     >
