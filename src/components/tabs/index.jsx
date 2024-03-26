@@ -29,11 +29,11 @@ function TabItem({ className, item, size }) {
   )
 }
 
-function Tabs({ className, data, size = SizeTypes.Small }) {
+function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
   return (
     <div className={cn('flex items-center justify-center gap-1', className)}>
       {data.map(item => (
-        <TabItem item={item} key={item.label} size={size} />
+        <TabItem item={item} key={item.label} size={size} className={itemClassName} />
       ))}
     </div>
   )

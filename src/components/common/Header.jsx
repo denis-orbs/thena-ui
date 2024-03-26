@@ -296,13 +296,13 @@ function Header() {
           push('/dashboard')
         },
       },
-      // {
-      //   label: 'Arena',
-      //   active: pathname === '/arena',
-      //   onClickHandler: () => {
-      //     push('/arena')
-      //   },
-      // },
+      {
+        label: 'Arena',
+        active: pathname === '/arena',
+        onClickHandler: () => {
+          push('/arena')
+        },
+      },
       {
         label: 'More',
         active: pathname.includes('/analytics') || pathname.includes('/protocols'),
@@ -387,6 +387,33 @@ function Header() {
     return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
   }, [pathname, push, networkId])
 
+  const arenaSubmenus = useMemo(
+    () => [
+      {
+        label: 'Competitions',
+        active: pathname === '/arena',
+        onClickHandler: () => {
+          push('/arena')
+        },
+      },
+      {
+        label: 'Rankings',
+        active: pathname === '/arena/rankings',
+        onClickHandler: () => {
+          push('/arena/rankings')
+        },
+      },
+      {
+        label: 'Profile',
+        active: pathname === '/arena/profile',
+        onClickHandler: () => {
+          push('/arena/profile')
+        },
+      },
+    ],
+    [pathname, push],
+  )
+
   const onLogoClick = () => {
     push('/')
     setIsOpen(false)
@@ -400,6 +427,7 @@ function Header() {
     router.prefetch('/dashboard')
     router.prefetch('/analytics')
     router.prefetch('/protocols')
+    router.prefetch('/arena')
   }, [router])
 
   return (
@@ -567,6 +595,11 @@ function Header() {
       {pathname.includes('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={submenus} size={SizeTypes.Medium} />
+        </div>
+      )}
+      {pathname.includes('/arena') && (
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
+          <Tabs data={arenaSubmenus} size={SizeTypes.Medium} />
         </div>
       )}
       <Script

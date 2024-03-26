@@ -10,7 +10,7 @@ export const metadata = {
 export default function ArenaLayout({ children }) {
   return (
     <main className='desktop-bg flex min-h-screen flex-col'>
-      <section className='layout'>
+      <section className='layout-container mt-[128px] lg:mt-[176px]'>
         <Suspense fallback={<Loading />}>{children}</Suspense>
       </section>
     </main>

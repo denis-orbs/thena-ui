@@ -9,8 +9,11 @@ import CheckIcon from '~/svgs/check.svg'
 import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
+import Clock from '~/svgs/clock.svg'
+import CoinHand from '~/svgs/coin-hand.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 import ExternalIcon from '~/svgs/external.svg'
+import Gift from '~/svgs/gift.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
@@ -49,8 +52,11 @@ export {
   CheckGradientIcon,
   CheckIcon,
   ChevronDownIcon,
+  Clock,
+  CoinHand,
   CoinsStackedIcon,
   ExternalIcon,
+  Gift,
   HamburgerIcon,
   InfoCircleGradient,
   InfoCirclePrimary,
