@@ -324,7 +324,6 @@ export default function PoolsPage() {
                 data={sortOptions.slice(0, sortOptions.length - 1)}
                 selected={sort ? `${sort.label}` : ''}
                 setSelected={ele => setSort(ele)}
-                placeHolder='Select Sort'
               />
             </div>
           </div>

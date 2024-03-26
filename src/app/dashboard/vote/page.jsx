@@ -406,7 +406,6 @@ export default function VotePage() {
                   data={sortOptions.slice(0, sortOptions.length - 1)}
                   selected={sort ? `${sort.label}` : ''}
                   setSelected={ele => setSort(ele)}
-                  placeHolder='Select Sort'
                 />
               </div>
               <Toggle
@@ -425,6 +424,7 @@ export default function VotePage() {
                 selected={veTHE ? `veTHE #${veTHE.id}` : ''}
                 setSelected={ele => setVeTHEId(ele.id)}
                 placeHolder='Select veTHE'
+                isLocale={false}
               />
               <SearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
             </div>

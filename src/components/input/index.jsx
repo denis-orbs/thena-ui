@@ -13,6 +13,7 @@ function Input({
   TrailingButton,
   type = 'number',
   placeholder = '0',
+  isLocale = true,
   ...rest
 }) {
   const t = useTranslations()
@@ -28,7 +29,7 @@ function Input({
           TrailingIcon || suffix ? 'pr-7' : 'pr-3',
           classNames?.input,
         )}
-        placeholder={!Number(placeholder) ? t(placeholder) : placeholder}
+        placeholder={isLocale && placeholder !== '0' ? t(placeholder) : placeholder}
         value={val}
         {...rest}
       />

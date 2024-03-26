@@ -8,7 +8,7 @@ import { ChevronDownIcon } from '@/svgs'
 
 import Input from '../input'
 
-function Dropdown({ className, data, selected, setSelected, placeHolder }) {
+function Dropdown({ className, data, selected, setSelected, placeHolder, isLocale = true }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
   const t = useTranslations()
@@ -32,7 +32,7 @@ function Dropdown({ className, data, selected, setSelected, placeHolder }) {
           input: cn('cursor-pointer caret-transparent', className),
         }}
         type='text'
-        val={t(selected)}
+        val={selected && t(selected)}
         onClick={() => setOpen(!open)}
         placeholder={placeHolder}
         TrailingIcon={
@@ -40,6 +40,7 @@ function Dropdown({ className, data, selected, setSelected, placeHolder }) {
             className={cn('transfrom transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
           />
         }
+        isLocale={isLocale}
         readOnly
       />
       <div
@@ -63,7 +64,7 @@ function Dropdown({ className, data, selected, setSelected, placeHolder }) {
               setOpen(false)
             }}
           >
-            <p>{t(item.label)}</p>
+            <p>{isLocale && item.label ? t(item.label) : item.label}</p>
           </div>
         ))}
       </div>
