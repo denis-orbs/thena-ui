@@ -152,7 +152,7 @@ export default function ArenaPage() {
       <div className='flex flex-col justify-between gap-4'>
         <div className='flex justify-between'>
           <h2>{t('Competitions')}</h2>
-          <PrimaryButton>{t('Add competition')}</PrimaryButton>
+          <PrimaryButton>{t('Add Competition')}</PrimaryButton>
         </div>
         <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
           <div className='rounded-lg bg-neutral-900 p-1 '>

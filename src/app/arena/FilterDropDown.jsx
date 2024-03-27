@@ -68,7 +68,6 @@ function FilterDropDown({ filter, setFilter }) {
             }))}
             selected={filter.sortBy}
             setSelected={ele => setFilter({ ...filter, sortBy: ele.label })}
-            placeHolder='Choose Category'
           />
         </div>
         <Toggle
@@ -76,7 +75,7 @@ function FilterDropDown({ filter, setFilter }) {
           checked={filter.free}
           onChange={() => setFilter({ ...filter, free: !filter.free })}
           toggleId='free-join'
-          label='Free To Join'
+          label={t('Free To Join')}
         />
       </Popover>
     </div>

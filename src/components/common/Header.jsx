@@ -257,71 +257,71 @@ function Header() {
   const menus = useMemo(
     () => [
       {
-        label: 'Swap',
+        label: t('Swap'),
         active: pathname.includes('/swap'),
         sub: [
           {
-            heading: 'Spot Trade',
-            subheading: 'Easy and user-friendly trading interface',
+            heading: t('Spot Trade'),
+            subheading: t('Easy and user-friendly trading interface'),
             onClickHandler: () => push('/swap'),
           },
           {
-            heading: 'Trade Perps',
-            subheading: 'Trade perpetual contracts with leverage',
+            heading: t('Trade Perps'),
+            subheading: t('Trade perpetual contracts with leverage'),
             onClickHandler: () => window.open('https://alpha.thena.fi', '_blank'),
           },
           {
-            heading: 'Cross-Chain',
-            subheading: 'Trade across different blockchains',
+            heading: t('Cross-Chain'),
+            subheading: t('Trade across different blockchains'),
             onClickHandler: () => push('/swap/cross'),
           },
           {
-            heading: 'Buy Crypto',
-            subheading: 'On-ramp from fiat to crypto',
+            heading: t('Buy Crypto'),
+            subheading: t('On-ramp from fiat to crypto'),
             onClickHandler: () => push('/swap/buy'),
           },
         ],
       },
       {
-        label: 'Pools',
+        label: t('Pools'),
         active: pathname.includes('/pools'),
         onClickHandler: () => {
           push('/pools')
         },
       },
       {
-        label: 'Dashboard',
+        label: t('Dashboard'),
         active: pathname.includes('/dashboard'),
         onClickHandler: () => {
           push('/dashboard')
         },
       },
       {
-        label: 'Arena',
+        label: t('Arena'),
         active: pathname === '/arena',
         onClickHandler: () => {
           push('/arena')
         },
       },
       {
-        label: 'More',
+        label: t('More'),
         active: pathname.includes('/analytics') || pathname.includes('/protocols'),
         sub:
           networkId === ChainId.BSC
             ? [
                 {
-                  heading: 'Analytics',
-                  subheading: 'See platform data',
+                  heading: t('Analytics'),
+                  subheading: t('See platform data'),
                   onClickHandler: () => push('/analytics'),
                 },
                 {
-                  heading: 'Protocols',
-                  subheading: 'Add gauges and voting incentives',
+                  heading: t('Protocols'),
+                  subheading: t('Add gauges and voting incentives'),
                   onClickHandler: () => push('/protocols'),
                 },
                 {
-                  heading: 'Docs',
-                  subheading: 'Learn more about THENA',
+                  heading: t('Docs'),
+                  subheading: t('Learn more about THENA'),
                   onClickHandler: () => {
                     goToDoc()
                   },
@@ -329,13 +329,13 @@ function Header() {
               ]
             : [
                 {
-                  heading: 'Analytics',
-                  subheading: 'See platform data',
+                  heading: t('Analytics'),
+                  subheading: t('See platform data'),
                   onClickHandler: () => push('/analytics'),
                 },
                 {
-                  heading: 'Docs',
-                  subheading: 'Learn more about THENA',
+                  heading: t('Docs'),
+                  subheading: t('Learn more about THENA'),
                   onClickHandler: () => {
                     goToDoc()
                   },
@@ -343,41 +343,41 @@ function Header() {
               ],
       },
     ],
-    [pathname, networkId, push],
+    [t, pathname, networkId, push],
   )
 
   const submenus = useMemo(() => {
     const subs = [
       {
-        label: 'My Assets',
+        label: t('My Assets'),
         active: pathname === '/dashboard',
         onClickHandler: () => {
           push('/dashboard')
         },
       },
       {
-        label: 'Lock',
+        label: t('Lock'),
         active: pathname === '/dashboard/lock',
         onClickHandler: () => {
           push('/dashboard/lock')
         },
       },
       {
-        label: 'Vote',
+        label: t('Vote'),
         active: pathname === '/dashboard/vote',
         onClickHandler: () => {
           push('/dashboard/vote')
         },
       },
       {
-        label: 'Rewards',
+        label: t('Rewards'),
         active: pathname === '/dashboard/rewards',
         onClickHandler: () => {
           push('/dashboard/rewards')
         },
       },
       {
-        label: 'theNFT',
+        label: t('theNFT'),
         active: pathname === '/dashboard/thenft',
         onClickHandler: () => {
           push('/dashboard/thenft')
@@ -385,33 +385,33 @@ function Header() {
       },
     ]
     return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
-  }, [pathname, push, networkId])
+  }, [t, pathname, networkId, push])
 
   const arenaSubmenus = useMemo(
     () => [
       {
-        label: 'Competitions',
+        label: t('Competitions'),
         active: pathname === '/arena',
         onClickHandler: () => {
           push('/arena')
         },
       },
       {
-        label: 'Rankings',
+        label: t('Rankings'),
         active: pathname === '/arena/rankings',
         onClickHandler: () => {
           push('/arena/rankings')
         },
       },
       {
-        label: 'Profile',
+        label: t('Profile'),
         active: pathname === '/arena/profile',
         onClickHandler: () => {
           push('/arena/profile')
         },
       },
     ],
-    [pathname, push],
+    [pathname, push, t],
   )
 
   const onLogoClick = () => {
