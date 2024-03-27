@@ -60,7 +60,7 @@ function FilterDropDown({ filter, setFilter }) {
           />
         </div>
         <div className='my-2 flex items-center space-x-2.5'>
-          <span className='whitespace-nowrap text-white'>Sort by</span>
+          <span className='whitespace-nowrap text-white'>Sort By</span>
           <Dropdown
             className='w-full lg:w-[200px]'
             data={Object.values(FILTERS).map(item => ({
