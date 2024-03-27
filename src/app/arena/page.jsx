@@ -1,20 +1,69 @@
 'use client'
 
+import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
+import useSWR from 'swr'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
+import { v4Client } from '@/lib/graphql'
 
 import CompetitionItem from './CompetitionItem'
 import NoCompetition from './NoCompetition'
 
+const V4_COMPETITION_DATAS = gql`
+  query V4_COMPETITION {
+    tradingCompetitions {
+      name
+      entryFee
+      market
+      id
+      competitionRules {
+        winningToken
+        tradingTokens
+      }
+      prize {
+        totalPrize
+        token
+      }
+      timestamp {
+        endTimestamp
+        startTimestamp
+      }
+      participants {
+        id
+        participant {
+          id
+        }
+      }
+      owner {
+        id
+      }
+    }
+  }
+`
+
+const fetchCompetition = async () => {
+  try {
+    const { tradingCompetitions } = await v4Client.request(V4_COMPETITION_DATAS)
+    return tradingCompetitions
+  } catch (error) {
+    return { error: true }
+  }
+}
+
 export default function ArenaPage() {
   const t = useTranslations()
+
+  const { data: competitions } = useSWR('competition api', () => fetchCompetition(), {
+    refreshInterval: 60000,
+  })
+
   const [selectedTab, setSearchTab] = useState('all')
-  const [competitions] = useState([1, 2, 3, 4])
+
   const submenus = useMemo(
     () => [
       {
@@ -69,10 +118,10 @@ export default function ArenaPage() {
       <div className='w-full'>
         <h3>{t('All Competitions')}</h3>
       </div>
-      {competitions.length ? (
-        <div className='grid grid-cols-3 gap-4'>
-          {competitions.map(() => (
-            <CompetitionItem />
+      {competitions?.length ? (
+        <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
+          {competitions.map(item => (
+            <CompetitionItem competition={item} />
           ))}
         </div>
       ) : (

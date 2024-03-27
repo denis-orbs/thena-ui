@@ -41,6 +41,10 @@ export const formatAmount = (amount = null, shorted = false, fixed = 3) => {
   }
 
   if (shorted) {
+    if (bigAmount.gte(1e12)) {
+      return `${bigAmount.div(1e12).dp(2).toFormat()}T`
+    }
+
     if (bigAmount.gte(1e9)) {
       return `${bigAmount.div(1e9).dp(2).toFormat()}B`
     }
