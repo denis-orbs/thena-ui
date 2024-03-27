@@ -21,11 +21,11 @@ function CompetitionItem({ competition }) {
   const isEnded = competition.timestamp.endTimestamp < new Date().getTime()
 
   const timestampToStatus = () => {
-    if (isUpcoming) return <NeutralBadge className='text-nowrap lg:text-xs'>Upcoming</NeutralBadge>
+    if (isUpcoming) return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Upcoming')}</NeutralBadge>
 
-    if (isLive) return <NeutralBadge className='text-nowrap lg:text-xs'>Live</NeutralBadge>
+    if (isLive) return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Live')}</NeutralBadge>
 
-    if (isEnded) return <NeutralBadge className='text-nowrap lg:text-xs'>Ended</NeutralBadge>
+    if (isEnded) return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Ended')}</NeutralBadge>
   }
 
   return (
@@ -62,7 +62,7 @@ function CompetitionItem({ competition }) {
       </div>
       <div className='flex w-full items-center justify-between gap-4'>
         <EmphasisButton className='w-full'>{t('View')}</EmphasisButton>
-        <PrimaryButton className='w-full'>{t('Trade now')}</PrimaryButton>
+        <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
       </div>
     </Box>
   )

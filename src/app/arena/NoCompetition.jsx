@@ -19,9 +19,7 @@ function NoCompetition() {
         <div className='flex w-72 flex-col items-center gap-3 lg:w-[416px]'>
           <h2>{t('No competitions found')}</h2>
 
-          <Paragraph className='mt-3 text-center'>
-            {t('For technical reasons, there are no competitions to show. Try again later')}
-          </Paragraph>
+          <Paragraph className='mt-3 text-center'>{t('No competitions message')}</Paragraph>
         </div>
       </div>
     </div>

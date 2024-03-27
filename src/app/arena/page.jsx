@@ -1,17 +1,19 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import { cloneDeep, sortBy } from 'lodash'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { PrimaryButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
 import { v4Client } from '@/lib/graphql'
 
 import CompetitionItem from './CompetitionItem'
+import FilterDropDown, { FILTERS } from './FilterDropDown'
 import NoCompetition from './NoCompetition'
 
 const V4_COMPETITION_DATAS = gql`
@@ -39,6 +41,7 @@ const V4_COMPETITION_DATAS = gql`
           id
         }
       }
+      participantCount
       owner {
         id
       }
@@ -62,36 +65,82 @@ export default function ArenaPage() {
     refreshInterval: 60000,
   })
 
-  const [selectedTab, setSearchTab] = useState('all')
+  const [selectedTab, setSelectedTab] = useState('upcoming')
 
-  const submenus = useMemo(
+  const [searchText, setSearchText] = useState('')
+
+  const [filter, setFilter] = useState({
+    market: 'all',
+    sortBy: 'Default',
+    free: false,
+  })
+
+  const filterCompetitions = useMemo(() => {
+    let result = cloneDeep(competitions)
+    if (filter.market !== 'all') {
+      result = result.filter(item => item.market.toLowerCase() === filter.market.toLowerCase())
+    }
+    switch (filter.sortBy) {
+      case FILTERS.entryFee:
+        result = sortBy(result, o => parseInt(o.entryFee, 10))
+        break
+
+      case FILTERS.totalPrize:
+        result = sortBy(result, o => parseInt(o.prize.totalPrize, 10))
+        break
+
+      case FILTERS.participantCount:
+        result = sortBy(result, o => parseInt(o.participantCount, 10))
+        break
+
+      default:
+        result = cloneDeep(result)
+    }
+
+    if (filter.free) {
+      result = result.filter(item => parseInt(item.entryFee, 10) === 0)
+    }
+
+    return !searchText.trim().length
+      ? result
+      : result.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()))
+  }, [competitions, filter.free, filter.market, searchText, filter.sortBy])
+
+  const subTabs = useMemo(
     () => [
       {
-        label: t('Browse all'),
+        label: t('Upcoming'),
+        active: selectedTab === 'upcoming',
+        onClickHandler: () => {
+          setSelectedTab('upcoming')
+        },
+      },
+      {
+        label: t('All'),
         active: selectedTab === 'all',
         onClickHandler: () => {
-          setSearchTab('all')
+          setSelectedTab('all')
         },
       },
       {
         label: t('Joined'),
         active: selectedTab === 'join',
         onClickHandler: () => {
-          setSearchTab('join')
+          setSelectedTab('join')
         },
       },
       {
         label: t('Hosted'),
         active: selectedTab === 'host',
         onClickHandler: () => {
-          setSearchTab('host')
+          setSelectedTab('host')
         },
       },
       {
-        label: t('Past'),
-        active: selectedTab === 'past',
+        label: t('Ended'),
+        active: selectedTab === 'ended',
         onClickHandler: () => {
-          setSearchTab('past')
+          setSelectedTab('ended')
         },
       },
     ],
@@ -107,21 +156,26 @@ export default function ArenaPage() {
         </div>
         <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
           <div className='rounded-lg bg-neutral-900 p-1 '>
-            <Tabs data={submenus} size={SizeTypes.Small} itemClassName='text-sm' />
+            <Tabs data={subTabs} size={SizeTypes.Small} itemClassName='text-sm' />
           </div>
           <div className='flex gap-4'>
-            <SearchInput className='h-11 w-full lg:w-[336px]' classNames={{ input: 'h-11' }} val='' setVal={() => {}} />
-            <EmphasisButton>{t('Filter')}</EmphasisButton>
+            <SearchInput
+              className='h-11 w-full lg:w-[336px]'
+              classNames={{ input: 'h-11' }}
+              val={searchText}
+              setVal={setSearchText}
+            />
+            <FilterDropDown filter={filter} setFilter={setFilter} />
           </div>
         </div>
       </div>
       <div className='w-full'>
         <h3>{t('All Competitions')}</h3>
       </div>
-      {competitions?.length ? (
+      {filterCompetitions?.length ? (
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
-          {competitions.map(item => (
-            <CompetitionItem competition={item} />
+          {filterCompetitions.map(item => (
+            <CompetitionItem competition={item} key={item.id} />
           ))}
         </div>
       ) : (
