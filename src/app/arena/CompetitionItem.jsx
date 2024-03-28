@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Cover from 'public/cover.png'
 import { useMemo } from 'react'
@@ -13,6 +14,7 @@ import { Clock, CoinHand, Gift } from '@/svgs'
 
 function CompetitionItem({ competition, tokens, account }) {
   const t = useTranslations()
+  const { push } = useRouter()
 
   const totalPrize = useMemo(() => {
     const tokenType = tokens.find(
@@ -125,7 +127,10 @@ function CompetitionItem({ competition, tokens, account }) {
         </div>
       </div>
       <div className='flex w-full items-center justify-between gap-4'>
-        <EmphasisButton className='w-full'>{t('View')}</EmphasisButton>
+        <EmphasisButton className='w-full' onClick={() => push(`arena/trading-competitions/${competition.id}`)}>
+          {t('View')}
+        </EmphasisButton>
+
         {isJoined && isLive && <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>}
         {isEnded && (isJoined || isHosting) && <PrimaryButton className='w-full'>{t('Claim Rewards')}</PrimaryButton>}
         {isUpcoming && !isJoined && !isHosting && <PrimaryButton className='w-full'>{t('Join Now')}</PrimaryButton>}
