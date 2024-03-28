@@ -118,19 +118,19 @@ export default function ArenaPage() {
 
     switch (selectedTab) {
       case 'upcoming':
-        result = result.filter(item => item.timestamp.startTimestamp > new Date().getTime())
+        result = result.filter(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
         break
 
-      case 'join':
+      case 'joined':
         result = result.filter(item => item.participants?.find(participant => participant?.participant.id === account))
         break
 
-      case 'host':
+      case 'hosted':
         result = result.filter(item => account && account === item.owner.id)
         break
 
       case 'ended':
-        result = result.filter(item => item.timestamp.endTimestamp < new Date().getTime())
+        result = result.filter(item => item.timestamp.endTimestamp < new Date().getTime() / 1000)
         break
 
       default:
@@ -164,16 +164,16 @@ export default function ArenaPage() {
       },
       {
         label: t('Joined'),
-        active: selectedTab === 'join',
+        active: selectedTab === 'joined',
         onClickHandler: () => {
-          setSelectedTab('join')
+          setSelectedTab('joined')
         },
       },
       {
         label: t('Hosted'),
-        active: selectedTab === 'host',
+        active: selectedTab === 'hosted',
         onClickHandler: () => {
-          setSelectedTab('host')
+          setSelectedTab('hosted')
         },
       },
       {

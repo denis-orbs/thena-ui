@@ -33,13 +33,13 @@ function CompetitionItem({ competition, tokens, account }) {
     return t('Free To Enter')
   }, [competition.prize.token, competition.entryFee, t, tokens])
 
-  const isUpcoming = competition.timestamp.startTimestamp > new Date().getTime()
+  const isUpcoming = competition.timestamp.startTimestamp > new Date().getTime() / 1000
 
   const isLive =
-    competition.timestamp.startTimestamp <= new Date().getTime() &&
-    new Date().getTime() <= competition.timestamp.endTimestamp
+    competition.timestamp.startTimestamp <= new Date().getTime() / 1000 &&
+    new Date().getTime() / 1000 <= competition.timestamp.endTimestamp
 
-  const isEnded = competition.timestamp.endTimestamp < new Date().getTime()
+  const isEnded = competition.timestamp.endTimestamp < new Date().getTime() / 1000
 
   const timestampToStatus = () => {
     if (isUpcoming) return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Upcoming')}</NeutralBadge>
@@ -49,7 +49,7 @@ function CompetitionItem({ competition, tokens, account }) {
     if (isEnded) return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Ended')}</NeutralBadge>
   }
 
-  const formatTime = unix => {
+  const timeDistance = unix => {
     const now = dayjs()
     const timestamp = dayjs.unix(unix)
 
@@ -107,8 +107,8 @@ function CompetitionItem({ competition, tokens, account }) {
               <Clock />
             </div>
             {isUpcoming
-              ? formatTime(competition.timestamp.startTimestamp)
-              : formatTime(competition.timestamp.endTimestamp)}
+              ? timeDistance(competition.timestamp.startTimestamp)
+              : timeDistance(competition.timestamp.endTimestamp)}
           </Paragraph>
           <Paragraph className='flex gap-1'>
             <div className='h-5 w-5'>
