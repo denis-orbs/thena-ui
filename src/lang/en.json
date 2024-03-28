@@ -478,5 +478,18 @@
   "Entry Fee": "Entry Fee",
   "Spot": "Spot",
   "Live": "Live",
-  "Ended": "Ended"
+  "Ended": "Ended",
+  "Free To Enter": "Free To Enter",
+  "Second": "second",
+  "Minute": "minute",
+  "Hour": "hour",
+  "Day": "day",
+  "Month": "month",
+  "Year": "year",
+  "Seconds": "seconds",
+  "Minutes": "minutes",
+  "Hours": "hours",
+  "Days": "days",
+  "Months": "months",
+  "Years": "years"
 }

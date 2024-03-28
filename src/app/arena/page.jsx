@@ -5,16 +5,20 @@ import { cloneDeep, sortBy } from 'lodash'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
+import useSWRImmutable from 'swr/immutable'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
 import { v4Client } from '@/lib/graphql'
+import useWallet from '@/lib/wallets/useWallet'
 
 import CompetitionItem from './CompetitionItem'
 import FilterDropDown, { FILTERS } from './FilterDropDown'
 import NoCompetition from './NoCompetition'
+
+const backendApi = 'https://api.thena.fi/api/v1'
 
 const V4_COMPETITION_DATAS = gql`
   query V4_COMPETITION {
@@ -58,12 +62,27 @@ const fetchCompetition = async () => {
   }
 }
 
+const getTokens = async () => {
+  try {
+    const response = await fetch(`${backendApi}/assets`, {
+      method: 'get',
+    })
+    return response.json()
+  } catch (error) {
+    return { error: true }
+  }
+}
+
 export default function ArenaPage() {
   const t = useTranslations()
+
+  const { account } = useWallet()
 
   const { data: competitions } = useSWR('competition api', () => fetchCompetition(), {
     refreshInterval: 60000,
   })
+
+  const { data: tokens } = useSWRImmutable('token api', () => getTokens())
 
   const [selectedTab, setSelectedTab] = useState('upcoming')
 
@@ -76,7 +95,7 @@ export default function ArenaPage() {
   })
 
   const filterCompetitions = useMemo(() => {
-    let result = cloneDeep(competitions)
+    let result = cloneDeep(competitions) ?? []
     if (filter.market !== 'all') {
       result = result.filter(item => item.market.toLowerCase() === filter.market.toLowerCase())
     }
@@ -86,11 +105,32 @@ export default function ArenaPage() {
         break
 
       case FILTERS.totalPrize:
-        result = sortBy(result, o => parseInt(o.prize.totalPrize, 10))
+        result = sortBy(result, o => -parseInt(o.prize.totalPrize, 10))
         break
 
       case FILTERS.participantCount:
-        result = sortBy(result, o => parseInt(o.participantCount, 10))
+        result = sortBy(result, o => -parseInt(o.participantCount, 10))
+        break
+
+      default:
+        result = cloneDeep(result)
+    }
+
+    switch (selectedTab) {
+      case 'upcoming':
+        result = result.filter(item => item.timestamp.startTimestamp > new Date().getTime())
+        break
+
+      case 'join':
+        result = result.filter(item => item.participants?.find(participant => participant?.participant.id === account))
+        break
+
+      case 'host':
+        result = result.filter(item => account && account === item.owner.id)
+        break
+
+      case 'ended':
+        result = result.filter(item => item.timestamp.endTimestamp < new Date().getTime())
         break
 
       default:
@@ -104,7 +144,7 @@ export default function ArenaPage() {
     return !searchText.trim().length
       ? result
       : result.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()))
-  }, [competitions, filter.free, filter.market, searchText, filter.sortBy])
+  }, [competitions, filter.market, filter.sortBy, filter.free, selectedTab, searchText, account])
 
   const subTabs = useMemo(
     () => [
@@ -175,7 +215,7 @@ export default function ArenaPage() {
       {filterCompetitions?.length ? (
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
           {filterCompetitions.map(item => (
-            <CompetitionItem competition={item} key={item.id} />
+            <CompetitionItem competition={item} key={item.id} tokens={tokens?.data ?? []} account={account} />
           ))}
         </div>
       ) : (
