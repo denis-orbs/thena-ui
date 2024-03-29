@@ -51,9 +51,9 @@ function CompetitionCard({ competition }) {
           <Paragraph>{`${competition.owner.id.slice(0, 6)}...${competition.owner.id.slice(-4)}`}</Paragraph>
         </div>
       </div>
-      <Box className='flex h-[444px] w-full cursor-pointer flex-col gap-4 p-6'>
-        <div className='relative max-h-72'>
-          <Image className='h-full w-full rounded-xl' src={Cover} alt='image' />
+      <Box className='flex h-full w-full cursor-pointer flex-col gap-4 p-6'>
+        <div className='relative'>
+          <Image className='h-72 max-w-full rounded-xl' src={Cover} alt='image' />
           <div className='absolute left-4 top-4 flex gap-2'>
             <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
               {competition.market.toLowerCase()}
@@ -80,7 +80,7 @@ function CompetitionCard({ competition }) {
               <TextHeading>
                 {dayjs.unix(Number(competition.timestamp.registrationEnd)).utc().format('MMM DD, YYYY HH:mm A UTC')}
               </TextHeading>
-              <Paragraph>{t('Registration deadline')}</Paragraph>
+              <Paragraph>{t('Registration Deadline')}</Paragraph>
             </div>
           </div>
         </div>

@@ -12,6 +12,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
 import { v4Client } from '@/lib/graphql'
+import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 import CompetitionItem from './CompetitionItem'
@@ -122,11 +123,13 @@ export default function ArenaPage() {
         break
 
       case 'joined':
-        result = result.filter(item => item.participants?.find(participant => participant?.participant.id === account))
+        result = result.filter(item =>
+          item.participants?.find(participant => participant?.participant.id === account?.toLowerCase()),
+        )
         break
 
       case 'hosted':
-        result = result.filter(item => account && account === item.owner.id)
+        result = result.filter(item => account?.toLowerCase() === item.owner.id)
         break
 
       case 'ended':
@@ -138,12 +141,16 @@ export default function ArenaPage() {
     }
 
     if (filter.free) {
-      result = result.filter(item => parseInt(item.entryFee, 10) === 0)
+      result = result.filter(item => fromWei(item.entryFee).isZero())
     }
 
     return !searchText.trim().length
       ? result
-      : result.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()))
+      : result.filter(
+          item =>
+            item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+            item.description.toLowerCase().includes(searchText.toLowerCase()),
+        )
   }, [competitions, filter.market, filter.sortBy, filter.free, selectedTab, searchText, account])
 
   const subTabs = useMemo(
@@ -213,7 +220,7 @@ export default function ArenaPage() {
         <h3>{t('All Competitions')}</h3>
       </div>
       {filterCompetitions?.length ? (
-        <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
           {filterCompetitions.map(item => (
             <CompetitionItem competition={item} key={item.id} tokens={tokens?.data ?? []} account={account} />
           ))}

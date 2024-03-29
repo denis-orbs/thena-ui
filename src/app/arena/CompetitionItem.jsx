@@ -1,20 +1,19 @@
 import dayjs from 'dayjs'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Cover from 'public/cover.png'
 import { useMemo } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { Paragraph } from '@/components/typography'
+import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
+import { TCButton } from '@/modules/TradingCompetition/TCButton'
 import { Clock, CoinHand, Gift } from '@/svgs'
 
 function CompetitionItem({ competition, tokens, account }) {
   const t = useTranslations()
-  const { push } = useRouter()
 
   const totalPrize = useMemo(() => {
     const tokenType = tokens.find(
@@ -28,30 +27,20 @@ function CompetitionItem({ competition, tokens, account }) {
 
   const entryFee = useMemo(() => {
     if (competition.entryFee !== '0') {
-      const tokenType = tokens.find(token => token.address.toLowerCase() === competition.prize.token.toLowerCase())
+      const tokenType = tokens.find(
+        token => token.address.toLowerCase() === competition.competitionRules.winningToken.toLowerCase(),
+      )
 
       return tokenType ? `${formatAmount(fromWei(competition.entryFee, tokenType.decimals))} ${tokenType.symbol}` : ''
     }
     return t('Free To Enter')
-  }, [competition.prize.token, competition.entryFee, t, tokens])
+  }, [competition.entryFee, competition.competitionRules.winningToken, t, tokens])
 
-  const isUpcoming = competition.timestamp.startTimestamp > new Date().getTime() / 1000
+  const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
 
-  const isLive =
-    competition.timestamp.startTimestamp <= new Date().getTime() / 1000 &&
-    new Date().getTime() / 1000 <= competition.timestamp.endTimestamp
-
-  const isEnded = competition.timestamp.endTimestamp < new Date().getTime() / 1000
-
-  const timestampToStatus = () => {
-    if (isUpcoming) return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Upcoming')}</NeutralBadge>
-
-    if (isLive) return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Live')}</NeutralBadge>
-
-    if (isEnded) return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Ended')}</NeutralBadge>
-  }
-
-  const timeDistance = unix => {
+  const timeDistance = useMemo(() => {
+    const unix =
+      eventType === EVENT_TYPES.UPCOMING ? competition.timestamp.startTimestamp : competition.timestamp.endTimestamp
     const now = dayjs()
     const timestamp = dayjs.unix(unix)
 
@@ -80,17 +69,7 @@ function CompetitionItem({ competition, tokens, account }) {
       return `${inMinutes} ${inMinutes === 1 ? t('Minute') : t('Minutes')}`
     }
     return `${inSeconds} ${inSeconds === 1 ? t('Second') : t('Seconds')}`
-  }
-
-  const isHosting = useMemo(() => account && account === competition.owner.id, [account, competition.owner.id])
-
-  const isJoined = useMemo(
-    () =>
-      competition.participants.length && account
-        ? competition.participants.find(participant => participant.participant.id === account)
-        : false,
-    [account, competition.participants],
-  )
+  }, [competition.timestamp.endTimestamp, competition.timestamp.startTimestamp, eventType, t])
 
   return (
     <Box className='flex w-full cursor-pointer flex-col gap-4 p-6'>
@@ -98,19 +77,17 @@ function CompetitionItem({ competition, tokens, account }) {
         <Image className='h-[200px] w-full rounded-xl' src={Cover} alt='image' />
         <div className='absolute left-4 top-4 flex gap-2'>
           <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{competition.market.toLowerCase()}</NeutralBadge>
-          {timestampToStatus()}
+          <NeutralBadge className='text-nowrap lg:text-xs'>{t(getEventType(competition.timestamp))}</NeutralBadge>
         </div>
       </div>
       <div>
         <h3>{competition.name}</h3>
-        <div className='flex w-full items-center justify-start gap-4 py-2'>
+        <div className='flex w-full flex-wrap items-center justify-start gap-4 text-nowrap py-2'>
           <Paragraph className='flex gap-1'>
             <div className='h-5 w-5'>
               <Clock />
             </div>
-            {isUpcoming
-              ? timeDistance(competition.timestamp.startTimestamp)
-              : timeDistance(competition.timestamp.endTimestamp)}
+            {timeDistance}
           </Paragraph>
           <Paragraph className='flex gap-1'>
             <div className='h-5 w-5'>
@@ -126,15 +103,7 @@ function CompetitionItem({ competition, tokens, account }) {
           </Paragraph>
         </div>
       </div>
-      <div className='flex w-full items-center justify-between gap-4'>
-        <EmphasisButton className='w-full' onClick={() => push(`arena/trading-competitions/${competition.id}`)}>
-          {t('View')}
-        </EmphasisButton>
-
-        {isJoined && isLive && <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>}
-        {isEnded && (isJoined || isHosting) && <PrimaryButton className='w-full'>{t('Claim Rewards')}</PrimaryButton>}
-        {isUpcoming && !isJoined && !isHosting && <PrimaryButton className='w-full'>{t('Join Now')}</PrimaryButton>}
-      </div>
+      <TCButton eventType={eventType} competition={competition} account={account} />
     </Box>
   )
 }

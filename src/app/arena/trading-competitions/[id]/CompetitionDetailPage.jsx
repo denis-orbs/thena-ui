@@ -56,7 +56,7 @@ export default function CompetitionDetailPage({ id }) {
 
   if (!competition) return null
   return (
-    <div className='grid grid-cols-12 gap-12'>
+    <div className='grid grid-cols-12 gap-4 lg:gap-12'>
       <div className='col-span-12 lg:col-span-7'>
         <CompetitionCard competition={competition} />
         <DetailCompetition />
