@@ -39,6 +39,47 @@ function CompetitionCard({ competition }) {
     }
   }, [competition.timestamp.endTimestamp, competition.timestamp.startTimestamp, t])
 
+  const registerText = useMemo(() => {
+    const now = Date.now() / 1000
+    const register = competition.timestamp.registrationEnd
+    const start = competition.timestamp.startTimestamp
+    const end = competition.timestamp.endTimestamp
+
+    return now > end
+      ? t('Competition Has Ended')
+      : register <= now && now < start
+        ? t('Registration Closed')
+        : start <= now && now <= end
+          ? t('Competition Is Live')
+          : dayjs.unix(Number(competition.timestamp.registrationEnd)).utc().format('MMM DD, YYYY HH:mm A UTC')
+  }, [
+    competition.timestamp.registrationEnd,
+    competition.timestamp.startTimestamp,
+    t,
+    competition.timestamp.endTimestamp,
+  ])
+
+  const startTimeText = useMemo(() => {
+    const now = Date.now() / 1000
+    const end = competition.timestamp.endTimestamp
+    const start = competition.timestamp.startTimestamp
+
+    return now > end
+      ? t('Competition Has Ended')
+      : start <= now && now <= end
+        ? t('Competition Is Live')
+        : dayjs.unix(Number(competition.timestamp.startTimestamp)).utc().format('MMM DD, YYYY HH:mm A UTC')
+  }, [competition.timestamp.endTimestamp, competition.timestamp.startTimestamp, t])
+
+  const endTimeText = useMemo(() => {
+    const now = Date.now() / 1000
+    const end = competition.timestamp.endTimestamp
+
+    return now > end
+      ? t('Competition Has Ended')
+      : dayjs.unix(Number(competition.timestamp.endTimestamp)).utc().format('MMM DD, YYYY HH:mm A UTC')
+  }, [competition.timestamp.endTimestamp, t])
+
   return (
     <div className='w-full'>
       <div className='mb-4 flex min-h-11 items-center justify-between'>
@@ -65,22 +106,16 @@ function CompetitionCard({ competition }) {
           <h3>{competition.name}</h3>
           <div className='flex w-full flex-col items-start justify-between gap-4 py-2 lg:flex-row lg:items-center'>
             <div className='flex flex-col gap-1'>
-              <TextHeading>
-                {dayjs.unix(Number(competition.timestamp.startTimestamp)).utc().format('MMM DD, YYYY HH:mm A UTC')}
-              </TextHeading>
+              <TextHeading>{registerText}</TextHeading>
+              <Paragraph>{t('Registration Deadline')}</Paragraph>
+            </div>
+            <div className='flex flex-col gap-1'>
+              <TextHeading>{startTimeText}</TextHeading>
               <Paragraph>{t('Start')}</Paragraph>
             </div>
             <div className='flex flex-col gap-1'>
-              <TextHeading>
-                {dayjs.unix(Number(competition.timestamp.endTimestamp)).utc().format('MMM DD, YYYY HH:mm A UTC')}
-              </TextHeading>
+              <TextHeading>{endTimeText}</TextHeading>
               <Paragraph>{t('End')}</Paragraph>
-            </div>
-            <div className='flex flex-col gap-1'>
-              <TextHeading>
-                {dayjs.unix(Number(competition.timestamp.registrationEnd)).utc().format('MMM DD, YYYY HH:mm A UTC')}
-              </TextHeading>
-              <Paragraph>{t('Registration Deadline')}</Paragraph>
             </div>
           </div>
         </div>

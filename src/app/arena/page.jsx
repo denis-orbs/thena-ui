@@ -5,12 +5,12 @@ import { cloneDeep, sortBy } from 'lodash'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
-import useSWRImmutable from 'swr/immutable'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
+import { useAssets } from '@/context/assetsContext'
 import { v4Client } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -18,8 +18,6 @@ import useWallet from '@/lib/wallets/useWallet'
 import CompetitionItem from './CompetitionItem'
 import FilterDropDown, { FILTERS } from './FilterDropDown'
 import NoCompetition from './NoCompetition'
-
-const backendApi = 'https://api.thena.fi/api/v1'
 
 const V4_COMPETITION_DATAS = gql`
   query V4_COMPETITION {
@@ -63,17 +61,6 @@ const fetchCompetition = async () => {
   }
 }
 
-const getTokens = async () => {
-  try {
-    const response = await fetch(`${backendApi}/assets`, {
-      method: 'get',
-    })
-    return response.json()
-  } catch (error) {
-    return { error: true }
-  }
-}
-
 export default function ArenaPage() {
   const t = useTranslations()
 
@@ -83,7 +70,7 @@ export default function ArenaPage() {
     refreshInterval: 60000,
   })
 
-  const { data: tokens } = useSWRImmutable('token api', () => getTokens())
+  const assets = useAssets()
 
   const [selectedTab, setSelectedTab] = useState('upcoming')
 
@@ -222,7 +209,7 @@ export default function ArenaPage() {
       {filterCompetitions?.length ? (
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
           {filterCompetitions.map(item => (
-            <CompetitionItem competition={item} key={item.id} tokens={tokens?.data ?? []} account={account} />
+            <CompetitionItem competition={item} key={item.id} tokens={assets} account={account} />
           ))}
         </div>
       ) : (
