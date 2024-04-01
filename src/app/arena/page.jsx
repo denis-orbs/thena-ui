@@ -12,6 +12,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
+import { useTCManagerInfo } from '@/hooks/useTCManager'
 import { v4Client } from '@/lib/graphql'
 import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
@@ -70,6 +71,7 @@ export default function ArenaPage() {
   const t = useTranslations()
   const searchParams = useSearchParams()
   const { account } = useWallet()
+  const { isAllowed } = useTCManagerInfo()
 
   const { data: dataCompetitions } = useSWR('competition api', () => fetchCompetition())
 
@@ -281,7 +283,7 @@ export default function ArenaPage() {
       <div className='flex flex-col justify-between gap-4'>
         <div className='flex justify-between'>
           <h2>{t('Competitions')}</h2>
-          <PrimaryButton>{t('Create Trading Competition')}</PrimaryButton>
+          {Boolean(isAllowed) && <PrimaryButton>{t('Add Competition')}</PrimaryButton>}
         </div>
         <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
           <div className='rounded-lg bg-neutral-900 p-1 '>
