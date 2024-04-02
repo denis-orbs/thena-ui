@@ -48,6 +48,7 @@ function Table({
   setCurrentPage,
   notAction = false,
   hidePagination = false,
+  tableBasic = false,
 }) {
   const pageCount = Math.ceil(data.length / PAGE_SIZE)
   const t = useTranslations()
@@ -55,57 +56,118 @@ function Table({
   return (
     <div className={cn('reltaive flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
       <div className='overflow-x-auto'>
-        <div className='hidden w-full min-w-max items-center border-b border-neutral-700 lg:flex'>
-          {sortOptions.map((option, idx) => (
-            <TableCell
-              className={cn('gap-1', !option.disabled && 'cursor-pointer', option.width)}
-              key={`header-${idx}`}
-              onClick={() => {
-                if (!option.disabled) {
-                  setSort({
-                    ...option,
-                    isDesc: sort.value === option.value ? !sort.isDesc : true,
-                  })
-                }
-              }}
-            >
-              <TextHeading className='text-sm'>
-                {option.label && typeof option.label === 'string' ? t(option.label) : option.label}
-              </TextHeading>
-              {sort.value === option.value && (
-                <ArrowDownIcon
-                  className={cn(
-                    'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
-                    sort.isDesc ? 'rotate-0' : 'rotate-180',
+        {tableBasic ? (
+          <table className='w-full'>
+            <thead>
+              <tr>
+                {sortOptions.map((option, idx) => (
+                  <th
+                    className={cn(
+                      'gap-1',
+                      !option.disabled && 'cursor-pointer',
+                      option.width,
+                      option.justify,
+                      option.minWidth,
+                    )}
+                    key={`header-${idx}`}
+                    onClick={() => {
+                      if (!option.disabled) {
+                        setSort({
+                          ...option,
+                          isDesc: sort.value === option.value ? !sort.isDesc : true,
+                        })
+                      }
+                    }}
+                  >
+                    <TableCell className={cn('flex text-nowrap', option.justify)}>
+                      <TextHeading className='text-sm'>
+                        {option.label && typeof option.label === 'string' ? t(option.label) : option.label}
+                      </TextHeading>
+                      {sort.value === option.value && (
+                        <ArrowDownIcon
+                          className={cn(
+                            'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
+                            sort.isDesc ? 'rotate-0' : 'rotate-180',
+                          )}
+                        />
+                      )}
+                    </TableCell>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((ele, eleIdx) => (
+                <tr key={`table-row-${eleIdx}`}>
+                  {sortOptions.map((cell, cellIdx) => (
+                    <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
+                      <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                        {ele[cell.value]}
+                      </TableCell>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <>
+            <div className='hidden w-full min-w-max items-center border-b border-neutral-700 lg:flex'>
+              {sortOptions.map((option, idx) => (
+                <TableCell
+                  className={cn('gap-1', !option.disabled && 'cursor-pointer', option.width, option.justify)}
+                  key={`header-${idx}`}
+                  onClick={() => {
+                    if (!option.disabled) {
+                      setSort({
+                        ...option,
+                        isDesc: sort.value === option.value ? !sort.isDesc : true,
+                      })
+                    }
+                  }}
+                >
+                  <TextHeading className='text-sm'>
+                    {option.label && typeof option.label === 'string' ? t(option.label) : option.label}
+                  </TextHeading>
+                  {sort.value === option.value && (
+                    <ArrowDownIcon
+                      className={cn(
+                        'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
+                        sort.isDesc ? 'rotate-0' : 'rotate-180',
+                      )}
+                    />
                   )}
-                />
-              )}
-            </TableCell>
-          ))}
-        </div>
-        {data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
-          <div
-            className={cn(
-              'flex w-full flex-wrap items-start rounded-lg border-b border-neutral-700 hover:bg-neutral-800 lg:flex-nowrap lg:items-center lg:border-0',
-              ele.onRowClick && 'cursor-pointer',
-            )}
-            onClick={() => ele.onRowClick && ele.onRowClick()}
-            key={`table-row-${eleIdx}`}
-          >
-            <TableCell className={cn('flex w-full', sortOptions[0].width)}>{ele[sortOptions[0].value]}</TableCell>
-            {sortOptions.slice(1, sortOptions.length - (notAction ? 0 : 1)).map((cell, cellIdx) => (
-              <TableCell className={cn('flex w-1/2 flex-col lg:flex-row', cell.width)} key={`${cell.value}-${cellIdx}`}>
-                <TextHeading className='lg:hidden'>{t(cell.label)}</TextHeading>
-                {ele[cell.value]}
-              </TableCell>
+                </TableCell>
+              ))}
+            </div>
+            {data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
+              <div
+                className={cn(
+                  'flex w-full flex-wrap items-start rounded-lg border-b border-neutral-700 hover:bg-neutral-800 lg:flex-nowrap lg:items-center lg:border-0',
+                  ele.onRowClick && 'cursor-pointer',
+                )}
+                onClick={() => ele.onRowClick && ele.onRowClick()}
+                key={`table-row-${eleIdx}`}
+              >
+                <TableCell className={cn('flex w-full', sortOptions[0].width)}>{ele[sortOptions[0].value]}</TableCell>
+                {sortOptions.slice(1, sortOptions.length - (notAction ? 0 : 1)).map((cell, cellIdx) => (
+                  <TableCell
+                    className={cn('flex w-1/2 flex-col lg:flex-row', cell.width)}
+                    key={`${cell.value}-${cellIdx}`}
+                  >
+                    <TextHeading className='lg:hidden'>{t(cell.label)}</TextHeading>
+                    {ele[cell.value]}
+                  </TableCell>
+                ))}
+                {!notAction && (
+                  <TableCell className={cn('flex w-full flex-col', sortOptions[sortOptions.length - 1].width)}>
+                    {ele[sortOptions[sortOptions.length - 1].value]}
+                  </TableCell>
+                )}
+              </div>
             ))}
-            {!notAction && (
-              <TableCell className={cn('flex w-full flex-col', sortOptions[sortOptions.length - 1].width)}>
-                {ele[sortOptions[sortOptions.length - 1].value]}
-              </TableCell>
-            )}
-          </div>
-        ))}
+          </>
+        )}
       </div>
       {pageCount > 1 && !hidePagination && (
         <ul className='flex items-center justify-center gap-2 px-5 py-3 lg:justify-end'>

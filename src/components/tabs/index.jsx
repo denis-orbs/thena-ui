@@ -39,4 +39,18 @@ function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
   )
 }
 
+export function TabPanel({ children, value, select, ...other }) {
+  return (
+    <div
+      role='tabpanel'
+      hidden={value !== select}
+      id={`simple-tabpanel-${select}`}
+      aria-labelledby={`simple-tab-${select}`}
+      {...other}
+    >
+      {value === select && <div className='flex w-full flex-col gap-4'>{children}</div>}
+    </div>
+  )
+}
+
 export default Tabs
