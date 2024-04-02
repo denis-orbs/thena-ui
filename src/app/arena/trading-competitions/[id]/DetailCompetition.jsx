@@ -1,10 +1,12 @@
 'use client'
 
+import { compact } from 'lodash'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
+import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
 
 import { DetailTab } from './DetailTab'
 import { LeaderboardTab } from './LeaderboardTab'
@@ -14,38 +16,43 @@ function DetailCompetition({ competition }) {
 
   const [selectedTab, setSelectedTab] = useState('Details')
 
+  const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
+
   const subTabs = useMemo(
-    () => [
-      {
-        label: t('Details'),
-        active: selectedTab === 'Details',
-        onClickHandler: () => {
-          setSelectedTab('Details')
+    () =>
+      compact([
+        {
+          label: t('Details'),
+          active: selectedTab === 'Details',
+          onClickHandler: () => {
+            setSelectedTab('Details')
+          },
         },
-      },
-      {
-        label: t('Leaderboard'),
-        active: selectedTab === 'Leaderboard',
-        onClickHandler: () => {
-          setSelectedTab('Leaderboard')
+        eventType === EVENT_TYPES.LIVE || eventType === EVENT_TYPES.ENDED
+          ? {
+              label: t('Leaderboard'),
+              active: selectedTab === 'Leaderboard',
+              onClickHandler: () => {
+                setSelectedTab('Leaderboard')
+              },
+            }
+          : {},
+        {
+          label: t('Participants'),
+          active: selectedTab === 'Participants',
+          onClickHandler: () => {
+            setSelectedTab('Participants')
+          },
         },
-      },
-      {
-        label: t('Participants'),
-        active: selectedTab === 'Participants',
-        onClickHandler: () => {
-          setSelectedTab('Participants')
+        {
+          label: t('Analytics'),
+          active: selectedTab === 'Analytics',
+          onClickHandler: () => {
+            setSelectedTab('Analytics')
+          },
         },
-      },
-      {
-        label: t('Analytics'),
-        active: selectedTab === 'Analytics',
-        onClickHandler: () => {
-          setSelectedTab('Analytics')
-        },
-      },
-    ],
-    [selectedTab, t],
+      ]),
+    [eventType, selectedTab, t],
   )
 
   return (

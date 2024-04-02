@@ -53,6 +53,7 @@ function FilterDropDown({ filter, setFilter }) {
                     market: 'perpetual',
                   })
                 },
+                disabled: true,
               },
             ]}
             size={SizeTypes.Small}

@@ -4,7 +4,7 @@ import React from 'react'
 import { SizeTypes } from '@/constant/type'
 import { cn } from '@/lib/utils'
 
-function TabItem({ className, item, size }) {
+function TabItem({ className, item, size, disabled }) {
   const t = useTranslations()
 
   return (
@@ -23,6 +23,7 @@ function TabItem({ className, item, size }) {
         className,
       )}
       onClick={item.onClickHandler}
+      disabled={disabled}
     >
       {t(item.label)}
     </button>
@@ -33,7 +34,7 @@ function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
   return (
     <div className={cn('flex items-center justify-center gap-1', className)}>
       {data.map(item => (
-        <TabItem item={item} key={item.label} size={size} className={itemClassName} />
+        <TabItem item={item} key={item.label} size={size} className={itemClassName} disabled={item.disabled || false} />
       ))}
     </div>
   )

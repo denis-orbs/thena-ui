@@ -82,6 +82,31 @@ export default function ArenaPage() {
     free: false,
   })
 
+  const showJoinedTab = useMemo(
+    () =>
+      competitions?.some(
+        item =>
+          account && item.participants?.find(participant => participant?.participant.id === account.toLowerCase()),
+      ),
+    [account, competitions],
+  )
+
+  const showHostedTab = useMemo(
+    () => competitions?.some(item => account && account.toLowerCase() === item.owner.id),
+    [account, competitions],
+  )
+
+  const showEndedTab = useMemo(
+    () =>
+      competitions?.some(
+        item =>
+          account &&
+          item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
+          item.participant?.id === account.toLowerCase(),
+      ),
+    [account, competitions],
+  )
+
   const filterCompetitions = useMemo(() => {
     let result = cloneDeep(competitions) ?? []
     if (filter.market !== 'all') {
@@ -120,7 +145,11 @@ export default function ArenaPage() {
         break
 
       case 'ended':
-        result = result.filter(item => item.timestamp.endTimestamp < new Date().getTime() / 1000)
+        result = result.filter(
+          item =>
+            item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
+            item?.participant?.id === account?.toLowerCase(),
+        )
         break
 
       default:
@@ -140,8 +169,8 @@ export default function ArenaPage() {
         )
   }, [competitions, filter.market, filter.sortBy, filter.free, selectedTab, searchText, account])
 
-  const subTabs = useMemo(
-    () => [
+  const subTabs = useMemo(() => {
+    const result = [
       {
         label: t('Upcoming'),
         active: selectedTab === 'upcoming',
@@ -156,30 +185,40 @@ export default function ArenaPage() {
           setSelectedTab('all')
         },
       },
-      {
+    ]
+
+    if (showJoinedTab) {
+      result.push({
         label: t('Joined'),
         active: selectedTab === 'joined',
         onClickHandler: () => {
           setSelectedTab('joined')
         },
-      },
-      {
+      })
+    }
+
+    if (showHostedTab) {
+      result.push({
         label: t('Hosted'),
         active: selectedTab === 'hosted',
         onClickHandler: () => {
           setSelectedTab('hosted')
         },
-      },
-      {
+      })
+    }
+
+    if (showEndedTab) {
+      result.push({
         label: t('Ended'),
         active: selectedTab === 'ended',
         onClickHandler: () => {
           setSelectedTab('ended')
         },
-      },
-    ],
-    [selectedTab, t],
-  )
+      })
+    }
+
+    return result
+  }, [selectedTab, showEndedTab, showHostedTab, showJoinedTab, t])
 
   return (
     <div className='flex flex-col gap-4'>

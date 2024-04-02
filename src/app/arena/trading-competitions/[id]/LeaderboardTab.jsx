@@ -92,11 +92,8 @@ export function LeaderboardTab({ competition, selectedTab }) {
 
   const filteredLeaderBoards = useMemo(
     () =>
-      !searchText
-        ? data?.participants
-        : (data?.participants &&
-            data?.participants?.filter(item => item.participant.id.toLowerCase().includes(searchText.toLowerCase()))) ||
-          [],
+      data?.participants?.filter(item => item.participant.id.toLowerCase().includes(searchText?.toLowerCase() || '')) ||
+      [],
     [searchText, data],
   )
 
@@ -105,8 +102,6 @@ export function LeaderboardTab({ competition, selectedTab }) {
       filteredLeaderBoards?.sort((a, b) => {
         let res
         switch (sort.value) {
-          case 'index':
-            break
           case 'user':
             res = sort.isDesc ? a.participant.id - b.participant.id : b.participant.id - a.participant.id
             break
@@ -140,8 +135,19 @@ export function LeaderboardTab({ competition, selectedTab }) {
             <Paragraph>{`${leader.participant.id.slice(0, 6)}...${leader.participant.id.slice(-4)}`}</Paragraph>
           </div>
         ),
-        pnl: <Paragraph>${formatAmount(fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal))}</Paragraph>,
-        reward: <Paragraph>${formatAmount(fromWei(leader.winAmount, leader.twinTokenDecimal))}</Paragraph>,
+        pnl: (
+          <Paragraph>
+            {`${formatAmount(fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal))}
+            ${competition.competitionRules?.winningToken?.symbol}`}
+          </Paragraph>
+        ),
+        reward: (
+          <Paragraph>
+            {`${formatAmount(fromWei(leader.winAmount, leader.twinTokenDecimal))} ${
+              competition.competitionRules?.winningToken?.symbol
+            }`}
+          </Paragraph>
+        ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData)],

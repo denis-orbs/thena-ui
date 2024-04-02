@@ -45,7 +45,9 @@ export function DetailTab({ competition, selectedTab }) {
       },
       {
         key: 'Max Prize Pool',
-        data: formatAmount(fromWei(totalPrize + (maxParticipants - participantCount) * entryFee, prizeToken?.decimals)),
+        data: formatAmount(
+          fromWei(totalPrize).plus(fromWei(entryFee).multipliedBy(maxParticipants - participantCount)),
+        ),
         ticker: prizeToken?.symbol,
       },
       {
