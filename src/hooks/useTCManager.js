@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -35,7 +34,9 @@ export const useTCManagerInfo = () => {
       setProtocolFee(res1)
       setProtocolFeeToken(feeToken)
       setTradingTokens(tradeAssets)
-      setIsAllowed(res0 || res4)
+      // setIsAllowed(res0 || res4)
+      // TODO: Just for test
+      setIsAllowed(true)
     }
 
     if (account && assets.length > 0 && tradingTokens.length === 0) {
@@ -127,7 +128,7 @@ export const useCreateTC = () => {
         tradingCompetition: data.tradingCompetitionSpot,
         name: data.name,
         description: data.description,
-        market: new BigNumber(0),
+        market: 0,
         timestamp: {
           ...data.timestamp,
         },

@@ -29,7 +29,7 @@ function Input({
           TrailingIcon || suffix ? 'pr-7' : 'pr-3',
           classNames?.input,
         )}
-        placeholder={isLocale && placeholder !== '0' ? t(placeholder) : placeholder}
+        placeholder={isLocale && placeholder !== '' && placeholder !== '0' ? t(placeholder) : placeholder}
         value={val}
         {...rest}
       />

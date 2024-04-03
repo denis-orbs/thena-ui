@@ -9,7 +9,9 @@ import useSWR from 'swr'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
+import Modal, { ModalBody } from '@/components/modal'
 import Tabs from '@/components/tabs'
+import { TC_STEPS } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
 import { useTCManagerInfo } from '@/hooks/useTCManager'
@@ -17,6 +19,8 @@ import { v4Client } from '@/lib/graphql'
 import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import Create from '@/modules/CreateTradingCompetition/Create'
+import Preview from '@/modules/CreateTradingCompetition/Preview'
 
 import CompetitionItem from './CompetitionItem'
 import FilterDropDown, { FILTERS } from './FilterDropDown'
@@ -283,7 +287,11 @@ export default function ArenaPage() {
       <div className='flex flex-col justify-between gap-4'>
         <div className='flex justify-between'>
           <h2>{t('Competitions')}</h2>
-          {Boolean(isAllowed) && <PrimaryButton>{t('Add Competition')}</PrimaryButton>}
+          {Boolean(isAllowed) && (
+            <PrimaryButton onClick={() => setShowModalCreateCompetition(true)}>
+              {t('Create Trading Competition')}
+            </PrimaryButton>
+          )}
         </div>
         <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
           <div className='rounded-lg bg-neutral-900 p-1 '>
@@ -311,6 +319,35 @@ export default function ArenaPage() {
         </div>
       ) : (
         <NoCompetition />
+      )}
+      <Create
+        data={data}
+        setData={setData}
+        step={step}
+        setStep={setStep}
+        showModalCreateCompetition={showModalCreateCompetition}
+        handleClose={() => setShowModalCreateCompetition(false)}
+      />
+      {step === TC_STEPS.length && (
+        <Modal
+          isOpen
+          closeModal={() => {}}
+          showIconX={false}
+          // width=''
+          // style={{
+          //   overflowY: 'hidden',
+          // }}
+          className='w-75'
+        >
+          <ModalBody>
+            <Preview
+              data={data}
+              step={step}
+              setStep={setStep}
+              showModalCreateCompetition={showModalCreateCompetition}
+            />
+          </ModalBody>
+        </Modal>
       )}
     </div>
   )
