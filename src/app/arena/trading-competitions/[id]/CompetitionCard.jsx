@@ -20,7 +20,7 @@ dayjs.extend(utc)
 
 function CompetitionCard({ competition }) {
   const t = useTranslations()
-  const { push } = useRouter()
+  const { back } = useRouter()
 
   const timestampToStatus = useMemo(() => {
     if (competition?.timestamp.startTimestamp > new Date().getTime() / 1000) {
@@ -83,7 +83,7 @@ function CompetitionCard({ competition }) {
   return (
     <div className='w-full'>
       <div className='mb-4 flex min-h-11 items-center justify-between'>
-        <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/arena')}>
+        <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => back()}>
           {t('Back')}
         </TextButton>
 

@@ -1,9 +1,10 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import { cloneDeep, sortBy } from 'lodash'
+import { cloneDeep, compact, sortBy } from 'lodash'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -12,6 +13,7 @@ import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
 import { v4Client } from '@/lib/graphql'
+import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
@@ -63,7 +65,7 @@ const fetchCompetition = async () => {
 
 export default function ArenaPage() {
   const t = useTranslations()
-
+  const searchParams = useSearchParams()
   const { account } = useWallet()
 
   const { data: competitions } = useSWR('competition api', () => fetchCompetition(), {
@@ -74,12 +76,12 @@ export default function ArenaPage() {
 
   const [selectedTab, setSelectedTab] = useState('upcoming')
 
-  const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] = useState(searchParams.get('search') ?? '')
 
   const [filter, setFilter] = useState({
-    market: 'all',
-    sortBy: 'Default',
-    free: false,
+    market: searchParams.get('market') ?? 'all',
+    sortBy: searchParams.get('sortBy') ?? 'Default',
+    free: searchParams.get('free') ?? false,
   })
 
   const showJoinedTab = useMemo(
@@ -89,6 +91,20 @@ export default function ArenaPage() {
           account && item.participants?.find(participant => participant?.participant.id === account.toLowerCase()),
       ),
     [account, competitions],
+  )
+
+  const showLiveTab = useMemo(
+    () =>
+      competitions?.some(
+        item =>
+          item.timestamp.startTimestamp <= new Date().getTime() / 1000 &&
+          item.timestamp.endTimestamp >= new Date().getTime() / 1000,
+      ),
+    [competitions],
+  )
+  const showUpcomingTab = useMemo(
+    () => competitions?.some(item => item.timestamp.startTimestamp > new Date().getTime() / 1000),
+    [competitions],
   )
 
   const showHostedTab = useMemo(
@@ -164,61 +180,83 @@ export default function ArenaPage() {
       ? result
       : result.filter(
           item =>
-            item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-            item.description.toLowerCase().includes(searchText.toLowerCase()),
+            item.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+            item.description?.toLowerCase().includes(searchText.toLowerCase()),
         )
   }, [competitions, filter.market, filter.sortBy, filter.free, selectedTab, searchText, account])
 
-  const subTabs = useMemo(() => {
-    const result = [
-      {
-        label: t('Upcoming'),
-        active: selectedTab === 'upcoming',
-        onClickHandler: () => {
-          setSelectedTab('upcoming')
+  const subTabs = useMemo(
+    () =>
+      compact([
+        showUpcomingTab
+          ? {
+              label: t('Upcoming'),
+              active: selectedTab === 'upcoming',
+              onClickHandler: () => {
+                setSelectedTab('upcoming')
+              },
+            }
+          : undefined,
+        showLiveTab
+          ? {
+              label: t('Live'),
+              active: selectedTab === 'live',
+              onClickHandler: () => {
+                setSelectedTab('live')
+              },
+            }
+          : undefined,
+        {
+          label: t('All'),
+          active: selectedTab === 'all',
+          onClickHandler: () => {
+            setSelectedTab('all')
+          },
         },
-      },
-      {
-        label: t('All'),
-        active: selectedTab === 'all',
-        onClickHandler: () => {
-          setSelectedTab('all')
-        },
-      },
-    ]
+        showJoinedTab
+          ? {
+              label: t('Joined'),
+              active: selectedTab === 'joined',
+              onClickHandler: () => {
+                setSelectedTab('joined')
+              },
+            }
+          : undefined,
+        showHostedTab
+          ? {
+              label: t('Hosted'),
+              active: selectedTab === 'hosted',
+              onClickHandler: () => {
+                setSelectedTab('hosted')
+              },
+            }
+          : undefined,
 
-    if (showJoinedTab) {
-      result.push({
-        label: t('Joined'),
-        active: selectedTab === 'joined',
-        onClickHandler: () => {
-          setSelectedTab('joined')
-        },
-      })
+        showEndedTab
+          ? {
+              label: t('Ended'),
+              active: selectedTab === 'ended',
+              onClickHandler: () => {
+                setSelectedTab('ended')
+              },
+            }
+          : undefined,
+      ]),
+    [showUpcomingTab, selectedTab, showEndedTab, showHostedTab, showJoinedTab, showLiveTab, t],
+  )
+
+  useEffect(() => {
+    if (!showUpcomingTab) {
+      setSelectedTab('all')
     }
+  }, [showUpcomingTab])
 
-    if (showHostedTab) {
-      result.push({
-        label: t('Hosted'),
-        active: selectedTab === 'hosted',
-        onClickHandler: () => {
-          setSelectedTab('hosted')
-        },
-      })
-    }
-
-    if (showEndedTab) {
-      result.push({
-        label: t('Ended'),
-        active: selectedTab === 'ended',
-        onClickHandler: () => {
-          setSelectedTab('ended')
-        },
-      })
-    }
-
-    return result
-  }, [selectedTab, showEndedTab, showHostedTab, showJoinedTab, t])
+  useEffect(() => {
+    addOrReplaceURLParams('search', searchText.length ? searchText : null)
+    addOrReplaceURLParams('free', filter.free ? 'true' : null)
+    addOrReplaceURLParams('market', filter.market !== 'all' ? filter.market : null)
+    addOrReplaceURLParams('sortBy', filter.sortBy !== 'Default' ? filter.sortBy : null)
+  }, [filter.free, filter.market, filter.sortBy, searchText])
 
   return (
     <div className='flex flex-col gap-4'>

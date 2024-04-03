@@ -16,3 +16,20 @@ export const getEventType = detail => {
   }
   return event
 }
+
+export const addOrReplaceURLParams = (type, value) => {
+  const url = new URL(window.location.href)
+
+  const params = new URLSearchParams(url.search.slice(1))
+
+  if (value === null) {
+    params.delete(type)
+  } else {
+    params.set(type, value)
+  }
+  window.history.replaceState(
+    {},
+    '',
+    `${window.location.pathname}${Array.from(params).length > 0 ? '?' : ''}${params.toString()}`,
+  )
+}
