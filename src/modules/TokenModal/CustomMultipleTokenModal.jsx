@@ -6,7 +6,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { goScan } from '@/lib/utils'
+import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { CheckIcon, ExternalIcon } from '@/svgs'
 
@@ -71,7 +71,7 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
             return (
               <div
                 className={`flex cursor-pointer items-center justify-between rounded-lg px-6 py-3
-                 hover:bg-slate-800 ${isSelected ? 'bg-neutral-800' : ''}`}
+                 hover:bg-slate-800 ${isSelected ? 'bg-neutral-800' : ''} gap-5`}
                 onClick={() => {
                   let temp = [...selectedAssets]
                   if (isSelected) {
@@ -84,32 +84,40 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
                 }}
                 key={item.address}
               >
-                <div className='flex items-center gap-2 rounded-lg'>
-                  <CircleImage src={item.logoURI} width={32} height={32} alt='thena token' />
-                  <div className='flex flex-col'>
-                    <div className='flex items-center space-x-1'>
-                      <TextHeading>{item.symbol}</TextHeading>
-                      {item.address !== 'BNB' && (
-                        <div className='flex items-center gap-1'>
-                          <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md !py-2'>
-                            <TextHeading className='text-xs'>{t('Add to Wallet')}</TextHeading>
-                          </CustomTooltip>
-                          <ExternalIcon
-                            className='h-3 w-3 stroke-neutral-400 hover:stroke-neutral-50'
-                            onClick={e => {
-                              e.stopPropagation()
-                              e.preventDefault()
-                              goScan(networkId, item.address)
-                            }}
-                            data-tooltip-id={`contract-tooltip-${idx}`}
-                          />
-                          <CustomTooltip id={`contract-tooltip-${idx}`} className='rounded-md !py-2' place='top'>
-                            <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
-                          </CustomTooltip>
-                        </div>
-                      )}
+                <div className='flex flex-1 items-center justify-between '>
+                  <div className='flex items-center gap-2 rounded-lg'>
+                    <CircleImage src={item.logoURI} width={32} height={32} alt='thena token' />
+                    <div className='flex flex-col'>
+                      <div className='flex items-center space-x-1'>
+                        <TextHeading>{item.symbol}</TextHeading>
+                        {item.address !== 'BNB' && (
+                          <div className='flex items-center gap-1'>
+                            <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md !py-2'>
+                              <TextHeading className='text-xs'>{t('Add to Wallet')}</TextHeading>
+                            </CustomTooltip>
+                            <ExternalIcon
+                              className='h-3 w-3 stroke-neutral-400 hover:stroke-neutral-50'
+                              onClick={e => {
+                                e.stopPropagation()
+                                e.preventDefault()
+                                goScan(networkId, item.address)
+                              }}
+                              data-tooltip-id={`contract-tooltip-${idx}`}
+                            />
+                            <CustomTooltip id={`contract-tooltip-${idx}`} className='rounded-md !py-2' place='top'>
+                              <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
+                            </CustomTooltip>
+                          </div>
+                        )}
+                      </div>
+                      <TextSubHeading>{item.name}</TextSubHeading>
                     </div>
-                    <TextSubHeading>{item.name}</TextSubHeading>
+                  </div>
+                  <div className='flex flex-col'>
+                    <TextHeading className='text-right'>{formatAmount(item.balance)}</TextHeading>
+                    <TextSubHeading className='text-right'>
+                      ${formatAmount(item.balance.times(item.price))}
+                    </TextSubHeading>
                   </div>
                 </div>
                 {isSelected && <CheckIcon className='h-4 w-4 stroke-white' />}

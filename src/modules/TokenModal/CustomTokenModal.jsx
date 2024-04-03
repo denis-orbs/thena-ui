@@ -6,7 +6,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { goScan } from '@/lib/utils'
+import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { ExternalIcon } from '@/svgs'
 
@@ -52,7 +52,7 @@ function CustomTokenModal({ popup, setPopup, setSelectedAsset, assets }) {
         <div className='max-h-[340px] overflow-auto'>
           {filteredAssets.map((item, idx) => (
             <div
-              className='cursor-pointer rounded-lg px-6 py-3 hover:bg-slate-800'
+              className='flex cursor-pointer items-center justify-between rounded-lg px-6 py-3 hover:bg-slate-800'
               onClick={() => {
                 setSelectedAsset(item)
                 setPopup(false)
@@ -86,6 +86,10 @@ function CustomTokenModal({ popup, setPopup, setSelectedAsset, assets }) {
                   </div>
                   <TextSubHeading>{item.name}</TextSubHeading>
                 </div>
+              </div>
+              <div className='flex flex-col'>
+                <TextHeading className='text-right'>{formatAmount(item.balance)}</TextHeading>
+                <TextSubHeading className='text-right'>${formatAmount(item.balance.times(item.price))}</TextSubHeading>
               </div>
             </div>
           ))}

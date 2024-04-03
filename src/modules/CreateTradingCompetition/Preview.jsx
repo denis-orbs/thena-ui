@@ -2,17 +2,19 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { useCreateTC, useTCManagerInfo } from '@/hooks/useTCManager'
+import { INIT_VALUES } from '@/constant'
+import { useTC } from '@/context/tcContext'
+import { useCreateTC } from '@/hooks/useTCManager'
 import { warnToast } from '@/lib/notify'
 import { formatAmount, fromWei, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 import Details from './Details/Details'
 
-function Preview({ step, setStep, data, setShowModalCreateCompetition }) {
+function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, setShowPreview }) {
   const t = useTranslations()
   const { account } = useWallet()
-  const { protocolFee, protocolFeeToken } = useTCManagerInfo()
+  const { protocolFee, protocolFeeToken } = useTC()
   const { onCreate, pending } = useCreateTC()
 
   const mainData = useMemo(() => {
@@ -70,6 +72,10 @@ function Preview({ step, setStep, data, setShowModalCreateCompetition }) {
               warnToast(`Insufficient ${protocolFeeToken?.symbol} Balance `)
             } else {
               onCreate(mainData)
+              setShowModalCreateCompetition(false)
+              setShowPreview(false)
+              setData(INIT_VALUES)
+              setStep(0)
             }
           }}
           content='CREATE'
@@ -88,47 +94,9 @@ function Preview({ step, setStep, data, setShowModalCreateCompetition }) {
           BACK
         </EmphasisButton>
       </div>
-      <div className='flex max-h-[80vh] overflow-y-scroll'>
+      <div className='flex max-h-[80vh] w-full overflow-y-scroll'>
         <Details data={mainData} isPreview account={account} />
       </div>
-      {/* <div className='bg-body border-blue fixed bottom-0 left-0 z-[100] w-full border-t px-5 py-3 lg:hidden'>
-        <span className='font-figtree text-xl font-semibold leading-6 text-white'>Create Trading Competition?</span>
-        <p className='text-lightGray mt-[7px] text-[15px] leading-5'>
-          In order to create this trading competition you will have to pay a creation fee.
-        </p>
-        <div className='mt-3'>
-          <span className='text-lightGray text-base leading-5'>Creation Fee:</span>
-          <p className=' text-xl font-semibold leading-5 text-white '>
-            {formatAmount(fromWei(protocolFee, protocolFeeToken?.decimals))} {protocolFeeToken?.symbol}
-          </p>
-        </div>
-        <div className='mt-3 flex w-full items-center space-x-3'>
-          <PrimaryButton
-            isLoading={pending}
-            onClick={() => {
-              if (fromWei(protocolFee, protocolFeeToken?.decimals).gt(protocolFeeToken?.balance)) {
-                warnToast(`Insufficient ${protocolFeeToken?.symbol} Balance `)
-              } else {
-                onCreate(mainData)
-              }
-            }}
-            content='CREATE'
-            className='w-full py-3.5'
-          >
-            CREATE
-          </PrimaryButton>
-
-          <EmphasisButton
-            onClick={() => {
-              setStep(step - 1)
-              setShowModalCreateCompetition(true)
-            }}
-            className='w-full py-3.5'
-          >
-            BACK
-          </EmphasisButton>
-        </div>
-      </div> */}
     </div>
   )
 }

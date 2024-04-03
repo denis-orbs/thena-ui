@@ -1,58 +1,21 @@
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
+import { useTC } from '@/context/tcContext'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTCContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useTCManagerInfo = () => {
-  const [protocolFee, setProtocolFee] = useState()
-  const [protocolFeeToken, setProtocolFeeToken] = useState(false)
-  const [tradingTokens, setTradingTokens] = useState([])
-  const [isAllowed, setIsAllowed] = useState(false)
-  const { account } = useWallet()
-  const assets = useAssets()
-
-  useEffect(() => {
-    const fetchTotalInfo = async () => {
-      const tcManagerContract = getTCContract()
-      const [res0, res1, res2, res3, res4] = await Promise.all([
-        readCall(tcManagerContract, 'isPermissionless', []),
-        readCall(tcManagerContract, 'protocol_fee', []),
-        readCall(tcManagerContract, 'protocol_fee_token', []),
-        readCall(tcManagerContract, 'tradingTokens', []),
-        readCall(tcManagerContract, 'isAllowedCreator', [account]),
-      ])
-      const tradeAssets = assets.filter(ele => res3.map(sub => sub.toLowerCase()).includes(ele.address))
-      const feeToken = assets.find(ele => ele.address.toLowerCase() === res2.toLowerCase())
-      setProtocolFee(res1)
-      setProtocolFeeToken(feeToken)
-      setTradingTokens(tradeAssets)
-      // setIsAllowed(res0 || res4)
-      // TODO: Just for test
-      setIsAllowed(true)
-    }
-
-    if (account && assets.length > 0 && tradingTokens.length === 0) {
-      fetchTotalInfo()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, assets])
-
-  return { isAllowed, protocolFee, protocolFeeToken, tradingTokens }
-}
-
 export const useCreateTC = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { account, chainId } = useWallet()
-  const { protocolFeeToken, protocolFee } = useTCManagerInfo()
+  const { protocolFeeToken, protocolFee } = useTC()
   const t = useTranslations()
 
   const handleCreate = useCallback(

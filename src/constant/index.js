@@ -273,7 +273,7 @@ export const TC_TIMESTAMP = {
   MIN_REG: 3600 * 1000,
   MAX_REG: 3600 * 24 * 7 * 1000,
   MIN_TS: 3600 * 1000,
-  MAX_TS: 3600 * 24 * 7 * 4 * 1000,
+  MAX_TS: 3600 * 24 * 7 * 1000,
 }
 
 export const TC_STEPS = ['DETAILS', 'TIME SETTINGS', 'TYPE AND TOKENS', 'FEES AND PRIZES']
@@ -313,17 +313,17 @@ export const INIT_VALUES = {
   prize: {
     placements: 2, //  number of placements
     ownerFee: 0, //  owner fee
-    totalPrize: 0, //  total prize amounts
+    totalPrize: '', //  total prize amounts
     token: '', //  prize tokens
     weights: [0, 0], //  placement weights
     // winType: false, //  win type
   },
   competitionRules: {
-    startingBalance: 0, //  starting balance
+    startingBalance: '', //  starting balance
     winningToken: null, //  winning token
     tradingTokens: [], //  trading tokens
   },
-  entryFee: 0, // entry fee of 0 prize token
+  entryFee: '', // entry fee of 0 prize token
   owner: {
     id: '',
   }, // owner address

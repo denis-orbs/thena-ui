@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
@@ -58,6 +58,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
           const total = weights.reduce((sum, cur) => sum + cur, 0)
           if (!token) {
             error = 'Invalid Prize Token'
+            // } else if (isInvalidAmount(totalPrize)) {
           } else if (isInvalidAmount(totalPrize) || token.balance.lt(totalPrize)) {
             error = 'Invalid Prize Amount'
           } else if (isEntryFee && isInvalidAmount(data.entryFee)) {
@@ -74,7 +75,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
       return error
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data],
+    [data, isStarting, isEntryFee],
   )
 
   const renderComponent = () => {
@@ -90,6 +91,20 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
       default:
     }
   }
+
+  useEffect(() => {
+    if (data.entryFee) {
+      setIsEntryFee(true)
+    } else {
+      setIsEntryFee(false)
+    }
+
+    if (data.competitionRules?.startingBalance) {
+      setIsStarting(true)
+    } else {
+      setIsStarting(false)
+    }
+  }, [data.competitionRules?.startingBalance, data.entryFee])
 
   return (
     <Modal

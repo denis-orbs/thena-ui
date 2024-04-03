@@ -11,10 +11,10 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Modal, { ModalBody } from '@/components/modal'
 import Tabs from '@/components/tabs'
-import { TC_STEPS } from '@/constant'
+import { INIT_VALUES, TC_STEPS } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
-import { useTCManagerInfo } from '@/hooks/useTCManager'
+import { useTC } from '@/context/tcContext'
 import { v4Client } from '@/lib/graphql'
 import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
@@ -75,7 +75,7 @@ export default function ArenaPage() {
   const t = useTranslations()
   const searchParams = useSearchParams()
   const { account } = useWallet()
-  const { isAllowed } = useTCManagerInfo()
+  const { isAllowed } = useTC()
 
   const { data: dataCompetitions } = useSWR('competition api', () => fetchCompetition())
 
@@ -91,6 +91,11 @@ export default function ArenaPage() {
     hosted: false,
     ended: false,
   })
+
+  const [showModalCreateCompetition, setShowModalCreateCompetition] = useState(false)
+  const [step, setStep] = useState(0)
+  const [data, setData] = useState(INIT_VALUES)
+  const [showPreview, setShowPreview] = useState(true)
 
   const [searchText, setSearchText] = useState(searchParams.get('search') ?? '')
 
@@ -326,25 +331,31 @@ export default function ArenaPage() {
         step={step}
         setStep={setStep}
         showModalCreateCompetition={showModalCreateCompetition}
-        handleClose={() => setShowModalCreateCompetition(false)}
+        handleClose={() => {
+          setShowModalCreateCompetition(false)
+          if (step === TC_STEPS.length - 1) {
+            setShowPreview(true)
+          }
+        }}
       />
       {step === TC_STEPS.length && (
         <Modal
-          isOpen
+          isOpen={showPreview}
           closeModal={() => {}}
           showIconX={false}
-          // width=''
-          // style={{
-          //   overflowY: 'hidden',
-          // }}
-          className='w-75'
+          width='75%'
+          style={{
+            overflowY: 'hidden',
+          }}
         >
           <ModalBody>
             <Preview
               data={data}
               step={step}
               setStep={setStep}
-              showModalCreateCompetition={showModalCreateCompetition}
+              setShowModalCreateCompetition={setShowModalCreateCompetition}
+              setShowPreview={setShowPreview}
+              setData={setData}
             />
           </ModalBody>
         </Modal>

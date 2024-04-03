@@ -8,7 +8,7 @@ import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
 import { TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
-import { useTCManagerInfo } from '@/hooks/useTCManager'
+import { useTC } from '@/context/tcContext'
 
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
@@ -16,7 +16,7 @@ import CustomTokenModal from '../TokenModal/CustomTokenModal'
 function Token({ data, setData, isStarting, setIsStarting }) {
   const [isTradeOpen, setIsTradeOpen] = useState(false)
   const [isWinningOpen, setIsWinningOpen] = useState(false)
-  const { tradingTokens } = useTCManagerInfo()
+  const { tradingTokens } = useTC()
 
   useEffect(() => {
     const { winningToken } = data.competitionRules
@@ -131,7 +131,7 @@ function Token({ data, setData, isStarting, setIsStarting }) {
                   ...data,
                   competitionRules: {
                     ...data.competitionRules,
-                    startingBalance: 0,
+                    startingBalance: '',
                   },
                 })
               }

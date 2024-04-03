@@ -86,7 +86,6 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           <Input
             value={data.prize.totalPrize}
             type='number'
-            min={0}
             TrailingButton={
               data.prize.token ? (
                 <div className='absolute right-4 flex items-center space-x-1.5'>
@@ -117,7 +116,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
                 if (isEntryFee) {
                   setData({
                     ...data,
-                    entryFee: 0,
+                    entryFee: '',
                   })
                 }
                 setIsEntryFee(!isEntryFee)
