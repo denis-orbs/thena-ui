@@ -46,6 +46,7 @@ const V4_COMPETITION_DATAS = gql`
           id
         }
       }
+      maxParticipants
       participantCount
       owner {
         id
@@ -68,7 +69,7 @@ export default function ArenaPage() {
   const searchParams = useSearchParams()
   const { account } = useWallet()
 
-  const { data: competitions } = useSWR('competition api', () => fetchCompetition(), {
+  const { data: dataCompetitions } = useSWR('competition api', () => fetchCompetition(), {
     refreshInterval: 60000,
   })
 
@@ -83,6 +84,27 @@ export default function ArenaPage() {
     sortBy: searchParams.get('sortBy') ?? 'Default',
     free: searchParams.get('free') ?? false,
   })
+
+  const competitions = useMemo(
+    () =>
+      dataCompetitions?.map(comp => ({
+        ...comp,
+        prize: {
+          ...comp.prize,
+          token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
+        },
+        competitionRules: {
+          ...comp.competitionRules,
+          winningToken: assets.find(
+            ele => ele.address.toLowerCase() === comp.competitionRules.winningToken.toLowerCase(),
+          ),
+          tradingTokens: assets.filter(ele =>
+            comp.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
+          ),
+        },
+      })) || [],
+    [assets, dataCompetitions],
+  )
 
   const showJoinedTab = useMemo(
     () =>

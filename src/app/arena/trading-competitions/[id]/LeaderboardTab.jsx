@@ -1,6 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useMemo, useState } from 'react'
@@ -47,6 +48,8 @@ export function LeaderboardTab({ competition, selectedTab }) {
   const { data } = useSWR('competition leader board api', () => fetchCompetitionLeaderboard(competition.id), {
     refreshInterval: 60000,
   })
+
+  const { push } = useRouter()
 
   const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
 
@@ -130,27 +133,31 @@ export function LeaderboardTab({ competition, selectedTab }) {
       sortedData?.map((leader, index) => ({
         index: <Paragraph>{index + 1}</Paragraph>,
         user: (
-          <div className='flex items-center justify-center gap-2'>
+          <div
+            className='flex cursor-pointer items-center justify-center gap-2'
+            onClick={() => push(`/arena/profile/${leader.participant.id}`)}
+          >
             <CircleImage src={Avatar} alt='avatar' className='size-8' />
             <Paragraph>{`${leader.participant.id.slice(0, 6)}...${leader.participant.id.slice(-4)}`}</Paragraph>
           </div>
         ),
         pnl: (
           <Paragraph>
-            {`${formatAmount(fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal))}
+            {`${formatAmount(fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal), false, 3, false)}
             ${competition.competitionRules?.winningToken?.symbol}`}
           </Paragraph>
         ),
         reward: (
           <Paragraph>
-            {`${formatAmount(fromWei(leader.winAmount, leader.twinTokenDecimal))} ${
+            {`${formatAmount(fromWei(leader.winAmount, leader.twinTokenDecimal), false, 3, false)} ${
               competition.competitionRules?.winningToken?.symbol
             }`}
           </Paragraph>
         ),
       })),
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(sortedData)],
+    [competition.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
   )
 
   return (

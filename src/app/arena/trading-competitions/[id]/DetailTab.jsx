@@ -39,7 +39,7 @@ export function DetailTab({ competition, selectedTab }) {
         data: competition?.market,
       },
       {
-        key: 'Current Price Pool',
+        key: 'Current Prize Pool',
         data: formatAmount(fromWei(totalPrize, prizeToken?.decimals)),
         ticker: prizeToken?.symbol,
       },
@@ -57,7 +57,6 @@ export function DetailTab({ competition, selectedTab }) {
       },
       {
         key: 'Deposit Token',
-        data: winningToken?.symbol,
         ticker: winningToken?.symbol,
       },
       {
@@ -119,7 +118,7 @@ export function DetailTab({ competition, selectedTab }) {
                     height={20}
                     loading='lazy'
                   />
-                  <Paragraph>{item.data}</Paragraph>
+                  <Paragraph>{`${item.data ? `${item.data} ` : ''}${item.ticker}`}</Paragraph>
                 </div>
               ) : (
                 <Paragraph>{item.data}</Paragraph>
@@ -152,12 +151,11 @@ export function DetailTab({ competition, selectedTab }) {
                 />
               )}
               <Paragraph>
-                {' '}
-                {formatAmount(
+                {`${formatAmount(
                   fromWei(competition.prize?.totalPrize, competition.prize?.token?.decimals).times(
                     competition.prize.ownerFee / 1000,
                   ),
-                )}
+                )} ${competition.prize?.token?.symbol}`}
               </Paragraph>
             </div>
           </div>
@@ -177,7 +175,7 @@ export function DetailTab({ competition, selectedTab }) {
                     loading='lazy'
                   />
                 )}
-                <Paragraph>{item.data}</Paragraph>
+                <Paragraph>{`${item.data} ${competition.prize?.token?.symbol}`}</Paragraph>
               </div>
             </div>
           ))}

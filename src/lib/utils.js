@@ -29,10 +29,10 @@ export function getRpcUrl(chainId) {
   return sample(RPC_PROVIDERS[chainId])
 }
 
-export const formatAmount = (amount = null, shorted = false, fixed = 3) => {
+export const formatAmount = (amount = null, shorted = false, fixed = 3, hideNegative = true) => {
   if (!amount || new BigNumber(amount).isZero()) return '0'
   const bigAmount = new BigNumber(amount)
-  if (bigAmount.lt(new BigNumber(1).div(new BigNumber(10).pow(fixed)))) {
+  if (hideNegative && bigAmount.lt(new BigNumber(1).div(new BigNumber(10).pow(fixed)))) {
     return `< ${new BigNumber(1).div(new BigNumber(10).pow(fixed)).toString(10)}`
   }
 

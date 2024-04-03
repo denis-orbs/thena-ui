@@ -492,14 +492,14 @@
   "Days": "days",
   "Months": "months",
   "Years": "years",
-  "Start": "Start",
-  "End": "End",
+  "Start": "Start Date & Time",
+  "End": "End Date & Time",
   "Registration Deadline": "Registration Deadline",
   "Detail": "Detail",
   "Leaderboard": "Leaderboard",
   "Participants": "Participants",
   "Competition Type": "Competition Type",
-  "Current Price Pool": "Current Price Pool",
+  "Current Prize Pool": "Current Prize Pool",
   "Max Prize Pool": "Max Prize Pool",
   "Host Contribution": "Host Contribution",
   "Required Deposit To Join": "Required Deposit To Join",
@@ -535,5 +535,6 @@
   "Thenians Are Competing": "{participantCount} Thenians are competing for {totalPrize} {ticker}!",
   "No Thenians Have Competed": "No Thenians have competed for {totalPrize} {ticker}!",
   "Thenian Has Competed": "{participantCount} Thenian has competed for {totalPrize} {ticker}!",
-  "Thenians Have Competed": " {participantCount} Thenians have competed for {totalPrize} {ticker}!"
+  "Thenians Have Competed": " {participantCount} Thenians have competed for {totalPrize} {ticker}!",
+  "Compete For": "Compete For"
 }
