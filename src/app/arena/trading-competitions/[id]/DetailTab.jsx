@@ -31,7 +31,7 @@ export function DetailTab({ competition, selectedTab }) {
       },
       {
         key: 'Entry Fee',
-        data: isInvalidAmount(entryFee) ? t('Free') : formatAmount(fromWei(entryFee, prizeToken?.decimals)),
+        data: isInvalidAmount(entryFee) ? t('Free To Join') : formatAmount(fromWei(entryFee, prizeToken?.decimals)),
         ticker: isInvalidAmount(entryFee) ? null : prizeToken?.symbol,
       },
       {

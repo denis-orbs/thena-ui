@@ -14,7 +14,7 @@ export function Collapse({ children, title, ...props }) {
     <div {...props}>
       <div onClick={() => setShow(!show)} className='flex items-center justify-between hover:cursor-pointer'>
         <TextHeading className='text-xl'>{title}</TextHeading>
-        <div className='h-4 w-5'>
+        <div className={cn('h-4 w-5', show ? 'rotate-180' : 'rotate-0')}>
           <ChevronDownIcon />
         </div>
       </div>

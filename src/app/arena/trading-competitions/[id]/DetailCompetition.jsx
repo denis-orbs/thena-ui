@@ -36,7 +36,7 @@ function DetailCompetition({ competition }) {
                 setSelectedTab('Leaderboard')
               },
             }
-          : {},
+          : undefined,
         {
           label: t('Participants'),
           active: selectedTab === 'Participants',
