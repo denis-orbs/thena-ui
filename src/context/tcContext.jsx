@@ -42,10 +42,22 @@ function TCContextProvider({ children }) {
       setIsAllowed(res0 || res4)
     }
 
+    const checkIsAllowed = async () => {
+      const tcManagerContract = getTCContract()
+      const [res0, res4] = await Promise.all([
+        readCall(tcManagerContract, 'isPermissionless', []),
+        readCall(tcManagerContract, 'isAllowedCreator', [account]),
+      ])
+      setIsAllowed(res0 || res4)
+    }
+
     if (account && assets.length > 0) {
       if (tradingTokens.length === 0) {
         fetchTotalInfo()
       } else {
+        if (!isAllowed) {
+          checkIsAllowed()
+        }
         const tradingTokenAddresses = tradingTokens.map(sub => sub.address?.toLowerCase())
         const tradeAssets = assets.filter(ele => tradingTokenAddresses.includes(ele.address))
         setTradingTokens(tradeAssets)
@@ -56,10 +68,6 @@ function TCContextProvider({ children }) {
       }
     } else if (!account) {
       setIsAllowed(false)
-    }
-
-    if (account && assets.length > 0 && tradingTokens.length === 0) {
-      fetchTotalInfo()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, assets])

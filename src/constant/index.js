@@ -273,7 +273,7 @@ export const TC_TIMESTAMP = {
   MIN_REG: 3600 * 1000,
   MAX_REG: 3600 * 24 * 7 * 1000,
   MIN_TS: 3600 * 1000,
-  MAX_TS: 3600 * 24 * 7 * 1000,
+  MAX_TS: 3600 * 24 * 7 * 1000 * 4,
 }
 
 export const TC_STEPS = ['DETAILS', 'TIME SETTINGS', 'TYPE AND TOKENS', 'FEES AND PRIZES']

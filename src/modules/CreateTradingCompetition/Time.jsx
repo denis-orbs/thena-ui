@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Input from '@/components/input'
-import DateInput from '@/components/input/DateInput'
+import DateTimeInput from '@/components/input/DateTimeInput'
 import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
 
 import LabelTooltip from '../../components/label/LabelTooltip'
@@ -14,9 +14,19 @@ function Time({ data, setData }) {
   const getIsoString = useCallback(timestamp => {
     const curTimeStamp = new Date().getTime()
     const finalTS = timestamp || curTimeStamp
-    // - (new Date().getTimezoneOffset() / 60) * 3600 * 1000
+    // //
+    console.log(finalTS)
     const finalDate = new Date(finalTS)
-    return finalDate
+    console.log(finalDate)
+    // // return finalDate
+    // // return finalDate
+    const out = finalDate.toISOString().slice(0, new Date().toISOString().lastIndexOf(':'))
+    console.log(out)
+    // // const out = moment(finalDate.toISOString()).format('yyyy-MM-DDThh:mm')
+    console.log(out)
+    return out
+    // const finalTS = (timestamp || curTimeStamp) - (new Date().getTimezoneOffset() / 60) * 3600 * 1000
+    // const finalDate = new Date(finalTS)
     // return finalDate.toISOString().slice(0, new Date().toISOString().lastIndexOf(':'))
   }, [])
 
@@ -165,10 +175,11 @@ function Time({ data, setData }) {
       <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='w-full'>
           <LabelTooltip label='Registration Start Time' />
-          <DateInput
-            selectedDate={regStartTime}
-            onChange={date => {
-              const newDate = new Date(date).getTime()
+          <DateTimeInput
+            value={regStartTime}
+            onChange={e => {
+              console.log(e)
+              const newDate = new Date(e.target.value).getTime()
               const curDate = new Date().getTime()
               const res = Math.max(newDate, curDate)
               setData({
@@ -179,17 +190,15 @@ function Time({ data, setData }) {
                 },
               })
             }}
-            minDate={getIsoString()}
-            showTimeSelect
-            dateFormat='yyyy/MM/dd hh:mm aa'
+            min={getIsoString()}
           />
         </div>
         <div className='w-full'>
           <LabelTooltip label='Registration End Time' />
-          <DateInput
-            selectedDate={regEndTime}
-            onChange={date => {
-              const newDate = new Date(date).getTime()
+          {/* <DateTimeInput
+            value={regEndTime}
+            onChange={e => {
+              const newDate = new Date(e.target.value).getTime()
               const minDate = new Date(minReg).getTime()
               const maxDate = new Date(maxReg).getTime()
               const res = Math.min(Math.max(newDate, minDate), maxDate)
@@ -201,17 +210,15 @@ function Time({ data, setData }) {
                 },
               })
             }}
-            minDate={minReg}
-            maxDate={maxReg}
-            showTimeSelect
-            dateFormat='yyyy/MM/dd hh:mm aa'
-          />
+            min={minReg}
+            max={maxReg}
+          /> */}
         </div>
       </div>
       <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='w-full'>
           <LabelTooltip label='Competition Start Time' />
-          <DateInput
+          {/* <DateInput
             selectedDate={tsStartTime}
             onChange={date => {
               const newDate = new Date(date).getTime()
@@ -228,11 +235,11 @@ function Time({ data, setData }) {
             minDate={minStartTime}
             showTimeSelect
             dateFormat='yyyy/MM/dd hh:mm aa'
-          />
+          /> */}
         </div>
         <div className='w-full'>
           <LabelTooltip label='Competition End Time' />
-          <DateInput
+          {/* <DateInput
             selectedDate={tsEndTime}
             onChange={date => {
               const newDate = new Date(date).getTime()
@@ -251,7 +258,7 @@ function Time({ data, setData }) {
             maxDate={maxTs}
             dateFormat='yyyy/MM/dd hh:mm aa'
             showTimeSelect
-          />
+          /> */}
         </div>
       </div>
     </>
