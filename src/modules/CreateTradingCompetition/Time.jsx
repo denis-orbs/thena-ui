@@ -1,9 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @next/next/no-img-element */
+import Image from 'next/image'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Input from '@/components/input'
-import DateTimeInput from '@/components/input/DateTimeInput'
+import DateInput from '@/components/input/DateInput'
 import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
 
 import LabelTooltip from '../../components/label/LabelTooltip'
@@ -14,20 +13,8 @@ function Time({ data, setData }) {
   const getIsoString = useCallback(timestamp => {
     const curTimeStamp = new Date().getTime()
     const finalTS = timestamp || curTimeStamp
-    // //
-    console.log(finalTS)
     const finalDate = new Date(finalTS)
-    console.log(finalDate)
-    // // return finalDate
-    // // return finalDate
-    const out = finalDate.toISOString().slice(0, new Date().toISOString().lastIndexOf(':'))
-    console.log(out)
-    // // const out = moment(finalDate.toISOString()).format('yyyy-MM-DDThh:mm')
-    console.log(out)
-    return out
-    // const finalTS = (timestamp || curTimeStamp) - (new Date().getTimezoneOffset() / 60) * 3600 * 1000
-    // const finalDate = new Date(finalTS)
-    // return finalDate.toISOString().slice(0, new Date().toISOString().lastIndexOf(':'))
+    return finalDate
   }, [])
 
   const [minReg, setMinReg] = useState(undefined)
@@ -36,13 +23,25 @@ function Time({ data, setData }) {
   const [maxTs, setMaxTs] = useState(undefined)
   const [minStartTime, setMinStartTime] = useState(undefined)
 
-  const regStartTime = useMemo(() => getIsoString(data.timestamp.registrationStart), [data.timestamp.registrationStart])
+  const regStartTime = useMemo(
+    () => getIsoString(data.timestamp.registrationStart),
+    [data.timestamp.registrationStart, getIsoString],
+  )
 
-  const regEndTime = useMemo(() => getIsoString(data.timestamp.registrationEnd), [data.timestamp.registrationEnd])
+  const regEndTime = useMemo(
+    () => getIsoString(data.timestamp.registrationEnd),
+    [data.timestamp.registrationEnd, getIsoString],
+  )
 
-  const tsStartTime = useMemo(() => getIsoString(data.timestamp.startTimestamp), [data.timestamp.startTimestamp])
+  const tsStartTime = useMemo(
+    () => getIsoString(data.timestamp.startTimestamp),
+    [data.timestamp.startTimestamp, getIsoString],
+  )
 
-  const tsEndTime = useMemo(() => getIsoString(data.timestamp.endTimestamp), [data.timestamp.endTimestamp])
+  const tsEndTime = useMemo(
+    () => getIsoString(data.timestamp.endTimestamp),
+    [data.timestamp.endTimestamp, getIsoString],
+  )
 
   const handleParticipants = val => {
     const res = Math.min(Math.max(TC_PARTICIPANTS.MIN, val), TC_PARTICIPANTS.MAX)
@@ -64,6 +63,7 @@ function Time({ data, setData }) {
       })
     }
     setMinReg(getIsoString(minTimestamp))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [regStartTime])
 
   useEffect(() => {
@@ -78,6 +78,7 @@ function Time({ data, setData }) {
       })
     }
     setMaxReg(getIsoString(maxTimestamp))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [regStartTime])
 
   useEffect(() => {
@@ -92,6 +93,7 @@ function Time({ data, setData }) {
       })
     }
     setMinStartTime(getIsoString(regEndTime))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [regEndTime])
 
   useEffect(() => {
@@ -106,6 +108,7 @@ function Time({ data, setData }) {
       })
     }
     setMinTs(getIsoString(minTimestamp))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tsStartTime])
 
   useEffect(() => {
@@ -120,6 +123,7 @@ function Time({ data, setData }) {
       })
     }
     setMaxTs(getIsoString(maxTimestamp))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tsStartTime])
 
   return (
@@ -155,7 +159,7 @@ function Time({ data, setData }) {
                   className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
                   type='button'
                 >
-                  <img src='/svgs/minus-v2.svg' alt='minus icon' />
+                  <Image src='/svgs/minus-v2.svg' alt='minus icon' width={14} height={14} />
                 </button>
                 <button
                   onClick={() => {
@@ -165,7 +169,7 @@ function Time({ data, setData }) {
                   className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
                   type='button'
                 >
-                  <img src='/svgs/plus-v2.svg' alt='plus icon' />
+                  <Image src='/svgs/plus-v2.svg' alt='plus icon' width={14} height={14} />
                 </button>
               </div>
             }
@@ -175,11 +179,10 @@ function Time({ data, setData }) {
       <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='w-full'>
           <LabelTooltip label='Registration Start Time' />
-          <DateTimeInput
-            value={regStartTime}
-            onChange={e => {
-              console.log(e)
-              const newDate = new Date(e.target.value).getTime()
+          <DateInput
+            selectedDate={regStartTime}
+            onChange={date => {
+              const newDate = new Date(date).getTime()
               const curDate = new Date().getTime()
               const res = Math.max(newDate, curDate)
               setData({
@@ -190,15 +193,17 @@ function Time({ data, setData }) {
                 },
               })
             }}
-            min={getIsoString()}
+            minDate={getIsoString()}
+            showTimeSelect
+            dateFormat='yyyy/MM/dd hh:mm aa'
           />
         </div>
         <div className='w-full'>
           <LabelTooltip label='Registration End Time' />
-          {/* <DateTimeInput
-            value={regEndTime}
-            onChange={e => {
-              const newDate = new Date(e.target.value).getTime()
+          <DateInput
+            selectedDate={regEndTime}
+            onChange={date => {
+              const newDate = new Date(date).getTime()
               const minDate = new Date(minReg).getTime()
               const maxDate = new Date(maxReg).getTime()
               const res = Math.min(Math.max(newDate, minDate), maxDate)
@@ -210,15 +215,17 @@ function Time({ data, setData }) {
                 },
               })
             }}
-            min={minReg}
-            max={maxReg}
-          /> */}
+            minDate={minReg}
+            maxDate={maxReg}
+            showTimeSelect
+            dateFormat='yyyy/MM/dd hh:mm aa'
+          />
         </div>
       </div>
       <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='w-full'>
           <LabelTooltip label='Competition Start Time' />
-          {/* <DateInput
+          <DateInput
             selectedDate={tsStartTime}
             onChange={date => {
               const newDate = new Date(date).getTime()
@@ -235,11 +242,11 @@ function Time({ data, setData }) {
             minDate={minStartTime}
             showTimeSelect
             dateFormat='yyyy/MM/dd hh:mm aa'
-          /> */}
+          />
         </div>
         <div className='w-full'>
           <LabelTooltip label='Competition End Time' />
-          {/* <DateInput
+          <DateInput
             selectedDate={tsEndTime}
             onChange={date => {
               const newDate = new Date(date).getTime()
@@ -258,7 +265,7 @@ function Time({ data, setData }) {
             maxDate={maxTs}
             dateFormat='yyyy/MM/dd hh:mm aa'
             showTimeSelect
-          /> */}
+          />
         </div>
       </div>
     </>

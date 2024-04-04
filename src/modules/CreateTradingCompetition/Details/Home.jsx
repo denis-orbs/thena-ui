@@ -1,13 +1,13 @@
 import React from 'react'
 
 import CompetitionCard from '@/app/arena/trading-competitions/[id]/CompetitionCard'
-import { DetailTab } from '@/app/arena/trading-competitions/[id]/DetailTab'
+import { CompetitionDetail } from '@/app/arena/trading-competitions/[id]/CompetitionDetail'
 
-function Home({ data, selectedTab, isPreview = false }) {
+function Home({ data }) {
   return (
     <div className='w-full'>
-      <CompetitionCard competition={data} isPreview={isPreview} />
-      <DetailTab competition={data} selectedTab={selectedTab} />
+      <CompetitionCard competition={data} />
+      <CompetitionDetail competition={data} isPreview />
     </div>
   )
 }

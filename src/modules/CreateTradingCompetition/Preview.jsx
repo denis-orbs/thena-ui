@@ -6,7 +6,7 @@ import { INIT_VALUES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { useCreateTC } from '@/hooks/useTCManager'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, fromWei, toWei } from '@/lib/utils'
+import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 import Details from './Details/Details'
@@ -24,7 +24,9 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
     weights[weights.length - 1] += 1000 - totalWeight
     return {
       ...data,
-      entryFee: toWei(data.entryFee, data.prize.token.decimals).dp(0).toString(10),
+      entryFee: !isInvalidAmount(data.entryFee)
+        ? toWei(data.entryFee, data.prize.token.decimals).dp(0).toString(10)
+        : 0,
       owner: {
         id: account,
       },
@@ -43,9 +45,9 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
       },
       competitionRules: {
         ...data.competitionRules,
-        startingBalance: toWei(data.competitionRules.startingBalance, data.competitionRules.winningToken.decimals)
-          .dp(0)
-          .toString(10),
+        startingBalance: !isInvalidAmount(data.competitionRules.startingBalance)
+          ? toWei(data.competitionRules.startingBalance, data.competitionRules.winningToken.decimals).dp(0).toString(10)
+          : 0,
       },
     }
   }, [data, account])

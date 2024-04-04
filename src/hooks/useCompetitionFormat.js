@@ -3,10 +3,13 @@ import { useMemo } from 'react'
 
 import { useAssets } from '@/context/assetsContext'
 
-export const useCompetitionFormat = competition => {
+export const useCompetitionFormat = (competition, isPreview = false) => {
   const assets = useAssets()
 
   return useMemo(() => {
+    if (isPreview) {
+      return competition
+    }
     if (competition) {
       const clone = cloneDeep(competition)
 
@@ -26,5 +29,5 @@ export const useCompetitionFormat = competition => {
       return clone
     }
     return undefined
-  }, [assets, competition])
+  }, [assets, competition, isPreview])
 }
