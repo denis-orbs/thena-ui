@@ -51,6 +51,7 @@ const V4_COMPETITION_DATAS = gql`
       owner {
         id
       }
+      tradingCompetitionSpot
     }
   }
 `

@@ -536,5 +536,6 @@
   "No Thenians Have Competed": "No Thenians have competed for {totalPrize} {ticker}!",
   "Thenian Has Competed": "{participantCount} Thenian has competed for {totalPrize} {ticker}!",
   "Thenians Have Competed": " {participantCount} Thenians have competed for {totalPrize} {ticker}!",
-  "Compete For": "Compete For"
+  "Compete For": "Compete For",
+  "Join Now": "Join Now"
 }

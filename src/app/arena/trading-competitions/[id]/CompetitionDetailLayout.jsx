@@ -94,7 +94,7 @@ function CompetitionDetailLayout({ children, params }) {
             replace(`/arena/trading-competitions/${params.id}`)
           },
         },
-        eventType === EVENT_TYPES.LIVE || eventType === EVENT_TYPES.ENDED
+        (eventType === EVENT_TYPES.LIVE || eventType === EVENT_TYPES.ENDED) && competition?.participantCount !== 0
           ? {
               label: t('Leaderboard'),
               active: selectedTab === 'leaderboard',
@@ -105,14 +105,16 @@ function CompetitionDetailLayout({ children, params }) {
               },
             }
           : undefined,
-        {
-          label: t('Participants'),
-          active: selectedTab === 'participants',
-          onClickHandler: () => {
-            setSelectedTab('participants')
-            replace(`/arena/trading-competitions/${params.id}/participants`)
-          },
-        },
+        competition?.participantCount !== 0
+          ? {
+              label: t('Participants'),
+              active: selectedTab === 'participants',
+              onClickHandler: () => {
+                setSelectedTab('participants')
+                replace(`/arena/trading-competitions/${params.id}/participants`)
+              },
+            }
+          : undefined,
         {
           label: t('Analytics'),
           active: selectedTab === 'analytics',
@@ -122,7 +124,7 @@ function CompetitionDetailLayout({ children, params }) {
           },
         },
       ]),
-    [eventType, params.id, replace, selectedTab, t],
+    [competition?.participantCount, eventType, params.id, replace, selectedTab, t],
   )
 
   const _competition = useCompetitionFormat(competition)
