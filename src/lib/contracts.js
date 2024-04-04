@@ -21,6 +21,7 @@ import {
   voterAbi,
   wbnbAbi,
 } from '@/constant/abi'
+import { tcSpotAbi } from '@/constant/abi/core'
 import {
   algebraAbi,
   defiedgeStrategyAbi,
@@ -138,3 +139,5 @@ export const getVaultDepositContract = chainId =>
   getContract(vaultDepositGaurdAbi, Contracts.vaultDepositGuard, chainId)
 
 export const getIchiVaultContract = (address, chainId) => getContract(ichiVaultAbi, address, chainId)
+
+export const getTcSpotContract = address => getContract(tcSpotAbi, address, ChainId.BSC)

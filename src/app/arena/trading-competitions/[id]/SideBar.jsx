@@ -1,11 +1,12 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
+import { useTcSpotContractActions } from '@/hooks/useTcSpotContractActions'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
@@ -16,13 +17,21 @@ function Sidebar({ competition }) {
   const t = useTranslations()
   const progressBarRef = useRef()
   const { account } = useWallet()
-
+  const { checkUserClaimable, claimPrize } = useTcSpotContractActions(competition.tradingCompetitionSpot)
   const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
 
   const isHosting = useMemo(
     () => account && account.toLowerCase() === competition.owner.id,
     [account, competition.owner.id],
   )
+  const [canClaimRewards, setCanClaimRewards] = useState(false)
+  useEffect(() => {
+    async function fetchData() {
+      const can = await checkUserClaimable()
+      setCanClaimRewards(can)
+    }
+    fetchData()
+  }, [checkUserClaimable])
 
   const isJoined = useMemo(
     () =>
@@ -41,8 +50,6 @@ function Sidebar({ competition }) {
     () => Date.now() / 1000 <= competition.timestamp.registrationEnd,
     [competition.timestamp.registrationEnd],
   )
-
-  const isClaimed = false
 
   const headingAndText = useMemo(() => {
     if (isInRegistration) {
@@ -86,7 +93,7 @@ function Sidebar({ competition }) {
       let subText = null
       let text = null
 
-      if (isJoined && !isClaimed) {
+      if (isJoined && canClaimRewards) {
         text = t('Claim Your Rewards')
         subText = t('You Have Won')
       } else {
@@ -126,7 +133,7 @@ function Sidebar({ competition }) {
     competition.prize?.token?.symbol,
     competition.prize?.totalPrize,
     eventType,
-    isClaimed,
+    canClaimRewards,
     isInRegistration,
     isJoined,
     t,
@@ -136,6 +143,16 @@ function Sidebar({ competition }) {
     navigator.clipboard.writeText(window.location.href)
     successToast(t('Link Has Been Copied'))
   }, [t])
+
+  const claim = useCallback(async () => {
+    try {
+      await claimPrize()
+      const canClaim = await checkUserClaimable()
+      setCanClaimRewards(canClaim)
+    } catch (e) {
+      console.error(e)
+    }
+  }, [checkUserClaimable, claimPrize])
 
   const buttonByStatus = useMemo(() => {
     if (isHosting) {
@@ -165,10 +182,14 @@ function Sidebar({ competition }) {
         </SecondaryButton>
       )
     }
-    if (isJoined && eventType === EVENT_TYPES.ENDED) {
-      return <PrimaryButton className='bg-green w-full'>{t('Claim Rewards')}</PrimaryButton>
+    if (isJoined && canClaimRewards && eventType === EVENT_TYPES.ENDED) {
+      return (
+        <PrimaryButton className='bg-green w-full' onClick={claim}>
+          {t('Claim Rewards')}
+        </PrimaryButton>
+      )
     }
-  }, [eventType, isFull, isHosting, isInRegistration, isJoined, onShare, t])
+  }, [canClaimRewards, claim, eventType, isFull, isHosting, isInRegistration, isJoined, onShare, t])
 
   useEffect(() => {
     const progress = progressBarRef.current

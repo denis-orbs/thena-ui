@@ -15,8 +15,8 @@ import Sidebar from './SideBar'
 const V4_COMPETITION_DATA = gql`
   query V4_COMPETITION($id: String!) {
     tradingCompetitionById(id: $id) {
-      description
       id
+      description
       name
       entryFee
       timestamp {
@@ -47,6 +47,7 @@ const V4_COMPETITION_DATA = gql`
         startingBalance
         tradingTokens
       }
+      tradingCompetitionSpot
     }
   }
 `
