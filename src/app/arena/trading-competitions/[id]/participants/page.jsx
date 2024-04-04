@@ -57,6 +57,7 @@ const V4_TRADE_RANK_DATA = gql`
   }
 `
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const getTradeRankByAddress = async (period, address) => {
   try {
     const { tradeRankByAddress } = await v4Client.request(V4_TRADE_RANK_DATA, { period, address })
@@ -87,6 +88,7 @@ const fetchCompetitionParticipationData = async id => {
 function ParticipantsPage() {
   const { id } = useParams()
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const { data } = useSWR('competition leader board api', () => fetchCompetitionParticipationData(id), {
     refreshInterval: 60000,
   })
