@@ -2,7 +2,7 @@
 
 import { gql } from 'graphql-request'
 import { compact } from 'lodash'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { Suspense, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -73,7 +73,13 @@ function CompetitionDetailLayout({ children, params }) {
   const t = useTranslations()
   const { replace } = useRouter()
 
-  const [selectedTab, setSelectedTab] = useState('details')
+  const pathname = usePathname()
+
+  const [selectedTab, setSelectedTab] = useState(
+    ['leaderboard', 'participants', 'analytics'].includes(pathname.split('/').slice(-1)[0])
+      ? pathname.split('/').slice(-1)[0]
+      : 'details',
+  )
 
   const eventType = useMemo(() => getEventType(competition?.timestamp), [competition?.timestamp])
 
@@ -93,7 +99,7 @@ function CompetitionDetailLayout({ children, params }) {
               label: t('Leaderboard'),
               active: selectedTab === 'leaderboard',
               onClickHandler: () => {
-                setSelectedTab('laderboard')
+                setSelectedTab('leaderboard')
 
                 replace(`/arena/trading-competitions/${params.id}/leaderboard`)
               },

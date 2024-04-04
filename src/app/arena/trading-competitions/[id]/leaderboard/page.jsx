@@ -68,7 +68,7 @@ function LeaderBoardPage() {
         label: <span>#</span>,
         value: 'rank',
         width: 'w-[10%]',
-        isDesc: true,
+        isDesc: false,
       },
       {
         label: 'User',
@@ -96,7 +96,7 @@ function LeaderBoardPage() {
   )
 
   const [searchText, setSearchText] = useState('')
-  const [sort, setSort] = useState(sortOptions[1])
+  const [sort, setSort] = useState(sortOptions[0])
   const [currentPage, setCurrentPage] = useState(1)
 
   const t = useTranslations()
@@ -111,7 +111,7 @@ function LeaderBoardPage() {
         )
         .map((item, index) => ({
           ...item,
-          rank: index,
+          rank: index + 1,
         })) ?? [],
     [competition?.participants],
   )
