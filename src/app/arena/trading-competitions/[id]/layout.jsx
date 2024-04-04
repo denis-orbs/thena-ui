@@ -1,13 +1,31 @@
-import React, { Suspense } from 'react'
+import { gql } from 'graphql-request'
+import React from 'react'
 
-import Loading from '@/app/loading'
+import { v4Client } from '@/lib/graphql'
 
-function CompetitionDetailLayout({ children }) {
-  return (
-    <main className='flex min-h-screen flex-col'>
-      <Suspense fallback={<Loading />}>{children}</Suspense>
-    </main>
-  )
+import CompetitionDetailLayout from './CompetitionDetailLayout'
+
+const V4_COMPETITION_DATA = gql`
+  query V4_COMPETITION($id: String!) {
+    tradingCompetitionById(id: $id) {
+      description
+      id
+      name
+    }
+  }
+`
+export async function generateMetadata({ params }) {
+  const { id } = params
+
+  const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
+
+  return {
+    title: `${competition.name} - THENA`,
+    description: `${competition.name} - Compete for rewards on THENA’s Trading Competitions!`,
+  }
+}
+function layout({ children, params }) {
+  return <CompetitionDetailLayout params={params}>{children}</CompetitionDetailLayout>
 }
 
-export default CompetitionDetailLayout
+export default layout

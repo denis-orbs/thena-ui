@@ -82,7 +82,7 @@ export default function ArenaPage() {
   const [filter, setFilter] = useState({
     market: searchParams.get('market') ?? 'all',
     sortBy: searchParams.get('sortBy') ?? 'Default',
-    free: searchParams.get('free') ?? false,
+    free: !!searchParams.get('free'),
   })
 
   const competitions = useMemo(
@@ -275,7 +275,7 @@ export default function ArenaPage() {
 
   useEffect(() => {
     addOrReplaceURLParams('search', searchText.length ? searchText : null)
-    addOrReplaceURLParams('free', filter.free ? 'true' : null)
+    addOrReplaceURLParams('free', filter.free ? true : null)
     addOrReplaceURLParams('market', filter.market !== 'all' ? filter.market : null)
     addOrReplaceURLParams('sortBy', filter.sortBy !== 'Default' ? filter.sortBy : null)
   }, [filter.free, filter.market, filter.sortBy, searchText])

@@ -20,7 +20,7 @@ export const useTcSpotContractActions = address => {
       readCall(tcSpotContract, 'isWinner', [account]),
       readCall(tcSpotContract, 'claimable', [account]),
     ])
-    console.log({ checkJoined, checkWinner, checkClaimable })
+
     const token = assets.find(ele => ele.address.toLowerCase() === checkClaimable[1].toLowerCase())
 
     if (!token) {

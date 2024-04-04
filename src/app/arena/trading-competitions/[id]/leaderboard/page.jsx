@@ -1,7 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useMemo, useState } from 'react'
@@ -10,8 +10,8 @@ import useSWR from 'swr'
 import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
-import { TabPanel } from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
@@ -30,6 +30,12 @@ const V4_COMPETITION_DATA = gql`
       }
       competitionRules {
         winningTokenDecimal
+        winningToken
+      }
+      timestamp {
+        endTimestamp
+        registrationEnd
+        startTimestamp
       }
     }
   }
@@ -43,24 +49,26 @@ const fetchCompetitionLeaderboard = async id => {
     return { error: true }
   }
 }
+function LeaderBoardPage() {
+  const { id } = useParams()
 
-export function LeaderboardTab({ competition, selectedTab }) {
-  const { data } = useSWR('competition leader board api', () => fetchCompetitionLeaderboard(competition.id), {
+  const { data } = useSWR('competition leader board api', () => fetchCompetitionLeaderboard(id), {
     refreshInterval: 60000,
   })
 
+  const competition = useCompetitionFormat(data)
+
   const { push } = useRouter()
 
-  const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
+  const eventType = useMemo(() => getEventType(competition?.timestamp), [competition?.timestamp])
 
   const sortOptions = useMemo(
     () => [
       {
         label: <span>#</span>,
-        value: 'index',
+        value: 'rank',
         width: 'w-[10%]',
         isDesc: true,
-        disabled: true,
       },
       {
         label: 'User',
@@ -93,11 +101,26 @@ export function LeaderboardTab({ competition, selectedTab }) {
 
   const t = useTranslations()
 
+  const dataParticipants = useMemo(
+    () =>
+      competition?.participants
+        .sort(
+          (a, b) =>
+            fromWei(b.pnl, b.competitionRules?.winningTokenDecimal) -
+            fromWei(a.pnl, a.competitionRules?.winningTokenDecimal),
+        )
+        .map((item, index) => ({
+          ...item,
+          rank: index,
+        })) ?? [],
+    [competition?.participants],
+  )
+
   const filteredLeaderBoards = useMemo(
     () =>
-      data?.participants?.filter(item => item.participant.id.toLowerCase().includes(searchText?.toLowerCase() || '')) ||
+      dataParticipants.filter(item => item.participant.id.toLowerCase().includes(searchText?.toLowerCase() || '')) ||
       [],
-    [searchText, data],
+    [searchText, dataParticipants],
   )
 
   const sortedData = useMemo(
@@ -105,6 +128,9 @@ export function LeaderboardTab({ competition, selectedTab }) {
       filteredLeaderBoards?.sort((a, b) => {
         let res
         switch (sort.value) {
+          case 'rank':
+            res = (a.rank - b.rank) * (sort.isDesc ? -1 : 1)
+            break
           case 'user':
             res = sort.isDesc ? a.participant.id - b.participant.id : b.participant.id - a.participant.id
             break
@@ -130,8 +156,8 @@ export function LeaderboardTab({ competition, selectedTab }) {
 
   const finalLeaderBoards = useMemo(
     () =>
-      sortedData?.map((leader, index) => ({
-        index: <Paragraph>{index + 1}</Paragraph>,
+      sortedData?.map(leader => ({
+        rank: <Paragraph>{leader.rank}</Paragraph>,
         user: (
           <div
             className='flex cursor-pointer items-center justify-center gap-2'
@@ -144,24 +170,24 @@ export function LeaderboardTab({ competition, selectedTab }) {
         pnl: (
           <Paragraph>
             {`${formatAmount(fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal), false, 3, false)}
-            ${competition.competitionRules?.winningToken?.symbol}`}
+            ${competition?.competitionRules?.winningToken?.symbol}`}
           </Paragraph>
         ),
         reward: (
           <Paragraph>
             {`${formatAmount(fromWei(leader.winAmount, leader.twinTokenDecimal), false, 3, false)} ${
-              competition.competitionRules?.winningToken?.symbol
+              competition?.competitionRules?.winningToken?.symbol
             }`}
           </Paragraph>
         ),
       })),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [competition.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
+    [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
   )
 
   return (
-    <TabPanel select={selectedTab} value='Leaderboard'>
+    <>
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
         <TextHeading className='text-xl lg:flex-1'>{t('Leaderboard')}</TextHeading>
         <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
@@ -176,6 +202,8 @@ export function LeaderboardTab({ competition, selectedTab }) {
         setCurrentPage={setCurrentPage}
         tableBasic
       />
-    </TabPanel>
+    </>
   )
 }
+
+export default LeaderBoardPage

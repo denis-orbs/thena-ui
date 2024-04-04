@@ -19,20 +19,18 @@ export function CompetitionCardHeader({ competition, className }) {
   )
 
   return (
-    <div className={cn('flex items-center justify-center gap-2 rounded-xl bg-[#100913] p-4', className)}>
-      <TextHeading className='text-center text-2xl'>
-        {t('Compete For')}{' '}
-        <TextHeading className='text-nowrap'>
-          {currentPrizePool} {prizeToken?.symbol}
-          <Image
-            alt={name}
-            src={`https://cdn.thena.fi/assets/${prizeToken?.symbol}.png`}
-            className='ml-1 inline-block flex-shrink-0'
-            width={20}
-            height={20}
-            loading='lazy'
-          />
-        </TextHeading>
+    <div className={cn('flex flex-col items-center justify-center gap-2 rounded-xl bg-[#100913] p-4 ', className)}>
+      <TextHeading className='text-center text-2xl'>{t('Compete For')}</TextHeading>
+      <TextHeading className='flex items-center text-nowrap'>
+        {currentPrizePool} {prizeToken?.symbol}
+        <Image
+          alt={name}
+          src={`https://cdn.thena.fi/assets/${prizeToken?.symbol}.png`}
+          className='ml-1 inline-block flex-shrink-0'
+          width={20}
+          height={20}
+          loading='lazy'
+        />
       </TextHeading>
     </div>
   )

@@ -13,6 +13,7 @@ import { TextButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
+import { cn } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 import { CompetitionCardHeader } from '../../CompetitionCardHeader'
@@ -107,7 +108,12 @@ function CompetitionCard({ competition }) {
         </div>
         <div>
           <h3>{competition.name}</h3>
-          <div className='flex w-full flex-col items-start justify-between gap-4 py-2 lg:flex-row lg:items-center'>
+          <div
+            className={cn(
+              'flex w-full flex-col items-start gap-4 py-2 lg:flex-row lg:items-center',
+              eventType !== EVENT_TYPES.ENDED ? 'justify-between' : 'space-x-8',
+            )}
+          >
             {eventType !== EVENT_TYPES.ENDED && (
               <div className='flex flex-col gap-1'>
                 <TextHeading>{registerText}</TextHeading>
