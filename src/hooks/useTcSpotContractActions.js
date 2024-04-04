@@ -15,10 +15,11 @@ export const useTcSpotContractActions = address => {
       return false
     }
     const tcSpotContract = getTcSpotContract(address)
-    const [checkJoined, checkWinner, checkClaimable] = await Promise.all([
+    const [checkJoined, checkWinner, checkClaimable, checkOwnerAddress] = await Promise.all([
       readCall(tcSpotContract, 'isRegistered', [account]),
       readCall(tcSpotContract, 'isWinner', [account]),
       readCall(tcSpotContract, 'claimable', [account]),
+      readCall(tcSpotContract, 'owner', []),
     ])
 
     const token = assets.find(ele => ele.address.toLowerCase() === checkClaimable[1].toLowerCase())
@@ -28,7 +29,10 @@ export const useTcSpotContractActions = address => {
     }
 
     const totalClaimable = fromWei(checkClaimable[0], token.decimals)
-    return checkJoined && checkWinner[0] && !totalClaimable.isZero
+    return (
+      (checkJoined && checkWinner[0]) ||
+      (account.toLowerCase() === checkOwnerAddress.toLowerCase() && !totalClaimable.isZero())
+    )
   }, [account, address, assets])
 
   const claimPrize = useCallback(async () => {

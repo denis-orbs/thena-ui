@@ -1,13 +1,16 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { useTcSpotContractActions } from '@/hooks/useTcSpotContractActions'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 
 export function TCButton({ eventType, competition, account }) {
   const t = useTranslations()
   const { push } = useRouter()
+  const [canClaimRewards, setCanClaimRewards] = useState(false)
+  const { checkUserClaimable, claimPrize } = useTcSpotContractActions(competition.tradingCompetitionSpot)
 
   const isHosting = useMemo(
     () => account && account.toLowerCase() === competition.owner.id,
@@ -22,6 +25,24 @@ export function TCButton({ eventType, competition, account }) {
     [account, competition.participants],
   )
 
+  const claim = useCallback(async () => {
+    try {
+      await claimPrize()
+      const canClaim = await checkUserClaimable()
+      setCanClaimRewards(canClaim)
+    } catch (e) {
+      console.error(e)
+    }
+  }, [checkUserClaimable, claimPrize])
+
+  useEffect(() => {
+    async function fetchData() {
+      const can = await checkUserClaimable()
+      setCanClaimRewards(can)
+    }
+    fetchData()
+  }, [checkUserClaimable])
+
   return (
     <div className='flex w-full items-center justify-between gap-4'>
       <EmphasisButton className='w-full' onClick={() => push(`arena/trading-competitions/${competition.id}`)}>
@@ -29,8 +50,10 @@ export function TCButton({ eventType, competition, account }) {
       </EmphasisButton>
 
       {isJoined && eventType === EVENT_TYPES.LIVE && <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>}
-      {eventType === EVENT_TYPES.ENDED && (isJoined || isHosting) && (
-        <PrimaryButton className='w-full'>{t('Claim Rewards')}</PrimaryButton>
+      {eventType === EVENT_TYPES.ENDED && (isJoined || isHosting) && canClaimRewards && (
+        <PrimaryButton className='w-full' onClick={claim}>
+          {t('Claim Rewards')}
+        </PrimaryButton>
       )}
       {eventType === EVENT_TYPES.UPCOMING && !isJoined && !isHosting && (
         <PrimaryButton className='w-full'>{t('Join Now')}</PrimaryButton>
