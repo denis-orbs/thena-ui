@@ -4,15 +4,20 @@ import { gql } from 'graphql-request'
 import { compact } from 'lodash'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { Suspense, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
+import { TextButton } from '@/components/buttons/Button'
+import CircleImage from '@/components/image/CircleImage'
 import Tabs from '@/components/tabs'
+import { Paragraph } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
+import { ArrowLeftIcon } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
 import Sidebar from './SideBar'
@@ -71,7 +76,7 @@ function CompetitionDetailLayout({ children, params }) {
     refreshInterval: 60000,
   })
   const t = useTranslations()
-  const { replace } = useRouter()
+  const { replace, back, push } = useRouter()
 
   const pathname = usePathname()
 
@@ -138,6 +143,19 @@ function CompetitionDetailLayout({ children, params }) {
       <Suspense fallback={<Loading />}>
         <div className='grid grid-cols-12 gap-4 lg:gap-12'>
           <div className='col-span-12 lg:col-span-7'>
+            <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[176px] lg:mb-4 lg:pt-10'>
+              <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon} onClick={() => back()}>
+                {t('Back')}
+              </TextButton>
+
+              <div
+                className='flex cursor-pointer items-center justify-center gap-2'
+                onClick={() => push(`/arena/profile/${competition.owner.id}`)}
+              >
+                <CircleImage src={Avatar} alt='avatar' className='size-8' />
+                <Paragraph>{`${competition.owner.id.slice(0, 6)}...${competition.owner.id.slice(-4)}`}</Paragraph>
+              </div>
+            </div>
             <CompetitionCard competition={_competition} />
             <div className='mt-10 flex w-full flex-col gap-4'>
               <Tabs

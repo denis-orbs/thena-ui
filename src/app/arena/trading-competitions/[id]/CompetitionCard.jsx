@@ -2,19 +2,14 @@
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useMemo } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { TextButton } from '@/components/buttons/Button'
-import CircleImage from '@/components/image/CircleImage'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
 import { cn } from '@/lib/utils'
-import { ArrowLeftIcon } from '@/svgs'
 
 import { CompetitionCardHeader } from '../../CompetitionCardHeader'
 
@@ -22,7 +17,6 @@ dayjs.extend(utc)
 
 function CompetitionCard({ competition }) {
   const t = useTranslations()
-  const { back, push } = useRouter()
 
   const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
 
@@ -83,19 +77,6 @@ function CompetitionCard({ competition }) {
 
   return (
     <div className='w-full'>
-      <div className='mb-4 flex min-h-11 items-center justify-between'>
-        <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => back()}>
-          {t('Back')}
-        </TextButton>
-
-        <div
-          className='flex cursor-pointer items-center justify-center gap-2'
-          onClick={() => push(`/arena/profile/${competition.owner.id}`)}
-        >
-          <CircleImage src={Avatar} alt='avatar' className='size-8' />
-          <Paragraph>{`${competition.owner.id.slice(0, 6)}...${competition.owner.id.slice(-4)}`}</Paragraph>
-        </div>
-      </div>
       <Box className='flex h-full w-full cursor-pointer flex-col gap-4 p-6'>
         <div className='relative'>
           <CompetitionCardHeader className='h-72 max-w-full rounded-xl' competition={competition} />

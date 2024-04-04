@@ -37,10 +37,15 @@ function CompetitionItem({ competition, account }) {
   const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
 
   const timeDistance = useMemo(() => {
-    const unix =
-      eventType === EVENT_TYPES.UPCOMING ? competition.timestamp.startTimestamp : competition.timestamp.endTimestamp
+    if (eventType === EVENT_TYPES.ENDED) {
+      return t('Ended')
+    }
+    if (eventType === EVENT_TYPES.LIVE) {
+      return t('Started')
+    }
+
     const now = dayjs()
-    const timestamp = dayjs.unix(unix)
+    const timestamp = dayjs.unix(competition.timestamp.startTimestamp)
 
     const inSeconds = Math.abs(now.diff(timestamp, 'second'))
     const inMinutes = Math.abs(now.diff(timestamp, 'minute'))
@@ -67,7 +72,7 @@ function CompetitionItem({ competition, account }) {
       return `${inMinutes} ${inMinutes === 1 ? t('Minute') : t('Minutes')}`
     }
     return `${inSeconds} ${inSeconds === 1 ? t('Second') : t('Seconds')}`
-  }, [competition.timestamp.endTimestamp, competition.timestamp.startTimestamp, eventType, t])
+  }, [competition.timestamp.startTimestamp, eventType, t])
 
   return (
     <Box className='flex w-full cursor-pointer flex-col gap-4 p-6'>

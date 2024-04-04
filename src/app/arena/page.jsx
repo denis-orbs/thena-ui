@@ -20,6 +20,7 @@ import useWallet from '@/lib/wallets/useWallet'
 import CompetitionItem from './CompetitionItem'
 import FilterDropDown, { FILTERS } from './FilterDropDown'
 import NoCompetition from './NoCompetition'
+import Loading from '../loading'
 
 const V4_COMPETITION_DATAS = gql`
   query V4_COMPETITION {
@@ -70,13 +71,20 @@ export default function ArenaPage() {
   const searchParams = useSearchParams()
   const { account } = useWallet()
 
-  const { data: dataCompetitions } = useSWR('competition api', () => fetchCompetition(), {
-    refreshInterval: 60000,
-  })
+  const { data: dataCompetitions } = useSWR('competition api', () => fetchCompetition())
 
   const assets = useAssets()
 
-  const [selectedTab, setSelectedTab] = useState('upcoming')
+  const [selectedTab, setSelectedTab] = useState()
+
+  const [showTab, setShowTab] = useState({
+    upcoming: false,
+    all: false,
+    joined: false,
+    live: false,
+    hosted: false,
+    ended: false,
+  })
 
   const [searchText, setSearchText] = useState(searchParams.get('search') ?? '')
 
@@ -103,51 +111,15 @@ export default function ArenaPage() {
             comp.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
           ),
         },
-      })) || [],
+      })),
     [assets, dataCompetitions],
   )
 
-  const showJoinedTab = useMemo(
-    () =>
-      competitions?.some(
-        item =>
-          account && item.participants?.find(participant => participant?.participant.id === account.toLowerCase()),
-      ),
-    [account, competitions],
-  )
-
-  const showLiveTab = useMemo(
-    () =>
-      competitions?.some(
-        item =>
-          item.timestamp.startTimestamp <= new Date().getTime() / 1000 &&
-          item.timestamp.endTimestamp >= new Date().getTime() / 1000,
-      ),
-    [competitions],
-  )
-  const showUpcomingTab = useMemo(
-    () => competitions?.some(item => item.timestamp.startTimestamp > new Date().getTime() / 1000),
-    [competitions],
-  )
-
-  const showHostedTab = useMemo(
-    () => competitions?.some(item => account && account.toLowerCase() === item.owner.id),
-    [account, competitions],
-  )
-
-  const showEndedTab = useMemo(
-    () =>
-      competitions?.some(
-        item =>
-          account &&
-          item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
-          item.participant?.id === account.toLowerCase(),
-      ),
-    [account, competitions],
-  )
-
   const filterCompetitions = useMemo(() => {
-    let result = cloneDeep(competitions) ?? []
+    if (!selectedTab) {
+      return []
+    }
+    let result = cloneDeep(competitions || []) ?? []
     if (filter.market !== 'all') {
       result = result.filter(item => item.market.toLowerCase() === filter.market.toLowerCase())
     }
@@ -211,7 +183,7 @@ export default function ArenaPage() {
   const subTabs = useMemo(
     () =>
       compact([
-        showUpcomingTab
+        showTab.upcoming
           ? {
               label: t('Upcoming'),
               active: selectedTab === 'upcoming',
@@ -220,7 +192,7 @@ export default function ArenaPage() {
               },
             }
           : undefined,
-        showLiveTab
+        showTab.live
           ? {
               label: t('Live'),
               active: selectedTab === 'live',
@@ -236,7 +208,7 @@ export default function ArenaPage() {
             setSelectedTab('all')
           },
         },
-        showJoinedTab
+        showTab.joined
           ? {
               label: t('Joined'),
               active: selectedTab === 'joined',
@@ -245,7 +217,7 @@ export default function ArenaPage() {
               },
             }
           : undefined,
-        showHostedTab
+        showTab.hosted
           ? {
               label: t('Hosted'),
               active: selectedTab === 'hosted',
@@ -255,7 +227,7 @@ export default function ArenaPage() {
             }
           : undefined,
 
-        showEndedTab
+        showTab.ended
           ? {
               label: t('Ended'),
               active: selectedTab === 'ended',
@@ -265,14 +237,8 @@ export default function ArenaPage() {
             }
           : undefined,
       ]),
-    [showUpcomingTab, selectedTab, showEndedTab, showHostedTab, showJoinedTab, showLiveTab, t],
+    [showTab.upcoming, showTab.live, showTab.joined, showTab.hosted, showTab.ended, t, selectedTab],
   )
-
-  useEffect(() => {
-    if (!showUpcomingTab) {
-      setSelectedTab('all')
-    }
-  }, [showUpcomingTab])
 
   useEffect(() => {
     addOrReplaceURLParams('search', searchText.length ? searchText : null)
@@ -281,8 +247,37 @@ export default function ArenaPage() {
     addOrReplaceURLParams('sortBy', filter.sortBy !== 'Default' ? filter.sortBy : null)
   }, [filter.free, filter.market, filter.sortBy, searchText])
 
+  useEffect(() => {
+    if (competitions) {
+      const hasUpcoming = competitions?.some(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
+      setSelectedTab(hasUpcoming ? 'upcoming' : 'all')
+      setShowTab({
+        all: true,
+        ended: competitions?.some(
+          item =>
+            account &&
+            item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
+            item.participant?.id === account.toLowerCase(),
+        ),
+        hosted: competitions?.some(item => account && account.toLowerCase() === item.owner.id),
+        joined: competitions?.some(
+          item =>
+            account && item.participants?.find(participant => participant?.participant.id === account.toLowerCase()),
+        ),
+        live: competitions?.some(
+          item =>
+            item.timestamp.startTimestamp <= new Date().getTime() / 1000 &&
+            item.timestamp.endTimestamp >= new Date().getTime() / 1000,
+        ),
+        upcoming: hasUpcoming,
+      })
+    }
+  }, [account, competitions])
+
+  if (!filterCompetitions.length && !selectedTab) return <Loading />
+
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='mt-6 flex flex-col gap-4'>
       <div className='flex flex-col justify-between gap-4'>
         <div className='flex justify-between'>
           <h2>{t('Competitions')}</h2>

@@ -202,7 +202,7 @@ function Sidebar({ competition }) {
   }, [competition.participantCount, competition.maxParticipants, isJoined, eventType])
 
   return (
-    <div className='col-span-12 mt-2 lg:col-span-5'>
+    <div className='col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
       <h3 className='mb-5'>{headingAndText.heading}</h3>
       <Box className='flex flex-col space-y-5'>
         {(headingAndText.subText || headingAndText.text) && (
