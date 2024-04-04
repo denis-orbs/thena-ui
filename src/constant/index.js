@@ -268,3 +268,64 @@ export const ANALYTIC_CHART = {
   ALL_CHART: 5,
   CHART_COUNT: 60, // limit analytics chart items not more than 60
 }
+
+export const TC_TIMESTAMP = {
+  MIN_REG: 3600 * 1000,
+  MAX_REG: 3600 * 24 * 7 * 1000,
+  MIN_TS: 3600 * 1000,
+  MAX_TS: 3600 * 24 * 7 * 1000 * 4,
+}
+
+export const TC_STEPS = ['DETAILS', 'TIME SETTINGS', 'TYPE AND TOKENS', 'FEES AND PRIZES']
+
+export const TC_PARTICIPANTS = {
+  MIN: 2,
+  MAX: 1000,
+}
+
+export const TC_MARKET_TYPES = {
+  ALL: 'ALL',
+  SPOT: 'SPOT',
+  PERPETUAL: 'PERPETUAL',
+}
+
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+const { MIN_REG, MIN_TS } = TC_TIMESTAMP
+
+export const INIT_VALUES = {
+  name: '',
+  description: '',
+  maxParticipants: 1000,
+  timestamp: {
+    // registrationStart: '',
+    // registrationEnd: '',
+    // startTimestamp: '',
+    // endTimestamp: '',
+    registrationStart: new Date().getTime() + 60 * 60 * 24 * 1000, // start timestamp
+    registrationEnd: new Date().getTime() + 60 * 60 * 24 * 1000 + MIN_REG, // end timestamp
+    startTimestamp: new Date().getTime() + 60 * 60 * 24 * 1000 + MIN_REG, // registration start timestamp
+    endTimestamp: new Date().getTime() + 60 * 60 * 24 * 1000 + MIN_REG + MIN_TS, // registration end timestamp
+  },
+  market: TC_MARKET_TYPES.SPOT,
+  participantCount: 0,
+  participants: [],
+  prize: {
+    placements: 2, //  number of placements
+    ownerFee: 0, //  owner fee
+    totalPrize: '', //  total prize amounts
+    token: '', //  prize tokens
+    weights: [0, 0], //  placement weights
+    // winType: false, //  win type
+  },
+  competitionRules: {
+    startingBalance: '', //  starting balance
+    winningToken: null, //  winning token
+    tradingTokens: [], //  trading tokens
+  },
+  entryFee: '', // entry fee of 0 prize token
+  owner: {
+    id: '',
+  }, // owner address
+  tradingCompetitionSpot: ZERO_ADDRESS, // trading competition contract address
+}

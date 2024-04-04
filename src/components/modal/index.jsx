@@ -34,6 +34,9 @@ function Modal({
   isBack = false,
   onClickHandler = null,
   isIntl,
+  fontSizeTitle = '',
+  showIconX = true,
+  style = {},
   ...rest
 }) {
   const t = useTranslations()
@@ -66,7 +69,7 @@ function Modal({
             left: '50%',
             right: 'auto',
             bottom: 'auto',
-            width: width ? `${width}px` : '540px',
+            width: width ? (typeof width === 'string' ? width : `${width}px`) : '540px',
             maxHeight: '90%',
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
@@ -84,7 +87,7 @@ function Modal({
     <ReactModal
       isOpen={isOpen}
       onRequestClose={closeModal}
-      style={customStyles}
+      style={{ ...customStyles, ...style }}
       closeTimeoutMS={100}
       ariaHideApp={false}
       autoFocus={false}
@@ -95,11 +98,11 @@ function Modal({
           {isBack && (
             <TextIconButton Icon={ArrowLeftIcon} className='mr-2' onClick={() => onClickHandler && onClickHandler()} />
           )}
-          <div className='font-archia text-xl font-semibold text-neutral-50 lg:text-3xl'>
+          <div className={`font-archia  font-semibold text-neutral-50 ${fontSizeTitle || 'text-xl lg:text-3xl'}`}>
             {isIntl ? title : title && typeof title === 'string' && t(title)}
           </div>
         </div>
-        <TextIconButton Icon={XIcon} onClick={closeModal} />
+        {showIconX && <TextIconButton Icon={XIcon} onClick={closeModal} />}
       </div>
       {children}
     </ReactModal>

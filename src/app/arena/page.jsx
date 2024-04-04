@@ -9,13 +9,18 @@ import useSWR from 'swr'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
+import Modal, { ModalBody } from '@/components/modal'
 import Tabs from '@/components/tabs'
+import { INIT_VALUES, TC_STEPS } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
+import { useTC } from '@/context/tcContext'
 import { v4Client } from '@/lib/graphql'
 import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import Create from '@/modules/CreateTradingCompetition/Create'
+import Preview from '@/modules/CreateTradingCompetition/Preview'
 
 import CompetitionItem from './CompetitionItem'
 import FilterDropDown, { FILTERS } from './FilterDropDown'
@@ -70,6 +75,7 @@ export default function ArenaPage() {
   const t = useTranslations()
   const searchParams = useSearchParams()
   const { account } = useWallet()
+  const { isAllowed } = useTC()
 
   const { data: dataCompetitions } = useSWR('competition api', () => fetchCompetition())
 
@@ -85,6 +91,11 @@ export default function ArenaPage() {
     hosted: false,
     ended: false,
   })
+
+  const [showModalCreateCompetition, setShowModalCreateCompetition] = useState(false)
+  const [step, setStep] = useState(0)
+  const [data, setData] = useState(INIT_VALUES)
+  const [showPreview, setShowPreview] = useState(true)
 
   const [searchText, setSearchText] = useState(searchParams.get('search') ?? '')
 
@@ -281,7 +292,11 @@ export default function ArenaPage() {
       <div className='flex flex-col justify-between gap-4'>
         <div className='flex justify-between'>
           <h2>{t('Competitions')}</h2>
-          <PrimaryButton>{t('Create Trading Competition')}</PrimaryButton>
+          {Boolean(isAllowed) && (
+            <PrimaryButton onClick={() => setShowModalCreateCompetition(true)}>
+              {t('Create Trading Competition')}
+            </PrimaryButton>
+          )}
         </div>
         <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
           <div className='rounded-lg bg-neutral-900 p-1 '>
@@ -309,6 +324,41 @@ export default function ArenaPage() {
         </div>
       ) : (
         <NoCompetition />
+      )}
+      <Create
+        data={data}
+        setData={setData}
+        step={step}
+        setStep={setStep}
+        showModalCreateCompetition={showModalCreateCompetition}
+        handleClose={() => {
+          setShowModalCreateCompetition(false)
+          if (step === TC_STEPS.length - 1) {
+            setShowPreview(true)
+          }
+        }}
+      />
+      {step === TC_STEPS.length && (
+        <Modal
+          isOpen={showPreview}
+          closeModal={() => {}}
+          showIconX={false}
+          width='75%'
+          style={{
+            overflowY: 'hidden',
+          }}
+        >
+          <ModalBody>
+            <Preview
+              data={data}
+              step={step}
+              setStep={setStep}
+              setShowModalCreateCompetition={setShowModalCreateCompetition}
+              setShowPreview={setShowPreview}
+              setData={setData}
+            />
+          </ModalBody>
+        </Modal>
       )}
     </div>
   )

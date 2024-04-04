@@ -54,7 +54,7 @@ export default function RootLayout({ children }) {
   const analyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
   return (
     <html lang='en'>
-      <body>
+      <body suppressHydrationWarning>
         <Web3Modal>
           <Providers>
             <Updaters />

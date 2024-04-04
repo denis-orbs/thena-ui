@@ -11,8 +11,8 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
-export function CompetitionDetail({ competition }) {
-  const _competition = useCompetitionFormat(competition)
+export function CompetitionDetail({ competition, isPreview = false }) {
+  const _competition = useCompetitionFormat(competition, isPreview)
 
   const t = useTranslations()
   const [viewAllPrize, setViewAllPrize] = useState(false)
