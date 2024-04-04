@@ -2,7 +2,7 @@
 
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -16,6 +16,8 @@ import { CompetitionCardHeader } from './CompetitionCardHeader'
 
 function CompetitionItem({ competition, account }) {
   const t = useTranslations()
+
+  const [timeDistance, setTimeDistance] = useState('')
 
   const totalPrize = useMemo(
     () =>
@@ -36,43 +38,61 @@ function CompetitionItem({ competition, account }) {
 
   const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
 
-  const timeDistance = useMemo(() => {
-    if (eventType === EVENT_TYPES.ENDED) {
-      return t('Ended')
-    }
-    if (eventType === EVENT_TYPES.LIVE) {
-      return t('Started')
-    }
+  useEffect(() => {
+    const calculate = () => {
+      if (getEventType(competition.timestamp) === EVENT_TYPES.ENDED) {
+        return t('Ended')
+      }
+      if (getEventType(competition.timestamp) === EVENT_TYPES.LIVE) {
+        return t('Started')
+      }
 
-    const now = dayjs()
-    const timestamp = dayjs.unix(competition.timestamp.startTimestamp)
+      const now = dayjs()
+      const timestamp = dayjs.unix(competition.timestamp.startTimestamp)
 
-    const inSeconds = Math.abs(now.diff(timestamp, 'second'))
-    const inMinutes = Math.abs(now.diff(timestamp, 'minute'))
-    const inHours = Math.abs(now.diff(timestamp, 'hour'))
-    const inDays = Math.abs(now.diff(timestamp, 'day'))
-    const inMonths = Math.abs(now.diff(timestamp, 'month'))
-    const inYears = Math.abs(now.diff(timestamp, 'year'))
+      const inSeconds = Math.abs(now.diff(timestamp, 'second'))
+      const inMinutes = Math.abs(now.diff(timestamp, 'minute'))
+      const inHours = Math.abs(now.diff(timestamp, 'hour'))
+      const inDays = Math.abs(now.diff(timestamp, 'day'))
+      const inMonths = Math.abs(now.diff(timestamp, 'month'))
+      const inYears = Math.abs(now.diff(timestamp, 'year'))
 
-    if (inMonths >= 12) {
-      return `${inYears} ${inYears === 1 ? t('Year') : t('Years')}`
-    }
+      if (inMonths >= 12) {
+        return `${inYears} ${inYears === 1 ? t('Year') : t('Years')}`
+      }
 
-    if (inDays >= 30) {
-      return `${inMonths} ${inMonths === 1 ? t('Month') : t('Months')}`
-    }
+      if (inDays >= 30) {
+        return `${inMonths} ${inMonths === 1 ? t('Month') : t('Months')}`
+      }
 
-    if (inHours >= 24) {
-      return `${inDays} ${inDays === 1 ? t('Day') : t('Days')}`
+      if (inMonths < 1) {
+        let result = ''
+
+        if (inDays) {
+          result += `${inDays}d:`
+        }
+
+        if (inHours) {
+          result += `${inHours - inDays * 24}h:`
+        }
+
+        if (inMinutes) {
+          result += `${inMinutes - inHours * 60}m:`
+        }
+
+        if (inSeconds) {
+          result += `${inSeconds - inMinutes * 60}s`
+        }
+
+        return result
+      }
     }
-    if (inMinutes >= 60) {
-      return `${inHours} ${inHours === 1 ? t('Hour') : t('Hours')}`
-    }
-    if (inSeconds >= 60) {
-      return `${inMinutes} ${inMinutes === 1 ? t('Minute') : t('Minutes')}`
-    }
-    return `${inSeconds} ${inSeconds === 1 ? t('Second') : t('Seconds')}`
-  }, [competition.timestamp.startTimestamp, eventType, t])
+    const interval = setInterval(() => {
+      setTimeDistance(calculate())
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [competition.timestamp, competition.timestamp.startTimestamp, eventType, t])
 
   return (
     <Box className='flex w-full cursor-pointer flex-col gap-4 p-6'>

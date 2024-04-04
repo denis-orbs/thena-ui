@@ -1,7 +1,6 @@
 'use client'
 
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
@@ -12,8 +11,6 @@ import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
 import { cn } from '@/lib/utils'
 
 import { CompetitionCardHeader } from '../../CompetitionCardHeader'
-
-dayjs.extend(utc)
 
 function CompetitionCard({ competition }) {
   const t = useTranslations()
@@ -46,7 +43,7 @@ function CompetitionCard({ competition }) {
         ? t('Registration Closed')
         : start <= now && now <= end
           ? t('Competition Is Live')
-          : dayjs.unix(Number(competition.timestamp.registrationEnd)).utc().format('MMM DD, YYYY HH:mm A UTC')
+          : dayjs.unix(Number(competition.timestamp.registrationEnd)).format('MMM DD, YYYY HH:mm A')
   }, [
     competition.timestamp.registrationEnd,
     competition.timestamp.startTimestamp,
@@ -63,7 +60,7 @@ function CompetitionCard({ competition }) {
       ? t('Competition Has Ended')
       : start <= now && now <= end
         ? t('Competition Is Live')
-        : dayjs.unix(Number(competition.timestamp.startTimestamp)).utc().format('MMM DD, YYYY HH:mm A UTC')
+        : dayjs.unix(Number(competition.timestamp.startTimestamp)).format('MMM DD, YYYY HH:mm A')
   }, [competition.timestamp.endTimestamp, competition.timestamp.startTimestamp, t])
 
   const endTimeText = useMemo(() => {
@@ -72,7 +69,7 @@ function CompetitionCard({ competition }) {
 
     return now > end
       ? t('Competition Has Ended')
-      : dayjs.unix(Number(competition.timestamp.endTimestamp)).utc().format('MMM DD, YYYY HH:mm A UTC')
+      : dayjs.unix(Number(competition.timestamp.endTimestamp)).format('MMM DD, YYYY HH:mm A')
   }, [competition.timestamp.endTimestamp, t])
 
   return (
