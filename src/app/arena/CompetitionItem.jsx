@@ -42,12 +42,12 @@ function CompetitionItem({ competition, account }) {
     const now = dayjs()
     const timestamp = dayjs.unix(unix)
 
-    const inSeconds = now.diff(timestamp, 'second')
-    const inMinutes = now.diff(timestamp, 'minute')
-    const inHours = now.diff(timestamp, 'hour')
-    const inDays = now.diff(timestamp, 'day')
-    const inMonths = now.diff(timestamp, 'month')
-    const inYears = now.diff(timestamp, 'year')
+    const inSeconds = Math.abs(now.diff(timestamp, 'second'))
+    const inMinutes = Math.abs(now.diff(timestamp, 'minute'))
+    const inHours = Math.abs(now.diff(timestamp, 'hour'))
+    const inDays = Math.abs(now.diff(timestamp, 'day'))
+    const inMonths = Math.abs(now.diff(timestamp, 'month'))
+    const inYears = Math.abs(now.diff(timestamp, 'year'))
 
     if (inMonths >= 12) {
       return `${inYears} ${inYears === 1 ? t('Year') : t('Years')}`
