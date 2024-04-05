@@ -97,26 +97,34 @@ export const useTcSpotContractActions = address => {
       if (!isApprovedFee) {
         const isSuccess = await writeTxn(key, approveFeeuuid, feeTokenContract, 'approve', [address, maxUint256])
         if (!isSuccess) {
-          return
+          return false
         }
       }
       if (!isApprovedWinningToken) {
         const isSuccess = await writeTxn(key, approveStartuuid, winningTokenContract, 'approve', [address, maxUint256])
         if (!isSuccess) {
-          return
+          return false
         }
       }
-      const isSuccess = await writeTxn(key, joinuuid, tcSpotContract, 'registerAndDeposit', [
-        data.competitionRules.startingBalance,
-      ])
-      if (!isSuccess) {
-        return
+      if (fromWei(data.competitionRules.startingBalance).isZero()) {
+        const isSuccess = await writeTxn(key, joinuuid, tcSpotContract, 'register', [])
+        if (!isSuccess) {
+          return false
+        }
+      } else {
+        const isSuccess = await writeTxn(key, joinuuid, tcSpotContract, 'registerAndDeposit', [
+          data.competitionRules.startingBalance,
+        ])
+        if (!isSuccess) {
+          return false
+        }
       }
 
       endTxn({
         key,
         final: 'Join TC Successful',
       })
+      return true
     },
     [account, address, chainId, endTxn, startTxn, t, writeTxn],
   )
