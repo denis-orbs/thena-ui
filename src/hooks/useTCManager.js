@@ -1,11 +1,14 @@
+import BigNumber from 'bignumber.js'
+import { ethers } from 'ethers'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
+import { tcManagerAbi } from '@/constant/abi/core'
 import { useTC } from '@/context/tcContext'
-import { readCall } from '@/lib/contractActions'
+import { readCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getTCContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -69,7 +72,7 @@ export const useCreateTC = () => {
         ])
         if (!isSuccess) {
           setPending(false)
-          return
+          return false
         }
       }
 
@@ -80,7 +83,7 @@ export const useCreateTC = () => {
         ])
         if (!isSuccess) {
           setPending(false)
-          return
+          return false
         }
       }
 
@@ -113,7 +116,7 @@ export const useCreateTC = () => {
       const isSuccess = await writeTxn(key, createuuid, tcManagerContract, 'create', [tradingComp])
       if (!isSuccess) {
         setPending(false)
-        return
+        return false
       }
 
       endTxn({
@@ -122,9 +125,32 @@ export const useCreateTC = () => {
       })
 
       setPending(false)
+      return isSuccess
     },
-    [account, chainId, protocolFee, protocolFeeToken.address, endTxn, startTxn, t, writeTxn],
+    [protocolFeeToken.address, chainId, account, protocolFee, startTxn, t, writeTxn, endTxn],
   )
 
-  return { onCreate: handleCreate, pending }
+  const handleGetTCId = useCallback(async txHash => {
+    const txnReceipt = await waitCall(txHash)
+    const iface = new ethers.Interface(tcManagerAbi)
+    for (let i = 0; i < txnReceipt.logs.length; i++) {
+      const parsed = iface.parseLog(txnReceipt.logs[i])
+      if (parsed && parsed.name === 'Create') {
+        if (parsed.args) {
+          const idCounter = parsed.args.getValue('idCounter')
+          const comp = parsed.args.getValue('competition')
+          if (idCounter && comp) {
+            const id = new BigNumber(idCounter).toNumber()
+            if (id && comp) {
+              return `${comp.toLowerCase()}-${id}`
+            }
+          }
+        }
+      }
+    }
+
+    return ''
+  }, [])
+
+  return { onCreate: handleCreate, pending, handleGetTCId }
 }

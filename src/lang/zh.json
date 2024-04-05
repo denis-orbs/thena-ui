@@ -562,5 +562,7 @@
   "Host (25% Max)": "Host (25% Max)",
   "Prizes Token": "Prizes Token",
   "Tradable Tokens Label": "Tradable Tokens",
-  "In order to create this trading competition you will have to pay a creation fee.": "In order to create this trading competition you will have to pay a creation fee."
+  "In order to create this trading competition you will have to pay a creation fee.": "In order to create this trading competition you will have to pay a creation fee.",
+  "Create": "Create",
+  "Creation Fee": "Creation Fee"
 }
