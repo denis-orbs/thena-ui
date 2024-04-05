@@ -37,6 +37,7 @@ const V4_COMPETITION_DATAS = gql`
       competitionRules {
         winningToken
         tradingTokens
+        startingBalance
       }
       prize {
         totalPrize

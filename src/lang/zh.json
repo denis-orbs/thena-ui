@@ -562,5 +562,11 @@
   "Host (25% Max)": "Host (25% Max)",
   "Prizes Token": "Prizes Token",
   "Tradable Tokens Label": "Tradable Tokens",
-  "In order to create this trading competition you will have to pay a creation fee.": "In order to create this trading competition you will have to pay a creation fee."
+  "Create Trading Competition Description": "In order to create this trading competition you will have to pay a creation fee.",
+  "Join Competition": "Join Competition",
+  "Pay Entry Fee And Deposit To Join Message": "You need to pay an entry fee to join this trading competition, and also deposit the required amount. You will be asked to withdraw the rest of your deposit back at he end of the competition. You will have to claim it manually. ",
+  "Free To Join Message": "This trading competition is free to join.",
+  "Pay Entry Fee To Join Message": "In order to join this trading competition you need to pay an entry fee.",
+  "Not Enough Balance To Join Message": "You do not have enough balance in your wallet. Please add funds to join this competition.",
+  "Add Balance": "Add Balance"
 }

@@ -12,6 +12,7 @@ import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { Countdown } from '@/modules/CountDown'
+import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
 
 function Sidebar({ competition }) {
   const t = useTranslations()
@@ -19,6 +20,7 @@ function Sidebar({ competition }) {
   const { account } = useWallet()
   const { checkUserClaimable, claimPrize } = useTcSpotContractActions(competition.tradingCompetitionSpot)
   const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
+  const [showJoinModal, setShowJoinModal] = useState(false)
 
   const isHosting = useMemo(
     () => account && account.toLowerCase() === competition.owner.id,
@@ -169,7 +171,7 @@ function Sidebar({ competition }) {
 
     if (!isHosting && eventType !== EVENT_TYPES.LIVE && isInRegistration) {
       return (
-        <PrimaryButton className='w-full' disabled={isFull}>
+        <PrimaryButton className='w-full' disabled={isFull} onClick={() => setShowJoinModal(true)}>
           {isFull ? t('This Competition Is Full') : t('Register')}
         </PrimaryButton>
       )
@@ -232,6 +234,9 @@ function Sidebar({ competition }) {
         )}
         {buttonByStatus}
       </Box>
+      {showJoinModal && (
+        <JoinModal competition={competition} onClose={() => setShowJoinModal(false)} open={showJoinModal} />
+      )}
     </div>
   )
 }

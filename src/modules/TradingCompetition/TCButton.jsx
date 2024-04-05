@@ -6,10 +6,13 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { useTcSpotContractActions } from '@/hooks/useTcSpotContractActions'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 
+import { JoinModal } from './JoinModal'
+
 export function TCButton({ eventType, competition, account }) {
   const t = useTranslations()
   const { push } = useRouter()
   const [canClaimRewards, setCanClaimRewards] = useState(false)
+  const [showJoinModal, setShowJoinModal] = useState(false)
   const { checkUserClaimable, claimPrize } = useTcSpotContractActions(competition.tradingCompetitionSpot)
 
   const isHosting = useMemo(
@@ -56,7 +59,13 @@ export function TCButton({ eventType, competition, account }) {
         </PrimaryButton>
       )}
       {eventType === EVENT_TYPES.UPCOMING && !isJoined && !isHosting && (
-        <PrimaryButton className='w-full'>{t('Join Now')}</PrimaryButton>
+        <PrimaryButton className='w-full' onClick={() => setShowJoinModal(true)}>
+          {t('Join Now')}
+        </PrimaryButton>
+      )}
+
+      {showJoinModal && (
+        <JoinModal competition={competition} onClose={() => setShowJoinModal(false)} open={showJoinModal} />
       )}
     </div>
   )

@@ -31,6 +31,12 @@ function Button({
           !disabled && 'active:bg-primary-600 active:text-primary-100',
           disabled && 'bg-neutral-700 text-neutral-500',
         ],
+        variant === CompTypes.Error && [
+          'bg-error-700 text-primary-100',
+          !disabled && 'hover:bg-error-600 hover:text-primary-200',
+          !disabled && 'active:bg-error-600 active:text-primary-100',
+          disabled && 'bg-neutral-700 text-neutral-500',
+        ],
         variant === CompTypes.Secondary && [
           'bg-primary-400 text-primary-900',
           !disabled && 'hover:bg-primary-500 active:bg-primary-400',
@@ -151,6 +157,10 @@ export function TertiaryButton(props) {
 
 export function TextButton(props) {
   return <Button variant={CompTypes.Text} {...props} />
+}
+
+export function ErrorButton(props) {
+  return <Button variant={CompTypes.Error} {...props} />
 }
 
 export function EmphasisButton(props) {
