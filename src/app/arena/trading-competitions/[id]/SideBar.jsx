@@ -8,19 +8,18 @@ import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { useTcSpotContractActions } from '@/hooks/useTcSpotContractActions'
 import { successToast } from '@/lib/notify'
-import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
+import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { Countdown } from '@/modules/CountDown'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
 
-function Sidebar({ competition }) {
+function Sidebar({ competition, eventType }) {
   const t = useTranslations()
   const progressBarRef = useRef()
   const { account } = useWallet()
   const { checkUserClaimable, claimPrize } = useTcSpotContractActions(competition.tradingCompetitionSpot)
   const [showJoinModal, setShowJoinModal] = useState(false)
-  const [eventType, setEventType] = useState('')
 
   const isHosting = useMemo(
     () => account && account.toLowerCase() === competition.owner.id,
@@ -211,12 +210,6 @@ function Sidebar({ competition }) {
     }
   }, [competition.participantCount, competition.maxParticipants, isJoined, eventType])
 
-  useEffect(() => {
-    const interval = setInterval(() => setEventType(getEventType(competition?.timestamp)), 1000)
-
-    return () => clearInterval(interval)
-  }, [competition?.timestamp])
-
   return (
     <div className='col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
       <h3 className='mb-5'>{headingAndText.heading}</h3>
@@ -237,7 +230,7 @@ function Sidebar({ competition }) {
           </div>
           <div>{`${competition.participantCount}/${competition.maxParticipants} ${t('Joined')}`}</div>
         </div>
-        {eventType !== EVENT_TYPES.ENDED && (
+        {eventType && eventType !== EVENT_TYPES.ENDED && (
           <Countdown
             timestamp={
               eventType === EVENT_TYPES.LIVE

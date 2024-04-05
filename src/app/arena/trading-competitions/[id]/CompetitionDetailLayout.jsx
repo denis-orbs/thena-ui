@@ -176,7 +176,7 @@ function CompetitionDetailLayout({ children, params }) {
                 <Paragraph>{`${competition.owner.id.slice(0, 6)}...${competition.owner.id.slice(-4)}`}</Paragraph>
               </div>
             </div>
-            <CompetitionCard competition={_competition} />
+            <CompetitionCard competition={_competition} eventType={eventType} />
             <div className='mt-10 flex w-full flex-col gap-4'>
               <Tabs
                 data={subTabs}
@@ -187,7 +187,7 @@ function CompetitionDetailLayout({ children, params }) {
               {children}
             </div>
           </div>
-          <Sidebar competition={_competition} />
+          <Sidebar competition={_competition} eventType={eventType} />
         </div>
       </Suspense>
     </main>
