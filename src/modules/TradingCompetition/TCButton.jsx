@@ -53,46 +53,6 @@ export function TCButton({ eventType, competition, account, timestamp }) {
   }, [checkUserClaimable])
 
   useEffect(() => {
-    const calculate = time => {
-      const now = dayjs()
-
-      const inSeconds = Math.abs(now.diff(time, 'second'))
-      const inMinutes = Math.abs(now.diff(time, 'minute'))
-      const inHours = Math.abs(now.diff(time, 'hour'))
-      const inDays = Math.abs(now.diff(time, 'day'))
-      const inMonths = Math.abs(now.diff(time, 'month'))
-      const inYears = Math.abs(now.diff(time, 'year'))
-
-      if (inMonths >= 12) {
-        return `${inYears} ${inYears === 1 ? t('Year') : t('Years')}`
-      }
-
-      if (inDays >= 30) {
-        return `${inMonths} ${inMonths === 1 ? t('Month') : t('Months')}`
-      }
-
-      if (inMonths < 1) {
-        let result = ''
-
-        if (inDays) {
-          result += `${inDays}d:`
-        }
-
-        if (inHours) {
-          result += `${inHours - inDays * 24}h:`
-        }
-
-        if (inMinutes) {
-          result += `${inMinutes - inHours * 60}m:`
-        }
-
-        if (inSeconds) {
-          result += `${inSeconds - inMinutes * 60}s`
-        }
-
-        return result
-      }
-    }
     const interval = setInterval(() => {
       setJoinButtonText(() => {
         const now = dayjs()
@@ -105,14 +65,10 @@ export function TCButton({ eventType, competition, account, timestamp }) {
         }
 
         if (now <= registerStart) {
-          const countdown = calculate(registerStart)
-
-          return { text: `${t('Registration Open')} ${countdown}`, disabled: true }
+          return { text: t('Registration Not Yet Open'), disabled: true }
         }
         if (now < start && now > registerEnd) {
-          const countdown = calculate(start)
-
-          return { text: `${t('Starts In')} ${countdown}`, disabled: true }
+          return { text: t('Registration Ended'), disabled: true }
         }
         return { text: t('Join Now'), disabled: false }
       })

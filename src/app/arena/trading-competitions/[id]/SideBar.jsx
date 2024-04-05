@@ -47,7 +47,8 @@ function Sidebar({ competition, eventType }) {
     [competition.maxParticipants, competition.participantCount],
   )
 
-  const [isInRegistration, setIsInRegistration] = useState(false)
+  const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
+  const [isEndedRegistration, setIsEndedRegistration] = useState(false)
 
   const headingAndText = useMemo(() => {
     if (!eventType) {
@@ -58,7 +59,7 @@ function Sidebar({ competition, eventType }) {
       }
     }
 
-    if (isInRegistration) {
+    if (!isNotStartRegistration && !isEndedRegistration) {
       return {
         heading: t('Registration'),
         text: isJoined ? t('Competition Joined') : null,
@@ -134,15 +135,16 @@ function Sidebar({ competition, eventType }) {
       }
     }
   }, [
+    eventType,
+    isNotStartRegistration,
+    isEndedRegistration,
+    t,
+    isJoined,
     competition.participantCount,
+    competition.prize?.totalPrize,
     competition.prize?.token?.decimals,
     competition.prize?.token?.symbol,
-    competition.prize?.totalPrize,
-    eventType,
     canClaimRewards,
-    isInRegistration,
-    isJoined,
-    t,
   ])
 
   const onShare = useCallback(() => {
@@ -173,7 +175,22 @@ function Sidebar({ competition, eventType }) {
       return <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
     }
 
-    if (!isHosting && eventType !== EVENT_TYPES.LIVE && isInRegistration) {
+    if (!isHosting && eventType !== EVENT_TYPES.UPCOMING && !isJoined) {
+      if (isNotStartRegistration) {
+        return (
+          <PrimaryButton className='w-full' disabled>
+            {t('Registration Not Yet Open')}
+          </PrimaryButton>
+        )
+      }
+      if (isEndedRegistration) {
+        return (
+          <PrimaryButton className='w-full' disabled>
+            {t('Registration Ended')}
+          </PrimaryButton>
+        )
+      }
+
       return (
         <PrimaryButton className='w-full' disabled={isFull} onClick={() => setShowJoinModal(true)}>
           {isFull ? t('This Competition Is Full') : t('Join Now')}
@@ -195,7 +212,18 @@ function Sidebar({ competition, eventType }) {
         </PrimaryButton>
       )
     }
-  }, [canClaimRewards, claim, eventType, isFull, isHosting, isInRegistration, isJoined, onShare, t])
+  }, [
+    canClaimRewards,
+    claim,
+    eventType,
+    isEndedRegistration,
+    isFull,
+    isHosting,
+    isJoined,
+    isNotStartRegistration,
+    onShare,
+    t,
+  ])
 
   useEffect(() => {
     const progress = progressBarRef.current
@@ -208,15 +236,12 @@ function Sidebar({ competition, eventType }) {
   }, [competition.participantCount, competition.maxParticipants, isJoined, eventType])
 
   useEffect(() => {
-    const interval = setInterval(
-      () =>
-        setIsInRegistration(Date.now() / 1000 <= competition.timestamp.registrationEnd, [
-          competition.timestamp.registrationEnd,
-        ]),
-      1000,
-    )
+    const interval = setInterval(() => {
+      setIsNotStartRegistration(Date.now() / 1000 <= competition.timestamp.registrationStart)
+      setIsEndedRegistration(Date.now() / 1000 > competition.timestamp.registrationEnd)
+    }, 1000)
     return () => clearInterval(interval)
-  }, [competition.timestamp.registrationEnd])
+  }, [competition.timestamp.registrationEnd, competition.timestamp.registrationStart])
 
   return (
     <div className='col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>

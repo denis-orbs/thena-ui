@@ -574,6 +574,7 @@
   "Create": "Create",
   "Creation Fee": "Creation Fee",
 	"Competition Full": "Competition full",
-	"Registration Open": "Registration open in",
+  "Registration Not Yet Open": "Registration not yet open",
+  "Registration Ended": "Registration ended",
 	"Starts In": "Starts in"
 }
