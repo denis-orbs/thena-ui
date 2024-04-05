@@ -32,6 +32,7 @@ const V4_COMPETITION_DATA = gql`
       timestamp {
         endTimestamp
         registrationEnd
+        registrationStart
         startTimestamp
       }
       market

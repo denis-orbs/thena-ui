@@ -18,30 +18,51 @@ function CompetitionCard({ competition, eventType }) {
   const [registerText, setRegisterText] = useState()
   const [startTimeText, setStartTimeText] = useState()
   const [endTimeText, setEndTimeText] = useState()
+  const [isRegisterStarted, setIsRegisterStarted] = useState(false)
 
   useEffect(() => {
     const interval = setInterval(() => {
       const nowDiff = dayjs().diff(dayjs.unix(competition.timestamp.registrationEnd), 'day')
       const now = Date.now() / 1000
-      const register = competition.timestamp.registrationEnd
+      const registerEndTime = competition.timestamp.registrationEnd
       const start = competition.timestamp.startTimestamp
+      const registerStartTime = competition.timestamp.registrationStart
       if (eventType) {
-        setRegisterText(
-          register <= now && now < start
-            ? t('Registration Closed')
-            : eventType === EVENT_TYPES.LIVE
-              ? t('Competition Is Live')
-              : nowDiff === 0
-                ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.registrationEnd)).format('HH:mm')}`
-                : nowDiff === -1
-                  ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.registrationEnd)).format('HH:mm')}`
-                  : dayjs.unix(Number(competition.timestamp.registrationEnd)).format('MMM DD, YYYY HH:mm'),
-        )
+        if (now <= registerStartTime) {
+          setIsRegisterStarted(false)
+          const nowDiffStart = dayjs().diff(dayjs.unix(competition.timestamp.registrationStart), 'day')
+          setRegisterText(
+            nowDiffStart === 0
+              ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.registrationStart)).format('HH:mm')}`
+              : nowDiffStart === -1
+                ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.registrationStart)).format('HH:mm')}`
+                : dayjs.unix(Number(competition.timestamp.registrationStart)).format('MMM DD, YYYY HH:mm'),
+          )
+        } else {
+          setIsRegisterStarted(true)
+          setRegisterText(
+            registerEndTime <= now && now < start
+              ? t('Registration Closed')
+              : eventType === EVENT_TYPES.LIVE
+                ? t('Competition Is Live')
+                : nowDiff === 0
+                  ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.registrationEnd)).format('HH:mm')}`
+                  : nowDiff === -1
+                    ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.registrationEnd)).format('HH:mm')}`
+                    : dayjs.unix(Number(competition.timestamp.registrationEnd)).format('MMM DD, YYYY HH:mm'),
+          )
+        }
       }
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [competition.timestamp.registrationEnd, competition.timestamp.startTimestamp, eventType, t])
+  }, [
+    competition.timestamp.registrationEnd,
+    competition.timestamp.registrationStart,
+    competition.timestamp.startTimestamp,
+    eventType,
+    t,
+  ])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -107,7 +128,7 @@ function CompetitionCard({ competition, eventType }) {
               {eventType !== EVENT_TYPES.ENDED && (
                 <div className='flex flex-col gap-1'>
                   <TextHeading>{registerText}</TextHeading>
-                  <Paragraph>{t('Registration Deadline')}</Paragraph>
+                  <Paragraph>{isRegisterStarted ? t('Registration Deadline') : t('Registration Start Time')}</Paragraph>
                 </div>
               )}
               <div className='flex flex-col gap-1'>

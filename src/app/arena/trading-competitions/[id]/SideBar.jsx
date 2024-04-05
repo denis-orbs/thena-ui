@@ -59,6 +59,13 @@ function Sidebar({ competition, eventType }) {
       }
     }
 
+    if (isNotStartRegistration) {
+      return {
+        heading: t('Registrations open in'),
+        text: isJoined ? t('Competition Joined') : null,
+        subText: isJoined ? t('You Joined This Competition') : null,
+      }
+    }
     if (!isNotStartRegistration && !isEndedRegistration) {
       return {
         heading: t('Registration'),
@@ -133,6 +140,12 @@ function Sidebar({ competition, eventType }) {
         text,
         subText,
       }
+    }
+
+    return {
+      heading: null,
+      text: null,
+      subText: null,
     }
   }, [
     eventType,
@@ -268,7 +281,9 @@ function Sidebar({ competition, eventType }) {
             timestamp={
               eventType === EVENT_TYPES.LIVE
                 ? competition.timestamp.endTimestamp
-                : competition.timestamp.registrationEnd
+                : isNotStartRegistration
+                  ? competition.timestamp.registrationStart
+                  : competition.timestamp.registrationEnd
             }
           />
         )}
