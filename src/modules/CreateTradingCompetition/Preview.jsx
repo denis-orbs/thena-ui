@@ -9,6 +9,7 @@ import { useCreateTC } from '@/hooks/useTCManager'
 import { warnToast } from '@/lib/notify'
 import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import { useTxn } from '@/state/transactions/hooks'
 
 import Details from './Details/Details'
 
@@ -18,6 +19,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
   const { account } = useWallet()
   const { protocolFee, protocolFeeToken } = useTC()
   const { onCreate, pending, handleGetTCId } = useCreateTC()
+  const { closeTxnModal } = useTxn()
 
   const mainData = useMemo(() => {
     const ownerFee = Math.floor(data.prize.weights[0] * 10)
@@ -71,6 +73,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
       if (txHash) {
         const tcId = await handleGetTCId(txHash)
         if (tcId) {
+          closeTxnModal()
           return router.push(`/arena/trading-competitions/${tcId}`)
         }
       }

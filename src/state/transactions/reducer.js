@@ -1,7 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { createReducer } from '@reduxjs/toolkit'
 
-import { closeTransaction, completeTransaction, openTransaction, updateTransaction } from './actions'
+import {
+  closeTransaction,
+  closeTransactionPopup,
+  completeTransaction,
+  openTransaction,
+  updateTransaction,
+} from './actions'
 
 export const initialState = {
   key: null,
@@ -49,5 +55,9 @@ export default createReducer(initialState, builder =>
       }
       return state
     })
-    .addCase(closeTransaction, () => initialState),
+    .addCase(closeTransaction, () => initialState)
+    .addCase(closeTransactionPopup, state => ({
+      ...state,
+      popup: false,
+    })),
 )

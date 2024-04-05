@@ -5,7 +5,13 @@ import { TXN_STATUS } from '@/constant'
 import { sendCall, waitCall, writeCall } from '@/lib/contractActions'
 import { errorToast, successToast } from '@/lib/notify'
 
-import { closeTransaction, completeTransaction, openTransaction, updateTransaction } from './actions'
+import {
+  closeTransaction,
+  closeTransactionPopup,
+  completeTransaction,
+  openTransaction,
+  updateTransaction,
+} from './actions'
 import { useChainSettings } from '../settings/hooks'
 
 export const useTxn = () => {
@@ -117,5 +123,9 @@ export const useTxn = () => {
     [updateTxn, networkId],
   )
 
-  return { startTxn, updateTxn, endTxn, closeTxn, writeTxn, sendTxn }
+  const closeTxnModal = useCallback(() => {
+    dispatch(closeTransactionPopup())
+  }, [dispatch])
+
+  return { startTxn, updateTxn, endTxn, closeTxn, writeTxn, sendTxn, closeTxnModal }
 }
