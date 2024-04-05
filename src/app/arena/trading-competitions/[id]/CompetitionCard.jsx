@@ -2,7 +2,7 @@
 
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -15,62 +15,74 @@ import { CompetitionCardHeader } from '../../CompetitionCardHeader'
 function CompetitionCard({ competition }) {
   const t = useTranslations()
 
-  const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
+  const [registerText, setRegisterText] = useState()
+  const [startTimeText, setStartTimeText] = useState()
+  const [endTimeText, setEndTimeText] = useState()
 
-  const timestampToStatus = useMemo(() => {
-    if (eventType === EVENT_TYPES.UPCOMING) {
-      return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Upcoming')}</NeutralBadge>
-    }
+  const [eventType, setEventType] = useState()
 
-    if (eventType === EVENT_TYPES.LIVE) {
-      return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Live')}</NeutralBadge>
-    }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nowDiff = dayjs().diff(dayjs.unix(competition.timestamp.registrationEnd), 'day')
+      const now = Date.now() / 1000
+      const register = competition.timestamp.registrationEnd
+      const start = competition.timestamp.startTimestamp
+      setRegisterText(
+        register <= now && now < start
+          ? t('Registration Closed')
+          : eventType === EVENT_TYPES.LIVE
+            ? t('Competition Is Live')
+            : nowDiff === 0
+              ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.registrationEnd)).format('HH:mm')}`
+              : nowDiff === -1
+                ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.registrationEnd)).format('HH:mm')}`
+                : dayjs.unix(Number(competition.timestamp.registrationEnd)).format('MMM DD, YYYY HH:mm'),
+      )
+    }, 1000)
 
-    if (eventType === EVENT_TYPES.ENDED) {
-      return <NeutralBadge className='text-nowrap lg:text-xs'>{t('Ended')}</NeutralBadge>
-    }
-  }, [eventType, t])
+    return () => clearInterval(interval)
+  }, [competition.timestamp.registrationEnd, competition.timestamp.startTimestamp, eventType, t])
 
-  const registerText = useMemo(() => {
-    const now = Date.now() / 1000
-    const register = competition.timestamp.registrationEnd
-    const start = competition.timestamp.startTimestamp
-    const end = competition.timestamp.endTimestamp
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nowDiff = dayjs().diff(dayjs.unix(competition.timestamp.startTimestamp), 'day')
 
-    return now > end
-      ? t('Competition Has Ended')
-      : register <= now && now < start
-        ? t('Registration Closed')
-        : start <= now && now <= end
-          ? t('Competition Is Live')
-          : dayjs.unix(Number(competition.timestamp.registrationEnd)).format('MMM DD, YYYY HH:mm A')
-  }, [
-    competition.timestamp.registrationEnd,
-    competition.timestamp.startTimestamp,
-    t,
-    competition.timestamp.endTimestamp,
-  ])
+      setStartTimeText(
+        eventType === EVENT_TYPES.ENDED
+          ? t('Competition Has Ended')
+          : eventType === EVENT_TYPES.LIVE
+            ? t('Competition Is Live')
+            : nowDiff === 0
+              ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.startTimestamp)).format('HH:mm')}`
+              : nowDiff === -1
+                ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.startTimestamp)).format('HH:mm')}`
+                : dayjs.unix(Number(competition.timestamp.startTimestamp)).format('MMM DD, YYYY HH:mm'),
+      )
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [competition.timestamp.startTimestamp, eventType, t])
 
-  const startTimeText = useMemo(() => {
-    const now = Date.now() / 1000
-    const end = competition.timestamp.endTimestamp
-    const start = competition.timestamp.startTimestamp
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nowDiff = dayjs().diff(dayjs.unix(competition.timestamp.endTimestamp), 'day')
 
-    return now > end
-      ? t('Competition Has Ended')
-      : start <= now && now <= end
-        ? t('Competition Is Live')
-        : dayjs.unix(Number(competition.timestamp.startTimestamp)).format('MMM DD, YYYY HH:mm A')
-  }, [competition.timestamp.endTimestamp, competition.timestamp.startTimestamp, t])
+      setEndTimeText(
+        eventType === EVENT_TYPES.ENDED
+          ? t('Competition Has Ended')
+          : nowDiff === 0
+            ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.endTimestamp)).format('HH:mm')}`
+            : nowDiff === -1
+              ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.endTimestamp)).format('HH:mm')}`
+              : dayjs.unix(Number(competition.timestamp.endTimestamp)).format('MMM DD, YYYY HH:mm'),
+      )
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [competition.timestamp.endTimestamp, eventType, t])
 
-  const endTimeText = useMemo(() => {
-    const now = Date.now() / 1000
-    const end = competition.timestamp.endTimestamp
-
-    return now > end
-      ? t('Competition Has Ended')
-      : dayjs.unix(Number(competition.timestamp.endTimestamp)).format('MMM DD, YYYY HH:mm A')
-  }, [competition.timestamp.endTimestamp, t])
+  useEffect(() => {
+    const interval = setInterval(() => setEventType(getEventType(competition.timestamp, true)), 1000)
+    return () => clearInterval(interval)
+  }, [competition.timestamp])
 
   return (
     <div className='w-full'>
@@ -81,7 +93,7 @@ function CompetitionCard({ competition }) {
             <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
               {competition.market.toLowerCase()}
             </NeutralBadge>
-            {timestampToStatus}
+            {eventType && <NeutralBadge className='text-nowrap lg:text-xs'>{t(eventType)}</NeutralBadge>}
           </div>
         </div>
         <div>

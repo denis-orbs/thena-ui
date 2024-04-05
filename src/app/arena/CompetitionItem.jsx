@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
+import Skeleton from '@/components/skeleton'
 import { Paragraph } from '@/components/typography'
 import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
@@ -17,7 +18,8 @@ import { CompetitionCardHeader } from './CompetitionCardHeader'
 function CompetitionItem({ competition, account }) {
   const t = useTranslations()
 
-  const [timeDistance, setTimeDistance] = useState('')
+  const [timeDistance, setTimeDistance] = useState()
+  const [eventType, setEventType] = useState()
 
   const totalPrize = useMemo(
     () =>
@@ -36,14 +38,17 @@ function CompetitionItem({ competition, account }) {
     return t('Free To Enter')
   }, [competition.entryFee, competition.competitionRules.winningToken, t])
 
-  const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
+  useEffect(() => {
+    const interval = setInterval(() => setEventType(getEventType(competition.timestamp)), 1000)
+    return () => clearInterval(interval)
+  }, [competition.timestamp])
 
   useEffect(() => {
     const calculate = () => {
-      if (getEventType(competition.timestamp) === EVENT_TYPES.ENDED) {
+      if (eventType === EVENT_TYPES.ENDED) {
         return t('Ended')
       }
-      if (getEventType(competition.timestamp) === EVENT_TYPES.LIVE) {
+      if (eventType === EVENT_TYPES.LIVE) {
         return t('Started')
       }
 
@@ -94,13 +99,15 @@ function CompetitionItem({ competition, account }) {
     return () => clearInterval(interval)
   }, [competition.timestamp, competition.timestamp.startTimestamp, eventType, t])
 
-  return (
+  return !timeDistance || !totalPrize || !entryFee || !eventType ? (
+    <Skeleton className='h-[320px] w-full' />
+  ) : (
     <Box className='flex w-full cursor-pointer flex-col gap-4 p-6'>
       <div className='relative'>
         <CompetitionCardHeader className='h-[200px] w-full' competition={competition} />
         <div className='absolute left-4 top-4 flex gap-2'>
           <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{competition.market.toLowerCase()}</NeutralBadge>
-          <NeutralBadge className='text-nowrap lg:text-xs'>{t(getEventType(competition.timestamp))}</NeutralBadge>
+          <NeutralBadge className='text-nowrap lg:text-xs'>{t(eventType)}</NeutralBadge>
         </div>
         <NeutralBadge className='absolute right-4 top-4 text-nowrap capitalize lg:text-xs'>
           {`${competition.participantCount}/${competition.maxParticipants}`}

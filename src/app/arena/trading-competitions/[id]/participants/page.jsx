@@ -138,6 +138,7 @@ function ParticipantsPage() {
 
   const dataParticipants = useMemo(() => [], [])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const filteredParticipants = useMemo(() => [], [dataParticipants])
 
   const sortedData = useMemo(

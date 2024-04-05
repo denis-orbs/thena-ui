@@ -84,6 +84,8 @@ export default function ArenaPage() {
 
   const [selectedTab, setSelectedTab] = useState()
 
+  const [firstTime, setFirstTime] = useState(true)
+
   const [showTab, setShowTab] = useState({
     upcoming: false,
     all: false,
@@ -175,6 +177,14 @@ export default function ArenaPage() {
         )
         break
 
+      case 'live':
+        result = result.filter(
+          item =>
+            item.timestamp.endTimestamp >= new Date().getTime() / 1000 &&
+            item.timestamp.startTimestamp <= new Date().getTime() / 1000,
+        )
+        break
+
       default:
         result = cloneDeep(result)
     }
@@ -262,7 +272,10 @@ export default function ArenaPage() {
   useEffect(() => {
     if (competitions) {
       const hasUpcoming = competitions?.some(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
-      setSelectedTab(hasUpcoming ? 'upcoming' : 'all')
+      if (firstTime) {
+        setSelectedTab(hasUpcoming ? 'upcoming' : 'all')
+        setFirstTime(false)
+      }
       setShowTab({
         all: true,
         ended: competitions?.some(
@@ -284,7 +297,7 @@ export default function ArenaPage() {
         upcoming: hasUpcoming,
       })
     }
-  }, [account, competitions])
+  }, [account, competitions, firstTime])
 
   if (!filterCompetitions.length && !selectedTab) return <Loading />
 

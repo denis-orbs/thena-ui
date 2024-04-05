@@ -5,7 +5,7 @@ import { compact } from 'lodash'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { Suspense, useMemo, useState } from 'react'
+import React, { Suspense, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
@@ -73,7 +73,8 @@ const fetchCompetition = async id => {
 
 function CompetitionDetailLayout({ children, params }) {
   const { data: competition } = useSWR('competition detail api', () => fetchCompetition(params.id), {
-    refreshInterval: 60000,
+    refreshInterval: 30000,
+    revalidateOnFocus: true,
   })
   const t = useTranslations()
   const { replace, back, push } = useRouter()
@@ -86,7 +87,7 @@ function CompetitionDetailLayout({ children, params }) {
       : 'details',
   )
 
-  const eventType = useMemo(() => getEventType(competition?.timestamp), [competition?.timestamp])
+  const [eventType, setEventType] = useState('')
 
   const subTabs = useMemo(
     () =>
@@ -134,7 +135,13 @@ function CompetitionDetailLayout({ children, params }) {
 
   const _competition = useCompetitionFormat(competition)
 
-  if (!competition) {
+  useEffect(() => {
+    const interval = setInterval(() => setEventType(getEventType(competition?.timestamp)), 1000)
+
+    return () => clearInterval(interval)
+  }, [competition?.timestamp])
+
+  if (params.id !== _competition?.id) {
     return <Loading />
   }
 

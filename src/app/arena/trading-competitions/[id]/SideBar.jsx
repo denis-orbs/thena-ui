@@ -19,8 +19,8 @@ function Sidebar({ competition }) {
   const progressBarRef = useRef()
   const { account } = useWallet()
   const { checkUserClaimable, claimPrize } = useTcSpotContractActions(competition.tradingCompetitionSpot)
-  const eventType = useMemo(() => getEventType(competition.timestamp), [competition.timestamp])
   const [showJoinModal, setShowJoinModal] = useState(false)
+  const [eventType, setEventType] = useState('')
 
   const isHosting = useMemo(
     () => account && account.toLowerCase() === competition.owner.id,
@@ -54,6 +54,14 @@ function Sidebar({ competition }) {
   )
 
   const headingAndText = useMemo(() => {
+    if (!eventType) {
+      return {
+        heading: null,
+        text: null,
+        subText: null,
+      }
+    }
+
     if (isInRegistration) {
       return {
         heading: t('Registration'),
@@ -165,14 +173,14 @@ function Sidebar({ competition }) {
       )
     }
 
-    if (!isHosting && eventType === EVENT_TYPES.LIVE) {
+    if (!isHosting && eventType === EVENT_TYPES.LIVE && isJoined) {
       return <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
     }
 
     if (!isHosting && eventType !== EVENT_TYPES.LIVE && isInRegistration) {
       return (
         <PrimaryButton className='w-full' disabled={isFull} onClick={() => setShowJoinModal(true)}>
-          {isFull ? t('This Competition Is Full') : t('Register')}
+          {isFull ? t('This Competition Is Full') : t('Join Now')}
         </PrimaryButton>
       )
     }
@@ -203,6 +211,12 @@ function Sidebar({ competition }) {
     }
   }, [competition.participantCount, competition.maxParticipants, isJoined, eventType])
 
+  useEffect(() => {
+    const interval = setInterval(() => setEventType(getEventType(competition?.timestamp)), 1000)
+
+    return () => clearInterval(interval)
+  }, [competition?.timestamp])
+
   return (
     <div className='col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
       <h3 className='mb-5'>{headingAndText.heading}</h3>
@@ -221,7 +235,7 @@ function Sidebar({ competition }) {
               className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
             />
           </div>
-          <div>{t('Spots Left', { spot: `${competition.participantCount}/${competition.maxParticipants}` })}</div>
+          <div>{`${competition.participantCount}/${competition.maxParticipants} ${t('Joined')}`}</div>
         </div>
         {eventType !== EVENT_TYPES.ENDED && (
           <Countdown

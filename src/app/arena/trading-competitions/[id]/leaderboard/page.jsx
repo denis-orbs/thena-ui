@@ -4,7 +4,7 @@ import { gql } from 'graphql-request'
 import { useParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import CircleImage from '@/components/image/CircleImage'
@@ -53,14 +53,15 @@ function LeaderBoardPage() {
   const { id } = useParams()
 
   const { data } = useSWR('competition leader board api', () => fetchCompetitionLeaderboard(id), {
-    refreshInterval: 60000,
+    refreshInterval: 30000,
+    revalidateOnFocus: true,
   })
 
   const competition = useCompetitionFormat(data)
 
   const { push } = useRouter()
 
-  const eventType = useMemo(() => getEventType(competition?.timestamp), [competition?.timestamp])
+  const [eventType, setEventType] = useState('')
 
   const sortOptions = useMemo(
     () => [
@@ -185,6 +186,12 @@ function LeaderBoardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
   )
+
+  useEffect(() => {
+    const interval = setInterval(() => setEventType(getEventType(competition?.timestamp)), 1000)
+
+    return () => clearInterval(interval)
+  }, [competition?.timestamp])
 
   return (
     <>
