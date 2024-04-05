@@ -16,7 +16,7 @@ import { Paragraph } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { v4Client } from '@/lib/graphql'
-import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
+import { EVENT_TYPES, getEventType, objectToQuery } from '@/lib/tradingCompetition/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
@@ -77,7 +77,7 @@ function CompetitionDetailLayout({ children, params }) {
     revalidateOnFocus: true,
   })
   const t = useTranslations()
-  const { replace, back, push } = useRouter()
+  const { replace, push } = useRouter()
 
   const pathname = usePathname()
 
@@ -88,6 +88,8 @@ function CompetitionDetailLayout({ children, params }) {
   )
 
   const [eventType, setEventType] = useState('')
+
+  const [queryParams, setQueryParams] = useState()
 
   const subTabs = useMemo(
     () =>
@@ -141,6 +143,17 @@ function CompetitionDetailLayout({ children, params }) {
     return () => clearInterval(interval)
   }, [competition?.timestamp])
 
+  useEffect(() => {
+    setQueryParams(
+      objectToQuery({
+        search: sessionStorage.getItem('search'),
+        free: sessionStorage.getItem('free'),
+        market: sessionStorage.getItem('market'),
+        sortBy: sessionStorage.getItem('sortBy'),
+      }),
+    )
+  }, [])
+
   if (params.id !== _competition?.id) {
     return <Loading />
   }
@@ -151,7 +164,7 @@ function CompetitionDetailLayout({ children, params }) {
         <div className='grid grid-cols-12 gap-4 lg:gap-12'>
           <div className='col-span-12 lg:col-span-7'>
             <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[176px] lg:mb-4 lg:pt-10'>
-              <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon} onClick={() => back()}>
+              <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon} onClick={() => push(`/arena${queryParams}`)}>
                 {t('Back')}
               </TextButton>
 

@@ -1,3 +1,5 @@
+import { isArray, isNil } from 'lodash'
+
 export const EVENT_TYPES = {
   UPCOMING: 'Upcoming',
   LIVE: 'Live',
@@ -32,4 +34,33 @@ export const addOrReplaceURLParams = (type, value) => {
     '',
     `${window.location.pathname}${Array.from(params).length > 0 ? '?' : ''}${params.toString()}`,
   )
+}
+
+export const objectToQuery = object => {
+  const queryStringArray = []
+
+  for (const key in object) {
+    if (Object.prototype.hasOwnProperty.call(object, key)) {
+      const values = object[key]
+      if (!isNil(values)) {
+        if (isArray(values)) {
+          values.forEach(value => {
+            const encodedKey = encodeURIComponent(key)
+            const encodedValue = encodeURIComponent(value.toString())
+            if (encodedValue) {
+              const queryParam = `${encodedKey}[]=${encodedValue}`
+              queryStringArray.push(queryParam)
+            }
+          })
+        } else {
+          const encodedKey = encodeURIComponent(key)
+          const encodedValue = encodeURIComponent(values.toString())
+          const queryParam = `${encodedKey}=${encodedValue}`
+          queryStringArray.push(queryParam)
+        }
+      }
+    }
+  }
+
+  return queryStringArray.length ? `?${queryStringArray.join('&')}` : ''
 }

@@ -270,6 +270,21 @@ export default function ArenaPage() {
   }, [filter.free, filter.market, filter.sortBy, searchText])
 
   useEffect(() => {
+    const saveToSessionStorage = (key, value) => {
+      if (value) {
+        sessionStorage.setItem(key, value)
+      } else {
+        sessionStorage.removeItem(key)
+      }
+    }
+
+    saveToSessionStorage('search', searchText?.length && searchText)
+    saveToSessionStorage('free', filter.free && true)
+    saveToSessionStorage('market', filter.market !== 'all' && filter.market)
+    saveToSessionStorage('sortBy', filter.sortBy !== 'Default' && filter.sortBy)
+  }, [filter.free, filter.market, filter.sortBy, searchText])
+
+  useEffect(() => {
     if (competitions) {
       const hasUpcoming = competitions?.some(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
       if (firstTime) {
