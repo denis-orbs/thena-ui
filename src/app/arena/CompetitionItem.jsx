@@ -136,7 +136,7 @@ function CompetitionItem({ competition, account }) {
           </Paragraph>
         </div>
       </div>
-      <TCButton eventType={eventType} competition={competition} account={account} />
+      <TCButton eventType={eventType} competition={competition} account={account} timestamp={competition.timestamp} />
     </Box>
   )
 }

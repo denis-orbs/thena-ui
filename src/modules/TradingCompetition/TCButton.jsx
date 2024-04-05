@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -8,7 +9,7 @@ import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 
 import { JoinModal } from './JoinModal'
 
-export function TCButton({ eventType, competition, account }) {
+export function TCButton({ eventType, competition, account, timestamp }) {
   const t = useTranslations()
   const { push } = useRouter()
   const [canClaimRewards, setCanClaimRewards] = useState(false)
@@ -28,6 +29,11 @@ export function TCButton({ eventType, competition, account }) {
     [account, competition.participants],
   )
 
+  const [joinButtonText, setJoinButtonText] = useState({
+    text: null,
+    disabled: false,
+  })
+
   const claim = useCallback(async () => {
     try {
       await claimPrize()
@@ -46,6 +52,83 @@ export function TCButton({ eventType, competition, account }) {
     fetchData()
   }, [checkUserClaimable])
 
+  useEffect(() => {
+    const calculate = time => {
+      const now = dayjs()
+
+      const inSeconds = Math.abs(now.diff(time, 'second'))
+      const inMinutes = Math.abs(now.diff(time, 'minute'))
+      const inHours = Math.abs(now.diff(time, 'hour'))
+      const inDays = Math.abs(now.diff(time, 'day'))
+      const inMonths = Math.abs(now.diff(time, 'month'))
+      const inYears = Math.abs(now.diff(time, 'year'))
+
+      if (inMonths >= 12) {
+        return `${inYears} ${inYears === 1 ? t('Year') : t('Years')}`
+      }
+
+      if (inDays >= 30) {
+        return `${inMonths} ${inMonths === 1 ? t('Month') : t('Months')}`
+      }
+
+      if (inMonths < 1) {
+        let result = ''
+
+        if (inDays) {
+          result += `${inDays}d:`
+        }
+
+        if (inHours) {
+          result += `${inHours - inDays * 24}h:`
+        }
+
+        if (inMinutes) {
+          result += `${inMinutes - inHours * 60}m:`
+        }
+
+        if (inSeconds) {
+          result += `${inSeconds - inMinutes * 60}s`
+        }
+
+        return result
+      }
+    }
+    const interval = setInterval(() => {
+      setJoinButtonText(() => {
+        const now = dayjs()
+        const registerStart = dayjs.unix(timestamp.registrationStart)
+        const registerEnd = dayjs.unix(timestamp.registrationEnd)
+        const start = dayjs.unix(timestamp.startTimestamp)
+
+        if (competition.participantCount === competition.maxParticipants) {
+          return { text: t('Competition Full'), disabled: true }
+        }
+
+        if (now <= registerStart) {
+          const countdown = calculate(registerStart)
+
+          return { text: `${t('Registration Open')} ${countdown}`, disabled: true }
+        }
+        if (now < start && now > registerEnd) {
+          const countdown = calculate(start)
+
+          return { text: `${t('Starts In')} ${countdown}`, disabled: true }
+        }
+        return { text: t('Join Now'), disabled: false }
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [
+    competition.maxParticipants,
+    competition.participantCount,
+    competition.timestamp,
+    competition.timestamp.startTimestamp,
+    eventType,
+    t,
+    timestamp,
+  ])
+
   return (
     <div className='flex w-full items-center justify-between gap-4'>
       <EmphasisButton className='w-full' onClick={() => push(`arena/trading-competitions/${competition.id}`)}>
@@ -58,9 +141,13 @@ export function TCButton({ eventType, competition, account }) {
           {t('Claim Rewards')}
         </PrimaryButton>
       )}
-      {eventType === EVENT_TYPES.UPCOMING && !isJoined && !isHosting && (
-        <PrimaryButton className='w-full' onClick={() => setShowJoinModal(true)}>
-          {t('Join Now')}
+      {eventType === EVENT_TYPES.UPCOMING && !isJoined && !isHosting && joinButtonText.text && (
+        <PrimaryButton
+          className='w-full text-wrap'
+          onClick={() => setShowJoinModal(true)}
+          disabled={joinButtonText.disabled}
+        >
+          {joinButtonText.text}
         </PrimaryButton>
       )}
 

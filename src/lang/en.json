@@ -572,5 +572,8 @@
   "Today": "Today at",
   "Tomorrow": "Tomorrow at",
   "Create": "Create",
-  "Creation Fee": "Creation Fee"
+  "Creation Fee": "Creation Fee",
+	"Competition Full": "Competition full",
+	"Registration Open": "Registration open in",
+	"Starts In": "Starts in"
 }

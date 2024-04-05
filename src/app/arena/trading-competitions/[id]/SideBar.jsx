@@ -47,10 +47,7 @@ function Sidebar({ competition, eventType }) {
     [competition.maxParticipants, competition.participantCount],
   )
 
-  const isInRegistration = useMemo(
-    () => Date.now() / 1000 <= competition.timestamp.registrationEnd,
-    [competition.timestamp.registrationEnd],
-  )
+  const [isInRegistration, setIsInRegistration] = useState(false)
 
   const headingAndText = useMemo(() => {
     if (!eventType) {
@@ -209,6 +206,17 @@ function Sidebar({ competition, eventType }) {
           : `${competition.participantCount / competition.maxParticipants}%`
     }
   }, [competition.participantCount, competition.maxParticipants, isJoined, eventType])
+
+  useEffect(() => {
+    const interval = setInterval(
+      () =>
+        setIsInRegistration(Date.now() / 1000 <= competition.timestamp.registrationEnd, [
+          competition.timestamp.registrationEnd,
+        ]),
+      1000,
+    )
+    return () => clearInterval(interval)
+  }, [competition.timestamp.registrationEnd])
 
   return (
     <div className='col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>

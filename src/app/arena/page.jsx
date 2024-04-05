@@ -46,6 +46,8 @@ const V4_COMPETITION_DATAS = gql`
       timestamp {
         endTimestamp
         startTimestamp
+        registrationStart
+        registrationEnd
       }
       participants {
         id
