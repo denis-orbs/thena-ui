@@ -568,5 +568,7 @@
   "Free To Join Message": "This trading competition is free to join.",
   "Pay Entry Fee To Join Message": "In order to join this trading competition you need to pay an entry fee.",
   "Not Enough Balance To Join Message": "You do not have enough balance in your wallet. Please add funds to join this competition.",
-  "Add Balance": "Add Balance"
+  "Add Balance": "Add Balance",
+  "Create": "Create",
+  "Creation Fee": "Creation Fee"
 }

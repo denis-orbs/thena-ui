@@ -302,10 +302,10 @@ export const INIT_VALUES = {
     // registrationEnd: '',
     // startTimestamp: '',
     // endTimestamp: '',
-    registrationStart: new Date().getTime() + 60 * 60 * 24 * 1000, // start timestamp
-    registrationEnd: new Date().getTime() + 60 * 60 * 24 * 1000 + MIN_REG, // end timestamp
-    startTimestamp: new Date().getTime() + 60 * 60 * 24 * 1000 + MIN_REG, // registration start timestamp
-    endTimestamp: new Date().getTime() + 60 * 60 * 24 * 1000 + MIN_REG + MIN_TS, // registration end timestamp
+    registrationStart: new Date().getTime(), // start timestamp
+    registrationEnd: new Date().getTime() + MIN_REG, // end timestamp
+    startTimestamp: new Date().getTime() + MIN_REG, // registration start timestamp
+    endTimestamp: new Date().getTime() + MIN_REG + MIN_TS, // registration end timestamp
   },
   market: TC_MARKET_TYPES.SPOT,
   participantCount: 0,

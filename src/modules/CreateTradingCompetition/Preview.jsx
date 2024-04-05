@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
@@ -12,10 +13,11 @@ import useWallet from '@/lib/wallets/useWallet'
 import Details from './Details/Details'
 
 function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, setShowPreview }) {
+  const router = useRouter()
   const t = useTranslations()
   const { account } = useWallet()
   const { protocolFee, protocolFeeToken } = useTC()
-  const { onCreate, pending } = useCreateTC()
+  const { onCreate, pending, handleGetTCId } = useCreateTC()
 
   const mainData = useMemo(() => {
     const ownerFee = Math.floor(data.prize.weights[0] * 10)
@@ -52,6 +54,29 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
     }
   }, [data, account])
 
+  const handleCreateTC = async () => {
+    if (fromWei(protocolFee, protocolFeeToken?.decimals).gt(protocolFeeToken?.balance)) {
+      warnToast(`Insufficient ${protocolFeeToken?.symbol} Balance `)
+    } else {
+      const txHash = await onCreate(mainData)
+      if (!txHash) {
+        setShowModalCreateCompetition(true)
+        setStep(step - 1)
+      } else {
+        setShowModalCreateCompetition(false)
+        setData(INIT_VALUES)
+        setStep(0)
+      }
+      setShowPreview(false)
+      if (txHash) {
+        const tcId = await handleGetTCId(txHash)
+        if (tcId) {
+          return router.push(`/arena/trading-competitions/${tcId}`)
+        }
+      }
+    }
+  }
+
   return (
     <div className='flex flex-col-reverse md:flex-row'>
       <div className='h-fit w-full rounded-[3px] px-5 py-4 md:max-w-[324px]'>
@@ -62,28 +87,13 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
           {t('Create Trading Competition Description')}
         </p>
         <div className='mb-3 w-full'>
-          <p className='text-lightGray text-base leading-5'>Creation Fee:</p>
+          <p className='text-lightGray text-base leading-5'>{t('Creation Fee')}:</p>
           <p className='text-[25px] font-semibold leading-[30px] text-white'>
             {formatAmount(fromWei(protocolFee, protocolFeeToken?.decimals))} {protocolFeeToken?.symbol}
           </p>
         </div>
-        <PrimaryButton
-          isLoading={pending}
-          onClick={() => {
-            if (fromWei(protocolFee, protocolFeeToken?.decimals).gt(protocolFeeToken?.balance)) {
-              warnToast(`Insufficient ${protocolFeeToken?.symbol} Balance `)
-            } else {
-              onCreate(mainData)
-              setShowModalCreateCompetition(false)
-              setShowPreview(false)
-              setData(INIT_VALUES)
-              setStep(0)
-            }
-          }}
-          content='CREATE'
-          className='w-full py-[15.75px]'
-        >
-          CREATE
+        <PrimaryButton isLoading={pending} onClick={handleCreateTC} className='w-full py-[15.75px] uppercase'>
+          {t('Create')}
         </PrimaryButton>
 
         <EmphasisButton
@@ -91,9 +101,9 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
             setStep(step - 1)
             setShowModalCreateCompetition(true)
           }}
-          className='mt-3 w-full py-[15.75px]'
+          className='mt-3 w-full py-[15.75px] uppercase'
         >
-          BACK
+          {t('Back')}
         </EmphasisButton>
       </div>
       <div className='flex max-h-[80vh] w-full overflow-y-scroll'>
