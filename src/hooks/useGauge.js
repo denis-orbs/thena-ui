@@ -25,7 +25,7 @@ export const useGuageStake = () => {
 
       setPending(true)
 
-      const allowance = await readCall(lpContract, 'allowance', [account, pair.gauge.address], chainId)
+      const allowance = await readCall(lpContract, 'allowance', [account, pair.gauge.address])
       const isApproved = fromWei(allowance).gte(amount)
 
       startTxn({
