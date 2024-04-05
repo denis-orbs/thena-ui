@@ -51,6 +51,22 @@ function TCContextProvider({ children }) {
       setIsAllowed(res0 || res4)
     }
 
+    const checkForGuest = async () => {
+      const tcManagerContract = getTCContract()
+      const [res0, res1, res2, res3] = await Promise.all([
+        readCall(tcManagerContract, 'isPermissionless', []),
+        readCall(tcManagerContract, 'protocol_fee', []),
+        readCall(tcManagerContract, 'protocol_fee_token', []),
+        readCall(tcManagerContract, 'tradingTokens', []),
+      ])
+      const tradeAssets = assets.filter(ele => res3.map(sub => sub.toLowerCase()).includes(ele.address))
+      const feeToken = assets.find(ele => ele.address.toLowerCase() === res2.toLowerCase())
+      setProtocolFee(res1)
+      setProtocolFeeToken(feeToken)
+      setTradingTokens(tradeAssets)
+      setIsAllowed(res0)
+    }
+
     if (account && assets.length > 0) {
       if (tradingTokens.length === 0) {
         fetchTotalInfo()
@@ -67,7 +83,7 @@ function TCContextProvider({ children }) {
         }
       }
     } else if (!account) {
-      setIsAllowed(false)
+      checkForGuest()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, assets])
