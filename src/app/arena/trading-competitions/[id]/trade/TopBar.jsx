@@ -6,7 +6,7 @@ import React from 'react'
 import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { ArrowLeftIcon } from '@/svgs'
+import { ArrowLeftIcon, InfoIcon } from '@/svgs'
 
 function TopBar() {
   const { id } = useParams()
@@ -35,20 +35,26 @@ function TopBar() {
           <TextSubHeading>{t('Your Rank')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col items-start'>
-          <TextHeading className='text-xl lg:text-2xl'>$100</TextHeading>
+          <div className='flex w-full items-center justify-between lg:flex'>
+            <TextHeading className='text-xl lg:text-2xl'>$100</TextHeading>
+            <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' />
+          </div>
           <TextSubHeading>{t('Your Profit & Loss')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col items-start'>
-          <div className='flex items-center justify-center space-x-2'>
-            <Image
-              alt='USDC'
-              src='https://cdn.thena.fi/assets/USDC.png'
-              className='flex-shrink-0'
-              width={24}
-              height={24}
-              loading='lazy'
-            />
-            <TextHeading className='text-xl lg:text-2xl'>123</TextHeading>
+          <div className='flex w-full items-center justify-between lg:flex'>
+            <div className='flex items-center justify-center space-x-2'>
+              <Image
+                alt='USDC'
+                src='https://cdn.thena.fi/assets/USDC.png'
+                className='flex-shrink-0'
+                width={24}
+                height={24}
+                loading='lazy'
+              />
+              <TextHeading className='text-xl lg:text-2xl'>123</TextHeading>
+            </div>
+            <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' />
           </div>
           <TextSubHeading>{t('Your Balance')}</TextSubHeading>
         </Box>

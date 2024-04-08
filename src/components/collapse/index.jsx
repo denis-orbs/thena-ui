@@ -5,15 +5,13 @@ import React, { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
-import { TextHeading } from '../typography'
-
-export function Collapse({ children, title, ...props }) {
-  const [show, setShow] = useState(true)
+export function Collapse({ children, title, defaultShow = true, ...props }) {
+  const [show, setShow] = useState(defaultShow)
 
   return (
     <div {...props}>
       <div onClick={() => setShow(!show)} className='flex items-center justify-between hover:cursor-pointer'>
-        <TextHeading className='text-xl'>{title}</TextHeading>
+        {title}
         <div className={cn('h-4 w-5', show ? 'rotate-180' : 'rotate-0')}>
           <ChevronDownIcon />
         </div>

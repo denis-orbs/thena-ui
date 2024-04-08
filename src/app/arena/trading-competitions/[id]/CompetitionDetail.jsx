@@ -96,7 +96,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
     <>
       {' '}
       <Box>
-        <Collapse title={t('Description')}>
+        <Collapse title={<TextHeading className='text-xl'>{t('Description')}</TextHeading>}>
           <div
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: _competition.description }}
@@ -132,9 +132,11 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       <Box>
         <div className='flex justify-between'>
           <TextHeading className='text-xl'> {t('Prize Distribution')} </TextHeading>
-          <EmphasisButton className='p-2 text-xs' onClick={onViewPrize}>
-            {viewAllPrize ? t('View Less') : t('View All')}
-          </EmphasisButton>
+          {prizeDistribution.length > 2 && (
+            <EmphasisButton className='p-2 text-xs' onClick={onViewPrize}>
+              {viewAllPrize ? t('View Less') : t('View All')}
+            </EmphasisButton>
+          )}
         </div>
         <div className='mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3'>
           <div className='flex flex-col gap-2'>
@@ -188,9 +190,11 @@ export function CompetitionDetail({ competition, isPreview = false }) {
           <TextHeading className='text-xl'>
             {t('Tradable Tokens', { value: _competition.competitionRules?.tradingTokens?.length })}
           </TextHeading>
-          <EmphasisButton className='p-2 text-xs' onClick={onViewTradable}>
-            {viewAllTradable ? t('View Less') : t('View All')}
-          </EmphasisButton>
+          {_competition.competitionRules?.tradingTokens.length > 8 && (
+            <EmphasisButton className='p-2 text-xs' onClick={onViewTradable}>
+              {viewAllTradable ? t('View Less') : t('View All')}
+            </EmphasisButton>
+          )}
         </div>
         <div className='mt-4 grid  grid-cols-2 gap-4 lg:grid-cols-4'>
           {_competition.competitionRules?.tradingTokens

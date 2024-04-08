@@ -3,10 +3,7 @@
 import { redirect, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
-import { ChainId } from 'thena-sdk-core'
 
-import SwapBest from '@/app/swap/SwapBest'
-import SwapFusion from '@/app/swap/SwapFusion'
 import Tabs, { TabPanel } from '@/components/tabs'
 import Contracts from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
@@ -15,8 +12,10 @@ import { useWrap } from '@/hooks/useSwap'
 import { useTradingCompetitionLeaderBoard } from '@/hooks/useTradingCompetitionLeaderboard'
 import useWallet from '@/lib/wallets/useWallet'
 import { LeaderBoard } from '@/modules/TradingCompetition/LeaderBoard'
+import { TradeHistory } from '@/modules/TradingCompetition/TradeHistory'
 import { useChainSettings } from '@/state/settings/hooks'
 
+import { SideBar } from './SideBar'
 import TopBar from './TopBar'
 
 function TradePage({ params }) {
@@ -124,42 +123,33 @@ function TradePage({ params }) {
   return (
     <div>
       <TopBar />
-      <div>
-        <div className='flex w-full flex-col items-center gap-10 lg:flex-row-reverse lg:items-start'>
-          {networkId === ChainId.BSC && (
-            <SwapBest
-              fromAsset={fromAsset}
-              toAsset={toAsset}
-              setFromAddress={setFromAddress}
-              setToAddress={setToAddress}
-              isWrap={isWrap}
-              isUnwrap={isUnwrap}
-              onWrap={onWrap}
-              onUnwrap={onUnwrap}
-              wrapPending={wrapPending}
-            />
-          )}
-          {networkId === ChainId.OPBNB && (
-            <SwapFusion
-              fromAsset={fromAsset}
-              toAsset={toAsset}
-              setFromAddress={setFromAddress}
-              setToAddress={setToAddress}
-              isWrap={isWrap}
-              isUnwrap={isUnwrap}
-              onWrap={onWrap}
-              onUnwrap={onUnwrap}
-              wrapPending={wrapPending}
-            />
-          )}
+
+      <SideBar
+        fromAsset={fromAsset}
+        toAsset={toAsset}
+        setFromAddress={setFromAddress}
+        setToAddress={setToAddress}
+        isWrap={isWrap}
+        isUnwrap={isUnwrap}
+        onWrap={onWrap}
+        onUnwrap={onUnwrap}
+        wrapPending={wrapPending}
+      >
+        <div className='mt-10 flex w-full flex-col gap-4'>
+          <Tabs
+            data={subTabs}
+            size={SizeTypes.Small}
+            itemClassName='text-sm'
+            className='justify-start overflow-x-auto'
+          />
+          <TabPanel value='leaderboard' select={selectedTab}>
+            <LeaderBoard competition={competition} />
+          </TabPanel>
+          <TabPanel value='history' select={selectedTab}>
+            <TradeHistory />
+          </TabPanel>
         </div>
-      </div>
-      <div className='mt-10 flex w-full flex-col gap-4'>
-        <Tabs data={subTabs} size={SizeTypes.Small} itemClassName='text-sm' className='justify-start overflow-x-auto' />
-        <TabPanel value='leaderboard' select={selectedTab}>
-          <LeaderBoard competition={competition} />
-        </TabPanel>
-      </div>
+      </SideBar>
     </div>
   )
 }
