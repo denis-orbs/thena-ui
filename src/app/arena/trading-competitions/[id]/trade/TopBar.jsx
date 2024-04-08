@@ -31,11 +31,11 @@ function TopBar() {
       </div>
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>
         <Box className='flex flex-col items-start'>
-          <TextHeading className='text-2xl'>5/100</TextHeading>
+          <TextHeading className='text-xl lg:text-2xl'>5/100</TextHeading>
           <TextSubHeading>{t('Your Rank')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col items-start'>
-          <TextHeading className='text-2xl'>$100</TextHeading>
+          <TextHeading className='text-xl lg:text-2xl'>$100</TextHeading>
           <TextSubHeading>{t('Your Profit & Loss')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col items-start'>
@@ -48,12 +48,12 @@ function TopBar() {
               height={24}
               loading='lazy'
             />
-            <TextHeading className='text-2xl'>123</TextHeading>
+            <TextHeading className='text-xl lg:text-2xl'>123</TextHeading>
           </div>
           <TextSubHeading>{t('Your Balance')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col items-start'>
-          <TextHeading className='text-2xl'>1h 29min 4sec</TextHeading>
+          <TextHeading className='text-xl lg:text-2xl'>1h 29min 4sec</TextHeading>
           <TextSubHeading>{t('Competition End')}</TextSubHeading>
         </Box>
       </div>
