@@ -15,7 +15,7 @@ import { Clock, CoinHand, Gift } from '@/svgs'
 
 import { CompetitionCardHeader } from './CompetitionCardHeader'
 
-function CompetitionItem({ competition, account }) {
+function CompetitionItem({ competition }) {
   const t = useTranslations()
 
   const [timeDistance, setTimeDistance] = useState()
@@ -136,7 +136,7 @@ function CompetitionItem({ competition, account }) {
           </Paragraph>
         </div>
       </div>
-      <TCButton eventType={eventType} competition={competition} account={account} timestamp={competition.timestamp} />
+      <TCButton eventType={eventType} competition={competition} timestamp={competition.timestamp} />
     </Box>
   )
 }

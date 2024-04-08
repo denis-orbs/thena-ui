@@ -1,33 +1,25 @@
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { useTcSpotContractActions } from '@/hooks/useTcSpotContractActions'
+import { useTCContractInfor, useTcSpotContract } from '@/hooks/useTcSpotContract'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 
 import { JoinModal } from './JoinModal'
 
-export function TCButton({ eventType, competition, account, timestamp }) {
+export function TCButton({ eventType, competition, timestamp }) {
   const t = useTranslations()
   const { push } = useRouter()
-  const [canClaimRewards, setCanClaimRewards] = useState(false)
   const [showJoinModal, setShowJoinModal] = useState(false)
-  const { checkUserClaimable, claimPrize } = useTcSpotContractActions(competition.tradingCompetitionSpot)
-
-  const isHosting = useMemo(
-    () => account && account.toLowerCase() === competition.owner.id,
-    [account, competition.owner.id],
-  )
-
-  const isJoined = useMemo(
-    () =>
-      competition.participants.length && account
-        ? competition.participants.find(participant => participant.participant.id === account.toLowerCase())
-        : false,
-    [account, competition.participants],
-  )
+  const { claimPrize } = useTcSpotContract(competition.tradingCompetitionSpot)
+  const {
+    isRegistered: isJoined,
+    isOwner: isHosting,
+    isClaimable: canClaimRewards,
+    refetch,
+  } = useTCContractInfor(competition.tradingCompetitionSpot, eventType)
 
   const [joinButtonText, setJoinButtonText] = useState({
     text: null,
@@ -37,20 +29,11 @@ export function TCButton({ eventType, competition, account, timestamp }) {
   const claim = useCallback(async () => {
     try {
       await claimPrize()
-      const canClaim = await checkUserClaimable()
-      setCanClaimRewards(canClaim)
+      await refetch()
     } catch (e) {
       console.error(e)
     }
-  }, [checkUserClaimable, claimPrize])
-
-  useEffect(() => {
-    async function fetchData() {
-      const can = await checkUserClaimable()
-      setCanClaimRewards(can)
-    }
-    fetchData()
-  }, [checkUserClaimable])
+  }, [refetch, claimPrize])
 
   useEffect(() => {
     const interval = setInterval(() => {

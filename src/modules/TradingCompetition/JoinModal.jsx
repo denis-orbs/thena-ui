@@ -1,13 +1,13 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { Alert } from '@/components/alert'
 import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { useTcSpotContractActions } from '@/hooks/useTcSpotContractActions'
+import { useJoinTC } from '@/hooks/useTcSpotContract'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
 export function JoinModal({ competition, open, onClose }) {
@@ -17,10 +17,9 @@ export function JoinModal({ competition, open, onClose }) {
     prize: { token: prizeToken },
     competitionRules: { startingBalance, winningToken },
   } = competition
-  const [pending, setPending] = useState(false)
   const { push } = useRouter()
 
-  const { joinTC } = useTcSpotContractActions(competition.tradingCompetitionSpot)
+  const { joinTC, pending } = useJoinTC()
 
   const showAlertBalance = useMemo(() => {
     if (prizeToken.address === winningToken.address) {
@@ -45,7 +44,6 @@ export function JoinModal({ competition, open, onClose }) {
 
   const handleJoin = useCallback(async () => {
     try {
-      setPending(true)
       const joined = await joinTC(competition)
       if (joined) {
         push(`/arena/trading-competitions/${competition.id}`)
@@ -53,8 +51,6 @@ export function JoinModal({ competition, open, onClose }) {
       }
     } catch (e) {
       console.error(e)
-    } finally {
-      setPending(false)
     }
   }, [competition, joinTC, onClose, push])
 

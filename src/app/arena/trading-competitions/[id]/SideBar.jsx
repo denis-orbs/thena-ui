@@ -6,47 +6,29 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Box from '@/components/box'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
-import { useTcSpotContractActions } from '@/hooks/useTcSpotContractActions'
+import { useTCContractInfor, useTcSpotContract } from '@/hooks/useTcSpotContract'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { Countdown } from '@/modules/CountDown'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
 
 function Sidebar({ competition, eventType }) {
   const t = useTranslations()
   const progressBarRef = useRef()
-  const { account } = useWallet()
-  const { checkUserClaimable, claimPrize } = useTcSpotContractActions(competition.tradingCompetitionSpot)
+  const { claimPrize } = useTcSpotContract(competition.tradingCompetitionSpot)
   const [showJoinModal, setShowJoinModal] = useState(false)
-
-  const isHosting = useMemo(
-    () => account && account.toLowerCase() === competition.owner.id,
-    [account, competition.owner.id],
-  )
-  const [canClaimRewards, setCanClaimRewards] = useState(false)
-  useEffect(() => {
-    async function fetchData() {
-      const can = await checkUserClaimable()
-      setCanClaimRewards(can)
-    }
-    fetchData()
-  }, [checkUserClaimable])
-
-  const isJoined = useMemo(
-    () =>
-      competition.participants.length && account
-        ? competition.participants.find(participant => participant.id === account.toLowerCase())
-        : false,
-    [account, competition.participants],
-  )
 
   const isFull = useMemo(
     () => competition.participantCount === competition.maxParticipants,
     [competition.maxParticipants, competition.participantCount],
   )
-
+  const {
+    isRegistered: isJoined,
+    isOwner: isHosting,
+    isClaimable: canClaimRewards,
+    refetch,
+  } = useTCContractInfor(competition.tradingCompetitionSpot, eventType)
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
 
@@ -168,12 +150,11 @@ function Sidebar({ competition, eventType }) {
   const claim = useCallback(async () => {
     try {
       await claimPrize()
-      const canClaim = await checkUserClaimable()
-      setCanClaimRewards(canClaim)
+      refetch()
     } catch (e) {
       console.error(e)
     }
-  }, [checkUserClaimable, claimPrize])
+  }, [claimPrize, refetch])
 
   const buttonByStatus = useMemo(() => {
     if (isHosting) {
@@ -290,7 +271,14 @@ function Sidebar({ competition, eventType }) {
         {buttonByStatus}
       </Box>
       {showJoinModal && (
-        <JoinModal competition={competition} onClose={() => setShowJoinModal(false)} open={showJoinModal} />
+        <JoinModal
+          competition={competition}
+          onClose={() => {
+            setShowJoinModal(false)
+            refetch()
+          }}
+          open={showJoinModal}
+        />
       )}
     </div>
   )
