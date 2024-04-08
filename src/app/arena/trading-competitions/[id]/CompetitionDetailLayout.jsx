@@ -172,7 +172,7 @@ function CompetitionDetailLayout({ children, params }) {
       <Suspense fallback={<Loading />}>
         <div className='grid grid-cols-12 gap-4 lg:gap-12'>
           <div className='col-span-12 lg:col-span-7'>
-            <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[176px] lg:mb-4 lg:pt-10'>
+            <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
               <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon} onClick={() => push(`/arena${queryParams}`)}>
                 {t('Back')}
               </TextButton>
