@@ -15,6 +15,7 @@ import { LeaderBoard } from '@/modules/TradingCompetition/LeaderBoard'
 import { TradeHistory } from '@/modules/TradingCompetition/TradeHistory'
 import { useChainSettings } from '@/state/settings/hooks'
 
+import DepositModal from './DepositModal'
 import { SideBar } from './SideBar'
 import TopBar from './TopBar'
 
@@ -32,6 +33,7 @@ function TradePage({ params }) {
   const assets = useAssets()
   const { onWrap, onUnwrap, pending: wrapPending } = useWrap()
   const [selectedTab, setSelectedTab] = useState('leaderboard')
+  const [showModalDeposit, setShowModalDeposit] = useState(false)
 
   const { competition } = useTradingCompetitionLeaderBoard(params.id)
 
@@ -122,7 +124,7 @@ function TradePage({ params }) {
 
   return (
     <div>
-      <TopBar />
+      <TopBar handleClickShowModal={() => setShowModalDeposit(true)} competition={competition} />
 
       <SideBar
         fromAsset={fromAsset}
@@ -150,6 +152,7 @@ function TradePage({ params }) {
           </TabPanel>
         </div>
       </SideBar>
+      <DepositModal competition={competition} isOpen={showModalDeposit} closeModal={() => setShowModalDeposit(false)} />
     </div>
   )
 }

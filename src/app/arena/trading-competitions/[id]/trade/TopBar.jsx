@@ -1,18 +1,35 @@
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { ArrowLeftIcon, InfoIcon } from '@/svgs'
 
-function TopBar() {
+function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
   const { id } = useParams()
   const t = useTranslations()
 
+  const [isRegistrable, setIsRegistrable] = useState(true)
+
   const { push } = useRouter()
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now() / 1000
+      const registerEndTime = competition?.timestamp?.registrationEnd
+      const registerStartTime = competition?.timestamp?.registrationStart
+      if (registerStartTime <= now && now <= registerEndTime) {
+        setIsRegistrable(true)
+      } else {
+        setIsRegistrable(false)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [competition?.timestamp?.registrationEnd, competition?.timestamp?.registrationStart])
 
   return (
     <div className='my-10 flex flex-col gap-10'>
@@ -25,8 +42,10 @@ function TopBar() {
           {t('Back')}
         </TextButton>
         <div className='flex justify-between'>
-          <TextHeading className='text-xl lg:text-3xl'>Fabio vel iudice vincam, sunt in culpa qui officia.</TextHeading>
-          <PrimaryButton>{t('Deposit')}</PrimaryButton>
+          <TextHeading className='text-xl lg:text-3xl'>{competition?.name}</TextHeading>
+          {isRegistrable && (
+            <PrimaryButton onClick={handleClickShowModal}>{`${t('Deposit')} ${t('More')}`}</PrimaryButton>
+          )}
         </div>
       </div>
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>

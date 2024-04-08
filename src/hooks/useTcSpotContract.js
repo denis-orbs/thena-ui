@@ -195,3 +195,67 @@ export const useJoinTC = () => {
     joinTC,
   }
 }
+
+export const useDepositToTC = () => {
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+  const [pending, setPending] = useState(false)
+
+  const deposit = useCallback(
+    async data => {
+      const key = uuidv4()
+      const approveTokenuuid = uuidv4()
+      const deposituuid = uuidv4()
+      const tcSpotContract = getTcSpotContract(data.tcAddress)
+
+      const tokenContract = getERC20Contract(data.token.address, chainId)
+      const allowance = await readCall(tokenContract, 'allowance', [account, data.tcAddress])
+      const isApprovedToken = fromWei(allowance).gte(fromWei(data.amount))
+
+      setPending(true)
+      startTxn({
+        key,
+        title: t('Join Competition'),
+        transactions: {
+          ...(!isApprovedToken && {
+            [approveTokenuuid]: {
+              desc: `${t('Approve')} ${t('Token')}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [deposituuid]: {
+            desc: t('Deposit'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      if (!isApprovedToken) {
+        const isSuccess = await writeTxn(key, approveTokenuuid, tokenContract, 'approve', [data.tcAddress, maxUint256])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      }
+
+      const isSuccess = await writeTxn(key, deposituuid, tcSpotContract, 'deposit', [data.amount])
+      if (!isSuccess) {
+        setPending(false)
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Deposit Successful',
+      })
+      setPending(false)
+      return true
+    },
+    [account, chainId, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { pending, deposit }
+}
