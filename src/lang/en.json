@@ -577,5 +577,12 @@
   "Registration Not Yet Open": "Registration not yet open",
   "Registration Ended": "Registration ended",
   "Starts In": "Starts in",
-  "Registrations open in": "Registrations open in"
+  "Registrations open in": "Registrations open in",
+  "Trade History": "Trade History",
+  "Your Rank": "Your Rank",
+  "Your Profit & Loss": "Your Profit & Loss",
+  "Your Balance": "Your Balance",
+  "Competition End": "Competition End",
+  "Whenever You Make A Swap": "Whenever you make a swap, your PnL will not be accurate.",
+  "If You Want To Know The Real PnL": "If you want to know the real PnL yu must swap all your tokens back to USDT. Also, your score won’t be counted until you swap all your tokens to USDT before the competition ends."
 }

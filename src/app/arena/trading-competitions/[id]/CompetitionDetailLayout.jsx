@@ -159,6 +159,14 @@ function CompetitionDetailLayout({ children, params }) {
     return <Loading />
   }
 
+  if (pathname.endsWith('/trade')) {
+    return (
+      <main className='flex min-h-screen flex-col'>
+        <Suspense fallback={<Loading />}>{children}</Suspense>
+      </main>
+    )
+  }
+
   return (
     <main className='flex min-h-screen flex-col'>
       <Suspense fallback={<Loading />}>
