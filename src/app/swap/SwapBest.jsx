@@ -79,8 +79,11 @@ export default function SwapBest({
     if (isLHToken) {
       return `${formatAmount(fromWei(outAmount, toAsset.decimals))} ${toAsset.symbol}`
     }
+    if (slippage && Boolean(Number(slippage))) {
+      return `${formatAmount(fromWei(outAmount * (1 - slippage / 100), toAsset.decimals))} ${toAsset.symbol}`
+    }
     return `${formatAmount(fromWei(outAmount, toAsset.decimals))} ${toAsset.symbol}`
-  }, [outAmount, toAsset, isLHToken])
+  }, [outAmount, toAsset, isLHToken, slippage])
 
   const priceImpact = useMemo(() => {
     if (quotePending) return 0
