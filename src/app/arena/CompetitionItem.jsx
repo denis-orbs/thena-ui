@@ -77,11 +77,11 @@ function CompetitionItem({ competition }) {
           result += `${inDays}d:`
         }
 
-        if (inHours) {
+        if (inHours && inHours - inDays * 24) {
           result += `${inHours - inDays * 24}h:`
         }
 
-        if (inMinutes) {
+        if (inMinutes && inMinutes - inHours * 60) {
           result += `${inMinutes - inHours * 60}m:`
         }
 

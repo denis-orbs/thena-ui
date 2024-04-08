@@ -1,3 +1,4 @@
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -6,12 +7,15 @@ import { useCallback, useEffect, useState } from 'react'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { useTCContractInfor, useTcSpotContract } from '@/hooks/useTcSpotContract'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
+import useWallet from '@/lib/wallets/useWallet'
 
 import { JoinModal } from './JoinModal'
 
 export function TCButton({ eventType, competition, timestamp }) {
   const t = useTranslations()
   const { push } = useRouter()
+  const { open } = useWeb3Modal()
+  const { account } = useWallet()
   const [showJoinModal, setShowJoinModal] = useState(false)
   const { claimPrize } = useTcSpotContract(competition.tradingCompetitionSpot)
   const {
@@ -83,7 +87,13 @@ export function TCButton({ eventType, competition, timestamp }) {
       {eventType === EVENT_TYPES.UPCOMING && !isJoined && !isHosting && joinButtonText.text && (
         <PrimaryButton
           className='w-full text-wrap'
-          onClick={() => setShowJoinModal(true)}
+          onClick={() => {
+            if (!account) {
+              open()
+            } else {
+              setShowJoinModal(true)
+            }
+          }}
           disabled={joinButtonText.disabled}
         >
           {joinButtonText.text}

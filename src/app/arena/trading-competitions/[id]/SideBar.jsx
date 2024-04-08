@@ -1,5 +1,6 @@
 'use client'
 
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -10,6 +11,7 @@ import { useTCContractInfor, useTcSpotContract } from '@/hooks/useTcSpotContract
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
+import useWallet from '@/lib/wallets/useWallet'
 import { Countdown } from '@/modules/CountDown'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
 
@@ -18,6 +20,8 @@ function Sidebar({ competition, eventType }) {
   const progressBarRef = useRef()
   const { claimPrize } = useTcSpotContract(competition.tradingCompetitionSpot)
   const [showJoinModal, setShowJoinModal] = useState(false)
+  const { open } = useWeb3Modal()
+  const { account } = useWallet()
 
   const isFull = useMemo(
     () => competition.participantCount === competition.maxParticipants,
@@ -186,7 +190,17 @@ function Sidebar({ competition, eventType }) {
       }
 
       return (
-        <PrimaryButton className='w-full' disabled={isFull} onClick={() => setShowJoinModal(true)}>
+        <PrimaryButton
+          className='w-full'
+          disabled={isFull}
+          onClick={() => {
+            if (!account) {
+              open()
+            } else {
+              setShowJoinModal(true)
+            }
+          }}
+        >
           {isFull ? t('This Competition Is Full') : t('Join Now')}
         </PrimaryButton>
       )
@@ -207,6 +221,7 @@ function Sidebar({ competition, eventType }) {
       )
     }
   }, [
+    account,
     canClaimRewards,
     claim,
     eventType,
@@ -216,6 +231,7 @@ function Sidebar({ competition, eventType }) {
     isJoined,
     isNotStartRegistration,
     onShare,
+    open,
     t,
   ])
 
