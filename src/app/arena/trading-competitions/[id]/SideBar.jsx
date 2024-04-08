@@ -188,7 +188,7 @@ function Sidebar({ competition, eventType }) {
       return <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
     }
 
-    if (!isHosting && eventType !== EVENT_TYPES.UPCOMING && !isJoined) {
+    if (!isHosting && eventType === EVENT_TYPES.UPCOMING && !isJoined) {
       if (isNotStartRegistration) {
         return (
           <PrimaryButton className='w-full' disabled>
