@@ -58,17 +58,27 @@ export function JoinModal({ competition, open, onClose }) {
 
   const message = useMemo(() => {
     if (isInvalidAmount(entryFee)) {
-      /** TODO: message required deposit */
-      // if (!isInvalidAmount(startingBalance)) {
-      //   return t('Free To Join Message')
-      // }
+      if (!isInvalidAmount(startingBalance)) {
+        return t('Pay Deposit To Join Message', {
+          depositAmount: formatAmount(fromWei(startingBalance, winningToken.decimals)),
+          depositTicker: winningToken.symbol,
+        })
+      }
       return t('Free To Join Message')
     }
     if (isInvalidAmount(startingBalance)) {
-      return t('Pay Entry Fee To Join Message')
+      return t('Pay Entry Fee To Join Message', {
+        entryFeeAmount: formatAmount(fromWei(entryFee, prizeToken.decimals)),
+        entryFeeTicker: prizeToken.symbol,
+      })
     }
-    return t('Pay Entry Fee And Deposit To Join Message')
-  }, [entryFee, startingBalance, t])
+    return t('Pay Entry Fee And Deposit To Join Message', {
+      depositAmount: formatAmount(fromWei(startingBalance, winningToken.decimals)),
+      depositTicker: winningToken.symbol,
+      entryFeeAmount: formatAmount(fromWei(entryFee, prizeToken.decimals)),
+      entryFeeTicker: prizeToken.symbol,
+    })
+  }, [entryFee, prizeToken.decimals, prizeToken.symbol, startingBalance, t, winningToken.decimals, winningToken.symbol])
 
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Join Competition')}>
@@ -106,7 +116,7 @@ export function JoinModal({ competition, open, onClose }) {
                   loading='lazy'
                 />
                 <Paragraph>
-                  {formatAmount(fromWei(entryFee, winningToken.decimals))} {winningToken.symbol}
+                  {formatAmount(fromWei(startingBalance, winningToken.decimals))} {winningToken.symbol}
                 </Paragraph>
               </div>
             </div>
