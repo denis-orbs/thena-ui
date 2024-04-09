@@ -85,7 +85,7 @@ function CompetitionItem({ competition }) {
           result += `${inMinutes - inHours * 60}m:`
         }
 
-        if (inSeconds) {
+        if (inSeconds && inSeconds - inMinutes * 60) {
           result += `${inSeconds - inMinutes * 60}s`
         }
 
@@ -102,7 +102,7 @@ function CompetitionItem({ competition }) {
   return !timeDistance || !totalPrize || !entryFee || !eventType ? (
     <Skeleton className='h-[320px] w-full' />
   ) : (
-    <Box className='flex w-full cursor-pointer flex-col gap-4 p-6'>
+    <Box className='flex w-full flex-col gap-4 p-6'>
       <div className='relative'>
         <CompetitionCardHeader className='h-[200px] w-full' competition={competition} />
         <div className='absolute left-4 top-4 flex gap-2'>
