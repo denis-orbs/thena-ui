@@ -15,8 +15,8 @@ export function errorToast(title, desc) {
   })
 }
 
-export function warnToast(desc) {
-  toast.error(<WarnMessage desc={desc} />, {
+export function warnToast(desc, params = undefined) {
+  toast.error(<WarnMessage desc={desc} params={params} />, {
     icon: false,
   })
 }

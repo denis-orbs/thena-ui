@@ -65,7 +65,7 @@ export function ErrorMessage({ closeToast, title, desc }) {
   )
 }
 
-export function WarnMessage({ closeToast, desc }) {
+export function WarnMessage({ closeToast, desc, params = undefined }) {
   const t = useTranslations()
 
   return (
@@ -77,7 +77,7 @@ export function WarnMessage({ closeToast, desc }) {
         <div>
           <div className='flex flex-col gap-1'>
             <TextHeading>{t('Warning')}</TextHeading>
-            {desc && <Paragraph className='text-sm'>{t(desc)}</Paragraph>}
+            {desc && <Paragraph className='text-sm'>{t(desc, params)}</Paragraph>}
           </div>
         </div>
       </div>

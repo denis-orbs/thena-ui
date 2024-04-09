@@ -178,7 +178,7 @@ function Sidebar({ competition, eventType }) {
       )
     }
 
-    if (!isHosting && eventType === EVENT_TYPES.UPCOMING && !isJoined) {
+    if (!isHosting && eventType === EVENT_TYPES.UPCOMING) {
       if (isNotStartRegistration) {
         return (
           <PrimaryButton className='w-full' disabled>
@@ -186,6 +186,15 @@ function Sidebar({ competition, eventType }) {
           </PrimaryButton>
         )
       }
+
+      if (isJoined) {
+        return (
+          <Link href={`/arena/trading-competitions/${competition.id}/trade`}>
+            <PrimaryButton className='w-full'>{t('Trade View')}</PrimaryButton>
+          </Link>
+        )
+      }
+
       if (isEndedRegistration) {
         return (
           <PrimaryButton className='w-full' disabled>

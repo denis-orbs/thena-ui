@@ -1,6 +1,6 @@
 'use client'
 
-import { redirect, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
@@ -121,7 +121,8 @@ function TradePage({ params }) {
   useLayoutEffect(() => {
     if (!account || !isRegistered) {
       errorToast('You Must Be A Participant')
-      return redirect(`/arena/trading-competitions/${params.id}`)
+      // TODO: Need to fix
+      // return redirect(`/arena/trading-competitions/${params.id}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

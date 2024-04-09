@@ -7,11 +7,11 @@ export const EVENT_TYPES = {
 }
 
 export const getEventType = detail => {
-  const currentTimStamp = Date.now() / 1000
+  const currentTimeStamp = Date.now() / 1000
   let event = ''
-  if (detail?.startTimestamp > currentTimStamp) {
+  if (detail?.startTimestamp > currentTimeStamp) {
     event = EVENT_TYPES.UPCOMING
-  } else if (currentTimStamp < detail?.endTimestamp) {
+  } else if (currentTimeStamp < detail?.endTimestamp) {
     event = EVENT_TYPES.LIVE
   } else {
     event = EVENT_TYPES.ENDED
