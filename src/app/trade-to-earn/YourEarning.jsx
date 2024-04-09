@@ -83,37 +83,37 @@ function YourEarning() {
     [],
   )
 
-  const sortedData = useMemo(
-    () =>
-      data.sort((a, b) => {
-        let res
-        switch (sort.value) {
-          case 'epoch':
-            res = (a.epoch - b.epoch) * (sort.isDesc ? -1 : 1)
-            break
-          case 'date':
-            res = (new Date(a.date).getTime() - new Date(b.date).getTime()) * (sort.isDesc ? -1 : 1)
-            break
-          case 'tradingVolume':
-            res = (a.tradingVolume - b.tradingVolume) * (sort.isDesc ? -1 : 1)
-            break
-          case 'earned':
-            res = (a.earned - b.earned) * (sort.isDesc ? -1 : 1)
-            break
+  // const sortedData = useMemo(
+  //   () =>
+  //     data.sort((a, b) => {
+  //       let res
+  //       switch (sort.value) {
+  //         case 'epoch':
+  //           res = (a.epoch - b.epoch) * (sort.isDesc ? -1 : 1)
+  //           break
+  //         case 'date':
+  //           res = (new Date(a.date).getTime() - new Date(b.date).getTime()) * (sort.isDesc ? -1 : 1)
+  //           break
+  //         case 'tradingVolume':
+  //           res = (a.tradingVolume - b.tradingVolume) * (sort.isDesc ? -1 : 1)
+  //           break
+  //         case 'earned':
+  //           res = (a.earned - b.earned) * (sort.isDesc ? -1 : 1)
+  //           break
 
-          case 'inUSD':
-            res = (a.inUSD - b.inUSD) * (sort.isDesc ? -1 : 1)
-            break
+  //         case 'inUSD':
+  //           res = (a.inUSD - b.inUSD) * (sort.isDesc ? -1 : 1)
+  //           break
 
-          default:
-            break
-        }
-        return res
-      }),
-    [data, sort],
-  )
+  //         default:
+  //           break
+  //       }
+  //       return res
+  //     }),
+  //   [data, sort],
+  // )
 
-  const finalData = []
+  // const finalData = []
 
   return (
     <div className='mb-8'>
@@ -121,7 +121,7 @@ function YourEarning() {
         <TextHeading className='text-xl font-semibold md:text-3xl'>{t('Your Earnings')}</TextHeading>
         <TextSubHeading>{t('Your Earnings Description')}</TextSubHeading>
       </div>
-      {!finalData.length ? (
+      {!data.length ? (
         <Box className='flex flex-col items-center gap-4 lg:py-8'>
           <>
             <TextHeading className='text-center text-xl md:text-3xl'>{t('No Earnings Found')}</TextHeading>
@@ -136,7 +136,7 @@ function YourEarning() {
       ) : (
         <div className='w-full'>
           <Table
-            data={finalData}
+            data={data}
             sortOptions={sortOptions}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
