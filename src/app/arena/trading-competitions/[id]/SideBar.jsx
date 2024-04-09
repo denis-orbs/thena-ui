@@ -1,6 +1,7 @@
 'use client'
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -54,7 +55,7 @@ function Sidebar({ competition, eventType }) {
     }
     if (!isNotStartRegistration && !isEndedRegistration) {
       return {
-        heading: t('Registration'),
+        heading: t('Registration Ends Soon'),
         text: isJoined ? t('Competition Joined') : null,
         subText: isJoined ? t('You Joined This Competition') : null,
       }
@@ -170,7 +171,11 @@ function Sidebar({ competition, eventType }) {
     }
 
     if (!isHosting && eventType === EVENT_TYPES.LIVE && isJoined) {
-      return <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
+      return (
+        <Link href={`/arena/trading-competitions/${competition.id}/trade`}>
+          <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
+        </Link>
+      )
     }
 
     if (!isHosting && eventType === EVENT_TYPES.UPCOMING && !isJoined) {
@@ -224,6 +229,7 @@ function Sidebar({ competition, eventType }) {
     account,
     canClaimRewards,
     claim,
+    competition.id,
     eventType,
     isEndedRegistration,
     isFull,

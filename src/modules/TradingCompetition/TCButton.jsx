@@ -1,5 +1,6 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import dayjs from 'dayjs'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
@@ -78,7 +79,11 @@ export function TCButton({ eventType, competition, timestamp }) {
         {t('View')}
       </EmphasisButton>
 
-      {isJoined && eventType === EVENT_TYPES.LIVE && <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>}
+      {isJoined && eventType === EVENT_TYPES.LIVE && (
+        <Link href={`/arena/trading-competitions/${competition.id}/trade`}>
+          <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
+        </Link>
+      )}
       {eventType === EVENT_TYPES.ENDED && (isJoined || isHosting) && canClaimRewards && (
         <PrimaryButton className='w-full' onClick={claim}>
           {t('Claim Rewards')}

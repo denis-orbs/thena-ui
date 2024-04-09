@@ -106,7 +106,7 @@ function CompetitionCard({ competition, eventType }) {
 
   return (
     <div className='w-full'>
-      <Box className='flex h-full w-full cursor-pointer flex-col gap-4 p-6'>
+      <Box className='flex h-full w-full flex-col gap-4 p-6'>
         <div className='relative'>
           <CompetitionCardHeader className='h-72 max-w-full rounded-xl' competition={competition} />
           <div className='absolute left-4 top-4 flex gap-2'>

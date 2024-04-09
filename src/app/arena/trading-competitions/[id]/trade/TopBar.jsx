@@ -1,5 +1,6 @@
 import Image from 'next/image'
-import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 
@@ -13,8 +14,6 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
   const t = useTranslations()
 
   const [isRegistrable, setIsRegistrable] = useState(true)
-
-  const { push } = useRouter()
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,13 +33,11 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
   return (
     <div className='my-10 flex flex-col gap-10'>
       <div>
-        <TextButton
-          className='mb-6 pl-1'
-          LeadingIcon={ArrowLeftIcon}
-          onClick={() => push(`/arena/trading-competitions/${id}`)}
-        >
-          {t('Back')}
-        </TextButton>
+        <Link href={`/arena/trading-competitions/${id}`}>
+          <TextButton className='mb-6 pl-1' LeadingIcon={ArrowLeftIcon}>
+            {t('Back')}
+          </TextButton>
+        </Link>
         <div className='flex justify-between'>
           <TextHeading className='text-xl lg:text-3xl'>{competition?.name}</TextHeading>
           {isRegistrable && (
