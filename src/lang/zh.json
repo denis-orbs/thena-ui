@@ -587,5 +587,9 @@
   "Whenever You Make A Swap": "Whenever you make a swap, your PnL will not be accurate.",
   "If You Want To Know The Real PnL": "If you want to know the real PnL yu must swap all your tokens back to USDT. Also, your score won’t be counted until you swap all your tokens to USDT before the competition ends.",
   "Description Modal Deposit": "You’ll be able to withdraw the rest of your deposit at the end of the competition. You’ll have to claim it manually.",
-  "Token": "Token"
+  "Token": "Token",
+  "Competition Start": "Competition Start",
+  "You Must Be A Participant": "You must be a participant of this trading competition to be able to trade!",
+  "This Is Your PNL": "This is your profit & loss of the {ticker} that you’re trading with in this competition. You have to swap back to this token for your profit & loss to change and get a different ranking.",
+  "This Is Your Balance": "This is your balance in {ticker} within this trading competition. You can use it to trade with. At the end, you can withdraw this balance from the trading competition, no matter whether you win or lose. However, this balance changes as you trade, and you may lose it all."
 }

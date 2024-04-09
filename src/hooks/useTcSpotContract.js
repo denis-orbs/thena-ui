@@ -259,3 +259,44 @@ export const useDepositToTC = () => {
 
   return { pending, deposit }
 }
+
+export const useTradeData = (TCAddress, winningTokenAddress) => {
+  const { account } = useWallet()
+
+  const [balance, setBalance] = useState(0n)
+  const [pnl, setPNL] = useState(0n)
+
+  const fetchData = useCallback(async () => {
+    if (!account || !TCAddress || !winningTokenAddress) {
+      return
+    }
+
+    console.log(TCAddress, account)
+    const tcSpotContract = getTcSpotContract(TCAddress)
+
+    const [pnlRes, balanceRes] = await Promise.all([
+      readCall(tcSpotContract, 'getPNLOf', [account]),
+      readCall(tcSpotContract, 'userBalance', [account]),
+    ])
+
+    if (pnlRes) {
+      setPNL(pnlRes)
+    }
+
+    if (balanceRes) {
+      const find = balanceRes[1].findIndex(item => item.toLowerCase() === winningTokenAddress.toLowerCase())
+      const value = find !== -1 ? balanceRes[0][find] : 0n
+
+      setBalance(value)
+    }
+  }, [TCAddress, account, winningTokenAddress])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  return {
+    pnl,
+    balance,
+  }
+}

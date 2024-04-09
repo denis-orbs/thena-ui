@@ -16,8 +16,9 @@ import Tabs from '@/components/tabs'
 import { Paragraph } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
+import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
-import { EVENT_TYPES, getEventType, objectToQuery } from '@/lib/tradingCompetition/utils'
+import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
@@ -89,7 +90,7 @@ function CompetitionDetailLayout({ children, params }) {
       : 'details',
   )
 
-  const [eventType, setEventType] = useState('')
+  const { eventType } = useEventType(competition?.timestamp)
 
   const [queryParams, setQueryParams] = useState()
 
@@ -138,12 +139,6 @@ function CompetitionDetailLayout({ children, params }) {
   )
 
   const _competition = useCompetitionFormat(competition)
-
-  useEffect(() => {
-    const interval = setInterval(() => setEventType(getEventType(competition?.timestamp)), 1000)
-
-    return () => clearInterval(interval)
-  }, [competition?.timestamp])
 
   useEffect(() => {
     setQueryParams(

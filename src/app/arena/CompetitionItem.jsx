@@ -1,14 +1,14 @@
 'use client'
 
-import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import Skeleton from '@/components/skeleton'
 import { Paragraph } from '@/components/typography'
-import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
+import { useCountdown } from '@/hooks/useCountdown'
+import { useEventType } from '@/hooks/useEventType'
 import { formatAmount, fromWei } from '@/lib/utils'
 import { TCButton } from '@/modules/TradingCompetition/TCButton'
 import { Clock, CoinHand, Gift } from '@/svgs'
@@ -18,8 +18,7 @@ import { CompetitionCardHeader } from './CompetitionCardHeader'
 function CompetitionItem({ competition }) {
   const t = useTranslations()
 
-  const [timeDistance, setTimeDistance] = useState()
-  const [eventType, setEventType] = useState()
+  const { eventType } = useEventType(competition?.timestamp)
 
   const totalPrize = useMemo(
     () =>
@@ -38,66 +37,7 @@ function CompetitionItem({ competition }) {
     return t('Free To Enter')
   }, [competition.entryFee, competition.competitionRules.winningToken, t])
 
-  useEffect(() => {
-    const interval = setInterval(() => setEventType(getEventType(competition.timestamp)), 1000)
-    return () => clearInterval(interval)
-  }, [competition.timestamp])
-
-  useEffect(() => {
-    const calculate = () => {
-      if (eventType === EVENT_TYPES.ENDED) {
-        return t('Ended')
-      }
-      if (eventType === EVENT_TYPES.LIVE) {
-        return t('Started')
-      }
-
-      const now = dayjs()
-      const timestamp = dayjs.unix(competition.timestamp.startTimestamp)
-
-      const inSeconds = Math.abs(now.diff(timestamp, 'second'))
-      const inMinutes = Math.abs(now.diff(timestamp, 'minute'))
-      const inHours = Math.abs(now.diff(timestamp, 'hour'))
-      const inDays = Math.abs(now.diff(timestamp, 'day'))
-      const inMonths = Math.abs(now.diff(timestamp, 'month'))
-      const inYears = Math.abs(now.diff(timestamp, 'year'))
-
-      if (inMonths >= 12) {
-        return `${inYears} ${inYears === 1 ? t('Year') : t('Years')}`
-      }
-
-      if (inDays >= 30) {
-        return `${inMonths} ${inMonths === 1 ? t('Month') : t('Months')}`
-      }
-
-      if (inMonths < 1) {
-        let result = ''
-
-        if (inDays) {
-          result += `${inDays}d:`
-        }
-
-        if (inHours && inHours - inDays * 24) {
-          result += `${inHours - inDays * 24}h:`
-        }
-
-        if (inMinutes && inMinutes - inHours * 60) {
-          result += `${inMinutes - inHours * 60}m:`
-        }
-
-        if (inSeconds) {
-          result += `${inSeconds - inMinutes * 60}s`
-        }
-
-        return result
-      }
-    }
-    const interval = setInterval(() => {
-      setTimeDistance(calculate())
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [competition.timestamp, competition.timestamp.startTimestamp, eventType, t])
+  const { text: timeDistance } = useCountdown(eventType, competition.timestamp.startTimestamp)
 
   return !timeDistance || !totalPrize || !entryFee || !eventType ? (
     <Skeleton className='h-[320px] w-full' />

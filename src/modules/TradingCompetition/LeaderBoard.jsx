@@ -2,17 +2,18 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { EVENT_TYPES, getEventType } from '@/lib/tradingCompetition/utils'
+import { useEventType } from '@/hooks/useEventType'
+import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
 
 export function LeaderBoard({ competition }) {
-  const [eventType, setEventType] = useState('')
+  const { eventType } = useEventType(competition?.timestamp)
   const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -138,12 +139,6 @@ export function LeaderBoard({ competition }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
   )
-
-  useEffect(() => {
-    const interval = setInterval(() => setEventType(getEventType(competition?.timestamp)), 1000)
-
-    return () => clearInterval(interval)
-  }, [competition?.timestamp])
 
   return (
     <>

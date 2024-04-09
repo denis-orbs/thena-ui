@@ -2,14 +2,17 @@
 
 import { redirect, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
 import Tabs, { TabPanel } from '@/components/tabs'
 import Contracts from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
 import { useWrap } from '@/hooks/useSwap'
+import { useTCContractInfor } from '@/hooks/useTcSpotContract'
+import { useTradeCompetitionData } from '@/hooks/useTradeCompetitionData'
 import { useTradingCompetitionLeaderBoard } from '@/hooks/useTradingCompetitionLeaderboard'
+import { errorToast } from '@/lib/notify'
 import useWallet from '@/lib/wallets/useWallet'
 import { LeaderBoard } from '@/modules/TradingCompetition/LeaderBoard'
 import { TradeHistory } from '@/modules/TradingCompetition/TradeHistory'
@@ -35,7 +38,11 @@ function TradePage({ params }) {
   const [selectedTab, setSelectedTab] = useState('leaderboard')
   const [showModalDeposit, setShowModalDeposit] = useState(false)
 
-  const { competition } = useTradingCompetitionLeaderBoard(params.id)
+  const { competition: competitionLeaderBoard } = useTradingCompetitionLeaderBoard(params.id)
+
+  const { competition: detailCompetition } = useTradeCompetitionData(params.id)
+
+  const { isRegistered } = useTCContractInfor(detailCompetition?.tradingCompetitionSpot)
 
   useEffect(() => {
     if (!assets || !assets.length) return
@@ -111,20 +118,21 @@ function TradePage({ params }) {
     [selectedTab, t],
   )
 
-  useEffect(() => {
-    if (!account) {
-      return redirect('/')
+  useLayoutEffect(() => {
+    if (!account || !isRegistered) {
+      errorToast('You Must Be A Participant')
+      return redirect(`/arena/trading-competitions/${params.id}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  if (!account) {
+  if (!account || !isRegistered) {
     return null
   }
 
   return (
     <div>
-      <TopBar handleClickShowModal={() => setShowModalDeposit(true)} competition={competition} />
+      <TopBar handleClickShowModal={() => setShowModalDeposit(true)} competition={detailCompetition} />
 
       <SideBar
         fromAsset={fromAsset}
@@ -145,14 +153,18 @@ function TradePage({ params }) {
             className='justify-start overflow-x-auto'
           />
           <TabPanel value='leaderboard' select={selectedTab}>
-            <LeaderBoard competition={competition} />
+            <LeaderBoard competition={competitionLeaderBoard} />
           </TabPanel>
           <TabPanel value='history' select={selectedTab}>
             <TradeHistory />
           </TabPanel>
         </div>
       </SideBar>
-      <DepositModal competition={competition} isOpen={showModalDeposit} closeModal={() => setShowModalDeposit(false)} />
+      <DepositModal
+        competition={detailCompetition}
+        isOpen={showModalDeposit}
+        closeModal={() => setShowModalDeposit(false)}
+      />
     </div>
   )
 }

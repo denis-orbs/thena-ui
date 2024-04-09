@@ -5,19 +5,10 @@ import { v4Client } from '@/lib/graphql'
 
 import { useCompetitionFormat } from './useCompetitionFormat'
 
-// TODO: Trade view should use other get data function
-const V4_COMPETITION_DATA = gql`
-  query V4_COMPETITION($id: String!) {
+const V4_TRADE_COMPETITION_DATA = gql`
+  query V4_TRADE_COMPETITION($id: String!) {
     tradingCompetitionById(id: $id) {
       id
-      participants {
-        pnl
-        participant {
-          id
-        }
-        winAmount
-        winTokenDecimal
-      }
       competitionRules {
         winningTokenDecimal
         winningToken
@@ -25,14 +16,25 @@ const V4_COMPETITION_DATA = gql`
       timestamp {
         endTimestamp
         startTimestamp
+        registrationEnd
+        registrationStart
       }
+      participants {
+        pnl
+        participant {
+          id
+        }
+      }
+      tradingCompetitionSpot
+      participantCount
+      name
     }
   }
 `
 
-const fetchCompetitionLeaderboard = async id => {
+const fetchCompetition = async id => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
+    const { tradingCompetitionById: competition } = await v4Client.request(V4_TRADE_COMPETITION_DATA, { id })
 
     return competition
   } catch (error) {
@@ -40,8 +42,8 @@ const fetchCompetitionLeaderboard = async id => {
   }
 }
 
-export const useTradingCompetitionLeaderBoard = id => {
-  const { data } = useSWR('competition leader board api', () => fetchCompetitionLeaderboard(id), {
+export const useTradeCompetitionData = id => {
+  const { data } = useSWR('trade competition data', () => fetchCompetition(id), {
     refreshInterval: 30000,
     revalidateOnFocus: true,
   })

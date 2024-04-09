@@ -2,18 +2,49 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
+import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { useCountdown } from '@/hooks/useCountdown'
+import { useEventType } from '@/hooks/useEventType'
+import { useTradeData } from '@/hooks/useTcSpotContract'
+import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
+import { formatAmount, fromWei } from '@/lib/utils'
+import useWallet from '@/lib/wallets/useWallet'
 import { ArrowLeftIcon, InfoIcon } from '@/svgs'
 
 function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
   const { id } = useParams()
   const t = useTranslations()
+  const { account } = useWallet()
 
   const [isRegistrable, setIsRegistrable] = useState(true)
+
+  const { eventType } = useEventType(competition?.timestamp)
+
+  const { text } = useCountdown(
+    eventType,
+    eventType === EVENT_TYPES.LIVE ? competition?.timestamp?.startTimestamp : competition?.timestamp?.endTimestamp,
+    true,
+  )
+
+  const { balance, pnl } = useTradeData(
+    competition?.tradingCompetitionSpot,
+    competition?.competitionRules?.winningToken?.address,
+  )
+
+  const currentRank = useMemo(() => {
+    const sort =
+      competition.participants?.sort(
+        (a, b) =>
+          fromWei(b.pnl, competition.competitionRules?.winningToken?.decimals) -
+          fromWei(a.pnl, competition.competitionRules?.winningToken?.decimals),
+      ) || []
+    return sort.findIndex(item => item.participant.id === account.toLocaleLowerCase()) + 1
+  }, [competition.participants, competition.competitionRules?.winningToken?.decimals, account])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -47,13 +78,28 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
       </div>
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>
         <Box className='flex flex-col items-start'>
-          <TextHeading className='text-xl lg:text-2xl'>5/100</TextHeading>
+          <TextHeading className='text-xl lg:text-2xl'>{`${currentRank}/${competition.participantCount}`}</TextHeading>
           <TextSubHeading>{t('Your Rank')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col items-start'>
           <div className='flex w-full items-center justify-between lg:flex'>
-            <TextHeading className='text-xl lg:text-2xl'>$100</TextHeading>
-            <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' />
+            <div className='flex items-center justify-center space-x-2'>
+              <Image
+                alt='USDC'
+                src={competition.competitionRules?.winningToken?.logoURI}
+                className='flex-shrink-0'
+                width={24}
+                height={24}
+                loading='lazy'
+              />
+              <TextHeading className='text-xl lg:text-2xl'>
+                {formatAmount(fromWei(pnl, competition.competitionRules?.winningToken?.decimals))}
+              </TextHeading>
+            </div>
+            <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' data-tooltip-id='user-pnl-tooltip' />
+            <CustomTooltip id='user-pnl-tooltip' className='max-w-[500px]'>
+              {t('This Is Your PNL', { ticker: competition.competitionRules?.winningToken?.symbol })}
+            </CustomTooltip>
           </div>
           <TextSubHeading>{t('Your Profit & Loss')}</TextSubHeading>
         </Box>
@@ -62,21 +108,28 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
             <div className='flex items-center justify-center space-x-2'>
               <Image
                 alt='USDC'
-                src='https://cdn.thena.fi/assets/USDC.png'
+                src={competition.competitionRules?.winningToken?.logoURI}
                 className='flex-shrink-0'
                 width={24}
                 height={24}
                 loading='lazy'
               />
-              <TextHeading className='text-xl lg:text-2xl'>123</TextHeading>
+              <TextHeading className='text-xl lg:text-2xl'>
+                {formatAmount(fromWei(balance, competition.competitionRules?.winningToken?.decimals))}
+              </TextHeading>
             </div>
-            <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' />
+            <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' data-tooltip-id='user-balance-tooltip' />
+            <CustomTooltip id='user-balance-tooltip' className='max-w-[500px]'>
+              {t('This Is Your Balance', { ticker: competition.competitionRules?.winningToken?.symbol })}
+            </CustomTooltip>
           </div>
           <TextSubHeading>{t('Your Balance')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col items-start'>
-          <TextHeading className='text-xl lg:text-2xl'>1h 29min 4sec</TextHeading>
-          <TextSubHeading>{t('Competition End')}</TextSubHeading>
+          <TextHeading className='text-xl lg:text-2xl'>{text}</TextHeading>
+          <TextSubHeading>
+            {eventType === EVENT_TYPES.LIVE ? t('Competition Start') : t('Competition End')}
+          </TextSubHeading>
         </Box>
       </div>
       <Box className='flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
