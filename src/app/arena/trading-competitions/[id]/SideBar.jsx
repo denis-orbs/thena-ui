@@ -247,7 +247,7 @@ function Sidebar({ competition, eventType }) {
       progress.style.width =
         !isJoined && eventType === EVENT_TYPES.ENDED
           ? '100%'
-          : `${competition.participantCount / competition.maxParticipants}%`
+          : `${(competition.participantCount / competition.maxParticipants) * 100}%`
     }
   }, [competition.participantCount, competition.maxParticipants, isJoined, eventType])
 

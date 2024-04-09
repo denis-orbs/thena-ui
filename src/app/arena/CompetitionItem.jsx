@@ -85,7 +85,7 @@ function CompetitionItem({ competition }) {
           result += `${inMinutes - inHours * 60}m:`
         }
 
-        if (inSeconds && inSeconds - inMinutes * 60) {
+        if (inSeconds) {
           result += `${inSeconds - inMinutes * 60}s`
         }
 
