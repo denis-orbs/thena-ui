@@ -2,7 +2,7 @@
 
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import WarningModal from '@/app/swap/WarningModal'
 import { Alert } from '@/components/alert'
@@ -11,7 +11,7 @@ import { EmphasisButton, TextButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import NextImage from '@/components/image/NextImage'
-import TokenInput from '@/components/input/TokenInput'
+import CustomTokenInput from '@/components/input/CustomTokenInput'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -30,17 +30,19 @@ import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
 export function SideBar({
   fromAsset,
   toAsset,
-  setFromAddress,
-  setToAddress,
+  setFromAsset,
+  setToAsset,
   isWrap,
   isUnwrap,
   onWrap,
   onUnwrap,
   wrapPending,
+  assets,
   children,
 }) {
   const t = useTranslations()
   const [fromAmount, setFromAmount] = useState('')
+  const [fromAddress, setFromAddress] = useState(fromAsset?.address)
   const [isWarning, setIsWarning] = useState(false)
   const { account } = useWallet()
   const { slippage } = useSettings()
@@ -66,6 +68,12 @@ export function SideBar({
     () => (quotePending ? '' : isLHToken || !bestTrade ? lhQuote?.outAmount : bestTrade?.outAmounts[0] || ''),
     [quotePending, isLHToken, lhQuote, bestTrade],
   )
+
+  useEffect(() => {
+    if (fromAddress !== fromAddress?.address) {
+      setFromAddress(fromAsset?.address)
+    }
+  }, [fromAddress, fromAsset?.address])
 
   const toAmount = useMemo(() => {
     if (outAmount && Number(outAmount) > 0 && toAsset) {
@@ -279,29 +287,39 @@ export function SideBar({
           <div className='my-3 flex flex-col items-end gap-2'>
             <Tabs data={percents} />
             <div className='relative flex w-full flex-col gap-2'>
-              <TokenInput
+              <CustomTokenInput
                 asset={fromAsset}
-                setAsset={asset => setFromAddress(asset.address)}
-                otherAsset={toAsset}
-                setOtherAsset={asset => setToAddress(asset.address)}
+                setAsset={asset => {
+                  if (asset.address === toAsset.address) {
+                    setToAsset(fromAsset)
+                  }
+                  setFromAsset(asset)
+                }}
                 amount={fromAmount}
                 setAmount={setFromAmount}
+                assets={assets}
                 autoFocus
+                hasTabs={false}
               />
-              <TokenInput
+              <CustomTokenInput
                 asset={toAsset}
-                setAsset={asset => setToAddress(asset.address)}
-                otherAsset={fromAsset}
-                setOtherAsset={asset => setFromAddress(asset.address)}
+                setAsset={asset => {
+                  if (asset.address === fromAsset.address) {
+                    setFromAsset(toAsset)
+                  }
+                  setToAsset(asset)
+                }}
                 amount={toAmount}
+                assets={assets}
+                hasTabs={false}
                 disabled
               />
               <EmphasisIconButton
                 className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
                 Icon={SwitchVerticalIcon}
                 onClick={() => {
-                  setFromAddress(toAsset.address)
-                  setToAddress(fromAsset.address)
+                  setFromAsset(toAsset)
+                  setToAsset(fromAsset)
                 }}
               />
             </div>

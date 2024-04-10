@@ -12,6 +12,8 @@ const V4_TRADE_COMPETITION_DATA = gql`
       competitionRules {
         winningTokenDecimal
         winningToken
+        tradingTokens
+        startingBalance
       }
       timestamp {
         endTimestamp

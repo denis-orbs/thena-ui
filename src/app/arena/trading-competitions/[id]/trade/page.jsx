@@ -1,13 +1,11 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
 import Tabs, { TabPanel } from '@/components/tabs'
 import Contracts from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
-import { useAssets } from '@/context/assetsContext'
 import { useWrap } from '@/hooks/useSwap'
 import { useTCContractInfor } from '@/hooks/useTcSpotContract'
 import { useTradeCompetitionData } from '@/hooks/useTradeCompetitionData'
@@ -16,7 +14,6 @@ import { errorToast } from '@/lib/notify'
 import useWallet from '@/lib/wallets/useWallet'
 import { LeaderBoard } from '@/modules/TradingCompetition/LeaderBoard'
 import { TradeHistory } from '@/modules/TradingCompetition/TradeHistory'
-import { useChainSettings } from '@/state/settings/hooks'
 
 import DepositModal from './DepositModal'
 import { SideBar } from './SideBar'
@@ -28,12 +25,6 @@ function TradePage({ params }) {
 
   const [fromAsset, setFromAsset] = useState(null)
   const [toAsset, setToAsset] = useState(null)
-  const [fromAddress, setFromAddress] = useState(null)
-  const [toAddress, setToAddress] = useState(null)
-  const { networkId } = useChainSettings()
-  const searchParams = useSearchParams()
-  const { push } = useRouter()
-  const assets = useAssets()
   const { onWrap, onUnwrap, pending: wrapPending } = useWrap()
   const [selectedTab, setSelectedTab] = useState('leaderboard')
   const [showModalDeposit, setShowModalDeposit] = useState(false)
@@ -44,35 +35,20 @@ function TradePage({ params }) {
 
   const { isRegistered } = useTCContractInfor(detailCompetition?.tradingCompetitionSpot)
 
-  useEffect(() => {
-    if (!assets || !assets.length) return
-    const inputCurrency = searchParams.get('inputCurrency')
-    const outputCurrency = searchParams.get('outputCurrency')
-    const from = inputCurrency
-      ? assets.find(asset => asset.address.toLowerCase() === inputCurrency.toLowerCase())
-      : null
-    const to = outputCurrency
-      ? assets.find(asset => asset.address.toLowerCase() === outputCurrency.toLowerCase())
-      : null
-    if (from && to) {
-      setFromAsset(from)
-      setToAsset(to)
-      if (!fromAddress) setFromAddress(from.address)
-      if (!toAddress) setToAddress(to.address)
-    } else if (!from && to) {
-      setFromAddress('BNB')
-    } else if (from && from.address !== 'BNB' && !to) {
-      setToAddress('BNB')
-    } else {
-      setFromAddress('BNB')
-      setToAddress(Contracts.THE[networkId])
-    }
-  }, [assets, searchParams, fromAddress, toAddress, networkId])
+  const tradingTokens = useMemo(
+    () => detailCompetition?.competitionRules?.tradingTokens || [],
+    [detailCompetition?.competitionRules?.tradingTokens],
+  )
 
   useEffect(() => {
-    if (!fromAddress || !toAddress) return
-    push(`/arena/trading-competitions/${params.id}/trade?inputCurrency=${fromAddress}&outputCurrency=${toAddress}`)
-  }, [push, fromAddress, toAddress, params.id])
+    if (!tradingTokens.length) return
+    if (!fromAsset) {
+      setFromAsset(tradingTokens[0] ?? null)
+    }
+    if (!toAsset) {
+      setToAsset(tradingTokens[1] ?? null)
+    }
+  }, [fromAsset, toAsset, tradingTokens])
 
   const isWrap = useMemo(() => {
     if (
@@ -131,6 +107,11 @@ function TradePage({ params }) {
     return null
   }
 
+  console.log({
+    fromAsset,
+    toAsset,
+  })
+
   return (
     <div>
       <TopBar handleClickShowModal={() => setShowModalDeposit(true)} competition={detailCompetition} />
@@ -138,13 +119,14 @@ function TradePage({ params }) {
       <SideBar
         fromAsset={fromAsset}
         toAsset={toAsset}
-        setFromAddress={setFromAddress}
-        setToAddress={setToAddress}
+        setFromAsset={setFromAsset}
+        setToAsset={setToAsset}
         isWrap={isWrap}
         isUnwrap={isUnwrap}
         onWrap={onWrap}
         onUnwrap={onUnwrap}
         wrapPending={wrapPending}
+        assets={detailCompetition?.competitionRules?.tradingTokens || []}
       >
         <div className='mt-10 flex w-full flex-col gap-4'>
           <Tabs
