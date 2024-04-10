@@ -297,7 +297,6 @@ export const useTradeData = (TCAddress, winningTokenAddress) => {
       return
     }
 
-    console.log(TCAddress, account)
     const tcSpotContract = getTcSpotContract(TCAddress)
 
     const [pnlRes, balanceRes] = await Promise.all([
@@ -318,11 +317,17 @@ export const useTradeData = (TCAddress, winningTokenAddress) => {
   }, [TCAddress, account, winningTokenAddress])
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      fetchData()
+    }, 30000)
+
     fetchData()
+    return () => clearInterval(interval)
   }, [fetchData])
 
   return {
     pnl,
     balance,
+    reload: fetchData,
   }
 }

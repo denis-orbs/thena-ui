@@ -86,7 +86,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
             <div className='flex items-center justify-center space-x-2'>
               <Image
                 alt='USDC'
-                src={competition.competitionRules?.winningToken?.logoURI}
+                src={competition.competitionRules?.winningToken?.logoURI ?? ''}
                 className='flex-shrink-0'
                 width={24}
                 height={24}
@@ -108,7 +108,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
             <div className='flex items-center justify-center space-x-2'>
               <Image
                 alt='USDC'
-                src={competition.competitionRules?.winningToken?.logoURI}
+                src={competition.competitionRules?.winningToken?.logoURI ?? ''}
                 className='flex-shrink-0'
                 width={24}
                 height={24}

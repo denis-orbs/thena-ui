@@ -7,7 +7,7 @@ import CustomTokenInput from '@/components/input/CustomTokenInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { useDepositToTC } from '@/hooks/useTcSpotContract'
+import { useDepositToTC, useTradeData } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
 
@@ -19,6 +19,11 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
   const [amount, setAmount] = useState('')
   const [token, setToken] = useState()
   const [filteredAssets, setFilteredAssets] = useState([])
+
+  const { reload } = useTradeData(
+    competition?.tradingCompetitionSpot,
+    competition?.competitionRules?.winningToken?.address,
+  )
 
   useEffect(() => {
     if (competition?.competitionRules?.winningToken?.symbol === 'WBNB' && assets.length) {
@@ -52,9 +57,11 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
     })
 
     if (isSuccess) {
+      await reload()
       closeModal()
     }
   }, [
+    reload,
     amount,
     closeModal,
     competition?.competitionRules?.winningToken,
