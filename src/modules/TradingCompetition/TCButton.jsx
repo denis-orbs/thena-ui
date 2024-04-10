@@ -1,7 +1,6 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -14,7 +13,6 @@ import { JoinModal } from './JoinModal'
 
 export function TCButton({ eventType, competition, timestamp }) {
   const t = useTranslations()
-  const { push } = useRouter()
   const { open } = useWeb3Modal()
   const { account } = useWallet()
   const [showJoinModal, setShowJoinModal] = useState(false)
@@ -75,9 +73,9 @@ export function TCButton({ eventType, competition, timestamp }) {
 
   return (
     <div className='flex w-full items-center justify-between gap-4'>
-      <EmphasisButton className='w-full' onClick={() => push(`arena/trading-competitions/${competition.id}`)}>
-        {t('View')}
-      </EmphasisButton>
+      <Link href={`arena/trading-competitions/${competition.id}`} className='w-full'>
+        <EmphasisButton className='w-full'>{t('View')}</EmphasisButton>
+      </Link>
 
       {isJoined && eventType === EVENT_TYPES.LIVE && (
         <Link href={`/arena/trading-competitions/${competition.id}/trade`}>

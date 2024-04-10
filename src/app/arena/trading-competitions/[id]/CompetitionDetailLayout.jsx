@@ -80,7 +80,7 @@ function CompetitionDetailLayout({ children, params }) {
     revalidateOnFocus: true,
   })
   const t = useTranslations()
-  const { replace, push } = useRouter()
+  const { replace } = useRouter()
 
   const pathname = usePathname()
 
@@ -175,13 +175,13 @@ function CompetitionDetailLayout({ children, params }) {
                 </TextButton>
               </Link>
 
-              <div
+              <Link
                 className='flex cursor-pointer items-center justify-center gap-2'
-                onClick={() => push(`/arena/profile/${competition.owner.id}`)}
+                href={`/arena/profile/${competition.owner.id}`}
               >
                 <CircleImage src={Avatar} alt='avatar' className='size-8' />
                 <Paragraph>{`${competition.owner.id.slice(0, 6)}...${competition.owner.id.slice(-4)}`}</Paragraph>
-              </div>
+              </Link>
             </div>
             <CompetitionCard competition={_competition} eventType={eventType} />
             <div className='mt-10 flex w-full flex-col gap-4'>

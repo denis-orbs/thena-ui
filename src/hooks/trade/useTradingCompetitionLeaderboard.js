@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 import { v4Client } from '@/lib/graphql'
 
-import { useCompetitionFormat } from './useCompetitionFormat'
+import { useCompetitionFormat } from '../useCompetitionFormat'
 
 // TODO: Trade view should use other get data function
 const V4_COMPETITION_DATA = gql`

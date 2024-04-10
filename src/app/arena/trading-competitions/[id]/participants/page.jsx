@@ -1,6 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
@@ -166,15 +167,15 @@ function ParticipantsPage() {
       sortedData?.map(participant => ({
         rank: <Paragraph>{participant.rank}</Paragraph>,
         user: (
-          <div
+          <Link
             className='flex cursor-pointer items-center justify-center gap-2'
-            onClick={() => push(`/arena/profile/${participant.participant.id}`)}
+            href={`/arena/profile/${participant.participant.id}`}
           >
             <CircleImage src={Avatar} alt='avatar' className='size-8' />
             <Paragraph>
               {`${participant.participant.id.slice(0, 6)}...${participant.participant.id.slice(-4)}`}
             </Paragraph>
-          </div>
+          </Link>
         ),
         volume: <Paragraph>$59.01</Paragraph>,
       })),
