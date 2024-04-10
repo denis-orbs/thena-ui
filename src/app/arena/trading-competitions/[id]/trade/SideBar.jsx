@@ -232,7 +232,9 @@ export function SideBar({
     <>
       <Box className='mb-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
         <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
-        <TextHeading className='text-base font-normal'>{t('If You Want To Know The Real PnL')}</TextHeading>
+        <TextHeading className='text-base font-normal'>
+          {t('If You Want To Know The Real PnL', { symbol: fromAsset?.symbol })}
+        </TextHeading>
       </Box>
       <div className='grid grid-cols-12 gap-4 lg:gap-12'>
         <div className='col-span-12 lg:col-span-7'>

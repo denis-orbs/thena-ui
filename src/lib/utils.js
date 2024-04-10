@@ -92,3 +92,8 @@ export const convertTimestamp = timeStamp => {
   const date = new Date(timeStamp * 1000)
   return date
 }
+
+export const sleep = delay =>
+  new Promise(resolve => {
+    setTimeout(resolve, delay)
+  })

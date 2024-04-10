@@ -356,19 +356,21 @@ export default function ArenaPage() {
       ) : (
         <NoCompetition />
       )}
-      <Create
-        data={data}
-        setData={setData}
-        step={step}
-        setStep={setStep}
-        showModalCreateCompetition={showModalCreateCompetition}
-        handleClose={() => {
-          setShowModalCreateCompetition(false)
-          if (step === TC_STEPS.length - 1) {
-            setShowPreview(true)
-          }
-        }}
-      />
+      {showModalCreateCompetition && (
+        <Create
+          data={data}
+          setData={setData}
+          step={step}
+          setStep={setStep}
+          showModalCreateCompetition={showModalCreateCompetition}
+          handleClose={() => {
+            setShowModalCreateCompetition(false)
+            if (step === TC_STEPS.length - 1) {
+              setShowPreview(true)
+            }
+          }}
+        />
+      )}
       {step === TC_STEPS.length && (
         <Modal
           isOpen={showPreview}

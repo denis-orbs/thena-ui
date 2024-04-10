@@ -190,7 +190,7 @@ function Sidebar({ competition, eventType }) {
       if (isJoined) {
         return (
           <Link href={`/arena/trading-competitions/${competition.id}/trade`}>
-            <PrimaryButton className='w-full'>{t('Trade View')}</PrimaryButton>
+            <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
           </Link>
         )
       }

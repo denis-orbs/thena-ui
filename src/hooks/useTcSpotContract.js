@@ -8,7 +8,7 @@ import { useAssets } from '@/context/assetsContext'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { fromWei } from '@/lib/utils'
+import { fromWei, sleep } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -254,6 +254,8 @@ export const useDepositToTC = () => {
           setPending(false)
           return false
         }
+
+        await sleep(4000)
       }
 
       if (!isApprovedWinningToken) {

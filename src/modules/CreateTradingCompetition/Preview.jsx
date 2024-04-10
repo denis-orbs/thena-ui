@@ -110,7 +110,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
         </EmphasisButton>
       </div>
       <div className='flex max-h-[80vh] w-full overflow-y-scroll'>
-        <Details data={mainData} isPreview account={account} />
+        <Details data={mainData} />
       </div>
     </div>
   )
