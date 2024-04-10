@@ -6,13 +6,16 @@ import { useEffect, useMemo, useState } from 'react'
 import Loading from '@/app/loading'
 import Contracts from '@/constant/contracts'
 import { useTradeCompetitionData } from '@/hooks/trade/useTradeCompetitionData'
+import { useEventType } from '@/hooks/useEventType'
 import { useWrap } from '@/hooks/useSwap'
 import { errorToast } from '@/lib/notify'
+import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 import DepositModal from './DepositModal'
 import { SideBar } from './SideBar'
 import TopBar from './TopBar'
+import { TradeNotStarted } from './TradeNotStarted'
 
 export function WrapLayout({ children, params }) {
   const { account } = useWallet()
@@ -24,6 +27,8 @@ export function WrapLayout({ children, params }) {
   const [showModalDeposit, setShowModalDeposit] = useState(false)
 
   const { competition } = useTradeCompetitionData(params.id)
+
+  const { eventType } = useEventType(competition?.timestamp)
 
   const isRegistered = useMemo(
     () =>
@@ -88,21 +93,39 @@ export function WrapLayout({ children, params }) {
   return (
     <>
       <TopBar handleClickShowModal={() => setShowModalDeposit(true)} competition={competition} />
-
-      <SideBar
-        fromAsset={fromAsset}
-        toAsset={toAsset}
-        setFromAsset={setFromAsset}
-        setToAsset={setToAsset}
-        isWrap={isWrap}
-        isUnwrap={isUnwrap}
-        onWrap={onWrap}
-        onUnwrap={onUnwrap}
-        wrapPending={wrapPending}
-        assets={competition?.competitionRules?.tradingTokens || []}
-      >
-        {children}
-      </SideBar>
+      {eventType === EVENT_TYPES.LIVE ? (
+        <SideBar
+          fromAsset={fromAsset}
+          toAsset={toAsset}
+          setFromAsset={setFromAsset}
+          setToAsset={setToAsset}
+          isWrap={isWrap}
+          isUnwrap={isUnwrap}
+          onWrap={onWrap}
+          onUnwrap={onUnwrap}
+          wrapPending={wrapPending}
+          assets={competition?.competitionRules?.tradingTokens || []}
+        >
+          {children}
+        </SideBar>
+      ) : (
+        <TradeNotStarted startTimestamp={competition?.timestamp?.startTimestamp}>
+          <SideBar
+            fromAsset={fromAsset}
+            toAsset={toAsset}
+            setFromAsset={setFromAsset}
+            setToAsset={setToAsset}
+            isWrap={isWrap}
+            isUnwrap={isUnwrap}
+            onWrap={onWrap}
+            onUnwrap={onUnwrap}
+            wrapPending={wrapPending}
+            assets={competition?.competitionRules?.tradingTokens || []}
+          >
+            {children}
+          </SideBar>
+        </TradeNotStarted>
+      )}
       <DepositModal competition={competition} isOpen={showModalDeposit} closeModal={() => setShowModalDeposit(false)} />
     </>
   )

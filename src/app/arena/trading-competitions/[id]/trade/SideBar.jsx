@@ -229,154 +229,160 @@ export function SideBar({
   }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap, quotePending, t])
 
   return (
-    <div className='grid grid-cols-12 gap-4 lg:gap-12'>
-      <div className='col-span-12 lg:col-span-7'>
-        <div className='flex w-full max-w-[920px] flex-col gap-4'>
-          <SwapChart asset0={toAsset} asset1={fromAsset} />
-          <Box className='flex flex-col gap-4'>
-            <div className='flex justify-between'>
-              <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
-              <TextButton
-                className='text-xs'
-                iconClassName='lg:h-4 lg:w-4'
-                onClick={() => mutate()}
-                LeadingIcon={RefreshIcon}
-              >
-                {t('Refresh Quote')}
-              </TextButton>
-            </div>
-            {quotePending ? (
-              <Skeleton className='h-[100px] w-full' />
-            ) : (
-              <div>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center gap-2'>
-                    <NextImage src={fromAsset?.logoURI} alt='' className='h-5 w-5' />
-                    <Paragraph>
-                      {formatAmount(fromAmount)} {fromAsset?.symbol}
-                    </Paragraph>
-                  </div>
-                  <div className='flex items-center gap-2'>
-                    <Paragraph>
-                      {formatAmount(toAmount)} {toAsset?.symbol}
-                    </Paragraph>
-                    <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
-                  </div>
-                </div>
-                {isDexTrade && (
-                  <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
-                    {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
-                  </div>
-                )}
-                {!!lhQuote?.outAmount && Number(lhQuote?.outAmount) > 0 && !isDexTrade && <LiquidityHubRouting />}
+    <>
+      <Box className='mb-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
+        <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
+        <TextHeading className='text-base font-normal'>{t('If You Want To Know The Real PnL')}</TextHeading>
+      </Box>
+      <div className='grid grid-cols-12 gap-4 lg:gap-12'>
+        <div className='col-span-12 lg:col-span-7'>
+          <div className='flex w-full max-w-[920px] flex-col gap-4'>
+            <SwapChart asset0={toAsset} asset1={fromAsset} />
+            <Box className='flex flex-col gap-4'>
+              <div className='flex justify-between'>
+                <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
+                <TextButton
+                  className='text-xs'
+                  iconClassName='lg:h-4 lg:w-4'
+                  onClick={() => mutate()}
+                  LeadingIcon={RefreshIcon}
+                >
+                  {t('Refresh Quote')}
+                </TextButton>
               </div>
+              {quotePending ? (
+                <Skeleton className='h-[100px] w-full' />
+              ) : (
+                <div>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center gap-2'>
+                      <NextImage src={fromAsset?.logoURI} alt='' className='h-5 w-5' />
+                      <Paragraph>
+                        {formatAmount(fromAmount)} {fromAsset?.symbol}
+                      </Paragraph>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                      <Paragraph>
+                        {formatAmount(toAmount)} {toAsset?.symbol}
+                      </Paragraph>
+                      <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
+                    </div>
+                  </div>
+                  {isDexTrade && (
+                    <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
+                      {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
+                    </div>
+                  )}
+                  {!!lhQuote?.outAmount && Number(lhQuote?.outAmount) > 0 && !isDexTrade && <LiquidityHubRouting />}
+                </div>
+              )}
+            </Box>
+          </div>
+          <div>{children}</div>
+        </div>
+
+        <div className='col-span-12 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[550px]'>
+          <Box className='w-full max-w-[480px]'>
+            <div className='mb-3 flex items-center justify-between'>
+              <h2>{t('Swap')}</h2>
+              <div className='flex items-center gap-2'>
+                <TxnSettings />
+              </div>
+            </div>
+            <div className='my-3 flex flex-col items-end gap-2'>
+              <Tabs data={percents} />
+              <div className='relative flex w-full flex-col gap-2'>
+                <CustomTokenInput
+                  asset={fromAsset}
+                  setAsset={asset => {
+                    if (asset.address === toAsset.address) {
+                      setToAsset(fromAsset)
+                    }
+                    setFromAsset(asset)
+                  }}
+                  amount={fromAmount}
+                  setAmount={setFromAmount}
+                  assets={assets}
+                  autoFocus
+                  hasTabs={false}
+                />
+                <CustomTokenInput
+                  asset={toAsset}
+                  setAsset={asset => {
+                    if (asset.address === fromAsset.address) {
+                      setFromAsset(toAsset)
+                    }
+                    setToAsset(asset)
+                  }}
+                  amount={toAmount}
+                  assets={assets}
+                  hasTabs={false}
+                  disabled
+                />
+                <EmphasisIconButton
+                  className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+                  Icon={SwitchVerticalIcon}
+                  onClick={() => {
+                    setFromAsset(toAsset)
+                    setToAsset(fromAsset)
+                  }}
+                />
+              </div>
+            </div>
+            {toAmount && (
+              <div className='flex flex-col gap-2 py-3'>
+                <div className='flex items-center justify-between'>
+                  <TextHeading>{t('Rate')}</TextHeading>
+                  <Paragraph>
+                    {`${formatAmount(new BigNumber(toAmount).div(fromAmount))} ${t('[symbolA] per [symbolB]', {
+                      symbolA: toAsset.symbol,
+                      symbolB: fromAsset.symbol,
+                    })}`}
+                  </Paragraph>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <TextHeading>{t('Minimum Received')}</TextHeading>
+                  <Paragraph>{minimumReceived}</Paragraph>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <TextHeading>{t('Price Impact')}</TextHeading>
+                  <Paragraph>{formatAmount(priceImpact)}%</Paragraph>
+                </div>
+                {priceImpact > 5 && (
+                  <Alert>
+                    <InfoIcon className='h-4 w-4 stroke-error-600' />
+                    <p>{t('Price impact too high')}</p>
+                  </Alert>
+                )}
+              </div>
+            )}
+
+            {account ? (
+              <EmphasisButton
+                className='mt-3 w-full'
+                disabled={!fromAmount || quotePending || swapPending || LHSwapPending || wrapPending || btnMsg.isError}
+                onClick={() => {
+                  if (priceImpact > 5) {
+                    setIsWarning(true)
+                  } else if (isWrap) {
+                    onWrap(fromAmount)
+                  } else if (isUnwrap) {
+                    onUnwrap(fromAmount)
+                  } else {
+                    handleSwap()
+                  }
+                }}
+              >
+                {btnMsg.label}
+              </EmphasisButton>
+            ) : (
+              <ConnectButton className='mt-3 w-full' />
             )}
           </Box>
         </div>
-        <div>{children}</div>
+
+        <WarningModal popup={isWarning} setPopup={setIsWarning} priceImpact={priceImpact} handleSwap={handleSwap} />
       </div>
-
-      <div className='col-span-12 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[550px]'>
-        <Box className='w-full max-w-[480px]'>
-          <div className='mb-3 flex items-center justify-between'>
-            <h2>{t('Swap')}</h2>
-            <div className='flex items-center gap-2'>
-              <TxnSettings />
-            </div>
-          </div>
-          <div className='my-3 flex flex-col items-end gap-2'>
-            <Tabs data={percents} />
-            <div className='relative flex w-full flex-col gap-2'>
-              <CustomTokenInput
-                asset={fromAsset}
-                setAsset={asset => {
-                  if (asset.address === toAsset.address) {
-                    setToAsset(fromAsset)
-                  }
-                  setFromAsset(asset)
-                }}
-                amount={fromAmount}
-                setAmount={setFromAmount}
-                assets={assets}
-                autoFocus
-                hasTabs={false}
-              />
-              <CustomTokenInput
-                asset={toAsset}
-                setAsset={asset => {
-                  if (asset.address === fromAsset.address) {
-                    setFromAsset(toAsset)
-                  }
-                  setToAsset(asset)
-                }}
-                amount={toAmount}
-                assets={assets}
-                hasTabs={false}
-                disabled
-              />
-              <EmphasisIconButton
-                className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
-                Icon={SwitchVerticalIcon}
-                onClick={() => {
-                  setFromAsset(toAsset)
-                  setToAsset(fromAsset)
-                }}
-              />
-            </div>
-          </div>
-          {toAmount && (
-            <div className='flex flex-col gap-2 py-3'>
-              <div className='flex items-center justify-between'>
-                <TextHeading>{t('Rate')}</TextHeading>
-                <Paragraph>
-                  {`${formatAmount(new BigNumber(toAmount).div(fromAmount))} ${t('[symbolA] per [symbolB]', {
-                    symbolA: toAsset.symbol,
-                    symbolB: fromAsset.symbol,
-                  })}`}
-                </Paragraph>
-              </div>
-              <div className='flex items-center justify-between'>
-                <TextHeading>{t('Minimum Received')}</TextHeading>
-                <Paragraph>{minimumReceived}</Paragraph>
-              </div>
-              <div className='flex items-center justify-between'>
-                <TextHeading>{t('Price Impact')}</TextHeading>
-                <Paragraph>{formatAmount(priceImpact)}%</Paragraph>
-              </div>
-              {priceImpact > 5 && (
-                <Alert>
-                  <InfoIcon className='h-4 w-4 stroke-error-600' />
-                  <p>{t('Price impact too high')}</p>
-                </Alert>
-              )}
-            </div>
-          )}
-
-          {account ? (
-            <EmphasisButton
-              className='mt-3 w-full'
-              disabled={!fromAmount || quotePending || swapPending || LHSwapPending || wrapPending || btnMsg.isError}
-              onClick={() => {
-                if (priceImpact > 5) {
-                  setIsWarning(true)
-                } else if (isWrap) {
-                  onWrap(fromAmount)
-                } else if (isUnwrap) {
-                  onUnwrap(fromAmount)
-                } else {
-                  handleSwap()
-                }
-              }}
-            >
-              {btnMsg.label}
-            </EmphasisButton>
-          ) : (
-            <ConnectButton className='mt-3 w-full' />
-          )}
-        </Box>
-      </div>
-
-      <WarningModal popup={isWarning} setPopup={setIsWarning} priceImpact={priceImpact} handleSwap={handleSwap} />
-    </div>
+    </>
   )
 }

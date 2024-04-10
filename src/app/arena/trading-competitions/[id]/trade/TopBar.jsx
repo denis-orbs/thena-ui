@@ -115,7 +115,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
                 loading='lazy'
               />
               <TextHeading className='text-xl lg:text-2xl'>
-                {formatAmount(fromWei(balance, competition.competitionRules?.winningToken?.decimals))}
+                {formatAmount(fromWei(balance, competition.competitionRules?.winningToken?.decimals), false, 10)}
               </TextHeading>
             </div>
             <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' data-tooltip-id='user-balance-tooltip' />
@@ -132,10 +132,6 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
           </TextSubHeading>
         </Box>
       </div>
-      <Box className='flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
-        <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
-        <TextHeading className='text-base font-normal'>{t('If You Want To Know The Real PnL')}</TextHeading>
-      </Box>
     </div>
   )
 }
