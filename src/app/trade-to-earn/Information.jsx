@@ -37,7 +37,7 @@ function Information() {
   return (
     <div className='mb-8 grid grid-cols-2 gap-6 lg:grid-cols-3'>
       {data.map((item, index) => (
-        <Box key={index} className='flex flex-col items-start'>
+        <Box key={index} className='flex flex-col items-start gap-1'>
           <TextHeading className='text-xl lg:text-2xl'>${item.value.toLocaleString()}</TextHeading>
           <TextSubHeading>{t(item.label)}</TextSubHeading>
         </Box>

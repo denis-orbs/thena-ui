@@ -21,7 +21,7 @@ function TopBar() {
           {t('Trade to earn description part 2')}
         </TextSubHeading>
         <div className='flex justify-center'>
-          <TrailingButton onClick={() => push('/swap')}>{t('Trade Now')}</TrailingButton>
+          <TrailingButton onClick={() => push('https://alpha.thena.fi/trade/BTCUSDT')}>{t('Trade Now')}</TrailingButton>
         </div>
       </div>
     </div>
