@@ -77,7 +77,7 @@ function Sidebar({ competition, eventType }) {
           })
           break
         default:
-          subText = t('Thenian Are Competing', {
+          subText = t('Thenians Are Competing', {
             totalPrize: formatAmount(fromWei(competition.prize?.totalPrize, competition.prize?.token?.decimals)),
             ticker: competition.prize?.token?.symbol,
             participantCount: competition.participantCount,

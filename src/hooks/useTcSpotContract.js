@@ -292,10 +292,12 @@ export const useTradeData = (TCAddress, winningTokenAddress) => {
   const { account } = useWallet()
 
   const [balance, setBalance] = useState(0n)
+  const [userBalance, setUserBalance] = useState()
   const [pnl, setPNL] = useState(0n)
 
   const fetchData = useCallback(async () => {
     if (!account || !TCAddress || !winningTokenAddress) {
+      setUserBalance([])
       return
     }
 
@@ -313,7 +315,7 @@ export const useTradeData = (TCAddress, winningTokenAddress) => {
     if (balanceRes) {
       const find = balanceRes[1].findIndex(item => item.toLowerCase() === winningTokenAddress.toLowerCase())
       const value = find !== -1 ? balanceRes[0][find] : 0n
-
+      setUserBalance(balanceRes)
       setBalance(value)
     }
   }, [TCAddress, account, winningTokenAddress])
@@ -331,5 +333,6 @@ export const useTradeData = (TCAddress, winningTokenAddress) => {
     pnl,
     balance,
     reload: fetchData,
+    userBalance,
   }
 }

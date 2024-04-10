@@ -8,8 +8,10 @@ import Contracts from '@/constant/contracts'
 import { useTradeCompetitionData } from '@/hooks/trade/useTradeCompetitionData'
 import { useEventType } from '@/hooks/useEventType'
 import { useWrap } from '@/hooks/useSwap'
+import { useTradeData } from '@/hooks/useTcSpotContract'
 import { errorToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
+import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 import DepositModal from './DepositModal'
@@ -27,13 +29,17 @@ export function WrapLayout({ children, params }) {
   const [showModalDeposit, setShowModalDeposit] = useState(false)
 
   const { competition } = useTradeCompetitionData(params.id)
+  const { userBalance } = useTradeData(
+    competition?.tradingCompetitionSpot,
+    competition?.competitionRules?.winningToken?.address,
+  )
 
   const { eventType } = useEventType(competition?.timestamp)
 
   const isRegistered = useMemo(
     () =>
       competition?.participants.find(
-        participant => participant?.participant?.id.toLowerCase() === account.toLowerCase(),
+        participant => participant?.participant?.id.toLowerCase() === account?.toLowerCase(),
       ),
     [account, competition],
   )
@@ -62,10 +68,24 @@ export function WrapLayout({ children, params }) {
     return false
   }, [fromAsset, toAsset])
 
-  const tradingTokens = useMemo(
-    () => competition?.competitionRules?.tradingTokens || [],
-    [competition?.competitionRules?.tradingTokens],
-  )
+  const tradingTokens = useMemo(() => {
+    const tokens = competition?.competitionRules?.tradingTokens || []
+    if (!userBalance || !Array.isArray(userBalance) || userBalance.length !== 2) {
+      return tokens
+    }
+    const userTokens = userBalance[1]
+    const userBalances = userBalance[0]
+
+    return tokens.map(token => {
+      const find = userTokens.findIndex(item => item.toLowerCase() === token.address.toLowerCase())
+      const value = find !== -1 ? fromWei(userBalances[find], token.decimals) : token.balance
+
+      return {
+        ...token,
+        balance: value,
+      }
+    })
+  }, [competition?.competitionRules?.tradingTokens, userBalance])
 
   useEffect(() => {
     if (!tradingTokens.length) return
@@ -104,7 +124,7 @@ export function WrapLayout({ children, params }) {
           onWrap={onWrap}
           onUnwrap={onUnwrap}
           wrapPending={wrapPending}
-          assets={competition?.competitionRules?.tradingTokens || []}
+          assets={tradingTokens}
         >
           {children}
         </SideBar>
@@ -120,7 +140,7 @@ export function WrapLayout({ children, params }) {
             onWrap={onWrap}
             onUnwrap={onUnwrap}
             wrapPending={wrapPending}
-            assets={competition?.competitionRules?.tradingTokens || []}
+            assets={tradingTokens}
           >
             {children}
           </SideBar>
