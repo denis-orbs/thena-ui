@@ -77,32 +77,36 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
         </div>
       </div>
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>
-        <Box className='flex flex-col items-start'>
-          <TextHeading className='text-xl lg:text-2xl'>{`${currentRank}/${competition.participantCount}`}</TextHeading>
-          <TextSubHeading>{t('Your Rank')}</TextSubHeading>
-        </Box>
-        <Box className='flex flex-col items-start'>
-          <div className='flex w-full items-center justify-between lg:flex'>
-            <div className='flex items-center justify-center space-x-2'>
-              <Image
-                alt='USDC'
-                src={competition.competitionRules?.winningToken?.logoURI ?? ''}
-                className='flex-shrink-0'
-                width={24}
-                height={24}
-                loading='lazy'
-              />
-              <TextHeading className='text-xl lg:text-2xl'>
-                {formatAmount(fromWei(pnl, competition.competitionRules?.winningToken?.decimals))}
-              </TextHeading>
-            </div>
-            <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' data-tooltip-id='user-pnl-tooltip' />
-            <CustomTooltip id='user-pnl-tooltip' className='max-w-[500px]'>
-              {t('This Is Your PNL', { ticker: competition.competitionRules?.winningToken?.symbol })}
-            </CustomTooltip>
-          </div>
-          <TextSubHeading>{t('Your Profit & Loss')}</TextSubHeading>
-        </Box>
+        {eventType === (EVENT_TYPES.LIVE || EVENT_TYPES.ENDED) && (
+          <>
+            <Box className='flex flex-col items-start'>
+              <TextHeading className='text-xl lg:text-2xl'>{`${currentRank}/${competition.participantCount}`}</TextHeading>
+              <TextSubHeading>{t('Your Rank')}</TextSubHeading>
+            </Box>
+            <Box className='flex flex-col items-start'>
+              <div className='flex w-full items-center justify-between lg:flex'>
+                <div className='flex items-center justify-center space-x-2'>
+                  <Image
+                    alt='USDC'
+                    src={competition.competitionRules?.winningToken?.logoURI ?? ''}
+                    className='flex-shrink-0'
+                    width={24}
+                    height={24}
+                    loading='lazy'
+                  />
+                  <TextHeading className='text-xl lg:text-2xl'>
+                    {formatAmount(fromWei(pnl, competition.competitionRules?.winningToken?.decimals))}
+                  </TextHeading>
+                </div>
+                <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' data-tooltip-id='user-pnl-tooltip' />
+                <CustomTooltip id='user-pnl-tooltip' className='max-w-[500px]'>
+                  {t('This Is Your PNL', { ticker: competition.competitionRules?.winningToken?.symbol })}
+                </CustomTooltip>
+              </div>
+              <TextSubHeading>{t('Your Profit & Loss')}</TextSubHeading>
+            </Box>
+          </>
+        )}
         <Box className='flex flex-col items-start'>
           <div className='flex w-full items-center justify-between lg:flex'>
             <div className='flex items-center justify-center space-x-2'>
