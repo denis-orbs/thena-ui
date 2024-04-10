@@ -27,7 +27,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
 
   const { text } = useCountdown(
     eventType,
-    eventType === EVENT_TYPES.LIVE ? competition?.timestamp?.startTimestamp : competition?.timestamp?.endTimestamp,
+    eventType === EVENT_TYPES.LIVE ? competition?.timestamp?.endTimestamp : competition?.timestamp?.startTimestamp,
     true,
   )
 
@@ -132,7 +132,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
         <Box className='flex flex-col items-start'>
           <TextHeading className='text-xl lg:text-2xl'>{text}</TextHeading>
           <TextSubHeading>
-            {eventType === EVENT_TYPES.LIVE ? t('Competition Start') : t('Competition End')}
+            {eventType === EVENT_TYPES.LIVE ? t('Competition End') : t('Competition Start')}
           </TextSubHeading>
         </Box>
       </div>
