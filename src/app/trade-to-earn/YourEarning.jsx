@@ -5,8 +5,10 @@ import React, { useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TrailingButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import Table from '@/components/table'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import useWallet from '@/lib/wallets/useWallet'
 
 function YourEarning() {
   const sortOptions = useMemo(
@@ -57,6 +59,7 @@ function YourEarning() {
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[0])
   const [data, setData] = useState([])
+  const { account } = useWallet()
 
   const sortedData = useMemo(
     () =>
@@ -124,33 +127,41 @@ function YourEarning() {
           <TextHeading className='text-xl font-semibold md:text-3xl'>{t('Your Earnings')}</TextHeading>
           <TextSubHeading>{t('Your Earnings Description')}</TextSubHeading>
         </div>
-        <div>
-          <PrimaryButton onClick={handleAdd}>Add</PrimaryButton>
-        </div>
-      </div>
-      {!finalData.length ? (
-        <Box className='flex flex-col items-center gap-4 lg:py-8'>
-          <TextHeading className='text-center text-xl md:text-3xl'>{t('No Earnings Found')}</TextHeading>
-          <TextSubHeading className='text-center text-base'>
-            {t('Go trade on ALPHA and claim your earnings here')}
-          </TextSubHeading>
-          <div className='flex justify-center'>
-            <TrailingButton onClick={() => push('https://alpha.thena.fi/trade/BTCUSDT')}>
-              {t('Trade Now')}
-            </TrailingButton>
+        {account && (
+          <div>
+            <PrimaryButton onClick={handleAdd}>Add</PrimaryButton>
           </div>
-        </Box>
+        )}
+      </div>
+      {account ? (
+        !finalData.length ? (
+          <Box className='flex flex-col items-center gap-4 lg:py-8'>
+            <TextHeading className='text-center text-xl md:text-3xl'>{t('No Earnings Found')}</TextHeading>
+            <TextSubHeading className='text-center text-base'>
+              {t('Go trade on ALPHA and claim your earnings here')}
+            </TextSubHeading>
+            <div className='flex justify-center'>
+              <TrailingButton onClick={() => push('https://alpha.thena.fi/trade/BTCUSDT')}>
+                {t('Trade Now')}
+              </TrailingButton>
+            </div>
+          </Box>
+        ) : (
+          <div className='w-full'>
+            <Table
+              data={finalData}
+              sortOptions={sortOptions}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              sort={sort}
+              setSort={setSort}
+            />
+          </div>
+        )
       ) : (
-        <div className='w-full'>
-          <Table
-            data={finalData}
-            sortOptions={sortOptions}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            sort={sort}
-            setSort={setSort}
-          />
-        </div>
+        <Box className='flex flex-col items-center gap-4 lg:py-8'>
+          <ConnectButton />
+        </Box>
       )}
     </div>
   )
