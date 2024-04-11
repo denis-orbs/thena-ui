@@ -14,6 +14,7 @@ const DibsRewarderContext = createContext({
   totalReward: 0,
   totalRewardThenaCurrDay: 0,
   totalUserEarned: 0,
+  dibsRewarder: null,
 })
 
 function DibsRewarderContextProvider({ children }) {
@@ -22,6 +23,7 @@ function DibsRewarderContextProvider({ children }) {
   const [totalReward, setTotalReward] = useState(0)
   const [totalRewardThenaCurrDay, setTotalRewardThenaCurrDay] = useState(0)
   const [totalUserEarned, setTotalUserEarned] = useState(0)
+  const [dibsRewarder, setDibsRewarder] = useState('')
   const assets = useAssets()
   const { account } = useWallet()
 
@@ -34,8 +36,9 @@ function DibsRewarderContextProvider({ children }) {
       totalReward,
       totalRewardThenaCurrDay,
       totalUserEarned,
+      dibsRewarder,
     }),
-    [currentDay, rewardTokenList, totalReward, totalRewardThenaCurrDay, totalUserEarned],
+    [currentDay, rewardTokenList, totalReward, totalRewardThenaCurrDay, totalUserEarned, dibsRewarder],
   )
 
   useEffect(() => {
@@ -43,6 +46,7 @@ function DibsRewarderContextProvider({ children }) {
       if (chainId) {
         try {
           const dibsRewarderContract = getDibsRewarderContract(chainId)
+          setDibsRewarder(dibsRewarderContract)
           const [res0, res1] = await Promise.all([
             readCall(dibsRewarderContract, 'currentDay', []),
             readCall(dibsRewarderContract, 'rewardTokenList', []),

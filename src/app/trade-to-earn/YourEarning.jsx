@@ -1,17 +1,23 @@
+import { useQuery } from '@tanstack/react-query'
 import moment from 'moment'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton, TrailingButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Table from '@/components/table'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { useAssets } from '@/context/assetsContext'
+import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import { fetchDataTotalVolume } from '@/modules/TradeToEarn'
 
 function YourEarning({ earnings = [] }) {
+  const assets = useAssets()
+
   const sortOptions = useMemo(
     () => [
       {
@@ -55,23 +61,52 @@ function YourEarning({ earnings = [] }) {
     [],
   )
 
+  const { data: totalVolume } = useQuery({
+    queryKey: ['getTotalVolumeEveryDay'],
+    queryFn: () =>
+      fetchDataTotalVolume('0x0000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000000'),
+    refetchInterval: 30000,
+    gcTime: 0,
+  })
+
   const t = useTranslations()
   const { push } = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[0])
   const { account } = useWallet()
+  const { fetchTotalRewardADay } = useTotalRewardADay()
+  const [data, setData] = useState([])
 
-  const data = useMemo(
-    () =>
-      earnings.map(item => ({
+  const getDataCallback = useCallback(async () => {
+    const items = []
+    for (const item of earnings) {
+      const totalRewardADay = await fetchTotalRewardADay(item.day)
+      const totalTradingADay = totalVolume?.find(totalVolItem => totalVolItem.day === item.day)
+      let earned = 0
+      if (totalTradingADay && totalTradingADay.amountAsUser > 0) {
+        const earnedWei =
+          (totalRewardADay * fromWei(item.amountAsUser).toNumber()) / fromWei(totalTradingADay.amountAsUser).toNumber()
+        earned = fromWei(earnedWei).toNumber()
+      }
+      let thenaPrice = 1
+      const thenaAsset = assets.find(assetItem => assetItem.name === 'THENA')
+      if (thenaAsset) {
+        thenaPrice = thenaAsset.price
+      }
+      items.push({
         epoch: item.day,
         date: item.lastUpdate,
         tradingVolume: item.amountAsUser,
-        earned: 0,
-        inUSD: 0,
-      })),
-    [earnings],
-  )
+        earned,
+        inUSD: earned * thenaPrice,
+      })
+    }
+    setData(items)
+  }, [assets, earnings, fetchTotalRewardADay, totalVolume])
+
+  useEffect(() => {
+    getDataCallback()
+  }, [getDataCallback])
 
   const sortedData = useMemo(
     () =>
@@ -107,7 +142,7 @@ function YourEarning({ earnings = [] }) {
         epoch: <Paragraph>{item.epoch}</Paragraph>,
         date: <Paragraph>{moment(new Date(item.date * 1000)).format('ll')}</Paragraph>,
         tradingVolume: <Paragraph>${formatAmount(fromWei(item.tradingVolume))}</Paragraph>,
-        earned: <Paragraph>{item.earned.toLocaleString()} THE</Paragraph>,
+        earned: <Paragraph>{formatAmount(item.earned)} THE</Paragraph>,
         inUSD: <Paragraph>${item.inUSD.toLocaleString()}</Paragraph>,
         action: <PrimaryButton className='w-full lg:w-fit'>{t('Claim')}</PrimaryButton>,
       })),

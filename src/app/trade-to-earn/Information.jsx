@@ -78,7 +78,7 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
         value: `${
           dailyTotalTradingVolume === 0
             ? 0
-            : (formatAmount(totalRewardThenaCurrDay) * dailyUserTradingVolume) / dailyTotalTradingVolume
+            : formatAmount((totalRewardThenaCurrDay * dailyUserTradingVolume) / dailyTotalTradingVolume)
         } THE`,
         label: 'Current Epoch Estimated reward',
         show: true,
