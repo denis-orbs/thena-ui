@@ -46,7 +46,7 @@ function CustomTokenInput({
   )
 
   const balance = useMemo(
-    () => assets.find(as => asset?.address === as.address)?.balance ?? asset.balance,
+    () => assets.find(as => asset?.address === as?.address)?.balance ?? asset?.balance,
     [asset, assets],
   )
 
