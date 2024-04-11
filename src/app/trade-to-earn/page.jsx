@@ -1,7 +1,7 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import React from 'react'
-import useSWR from 'swr'
 
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import useWallet from '@/lib/wallets/useWallet'
@@ -19,26 +19,49 @@ export default function TradeToEarnPage() {
   const { account } = useWallet()
   const { currentDay } = useDibsRewarder()
 
-  const { data: dailyVolume } = useSWR(
-    Number(currentDay) ? 'getDailyVolume' : null,
-    () => fetchDataDailyVolume(account, String(currentDay), '0x0000000000000000000000000000000000000000'),
-    {},
-  )
+  const { data: dailyUserVolume } = useQuery({
+    queryKey: ['getDailyUserVolume', currentDay],
+    queryFn: () => fetchDataDailyVolume(account, String(currentDay), '0x0000000000000000000000000000000000000000'),
+    refetchInterval: 30000,
+    enabled: Boolean(currentDay),
+    gcTime: 0,
+  })
 
-  const { data: totalVolume } = useSWR(
-    'getTotalVolume',
-    () => fetchDataTotalVolume(account, '0x0000000000000000000000000000000000000000'),
-    {},
-  )
+  const { data: dailyTotalVolume } = useQuery({
+    queryKey: ['getDailyTotalVolume', currentDay],
+    queryFn: () =>
+      fetchDataDailyVolume(
+        '0x0000000000000000000000000000000000000000',
+        String(currentDay),
+        '0x0000000000000000000000000000000000000000',
+      ),
+    refetchInterval: 30000,
+    enabled: Boolean(currentDay),
+    gcTime: 0,
+  })
 
-  const { data: earnings } = useSWR('getEarnings', () => fetchDataEarnings(account), {})
+  const { data: totalVolume } = useQuery({
+    queryKey: ['getTotalVolume'],
+    queryFn: () => fetchDataTotalVolume(account, '0x0000000000000000000000000000000000000000'),
+    refetchInterval: 30000,
+    enabled: Boolean(account),
+    gcTime: 0,
+  })
+
+  const { data: earnings } = useQuery({
+    queryKey: ['getEarnings'],
+    queryFn: () => fetchDataEarnings(account),
+    refetchInterval: 30000,
+    enabled: Boolean(account),
+    gcTime: 0,
+  })
 
   return (
     <div className='relative'>
       <Hero />
       <div className='relative z-30'>
         <TopBar />
-        <Information dailyVolume={dailyVolume} totalVolume={totalVolume} />
+        <Information dailyUserVolume={dailyUserVolume} dailyTotalVolume={dailyTotalVolume} totalVolume={totalVolume} />
         <YourEarning earnings={earnings} />
         <Work />
       </div>

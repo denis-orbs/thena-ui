@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 import { readCall } from '@/lib/contractActions'
 import { getDibsRewarderContract } from '@/lib/contracts'
+import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 import { useAssets } from './assetsContext'
@@ -11,13 +12,18 @@ const DibsRewarderContext = createContext({
   currentDay: 0,
   rewardTokenList: [],
   totalReward: 0,
+  totalRewardThenaCurrDay: 0,
+  totalUserEarned: 0,
 })
 
 function DibsRewarderContextProvider({ children }) {
   const [currentDay, setCurrentDay] = useState(0)
   const [rewardTokenList, setRewardTokenList] = useState([])
   const [totalReward, setTotalReward] = useState(0)
+  const [totalRewardThenaCurrDay, setTotalRewardThenaCurrDay] = useState(0)
+  const [totalUserEarned, setTotalUserEarned] = useState(0)
   const assets = useAssets()
+  const { account } = useWallet()
 
   const { chainId } = useWallet()
 
@@ -26,8 +32,10 @@ function DibsRewarderContextProvider({ children }) {
       currentDay,
       rewardTokenList,
       totalReward,
+      totalRewardThenaCurrDay,
+      totalUserEarned,
     }),
-    [currentDay, rewardTokenList, totalReward],
+    [currentDay, rewardTokenList, totalReward, totalRewardThenaCurrDay, totalUserEarned],
   )
 
   useEffect(() => {
@@ -45,12 +53,32 @@ function DibsRewarderContextProvider({ children }) {
           setCurrentDay(new BigNumber(res0).toNumber())
           setRewardTokenList(res1)
           let total = 0
+          let totalEarned = 0
           for (let i = 0; i < res1.length; i++) {
-            const res = await readCall(dibsRewarderContract, 'totalReward', [res1[i], new BigNumber(res0).toNumber()])
+            const res2 = await readCall(dibsRewarderContract, 'totalReward', [res1[i], new BigNumber(res0).toNumber()])
             const asset = assets.find(a => a.address.toLowerCase() === res1[i].toLowerCase())
-            if (res && asset) total += new BigNumber(res).toNumber() * asset.price
+            if (res2 && asset) total += new BigNumber(res2).toNumber() * asset.price
+            if (asset && account) {
+              for (let j = 0; j < new BigNumber(res0).toNumber(); j++) {
+                const res3 = await readCall(dibsRewarderContract, 'claimed', [account, res1[i], j])
+                const userEarnedTokenIDayJ = fromWei(new BigNumber(res3)).toNumber() * asset.price
+                totalEarned += userEarnedTokenIDayJ
+              }
+            }
           }
           setTotalReward(total)
+          setTotalUserEarned(totalEarned)
+
+          // TODO: Support multiple tokens
+          const thenaAsset = assets.find(item => item.name === 'THENA')
+          if (thenaAsset) {
+            const thenaAddress = thenaAsset.address
+            const thenaRewardCurrDay = await readCall(dibsRewarderContract, 'totalReward', [
+              thenaAddress,
+              new BigNumber(res0).toNumber(),
+            ])
+            setTotalRewardThenaCurrDay(fromWei(thenaRewardCurrDay).toNumber())
+          }
         } catch (error) {
           console.log(error)
         }
@@ -58,7 +86,7 @@ function DibsRewarderContextProvider({ children }) {
     }
 
     fetchTotalReward()
-  }, [assets, chainId])
+  }, [assets, chainId, account])
 
   return <DibsRewarderContext.Provider value={value}>{children}</DibsRewarderContext.Provider>
 }

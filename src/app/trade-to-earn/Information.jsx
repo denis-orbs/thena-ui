@@ -10,10 +10,10 @@ import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
-function Information({ dailyVolume, totalVolume }) {
+function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
   const t = useTranslations()
   const { account } = useWallet()
-  const { totalReward } = useDibsRewarder()
+  const { totalReward, totalRewardThenaCurrDay, totalUserEarned } = useDibsRewarder()
   const [countDown, setCountDown] = useState(0)
 
   const hours = useMemo(
@@ -36,12 +36,19 @@ function Information({ dailyVolume, totalVolume }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [new Date().getTime()])
 
-  const dailyTradingVolume = useMemo(() => {
-    if (dailyVolume && dailyVolume.length) {
-      return fromWei(dailyVolume[0].amountAsUser)
+  const dailyUserTradingVolume = useMemo(() => {
+    if (dailyUserVolume && dailyUserVolume.length) {
+      return fromWei(dailyUserVolume[0].amountAsUser).toNumber()
     }
     return 0
-  }, [dailyVolume])
+  }, [dailyUserVolume])
+
+  const dailyTotalTradingVolume = useMemo(() => {
+    if (dailyTotalVolume && dailyTotalVolume.length) {
+      return fromWei(dailyTotalVolume[0].amountAsUser).toNumber()
+    }
+    return 0
+  }, [dailyTotalVolume])
 
   const totalTradingVolume = useMemo(() => {
     let rs = 0
@@ -63,12 +70,16 @@ function Information({ dailyVolume, totalVolume }) {
         show: true,
       },
       {
-        value: `$${formatAmount(dailyTradingVolume)}`,
+        value: `$${formatAmount(dailyUserTradingVolume)}`,
         label: 'Your Daily Trading Volume',
         show: !!account,
       },
       {
-        value: `$${19999}`,
+        value: `${
+          dailyTotalTradingVolume === 0
+            ? 0
+            : (formatAmount(totalRewardThenaCurrDay) * dailyUserTradingVolume) / dailyTotalTradingVolume
+        } THE`,
         label: 'Current Epoch Estimated reward',
         show: true,
       },
@@ -88,12 +99,23 @@ function Information({ dailyVolume, totalVolume }) {
         show: !!account,
       },
       {
-        value: `$${19999}`,
+        value: `$${formatAmount(totalUserEarned)}`,
         label: 'Your Total Earnings',
         show: !!account,
       },
     ],
-    [account, dailyTradingVolume, hours, minutes, seconds, totalReward, totalTradingVolume],
+    [
+      account,
+      dailyTotalTradingVolume,
+      dailyUserTradingVolume,
+      hours,
+      minutes,
+      seconds,
+      totalReward,
+      totalRewardThenaCurrDay,
+      totalTradingVolume,
+      totalUserEarned,
+    ],
   )
 
   return (
