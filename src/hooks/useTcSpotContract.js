@@ -41,7 +41,7 @@ export const useTCContractInfor = (address, eventType) => {
   const assets = useAssets()
 
   const getUserData = useCallback(async () => {
-    if (!account) {
+    if (!account || !tcSpotContract) {
       setIsRegistered(false)
       setIsWinner(false)
       setIsOwner(false)
@@ -58,7 +58,7 @@ export const useTCContractInfor = (address, eventType) => {
     setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
     setLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, tcSpotContract, eventType])
+  }, [account, tcSpotContract, eventType, address])
 
   useEffect(() => {
     const checkClaimable = async () => {

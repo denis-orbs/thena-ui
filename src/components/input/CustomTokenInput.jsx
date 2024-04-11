@@ -45,11 +45,6 @@ function CustomTokenInput({
     [asset, setAmount],
   )
 
-  const balance = useMemo(
-    () => assets.find(as => asset?.address === as?.address)?.balance ?? asset?.balance,
-    [asset, assets],
-  )
-
   return (
     <div className='flex flex-col gap-2'>
       {hasTabs && (
@@ -80,7 +75,7 @@ function CustomTokenInput({
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
           <TextSubHeading>
-            {t('Balance')}: {formatAmount(balance)}
+            {t('Balance')}: {formatAmount(asset?.balance)}
           </TextSubHeading>
         </div>
         <CustomTokenModal popup={tokenPopup} setPopup={setTokenPopup} setSelectedAsset={setAsset} assets={assets} />

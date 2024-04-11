@@ -2,15 +2,13 @@
 
 import { redirect } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import Box from '@/components/box'
 import { TextHeading } from '@/components/typography'
-import Contracts from '@/constant/contracts'
 import { useTradeCompetitionData } from '@/hooks/trade/useTradeCompetitionData'
 import { useEventType } from '@/hooks/useEventType'
-import { useWrap } from '@/hooks/useSwap'
 import { useTCContractInfor, useTradeData } from '@/hooks/useTcSpotContract'
 import { errorToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -26,10 +24,9 @@ export function WrapLayout({ children, params }) {
   const { account } = useWallet()
   const t = useTranslations()
 
-  const [fromAsset, setFromAsset] = useState(null)
-  const [toAsset, setToAsset] = useState(null)
+  const [fromAddress, setFromAddress] = useState(null)
+  const [toAddress, setToAddress] = useState(null)
 
-  const { onWrap, onUnwrap, pending: wrapPending } = useWrap()
   const [showModalDeposit, setShowModalDeposit] = useState(false)
 
   const { competition } = useTradeCompetitionData(params.id)
@@ -41,30 +38,6 @@ export function WrapLayout({ children, params }) {
   const { eventType } = useEventType(competition?.timestamp)
 
   const { isRegistered, loaded } = useTCContractInfor(competition?.tradingCompetitionSpot)
-
-  const isWrap = useMemo(() => {
-    if (
-      fromAsset &&
-      toAsset &&
-      fromAsset.address === 'BNB' &&
-      toAsset.address.toLowerCase() === Contracts.WBNB[fromAsset.chainId].toLowerCase()
-    ) {
-      return true
-    }
-    return false
-  }, [fromAsset, toAsset])
-
-  const isUnwrap = useMemo(() => {
-    if (
-      fromAsset &&
-      toAsset &&
-      toAsset.address === 'BNB' &&
-      fromAsset.address.toLowerCase() === Contracts.WBNB[fromAsset.chainId].toLowerCase()
-    ) {
-      return true
-    }
-    return false
-  }, [fromAsset, toAsset])
 
   const tradingTokens = useMemo(() => {
     const tokens = competition?.competitionRules?.tradingTokens || []
@@ -85,15 +58,33 @@ export function WrapLayout({ children, params }) {
     })
   }, [competition?.competitionRules?.tradingTokens, userBalance])
 
+  const fromAsset = useMemo(
+    () => tradingTokens.find(token => token.address.toLowerCase() === fromAddress?.toLowerCase()),
+    [fromAddress, tradingTokens],
+  )
+
+  const toAsset = useMemo(
+    () => tradingTokens.find(token => token.address.toLowerCase() === toAddress?.toLowerCase()),
+    [toAddress, tradingTokens],
+  )
+
   useEffect(() => {
     if (!tradingTokens.length) return
     if (!fromAsset) {
-      setFromAsset(tradingTokens[0] ?? null)
+      setFromAddress(tradingTokens[0]?.address ?? null)
     }
     if (!toAsset) {
-      setToAsset(tradingTokens[1] ?? null)
+      setToAddress(tradingTokens[1].address ?? null)
     }
   }, [fromAsset, toAsset, tradingTokens])
+
+  const setFromAsset = useCallback(asset => {
+    setFromAddress(asset?.address)
+  }, [])
+
+  const setToAsset = useCallback(asset => {
+    setToAddress(asset?.address)
+  }, [])
 
   useEffect(() => {
     if (loaded && competition) {
@@ -123,11 +114,6 @@ export function WrapLayout({ children, params }) {
           toAsset={toAsset}
           setFromAsset={setFromAsset}
           setToAsset={setToAsset}
-          isWrap={isWrap}
-          isUnwrap={isUnwrap}
-          onWrap={onWrap}
-          onUnwrap={onUnwrap}
-          wrapPending={wrapPending}
           assets={tradingTokens}
         >
           {children}
@@ -139,11 +125,6 @@ export function WrapLayout({ children, params }) {
             toAsset={toAsset}
             setFromAsset={setFromAsset}
             setToAsset={setToAsset}
-            isWrap={isWrap}
-            isUnwrap={isUnwrap}
-            onWrap={onWrap}
-            onUnwrap={onUnwrap}
-            wrapPending={wrapPending}
             assets={tradingTokens}
           >
             {children}

@@ -2,7 +2,7 @@
 
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import WarningModal from '@/app/swap/WarningModal'
 import { Alert } from '@/components/alert'
@@ -27,22 +27,9 @@ import SwapChart from '@/modules/SwapChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
 
-export function SideBar({
-  fromAsset,
-  toAsset,
-  setFromAsset,
-  setToAsset,
-  isWrap,
-  isUnwrap,
-  onWrap,
-  onUnwrap,
-  wrapPending,
-  assets,
-  children,
-}) {
+export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, children }) {
   const t = useTranslations()
   const [fromAmount, setFromAmount] = useState('')
-  const [fromAddress, setFromAddress] = useState(fromAsset?.address)
   const [isWarning, setIsWarning] = useState(false)
   const { account } = useWallet()
   const { slippage } = useSettings()
@@ -68,12 +55,6 @@ export function SideBar({
     () => (quotePending ? '' : isLHToken || !bestTrade ? lhQuote?.outAmount : bestTrade?.outAmounts[0] || ''),
     [quotePending, isLHToken, lhQuote, bestTrade],
   )
-
-  useEffect(() => {
-    if (fromAddress !== fromAddress?.address) {
-      setFromAddress(fromAsset?.address)
-    }
-  }, [fromAddress, fromAsset?.address])
 
   const toAmount = useMemo(() => {
     if (outAmount && Number(outAmount) > 0 && toAsset) {
@@ -147,7 +128,6 @@ export function SideBar({
         fromAsset,
         toAsset,
         fromAmount,
-        setFromAddress,
         outAmount,
         quote: lhQuote,
         callback: () => {
@@ -165,7 +145,6 @@ export function SideBar({
     onOdosSwap,
     onLHSwap,
     outAmount,
-    setFromAddress,
     isDexTrade,
     slippage,
     mutateAssets,
@@ -201,20 +180,6 @@ export function SideBar({
       }
     }
 
-    if (isWrap) {
-      return {
-        isError: false,
-        label: t('Wrap'),
-      }
-    }
-
-    if (isUnwrap) {
-      return {
-        isError: false,
-        label: t('Unwrap'),
-      }
-    }
-
     if (!toAmount) {
       return {
         isError: true,
@@ -226,7 +191,7 @@ export function SideBar({
       isError: false,
       label: t('Swap'),
     }
-  }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap, quotePending, t])
+  }, [fromAsset, toAsset, fromAmount, toAmount, quotePending, t])
 
   return (
     <>
@@ -316,7 +281,7 @@ export function SideBar({
                   disabled
                 />
                 <EmphasisIconButton
-                  className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+                  className='z-1 absolute bottom-0 left-0 right-0 top-0 m-auto'
                   Icon={SwitchVerticalIcon}
                   onClick={() => {
                     setFromAsset(toAsset)
@@ -356,14 +321,10 @@ export function SideBar({
             {account ? (
               <EmphasisButton
                 className='mt-3 w-full'
-                disabled={!fromAmount || quotePending || swapPending || LHSwapPending || wrapPending || btnMsg.isError}
+                disabled={!fromAmount || quotePending || swapPending || LHSwapPending || btnMsg.isError}
                 onClick={() => {
                   if (priceImpact > 5) {
                     setIsWarning(true)
-                  } else if (isWrap) {
-                    onWrap(fromAmount)
-                  } else if (isUnwrap) {
-                    onUnwrap(fromAmount)
                   } else {
                     handleSwap()
                   }
