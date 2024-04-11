@@ -17,6 +17,8 @@ export const useCompetitionFormat = (competition, isPreview = false) => {
         clone.prize.token = assets.find(ele => ele.address.toLowerCase() === competition?.prize?.token.toLowerCase())
       }
 
+      clone.participantCount = competition.participants?.length || 0 // TODO: Remove this after fix api
+
       if (clone.competitionRules) {
         clone.competitionRules.tradingTokens = assets.filter(ele =>
           competition?.competitionRules.tradingTokens?.map(sub => sub.toLowerCase()).includes(ele.address),

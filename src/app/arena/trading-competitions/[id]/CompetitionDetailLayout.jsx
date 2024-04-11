@@ -94,6 +94,8 @@ function CompetitionDetailLayout({ children, params }) {
 
   const [queryParams, setQueryParams] = useState()
 
+  const _competition = useCompetitionFormat(competition)
+
   const subTabs = useMemo(
     () =>
       compact([
@@ -105,7 +107,7 @@ function CompetitionDetailLayout({ children, params }) {
             replace(`/arena/trading-competitions/${params.id}`)
           },
         },
-        (eventType === EVENT_TYPES.LIVE || eventType === EVENT_TYPES.ENDED) && competition?.participantCount !== 0
+        (eventType === EVENT_TYPES.LIVE || eventType === EVENT_TYPES.ENDED) && _competition?.participantCount !== 0
           ? {
               label: t('Leaderboard'),
               active: selectedTab === 'leaderboard',
@@ -116,7 +118,7 @@ function CompetitionDetailLayout({ children, params }) {
               },
             }
           : undefined,
-        competition?.participantCount !== 0
+        _competition?.participantCount !== 0
           ? {
               label: t('Participants'),
               active: selectedTab === 'participants',
@@ -135,10 +137,8 @@ function CompetitionDetailLayout({ children, params }) {
           },
         },
       ]),
-    [competition?.participantCount, eventType, params.id, replace, selectedTab, t],
+    [_competition?.participantCount, eventType, params.id, replace, selectedTab, t],
   )
-
-  const _competition = useCompetitionFormat(competition)
 
   useEffect(() => {
     setQueryParams(
