@@ -78,7 +78,7 @@ export function TCButton({ eventType, competition, timestamp }) {
       </Link>
 
       {isJoined && eventType === EVENT_TYPES.LIVE && (
-        <Link href={`/arena/trading-competitions/${competition.id}/trade`}>
+        <Link href={`/arena/trading-competitions/${competition.id}/trade`} className='w-full'>
           <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
         </Link>
       )}

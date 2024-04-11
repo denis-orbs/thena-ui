@@ -43,7 +43,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
           fromWei(b.pnl, competition.competitionRules?.winningToken?.decimals) -
           fromWei(a.pnl, competition.competitionRules?.winningToken?.decimals),
       ) || []
-    return sort.findIndex(item => item.participant.id === account.toLocaleLowerCase()) + 1
+    return sort.findIndex(item => item.participant.id === account?.toLocaleLowerCase()) + 1
   }, [competition.participants, competition.competitionRules?.winningToken?.decimals, account])
 
   useEffect(() => {
@@ -88,7 +88,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
                 <div className='flex items-center justify-center space-x-2'>
                   <Image
                     alt='USDC'
-                    src={competition.competitionRules?.winningToken?.logoURI ?? ''}
+                    src={`${competition.competitionRules?.winningToken?.logoURI ?? ''}`}
                     className='flex-shrink-0'
                     width={24}
                     height={24}
@@ -112,7 +112,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
             <div className='flex items-center justify-center space-x-2'>
               <Image
                 alt='USDC'
-                src={competition.competitionRules?.winningToken?.logoURI ?? ''}
+                src={`${competition.competitionRules?.winningToken?.logoURI ?? ''}`}
                 className='flex-shrink-0'
                 width={24}
                 height={24}

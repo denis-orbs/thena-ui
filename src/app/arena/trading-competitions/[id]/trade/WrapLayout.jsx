@@ -8,7 +8,7 @@ import Contracts from '@/constant/contracts'
 import { useTradeCompetitionData } from '@/hooks/trade/useTradeCompetitionData'
 import { useEventType } from '@/hooks/useEventType'
 import { useWrap } from '@/hooks/useSwap'
-import { useTradeData } from '@/hooks/useTcSpotContract'
+import { useTCContractInfor, useTradeData } from '@/hooks/useTcSpotContract'
 import { errorToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
@@ -36,13 +36,7 @@ export function WrapLayout({ children, params }) {
 
   const { eventType } = useEventType(competition?.timestamp)
 
-  const isRegistered = useMemo(
-    () =>
-      competition?.participants.find(
-        participant => participant?.participant?.id.toLowerCase() === account?.toLowerCase(),
-      ),
-    [account, competition],
-  )
+  const { isRegistered, loaded } = useTCContractInfor(competition?.tradingCompetitionSpot)
 
   const isWrap = useMemo(() => {
     if (
@@ -98,15 +92,15 @@ export function WrapLayout({ children, params }) {
   }, [fromAsset, toAsset, tradingTokens])
 
   useEffect(() => {
-    if (competition) {
+    if (loaded && competition) {
       if (!account || !isRegistered) {
         errorToast('You Must Be A Participant')
         redirect(`/arena/trading-competitions/${params.id}`)
       }
     }
-  }, [account, isRegistered, params.id, competition])
+  }, [account, competition, isRegistered, params.id, loaded])
 
-  if (!competition || !account || !isRegistered) {
+  if (!competition || !loaded || !account || !isRegistered) {
     return <Loading />
   }
 

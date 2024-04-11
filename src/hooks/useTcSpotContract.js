@@ -31,7 +31,7 @@ export const useTcSpotContract = address => {
 }
 
 export const useTCContractInfor = (address, eventType) => {
-  const [pending, setPending] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
@@ -47,15 +47,16 @@ export const useTCContractInfor = (address, eventType) => {
       setIsOwner(false)
       return
     }
-    setPending(true)
     const [joined, won, ownerAddress] = await Promise.all([
       readCall(tcSpotContract, 'isRegistered', [account]),
       readCall(tcSpotContract, 'isWinner', [account]),
       readCall(tcSpotContract, 'owner', []),
     ])
+
     setIsRegistered(joined)
     setIsWinner(won[0])
     setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
+    setLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, tcSpotContract, eventType])
 
@@ -82,8 +83,10 @@ export const useTCContractInfor = (address, eventType) => {
     getUserData()
   }, [getUserData])
 
+  console.log('register', isRegistered)
+
   return {
-    pending,
+    loaded,
     isRegistered,
     isWinner,
     isOwner,
