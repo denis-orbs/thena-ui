@@ -83,8 +83,6 @@ export const useTCContractInfor = (address, eventType) => {
     getUserData()
   }, [getUserData])
 
-  console.log('register', isRegistered)
-
   return {
     loaded,
     isRegistered,

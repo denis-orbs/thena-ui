@@ -1,9 +1,12 @@
 'use client'
 
 import { redirect } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
+import Box from '@/components/box'
+import { TextHeading } from '@/components/typography'
 import Contracts from '@/constant/contracts'
 import { useTradeCompetitionData } from '@/hooks/trade/useTradeCompetitionData'
 import { useEventType } from '@/hooks/useEventType'
@@ -21,6 +24,7 @@ import { TradeNotStarted } from './TradeNotStarted'
 
 export function WrapLayout({ children, params }) {
   const { account } = useWallet()
+  const t = useTranslations()
 
   const [fromAsset, setFromAsset] = useState(null)
   const [toAsset, setToAsset] = useState(null)
@@ -107,6 +111,12 @@ export function WrapLayout({ children, params }) {
   return (
     <>
       <TopBar handleClickShowModal={() => setShowModalDeposit(true)} competition={competition} />
+      <Box className='mb-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
+        <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
+        <TextHeading className='text-base font-normal'>
+          {t('If You Want To Know The Real PnL', { symbol: fromAsset?.symbol })}
+        </TextHeading>
+      </Box>
       {eventType === EVENT_TYPES.LIVE ? (
         <SideBar
           fromAsset={fromAsset}
