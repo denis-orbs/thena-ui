@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { useTCContractInfor, useTcSpotContract } from '@/hooks/useTcSpotContract'
+import { useClaimTC, useTCContractInfor } from '@/hooks/useTcSpotContract'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
@@ -16,7 +16,7 @@ export function TCButton({ eventType, competition, timestamp }) {
   const { open } = useWeb3Modal()
   const { account } = useWallet()
   const [showJoinModal, setShowJoinModal] = useState(false)
-  const { claimPrize } = useTcSpotContract(competition.tradingCompetitionSpot)
+  const { claimReward } = useClaimTC()
   const {
     isRegistered: isJoined,
     isOwner: isHosting,
@@ -31,12 +31,15 @@ export function TCButton({ eventType, competition, timestamp }) {
 
   const claim = useCallback(async () => {
     try {
-      await claimPrize()
+      await claimReward({
+        tcAddress: competition.tradingCompetitionSpot,
+        isOwner: isHosting,
+      })
       await refetch()
     } catch (e) {
       console.error(e)
     }
-  }, [refetch, claimPrize])
+  }, [claimReward, competition.tradingCompetitionSpot, isHosting, refetch])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -83,7 +86,7 @@ export function TCButton({ eventType, competition, timestamp }) {
         </Link>
       )}
       {eventType === EVENT_TYPES.ENDED && (isJoined || isHosting) && canClaimRewards && (
-        <PrimaryButton className='w-full' onClick={claim}>
+        <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
           {t('Claim Rewards')}
         </PrimaryButton>
       )}

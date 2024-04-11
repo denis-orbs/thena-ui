@@ -97,3 +97,18 @@ export const sleep = delay =>
   new Promise(resolve => {
     setTimeout(resolve, delay)
   })
+
+export const retry = async (callback, maxRetries = 3, enableThrow = false) => {
+  for (let retries = 0; retries < maxRetries; retries++) {
+    try {
+      await callback()
+      return
+    } catch (error) {
+      if (enableThrow && retries === maxRetries - 1) {
+        throw error
+      }
+    }
+
+    await sleep(1000)
+  }
+}

@@ -8,7 +8,7 @@ import { useAssets } from '@/context/assetsContext'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { fromWei, sleep } from '@/lib/utils'
+import { fromWei, retry, sleep } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -47,15 +47,20 @@ export const useTCContractInfor = (address, eventType) => {
       setIsOwner(false)
       return
     }
-    const [joined, won, ownerAddress] = await Promise.all([
-      readCall(tcSpotContract, 'isRegistered', [account]),
-      readCall(tcSpotContract, 'isWinner', [account]),
-      readCall(tcSpotContract, 'owner', []),
-    ])
+    const callData = async () => {
+      const [joined, won, ownerAddress] = await Promise.all([
+        readCall(tcSpotContract, 'isRegistered', [account]),
+        readCall(tcSpotContract, 'isWinner', [account]),
+        readCall(tcSpotContract, 'owner', []),
+      ])
 
-    setIsRegistered(joined)
-    setIsWinner(won[0])
-    setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
+      setIsRegistered(joined)
+      setIsWinner(won[0])
+      setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
+    }
+
+    await retry(callData)
+
     setLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, tcSpotContract, eventType, address])
@@ -336,4 +341,49 @@ export const useTradeData = (TCAddress, winningTokenAddress) => {
     reload: fetchData,
     userBalance,
   }
+}
+
+export const useClaimTC = () => {
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const { account } = useWallet()
+  const t = useTranslations()
+  const [loading, setLoading] = useState(false)
+
+  const claimReward = useCallback(
+    async ({ tcAddress, isOwner }) => {
+      const key = uuidv4()
+      const claimuuid = uuidv4()
+      const tcSpotContract = getTcSpotContract(tcAddress)
+
+      setLoading(true)
+      startTxn({
+        key,
+        title: isOwner ? t('Claim Owner Fee') : t('Claim Rewards'),
+        transactions: {
+          [claimuuid]: {
+            desc: isOwner ? t('Claim Owner Fee') : t('Claim Rewards'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      const isSuccess = await writeTxn(key, claimuuid, tcSpotContract, isOwner ? 'claimOwnerFee' : 'claimPrize', [
+        account,
+      ])
+      if (!isSuccess) {
+        setLoading(false)
+        return false
+      }
+      endTxn({
+        key,
+        final: 'Claim Successful',
+      })
+      setLoading(false)
+      return true
+    },
+    [account, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { loading, claimReward }
 }

@@ -162,6 +162,14 @@ function Sidebar({ competition, eventType }) {
   }, [claimPrize, refetch])
 
   const buttonByStatus = useMemo(() => {
+    if (canClaimRewards && eventType === EVENT_TYPES.ENDED) {
+      return (
+        <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
+          {isHosting ? t('Claim Owner Fee') : t('Claim Rewards')}
+        </PrimaryButton>
+      )
+    }
+
     if (isHosting) {
       return (
         <PrimaryButton className='w-full' onClick={onShare}>
@@ -225,13 +233,6 @@ function Sidebar({ competition, eventType }) {
         <SecondaryButton className='w-full' disabled>
           {t('Trading Competition Has Ended')}
         </SecondaryButton>
-      )
-    }
-    if (isJoined && canClaimRewards && eventType === EVENT_TYPES.ENDED) {
-      return (
-        <PrimaryButton className='bg-green w-full' onClick={claim}>
-          {t('Claim Rewards')}
-        </PrimaryButton>
       )
     }
   }, [
