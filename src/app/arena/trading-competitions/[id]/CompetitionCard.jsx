@@ -22,7 +22,7 @@ function CompetitionCard({ competition, eventType }) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const nowDiff = dayjs().diff(dayjs.unix(competition.timestamp.registrationEnd), 'day')
+      const isSame = dayjs().isSame(dayjs.unix(competition.timestamp.registrationEnd), 'day')
       const now = Date.now() / 1000
       const registerEndTime = competition.timestamp.registrationEnd
       const start = competition.timestamp.startTimestamp
@@ -30,11 +30,11 @@ function CompetitionCard({ competition, eventType }) {
       if (eventType) {
         if (now <= registerStartTime) {
           setIsRegisterStarted(false)
-          const nowDiffStart = dayjs().diff(dayjs.unix(competition.timestamp.registrationStart), 'day')
+          const isSameStart = dayjs().isSame(dayjs.unix(competition.timestamp.registrationStart), 'day')
           setRegisterText(
-            nowDiffStart === 0
+            isSameStart
               ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.registrationStart)).format('HH:mm')}`
-              : nowDiffStart === -1
+              : isSameStart
                 ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.registrationStart)).format('HH:mm')}`
                 : dayjs.unix(Number(competition.timestamp.registrationStart)).format('MMM DD, YYYY HH:mm'),
           )
@@ -45,9 +45,9 @@ function CompetitionCard({ competition, eventType }) {
               ? t('Registration Closed')
               : eventType === EVENT_TYPES.LIVE
                 ? t('Competition Is Live')
-                : nowDiff === 0
+                : isSame
                   ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.registrationEnd)).format('HH:mm')}`
-                  : nowDiff === -1
+                  : isSame
                     ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.registrationEnd)).format('HH:mm')}`
                     : dayjs.unix(Number(competition.timestamp.registrationEnd)).format('MMM DD, YYYY HH:mm'),
           )
@@ -66,7 +66,7 @@ function CompetitionCard({ competition, eventType }) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const nowDiff = dayjs().diff(dayjs.unix(competition.timestamp.startTimestamp), 'day')
+      const isSame = dayjs().isSame(dayjs.unix(competition.timestamp.startTimestamp), 'day')
 
       if (eventType) {
         setStartTimeText(
@@ -74,9 +74,9 @@ function CompetitionCard({ competition, eventType }) {
             ? t('Competition Has Ended')
             : eventType === EVENT_TYPES.LIVE
               ? t('Competition Is Live')
-              : nowDiff === 0
+              : isSame
                 ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.startTimestamp)).format('HH:mm')}`
-                : nowDiff === -1
+                : isSame
                   ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.startTimestamp)).format('HH:mm')}`
                   : dayjs.unix(Number(competition.timestamp.startTimestamp)).format('MMM DD, YYYY HH:mm'),
         )
@@ -87,15 +87,15 @@ function CompetitionCard({ competition, eventType }) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const nowDiff = dayjs().diff(dayjs.unix(competition.timestamp.endTimestamp), 'day')
+      const isSame = dayjs().isSame(dayjs.unix(competition.timestamp.endTimestamp), 'day')
 
       if (eventType) {
         setEndTimeText(
           eventType === EVENT_TYPES.ENDED
             ? t('Competition Has Ended')
-            : nowDiff === 0
+            : isSame
               ? `${t('Today')} ${dayjs.unix(Number(competition.timestamp.endTimestamp)).format('HH:mm')}`
-              : nowDiff === -1
+              : isSame
                 ? `${t('Tomorrow')} ${dayjs.unix(Number(competition.timestamp.endTimestamp)).format('HH:mm')}`
                 : dayjs.unix(Number(competition.timestamp.endTimestamp)).format('MMM DD, YYYY HH:mm'),
         )
