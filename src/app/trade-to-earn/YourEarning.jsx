@@ -4,13 +4,14 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, TrailingButton } from '@/components/buttons/Button'
+import { PrimaryButton, TrailingButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Table from '@/components/table'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
-function YourEarning() {
+function YourEarning({ earnings = [] }) {
   const sortOptions = useMemo(
     () => [
       {
@@ -58,8 +59,19 @@ function YourEarning() {
   const { push } = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[0])
-  const [data, setData] = useState([])
   const { account } = useWallet()
+
+  const data = useMemo(
+    () =>
+      earnings.map(item => ({
+        epoch: item.day,
+        date: item.lastUpdate,
+        tradingVolume: item.amountAsUser,
+        earned: 0,
+        inUSD: 0,
+      })),
+    [earnings],
+  )
 
   const sortedData = useMemo(
     () =>
@@ -70,7 +82,7 @@ function YourEarning() {
             res = (a.epoch - b.epoch) * (sort.isDesc ? -1 : 1)
             break
           case 'date':
-            res = (new Date(a.date).getTime() - new Date(b.date).getTime()) * (sort.isDesc ? -1 : 1)
+            res = (a.date - b.date) * (sort.isDesc ? -1 : 1)
             break
           case 'tradingVolume':
             res = (a.tradingVolume - b.tradingVolume) * (sort.isDesc ? -1 : 1)
@@ -78,11 +90,9 @@ function YourEarning() {
           case 'earned':
             res = (a.earned - b.earned) * (sort.isDesc ? -1 : 1)
             break
-
           case 'inUSD':
             res = (a.inUSD - b.inUSD) * (sort.isDesc ? -1 : 1)
             break
-
           default:
             break
         }
@@ -95,30 +105,15 @@ function YourEarning() {
     () =>
       sortedData.map(item => ({
         epoch: <Paragraph>{item.epoch}</Paragraph>,
-        date: <Paragraph>{item.date}</Paragraph>,
-        tradingVolume: <Paragraph>${item.tradingVolume.toLocaleString()}</Paragraph>,
+        date: <Paragraph>{moment(new Date(item.date * 1000)).format('ll')}</Paragraph>,
+        tradingVolume: <Paragraph>${formatAmount(fromWei(item.tradingVolume))}</Paragraph>,
         earned: <Paragraph>{item.earned.toLocaleString()} THE</Paragraph>,
         inUSD: <Paragraph>${item.inUSD.toLocaleString()}</Paragraph>,
-        action: <EmphasisButton className='w-full lg:w-fit'>{t('Claim')}</EmphasisButton>,
+        action: <PrimaryButton className='w-full lg:w-fit'>{t('Claim')}</PrimaryButton>,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData), t],
   )
-
-  const handleAdd = () => {
-    const randomDays = Math.floor(Math.random() * 365)
-    const randomDate = moment().add(randomDays, 'days').format('LL')
-    const item = {
-      epoch: Math.floor(Math.random() * 1000),
-      date: randomDate,
-      tradingVolume: Math.floor(Math.random() * 10000),
-      earned: Math.floor(Math.random() * 10000),
-      inUSD: Math.floor(Math.random() * 10000),
-    }
-    const arr = [...data]
-    arr.push(item)
-    setData(arr)
-  }
 
   return (
     <div className='mb-8'>
@@ -127,11 +122,6 @@ function YourEarning() {
           <TextHeading className='text-xl font-semibold md:text-3xl'>{t('Your Earnings')}</TextHeading>
           <TextSubHeading>{t('Your Earnings Description')}</TextSubHeading>
         </div>
-        {account && (
-          <div>
-            <PrimaryButton onClick={handleAdd}>Add</PrimaryButton>
-          </div>
-        )}
       </div>
       {account ? (
         !finalData.length ? (
