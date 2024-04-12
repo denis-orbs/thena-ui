@@ -62,7 +62,7 @@ export default function TradeToEarnPage() {
       <div className='relative z-30'>
         <TopBar />
         <Information dailyUserVolume={dailyUserVolume} dailyTotalVolume={dailyTotalVolume} totalVolume={totalVolume} />
-        <YourEarning earnings={earnings} />
+        <YourEarning earnings={earnings || []} />
         <Work />
       </div>
     </div>

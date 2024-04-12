@@ -11,14 +11,17 @@ import Table from '@/components/table'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
+import { useClaimReward } from '@/hooks/useDibsRewarder'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
 import { readCall } from '@/lib/contractActions'
+import { warnToast } from '@/lib/notify'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { fetchDataTotalVolume } from '@/modules/TradeToEarn'
 
 function YourEarning({ earnings = [] }) {
   const assets = useAssets()
+  const { onClaimReward, pending } = useClaimReward()
 
   const sortOptions = useMemo(
     () => [
@@ -56,7 +59,7 @@ function YourEarning({ earnings = [] }) {
       {
         label: '',
         value: 'action',
-        width: 'lg:w-[10%]',
+        width: 'lg:w-[15%]',
         disabled: true,
       },
     ],
@@ -78,59 +81,75 @@ function YourEarning({ earnings = [] }) {
   const { account } = useWallet()
   const { fetchTotalRewardADay } = useTotalRewardADay()
   const [data, setData] = useState([])
-  const { dibsRewarder } = useDibsRewarder()
+  const { dibsRewarder, currentDay } = useDibsRewarder()
 
   const getDataCallback = useCallback(async () => {
-    const items = []
-    for (const item of earnings) {
-      const totalRewardADay = await fetchTotalRewardADay(item.day)
-      const totalTradingADay = totalVolume?.find(totalVolItem => totalVolItem.day === item.day)
-      const earned = []
-      const inUSD = []
-      let isClaimable = false
-      if (totalTradingADay && totalTradingADay.amountAsUser > 0) {
-        for (const reward of totalRewardADay) {
-          const earnedWei =
-            reward.totalReward *
-            (fromWei(item.amountAsUser).toNumber() / fromWei(totalTradingADay.amountAsUser).toNumber())
-          // ToDo: hard code for test
-          // * 10 ** 30
+    if (earnings.length) {
+      const items = []
+      for (const item of earnings) {
+        const totalRewardADay = await fetchTotalRewardADay(item.day)
+        const totalTradingADay = totalVolume?.find(totalVolItem => totalVolItem.day === item.day)
+        const earned = []
+        const inUSD = []
+        let isClaimable = false
+        if (totalTradingADay && totalTradingADay.amountAsUser > 0) {
+          for (const reward of totalRewardADay) {
+            const earnedWei =
+              reward.totalReward *
+              (fromWei(item.amountAsUser).toNumber() / fromWei(totalTradingADay.amountAsUser).toNumber())
+            // ToDo: hard code for test
+            // * 10 ** 30
 
-          const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
-          const checkClaim = earnedWei - fromWei(claimed).toNumber()
-          if (checkClaim > 0) {
-            isClaimable = true
+            if (account) {
+              const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
+              const checkClaim = earnedWei - fromWei(claimed).toNumber()
+              if (checkClaim > 0) {
+                isClaimable = true
+              }
+            }
+            earned.push({
+              total: fromWei(earnedWei).toNumber(),
+              symbol: reward.symbol,
+            })
           }
-          earned.push({
-            total: fromWei(earnedWei).toNumber(),
-            symbol: reward.symbol,
+        }
+
+        if (earned.length) {
+          earned.forEach(e => {
+            let price = 1
+            const asset = assets.find(assetItem => assetItem.symbol === e.symbol)
+            if (asset) {
+              price = asset.price
+            }
+            inUSD.push(e.total * price)
           })
         }
-      }
 
-      if (earned.length) {
-        earned.forEach(e => {
-          let price = 1
-          const asset = assets.find(assetItem => assetItem.symbol === e.symbol)
-          if (asset) {
-            price = asset.price
-          }
-          inUSD.push(e.total * price)
+        items.push({
+          epoch: item.day,
+          date: item.lastUpdate,
+          tradingVolume: item.amountAsUser,
+          earned,
+          inUSD,
+          isClaimable,
         })
       }
 
-      items.push({
-        epoch: item.day,
-        date: item.lastUpdate,
-        tradingVolume: item.amountAsUser,
-        earned,
-        inUSD,
-        isClaimable,
-      })
+      setData(items)
+    } else {
+      setData([])
     }
-    setData(items)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, earnings, totalVolume])
+  }, [account, assets, dibsRewarder, earnings, fetchTotalRewardADay, totalVolume])
+
+  const handleClaimReward = useCallback(
+    async day => {
+      if (account) {
+        return await onClaimReward(account, day)
+      }
+      warnToast('Error')
+    },
+    [account, onClaimReward],
+  )
 
   useEffect(() => {
     getDataCallback()
@@ -172,13 +191,20 @@ function YourEarning({ earnings = [] }) {
         tradingVolume: <Paragraph>${formatAmount(fromWei(item.tradingVolume))}</Paragraph>,
         earned: <Paragraph>{item.earned.map(e => `${formatAmount(e.total)} ${e.symbol}`).join(', ')}</Paragraph>,
         inUSD: (
-          <Paragraph>{item.inUSD.length ? item.inUSD.map(usd => `${formatAmount(usd)}`).join(', ') : 0}</Paragraph>
+          <Paragraph>${item.inUSD.length ? item.inUSD.map(usd => `${formatAmount(usd)}`).join(', ') : 0}</Paragraph>
         ),
-        action: (
-          <PrimaryButton className='w-full lg:w-fit' disabled={!item.isClaimable}>
-            {t(item.isClaimable ? 'Claim' : 'Claimed')}
-          </PrimaryButton>
-        ),
+        action:
+          Number(item.epoch) !== Number(currentDay) ? (
+            <PrimaryButton
+              className='w-full'
+              onClick={() => handleClaimReward(item.epoch)}
+              disabled={!item.isClaimable || pending}
+            >
+              {t(item.isClaimable ? 'Claim' : 'Claimed')}
+            </PrimaryButton>
+          ) : (
+            ''
+          ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData), t],
