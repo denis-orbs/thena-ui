@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Box from '@/components/box'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
-import { useTCContractInfor, useTcSpotContract } from '@/hooks/useTcSpotContract'
+import { useClaimTC, useTCContractInfor } from '@/hooks/useTcSpotContract'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
@@ -19,7 +19,7 @@ import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
 function Sidebar({ competition, eventType }) {
   const t = useTranslations()
   const progressBarRef = useRef()
-  const { claimPrize } = useTcSpotContract(competition.tradingCompetitionSpot)
+  const { claimReward } = useClaimTC()
   const [showJoinModal, setShowJoinModal] = useState(false)
   const { open } = useWeb3Modal()
   const { account } = useWallet()
@@ -154,12 +154,12 @@ function Sidebar({ competition, eventType }) {
 
   const claim = useCallback(async () => {
     try {
-      await claimPrize()
+      await claimReward({ tcAddress: competition.tradingCompetitionSpot, isOwner: isHosting })
       refetch()
     } catch (e) {
       console.error(e)
     }
-  }, [claimPrize, refetch])
+  }, [claimReward, competition.tradingCompetitionSpot, isHosting, refetch])
 
   const buttonByStatus = useMemo(() => {
     if (canClaimRewards && eventType === EVENT_TYPES.ENDED) {

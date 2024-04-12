@@ -35,7 +35,7 @@ export const useTCContractInfor = (address, eventType) => {
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
-  const [isClaimable, setIsClaimable] = useState(false)
+  const [isClaimable, setIsClaimable] = useState(undefined)
   const tcSpotContract = getTcSpotContract(address)
   const { account } = useWallet()
   const assets = useAssets()
@@ -63,11 +63,10 @@ export const useTCContractInfor = (address, eventType) => {
 
   useEffect(() => {
     const checkClaimable = async () => {
-      if (eventType === EVENT_TYPES.ENDED) {
-        if ((isRegistered && isWinner) || isOwner) {
+      if (eventType === EVENT_TYPES.ENDED && isClaimable === undefined) {
+        if (isRegistered && isWinner) {
           const claimable = await readCall(tcSpotContract, 'claimable', [account])
           const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
-
           if (!token) {
             setIsClaimable(false)
           } else {
@@ -75,10 +74,22 @@ export const useTCContractInfor = (address, eventType) => {
             setIsClaimable(!totalClaimable.isZero())
           }
         }
+        if (isOwner) {
+          const [ownerClaimed, feeAmount] = await Promise.all([
+            await readCall(tcSpotContract, 'ownerHasClaimed', [account]),
+            await readCall(tcSpotContract, 'ownerFeeAmount', []),
+          ])
+
+          if (ownerClaimed) {
+            setIsClaimable(false)
+          } else {
+            setIsClaimable(!fromWei(feeAmount).isZero())
+          }
+        }
       }
     }
     checkClaimable()
-  }, [account, assets, eventType, isOwner, isRegistered, isWinner, tcSpotContract])
+  }, [account, assets, eventType, isClaimable, isOwner, isRegistered, isWinner, tcSpotContract])
 
   useEffect(() => {
     getUserData()
@@ -90,6 +101,7 @@ export const useTCContractInfor = (address, eventType) => {
     isWinner,
     isOwner,
     isClaimable,
+    setIsClaimable,
     refetch: getUserData,
   }
 }
