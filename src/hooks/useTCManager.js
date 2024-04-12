@@ -139,9 +139,9 @@ export const useCreateTC = () => {
         if (parsed.args) {
           const idCounter = parsed.args.getValue('idCounter')
           const comp = parsed.args.getValue('competition')
-          if (idCounter && comp) {
+          if (comp && (idCounter === 0n || idCounter)) {
             const id = new BigNumber(idCounter).toNumber()
-            if (id && comp) {
+            if (id === 0 || id) {
               return `${comp.toLowerCase()}-${id}`
             }
           }
