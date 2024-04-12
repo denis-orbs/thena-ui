@@ -86,35 +86,39 @@ function YourEarning({ earnings = [] }) {
       const totalRewardADay = await fetchTotalRewardADay(item.day)
       const totalTradingADay = totalVolume?.find(totalVolItem => totalVolItem.day === item.day)
       const earned = []
+      const inUSD = []
       let isClaimable = false
       if (totalTradingADay && totalTradingADay.amountAsUser > 0) {
-        totalRewardADay.forEach(async reward => {
+        for (const reward of totalRewardADay) {
           const earnedWei =
-            (reward.totalReward * fromWei(item.amountAsUser).toNumber()) /
-            fromWei(totalTradingADay.amountAsUser).toNumber()
+            reward.totalReward *
+            (fromWei(item.amountAsUser).toNumber() / fromWei(totalTradingADay.amountAsUser).toNumber())
+          // ToDo: hard code for test
+          // * 10 ** 30
 
           const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
-
-          if (earnedWei - fromWei(claimed).toNumber()) {
+          const checkClaim = earnedWei - fromWei(claimed).toNumber()
+          if (checkClaim > 0) {
             isClaimable = true
           }
-
           earned.push({
             total: fromWei(earnedWei).toNumber(),
             symbol: reward.symbol,
           })
+        }
+      }
+
+      if (earned.length) {
+        earned.forEach(e => {
+          let price = 1
+          const asset = assets.find(assetItem => assetItem.symbol === e.symbol)
+          if (asset) {
+            price = asset.price
+          }
+          inUSD.push(e.total * price)
         })
       }
 
-      const inUSD = []
-      earned.forEach(e => {
-        let price = 1
-        const asset = assets.find(assetItem => assetItem.symbol === e.symbol)
-        if (asset) {
-          price = asset.price
-        }
-        inUSD.push(e.total * price)
-      })
       items.push({
         epoch: item.day,
         date: item.lastUpdate,
@@ -146,12 +150,12 @@ function YourEarning({ earnings = [] }) {
           case 'tradingVolume':
             res = (a.tradingVolume - b.tradingVolume) * (sort.isDesc ? -1 : 1)
             break
-          // case 'earned':
-          //   res = (a.earned - b.earned) * (sort.isDesc ? -1 : 1)
-          //   break
-          // case 'inUSD':
-          //   res = (a.inUSD - b.inUSD) * (sort.isDesc ? -1 : 1)
-          //   break
+          case 'earned':
+            res = a.earned[0] && b.earned[0] ? (a.earned[0].total - b.earned[0].total) * (sort.isDesc ? -1 : 1) : 0
+            break
+          case 'inUSD':
+            res = a.inUSD[0] && b.inUSD[0] ? (a.inUSD[0] - b.inUSD[0]) * (sort.isDesc ? -1 : 1) : 0
+            break
           default:
             break
         }
@@ -166,8 +170,10 @@ function YourEarning({ earnings = [] }) {
         epoch: <Paragraph>{item.epoch}</Paragraph>,
         date: <Paragraph>{moment(new Date(item.date * 1000)).format('ll')}</Paragraph>,
         tradingVolume: <Paragraph>${formatAmount(fromWei(item.tradingVolume))}</Paragraph>,
-        earned: <Paragraph>{item.earned.map(e => `${e.total} ${e.symbol}`).join(', ')}</Paragraph>,
-        inUSD: <Paragraph>{item.inUSD.length ? item.inUSD.join(', ') : 0}</Paragraph>,
+        earned: <Paragraph>{item.earned.map(e => `${formatAmount(e.total)} ${e.symbol}`).join(', ')}</Paragraph>,
+        inUSD: (
+          <Paragraph>{item.inUSD.length ? item.inUSD.map(usd => `${formatAmount(usd)}`).join(', ') : 0}</Paragraph>
+        ),
         action: (
           <PrimaryButton className='w-full lg:w-fit' disabled={!item.isClaimable}>
             {t(item.isClaimable ? 'Claim' : 'Claimed')}

@@ -3,6 +3,7 @@ import { gql, GraphQLClient } from 'graphql-request'
 
 // const END_POINT = 'https://api.studio.thegraph.com/proxy/70764/thena-subgraph-3/version/latest'
 const END_POINT = 'https://api.studio.thegraph.com/query/70764/thena-subgraph/version/latest'
+// const END_POINT = 'https://api.studio.thegraph.com/query/70764/thena-subgraph/0.0.3'
 
 export const v4Client = new GraphQLClient(END_POINT)
 
