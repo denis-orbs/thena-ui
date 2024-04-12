@@ -10,7 +10,9 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import Table from '@/components/table'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
+import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
+import { readCall } from '@/lib/contractActions'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { fetchDataTotalVolume } from '@/modules/TradeToEarn'
@@ -76,33 +78,55 @@ function YourEarning({ earnings = [] }) {
   const { account } = useWallet()
   const { fetchTotalRewardADay } = useTotalRewardADay()
   const [data, setData] = useState([])
+  const { dibsRewarder } = useDibsRewarder()
 
   const getDataCallback = useCallback(async () => {
     const items = []
     for (const item of earnings) {
       const totalRewardADay = await fetchTotalRewardADay(item.day)
       const totalTradingADay = totalVolume?.find(totalVolItem => totalVolItem.day === item.day)
-      let earned = 0
+      const earned = []
+      let isClaimable = false
       if (totalTradingADay && totalTradingADay.amountAsUser > 0) {
-        const earnedWei =
-          (totalRewardADay * fromWei(item.amountAsUser).toNumber()) / fromWei(totalTradingADay.amountAsUser).toNumber()
-        earned = fromWei(earnedWei).toNumber()
+        totalRewardADay.forEach(async reward => {
+          const earnedWei =
+            (reward.totalReward * fromWei(item.amountAsUser).toNumber()) /
+            fromWei(totalTradingADay.amountAsUser).toNumber()
+
+          const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
+
+          if (earnedWei - fromWei(claimed).toNumber()) {
+            isClaimable = true
+          }
+
+          earned.push({
+            total: fromWei(earnedWei).toNumber(),
+            symbol: reward.symbol,
+          })
+        })
       }
-      let thenaPrice = 1
-      const thenaAsset = assets.find(assetItem => assetItem.name === 'THENA')
-      if (thenaAsset) {
-        thenaPrice = thenaAsset.price
-      }
+
+      const inUSD = []
+      earned.forEach(e => {
+        let price = 1
+        const asset = assets.find(assetItem => assetItem.symbol === e.symbol)
+        if (asset) {
+          price = asset.price
+        }
+        inUSD.push(e.total * price)
+      })
       items.push({
         epoch: item.day,
         date: item.lastUpdate,
         tradingVolume: item.amountAsUser,
         earned,
-        inUSD: earned * thenaPrice,
+        inUSD,
+        isClaimable,
       })
     }
     setData(items)
-  }, [assets, earnings, fetchTotalRewardADay, totalVolume])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, earnings, totalVolume])
 
   useEffect(() => {
     getDataCallback()
@@ -122,12 +146,12 @@ function YourEarning({ earnings = [] }) {
           case 'tradingVolume':
             res = (a.tradingVolume - b.tradingVolume) * (sort.isDesc ? -1 : 1)
             break
-          case 'earned':
-            res = (a.earned - b.earned) * (sort.isDesc ? -1 : 1)
-            break
-          case 'inUSD':
-            res = (a.inUSD - b.inUSD) * (sort.isDesc ? -1 : 1)
-            break
+          // case 'earned':
+          //   res = (a.earned - b.earned) * (sort.isDesc ? -1 : 1)
+          //   break
+          // case 'inUSD':
+          //   res = (a.inUSD - b.inUSD) * (sort.isDesc ? -1 : 1)
+          //   break
           default:
             break
         }
@@ -142,9 +166,13 @@ function YourEarning({ earnings = [] }) {
         epoch: <Paragraph>{item.epoch}</Paragraph>,
         date: <Paragraph>{moment(new Date(item.date * 1000)).format('ll')}</Paragraph>,
         tradingVolume: <Paragraph>${formatAmount(fromWei(item.tradingVolume))}</Paragraph>,
-        earned: <Paragraph>{formatAmount(item.earned)} THE</Paragraph>,
-        inUSD: <Paragraph>${item.inUSD.toLocaleString()}</Paragraph>,
-        action: <PrimaryButton className='w-full lg:w-fit'>{t('Claim')}</PrimaryButton>,
+        earned: <Paragraph>{item.earned.map(e => `${e.total} ${e.symbol}`).join(', ')}</Paragraph>,
+        inUSD: <Paragraph>{item.inUSD.length ? item.inUSD.join(', ') : 0}</Paragraph>,
+        action: (
+          <PrimaryButton className='w-full lg:w-fit' disabled={!item.isClaimable}>
+            {t(item.isClaimable ? 'Claim' : 'Claimed')}
+          </PrimaryButton>
+        ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData), t],

@@ -13,7 +13,7 @@ import useWallet from '@/lib/wallets/useWallet'
 function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
   const t = useTranslations()
   const { account } = useWallet()
-  const { totalReward, totalRewardThenaCurrDay, totalUserEarned } = useDibsRewarder()
+  const { totalReward, totalRewardCurrDay, totalUserEarned } = useDibsRewarder()
   const [countDown, setCountDown] = useState(0)
 
   const hours = useMemo(
@@ -66,7 +66,7 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
     () => [
       {
         value: `$${formatAmount(fromWei(totalReward))}`,
-        label: 'Total rewards for current epoch',
+        label: 'Total daily rewards available',
         show: true,
       },
       {
@@ -75,22 +75,30 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
         show: !!account,
       },
       {
-        value: `${
-          dailyTotalTradingVolume === 0
-            ? 0
-            : formatAmount((totalRewardThenaCurrDay * dailyUserTradingVolume) / dailyTotalTradingVolume)
-        } THE`,
-        label: 'Current Epoch Estimated reward',
+        value:
+          totalRewardCurrDay && totalRewardCurrDay.length
+            ? totalRewardCurrDay
+                .map(
+                  item =>
+                    `${
+                      dailyTotalTradingVolume === 0
+                        ? 0
+                        : formatAmount((item.totalReward * dailyUserTradingVolume) / dailyTotalTradingVolume)
+                    } ${item.symbol}`,
+                )
+                .join(',')
+            : `${0}`,
+        label: 'Your estimated daily rewards',
         show: true,
       },
       {
         value:
           hours || minutes || seconds
             ? (hours ? `${hours}h ` : '') +
-              (minutes ? `${minutes}m ` : seconds ? '0m' : '') +
-              (seconds ? `${seconds}s` : '')
+              (minutes ? `${minutes}m ` : hours ? '0m' : '') +
+              (seconds ? `${seconds}s` : minutes ? '0s' : '')
             : 0,
-        label: 'Daily epoch timer',
+        label: 'Next rewards distribution',
         show: true,
       },
       {
@@ -112,7 +120,7 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
       minutes,
       seconds,
       totalReward,
-      totalRewardThenaCurrDay,
+      totalRewardCurrDay,
       totalTradingVolume,
       totalUserEarned,
     ],

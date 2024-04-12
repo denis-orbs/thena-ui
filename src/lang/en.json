@@ -461,14 +461,14 @@
   "Trade on ALPHA and Earn Rewards": "Trade on ALPHA and Earn Rewards",
   "Trade to earn description part 1": "Earn THE tokens while trading on our perpetual DEX. The more you trade, the more you earn!",
   "Trade to earn description part 2": "Start trading now and seize your share of THE tokens today!",
-  "Total rewards for current epoch": "Total rewards for current epoch",
+  "Total daily rewards available": "Total daily rewards available",
   "Your Daily Trading Volume": "Your Daily Trading Volume",
   "Current Epoch Estimated reward": "Current Epoch Estimated reward",
-  "Daily epoch timer": "Daily epoch timer",
+  "Next rewards distribution": "Next rewards distribution",
   "Your Total Trading Volume": "Your Total Trading Volume",
   "Your Total Earnings": "Your Total Earnings",
   "Your Earnings": "Your Earnings",
-  "Your Earnings Description": "You have to claim your earnings manually after each epoch. The epoch changes at 00:00 UTC every 24 hours.",
+  "Your Earnings Description": "You have to claim manually each batch of daily rewards you earned. It resets at 00:00 every 24 hours.",
   "Epoch": "Epoch",
   "Trading Volume": "Trading Volume",
   "Earned": "Earned",
@@ -483,5 +483,7 @@
   "Claim your earnings manually after each epoch ends": "Claim your earnings manually after each epoch ends.",
   "Epoch resets every 24 hours at 00:00 UTC": "Epoch resets every 24 hours at 00:00 UTC",
   "No Earnings Found": "No Earnings Found",
-  "Go trade on ALPHA and claim your earnings here": "Go trade on ALPHA and claim your earnings here."
+  "Go trade on ALPHA and claim your earnings here": "Go trade on ALPHA and claim your earnings here.",
+  "Claimed": "Claimed",
+  "Your estimated daily rewards": "Your estimated daily rewards"
 }
