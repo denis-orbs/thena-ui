@@ -19,7 +19,7 @@ import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { fetchDataTotalVolume } from '@/modules/TradeToEarn'
 
-function YourEarning({ earnings = [] }) {
+function YourEarning({ earnings = [], refetchEarnings, setPending }) {
   const assets = useAssets()
   const { onClaimReward, pending } = useClaimReward()
 
@@ -97,12 +97,10 @@ function YourEarning({ earnings = [] }) {
             const earnedWei =
               reward.totalReward *
               (fromWei(item.amountAsUser).toNumber() / fromWei(totalTradingADay.amountAsUser).toNumber())
-            // ToDo: hard code for test
-            // * 10 ** 30
 
             if (account) {
               const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
-              const checkClaim = earnedWei - fromWei(claimed).toNumber()
+              const checkClaim = fromWei(earnedWei).toNumber() - fromWei(claimed).toNumber()
               if (checkClaim > 0) {
                 isClaimable = true
               }
@@ -144,11 +142,16 @@ function YourEarning({ earnings = [] }) {
   const handleClaimReward = useCallback(
     async day => {
       if (account) {
-        return await onClaimReward(account, day)
+        setPending(true)
+        const isSuccess = await onClaimReward(account, day)
+        if (isSuccess) {
+          refetchEarnings()
+        }
+        setPending(false)
       }
       warnToast('Error')
     },
-    [account, onClaimReward],
+    [account, onClaimReward, refetchEarnings, setPending],
   )
 
   useEffect(() => {

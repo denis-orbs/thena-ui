@@ -89,7 +89,7 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
                 .join(',')
             : `${0}`,
         label: 'Your estimated daily rewards',
-        show: true,
+        show: !!account,
       },
       {
         value:

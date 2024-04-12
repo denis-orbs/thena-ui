@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import React from 'react'
+import React, { Suspense, useState } from 'react'
 
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import useWallet from '@/lib/wallets/useWallet'
@@ -12,12 +12,15 @@ import Information from './Information'
 import TopBar from './TopBar'
 import Work from './Work'
 import YourEarning from './YourEarning'
+import Loading from '../loading'
 
 // '0x0b33f44aa8cde53f4ac3bc427cb80ae1c0dfefd1' for test
 
 export default function TradeToEarnPage() {
   const { account } = useWallet()
   const { currentDay } = useDibsRewarder()
+
+  const [pending, setPending] = useState(false)
 
   const { data: dailyUserVolume } = useQuery({
     queryKey: ['getDailyUserVolume', currentDay],
@@ -48,7 +51,7 @@ export default function TradeToEarnPage() {
     gcTime: 0,
   })
 
-  const { data: earnings } = useQuery({
+  const { data: earnings, refetch: refetchEarnings } = useQuery({
     queryKey: ['getEarnings'],
     queryFn: () => fetchDataEarnings(account),
     refetchInterval: 30000,
@@ -57,14 +60,30 @@ export default function TradeToEarnPage() {
   })
 
   return (
-    <div className='relative'>
-      <Hero />
-      <div className='relative z-30'>
-        <TopBar />
-        <Information dailyUserVolume={dailyUserVolume} dailyTotalVolume={dailyTotalVolume} totalVolume={totalVolume} />
-        <YourEarning earnings={earnings || []} />
-        <Work />
+    <section className='relative'>
+      {pending && (
+        <div className='absolute z-40 flex h-full w-full flex-col items-center justify-start gap-6 bg-[rgba(0,0,0,0.1)] pt-10 backdrop-blur-lg'>
+          <Loading />
+        </div>
+      )}
+      <div className='fixed left-0 right-0 mx-auto' />
+      <div className='layout'>
+        <Suspense fallback={<Loading />}>
+          <div className='relative'>
+            <Hero />
+            <div className='relative z-30'>
+              <TopBar />
+              <Information
+                dailyUserVolume={dailyUserVolume}
+                dailyTotalVolume={dailyTotalVolume}
+                totalVolume={totalVolume}
+              />
+              <YourEarning earnings={earnings || []} setPending={setPending} refetchEarnings={refetchEarnings} />
+              <Work />
+            </div>
+          </div>
+        </Suspense>
       </div>
-    </div>
+    </section>
   )
 }

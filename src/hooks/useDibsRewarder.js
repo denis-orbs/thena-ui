@@ -72,7 +72,6 @@ export const useClaimReward = () => {
         return isSuccess
       }
 
-      setPending(false)
       return false
     },
     [chainId, endTxn, startTxn, t, writeTxn],
