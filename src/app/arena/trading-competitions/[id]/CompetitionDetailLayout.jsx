@@ -129,14 +129,16 @@ function CompetitionDetailLayout({ children, params }) {
               },
             }
           : undefined,
-        {
-          label: t('Analytics'),
-          active: selectedTab === 'analytics',
-          onClickHandler: () => {
-            setSelectedTab('analytics')
-            replace(`/arena/trading-competitions/${params.id}/analytics`)
-          },
-        },
+        eventType !== EVENT_TYPES.UPCOMING
+          ? {
+              label: t('Analytics'),
+              active: selectedTab === 'analytics',
+              onClickHandler: () => {
+                setSelectedTab('analytics')
+                replace(`/arena/trading-competitions/${params.id}/analytics`)
+              },
+            }
+          : undefined,
       ]),
     [_competition?.participantCount, eventType, params.id, replace, selectedTab, t],
   )

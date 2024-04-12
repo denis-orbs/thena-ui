@@ -75,7 +75,7 @@ function CustomTokenInput({
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
           <TextSubHeading>
-            {t('Balance')}: {formatAmount(asset?.balance)}
+            {t('Balance')}: {formatAmount(asset?.balance, false, 10)}
           </TextSubHeading>
         </div>
         <CustomTokenModal popup={tokenPopup} setPopup={setTokenPopup} setSelectedAsset={setAsset} assets={assets} />
