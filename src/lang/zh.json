@@ -596,5 +596,8 @@
   "Claim Rewards": "Claim Rewards",
   "Claim Owner Fee": "Claim Owner Fee",
   "Profile Rank": "Profile Rank",
-  "Total Trading Volume": "Total Trading Volume"
+  "Total Trading Volume": "Total Trading Volume",
+  "Number Of Participants": "Number of participants",
+  "Amount Of Trades": "Amount of trades",
+  "Total Fees": "Total fees"
 }
