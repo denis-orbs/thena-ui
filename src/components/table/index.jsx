@@ -97,7 +97,7 @@ function Table({
               </tr>
             </thead>
             <tbody>
-              {data.map((ele, eleIdx) => (
+              {data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
                 <tr key={`table-row-${eleIdx}`}>
                   {sortOptions.map((cell, cellIdx) => (
                     <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>

@@ -10,7 +10,7 @@ import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useEventType } from '@/hooks/useEventType'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount, fromWei, sliceAddress } from '@/lib/utils'
 
 export function LeaderBoard({ competition }) {
   const { eventType } = useEventType(competition?.timestamp)
@@ -96,7 +96,7 @@ export function LeaderBoard({ competition }) {
             break
           case 'reward':
             res =
-              (fromWei(a.winAmount, a.twinTokenDecimal) - fromWei(b.winAmount, b.twinTokenDecimal)) *
+              (fromWei(a.winAmount, a.winTokenDecimal) - fromWei(b.winAmount, b.winTokenDecimal)) *
               (sort.isDesc ? -1 : 1)
             break
 
@@ -118,7 +118,7 @@ export function LeaderBoard({ competition }) {
             href={`/arena/profile/${leader.participant.id}`}
           >
             <CircleImage src={Avatar} alt='avatar' className='size-8' />
-            <Paragraph>{`${leader.participant.id.slice(0, 6)}...${leader.participant.id.slice(-4)}`}</Paragraph>
+            <Paragraph>{sliceAddress(leader.participant.id)}</Paragraph>
           </Link>
         ),
         pnl: (
@@ -129,7 +129,7 @@ export function LeaderBoard({ competition }) {
         ),
         reward: (
           <Paragraph>
-            {`${formatAmount(fromWei(leader.winAmount, leader.twinTokenDecimal), false, 3, false)} ${
+            {`${formatAmount(fromWei(leader.winAmount, leader.winTokenDecimal), false, 3, false)} ${
               competition?.competitionRules?.winningToken?.symbol
             }`}
           </Paragraph>

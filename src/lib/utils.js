@@ -112,3 +112,18 @@ export const retry = async (callback, maxRetries = 3, enableThrow = false) => {
     await sleep(1000)
   }
 }
+
+export const customSort = (a, b, isDesc) => {
+  if (a === undefined && b === undefined) return 0
+  if (a === undefined) return 1
+  if (b === undefined) return -1
+  if (a && b) {
+    return (a - b) * (isDesc ? -1 : 1)
+  }
+  return 0
+}
+
+export const formatNumberDecimals = (value, precision) => {
+  const multiplier = 10 ** (precision || 0)
+  return Math.round(value * multiplier) / multiplier
+}

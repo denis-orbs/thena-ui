@@ -2,20 +2,23 @@
 
 import { gql } from 'graphql-request'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
+import Skeleton from '@/components/skeleton'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { v4Client } from '@/lib/graphql'
+import { customSort, formatNumberDecimals, sliceAddress } from '@/lib/utils'
 
-const V4_COMPETITION_DATA = gql`
-  query V4_COMPETITION($id: String!) {
+const V4_TC_COMPETITION_DATA = gql`
+  query V4_TC_COMPETITION($id: String!) {
     tradingCompetitionById(id: $id) {
       id
       participants {
@@ -33,8 +36,8 @@ const V4_COMPETITION_DATA = gql`
 
 const getCompetitionParticipants = async id => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
-    return competition.participants ?? []
+    const { tradingCompetitionById: competition } = await v4Client.request(V4_TC_COMPETITION_DATA, { id })
+    return competition
   } catch (error) {
     return { error: true }
   }
@@ -44,21 +47,13 @@ const getCompetitionParticipants = async id => {
 const V4_TRADE_RANK_DATA = gql`
   query V4_TRADE_RANK($period: String!, $address: String!) {
     tradeRankByAddress(period: $period, address: $address) {
-      id
-      participants {
-        participant {
-          id
-        }
-      }
-      competitionRules {
-        winningTokenDecimal
-        winningToken
-      }
+      rank
+      volume
+      address
     }
   }
 `
 
-// eslint-disable-next-line unused-imports/no-unused-vars
 const getTradeRankByAddress = async (period, address) => {
   try {
     const { tradeRankByAddress } = await v4Client.request(V4_TRADE_RANK_DATA, { period, address })
@@ -70,17 +65,25 @@ const getTradeRankByAddress = async (period, address) => {
 
 const fetchCompetitionParticipationData = async id => {
   try {
-    const { data: participants } = await getCompetitionParticipants(id)
-    console.log('call', participants)
-    if (participants) {
-      // const getRanks = participants.map(
-      //   async participant => await getTradeRankByAddress('2 years', participant.participant.id),
-      // )
-      // const ranks = await Promise.all(getRanks)
-      // if (ranks) {
-      //   console.log('ransk', ranks)
-      // }
+    const competition = await getCompetitionParticipants(id)
+
+    if (competition.participants.length) {
+      const getRanks = competition.participants.map(
+        async participant => await getTradeRankByAddress('20 years', participant.participant.id),
+      )
+
+      const ranks = await Promise.all(getRanks)
+
+      if (ranks) {
+        competition.participants = competition.participants.map((participant, index) => ({
+          ...participant,
+          rank: ranks[index]?.[0]?.rank,
+          volume: ranks[index]?.[0]?.volume,
+        }))
+      }
     }
+
+    return competition
   } catch (error) {
     return { error: true }
   }
@@ -89,23 +92,21 @@ const fetchCompetitionParticipationData = async id => {
 function ParticipantsPage() {
   const { id } = useParams()
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const { data } = useSWR('competition leader board api', () => fetchCompetitionParticipationData(id), {
-    refreshInterval: 60000,
-  })
+  const { data: _competition, isLoading } = useSWR(
+    ['competition participants api', id],
+    () => fetchCompetitionParticipationData(id),
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      revalidateIfStale: true,
+    },
+  )
 
-  const competition = [] // useCompetitionFormat(data)
-
-  const { push } = useRouter()
+  const competition = useCompetitionFormat(_competition)
 
   const sortOptions = useMemo(
     () => [
-      {
-        label: <span>#</span>,
-        value: 'rank',
-        width: 'w-[10%]',
-        isDesc: false,
-      },
       {
         label: 'User',
         value: 'user',
@@ -132,15 +133,21 @@ function ParticipantsPage() {
   )
 
   const [searchText, setSearchText] = useState('')
-  const [sort, setSort] = useState(sortOptions[0])
+  const [sort, setSort] = useState(sortOptions[1])
   const [currentPage, setCurrentPage] = useState(1)
 
   const t = useTranslations()
 
-  const dataParticipants = useMemo(() => [], [])
+  const dataParticipants = useMemo(
+    () => competition?.participants?.sort((a, b) => customSort(a.rank, b.rank, false)) || [],
+    [competition?.participants],
+  )
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const filteredParticipants = useMemo(() => [], [dataParticipants])
+  const filteredParticipants = useMemo(
+    () => dataParticipants?.filter(item => item.participant.id.toLowerCase().includes(searchText.toLowerCase() || '')),
+
+    [searchText, dataParticipants],
+  )
 
   const sortedData = useMemo(
     () =>
@@ -148,12 +155,14 @@ function ParticipantsPage() {
         let res
         switch (sort.value) {
           case 'rank':
-            res = (a.rank - b.rank) * (sort.isDesc ? -1 : 1)
+            res = customSort(a.rank, b.rank, sort.isDesc)
             break
           case 'user':
             res = sort.isDesc ? a.participant.id - b.participant.id : b.participant.id - a.participant.id
             break
-
+          case 'volume':
+            res = customSort(a.volume, b.volume, sort.isDesc)
+            break
           default:
             break
         }
@@ -163,25 +172,38 @@ function ParticipantsPage() {
   )
 
   const finalParticipants = useMemo(
-    () =>
-      sortedData?.map(participant => ({
-        rank: <Paragraph>{participant.rank}</Paragraph>,
-        user: (
+    () => {
+      if (isLoading) {
+        return [
+          {
+            rank: <Skeleton className='h-[30px] w-full' />,
+            user: <Skeleton className='h-[30px] w-full' />,
+            volume: <Skeleton className='h-[30px] w-full' />,
+          },
+        ]
+      }
+      return sortedData?.map(participant => ({
+        rank: <Paragraph>{participant.rank ?? '-'}</Paragraph>,
+        user: participant.participant && (
           <Link
             className='flex cursor-pointer items-center justify-center gap-2'
             href={`/arena/profile/${participant.participant.id}`}
           >
             <CircleImage src={Avatar} alt='avatar' className='size-8' />
-            <Paragraph>
-              {`${participant.participant.id.slice(0, 6)}...${participant.participant.id.slice(-4)}`}
-            </Paragraph>
+            <Paragraph>{sliceAddress(participant.participant.id)}</Paragraph>
           </Link>
         ),
-        volume: <Paragraph>$59.01</Paragraph>,
-      })),
-
+        volume: <Paragraph>{participant.volume ? `$${formatNumberDecimals(participant.volume, 2)}` : '-'}</Paragraph>,
+      }))
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
+    [
+      isLoading,
+      competition?.competitionRules?.winningToken?.decimal,
+      competition?.competitionRules?.winningToken?.symbol,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      JSON.stringify(sortedData),
+    ],
   )
 
   return (

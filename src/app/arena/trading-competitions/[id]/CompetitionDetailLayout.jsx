@@ -19,6 +19,7 @@ import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
+import { sliceAddress } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
@@ -180,7 +181,7 @@ function CompetitionDetailLayout({ children, params }) {
                 href={`/arena/profile/${competition.owner.id}`}
               >
                 <CircleImage src={Avatar} alt='avatar' className='size-8' />
-                <Paragraph>{`${competition.owner.id.slice(0, 6)}...${competition.owner.id.slice(-4)}`}</Paragraph>
+                <Paragraph>{sliceAddress(competition.owner.id)}</Paragraph>
               </Link>
             </div>
             <CompetitionCard competition={_competition} eventType={eventType} />

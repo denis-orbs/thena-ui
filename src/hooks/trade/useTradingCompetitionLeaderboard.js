@@ -41,7 +41,7 @@ const fetchCompetitionLeaderboard = async id => {
 }
 
 export const useTradingCompetitionLeaderBoard = id => {
-  const { data } = useSWR('competition leader board api', () => fetchCompetitionLeaderboard(id), {
+  const { data } = useSWR(['competition leader board api', id], () => fetchCompetitionLeaderboard(id), {
     refreshInterval: 30000,
     revalidateOnFocus: true,
   })

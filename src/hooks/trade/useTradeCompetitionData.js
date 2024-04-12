@@ -45,7 +45,7 @@ export const fetchCompetition = async id => {
 }
 
 export const useTradeCompetitionData = id => {
-  const { data } = useSWR('trade competition data', () => fetchCompetition(id), {
+  const { data } = useSWR(['trade competition data', id], () => fetchCompetition(id), {
     refreshInterval: 30000,
     revalidateOnFocus: true,
   })
