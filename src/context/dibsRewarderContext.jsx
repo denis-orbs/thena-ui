@@ -80,16 +80,6 @@ function DibsRewarderContextProvider({ children }) {
           setTotalReward(total)
           setTotalUserEarned(totalEarned)
           setTotalRewardCurrDay(arrayTotalRewardCurrDay)
-          // TODO: Support multiple tokens
-          // const thenaAsset = assets.find(item => item.name === 'THENA')
-          // if (thenaAsset) {
-          //   const thenaAddress = thenaAsset.address
-          //   const thenaRewardCurrDay = await readCall(dibsRewarderContract, 'totalReward', [
-          //     thenaAddress,
-          //     new BigNumber(res0).toNumber(),
-          //   ])
-          //   setTotalRewardThenaCurrDay(fromWei(thenaRewardCurrDay).toNumber())
-          // }
         } catch (error) {
           console.log(error)
         }

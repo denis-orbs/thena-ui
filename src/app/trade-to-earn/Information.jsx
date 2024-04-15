@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -15,6 +16,7 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
   const { account } = useWallet()
   const { totalReward, totalRewardCurrDay, totalUserEarned } = useDibsRewarder()
   const [countDown, setCountDown] = useState(0)
+  const assets = useAssets()
 
   const hours = useMemo(
     () => (countDown ? Math.floor((countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) : 0),
@@ -62,7 +64,22 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
     return fromWei(rs)
   }, [totalVolume])
 
-  const data = useMemo(
+  const yourEstimatedDailyRewardTotal = useMemo(() => {
+    let rs = 0
+    if (totalRewardCurrDay && totalRewardCurrDay.length) {
+      rs = totalRewardCurrDay.reduce((accumulator, currentValue) => {
+        let price = 1
+        const asset = assets.find(assetItem => assetItem.symbol === currentValue.symbol)
+        if (asset) {
+          price = asset.price
+        }
+        return accumulator + currentValue.totalReward * price
+      }, 0)
+    }
+    return rs
+  }, [assets, totalRewardCurrDay])
+
+  const array1 = useMemo(
     () => [
       {
         value: `$${formatAmount(fromWei(totalReward))}`,
@@ -76,21 +93,43 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
       },
       {
         value:
-          totalRewardCurrDay && totalRewardCurrDay.length
-            ? totalRewardCurrDay
-                .map(
-                  item =>
-                    `${
-                      dailyTotalTradingVolume === 0
-                        ? 0
-                        : formatAmount((item.totalReward * dailyUserTradingVolume) / dailyTotalTradingVolume)
-                    } ${item.symbol}`,
-                )
-                .join(',')
-            : `${0}`,
+          totalRewardCurrDay && totalRewardCurrDay.length ? (
+            <div className='flex flex-row flex-wrap items-center gap-2'>
+              <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>
+                ${formatAmount((yourEstimatedDailyRewardTotal * dailyUserTradingVolume) / dailyTotalTradingVolume)}
+              </TextHeading>
+              <TextSubHeading>
+                {totalRewardCurrDay
+                  .map(
+                    item =>
+                      `${
+                        dailyTotalTradingVolume === 0
+                          ? 0
+                          : formatAmount((item.totalReward * dailyUserTradingVolume) / dailyTotalTradingVolume)
+                      } ${item.symbol}`,
+                  )
+                  .join(', ')}
+              </TextSubHeading>
+            </div>
+          ) : (
+            0
+          ),
         label: 'Your estimated daily rewards',
         show: !!account,
       },
+    ],
+    [
+      account,
+      dailyTotalTradingVolume,
+      dailyUserTradingVolume,
+      totalReward,
+      totalRewardCurrDay,
+      yourEstimatedDailyRewardTotal,
+    ],
+  )
+
+  const array2 = useMemo(
+    () => [
       {
         value:
           hours || minutes || seconds
@@ -101,6 +140,12 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
         label: 'Next rewards distribution',
         show: true,
       },
+    ],
+    [hours, minutes, seconds],
+  )
+
+  const array3 = useMemo(
+    () => [
       {
         value: `$${formatAmount(totalTradingVolume)}`,
         label: 'Your Total Trading Volume',
@@ -112,23 +157,24 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
         show: !!account,
       },
     ],
-    [
-      account,
-      dailyTotalTradingVolume,
-      dailyUserTradingVolume,
-      hours,
-      minutes,
-      seconds,
-      totalReward,
-      totalRewardCurrDay,
-      totalTradingVolume,
-      totalUserEarned,
-    ],
+    [account, totalTradingVolume, totalUserEarned],
   )
 
   return (
     <div className='mb-8 grid grid-cols-2 gap-6 lg:grid-cols-3'>
-      {data.map((item, index) => (
+      {array1.map((item, index) => (
+        <Box key={index} className={item.show ? 'flex flex-col items-start gap-1' : 'hidden'}>
+          <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>{item.value}</TextHeading>
+          <TextSubHeading>{t(item.label)}</TextSubHeading>
+        </Box>
+      ))}
+      {array2.map((item, index) => (
+        <Box key={index} className={item.show ? 'flex flex-col items-start gap-1' : 'hidden'}>
+          <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>{item.value}</TextHeading>
+          <TextSubHeading>{t(item.label)}</TextSubHeading>
+        </Box>
+      ))}
+      {array3.map((item, index) => (
         <Box key={index} className={item.show ? 'flex flex-col items-start gap-1' : 'hidden'}>
           <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>{item.value}</TextHeading>
           <TextSubHeading>{t(item.label)}</TextSubHeading>

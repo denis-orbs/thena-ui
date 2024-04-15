@@ -1,5 +1,14 @@
 /* eslint-disable max-len */
+import { useMutation } from '@tanstack/react-query'
 import { gql, GraphQLClient } from 'graphql-request'
+import { toast } from 'react-toastify'
+import { useTranslations } from 'use-intl'
+import { v4 as uuidv4 } from 'uuid'
+
+import { TXN_STATUS } from '@/constant'
+import { getDibsRewarderContract } from '@/lib/contracts'
+import useWallet from '@/lib/wallets/useWallet'
+import { useTxn } from '@/state/transactions/hooks'
 
 // const END_POINT = 'https://api.studio.thegraph.com/proxy/70764/thena-subgraph-3/version/latest'
 const END_POINT = 'https://api.studio.thegraph.com/query/70764/thena-subgraph/version/latest'
@@ -110,7 +119,7 @@ export const fetchMuon = async (account, day) => {
   const projectId = '0x1fdee74ea6c68fdce3c090e59eeb93943eeaadc99a89c65ac12024c85be84d41'
 
   try {
-    const muonURL = `https://dibs-shield.muon.net/v1/?app=dibsGlobal&method=userVolume&params[projectId]=${projectId}&params[day]=${day}&params[pair]=${pair}&params[user]=${user}`
+    const muonURL = `http://3.136.59.242:8012/v1/?app=thenaTrade2Earn&method=userVolume&params[projectId]=${projectId}&params[day]=${day}&params[pair]=${pair}&params[user]=${user}`
 
     const response = await fetch(muonURL)
     const res = await response.json()
@@ -120,4 +129,68 @@ export const fetchMuon = async (account, day) => {
     console.log(error)
     return false
   }
+}
+
+export const useGetMuonMutation = () => {
+  const { account } = useWallet()
+  return useMutation({
+    mutationFn: async day => {
+      const toastRes = await toast.promise(
+        async () => await fetchMuon(account, day),
+        {
+          error: 'Request data failed',
+          success: 'Muon responded',
+          pending: 'Request data from Muon...',
+        },
+        {
+          className: '!bg-white text-black',
+          autoClose: 3000,
+        },
+      )
+
+      if (toastRes && toastRes.success) {
+        return toastRes.result
+      }
+      return null
+    },
+  })
+}
+
+export const useClaimRewardMutation = () => {
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+  const { chainId } = useWallet()
+
+  return useMutation({
+    mutationFn: async body => {
+      const key = uuidv4()
+      const claimuuid = uuidv4()
+
+      const dibsRewarderContract = getDibsRewarderContract(chainId)
+
+      startTxn({
+        key,
+        title: t('Claim Earnings'),
+        transactions: {
+          [claimuuid]: {
+            desc: t('Claim Earnings'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      const isSuccess = await writeTxn(key, claimuuid, dibsRewarderContract, 'claim', body)
+      if (!isSuccess) {
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Claimed',
+      })
+
+      return isSuccess
+    },
+  })
 }

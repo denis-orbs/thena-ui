@@ -11,17 +11,14 @@ import Table from '@/components/table'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
-import { useClaimReward } from '@/hooks/useDibsRewarder'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
 import { readCall } from '@/lib/contractActions'
-import { warnToast } from '@/lib/notify'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { fetchDataTotalVolume } from '@/modules/TradeToEarn'
+import { fetchDataTotalVolume, useClaimRewardMutation, useGetMuonMutation } from '@/modules/TradeToEarn'
 
 function YourEarning({ earnings = [], refetchEarnings, setPending }) {
   const assets = useAssets()
-  const { onClaimReward, pending } = useClaimReward()
 
   const sortOptions = useMemo(
     () => [
@@ -49,6 +46,7 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
         value: 'earned',
         width: 'lg:w-[20%]',
         isDesc: true,
+        disabled: true,
       },
       {
         label: 'in USD',
@@ -90,7 +88,7 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
         const totalRewardADay = await fetchTotalRewardADay(item.day)
         const totalTradingADay = totalVolume?.find(totalVolItem => totalVolItem.day === item.day)
         const earned = []
-        const inUSD = []
+
         let isClaimable = false
         if (totalTradingADay && totalTradingADay.amountAsUser > 0) {
           for (const reward of totalRewardADay) {
@@ -100,8 +98,8 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
 
             if (account) {
               const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
-              const checkClaim = fromWei(earnedWei).toNumber() - fromWei(claimed).toNumber()
-              if (checkClaim > 0) {
+
+              if (fromWei(earnedWei).toNumber() !== 0 && fromWei(claimed).toNumber() === 0) {
                 isClaimable = true
               }
             }
@@ -111,16 +109,16 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
             })
           }
         }
-
+        let inUSD = 0
         if (earned.length) {
-          earned.forEach(e => {
+          inUSD = earned.reduce((accumulator, currentValue, index) => {
             let price = 1
-            const asset = assets.find(assetItem => assetItem.symbol === e.symbol)
+            const asset = assets.find(assetItem => assetItem.symbol === earned[index].symbol)
             if (asset) {
               price = asset.price
             }
-            inUSD.push(e.total * price)
-          })
+            return accumulator + currentValue.total * price
+          }, 0)
         }
 
         items.push({
@@ -139,19 +137,51 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
     }
   }, [account, assets, dibsRewarder, earnings, fetchTotalRewardADay, totalVolume])
 
+  const { mutateAsync: getMuon, isPending: pendingGetMuon } = useGetMuonMutation()
+
+  const { mutateAsync: claimReward, isPending: pendingClaim } = useClaimRewardMutation()
+
   const handleClaimReward = useCallback(
     async day => {
-      if (account) {
+      try {
         setPending(true)
-        const isSuccess = await onClaimReward(account, day)
-        if (isSuccess) {
-          refetchEarnings()
+        const muonResponse = await getMuon(day)
+        if (muonResponse) {
+          const sigTimestamp = muonResponse?.data?.timestamp
+          const reqId = muonResponse?.reqId
+          const userVolume = muonResponse?.data?.result?.userVolume
+          const totalVolumeBody = muonResponse?.data?.result?.totalVolume
+          const schnorrsign = {
+            signature: muonResponse?.signatures?.[0]?.signature,
+            owner: muonResponse?.signatures?.[0]?.owner,
+            nonce: muonResponse?.data?.init?.nonceAddress,
+          }
+          const gatewaySignature = ''
+
+          const body = [
+            parseInt(day, 10),
+            userVolume,
+            totalVolumeBody,
+            sigTimestamp,
+            reqId,
+            schnorrsign,
+            gatewaySignature,
+          ]
+
+          const isSuccess = await claimReward(body)
+          if (isSuccess) {
+            refetchEarnings()
+          }
+          setPending(false)
+        } else {
+          setPending(false)
         }
+      } catch (error) {
         setPending(false)
+        console.log(error)
       }
-      warnToast('Error')
     },
-    [account, onClaimReward, refetchEarnings, setPending],
+    [claimReward, getMuon, refetchEarnings, setPending],
   )
 
   useEffect(() => {
@@ -172,11 +202,8 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
           case 'tradingVolume':
             res = (a.tradingVolume - b.tradingVolume) * (sort.isDesc ? -1 : 1)
             break
-          case 'earned':
-            res = a.earned[0] && b.earned[0] ? (a.earned[0].total - b.earned[0].total) * (sort.isDesc ? -1 : 1) : 0
-            break
           case 'inUSD':
-            res = a.inUSD[0] && b.inUSD[0] ? (a.inUSD[0] - b.inUSD[0]) * (sort.isDesc ? -1 : 1) : 0
+            res = (a.inUSD - b.inUSD) * (sort.isDesc ? -1 : 1)
             break
           default:
             break
@@ -192,25 +219,40 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
         epoch: <Paragraph>{item.epoch}</Paragraph>,
         date: <Paragraph>{moment(new Date(item.date * 1000)).format('ll')}</Paragraph>,
         tradingVolume: <Paragraph>${formatAmount(fromWei(item.tradingVolume))}</Paragraph>,
-        earned: <Paragraph>{item.earned.map(e => `${formatAmount(e.total)} ${e.symbol}`).join(', ')}</Paragraph>,
-        inUSD: (
-          <Paragraph>${item.inUSD.length ? item.inUSD.map(usd => `${formatAmount(usd)}`).join(', ') : 0}</Paragraph>
+        earned: item.earned.length && (
+          <Paragraph>
+            <div className='flex flex-col'>
+              {item.earned.some(e => e.total) ? (
+                item.earned.map(e =>
+                  e.total ? (
+                    <span key={e.symbol}>
+                      {formatAmount(e.total)} {e.symbol}
+                    </span>
+                  ) : (
+                    ''
+                  ),
+                )
+              ) : (
+                <span>
+                  {formatAmount(item.earned[0].total)} {item.earned[0].symbol}
+                </span>
+              )}
+            </div>
+          </Paragraph>
         ),
-        action:
-          Number(item.epoch) !== Number(currentDay) ? (
-            <PrimaryButton
-              className='w-full'
-              onClick={() => handleClaimReward(item.epoch)}
-              disabled={!item.isClaimable || pending}
-            >
-              {t(item.isClaimable ? 'Claim' : 'Claimed')}
-            </PrimaryButton>
-          ) : (
-            ''
-          ),
+        inUSD: <Paragraph>{item.inUSD ? `$${formatAmount(item.inUSD)}` : '$0'}</Paragraph>,
+        action: Number(item.epoch) !== Number(currentDay) && Boolean(item.earned.find(e => e.total !== 0)) && (
+          <PrimaryButton
+            className='w-full'
+            onClick={() => handleClaimReward(item.epoch)}
+            disabled={!item.isClaimable || pendingGetMuon || pendingClaim}
+          >
+            {t(item.isClaimable ? 'Claim' : 'Claimed')}
+          </PrimaryButton>
+        ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(sortedData), t],
+    [pendingClaim, pendingGetMuon, sortedData, t],
   )
 
   return (
