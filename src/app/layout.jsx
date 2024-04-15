@@ -46,6 +46,7 @@ export const metadata = {
     description: siteConfig.description,
     images: [`${siteConfig.url}/cover.png`],
   },
+  'Content-Security-Policy': 'upgrade-insecure-requests',
 }
 
 export const revalidate = 30
