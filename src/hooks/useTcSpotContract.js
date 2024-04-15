@@ -171,7 +171,7 @@ export const useJoinTC = () => {
         }
       }
       if (fromWei(data.competitionRules.startingBalance).isZero()) {
-        const isSuccess = await writeTxn(key, joinuuid, tcSpotContract, 'register', [])
+        const isSuccess = await writeTxn(key, joinuuid, tcSpotContract, 'registerAndDeposit', [0])
         if (!isSuccess) {
           setPending(false)
           return false

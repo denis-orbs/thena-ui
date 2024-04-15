@@ -35,6 +35,7 @@ import ShadowIcon from '~/svgs/shadow.svg'
 import SplitIcon from '~/svgs/split.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
+import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
 import XIcon from '~/svgs/x-close.svg'
 import ZoomInIcon from '~/svgs/zoom-in.svg'
@@ -78,6 +79,7 @@ export {
   SplitIcon,
   SwitchVerticalIcon,
   TransferIcon,
+  Verified,
   WalletIcon,
   XIcon,
   ZoomInIcon,

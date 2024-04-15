@@ -20,7 +20,7 @@ import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
 import { retry, sliceAddress } from '@/lib/utils'
-import { ArrowLeftIcon } from '@/svgs'
+import { ArrowLeftIcon, Verified } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
 import Sidebar from './SideBar'
@@ -49,6 +49,7 @@ const V4_COMPETITION_DATA = gql`
       }
       owner {
         id
+        isVerified
       }
       participants {
         id
@@ -161,7 +162,7 @@ function CompetitionDetailLayout({ children, params }) {
     }
   }, [competition?.tradingCompetitionSpot, mutate])
 
-  if (params.id !== _competition?.id) {
+  if (params.id !== _competition?.id || !competition?.tradingCompetitionSpot) {
     return <Loading />
   }
 
@@ -191,6 +192,11 @@ function CompetitionDetailLayout({ children, params }) {
               >
                 <CircleImage src={Avatar} alt='avatar' className='size-8' />
                 <Paragraph>{sliceAddress(competition.owner.id)}</Paragraph>
+                {competition.owner.isVerified && (
+                  <div className='h-5 w-5'>
+                    <Verified />
+                  </div>
+                )}
               </Link>
             </div>
             <CompetitionCard competition={_competition} eventType={eventType} />

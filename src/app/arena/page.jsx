@@ -59,6 +59,7 @@ const V4_COMPETITION_DATAS = gql`
       participantCount
       owner {
         id
+        isVerified
       }
       tradingCompetitionSpot
     }

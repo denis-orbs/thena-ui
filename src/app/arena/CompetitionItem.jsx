@@ -9,9 +9,9 @@ import Skeleton from '@/components/skeleton'
 import { Paragraph } from '@/components/typography'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import { TCButton } from '@/modules/TradingCompetition/TCButton'
-import { Clock, CoinHand, Gift } from '@/svgs'
+import { Clock, CoinHand, Gift, Verified } from '@/svgs'
 
 import { CompetitionCardHeader } from './CompetitionCardHeader'
 
@@ -54,7 +54,23 @@ function CompetitionItem({ competition }) {
         </NeutralBadge>
       </div>
       <div>
-        <h3>{competition.name}</h3>
+        <div className='flex items-center gap-2'>
+          <h3>{competition.name}</h3>
+          {competition.owner.isVerified && (
+            <div className='flex items-center gap-1 text-nowrap'>
+              {competition.owner.name ? (
+                <h4 className='inline-block bg-gradient-to-r from-[#C72AD0] to-[#AA23DB] bg-clip-text bg-clip-text text-3xl font-bold text-transparent'>
+                  by {formatAddress(competition.owner.name)}
+                </h4>
+              ) : (
+                <h4>by {formatAddress(competition.owner.id)}</h4>
+              )}
+              <div className='h-5 w-5'>
+                <Verified />
+              </div>
+            </div>
+          )}
+        </div>
         <div className='flex w-full flex-wrap items-center justify-start gap-4 text-nowrap py-2'>
           <Paragraph className='flex gap-1'>
             <div className='h-5 w-5'>

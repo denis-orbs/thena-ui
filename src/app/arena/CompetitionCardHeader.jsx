@@ -19,7 +19,13 @@ export function CompetitionCardHeader({ competition, className }) {
   )
 
   return (
-    <div className={cn('flex flex-col items-center justify-center gap-2 rounded-xl bg-[#100913] p-4 ', className)}>
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center gap-2 rounded-xl p-4 ',
+        competition.owner.isVerified ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 'bg-[#100913]',
+        className,
+      )}
+    >
       <TextHeading className='text-center text-2xl'>{t('Compete For')}</TextHeading>
       <TextHeading className='flex items-center text-nowrap'>
         {currentPrizePool} {prizeToken?.symbol}
