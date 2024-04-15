@@ -156,10 +156,10 @@ function CompetitionDetailLayout({ children, params }) {
   }, [])
 
   useEffect(() => {
-    if (!competition.tradingCompetitionSpot) {
+    if (!competition?.tradingCompetitionSpot) {
       retry(mutate)
     }
-  }, [competition.tradingCompetitionSpot, mutate])
+  }, [competition?.tradingCompetitionSpot, mutate])
 
   if (params.id !== _competition?.id) {
     return <Loading />
