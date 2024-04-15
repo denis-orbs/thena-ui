@@ -78,7 +78,7 @@ export default function RewardsPage() {
         {account && (
           <Info className='flex w-auto justify-between lg:w-[550px] lg:p-8'>
             <div className='flex items-center gap-4'>
-              <CoinsStackedIcon className='h-4 w-4 min-w-fit stroke-primary-600 lg:h-8 lg:w-8' />
+              <CoinsStackedIcon className='h-4 w-4 stroke-primary-600 lg:h-8 lg:w-8' />
               <p className='text-base leading-tight lg:text-xl'>
                 {t('Total Rewards:')} ${formatAmount(isExpected ? totalExpectedUsd : totalUsd)}
               </p>
