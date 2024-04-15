@@ -1,12 +1,12 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import { compact } from 'lodash'
+import { compact, isNil } from 'lodash'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { Suspense, useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
@@ -19,7 +19,7 @@ import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
-import { retry, sliceAddress } from '@/lib/utils'
+import { sleep, sliceAddress } from '@/lib/utils'
 import { ArrowLeftIcon, Verified } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
@@ -77,7 +77,11 @@ const fetchCompetition = async id => {
 }
 
 function CompetitionDetailLayout({ children, params }) {
-  const { data: competition, mutate } = useSWR('competition detail api', () => fetchCompetition(params.id), {
+  const {
+    data: competition,
+    isLoading,
+    mutate,
+  } = useSWR('competition detail api', () => fetchCompetition(params.id), {
     refreshInterval: 30000,
     revalidateOnFocus: true,
   })
@@ -95,7 +99,7 @@ function CompetitionDetailLayout({ children, params }) {
 
   const { eventType } = useEventType(competition?.timestamp)
 
-  const [queryParams, setQueryParams] = useState()
+  const [queryParams, setQueryParams] = useState('')
 
   const _competition = useCompetitionFormat(competition)
 
@@ -145,6 +149,22 @@ function CompetitionDetailLayout({ children, params }) {
     [_competition?.participantCount, eventType, params.id, replace, selectedTab, t],
   )
 
+  const retryCompetition = useCallback(async () => {
+    let retries = 0
+    const maxRetries = 4
+
+    while (retries < maxRetries) {
+      if (!isNil(competition)) {
+        break
+      }
+
+      await mutate()
+
+      await sleep(2000)
+      retries++
+    }
+  }, [competition, mutate])
+
   useEffect(() => {
     setQueryParams(
       objectToQuery({
@@ -157,12 +177,10 @@ function CompetitionDetailLayout({ children, params }) {
   }, [])
 
   useEffect(() => {
-    if (!competition?.tradingCompetitionSpot) {
-      retry(mutate)
-    }
-  }, [competition?.tradingCompetitionSpot, mutate])
+    retryCompetition()
+  }, [retryCompetition])
 
-  if (params.id !== _competition?.id || !competition?.tradingCompetitionSpot) {
+  if (isLoading || !competition) {
     return <Loading />
   }
 

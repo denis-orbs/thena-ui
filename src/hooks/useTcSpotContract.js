@@ -8,7 +8,7 @@ import { useAssets } from '@/context/assetsContext'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { fromWei, retry, sleep } from '@/lib/utils'
+import { fromWei, sleep } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -47,19 +47,15 @@ export const useTCContractInfor = (address, eventType) => {
       setIsOwner(false)
       return
     }
-    const callData = async () => {
-      const [joined, won, ownerAddress] = await Promise.all([
-        readCall(tcSpotContract, 'isRegistered', [account]),
-        readCall(tcSpotContract, 'isWinner', [account]),
-        readCall(tcSpotContract, 'owner', []),
-      ])
 
-      setIsRegistered(joined)
-      setIsWinner(won[0])
-      setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
-    }
-
-    await retry(callData)
+    const [joined, won, ownerAddress] = await Promise.all([
+      readCall(tcSpotContract, 'isRegistered', [account]),
+      readCall(tcSpotContract, 'isWinner', [account]),
+      readCall(tcSpotContract, 'owner', []),
+    ])
+    setIsRegistered(joined)
+    setIsWinner(won[0])
+    setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
 
     setLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
