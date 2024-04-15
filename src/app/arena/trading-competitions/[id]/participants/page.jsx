@@ -43,10 +43,9 @@ const getCompetitionParticipants = async id => {
   }
 }
 
-// TODO: chang query
 const V4_TRADE_RANK_DATA = gql`
-  query V4_TRADE_RANK($period: String!, $address: String!) {
-    tradeRankByAddress(period: $period, address: $address) {
+  query V4_TRADE_RANK($participantIds: [String!]!) {
+    tradeRankByParticipants(participantIds: $participantIds) {
       rank
       volume
       address
@@ -54,10 +53,10 @@ const V4_TRADE_RANK_DATA = gql`
   }
 `
 
-const getTradeRankByAddress = async (period, address) => {
+const getTradeRankByAddress = async participantIds => {
   try {
-    const { tradeRankByAddress } = await v4Client.request(V4_TRADE_RANK_DATA, { period, address })
-    return tradeRankByAddress
+    const { tradeRankByParticipants } = await v4Client.request(V4_TRADE_RANK_DATA, { participantIds })
+    return tradeRankByParticipants
   } catch (error) {
     return { error: true }
   }
@@ -68,19 +67,25 @@ const fetchCompetitionParticipationData = async id => {
     const competition = await getCompetitionParticipants(id)
 
     if (competition.participants.length) {
-      const getRanks = competition.participants.map(
-        async participant => await getTradeRankByAddress('20 years', participant.participant.id),
-      )
+      const participantIds = competition.participants.map(participant => participant.participant.id)
 
-      const ranks = await Promise.all(getRanks)
+      const ranks = await getTradeRankByAddress(participantIds)
 
-      if (ranks) {
-        competition.participants = competition.participants.map((participant, index) => ({
+      const rankMap = {}
+      ranks.forEach(rank => {
+        rankMap[rank.address.toLowerCase()] = rank
+      })
+
+      competition.participants = competition.participants.map(participant => {
+        const address = participant.participant.id.toLowerCase()
+        const rankInfo = rankMap[address]
+
+        return {
           ...participant,
-          rank: ranks[index]?.[0]?.rank,
-          volume: ranks[index]?.[0]?.volume,
-        }))
-      }
+          rank: rankInfo?.rank,
+          volume: rankInfo?.volume,
+        }
+      })
     }
 
     return competition
@@ -118,7 +123,7 @@ function ParticipantsPage() {
         label: 'Profile Rank',
         value: 'rank',
         width: 'w-[30%]',
-        isDesc: true,
+        isDesc: false,
         justify: 'justify-center items-center',
       },
       {

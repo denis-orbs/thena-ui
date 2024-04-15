@@ -23,14 +23,16 @@ export function CompetitionCardHeader({ competition, className }) {
       <TextHeading className='text-center text-2xl'>{t('Compete For')}</TextHeading>
       <TextHeading className='flex items-center text-nowrap'>
         {currentPrizePool} {prizeToken?.symbol}
-        <Image
-          alt={name}
-          src={`https://cdn.thena.fi/assets/${prizeToken?.symbol}.png`}
-          className='ml-1 inline-block flex-shrink-0'
-          width={20}
-          height={20}
-          loading='lazy'
-        />
+        {prizeToken?.logoURI && (
+          <Image
+            alt={name}
+            src={prizeToken?.logoURI}
+            className='ml-1 inline-block flex-shrink-0'
+            width={20}
+            height={20}
+            loading='lazy'
+          />
+        )}
       </TextHeading>
     </div>
   )

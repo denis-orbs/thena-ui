@@ -114,7 +114,6 @@ export default function ArenaPage() {
     () =>
       dataCompetitions?.map(comp => ({
         ...comp,
-        participantCount: comp.participants.length, // TODO: remove this after fix api
         prize: {
           ...comp.prize,
           token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
