@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { ChainId, WBNB } from 'thena-sdk-core'
 
 export const CHAIN_LIST = {
@@ -294,6 +295,22 @@ export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 const { MIN_REG, MIN_TS } = TC_TIMESTAMP
 
+const roundupTime = () => {
+  const finalTS = dayjs()
+
+  let hours = finalTS.hour()
+  let minutes = finalTS.minute()
+
+  if (minutes < 30) {
+    minutes = 30
+  } else {
+    minutes = 0
+    hours = hours === 23 ? 0 : hours + 1
+  }
+
+  return dayjs().set('hour', hours).set('minute', minutes).valueOf()
+}
+
 export const INIT_VALUES = {
   name: '',
   description: '',
@@ -303,10 +320,10 @@ export const INIT_VALUES = {
     // registrationEnd: '',
     // startTimestamp: '',
     // endTimestamp: '',
-    registrationStart: new Date().getTime(), // start timestamp
-    registrationEnd: new Date().getTime() + MIN_REG, // end timestamp
-    startTimestamp: new Date().getTime() + MIN_REG, // registration start timestamp
-    endTimestamp: new Date().getTime() + MIN_REG + MIN_TS, // registration end timestamp
+    registrationStart: roundupTime(), // start timestamp
+    registrationEnd: roundupTime() + MIN_REG, // end timestamp
+    startTimestamp: roundupTime() + MIN_REG, // registration start timestamp
+    endTimestamp: roundupTime() + MIN_REG + MIN_TS, // registration end timestamp
   },
   market: TC_MARKET_TYPES.SPOT,
   participantCount: 0,
