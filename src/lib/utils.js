@@ -102,14 +102,13 @@ export const retry = async (callback, maxRetries = 3, enableThrow = false) => {
   for (let retries = 0; retries < maxRetries; retries++) {
     try {
       await callback()
-      return
     } catch (error) {
       if (enableThrow && retries === maxRetries - 1) {
         throw error
       }
+    } finally {
+      await sleep(1000)
     }
-
-    await sleep(1000)
   }
 }
 
