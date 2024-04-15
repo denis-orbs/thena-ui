@@ -19,7 +19,7 @@ import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
-import { sliceAddress } from '@/lib/utils'
+import { retry, sliceAddress } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
@@ -76,10 +76,11 @@ const fetchCompetition = async id => {
 }
 
 function CompetitionDetailLayout({ children, params }) {
-  const { data: competition } = useSWR('competition detail api', () => fetchCompetition(params.id), {
+  const { data: competition, mutate } = useSWR('competition detail api', () => fetchCompetition(params.id), {
     refreshInterval: 30000,
     revalidateOnFocus: true,
   })
+
   const t = useTranslations()
   const { replace } = useRouter()
 
@@ -153,6 +154,12 @@ function CompetitionDetailLayout({ children, params }) {
       }),
     )
   }, [])
+
+  useEffect(() => {
+    if (!competition.tradingCompetitionSpot) {
+      retry(mutate)
+    }
+  }, [competition.tradingCompetitionSpot, mutate])
 
   if (params.id !== _competition?.id) {
     return <Loading />
