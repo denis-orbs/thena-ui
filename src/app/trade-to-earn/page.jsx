@@ -14,8 +14,6 @@ import Work from './Work'
 import YourEarning from './YourEarning'
 import Loading from '../loading'
 
-// '0x0b33f44aa8cde53f4ac3bc427cb80ae1c0dfefd1' for test
-
 export default function TradeToEarnPage() {
   const { account } = useWallet()
   const { currentDay } = useDibsRewarder()
