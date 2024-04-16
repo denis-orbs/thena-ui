@@ -1,5 +1,6 @@
 'use client'
 
+import { compact } from 'lodash'
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
@@ -388,30 +389,33 @@ function Header() {
   }, [t, pathname, networkId, push])
 
   const arenaSubmenus = useMemo(
-    () => [
-      {
-        label: t('Competitions'),
-        active: pathname === '/arena',
-        onClickHandler: () => {
-          push('/arena')
+    () =>
+      compact([
+        {
+          label: t('Competitions'),
+          active: pathname === '/arena',
+          onClickHandler: () => {
+            push('/arena')
+          },
         },
-      },
-      {
-        label: t('Rankings'),
-        active: pathname === '/arena/rankings',
-        onClickHandler: () => {
-          push('/arena/rankings')
+        {
+          label: t('Rankings'),
+          active: pathname === '/arena/rankings',
+          onClickHandler: () => {
+            push('/arena/rankings')
+          },
         },
-      },
-      {
-        label: t('Profile'),
-        active: pathname === '/arena/profile',
-        onClickHandler: () => {
-          push('/arena/profile')
-        },
-      },
-    ],
-    [pathname, push, t],
+        account
+          ? {
+              label: t('Profile'),
+              active: pathname === `/arena/profile/${account}`,
+              onClickHandler: () => {
+                push(`/arena/profile/${account}`)
+              },
+            }
+          : undefined,
+      ]),
+    [account, pathname, push, t],
   )
 
   const onLogoClick = () => {

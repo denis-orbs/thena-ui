@@ -599,5 +599,17 @@
   "Total Trading Volume": "Total Trading Volume",
   "Number Of Participants": "Number of participants",
   "Amount Of Trades": "Amount of trades",
-  "Total Fees": "Total fees"
+  "Total Fees": "Total fees",
+  "Get ID": "Get ID",
+  "Buy Your Thena NFT Subdomain": "Buy your Thena NFT subdomain.",
+  "Rank": "Rank",
+  "Followers": "Followers",
+  "Following": "Following",
+  "About": "About",
+  "Unlock This Feature With THENA ID": "Unlock this feature with THENA ID",
+  "Followed Profiles": "Followed profiles",
+  "Edit Profile": "Edit profile",
+  "Send THENA ID": "Send THENA ID",
+  "Follow": "Follow",
+  "Unfollow": "Unfollow"
 }

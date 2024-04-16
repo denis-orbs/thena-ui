@@ -76,7 +76,7 @@ export function TCButton({ eventType, competition, timestamp }) {
 
   return (
     <div className='flex w-full items-center justify-between gap-4'>
-      <Link href={`arena/trading-competitions/${competition.id}`} className='w-full'>
+      <Link href={`/arena/trading-competitions/${competition.id}`} className='w-full'>
         <EmphasisButton className='w-full'>{t('View')}</EmphasisButton>
       </Link>
 

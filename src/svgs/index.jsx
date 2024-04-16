@@ -28,6 +28,7 @@ import PiggySecondIcon from '~/svgs/piggy-second.svg'
 import PlusIcon from '~/svgs/plus.svg'
 import PlusCircleIcon from '~/svgs/plus-circle.svg'
 import PowerIcon from '~/svgs/power.svg'
+import PublicIcon from '~/svgs/public.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
 import SearchIcon from '~/svgs/search.svg'
 import SettingsIcon from '~/svgs/settings.svg'
@@ -72,6 +73,7 @@ export {
   PlusCircleIcon,
   PlusIcon,
   PowerIcon,
+  PublicIcon,
   RefreshIcon,
   SearchIcon,
   SettingsIcon,
