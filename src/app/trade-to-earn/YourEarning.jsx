@@ -156,7 +156,7 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
             owner: muonResponse?.signatures?.[0]?.owner,
             nonce: muonResponse?.data?.init?.nonceAddress,
           }
-          const gatewaySignature = ''
+          const gatewaySignature = muonResponse?.nodeSignature
 
           const body = [
             parseInt(day, 10),
@@ -172,10 +172,8 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
           if (isSuccess) {
             refetchEarnings()
           }
-          setPending(false)
-        } else {
-          setPending(false)
         }
+        setPending(false)
       } catch (error) {
         setPending(false)
         console.log(error)
