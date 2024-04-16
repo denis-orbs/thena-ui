@@ -2,12 +2,12 @@
 
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import WarningModal from '@/app/swap/WarningModal'
 import { Alert } from '@/components/alert'
 import Box from '@/components/box'
-import { EmphasisButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import NextImage from '@/components/image/NextImage'
@@ -15,140 +15,119 @@ import CustomTokenInput from '@/components/input/CustomTokenInput'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { useMutateAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { useOdosQuoteSwap, useOdosSwap } from '@/hooks/useSwap'
-import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+import { useGetOOESwapData, useTCSpotAlgebraSwap, useTCSpotOOESwap } from '@/hooks/useSwap'
+import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { liquidityHub } from '@/modules/LiquidityHub'
-import { LiquidityHubRouting } from '@/modules/LiquidityHub/components'
-import TxnSettings from '@/modules/SettingsModal'
 import SwapChart from '@/modules/SwapChart'
-import { useChainSettings, useSettings } from '@/state/settings/hooks'
-import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
+import { useChainSettings } from '@/state/settings/hooks'
+import { InfoIcon, SwitchVerticalIcon } from '@/svgs'
 
-export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, children }) {
+export function SideBar({
+  fromAsset,
+  toAsset,
+  setFromAsset,
+  setToAsset,
+  isWrap,
+  isUnwrap,
+  onWrap,
+  onUnwrap,
+  wrapPending,
+  assets,
+  tcSpot,
+  children,
+}) {
   const t = useTranslations()
-  const [fromAmount, setFromAmount] = useState('')
+  const [fromAddress, setFromAddress] = useState(fromAsset?.address)
   const [isWarning, setIsWarning] = useState(false)
   const { account } = useWallet()
-  const { slippage } = useSettings()
+  // const { slippage } = useSettings()
   const { networkId } = useChainSettings()
-  const debouncedAmount = useDebounce(fromAmount)
-  const {
-    data: bestTrade,
-    isLoading: bestTradePending,
-    mutate,
-  } = useOdosQuoteSwap(account, fromAsset, toAsset, debouncedAmount, slippage, networkId)
-  const mutateAssets = useMutateAssets()
-  const { onOdosSwap, swapPending } = useOdosSwap()
-  const { mutate: onLHSwap, isLoading: LHSwapPending } = liquidityHub.useSwap()
-  const {
-    data: lhQuote,
-    error: lhQuoteError,
-    isLoading: lhQuotePending,
-  } = liquidityHub.useQuoteQuery(fromAsset, toAsset, debouncedAmount, bestTrade?.outAmounts[0])
-  const isDexTrade = liquidityHub.useIsDexTrade(bestTrade?.outAmounts[0], lhQuote?.outAmount, lhQuoteError)
-  const quotePending = bestTradePending || lhQuotePending
-  const isLHToken = fromAsset?.extended || toAsset?.extended
-  const outAmount = useMemo(
-    () => (quotePending ? '' : isLHToken || !bestTrade ? lhQuote?.outAmount : bestTrade?.outAmounts[0] || ''),
-    [quotePending, isLHToken, lhQuote, bestTrade],
+  const [fromTokenAmount, setFromTokenAmount] = useState('')
+  const [toTokenAmount, setToTokenAmount] = useState('')
+  const [minimumReceived, setMinimumReceived] = useState(0)
+  const [ooeData, setOoeData] = useState('')
+
+  const debouncedFromTokenAmount = useDebounce(fromTokenAmount, 200)
+
+  const { data: ooeQuoteData, isLoading } = useGetOOESwapData(
+    fromAddress,
+    toAsset?.address,
+    debouncedFromTokenAmount,
+    3,
+    networkId,
+    account,
   )
 
-  const toAmount = useMemo(() => {
-    if (outAmount && Number(outAmount) > 0 && toAsset) {
-      return fromWei(outAmount, toAsset.decimals).toString(10)
-    }
-    return ''
-  }, [toAsset, outAmount])
+  const { onSwap: onSwapOOE, pending: pendingOOE } = useTCSpotOOESwap()
+  const { onSwap: onSwapAlgebra, pending: pendingAlg } = useTCSpotAlgebraSwap()
 
-  const minimumReceived = useMemo(() => {
-    if (!toAsset || !outAmount) return ''
-    if (isLHToken) {
-      return `${formatAmount(fromWei(outAmount, toAsset.decimals))} ${toAsset.symbol}`
+  useEffect(() => {
+    if (ooeQuoteData?.code === 200 && ooeQuoteData?.data) {
+      setToTokenAmount(fromWei(ooeQuoteData.data.outAmount, ooeQuoteData.data.outToken.decimals))
+      setMinimumReceived(fromWei(ooeQuoteData.data.minOutAmount, ooeQuoteData.data.outToken.decimals))
+      setOoeData(ooeQuoteData.data.data)
+    } else {
+      setToTokenAmount('')
     }
-    return `${formatAmount(fromWei(outAmount, toAsset.decimals))} ${toAsset.symbol}`
-  }, [outAmount, toAsset, isLHToken])
+  }, [ooeQuoteData])
+
+  useEffect(() => {
+    if (fromAddress !== fromAddress?.address) {
+      setFromAddress(fromAsset?.address)
+    }
+  }, [fromAddress, fromAsset?.address])
 
   const priceImpact = useMemo(() => {
-    if (quotePending) return 0
-    if (!isLHToken && bestTrade) {
-      return Math.abs(bestTrade.priceImpact)
-    }
-    if (fromAsset && toAsset && fromAmount && toAmount) {
-      const fromInUsd = new BigNumber(fromAmount).times(fromAsset.price)
-      const toInUsd = new BigNumber(toAmount).times(toAsset.price)
+    if (fromAsset && toAsset && debouncedFromTokenAmount && toTokenAmount) {
+      const fromInUsd = new BigNumber(debouncedFromTokenAmount).times(fromAsset.price)
+      const toInUsd = new BigNumber(toTokenAmount).times(toAsset.price)
       return new BigNumber(((fromInUsd - toInUsd) / fromInUsd) * 100).toNumber()
     }
     return 0
-  }, [isLHToken, bestTrade, fromAsset, toAsset, fromAmount, toAmount, quotePending])
+  }, [fromAsset, toAsset, debouncedFromTokenAmount, toTokenAmount])
 
   const percents = useMemo(
     () => [
       {
         label: '10%',
-        onClickHandler: () => setFromAmount(fromAsset.balance.times(0.1).toString(10)),
+        onClickHandler: () => setFromTokenAmount(fromAsset.balance.times(0.1).toString(10)),
       },
       {
         label: '25%',
-        onClickHandler: () => setFromAmount(fromAsset.balance.times(0.25).toString(10)),
+        onClickHandler: () => setFromTokenAmount(fromAsset.balance.times(0.25).toString(10)),
       },
       {
         label: '50%',
-        onClickHandler: () => setFromAmount(fromAsset.balance.times(0.5).toString(10)),
+        onClickHandler: () => setFromTokenAmount(fromAsset.balance.times(0.5).toString(10)),
       },
       {
         label: 'Max',
-        onClickHandler: () => setFromAmount(fromAsset.balance.toString(10)),
+        onClickHandler: () => setFromTokenAmount(fromAsset.balance.toString(10)),
       },
     ],
-    [fromAsset, setFromAmount],
+    [fromAsset, setFromTokenAmount],
   )
 
-  const handleSwap = useCallback(() => {
-    const dexOutAmount = bestTrade?.outAmounts[0]
-    liquidityHub.analytics.initSwap({
+  const handleSwap = useCallback(async () => {
+    // const isSuccess = await onSwapOOE(ooeData, fromAsset, toAsset, tcSpot)
+    const isSuccess = await onSwapAlgebra(
       fromAsset,
       toAsset,
-      fromAmount,
-      toAmount,
-      slippage,
-      lhQuote,
-      dexOutAmount,
-      isDexTrade,
-    })
-    if (isDexTrade) {
-      onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => {
-        setFromAmount('')
-        mutateAssets()
-      })
-    } else {
-      onLHSwap({
-        fromAsset,
-        toAsset,
-        fromAmount,
-        outAmount,
-        quote: lhQuote,
-        callback: () => {
-          setFromAmount('')
-          mutateAssets()
-        },
-      })
-    }
+      toWei(debouncedFromTokenAmount),
+      ooeQuoteData?.data?.minOutAmount,
+      tcSpot,
+    )
+    console.log({ isSuccess })
   }, [
+    debouncedFromTokenAmount,
     fromAsset,
+    onSwapAlgebra,
+    onSwapOOE,
+    ooeData,
+    ooeQuoteData?.data?.minOutAmount,
+    tcSpot,
     toAsset,
-    fromAmount,
-    toAmount,
-    bestTrade,
-    onOdosSwap,
-    onLHSwap,
-    outAmount,
-    isDexTrade,
-    slippage,
-    mutateAssets,
-    lhQuote,
   ])
 
   const btnMsg = useMemo(() => {
@@ -159,28 +138,35 @@ export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, 
       }
     }
 
-    if (isInvalidAmount(fromAmount)) {
+    if (isInvalidAmount(debouncedFromTokenAmount)) {
       return {
         isError: true,
         label: t('Enter an amount'),
       }
     }
 
-    if (quotePending) {
-      return {
-        isError: false,
-        label: t('Fetching Quotes'),
-      }
-    }
-
-    if (fromAsset.balance && fromAsset.balance.lt(fromAmount)) {
+    if (fromAsset.balance && fromAsset.balance.lt(debouncedFromTokenAmount)) {
       return {
         isError: true,
         label: t('Insufficient Balance'),
       }
     }
 
-    if (!toAmount) {
+    if (isWrap) {
+      return {
+        isError: false,
+        label: t('Wrap'),
+      }
+    }
+
+    if (isUnwrap) {
+      return {
+        isError: false,
+        label: t('Unwrap'),
+      }
+    }
+
+    if (!toTokenAmount) {
       return {
         isError: true,
         label: t('Insufficient liquidity for this trade'),
@@ -191,7 +177,7 @@ export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, 
       isError: false,
       label: t('Swap'),
     }
-  }, [fromAsset, toAsset, fromAmount, toAmount, quotePending, t])
+  }, [fromAsset, debouncedFromTokenAmount, isUnwrap, isWrap, t, toAsset, toTokenAmount])
 
   return (
     <>
@@ -202,16 +188,16 @@ export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, 
             <Box className='flex flex-col gap-4'>
               <div className='flex justify-between'>
                 <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
-                <TextButton
+                {/* <TextButton
                   className='text-xs'
                   iconClassName='lg:h-4 lg:w-4'
                   onClick={() => mutate()}
                   LeadingIcon={RefreshIcon}
                 >
                   {t('Refresh Quote')}
-                </TextButton>
+                </TextButton> */}
               </div>
-              {quotePending ? (
+              {isLoading ? (
                 <Skeleton className='h-[100px] w-full' />
               ) : (
                 <div>
@@ -219,22 +205,22 @@ export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, 
                     <div className='flex items-center gap-2'>
                       <NextImage src={fromAsset?.logoURI} alt='' className='h-5 w-5' />
                       <Paragraph>
-                        {formatAmount(fromAmount)} {fromAsset?.symbol}
+                        {formatAmount(fromTokenAmount)} {fromAsset?.symbol}
                       </Paragraph>
                     </div>
                     <div className='flex items-center gap-2'>
                       <Paragraph>
-                        {formatAmount(toAmount)} {toAsset?.symbol}
+                        {formatAmount(toTokenAmount)} {toAsset?.symbol}
                       </Paragraph>
                       <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
                     </div>
                   </div>
-                  {isDexTrade && (
+                  {/* {isDexTrade && (
                     <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
                       {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
                     </div>
                   )}
-                  {!!lhQuote?.outAmount && Number(lhQuote?.outAmount) > 0 && !isDexTrade && <LiquidityHubRouting />}
+                  {!!lhQuote?.outAmount && Number(lhQuote?.outAmount) > 0 && !isDexTrade && <LiquidityHubRouting />} */}
                 </div>
               )}
             </Box>
@@ -246,9 +232,9 @@ export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, 
           <Box className='w-full max-w-[480px]'>
             <div className='mb-3 flex items-center justify-between'>
               <h2>{t('Swap')}</h2>
-              <div className='flex items-center gap-2'>
+              {/* <div className='flex items-center gap-2'>
                 <TxnSettings />
-              </div>
+              </div> */}
             </div>
             <div className='my-3 flex flex-col items-end gap-2'>
               <Tabs data={percents} />
@@ -261,8 +247,8 @@ export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, 
                     }
                     setFromAsset(asset)
                   }}
-                  amount={fromAmount}
-                  setAmount={setFromAmount}
+                  amount={fromTokenAmount}
+                  setAmount={setFromTokenAmount}
                   assets={assets}
                   autoFocus
                   hasTabs={false}
@@ -275,7 +261,7 @@ export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, 
                     }
                     setToAsset(asset)
                   }}
-                  amount={toAmount}
+                  amount={toTokenAmount}
                   assets={assets}
                   hasTabs={false}
                   disabled
@@ -290,20 +276,25 @@ export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, 
                 />
               </div>
             </div>
-            {toAmount && (
+            {toTokenAmount && !isLoading && (
               <div className='flex flex-col gap-2 py-3'>
                 <div className='flex items-center justify-between'>
                   <TextHeading>{t('Rate')}</TextHeading>
                   <Paragraph>
-                    {`${formatAmount(new BigNumber(toAmount).div(fromAmount))} ${t('[symbolA] per [symbolB]', {
-                      symbolA: toAsset.symbol,
-                      symbolB: fromAsset.symbol,
-                    })}`}
+                    {`${formatAmount(new BigNumber(toTokenAmount).div(fromTokenAmount))} ${t(
+                      '[symbolA] per [symbolB]',
+                      {
+                        symbolA: toAsset.symbol,
+                        symbolB: fromAsset.symbol,
+                      },
+                    )}`}
                   </Paragraph>
                 </div>
                 <div className='flex items-center justify-between'>
                   <TextHeading>{t('Minimum Received')}</TextHeading>
-                  <Paragraph>{minimumReceived}</Paragraph>
+                  <Paragraph>
+                    {new BigNumber(minimumReceived).toNumber()} {toAsset.symbol}
+                  </Paragraph>
                 </div>
                 <div className='flex items-center justify-between'>
                   <TextHeading>{t('Price Impact')}</TextHeading>
@@ -321,10 +312,14 @@ export function SideBar({ fromAsset, toAsset, setFromAsset, setToAsset, assets, 
             {account ? (
               <EmphasisButton
                 className='mt-3 w-full'
-                disabled={!fromAmount || quotePending || swapPending || LHSwapPending || btnMsg.isError}
+                disabled={!debouncedFromTokenAmount || wrapPending || pendingOOE || pendingAlg || btnMsg.isError}
                 onClick={() => {
                   if (priceImpact > 5) {
                     setIsWarning(true)
+                  } else if (isWrap) {
+                    onWrap(debouncedFromTokenAmount)
+                  } else if (isUnwrap) {
+                    onUnwrap(debouncedFromTokenAmount)
                   } else {
                     handleSwap()
                   }

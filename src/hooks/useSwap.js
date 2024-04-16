@@ -1,4 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
+import { ethers } from 'ethers'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import useSWR from 'swr'
@@ -9,7 +11,7 @@ import { getAddress, maxUint256, zeroAddress } from 'viem'
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
+import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
@@ -355,4 +357,138 @@ export const useWrap = () => {
   )
 
   return { onWrap, onUnwrap, pending }
+}
+
+export const useGetOOESwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, account) => {
+  const gasPrice = 3
+  const enabledDexIds = '44,47'
+
+  const { data, isFetching } = useQuery({
+    queryKey: ['useGetOOESwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, account],
+    queryFn: async () => {
+      const response = await fetch(
+        // eslint-disable-next-line max-len
+        `https://open-api.openocean.finance/v3/${networkId}/swap_quote?inTokenAddress=${fromAddress}&outTokenAddress=${toAddress}&account=${account}&amount=${fromAmount}&gasPrice=${gasPrice}&slippage=${slippage}&enabledDexIds=${enabledDexIds}`,
+        {
+          method: 'GET',
+        },
+      )
+      const res = await response.json()
+
+      return res
+    },
+    refetchInterval: 30000,
+    enabled: Boolean(
+      fromAddress && toAddress && !isInvalidAmount(fromAmount) && fromAddress.toLowerCase() !== toAddress.toLowerCase(),
+    ),
+    gcTime: 0,
+  })
+
+  return { data, isLoading: isFetching }
+}
+
+export const useTCSpotOOESwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (ooeData, fromAsset, toAsset, tcAddress) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const swapOpenOceanFunctionHash = '0x60d4bb2c'
+      const data = swapOpenOceanFunctionHash + ooeData.slice(10)
+      const isSuccess = await sendTxn(key, swapuuid, tcAddress, data)
+      if (!isSuccess) {
+        setPending(false)
+        return
+      }
+
+      endTxn({
+        key,
+        final: 'Swap Successful',
+      })
+      setPending(false)
+    },
+    [endTxn, sendTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
+}
+
+export const useTCSpotAlgebraSwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (fromAsset, toAsset, amount, minOutAmount, tcAddress) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const path = ethers.solidityPacked(['address', 'address'], [fromAsset.address, toAsset.address])
+      const latestBlock = await ethers.getDefaultProvider().getBlock('latest')
+      if (latestBlock) {
+        const { timestamp } = latestBlock
+        const exactInputParams = {
+          path,
+          recipient: tcAddress,
+          deadline: timestamp + 3600,
+          amountIn: amount,
+          amountOutMinimum: minOutAmount,
+        }
+
+        const tcSpotContract = getTcSpotContract(tcAddress)
+
+        const isSuccess = await writeTxn(key, swapuuid, tcSpotContract, 'swapAlgebra', [
+          fromAsset.address,
+          toAsset.address,
+          exactInputParams,
+        ])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+
+        endTxn({
+          key,
+          final: 'Swap Successful',
+        })
+
+        setPending(false)
+        return isSuccess
+      }
+
+      setPending(false)
+      return false
+    },
+    [endTxn, writeTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
 }
