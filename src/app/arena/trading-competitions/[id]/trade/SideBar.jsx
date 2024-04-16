@@ -23,6 +23,8 @@ import SwapChart from '@/modules/SwapChart'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon, SwitchVerticalIcon } from '@/svgs'
 
+import SettingSideBar, { serviceList } from './SettingSideBar'
+
 export function SideBar({
   fromAsset,
   toAsset,
@@ -47,6 +49,7 @@ export function SideBar({
   const [toTokenAmount, setToTokenAmount] = useState('')
   const [minimumReceived, setMinimumReceived] = useState(0)
   const [ooeData, setOoeData] = useState('')
+  const [service, setService] = useState(serviceList[0])
 
   const debouncedFromTokenAmount = useDebounce(fromTokenAmount, 200)
 
@@ -232,9 +235,9 @@ export function SideBar({
           <Box className='w-full max-w-[480px]'>
             <div className='mb-3 flex items-center justify-between'>
               <h2>{t('Swap')}</h2>
-              {/* <div className='flex items-center gap-2'>
-                <TxnSettings />
-              </div> */}
+              <div className='flex items-center gap-2'>
+                <SettingSideBar service={service} setService={setService} />
+              </div>
             </div>
             <div className='my-3 flex flex-col items-end gap-2'>
               <Tabs data={percents} />
