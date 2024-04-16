@@ -12,12 +12,18 @@ import { fromWei, sleep } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
+const MAX_RETIRES = 3
+
 export const useTCContractInfor = (address, eventType) => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
+  const [placement, setPlacement] = useState()
   const [isOwner, setIsOwner] = useState(false)
   const [isClaimable, setIsClaimable] = useState(undefined)
+
+  const [retries, setRetires] = useState(0)
+
   const tcSpotContract = getTcSpotContract(address)
   const { account } = useWallet()
   const assets = useAssets()
@@ -37,50 +43,86 @@ export const useTCContractInfor = (address, eventType) => {
     ])
     setIsRegistered(joined)
     setIsWinner(won[0])
+    setPlacement(won[1])
     setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
 
     setLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, tcSpotContract, eventType, address])
 
+  const getWinnersList = useCallback(
+    async userPlacement => {
+      try {
+        return await readCall(tcSpotContract, 'winnersList', [userPlacement])
+      } catch (error) {
+        return false
+      }
+    },
+    [tcSpotContract],
+  )
+
   useEffect(() => {
     const checkClaimable = async () => {
       if (eventType === EVENT_TYPES.ENDED && isClaimable === undefined) {
-        if (isRegistered && isWinner[0]) {
-          const [claimable, winnerList] = await Promise.all(
-            [readCall(tcSpotContract, 'claimable', [account])],
-            [readCall(tcSpotContract, 'winnersList', [isWinner[1]])],
-          )
-
-          const isClaimed = winnerList.toLowerCase() === account.toLowerCase()
-          const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
-          if (!token || !isClaimed) {
-            setIsClaimable(false)
-          } else {
-            const totalClaimable = fromWei(claimable[0], token.decimals)
-            setIsClaimable(!totalClaimable.isZero())
+        try {
+          if (isRegistered && isWinner && placement !== undefined) {
+            const claimable = await readCall(tcSpotContract, 'claimable', [account])
+            const winnersList = await getWinnersList(placement)
+            const isClaimed = winnersList && winnersList.toLowerCase() === account.toLowerCase()
+            const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
+            if (!token || isClaimed) {
+              setIsClaimable(false)
+            } else {
+              const totalClaimable = fromWei(claimable[0], token.decimals)
+              setIsClaimable(!totalClaimable.isZero())
+            }
           }
-        }
-        if (isOwner) {
-          const [ownerClaimed, feeAmount] = await Promise.all([
-            readCall(tcSpotContract, 'ownerHasClaimed', [account]),
-            readCall(tcSpotContract, 'ownerFeeAmount', []),
-          ])
+          if (isOwner) {
+            const [ownerClaimed, feeAmount] = await Promise.all([
+              readCall(tcSpotContract, 'ownerHasClaimed', [account]),
+              readCall(tcSpotContract, 'ownerFeeAmount', []),
+            ])
 
-          if (ownerClaimed) {
+            if (ownerClaimed) {
+              setIsClaimable(false)
+            } else {
+              setIsClaimable(!fromWei(feeAmount).isZero())
+            }
+          }
+        } catch (error) {
+          if (retries === MAX_RETIRES) {
             setIsClaimable(false)
           } else {
-            setIsClaimable(!fromWei(feeAmount).isZero())
+            setRetires(retries + 1)
           }
         }
       }
     }
     checkClaimable()
-  }, [account, assets, eventType, isClaimable, isOwner, isRegistered, isWinner, tcSpotContract])
+  }, [
+    account,
+    assets,
+    eventType,
+    getWinnersList,
+    isClaimable,
+    isOwner,
+    isRegistered,
+    isWinner,
+    placement,
+    retries,
+    tcSpotContract,
+  ])
 
   useEffect(() => {
     getUserData()
   }, [getUserData])
+
+  useEffect(() => {
+    if (account && address) {
+      setRetires(0)
+      setIsClaimable(undefined)
+    }
+  }, [account, address])
 
   return {
     loaded,
@@ -339,7 +381,7 @@ export const useTradeData = (TCAddress, winningTokenAddress) => {
 }
 
 export const useClaimTC = () => {
-  const { startTxn, endTxn, writeTxn } = useTxn()
+  const { startTxn, endTxn, writeTxn, closeTxnModal, closeTxn } = useTxn()
   const { account } = useWallet()
   const t = useTranslations()
   const [loading, setLoading] = useState(false)
@@ -368,6 +410,7 @@ export const useClaimTC = () => {
       ])
       if (!isSuccess) {
         setLoading(false)
+        closeTxn()
         return false
       }
       endTxn({
@@ -375,9 +418,10 @@ export const useClaimTC = () => {
         final: 'Claim Successful',
       })
       setLoading(false)
+      closeTxnModal()
       return true
     },
-    [account, endTxn, startTxn, t, writeTxn],
+    [account, endTxn, startTxn, t, writeTxn, closeTxnModal, closeTxn],
   )
 
   return { loading, claimReward }
