@@ -12,24 +12,6 @@ import { fromWei, sleep } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useTcSpotContract = address => {
-  const { account } = useWallet()
-  const claimPrize = useCallback(async () => {
-    const tcSpotContract = getTcSpotContract(address)
-    await Promise.all([readCall(tcSpotContract, 'claimPrize', [account])])
-  }, [address, account])
-
-  const claimOwnerFee = useCallback(async () => {
-    const tcSpotContract = getTcSpotContract(address)
-    await Promise.all([readCall(tcSpotContract, 'claimOwnerFee', [account])])
-  }, [address, account])
-
-  return {
-    claimPrize,
-    claimOwnerFee,
-  }
-}
-
 export const useTCContractInfor = (address, eventType) => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
@@ -64,10 +46,15 @@ export const useTCContractInfor = (address, eventType) => {
   useEffect(() => {
     const checkClaimable = async () => {
       if (eventType === EVENT_TYPES.ENDED && isClaimable === undefined) {
-        if (isRegistered && isWinner) {
-          const claimable = await readCall(tcSpotContract, 'claimable', [account])
+        if (isRegistered && isWinner[0]) {
+          const [claimable, winnerList] = await Promise.all(
+            [readCall(tcSpotContract, 'claimable', [account])],
+            [readCall(tcSpotContract, 'winnersList', [isWinner[1]])],
+          )
+
+          const isClaimed = winnerList.toLowerCase() === account.toLowerCase()
           const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
-          if (!token) {
+          if (!token || !isClaimed) {
             setIsClaimable(false)
           } else {
             const totalClaimable = fromWei(claimable[0], token.decimals)
@@ -76,8 +63,8 @@ export const useTCContractInfor = (address, eventType) => {
         }
         if (isOwner) {
           const [ownerClaimed, feeAmount] = await Promise.all([
-            await readCall(tcSpotContract, 'ownerHasClaimed', [account]),
-            await readCall(tcSpotContract, 'ownerFeeAmount', []),
+            readCall(tcSpotContract, 'ownerHasClaimed', [account]),
+            readCall(tcSpotContract, 'ownerFeeAmount', []),
           ])
 
           if (ownerClaimed) {
