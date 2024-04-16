@@ -136,7 +136,7 @@ export const useTCContractInfor = (address, eventType) => {
 }
 
 export const useJoinTC = () => {
-  const { startTxn, endTxn, writeTxn } = useTxn()
+  const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
   const { account, chainId } = useWallet()
   const t = useTranslations()
   const [pending, setPending] = useState(false)
@@ -228,9 +228,10 @@ export const useJoinTC = () => {
         final: 'Join TC Successful',
       })
       setPending(false)
+      closeTxnModal()
       return true
     },
-    [account, chainId, endTxn, startTxn, t, writeTxn],
+    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
   )
 
   return {
@@ -240,7 +241,7 @@ export const useJoinTC = () => {
 }
 
 export const useDepositToTC = () => {
-  const { startTxn, endTxn, writeTxn } = useTxn()
+  const { startTxn, endTxn, writeTxn, closeTxn } = useTxn()
   const { account, chainId } = useWallet()
   const t = useTranslations()
   const [pending, setPending] = useState(false)
@@ -315,6 +316,7 @@ export const useDepositToTC = () => {
       const isSuccess = await writeTxn(key, deposituuid, tcSpotContract, 'deposit', [data.amount])
       if (!isSuccess) {
         setPending(false)
+        closeTxn()
         return false
       }
 
@@ -325,7 +327,7 @@ export const useDepositToTC = () => {
       setPending(false)
       return true
     },
-    [account, chainId, endTxn, startTxn, t, writeTxn],
+    [account, chainId, closeTxn, endTxn, startTxn, t, writeTxn],
   )
 
   return { pending, deposit }
