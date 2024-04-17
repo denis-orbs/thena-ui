@@ -15,12 +15,15 @@ import CustomTokenInput from '@/components/input/CustomTokenInput'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useCurrency } from '@/hooks/fusion/Tokens'
+import { useBestV3TradeExactIn } from '@/hooks/fusion/useBestV3Trade'
 import useDebounce from '@/hooks/useDebounce'
-import { useGetOOESwapData, useTCSpotAlgebraSwap, useTCSpotOOESwap } from '@/hooks/useSwap'
+import { useGet1InchSwapData, useGetOOESwapData, useTCSpotAlgebraSwap, useTCSpotOOESwap } from '@/hooks/useSwap'
+import { tryParseAmount } from '@/lib/fusion'
 import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import SwapChart from '@/modules/SwapChart'
-import { useChainSettings } from '@/state/settings/hooks'
+import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { InfoIcon, SwitchVerticalIcon } from '@/svgs'
 
 import SettingSideBar, { serviceList } from './SettingSideBar'
@@ -43,13 +46,44 @@ export function SideBar({
   const [fromAddress, setFromAddress] = useState(fromAsset?.address)
   const [isWarning, setIsWarning] = useState(false)
   const { account } = useWallet()
-  // const { slippage } = useSettings()
+  const { slippage, deadline } = useSettings()
   const { networkId } = useChainSettings()
   const [fromTokenAmount, setFromTokenAmount] = useState('')
   const [toTokenAmount, setToTokenAmount] = useState('')
   const [minimumReceived, setMinimumReceived] = useState(0)
   const [ooeData, setOoeData] = useState('')
   const [service, setService] = useState(serviceList[0])
+  // const [realizedLPFee, setRealizedLPFee] = useState(0)
+  // const [priceImpactAlg, setPriceImpactAlg] = useState(0)
+
+  const inCurrency = useCurrency(fromAsset ? fromAsset.address : undefined)
+  const outCurrency = useCurrency(toAsset ? toAsset.address : undefined)
+  const parsedAmount = tryParseAmount(fromTokenAmount, inCurrency ?? undefined)
+  const bestV3TradeExactIn = useBestV3TradeExactIn(parsedAmount, outCurrency ?? undefined)
+
+  const v3Trade = bestV3TradeExactIn ?? undefined
+  const bestTrade = v3Trade.trade ?? undefined
+
+  useEffect(() => {
+    if (service === 'Algebra') {
+      if (bestTrade) {
+        const outputAmount = bestTrade.outputAmount?.toExact()
+        if (outputAmount) {
+          setToTokenAmount(outputAmount)
+          setMinimumReceived(outputAmount * ((100 - slippage) / 100))
+          // TODO
+          // const realizedLpFeePercent = computeRealizedLPFeePercent(bestTrade)
+          // const realizedLPFeeVal = bestTrade.inputAmount.multiply(realizedLpFeePercent)
+          // const priceImpactVal = bestTrade.priceImpact.subtract(realizedLpFeePercent)
+          // setPriceImpactAlg(priceImpactVal)
+          // setRealizedLPFee(realizedLPFeeVal)
+          // console.log({ priceImpactVal, realizedLPFeeVal })
+        }
+      } else {
+        setToTokenAmount('')
+      }
+    }
+  }, [bestTrade, service, slippage])
 
   const debouncedFromTokenAmount = useDebounce(fromTokenAmount, 200)
 
@@ -57,9 +91,32 @@ export function SideBar({
     fromAddress,
     toAsset?.address,
     debouncedFromTokenAmount,
-    3,
+    slippage,
     networkId,
     account,
+    Boolean(
+      service === 'OOE' &&
+        fromAddress &&
+        toAsset?.address &&
+        !isInvalidAmount(debouncedFromTokenAmount) &&
+        fromAddress.toLowerCase() !== toAsset?.address?.toLowerCase(),
+    ),
+  )
+
+  const { data: oneInchQuoteData, isLoading: isLoadingOneInch } = useGet1InchSwapData(
+    fromAddress,
+    toAsset?.address,
+    debouncedFromTokenAmount,
+    slippage,
+    networkId,
+    account,
+    Boolean(
+      service === '1inch' &&
+        fromAddress &&
+        toAsset?.address &&
+        !isInvalidAmount(debouncedFromTokenAmount) &&
+        fromAddress.toLowerCase() !== toAsset?.address?.toLowerCase(),
+    ),
   )
 
   const { onSwap: onSwapOOE, pending: pendingOOE } = useTCSpotOOESwap()
@@ -74,6 +131,17 @@ export function SideBar({
       setToTokenAmount('')
     }
   }, [ooeQuoteData])
+
+  useEffect(() => {
+    console.log({ oneInchQuoteData })
+    // if (oneInchQuoteData?.code === 200 && ooeQuoteData?.data) {
+    //   setToTokenAmount(fromWei(ooeQuoteData.data.outAmount, ooeQuoteData.data.outToken.decimals))
+    //   setMinimumReceived(fromWei(ooeQuoteData.data.minOutAmount, ooeQuoteData.data.outToken.decimals))
+    //   setOoeData(ooeQuoteData.data.data)
+    // } else {
+    //   setToTokenAmount('')
+    // }
+  }, [oneInchQuoteData])
 
   useEffect(() => {
     if (fromAddress !== fromAddress?.address) {
@@ -113,24 +181,34 @@ export function SideBar({
   )
 
   const handleSwap = useCallback(async () => {
-    // const isSuccess = await onSwapOOE(ooeData, fromAsset, toAsset, tcSpot)
-    const isSuccess = await onSwapAlgebra(
-      fromAsset,
-      toAsset,
-      toWei(debouncedFromTokenAmount),
-      ooeQuoteData?.data?.minOutAmount,
-      tcSpot,
-    )
-    console.log({ isSuccess })
+    switch (service) {
+      case 'Algebra':
+        await onSwapAlgebra(
+          fromAsset,
+          toAsset,
+          toWei(debouncedFromTokenAmount),
+          toWei(minimumReceived, 17), // TODO
+          tcSpot,
+          slippage,
+          deadline,
+        )
+        break
+      default:
+        await onSwapOOE(ooeData, fromAsset, toAsset, tcSpot)
+        break
+    }
   }, [
-    debouncedFromTokenAmount,
-    fromAsset,
+    service,
     onSwapAlgebra,
+    fromAsset,
+    toAsset,
+    debouncedFromTokenAmount,
+    tcSpot,
+    slippage,
+    deadline,
     onSwapOOE,
     ooeData,
-    ooeQuoteData?.data?.minOutAmount,
-    tcSpot,
-    toAsset,
+    minimumReceived,
   ])
 
   const btnMsg = useMemo(() => {
@@ -200,7 +278,7 @@ export function SideBar({
                   {t('Refresh Quote')}
                 </TextButton> */}
               </div>
-              {isLoading ? (
+              {isLoading || isLoadingOneInch ? (
                 <Skeleton className='h-[100px] w-full' />
               ) : (
                 <div>
@@ -279,7 +357,7 @@ export function SideBar({
                 />
               </div>
             </div>
-            {toTokenAmount && !isLoading && (
+            {toTokenAmount && !isLoading && !isLoadingOneInch && (
               <div className='flex flex-col gap-2 py-3'>
                 <div className='flex items-center justify-between'>
                   <TextHeading>{t('Rate')}</TextHeading>

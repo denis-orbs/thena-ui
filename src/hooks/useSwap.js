@@ -359,7 +359,7 @@ export const useWrap = () => {
   return { onWrap, onUnwrap, pending }
 }
 
-export const useGetOOESwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, account) => {
+export const useGetOOESwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, account, enabled) => {
   const gasPrice = 3
   const enabledDexIds = '44,47'
 
@@ -377,10 +377,37 @@ export const useGetOOESwapData = (fromAddress, toAddress, fromAmount, slippage, 
 
       return res
     },
-    refetchInterval: 30000,
-    enabled: Boolean(
-      fromAddress && toAddress && !isInvalidAmount(fromAmount) && fromAddress.toLowerCase() !== toAddress.toLowerCase(),
-    ),
+    refetchInterval: 10000,
+    enabled,
+    gcTime: 0,
+  })
+
+  return { data, isLoading: isFetching }
+}
+
+export const useGet1InchSwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot, enabled) => {
+  const { data, isFetching } = useQuery({
+    queryKey: ['useGet1InchSwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
+    queryFn: async () => {
+      const response = await fetch(
+        `https://80be-118-70-80-24.ngrok-free.app/proxy/1inch-api/quote/v5.2/${networkId}/${new URLSearchParams({
+          src: fromAddress,
+          dst: toAddress,
+          amount: fromAmount,
+          from: tcSpot,
+          slippage,
+          protocols: ['BSC_THENA', 'BSC_THENA_V3'],
+        })}`,
+        {
+          method: 'GET',
+        },
+      )
+      const res = await response.json()
+
+      return res
+    },
+    refetchInterval: 10000,
+    enabled,
     gcTime: 0,
   })
 
@@ -412,6 +439,7 @@ export const useTCSpotOOESwap = () => {
       const swapOpenOceanFunctionHash = '0x60d4bb2c'
       const data = swapOpenOceanFunctionHash + ooeData.slice(10)
       const isSuccess = await sendTxn(key, swapuuid, tcAddress, data)
+      // const isSuccess = await sendTxn(key, swapuuid, '0x6352a56caadc4f1e25cd6c75970fa768a3304e64', ooeData)
       if (!isSuccess) {
         setPending(false)
         return
@@ -435,7 +463,7 @@ export const useTCSpotAlgebraSwap = () => {
   const t = useTranslations()
 
   const onSwap = useCallback(
-    async (fromAsset, toAsset, amount, minOutAmount, tcAddress) => {
+    async (fromAsset, toAsset, amount, minOutAmount, tcAddress, deadline) => {
       const key = uuidv4()
       const swapuuid = uuidv4()
       startTxn({
@@ -458,7 +486,7 @@ export const useTCSpotAlgebraSwap = () => {
         const exactInputParams = {
           path,
           recipient: tcAddress,
-          deadline: timestamp + 3600,
+          deadline: timestamp + deadline * 60,
           amountIn: amount,
           amountOutMinimum: minOutAmount,
         }
@@ -488,6 +516,49 @@ export const useTCSpotAlgebraSwap = () => {
       return false
     },
     [endTxn, writeTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
+}
+
+export const useTCSpot1InchSwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (oneInchData, fromAsset, toAsset, tcAddress) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const swap1InchFunctionHash = '0x2e8b0011'
+      const data = swap1InchFunctionHash + oneInchData.slice(10)
+      const isSuccess = await sendTxn(key, swapuuid, tcAddress, data)
+      // const isSuccess = await sendTxn(key, swapuuid, '0x1111111254EEB25477B68fb85Ed929f73A960582', oneInchData)
+      if (!isSuccess) {
+        setPending(false)
+        return
+      }
+
+      endTxn({
+        key,
+        final: 'Swap Successful',
+      })
+      setPending(false)
+    },
+    [endTxn, sendTxn, startTxn, t],
   )
 
   return { onSwap, pending }
