@@ -29,11 +29,15 @@ export const useTCContractInfor = (address, eventType) => {
   const assets = useAssets()
 
   const getUserData = useCallback(async () => {
-    try {
+    setLoaded(false)
+
+    if (address) {
       if (!account || !tcSpotContract) {
         setIsRegistered(false)
         setIsWinner(false)
         setIsOwner(false)
+        setLoaded(true)
+
         return
       }
 
@@ -46,14 +50,12 @@ export const useTCContractInfor = (address, eventType) => {
       setIsWinner(won[0])
       setPlacement(won[1])
       setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
-    } catch (error) {
-      setLoaded(true)
-    } finally {
+
       setLoaded(true)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, tcSpotContract, eventType, address])
+  }, [account, eventType, address])
 
   const getWinnersList = useCallback(
     async userPlacement => {
