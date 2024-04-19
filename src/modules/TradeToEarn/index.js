@@ -118,7 +118,7 @@ export const fetchMuon = async (account, day) => {
   const user = account
   const projectId = '0x1fdee74ea6c68fdce3c090e59eeb93943eeaadc99a89c65ac12024c85be84d41'
 
-  const muonURL = `http://15.237.179.178:3000/v1/?app=thenaTrade2Earn&method=userVolume&params[projectId]=${projectId}&params[day]=${day}&params[pair]=${pair}&params[user]=${user}`
+  const muonURL = `https://api-muon.thena.fi/v1/?app=thenaTrade2Earn&method=userVolume&params[projectId]=${projectId}&params[day]=${day}&params[pair]=${pair}&params[user]=${user}`
 
   const controller = new AbortController()
   const id = setTimeout(() => controller.abort(), 15000)
