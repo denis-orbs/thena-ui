@@ -129,7 +129,7 @@ export function LeaderBoard({ competition }) {
         ),
         reward: (
           <Paragraph>
-            {`${formatAmount(fromWei(leader.winAmount, leader.winTokenDecimal), false, 3, false)} ${
+            {`${formatAmount(fromWei(leader.winAmount, leader.winTokenDecimal))} ${
               competition?.competitionRules?.winningToken?.symbol
             }`}
           </Paragraph>
@@ -143,7 +143,7 @@ export function LeaderBoard({ competition }) {
   return (
     <>
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
-        <TextHeading className='text-xl lg:flex-2 '>{t('Leaderboard')}</TextHeading>
+        <TextHeading className='lg:flex-2 text-xl '>{t('Leaderboard')}</TextHeading>
         <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
       </div>
 

@@ -54,7 +54,7 @@ export function SideBar({
   const [toTokenAmount, setToTokenAmount] = useState('')
   const [minimumReceived, setMinimumReceived] = useState(0)
   const [ooeData, setOoeData] = useState('')
-  const [service, setService] = useState(serviceList[0])
+  const [service, setService] = useState(serviceList[2])
 
   const inCurrency = useCurrency(fromAsset ? fromAsset.address : undefined)
   const outCurrency = useCurrency(toAsset ? toAsset.address : undefined)
