@@ -198,3 +198,35 @@ export const useClaimRewardMutation = () => {
     },
   })
 }
+
+const V4_TOTAL_CLAIMED_REWARDS = gql`
+  query V4_TOTAL_CLAIMED_REWARDS($user: String!) {
+    totalClaimedRewards(where: { user: $user }) {
+      id
+      user
+      amount
+      token
+      lastUpdate
+    }
+  }
+`
+
+export const fetchTotalClaimedRewards = async user => {
+  try {
+    const { totalClaimedRewards } = await v4Client.request(V4_TOTAL_CLAIMED_REWARDS, {
+      user,
+    })
+    return totalClaimedRewards
+  } catch (error) {
+    return { error: true }
+  }
+}
+
+export const fetchDataTotalClaimedRewards = async user => {
+  try {
+    const data = await fetchTotalClaimedRewards(user)
+    return data
+  } catch (error) {
+    return { error: true }
+  }
+}

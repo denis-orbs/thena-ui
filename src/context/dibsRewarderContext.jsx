@@ -5,6 +5,7 @@ import { readCall } from '@/lib/contractActions'
 import { getDibsRewarderContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import { fetchDataTotalClaimedRewards } from '@/modules/TradeToEarn'
 
 import { useAssets } from './assetsContext'
 
@@ -57,7 +58,7 @@ function DibsRewarderContextProvider({ children }) {
           setCurrentDay(new BigNumber(res0).toNumber())
           setRewardTokenList(res1)
           let total = 0
-          let totalEarned = 0
+
           const arrayTotalRewardCurrDay = []
           for (let i = 0; i < res1.length; i++) {
             const res2 = await readCall(dibsRewarderContract, 'totalReward', [res1[i], new BigNumber(res0).toNumber()])
@@ -69,14 +70,16 @@ function DibsRewarderContextProvider({ children }) {
                 symbol: asset.symbol,
               })
             }
-            if (asset && account) {
-              for (let j = 0; j < new BigNumber(res0).toNumber(); j++) {
-                const res3 = await readCall(dibsRewarderContract, 'claimed', [account, res1[i], j])
-                const userEarnedTokenIDayJ = fromWei(new BigNumber(res3)).toNumber() * asset.price
-                totalEarned += userEarnedTokenIDayJ
-              }
-            }
           }
+
+          let totalEarned = 0
+          const totalClaimedRewards = await fetchDataTotalClaimedRewards(account)
+          totalClaimedRewards.forEach(tcr => {
+            const asset = assets.find(a => a.address.toLowerCase() === tcr.token.toLowerCase())
+            const userEarned = fromWei(new BigNumber(tcr.amount)).toNumber() * asset.price
+            totalEarned += userEarned
+          })
+
           setTotalReward(total)
           setTotalUserEarned(totalEarned)
           setTotalRewardCurrDay(arrayTotalRewardCurrDay)
