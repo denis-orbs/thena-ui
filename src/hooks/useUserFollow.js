@@ -39,7 +39,7 @@ const V4_FOLLOW = gql`
 `
 export const fetchFollowing = async id => {
   try {
-    const { userFollows } = await v4Client.request(V4_FOLLOWING, { id: id.toLowerCase() })
+    const { userFollows } = await v4Client.request(V4_FOLLOWING, { followerId: id.toLowerCase() })
 
     return userFollows
   } catch (error) {
@@ -49,7 +49,7 @@ export const fetchFollowing = async id => {
 
 export const fetchFollower = async id => {
   try {
-    const { userFollows } = await v4Client.request(V4_FOLLOWERS, { id: id.toLowerCase() })
+    const { userFollows } = await v4Client.request(V4_FOLLOWERS, { userId: id.toLowerCase() })
 
     return userFollows
   } catch (error) {
