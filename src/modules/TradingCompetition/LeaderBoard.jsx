@@ -143,7 +143,8 @@ export function LeaderBoard({ competition }) {
   return (
     <>
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
-        <TextHeading className='lg:flex-2 text-xl '>{t('Leaderboard')}</TextHeading>
+        {/* eslint-disable-next-line prettier/prettier */}
+        <TextHeading className='text-xl lg:flex-2'>{t('Leaderboard')}</TextHeading>
         <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
       </div>
 
