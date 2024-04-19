@@ -21,7 +21,7 @@ export function TCButton({ eventType, competition, timestamp }) {
     isRegistered: isJoined,
     isOwner: isHosting,
     isClaimable: canClaimRewards,
-    refetch,
+    checkClaimable,
   } = useTCContractInfor(competition.tradingCompetitionSpot, eventType)
 
   const [joinButtonText, setJoinButtonText] = useState({
@@ -35,11 +35,11 @@ export function TCButton({ eventType, competition, timestamp }) {
         tcAddress: competition.tradingCompetitionSpot,
         isOwner: isHosting,
       })
-      await refetch()
+      await checkClaimable(true)
     } catch (e) {
       console.error(e)
     }
-  }, [claimReward, competition.tradingCompetitionSpot, isHosting, refetch])
+  }, [claimReward, competition.tradingCompetitionSpot, isHosting, checkClaimable])
 
   useEffect(() => {
     const interval = setInterval(() => {

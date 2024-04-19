@@ -33,6 +33,7 @@ function Sidebar({ competition, eventType }) {
     isOwner: isHosting,
     isClaimable: canClaimRewards,
     refetch,
+    checkClaimable,
   } = useTCContractInfor(competition.tradingCompetitionSpot, eventType)
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
@@ -155,11 +156,11 @@ function Sidebar({ competition, eventType }) {
   const claim = useCallback(async () => {
     try {
       await claimReward({ tcAddress: competition.tradingCompetitionSpot, isOwner: isHosting })
-      refetch()
+      checkClaimable(true)
     } catch (e) {
       console.error(e)
     }
-  }, [claimReward, competition.tradingCompetitionSpot, isHosting, refetch])
+  }, [claimReward, competition.tradingCompetitionSpot, isHosting, checkClaimable])
 
   const buttonByStatus = useMemo(() => {
     if (canClaimRewards && eventType === EVENT_TYPES.ENDED) {

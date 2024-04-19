@@ -68,9 +68,9 @@ export const useTCContractInfor = (address, eventType) => {
     [tcSpotContract],
   )
 
-  useEffect(() => {
-    const checkClaimable = async () => {
-      if (eventType === EVENT_TYPES.ENDED && isClaimable === undefined) {
+  const checkClaimable = useCallback(
+    async (force = false) => {
+      if ((eventType === EVENT_TYPES.ENDED && isClaimable === undefined) || force) {
         try {
           if (isRegistered && isWinner && placement !== undefined) {
             const claimable = await readCall(tcSpotContract, 'claimable', [account])
@@ -104,21 +104,25 @@ export const useTCContractInfor = (address, eventType) => {
           }
         }
       }
-    }
+    },
+    [
+      account,
+      assets,
+      eventType,
+      getWinnersList,
+      isClaimable,
+      isOwner,
+      isRegistered,
+      isWinner,
+      placement,
+      retries,
+      tcSpotContract,
+    ],
+  )
+
+  useEffect(() => {
     checkClaimable()
-  }, [
-    account,
-    assets,
-    eventType,
-    getWinnersList,
-    isClaimable,
-    isOwner,
-    isRegistered,
-    isWinner,
-    placement,
-    retries,
-    tcSpotContract,
-  ])
+  }, [checkClaimable])
 
   useEffect(() => {
     getUserData()
@@ -139,6 +143,7 @@ export const useTCContractInfor = (address, eventType) => {
     isClaimable,
     setIsClaimable,
     refetch: getUserData,
+    checkClaimable,
   }
 }
 
