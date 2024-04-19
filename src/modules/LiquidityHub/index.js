@@ -496,12 +496,12 @@ const useSubmitTransaction = () => {
   )
 }
 
-const useSwap = () => {
+const useSwap = (autoClose = false) => {
   const { account, chainId } = useWallet()
   const count = counter()
   const submitTx = useSubmitTransaction()
   const { incrementFailures } = useStore()
-  const { startTxn, writeTxn, updateTxn, endTxn } = useTxn()
+  const { startTxn, writeTxn, updateTxn, endTxn, closeTxnModal } = useTxn()
 
   return useMutation({
     mutationFn: async ({ fromAsset, toAsset, fromAmount, setFromAddress, outAmount, quote, callback }) => {
@@ -641,6 +641,9 @@ const useSwap = () => {
         final: 'Swap Successful',
       })
       callback()
+      if (autoClose) {
+        closeTxnModal()
+      }
       return tx
     },
     onError: () => {

@@ -85,10 +85,10 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
   return res
 }
 
-export const useOdosSwap = () => {
+export const useOdosSwap = (autoClose = false) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
-  const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
+  const { startTxn, endTxn, writeTxn, sendTxn, closeTxnModal } = useTxn()
   const t = useTranslations()
 
   const onOdosSwap = useCallback(
@@ -160,8 +160,11 @@ export const useOdosSwap = () => {
       })
       setPending(false)
       callback()
+      if (autoClose) {
+        closeTxnModal()
+      }
     },
-    [account, chainId, startTxn, writeTxn, endTxn, sendTxn, t],
+    [chainId, startTxn, t, account, sendTxn, endTxn, autoClose, writeTxn, closeTxnModal],
   )
 
   return { onOdosSwap, pending }
