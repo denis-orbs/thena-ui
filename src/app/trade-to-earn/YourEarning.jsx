@@ -20,6 +20,8 @@ import { fetchDataTotalVolume, useClaimRewardMutation, useGetMuonMutation } from
 function YourEarning({ earnings = [], refetchEarnings, setPending }) {
   const assets = useAssets()
 
+  const [refetchCount, setRefetchCount] = useState(0)
+
   const sortOptions = useMemo(
     () => [
       {
@@ -135,7 +137,8 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
     } else {
       setData([])
     }
-  }, [account, assets, dibsRewarder, earnings, fetchTotalRewardADay, totalVolume])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, assets, dibsRewarder, earnings, fetchTotalRewardADay, totalVolume, refetchCount])
 
   const { mutateAsync: getMuon, isPending: pendingGetMuon } = useGetMuonMutation()
 
@@ -171,6 +174,7 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
           const isSuccess = await claimReward(body)
           if (isSuccess) {
             refetchEarnings()
+            setRefetchCount(count => count + 1)
           }
         }
         setPending(false)
