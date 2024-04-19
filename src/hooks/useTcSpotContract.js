@@ -29,26 +29,33 @@ export const useTCContractInfor = (address, eventType) => {
   const assets = useAssets()
 
   const getUserData = useCallback(async () => {
-    if (!account || !tcSpotContract) {
-      setIsRegistered(false)
-      setIsWinner(false)
-      setIsOwner(false)
-      return
+    setLoaded(false)
+
+    if (address) {
+      if (!account || !tcSpotContract) {
+        setIsRegistered(false)
+        setIsWinner(false)
+        setIsOwner(false)
+        setLoaded(true)
+
+        return
+      }
+
+      const [joined, won, ownerAddress] = await Promise.all([
+        readCall(tcSpotContract, 'isRegistered', [account]),
+        readCall(tcSpotContract, 'isWinner', [account]),
+        readCall(tcSpotContract, 'owner', []),
+      ])
+      setIsRegistered(joined)
+      setIsWinner(won[0])
+      setPlacement(won[1])
+      setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
+
+      setLoaded(true)
     }
 
-    const [joined, won, ownerAddress] = await Promise.all([
-      readCall(tcSpotContract, 'isRegistered', [account]),
-      readCall(tcSpotContract, 'isWinner', [account]),
-      readCall(tcSpotContract, 'owner', []),
-    ])
-    setIsRegistered(joined)
-    setIsWinner(won[0])
-    setPlacement(won[1])
-    setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
-
-    setLoaded(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, tcSpotContract, eventType, address])
+  }, [account, eventType, address])
 
   const getWinnersList = useCallback(
     async userPlacement => {

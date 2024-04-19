@@ -95,7 +95,7 @@ export function WrapLayout({ children, params }) {
     }
   }, [account, competition, isRegistered, params.id, loaded])
 
-  if (!competition || !loaded || !account || !isRegistered) {
+  if (!competition || !loaded) {
     return <Loading />
   }
 
