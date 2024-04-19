@@ -359,45 +359,16 @@ export const useWrap = () => {
   return { onWrap, onUnwrap, pending }
 }
 
-export const useGetOOESwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, account, enabled) => {
+export const useGetOOESwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot, enabled) => {
   const gasPrice = 3
   const enabledDexIds = '44,47'
 
   const { data, isFetching } = useQuery({
-    queryKey: ['useGetOOESwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, account],
+    queryKey: ['useGetOOESwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
     queryFn: async () => {
       const response = await fetch(
         // eslint-disable-next-line max-len
-        `https://open-api.openocean.finance/v3/${networkId}/swap_quote?inTokenAddress=${fromAddress}&outTokenAddress=${toAddress}&account=${account}&amount=${fromAmount}&gasPrice=${gasPrice}&slippage=${slippage}&enabledDexIds=${enabledDexIds}`,
-        {
-          method: 'GET',
-        },
-      )
-      const res = await response.json()
-
-      return res
-    },
-    refetchInterval: 10000,
-    enabled,
-    gcTime: 0,
-  })
-
-  return { data, isLoading: isFetching }
-}
-
-export const useGet1InchSwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot, enabled) => {
-  const { data, isFetching } = useQuery({
-    queryKey: ['useGet1InchSwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
-    queryFn: async () => {
-      const response = await fetch(
-        `https://80be-118-70-80-24.ngrok-free.app/proxy/1inch-api/quote/v5.2/${networkId}/${new URLSearchParams({
-          src: fromAddress,
-          dst: toAddress,
-          amount: fromAmount,
-          from: tcSpot,
-          slippage,
-          protocols: ['BSC_THENA', 'BSC_THENA_V3'],
-        })}`,
+        `https://open-api.openocean.finance/v3/${networkId}/swap_quote?inTokenAddress=${fromAddress}&outTokenAddress=${toAddress}&account=${tcSpot}&amount=${fromAmount}&gasPrice=${gasPrice}&slippage=${slippage}&enabledDexIds=${enabledDexIds}`,
         {
           method: 'GET',
         },
@@ -519,6 +490,35 @@ export const useTCSpotAlgebraSwap = () => {
   )
 
   return { onSwap, pending }
+}
+
+export const useGet1InchSwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot, enabled) => {
+  const { data, isFetching } = useQuery({
+    queryKey: ['useGet1InchSwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
+    queryFn: async () => {
+      const response = await fetch(
+        `https://80be-118-70-80-24.ngrok-free.app/proxy/1inch-api/quote/v5.2/${networkId}/${new URLSearchParams({
+          src: fromAddress,
+          dst: toAddress,
+          amount: fromAmount,
+          from: tcSpot,
+          slippage,
+          protocols: ['BSC_THENA', 'BSC_THENA_V3'],
+        })}`,
+        {
+          method: 'GET',
+        },
+      )
+      const res = await response.json()
+
+      return res
+    },
+    refetchInterval: 10000,
+    enabled,
+    gcTime: 0,
+  })
+
+  return { data, isLoading: isFetching }
 }
 
 export const useTCSpot1InchSwap = () => {

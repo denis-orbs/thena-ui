@@ -93,7 +93,7 @@ export function SideBar({
     debouncedFromTokenAmount,
     slippage,
     networkId,
-    account,
+    tcSpot,
     Boolean(
       service === 'OOE' &&
         fromAddress &&
@@ -109,7 +109,7 @@ export function SideBar({
     debouncedFromTokenAmount,
     slippage,
     networkId,
-    account,
+    tcSpot,
     Boolean(
       service === '1inch' &&
         fromAddress &&
@@ -189,7 +189,6 @@ export function SideBar({
           toWei(debouncedFromTokenAmount),
           toWei(minimumReceived, 17), // TODO
           tcSpot,
-          slippage,
           deadline,
         )
         break
@@ -204,7 +203,6 @@ export function SideBar({
     toAsset,
     debouncedFromTokenAmount,
     tcSpot,
-    slippage,
     deadline,
     onSwapOOE,
     ooeData,
