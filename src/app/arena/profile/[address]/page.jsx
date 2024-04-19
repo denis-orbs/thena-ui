@@ -6,7 +6,7 @@ import useSWRImmutable from 'swr/immutable'
 
 import Loading from '@/app/loading'
 import { useAssets } from '@/context/assetsContext'
-import { fetchFollowing } from '@/hooks/useUserFollow'
+import { fetchFollower, fetchFollowing } from '@/hooks/useUserFollow'
 import { v4Client } from '@/lib/graphql'
 
 import { FollowedProfiles } from './FollowedProfiles'
@@ -124,7 +124,7 @@ export default function ProfilePage({ params }) {
 
   const { data: following } = useSWRImmutable(['following', address], () => fetchFollowing(address))
 
-  const { data: followers } = useSWRImmutable(['followers', address], () => fetchFollowing(address))
+  const { data: followers } = useSWRImmutable(['followers', address], () => fetchFollower(address))
 
   const assets = useAssets()
   const joinedCompetitions = useMemo(
