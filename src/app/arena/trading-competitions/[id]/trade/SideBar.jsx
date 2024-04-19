@@ -3,6 +3,7 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { JSBI, Percent } from 'thena-sdk-core'
 
 import WarningModal from '@/app/swap/WarningModal'
 import { Alert } from '@/components/alert'
@@ -20,6 +21,7 @@ import { useBestV3TradeExactIn } from '@/hooks/fusion/useBestV3Trade'
 import useDebounce from '@/hooks/useDebounce'
 import { useGet1InchSwapData, useGetOOESwapData, useTCSpotAlgebraSwap, useTCSpotOOESwap } from '@/hooks/useSwap'
 import { tryParseAmount } from '@/lib/fusion'
+import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
 import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import SwapChart from '@/modules/SwapChart'
@@ -53,37 +55,20 @@ export function SideBar({
   const [minimumReceived, setMinimumReceived] = useState(0)
   const [ooeData, setOoeData] = useState('')
   const [service, setService] = useState(serviceList[0])
-  // const [realizedLPFee, setRealizedLPFee] = useState(0)
-  // const [priceImpactAlg, setPriceImpactAlg] = useState(0)
 
   const inCurrency = useCurrency(fromAsset ? fromAsset.address : undefined)
   const outCurrency = useCurrency(toAsset ? toAsset.address : undefined)
   const parsedAmount = tryParseAmount(fromTokenAmount, inCurrency ?? undefined)
   const bestV3TradeExactIn = useBestV3TradeExactIn(parsedAmount, outCurrency ?? undefined)
 
-  const v3Trade = bestV3TradeExactIn ?? undefined
-  const bestTrade = v3Trade.trade ?? undefined
+  const bestTrade = useMemo(() => {
+    const v3Trade = bestV3TradeExactIn ?? undefined
+    const bestTradeTmp = v3Trade?.trade ?? undefined
 
-  useEffect(() => {
-    if (service === 'Algebra') {
-      if (bestTrade) {
-        const outputAmount = bestTrade.outputAmount?.toExact()
-        if (outputAmount) {
-          setToTokenAmount(outputAmount)
-          setMinimumReceived(outputAmount * ((100 - slippage) / 100))
-          // TODO
-          // const realizedLpFeePercent = computeRealizedLPFeePercent(bestTrade)
-          // const realizedLPFeeVal = bestTrade.inputAmount.multiply(realizedLpFeePercent)
-          // const priceImpactVal = bestTrade.priceImpact.subtract(realizedLpFeePercent)
-          // setPriceImpactAlg(priceImpactVal)
-          // setRealizedLPFee(realizedLPFeeVal)
-          // console.log({ priceImpactVal, realizedLPFeeVal })
-        }
-      } else {
-        setToTokenAmount('')
-      }
-    }
-  }, [bestTrade, service, slippage])
+    return bestTradeTmp
+  }, [bestV3TradeExactIn])
+
+  const allowedSlippage = useMemo(() => new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000)), [slippage])
 
   const debouncedFromTokenAmount = useDebounce(fromTokenAmount, 200)
 
@@ -106,7 +91,7 @@ export function SideBar({
   const { data: oneInchQuoteData, isLoading: isLoadingOneInch } = useGet1InchSwapData(
     fromAddress,
     toAsset?.address,
-    debouncedFromTokenAmount,
+    toWei(debouncedFromTokenAmount),
     slippage,
     networkId,
     tcSpot,
@@ -123,25 +108,41 @@ export function SideBar({
   const { onSwap: onSwapAlgebra, pending: pendingAlg } = useTCSpotAlgebraSwap()
 
   useEffect(() => {
-    if (ooeQuoteData?.code === 200 && ooeQuoteData?.data) {
-      setToTokenAmount(fromWei(ooeQuoteData.data.outAmount, ooeQuoteData.data.outToken.decimals))
-      setMinimumReceived(fromWei(ooeQuoteData.data.minOutAmount, ooeQuoteData.data.outToken.decimals))
-      setOoeData(ooeQuoteData.data.data)
-    } else {
-      setToTokenAmount('')
+    if (service === '1inch') {
+      if (oneInchQuoteData && oneInchQuoteData.toAmount) {
+        setToTokenAmount(fromWei(oneInchQuoteData.toAmount, toAsset?.decimals))
+        setMinimumReceived(fromWei(oneInchQuoteData.toAmount, toAsset?.decimals) * ((100 - slippage) / 100))
+      } else {
+        setToTokenAmount('')
+      }
     }
-  }, [ooeQuoteData])
+  }, [oneInchQuoteData, oneInchQuoteData?.toAmount, service, slippage, toAsset?.decimals])
 
   useEffect(() => {
-    console.log({ oneInchQuoteData })
-    // if (oneInchQuoteData?.code === 200 && ooeQuoteData?.data) {
-    //   setToTokenAmount(fromWei(ooeQuoteData.data.outAmount, ooeQuoteData.data.outToken.decimals))
-    //   setMinimumReceived(fromWei(ooeQuoteData.data.minOutAmount, ooeQuoteData.data.outToken.decimals))
-    //   setOoeData(ooeQuoteData.data.data)
-    // } else {
-    //   setToTokenAmount('')
-    // }
-  }, [oneInchQuoteData])
+    if (service === 'Algebra') {
+      if (bestTrade) {
+        const outputAmount = bestTrade.outputAmount?.toExact()
+        if (outputAmount) {
+          setToTokenAmount(outputAmount)
+          setMinimumReceived(bestTrade.minimumAmountOut(allowedSlippage).toSignificant(6))
+        }
+      } else {
+        setToTokenAmount('')
+      }
+    }
+  }, [allowedSlippage, bestTrade, service, slippage])
+
+  useEffect(() => {
+    if (service === 'OOE') {
+      if (ooeQuoteData?.code === 200 && ooeQuoteData?.data) {
+        setToTokenAmount(fromWei(ooeQuoteData.data.outAmount, ooeQuoteData.data.outToken.decimals))
+        setMinimumReceived(fromWei(ooeQuoteData.data.minOutAmount, ooeQuoteData.data.outToken.decimals))
+        setOoeData(ooeQuoteData.data.data)
+      } else {
+        setToTokenAmount('')
+      }
+    }
+  }, [ooeQuoteData, service])
 
   useEffect(() => {
     if (fromAddress !== fromAddress?.address) {
@@ -149,14 +150,24 @@ export function SideBar({
     }
   }, [fromAddress, fromAsset?.address])
 
-  const priceImpact = useMemo(() => {
+  const { priceImpact, realizedLPFee } = useMemo(() => {
     if (fromAsset && toAsset && debouncedFromTokenAmount && toTokenAmount) {
+      if (service === 'Algebra') {
+        if (bestTrade) {
+          const realizedLpFeePercent = computeRealizedLPFeePercent(bestTrade)
+          const realizedLPFeeVal = bestTrade.inputAmount.multiply(realizedLpFeePercent)
+          const priceImpactVal = bestTrade.priceImpact.subtract(realizedLpFeePercent)
+          return { priceImpact: priceImpactVal.toSignificant(4), realizedLPFee: realizedLPFeeVal }
+        }
+        return { priceImpact: 0, realizedLPFee: 0 }
+      }
+
       const fromInUsd = new BigNumber(debouncedFromTokenAmount).times(fromAsset.price)
       const toInUsd = new BigNumber(toTokenAmount).times(toAsset.price)
-      return new BigNumber(((fromInUsd - toInUsd) / fromInUsd) * 100).toNumber()
+      return { priceImpact: new BigNumber(((fromInUsd - toInUsd) / fromInUsd) * 100).toNumber() }
     }
-    return 0
-  }, [fromAsset, toAsset, debouncedFromTokenAmount, toTokenAmount])
+    return { priceImpact: 0, realizedLPFee: 0 }
+  }, [fromAsset, toAsset, debouncedFromTokenAmount, toTokenAmount, service, bestTrade])
 
   const percents = useMemo(
     () => [
@@ -294,12 +305,6 @@ export function SideBar({
                       <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
                     </div>
                   </div>
-                  {/* {isDexTrade && (
-                    <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
-                      {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
-                    </div>
-                  )}
-                  {!!lhQuote?.outAmount && Number(lhQuote?.outAmount) > 0 && !isDexTrade && <LiquidityHubRouting />} */}
                 </div>
               )}
             </Box>
@@ -379,6 +384,14 @@ export function SideBar({
                   <TextHeading>{t('Price Impact')}</TextHeading>
                   <Paragraph>{formatAmount(priceImpact)}%</Paragraph>
                 </div>
+                {service === 'Algebra' && (
+                  <div className='flex items-center justify-between'>
+                    <TextHeading>{t('Liquidity Provider Fee')}</TextHeading>
+                    <Paragraph>
+                      {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${realizedLPFee.currency.symbol}` : '-'}
+                    </Paragraph>
+                  </div>
+                )}
                 {priceImpact > 5 && (
                   <Alert>
                     <InfoIcon className='h-4 w-4 stroke-error-600' />
@@ -391,7 +404,14 @@ export function SideBar({
             {account ? (
               <EmphasisButton
                 className='mt-3 w-full'
-                disabled={!debouncedFromTokenAmount || wrapPending || pendingOOE || pendingAlg || btnMsg.isError}
+                disabled={
+                  !debouncedFromTokenAmount ||
+                  wrapPending ||
+                  pendingOOE ||
+                  pendingAlg ||
+                  btnMsg.isError ||
+                  service === '1inch'
+                }
                 onClick={() => {
                   if (priceImpact > 5) {
                     setIsWarning(true)

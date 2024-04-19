@@ -10,6 +10,7 @@ import { getAddress, maxUint256, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import { oneInchApiKey } from '@/constant/env'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
@@ -497,7 +498,7 @@ export const useGet1InchSwapData = (fromAddress, toAddress, fromAmount, slippage
     queryKey: ['useGet1InchSwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
     queryFn: async () => {
       const response = await fetch(
-        `https://80be-118-70-80-24.ngrok-free.app/proxy/1inch-api/quote/v5.2/${networkId}/${new URLSearchParams({
+        `/api/proxy/1inch/swap/v5.2/${networkId}/quote?${new URLSearchParams({
           src: fromAddress,
           dst: toAddress,
           amount: fromAmount,
@@ -507,6 +508,9 @@ export const useGet1InchSwapData = (fromAddress, toAddress, fromAmount, slippage
         })}`,
         {
           method: 'GET',
+          headers: {
+            Authorization: `Bearer ${oneInchApiKey}`,
+          },
         },
       )
       const res = await response.json()
