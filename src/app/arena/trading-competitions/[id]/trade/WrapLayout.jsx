@@ -115,6 +115,7 @@ export function WrapLayout({ children, params }) {
           setFromAsset={setFromAsset}
           setToAsset={setToAsset}
           assets={tradingTokens}
+          tcSpot={competition?.tradingCompetitionSpot}
         >
           {children}
         </SideBar>
@@ -126,6 +127,7 @@ export function WrapLayout({ children, params }) {
             setFromAsset={setFromAsset}
             setToAsset={setToAsset}
             assets={tradingTokens}
+            tcSpot={competition?.tradingCompetitionSpot}
           >
             {children}
           </SideBar>

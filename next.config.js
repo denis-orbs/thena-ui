@@ -60,6 +60,15 @@ const nextConfig = {
 
     return config
   },
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/proxy/1inch/:path*',
+        destination: 'https://api.1inch.dev/:path*',
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

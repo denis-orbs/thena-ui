@@ -1,4 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
+import { ethers } from 'ethers'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import useSWR from 'swr'
@@ -8,8 +10,9 @@ import { getAddress, maxUint256, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import { oneInchApiKey } from '@/constant/env'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
+import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
@@ -358,4 +361,212 @@ export const useWrap = () => {
   )
 
   return { onWrap, onUnwrap, pending }
+}
+
+export const useGetOOESwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot, enabled) => {
+  const gasPrice = 3
+  const enabledDexIds = '44,47'
+
+  const { data, isFetching } = useQuery({
+    queryKey: ['useGetOOESwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
+    queryFn: async () => {
+      const response = await fetch(
+        // eslint-disable-next-line max-len
+        `https://open-api.openocean.finance/v3/${networkId}/swap_quote?inTokenAddress=${fromAddress}&outTokenAddress=${toAddress}&account=${tcSpot}&amount=${fromAmount}&gasPrice=${gasPrice}&slippage=${slippage}&enabledDexIds=${enabledDexIds}`,
+        {
+          method: 'GET',
+        },
+      )
+      const res = await response.json()
+
+      return res
+    },
+    refetchInterval: 10000,
+    enabled,
+    gcTime: 0,
+  })
+
+  return { data, isLoading: isFetching }
+}
+
+export const useTCSpotOOESwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (ooeData, fromAsset, toAsset, tcAddress) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const swapOpenOceanFunctionHash = '0x60d4bb2c'
+      const data = swapOpenOceanFunctionHash + ooeData.slice(10)
+      const isSuccess = await sendTxn(key, swapuuid, tcAddress, data)
+      // const isSuccess = await sendTxn(key, swapuuid, '0x6352a56caadc4f1e25cd6c75970fa768a3304e64', ooeData)
+      if (!isSuccess) {
+        setPending(false)
+        return
+      }
+
+      endTxn({
+        key,
+        final: 'Swap Successful',
+      })
+      setPending(false)
+    },
+    [endTxn, sendTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
+}
+
+export const useTCSpotAlgebraSwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (fromAsset, toAsset, amount, minOutAmount, tcAddress, deadline) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const path = ethers.solidityPacked(['address', 'address'], [fromAsset.address, toAsset.address])
+      const latestBlock = await ethers.getDefaultProvider().getBlock('latest')
+      if (latestBlock) {
+        const { timestamp } = latestBlock
+        const exactInputParams = {
+          path,
+          recipient: tcAddress,
+          deadline: timestamp + deadline * 60,
+          amountIn: amount,
+          amountOutMinimum: minOutAmount,
+        }
+
+        const tcSpotContract = getTcSpotContract(tcAddress)
+
+        const isSuccess = await writeTxn(key, swapuuid, tcSpotContract, 'swapAlgebra', [
+          fromAsset.address,
+          toAsset.address,
+          exactInputParams,
+        ])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+
+        endTxn({
+          key,
+          final: 'Swap Successful',
+        })
+
+        setPending(false)
+        return isSuccess
+      }
+
+      setPending(false)
+      return false
+    },
+    [endTxn, writeTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
+}
+
+export const useGet1InchSwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot, enabled) => {
+  const { data, isFetching } = useQuery({
+    queryKey: ['useGet1InchSwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/proxy/1inch/swap/v5.2/${networkId}/quote?${new URLSearchParams({
+          src: fromAddress,
+          dst: toAddress,
+          amount: fromAmount,
+          from: tcSpot,
+          slippage,
+          protocols: ['BSC_THENA', 'BSC_THENA_V3'],
+        })}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${oneInchApiKey}`,
+          },
+        },
+      )
+      const res = await response.json()
+
+      return res
+    },
+    refetchInterval: 10000,
+    enabled,
+    gcTime: 0,
+  })
+
+  return { data, isLoading: isFetching }
+}
+
+export const useTCSpot1InchSwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (oneInchData, fromAsset, toAsset, tcAddress) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const swap1InchFunctionHash = '0x2e8b0011'
+      const data = swap1InchFunctionHash + oneInchData.slice(10)
+      const isSuccess = await sendTxn(key, swapuuid, tcAddress, data)
+      // const isSuccess = await sendTxn(key, swapuuid, '0x1111111254EEB25477B68fb85Ed929f73A960582', oneInchData)
+      if (!isSuccess) {
+        setPending(false)
+        return
+      }
+
+      endTxn({
+        key,
+        final: 'Swap Successful',
+      })
+      setPending(false)
+    },
+    [endTxn, sendTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
 }

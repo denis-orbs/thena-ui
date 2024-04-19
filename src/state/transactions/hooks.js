@@ -70,6 +70,7 @@ export const useTxn = () => {
         console.log('txnReceipt :>> ', txnReceipt)
         return hash
       } catch (error) {
+        console.log(error)
         updateTxn({
           key,
           uuid,
@@ -110,6 +111,7 @@ export const useTxn = () => {
         console.log('txnReceipt :>> ', txnReceipt)
         return true
       } catch (error) {
+        console.log(error)
         updateTxn({
           key,
           uuid,
