@@ -11,27 +11,31 @@ import { SizeTypes } from '@/constant/type'
 
 import CompetitionItem from '../../CompetitionItem'
 
-export function UserCompetitions({ competition, joinedTCs }) {
+export function UserCompetitions({ hostedCompetitions, joinedTCs }) {
+  const initSelectedTab = useMemo(
+    () => compact([joinedTCs.length ? 'Joined' : undefined, hostedCompetitions.length ? 'Hosted' : undefined]),
+    [hostedCompetitions.length, joinedTCs.length],
+  )
   const t = useTranslations()
   const [searchText, setSearchText] = useState('')
 
-  const [selectedTab, setSelectedTab] = useState('Joined')
+  const [selectedTab, setSelectedTab] = useState(initSelectedTab[0])
 
   const competitionByTab = useMemo(() => {
     if (selectedTab === 'Joined') {
       return joinedTCs
     }
     if (selectedTab === 'Hosted') {
-      return competition
+      return hostedCompetitions
     }
 
     return []
-  }, [competition, joinedTCs, selectedTab])
+  }, [hostedCompetitions, joinedTCs, selectedTab])
 
   const subTabs = useMemo(
     () =>
       compact([
-        competition
+        joinedTCs.length
           ? {
               label: t('Joined'),
               active: selectedTab === 'Joined',
@@ -40,7 +44,7 @@ export function UserCompetitions({ competition, joinedTCs }) {
               },
             }
           : undefined,
-        joinedTCs
+        hostedCompetitions.length
           ? {
               label: t('Hosted'),
               active: selectedTab === 'Hosted',
@@ -50,7 +54,7 @@ export function UserCompetitions({ competition, joinedTCs }) {
             }
           : undefined,
       ]),
-    [competition, joinedTCs, selectedTab, t],
+    [hostedCompetitions, joinedTCs, selectedTab, t],
   )
 
   const filterCompetitions = useMemo(

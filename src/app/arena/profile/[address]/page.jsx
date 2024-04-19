@@ -6,6 +6,7 @@ import useSWRImmutable from 'swr/immutable'
 
 import Loading from '@/app/loading'
 import { useAssets } from '@/context/assetsContext'
+import { fetchFollowing } from '@/hooks/useUserFollow'
 import { v4Client } from '@/lib/graphql'
 
 import { FollowedProfiles } from './FollowedProfiles'
@@ -110,8 +111,6 @@ const fetchUserInfo = async id => {
 
     const { tradeRankByAddress } = await v4Client.request(V4_USER_RANK, { id: id.toLowerCase() })
 
-    console.log('object', userById)
-
     return { ...userById, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
   } catch (error) {
     return { error: true }
@@ -122,55 +121,51 @@ export default function ProfilePage({ params }) {
   const { address } = params
 
   const { data: userInfo, isLoading } = useSWRImmutable(['user info', address], () => fetchUserInfo(address))
+
+  const { data: following } = useSWRImmutable(['following', address], () => fetchFollowing(address))
+
+  const { data: followers } = useSWRImmutable(['followers', address], () => fetchFollowing(address))
+
   const assets = useAssets()
   const joinedCompetitions = useMemo(
     () =>
-      userInfo?.joinedTCs
-        ? userInfo?.joinedTCs.map(comp => ({
-            ...comp.tradingCompetition,
-            prize: {
-              ...comp.tradingCompetition.prize,
-              token: assets.find(
-                ele => ele.address.toLowerCase() === comp.tradingCompetition.prize.token.toLowerCase(),
-              ),
-            },
-            competitionRules: {
-              ...comp.tradingCompetition.competitionRules,
-              winningToken: assets.find(
-                ele =>
-                  ele.address.toLowerCase() === comp.tradingCompetition.competitionRules.winningToken.toLowerCase(),
-              ),
-              tradingTokens: assets.filter(ele =>
-                comp.tradingCompetition.competitionRules.tradingTokens
-                  .map(sub => sub.toLowerCase())
-                  .includes(ele.address),
-              ),
-            },
-          }))
-        : [],
+      userInfo?.joinedTCs?.map(comp => ({
+        ...comp.tradingCompetition,
+        prize: {
+          ...comp.tradingCompetition.prize,
+          token: assets.find(ele => ele.address.toLowerCase() === comp.tradingCompetition.prize.token.toLowerCase()),
+        },
+        competitionRules: {
+          ...comp.tradingCompetition.competitionRules,
+          winningToken: assets.find(
+            ele => ele.address.toLowerCase() === comp.tradingCompetition.competitionRules.winningToken.toLowerCase(),
+          ),
+          tradingTokens: assets.filter(ele =>
+            comp.tradingCompetition.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
+          ),
+        },
+      })),
     [assets, userInfo?.joinedTCs],
   )
 
   const hostedCompetitions = useMemo(
     () =>
-      userInfo?.tradingCompetitions
-        ? userInfo.tradingCompetitions.map(comp => ({
-            ...comp,
-            prize: {
-              ...comp.prize,
-              token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
-            },
-            competitionRules: {
-              ...comp.competitionRules,
-              winningToken: assets.find(
-                ele => ele.address.toLowerCase() === comp.competitionRules.winningToken.toLowerCase(),
-              ),
-              tradingTokens: assets.filter(ele =>
-                comp.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
-              ),
-            },
-          }))
-        : [],
+      userInfo?.tradingCompetitions?.map(comp => ({
+        ...comp,
+        prize: {
+          ...comp.prize,
+          token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
+        },
+        competitionRules: {
+          ...comp.competitionRules,
+          winningToken: assets.find(
+            ele => ele.address.toLowerCase() === comp.competitionRules.winningToken.toLowerCase(),
+          ),
+          tradingTokens: assets.filter(ele =>
+            comp.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
+          ),
+        },
+      })),
     [assets, userInfo?.tradingCompetitions],
   )
 
@@ -180,11 +175,11 @@ export default function ProfilePage({ params }) {
 
   return (
     <div className='mt-10 space-y-10'>
-      <UserInfo userInfo={userInfo} />
-      {(userInfo?.joinedTCs || userInfo?.tradingCompetitions) && (
-        <UserCompetitions competition={hostedCompetitions} joinedTCs={joinedCompetitions} />
+      <UserInfo userInfo={userInfo} following={following} followers={followers} />
+      {(joinedCompetitions || hostedCompetitions) && (
+        <UserCompetitions hostedCompetitions={hostedCompetitions} joinedTCs={joinedCompetitions} />
       )}
-      <FollowedProfiles />
+      {following && <FollowedProfiles followingUsers={following} />}
     </div>
   )
 }

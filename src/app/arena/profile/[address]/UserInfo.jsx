@@ -11,18 +11,27 @@ import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { formatAddress } from '@/lib/utils'
+import Contracts from '@/constant/contracts'
+import { useAssets } from '@/context/assetsContext'
+import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
+import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
 dayjs.extend(localizedFormat)
 
-export function UserInfo({ userInfo }) {
+export function UserInfo({ userInfo, following, followers }) {
   const t = useTranslations()
   const { account } = useWallet()
+  const assets = useAssets()
+  const isOwnProfile = useMemo(() => userInfo?.id.toLowerCase() === account?.toLowerCase(), [account, userInfo.id])
+  const { networkId } = useChainSettings()
+  const theAsset = assets.find(asset => asset.address.toLowerCase() === Contracts.THE[networkId].toLowerCase())
 
-  const isOwnProfile = useMemo(() => userInfo.id.toLowerCase() === account.toLowerCase(), [account, userInfo.id])
+  const followingCount = useMemo(() => following?.length ?? '-', [following?.length])
+
+  const followersCount = useMemo(() => followers?.length ?? '-', [followers?.length])
 
   return (
     <Box className='space-y-4'>
@@ -39,7 +48,9 @@ export function UserInfo({ userInfo }) {
             <div className='flex flex-col gap-3'>
               <div className='flex items-center'>
                 <TextHeading className='text-3xl'>{formatAddress(userInfo.id)}</TextHeading>
-                <PrimaryButton className='ml-4 p-2 text-sm text-black'>{t('Get ID')}</PrimaryButton>
+                <PrimaryButton className='ml-4 p-2 text-sm text-black'>
+                  {t(isOwnProfile ? 'Get ID' : 'Gift Thena ID')}
+                </PrimaryButton>
               </div>
               <TextSubHeading className='text-sm'>
                 {t('Joined')} {dayjs(userInfo.firstInteractAt).format('lll')}
@@ -60,7 +71,7 @@ export function UserInfo({ userInfo }) {
             </Box>
           )}
         </div>
-        <ProfileButton isOwnProfile={isOwnProfile} />
+        <ProfileButton isOwnProfile={isOwnProfile} userInfoId={userInfo.id} />
       </div>
       <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>
         <Box className='flex flex-col gap-2 bg-neutral-800'>
@@ -68,15 +79,17 @@ export function UserInfo({ userInfo }) {
           <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col gap-2 bg-neutral-800'>
-          <TextHeading className='text-lg'>{userInfo.balance}</TextHeading>
+          <TextHeading className='text-lg'>
+            {`${formatAmount(fromWei(userInfo.balance, theAsset.decimal))} ${theAsset.symbol}`}
+          </TextHeading>
           <TextSubHeading className='text-sm'>{t('Balance')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col gap-2 bg-neutral-800'>
-          <TextHeading className='text-lg'>95</TextHeading>
+          <TextHeading className='text-lg'>{followersCount}</TextHeading>
           <TextSubHeading className='text-sm'>{t('Followers')}</TextSubHeading>
         </Box>
         <Box className='flex flex-col gap-2 bg-neutral-800'>
-          <TextHeading className='text-lg'>86</TextHeading>
+          <TextHeading className='text-lg'>{followingCount}</TextHeading>
           <TextSubHeading className='text-sm'>{t('Following')}</TextSubHeading>
         </Box>
       </div>
