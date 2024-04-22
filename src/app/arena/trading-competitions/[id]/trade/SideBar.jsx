@@ -19,7 +19,13 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useBestV3TradeExactIn } from '@/hooks/fusion/useBestV3Trade'
 import useDebounce from '@/hooks/useDebounce'
-import { useGet1InchSwapData, useGetOOESwapData, useTCSpotAlgebraSwap, useTCSpotOOESwap } from '@/hooks/useSwap'
+import {
+  useGet1InchSwapData,
+  useGetOOESwapData,
+  useTCSpot1InchSwap,
+  useTCSpotAlgebraSwap,
+  useTCSpotOOESwap,
+} from '@/hooks/useSwap'
 import { tryParseAmount } from '@/lib/fusion'
 import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
 import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
@@ -54,6 +60,7 @@ export function SideBar({
   const [toTokenAmount, setToTokenAmount] = useState('')
   const [minimumReceived, setMinimumReceived] = useState(0)
   const [ooeData, setOoeData] = useState('')
+  const [oneInchData, setOneInchData] = useState('')
   const [service, setService] = useState(serviceList[2])
 
   const inCurrency = useCurrency(fromAsset ? fromAsset.address : undefined)
@@ -106,12 +113,14 @@ export function SideBar({
 
   const { onSwap: onSwapOOE, pending: pendingOOE } = useTCSpotOOESwap()
   const { onSwap: onSwapAlgebra, pending: pendingAlg } = useTCSpotAlgebraSwap()
+  const { onSwap: onSwap1inch, pending: pending1inch } = useTCSpot1InchSwap()
 
   useEffect(() => {
     if (service === '1inch') {
-      if (oneInchQuoteData && oneInchQuoteData.toAmount) {
+      if (oneInchQuoteData && oneInchQuoteData.toAmount && oneInchQuoteData.tx) {
         setToTokenAmount(fromWei(oneInchQuoteData.toAmount, toAsset?.decimals))
         setMinimumReceived(fromWei(oneInchQuoteData.toAmount, toAsset?.decimals) * ((100 - slippage) / 100))
+        setOneInchData(oneInchQuoteData.tx.data)
       } else {
         setToTokenAmount('')
       }
@@ -124,7 +133,7 @@ export function SideBar({
         const outputAmount = bestTrade.outputAmount?.toExact()
         if (outputAmount) {
           setToTokenAmount(outputAmount)
-          setMinimumReceived(bestTrade.minimumAmountOut(allowedSlippage).toSignificant(6))
+          setMinimumReceived(bestTrade.minimumAmountOut(allowedSlippage).toSignificant(10) * 0.95)
         }
       } else {
         setToTokenAmount('')
@@ -198,10 +207,13 @@ export function SideBar({
           fromAsset,
           toAsset,
           toWei(debouncedFromTokenAmount),
-          toWei(minimumReceived, 17), // TODO
+          toWei(minimumReceived),
           tcSpot,
           deadline,
         )
+        break
+      case '1inch':
+        await onSwap1inch(oneInchData, fromAsset, toAsset, tcSpot)
         break
       default:
         await onSwapOOE(ooeData, fromAsset, toAsset, tcSpot)
@@ -213,11 +225,13 @@ export function SideBar({
     fromAsset,
     toAsset,
     debouncedFromTokenAmount,
+    minimumReceived,
     tcSpot,
     deadline,
+    onSwap1inch,
+    oneInchData,
     onSwapOOE,
     ooeData,
-    minimumReceived,
   ])
 
   const btnMsg = useMemo(() => {
@@ -405,12 +419,7 @@ export function SideBar({
               <EmphasisButton
                 className='mt-3 w-full'
                 disabled={
-                  !debouncedFromTokenAmount ||
-                  wrapPending ||
-                  pendingOOE ||
-                  pendingAlg ||
-                  btnMsg.isError ||
-                  service === '1inch'
+                  !debouncedFromTokenAmount || wrapPending || pendingOOE || pendingAlg || pending1inch || btnMsg.isError
                 }
                 onClick={() => {
                   if (priceImpact > 5) {
