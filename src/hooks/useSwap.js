@@ -455,13 +455,12 @@ export const useTCSpotAlgebraSwap = () => {
 
       setPending(true)
       const path = ethers.solidityPacked(['address', 'address'], [fromAsset.address, toAsset.address])
-      const latestBlock = await ethers.getDefaultProvider().getBlock('latest')
-      if (latestBlock) {
-        const { timestamp } = latestBlock
+      const currentTimestamp = parseInt(new Date().getTime() / 1000, 10)
+      if (path) {
         const exactInputParams = {
           path,
           recipient: tcAddress,
-          deadline: timestamp + deadline * 60,
+          deadline: currentTimestamp + deadline * 60,
           amountIn: amount,
           amountOutMinimum: minOutAmount,
         }
@@ -501,13 +500,14 @@ export const useGet1InchSwapData = (fromAddress, toAddress, fromAmount, slippage
     queryKey: ['useGet1InchSwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
     queryFn: async () => {
       const response = await fetch(
-        `/api/proxy/1inch/swap/v5.2/${networkId}/quote?${new URLSearchParams({
+        `/api/proxy/1inch/swap/v5.2/${networkId}/swap?${new URLSearchParams({
           src: fromAddress,
           dst: toAddress,
           amount: fromAmount,
           from: tcSpot,
           slippage,
           protocols: ['BSC_THENA', 'BSC_THENA_V3'],
+          disableEstimate: true,
         })}`,
         {
           method: 'GET',

@@ -577,7 +577,7 @@
   "Competition Full": "Competition full",
   "Registration Not Yet Open": "Registration not yet open",
   "Registration Ended": "Registration ended",
-  "Starts In": "Trading Starts In",
+  "Trading Starts In": "Trading Starts In",
   "Registrations open in": "Registrations open in",
   "Trade History": "Trade History",
   "Your Rank": "Your Rank",
@@ -638,5 +638,12 @@
   "Invalid Website URL": "Invalid Website URL",
   "Invalid X URL": "Invalid X URL",
   "xprofilehandle": "@xprofilehandle",
-  "yourwebsite": "yourwebsite.com"
+  "yourwebsite": "yourwebsite.com",
+  "Traded token": "Traded token",
+  "In amount": "In amount",
+  "Out amount": "Out amount",
+  "Transaction hash": "Transaction hash",
+  "Date & Time": "Date & Time",
+  "Total volume": "Total volume",
+  "Number of participants": "Number of participants"
 }

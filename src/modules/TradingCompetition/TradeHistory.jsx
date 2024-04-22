@@ -1,29 +1,43 @@
+import moment from 'moment'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { useAssets } from '@/context/assetsContext'
+import { useTCTradeHistory } from '@/hooks/trade/useTradingCompetitionTradeHistory'
+import useDebounce from '@/hooks/useDebounce'
+import { formatAmount, fromWei } from '@/lib/utils'
+import useWallet from '@/lib/wallets/useWallet'
 import { TransferIcon } from '@/svgs'
 
 const sortOptions = [
   {
-    label: 'Traded Token',
+    label: 'Traded token',
     value: 'traded_token',
     width: 'w-[30%]',
-    isDesc: false,
+    isDesc: true,
     minWidth: 'min-w-40',
   },
   {
-    label: 'Token amount',
-    value: 'token_amount',
+    label: 'In amount',
+    value: 'amountIn',
     width: 'w-[15%]',
     isDesc: true,
   },
   {
-    label: 'Transaction Hash',
-    value: 'hash',
+    label: 'Out amount',
+    value: 'amountOut',
+    width: 'w-[15%]',
+    isDesc: true,
+  },
+  {
+    label: 'Transaction hash',
+    value: 'txHash',
     width: 'w-[30%]',
     isDesc: true,
     justify: 'justify-center items-center',
@@ -37,55 +51,141 @@ const sortOptions = [
   },
 ]
 export function TradeHistory() {
+  const assets = useAssets()
+  const { account } = useWallet()
+
   const [searchText, setSearchText] = useState('')
   const t = useTranslations()
   const [currentPage, setCurrentPage] = useState(1)
+  const [data, setData] = useState([])
+  const [sort, setSort] = useState(sortOptions[4])
 
-  const [sort, setSort] = useState(sortOptions[0])
+  const { id } = useParams()
 
-  const sortedData = Array.from({ length: 5 })
+  const dataFetch = useTCTradeHistory(id.toLowerCase(), account.toLowerCase())
+
+  useEffect(() => {
+    if (dataFetch) {
+      const arr = dataFetch.map(history => {
+        const assetIn = assets.find(a => a.symbol === history.tokenIn?.symbol)
+        const assetOut = assets.find(a => a.symbol === history.tokenOut?.symbol)
+
+        return {
+          traded_token: [
+            { symbol: assetIn?.symbol || '', logoURI: assetIn?.logoURI || '' },
+            { symbol: assetOut?.symbol || '', logoURI: assetOut?.logoURI || '' },
+          ],
+          amountIn: fromWei(history.amountIn).toNumber(),
+          amountOut: fromWei(history.amountOut).toNumber(),
+          txHash: history.txHash,
+          timestamp: history.timestamp,
+        }
+      })
+      setData(arr)
+    } else {
+      setData([])
+    }
+  }, [assets, dataFetch])
+
+  const debounceSearchText = useDebounce(searchText, 300)
+
+  const dataWithSearchText = useMemo(() => {
+    let arr = [...data]
+    const keyword = debounceSearchText.trim()
+    if (keyword) {
+      arr = arr.filter(
+        item =>
+          String(item.hash).toLowerCase().includes(keyword.toLowerCase()) ||
+          String(item.traded_token[0].symbol).toLowerCase().includes(keyword.toLowerCase()) ||
+          String(item.traded_token[1].symbol).toLowerCase().includes(keyword.toLowerCase()),
+      )
+    }
+    return arr
+  }, [data, debounceSearchText])
+
+  const sortedData = useMemo(
+    () =>
+      dataWithSearchText.sort((a, b) => {
+        let res
+        switch (sort.value) {
+          case 'traded_token':
+            res =
+              String(a.traded_token[0].symbol).localeCompare(String(b.traded_token[0].symbol)) * (sort.isDesc ? -1 : 1)
+            break
+          case 'amountIn':
+            res = (a.amountIn - b.amountIn) * (sort.isDesc ? -1 : 1)
+            break
+          case 'amountOut':
+            res = (a.amountOut - b.amountOut) * (sort.isDesc ? -1 : 1)
+            break
+          case 'txHash':
+            res = String(a.txHash).localeCompare(String(b.txHash)) * (sort.isDesc ? -1 : 1)
+            break
+          case 'timestamp':
+            res = (new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()) * (sort.isDesc ? -1 : 1)
+            break
+          default:
+            break
+        }
+        return res
+      }),
+    [dataWithSearchText, sort],
+  )
 
   const finalLeaderBoards = useMemo(
     () =>
-      sortedData?.map(() => ({
-        traded_token: (
-          <div className='flex items-center justify-between space-x-1'>
-            <div className='flex items-center gap-1'>
-              <Image
-                alt='ETH'
-                src='https://cdn.thena.fi/assets/ETH.png'
-                className='flex-shrink-0'
-                width={24}
-                height={24}
-                loading='lazy'
-              />
-              <TextHeading>ETH</TextHeading>
-            </div>
-            <TransferIcon className='h-4 w-4 stroke-neutral-400' />
-            <div className='flex items-center gap-1'>
-              <Image
-                alt='BNB'
-                src='https://cdn.thena.fi/assets/BNB.png'
-                className='flex-shrink-0'
-                width={24}
-                height={24}
-                loading='lazy'
-              />
-              <TextHeading>BNB</TextHeading>
-            </div>
-          </div>
-        ),
-        token_amount: <Paragraph>12.34</Paragraph>,
-        hash: <Paragraph>123AbC456...891</Paragraph>,
-        timestamp: (
-          <div className='flex flex-col'>
-            <Paragraph>Nov 15, 2024</Paragraph>
-            <TextSubHeading>12:00:00 UTC</TextSubHeading>
-          </div>
-        ),
-      })),
+      sortedData?.map(item => {
+        const hashText = `${String(item.txHash).slice(0, 9)}...${String(item.txHash).slice(
+          String(item.txHash).length - 3,
+        )}`
 
-    [sortedData],
+        return {
+          traded_token: (
+            <div className='flex items-center justify-between space-x-1'>
+              <div className='flex items-center gap-1'>
+                <Image
+                  alt={item.traded_token?.[0]?.symbol}
+                  src={item.traded_token?.[0]?.logoURI}
+                  className='flex-shrink-0'
+                  width={24}
+                  height={24}
+                  loading='lazy'
+                />
+                <TextHeading>{item.traded_token?.[0]?.symbol}</TextHeading>
+              </div>
+              <TransferIcon className='h-4 w-4 stroke-neutral-400' />
+              <div className='flex items-center gap-1'>
+                <Image
+                  alt={item.traded_token?.[1]?.symbol}
+                  src={item.traded_token?.[1]?.logoURI}
+                  className='flex-shrink-0'
+                  width={24}
+                  height={24}
+                  loading='lazy'
+                />
+                <TextHeading>{item.traded_token?.[1]?.symbol}</TextHeading>
+              </div>
+            </div>
+          ),
+          amountIn: <Paragraph>{formatAmount(item.amountIn, false, 4)}</Paragraph>,
+          amountOut: <Paragraph>{formatAmount(item.amountOut, false, 4)}</Paragraph>,
+          txHash: (
+            <Paragraph>
+              <Link href={`https://bscscan.com/tx/${item.txHash}`} target='_blank' rel='nofollow noopener'>
+                {hashText}
+              </Link>
+            </Paragraph>
+          ),
+          timestamp: (
+            <div className='flex flex-col'>
+              <Paragraph>{moment(item.timestamp.split('T')[0]).format('ll')}</Paragraph>
+              <TextSubHeading>{item.timestamp.split('T')[1].split('.')[0]} UTC</TextSubHeading>
+            </div>
+          ),
+        }
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(sortedData)],
   )
 
   return (
