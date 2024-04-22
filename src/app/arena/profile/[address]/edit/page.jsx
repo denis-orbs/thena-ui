@@ -46,16 +46,9 @@ function EditProfilePage({ params }) {
   const handleUpdate = useCallback(async () => {
     if (dataUpdate.websiteUrl) {
       const regex = /^(https?):\/\/[^\s/$.?#].[^\s]*$/
-      const validUrl = dataUpdate.xProfileUrl.match(regex)
+      const validUrl = dataUpdate.websiteUrl.match(regex)
       if (!validUrl) {
         return errorToast('Error', 'Invalid Website URL')
-      }
-    }
-    if (dataUpdate.xProfileUrl) {
-      const regex = /(?:https?:\/\/)?(?:www\.)?(twitter.com|x.com)\/(?:#!\/)?(\w+)/
-      const validUrl = dataUpdate.xProfileUrl.match(regex)
-      if (!validUrl) {
-        return errorToast('Error', 'Invalid X URL')
       }
     }
     await updateProfile(...dataUpdate)
