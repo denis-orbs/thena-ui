@@ -115,7 +115,7 @@ export function LeaderBoard({ competition }) {
         user: (
           <Link
             className='flex cursor-pointer items-center justify-center gap-2'
-            href={`/arena/profile/${leader.participant.id}`}
+            href={`/arena/profile/${leader.participant.id.toLowerCase()}`}
           >
             <CircleImage src={Avatar} alt='avatar' className='size-8' />
             <Paragraph>{sliceAddress(leader.participant.id)}</Paragraph>

@@ -206,7 +206,7 @@ function CompetitionDetailLayout({ children, params }) {
 
               <Link
                 className='flex cursor-pointer items-center justify-center gap-2'
-                href={`/arena/profile/${competition.owner.id}`}
+                href={`/arena/profile/${competition.owner.id.toLowerCase()}`}
               >
                 <CircleImage src={Avatar} alt='avatar' className='size-8' />
                 <Paragraph>{sliceAddress(competition.owner.id)}</Paragraph>

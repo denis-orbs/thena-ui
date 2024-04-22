@@ -40,7 +40,7 @@ export function UserInfo({ userInfo, following, followers }) {
           <div className='flex items-start gap-5 lg:items-center'>
             <Image
               alt='avatar'
-              src={Avatar}
+              src={userInfo?.avatar ?? Avatar}
               className='h-14 w-14 rounded-full lg:h-32 lg:w-32'
               width={100}
               height={100}
@@ -56,15 +56,21 @@ export function UserInfo({ userInfo, following, followers }) {
                 {t('Joined')} {dayjs(userInfo.firstInteractAt).format('lll')}
               </TextSubHeading>
               <div className='flex gap-2'>
-                <NeutralBadge className='text-nowrap capitalize lg:text-xs'>website.com</NeutralBadge>
-                <NeutralBadge className='text-nowrap capitalize lg:text-xs'>@twitterhandle</NeutralBadge>
+                {userInfo?.websiteUrl && (
+                  <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.websiteUrl}</NeutralBadge>
+                )}
+                {userInfo?.xProfileUrl && (
+                  <NeutralBadge className='text-nowrap capitalize lg:text-xs'>@{userInfo.xProfileUrl}</NeutralBadge>
+                )}
               </div>
             </div>
           </div>
           {isOwnProfile && (
             <Box className='flex items-center justify-between space-x-2 border border-primary-800 bg-primary-950 p-2 pl-3 lg:p-2 lg:pl-3'>
               <InfoIcon className='h-4 w-4 stroke-primary-600' />
-              <TextHeading className='text-base'>{t('Buy Your Thena NFT Subdomain')}</TextHeading>
+              <TextHeading className='text-base'>
+                {t(userInfo?.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}
+              </TextHeading>
               <OutlinedButton className='text-nowrap border-primary-600 p-2 text-primary-600 hover:bg-primary-900'>
                 {t('Learn More')}
               </OutlinedButton>
@@ -95,20 +101,27 @@ export function UserInfo({ userInfo, following, followers }) {
       </div>
       <div className='flex flex-col'>
         <TextHeading className='text-2xl'>{t('About')}</TextHeading>
-        <div className='relative h-full w-full'>
-          <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-sm'>
-            <EmphasisButton>{t('Unlock This Feature With THENA ID')}</EmphasisButton>
+        {/* TODO: change field after have api */}
+        {userInfo?.thenaId ? (
+          <div>
+            <Paragraph _html={userInfo?.biography} />
           </div>
-          <div className='h-full w-full p-1'>
-            <Paragraph>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi maxime accusantium at voluptatum eius
-              dolorum aspernatur quod sequi itaque ullam assumenda, dolore laboriosam. Ab sint, sapiente enim natus
-              assumenda nesciunt. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae doloremque
-              accusamus perferendis! Velit animi mollitia quisquam consequatur magnam accusamus, inventore ut minima?
-              Ducimus maxime vitae quidem officiis maiores ratione eum!
-            </Paragraph>
+        ) : (
+          <div className='relative h-full w-full'>
+            <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-sm'>
+              <EmphasisButton>{t('Unlock This Feature With THENA ID')}</EmphasisButton>
+            </div>
+            <div className='h-full w-full p-1'>
+              <Paragraph>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi maxime accusantium at voluptatum eius
+                dolorum aspernatur quod sequi itaque ullam assumenda, dolore laboriosam. Ab sint, sapiente enim natus
+                assumenda nesciunt. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae doloremque
+                accusamus perferendis! Velit animi mollitia quisquam consequatur magnam accusamus, inventore ut minima?
+                Ducimus maxime vitae quidem officiis maiores ratione eum!
+              </Paragraph>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </Box>
   )

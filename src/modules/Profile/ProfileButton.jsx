@@ -1,4 +1,4 @@
-/* eslint-disable unused-imports/no-unused-vars */
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -40,7 +40,9 @@ export function ProfileButton({ isOwnProfile, userInfoId }) {
     <div className='flex items-center space-x-2'>
       {isOwnProfile ? (
         <>
-          <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
+          <Link href={`/arena/profile/${userInfoId}/edit`}>
+            <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
+          </Link>
           <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Send THENA ID')}</EmphasisButton>
         </>
       ) : (

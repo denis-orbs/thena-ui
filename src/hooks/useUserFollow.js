@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request'
 import { useCallback } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import useSWR, { mutate as mutateSWR } from 'swr'
 
 import { v4Client } from '@/lib/graphql'
 import { errorToast } from '@/lib/notify'
@@ -60,8 +60,10 @@ export const fetchFollower = async id => {
 export const useCurrentUserFollow = () => {
   const { account } = useWallet()
 
-  const { data: following, mutate } = useSWRImmutable('current-user-follow', () =>
-    fetchFollowing(account.toLocaleLowerCase()),
+  const { data: following, mutate } = useSWR('current-user-follow', () =>
+    fetchFollowing(account.toLocaleLowerCase(), {
+      refreshInterval: 60000,
+    }),
   )
 
   return { following, mutate }
@@ -69,7 +71,6 @@ export const useCurrentUserFollow = () => {
 
 export const useFollow = userId => {
   const { account } = useWallet()
-  const { mutate } = useCurrentUserFollow()
   const follow = useCallback(async () => {
     try {
       const { followUser } = await v4Client.request(V4_FOLLOW, {
@@ -77,12 +78,14 @@ export const useFollow = userId => {
         userId: userId.toLowerCase(),
       })
       if (followUser) {
-        await mutate()
+        await mutateSWR('current-user-follow')
+        await mutateSWR(['followers', userId])
+        await mutateSWR(['following', account.toLowerCase()])
       }
     } catch (error) {
-      errorToast('Error', error.shortMessage)
+      errorToast('Error', error?.shortMessage)
     }
-  }, [account, mutate, userId])
+  }, [account, userId])
 
   return { followUser: follow }
 }

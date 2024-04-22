@@ -192,7 +192,7 @@ function ParticipantsPage() {
         user: participant.participant && (
           <Link
             className='flex cursor-pointer items-center justify-center gap-2'
-            href={`/arena/profile/${participant.participant.id}`}
+            href={`/arena/profile/${participant.participant.id.toLowerCase()}`}
           >
             <CircleImage src={Avatar} alt='avatar' className='size-8' />
             <Paragraph>{sliceAddress(participant.participant.id)}</Paragraph>

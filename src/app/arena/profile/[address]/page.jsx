@@ -1,8 +1,8 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import React, { useMemo } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import React, { useCallback, useEffect, useMemo } from 'react'
+import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import { useAssets } from '@/context/assetsContext'
@@ -97,6 +97,11 @@ const V4_USER_INFO = gql`
           tradingCompetitionSpot
         }
       }
+      thenianNfts {
+        meatadata {
+          image
+        }
+      }
       usernameNfts {
         name
         id
@@ -120,11 +125,25 @@ const fetchUserInfo = async id => {
 export default function ProfilePage({ params }) {
   const { address } = params
 
-  const { data: userInfo, isLoading } = useSWRImmutable(['user info', address], () => fetchUserInfo(address))
+  const { data: userInfo, isLoading } = useSWR(['user info', address.toLowerCase()], () => fetchUserInfo(address), {
+    refreshInterval: 60000,
+  })
 
-  const { data: following } = useSWRImmutable(['following', address], () => fetchFollowing(address))
+  const { data: following, mutate: mutateFollowing } = useSWR(
+    ['following', address.toLowerCase()],
+    () => fetchFollowing(address),
+    {
+      refreshInterval: 60000,
+    },
+  )
 
-  const { data: followers } = useSWRImmutable(['followers', address], () => fetchFollower(address))
+  const { data: followers, mutate: mutateFollower } = useSWR(
+    ['followers', address.toLowerCase()],
+    () => fetchFollower(address),
+    {
+      refreshInterval: 60000,
+    },
+  )
 
   const assets = useAssets()
   const joinedCompetitions = useMemo(
@@ -168,6 +187,15 @@ export default function ProfilePage({ params }) {
       })),
     [assets, userInfo?.tradingCompetitions],
   )
+
+  const mutateData = useCallback(async () => {
+    await mutateFollowing()
+    await mutateFollower()
+  }, [mutateFollowing, mutateFollower])
+
+  useEffect(() => {
+    mutateData()
+  }, [mutateData])
 
   if (isLoading) {
     return <Loading />
