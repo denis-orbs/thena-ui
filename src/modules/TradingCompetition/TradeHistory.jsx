@@ -46,7 +46,7 @@ const sortOptions = [
     label: 'Date & Time',
     value: 'timestamp',
     width: 'w-[30%]',
-    isDesc: false,
+    isDesc: true,
     justify: 'justify-center items-center',
   },
 ]

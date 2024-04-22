@@ -36,11 +36,6 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
     competition?.competitionRules?.winningToken?.address,
   )
 
-  const yourProfitAndLoss = useMemo(
-    () => fromWei(pnl, competition.competitionRules?.winningToken?.decimals).toNumber(),
-    [competition.competitionRules?.winningToken?.decimals, pnl],
-  )
-
   const currentRank = useMemo(() => {
     const sort =
       competition.participants?.sort(
@@ -100,9 +95,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {} }) {
                     loading='lazy'
                   />
                   <TextHeading className='text-xl lg:text-2xl'>
-                    {yourProfitAndLoss < 0
-                      ? yourProfitAndLoss
-                      : formatAmount(fromWei(pnl, competition.competitionRules?.winningToken?.decimals))}
+                    {formatAmount(fromWei(pnl, competition.competitionRules?.winningToken?.decimals), false, 10, false)}
                   </TextHeading>
                 </div>
                 <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' data-tooltip-id='user-pnl-tooltip' />
