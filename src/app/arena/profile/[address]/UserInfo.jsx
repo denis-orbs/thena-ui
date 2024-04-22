@@ -99,30 +99,40 @@ export function UserInfo({ userInfo, following, followers }) {
           <TextSubHeading className='text-sm'>{t('Following')}</TextSubHeading>
         </Box>
       </div>
-      <div className='flex flex-col'>
-        <TextHeading className='text-2xl'>{t('About')}</TextHeading>
-        {/* TODO: change field after have api */}
-        {userInfo?.thenaId ? (
-          <div>
-            <Paragraph _html={userInfo?.biography} />
+
+      {/* TODO: change field after have api */}
+      {userInfo?.thenaId ? (
+        userInfo?.biography ? (
+          <div className='flex flex-col'>
+            <TextHeading className='text-2xl'>{t('About')}</TextHeading>
+            <div>
+              <Paragraph _html={userInfo?.biography} />
+            </div>
           </div>
         ) : (
-          <div className='relative h-full w-full'>
-            <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-sm'>
-              <EmphasisButton>{t('Unlock This Feature With THENA ID')}</EmphasisButton>
-            </div>
-            <div className='h-full w-full p-1'>
-              <Paragraph>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi maxime accusantium at voluptatum eius
-                dolorum aspernatur quod sequi itaque ullam assumenda, dolore laboriosam. Ab sint, sapiente enim natus
-                assumenda nesciunt. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae doloremque
-                accusamus perferendis! Velit animi mollitia quisquam consequatur magnam accusamus, inventore ut minima?
-                Ducimus maxime vitae quidem officiis maiores ratione eum!
-              </Paragraph>
+          <></>
+        )
+      ) : (
+        isOwnProfile && (
+          <div className='flex flex-col'>
+            <TextHeading className='text-2xl'>{t('About')}</TextHeading>
+            <div className='relative h-full w-full'>
+              <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-sm'>
+                <EmphasisButton>{t('Unlock This Feature With THENA ID')}</EmphasisButton>
+              </div>
+              <div className='h-full w-full p-1'>
+                <Paragraph>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi maxime accusantium at voluptatum eius
+                  dolorum aspernatur quod sequi itaque ullam assumenda, dolore laboriosam. Ab sint, sapiente enim natus
+                  assumenda nesciunt. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae doloremque
+                  accusamus perferendis! Velit animi mollitia quisquam consequatur magnam accusamus, inventore ut
+                  minima? Ducimus maxime vitae quidem officiis maiores ratione eum!
+                </Paragraph>
+              </div>
             </div>
           </div>
-        )}
-      </div>
+        )
+      )}
     </Box>
   )
 }

@@ -204,10 +204,10 @@ export default function ProfilePage({ params }) {
   return (
     <div className='mt-10 space-y-10'>
       <UserInfo userInfo={userInfo} following={following} followers={followers} />
-      {(joinedCompetitions || hostedCompetitions) && (
+      {(!!joinedCompetitions.length || !!hostedCompetitions.length) && (
         <UserCompetitions hostedCompetitions={hostedCompetitions} joinedTCs={joinedCompetitions} />
       )}
-      {following && <FollowedProfiles followingUsers={following} />}
+      {!!following.length && <FollowedProfiles followingUsers={following} />}
     </div>
   )
 }

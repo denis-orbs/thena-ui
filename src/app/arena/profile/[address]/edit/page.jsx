@@ -58,7 +58,6 @@ function EditProfilePage({ params }) {
         return errorToast('Error', 'Invalid X URL')
       }
     }
-    console.log('object', dataUpdate)
     await updateProfile(...dataUpdate)
   }, [dataUpdate, updateProfile])
 
@@ -93,6 +92,7 @@ function EditProfilePage({ params }) {
           </div>
           <div className='flex-2'>
             <Input
+              type='text'
               placeholder='yourwebsite'
               className='w-full lg:w-72'
               val={dataUpdate.websiteUrl ?? ''}
@@ -112,6 +112,7 @@ function EditProfilePage({ params }) {
           </div>
           <div className='flex-2'>
             <Input
+              type='text'
               placeholder='xprofilehandle'
               className='w-full lg:w-72'
               val={dataUpdate.xProfileUrl ?? ''}
