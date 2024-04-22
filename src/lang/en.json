@@ -638,5 +638,10 @@
   "Invalid Website URL": "Invalid Website URL",
   "Invalid X URL": "Invalid X URL",
   "xprofilehandle": "@xprofilehandle",
-  "yourwebsite": "yourwebsite.com"
+  "yourwebsite": "yourwebsite.com",
+  "Traded token": "Traded token",
+  "In amount": "In amount",
+  "Out amount": "Out amount",
+  "Transaction hash": "Transaction hash",
+  "Date & Time": "Date & Time"
 }
