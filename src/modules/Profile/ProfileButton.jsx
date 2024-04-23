@@ -40,7 +40,7 @@ export function ProfileButton({ isOwnProfile, userInfoId }) {
     <div className='flex items-center space-x-2'>
       {isOwnProfile ? (
         <>
-          <Link href={`/arena/profile/${userInfoId}/edit`}>
+          <Link href='/arena/profile/edit'>
             <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
           </Link>
           <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Send THENA ID')}</EmphasisButton>

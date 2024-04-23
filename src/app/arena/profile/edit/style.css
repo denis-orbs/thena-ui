@@ -1,0 +1,12 @@
+.react-quill-create-tc .ql-toolbar {
+  border: none;
+}
+
+.react-quill-create-tc .ql-container {
+  border: none;
+  min-height: 120px;
+}
+
+.gradient-bg {
+  background: transparent linear-gradient(128deg, #ed00c9 0%, #bd00ed 100%) 0% 0% no-repeat padding-box;
+}

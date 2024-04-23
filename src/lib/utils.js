@@ -127,3 +127,16 @@ export const formatNumberDecimals = (value, precision) => {
   const multiplier = 10 ** (precision || 0)
   return Math.round(value * multiplier) / multiplier
 }
+
+export function isValidHttpUrl(string) {
+  const pattern = new RegExp(
+    '^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$', // fragment locator
+    'i',
+  )
+  return pattern.test(string)
+}

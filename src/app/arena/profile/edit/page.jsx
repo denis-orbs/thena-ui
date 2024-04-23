@@ -1,63 +1,84 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+
+import 'react-quill/dist/quill.snow.css'
+import 'react-quill-emoji/dist/quill-emoji.css'
+import './style.css'
 
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import Input from '@/components/input'
-import { TextArea } from '@/components/textarea'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { useUserInfo } from '@/context/userInfoContext'
 import { useUpdateProfile } from '@/hooks/useProfile'
 import { errorToast } from '@/lib/notify'
+import { isValidHttpUrl } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
+import { SelectAvatar } from './SelectAvatar'
 import { SelectTheme } from './SelectTheme'
 
-function EditProfilePage({ params }) {
-  const t = useTranslations()
-  const timeZoneData = useMemo(
-    () =>
-      Intl.supportedValuesOf('timeZone').map(value => ({
-        label: value,
-      })),
-    [],
-  )
+const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { ssr: false })
 
-  const currentTimeZone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, [])
+function EditProfilePage() {
+  const t = useTranslations()
+  const { userInfo, isLoading } = useUserInfo()
+
+  const [timeZoneData, setTimeZoneData] = useState([])
+
+  const [currentTimeZone, setCurrentTimeZone] = useState('')
 
   const [dataUpdate, setDataUpdate] = useState({
-    biography: null,
-    avatar: null,
-    nameColor: null,
-    theme: null,
-    timezone: null,
-    username: null,
-    websiteUrl: null,
-    xProfileUrl: null,
-    isPublicProfile: true,
+    biography: userInfo?.biography ?? null,
+    avatar: userInfo?.avatar ?? null,
+    theme: userInfo?.theme ?? null,
+    timezone: userInfo?.timezone ?? currentTimeZone,
+    username: userInfo?.username ?? null,
+    websiteUrl: userInfo?.websiteUrl ?? null,
+    xProfileUrl: userInfo?.xProfileUrl ?? null,
+    isPublicProfile: userInfo?.isPublicProfile ?? true,
   })
 
   const { updateProfile } = useUpdateProfile()
 
   const handleUpdate = useCallback(async () => {
     if (dataUpdate.websiteUrl) {
-      const regex = /^(https?):\/\/[^\s/$.?#].[^\s]*$/
-      const validUrl = dataUpdate.websiteUrl.match(regex)
-      if (!validUrl) {
+      if (!isValidHttpUrl(dataUpdate.websiteUrl)) {
         return errorToast('Error', 'Invalid Website URL')
       }
     }
     await updateProfile(...dataUpdate)
   }, [dataUpdate, updateProfile])
 
+  useEffect(() => {
+    if (!isLoading && !userInfo && !userInfo?.usernameNfts.length) {
+      redirect('/arena/profile')
+    }
+  }, [isLoading, userInfo, userInfo?.usernameNfts])
+
+  useEffect(() => setCurrentTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone), [])
+
+  useEffect(
+    () =>
+      setTimeZoneData(
+        Intl.supportedValuesOf('timeZone').map(value => ({
+          label: value,
+        })),
+      ),
+    [],
+  )
+
   return (
     <div className='flex flex-col space-y-10 pt-10'>
       <div>
-        <Link href={`/arena/profile/${params.address}`}>
+        <Link href='/arena/profile'>
           <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
             {t('Back')}
           </TextButton>
@@ -73,10 +94,7 @@ function EditProfilePage({ params }) {
               {t('You Must Own An TheNFT To Select It As Your Avatar')}
             </TextSubHeading>
           </div>
-          <div className='flex flex-2 flex-col-reverse space-y-4 lg:flex-col lg:space-y-2'>
-            <TextHeading className='text-3xl'>{t('No TheNFTs Found')}</TextHeading>
-            <EmphasisButton className='w-32 text-nowrap'>{t('Buy TheNFT')}</EmphasisButton>
-          </div>
+          <SelectAvatar dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
         </div>
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
@@ -124,13 +142,12 @@ function EditProfilePage({ params }) {
             <TextSubHeading className='text-base'>{t('Enter Your Biography')}</TextSubHeading>
           </div>
           <div className='flex-2'>
-            <TextArea
-              placeholder={t('About Content')}
-              value={dataUpdate.biography ?? ''}
-              onChange={e => {
+            <QuillEditor
+              value={dataUpdate.biography}
+              onChange={value => {
                 setDataUpdate({
                   ...dataUpdate,
-                  biography: e.target.value,
+                  biography: value,
                 })
               }}
             />
@@ -185,7 +202,7 @@ function EditProfilePage({ params }) {
               {t('Personalize Your Experience By Choosing From A Variety Of Background Themes')}
             </TextSubHeading>
           </div>
-          <div className='grid flex-2 grid-cols-2 gap-3 lg:grid-cols-4'>
+          <div className='grid flex-2 grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4'>
             <SelectTheme dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
           </div>
         </div>

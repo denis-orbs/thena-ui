@@ -9,7 +9,7 @@ import Tabs from '@/components/tabs'
 import { TextHeading } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 
-import CompetitionItem from '../../CompetitionItem'
+import CompetitionItem from '../CompetitionItem'
 
 export function UserCompetitions({ hostedCompetitions, joinedTCs }) {
   const initSelectedTab = useMemo(

@@ -408,9 +408,9 @@ function Header() {
         account
           ? {
               label: t('Profile'),
-              active: pathname.includes(`/arena/profile/${account.toLowerCase()}`),
+              active: pathname === '/arena/profile' || pathname === '/arena/profile/edit',
               onClickHandler: () => {
-                push(`/arena/profile/${account.toLowerCase()}`)
+                push('/arena/profile')
               },
             }
           : undefined,

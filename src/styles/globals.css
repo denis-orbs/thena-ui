@@ -137,6 +137,14 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
+input[type='radio']:checked:before {
+  background: linear-gradient(180deg, #e416d0 0%, #8f1ddf 64.71%, #1027f5 111.93%);
+}
+
+input[type='radio']:checked {
+  background-color: #e416d0;
+}
+
 .ReactModal__Overlay {
   opacity: 0;
   transition: all 100ms ease-out;

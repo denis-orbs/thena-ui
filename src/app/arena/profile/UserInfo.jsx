@@ -60,7 +60,7 @@ export function UserInfo({ userInfo, following, followers }) {
                   <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.websiteUrl}</NeutralBadge>
                 )}
                 {userInfo?.xProfileUrl && (
-                  <NeutralBadge className='text-nowrap capitalize lg:text-xs'>@{userInfo.xProfileUrl}</NeutralBadge>
+                  <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.xProfileUrl}</NeutralBadge>
                 )}
               </div>
             </div>
