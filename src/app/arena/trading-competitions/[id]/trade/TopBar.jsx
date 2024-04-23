@@ -77,7 +77,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {}, reloadFetch
           ) || []
         const newRank = sort.findIndex(item => item.participant.id === account?.toLocaleLowerCase()) + 1
         if (newRank === 1) {
-          successToast('You’re in 1st place. Good job!', null, ChainId.BSC, <Champion className='h-4 w-4' />)
+          successToast('You’re in 1st place', null, ChainId.BSC, <Champion className='h-4 w-4' />)
         } else {
           successToast(
             `You’re now rank ${newRank} of ${competition.participants.length}`,
