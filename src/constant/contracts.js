@@ -90,5 +90,8 @@ const Contracts = {
     [ChainId.BSC]: '0x05cC3CA6E768a68A7f86b09e3ceE754437bd5f12',
     [ChainId.OPBNB]: '0xAAC397840fC57F6bE1e3d40496E0823Ff15e1C6D',
   },
+  thenaId: {
+    [ChainId.BSC]: '0xd8cd3f2e2c97d85bcd5bd47ff3f67ed0060f5b14',
+  },
 }
 export default Contracts

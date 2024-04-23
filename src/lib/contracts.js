@@ -21,7 +21,7 @@ import {
   voterAbi,
   wbnbAbi,
 } from '@/constant/abi'
-import { tcManagerAbi, tcSpotAbi } from '@/constant/abi/core'
+import { tcManagerAbi, tcSpotAbi, thenaIdAbi } from '@/constant/abi/core'
 import {
   algebraAbi,
   defiedgeStrategyAbi,
@@ -147,3 +147,9 @@ export const getTcSpotContract = address => getContract(tcSpotAbi, address, Chai
   ************************************************************************************************** */
 
 export const getTCContract = () => getContract(tcManagerAbi, Contracts.tcManager, ChainId.BSC)
+
+/** **************************************************************************************************
+                                            Thena ID
+  ************************************************************************************************** */
+
+export const getThenaIDContract = () => getContract(thenaIdAbi, Contracts.thenaId, ChainId.BSC)

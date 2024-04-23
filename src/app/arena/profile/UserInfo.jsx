@@ -1,11 +1,12 @@
 'use client'
 
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -19,19 +20,35 @@ import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
+import ThenaIdModal from './ThenaIdModal'
+
 dayjs.extend(localizedFormat)
 
 export function UserInfo({ userInfo, following, followers }) {
   const t = useTranslations()
   const { account } = useWallet()
   const assets = useAssets()
-  const isOwnProfile = useMemo(() => userInfo?.id.toLowerCase() === account?.toLowerCase(), [account, userInfo.id])
+  const isOwnProfile = useMemo(() => userInfo.id.toLowerCase() === account?.toLowerCase(), [account, userInfo.id])
   const { networkId } = useChainSettings()
+  const { open: openConnectWallet } = useWeb3Modal()
+
+  const [thenaModalTab, setThenaModalTab] = useState()
   const theAsset = assets.find(asset => asset.address.toLowerCase() === Contracts.THE[networkId].toLowerCase())
+  const hasThenaId = useMemo(() => userInfo.usernameNfts.length, [userInfo.usernameNfts.length])
 
   const followingCount = useMemo(() => following?.length ?? '-', [following?.length])
 
   const followersCount = useMemo(() => followers?.length ?? '-', [followers?.length])
+
+  const handleClickThenaButton = useCallback(
+    (tab = 'get') => {
+      if (!account) {
+        openConnectWallet()
+      }
+      setThenaModalTab(tab)
+    },
+    [account, openConnectWallet],
+  )
 
   return (
     <Box className='space-y-4'>
@@ -40,7 +57,7 @@ export function UserInfo({ userInfo, following, followers }) {
           <div className='flex items-start gap-5 lg:items-center'>
             <Image
               alt='avatar'
-              src={userInfo?.avatar ?? Avatar}
+              src={userInfo.avatar ?? Avatar}
               className='h-14 w-14 rounded-full lg:h-32 lg:w-32'
               width={100}
               height={100}
@@ -48,19 +65,35 @@ export function UserInfo({ userInfo, following, followers }) {
             <div className='flex flex-col gap-3'>
               <div className='flex items-center'>
                 <TextHeading className='text-3xl'>{formatAddress(userInfo.id)}</TextHeading>
-                <PrimaryButton className='ml-4 p-2 text-sm text-black'>
-                  {t(isOwnProfile ? 'Get ID' : 'Gift Thena ID')}
-                </PrimaryButton>
+                {isOwnProfile && !hasThenaId && (
+                  <PrimaryButton className='ml-4 p-2 text-sm text-black' onClick={() => handleClickThenaButton('get')}>
+                    {t('Get ID')}
+                  </PrimaryButton>
+                )}
+                {!isOwnProfile && (
+                  <PrimaryButton className='ml-4 p-2 text-sm text-black' onClick={() => handleClickThenaButton('gift')}>
+                    {t('Gift Thena ID')}
+                  </PrimaryButton>
+                )}
+                {thenaModalTab && (
+                  <ThenaIdModal
+                    tab={thenaModalTab}
+                    targetAddress={
+                      account?.toLowerCase() !== userInfo.id.toLowerCase() ? userInfo.id.toLowerCase() : undefined
+                    }
+                    onClose={() => setThenaModalTab(undefined)}
+                  />
+                )}
               </div>
               <TextSubHeading className='text-sm'>
                 {t('Joined')} {dayjs(userInfo.firstInteractAt).format('lll')}
               </TextSubHeading>
               <div className='flex gap-2'>
-                {userInfo?.websiteUrl && (
+                {userInfo.websiteUrl && (
                   <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.websiteUrl}</NeutralBadge>
                 )}
-                {userInfo?.xProfileUrl && (
-                  <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.xProfileUrl}</NeutralBadge>
+                {userInfo.xProfileUrl && (
+                  <NeutralBadge className='text-nowrap capitalize lg:text-xs'>@{userInfo.xProfileUrl}</NeutralBadge>
                 )}
               </div>
             </div>
@@ -69,7 +102,7 @@ export function UserInfo({ userInfo, following, followers }) {
             <Box className='flex items-center justify-between space-x-2 border border-primary-800 bg-primary-950 p-2 pl-3 lg:p-2 lg:pl-3'>
               <InfoIcon className='h-4 w-4 stroke-primary-600' />
               <TextHeading className='text-base'>
-                {t(userInfo?.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}
+                {t(userInfo.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}
               </TextHeading>
               <OutlinedButton className='text-nowrap border-primary-600 p-2 text-primary-600 hover:bg-primary-900'>
                 {t('Learn More')}
@@ -101,12 +134,12 @@ export function UserInfo({ userInfo, following, followers }) {
       </div>
 
       {/* TODO: change field after have api */}
-      {userInfo?.thenaId ? (
-        userInfo?.biography ? (
+      {userInfo.thenaId ? (
+        userInfo.biography ? (
           <div className='flex flex-col'>
             <TextHeading className='text-2xl'>{t('About')}</TextHeading>
             <div>
-              <Paragraph _html={userInfo?.biography} />
+              <Paragraph _html={userInfo.biography} />
             </div>
           </div>
         ) : (

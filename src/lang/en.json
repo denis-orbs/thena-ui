@@ -646,5 +646,17 @@
   "Date & Time": "Date & Time",
   "Total volume": "Total volume",
   "Number of participants": "Number of participants",
-  "You’re in 1st place": "You’re in 1st place. Good job!"
+  "You’re in 1st place": "You’re in 1st place. Good job!",
+  "Mint Thena Id": "Mint THENA ID",
+  "Mint": "Mint",
+  "Mint Desc": "Once minted, you can not change your ID.",
+  "Send As Gift": "Send as gift",
+  "Send Desc": "Send ID to your friend or fan.",
+  "Your Thena Id": "Your THENA ID",
+  "Type Your Id": "Type Your ID",
+  "Select Token For Payment": "Select Token For Payment",
+  "Total Price": "Total Price",
+  "Wallet Address": "Wallet Address",
+  "Thena Id": "THENA ID",
+  "Mint Now": "Mint Now"
 }

@@ -83,7 +83,7 @@ export function ProfilePage({ address }) {
     mutateData()
   }, [mutateData])
 
-  if (isLoading) {
+  if (isLoading || !userInfo) {
     return <Loading />
   }
 
