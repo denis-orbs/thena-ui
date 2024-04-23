@@ -417,7 +417,7 @@ export const useTCSpotOOESwap = () => {
       // const isSuccess = await sendTxn(key, swapuuid, '0x6352a56caadc4f1e25cd6c75970fa768a3304e64', ooeData)
       if (!isSuccess) {
         setPending(false)
-        return
+        return false
       }
 
       endTxn({
@@ -425,6 +425,7 @@ export const useTCSpotOOESwap = () => {
         final: 'Swap Successful',
       })
       setPending(false)
+      return isSuccess
     },
     [endTxn, sendTxn, startTxn, t],
   )
@@ -556,7 +557,7 @@ export const useTCSpot1InchSwap = () => {
       // const isSuccess = await sendTxn(key, swapuuid, '0x1111111254EEB25477B68fb85Ed929f73A960582', oneInchData)
       if (!isSuccess) {
         setPending(false)
-        return
+        return false
       }
 
       endTxn({
@@ -564,6 +565,7 @@ export const useTCSpot1InchSwap = () => {
         final: 'Swap Successful',
       })
       setPending(false)
+      return isSuccess
     },
     [endTxn, sendTxn, startTxn, t],
   )

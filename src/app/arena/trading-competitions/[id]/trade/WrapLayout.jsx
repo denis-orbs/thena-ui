@@ -26,6 +26,7 @@ export function WrapLayout({ children, params }) {
 
   const [fromAddress, setFromAddress] = useState(null)
   const [toAddress, setToAddress] = useState(null)
+  const [reloadFetch, setReloadFetch] = useState(0)
 
   const [showModalDeposit, setShowModalDeposit] = useState(false)
 
@@ -101,7 +102,12 @@ export function WrapLayout({ children, params }) {
 
   return (
     <>
-      <TopBar handleClickShowModal={() => setShowModalDeposit(true)} competition={competition} />
+      <TopBar
+        handleClickShowModal={() => setShowModalDeposit(true)}
+        competition={competition}
+        reloadFetch={reloadFetch}
+        setReloadFetch={setReloadFetch}
+      />
       <Box className='mb-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
         <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
         <TextHeading className='text-base font-normal'>
@@ -116,6 +122,7 @@ export function WrapLayout({ children, params }) {
           setToAsset={setToAsset}
           assets={tradingTokens}
           tcSpot={competition?.tradingCompetitionSpot}
+          setReloadFetch={setReloadFetch}
         >
           {children}
         </SideBar>

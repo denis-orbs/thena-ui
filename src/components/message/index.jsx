@@ -10,15 +10,13 @@ import { TextIconButton } from '../buttons/IconButton'
 import Highlight from '../highlight'
 import { Paragraph, TextHeading } from '../typography'
 
-export function SuccessMessage({ closeToast, title, desc, hash = null, chainId }) {
+export function SuccessMessage({ closeToast, title, desc, hash = null, chainId, icon = null }) {
   const t = useTranslations()
 
   return (
     <div className='flex items-start justify-between gap-4'>
       <div className='flex items-center gap-4'>
-        <Highlight className='bg-success-700'>
-          <CheckGradientIcon className='h-4 w-4' />
-        </Highlight>
+        <Highlight className='bg-success-700'>{icon || <CheckGradientIcon className='h-4 w-4' />}</Highlight>
         <div className='w-full'>
           <TextHeading>{t(title)}</TextHeading>
           {desc && <Paragraph className='text-sm'>{t(desc)}</Paragraph>}
@@ -44,15 +42,13 @@ export function SuccessMessage({ closeToast, title, desc, hash = null, chainId }
   )
 }
 
-export function ErrorMessage({ closeToast, title, desc }) {
+export function ErrorMessage({ closeToast, title, desc, icon = null }) {
   const t = useTranslations()
 
   return (
     <div className='flex items-start justify-between gap-4'>
       <div className='flex items-center gap-4'>
-        <Highlight className='bg-error-500'>
-          <InfoCircleGradient className='h-4 w-4' />
-        </Highlight>
+        <Highlight className='bg-error-500'>{icon || <InfoCircleGradient className='h-4 w-4' />}</Highlight>
         <div>
           <div className='flex flex-col gap-1'>
             <TextHeading>{t(title)}</TextHeading>

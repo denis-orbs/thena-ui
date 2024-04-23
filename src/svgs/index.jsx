@@ -5,6 +5,7 @@ import ArrowLeftIcon from '~/svgs/arrow-left.svg'
 import ArrowRightIcon from '~/svgs/arrow-right.svg'
 import BankIcon from '~/svgs/bank.svg'
 import CalendarIcon from '~/svgs/calendar.svg'
+import Champion from '~/svgs/champion.svg'
 import CheckIcon from '~/svgs/check.svg'
 import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
@@ -12,6 +13,7 @@ import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import Clock from '~/svgs/clock.svg'
 import CoinHand from '~/svgs/coin-hand.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
+import DownRank from '~/svgs/down-rank.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import Gift from '~/svgs/gift.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
@@ -36,6 +38,7 @@ import ShadowIcon from '~/svgs/shadow.svg'
 import SplitIcon from '~/svgs/split.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
+import UpRank from '~/svgs/up-rank.svg'
 import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
 import XIcon from '~/svgs/x-close.svg'
@@ -50,6 +53,7 @@ export {
   ArrowRightIcon,
   BankIcon,
   CalendarIcon,
+  Champion,
   CheckCircleIcon,
   CheckGradientIcon,
   CheckIcon,
@@ -57,6 +61,7 @@ export {
   Clock,
   CoinHand,
   CoinsStackedIcon,
+  DownRank,
   ExternalIcon,
   Gift,
   HamburgerIcon,
@@ -81,6 +86,7 @@ export {
   SplitIcon,
   SwitchVerticalIcon,
   TransferIcon,
+  UpRank,
   Verified,
   WalletIcon,
   XIcon,

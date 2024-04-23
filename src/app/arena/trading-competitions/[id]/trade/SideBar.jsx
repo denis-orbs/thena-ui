@@ -49,6 +49,7 @@ export function SideBar({
   assets,
   tcSpot,
   children,
+  setReloadFetch,
 }) {
   const t = useTranslations()
   const [fromAddress, setFromAddress] = useState(fromAsset?.address)
@@ -201,9 +202,11 @@ export function SideBar({
   )
 
   const handleSwap = useCallback(async () => {
+    let isSuccess = false
+
     switch (service) {
       case 'Algebra':
-        await onSwapAlgebra(
+        isSuccess = await onSwapAlgebra(
           fromAsset,
           toAsset,
           toWei(debouncedFromTokenAmount),
@@ -213,14 +216,19 @@ export function SideBar({
         )
         break
       case '1inch':
-        await onSwap1inch(oneInchData, fromAsset, toAsset, tcSpot)
+        isSuccess = await onSwap1inch(oneInchData, fromAsset, toAsset, tcSpot)
         break
       default:
-        await onSwapOOE(ooeData, fromAsset, toAsset, tcSpot)
+        isSuccess = await onSwapOOE(ooeData, fromAsset, toAsset, tcSpot)
         break
+    }
+
+    if (isSuccess) {
+      setReloadFetch(reload => reload + 1)
     }
   }, [
     service,
+    setReloadFetch,
     onSwapAlgebra,
     fromAsset,
     toAsset,
