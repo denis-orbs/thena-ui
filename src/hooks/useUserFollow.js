@@ -4,6 +4,7 @@ import useSWR, { mutate as mutateSWR } from 'swr'
 
 import { v4Client } from '@/lib/graphql'
 import { errorToast } from '@/lib/notify'
+import { useSignWallet } from '@/lib/wallets/useSignWallet'
 import useWallet from '@/lib/wallets/useWallet'
 
 // follower of current user
@@ -60,23 +61,29 @@ export const fetchFollower = async id => {
 export const useCurrentUserFollow = () => {
   const { account } = useWallet()
 
-  const { data: following, mutate } = useSWR('current-user-follow', () =>
-    fetchFollowing(account.toLocaleLowerCase(), {
-      refreshInterval: 60000,
-    }),
-  )
+  const { data: following, mutate } = useSWR('current-user-follow', () => fetchFollowing(account.toLocaleLowerCase()), {
+    refreshInterval: 60000,
+  })
 
   return { following, mutate }
 }
 
 export const useFollow = userId => {
   const { account } = useWallet()
+  const { token } = useSignWallet()
+
   const follow = useCallback(async () => {
     try {
-      const { followUser } = await v4Client.request(V4_FOLLOW, {
-        followerId: account.toLowerCase(),
-        userId: userId.toLowerCase(),
-      })
+      const { followUser } = await v4Client.setHeader('authorization', `Bearer ${token}`).request(
+        V4_FOLLOW,
+        {
+          followerId: account.toLowerCase(),
+          userId: userId.toLowerCase(),
+        },
+        {
+          authorization: `Bearer ${token}`,
+        },
+      )
       if (followUser) {
         await mutateSWR('current-user-follow')
         await mutateSWR(['followers', userId])
@@ -85,7 +92,7 @@ export const useFollow = userId => {
     } catch (error) {
       errorToast('Error', error?.shortMessage)
     }
-  }, [account, userId])
+  }, [token, account, userId])
 
   return { followUser: follow }
 }

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import ThenaIdModal from '@/app/arena/profile/ThenaIdModal'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import { successToast } from '@/lib/notify'
 import useWallet from '@/lib/wallets/useWallet'
@@ -27,6 +28,8 @@ export function ProfileButton({ isOwnProfile, userInfoId }) {
   const { following } = useCurrentUserFollow()
 
   const { followUser } = useFollow(userInfoId)
+
+  const { userInfo } = useUserInfo()
 
   const isFollowed = useMemo(() => following?.find(follow => follow?.user?.id === userInfoId), [following, userInfoId])
 
@@ -56,9 +59,11 @@ export function ProfileButton({ isOwnProfile, userInfoId }) {
     <div className='flex items-center space-x-2'>
       {isOwnProfile ? (
         <>
-          <Link href='/arena/profile/edit'>
-            <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
-          </Link>
+          {!!userInfo?.usernameNfts?.length && (
+            <Link href='/arena/profile/edit'>
+              <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
+            </Link>
+          )}
           <EmphasisButton onClick={() => handleClickThenaButton('gift')} className='p-2 text-xs lg:py-3 lg:text-base'>
             {t('Gift Thena ID')}
           </EmphasisButton>

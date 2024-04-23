@@ -11,7 +11,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate }) {
   const t = useTranslations()
   const { userInfo } = useUserInfo()
 
-  const isHaveThenaNfts = useMemo(() => !!userInfo?.thenianNfts.length, [userInfo?.thenianNfts.length])
+  const isHaveThenaNfts = useMemo(() => !!userInfo?.thenianNfts?.length, [userInfo?.thenianNfts?.length])
 
   const onSelectAvatar = useCallback(
     image => {

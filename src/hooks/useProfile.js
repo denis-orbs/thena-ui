@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 
 import { v4Client } from '@/lib/graphql'
 import { errorToast } from '@/lib/notify'
+import { useSignWallet } from '@/lib/wallets/useSignWallet'
 import useWallet from '@/lib/wallets/useWallet'
 
 const V4_UPDATE_PROFILE = gql`
@@ -48,31 +49,38 @@ const V4_UPDATE_PROFILE = gql`
 
 export const useUpdateProfile = () => {
   const { account } = useWallet()
+  const { token } = useSignWallet()
 
   const updateProfile = useCallback(
     async ({ biography, avatar, nameColor, theme, timezone, username, websiteUrl, xProfileUrl, isPublicProfile }) => {
       try {
-        const { data } = await v4Client.request(V4_UPDATE_PROFILE, {
-          input: {
-            biography,
-            avatar,
-            nameColor,
-            theme,
-            timezone,
-            username,
-            websiteUrl,
-            xProfileUrl,
-            isPublicProfile,
+        const { data } = await v4Client.setHeader('authorization', token).request(
+          V4_UPDATE_PROFILE,
+          {
+            input: {
+              biography,
+              avatar,
+              nameColor,
+              theme,
+              timezone,
+              username,
+              websiteUrl,
+              xProfileUrl,
+              isPublicProfile,
+            },
+            id: account.toLocaleLowerCase(),
           },
-          id: account.toLocaleLowerCase(),
-        })
+          {
+            authorization: token,
+          },
+        )
 
         return data?.updateUserProfile
       } catch (error) {
         errorToast('Error', error?.shortMessage)
       }
     },
-    [account],
+    [account, token],
   )
 
   return { updateProfile }

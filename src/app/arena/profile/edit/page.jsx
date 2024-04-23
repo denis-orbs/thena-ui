@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+// import { redirect } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -39,7 +39,7 @@ function EditProfilePage() {
     biography: userInfo?.biography ?? null,
     avatar: userInfo?.avatar ?? null,
     theme: userInfo?.theme ?? null,
-    timezone: userInfo?.timezone ?? currentTimeZone,
+    timezone: userInfo?.timezone ?? null,
     username: userInfo?.username ?? null,
     websiteUrl: userInfo?.websiteUrl ?? null,
     xProfileUrl: userInfo?.xProfileUrl ?? null,
@@ -58,8 +58,8 @@ function EditProfilePage() {
   }, [dataUpdate, updateProfile])
 
   useEffect(() => {
-    if (!isLoading && !userInfo && !userInfo?.usernameNfts.length) {
-      redirect('/arena/profile')
+    if (!isLoading && (!userInfo || !userInfo?.usernameNfts?.length)) {
+      // redirect('/arena/profile')
     }
   }, [isLoading, userInfo, userInfo?.usernameNfts])
 

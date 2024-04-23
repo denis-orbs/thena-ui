@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo } from 'reac
 import useSWR from 'swr'
 
 import { v4Client } from '@/lib/graphql'
+import { useSignWallet } from '@/lib/wallets/useSignWallet'
 import useWallet from '@/lib/wallets/useWallet'
 
 const V4_USER_RANK = gql`
@@ -103,9 +104,15 @@ const V4_USER_INFO = gql`
   }
 `
 
-const fetchUserInfo = async id => {
+const fetchUserInfo = async (id, token) => {
   try {
-    const { userById } = await v4Client.request(V4_USER_INFO, { id: id.toLowerCase() })
+    const { userById } = await v4Client.request(
+      V4_USER_INFO,
+      { id: id.toLowerCase() },
+      {
+        authorization: token,
+      },
+    )
 
     const { tradeRankByAddress } = await v4Client.request(V4_USER_RANK, { id: id.toLowerCase() })
 
@@ -125,12 +132,13 @@ const UserInfoContext = createContext(initialState)
 
 function UserInfoContextProvider({ children }) {
   const { account } = useWallet()
+  const { token } = useSignWallet()
 
   const {
     data: userInfo,
     mutate: mutateUserInfo,
     isLoading,
-  } = useSWR(['current user info', account?.toLowerCase()], () => fetchUserInfo(account?.toLowerCase()), {
+  } = useSWR(['current user info'], () => fetchUserInfo(account?.toLowerCase(), token), {
     refreshInterval: 60000,
   })
 
