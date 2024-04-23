@@ -110,32 +110,34 @@ export function LeaderBoard({ competition }) {
 
   const finalLeaderBoards = useMemo(
     () =>
-      sortedData?.map(leader => ({
-        rank: <Paragraph>{leader.rank}</Paragraph>,
-        user: (
-          <Link
-            className='flex cursor-pointer items-center justify-center gap-2'
-            href={`/arena/profile/${leader.participant.id.toLowerCase()}`}
-          >
-            <CircleImage src={Avatar} alt='avatar' className='size-8' />
-            <Paragraph>{sliceAddress(leader.participant.id)}</Paragraph>
-          </Link>
-        ),
-        pnl: (
-          <Paragraph>
-            {`${formatAmount(fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal), false, 3, false)}
-            ${competition?.competitionRules?.winningToken?.symbol}`}
-          </Paragraph>
-        ),
-        reward: (
-          <Paragraph>
-            {`${formatAmount(fromWei(leader.winAmount, leader.winTokenDecimal))} ${
-              competition?.competitionRules?.winningToken?.symbol
-            }`}
-          </Paragraph>
-        ),
-      })),
-
+      sortedData?.map(leader => {
+        const pnl = fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal)
+        return {
+          rank: <Paragraph>{leader.rank}</Paragraph>,
+          user: (
+            <Link
+              className='flex cursor-pointer items-center justify-center gap-2'
+              href={`/arena/profile/${leader.participant.id.toLowerCase()}`}
+            >
+              <CircleImage src={Avatar} alt='avatar' className='size-8' />
+              <Paragraph>{sliceAddress(leader.participant.id)}</Paragraph>
+            </Link>
+          ),
+          pnl: (
+            <Paragraph className={`${pnl < 0 ? 'text-red-500' : 'text-green-500'}`}>
+              {`${formatAmount(pnl, false, 5, false)}
+              ${competition?.competitionRules?.winningToken?.symbol}`}
+            </Paragraph>
+          ),
+          reward: (
+            <Paragraph>
+              {`${formatAmount(fromWei(leader.winAmount, leader.winTokenDecimal), false, 5, false)} ${
+                competition?.competitionRules?.winningToken?.symbol
+              }`}
+            </Paragraph>
+          ),
+        }
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
   )
