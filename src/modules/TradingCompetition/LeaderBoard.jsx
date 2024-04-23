@@ -124,7 +124,7 @@ export function LeaderBoard({ competition }) {
             </Link>
           ),
           pnl: (
-            <Paragraph className={`${pnl < 0 ? 'text-red-500' : 'text-green-500'}`}>
+            <Paragraph className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}>
               {`${formatAmount(pnl, false, 5, false)}
               ${competition?.competitionRules?.winningToken?.symbol}`}
             </Paragraph>
