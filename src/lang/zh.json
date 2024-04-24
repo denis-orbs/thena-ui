@@ -659,5 +659,8 @@
   "Mint Now": "Mint Now",
   "Competition name": "Competition name",
   "Top competitions": "Top competitions",
-  "View all": "View all"
+  "View all": "View all",
+  "Invalid Token": "Invalid Token",
+  "Invalid Thena Id": "Invalid Thena Id",
+  "Thena Id Is Taken": "Thena Id Is Taken"
 }

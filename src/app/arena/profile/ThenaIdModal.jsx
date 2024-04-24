@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import CheckBox from '@/components/checkbox'
@@ -12,8 +12,9 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { useCalculateCost, useValidateUserName } from '@/hooks/useThenaIdContract'
-import { cn, formatAmount } from '@/lib/utils'
+import { useCalculateCost, useGiftThenaId, useMintThenaId, useValidateUserName } from '@/hooks/useThenaIdContract'
+import { warnToast } from '@/lib/notify'
+import { cn, formatAmount, fromWei } from '@/lib/utils'
 import CustomTokenModal from '@/modules/TokenModal/CustomTokenModal'
 
 export default function ThenaIdModal({ tab, targetAddress, onClose }) {
@@ -21,13 +22,22 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
   const [type, setType] = useState(tab)
   const [thenaId, setThenaId] = useState('')
   const [address, setAddress] = useState(targetAddress)
-  console.log(address)
   const [token, setToken] = useState()
   const assets = useAssets()
   const [openSelectToken, setOpenSelectToken] = useState(false)
   const [invalidUsername, setInvalidUsername] = useState(false)
   const [usernameIsTaken, setUsernameIsTaken] = useState(false)
   const [estimateCost, setEstimateCost] = useState()
+
+  // Only allowed USDT
+  const allowedAssets = useMemo(
+    () =>
+      assets.filter(item => item.address.toLowerCase() === '0x55d398326f99059fF775485246999027B3197955'.toLowerCase()),
+    [assets],
+  )
+
+  const { loading: gifting, giftThenaId } = useGiftThenaId()
+  const { loading: minting, buyThenaId } = useMintThenaId()
 
   const debounceToken = useDebounce(token, 500)
   const debounceThenaId = useDebounce(thenaId, 500)
@@ -50,7 +60,35 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounceThenaId, debounceToken?.address])
 
-  const onMint = useCallback(() => {}, [])
+  const validateForm = useCallback(() => {
+    if (usernameIsTaken) {
+      warnToast('Thena Id Is Taken')
+      return false
+    }
+    if (invalidUsername) {
+      warnToast('Invalid Thena Id')
+      return false
+    }
+    if (!token) {
+      warnToast('Invalid Token')
+      return false
+    }
+    if (type === 'gift' && !address) {
+      warnToast('Invalid Address')
+      return false
+    }
+    return true
+  }, [address, invalidUsername, token, type, usernameIsTaken])
+
+  const onMint = useCallback(async () => {
+    if (validateForm()) {
+      if (type === 'gift') {
+        await giftThenaId(thenaId, address, token.address)
+      } else {
+        buyThenaId(thenaId, token.address)
+      }
+    }
+  }, [address, buyThenaId, giftThenaId, thenaId, token?.address, type, validateForm])
 
   return (
     <Modal isOpen={!!tab} title='Mint Thena Id' closeModal={onClose} fontSizeTitle='text-xl' width={540}>
@@ -141,7 +179,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
                   <div className='flex items-center gap-2'>
                     <NextImage src={token?.logoURI} alt='' className='h-5 w-5' />
                     <Paragraph>
-                      {formatAmount(estimateCost)} {token?.symbol}
+                      {formatAmount(fromWei(estimateCost, token?.decimals))} {token?.symbol}
                     </Paragraph>
                   </div>
                 )}
@@ -151,13 +189,17 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
               popup={openSelectToken}
               setPopup={setOpenSelectToken}
               setSelectedAsset={setToken}
-              assets={assets}
+              assets={allowedAssets}
             />
           </div>
         </div>
       </ModalBody>
       <ModalFooter className='mt-3 flex w-full flex-row justify-center gap-4'>
-        <EmphasisButton className='w-full py-3.5 text-white lg:px-16 lg:py-3' onClick={onMint}>
+        <EmphasisButton
+          className='w-full py-3.5 text-white lg:px-16 lg:py-3'
+          disabled={gifting || minting}
+          onClick={onMint}
+        >
           {t('Mint Now')}
         </EmphasisButton>
       </ModalFooter>
