@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import useSWR, { mutate as mutateSWR } from 'swr'
 
 import { v4Client } from '@/lib/graphql'
@@ -70,18 +70,20 @@ export const useCurrentUserFollow = () => {
 
 export const useFollow = userId => {
   const { account } = useWallet()
-  const { token } = useSignWallet()
+  const { token, login } = useSignWallet()
+
+  const [errorMessage, setErrorMessage] = useState('')
 
   const follow = useCallback(async () => {
     try {
-      const { followUser } = await v4Client.setHeader('authorization', `Bearer ${token}`).request(
+      const { followUser } = await v4Client.request(
         V4_FOLLOW,
         {
           followerId: account.toLowerCase(),
           userId: userId.toLowerCase(),
         },
         {
-          authorization: `Bearer ${token}`,
+          authorization: token ? `Bearer ${token}` : '',
         },
       )
       if (followUser) {
@@ -90,9 +92,20 @@ export const useFollow = userId => {
         await mutateSWR(['following', account.toLowerCase()])
       }
     } catch (error) {
-      errorToast('Error', error?.shortMessage)
+      errorToast('Error')
+      setErrorMessage(error.response.errors[0].message)
     }
-  }, [token, account, userId])
+  }, [account, userId, token])
+
+  useEffect(() => {
+    const reLogin = async () => {
+      await login()
+    }
+    if (errorMessage === 'Invalid Access Token') {
+      reLogin()
+      follow()
+    }
+  }, [errorMessage, follow, login])
 
   return { followUser: follow }
 }

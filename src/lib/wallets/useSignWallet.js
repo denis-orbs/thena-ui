@@ -1,9 +1,10 @@
 import { gql } from 'graphql-request'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useSignMessage } from 'wagmi'
 
 import useWallet from './useWallet'
 import { v4Client } from '../graphql'
+import { getFromSessionStorage } from '../helper'
 
 const V4_LOGIN = gql`
   mutation V4_MUTATION_LOGIN($signature: String!, $address: String!) {
@@ -22,10 +23,8 @@ const V4_LOGIN = gql`
 export const useSignWallet = () => {
   const { account } = useWallet()
   const { signMessage, data: signData } = useSignMessage()
-  const [accessToken, setAccessToken] = useState('')
 
   const deleteToken = useCallback(() => {
-    setAccessToken(undefined)
     sessionStorage.removeItem('token')
   }, [])
 
@@ -40,40 +39,30 @@ export const useSignWallet = () => {
         })
 
         if (token) {
-          setAccessToken(token)
           sessionStorage.setItem('token', token)
         }
       }
     } catch (error) {
-      setAccessToken(undefined)
       sessionStorage.removeItem('token')
     }
   }, [signData, account])
 
   const signWallet = useCallback(() => {
-    if (account && !accessToken) {
+    if (account && !signData) {
       signMessage({
         message: "By signing you agree to 'Terms of Service' & 'Privacy Policy' of THENA",
         account,
       })
     }
-  }, [accessToken, account, signMessage])
+  }, [account, signData, signMessage])
 
   useEffect(() => {
-    setAccessToken(sessionStorage.getItem('token'))
-  }, [])
-
-  useEffect(() => {
-    const interval = setInterval(() => login(), 60000 * 29)
-
     login()
-
-    return () => clearInterval(interval)
   }, [login])
 
   return {
     signWallet,
-    token: accessToken,
+    token: getFromSessionStorage('token'),
     login,
     deleteToken,
   }

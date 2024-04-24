@@ -34,7 +34,7 @@ export function ProfileButton({ isOwnProfile, userInfoId }) {
   const isFollowed = useMemo(() => following?.find(follow => follow?.user?.id === userInfoId), [following, userInfoId])
 
   const onFollow = useCallback(async () => {
-    await followUser()
+    setTimeout(async () => await followUser(), 1000)
   }, [followUser])
 
   const handleClickThenaButton = useCallback(
@@ -69,9 +69,11 @@ export function ProfileButton({ isOwnProfile, userInfoId }) {
           </EmphasisButton>
         </>
       ) : (
-        <EmphasisButton className='p-2 text-xs lg:p-3 lg:text-base' onClick={onFollow}>
-          {t(isFollowed ? 'UnFollow' : 'Follow')}
-        </EmphasisButton>
+        userInfo && (
+          <EmphasisButton className='p-2 text-xs lg:p-3 lg:text-base' onClick={onFollow}>
+            {t(isFollowed ? 'UnFollow' : 'Follow')}
+          </EmphasisButton>
+        )
       )}
 
       {thenaModalTab && <ThenaIdModal tab={thenaModalTab} onClose={() => setThenaModalTab(undefined)} />}

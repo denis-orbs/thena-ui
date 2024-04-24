@@ -54,7 +54,7 @@ export const useUpdateProfile = () => {
   const updateProfile = useCallback(
     async ({ biography, avatar, nameColor, theme, timezone, username, websiteUrl, xProfileUrl, isPublicProfile }) => {
       try {
-        const { data } = await v4Client.setHeader('authorization', token).request(
+        const { data } = await v4Client.request(
           V4_UPDATE_PROFILE,
           {
             input: {
@@ -71,7 +71,7 @@ export const useUpdateProfile = () => {
             id: account.toLocaleLowerCase(),
           },
           {
-            authorization: token,
+            authorization: token ? `Bearer ${token}` : '',
           },
         )
 
