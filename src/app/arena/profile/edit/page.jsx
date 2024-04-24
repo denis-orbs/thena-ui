@@ -10,6 +10,7 @@ import 'react-quill/dist/quill.snow.css'
 import 'react-quill-emoji/dist/quill-emoji.css'
 import './style.css'
 
+import Loading from '@/app/loading'
 import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
@@ -74,6 +75,10 @@ function EditProfilePage() {
       ),
     [],
   )
+
+  if (isLoading) {
+    return <Loading />
+  }
 
   return (
     <div className='flex flex-col space-y-10 pt-10'>
