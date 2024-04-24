@@ -1,7 +1,6 @@
 'use client'
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
-import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
@@ -14,6 +13,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/butt
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
+import dayjs from '@/lib/arenaDayjs'
 import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'

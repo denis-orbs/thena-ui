@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react'
 
+import { ArenaContextProviders } from './ArenaContextProviders'
 import Loading from '../loading'
 
 export const metadata = {
@@ -9,10 +10,10 @@ export const metadata = {
 
 export default function ArenaLayout({ children }) {
   return (
-    <main className='desktop-bg flex min-h-screen flex-col'>
+    <ArenaContextProviders>
       <section className='layout-container mt-[128px] pt-0 lg:mt-[176px]'>
         <Suspense fallback={<Loading />}>{children}</Suspense>
       </section>
-    </main>
+    </ArenaContextProviders>
   )
 }

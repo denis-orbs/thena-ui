@@ -1,7 +1,7 @@
-import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
+import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 
 export const useCountdown = (eventType, timeInput, onlyTime = false) => {
@@ -19,7 +19,7 @@ export const useCountdown = (eventType, timeInput, onlyTime = false) => {
       }
 
       const now = dayjs()
-      const timestamp = dayjs.unix(timeInput)
+      const timestamp = dayjs.tz(timeInput * 1000)
 
       const inSeconds = Math.abs(now.diff(timestamp, 'second'))
       const inMinutes = Math.abs(now.diff(timestamp, 'minute'))

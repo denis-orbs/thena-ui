@@ -3,11 +3,12 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { Paragraph } from '@/components/typography'
+import dayjs from '@/lib/arenaDayjs'
 
 export function Countdown({ timestamp }) {
   const t = useTranslations()
 
-  const [countDown, setCountDown] = useState(timestamp * 1000 - new Date().getTime())
+  const [countDown, setCountDown] = useState(timestamp * 1000 - dayjs().unix() * 1000)
 
   const days = useMemo(() => Math.floor(countDown / (1000 * 60 * 60 * 24)), [countDown])
   const hours = useMemo(() => Math.floor((countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)), [countDown])
@@ -16,7 +17,7 @@ export function Countdown({ timestamp }) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCountDown(timestamp * 1000 - new Date().getTime())
+      setCountDown(timestamp * 1000 - dayjs().unix() * 1000)
     }, 1000)
 
     return () => clearInterval(interval)

@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request'
-import { createContext, useCallback, useContext, useEffect, useMemo } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react'
 import useSWR from 'swr'
 
 import { v4Client } from '@/lib/graphql'
@@ -150,6 +150,12 @@ function UserInfoContextProvider({ children }) {
         isLoading,
       }
     }
+    // set localStorage timezone
+
+    if (userInfo.timezone) {
+      localStorage.setItem('timezone', userInfo.timezone)
+    }
+
     return {
       mutateUserInfo,
       userInfo,
@@ -167,7 +173,23 @@ function UserInfoContextProvider({ children }) {
     mutateData()
   }, [mutateData])
 
-  return <UserInfoContext.Provider value={final}>{children}</UserInfoContext.Provider>
+  const mainRef = useRef()
+
+  useEffect(() => {
+    const { current } = mainRef
+
+    if (userInfo?.theme && current) {
+      current.style.backgroundImage = `url(${userInfo.theme})`
+    }
+  }, [userInfo?.theme, userInfo])
+
+  return (
+    <UserInfoContext.Provider value={final}>
+      <main className='desktop-bg flex min-h-screen flex-col' ref={mainRef}>
+        {children}
+      </main>
+    </UserInfoContext.Provider>
+  )
 }
 
 const useUserInfo = () => {

@@ -1,11 +1,11 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react'
-import dayjs from 'dayjs'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { useClaimTC, useTCContractInfor } from '@/hooks/useTcSpotContract'
+import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
@@ -45,9 +45,9 @@ export function TCButton({ eventType, competition, timestamp }) {
     const interval = setInterval(() => {
       setJoinButtonText(() => {
         const now = dayjs()
-        const registerStart = dayjs.unix(timestamp.registrationStart)
-        const registerEnd = dayjs.unix(timestamp.registrationEnd)
-        const start = dayjs.unix(timestamp.startTimestamp)
+        const registerStart = dayjs.tz(timestamp.registrationStart * 1000)
+        const registerEnd = dayjs.tz(timestamp.registrationEnd * 1000)
+        const start = dayjs.tz(timestamp.startTimestamp * 1000)
 
         if (competition.participantCount === competition.maxParticipants) {
           return { text: t('Competition Full'), disabled: true }

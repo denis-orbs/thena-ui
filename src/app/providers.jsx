@@ -14,7 +14,6 @@ import { PairsContextProvider } from '@/context/pairsContext'
 import { RewardsContextProvider } from '@/context/rewardsContext'
 import { TCContextProvider } from '@/context/tcContext'
 import { TokensContextProvider } from '@/context/tokensContext'
-import { UserInfoContextProvider } from '@/context/userInfoContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
 import { VeTHEsContextProvider } from '@/context/veTHEsContext'
 import enMessage from '@/lang/en.json'
@@ -26,23 +25,21 @@ import { useLocaleSettings } from '@/state/settings/hooks'
 function ContextProviders({ children }) {
   return (
     <AssetsContextProvider>
-      <UserInfoContextProvider>
-        <VaultsContextProvider>
-          <PairsContextProvider>
-            <FusionsContextProvider>
-              <ManualsContextProvider>
-                <TokensContextProvider>
-                  <VeTHEsContextProvider>
-                    <RewardsContextProvider>
-                      <TCContextProvider>{children}</TCContextProvider>
-                    </RewardsContextProvider>
-                  </VeTHEsContextProvider>
-                </TokensContextProvider>
-              </ManualsContextProvider>
-            </FusionsContextProvider>
-          </PairsContextProvider>
-        </VaultsContextProvider>
-      </UserInfoContextProvider>
+      <VaultsContextProvider>
+        <PairsContextProvider>
+          <FusionsContextProvider>
+            <ManualsContextProvider>
+              <TokensContextProvider>
+                <VeTHEsContextProvider>
+                  <RewardsContextProvider>
+                    <TCContextProvider>{children}</TCContextProvider>
+                  </RewardsContextProvider>
+                </VeTHEsContextProvider>
+              </TokensContextProvider>
+            </ManualsContextProvider>
+          </FusionsContextProvider>
+        </PairsContextProvider>
+      </VaultsContextProvider>
     </AssetsContextProvider>
   )
 }
