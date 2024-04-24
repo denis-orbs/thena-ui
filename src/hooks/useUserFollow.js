@@ -91,6 +91,7 @@ export const useFollow = userId => {
         await mutateSWR(['followers', userId])
         await mutateSWR(['following', account.toLowerCase()])
       }
+      setErrorMessage('')
     } catch (error) {
       errorToast('Error')
       setErrorMessage(error.response.errors[0].message)
