@@ -42,6 +42,7 @@ function TopBar({ handleClickShowModal = () => {}, competition = {}, reloadFetch
   const { balance, pnl } = useTradeData(
     competition?.tradingCompetitionSpot,
     competition?.competitionRules?.winningToken?.address,
+    reloadFetch,
   )
 
   const getPnl = useCallback(async () => {

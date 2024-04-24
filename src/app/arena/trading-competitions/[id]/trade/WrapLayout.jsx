@@ -70,10 +70,11 @@ export function WrapLayout({ children, params }) {
   )
 
   useEffect(() => {
-    if (!tradingTokens.length) return
+    if (!tradingTokens?.length) return
     setFromAddress(tradingTokens[0]?.address ?? null)
-    setToAddress(tradingTokens[1].address ?? null)
-  }, [tradingTokens])
+    setToAddress(tradingTokens[1]?.address ?? null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tradingTokens?.[0]?.address, tradingTokens?.[1]?.address])
 
   const setFromAsset = useCallback(asset => {
     setFromAddress(asset?.address)

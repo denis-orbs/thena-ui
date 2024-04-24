@@ -148,6 +148,7 @@ function TopCompetition() {
             competitionName: item.name,
             participants: item.participantCount,
             volume,
+            id: item.id,
           }
         })
       } else {
@@ -159,6 +160,7 @@ function TopCompetition() {
             competitionName: item.name,
             participants: item.participantCount,
             volume,
+            id: item.id,
           }
         })
         let prevVol = -1
@@ -191,7 +193,9 @@ function TopCompetition() {
       competitions?.map(item => ({
         rank: <Paragraph>{item.rank}</Paragraph>,
         competitionName: (
-          <Paragraph className='max-w-[200px] truncate md:max-w-[400px]'>{item.competitionName}</Paragraph>
+          <Paragraph className={`max-w-[200px] truncate ${isAll ? 'md:max-w-[500px]' : 'md:max-w-[400px]'}`}>
+            <Link href={`/arena/trading-competitions/${item.id}`}>{item.competitionName} </Link>
+          </Paragraph>
         ),
         participants: <Paragraph>{item.participants}</Paragraph>,
         volume: <Paragraph>${formatAmount(item.volume)}</Paragraph>,
@@ -201,9 +205,9 @@ function TopCompetition() {
   )
 
   return (
-    <div className='z-10 col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
+    <div className='z-10 col-span-12 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
       <Box>
-        <div className='flex lg:flex-row lg:items-center lg:justify-between'>
+        <div className='flex flex-row items-center justify-between'>
           <TextHeading className='text-xl'>{t('Top competitions')}</TextHeading>
           {!isAll && (
             <Link href='/arena/rankings/competitions'>

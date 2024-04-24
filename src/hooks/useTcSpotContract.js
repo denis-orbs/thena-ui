@@ -345,7 +345,7 @@ export const useDepositToTC = () => {
   return { pending, deposit }
 }
 
-export const useTradeData = (TCAddress, winningTokenAddress) => {
+export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) => {
   const { account } = useWallet()
 
   const [balance, setBalance] = useState(0n)
@@ -384,7 +384,7 @@ export const useTradeData = (TCAddress, winningTokenAddress) => {
 
     fetchData()
     return () => clearInterval(interval)
-  }, [fetchData])
+  }, [fetchData, reloadFetch])
 
   return {
     pnl,

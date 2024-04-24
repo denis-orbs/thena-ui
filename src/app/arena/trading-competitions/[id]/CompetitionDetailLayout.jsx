@@ -151,7 +151,7 @@ function CompetitionDetailLayout({ children, params }) {
 
   const retryCompetition = useCallback(async () => {
     let retries = 0
-    const maxRetries = 4
+    const maxRetries = 5
 
     while (retries < maxRetries) {
       if (!isNil(competition)) {
@@ -160,7 +160,7 @@ function CompetitionDetailLayout({ children, params }) {
 
       await mutate()
 
-      await sleep(2000)
+      await sleep(3000)
       retries++
     }
   }, [competition, mutate])

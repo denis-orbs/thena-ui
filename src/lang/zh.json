@@ -662,5 +662,9 @@
   "View all": "View all",
   "Invalid Token": "Invalid Token",
   "Invalid Thena Id": "Invalid Thena Id",
-  "Thena Id Is Taken": "Thena Id Is Taken"
+  "Thena Id Is Taken": "Thena Id Is Taken",
+  "24h": "24h",
+  "7d": "7d",
+  "30d": "30d",
+  "Profit / Loss": "Profit / Loss"
 }

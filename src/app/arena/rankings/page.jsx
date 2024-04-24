@@ -9,7 +9,7 @@ function RankingPage() {
       <div className='mt-6'>
         <h2>Rankings</h2>
       </div>
-      <div className='mt-6 grid grid-cols-12 gap-4 lg:gap-12'>
+      <div className='mt-6 grid grid-cols-12 gap-8 lg:gap-12'>
         <TopUser />
         <TopCompetition />
       </div>

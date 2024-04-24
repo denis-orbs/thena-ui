@@ -59,7 +59,7 @@ function CompetitionItem({ competition }) {
           {competition.owner.isVerified && (
             <div className='flex items-center gap-1 text-nowrap'>
               {competition.owner.name ? (
-                <h4 className='inline-block bg-gradient-to-r from-[#C72AD0] to-[#AA23DB] bg-clip-text bg-clip-text text-3xl font-bold text-transparent'>
+                <h4 className='inline-block bg-gradient-to-r from-[#C72AD0] to-[#AA23DB] bg-clip-text text-3xl font-bold text-transparent'>
                   by {formatAddress(competition.owner.name)}
                 </h4>
               ) : (

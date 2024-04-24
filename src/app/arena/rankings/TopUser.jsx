@@ -1,9 +1,12 @@
 'use client'
 
 import { ethers } from 'ethers'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useMemo, useState } from 'react'
 
+import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
@@ -78,12 +81,10 @@ function TopUser() {
     .fill(1)
     .map(() => ({
       user: ethers.Wallet.createRandom().address,
-      avatar: '',
       competitionName: `Competition ${ethers.Wallet.createRandom().fingerprint}`,
       pnl: (Math.random() - 0.5) * 1000,
+      competitionId: ethers.Wallet.createRandom().address,
     }))
-
-  console.log({ data })
 
   const sortedData = useMemo(
     () =>
@@ -111,8 +112,20 @@ function TopUser() {
     () =>
       sortedData?.map((item, index) => ({
         rank: <Paragraph>{index + 1}</Paragraph>,
-        user: <Paragraph>{sliceAddress(item.user)}</Paragraph>,
-        competitionName: <Paragraph>{item.competitionName}</Paragraph>,
+        user: (
+          <Link
+            className='flex cursor-pointer items-center justify-center gap-2'
+            href={`/arena/profile/${item.user.toLowerCase()}`}
+          >
+            <CircleImage src={Avatar} alt='avatar' className='size-8' />
+            <Paragraph>{sliceAddress(item.user)}</Paragraph>
+          </Link>
+        ),
+        competitionName: (
+          <Link className='truncate' href={`/arena/trading-competitions/${item.competitionId.toLowerCase()}`}>
+            {item.competitionName}
+          </Link>
+        ),
         pnl: (
           <Paragraph className={item.pnl < 0 ? 'text-red-500' : item.pnl > 0 ? 'text-green-500' : ''}>
             {item.pnl < 0 ? '-' : item.pnl > 0 ? '+' : ''} $
@@ -129,7 +142,7 @@ function TopUser() {
       <div className='flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between'>
         <Tabs data={subTabs} size={SizeTypes.Medium} itemClassName='text-sm' />
         <SearchInput
-          className='h-11 w-full lg:w-[336px]'
+          className='h-11 w-full md:w-[336px]'
           classNames={{ input: 'h-11' }}
           val={searchText}
           setVal={setSearchText}
