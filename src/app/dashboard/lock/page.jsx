@@ -181,7 +181,7 @@ export default function LockPage() {
         <div className='flex flex-col'>
           <div className='flex flex-col gap-4'>
             <Info className='justify-between lg:p-8'>
-              <InfoCirclePrimary className='h-4 w-4 min-w-fit lg:h-8 lg:w-8' />
+              <InfoCirclePrimary className='h-4 w-4 lg:h-8 lg:w-8' />
               <p>{t('Lock THE Desciption')}</p>
               <TertiaryButton
                 className='min-w-fit'
