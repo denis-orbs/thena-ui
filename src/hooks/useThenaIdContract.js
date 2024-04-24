@@ -5,7 +5,9 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
-import { getThenaIDContract } from '@/lib/contracts'
+import { getERC20Contract, getThenaIDContract } from '@/lib/contracts'
+import { fromWei } from '@/lib/utils'
+import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 const DEFAULT_TRAITS = ['GREEK_GODS', 'FIRST_NAMES', 'LAST_NAMES', 'CHARACTER_SET']
@@ -70,22 +72,26 @@ export const useMintThenaId = () => {
   const [loading, setLoading] = useState(false)
   const t = useTranslations()
   const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
+  const { account, chainId } = useWallet()
+
   const buyThenaId = useCallback(
-    async (username, tokenAddress) => {
-      const contract = getThenaIDContract()
-      if (username && contract && tokenAddress) {
+    async (username, tokenAddress, estimateCost) => {
+      const thenaIdContract = getThenaIDContract()
+      if (username && thenaIdContract && tokenAddress) {
         const key = uuidv4()
         const mintUuid = uuidv4()
-        const allowedUuid = uuidv4()
-        const allowedToken = await readCall(contract, 'allowedTokens', [tokenAddress])
+        const approveTokenUuid = uuidv4()
+        const tokenContract = getERC20Contract(tokenAddress, chainId)
+        const allowance = await readCall(tokenContract, 'allowance', [account, thenaIdContract.address])
+        const isApprovedToken = fromWei(allowance).gte(fromWei(estimateCost))
 
         setLoading(true)
         startTxn({
           key,
           title: t('Mint Thena Id'),
           transactions: {
-            ...(!allowedToken && {
-              [allowedUuid]: {
+            ...(!isApprovedToken && {
+              [approveTokenUuid]: {
                 desc: `${t('Approve')} ${t('Token')}`,
                 status: TXN_STATUS.START,
                 hash: null,
@@ -99,14 +105,18 @@ export const useMintThenaId = () => {
           },
         })
 
-        if (!allowedToken) {
-          const isSuccess = await writeTxn(key, allowedUuid, contract, 'approve', [tokenAddress, 0])
+        if (!isApprovedToken) {
+          const isSuccess = await writeTxn(key, approveTokenUuid, tokenContract, 'approve', [
+            thenaIdContract.address,
+            estimateCost,
+          ])
           if (!isSuccess) {
             setLoading(false)
             return false
           }
         }
-        const isSuccess = await writeTxn(key, mintUuid, contract, 'mintUsername', [
+
+        const isSuccess = await writeTxn(key, mintUuid, thenaIdContract, 'mintUsername', [
           username,
           tokenAddress,
           DEFAULT_TRAITS,
@@ -122,10 +132,10 @@ export const useMintThenaId = () => {
         })
         setLoading(false)
         closeTxnModal()
-        return true
+        return isSuccess
       }
     },
-    [closeTxnModal, endTxn, startTxn, t, writeTxn],
+    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
   )
 
   return { loading, buyThenaId }

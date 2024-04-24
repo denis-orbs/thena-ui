@@ -85,16 +85,16 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
       if (type === 'gift') {
         await giftThenaId(thenaId, address, token.address)
       } else {
-        buyThenaId(thenaId, token.address)
+        await buyThenaId(thenaId, token.address, estimateCost)
       }
     }
-  }, [address, buyThenaId, giftThenaId, thenaId, token?.address, type, validateForm])
+  }, [address, buyThenaId, giftThenaId, thenaId, token?.address, type, validateForm, estimateCost])
 
   return (
     <Modal isOpen={!!tab} title='Mint Thena Id' closeModal={onClose} fontSizeTitle='text-xl' width={540}>
       <ModalBody className='p-2'>
         <div className='rounded-lg'>
-          <div className='mt-[9px] flex grid grid-cols-1 items-center gap-4 md:grid-cols-2 lg:mt-2.5'>
+          <div className='mt-[9px] grid grid-cols-1 items-center gap-4 md:grid-cols-2 lg:mt-2.5'>
             <div
               onClick={() => setType('get')}
               className={cn(
