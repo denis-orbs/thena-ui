@@ -82,7 +82,7 @@ export default function TheNftPage() {
         <h2>theNFT</h2>
         <Info className='justify-between lg:p-8'>
           <div className='flex items-center gap-4'>
-            <PiggyIcon className='h-4 w-4 lg:h-8 lg:w-8' />
+            <PiggyIcon className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
             <div className='flex flex-col gap-2'>
               <p className='hidden text-xl font-medium lg:block'>{t('Passive Income by Staking theNFT')}</p>
               <p>{t('Stake Your theNFT for Trading Fees and Royalties')}</p>
@@ -165,7 +165,7 @@ export default function TheNftPage() {
             <TextHeading className='text-xl'>{t('Royalties')}</TextHeading>
             <Neutral className='flex-col lg:flex-row'>
               <div className='flex items-center gap-4'>
-                <CoinsStackedIcon className='h-4 w-4 min-w-fit stroke-neutral-400 lg:h-8 lg:w-8' />
+                <CoinsStackedIcon className='h-4 w-4 min-w-4 stroke-neutral-400 lg:h-8 lg:w-8 lg:min-w-8' />
                 <div className='flex flex-col gap-2'>
                   <TextHeading className='hidden text-xl lg:block'>{t('Claim theNFT minter royalties')}</TextHeading>
                   <Paragraph>{t('Original minters')}</Paragraph>
