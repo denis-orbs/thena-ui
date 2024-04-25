@@ -42,7 +42,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
   const debounceToken = useDebounce(token, 500)
   const debounceThenaId = useDebounce(thenaId, 500)
 
-  const { calculate } = useCalculateCost()
+  const { calculate, loading } = useCalculateCost()
   const { validate } = useValidateUserName()
 
   useEffect(() => {
@@ -197,7 +197,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
       <ModalFooter className='mt-3 flex w-full flex-row justify-center gap-4'>
         <EmphasisButton
           className='w-full py-3.5 text-white lg:px-16 lg:py-3'
-          disabled={gifting || minting}
+          disabled={!thenaId || !token || loading || gifting || minting}
           onClick={onMint}
         >
           {t('Mint Now')}
