@@ -37,7 +37,7 @@ function AdminPage() {
         <Users
           userInfo={userInfo}
           reloadFetch={reloadFetch}
-          setReloadFetch={setReloadFetch}
+          // setReloadFetch={setReloadFetch}
           handleClickOpenModal={handleClickOpenModal}
         />
         <Admins userInfo={userInfo} reloadFetch={reloadFetch} handleClickOpenModal={handleClickOpenModal} />

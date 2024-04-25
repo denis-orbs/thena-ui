@@ -42,7 +42,7 @@ const fetchUser = async search => {
   }
 }
 
-function Users({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch }) {
+function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
   const sortOptions = useMemo(
     () => [
       {
