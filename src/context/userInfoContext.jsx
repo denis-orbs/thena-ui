@@ -19,6 +19,14 @@ const V4_USER_INFO = gql`
     userById(id: $id) {
       id
       firstInteractAt
+      biography
+      timezone
+      websiteUrl
+      xProfileUrl
+      username
+      theme
+      nameColor
+      avatar
       balance
       isSuperAdmin
       isAdmin
