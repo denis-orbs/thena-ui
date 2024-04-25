@@ -400,7 +400,7 @@ function Header() {
         },
         {
           label: t('Rankings'),
-          active: pathname === '/arena/rankings',
+          active: pathname === '/arena/rankings' || pathname === '/arena/profile/competitions',
           onClickHandler: () => {
             push('/arena/rankings')
           },
@@ -411,6 +411,15 @@ function Header() {
               active: pathname === '/arena/profile' || pathname === '/arena/profile/edit',
               onClickHandler: () => {
                 push('/arena/profile')
+              },
+            }
+          : undefined,
+        account
+          ? {
+              label: t('Admin'),
+              active: pathname === '/arena/admin',
+              onClickHandler: () => {
+                push('/arena/admin')
               },
             }
           : undefined,

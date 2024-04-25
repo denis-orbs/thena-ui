@@ -668,5 +668,11 @@
   "24h": "24h",
   "7d": "7d",
   "30d": "30d",
-  "Profit / Loss": "Profit / Loss"
+  "Profit / Loss": "Profit / Loss",
+  "Admin": "Admin",
+  "Wallet ID": "Wallet ID",
+  "Verification badge": "Verification badge",
+  "Search by name or  wallet ID": "Search by name or  wallet ID",
+  "Hidden": "Hidden",
+  "Unhidden": "Unhidden"
 }
