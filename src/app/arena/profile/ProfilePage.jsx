@@ -93,7 +93,7 @@ export function ProfilePage({ address }) {
       {(!!joinedCompetitions.length || !!hostedCompetitions.length) && (
         <UserCompetitions hostedCompetitions={hostedCompetitions} joinedTCs={joinedCompetitions} />
       )}
-      {!!following.length && <FollowedProfiles followingUsers={following} />}
+      {!!following?.length && <FollowedProfiles followingUsers={following} />}
     </div>
   )
 }

@@ -10,8 +10,8 @@ import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
-const DEFAULT_TRAITS = ['GREEK_GODS', 'FIRST_NAMES', 'LAST_NAMES', 'CHARACTER_SET']
-const DEFAULT_PROOFS = []
+const DEFAULT_TRAITS = ['CHARACTER_SET']
+const DEFAULT_PROOFS = [[]]
 
 export const useValidateUserName = () => {
   const [loading, setLoading] = useState(false)
@@ -55,6 +55,9 @@ export const useCalculateCost = () => {
 
         if (costPerToken[new BigNumber(length).toNumber() - 1]) {
           return costPerToken[new BigNumber(length).toNumber() - 1]
+        }
+        if (new BigNumber(length).toNumber() > costPerToken.length) {
+          return costPerToken[costPerToken.length - 1]
         }
         return undefined
       } catch (e) {
