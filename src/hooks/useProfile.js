@@ -12,11 +12,11 @@ const V4_UPDATE_PROFILE = gql`
     $biography: String
     $nameColor: String
     $username: String
-    $website: String
-    $xProfile: String
+    $websiteUrl: String
+    $xProfileUrl: String
     $timezone: String
     $theme: String
-    $id: String!
+    $userId: String
   ) {
     updateUserProfile(
       input: {
@@ -26,11 +26,11 @@ const V4_UPDATE_PROFILE = gql`
         nameColor: $nameColor
         theme: $theme
         username: $username
-        websiteUrl: $website
-        xProfileUrl: $xProfile
+        websiteUrl: $websiteUrl
+        xProfileUrl: $xProfileUrl
         timezone: $timezone
       }
-      userId: $id
+      userId: $userId
     ) {
       id
       biography
@@ -54,18 +54,16 @@ export const useUpdateProfile = account => {
       const { data } = await v4Client.request(
         V4_UPDATE_PROFILE,
         {
-          input: {
-            biography,
-            avatar,
-            nameColor,
-            theme,
-            timezone,
-            username,
-            websiteUrl,
-            xProfileUrl,
-            isPublicProfile,
-          },
-          id: account.toLocaleLowerCase(),
+          biography,
+          avatar,
+          nameColor,
+          theme,
+          timezone,
+          username,
+          websiteUrl,
+          xProfileUrl,
+          isPublicProfile,
+          userId: account.toLocaleLowerCase(),
         },
         {
           authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',

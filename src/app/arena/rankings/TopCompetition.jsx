@@ -193,9 +193,12 @@ function TopCompetition() {
       competitions?.map(item => ({
         rank: <Paragraph>{item.rank}</Paragraph>,
         competitionName: (
-          <Paragraph className={`max-w-[200px] truncate ${isAll ? 'md:max-w-[500px]' : 'md:max-w-[400px]'}`}>
-            <Link href={`/arena/trading-competitions/${item.id}`}>{item.competitionName} </Link>
-          </Paragraph>
+          <Link
+            href={`/arena/trading-competitions/${item.id}`}
+            className={`max-w-[200px] truncate ${isAll ? 'md:max-w-[500px]' : 'md:max-w-[400px]'}`}
+          >
+            {item.competitionName}
+          </Link>
         ),
         participants: <Paragraph>{item.participants}</Paragraph>,
         volume: <Paragraph>${formatAmount(item.volume)}</Paragraph>,

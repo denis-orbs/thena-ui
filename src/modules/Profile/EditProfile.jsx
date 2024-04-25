@@ -23,7 +23,7 @@ import { SelectTheme } from './SelectTheme'
 
 const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { ssr: false })
 
-export function EditProfile({ userInfo }) {
+export function EditProfile({ userInfo, isAdmin = false }) {
   const t = useTranslations()
   const [timeZoneData, setTimeZoneData] = useState([])
 
@@ -40,7 +40,7 @@ export function EditProfile({ userInfo }) {
     isPublicProfile: userInfo?.isPublicProfile ?? true,
   })
 
-  const { updateProfile } = useUpdateProfile(userInfo.id)
+  const { updateProfile } = useUpdateProfile(userInfo?.id)
 
   const handleUpdate = useCallback(async () => {
     if (dataUpdate.websiteUrl) {
@@ -66,7 +66,7 @@ export function EditProfile({ userInfo }) {
   return (
     <div className='flex flex-col space-y-10 pt-10'>
       <div>
-        <Link href='/arena/profile'>
+        <Link href={isAdmin ? '/arena/admin' : '/arena/profile'}>
           <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
             {t('Back')}
           </TextButton>

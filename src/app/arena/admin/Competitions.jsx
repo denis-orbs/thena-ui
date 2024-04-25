@@ -73,9 +73,9 @@ function Competitions() {
   const [searchText, setSearchText] = useState('')
   const assets = useAssets()
 
-  const competitions = useMemo(
-    () =>
-      (dataCompetitions || [])?.map(comp => ({
+  const competitions = useMemo(() => {
+    if (dataCompetitions && Array.isArray(dataCompetitions)) {
+      return dataCompetitions.map(comp => ({
         ...comp,
         prize: {
           ...comp.prize,
@@ -90,9 +90,10 @@ function Competitions() {
             comp.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
           ),
         },
-      })),
-    [assets, dataCompetitions],
-  )
+      }))
+    }
+    return []
+  }, [assets, dataCompetitions])
 
   const subTabs = useMemo(
     () =>

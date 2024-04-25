@@ -400,7 +400,7 @@ function Header() {
         },
         {
           label: t('Rankings'),
-          active: pathname === '/arena/rankings' || pathname === '/arena/profile/competitions',
+          active: pathname === '/arena/rankings' || pathname === '/arena/rankings/competitions',
           onClickHandler: () => {
             push('/arena/rankings')
           },

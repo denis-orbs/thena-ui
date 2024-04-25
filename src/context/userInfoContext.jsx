@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef } fr
 import useSWR from 'swr'
 
 import { v4Client } from '@/lib/graphql'
-import { useSignWallet } from '@/lib/wallets/useSignWallet'
+import { getFromSessionStorage } from '@/lib/helper'
 import useWallet from '@/lib/wallets/useWallet'
 
 const V4_USER_RANK = gql`
@@ -20,6 +20,9 @@ const V4_USER_INFO = gql`
       id
       firstInteractAt
       balance
+      isSuperAdmin
+      isAdmin
+      isVerified
       tradingCompetitions {
         name
         entryFee
@@ -104,13 +107,13 @@ const V4_USER_INFO = gql`
   }
 `
 
-const fetchUserInfo = async (id, token) => {
+const fetchUserInfo = async id => {
   try {
     const { userById } = await v4Client.request(
       V4_USER_INFO,
       { id: id.toLowerCase() },
       {
-        authorization: token,
+        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
       },
     )
 
@@ -132,13 +135,12 @@ const UserInfoContext = createContext(initialState)
 
 function UserInfoContextProvider({ children }) {
   const { account } = useWallet()
-  const { token } = useSignWallet()
 
   const {
     data: userInfo,
     mutate: mutateUserInfo,
     isLoading,
-  } = useSWR(['current user info'], () => fetchUserInfo(account?.toLowerCase(), token), {
+  } = useSWR(['current user info'], () => fetchUserInfo(account?.toLowerCase()), {
     refreshInterval: 60000,
   })
 

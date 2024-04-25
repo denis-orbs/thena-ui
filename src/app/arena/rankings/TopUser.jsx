@@ -118,7 +118,7 @@ function TopUser() {
             href={`/arena/profile/${item.user.toLowerCase()}`}
           >
             <CircleImage src={Avatar} alt='avatar' className='size-8' />
-            <Paragraph>{sliceAddress(item.user)}</Paragraph>
+            <Paragraph className='text-white'>{sliceAddress(item.user)}</Paragraph>
           </Link>
         ),
         competitionName: (

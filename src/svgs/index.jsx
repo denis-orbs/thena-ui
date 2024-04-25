@@ -39,6 +39,7 @@ import SplitIcon from '~/svgs/split.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 import UpRank from '~/svgs/up-rank.svg'
+import User from '~/svgs/user.svg'
 import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
 import XIcon from '~/svgs/x-close.svg'
@@ -87,6 +88,7 @@ export {
   SwitchVerticalIcon,
   TransferIcon,
   UpRank,
+  User,
   Verified,
   WalletIcon,
   XIcon,

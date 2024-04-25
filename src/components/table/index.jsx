@@ -83,7 +83,7 @@ function Table({
                       <TextHeading className='text-sm'>
                         {option.label && typeof option.label === 'string' ? t(option.label) : option.label}
                       </TextHeading>
-                      {sort.value === option.value && (
+                      {sort.value === option.value && !option.disabled && (
                         <ArrowDownIcon
                           className={cn(
                             'transfrom h-4 w-4 cursor-pointer stroke-neutral-400 transition-all duration-150 ease-out',
