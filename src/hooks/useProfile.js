@@ -4,7 +4,6 @@ import { useCallback } from 'react'
 import { v4Client } from '@/lib/graphql'
 import { errorToast } from '@/lib/notify'
 import { useSignWallet } from '@/lib/wallets/useSignWallet'
-import useWallet from '@/lib/wallets/useWallet'
 
 const V4_UPDATE_PROFILE = gql`
   mutation V4_MUTATION_FOLLOW(
@@ -47,8 +46,7 @@ const V4_UPDATE_PROFILE = gql`
   }
 `
 
-export const useUpdateProfile = () => {
-  const { account } = useWallet()
+export const useUpdateProfile = account => {
   const { token } = useSignWallet()
 
   const updateProfile = useCallback(

@@ -38,7 +38,7 @@ export function SelectTheme({ dataUpdate, setDataUpdate }) {
       {LIST_THEME.map(theme => (
         <Box
           key={theme.src}
-          className='relative flex h-20 w-36 items-center justify-between space-x-2 border border-primary-800 p-2 pl-3 lg:h-24 lg:w-40 lg:p-2 lg:pl-3 xl:h-32 xl:w-56'
+          className='relative flex h-20 w-36 items-center justify-between space-x-2 border border-primary-800 p-2 pl-3 lg:h-24 lg:w-40 lg:p-2 lg:pl-3 xl:h-28 xl:w-48'
           onClick={() => {
             setThemeChecked(theme.src)
           }}
