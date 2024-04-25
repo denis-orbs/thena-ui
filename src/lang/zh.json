@@ -666,5 +666,17 @@
   "24h": "24h",
   "7d": "7d",
   "30d": "30d",
-  "Profit / Loss": "Profit / Loss"
+  "Profit / Loss": "Profit / Loss",
+  "Admin": "Admin",
+  "Wallet ID": "Wallet ID",
+  "Verification badge": "Verification badge",
+  "Search by name or  wallet ID": "Search by name or  wallet ID",
+  "Hidden": "Hidden",
+  "Unhidden": "Unhidden",
+  "Edit checkmark": "Edit checkmark",
+  "Remove admin": "Remove admin",
+  "Add admin": "Add admin",
+  "Change avatar": "Change avatar",
+  "Are you sure you want to admin": "Are you sure you want to {type} admin to this user?",
+  "Edit profile": "Edit profile"
 }

@@ -6,7 +6,8 @@ import { useMemo } from 'react'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import Skeleton from '@/components/skeleton'
-import { Paragraph } from '@/components/typography'
+import Toggle from '@/components/toggle'
+import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
 import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
@@ -15,7 +16,7 @@ import { Clock, CoinHand, Gift, Verified } from '@/svgs'
 
 import { CompetitionCardHeader } from './CompetitionCardHeader'
 
-function CompetitionItem({ competition }) {
+function CompetitionItem({ competition, showCheckedHidden = false }) {
   const t = useTranslations()
 
   const { eventType } = useEventType(competition?.timestamp)
@@ -49,9 +50,16 @@ function CompetitionItem({ competition }) {
           <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{competition.market.toLowerCase()}</NeutralBadge>
           <NeutralBadge className='text-nowrap lg:text-xs'>{t(eventType)}</NeutralBadge>
         </div>
-        <NeutralBadge className='absolute right-4 top-4 text-nowrap capitalize lg:text-xs'>
-          {`${competition.participantCount}/${competition.maxParticipants}`}
-        </NeutralBadge>
+        {!showCheckedHidden ? (
+          <NeutralBadge className='absolute right-4 top-4 text-nowrap capitalize lg:text-xs'>
+            {`${competition.participantCount}/${competition.maxParticipants}`}
+          </NeutralBadge>
+        ) : (
+          <div className='absolute right-4 top-4 flex flex-row items-center'>
+            <Toggle checked={competition.hidden} />
+            <TextSubHeading>Hide</TextSubHeading>
+          </div>
+        )}
       </div>
       <div>
         <div className='flex items-center gap-2'>
