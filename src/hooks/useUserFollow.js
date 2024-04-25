@@ -1,10 +1,10 @@
 import { gql } from 'graphql-request'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import useSWR, { mutate as mutateSWR } from 'swr'
 
 import { v4Client } from '@/lib/graphql'
-import { errorToast } from '@/lib/notify'
-import { useSignWallet } from '@/lib/wallets/useSignWallet'
+import { getFromSessionStorage } from '@/lib/helper'
+import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 import useWallet from '@/lib/wallets/useWallet'
 
 // follower of current user
@@ -70,43 +70,26 @@ export const useCurrentUserFollow = () => {
 
 export const useFollow = userId => {
   const { account } = useWallet()
-  const { token, login } = useSignWallet()
+  const { signWallet } = useSignWallet()
 
-  const [errorMessage, setErrorMessage] = useState('')
-
-  const follow = useCallback(async () => {
-    try {
-      const { followUser } = await v4Client.request(
-        V4_FOLLOW,
-        {
-          followerId: account.toLowerCase(),
-          userId: userId.toLowerCase(),
-        },
-        {
-          authorization: token ? `Bearer ${token}` : '',
-        },
-      )
-      if (followUser) {
-        await mutateSWR('current-user-follow')
-        await mutateSWR(['followers', userId])
-        await mutateSWR(['following', account.toLowerCase()])
-      }
-      setErrorMessage('')
-    } catch (error) {
-      errorToast('Error')
-      setErrorMessage(error.response.errors[0].message)
+  const followFn = useCallback(async () => {
+    const { followUser } = await v4Client.request(
+      V4_FOLLOW,
+      {
+        followerId: account.toLowerCase(),
+        userId: userId.toLowerCase(),
+      },
+      {
+        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+      },
+    )
+    if (followUser) {
+      await mutateSWR('current-user-follow')
+      await mutateSWR(['followers', userId])
+      await mutateSWR(['following', account.toLowerCase()])
     }
-  }, [account, userId, token])
+  }, [account, userId])
 
-  useEffect(() => {
-    const reLogin = async () => {
-      await login()
-    }
-    if (errorMessage === 'Invalid Access Token') {
-      reLogin()
-      follow()
-    }
-  }, [errorMessage, follow, login])
-
+  const follow = useCallback(() => actionWithAuthentication(followFn, signWallet), [followFn, signWallet])
   return { followUser: follow }
 }

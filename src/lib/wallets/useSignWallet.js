@@ -1,10 +1,13 @@
 import { gql } from 'graphql-request'
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import { useSignMessage } from 'wagmi'
+
+import { errorToast } from '@/lib/notify'
 
 import useWallet from './useWallet'
 import { v4Client } from '../graphql'
 import { getFromSessionStorage } from '../helper'
+import { sleep } from '../utils'
 
 const V4_LOGIN = gql`
   mutation V4_MUTATION_LOGIN($signature: String!, $address: String!) {
@@ -28,42 +31,68 @@ export const useSignWallet = () => {
     sessionStorage.removeItem('token')
   }, [])
 
-  const login = useCallback(async () => {
-    try {
-      if (!!signData && !!account) {
-        const {
-          login: { accessToken: token },
-        } = await v4Client.request(V4_LOGIN, {
-          signature: signData,
-          address: account,
-        })
+  const login = useCallback(
+    async data => {
+      try {
+        if (!!data && !!account) {
+          const {
+            login: { accessToken },
+          } = await v4Client.request(V4_LOGIN, {
+            signature: data,
+            address: account,
+          })
 
-        if (token) {
-          sessionStorage.setItem('token', token)
+          if (accessToken) {
+            sessionStorage.setItem('token', accessToken)
+          }
         }
+      } catch (error) {
+        sessionStorage.removeItem('token')
       }
-    } catch (error) {
-      sessionStorage.removeItem('token')
-    }
-  }, [signData, account])
+    },
+    [account],
+  )
 
-  const signWallet = useCallback(() => {
-    if (account && !signData) {
-      signMessage({
-        message: "By signing you agree to 'Terms of Service' & 'Privacy Policy' of THENA",
-        account,
-      })
-    }
-  }, [account, signData, signMessage])
-
-  useEffect(() => {
-    login()
-  }, [login])
+  const signWallet = useCallback(
+    (loginCallback, params) => {
+      if (account && !signData) {
+        signMessage(
+          {
+            message: "By signing you agree to 'Terms of Service' & 'Privacy Policy' of THENA",
+            account,
+          },
+          {
+            onSuccess: async data => {
+              await login(data)
+              await sleep(3000)
+              if (getFromSessionStorage('token')) {
+                await loginCallback?.(params)
+              }
+            },
+          },
+        )
+      }
+    },
+    [account, login, signMessage, signData],
+  )
 
   return {
     signWallet,
-    token: getFromSessionStorage('token'),
-    login,
     deleteToken,
+  }
+}
+
+export async function actionWithAuthentication(action, callOnFailed, params) {
+  try {
+    await action(params)
+  } catch (err) {
+    if (
+      err?.response?.errors?.[0]?.message === 'Missing Authorization Header' ||
+      err?.response?.errors?.[0]?.message === 'Invalid Access Token'
+    ) {
+      callOnFailed(action, params)
+    } else {
+      errorToast('Error')
+    }
   }
 }

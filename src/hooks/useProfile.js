@@ -2,11 +2,11 @@ import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 
 import { v4Client } from '@/lib/graphql'
-import { errorToast } from '@/lib/notify'
-import { useSignWallet } from '@/lib/wallets/useSignWallet'
+import { getFromSessionStorage } from '@/lib/helper'
+import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
 const V4_UPDATE_PROFILE = gql`
-  mutation V4_MUTATION_FOLLOW(
+  mutation V4_UPDATE_PROFILE(
     $isPublicProfile: Boolean
     $avatar: String
     $biography: String
@@ -30,7 +30,7 @@ const V4_UPDATE_PROFILE = gql`
         xProfileUrl: $xProfile
         timezone: $timezone
       }
-      id: $id
+      userId: $id
     ) {
       id
       biography
@@ -47,38 +47,39 @@ const V4_UPDATE_PROFILE = gql`
 `
 
 export const useUpdateProfile = account => {
-  const { token } = useSignWallet()
+  const { signWallet } = useSignWallet()
+
+  const updateProfileFn = useCallback(
+    async ({ biography, avatar, nameColor, theme, timezone, username, websiteUrl, xProfileUrl, isPublicProfile }) => {
+      const { data } = await v4Client.request(
+        V4_UPDATE_PROFILE,
+        {
+          input: {
+            biography,
+            avatar,
+            nameColor,
+            theme,
+            timezone,
+            username,
+            websiteUrl,
+            xProfileUrl,
+            isPublicProfile,
+          },
+          id: account.toLocaleLowerCase(),
+        },
+        {
+          authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+        },
+      )
+
+      return data?.updateUserProfile
+    },
+    [account],
+  )
 
   const updateProfile = useCallback(
-    async ({ biography, avatar, nameColor, theme, timezone, username, websiteUrl, xProfileUrl, isPublicProfile }) => {
-      try {
-        const { data } = await v4Client.request(
-          V4_UPDATE_PROFILE,
-          {
-            input: {
-              biography,
-              avatar,
-              nameColor,
-              theme,
-              timezone,
-              username,
-              websiteUrl,
-              xProfileUrl,
-              isPublicProfile,
-            },
-            id: account.toLocaleLowerCase(),
-          },
-          {
-            authorization: token ? `Bearer ${token}` : '',
-          },
-        )
-
-        return data?.updateUserProfile
-      } catch (error) {
-        errorToast('Error', error?.shortMessage)
-      }
-    },
-    [account, token],
+    params => actionWithAuthentication(updateProfileFn, signWallet, params),
+    [updateProfileFn, signWallet],
   )
 
   return { updateProfile }
