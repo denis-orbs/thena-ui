@@ -9,12 +9,20 @@ import {
 } from '@wagmi/core'
 import { ChainId } from 'thena-sdk-core/dist'
 
-import { wagmiConfig } from '@/context/Web3Modal'
+import { wagmiConfig, wagmiConfigRewards } from '@/context/Web3Modal'
 
 export const callMulti = async contracts => {
   const res = await multicall(wagmiConfig, {
     contracts,
   })
+  return res.map(ele => (ele.status === 'success' ? ele.result : null))
+}
+
+export const callMultiRewards = async contracts => {
+  const res = await multicall(wagmiConfigRewards, {
+    contracts,
+  })
+
   return res.map(ele => (ele.status === 'success' ? ele.result : null))
 }
 

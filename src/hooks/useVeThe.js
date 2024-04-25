@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
-import { callMulti, readCall } from '@/lib/contractActions'
+import { callMultiRewards, readCall } from '@/lib/contractActions'
 import { getTheContract, getVeDistContract, getVeTHEContract, getVoterContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -651,7 +651,7 @@ export const useClaimBribes = () => {
         args: [account, reward.address],
         chainId,
       }))
-      const [resFees, resBribes] = await Promise.all([callMulti(callsFees), callMulti(callsBribes)])
+      const [resFees, resBribes] = await Promise.all([callMultiRewards(callsFees), callMultiRewards(callsBribes)])
       const feeTokens = []
       resFees.forEach((item, index) => {
         const rewardTokenAddress = pool.rewards[index].address.toLowerCase()

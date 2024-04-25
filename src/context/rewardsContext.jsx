@@ -6,7 +6,7 @@ import { ChainId } from 'thena-sdk-core'
 import { rewardsAPIAbi, veTHEApiAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
-import { callMulti } from '@/lib/contractActions'
+import { callMulti, callMultiRewards } from '@/lib/contractActions'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { usePoolsWithGauge } from '@/state/pools/hooks'
@@ -24,15 +24,30 @@ const rewardsContext = React.createContext({
 
 const fetchCurrentRewards = async (_, account, chainId, pools) => {
   console.log('--------------current---------------')
-  return await callMulti(
-    pools.map(pool => ({
-      address: Contracts.veTHEAPI[chainId],
-      abi: veTHEApiAbi,
-      functionName: 'singlePairRewardAddress',
-      args: [account, pool],
-      chainId,
-    })),
-  )
+  const callData = pools.map(pool => ({
+    address: Contracts.veTHEAPI[chainId],
+    abi: veTHEApiAbi,
+    functionName: 'singlePairRewardAddress',
+    args: [account, pool],
+    chainId,
+  }))
+
+  const maxCallPerTime = 50
+
+  const calls = []
+  const rewards = []
+
+  for (let i = 0; i < callData.length; i += maxCallPerTime) {
+    const data = callMultiRewards(callData.slice(i, i + maxCallPerTime))
+    calls.push(data)
+  }
+
+  const rewardsData = await Promise.all(calls)
+  rewardsData.forEach(data => {
+    rewards.push(...data)
+  })
+
+  return rewards
 }
 
 const fetchNextRewards = async (_, account, chainId, pools) => {
@@ -68,6 +83,7 @@ function RewardsContextProvider({ children }) {
       refreshInterval: 60000,
     },
   )
+
   const {
     data: next,
     error: nextError,
