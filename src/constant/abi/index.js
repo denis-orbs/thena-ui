@@ -1,6 +1,7 @@
 import bribeAbi from './bribe.json'
 import dibsAbi from './dibs.json'
 import dibsLotteryAbi from './dibsLottery.json'
+import dibsRewarderAbi from './dibsRewarder.json'
 import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import factoryAbi from './factory.json'
@@ -25,6 +26,7 @@ export {
   bribeAbi,
   dibsAbi,
   dibsLotteryAbi,
+  dibsRewarderAbi,
   ERC20Abi,
   extraRewarderAbi,
   factoryAbi,
