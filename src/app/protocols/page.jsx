@@ -23,7 +23,7 @@ export default function ProtocolsPage() {
         </div>
         <Neutral className='justify-between lg:p-8'>
           <div className='flex items-center gap-4'>
-            <InfoIcon className='h-4 w-4 min-w-fit stroke-neutral-600 lg:h-8 lg:w-8' />
+            <InfoIcon className='h-4 w-4 min-w-4 stroke-neutral-600 lg:h-8 lg:w-8 lg:min-w-8' />
             <div className='flex flex-col gap-2'>
               <TextHeading className='text-xl'>{t('What are Gauges')}</TextHeading>
               <Paragraph>{t('Gauges Description')}</Paragraph>
