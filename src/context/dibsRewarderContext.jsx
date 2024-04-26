@@ -76,8 +76,10 @@ function DibsRewarderContextProvider({ children }) {
           const totalClaimedRewards = await fetchDataTotalClaimedRewards(account)
           totalClaimedRewards.forEach(tcr => {
             const asset = assets.find(a => a.address.toLowerCase() === tcr.token.toLowerCase())
-            const userEarned = fromWei(new BigNumber(tcr.amount)).toNumber() * asset.price
-            totalEarned += userEarned
+            if (asset) {
+              const userEarned = fromWei(new BigNumber(tcr.amount)).toNumber() * asset.price
+              totalEarned += userEarned
+            }
           })
 
           setTotalReward(total)
