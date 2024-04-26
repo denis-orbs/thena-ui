@@ -39,9 +39,9 @@ function TopBar({ userInfo }) {
           </div>
           <TextSubHeading>
             Joined {moment(userInfo.firstInteractAt).utc().format('ll')} at{' '}
-            {moment(userInfo.firstInteractAt).utc().format('LT')} +3 UTC
+            {moment(userInfo.firstInteractAt).utc().format('LT')}
+            {/* +3 UTC */}
           </TextSubHeading>
-          {/* <TextSubHeading>Joined Jan 24, 2024 at 11:40 AM +3 UTC</TextSubHeading> */}
         </div>
       </div>
       <div className='flex flex-row justify-end'>

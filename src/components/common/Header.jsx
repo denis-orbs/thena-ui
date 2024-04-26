@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import { OutlinedButton } from '@/components/buttons/Button'
@@ -12,6 +13,7 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
 import { LOCALES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
+import { fetchUserInfo } from '@/context/userInfoContext'
 import usePrices from '@/hooks/usePrices'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -241,6 +243,10 @@ function Header() {
     }
   }, [account, chainId, networkId, updateNetwork])
 
+  const { data: userInfo } = useSWR('fetchUserInfo', () => fetchUserInfo(account), {
+    refreshInterval: 60000,
+  })
+
   useEffect(() => {
     if (window?.MetaCRMWidget?.manualConnectWallet) {
       window.MetaCRMWidget.manualConnectWallet(account)
@@ -415,7 +421,7 @@ function Header() {
               },
             }
           : undefined,
-        account
+        account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
           ? {
               label: t('Admin'),
               active: pathname === '/arena/admin',
@@ -425,7 +431,7 @@ function Header() {
             }
           : undefined,
       ]),
-    [account, pathname, push, t],
+    [account, pathname, push, t, userInfo],
   )
 
   const onLogoClick = () => {
