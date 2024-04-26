@@ -33,7 +33,7 @@ const chains = [
 
 const langs = [
   { img: '/images/en.png', lang: LOCALES.en, label: 'English' },
-  { img: '/images/zh.png', lang: LOCALES.zh, label: 'Chinese' },
+  { img: '/images/zh.png', lang: LOCALES.zh, label: '中文' },
 ]
 
 function ChainSelect({ t }) {

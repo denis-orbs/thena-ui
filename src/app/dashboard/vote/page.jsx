@@ -423,7 +423,7 @@ export default function VotePage() {
                 }))}
                 selected={veTHE ? `veTHE #${veTHE.id}` : ''}
                 setSelected={ele => setVeTHEId(ele.id)}
-                placeHolder='Select veTHE'
+                placeHolder={t('Select veTHE')}
                 isLocale={false}
               />
               <SearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />

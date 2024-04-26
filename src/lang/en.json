@@ -457,5 +457,6 @@
   "Out of Range": "Out of Range",
   "In Range": "In Range",
   "0": "0",
-  "Audit": ""
+  "Audit": "",
+  "Provide better price": ", may provide better price by aggregating liquidity from multiple sources."
 }
