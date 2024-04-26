@@ -1,8 +1,10 @@
 import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 
+import { useUserInfo } from '@/context/userInfoContext'
 import { v4Client } from '@/lib/graphql'
 import { getFromSessionStorage } from '@/lib/helper'
+import { successToast } from '@/lib/notify'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
 const V4_UPDATE_PROFILE = gql`
@@ -48,10 +50,10 @@ const V4_UPDATE_PROFILE = gql`
 
 export const useUpdateProfile = account => {
   const { signWallet } = useSignWallet()
-
+  const { mutateUserInfo } = useUserInfo()
   const updateProfileFn = useCallback(
     async ({ biography, avatar, nameColor, theme, timezone, username, websiteUrl, xProfileUrl, isPublicProfile }) => {
-      const { data } = await v4Client.request(
+      const { updateUserProfile } = await v4Client.request(
         V4_UPDATE_PROFILE,
         {
           biography,
@@ -69,15 +71,19 @@ export const useUpdateProfile = account => {
           authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
         },
       )
+      if (updateUserProfile) {
+        successToast('Successfully')
 
-      return data?.updateUserProfile
+        return updateUserProfile
+      }
+      return false
     },
     [account],
   )
 
   const updateProfile = useCallback(
-    params => actionWithAuthentication(updateProfileFn, signWallet, params),
-    [updateProfileFn, signWallet],
+    params => actionWithAuthentication(updateProfileFn, signWallet, params, mutateUserInfo),
+    [updateProfileFn, signWallet, mutateUserInfo],
   )
 
   return { updateProfile }

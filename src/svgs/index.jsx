@@ -4,7 +4,9 @@ import ArrowDownIcon from '~/svgs/arrow-down.svg'
 import ArrowLeftIcon from '~/svgs/arrow-left.svg'
 import ArrowRightIcon from '~/svgs/arrow-right.svg'
 import BankIcon from '~/svgs/bank.svg'
+import BellIcon from '~/svgs/bell.svg'
 import CalendarIcon from '~/svgs/calendar.svg'
+import CalendarWhiteIcon from '~/svgs/calendar-white.svg'
 import Champion from '~/svgs/champion.svg'
 import CheckIcon from '~/svgs/check.svg'
 import CheckCircleIcon from '~/svgs/checkCircle.svg'
@@ -53,7 +55,9 @@ export {
   ArrowLeftIcon,
   ArrowRightIcon,
   BankIcon,
+  BellIcon,
   CalendarIcon,
+  CalendarWhiteIcon,
   Champion,
   CheckCircleIcon,
   CheckGradientIcon,

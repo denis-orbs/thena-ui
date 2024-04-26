@@ -126,8 +126,9 @@ const fetchUserInfo = async id => {
     )
 
     const { tradeRankByAddress } = await v4Client.request(V4_USER_RANK, { id: id.toLowerCase() })
-
-    return { ...userById, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
+    if (userById) {
+      return { ...userById, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
+    }
   } catch (error) {
     return undefined
   }
@@ -203,17 +204,13 @@ function UserInfoContextProvider({ children }) {
 }
 
 const useUserInfo = () => {
-  const { userInfo, isLoading } = useContext(UserInfoContext)
+  const { userInfo, isLoading, mutateUserInfo } = useContext(UserInfoContext)
 
   return {
     userInfo,
     isLoading,
+    mutateUserInfo,
   }
 }
 
-const useMutateUserInfo = () => {
-  const { mutateUserInfo } = useContext(UserInfoContext)
-  return mutateUserInfo
-}
-
-export { fetchUserInfo, useMutateUserInfo, UserInfoContext, UserInfoContextProvider, useUserInfo }
+export { fetchUserInfo, UserInfoContext, UserInfoContextProvider, useUserInfo }

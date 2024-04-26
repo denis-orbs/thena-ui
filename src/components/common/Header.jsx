@@ -21,6 +21,7 @@ import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, LangIcon } from '@/svgs
 
 import Logo from '~/logo.svg'
 
+import { Notification } from './Notification'
 import ConnectButton from '../buttons/ConnectButton'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
@@ -221,7 +222,7 @@ function LanguageSelect() {
 }
 
 const showLanguage = false
-
+const showNotification = false
 function Header() {
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
@@ -536,6 +537,7 @@ function Header() {
             </OutlinedButton>
             <ConnectButton className='hidden lg:flex' />
             <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
+            {showNotification && <Notification />}
           </div>
         </div>
         <Modal

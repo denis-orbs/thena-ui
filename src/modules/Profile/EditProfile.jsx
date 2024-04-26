@@ -41,7 +41,6 @@ export function EditProfile({ userInfo, isAdmin = false }) {
   })
 
   const { updateProfile } = useUpdateProfile(isAdmin ? userInfo?.id : null)
-
   const handleUpdate = useCallback(async () => {
     if (dataUpdate.websiteUrl) {
       if (!isValidHttpUrl(dataUpdate.websiteUrl)) {

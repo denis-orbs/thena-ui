@@ -82,9 +82,10 @@ export const useSignWallet = () => {
   }
 }
 
-export async function actionWithAuthentication(action, callOnFailed, params) {
+export async function actionWithAuthentication(action, callOnFailed, params, callOnSuccess) {
   try {
     await action(params)
+    callOnSuccess?.()
   } catch (err) {
     if (
       err?.response?.errors?.[0]?.message === 'Missing Authorization Header' ||
