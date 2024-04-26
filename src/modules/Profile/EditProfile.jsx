@@ -40,7 +40,7 @@ export function EditProfile({ userInfo, isAdmin = false }) {
     isPublicProfile: userInfo?.isPublicProfile ?? true,
   })
 
-  const { updateProfile } = useUpdateProfile(userInfo?.id)
+  const { updateProfile } = useUpdateProfile(isAdmin ? userInfo?.id : null)
 
   const handleUpdate = useCallback(async () => {
     if (dataUpdate.websiteUrl) {

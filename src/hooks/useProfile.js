@@ -63,7 +63,7 @@ export const useUpdateProfile = account => {
           websiteUrl,
           xProfileUrl,
           isPublicProfile,
-          userId: account.toLocaleLowerCase(),
+          userId: account?.toLocaleLowerCase() ?? null,
         },
         {
           authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
