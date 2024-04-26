@@ -44,9 +44,11 @@ function TopBar({ userInfo }) {
           <div className='flex flex-col gap-1 md:flex-row md:items-center md:gap-3'>
             <div className='flex flex-row items-center gap-3'>
               <TextHeading className='text-xl md:text-3xl'>{sliceAddress(userInfo.id)}</TextHeading>
-              <div className='size-4 md:size-5'>
-                <Verified />
-              </div>
+              {userInfo.isVerified && (
+                <div className='size-4 md:size-5'>
+                  <Verified />
+                </div>
+              )}
             </div>
             {userInfo.isSuperAdmin ? <Tag>Super admin</Tag> : <Tag>Admin</Tag>}
           </div>

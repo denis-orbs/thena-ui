@@ -4,7 +4,7 @@ import { gql } from 'graphql-request'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Box from '@/components/box'
@@ -17,14 +17,17 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { v4Client } from '@/lib/graphql'
+import { getFromSessionStorage } from '@/lib/helper'
+import { errorToast, successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 import { Verified } from '@/svgs'
 
 const V4_USERS = gql`
   query V4_USERS($search: String) {
     users(
+      orderBy: firstInteractAt_DESC
       limit: 8
-      where: { isSuperAdmin_eq: false, isAdmin_eq: false, id_containsInsensitive: $search, isContract_eq: false }
+      where: { isSuperAdmin_eq: false, isAdmin_eq: false, id_containsInsensitive: $search }
     ) {
       id
       isVerified
@@ -41,6 +44,14 @@ const fetchUser = async search => {
     return { error: true }
   }
 }
+
+const V4_UPDATE_VERIFIED = gql`
+  mutation V4_UPDATE_VERIFIED($isVerified: Boolean!, $userId: String!) {
+    updateVerifiedUser(input: { isVerified: $isVerified }, userId: $userId) {
+      id
+    }
+  }
+`
 
 function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
   const sortOptions = useMemo(
@@ -74,6 +85,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
   const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[0])
+  const [refetchUpdatedVerify, setRefetchUpdatedVerify] = useState(0)
 
   const [dataFetch, setDataFetch] = useState([])
 
@@ -82,15 +94,45 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data } = useSWR(['user api', debounceSearch, reloadFetch], () => fetchUser(debounceSearch))
+  const { data, isLoading } = useSWR(['user api', debounceSearch, reloadFetch, refetchUpdatedVerify], () =>
+    fetchUser(debounceSearch),
+  )
+
+  const updateVerify = useCallback(
+    async (isVerified, userId) => {
+      try {
+        const { data: res } = await v4Client.request(
+          V4_UPDATE_VERIFIED,
+          {
+            isVerified,
+            userId,
+          },
+          {
+            authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+          },
+        )
+
+        setRefetchUpdatedVerify(refetchUpdatedVerify + 1)
+        successToast('Successfully')
+
+        return res
+      } catch (error) {
+        errorToast('Error')
+        console.log(error)
+      }
+    },
+    [refetchUpdatedVerify],
+  )
 
   useEffect(() => {
-    if (data && Array.isArray(data)) {
-      setDataFetch(data)
-      return
+    if (!isLoading) {
+      if (data && Array.isArray(data)) {
+        setDataFetch(data)
+        return
+      }
+      setDataFetch([])
     }
-    setDataFetch([])
-  }, [data])
+  }, [data, isLoading])
 
   const finalData = useMemo(
     () =>
@@ -112,7 +154,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         verification: (
           <Paragraph className='flex flex-row items-center justify-between'>
             {isMdDown ? <TextHeading>Verification badge</TextHeading> : ''}
-            <Toggle checked={item.isVerified} onChange={() => {}} />
+            <Toggle checked={item.isVerified} onChange={() => updateVerify(!item.isVerified, item.id)} />
           </Paragraph>
         ),
         action: (
@@ -133,7 +175,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           </div>
         ),
       })),
-    [dataFetch, handleClickOpenModal, isMdDown, t, userInfo.isSuperAdmin],
+    [dataFetch, handleClickOpenModal, isMdDown, t, updateVerify, userInfo.isSuperAdmin],
   )
 
   return (

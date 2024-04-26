@@ -34,12 +34,7 @@ function AdminPage() {
     (userInfo.isAdmin || userInfo.isSuperAdmin) && (
       <div className='mt-8 flex flex-col gap-8'>
         <TopBar userInfo={userInfo} />
-        <Users
-          userInfo={userInfo}
-          reloadFetch={reloadFetch}
-          // setReloadFetch={setReloadFetch}
-          handleClickOpenModal={handleClickOpenModal}
-        />
+        <Users userInfo={userInfo} reloadFetch={reloadFetch} handleClickOpenModal={handleClickOpenModal} />
         <Admins userInfo={userInfo} reloadFetch={reloadFetch} handleClickOpenModal={handleClickOpenModal} />
         <Competitions />
         <ModalRemoveAddAdmin

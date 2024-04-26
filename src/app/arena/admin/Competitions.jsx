@@ -1,9 +1,8 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import { cloneDeep } from 'lodash'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import SearchInput from '@/components/input/SearchInput'
@@ -11,18 +10,22 @@ import Tabs from '@/components/tabs'
 import { TextHeading } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
+import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
+import { getFromSessionStorage } from '@/lib/helper'
+import { errorToast, successToast } from '@/lib/notify'
 
 import CompetitionItem from '../CompetitionItem'
 import NoCompetition from '../NoCompetition'
 
-const V4_COMPETITION_DATAS = gql`
-  query V4_COMPETITION {
-    tradingCompetitions {
+const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
+  query V4_COMPETITION($search: String) {
+    tradingCompetitions(orderBy: timestamp_startTimestamp_DESC, where: { name_containsInsensitive: $search }) {
       name
       entryFee
       market
       id
+      isHidden
       competitionRules {
         winningToken
         tradingTokens
@@ -58,45 +61,120 @@ const V4_COMPETITION_DATAS = gql`
   }
 `
 
-const fetchCompetition = async () => {
+const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
+  query V4_COMPETITION($isHidden: Boolean, $search: String) {
+    tradingCompetitions(
+      orderBy: timestamp_startTimestamp_DESC
+      where: { isHidden_eq: $isHidden, name_containsInsensitive: $search }
+    ) {
+      name
+      entryFee
+      market
+      id
+      isHidden
+      competitionRules {
+        winningToken
+        tradingTokens
+        startingBalance
+      }
+      prize {
+        totalPrize
+        token
+      }
+      timestamp {
+        endTimestamp
+        startTimestamp
+        registrationStart
+        registrationEnd
+      }
+      participants {
+        id
+        participant {
+          id
+        }
+      }
+      maxParticipants
+      participantCount
+      owner {
+        id
+        isVerified
+      }
+      tradingCompetitionSpot
+    }
+  }
+`
+
+const fetchCompetition = async (tab, search) => {
   try {
-    const { tradingCompetitions } = await v4Client.request(V4_COMPETITION_DATAS)
+    const isHidden = tab === 'All' ? undefined : tab === 'Hidden'
+    const { tradingCompetitions } = await v4Client.request(
+      isHidden === undefined ? V4_COMPETITION_DATA_WITHOUT_ISHIDDEN : V4_COMPETITION_DATA_WITH_ISHIDDEN,
+      isHidden === undefined
+        ? {
+            search,
+          }
+        : {
+            isHidden,
+            search,
+          },
+    )
     return tradingCompetitions
   } catch (error) {
     return { error: true }
   }
 }
 
+const V4_HIDE_TC = gql`
+  mutation V4_HIDE_TC($isHidden: Boolean!, $tcId: String!) {
+    hideTradingCompetition(input: { isHidden: $isHidden }, tcId: $tcId) {
+      id
+    }
+  }
+`
+
 const tabs = ['All', 'Hidden', 'Unhidden']
 
 function Competitions() {
   const t = useTranslations()
-  const { data: dataCompetitions } = useSWR('competition api', () => fetchCompetition())
   const [selectedTab, setSelectedTab] = useState(tabs[0])
   const [searchText, setSearchText] = useState('')
   const assets = useAssets()
+  const [refetch, setRefetch] = useState(0)
+  const [competitions, setCompetitions] = useState([])
 
-  const competitions = useMemo(() => {
-    if (dataCompetitions && Array.isArray(dataCompetitions)) {
-      return dataCompetitions.map(comp => ({
-        ...comp,
-        prize: {
-          ...comp.prize,
-          token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
-        },
-        competitionRules: {
-          ...comp.competitionRules,
-          winningToken: assets.find(
-            ele => ele.address.toLowerCase() === comp.competitionRules.winningToken.toLowerCase(),
-          ),
-          tradingTokens: assets.filter(ele =>
-            comp.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
-          ),
-        },
-      }))
+  const debounceSearchText = useDebounce(searchText.trim(), 300)
+
+  const { data: dataCompetitions, isLoading } = useSWR(
+    ['competition api', refetch, selectedTab, debounceSearchText],
+    () => fetchCompetition(selectedTab, debounceSearchText),
+  )
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (dataCompetitions && Array.isArray(dataCompetitions)) {
+        const arrDataFormatted = dataCompetitions.map(comp => ({
+          ...comp,
+          prize: {
+            ...comp.prize,
+            token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
+          },
+          competitionRules: {
+            ...comp.competitionRules,
+            winningToken: assets.find(
+              ele => ele.address.toLowerCase() === comp.competitionRules.winningToken.toLowerCase(),
+            ),
+            tradingTokens: assets.filter(ele =>
+              comp.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
+            ),
+          },
+        }))
+
+        setCompetitions(arrDataFormatted)
+      } else {
+        setCompetitions([])
+      }
     }
-    return []
-  }, [assets, dataCompetitions])
+  }, [assets, dataCompetitions, isLoading])
 
   const subTabs = useMemo(
     () =>
@@ -110,35 +188,29 @@ function Competitions() {
     [selectedTab, t],
   )
 
-  const filterCompetitions = useMemo(() => {
-    if (!selectedTab) {
-      return []
-    }
-    let result = cloneDeep(competitions || []) ?? []
-
-    switch (selectedTab) {
-      case 'All':
-        break
-
-      case 'hidden':
-        result = result.filter(item => item.hidden)
-        break
-
-      case 'unhidden':
-        result = result.filter(item => !item.hidden)
-        break
-      default:
-        result = cloneDeep(result)
-    }
-
-    return !searchText.trim().length
-      ? result
-      : result.filter(
-          item =>
-            item.name?.toLowerCase().includes(searchText.toLowerCase()) ||
-            item.description?.toLowerCase().includes(searchText.toLowerCase()),
+  const updateIsHidden = useCallback(
+    async (isHidden, tcId) => {
+      try {
+        const { data: res } = await v4Client.request(
+          V4_HIDE_TC,
+          {
+            isHidden,
+            tcId,
+          },
+          {
+            authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+          },
         )
-  }, [competitions, selectedTab, searchText])
+        setRefetch(refetch + 1)
+        successToast('Successfully')
+        return res
+      } catch (error) {
+        errorToast('Error')
+        console.log(error)
+      }
+    },
+    [refetch],
+  )
 
   return (
     <div>
@@ -152,10 +224,15 @@ function Competitions() {
           setVal={setSearchText}
         />
       </div>
-      {filterCompetitions?.length ? (
+      {competitions?.length ? (
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-          {filterCompetitions.map(item => (
-            <CompetitionItem competition={item} key={item.id} showCheckedHidden />
+          {competitions.map(item => (
+            <CompetitionItem
+              competition={item}
+              key={item.id}
+              updateIsHidden={() => updateIsHidden(!item.isHidden, item.id)}
+              showCheckedHidden
+            />
           ))}
         </div>
       ) : (

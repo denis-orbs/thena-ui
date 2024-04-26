@@ -22,10 +22,7 @@ import { Verified } from '@/svgs'
 
 const V4_ADMINS = gql`
   query V4_ADMINS($search: String) {
-    users(
-      limit: 8
-      where: { isSuperAdmin_eq: false, isAdmin_eq: true, id_containsInsensitive: $search, isContract_eq: false }
-    ) {
+    users(limit: 8, where: { isSuperAdmin_eq: false, isAdmin_eq: true, id_containsInsensitive: $search }) {
       id
       username
     }
@@ -74,15 +71,19 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data: admins } = useSWR(['admin api', debounceSearch, reloadFetch], () => fetchAdmin(debounceSearch))
+  const { data: admins, isLoading } = useSWR(['admin api', debounceSearch, reloadFetch], () =>
+    fetchAdmin(debounceSearch),
+  )
 
   useEffect(() => {
-    if (admins && Array.isArray(admins)) {
-      setDataFetch(admins)
-    } else {
+    if (!isLoading) {
+      if (admins && Array.isArray(admins)) {
+        setDataFetch(admins)
+        return
+      }
       setDataFetch([])
     }
-  }, [admins])
+  }, [admins, isLoading])
 
   const finalData = useMemo(
     () =>
@@ -96,9 +97,11 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
             <div className='flex gap-2 md:flex-col'>
               <div className='flex flex-row items-center gap-2'>
                 <TextHeading className='text-base'>{item.username || sliceAddress(item.id)}</TextHeading>
-                <div className='size-4'>
-                  <Verified />
-                </div>
+                {item.isVerified && (
+                  <div className='size-4'>
+                    <Verified />
+                  </div>
+                )}
               </div>
               <Tag>admin</Tag>
             </div>
