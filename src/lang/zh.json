@@ -678,5 +678,7 @@
   "Add admin": "Add admin",
   "Change avatar": "Change avatar",
   "Are you sure you want to admin": "Are you sure you want to {type} admin to this user?",
-  "Edit profile": "Edit profile"
+  "Edit profile": "Edit profile",
+  "Successfully": "Successfully",
+  "Win amount": "Win amount"
 }

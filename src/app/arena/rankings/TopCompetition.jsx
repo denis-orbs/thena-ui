@@ -82,11 +82,13 @@ function TopCompetition() {
       {
         label: 'Participants',
         value: 'participants',
+        width: 'w-[20%]',
         isDesc: true,
       },
       {
         label: 'Volume',
         value: 'volume',
+        width: 'w-[20%]',
       },
     ],
     [isAll],
@@ -195,7 +197,7 @@ function TopCompetition() {
         competitionName: (
           <Link
             href={`/arena/trading-competitions/${item.id}`}
-            className={`max-w-[200px] truncate ${isAll ? 'md:max-w-[500px]' : 'md:max-w-[400px]'}`}
+            className={`max-w-[200px] truncate ${isAll ? 'md:max-w-[500px]' : 'md:max-w-[150px]'}`}
           >
             {item.competitionName}
           </Link>

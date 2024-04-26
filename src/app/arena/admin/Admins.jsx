@@ -22,10 +22,7 @@ import { Verified } from '@/svgs'
 
 const V4_ADMINS = gql`
   query V4_ADMINS($search: String) {
-    users(
-      limit: 8
-      where: { isSuperAdmin_eq: false, isAdmin_eq: true, id_containsInsensitive: $search, isContract_eq: false }
-    ) {
+    users(limit: 8, where: { isSuperAdmin_eq: false, isAdmin_eq: true, id_containsInsensitive: $search }) {
       id
       username
     }
@@ -42,47 +39,54 @@ const fetchAdmin = async search => {
 }
 
 function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
-  const sortOptions = useMemo(
-    () => [
+  const sortOptions = useMemo(() => {
+    const arr = [
       {
         label: 'User',
         value: 'user',
-        width: 'w-[30%]',
+        width: userInfo.isSuperAdmin ? 'w-[30%]' : 'w-50%',
         disabled: true,
       },
       {
         label: 'Wallet ID',
         value: 'walletId',
-        width: 'w-[30%]',
+        width: userInfo.isSuperAdmin ? 'w-[30%]' : 'w-50%',
         disabled: true,
       },
-      {
+    ]
+    if (userInfo.isSuperAdmin) {
+      arr.push({
         value: 'action',
         width: 'w-[50%]',
         disabled: true,
-      },
-    ],
-    [],
-  )
+      })
+    }
+
+    return arr
+  }, [userInfo?.isSuperAdmin])
 
   const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [sort, setSort] = useState(sortOptions[2])
+  const [sort, setSort] = useState(sortOptions[0])
   const { isMdDown } = useMediaQuery()
   const t = useTranslations()
   const [dataFetch, setDataFetch] = useState([])
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data: admins } = useSWR(['admin api', debounceSearch, reloadFetch], () => fetchAdmin(debounceSearch))
+  const { data: admins, isLoading } = useSWR(['admin api', debounceSearch, reloadFetch], () =>
+    fetchAdmin(debounceSearch),
+  )
 
   useEffect(() => {
-    if (admins && Array.isArray(admins)) {
-      setDataFetch(admins)
-    } else {
+    if (!isLoading) {
+      if (admins && Array.isArray(admins)) {
+        setDataFetch(admins)
+        return
+      }
       setDataFetch([])
     }
-  }, [admins])
+  }, [admins, isLoading])
 
   const finalData = useMemo(
     () =>
@@ -95,33 +99,39 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
             <CircleImage src={Avatar} alt='avatar' className='size-9' />
             <div className='flex gap-2 md:flex-col'>
               <div className='flex flex-row items-center gap-2'>
-                <TextHeading className='text-base'>{item.username || sliceAddress(item.id)}</TextHeading>
-                <div className='size-4'>
-                  <Verified />
-                </div>
+                <TextHeading className='text-base'>
+                  {item.username || (isMdDown || userInfo.isSuperAdmin ? sliceAddress(item.id) : item.id)}
+                </TextHeading>
+                {item.isVerified && (
+                  <div className='size-4'>
+                    <Verified />
+                  </div>
+                )}
               </div>
               <Tag>admin</Tag>
             </div>
           </Link>
         ),
         walletId: (
-          <Paragraph className='text-wrap break-words'>{!isMdDown ? sliceAddress(item.id) : item.id}</Paragraph>
+          <Paragraph className='text-wrap break-words'>
+            {!isMdDown ? (userInfo.isSuperAdmin ? sliceAddress(item.id) : item.id) : item.id}
+          </Paragraph>
         ),
-        action: (
+        action: userInfo.isSuperAdmin ? (
           <div className='flex w-full flex-col gap-3 md:flex-row md:items-center'>
             <div className='flex w-full flex-row items-center gap-3'>
-              <EmphasisButton className='w-full text-base'>{t('Edit checkmark')}</EmphasisButton>
+              <EmphasisButton className='hidden w-full text-base'>{t('Edit checkmark')}</EmphasisButton>
               {userInfo.isSuperAdmin && (
                 <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenModal(item, 'remove')}>
                   {t('Remove admin')}
                 </EmphasisButton>
               )}
             </div>
-            <div>
+            <div className='w-full'>
               <EmphasisButton className='w-full text-base'>{t('Edit profile')}</EmphasisButton>
             </div>
           </div>
-        ),
+        ) : null,
       })),
     [dataFetch, handleClickOpenModal, isMdDown, t, userInfo.isSuperAdmin],
   )

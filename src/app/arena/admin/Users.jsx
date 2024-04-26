@@ -4,7 +4,7 @@ import { gql } from 'graphql-request'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Box from '@/components/box'
@@ -17,14 +17,18 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { v4Client } from '@/lib/graphql'
+import { getFromSessionStorage } from '@/lib/helper'
+import { errorToast, successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
+import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 import { Verified } from '@/svgs'
 
 const V4_USERS = gql`
   query V4_USERS($search: String) {
     users(
+      orderBy: firstInteractAt_DESC
       limit: 8
-      where: { isSuperAdmin_eq: false, isAdmin_eq: false, id_containsInsensitive: $search, isContract_eq: false }
+      where: { isSuperAdmin_eq: false, isAdmin_eq: false, id_containsInsensitive: $search }
     ) {
       id
       isVerified
@@ -42,25 +46,33 @@ const fetchUser = async search => {
   }
 }
 
+const V4_UPDATE_VERIFIED = gql`
+  mutation V4_UPDATE_VERIFIED($isVerified: Boolean!, $userId: String!) {
+    updateVerifiedUser(input: { isVerified: $isVerified }, userId: $userId) {
+      id
+    }
+  }
+`
+
 function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
   const sortOptions = useMemo(
     () => [
       {
         label: 'User',
         value: 'user',
-        width: 'w-[20%]',
+        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
         label: 'Wallet ID',
         value: 'walletId',
-        width: 'w-[20%]',
+        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
         label: 'Verification badge',
         value: 'verification',
-        width: 'w-[20%]',
+        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
@@ -68,12 +80,15 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         // width: 'w-[40%]',
       },
     ],
-    [],
+    [userInfo?.isSuperAdmin],
   )
 
   const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[0])
+  const [refetchUpdated, setRefetchUpdated] = useState(0)
+  const [showModalEditCheckMark, setShowModalEditCheckMark] = useState(false)
+  const [userEditCheckMark, setUserEditCheckMark] = useState(null)
 
   const [dataFetch, setDataFetch] = useState([])
 
@@ -82,15 +97,55 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data } = useSWR(['user api', debounceSearch, reloadFetch], () => fetchUser(debounceSearch))
+  const { data, isLoading } = useSWR(['user api', debounceSearch, reloadFetch, refetchUpdated], () =>
+    fetchUser(debounceSearch),
+  )
+
+  const updateVerify = useCallback(
+    async (isVerified, userId) => {
+      try {
+        const { data: res } = await v4Client.request(
+          V4_UPDATE_VERIFIED,
+          {
+            isVerified,
+            userId,
+          },
+          {
+            authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+          },
+        )
+
+        setRefetchUpdated(refetchUpdated + 1)
+        successToast('Successfully')
+
+        return res
+      } catch (error) {
+        errorToast('Error')
+        console.log(error)
+      }
+    },
+    [refetchUpdated],
+  )
+
+  const handleClickOpenEditCheckMark = useCallback(user => {
+    setShowModalEditCheckMark(true)
+    setUserEditCheckMark(user)
+  }, [])
+
+  const handleCloseModal = useCallback(() => {
+    setShowModalEditCheckMark(false)
+    setUserEditCheckMark(null)
+  }, [])
 
   useEffect(() => {
-    if (data && Array.isArray(data)) {
-      setDataFetch(data)
-      return
+    if (!isLoading) {
+      if (data && Array.isArray(data)) {
+        setDataFetch(data)
+        return
+      }
+      setDataFetch([])
     }
-    setDataFetch([])
-  }, [data])
+  }, [data, isLoading])
 
   const finalData = useMemo(
     () =>
@@ -112,20 +167,22 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         verification: (
           <Paragraph className='flex flex-row items-center justify-between'>
             {isMdDown ? <TextHeading>Verification badge</TextHeading> : ''}
-            <Toggle checked={item.isVerified} onChange={() => {}} />
+            <Toggle checked={item.isVerified} onChange={() => updateVerify(!item.isVerified, item.id)} />
           </Paragraph>
         ),
         action: (
           <div className='flex w-full flex-col gap-3 md:flex-row md:items-center'>
             <div className='flex w-full flex-row items-center gap-3'>
-              <EmphasisButton className='w-full text-base'>{t('Edit checkmark')}</EmphasisButton>
+              <EmphasisButton className='hidden w-full text-base' onClick={() => handleClickOpenEditCheckMark(item)}>
+                {t('Edit checkmark')}
+              </EmphasisButton>
               {userInfo.isSuperAdmin && (
                 <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenModal(item, 'add')}>
                   {t('Add admin')}
                 </EmphasisButton>
               )}
             </div>
-            <div>
+            <div className='w-full'>
               <Link href={`/arena/admin/edit/${item.id}`}>
                 <EmphasisButton className='w-full text-base'>{t('Edit profile')}</EmphasisButton>
               </Link>
@@ -133,7 +190,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           </div>
         ),
       })),
-    [dataFetch, handleClickOpenModal, isMdDown, t, userInfo.isSuperAdmin],
+    [dataFetch, handleClickOpenEditCheckMark, handleClickOpenModal, isMdDown, t, updateVerify, userInfo.isSuperAdmin],
   )
 
   return (
@@ -175,7 +232,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           ))}
         </div>
       )}
-      {/* <ModalRemoveAddAdmin isOpen={openModal} closeModal={handleCloseModal} type='add' user={addAdmin} /> */}
+      <ModalEditCheckMark isOpen={showModalEditCheckMark} closeModal={handleCloseModal} user={userEditCheckMark} />
     </Box>
   )
 }

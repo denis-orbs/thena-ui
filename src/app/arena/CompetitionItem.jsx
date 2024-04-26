@@ -16,7 +16,7 @@ import { Clock, CoinHand, Gift, Verified } from '@/svgs'
 
 import { CompetitionCardHeader } from './CompetitionCardHeader'
 
-function CompetitionItem({ competition, showCheckedHidden = false }) {
+function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidden = () => {} }) {
   const t = useTranslations()
 
   const { eventType } = useEventType(competition?.timestamp)
@@ -56,7 +56,7 @@ function CompetitionItem({ competition, showCheckedHidden = false }) {
           </NeutralBadge>
         ) : (
           <div className='absolute right-4 top-4 flex flex-row items-center'>
-            <Toggle checked={competition.hidden} />
+            <Toggle checked={competition.isHidden} onChange={updateIsHidden} />
             <TextSubHeading>Hide</TextSubHeading>
           </div>
         )}
