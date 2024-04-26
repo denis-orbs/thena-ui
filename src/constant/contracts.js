@@ -88,8 +88,5 @@ const Contracts = {
     [ChainId.BSC]: '0x05cC3CA6E768a68A7f86b09e3ceE754437bd5f12',
     [ChainId.OPBNB]: '0xAAC397840fC57F6bE1e3d40496E0823Ff15e1C6D',
   },
-  dibsRewarder: {
-    [ChainId.BSC]: '0x6e298908514c77c2dc1dc8faa150eef46ad7f03b',
-  },
 }
 export default Contracts
