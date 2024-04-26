@@ -49,7 +49,7 @@ export function ProfilePage({ address }) {
             comp.tradingCompetition.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
           ),
         },
-      })),
+      })) || [],
     [assets, userInfo?.joinedTCs],
   )
 
@@ -70,7 +70,7 @@ export function ProfilePage({ address }) {
             comp.competitionRules.tradingTokens.map(sub => sub.toLowerCase()).includes(ele.address),
           ),
         },
-      })),
+      })) || [],
     [assets, userInfo?.tradingCompetitions],
   )
 
