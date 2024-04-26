@@ -62,6 +62,8 @@ const V4_USER_INFO = gql`
         owner {
           id
           isVerified
+          avatar
+          username
         }
         tradingCompetitionSpot
       }
@@ -97,6 +99,8 @@ const V4_USER_INFO = gql`
           owner {
             id
             isVerified
+            avatar
+            username
           }
           tradingCompetitionSpot
         }

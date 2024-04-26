@@ -18,7 +18,7 @@ import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
+import { InfoIcon, Verified } from '@/svgs'
 
 import ThenaIdModal from './ThenaIdModal'
 
@@ -64,7 +64,14 @@ export function UserInfo({ userInfo, following, followers }) {
             />
             <div className='flex flex-col gap-3'>
               <div className='flex items-center'>
-                <TextHeading className='text-3xl'>{formatAddress(userInfo.id)}</TextHeading>
+                <TextHeading className='text-3xl'>
+                  {userInfo.username
+                    ? userInfo.username.length > 12
+                      ? formatAddress(userInfo.username)
+                      : userInfo.username
+                    : formatAddress(userInfo.id)}
+                </TextHeading>
+                {userInfo.isVerified && <Verified className='ml-1 h-5 w-5' />}
                 {isOwnProfile && !hasThenaId && (
                   <PrimaryButton className='ml-4 p-2 text-sm text-black' onClick={() => handleClickThenaButton('get')}>
                     {t('Get ID')}

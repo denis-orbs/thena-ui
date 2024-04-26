@@ -13,6 +13,10 @@ export const V4_FOLLOWERS = gql`
     userFollows(where: { user: { id_eq: $userId } }) {
       follower {
         id
+        avatar
+        username
+        isVerified
+        nameColor
       }
     }
   }
@@ -23,6 +27,10 @@ export const V4_FOLLOWING = gql`
     userFollows(where: { follower: { id_eq: $followerId } }) {
       user {
         id
+        avatar
+        username
+        isVerified
+        nameColor
       }
     }
   }

@@ -1,21 +1,19 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import CircleImage from '@/components/image/CircleImage'
+import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
 import Skeleton from '@/components/skeleton'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { v4Client } from '@/lib/graphql'
-import { customSort, formatNumberDecimals, sliceAddress } from '@/lib/utils'
+import { customSort, formatNumberDecimals } from '@/lib/utils'
 
 const V4_TC_COMPETITION_DATA = gql`
   query V4_TC_COMPETITION($id: String!) {
@@ -158,12 +156,14 @@ function ParticipantsPage() {
     () =>
       filteredParticipants?.sort((a, b) => {
         let res
+        const participantA = a.participant.username ?? a.participant.id
+        const participantB = b.participant.username ?? b.participant.id
         switch (sort.value) {
           case 'rank':
             res = customSort(a.rank, b.rank, sort.isDesc)
             break
           case 'user':
-            res = sort.isDesc ? a.participant.id - b.participant.id : b.participant.id - a.participant.id
+            res = (participantA - participantB) * (sort.isDesc ? 1 : -1)
             break
           case 'volume':
             res = customSort(a.volume, b.volume, sort.isDesc)
@@ -190,13 +190,11 @@ function ParticipantsPage() {
       return sortedData?.map(participant => ({
         rank: <Paragraph>{participant.rank ?? '-'}</Paragraph>,
         user: participant.participant && (
-          <Link
-            className='flex cursor-pointer items-center justify-center gap-2'
-            href={`/arena/profile/${participant.participant.id.toLowerCase()}`}
-          >
-            <CircleImage src={Avatar} alt='avatar' className='size-8' />
-            <Paragraph>{sliceAddress(participant.participant.id)}</Paragraph>
-          </Link>
+          <UserProfileCard
+            avatar={participant.participant.avatar}
+            username={participant.participant.username}
+            id={participant.participant.id}
+          />
         ),
         volume: <Paragraph>{participant.volume ? `$${formatNumberDecimals(participant.volume, 2)}` : '-'}</Paragraph>,
       }))

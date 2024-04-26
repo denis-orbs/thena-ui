@@ -5,22 +5,20 @@ import { compact, isNil } from 'lodash'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import { TextButton } from '@/components/buttons/Button'
-import CircleImage from '@/components/image/CircleImage'
+import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Tabs from '@/components/tabs'
-import { Paragraph } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
-import { sleep, sliceAddress } from '@/lib/utils'
-import { ArrowLeftIcon, Verified } from '@/svgs'
+import { sleep } from '@/lib/utils'
+import { ArrowLeftIcon } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
 import Sidebar from './SideBar'
@@ -50,6 +48,9 @@ const V4_COMPETITION_DATA = gql`
       owner {
         id
         isVerified
+        avatar
+        username
+        nameColor
       }
       participants {
         id
@@ -203,19 +204,12 @@ function CompetitionDetailLayout({ children, params }) {
                   {t('Back')}
                 </TextButton>
               </Link>
-
-              <Link
-                className='flex cursor-pointer items-center justify-center gap-2'
-                href={`/arena/profile/${competition.owner.id.toLowerCase()}`}
-              >
-                <CircleImage src={Avatar} alt='avatar' className='size-8' />
-                <Paragraph>{sliceAddress(competition.owner.id)}</Paragraph>
-                {competition.owner.isVerified && (
-                  <div className='h-5 w-5'>
-                    <Verified />
-                  </div>
-                )}
-              </Link>
+              <UserProfileCard
+                avatar={competition.owner.avatar}
+                id={competition.owner.id}
+                username={competition.owner.username}
+                showVerified={competition.owner.isVerified}
+              />
             </div>
             <CompetitionCard competition={_competition} eventType={eventType} />
             <div className='mt-10 flex w-full flex-col gap-4'>

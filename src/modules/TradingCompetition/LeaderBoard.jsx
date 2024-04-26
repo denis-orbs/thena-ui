@@ -1,16 +1,14 @@
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import { useMemo, useState } from 'react'
 
-import CircleImage from '@/components/image/CircleImage'
+import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useEventType } from '@/hooks/useEventType'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, fromWei, sliceAddress } from '@/lib/utils'
+import { formatAmount, fromWei } from '@/lib/utils'
 
 export function LeaderBoard({ competition }) {
   const { eventType } = useEventType(competition?.timestamp)
@@ -81,12 +79,14 @@ export function LeaderBoard({ competition }) {
     () =>
       filteredLeaderBoards?.sort((a, b) => {
         let res
+        const participantA = a.participant.username ?? a.participant.id
+        const participantB = b.participant.username ?? b.participant.id
         switch (sort.value) {
           case 'rank':
             res = (a.rank - b.rank) * (sort.isDesc ? -1 : 1)
             break
           case 'user':
-            res = sort.isDesc ? a.participant.id - b.participant.id : b.participant.id - a.participant.id
+            res = (participantA - participantB) * (sort.isDesc ? 1 : -1)
             break
           case 'pnl':
             res =
@@ -115,13 +115,11 @@ export function LeaderBoard({ competition }) {
         return {
           rank: <Paragraph>{leader.rank}</Paragraph>,
           user: (
-            <Link
-              className='flex cursor-pointer items-center justify-center gap-2'
-              href={`/arena/profile/${leader.participant.id.toLowerCase()}`}
-            >
-              <CircleImage src={Avatar} alt='avatar' className='size-8' />
-              <Paragraph>{sliceAddress(leader.participant.id)}</Paragraph>
-            </Link>
+            <UserProfileCard
+              avatar={leader.participant.avatar}
+              username={leader.participant.username}
+              id={leader.participant.id}
+            />
           ),
           pnl: (
             <Paragraph className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}>
