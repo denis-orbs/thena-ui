@@ -4,8 +4,9 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TXN_STATUS } from '@/constant'
+import { rewardEarnedAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
-import { callMultiRewards, readCall } from '@/lib/contractActions'
+import { callMulti, readCall } from '@/lib/contractActions'
 import { getTheContract, getVeDistContract, getVeTHEContract, getVoterContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -610,48 +611,23 @@ export const useClaimBribes = () => {
     async (pool, callback) => {
       const key = uuidv4()
 
-      const bribeAbi = [
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: '_owner',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: '_rewardToken',
-              type: 'address',
-            },
-          ],
-          name: 'earned',
-          outputs: [
-            {
-              internalType: 'uint256',
-              name: '',
-              type: 'uint256',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-      ]
+      const rewardEarnedContract = '0x1ec88f8c3d95a6ba0560c1aa6c184e334b2c1692'
       // fees claim
       const callsFees = pool.rewards.map(reward => ({
-        address: pool.gauge.fee,
-        abi: bribeAbi,
+        address: rewardEarnedContract,
+        abi: rewardEarnedAbi,
         functionName: 'earned',
-        args: [account, reward.address],
+        args: [pool.gauge.fee, reward.address, account],
         chainId,
       }))
       const callsBribes = pool.rewards.map(reward => ({
-        address: pool.gauge.bribe,
-        abi: bribeAbi,
+        address: rewardEarnedContract,
+        abi: rewardEarnedAbi,
         functionName: 'earned',
-        args: [account, reward.address],
+        args: [pool.gauge.bribe, reward.address, account],
         chainId,
       }))
-      const [resFees, resBribes] = await Promise.all([callMultiRewards(callsFees), callMultiRewards(callsBribes)])
+      const [resFees, resBribes] = await Promise.all([callMulti(callsFees), callMulti(callsBribes)])
       const feeTokens = []
       resFees.forEach((item, index) => {
         const rewardTokenAddress = pool.rewards[index].address.toLowerCase()
