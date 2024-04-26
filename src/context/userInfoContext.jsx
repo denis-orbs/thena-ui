@@ -129,7 +129,7 @@ const fetchUserInfo = async id => {
 
     return { ...userById, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
   } catch (error) {
-    return { error: true }
+    return undefined
   }
 }
 
