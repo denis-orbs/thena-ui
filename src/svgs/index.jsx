@@ -31,7 +31,6 @@ import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
 import SplitIcon from '~/svgs/split.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
-import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 import WalletIcon from '~/svgs/wallet.svg'
 import XIcon from '~/svgs/x-close.svg'
@@ -71,7 +70,6 @@ export {
   SettingsIcon,
   ShadowIcon,
   SplitIcon,
-  SwitchHorizontalV2Icon,
   SwitchVerticalIcon,
   TransferIcon,
   WalletIcon,
