@@ -31,6 +31,7 @@ function AdminPage() {
 
   return (
     userInfo &&
+    userInfo.id &&
     (userInfo.isAdmin || userInfo.isSuperAdmin) && (
       <div className='mt-8 flex flex-col gap-8'>
         <TopBar userInfo={userInfo} />

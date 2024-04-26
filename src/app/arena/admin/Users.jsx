@@ -20,6 +20,7 @@ import { v4Client } from '@/lib/graphql'
 import { getFromSessionStorage } from '@/lib/helper'
 import { errorToast, successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
+import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 import { Verified } from '@/svgs'
 
 const V4_USERS = gql`
@@ -59,19 +60,19 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
       {
         label: 'User',
         value: 'user',
-        width: 'w-[20%]',
+        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
         label: 'Wallet ID',
         value: 'walletId',
-        width: 'w-[20%]',
+        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
         label: 'Verification badge',
         value: 'verification',
-        width: 'w-[20%]',
+        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
@@ -79,13 +80,15 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         // width: 'w-[40%]',
       },
     ],
-    [],
+    [userInfo?.isSuperAdmin],
   )
 
   const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[0])
-  const [refetchUpdatedVerify, setRefetchUpdatedVerify] = useState(0)
+  const [refetchUpdated, setRefetchUpdated] = useState(0)
+  const [showModalEditCheckMark, setShowModalEditCheckMark] = useState(false)
+  const [userEditCheckMark, setUserEditCheckMark] = useState(null)
 
   const [dataFetch, setDataFetch] = useState([])
 
@@ -94,7 +97,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data, isLoading } = useSWR(['user api', debounceSearch, reloadFetch, refetchUpdatedVerify], () =>
+  const { data, isLoading } = useSWR(['user api', debounceSearch, reloadFetch, refetchUpdated], () =>
     fetchUser(debounceSearch),
   )
 
@@ -112,7 +115,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           },
         )
 
-        setRefetchUpdatedVerify(refetchUpdatedVerify + 1)
+        setRefetchUpdated(refetchUpdated + 1)
         successToast('Successfully')
 
         return res
@@ -121,8 +124,18 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         console.log(error)
       }
     },
-    [refetchUpdatedVerify],
+    [refetchUpdated],
   )
+
+  const handleClickOpenEditCheckMark = useCallback(user => {
+    setShowModalEditCheckMark(true)
+    setUserEditCheckMark(user)
+  }, [])
+
+  const handleCloseModal = useCallback(() => {
+    setShowModalEditCheckMark(false)
+    setUserEditCheckMark(null)
+  }, [])
 
   useEffect(() => {
     if (!isLoading) {
@@ -160,14 +173,16 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         action: (
           <div className='flex w-full flex-col gap-3 md:flex-row md:items-center'>
             <div className='flex w-full flex-row items-center gap-3'>
-              <EmphasisButton className='w-full text-base'>{t('Edit checkmark')}</EmphasisButton>
+              <EmphasisButton className='hidden w-full text-base' onClick={() => handleClickOpenEditCheckMark(item)}>
+                {t('Edit checkmark')}
+              </EmphasisButton>
               {userInfo.isSuperAdmin && (
                 <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenModal(item, 'add')}>
                   {t('Add admin')}
                 </EmphasisButton>
               )}
             </div>
-            <div>
+            <div className='w-full'>
               <Link href={`/arena/admin/edit/${item.id}`}>
                 <EmphasisButton className='w-full text-base'>{t('Edit profile')}</EmphasisButton>
               </Link>
@@ -175,7 +190,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           </div>
         ),
       })),
-    [dataFetch, handleClickOpenModal, isMdDown, t, updateVerify, userInfo.isSuperAdmin],
+    [dataFetch, handleClickOpenEditCheckMark, handleClickOpenModal, isMdDown, t, updateVerify, userInfo.isSuperAdmin],
   )
 
   return (
@@ -217,7 +232,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           ))}
         </div>
       )}
-      {/* <ModalRemoveAddAdmin isOpen={openModal} closeModal={handleCloseModal} type='add' user={addAdmin} /> */}
+      <ModalEditCheckMark isOpen={showModalEditCheckMark} closeModal={handleCloseModal} user={userEditCheckMark} />
     </Box>
   )
 }

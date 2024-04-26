@@ -681,5 +681,6 @@
   "Change avatar": "Change avatar",
   "Are you sure you want to admin": "Are you sure you want to {type} admin to this user?",
   "Edit profile": "Edit profile",
-  "Successfully": "Successfully"
+  "Successfully": "Successfully",
+  "Are you sure you want to edit checkmark for user": "Are you sure you want to edit checkmark for user"
 }
