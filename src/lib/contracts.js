@@ -4,6 +4,7 @@ import {
   bribeAbi,
   dibsAbi,
   dibsLotteryAbi,
+  dibsRewarderAbi,
   ERC20Abi,
   gaugeAbi,
   minterAbi,
@@ -140,16 +141,21 @@ export const getVaultDepositContract = chainId =>
 
 export const getIchiVaultContract = (address, chainId) => getContract(ichiVaultAbi, address, chainId)
 
-export const getTcSpotContract = address => getContract(tcSpotAbi, address, ChainId.BSC)
-
 /** **************************************************************************************************
                                             TC (Trading Competition)
   ************************************************************************************************** */
 
 export const getTCContract = () => getContract(tcManagerAbi, Contracts.tcManager, ChainId.BSC)
 
+export const getTcSpotContract = address => getContract(tcSpotAbi, address, ChainId.BSC)
+
 /** **************************************************************************************************
                                             Thena ID
   ************************************************************************************************** */
 
 export const getThenaIDContract = () => getContract(thenaIdAbi, Contracts.thenaId, ChainId.BSC)
+/** **************************************************************************************************
+                                            DibsRewarder
+  ************************************************************************************************** */
+
+export const getDibsRewarderContract = chainId => getContract(dibsRewarderAbi, Contracts.dibsRewarder, chainId)

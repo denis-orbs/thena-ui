@@ -149,10 +149,22 @@ function Table({
                 onClick={() => ele.onRowClick && ele.onRowClick()}
                 key={`table-row-${eleIdx}`}
               >
-                <TableCell className={cn('flex w-full', sortOptions[0].width)}>{ele[sortOptions[0].value]}</TableCell>
+                <TableCell
+                  className={cn(
+                    'flex w-full',
+                    sortOptions[0].width,
+                    sortOptions[0].hiddenMobile ? 'max-lg:hidden' : 'flex',
+                  )}
+                >
+                  {ele[sortOptions[0].value]}
+                </TableCell>
                 {sortOptions.slice(1, sortOptions.length - (notAction ? 0 : 1)).map((cell, cellIdx) => (
                   <TableCell
-                    className={cn('flex w-1/2 flex-col lg:flex-row', cell.width)}
+                    className={cn(
+                      'flex w-1/2 flex-col lg:flex-row',
+                      cell.width,
+                      !cell.hiddenMobile ? 'lg:flex-row' : 'hidden',
+                    )}
                     key={`${cell.value}-${cellIdx}`}
                   >
                     <TextHeading className='lg:hidden'>{t(cell.label)}</TextHeading>

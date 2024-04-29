@@ -93,5 +93,8 @@ const Contracts = {
   thenaId: {
     [ChainId.BSC]: '0xd8cd3f2e2c97d85bcd5bd47ff3f67ed0060f5b14',
   },
+  dibsRewarder: {
+    [ChainId.BSC]: '0x6e298908514c77c2dc1dc8faa150eef46ad7f03b',
+  },
 }
 export default Contracts

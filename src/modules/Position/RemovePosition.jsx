@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
@@ -25,6 +26,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
   const { onGammaRemove, pending: gammaPending } = useGammaRemove()
   const { onIchiRemove, pending: ichiPending } = useIchiRemove()
   const { onDefiedgeRemove, pending: defiedgePending } = useDefiedgeRemove()
+  const t = useTranslations()
 
   const balance = strategy.account.walletBalance
   const firstAmount = useMemo(
@@ -95,7 +97,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
           autoFocus
         />
         <div className='flex flex-col gap-4'>
-          <TextHeading className='text-lg'>You will receive</TextHeading>
+          <TextHeading className='text-lg'>{t('You will receive')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1'>
@@ -116,7 +118,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <TextButton className='w-full' onClick={() => setPopup(false)}>
-          Cancel
+          {t('Cancel')}
         </TextButton>
         <PrimaryButton
           className='w-full'
@@ -125,7 +127,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
             onRemoveLiquidity()
           }}
         >
-          Remove
+          {t('Remove')}
         </PrimaryButton>
       </ModalFooter>
     </>
