@@ -49,6 +49,7 @@ function Table({
   notAction = false,
   hidePagination = false,
   tableBasic = false,
+  onlySortDesc = false,
 }) {
   const pageCount = Math.ceil(data.length / PAGE_SIZE)
   const t = useTranslations()
@@ -72,10 +73,17 @@ function Table({
                     key={`header-${idx}`}
                     onClick={() => {
                       if (!option.disabled) {
-                        setSort({
-                          ...option,
-                          isDesc: sort.value === option.value ? !sort.isDesc : true,
-                        })
+                        if (!onlySortDesc) {
+                          setSort({
+                            ...option,
+                            isDesc: sort.value === option.value ? !sort.isDesc : true,
+                          })
+                        } else {
+                          setSort({
+                            ...option,
+                            isDesc: true,
+                          })
+                        }
                       }
                     }}
                   >

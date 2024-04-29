@@ -16,32 +16,18 @@ import { SizeTypes } from '@/constant/type'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount, sliceAddress } from '@/lib/utils'
+import useWallet from '@/lib/wallets/useWallet'
 
-const tabs = ['All', 'Hosted', 'Joined']
+const tabsFilterUser = ['All', 'Hosted', 'Joined']
 const tabsFilterTime = ['24h', '7d', '30d', 'Max']
 
-// const V4_TOP_USER_ALL_WIN_AMOUNT_USD_DESC = gql`
-//   query V4_TOP_USER_ALL_WIN_AMOUNT_USD_DESC {
-//     tcParticipants(orderBy: winAmountUSD_DESC) {
-//       participant {
-//         avatar
-//         id
-//         nameColor
-//         username
-//       }
-//       pnlUSD
-//       winAmountUSD
-//       tradingCompetition {
-//         name
-//         id
-//       }
-//     }
-//   }
-// `
-
-const V4_TOP_USER_ALL_PNL_USD_DESC = gql`
-  query V4_TOP_USER_ALL_PNL_USD_DESC {
-    tcParticipants(orderBy: pnlUSD_DESC) {
+const V4_TOP_USER_ALL_WIN_AMOUNT_DESC = gql`
+  query V4_TOP_USER_ALL_WIN_AMOUNT_DESC($tradingCompetition: TradingCompetitionWhereInput = {}) {
+    tcParticipants(
+      orderBy: [winAmountUSD_DESC, id_ASC]
+      where: { tradingCompetition: $tradingCompetition }
+      limit: 25
+    ) {
       participant {
         avatar
         id
@@ -53,14 +39,48 @@ const V4_TOP_USER_ALL_PNL_USD_DESC = gql`
       tradingCompetition {
         name
         id
+        timestamp {
+          endTimestamp
+        }
       }
     }
   }
 `
 
-const fetchUsers = async () => {
+const V4_TOP_USER_ALL_PNL_DESC = gql`
+  query V4_TOP_USER_ALL_PNL_DESC($tradingCompetition: TradingCompetitionWhereInput = {}) {
+    tcParticipants(orderBy: [pnlUSD_DESC, id_ASC], where: { tradingCompetition: $tradingCompetition }, limit: 25) {
+      participant {
+        avatar
+        id
+        nameColor
+        username
+      }
+      pnlUSD
+      winAmountUSD
+      tradingCompetition {
+        name
+        id
+        timestamp {
+          endTimestamp
+        }
+      }
+    }
+  }
+`
+
+// TODO: BigInt for timestamp filter
+const fetchUsers = async (sort, tradingCompetitionFilter) => {
   try {
-    const { tcParticipants } = await v4Client.request(V4_TOP_USER_ALL_PNL_USD_DESC)
+    if (sort?.value === 'pnlUSD') {
+      const { tcParticipants } = await v4Client.request(V4_TOP_USER_ALL_PNL_DESC, {
+        tradingCompetition: tradingCompetitionFilter,
+      })
+      return tcParticipants
+    }
+    const { tcParticipants } = await v4Client.request(V4_TOP_USER_ALL_WIN_AMOUNT_DESC, {
+      tradingCompetition: tradingCompetitionFilter,
+    })
     return tcParticipants
   } catch (error) {
     console.log(error)
@@ -93,13 +113,13 @@ function TopUser() {
         label: 'Win amount',
         value: 'winAmountUSD',
         width: 'w-[20%]',
-        disabled: true,
+        disabled: false,
       },
       {
         label: 'Profit & Loss',
         value: 'pnlUSD',
         isDesc: true,
-        disabled: true,
+        disabled: false,
       },
     ],
     [],
@@ -107,26 +127,48 @@ function TopUser() {
 
   const t = useTranslations()
   const [searchText, setSearchText] = useState('')
-  const [selectedTab, setSelectedTab] = useState(tabs[0])
-  const [selectedTabTime, setSelectedTabTime] = useState(tabsFilterTime[0])
+  const [selectedTabUser, setSelectedTabUser] = useState(tabsFilterUser[0])
+  const [selectedTabTime, setSelectedTabTime] = useState(tabsFilterTime[3])
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[4])
   const [dataFetch, setDataFetch] = useState([])
+  const { account } = useWallet()
+
+  // const endTimestamp_gte = useMemo(() => {
+  //   console.log({ selectedTabTime })
+  //   // eslint-disable-next-line no-undef
+  //   return '0'
+  // }, [selectedTabTime])
+
+  const tradingCompetitionFilter = useMemo(() => {
+    console.log({ selectedTabUser })
+    if (account) {
+      switch (selectedTabUser) {
+        case 'Hosted':
+          return { owner: { id_eq: account.toLowerCase() } }
+        case 'Joined':
+          return { participants_some: { participant: { id_eq: account.toLowerCase() } } }
+        default:
+          break
+      }
+    }
+    return {}
+  }, [selectedTabUser, account])
 
   const debounceSearch = useDebounce(searchText.trim(), 300)
 
-  const { data: topUsers, isLoading } = useSWR('top users api', () => fetchUsers())
+  const { data: topUsers, isLoading } = useSWR('top users api', () => fetchUsers(sort, tradingCompetitionFilter))
 
-  const subTabs = useMemo(
+  const subTabsUser = useMemo(
     () =>
-      tabs.map(tab => ({
+      tabsFilterUser.map(tab => ({
         label: t(tab),
-        active: tab === selectedTab,
+        active: tab === selectedTabUser,
         onClickHandler: () => {
-          setSelectedTab(tab)
+          setSelectedTabUser(tab)
         },
       })),
-    [selectedTab, t],
+    [selectedTabUser, t],
   )
 
   const subTabsTime = useMemo(
@@ -169,8 +211,8 @@ function TopUser() {
       return arr.filter(
         item =>
           item.username?.toLowerCase().includes(debounceSearch.toLowerCase()) ||
-          item.userId.toLowerCase().includes(debounceSearch.toLowerCase()) ||
-          item.competitionName.toLowerCase().includes(debounceSearch.toLowerCase()),
+          item.userId?.toLowerCase().includes(debounceSearch.toLowerCase()) ||
+          item.competitionName?.toLowerCase().includes(debounceSearch.toLowerCase()),
       )
     }
     return arr
@@ -216,7 +258,7 @@ function TopUser() {
   return (
     <div className='col-span-12 lg:col-span-7'>
       <div className='flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between'>
-        <Tabs data={subTabs} size={SizeTypes.Medium} itemClassName='text-sm hidden' />
+        <Tabs data={subTabsUser} size={SizeTypes.Medium} itemClassName={`text-sm ${account ? '' : 'hidden'}`} />
         <SearchInput
           className='h-11 w-full md:w-[336px]'
           classNames={{ input: 'h-11' }}
@@ -224,8 +266,7 @@ function TopUser() {
           setVal={setSearchText}
         />
       </div>
-      <div className='mt-6 hidden flex-col items-start gap-3 md:flex-row md:items-center md:justify-between'>
-        <div>select</div>
+      <div className='mt-6 flex justify-end'>
         <div className='hidden rounded-lg bg-neutral-900 p-1'>
           <Tabs data={subTabsTime} size={SizeTypes.Small} itemClassName='text-sm' />
         </div>
@@ -239,6 +280,7 @@ function TopUser() {
           tableBasic
           data={finalData}
           sortOptions={sortOptions}
+          onlySortDesc
         />
       </div>
     </div>
