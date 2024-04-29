@@ -186,7 +186,12 @@ function LanguageSelect() {
 
   return (
     <div className={cn('relative')} ref={wrapperRef}>
-      <CircleImage className='mx-2 h-5 w-5 cursor-pointer' src={selected.img} onClick={() => setOpen(!open)} />
+      <CircleImage
+        alt='lang'
+        className='mx-2 h-5 w-5 cursor-pointer'
+        src={selected.img}
+        onClick={() => setOpen(!open)}
+      />
       <div
         className={cn(
           'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
@@ -210,7 +215,7 @@ function LanguageSelect() {
             }}
           >
             <div className='flex items-center gap-2'>
-              <CircleImage src={item.img} alt='' className='h-5 w-5' />
+              <CircleImage src={item.img} alt={item.lang} className='h-5 w-5' />
               <TextHeading className='text-nowrap'>{item.label}</TextHeading>
               {locale === item.lang && <div className='h-2 w-2 rounded-full bg-primary-600' />}
             </div>
