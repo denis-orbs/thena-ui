@@ -116,7 +116,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           <div className='flex w-full flex-col gap-3 md:flex-row md:items-center'>
             <div className='flex w-full flex-row items-center gap-3'>
               <EmphasisButton
-                className='w-full text-base'
+                className='hidden w-full text-base'
                 onClick={() => {
                   setSelectedUser(item)
                   setOpenEditCheckmark(true)

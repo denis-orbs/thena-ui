@@ -14,7 +14,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import dayjs from '@/lib/arenaDayjs'
-import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
+import { cn, formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -64,7 +64,7 @@ export function UserInfo({ userInfo, following, followers }) {
             />
             <div className='flex flex-col gap-3'>
               <div className='flex items-center'>
-                <TextHeading className='text-3xl'>
+                <TextHeading className={cn('text-3xl', userInfo.nameColor ?? '')}>
                   {userInfo.username
                     ? userInfo.username.length > 12
                       ? formatAddress(userInfo.username)

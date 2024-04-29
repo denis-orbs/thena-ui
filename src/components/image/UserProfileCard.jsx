@@ -43,7 +43,7 @@ export function UserProfileCard({
       <CircleImage src={avatar ?? Avatar} alt='avatar' className='size-8' />
 
       <div className='flex flex-col gap-1'>
-        <TextHeading className={cn('text-nowrap text-base', nameColor ? `text-[#${nameColor}]` : '')}>
+        <TextHeading className={cn('text-nowrap text-base', nameColor ?? '')}>
           {username || sliceAddress(id)}
         </TextHeading>
         {username && <Paragraph>{sliceAddress(id)}</Paragraph>}

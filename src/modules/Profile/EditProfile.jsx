@@ -19,6 +19,7 @@ import { isValidHttpUrl } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 import { SelectAvatar } from './SelectAvatar'
+import { SelectNameColor } from './SelectNameColor'
 import { SelectTheme } from './SelectTheme'
 
 const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { ssr: false })
@@ -38,6 +39,7 @@ export function EditProfile({ userInfo, isAdmin = false }) {
     websiteUrl: userInfo?.websiteUrl ?? null,
     xProfileUrl: userInfo?.xProfileUrl ?? null,
     isPublicProfile: userInfo?.isPublicProfile ?? true,
+    nameColor: userInfo?.nameColor ?? 'ffffff',
   })
 
   const { updateProfile } = useUpdateProfile(isAdmin ? userInfo?.id : null)
@@ -82,6 +84,13 @@ export function EditProfile({ userInfo, isAdmin = false }) {
             </TextSubHeading>
           </div>
           <SelectAvatar dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
+        </div>
+        <div className='flex flex-col gap-6 lg:flex-row'>
+          <div className='flex flex-1 flex-col gap-3'>
+            <TextHeading className='text-xl'>{t('Change Name Color')}</TextHeading>
+            <TextSubHeading className='text-base'>{t('Pick A Color For Your Name')}</TextSubHeading>
+          </div>
+          <SelectNameColor dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
         </div>
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
