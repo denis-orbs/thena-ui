@@ -11,7 +11,7 @@ function Work() {
   const data = [
     {
       icon: WalletIcon,
-      heading: 'Connect Your Wallet',
+      heading: 'Connect your wallet',
       subHeading: ['Go to our perpetual DEX ALPHA and connect your wallet'],
     },
     {
