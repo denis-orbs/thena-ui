@@ -119,6 +119,9 @@ export function LeaderBoard({ competition }) {
               avatar={leader.participant.avatar}
               username={leader.participant.username}
               id={leader.participant.id}
+              nameColor={leader.participant.nameColor}
+              verifyImage={leader.participant.checkMarkIcon}
+              showVerified={leader.participant.isVerified}
             />
           ),
           pnl: (

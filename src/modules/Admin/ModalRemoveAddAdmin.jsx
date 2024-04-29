@@ -64,7 +64,9 @@ function ModalRemoveAddAdmin({ type = 'remove', isOpen, closeModal = () => {}, u
             ) : null}
           </Box>
           <div className='mt-2 flex w-full flex-row items-center gap-2'>
-            <EmphasisButton className='w-full'>{t('Cancel')}</EmphasisButton>
+            <EmphasisButton className='w-full' onClick={closeModal}>
+              {t('Cancel')}
+            </EmphasisButton>
             <PrimaryButton className='w-full' onClick={handleUpdatePermission}>
               {t(isRemoveAdmin ? 'Remove admin' : 'Add admin')}
             </PrimaryButton>

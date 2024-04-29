@@ -3,13 +3,12 @@
 import { gql } from 'graphql-request'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
-import CircleImage from '@/components/image/CircleImage'
+import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
@@ -21,8 +20,8 @@ import { getFromSessionStorage } from '@/lib/helper'
 import { errorToast, successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
-import { Verified } from '@/svgs'
 
+// TODO: add checkmarkIcon field
 const V4_USERS = gql`
   query V4_USERS($search: String) {
     users(
@@ -33,6 +32,8 @@ const V4_USERS = gql`
       id
       isVerified
       username
+      nameColor
+      avatar
     }
   }
 `
@@ -77,6 +78,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
       },
       {
         value: 'action',
+        disabled: true,
         // width: 'w-[40%]',
       },
     ],
@@ -97,7 +99,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data, isLoading } = useSWR(['user api', debounceSearch, reloadFetch, refetchUpdated], () =>
+  const { data, isLoading, mutate } = useSWR(['user api', debounceSearch, reloadFetch, refetchUpdated], () =>
     fetchUser(debounceSearch),
   )
 
@@ -151,15 +153,14 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
     () =>
       dataFetch.map(item => ({
         user: (
-          <Link className='flex cursor-pointer items-center gap-2' href={`/arena/profile/${item.id.toLowerCase()}`}>
-            <CircleImage src={Avatar} alt='avatar' className='size-9' />
-            <TextHeading className='text-base'>{item.username || sliceAddress(item.id)}</TextHeading>
-            {item.isVerified && (
-              <div className='size-4'>
-                <Verified />
-              </div>
-            )}
-          </Link>
+          <UserProfileCard
+            avatar={item.avatar}
+            id={item.id}
+            nameColor={item.nameColor}
+            showVerified={item.isVerified}
+            username={item.username}
+            verifyImage={item.checkMarkIcon}
+          />
         ),
         walletId: (
           <Paragraph className='text-wrap break-words'>{!isMdDown ? sliceAddress(item.id) : item.id}</Paragraph>
@@ -232,7 +233,14 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           ))}
         </div>
       )}
-      <ModalEditCheckMark isOpen={showModalEditCheckMark} closeModal={handleCloseModal} user={userEditCheckMark} />
+      {showModalEditCheckMark && (
+        <ModalEditCheckMark
+          isOpen={showModalEditCheckMark}
+          closeModal={handleCloseModal}
+          user={userEditCheckMark}
+          mutate={mutate}
+        />
+      )}
     </Box>
   )
 }

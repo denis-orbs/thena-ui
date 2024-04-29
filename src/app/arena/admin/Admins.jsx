@@ -1,30 +1,31 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
-import CircleImage from '@/components/image/CircleImage'
+import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
-import Tag from '@/components/tag'
 import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { v4Client } from '@/lib/graphql'
 import { sliceAddress } from '@/lib/utils'
-import { Verified } from '@/svgs'
+import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 
+// TODO: add checkmarkIcon field
 const V4_ADMINS = gql`
   query V4_ADMINS($search: String) {
     users(limit: 8, where: { isSuperAdmin_eq: false, isAdmin_eq: true, id_containsInsensitive: $search }) {
       id
       username
+      nameColor
+      isVerified
+      avatar
     }
   }
 `
@@ -64,6 +65,8 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
     return arr
   }, [userInfo?.isSuperAdmin])
+  const [openEditCheckmark, setOpenEditCheckmark] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(undefined)
 
   const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -74,9 +77,11 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data: admins, isLoading } = useSWR(['admin api', debounceSearch, reloadFetch], () =>
-    fetchAdmin(debounceSearch),
-  )
+  const {
+    data: admins,
+    isLoading,
+    mutate,
+  } = useSWR(['admin api', debounceSearch, reloadFetch], () => fetchAdmin(debounceSearch))
 
   useEffect(() => {
     if (!isLoading) {
@@ -92,25 +97,15 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
     () =>
       dataFetch.map(item => ({
         user: (
-          <Link
-            className='flex cursor-pointer items-center gap-2 md:items-start'
-            href={`/arena/profile/${item.id.toLowerCase()}`}
-          >
-            <CircleImage src={Avatar} alt='avatar' className='size-9' />
-            <div className='flex gap-2 md:flex-col'>
-              <div className='flex flex-row items-center gap-2'>
-                <TextHeading className='text-base'>
-                  {item.username || (isMdDown || userInfo.isSuperAdmin ? sliceAddress(item.id) : item.id)}
-                </TextHeading>
-                {item.isVerified && (
-                  <div className='size-4'>
-                    <Verified />
-                  </div>
-                )}
-              </div>
-              <Tag>admin</Tag>
-            </div>
-          </Link>
+          <UserProfileCard
+            avatar={item.avatar}
+            id={item.id}
+            nameColor={item.nameColor}
+            showVerified={item.isVerified}
+            username={item.username}
+            verifyImage={item.checkMarkIcon}
+            isAdmin
+          />
         ),
         walletId: (
           <Paragraph className='text-wrap break-words'>
@@ -120,7 +115,15 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         action: userInfo.isSuperAdmin ? (
           <div className='flex w-full flex-col gap-3 md:flex-row md:items-center'>
             <div className='flex w-full flex-row items-center gap-3'>
-              <EmphasisButton className='hidden w-full text-base'>{t('Edit checkmark')}</EmphasisButton>
+              <EmphasisButton
+                className='w-full text-base'
+                onClick={() => {
+                  setSelectedUser(item)
+                  setOpenEditCheckmark(true)
+                }}
+              >
+                {t('Edit checkmark')}
+              </EmphasisButton>
               {userInfo.isSuperAdmin && (
                 <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenModal(item, 'remove')}>
                   {t('Remove admin')}
@@ -137,45 +140,59 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
   )
 
   return (
-    <Box>
-      <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
-        <TextHeading className='text-xl'>Admins</TextHeading>
-        <SearchInput
-          className='h-11 w-full md:w-[480px]'
-          classNames={{ input: 'h-11' }}
-          val={searchText}
-          setVal={setSearchText}
-          placeholder='Search by name or  wallet ID'
-        />
-      </div>
-      {!isMdDown ? (
-        <Table
-          sortOptions={sortOptions}
-          sort={sort}
-          setSort={setSort}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          data={finalData}
-          tableBasic
-        />
-      ) : (
-        <div className='flex flex-col'>
-          {finalData.map((item, index) => (
-            <div
-              className={`mt-6 flex flex-col gap-4 ${
-                index !== finalData.length - 1 ? 'border-b border-neutral-700 pb-6' : ''
-              }`}
-              key={index}
-            >
-              {item.user}
-              {item.walletId}
-              {item.action}
-            </div>
-          ))}
+    <>
+      <Box>
+        <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+          <TextHeading className='text-xl'>Admins</TextHeading>
+          <SearchInput
+            className='h-11 w-full md:w-[480px]'
+            classNames={{ input: 'h-11' }}
+            val={searchText}
+            setVal={setSearchText}
+            placeholder='Search by name or  wallet ID'
+          />
         </div>
+        {!isMdDown ? (
+          <Table
+            sortOptions={sortOptions}
+            sort={sort}
+            setSort={setSort}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            data={finalData}
+            tableBasic
+          />
+        ) : (
+          <div className='flex flex-col'>
+            {finalData.map((item, index) => (
+              <div
+                className={`mt-6 flex flex-col gap-4 ${
+                  index !== finalData.length - 1 ? 'border-b border-neutral-700 pb-6' : ''
+                }`}
+                key={index}
+              >
+                {item.user}
+                {item.walletId}
+                {item.action}
+              </div>
+            ))}
+          </div>
+        )}
+        {/* <ModalRemoveAddAdmin isOpen={openModal} closeModal={handleCloseModal} type='remove' user={adminRemove} /> */}
+      </Box>
+
+      {openEditCheckmark && (
+        <ModalEditCheckMark
+          isOpen={openEditCheckmark}
+          closeModal={() => {
+            setOpenEditCheckmark(false)
+            setSelectedUser(undefined)
+          }}
+          user={selectedUser}
+          mutate={mutate}
+        />
       )}
-      {/* <ModalRemoveAddAdmin isOpen={openModal} closeModal={handleCloseModal} type='remove' user={adminRemove} /> */}
-    </Box>
+    </>
   )
 }
 

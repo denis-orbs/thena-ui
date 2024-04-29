@@ -23,6 +23,7 @@ import { ArrowLeftIcon } from '@/svgs'
 import CompetitionCard from './CompetitionCard'
 import Sidebar from './SideBar'
 
+// TODO: add checkmarkIcon field
 const V4_COMPETITION_DATA = gql`
   query V4_COMPETITION($id: String!) {
     tradingCompetitionById(id: $id) {
@@ -209,6 +210,8 @@ function CompetitionDetailLayout({ children, params }) {
                 id={competition.owner.id}
                 username={competition.owner.username}
                 showVerified={competition.owner.isVerified}
+                nameColor={competition.owner.nameColor}
+                verifyImage={competition.owner.checkMarkIcon}
               />
             </div>
             <CompetitionCard competition={_competition} eventType={eventType} />

@@ -17,7 +17,7 @@ const V4_USER_RANK = gql`
     }
   }
 `
-
+// TODO: add checkmarkIcon field
 const V4_USER_INFO = gql`
   query V4_USER($id: String!) {
     userById(id: $id) {
@@ -57,7 +57,9 @@ const fetchUserInfo = async id => {
 
     const { tradeRankByAddress } = await v4Client.request(V4_USER_RANK, { id: id.toLowerCase() })
 
-    return { ...userById, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
+    if (userById) {
+      return { ...userById, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
+    }
   } catch (error) {
     return { error: true }
   }

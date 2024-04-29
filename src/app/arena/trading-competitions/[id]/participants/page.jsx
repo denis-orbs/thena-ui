@@ -15,6 +15,7 @@ import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { v4Client } from '@/lib/graphql'
 import { customSort, formatNumberDecimals } from '@/lib/utils'
 
+// TODO: add checkmarkIcon field
 const V4_TC_COMPETITION_DATA = gql`
   query V4_TC_COMPETITION($id: String!) {
     tradingCompetitionById(id: $id) {
@@ -22,6 +23,9 @@ const V4_TC_COMPETITION_DATA = gql`
       participants {
         participant {
           id
+          username
+          avatar
+          isVerified
         }
       }
       competitionRules {
@@ -194,6 +198,9 @@ function ParticipantsPage() {
             avatar={participant.participant.avatar}
             username={participant.participant.username}
             id={participant.participant.id}
+            nameColor={participant.participant.nameColor}
+            verifyImage={participant.participant.checkMarkIcon}
+            showVerified={participant.participant.isVerified}
           />
         ),
         volume: <Paragraph>{participant.volume ? `$${formatNumberDecimals(participant.volume, 2)}` : '-'}</Paragraph>,

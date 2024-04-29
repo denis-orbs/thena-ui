@@ -716,5 +716,9 @@
   "Your estimated daily rewards": "Your estimated daily rewards",
   "An internal error was received": "An internal error was received.",
   "Begin your DeFi journey on THENA": "Begin your DeFi journey on THENA",
-  "You will receive": "You will receive"
+  "You will receive": "You will receive",
+  "Use Checkmark Default": "Use checkmark default",
+  "Use Custom Checkmark": "Use custom checkmark",
+  "Drop The File Here": "Drop the file here...",
+  "Drag Drop File Here": "Drag 'n' drop file here, or click to select file"
 }

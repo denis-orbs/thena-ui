@@ -145,6 +145,18 @@ input[type='radio']:checked {
   background-color: #e416d0;
 }
 
+input[type='radio']:checked:hover {
+  color: #e416d0;
+}
+
+input[type='radio']:checked:before {
+  background-color: #e416d0;
+}
+
+input[type='radio']:checked:after {
+  background-color: #e416d0;
+}
+
 .ReactModal__Overlay {
   opacity: 0;
   transition: all 100ms ease-out;

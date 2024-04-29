@@ -24,10 +24,7 @@ export const useValidateUserName = () => {
           readCall(contract, 'isUsernameAvailable', [username]),
           readCall(contract, 'validateUsername', [username]),
         ])
-        console.log({
-          available,
-          valid,
-        })
+
         return {
           available,
           valid,
