@@ -342,6 +342,13 @@ function Header() {
                 },
               ],
       },
+      {
+        label: 'Trade To Earn',
+        active: pathname.includes('/trade-to-earn'),
+        onClickHandler: () => {
+          push('/trade-to-earn')
+        },
+      },
     ],
     [pathname, networkId, push],
   )
