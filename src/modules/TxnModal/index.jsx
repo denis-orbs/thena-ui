@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -13,6 +14,7 @@ import { CheckCircleIcon, InfoIcon } from '@/svgs'
 function TxnModal() {
   const { popup, title, transactions, final } = useSelector(state => state.transactions)
   const { closeTxn } = useTxn()
+  const t = useTranslations()
 
   const txns = useMemo(() => {
     if (!transactions) return []
@@ -51,7 +53,7 @@ function TxnModal() {
         {final && (
           <Info>
             <InfoIcon className='h-4 w-4 stroke-primary-600' />
-            <p>All done! You may now close this window.</p>
+            <p>{t('All done')}</p>
           </Info>
         )}
       </ModalBody>

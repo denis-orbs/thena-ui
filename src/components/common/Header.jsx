@@ -16,7 +16,7 @@ import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, LangIcon } from '@/svgs'
+import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon } from '@/svgs'
 
 import Logo from '~/logo.svg'
 
@@ -33,7 +33,7 @@ const chains = [
 
 const langs = [
   { img: '/images/en.png', lang: LOCALES.en, label: 'English' },
-  { img: '/images/zh.png', lang: LOCALES.zh, label: 'Chinese' },
+  { img: '/images/zh.png', lang: LOCALES.zh, label: '中文' },
 ]
 
 function ChainSelect({ t }) {
@@ -126,7 +126,7 @@ function ChainMobileSelect({ t }) {
       >
         <div className='flex items-center gap-2'>
           <CircleImage src={selected.img} alt='' className='h-5 w-5' />
-          <TextHeading>{selected.label}</TextHeading>
+          <TextHeading>{t(selected.label)}</TextHeading>
         </div>
         <ChevronDownIcon
           className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
@@ -182,9 +182,16 @@ function LanguageSelect() {
     }
   }, [wrapperRef])
 
+  const selected = useMemo(() => langs.find(ele => ele.lang === locale), [locale])
+
   return (
-    <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
-      <TextIconButton Icon={LangIcon} onClick={() => setOpen(!open)} />
+    <div className={cn('relative')} ref={wrapperRef}>
+      <CircleImage
+        alt='lang'
+        className='mx-2 h-5 w-5 cursor-pointer'
+        src={selected.img}
+        onClick={() => setOpen(!open)}
+      />
       <div
         className={cn(
           'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
@@ -208,7 +215,7 @@ function LanguageSelect() {
             }}
           >
             <div className='flex items-center gap-2'>
-              <CircleImage src={item.img} alt='' className='h-5 w-5' />
+              <CircleImage src={item.img} alt={item.lang} className='h-5 w-5' />
               <TextHeading className='text-nowrap'>{item.label}</TextHeading>
               {locale === item.lang && <div className='h-2 w-2 rounded-full bg-primary-600' />}
             </div>
@@ -218,8 +225,6 @@ function LanguageSelect() {
     </div>
   )
 }
-
-const showLanguage = false
 
 function Header() {
   const [selected, setSelected] = useState(null)
@@ -496,7 +501,7 @@ function Header() {
               )}
             </div>
             <ChainSelect t={t} />
-            {showLanguage && <LanguageSelect />}
+            <LanguageSelect />
             <OutlinedButton className='hidden lg:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton>
@@ -518,6 +523,7 @@ function Header() {
               onLogoClick()
             }
           }}
+          isIntl={!selected}
         >
           {selected ? (
             <div className='inline-flex w-full flex-col items-start justify-start gap-3 p-3'>
@@ -554,7 +560,7 @@ function Header() {
                       }
                     }}
                   >
-                    <p className='font-medium text-neutral-200'>{menu.label}</p>
+                    <p className='font-medium text-neutral-200'>{t(menu.label)}</p>
                     {menu.sub && <ArrowRightIcon className='h-4 w-4' />}
                   </div>
                 ))}
