@@ -74,13 +74,13 @@ function TopUser() {
       {
         label: <span>#</span>,
         value: 'rank',
-        width: 'w-[10%]',
+        width: 'w-[5%]',
         disabled: true,
       },
       {
         label: 'User',
         value: 'user',
-        width: 'w-[20%]',
+        width: 'w-[15%]',
         disabled: true,
       },
       {
@@ -96,7 +96,7 @@ function TopUser() {
         disabled: true,
       },
       {
-        label: 'Profit / Loss',
+        label: 'Profit & Loss',
         value: 'pnlUSD',
         isDesc: true,
         disabled: true,
@@ -195,7 +195,7 @@ function TopUser() {
         ),
         competitionName: (
           <Link
-            className='max-w-[300px] truncate'
+            className='max-w-[250px] truncate'
             href={`/arena/trading-competitions/${item.competitionId.toLowerCase()}`}
           >
             {item.competitionName}

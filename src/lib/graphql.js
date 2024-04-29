@@ -18,7 +18,7 @@ export const blockGraphUrl = {
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/opbnb-blocks',
 }
-// export const v4GraphUrl = 'https://6372-14-248-83-170.ngrok-free.app/graphql'
+// export const v4GraphUrl = 'https://b57e-2402-800-6137-baa7-1d28-aa3e-10a1-ac19.ngrok-free.app/graphql'
 export const v4GraphUrl = 'https://squid.subsquid.io/thena-squid/v/v4/graphql'
 
 export const v1Client = {

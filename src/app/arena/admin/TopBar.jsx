@@ -1,7 +1,5 @@
 'use client'
 
-import localizedFormat from 'dayjs/plugin/localizedFormat'
-import moment from 'moment'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
@@ -15,8 +13,6 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
 import { sliceAddress } from '@/lib/utils'
 import { Verified } from '@/svgs'
-
-dayjs.extend(localizedFormat)
 
 function TopBar({ userInfo }) {
   const t = useTranslations()
@@ -38,9 +34,8 @@ function TopBar({ userInfo }) {
             {userInfo.isSuperAdmin ? <Tag>Super admin</Tag> : <Tag>Admin</Tag>}
           </div>
           <TextSubHeading>
-            Joined {moment(userInfo.firstInteractAt).utc().format('ll')} at{' '}
-            {moment(userInfo.firstInteractAt).utc().format('LT')}
-            {/* +3 UTC */}
+            {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM DD, YYYY')} {`${t('at')} `}
+            {dayjs(userInfo.firstInteractAt).tz().format('hh:mm a Z')} UTC
           </TextSubHeading>
         </div>
       </div>
