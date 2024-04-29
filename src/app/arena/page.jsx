@@ -29,7 +29,7 @@ import Loading from '../loading'
 
 const V4_COMPETITION_DATAS = gql`
   query V4_COMPETITION {
-    tradingCompetitions {
+    tradingCompetitions(where: { isHidden_eq: false }) {
       name
       entryFee
       market
