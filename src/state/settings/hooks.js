@@ -1,7 +1,9 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { ChainId } from 'thena-sdk-core'
 import { useAccount, useSwitchChain } from 'wagmi'
+
+import { LOCALES } from '@/constant'
 
 import { closeWallet, openWallet, switchNetwork, updateDeadline, updateLocale, updateSlippage } from './actions'
 
@@ -61,12 +63,21 @@ export const useChainSettings = () => {
 }
 
 export const useLocaleSettings = () => {
-  const { locale } = useSelector(state => state.settings)
   const dispatch = useDispatch()
+
+  const { locale } = useSelector(state => state.settings)
+
+  useEffect(() => {
+    const lcLocale = localStorage.getItem('thena-locale') || LOCALES.en
+    dispatch(updateLocale(lcLocale))
+  }, [dispatch])
 
   const updateLanguage = useCallback(
     val => {
       dispatch(updateLocale(val))
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('thena-locale', val)
+      }
     },
     [dispatch],
   )

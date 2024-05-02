@@ -7,7 +7,7 @@ import { bsc, opBNB } from 'viem/chains'
 import { cookieStorage, createConfig, createStorage, http, WagmiProvider } from 'wagmi'
 import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
 
-import { getRpcUrl } from '@/lib/utils'
+import { getRpcUrl, getRpcUrlRewards } from '@/lib/utils'
 
 // 0. Setup queryClient
 const queryClient = new QueryClient()
@@ -25,11 +25,40 @@ const metadata = {
 
 const chains = [bsc, opBNB]
 
+const bscRewards = {
+  ...bsc,
+  rpcUrls: {
+    default: {
+      http: ['https://bsc-dataseed1.bnbchain.org'],
+    },
+  },
+}
+
 export const wagmiConfig = createConfig({
   chains,
   transports: {
     [bsc.id]: http(getRpcUrl(ChainId.BSC)),
     [opBNB.id]: http(getRpcUrl(ChainId.OPBNB)),
+  },
+  connectors: [
+    walletConnect({ projectId, metadata, showQrModal: false }),
+    injected({ shimDisconnect: true }),
+    coinbaseWallet({
+      appName: metadata.name,
+      appLogoUrl: metadata.icons[0],
+    }),
+  ],
+  ssr: true,
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
+})
+
+export const wagmiConfigRewards = createConfig({
+  chains: [bscRewards, opBNB],
+  transports: {
+    [bsc.id]: http(getRpcUrlRewards(ChainId.BSC)),
+    [opBNB.id]: http(getRpcUrlRewards(ChainId.OPBNB)),
   },
   connectors: [
     walletConnect({ projectId, metadata, showQrModal: false }),
