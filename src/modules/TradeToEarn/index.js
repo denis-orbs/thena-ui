@@ -51,7 +51,7 @@ export const fetchDataDailyVolume = async (user, day, pair) => {
 
 const V4_TOTAL_VOLUME = gql`
   query V4_TOTAL_VOLUME($user: String!, $pair: String!) {
-    dailyGeneratedVolumes(where: { user: $user, pair: $pair, amountAsReferrer_gt: 0 }) {
+    dailyGeneratedVolumes(where: { user: $user, pair: $pair, day_gt: 17, amountAsReferrer_gt: 0 }) {
       id
       user
       amountAsUser
@@ -83,7 +83,7 @@ export const fetchDataTotalVolume = async (user, pair) => {
 
 const V4_EARNINGS = gql`
   query V4_EARNINGS($user: String!) {
-    dailyGeneratedVolumes(where: { user: $user }) {
+    dailyGeneratedVolumes(where: { user: $user, day_gt: 17 }) {
       id
       user
       amountAsUser
