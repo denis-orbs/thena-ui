@@ -182,11 +182,19 @@ export default function PoolsPage() {
             {pool.address === weETHPoolAddress && (
               <div className='flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id='etherBadgeIcon'>
-                  <NextImage className='h-full w-full object-contain' alt='EtherFi' src='/images/Etherfi.jpg' />
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EtherFi'
+                    src='/images/Etherfi.png'
+                  />
                 </div>
 
-                <div className='size-6' data-tooltip-id='etherBadgeIcon'>
-                  <NextImage className='h-full w-full object-cover' alt='EigenLayer' src='/images/Eigenlayer.png' />
+                <div className='size-6' data-tooltip-id='eigenBadgeIcon'>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EigenLayer'
+                    src='/images/Eigenlayer.png'
+                  />
                 </div>
 
                 {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIcon' /> */}

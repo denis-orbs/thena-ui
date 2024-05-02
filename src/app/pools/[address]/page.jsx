@@ -84,11 +84,19 @@ export default function SpecificPoolPage({ params }) {
             {pool.address === '0xc0e1c9fec0d8888039095da014382d027f27069d' && (
               <div className='ml-4 mt-5 flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id='etherBadgeIconDetail'>
-                  <NextImage className='h-full w-full object-contain' alt='EtherFi' src='/images/Etherfi.jpg' />
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EtherFi'
+                    src='/images/Etherfi.png'
+                  />
                 </div>
 
                 <div className='size-6' data-tooltip-id='eigenBadgeIconDetail'>
-                  <NextImage className='h-full w-full object-cover' alt='EigenLayer' src='/images/Eigenlayer.png' />
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EigenLayer'
+                    src='/images/Eigenlayer.png'
+                  />
                 </div>
                 {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIconDetail' />
                 <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIconDetail' /> */}
