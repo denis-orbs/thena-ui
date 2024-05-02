@@ -41,7 +41,7 @@ function ModalRemoveAddAdmin({ type = 'remove', isOpen, closeModal = () => {}, u
               <User className='h-4 w-4' />
             </Highlight>
           </div>
-          <TextHeading className='text-3xl capitalize'>{t(isRemoveAdmin ? 'Remove admin' : 'Add admin')}</TextHeading>
+          <TextHeading className='text-3xl capitalize'>{t(isRemoveAdmin ? 'Remove Admin' : 'Add Admin')}</TextHeading>
           <TextSubHeading>
             {t('Are you sure you want to admin', { type: isRemoveAdmin ? 'remove' : 'add' })}
           </TextSubHeading>
@@ -68,7 +68,7 @@ function ModalRemoveAddAdmin({ type = 'remove', isOpen, closeModal = () => {}, u
               {t('Cancel')}
             </EmphasisButton>
             <PrimaryButton className='w-full' onClick={handleUpdatePermission}>
-              {t(isRemoveAdmin ? 'Remove admin' : 'Add admin')}
+              {t(isRemoveAdmin ? 'Remove Admin' : 'Add Admin')}
             </PrimaryButton>
           </div>
         </div>

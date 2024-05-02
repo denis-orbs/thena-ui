@@ -124,12 +124,9 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
               >
                 {t('Edit checkmark')}
               </EmphasisButton>
-              {userInfo.isSuperAdmin && userInfo.id !== item.id && (
-                <EmphasisButton
-                  className='w-full text-base'
-                  onClick={() => handleClickOpenModal(item, item.isAdmin ? 'remove' : 'add')}
-                >
-                  {t(item.isAdmin ? 'Remove admin' : 'Add admin')}
+              {userInfo.id !== item.id && (
+                <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenModal(item, 'remove')}>
+                  {t('Remove Admin')}
                 </EmphasisButton>
               )}
             </div>

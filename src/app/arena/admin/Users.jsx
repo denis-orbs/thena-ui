@@ -182,7 +182,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
                   className='w-full text-base'
                   onClick={() => handleClickOpenModal(item, item.isAdmin ? 'remove' : 'add')}
                 >
-                  {t(item.isAdmin ? 'Remove Admin' : 'Add admin')}
+                  {t(item.isAdmin ? 'Remove Admin' : 'Add Admin')}
                 </EmphasisButton>
               )}
             </div>
