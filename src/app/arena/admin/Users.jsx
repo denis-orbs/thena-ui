@@ -98,7 +98,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
   const debounceSearch = useDebounce(searchText, 300)
 
   const { data, isLoading, mutate } = useSWR(['user api', debounceSearch, reloadFetch, refetchUpdated], () =>
-    fetchUser(debounceSearch),
+    fetchUser(debounceSearch, userInfo?.id),
   )
 
   const updateVerify = useCallback(
@@ -177,9 +177,12 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
               <EmphasisButton className='hidden w-full text-base' onClick={() => handleClickOpenEditCheckMark(item)}>
                 {t('Edit checkmark')}
               </EmphasisButton>
-              {userInfo.isSuperAdmin && (
-                <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenModal(item, 'add')}>
-                  {t('Add admin')}
+              {userInfo.isSuperAdmin && userInfo.id !== item.id && (
+                <EmphasisButton
+                  className='w-full text-base'
+                  onClick={() => handleClickOpenModal(item, item.isAdmin ? 'remove' : 'add')}
+                >
+                  {t(item.isAdmin ? 'Remove Admin' : 'Add admin')}
                 </EmphasisButton>
               )}
             </div>
@@ -191,7 +194,16 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           </div>
         ),
       })),
-    [dataFetch, handleClickOpenEditCheckMark, handleClickOpenModal, isMdDown, t, updateVerify, userInfo.isSuperAdmin],
+    [
+      dataFetch,
+      handleClickOpenEditCheckMark,
+      handleClickOpenModal,
+      isMdDown,
+      t,
+      updateVerify,
+      userInfo.id,
+      userInfo.isSuperAdmin,
+    ],
   )
 
   return (
