@@ -150,8 +150,7 @@ export function UserInfo({ userInfo, following, followers }) {
         </Box>
       </div>
 
-      {/* TODO: change field after have api */}
-      {userInfo.thenaId ? (
+      {hasThenaId ? (
         userInfo.biography ? (
           <div className='flex flex-col'>
             <TextHeading className='text-2xl'>{t('About')}</TextHeading>

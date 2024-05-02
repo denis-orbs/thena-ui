@@ -5,12 +5,10 @@ import React, { useCallback, useMemo } from 'react'
 import { EmphasisButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import { TextHeading } from '@/components/typography'
-import { useUserInfo } from '@/context/userInfoContext'
 import { cn } from '@/lib/utils'
 
-export function SelectAvatar({ dataUpdate, setDataUpdate }) {
+export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo }) {
   const t = useTranslations()
-  const { userInfo } = useUserInfo()
 
   const isHaveThenaNfts = useMemo(() => !!userInfo?.thenianNfts?.length, [userInfo?.thenianNfts?.length])
 

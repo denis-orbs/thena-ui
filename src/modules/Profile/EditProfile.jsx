@@ -83,7 +83,7 @@ export function EditProfile({ userInfo, isAdmin = false }) {
               {t('You Must Own An TheNFT To Select It As Your Avatar')}
             </TextSubHeading>
           </div>
-          <SelectAvatar dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
+          <SelectAvatar dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} userInfo={userInfo} />
         </div>
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
