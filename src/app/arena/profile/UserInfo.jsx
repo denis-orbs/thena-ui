@@ -100,7 +100,7 @@ export function UserInfo({ userInfo, following, followers }) {
               <div className='flex gap-2'>
                 {userInfo.websiteUrl && (
                   <Link href={userInfo.websiteUrl} rel='nofollow noopener' target='_blank'>
-                    <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.websiteUrl}</NeutralBadge>
+                    <NeutralBadge className='text-nowrap lg:text-xs'>{userInfo.websiteUrl}</NeutralBadge>
                   </Link>
                 )}
                 {userInfo.xProfileUrl && (
@@ -109,7 +109,7 @@ export function UserInfo({ userInfo, following, followers }) {
                     rel='nofollow noopener'
                     target='_blank'
                   >
-                    <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.xProfileUrl}</NeutralBadge>
+                    <NeutralBadge className='text-nowrap lg:text-xs'>{userInfo.xProfileUrl}</NeutralBadge>
                   </Link>
                 )}
               </div>
