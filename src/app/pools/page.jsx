@@ -11,6 +11,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
+import NextImage from '@/components/image/NextImage'
 import SearchInput from '@/components/input/SearchInput'
 import Selection from '@/components/selection'
 import Table from '@/components/table'
@@ -22,7 +23,7 @@ import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { formatAmount } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { EigenBadgeIcon, EtherFiBadgeIcon, InfoIcon } from '@/svgs'
+import { InfoIcon } from '@/svgs'
 
 import AddLiquidityModal from './addLiquidityModal'
 
@@ -180,8 +181,16 @@ export default function PoolsPage() {
             </div>
             {pool.address === weETHPoolAddress && (
               <div className='flex items-center gap-2'>
-                <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIcon' />
-                <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIcon' />
+                <div className='size-6' data-tooltip-id='etherBadgeIcon'>
+                  <NextImage className='h-full w-full object-contain' alt='EtherFi' src='/images/Etherfi.jpg' />
+                </div>
+
+                <div className='size-6' data-tooltip-id='etherBadgeIcon'>
+                  <NextImage className='h-full w-full object-cover' alt='EigenLayer' src='/images/Eigenlayer.png' />
+                </div>
+
+                {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIcon' /> */}
+                {/* <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIcon' /> */}
                 <CustomTooltip id='etherBadgeIcon' className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
                 </CustomTooltip>

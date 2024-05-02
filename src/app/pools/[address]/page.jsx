@@ -12,13 +12,14 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import AddLiquidity from '@/components/common/AddLiquidity'
 import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
+import NextImage from '@/components/image/NextImage'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { usePairs } from '@/context/pairsContext'
 import { formatAmount, goScan } from '@/lib/utils'
 import Position from '@/modules/Position'
 import { useChainSettings } from '@/state/settings/hooks'
-import { AnalyticsIcon, ArrowLeftIcon, EigenBadgeIcon, EtherFiBadgeIcon, ExternalIcon, InfoCircleWhite } from '@/svgs'
+import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/svgs'
 
 export default function SpecificPoolPage({ params }) {
   const [currentStep, setCurrentStep] = useState(1)
@@ -82,8 +83,15 @@ export default function SpecificPoolPage({ params }) {
             </div>
             {pool.address === '0xc0e1c9fec0d8888039095da014382d027f27069d' && (
               <div className='ml-4 mt-5 flex items-center gap-2'>
-                <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIconDetail' />
-                <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIconDetail' />
+                <div className='size-6' data-tooltip-id='etherBadgeIconDetail'>
+                  <NextImage className='h-full w-full object-contain' alt='EtherFi' src='/images/Etherfi.jpg' />
+                </div>
+
+                <div className='size-6' data-tooltip-id='eigenBadgeIconDetail'>
+                  <NextImage className='h-full w-full object-cover' alt='EigenLayer' src='/images/Eigenlayer.png' />
+                </div>
+                {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIconDetail' />
+                <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIconDetail' /> */}
                 <CustomTooltip id='etherBadgeIconDetail' className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
                 </CustomTooltip>
