@@ -17,9 +17,10 @@ export function UserProfileCard({
   id,
   nameColor,
   verifyImage,
+  isAdmin,
+  isSuperAdmin,
   showVerified = false,
   disableLink = false,
-  isAdmin,
 }) {
   const LinkComponent = useCallback(
     ({ children }) => {
@@ -55,6 +56,7 @@ export function UserProfileCard({
           <Verified className='h-5 w-5' />
         ))}
       {isAdmin && <Tag>{t('Admin')}</Tag>}
+      {isSuperAdmin && <Tag>{t('Super Admin')}</Tag>}
     </LinkComponent>
   )
 }

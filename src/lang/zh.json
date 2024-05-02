@@ -718,5 +718,6 @@
   "Use Checkmark Default": "Use checkmark default",
   "Use Custom Checkmark": "Use custom checkmark",
   "Drop The File Here": "Drop the file here...",
-  "Drag Drop File Here": "Drag 'n' drop file here, or click to select file"
+	"Drag Drop File Here": "Drag 'n' drop file here, or click to select file",
+	"Super Admin": "Super admin"
 }

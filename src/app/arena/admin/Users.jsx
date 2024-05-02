@@ -24,16 +24,14 @@ import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 // TODO: add checkmarkIcon field
 const V4_USERS = gql`
   query V4_USERS($search: String) {
-    users(
-      orderBy: firstInteractAt_DESC
-      limit: 8
-      where: { isSuperAdmin_eq: false, isAdmin_eq: false, id_containsInsensitive: $search }
-    ) {
+    users(orderBy: firstInteractAt_DESC, limit: 8, where: { id_containsInsensitive: $search }) {
       id
       isVerified
       username
       nameColor
       avatar
+      isAdmin
+      isSuperAdmin
     }
   }
 `
@@ -160,6 +158,8 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
             showVerified={item.isVerified}
             username={item.username}
             verifyImage={item.checkMarkIcon}
+            isAdmin={item.isAdmin}
+            isSuperAdmin={item.isSuperAdmin}
           />
         ),
         walletId: (

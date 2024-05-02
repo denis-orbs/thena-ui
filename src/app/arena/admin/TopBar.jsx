@@ -33,7 +33,7 @@ function TopBar({ userInfo }) {
                 </div>
               )}
             </div>
-            {userInfo.isSuperAdmin ? <Tag>Super admin</Tag> : <Tag>Admin</Tag>}
+            {userInfo.isSuperAdmin ? <Tag>{t('Super Admin')}</Tag> : <Tag>{t('Admin')}</Tag>}
           </div>
           <TextSubHeading>
             {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM DD, YYYY')} {`${t('at')} `}
