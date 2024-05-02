@@ -123,14 +123,16 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
           }, 0)
         }
 
-        items.push({
-          epoch: item.day,
-          date: item.lastUpdate,
-          tradingVolume: item.amountAsUser,
-          earned,
-          inUSD,
-          isClaimable,
-        })
+        if (earned.some(e => e.total)) {
+          items.push({
+            epoch: item.day,
+            date: item.lastUpdate,
+            tradingVolume: item.amountAsUser,
+            earned,
+            inUSD,
+            isClaimable,
+          })
+        }
       }
 
       setData(items)
