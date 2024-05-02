@@ -22,7 +22,7 @@ import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { formatAmount } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
+import { EigenBadgeIcon, EtherFiBadgeIcon, InfoIcon } from '@/svgs'
 
 import AddLiquidityModal from './addLiquidityModal'
 
@@ -178,6 +178,18 @@ export default function PoolsPage() {
               <TextHeading>{pool.symbol}</TextHeading>
               <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
             </div>
+            {pool.address === weETHPoolAddress && (
+              <div className='flex items-center gap-2'>
+                <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIcon' />
+                <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIcon' />
+                <CustomTooltip id='etherBadgeIcon' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
+                </CustomTooltip>
+                <CustomTooltip id='eigenBadgeIcon' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
+                </CustomTooltip>
+              </div>
+            )}
           </div>
         ),
         apr: (

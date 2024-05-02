@@ -488,5 +488,7 @@
   "Your estimated daily rewards": "您今日预计的奖励",
   "An internal error was received": "An internal error was received.",
   "Begin your DeFi journey on THENA": "开始您在 THENA 上的DeFi之旅",
-  "You will receive": "您会收到"
+  "You will receive": "您会收到",
+  "EtherFi tooltip": "3x EtherFi Points will be distributed to liquidity providers in this pool.",
+  "Eigen tooltip": "EigenLayer Points will be distributed to liquidity providers in this pool."
 }
