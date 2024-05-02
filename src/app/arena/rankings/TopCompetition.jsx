@@ -15,26 +15,9 @@ import { useAssets } from '@/context/assetsContext'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount, fromWei } from '@/lib/utils'
 
-const V4_TOP_COMPETITION_DESC = gql`
-  query V4_TOP_COMPETITIONS_DESC {
-    tradingCompetitions(orderBy: [participantCount_DESC, id_ASC]) {
-      id
-      tcTrades {
-        amountIn
-        id
-        tokenIn {
-          id
-        }
-      }
-      participantCount
-      name
-    }
-  }
-`
-
-const V4_TOP_COMPETITION_ASC = gql`
-  query V4_TOP_COMPETITIONS_ASC {
-    tradingCompetitions(orderBy: [participantCount_ASC, id_ASC]) {
+const V4_TOP_COMPETITIONS = gql`
+  query V4_TOP_COMPETITIONS($orderBy: [TradingCompetitionOrderByInput!] = []) {
+    tradingCompetitions(orderBy: $orderBy) {
       id
       tcTrades {
         amountIn
@@ -51,9 +34,9 @@ const V4_TOP_COMPETITION_ASC = gql`
 
 const fetchTopCompetition = async direction => {
   try {
-    const { tradingCompetitions: topCompetition } = await v4Client.request(
-      direction === 'DESC' ? V4_TOP_COMPETITION_DESC : V4_TOP_COMPETITION_ASC,
-    )
+    const { tradingCompetitions: topCompetition } = await v4Client.request(V4_TOP_COMPETITIONS, {
+      orderBy: direction === 'DESC' ? ['participantCount_DESC', 'id_ASC'] : ['participantCount_ASC', 'id_ASC'],
+    })
     return topCompetition
   } catch (error) {
     console.log(error)
@@ -229,6 +212,7 @@ function TopCompetition() {
             setCurrentPage={setCurrentPage}
             tableBasic
             data={isAll ? finalData : finalData.slice(0, 5)}
+            onlySortDesc
           />
         </div>
       </Box>

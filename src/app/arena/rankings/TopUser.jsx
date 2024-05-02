@@ -21,35 +21,9 @@ import useWallet from '@/lib/wallets/useWallet'
 const tabsFilterUser = ['All', 'Hosted', 'Joined']
 const tabsFilterTime = ['24h', '7d', '30d', 'Max']
 
-const V4_TOP_USER_ALL_WIN_AMOUNT_DESC = gql`
-  query V4_TOP_USER_ALL_WIN_AMOUNT_DESC($tradingCompetition: TradingCompetitionWhereInput = {}) {
-    tcParticipants(
-      orderBy: [winAmountUSD_DESC, id_ASC]
-      where: { tradingCompetition: $tradingCompetition }
-      limit: 25
-    ) {
-      participant {
-        avatar
-        id
-        nameColor
-        username
-      }
-      pnlUSD
-      winAmountUSD
-      tradingCompetition {
-        name
-        id
-        timestamp {
-          endTimestamp
-        }
-      }
-    }
-  }
-`
-
-const V4_TOP_USER_ALL_PNL_DESC = gql`
-  query V4_TOP_USER_ALL_PNL_DESC($tradingCompetition: TradingCompetitionWhereInput = {}) {
-    tcParticipants(orderBy: [pnlUSD_DESC, id_ASC], where: { tradingCompetition: $tradingCompetition }, limit: 25) {
+const V4_TOP_USER = gql`
+  query V4_TOP_USER($where: TCParticipantWhereInput = {}, $orderBy: [TCParticipantOrderByInput!] = []) {
+    tcParticipants(orderBy: $orderBy, where: $where, limit: 25) {
       participant {
         avatar
         id
@@ -70,16 +44,11 @@ const V4_TOP_USER_ALL_PNL_DESC = gql`
 `
 
 // TODO: BigInt for timestamp filter
-const fetchUsers = async (sort, tradingCompetitionFilter) => {
+const fetchUsers = async (sort, whereQuery) => {
   try {
-    if (sort?.value === 'pnlUSD') {
-      const { tcParticipants } = await v4Client.request(V4_TOP_USER_ALL_PNL_DESC, {
-        tradingCompetition: tradingCompetitionFilter,
-      })
-      return tcParticipants
-    }
-    const { tcParticipants } = await v4Client.request(V4_TOP_USER_ALL_WIN_AMOUNT_DESC, {
-      tradingCompetition: tradingCompetitionFilter,
+    const { tcParticipants } = await v4Client.request(V4_TOP_USER, {
+      where: whereQuery,
+      orderBy: sort?.value === 'pnlUSD' ? ['pnl_DESC', 'id_ASC'] : ['winAmountUSD_DESC', 'id_ASC'],
     })
     return tcParticipants
   } catch (error) {
@@ -134,30 +103,87 @@ function TopUser() {
   const [dataFetch, setDataFetch] = useState([])
   const { account } = useWallet()
 
-  // const endTimestamp_gte = useMemo(() => {
-  //   console.log({ selectedTabTime })
-  //   // eslint-disable-next-line no-undef
-  //   return '0'
-  // }, [selectedTabTime])
+  const debounceSearch = useDebounce(searchText.trim(), 300)
 
   const tradingCompetitionFilter = useMemo(() => {
-    console.log({ selectedTabUser })
-    if (account) {
-      switch (selectedTabUser) {
-        case 'Hosted':
-          return { owner: { id_eq: account.toLowerCase() } }
-        case 'Joined':
-          return { participants_some: { participant: { id_eq: account.toLowerCase() } } }
+    let filter = {}
+    if (selectedTabTime !== 'Max') {
+      switch (selectedTabTime) {
+        case '24h':
+          filter = {
+            ...filter,
+            timestamp: { endTimestamp_gte: Math.floor(Number(Date.now() / 1000 - 60 * 60 * 24)) },
+          }
+          break
+        case '7d':
+          filter = {
+            ...filter,
+            timestamp: { endTimestamp_gte: Math.floor(Date.now() / 1000 - 7 * 60 * 60 * 24) },
+          }
+          break
+        case '30d':
+          filter = {
+            ...filter,
+            timestamp: { endTimestamp_gte: Math.floor(Date.now() / 1000 - 30 * 60 * 60 * 24) },
+          }
+          break
         default:
           break
       }
     }
-    return {}
-  }, [selectedTabUser, account])
 
-  const debounceSearch = useDebounce(searchText.trim(), 300)
+    if (account) {
+      switch (selectedTabUser) {
+        case 'Hosted':
+          filter = {
+            ...filter,
+            owner: {
+              id_eq: account.toLowerCase(),
+            },
+          }
+          break
+        case 'Joined':
+          filter = {
+            ...filter,
+            participants_some: {
+              participant: {
+                id_eq: account.toLowerCase(),
+              },
+            },
+          }
+          break
+        default:
+          break
+      }
+    }
+    return filter
+  }, [selectedTabTime, account, selectedTabUser])
 
-  const { data: topUsers, isLoading } = useSWR('top users api', () => fetchUsers(sort, tradingCompetitionFilter))
+  const whereQuery = useMemo(() => {
+    let where = {
+      tradingCompetition: tradingCompetitionFilter,
+    }
+
+    if (debounceSearch) {
+      where = {
+        ...where,
+        AND: {
+          OR: [
+            {
+              participant: {
+                OR: [{ id_containsInsensitive: debounceSearch }, { username_containsInsensitive: debounceSearch }],
+              },
+            },
+            { tradingCompetition: { name_containsInsensitive: debounceSearch } },
+          ],
+        },
+      }
+    }
+
+    return where
+  }, [debounceSearch, tradingCompetitionFilter])
+
+  const { data: topUsers, isLoading } = useSWR(['top users api', whereQuery, sort], () => fetchUsers(sort, whereQuery))
 
   const subTabsUser = useMemo(
     () =>
@@ -184,6 +210,10 @@ function TopUser() {
   )
 
   useEffect(() => {
+    setCurrentPage(1)
+  }, [debounceSearch, selectedTabTime, selectedTabUser, sort])
+
+  useEffect(() => {
     if (!isLoading) {
       if (topUsers && Array.isArray(topUsers)) {
         setDataFetch(topUsers)
@@ -201,37 +231,62 @@ function TopUser() {
       competitionId: item.tradingCompetition.id,
       winAmountUSD: item.winAmountUSD,
       pnlUSD: item.pnlUSD,
+      avatar: item.avatar || Avatar,
     }))
     return arr
   }, [dataFetch])
 
-  const topUserWithSearch = useMemo(() => {
-    const arr = [...topUsersFormatted]
-    if (debounceSearch) {
-      return arr.filter(
-        item =>
-          item.username?.toLowerCase().includes(debounceSearch.toLowerCase()) ||
-          item.userId?.toLowerCase().includes(debounceSearch.toLowerCase()) ||
-          item.competitionName?.toLowerCase().includes(debounceSearch.toLowerCase()),
-      )
-    }
-    return arr
-  }, [debounceSearch, topUsersFormatted])
+  const filteredTcParticipants = useMemo(() => {
+    if (topUsersFormatted && Array.isArray(topUsersFormatted) && !topUsersFormatted.errors) {
+      let rank = 0
+      let arr = []
+      if (sort?.value === 'pnlUSD') {
+        let prevPnl = -99999999999
 
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [debounceSearch])
+        arr = topUsersFormatted.map((item, index) => {
+          if (item.pnlUSD !== prevPnl) {
+            rank = index + 1
+            prevPnl = item.pnlUSD
+          }
+
+          return {
+            ...item,
+            rank,
+          }
+        })
+      } else {
+        // Sort by Win Amount
+        let prevWinAmount = -1
+
+        arr = topUsersFormatted.map((item, index) => {
+          if (item.winAmountUSD !== prevWinAmount) {
+            rank = index + 1
+            prevWinAmount = item.winAmountUSD
+          }
+
+          return {
+            ...item,
+            rank,
+          }
+        })
+      }
+
+      return arr
+    }
+
+    return []
+  }, [sort?.value, topUsersFormatted])
 
   const finalData = useMemo(
     () =>
-      topUserWithSearch?.map((item, index) => ({
-        rank: <Paragraph>{index + 1}</Paragraph>,
+      filteredTcParticipants?.map(item => ({
+        rank: <Paragraph>{item.rank}</Paragraph>,
         user: (
           <Link
             className='flex cursor-pointer items-center justify-center gap-2'
             href={`/arena/profile/${item.userId.toLowerCase()}`}
           >
-            <CircleImage src={Avatar} alt='avatar' className='size-8' />
+            <CircleImage src={item.avatar} alt='avatar' className='size-8' />
             <Paragraph className='text-white'>{item.username || sliceAddress(item.userId)}</Paragraph>
           </Link>
         ),
@@ -252,13 +307,13 @@ function TopUser() {
         ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(topUserWithSearch)],
+    [JSON.stringify(filteredTcParticipants)],
   )
 
   return (
     <div className='col-span-12 lg:col-span-7'>
       <div className='flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between'>
-        <Tabs data={subTabsUser} size={SizeTypes.Medium} itemClassName={`text-sm ${account ? '' : 'hidden'}`} />
+        {account ? <Tabs data={subTabsUser} size={SizeTypes.Medium} itemClassName='text-sm' /> : null}
         <SearchInput
           className='h-11 w-full md:w-[336px]'
           classNames={{ input: 'h-11' }}
@@ -267,7 +322,7 @@ function TopUser() {
         />
       </div>
       <div className='mt-6 flex justify-end'>
-        <div className='hidden rounded-lg bg-neutral-900 p-1'>
+        <div className='rounded-lg bg-neutral-900 p-1'>
           <Tabs data={subTabsTime} size={SizeTypes.Small} itemClassName='text-sm' />
         </div>
       </div>
