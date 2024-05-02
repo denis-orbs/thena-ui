@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo } from 'react'
 
@@ -43,7 +44,9 @@ export function SelectAvatar({ dataUpdate, setDataUpdate }) {
   ) : (
     <div className='flex flex-2 flex-col-reverse space-y-4 lg:flex-col lg:space-y-2'>
       <TextHeading className='text-3xl'>{t('No TheNFTs Found')}</TextHeading>
-      <EmphasisButton className='w-32 text-nowrap'>{t('Buy TheNFT')}</EmphasisButton>
+      <Link href='https://element.market/collections/thenian' className='' rel='nofollow noopener' target='_blank'>
+        <EmphasisButton className='w-32 text-nowrap'>{t('Buy TheNFT')}</EmphasisButton>
+      </Link>
     </div>
   )
 }

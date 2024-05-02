@@ -3,6 +3,7 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import { useCallback, useMemo, useState } from 'react'
@@ -98,10 +99,18 @@ export function UserInfo({ userInfo, following, followers }) {
               </TextSubHeading>
               <div className='flex gap-2'>
                 {userInfo.websiteUrl && (
-                  <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.websiteUrl}</NeutralBadge>
+                  <Link href={userInfo.websiteUrl} rel='nofollow noopener' target='_blank'>
+                    <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.websiteUrl}</NeutralBadge>
+                  </Link>
                 )}
                 {userInfo.xProfileUrl && (
-                  <NeutralBadge className='text-nowrap capitalize lg:text-xs'>@{userInfo.xProfileUrl}</NeutralBadge>
+                  <Link
+                    href={`https://twitter.com/${userInfo.xProfileUrl.replace('@', '')}`}
+                    rel='nofollow noopener'
+                    target='_blank'
+                  >
+                    <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{userInfo.xProfileUrl}</NeutralBadge>
+                  </Link>
                 )}
               </div>
             </div>
