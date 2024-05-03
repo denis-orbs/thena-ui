@@ -3,7 +3,7 @@
 import { gql } from 'graphql-request'
 import { compact, isNil } from 'lodash'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -89,15 +89,8 @@ function CompetitionDetailLayout({ children, params }) {
   })
 
   const t = useTranslations()
-  const { replace } = useRouter()
 
   const pathname = usePathname()
-
-  const [selectedTab, setSelectedTab] = useState(
-    ['leaderboard', 'participants', 'analytics'].includes(pathname.split('/').slice(-1)[0])
-      ? pathname.split('/').slice(-1)[0]
-      : 'details',
-  )
 
   const { eventType } = useEventType(competition?.timestamp)
 
@@ -110,45 +103,39 @@ function CompetitionDetailLayout({ children, params }) {
       compact([
         {
           label: t('Details'),
-          active: selectedTab === 'details',
-          onClickHandler: () => {
-            setSelectedTab('details')
-            replace(`/arena/trading-competitions/${params.id}`)
-          },
+          active: pathname === `/arena/trading-competitions/${params.id}`,
+          href: `/arena/trading-competitions/${params.id}`,
+          isLink: true,
         },
         (eventType === EVENT_TYPES.LIVE || eventType === EVENT_TYPES.ENDED) && _competition?.participantCount !== 0
           ? {
               label: t('Leaderboard'),
-              active: selectedTab === 'leaderboard',
-              onClickHandler: () => {
-                setSelectedTab('leaderboard')
+              active: pathname === `/arena/trading-competitions/${params.id}/leaderboard`,
 
-                replace(`/arena/trading-competitions/${params.id}/leaderboard`)
-              },
+              isLink: true,
+              href: `/arena/trading-competitions/${params.id}/leaderboard`,
             }
           : undefined,
         _competition?.participantCount !== 0
           ? {
               label: t('Participants'),
-              active: selectedTab === 'participants',
-              onClickHandler: () => {
-                setSelectedTab('participants')
-                replace(`/arena/trading-competitions/${params.id}/participants`)
-              },
+              active: pathname === `/arena/trading-competitions/${params.id}/participants`,
+
+              isLink: true,
+              href: `/arena/trading-competitions/${params.id}/participants`,
             }
           : undefined,
         eventType !== EVENT_TYPES.UPCOMING
           ? {
               label: t('Analytics'),
-              active: selectedTab === 'analytics',
-              onClickHandler: () => {
-                setSelectedTab('analytics')
-                replace(`/arena/trading-competitions/${params.id}/analytics`)
-              },
+              active: pathname === `/arena/trading-competitions/${params.id}/analytics`,
+
+              isLink: true,
+              href: `/arena/trading-competitions/${params.id}/analytics`,
             }
           : undefined,
       ]),
-    [_competition?.participantCount, eventType, params.id, replace, selectedTab, t],
+    [_competition?.participantCount, eventType, params.id, pathname, t],
   )
 
   const retryCompetition = useCallback(async () => {
@@ -170,6 +157,7 @@ function CompetitionDetailLayout({ children, params }) {
   useEffect(() => {
     setQueryParams(
       objectToQuery({
+        type: sessionStorage.getItem('type'),
         search: sessionStorage.getItem('search'),
         free: sessionStorage.getItem('free'),
         market: sessionStorage.getItem('market'),

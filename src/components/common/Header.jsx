@@ -415,37 +415,33 @@ function Header() {
         {
           label: t('Competitions'),
           active: pathname === '/arena',
-          onClickHandler: () => {
-            push('/arena')
-          },
+          isLink: true,
+          href: '/arena',
         },
         {
           label: t('Rankings'),
           active: pathname === '/arena/rankings' || pathname === '/arena/rankings/competitions',
-          onClickHandler: () => {
-            push('/arena/rankings')
-          },
+          isLink: true,
+          href: '/arena/rankings',
         },
         account
           ? {
               label: t('Profile'),
               active: pathname === '/arena/profile' || pathname === '/arena/profile/edit',
-              onClickHandler: () => {
-                push('/arena/profile')
-              },
+              isLink: true,
+              href: '/arena/profile',
             }
           : undefined,
         account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
           ? {
               label: t('Admin'),
               active: pathname === '/arena/admin',
-              onClickHandler: () => {
-                push('/arena/admin')
-              },
+              isLink: true,
+              href: '/arena/admin',
             }
           : undefined,
       ]),
-    [account, pathname, push, t, userInfo],
+    [account, pathname, t, userInfo],
   )
 
   const onLogoClick = () => {

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
@@ -7,7 +8,29 @@ import { cn } from '@/lib/utils'
 function TabItem({ className, item, size, disabled }) {
   const t = useTranslations()
 
-  return (
+  return item.isLink ? (
+    <Link href={item.href}>
+      <div
+        type='button'
+        className={cn(
+          'cursor-pointer rounded-lg px-4 py-2.5',
+          'rounded px-3 py-2 text-xs',
+          size === SizeTypes.Medium && 'lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base',
+          'font-medium text-neutral-200',
+          'outline outline-2 outline-offset-4 outline-transparent',
+          'transition-all duration-150 ease-out',
+          'hover:bg-neutral-800 hover:text-neutral-100 active:outline-focus',
+          'disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-200',
+          item.active && 'bg-neutral-800',
+          className,
+        )}
+        disabled={disabled}
+        onClick={item.onClickHandler}
+      >
+        {t(item.label)}
+      </div>
+    </Link>
+  ) : (
     <button
       type='button'
       className={cn(
