@@ -11,7 +11,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
-import { cn, sliceAddress } from '@/lib/utils'
+import { sliceAddress } from '@/lib/utils'
 import { Verified } from '@/svgs'
 
 function TopBar({ userInfo }) {
@@ -24,8 +24,22 @@ function TopBar({ userInfo }) {
         <div className='flex flex-col gap-2 md:gap-3'>
           <div className='flex flex-col gap-1 md:flex-row md:items-center md:gap-3'>
             <div className='flex flex-row items-center gap-3'>
-              <TextHeading className={cn('text-xl md:text-3xl', userInfo.nameColor ?? '')}>
-                {sliceAddress(userInfo.id)}
+              <TextHeading
+                className={`text-xl md:text-3xl ${
+                  userInfo.nameColor && !String(userInfo.nameColor).startsWith('#') ? userInfo.nameColor : ''
+                }`}
+              >
+                <span
+                  style={{
+                    color: userInfo.nameColor
+                      ? String(userInfo.nameColor).startsWith('#')
+                        ? userInfo.nameColor
+                        : ''
+                      : '',
+                  }}
+                >
+                  {userInfo.username || sliceAddress(userInfo.id)}
+                </span>
               </TextHeading>
               {userInfo.isVerified && (
                 <div className='size-4 md:size-5'>
@@ -37,7 +51,7 @@ function TopBar({ userInfo }) {
           </div>
           <TextSubHeading>
             {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM DD, YYYY')} {`${t('at')} `}
-            {dayjs(userInfo.firstInteractAt).tz().format('hh:mma')}
+            {dayjs(userInfo.firstInteractAt).tz().format('h:ma')}
           </TextSubHeading>
         </div>
       </div>

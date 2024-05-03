@@ -731,5 +731,9 @@
   "Error following": "Error following {user}, please try again!",
   "Copied": "Copied",
   "Users": "Users",
-  "Admins": "Admins"
+  "Admins": "Admins",
+  "Change Name Color": "Change Name Color",
+  "Custom Color": "Custom Color",
+  "Gift ID": "Gift ID",
+  "Basic Color": "Basic Color"
 }

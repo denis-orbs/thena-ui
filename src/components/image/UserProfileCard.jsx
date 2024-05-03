@@ -62,12 +62,20 @@ export function UserProfileCard({
   }, [followUser])
 
   return (
-    <div className='flex gap-1'>
+    <div className='flex items-center gap-1'>
       <LinkComponent>
         <CircleImage src={avatar ?? Avatar} alt='avatar' className='size-8' />
         <div className='flex flex-col gap-1'>
-          <TextHeading className={cn('text-nowrap text-base', nameColor ?? '')}>
-            {username || sliceAddress(id)}
+          <TextHeading
+            className={cn('text-nowrap text-base', nameColor && !String(nameColor).startsWith('#') ? nameColor : '')}
+          >
+            <span
+              style={{
+                color: nameColor ? (String(nameColor).startsWith('#') ? nameColor : '') : '',
+              }}
+            >
+              {username || sliceAddress(id)}
+            </span>
           </TextHeading>
           {username && <Paragraph>{sliceAddress(id)}</Paragraph>}
         </div>
@@ -82,9 +90,11 @@ export function UserProfileCard({
         {isSuperAdmin && <Tag>{t('Super Admin')}</Tag>}
       </LinkComponent>
       {enableFollow && !isOwnProfile && userInfo && (
-        <EmphasisButton className='p-1 text-xs lg:p-1 lg:px-2 lg:text-xs' onClick={onFollow} disabled={loading}>
-          {!loading ? t(isFollowed ? 'UnFollow' : 'Follow') : <Spinner />}
-        </EmphasisButton>
+        <div>
+          <EmphasisButton className='p-1 text-xs lg:p-1 lg:px-2 lg:text-xs' onClick={onFollow} disabled={loading}>
+            {!loading ? t(isFollowed ? 'UnFollow' : 'Follow') : <Spinner />}
+          </EmphasisButton>
+        </div>
       )}
     </div>
   )

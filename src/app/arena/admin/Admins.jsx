@@ -19,7 +19,14 @@ import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 
 const V4_ADMINS = gql`
   query V4_ADMINS($search: String) {
-    users(limit: 8, where: { isSuperAdmin_eq: false, isAdmin_eq: true, id_containsInsensitive: $search }) {
+    users(
+      limit: 8
+      where: {
+        isSuperAdmin_eq: false
+        isAdmin_eq: true
+        OR: [{ id_containsInsensitive: $search }, { username_containsInsensitive: $search }]
+      }
+    ) {
       id
       username
       nameColor

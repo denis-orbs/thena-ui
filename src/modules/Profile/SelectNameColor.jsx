@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 
 import { cn } from '@/lib/utils'
 
-const LIST_COLOR = [
+export const LIST_COLOR = [
   {
     value: 'ffffff',
     color: 'name-color-1',
@@ -43,9 +43,13 @@ export function SelectNameColor({ dataUpdate, setDataUpdate }) {
 
   return (
     // eslint-disable-next-line prettier/prettier
-    <div className='flex flex-2 gap-2 py-2 lg:max-w-4xl'>
+    <div className='flex gap-2 py-2 lg:w-[300px]'>
       {LIST_COLOR.map(({ color, bg, value }) => (
-        <div className='flex cursor-pointer items-center gap-4 p-2' onClick={() => onSelectNameColor(color)}>
+        <div
+          key={value}
+          className='flex cursor-pointer items-center gap-4 p-2'
+          onClick={() => onSelectNameColor(color)}
+        >
           <div className={cn('rounded-full p-1', dataUpdate.nameColor === color ? `border border-[#${value}]` : '')}>
             <div className={cn('h-8 w-8 rounded-full', bg)} />
           </div>

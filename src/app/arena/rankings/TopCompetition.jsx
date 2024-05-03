@@ -72,6 +72,7 @@ function TopCompetition() {
         label: 'Volume',
         value: 'volume',
         width: 'w-[20%]',
+        isDesc: true,
       },
     ],
     [isAll],
@@ -79,7 +80,7 @@ function TopCompetition() {
 
   const assets = useAssets()
   const [currentPage, setCurrentPage] = useState(1)
-  const [sort, setSort] = useState(sortOptions[2])
+  const [sort, setSort] = useState(sortOptions[3])
 
   const [direction, setDirection] = useState('DESC')
 
@@ -213,7 +214,7 @@ function TopCompetition() {
             tableBasic
             data={isAll ? finalData : finalData.slice(0, 5)}
             onlySortDesc
-            enabledRedirectOnClickPagination
+            enabledRedirectOnClickPagination={isAll}
           />
         </div>
       </Box>
