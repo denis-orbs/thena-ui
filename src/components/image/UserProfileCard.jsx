@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
@@ -15,7 +16,6 @@ import { EmphasisButton } from '../buttons/Button'
 import Spinner from '../spinner'
 import Tag from '../tag'
 import { Paragraph, TextHeading } from '../typography'
-import Image from 'next/image'
 
 export function UserProfileCard({
   avatar,
