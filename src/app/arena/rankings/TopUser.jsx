@@ -18,8 +18,6 @@ import { v4Client } from '@/lib/graphql'
 import { formatAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
-import { FollowButtonTopUser } from './FollowButtonTopUser'
-
 const tabsFilterUser = ['All', 'Hosted', 'Joined']
 const tabsFilterTime = ['24h', '7d', '30d', 'Max']
 
@@ -49,7 +47,6 @@ const V4_TOP_USER = gql`
   }
 `
 
-// TODO: BigInt for timestamp filter
 const fetchUsers = async (sort, whereQuery) => {
   try {
     const { tcParticipants } = await v4Client.request(V4_TOP_USER, {
@@ -65,8 +62,8 @@ const fetchUsers = async (sort, whereQuery) => {
 
 function TopUser() {
   const { account } = useWallet()
-  const sortOptions = useMemo(() => {
-    const arr = [
+  const sortOptions = useMemo(
+    () => [
       {
         label: <span>#</span>,
         value: 'rank',
@@ -97,18 +94,9 @@ function TopUser() {
         isDesc: true,
         disabled: false,
       },
-    ]
-
-    if (account) {
-      arr.push({
-        label: '',
-        value: 'follow',
-        disabled: true,
-      })
-    }
-
-    return arr
-  }, [account])
+    ],
+    [],
+  )
 
   const t = useTranslations()
   const [searchText, setSearchText] = useState('')
@@ -329,7 +317,6 @@ function TopUser() {
             {formatAmount(item.pnlUSD < 0 ? item.pnlUSD * -1 : item.pnlUSD)}
           </Paragraph>
         ),
-        follow: <FollowButtonTopUser userInfoId={item.userId} username={item.username} />,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(filteredTcParticipants)],
