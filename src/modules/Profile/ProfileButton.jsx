@@ -1,28 +1,22 @@
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import ThenaIdModal from '@/app/arena/profile/ThenaIdModal'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import { successToast } from '@/lib/notify'
-import useWallet from '@/lib/wallets/useWallet'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
-export function ProfileButton({ isOwnProfile, userInfoId }) {
+export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton }) {
   const [copied, setCopied] = useState(false)
-  const [thenaModalTab, setThenaModalTab] = useState()
   const t = useTranslations()
   const onShare = useCallback(() => {
     navigator.clipboard.writeText(window.location.href)
     setCopied(true)
     successToast(t('Link Has Been Copied'))
   }, [t])
-  const { open: openConnectWallet } = useWeb3Modal()
-  const { account } = useWallet()
 
   const shareIconButton = useMemo(() => (copied ? CheckIcon : PublicIcon), [copied])
   const { following } = useCurrentUserFollow()
@@ -37,16 +31,6 @@ export function ProfileButton({ isOwnProfile, userInfoId }) {
     setTimeout(async () => await followUser(), 1000)
   }, [followUser])
 
-  const handleClickThenaButton = useCallback(
-    (tab = 'get') => {
-      if (!account) {
-        openConnectWallet()
-      }
-      setThenaModalTab(tab)
-    },
-    [account, openConnectWallet],
-  )
-
   useEffect(() => {
     if (copied) {
       const timeOut = setTimeout(() => setCopied(false), 2000)
@@ -57,26 +41,22 @@ export function ProfileButton({ isOwnProfile, userInfoId }) {
 
   return (
     <div className='flex items-center space-x-2'>
-      {isOwnProfile ? (
-        <>
-          {!!userInfo?.usernameNfts?.length && (
-            <Link href='/arena/profile/edit'>
-              <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
-            </Link>
-          )}
-          <EmphasisButton onClick={() => handleClickThenaButton('gift')} className='p-2 text-xs lg:py-3 lg:text-base'>
-            {t('Gift Thena ID')}
-          </EmphasisButton>
-        </>
-      ) : (
-        userInfo && (
-          <EmphasisButton className='p-2 text-xs lg:p-3 lg:text-base' onClick={onFollow}>
-            {t(isFollowed ? 'UnFollow' : 'Follow')}
-          </EmphasisButton>
-        )
+      {isOwnProfile && !!userInfo?.usernameNfts?.length && (
+        <Link href='/arena/profile/edit'>
+          <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
+        </Link>
       )}
-
-      {thenaModalTab && <ThenaIdModal tab={thenaModalTab} onClose={() => setThenaModalTab(undefined)} />}
+      <EmphasisButton
+        onClick={() => handleClickThenaButton(isOwnProfile ? 'get' : 'gift')}
+        className='p-2 text-xs lg:py-3 lg:text-base'
+      >
+        {t(isOwnProfile ? 'Gift ID' : 'Gift Thena ID')}
+      </EmphasisButton>
+      {!isOwnProfile && userInfo && (
+        <EmphasisButton className='p-2 text-xs lg:p-3 lg:text-base' onClick={onFollow}>
+          {t(isFollowed ? 'UnFollow' : 'Follow')}
+        </EmphasisButton>
+      )}
       <EmphasisIconButton Icon={shareIconButton} onClick={onShare} />
     </div>
   )

@@ -20,7 +20,7 @@ function FilterDropDown({ filter, setFilter }) {
   return (
     <div>
       <Popover triggerElement={<EmphasisButton>{t('Filter')}</EmphasisButton>}>
-        <p className='font-figtree text-xl font-semibold leading-6 text-white'>Filters</p>
+        <p className='font-figtree text-xl font-semibold leading-6 text-white'>{t('Filters')}</p>
         <div className='my-2 rounded-lg bg-neutral-900 p-1'>
           <Tabs
             data={[
