@@ -1,4 +1,3 @@
-import { gql } from 'graphql-request'
 import { isString } from 'lodash'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -8,22 +7,16 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
-import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
+import { updateCheckMarkIcon, useUpload } from '@/hooks/useUploadFile'
 import { errorToast, successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
-
-const V4_UPDATE_CHECKMARK = gql`
-  mutation V4_UPDATE_CHECKMARK($file: Upload!) {
-    uploadCheckMarkIcon(file: $file)
-  }
-`
 
 function ModalEditCheckMark({ isOpen, mutate, closeModal = () => {}, user = {} }) {
   const t = useTranslations()
   const [stateChecked, setStateChecked] = useState('default')
   const [selectedImage, setSelectedImage] = useState(undefined)
-
+  const [loading, setLoading] = useState(false)
+  const { upload } = useUpload()
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
     accept: { 'image/*': [] },
@@ -31,27 +24,24 @@ function ModalEditCheckMark({ isOpen, mutate, closeModal = () => {}, user = {} }
 
   const handleSave = useCallback(async () => {
     try {
+      setLoading(true)
       if (user?.id) {
-        await v4Client.request(
-          V4_UPDATE_CHECKMARK,
-          {
-            file: selectedImage,
-            userId: user.id,
-          },
-          {
-            authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
-          },
-        )
-
+        if (selectedImage) {
+          await upload(selectedImage, user.id)
+        } else {
+          updateCheckMarkIcon(null, user.id)
+        }
         successToast('Successfully')
-        closeModal()
         await mutate()
+        closeModal()
       }
     } catch (error) {
       errorToast('Error')
       console.error(error)
+    } finally {
+      setLoading(false)
     }
-  }, [selectedImage, user?.id, mutate, closeModal])
+  }, [selectedImage, user?.id, mutate, closeModal, upload])
 
   useEffect(() => {
     if (acceptedFiles.length) {
@@ -128,7 +118,7 @@ function ModalEditCheckMark({ isOpen, mutate, closeModal = () => {}, user = {} }
               <EmphasisButton className='w-full' onClick={closeModal}>
                 {t('Cancel')}
               </EmphasisButton>
-              <PrimaryButton className='w-full' onClick={handleSave}>
+              <PrimaryButton className='w-full' onClick={handleSave} disabled={loading}>
                 {t('Save Change')}
               </PrimaryButton>
             </div>

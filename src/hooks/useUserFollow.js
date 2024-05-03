@@ -20,6 +20,7 @@ export const V4_FOLLOWERS = gql`
         username
         isVerified
         nameColor
+        checkMarkIcon
       }
     }
   }
@@ -34,6 +35,7 @@ export const V4_FOLLOWING = gql`
         username
         isVerified
         nameColor
+        checkMarkIcon
       }
     }
   }

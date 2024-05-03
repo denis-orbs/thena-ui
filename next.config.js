@@ -26,6 +26,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'tokens.pancakeswap.finance',
       },
+      {
+        protocol: 'https',
+        hostname: 'thena-icon-checkmark.s3.amazonaws.com',
+      },
     ],
   },
 

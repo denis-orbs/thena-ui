@@ -17,7 +17,7 @@ const V4_USER_RANK = gql`
     }
   }
 `
-// TODO: add checkmarkIcon field
+
 const V4_USER_INFO = gql`
   query V4_USER($id: String!) {
     userById(id: $id) {
@@ -30,6 +30,7 @@ const V4_USER_INFO = gql`
       username
       theme
       nameColor
+      checkMarkIcon
       avatar
       thenianNfts {
         meatadata {

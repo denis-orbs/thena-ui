@@ -729,5 +729,7 @@
   "You successfully unfollowed": "You successfully unfollowed {user}",
   "Error unfollowing": "Error unfollowing {user}, please try again!",
   "Error following": "Error following {user}, please try again!",
-  "Copied": "Copied"
+  "Copied": "Copied",
+  "Users": "Users",
+  "Admins": "Admins"
 }

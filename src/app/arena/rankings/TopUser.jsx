@@ -31,6 +31,7 @@ const V4_TOP_USER = gql`
         id
         nameColor
         username
+        checkMarkIcon
       }
       pnlUSD
       winAmountUSD

@@ -21,7 +21,6 @@ import { errorToast, successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 
-// TODO: add checkmarkIcon field
 const V4_USERS = gql`
   query V4_USERS($search: String) {
     users(orderBy: firstInteractAt_DESC, limit: 8, where: { id_containsInsensitive: $search }) {
@@ -32,6 +31,7 @@ const V4_USERS = gql`
       avatar
       isAdmin
       isSuperAdmin
+      checkMarkIcon
     }
   }
 `
@@ -167,14 +167,14 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         ),
         verification: (
           <Paragraph className='flex flex-row items-center justify-between'>
-            {isMdDown ? <TextHeading>Verification badge</TextHeading> : ''}
+            {isMdDown ? <TextHeading>{t('Verification badge')}</TextHeading> : ''}
             <Toggle checked={item.isVerified} onChange={() => updateVerify(!item.isVerified, item.id)} />
           </Paragraph>
         ),
         action: (
           <div className='flex w-full flex-col gap-3 md:flex-row md:items-center'>
             <div className='flex w-full flex-row items-center gap-3'>
-              <EmphasisButton className='hidden w-full text-base' onClick={() => handleClickOpenEditCheckMark(item)}>
+              <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenEditCheckMark(item)}>
                 {t('Edit checkmark')}
               </EmphasisButton>
               {userInfo.isSuperAdmin && userInfo.id !== item.id && (
@@ -209,7 +209,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
   return (
     <Box>
       <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
-        <TextHeading className='text-xl'>Users</TextHeading>
+        <TextHeading className='text-xl'>{t('Users')}</TextHeading>
         <SearchInput
           className='h-11 w-full md:w-[480px]'
           classNames={{ input: 'h-11' }}

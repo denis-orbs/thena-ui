@@ -17,7 +17,6 @@ import { v4Client } from '@/lib/graphql'
 import { sliceAddress } from '@/lib/utils'
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 
-// TODO: add checkmarkIcon field
 const V4_ADMINS = gql`
   query V4_ADMINS($search: String) {
     users(limit: 8, where: { isSuperAdmin_eq: false, isAdmin_eq: true, id_containsInsensitive: $search }) {
@@ -26,6 +25,7 @@ const V4_ADMINS = gql`
       nameColor
       isVerified
       avatar
+      checkMarkIcon
     }
   }
 `
@@ -116,7 +116,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           <div className='flex w-full flex-col gap-3 md:flex-row md:items-center'>
             <div className='flex w-full flex-row items-center gap-3'>
               <EmphasisButton
-                className='hidden w-full text-base'
+                className='w-full text-base'
                 onClick={() => {
                   setSelectedUser(item)
                   setOpenEditCheckmark(true)
@@ -143,7 +143,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
     <>
       <Box>
         <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
-          <TextHeading className='text-xl'>Admins</TextHeading>
+          <TextHeading className='text-xl'>{t('Admins')}</TextHeading>
           <SearchInput
             className='h-11 w-full md:w-[480px]'
             classNames={{ input: 'h-11' }}
