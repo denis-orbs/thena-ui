@@ -226,9 +226,8 @@ function Table({
         <ul className='flex items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
           <PaginateCell
             onClick={() => {
-              const newPage = Math.max(currentPage - 1, 1)
-              setCurrentPage(newPage)
-              handleRedirectPage(newPage)
+              setCurrentPage(Math.max(currentPage - 1, 1))
+              handleRedirectPage(Math.max(currentPage - 1, 1))
             }}
           >
             <ArrowLeftIcon className='h-4 w-4' />

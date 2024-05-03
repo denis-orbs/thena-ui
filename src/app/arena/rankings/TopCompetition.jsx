@@ -213,6 +213,7 @@ function TopCompetition() {
             tableBasic
             data={isAll ? finalData : finalData.slice(0, 5)}
             onlySortDesc
+            enabledRedirectOnClickPagination
           />
         </div>
       </Box>
