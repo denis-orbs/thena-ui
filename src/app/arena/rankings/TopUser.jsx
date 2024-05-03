@@ -18,6 +18,8 @@ import { v4Client } from '@/lib/graphql'
 import { formatAmount, sliceAddress } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
+import { FollowButtonTopUser } from './FollowButtonTopUser'
+
 const tabsFilterUser = ['All', 'Hosted', 'Joined']
 const tabsFilterTime = ['24h', '7d', '30d', 'Max']
 
@@ -58,8 +60,9 @@ const fetchUsers = async (sort, whereQuery) => {
 }
 
 function TopUser() {
-  const sortOptions = useMemo(
-    () => [
+  const { account } = useWallet()
+  const sortOptions = useMemo(() => {
+    const arr = [
       {
         label: <span>#</span>,
         value: 'rank',
@@ -90,18 +93,27 @@ function TopUser() {
         isDesc: true,
         disabled: false,
       },
-    ],
-    [],
-  )
+    ]
+
+    if (account) {
+      arr.push({
+        label: '',
+        value: 'follow',
+        disabled: true,
+      })
+    }
+
+    return arr
+  }, [account])
 
   const t = useTranslations()
   const [searchText, setSearchText] = useState('')
   const [selectedTabUser, setSelectedTabUser] = useState(tabsFilterUser[0])
   const [selectedTabTime, setSelectedTabTime] = useState(tabsFilterTime[3])
+
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[4])
   const [dataFetch, setDataFetch] = useState([])
-  const { account } = useWallet()
 
   const debounceSearch = useDebounce(searchText.trim(), 300)
 
@@ -305,9 +317,10 @@ function TopUser() {
         pnlUSD: (
           <Paragraph className={item.pnlUSD < 0 ? 'text-red-500' : item.pnlUSD > 0 ? 'text-green-500' : ''}>
             {item.pnlUSD < 0 ? '-' : item.pnlUSD > 0 ? '+' : ''} $
-            {item.pnlUSD < 0 ? formatAmount(item.pnlUSD * -1) : formatAmount(item.pnlUSD)}
+            {formatAmount(item.pnlUSD < 0 ? item.pnlUSD * -1 : item.pnlUSD)}
           </Paragraph>
         ),
+        follow: <FollowButtonTopUser userInfoId={item.userId} />,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(filteredTcParticipants)],
@@ -339,6 +352,7 @@ function TopUser() {
           data={finalData}
           sortOptions={sortOptions}
           onlySortDesc
+          enabledRedirectOnClickPagination
         />
       </div>
     </div>

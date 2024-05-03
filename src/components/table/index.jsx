@@ -1,7 +1,8 @@
 'use client'
 
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 import { ArrowDownIcon, ArrowLeftIcon } from '@/svgs'
@@ -50,9 +51,41 @@ function Table({
   hidePagination = false,
   tableBasic = false,
   onlySortDesc = false,
+  enabledRedirectOnClickPagination = false,
 }) {
   const pageCount = Math.ceil(data.length / PAGE_SIZE)
   const t = useTranslations()
+  const pathname = usePathname()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [pageQuery, setPageQuery] = useState(1)
+
+  const handleRedirectPage = useCallback(
+    newPage => {
+      if (enabledRedirectOnClickPagination) {
+        const query = new URLSearchParams(searchParams.toString())
+        if (newPage > 1) {
+          query.set('page', newPage.toString())
+          router.replace(`${pathname}?${query.toString()}`)
+          return
+        }
+        router.replace(pathname)
+      }
+    },
+    [enabledRedirectOnClickPagination, pathname, router, searchParams],
+  )
+
+  useEffect(() => {
+    if (searchParams.get('page')) {
+      setPageQuery(Number(searchParams.get('page')))
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    if (enabledRedirectOnClickPagination) {
+      setCurrentPage(pageQuery)
+    }
+  }, [pageQuery, setCurrentPage, enabledRedirectOnClickPagination])
 
   return (
     <div className={cn('reltaive flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
@@ -193,7 +226,9 @@ function Table({
         <ul className='flex items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
           <PaginateCell
             onClick={() => {
-              setCurrentPage(Math.max(currentPage - 1, 1))
+              const newPage = Math.max(currentPage - 1, 1)
+              setCurrentPage(newPage)
+              handleRedirectPage(newPage)
             }}
           >
             <ArrowLeftIcon className='h-4 w-4' />
@@ -205,6 +240,7 @@ function Table({
                 active={currentPage === idx + 1}
                 onClick={() => {
                   setCurrentPage(idx + 1)
+                  handleRedirectPage(idx + 1)
                 }}
               >
                 {idx + 1}
@@ -216,6 +252,7 @@ function Table({
                 active={currentPage === 1}
                 onClick={() => {
                   setCurrentPage(1)
+                  handleRedirectPage(1)
                 }}
               >
                 1
@@ -224,6 +261,7 @@ function Table({
                 active={currentPage === 2}
                 onClick={() => {
                   setCurrentPage(2)
+                  handleRedirectPage(2)
                 }}
               >
                 2
@@ -232,6 +270,7 @@ function Table({
                 <PaginateCell
                   onClick={() => {
                     setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                    handleRedirectPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
                   }}
                 >
                   ...
@@ -242,6 +281,7 @@ function Table({
                   active
                   onClick={() => {
                     setCurrentPage(currentPage)
+                    handleRedirectPage(currentPage)
                   }}
                 >
                   {currentPage}
@@ -251,6 +291,7 @@ function Table({
                 <PaginateCell
                   onClick={() => {
                     setCurrentPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
+                    handleRedirectPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
                   }}
                 >
                   ...
@@ -260,6 +301,7 @@ function Table({
                 active={currentPage === pageCount - 1}
                 onClick={() => {
                   setCurrentPage(pageCount - 1)
+                  handleRedirectPage(pageCount - 1)
                 }}
               >
                 {pageCount - 1}
@@ -268,6 +310,7 @@ function Table({
                 active={currentPage === pageCount}
                 onClick={() => {
                   setCurrentPage(pageCount)
+                  handleRedirectPage(pageCount)
                 }}
               >
                 {pageCount}
@@ -277,6 +320,7 @@ function Table({
           <PaginateCell
             onClick={() => {
               setCurrentPage(Math.min(currentPage + 1, pageCount))
+              handleRedirectPage(Math.min(currentPage + 1, pageCount))
             }}
           >
             <ArrowLeftIcon className='h-4 w-4 rotate-180' />
