@@ -69,12 +69,27 @@ export function UserInfo({ userInfo, following, followers }) {
               />
               <div className='flex flex-col gap-3'>
                 <div className='flex items-center'>
-                  <TextHeading className={cn('text-3xl', userInfo.nameColor ?? '')}>
-                    {userInfo.username
-                      ? userInfo.username.length > 12
-                        ? formatAddress(userInfo.username)
-                        : userInfo.username
-                      : formatAddress(userInfo.id)}
+                  <TextHeading
+                    className={cn(
+                      'text-3xl',
+                      userInfo.nameColor && !String(userInfo.nameColor).startsWith('#') ? userInfo.nameColor : '',
+                    )}
+                  >
+                    <span
+                      style={{
+                        color: userInfo.nameColor
+                          ? String(userInfo.nameColor).startsWith('#')
+                            ? userInfo.nameColor
+                            : ''
+                          : '',
+                      }}
+                    >
+                      {userInfo.username
+                        ? userInfo.username.length > 12
+                          ? formatAddress(userInfo.username)
+                          : userInfo.username
+                        : formatAddress(userInfo.id)}
+                    </span>
                   </TextHeading>
                   {userInfo.isVerified && <Verified className='ml-1 h-5 w-5' />}
                   <CopyAddress value={userInfo.id} />

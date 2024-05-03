@@ -7,7 +7,7 @@ import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import CircleImage from '@/components/image/CircleImage'
+import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
@@ -15,7 +15,7 @@ import { Paragraph } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
-import { formatAmount, sliceAddress } from '@/lib/utils'
+import { formatAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 import { FollowButtonTopUser } from './FollowButtonTopUser'
@@ -27,10 +27,13 @@ const V4_TOP_USER = gql`
   query V4_TOP_USER($where: TCParticipantWhereInput = {}, $orderBy: [TCParticipantOrderByInput!] = []) {
     tcParticipants(orderBy: $orderBy, where: $where, limit: 25) {
       participant {
-        avatar
         id
-        nameColor
+        isVerified
         username
+        nameColor
+        avatar
+        isAdmin
+        isSuperAdmin
         checkMarkIcon
       }
       pnlUSD
@@ -244,8 +247,12 @@ function TopUser() {
       competitionId: item.tradingCompetition.id,
       winAmountUSD: item.winAmountUSD,
       pnlUSD: item.pnlUSD,
-      avatar: item.avatar || Avatar,
+      avatar: item.participant.avatar || Avatar,
       nameColor: item.participant.nameColor,
+      showVerified: item.participant.showVerified,
+      verifyImage: item.participant.checkMarkIcon,
+      isAdmin: item.participant.isAdmin,
+      isSuperAdmin: item.participant.isSuperAdmin,
     }))
     return arr
   }, [dataFetch])
@@ -296,15 +303,16 @@ function TopUser() {
       filteredTcParticipants?.map(item => ({
         rank: <Paragraph>{item.rank}</Paragraph>,
         user: (
-          <Link
-            className='flex cursor-pointer items-center justify-center gap-2'
-            href={`/arena/profile/${item.userId.toLowerCase()}`}
-          >
-            <CircleImage src={item.avatar} alt='avatar' className='size-8' />
-            <Paragraph className={item.nameColor || 'text-white'}>
-              {item.username || sliceAddress(item.userId)}
-            </Paragraph>
-          </Link>
+          <UserProfileCard
+            avatar={item?.avatar}
+            id={item?.userId}
+            nameColor={item?.nameColor}
+            showVerified={item?.isVerified}
+            username={item?.username}
+            verifyImage={item?.verifyImage}
+            isAdmin={item.isAdmin}
+            isSuperAdmin={item.isSuperAdmin}
+          />
         ),
         competitionName: (
           <Link

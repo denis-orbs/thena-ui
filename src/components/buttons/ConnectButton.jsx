@@ -3,7 +3,9 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect } from 'react'
+import useSWR from 'swr'
 
+import { fetchUserInfo } from '@/context/userInfoContext'
 import { formatAddress } from '@/lib/utils'
 import { useSignWallet } from '@/lib/wallets/useSignWallet'
 import useWallet from '@/lib/wallets/useWallet'
@@ -14,6 +16,10 @@ export default function ConnectButton({ className }) {
   const { open } = useWeb3Modal()
   const { account, isWrong, active } = useWallet()
   const t = useTranslations()
+
+  const { data: userInfo } = useSWR(['user info', account], () => fetchUserInfo(account), {
+    refreshInterval: 60000,
+  })
 
   const { signWallet, deleteToken } = useSignWallet()
 
@@ -44,7 +50,7 @@ export default function ConnectButton({ className }) {
   if (account) {
     return (
       <EmphasisButton className={className} onClick={() => open()}>
-        {formatAddress(account)}
+        {userInfo?.username || formatAddress(account)}
       </EmphasisButton>
     )
   }
