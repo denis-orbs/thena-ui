@@ -20,7 +20,7 @@ const LIST_THEME = [
     src: '/images/home/scenes/bg.png',
   },
 ]
-export function SelectTheme({ dataUpdate, setDataUpdate }) {
+export function SelectTheme({ dataUpdate, setDataUpdate, isAdmin = false }) {
   const [themeChecked, setThemeChecked] = useState(dataUpdate.theme ?? LIST_THEME[0].src)
 
   useEffect(
@@ -41,12 +41,12 @@ export function SelectTheme({ dataUpdate, setDataUpdate }) {
           key={theme.src}
           className='relative flex h-20 w-36 items-center justify-between space-x-2 border border-primary-800 p-2 pl-3 lg:h-24 lg:w-40 lg:p-2 lg:pl-3 xl:h-28 xl:w-48'
           onClick={() => {
-            if (index <= 1) {
+            if (index <= 1 || isAdmin) {
               setThemeChecked(theme.src)
             }
           }}
         >
-          {index > 1 ? (
+          {index > 1 && !isAdmin ? (
             <LockIcon className='z-5 absolute right-3 top-3 h-4 w-4' />
           ) : (
             <input

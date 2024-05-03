@@ -11,6 +11,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import NextImage from '@/components/image/NextImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
@@ -19,11 +20,12 @@ import { cn, formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon, Verified } from '@/svgs'
+import { ExternalIcon, InfoIcon, Verified } from '@/svgs'
 
 import ThenaIdModal from './ThenaIdModal'
 
 dayjs.extend(localizedFormat)
+const tarea_regex = /^(http|https)/
 
 export function UserInfo({ userInfo, following, followers }) {
   const t = useTranslations()
@@ -97,17 +99,23 @@ export function UserInfo({ userInfo, following, followers }) {
                 </TextSubHeading>
                 <div className='flex gap-2'>
                   {userInfo.websiteUrl && (
-                    <Link href={userInfo.websiteUrl} rel='nofollow noopener' target='_blank'>
-                      <NeutralBadge className='text-nowrap lg:text-xs'>{userInfo.websiteUrl}</NeutralBadge>
+                    <Link
+                      href={tarea_regex.test(userInfo.websiteUrl) ? userInfo.websiteUrl : `//${userInfo.websiteUrl}`}
+                      rel='nofollow noopener noreferrer'
+                      target='_blank'
+                      prefetch={false}
+                    >
+                      <NeutralBadge className='flex items-center text-nowrap lg:text-xs '>
+                        <ExternalIcon className='mr-2 h-4 w-4 stroke-neutral-400' />
+                        {userInfo.websiteUrl}
+                      </NeutralBadge>
                     </Link>
                   )}
                   {userInfo.xProfileUrl && (
-                    <Link
-                      href={`https://twitter.com/${userInfo.xProfileUrl.replace('@', '')}`}
-                      rel='nofollow noopener'
-                      target='_blank'
-                    >
-                      <NeutralBadge className='text-nowrap lg:text-xs'>{userInfo.xProfileUrl}</NeutralBadge>
+                    <Link href={`https://x.com/${userInfo.xProfileUrl}`} rel='nofollow noopener' target='_blank'>
+                      <NeutralBadge className='flex items-center text-nowrap lg:text-xs'>
+                        <NextImage alt='svg' className='mr-2 w-fit' src='/images/footer/x.svg' />@{userInfo.xProfileUrl}
+                      </NeutralBadge>
                     </Link>
                   )}
                 </div>
@@ -152,39 +160,36 @@ export function UserInfo({ userInfo, following, followers }) {
           </Box>
         </div>
 
-        {hasThenaId ? (
-          userInfo.biography ? (
-            <div className='flex flex-col'>
-              <TextHeading className='text-2xl'>{t('About')}</TextHeading>
-              <div>
-                <Paragraph _html={userInfo.biography} />
+        {isOwnProfile && !hasThenaId && !userInfo.biography && (
+          <div className='flex flex-col'>
+            <TextHeading className='text-2xl'>{t('About')}</TextHeading>
+            <div className='relative h-full w-full'>
+              <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-sm'>
+                <EmphasisButton onClick={() => handleClickThenaButton('get')}>
+                  {t('To Edit Your About Section')}
+                </EmphasisButton>
+              </div>
+              <div className='h-full w-full p-1'>
+                <Paragraph>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi maxime accusantium at voluptatum eius
+                  dolorum aspernatur quod sequi itaque ullam assumenda, dolore laboriosam. Ab sint, sapiente enim natus
+                  assumenda nesciunt. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae doloremque
+                  accusamus perferendis! Velit animi mollitia quisquam consequatur magnam accusamus, inventore ut
+                  minima? Ducimus maxime vitae quidem officiis maiores ratione eum!
+                </Paragraph>
               </div>
             </div>
-          ) : (
-            <></>
-          )
-        ) : (
-          isOwnProfile && (
-            <div className='flex flex-col'>
-              <TextHeading className='text-2xl'>{t('About')}</TextHeading>
-              <div className='relative h-full w-full'>
-                <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-sm'>
-                  <EmphasisButton onClick={() => handleClickThenaButton('get')}>
-                    {t('To Edit Your About Section')}
-                  </EmphasisButton>
-                </div>
-                <div className='h-full w-full p-1'>
-                  <Paragraph>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi maxime accusantium at voluptatum eius
-                    dolorum aspernatur quod sequi itaque ullam assumenda, dolore laboriosam. Ab sint, sapiente enim
-                    natus assumenda nesciunt. Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae
-                    doloremque accusamus perferendis! Velit animi mollitia quisquam consequatur magnam accusamus,
-                    inventore ut minima? Ducimus maxime vitae quidem officiis maiores ratione eum!
-                  </Paragraph>
-                </div>
-              </div>
+          </div>
+        )}
+        {userInfo.biography && (
+          <div className='flex flex-col'>
+            <TextHeading className='text-2xl'>{t('About')}</TextHeading>
+            <div>
+              <Paragraph>
+                <div dangerouslySetInnerHTML={{ __html: userInfo.biography }} />
+              </Paragraph>
             </div>
-          )
+          </div>
         )}
       </Box>
       {thenaModalTab && (

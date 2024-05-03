@@ -9,6 +9,7 @@ function Input({
   val,
   LeadingIcon,
   suffix,
+  prefix,
   TrailingIcon,
   TrailingButton,
   type = 'number',
@@ -26,6 +27,7 @@ function Input({
         className={cn(
           'w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500',
           LeadingIcon ? 'pl-12' : 'pl-4',
+          prefix ? 'pl-7' : 'pl-4',
           TrailingIcon || suffix ? 'pr-7' : 'pr-3',
           classNames?.input,
         )}
@@ -33,6 +35,7 @@ function Input({
         value={val}
         {...rest}
       />
+      {prefix && <span className='absolute bottom-0 left-3 top-0 my-auto h-fit text-neutral-400'>{prefix}</span>}
       {LeadingIcon && <div className='absolute bottom-0 left-4 top-0 my-auto h-5 w-5'>{LeadingIcon}</div>}
       {suffix && <span className='absolute bottom-0 right-3 top-0 my-auto h-fit text-neutral-400'>{suffix}</span>}
       {TrailingIcon && <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>{TrailingIcon}</div>}

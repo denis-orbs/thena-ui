@@ -114,11 +114,12 @@ export function EditProfile({ userInfo, isAdmin = false }) {
         </div>
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
-            <TextHeading className='text-xl'>{t('X Profile Link')}</TextHeading>
-            <TextSubHeading className='text-base'>{t('Enter Your X Profile URL To Update X')}</TextSubHeading>
+            <TextHeading className='text-xl'>{t('X Profile Username')}</TextHeading>
+            <TextSubHeading className='text-base'>{t('Enter Your X Profile Username To Update X')}</TextSubHeading>
           </div>
           <div className='flex-2'>
             <Input
+              prefix='@'
               type='text'
               placeholder='xprofilehandle'
               className='w-full lg:w-72'
@@ -199,7 +200,7 @@ export function EditProfile({ userInfo, isAdmin = false }) {
             </TextSubHeading>
           </div>
           <div className='grid flex-2 grid-cols-2 gap-3 lg:grid-cols-3 2xl:grid-cols-4'>
-            <SelectTheme dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
+            <SelectTheme dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} isAdmin={isAdmin} />
           </div>
         </div>
         <div className='flex flex-col lg:flex-row'>
