@@ -320,7 +320,7 @@ function TopUser() {
             {formatAmount(item.pnlUSD < 0 ? item.pnlUSD * -1 : item.pnlUSD)}
           </Paragraph>
         ),
-        follow: <FollowButtonTopUser userInfoId={item.userId} />,
+        follow: <FollowButtonTopUser userInfoId={item.userId} username={item.username} />,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(filteredTcParticipants)],

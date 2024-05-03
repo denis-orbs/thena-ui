@@ -7,7 +7,7 @@ import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import useWallet from '@/lib/wallets/useWallet'
 
-export function FollowButtonTopUser({ userInfoId }) {
+export function FollowButtonTopUser({ userInfoId, username = null }) {
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(false)
   const t = useTranslations()
@@ -15,10 +15,11 @@ export function FollowButtonTopUser({ userInfoId }) {
   const { account } = useWallet()
   const { userInfo } = useUserInfo()
   const { following } = useCurrentUserFollow()
-  const { followUser } = useFollow(userInfoId)
 
   const isOwnProfile = useMemo(() => userInfoId?.toLowerCase() === account?.toLowerCase(), [account, userInfoId])
   const isFollowed = useMemo(() => following?.find(follow => follow?.user?.id === userInfoId), [following, userInfoId])
+
+  const { followUser } = useFollow(userInfoId, username, isFollowed)
 
   const onFollow = useCallback(async () => {
     setLoading(true)

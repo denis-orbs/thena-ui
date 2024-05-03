@@ -199,6 +199,7 @@ export function EditProfile({ userInfo, isAdmin = false }) {
               {t('Personalize Your Experience By Choosing From A Variety Of Background Themes')}
             </TextSubHeading>
           </div>
+          {/* eslint-disable-next-line prettier/prettier */}
           <div className='grid flex-2 grid-cols-2 gap-3 lg:grid-cols-3 2xl:grid-cols-4'>
             <SelectTheme dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} isAdmin={isAdmin} />
           </div>

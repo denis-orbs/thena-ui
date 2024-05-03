@@ -1,9 +1,12 @@
 import { gql } from 'graphql-request'
+import { useTranslations } from 'next-intl'
 import { useCallback } from 'react'
 import useSWR, { mutate as mutateSWR } from 'swr'
+import { ChainId } from 'thena-sdk-core'
 
 import { v4Client } from '@/lib/graphql'
 import { getFromSessionStorage } from '@/lib/helper'
+import { errorToast, successToast } from '@/lib/notify'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 import useWallet from '@/lib/wallets/useWallet'
 
@@ -76,9 +79,10 @@ export const useCurrentUserFollow = () => {
   return { following, mutate }
 }
 
-export const useFollow = userId => {
+export const useFollow = (userId, username = null, isFollowed = false) => {
   const { account } = useWallet()
   const { signWallet } = useSignWallet()
+  const t = useTranslations()
 
   const followFn = useCallback(async () => {
     const { followUser } = await v4Client.request(
@@ -91,12 +95,36 @@ export const useFollow = userId => {
         authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
       },
     )
+
     if (followUser) {
       await mutateSWR('current-user-follow')
       await mutateSWR(['followers', userId])
       await mutateSWR(['following', account.toLowerCase()])
+      if (followUser.state === 'inserted') {
+        successToast(
+          t('You successfully followed', { user: username || userId.toLowerCase() }),
+          null,
+          ChainId.BSC,
+          null,
+          false,
+        )
+        return
+      }
+      successToast(
+        t('You successfully unfollowed', { user: username || userId.toLowerCase() }),
+        null,
+        ChainId.BSC,
+        null,
+        false,
+      )
+    } else {
+      if (isFollowed) {
+        errorToast(t('Error unfollowing', { user: username || userId.toLowerCase() }), undefined, null, false)
+        return
+      }
+      errorToast(t('Error following', { user: username || userId.toLowerCase() }), undefined, null, false)
     }
-  }, [account, userId])
+  }, [account, isFollowed, t, userId, username])
 
   const follow = useCallback(() => actionWithAuthentication(followFn, signWallet), [followFn, signWallet])
   return { followUser: follow }

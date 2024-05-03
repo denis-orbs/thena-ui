@@ -42,6 +42,7 @@ export function SelectNameColor({ dataUpdate, setDataUpdate }) {
   )
 
   return (
+    // eslint-disable-next-line prettier/prettier
     <div className='flex flex-2 gap-2 py-2 lg:max-w-4xl'>
       {LIST_COLOR.map(({ color, bg, value }) => (
         <div className='flex cursor-pointer items-center gap-4 p-2' onClick={() => onSelectNameColor(color)}>

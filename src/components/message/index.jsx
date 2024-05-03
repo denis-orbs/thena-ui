@@ -10,7 +10,7 @@ import { TextIconButton } from '../buttons/IconButton'
 import Highlight from '../highlight'
 import { Paragraph, TextHeading } from '../typography'
 
-export function SuccessMessage({ closeToast, title, desc, hash = null, chainId, icon = null }) {
+export function SuccessMessage({ closeToast, title, desc, hash = null, chainId, icon = null, translate = true }) {
   const t = useTranslations()
 
   return (
@@ -18,7 +18,7 @@ export function SuccessMessage({ closeToast, title, desc, hash = null, chainId, 
       <div className='flex items-center gap-4'>
         <Highlight className='bg-success-700'>{icon || <CheckGradientIcon className='h-4 w-4' />}</Highlight>
         <div className='w-full'>
-          <TextHeading>{t(title)}</TextHeading>
+          <TextHeading>{translate ? t(title) : title}</TextHeading>
           {desc && <Paragraph className='text-sm'>{t(desc)}</Paragraph>}
           {hash && (
             <EmphasisButton
@@ -42,7 +42,7 @@ export function SuccessMessage({ closeToast, title, desc, hash = null, chainId, 
   )
 }
 
-export function ErrorMessage({ closeToast, title, desc, icon = null }) {
+export function ErrorMessage({ closeToast, title, desc, icon = null, translate = true }) {
   const t = useTranslations()
 
   return (
@@ -51,7 +51,7 @@ export function ErrorMessage({ closeToast, title, desc, icon = null }) {
         <Highlight className='bg-error-500'>{icon || <InfoCircleGradient className='h-4 w-4' />}</Highlight>
         <div>
           <div className='flex flex-col gap-1'>
-            <TextHeading>{t(title)}</TextHeading>
+            <TextHeading>{translate ? t(title) : title}</TextHeading>
             {desc && <Paragraph className='text-sm'>{t(desc)}</Paragraph>}
           </div>
         </div>

@@ -3,14 +3,14 @@ import { ChainId } from 'thena-sdk-core'
 
 import { ErrorMessage, SuccessMessage, WarnMessage } from '@/components/message'
 
-export function successToast(title, hash = null, chainId = ChainId.BSC, icon = null) {
-  toast.success(<SuccessMessage title={title} hash={hash} chainId={chainId} icon={icon} />, {
+export function successToast(title, hash = null, chainId = ChainId.BSC, icon = null, translate = true) {
+  toast.success(<SuccessMessage title={title} hash={hash} chainId={chainId} icon={icon} translate={translate} />, {
     icon: false,
   })
 }
 
-export function errorToast(title, desc, icon = null) {
-  toast.error(<ErrorMessage title={title} desc={desc} icon={icon} />, {
+export function errorToast(title, desc, icon = null, translate = true) {
+  toast.error(<ErrorMessage title={title} desc={desc} icon={icon} translate={translate} />, {
     icon: false,
   })
 }
