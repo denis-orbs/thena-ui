@@ -1,13 +1,14 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import { useParams } from 'next/navigation'
-import React from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import React, { useEffect } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import { v4Client } from '@/lib/graphql'
 import { getFromSessionStorage } from '@/lib/helper'
+import useWallet from '@/lib/wallets/useWallet'
 import { EditProfile } from '@/modules/Profile/EditProfile'
 
 const V4_USER_RANK = gql`
@@ -68,10 +69,22 @@ const fetchUserInfo = async id => {
 
 function EditUserProfile() {
   const params = useParams()
+  const { account } = useWallet()
+  const router = useRouter()
 
-  const { data: userInfo, isLoading } = useSWR(['edit user info'], () => fetchUserInfo(params?.id?.toLowerCase()), {
-    refreshInterval: 60000,
-  })
+  const { data: userInfo, isLoading } = useSWR(
+    ['edit user info', params?.id],
+    () => fetchUserInfo(params?.id?.toLowerCase()),
+    {
+      refreshInterval: 60000,
+    },
+  )
+
+  useEffect(() => {
+    if (!account) {
+      router.replace('/arena')
+    }
+  }, [account, router])
 
   return params?.id && !isLoading ? <EditProfile userInfo={userInfo} isAdmin /> : <Loading />
 }

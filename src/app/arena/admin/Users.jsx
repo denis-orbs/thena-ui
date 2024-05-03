@@ -23,7 +23,11 @@ import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 
 const V4_USERS = gql`
   query V4_USERS($search: String) {
-    users(orderBy: firstInteractAt_DESC, limit: 8, where: { id_containsInsensitive: $search }) {
+    users(
+      orderBy: firstInteractAt_DESC
+      limit: 8
+      where: { OR: [{ id_containsInsensitive: $search }, { username_containsInsensitive: $search }] }
+    ) {
       id
       isVerified
       username

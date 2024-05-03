@@ -16,10 +16,11 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useUpdateProfile } from '@/hooks/useProfile'
 import { errorToast } from '@/lib/notify'
 import { isValidHttpUrl } from '@/lib/utils'
+import useWallet from '@/lib/wallets/useWallet'
 import { ArrowLeftIcon } from '@/svgs'
 
 import { SelectAvatar } from './SelectAvatar'
-import { SelectNameColor } from './SelectNameColor'
+import { LIST_COLOR, SelectNameColor } from './SelectNameColor'
 import { SelectTheme } from './SelectTheme'
 
 const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { ssr: false })
@@ -27,8 +28,25 @@ const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { s
 export function EditProfile({ userInfo, isAdmin = false }) {
   const t = useTranslations()
   const [timeZoneData, setTimeZoneData] = useState([])
-
   const [currentTimeZone, setCurrentTimeZone] = useState('')
+  const [showCustomColor, setShowCustomColor] = useState(false)
+
+  const { account } = useWallet()
+
+  // const dataPrev = useMemo(
+  //   () => ({
+  //     biography: userInfo?.biography ?? null,
+  //     avatar: userInfo?.avatar ?? null,
+  //     theme: userInfo?.theme ?? null,
+  //     timezone: userInfo?.timezone ?? null,
+  //     username: userInfo?.username ?? null,
+  //     websiteUrl: userInfo?.websiteUrl ?? null,
+  //     xProfileUrl: userInfo?.xProfileUrl ?? null,
+  //     isPublicProfile: userInfo?.isPublicProfile ?? true,
+  //     nameColor: userInfo?.nameColor ?? 'ffffff',
+  //   }),
+  //   [userInfo],
+  // )
 
   const [dataUpdate, setDataUpdate] = useState({
     biography: userInfo?.biography ?? null,
@@ -64,6 +82,30 @@ export function EditProfile({ userInfo, isAdmin = false }) {
     [],
   )
 
+  useEffect(() => {
+    if (dataUpdate?.nameColor) {
+      const index = LIST_COLOR.findIndex(item => `#${item.value.toLowerCase()}` === dataUpdate.nameColor.toLowerCase())
+      if (index === -1) {
+        setShowCustomColor(true)
+      } else {
+        setShowCustomColor(false)
+      }
+    }
+  }, [dataUpdate?.nameColor])
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (dataPrev && dataUpdate) {
+  //       console.log({ dataPrev })
+  //       console.log({ dataUpdate })
+  //       if (!_.isEqual(dataPrev, dataUpdate)) {
+  //         handleUpdate(true)
+  //       }
+  //     }
+  //   }, 5000)
+  //   return () => clearInterval(interval)
+  // }, [dataPrev, dataUpdate, handleUpdate])
+
   return (
     <div className='flex flex-col space-y-10 pt-10'>
       <div>
@@ -90,7 +132,31 @@ export function EditProfile({ userInfo, isAdmin = false }) {
             <TextHeading className='text-xl'>{t('Change Name Color')}</TextHeading>
             <TextSubHeading className='text-base'>{t('Pick A Color For Your Name')}</TextSubHeading>
           </div>
-          <SelectNameColor dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
+
+          {/* eslint-disable-next-line prettier/prettier */}
+          <div className='flex flex-2 flex-col items-center gap-3 lg:flex-row'>
+            {!showCustomColor ? (
+              <SelectNameColor dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
+            ) : (
+              <Input
+                type='color'
+                className='w-full lg:w-[300px]'
+                classNames={{
+                  input: 'h-[51px] py-1 px-2',
+                }}
+                val={dataUpdate.nameColor}
+                onChange={e => {
+                  setDataUpdate({
+                    ...dataUpdate,
+                    nameColor: e.target.value,
+                  })
+                }}
+              />
+            )}
+            <PrimaryButton onClick={() => setShowCustomColor(!showCustomColor)}>
+              {t(showCustomColor ? 'Basic Color' : 'Custom Color')}
+            </PrimaryButton>
+          </div>
         </div>
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
@@ -150,27 +216,29 @@ export function EditProfile({ userInfo, isAdmin = false }) {
             />
           </div>
         </div>
-        <div className='flex flex-col gap-6 lg:flex-row'>
-          <div className='flex flex-1 flex-col gap-3'>
-            <TextHeading className='text-xl'>{t('Time Zone')}</TextHeading>
-            <TextSubHeading className='text-base'>{t('Select Your Preferred Time Zone')}</TextSubHeading>
+        {(!isAdmin || account?.toLowerCase() === userInfo?.id.toLowerCase()) && (
+          <div className='flex flex-col gap-6 lg:flex-row'>
+            <div className='flex flex-1 flex-col gap-3'>
+              <TextHeading className='text-xl'>{t('Time Zone')}</TextHeading>
+              <TextSubHeading className='text-base'>{t('Select Your Preferred Time Zone')}</TextSubHeading>
+            </div>
+            <div className='flex-2'>
+              <Dropdown
+                className='w-full lg:w-80'
+                listClassNames='max-h-64 overflow-y-auto'
+                data={timeZoneData}
+                selected={dataUpdate.timezone ?? currentTimeZone}
+                setSelected={e => {
+                  setDataUpdate({
+                    ...dataUpdate,
+                    timezone: e.label,
+                  })
+                }}
+                isLocale={false}
+              />
+            </div>
           </div>
-          <div className='flex-2'>
-            <Dropdown
-              className='w-full lg:w-80'
-              listClassNames='max-h-64 overflow-y-auto'
-              data={timeZoneData}
-              selected={dataUpdate.timezone ?? currentTimeZone}
-              setSelected={e => {
-                setDataUpdate({
-                  ...dataUpdate,
-                  timezone: e.label,
-                })
-              }}
-              isLocale={false}
-            />
-          </div>
-        </div>
+        )}
         <div className='flex flex-col gap-10 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
             <TextHeading className='text-xl'>{t('Suggest My Profile To Others')}</TextHeading>
