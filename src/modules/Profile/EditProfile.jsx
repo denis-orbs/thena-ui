@@ -20,7 +20,7 @@ import useWallet from '@/lib/wallets/useWallet'
 import { ArrowLeftIcon } from '@/svgs'
 
 import { SelectAvatar } from './SelectAvatar'
-import { LIST_COLOR, SelectNameColor } from './SelectNameColor'
+import { SelectNameColor } from './SelectNameColor'
 import { SelectTheme } from './SelectTheme'
 
 const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { ssr: false })
@@ -84,14 +84,13 @@ export function EditProfile({ userInfo, isAdmin = false }) {
 
   useEffect(() => {
     if (dataUpdate?.nameColor) {
-      const index = LIST_COLOR.findIndex(item => `#${item.value.toLowerCase()}` === dataUpdate.nameColor.toLowerCase())
-      if (index === -1) {
+      if (isAdmin && dataUpdate.nameColor && String(dataUpdate.nameColor).startsWith('#')) {
         setShowCustomColor(true)
       } else {
         setShowCustomColor(false)
       }
     }
-  }, [dataUpdate?.nameColor])
+  }, [dataUpdate.nameColor, isAdmin])
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
@@ -135,27 +134,38 @@ export function EditProfile({ userInfo, isAdmin = false }) {
 
           {/* eslint-disable-next-line prettier/prettier */}
           <div className='flex flex-2 flex-col items-center gap-3 lg:flex-row'>
-            {!showCustomColor ? (
-              <SelectNameColor dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
-            ) : (
-              <Input
-                type='color'
-                className='w-full lg:w-[300px]'
-                classNames={{
-                  input: 'h-[51px] py-1 px-2',
-                }}
-                val={dataUpdate.nameColor}
-                onChange={e => {
-                  setDataUpdate({
-                    ...dataUpdate,
-                    nameColor: e.target.value,
-                  })
-                }}
-              />
+            <div>
+              <TextSubHeading className='mb-1 block'>
+                {t(!showCustomColor ? 'Basic Color' : 'Custom Color')}:
+              </TextSubHeading>
+              {!showCustomColor ? (
+                <SelectNameColor dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
+              ) : (
+                <Input
+                  type='color'
+                  className='w-full lg:w-[300px]'
+                  classNames={{
+                    input: 'h-[58px] py-1 px-2',
+                  }}
+                  val={
+                    dataUpdate.nameColor && String(dataUpdate.nameColor).startsWith('#')
+                      ? dataUpdate.nameColor
+                      : '#32c343'
+                  }
+                  onChange={e => {
+                    setDataUpdate({
+                      ...dataUpdate,
+                      nameColor: e.target.value,
+                    })
+                  }}
+                />
+              )}
+            </div>
+            {isAdmin && (
+              <PrimaryButton onClick={() => setShowCustomColor(!showCustomColor)} className='lg:ml-16'>
+                {t(showCustomColor ? 'Use Basic Color Instead' : 'Use Custom Color Instead')}
+              </PrimaryButton>
             )}
-            <PrimaryButton onClick={() => setShowCustomColor(!showCustomColor)}>
-              {t(showCustomColor ? 'Basic Color' : 'Custom Color')}
-            </PrimaryButton>
           </div>
         </div>
         <div className='flex flex-col gap-6 lg:flex-row'>
