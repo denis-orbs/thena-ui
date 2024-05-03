@@ -37,7 +37,7 @@ function TopBar({ userInfo }) {
           </div>
           <TextSubHeading>
             {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM DD, YYYY')} {`${t('at')} `}
-            {dayjs(userInfo.firstInteractAt).tz().format('hh:mma')}
+            {dayjs(userInfo.firstInteractAt).tz().format('h:ma')}
           </TextSubHeading>
         </div>
       </div>
