@@ -1,6 +1,5 @@
-import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TXN_STATUS } from '@/constant'
@@ -12,6 +11,7 @@ import { useTxn } from '@/state/transactions/hooks'
 
 const DEFAULT_TRAITS = ['CHARACTER_SET']
 const DEFAULT_PROOFS = [[]]
+const USDT_TOKEN_ADDRESS = '0x55d398326f99059fF775485246999027B3197955'
 
 export const useValidateUserName = () => {
   const [loading, setLoading] = useState(false)
@@ -20,14 +20,16 @@ export const useValidateUserName = () => {
     if (username && contract) {
       try {
         setLoading(true)
-        const [available, valid] = await Promise.all([
+        const [available, valid, length] = await Promise.all([
           readCall(contract, 'isUsernameAvailable', [username]),
           readCall(contract, 'validateUsername', [username]),
+          readCall(contract, 'getLength', [username]),
         ])
 
         return {
           available,
           valid,
+          length,
         }
       } catch (e) {
         console.error(e)
@@ -40,23 +42,16 @@ export const useValidateUserName = () => {
   return { loading, validate }
 }
 
-export const useCalculateCost = () => {
+export const useUSDTCostPerToken = () => {
   const [loading, setLoading] = useState(false)
-  const calculate = useCallback(async (username, tokenAddress) => {
+  const [costPerToken, setCostPerToken] = useState()
+  const getCost = useCallback(async () => {
     const contract = getThenaIDContract()
-    if (username && contract && tokenAddress) {
+    if (contract) {
       try {
         setLoading(true)
-        const length = await readCall(contract, 'getLength', [username])
-        const costPerToken = await readCall(contract, 'costPerToken', [tokenAddress])
-
-        if (costPerToken[new BigNumber(length).toNumber() - 1]) {
-          return costPerToken[new BigNumber(length).toNumber() - 1]
-        }
-        if (new BigNumber(length).toNumber() > costPerToken.length) {
-          return costPerToken[costPerToken.length - 1]
-        }
-        return undefined
+        const cost = await readCall(contract, 'costPerToken', [USDT_TOKEN_ADDRESS])
+        setCostPerToken(cost)
       } catch (e) {
         console.error(e)
       } finally {
@@ -65,7 +60,11 @@ export const useCalculateCost = () => {
     }
   }, [])
 
-  return { loading, calculate }
+  useEffect(() => {
+    getCost()
+  }, [getCost])
+
+  return { loading, costPerToken }
 }
 
 export const useMintThenaId = () => {
@@ -75,13 +74,13 @@ export const useMintThenaId = () => {
   const { account, chainId } = useWallet()
 
   const buyThenaId = useCallback(
-    async (username, tokenAddress, estimateCost) => {
+    async (username, estimateCost) => {
       const thenaIdContract = getThenaIDContract()
-      if (username && thenaIdContract && tokenAddress) {
+      if (username && thenaIdContract) {
         const key = uuidv4()
         const mintUuid = uuidv4()
         const approveTokenUuid = uuidv4()
-        const tokenContract = getERC20Contract(tokenAddress, chainId)
+        const tokenContract = getERC20Contract(USDT_TOKEN_ADDRESS, chainId)
         const allowance = await readCall(tokenContract, 'allowance', [account, thenaIdContract.address])
         const isApprovedToken = fromWei(allowance).gte(fromWei(estimateCost))
 
@@ -118,7 +117,7 @@ export const useMintThenaId = () => {
 
         const isSuccess = await writeTxn(key, mintUuid, thenaIdContract, 'mintUsername', [
           username,
-          tokenAddress,
+          USDT_TOKEN_ADDRESS,
           DEFAULT_TRAITS,
           DEFAULT_PROOFS,
         ])
@@ -146,13 +145,13 @@ export const useGiftThenaId = () => {
   const t = useTranslations()
   const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
   const giftThenaId = useCallback(
-    async (username, toAddress, tokenAddress) => {
+    async (username, toAddress) => {
       const contract = getThenaIDContract()
-      if (username && contract && tokenAddress) {
+      if (username && contract && USDT_TOKEN_ADDRESS) {
         const key = uuidv4()
         const mintUuid = uuidv4()
         const allowedUuid = uuidv4()
-        const allowedToken = await readCall(contract, 'allowedTokens', [tokenAddress])
+        const allowedToken = await readCall(contract, 'allowedTokens', [USDT_TOKEN_ADDRESS])
 
         setLoading(true)
         startTxn({
@@ -175,7 +174,7 @@ export const useGiftThenaId = () => {
         })
 
         if (!allowedToken) {
-          const isSuccess = await writeTxn(key, allowedUuid, contract, 'approve', [tokenAddress, 0])
+          const isSuccess = await writeTxn(key, allowedUuid, contract, 'approve', [USDT_TOKEN_ADDRESS, 0])
           if (!isSuccess) {
             setLoading(false)
             return false
@@ -184,7 +183,7 @@ export const useGiftThenaId = () => {
         const isSuccess = await writeTxn(key, mintUuid, contract, 'mintUsernameFor', [
           toAddress,
           username,
-          tokenAddress,
+          USDT_TOKEN_ADDRESS,
           DEFAULT_TRAITS,
           DEFAULT_PROOFS,
         ])
