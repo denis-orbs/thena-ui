@@ -56,7 +56,7 @@ export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton
         onClick={() => handleClickThenaButton(isOwnProfile ? 'get' : 'gift')}
         className='p-2 text-xs lg:py-3 lg:text-base'
       >
-        {t(isOwnProfile ? 'Gift ID' : 'Gift Thena ID')}
+        {t(isOwnProfile ? 'Get ID' : 'Gift Thena ID')}
       </EmphasisButton>
       {!isOwnProfile && userInfo && (
         <EmphasisButton

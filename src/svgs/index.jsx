@@ -15,6 +15,7 @@ import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import Clock from '~/svgs/clock.svg'
 import CoinHand from '~/svgs/coin-hand.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
+import CopyIcon from '~/svgs/copy.svg'
 import DownRank from '~/svgs/down-rank.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import Gift from '~/svgs/gift.svg'
@@ -67,6 +68,7 @@ export {
   Clock,
   CoinHand,
   CoinsStackedIcon,
+  CopyIcon,
   DownRank,
   ExternalIcon,
   Gift,

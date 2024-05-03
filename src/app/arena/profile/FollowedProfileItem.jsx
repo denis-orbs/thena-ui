@@ -36,6 +36,7 @@ export function FollowedProfileItem({ user }) {
           showVerified={user?.user.isVerified}
           verifyImage={user?.user.checkMarkIcon}
           nameColor={user?.user.nameColor}
+          enableFollow={false}
         />
       </div>
       {account &&

@@ -18,6 +18,7 @@ import { useAssets } from '@/context/assetsContext'
 import dayjs from '@/lib/arenaDayjs'
 import { cn, formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import { CopyAddress } from '@/modules/Profile/CopyAddress'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { useChainSettings } from '@/state/settings/hooks'
 import { ExternalIcon, InfoIcon, Verified } from '@/svgs'
@@ -76,6 +77,7 @@ export function UserInfo({ userInfo, following, followers }) {
                       : formatAddress(userInfo.id)}
                   </TextHeading>
                   {userInfo.isVerified && <Verified className='ml-1 h-5 w-5' />}
+                  <CopyAddress value={userInfo.id} />
                   {isOwnProfile && !hasThenaId && (
                     <PrimaryButton
                       className='ml-4 p-2 text-sm text-black'
@@ -147,7 +149,7 @@ export function UserInfo({ userInfo, following, followers }) {
           </Box>
           <Box className='flex flex-col gap-2 bg-neutral-800'>
             <TextHeading className='text-lg'>
-              {`${formatAmount(fromWei(userInfo.balance, theAsset.decimal))} ${theAsset.symbol}`}
+              {`${formatAmount(fromWei(userInfo.balance, theAsset?.decimal))} ${theAsset?.symbol}`}
             </TextHeading>
             <TextSubHeading className='text-sm'>{t('Balance')}</TextSubHeading>
           </Box>
@@ -187,6 +189,7 @@ export function UserInfo({ userInfo, following, followers }) {
             <TextHeading className='text-2xl'>{t('About')}</TextHeading>
             <div>
               <Paragraph>
+                {/* eslint-disable-next-line react/no-danger */}
                 <div dangerouslySetInnerHTML={{ __html: userInfo.biography }} />
               </Paragraph>
             </div>
