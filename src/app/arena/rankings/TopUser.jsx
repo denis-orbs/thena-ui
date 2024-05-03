@@ -232,6 +232,7 @@ function TopUser() {
       winAmountUSD: item.winAmountUSD,
       pnlUSD: item.pnlUSD,
       avatar: item.avatar || Avatar,
+      nameColor: item.participant.nameColor,
     }))
     return arr
   }, [dataFetch])
@@ -287,7 +288,9 @@ function TopUser() {
             href={`/arena/profile/${item.userId.toLowerCase()}`}
           >
             <CircleImage src={item.avatar} alt='avatar' className='size-8' />
-            <Paragraph className='text-white'>{item.username || sliceAddress(item.userId)}</Paragraph>
+            <Paragraph className={item.nameColor || 'text-white'}>
+              {item.username || sliceAddress(item.userId)}
+            </Paragraph>
           </Link>
         ),
         competitionName: (
