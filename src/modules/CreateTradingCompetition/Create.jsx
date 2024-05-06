@@ -12,7 +12,6 @@ import Time from './Time'
 import Token from './Token'
 
 function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = () => {}, data, setData }) {
-  const [isStarting, setIsStarting] = useState(!isInvalidAmount(data.competitionRules.startingBalance))
   const [isEntryFee, setIsEntryFee] = useState(!isInvalidAmount(data.entryFee))
 
   const getErrorMsg = useCallback(
@@ -47,7 +46,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
               ? 'Invalid Tradable Tokens'
               : !winningToken
                 ? 'Invalid Winning Token'
-                : isStarting && isInvalidAmount(startingBalance)
+                : isInvalidAmount(startingBalance)
                   ? 'Invalid Amount'
                   : ''
           break
@@ -74,8 +73,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
       }
       return error
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data, isStarting, isEntryFee],
+    [data, isEntryFee],
   )
 
   const renderComponent = () => {
@@ -85,7 +83,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
       case 1:
         return <Time data={data} setData={setData} />
       case 2:
-        return <Token data={data} setData={setData} isStarting={isStarting} setIsStarting={setIsStarting} />
+        return <Token data={data} setData={setData} />
       case 3:
         return <Prize data={data} setData={setData} isEntryFee={isEntryFee} setIsEntryFee={setIsEntryFee} />
       default:
@@ -97,12 +95,6 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
       setIsEntryFee(true)
     } else {
       setIsEntryFee(false)
-    }
-
-    if (data.competitionRules?.startingBalance) {
-      setIsStarting(true)
-    } else {
-      setIsStarting(false)
     }
   }, [data.competitionRules?.startingBalance, data.entryFee])
 

@@ -13,7 +13,7 @@ import { useTC } from '@/context/tcContext'
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
 
-function Token({ data, setData, isStarting, setIsStarting }) {
+function Token({ data, setData }) {
   const [isTradeOpen, setIsTradeOpen] = useState(false)
   const [isWinningOpen, setIsWinningOpen] = useState(false)
   const { tradingTokens } = useTC()
@@ -122,22 +122,7 @@ function Token({ data, setData, isStarting, setIsStarting }) {
       </div>
       <div className='mt-3 items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='flex:col flex h-[50px] w-full items-center'>
-          <Toggle
-            checked={isStarting}
-            toggleId='starting'
-            onChange={() => {
-              if (isStarting) {
-                setData({
-                  ...data,
-                  competitionRules: {
-                    ...data.competitionRules,
-                    startingBalance: '',
-                  },
-                })
-              }
-              setIsStarting(!isStarting)
-            }}
-          />
+          <Toggle checked disabled toggleId='starting' onChange={() => {}} />
           <LabelTooltip
             id='startingBalance'
             label='Require Deposit to Join'
@@ -147,34 +132,29 @@ function Token({ data, setData, isStarting, setIsStarting }) {
           />
         </div>
         <div className='w-full'>
-          {isStarting && (
-            <Input
-              value={data.competitionRules.startingBalance}
-              type='number'
-              onChange={e => {
-                setData({
-                  ...data,
-                  competitionRules: {
-                    ...data.competitionRules,
-                    startingBalance: e.target.value,
-                  },
-                })
-              }}
-              TrailingButton={
-                data.competitionRules.winningToken ? (
-                  <div className='absolute right-4 flex items-center space-x-1.5'>
-                    <Image alt='' src={data.competitionRules.winningToken.logoURI} width={20} height={20} />
-                    <span className='font-figtree text-lg leading-[22px] text-white'>
-                      {data.competitionRules.winningToken.symbol}
-                    </span>
-                  </div>
-                ) : undefined
-              }
-              // classNames={{
-              //   input: isStarting ? 'block' : 'hidden',
-              // }}
-            />
-          )}
+          <Input
+            value={data.competitionRules.startingBalance}
+            type='number'
+            onChange={e => {
+              setData({
+                ...data,
+                competitionRules: {
+                  ...data.competitionRules,
+                  startingBalance: e.target.value,
+                },
+              })
+            }}
+            TrailingButton={
+              data.competitionRules.winningToken ? (
+                <div className='absolute right-4 flex items-center space-x-1.5'>
+                  <Image alt='' src={data.competitionRules.winningToken.logoURI} width={20} height={20} />
+                  <span className='font-figtree text-lg leading-[22px] text-white'>
+                    {data.competitionRules.winningToken.symbol}
+                  </span>
+                </div>
+              ) : undefined
+            }
+          />
         </div>
       </div>
 
