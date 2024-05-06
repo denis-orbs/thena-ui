@@ -8,7 +8,6 @@ import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import { cn, sliceAddress } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { CopyAddress } from '@/modules/Profile/CopyAddress'
 import { Verified } from '@/svgs'
 
 import CircleImage from './CircleImage'
@@ -85,7 +84,6 @@ export function UserProfileCard({
           ) : (
             <Verified className='h-5 w-5' />
           ))}
-        <CopyAddress value={id} />
         {isAdmin && <Tag>{t('Admin')}</Tag>}
         {isSuperAdmin && <Tag>{t('Super Admin')}</Tag>}
       </LinkComponent>
