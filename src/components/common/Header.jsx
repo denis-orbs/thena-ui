@@ -425,7 +425,11 @@ function Header() {
         account
           ? {
               label: t('Profile'),
-              active: pathname === '/arena/profile' || pathname === '/arena/profile/edit',
+              active:
+                pathname === '/arena/profile' ||
+                pathname === '/arena/profile/edit' ||
+                pathname === '/arena/profile/following' ||
+                pathname === '/arena/profile/followers',
               isLink: true,
               href: '/arena/profile',
             }
