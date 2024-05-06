@@ -1,8 +1,9 @@
 import BigNumber from 'bignumber.js'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
-import { EmphasisButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CheckBox from '@/components/checkbox'
 import NextImage from '@/components/image/NextImage'
 import Input from '@/components/input'
@@ -10,19 +11,31 @@ import LabelTooltip from '@/components/label/LabelTooltip'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import useDebounce from '@/hooks/useDebounce'
-import { useGiftThenaId, useMintThenaId, useUSDTCostPerToken, useValidateUserName } from '@/hooks/useThenaIdContract'
-import { cn, formatAmount, fromWei } from '@/lib/utils'
-import { CheckCircleIcon } from '@/svgs'
+import {
+  useBatchGiftThenaId,
+  useBatchMintThenaId,
+  useGiftThenaId,
+  useMintThenaId,
+  useUSDTCostPerToken,
+} from '@/hooks/useThenaIdContract'
+import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+
+import ThenaIdInput from './ThenaIdInput'
+
+const DEFAULT_THENAID_DATA = {
+  id: 1,
+  username: '',
+  errorMessage: '',
+  cost: undefined,
+}
 
 export default function ThenaIdModal({ tab, targetAddress, onClose }) {
   const t = useTranslations()
   const [type, setType] = useState(tab)
-  const [thenaId, setThenaId] = useState('')
+  const [thenaIds, setThenaIds] = useState([DEFAULT_THENAID_DATA])
+  const [thenaId] = useState('')
   const [address, setAddress] = useState(targetAddress)
   const assets = useAssets()
-  const [errors, setErrors] = useState({})
-  const [estimateCost, setEstimateCost] = useState()
   const { costPerToken, loading } = useUSDTCostPerToken()
 
   // Only allowed USDT
@@ -32,54 +45,55 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
     [assets],
   )
 
+  const isValid = useMemo(() => thenaIds.every(item => item.username && !item.errorMessage && item.cost), [thenaIds])
+  const totalCost = useMemo(
+    () => thenaIds.reduce((sum, curr) => (curr.cost ? sum.plus(curr.cost) : sum), new BigNumber(0)),
+    [thenaIds],
+  )
+
   const { loading: gifting, giftThenaId } = useGiftThenaId()
   const { loading: minting, buyThenaId } = useMintThenaId()
+  const { loading: batchMinting, batchMintThenaId } = useBatchMintThenaId()
+  const { loading: batchGifting, batchGiftThenaId } = useBatchGiftThenaId()
 
-  const debounceThenaId = useDebounce(thenaId, 500)
-
-  const { validate } = useValidateUserName()
-
-  useEffect(() => {
-    const calculateCost = thenaIdLength => {
-      if (costPerToken[new BigNumber(thenaIdLength).toNumber() - 1]) {
-        return costPerToken[new BigNumber(thenaIdLength).toNumber() - 1]
-      }
-      if (new BigNumber(thenaIdLength).toNumber() > costPerToken.length) {
-        return costPerToken[costPerToken.length - 1]
-      }
-      return undefined
-    }
-    if (debounceThenaId) {
-      validate(debounceThenaId).then(data => {
-        const errorMessages = {}
-        if (!data.valid) {
-          errorMessages.thenaId = t('Invalid Thena Id', { thenaId: debounceThenaId })
-        }
-        if (!data.available) {
-          errorMessages.thenaId = t('Thena Id Is Taken', { thenaId: debounceThenaId })
-        }
-        if (!errorMessages.thenaId) {
-          setEstimateCost(calculateCost(data.length))
-        } else {
-          setEstimateCost(undefined)
-        }
-        setErrors(errorMessages)
-      })
-    } else {
-      setErrors({})
-      setEstimateCost(undefined)
-    }
-  }, [costPerToken, debounceThenaId, errors, t, validate])
+  const isMinting = useMemo(
+    () => gifting || minting || batchGifting || batchMinting,
+    [batchMinting, batchGifting, gifting, minting],
+  )
 
   const onMint = useCallback(async () => {
-    if (!Object.keys(errors).length) {
-      if (type === 'gift') {
-        await giftThenaId(thenaId, address)
-      } else {
-        await buyThenaId(thenaId, estimateCost)
-      }
+    if (!isValid) {
+      return
     }
-  }, [errors, type, giftThenaId, thenaId, address, buyThenaId, estimateCost])
+    if (type === 'gift') {
+      if (thenaIds.length > 1) {
+        await batchGiftThenaId(
+          thenaIds.map(item => item.username),
+          address,
+        )
+      } else {
+        await giftThenaId(thenaId, address)
+      }
+    } else if (thenaIds.length > 1) {
+      await batchMintThenaId(
+        thenaIds.map(item => item.username),
+        totalCost,
+      )
+    } else {
+      await buyThenaId(thenaIds[0].username, thenaIds[0].cost)
+    }
+  }, [
+    isValid,
+    type,
+    thenaIds,
+    batchGiftThenaId,
+    address,
+    giftThenaId,
+    thenaId,
+    batchMintThenaId,
+    totalCost,
+    buyThenaId,
+  ])
 
   return (
     <Modal isOpen={!!tab} title='Mint Thena Id' closeModal={onClose} fontSizeTitle='text-xl' width={550}>
@@ -117,24 +131,58 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
             <div className='w-full'>
               <div className='w-full'>
                 <LabelTooltip label={type === 'get' ? 'Your Thena Id' : 'Thena Id'} />
-
-                <Input
-                  onChange={e => {
-                    setThenaId(e.target.value)
-                  }}
-                  type='text'
-                  value={thenaId || ''}
-                  placeholder='Type Your Id'
-                  TrailingIcon={!errors?.thenaId && debounceThenaId.length ? <CheckCircleIcon /> : null}
-                  classNames={{
-                    input: errors?.thenaId ? 'border-error-500' : undefined,
-                  }}
-                />
-                {errors?.thenaId && (
-                  <Paragraph className='ml-1 mt-1 text-sm text-error-500'>{errors?.thenaId}</Paragraph>
-                )}
+                {thenaIds.map(thenaItem => (
+                  <ThenaIdInput
+                    onChange={({ errorMessage, cost, username }) => {
+                      setThenaIds(prev =>
+                        prev.map(item => {
+                          if (item.id === thenaItem.id) {
+                            return {
+                              id: item.id,
+                              username,
+                              errorMessage,
+                              cost,
+                            }
+                          }
+                          return item
+                        }),
+                      )
+                    }}
+                    costPerToken={costPerToken}
+                  />
+                ))}
               </div>
 
+              <div className='mt-4 flex items-center justify-center space-x-3 md:mt-6'>
+                <PrimaryButton
+                  onClick={() => {
+                    if (thenaIds.length >= 2) {
+                      setThenaIds(thenaIds.slice(0, -1))
+                    }
+                  }}
+                  disabled={thenaIds.length === 1}
+                  className='bg-red-600 p-[0.5rem] hover:bg-red-600'
+                >
+                  <Image src='/svgs/minus-v2.svg' alt='' width={20} height={20} />
+                </PrimaryButton>
+                <PrimaryButton
+                  onClick={() => {
+                    if (thenaIds.length < 10) {
+                      setThenaIds([
+                        ...thenaIds,
+                        {
+                          ...DEFAULT_THENAID_DATA,
+                          id: thenaIds.length + 1,
+                        },
+                      ])
+                    }
+                  }}
+                  className='bg-green-600 p-[0.5rem] hover:bg-green-600'
+                  disabled={thenaIds.length >= 10}
+                >
+                  <Image src='/svgs/plus-v2.svg' alt='' width={20} height={20} />
+                </PrimaryButton>
+              </div>
               {type === 'gift' && (
                 <div className='mt-5 w-full'>
                   <LabelTooltip label='Wallet Address' />
@@ -152,11 +200,11 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
               )}
               <div className='flex:col mt-5 flex w-full items-center justify-between'>
                 <LabelTooltip label='Total Price' className='mb-0' />
-                {estimateCost && USDTAsset && (
+                {totalCost && !isInvalidAmount(totalCost) && USDTAsset && (
                   <div className='flex items-center gap-2'>
                     <NextImage src={USDTAsset?.logoURI} alt='' className='h-5 w-5' />
                     <Paragraph>
-                      {formatAmount(fromWei(estimateCost, USDTAsset?.decimals))} {USDTAsset?.symbol}
+                      {formatAmount(fromWei(totalCost, USDTAsset?.decimals))} {USDTAsset?.symbol}
                     </Paragraph>
                   </div>
                 )}
@@ -168,7 +216,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
       <ModalFooter className='mt-3 flex w-full flex-row justify-center gap-4'>
         <EmphasisButton
           className='w-full py-3.5 text-white lg:px-16 lg:py-3'
-          disabled={!thenaId || loading || gifting || minting}
+          disabled={!isValid || loading || isMinting}
           onClick={onMint}
         >
           {t('Mint Now')}

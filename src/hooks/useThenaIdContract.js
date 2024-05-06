@@ -26,6 +26,11 @@ export const useValidateUserName = () => {
           readCall(contract, 'getLength', [username]),
         ])
 
+        console.log({
+          available,
+          valid,
+          length,
+        })
         return {
           available,
           valid,
@@ -204,4 +209,143 @@ export const useGiftThenaId = () => {
   )
 
   return { loading, giftThenaId }
+}
+
+export const useBatchMintThenaId = () => {
+  const [loading, setLoading] = useState(false)
+  const t = useTranslations()
+  const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
+  const { account, chainId } = useWallet()
+
+  const batchMintThenaId = useCallback(
+    async (usernames, estimateCost) => {
+      const thenaIdContract = getThenaIDContract()
+      if (usernames.length && thenaIdContract) {
+        const key = uuidv4()
+        const mintUuid = uuidv4()
+        const approveTokenUuid = uuidv4()
+        const tokenContract = getERC20Contract(USDT_TOKEN_ADDRESS, chainId)
+        const allowance = await readCall(tokenContract, 'allowance', [account, thenaIdContract.address])
+        const isApprovedToken = fromWei(allowance).gte(fromWei(estimateCost))
+
+        setLoading(true)
+        startTxn({
+          key,
+          title: t('Mint Thena Id'),
+          transactions: {
+            ...(!isApprovedToken && {
+              [approveTokenUuid]: {
+                desc: `${t('Approve')} ${t('Token')}`,
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
+            [mintUuid]: {
+              desc: t('Mint Thena Id'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
+        if (!isApprovedToken) {
+          const isSuccess = await writeTxn(key, approveTokenUuid, tokenContract, 'approve', [
+            thenaIdContract.address,
+            estimateCost,
+          ])
+          if (!isSuccess) {
+            setLoading(false)
+            return false
+          }
+        }
+
+        const isSuccess = await writeTxn(key, mintUuid, thenaIdContract, 'batchMintUsername', [
+          usernames,
+          USDT_TOKEN_ADDRESS,
+          usernames.map(() => DEFAULT_TRAITS),
+          usernames.map(() => DEFAULT_PROOFS),
+        ])
+        if (!isSuccess) {
+          setLoading(false)
+          return false
+        }
+        endTxn({
+          key,
+          final: 'Mint Thena Id Successful',
+        })
+        setLoading(false)
+        closeTxnModal()
+        return isSuccess
+      }
+    },
+    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { loading, batchMintThenaId }
+}
+
+export const useBatchGiftThenaId = () => {
+  const [loading, setLoading] = useState(false)
+  const t = useTranslations()
+  const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
+  const batchGiftThenaId = useCallback(
+    async (usernames, toAddress) => {
+      const contract = getThenaIDContract()
+      if (usernames.length && contract && USDT_TOKEN_ADDRESS) {
+        const key = uuidv4()
+        const mintUuid = uuidv4()
+        const allowedUuid = uuidv4()
+        const allowedToken = await readCall(contract, 'allowedTokens', [USDT_TOKEN_ADDRESS])
+
+        setLoading(true)
+        startTxn({
+          key,
+          title: t('Send As Gift'),
+          transactions: {
+            ...(!allowedToken && {
+              [allowedUuid]: {
+                desc: `${t('Approve')} ${t('Token')}`,
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
+            [mintUuid]: {
+              desc: t('Send As Gift'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
+        if (!allowedToken) {
+          const isSuccess = await writeTxn(key, allowedUuid, contract, 'approve', [USDT_TOKEN_ADDRESS, 0])
+          if (!isSuccess) {
+            setLoading(false)
+            return false
+          }
+        }
+        const isSuccess = await writeTxn(key, mintUuid, contract, 'batchMintUsernameFor', [
+          toAddress,
+          usernames,
+          USDT_TOKEN_ADDRESS,
+          usernames.map(() => DEFAULT_TRAITS),
+          usernames.map(() => DEFAULT_PROOFS),
+        ])
+        if (!isSuccess) {
+          setLoading(false)
+          return false
+        }
+        endTxn({
+          key,
+          final: 'Send As Gift Successful',
+        })
+        setLoading(false)
+        closeTxnModal()
+        return true
+      }
+    },
+    [closeTxnModal, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { loading, batchGiftThenaId }
 }
