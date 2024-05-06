@@ -114,21 +114,21 @@ export function UserInfo({ userInfo, following, followers }) {
                         src={userInfo.checkMarkIcon}
                         width={20}
                         height={20}
-                        className='h-5 w-5'
+                        className='ml-1 h-5 w-5'
                         alt='demo-checkmark'
                       />
                     ) : (
-                      <Verified className='h-5 w-5' />
+                      <Verified className='ml-1 h-5 w-5' />
                     ))}
                   <div onClick={onCopy} className='ml-1 h-5 w-5 cursor-pointer stroke-neutral-200'>
                     {copied ? <CheckIcon /> : <CopyIcon />}
                   </div>
-                  {isOwnProfile && !hasThenaId && (
+                  {isOwnProfile && (
                     <PrimaryButton
                       className='ml-4 bg-gradient-to-r from-[#B386FF] to-[#FF86FA] p-2 text-sm text-black'
                       onClick={() => handleClickThenaButton('get')}
                     >
-                      {t('Get ID')}
+                      {!hasThenaId ? t('Get ID') : t('Get More IDs')}
                     </PrimaryButton>
                   )}
                   {!isOwnProfile && (

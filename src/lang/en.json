@@ -604,6 +604,7 @@
   "Algebra": "Algebra",
   "OOE": "OOE",
   "Get ID": "Get THENA ID",
+  "Get More IDs": "Get more THENA IDs",
   "Buy Your Thena NFT Subdomain": "Buy your own THENA ID NFT subdomains!",
   "Buy Additional THENA IDs": "Buy additional THENA IDs",
   "Rank": "Rank",
@@ -737,5 +738,6 @@
   "Gift ID": "Gift ID",
   "Basic Color": "Basic Color",
   "Username": "Username",
-  "Select Your Username": "Select your username"
+  "Select Your Username": "Select your username.",
+  "Trading Starts Soon": "Trading Starts Soon"
 }

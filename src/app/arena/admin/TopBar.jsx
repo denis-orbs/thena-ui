@@ -44,9 +44,15 @@ function TopBar({ userInfo }) {
               </TextHeading>
               {userInfo.isVerified &&
                 (userInfo?.checkMarkIcon ? (
-                  <Image src={userInfo.checkMarkIcon} width={20} height={20} className='h-5 w-5' alt='demo-checkmark' />
+                  <Image
+                    src={userInfo.checkMarkIcon}
+                    width={20}
+                    height={20}
+                    className='ml-1 h-5 w-5'
+                    alt='demo-checkmark'
+                  />
                 ) : (
-                  <Verified className='h-5 w-5' />
+                  <Verified className='ml-1 h-5 w-5' />
                 ))}
             </div>
             {userInfo.isSuperAdmin ? <Tag>{t('Super Admin')}</Tag> : <Tag>{t('Admin')}</Tag>}

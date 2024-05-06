@@ -118,6 +118,9 @@ export function EditProfile({ userInfo, isAdmin = false }) {
       <TextHeading className='text-3xl'>{t('Edit Profile')}</TextHeading>
 
       <Box className='space-y-10'>
+        {!!userInfo?.usernameNfts?.length && (
+          <SelectUserName dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} userInfo={userInfo} />
+        )}
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
             <TextHeading className='text-xl'>{t('Avatar')}</TextHeading>
@@ -169,9 +172,6 @@ export function EditProfile({ userInfo, isAdmin = false }) {
             )}
           </div>
         </div>
-        {!!userInfo?.usernameNfts?.length && (
-          <SelectUserName dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} userInfo={userInfo} />
-        )}
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
             <TextHeading className='text-xl'>{t('Website URL')}</TextHeading>

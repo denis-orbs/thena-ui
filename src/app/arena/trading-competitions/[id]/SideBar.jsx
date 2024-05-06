@@ -198,9 +198,9 @@ function Sidebar({ competition, eventType }) {
 
       if (isJoined) {
         return (
-          <Link href={`/arena/trading-competitions/${competition.id}/trade`}>
-            <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
-          </Link>
+          <PrimaryButton disabled className='w-full'>
+            {t('Trading Starts Soon')}
+          </PrimaryButton>
         )
       }
 
@@ -297,7 +297,7 @@ function Sidebar({ competition, eventType }) {
                 ? competition.timestamp.endTimestamp
                 : isNotStartRegistration
                   ? competition.timestamp.registrationStart
-                  : competition.timestamp.registrationEnd
+                  : competition.timestamp.startTimestamp
             }
           />
         )}
