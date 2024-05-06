@@ -31,10 +31,10 @@ function ThenaIdInput({ onChange, costPerToken }) {
     }
     if (debounceThenaId) {
       validate(debounceThenaId).then(data => {
-        if (!data.valid) {
-          errorMessage = t('Invalid Thena Id', { thenaId: debounceThenaId })
-        } else if (!data.available) {
+        if (!data.available) {
           errorMessage = t('Thena Id Is Taken', { thenaId: debounceThenaId })
+        } else if (!data.valid) {
+          errorMessage = t('Invalid Thena Id', { thenaId: debounceThenaId })
         } else {
           estimateCost = calculateCost(data.length)
         }
