@@ -61,6 +61,13 @@ function Sidebar({ competition, eventType }) {
         subText: isJoined ? t('You Joined This Competition') : null,
       }
     }
+    if (eventType === EVENT_TYPES.UPCOMING && isEndedRegistration) {
+      return {
+        heading: t('Trading Starts In'),
+        text: null,
+        subText: null,
+      }
+    }
     if (eventType === EVENT_TYPES.LIVE) {
       let subText = null
       switch (competition.participantCount) {
