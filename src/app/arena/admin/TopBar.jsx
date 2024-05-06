@@ -39,7 +39,7 @@ function TopBar({ userInfo }) {
                       : '',
                   }}
                 >
-                  {userInfo.username ? `${userInfo.username}.thena` : sliceAddress(userInfo.id)}
+                  {userInfo.username || sliceAddress(userInfo.id)}
                 </span>
               </TextHeading>
               {userInfo.isVerified &&
