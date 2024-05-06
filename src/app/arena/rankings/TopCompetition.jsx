@@ -86,10 +86,14 @@ function TopCompetition() {
 
   const t = useTranslations()
 
-  const { data: topTCRes } = useSWR(['top competition api', direction], () => fetchTopCompetition(direction), {
-    refreshInterval: 30000,
-    revalidateOnFocus: true,
-  })
+  const { data: topTCRes, isLoading } = useSWR(
+    ['top competition api', direction],
+    () => fetchTopCompetition(direction),
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    },
+  )
 
   useEffect(() => {
     if (sort.value === 'participants') {
@@ -215,6 +219,7 @@ function TopCompetition() {
             data={isAll ? finalData : finalData.slice(0, 5)}
             onlySortDesc
             enabledRedirectOnClickPagination={isAll}
+            loading={isLoading}
           />
         </div>
       </Box>

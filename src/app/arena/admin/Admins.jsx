@@ -171,6 +171,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
             setCurrentPage={setCurrentPage}
             data={finalData}
             tableBasic
+            loading={isLoading}
           />
         ) : (
           <div className='flex flex-col'>

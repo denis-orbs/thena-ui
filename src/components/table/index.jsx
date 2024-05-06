@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import Loading from '@/app/loading'
 import { cn } from '@/lib/utils'
 import { ArrowDownIcon, ArrowLeftIcon } from '@/svgs'
 
@@ -52,6 +53,7 @@ function Table({
   tableBasic = false,
   onlySortDesc = false,
   enabledRedirectOnClickPagination = false,
+  loading = false,
 }) {
   const pageCount = Math.ceil(data.length / PAGE_SIZE)
   const t = useTranslations()
@@ -88,10 +90,10 @@ function Table({
   }, [pageQuery, setCurrentPage, enabledRedirectOnClickPagination])
 
   return (
-    <div className={cn('reltaive flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
+    <div className={cn('relative flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
       <div className='overflow-x-auto'>
         {tableBasic ? (
-          <table className='w-full'>
+          <table className={`w-full ${loading ? 'min-h-[500px]' : ''}`}>
             <thead>
               <tr>
                 {sortOptions.map((option, idx) => (
@@ -137,18 +139,24 @@ function Table({
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
-                <tr key={`table-row-${eleIdx}`}>
-                  {sortOptions.map((cell, cellIdx) => (
-                    <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
-                      <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
-                        {ele[cell.value]}
-                      </TableCell>
-                    </td>
-                  ))}
-                </tr>
-              ))}
+            <tbody className='relative'>
+              {loading && (
+                <div className='flex w-full justify-center'>
+                  <Loading />
+                </div>
+              )}
+              {!loading &&
+                data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
+                  <tr key={`table-row-${eleIdx}`}>
+                    {sortOptions.map((cell, cellIdx) => (
+                      <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
+                        <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                          {ele[cell.value]}
+                        </TableCell>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
             </tbody>
           </table>
         ) : (
@@ -181,48 +189,54 @@ function Table({
                 </TableCell>
               ))}
             </div>
-            {data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
-              <div
-                className={cn(
-                  'flex w-full flex-wrap items-start rounded-lg border-b border-neutral-700 hover:bg-neutral-800 lg:flex-nowrap lg:items-center lg:border-0',
-                  ele.onRowClick && 'cursor-pointer',
-                )}
-                onClick={() => ele.onRowClick && ele.onRowClick()}
-                key={`table-row-${eleIdx}`}
-              >
-                <TableCell
+            {loading && (
+              <div className='flex min-h-[500px] w-full justify-center'>
+                <Loading />
+              </div>
+            )}
+            {!loading &&
+              data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
+                <div
                   className={cn(
-                    'flex w-full',
-                    sortOptions[0].width,
-                    sortOptions[0].hiddenMobile ? 'max-lg:hidden' : 'flex',
+                    'flex w-full flex-wrap items-start rounded-lg border-b border-neutral-700 hover:bg-neutral-800 lg:flex-nowrap lg:items-center lg:border-0',
+                    ele.onRowClick && 'cursor-pointer',
                   )}
+                  onClick={() => ele.onRowClick && ele.onRowClick()}
+                  key={`table-row-${eleIdx}`}
                 >
-                  {ele[sortOptions[0].value]}
-                </TableCell>
-                {sortOptions.slice(1, sortOptions.length - (notAction ? 0 : 1)).map((cell, cellIdx) => (
                   <TableCell
                     className={cn(
-                      'flex w-1/2 flex-col lg:flex-row',
-                      cell.width,
-                      !cell.hiddenMobile ? 'lg:flex-row' : 'hidden',
+                      'flex w-full',
+                      sortOptions[0].width,
+                      sortOptions[0].hiddenMobile ? 'max-lg:hidden' : 'flex',
                     )}
-                    key={`${cell.value}-${cellIdx}`}
                   >
-                    <TextHeading className='lg:hidden'>{t(cell.label)}</TextHeading>
-                    {ele[cell.value]}
+                    {ele[sortOptions[0].value]}
                   </TableCell>
-                ))}
-                {!notAction && (
-                  <TableCell className={cn('flex w-full flex-col', sortOptions[sortOptions.length - 1].width)}>
-                    {ele[sortOptions[sortOptions.length - 1].value]}
-                  </TableCell>
-                )}
-              </div>
-            ))}
+                  {sortOptions.slice(1, sortOptions.length - (notAction ? 0 : 1)).map((cell, cellIdx) => (
+                    <TableCell
+                      className={cn(
+                        'flex w-1/2 flex-col lg:flex-row',
+                        cell.width,
+                        !cell.hiddenMobile ? 'lg:flex-row' : 'hidden',
+                      )}
+                      key={`${cell.value}-${cellIdx}`}
+                    >
+                      <TextHeading className='lg:hidden'>{t(cell.label)}</TextHeading>
+                      {ele[cell.value]}
+                    </TableCell>
+                  ))}
+                  {!notAction && (
+                    <TableCell className={cn('flex w-full flex-col', sortOptions[sortOptions.length - 1].width)}>
+                      {ele[sortOptions[sortOptions.length - 1].value]}
+                    </TableCell>
+                  )}
+                </div>
+              ))}
           </>
         )}
       </div>
-      {pageCount > 1 && !hidePagination && (
+      {!loading && pageCount > 1 && !hidePagination && (
         <ul className='flex items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
           <PaginateCell
             onClick={() => {

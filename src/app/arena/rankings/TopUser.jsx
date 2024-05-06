@@ -78,7 +78,7 @@ function TopUser() {
       {
         label: 'User',
         value: 'user',
-        width: 'w-[15%]',
+        width: 'w-[30%]',
         disabled: true,
       },
       {
@@ -96,6 +96,7 @@ function TopUser() {
       {
         label: 'Profit & Loss',
         value: 'pnlUSD',
+        width: 'w-[20%]',
         isDesc: true,
         disabled: false,
       },
@@ -362,6 +363,7 @@ function TopUser() {
           sortOptions={sortOptions}
           onlySortDesc
           enabledRedirectOnClickPagination={isAll}
+          loading={isLoading}
         />
       </Box>
     </div>
