@@ -44,8 +44,6 @@ export const useGammaAdd = () => {
       const positionsResp = await readCall(clearingContract, 'positions', [gammaPairAddress], networkId)
       const deposit0MaxRes = positionsResp?.[8] || 0n
       const deposit1MaxRes = positionsResp?.[9] || 0n
-      // const deposit0MaxRes = positionsResp?.[8] / 1000000n
-      // const deposit0MaxRes = positionsResp?.[9] / 1000000n
       const key = uuidv4()
       const wrapuuid = uuidv4()
       const approve1uuid = uuidv4()
