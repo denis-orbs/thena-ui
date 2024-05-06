@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -13,7 +14,7 @@ import {
   getGaugeContract,
   getWBNBContract,
 } from '@/lib/contracts'
-import { warnToast } from '@/lib/notify'
+import { successToast, warnToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
@@ -40,26 +41,11 @@ export const useGammaAdd = () => {
       const gammaUNIProxyContract = getGammaUNIProxyContract(networkId)
       const clearingAddress = await readCall(gammaUNIProxyContract, 'clearance', [], networkId)
       const clearingContract = getGammaClearingContract(clearingAddress, networkId)
-      const { deposit0Max: deposit0MaxRes, deposit1Max: deposit1MaxRes } = await readCall(
-        clearingContract,
-        'positions',
-        [gammaPairAddress],
-        networkId,
-      )
-      const deposit0Max = fromWei(deposit0MaxRes, gammaPair.token0.decimals)
-      const deposit1Max = fromWei(deposit1MaxRes, gammaPair.token1.decimals)
-      if (
-        deposit0Max.lt((baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountA : amountB).toExact())
-      ) {
-        warnToast(`Maximum deposit amount of ${gammaPair.token0.symbol} is ${deposit0Max.toFormat(0)}.`, 'warn')
-        return
-      }
-      if (
-        deposit1Max.lt((baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountB : amountA).toExact())
-      ) {
-        warnToast(`Maximum deposit amount of ${gammaPair.token1.symbol} is ${deposit1Max.toFormat(0)}.`, 'warn')
-        return
-      }
+      const positionsResp = await readCall(clearingContract, 'positions', [gammaPairAddress], networkId)
+      const deposit0MaxRes = positionsResp?.[8] || 0n
+      const deposit1MaxRes = positionsResp?.[9] || 0n
+      // const deposit0MaxRes = positionsResp?.[8] / 1000000n
+      // const deposit0MaxRes = positionsResp?.[9] / 1000000n
       const key = uuidv4()
       const wrapuuid = uuidv4()
       const approve1uuid = uuidv4()
@@ -71,37 +57,77 @@ export const useGammaAdd = () => {
       const isFirstApproved = fromWei(baseAllowance, baseCurrency.decimals).gte(amountA.toExact())
       const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaPairAddress], networkId)
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
-      startTxn({
-        key,
-        title: t('Add Liquidity'),
-        transactions: {
-          ...(amountToWrap && {
-            [wrapuuid]: {
-              desc: t('Wrap'),
+
+      const firstParam = (
+        baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountA : amountB
+      ).numerator.toString()
+      const secondParam = (
+        baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountB : amountA
+      ).numerator.toString()
+
+      const firstParamNumber = Number(firstParam)
+      const secondParamNumber = Number(secondParam)
+      const deposit0MaxNumber = new BigNumber(deposit0MaxRes).toNumber()
+      const deposit1MaxNumber = new BigNumber(deposit1MaxRes).toNumber()
+
+      const checkMaxA = Math.ceil(firstParamNumber / deposit0MaxNumber)
+      const checkMaxB = Math.ceil(secondParamNumber / deposit1MaxNumber)
+
+      const checkMax = Math.max(checkMaxA, checkMaxB)
+
+      let transactions = {
+        ...(amountToWrap && {
+          [wrapuuid]: {
+            desc: t('Wrap'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        }),
+        ...(!isFirstApproved && {
+          [approve1uuid]: {
+            desc: `${t('Approve')} ${baseCurrency.symbol}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        }),
+        ...(!isSecondApproved && {
+          [approve2uuid]: {
+            desc: `${t('Approve')} ${quoteCurrency.symbol}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        }),
+      }
+
+      const supplyuuidList = []
+      if (checkMax > 1) {
+        for (let i = 0; i < checkMax; i++) {
+          const uuidI = uuidv4()
+          supplyuuidList.push(uuidI)
+          transactions = {
+            ...transactions,
+            [uuidI]: {
+              desc: t('Add Liquidity'),
               status: TXN_STATUS.START,
               hash: null,
             },
-          }),
-          ...(!isFirstApproved && {
-            [approve1uuid]: {
-              desc: `${t('Approve')} ${baseCurrency.symbol}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          ...(!isSecondApproved && {
-            [approve2uuid]: {
-              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
+          }
+        }
+      } else {
+        transactions = {
+          ...transactions,
           [supplyuuid]: {
             desc: t('Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },
-        },
+        }
+      }
+
+      startTxn({
+        key,
+        title: t('Add Liquidity'),
+        transactions,
       })
       setPending(true)
       if (amountToWrap) {
@@ -125,14 +151,32 @@ export const useGammaAdd = () => {
         }
       }
 
-      const firstParam = (
-        baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountA : amountB
-      ).numerator.toString()
-      const secondParam = (
-        baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountB : amountA
-      ).numerator.toString()
+      if (checkMax > 1) {
+        successToast(`Your request is above Gamma max deposit. Your deposit is split in ${checkMax} transactions`)
+        for (let i = 1; i < checkMax + 1; i++) {
+          const firstParamI =
+            firstParamNumber > deposit0MaxNumber * i
+              ? deposit0MaxNumber
+              : firstParamNumber - deposit0MaxNumber * (i - 1)
+          const secondParamI =
+            secondParamNumber > deposit1MaxNumber * i
+              ? deposit1MaxNumber
+              : secondParamNumber - deposit1MaxNumber * (i - 1)
 
-      if (
+          if (
+            !(await writeTxn(key, supplyuuidList[i - 1], gammaUNIProxyContract, 'deposit', [
+              firstParamI > 0 ? firstParamI : '0',
+              secondParamI > 0 ? secondParamI : '0',
+              account,
+              gammaPairAddress,
+              [0, 0, 0, 0],
+            ]))
+          ) {
+            setPending(false)
+            return
+          }
+        }
+      } else if (
         !(await writeTxn(key, supplyuuid, gammaUNIProxyContract, 'deposit', [
           firstParam,
           secondParam,
