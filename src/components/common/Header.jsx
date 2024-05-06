@@ -230,8 +230,6 @@ function LanguageSelect() {
   )
 }
 
-const showNotification = false
-
 function Header() {
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
@@ -553,7 +551,7 @@ function Header() {
             </OutlinedButton>
             <ConnectButton className='hidden lg:flex' />
             <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
-            {showNotification && <Notification />}
+            <Notification />
           </div>
         </div>
         <Modal

@@ -1,11 +1,15 @@
 'use client'
 
-import React from 'react'
-import 'dayjs/locale/zh'
+import Link from 'next/link'
+import useSWR from 'swr'
 import 'dayjs/locale/en'
+import 'dayjs/locale/zh'
 
+import { fetchUserNotifcations } from '@/hooks/useNotifications'
 import dayjs from '@/lib/arenaDayjs'
 import { cn } from '@/lib/utils'
+import useWallet from '@/lib/wallets/useWallet'
+import { useLocaleSettings } from '@/state/settings/hooks'
 import { BellIcon, CalendarWhiteIcon } from '@/svgs'
 
 import { EmphasisIconButton } from '../buttons/IconButton'
@@ -14,53 +18,18 @@ import Popover from '../popover'
 import { Paragraph, TextHeading } from '../typography'
 
 export function Notification() {
-  const notifications = [
+  const { account } = useWallet()
+  const { locale } = useLocaleSettings()
+  const { data: notifications } = useSWR(
+    ['notifications', account?.toLowerCase()],
+    () => fetchUserNotifcations(account),
     {
-      id: 232,
-      title: 'Notifications',
-      timestamp: 1714103254,
+      refreshInterval: 30000,
     },
-    {
-      id: 2321,
-      title: 'Notifications',
-      timestamp: 1714103254,
-    },
-    {
-      id: 2322,
-      title: 'Notifications',
-      timestamp: 1714103254,
-    },
-    {
-      id: 2324,
-      title: 'Notifications',
-      timestamp: 1714103254,
-    },
-    {
-      id: 2325,
-      title: 'Notifications',
-      timestamp: 1714103254,
-    },
-    {
-      id: 23221,
-      title: 'Notifications',
-      timestamp: 1714103254,
-    },
-    {
-      id: 2325436,
-      title: 'Notifications',
-      timestamp: 1714103254,
-    },
-    {
-      id: 232432,
-      title: 'Notifications',
-      timestamp: 1714103254,
-    },
-    {
-      id: 232543,
-      title: 'Notifications',
-      timestamp: 1714103254,
-    },
-  ]
+  )
+  if (!account || !notifications?.length) {
+    return null
+  }
 
   return (
     <>
@@ -74,21 +43,23 @@ export function Notification() {
           />
         }
       >
-        <div className='max-h-96 min-h-20 max-w-sm overflow-y-auto'>
+        <div className='max-h-96 min-h-20 max-w-[500px] overflow-y-auto'>
           {notifications?.map(notification => (
-            <div className='flex h-20 w-80 items-center gap-4' key={notification.id}>
-              <Highlight className='bg-gradient-to-t from-[#9A5EFF] to-primary-600'>
-                <CalendarWhiteIcon className='h-4 w-4 text-black' />
-              </Highlight>
-              <div className='flex flex-col gap-1'>
-                <TextHeading>{`Competition ${notification.title} has ended`}</TextHeading>
-                <Paragraph className='text-sm'>
-                  {dayjs(notification.timestamp * 1000)
-                    .locale('en') // TODO: change after set language
-                    .fromNow()}
-                </Paragraph>
+            <Link href={notification.redirectUrl ?? '#'}>
+              <div className='flex h-20 min-w-80 items-center gap-4' key={notification.id}>
+                <Highlight className='bg-gradient-to-t from-[#9A5EFF] to-primary-600'>
+                  <CalendarWhiteIcon className='h-4 w-4 text-black' />
+                </Highlight>
+                <div className='flex flex-col gap-1'>
+                  <TextHeading>{notification.content}</TextHeading>
+                  <Paragraph className='text-sm'>
+                    {dayjs(notification.timestamp * 1000)
+                      .locale(locale) // TODO: change after set language
+                      .fromNow()}
+                  </Paragraph>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </Popover>
