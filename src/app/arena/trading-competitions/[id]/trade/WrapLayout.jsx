@@ -108,7 +108,7 @@ export function WrapLayout({ children, params }) {
       <Box className='mb-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
         <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
         <TextHeading className='text-base font-normal'>
-          {t('If You Want To Know The Real PnL', { symbol: fromAsset?.symbol })}
+          {t('If You Want To Know The Real PnL', { symbol: competition?.competitionRules?.winningToken?.symbol })}
         </TextHeading>
       </Box>
       {eventType === EVENT_TYPES.LIVE ? (

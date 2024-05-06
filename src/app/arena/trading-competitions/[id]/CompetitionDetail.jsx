@@ -68,6 +68,10 @@ export function CompetitionDetail({ competition, isPreview = false }) {
           : formatAmount(fromWei(startingBalance, winningToken?.decimals)),
         ticker: isInvalidAmount(startingBalance) ? '' : winningToken?.symbol,
       },
+      {
+        key: 'Winning Token',
+        ticker: winningToken?.symbol,
+      },
     ]
   }, [_competition, t])
 
