@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CheckBox from '@/components/checkbox'
@@ -15,7 +15,13 @@ import LabelTooltip from '@/components/label/LabelTooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useUserInfo } from '@/context/userInfoContext'
-import { useUSDTCostPerToken } from '@/hooks/useThenaIdContract'
+import {
+  useBatchGiftThenaId,
+  useBatchMintThenaId,
+  useGiftThenaId,
+  useMintThenaId,
+  useUSDTCostPerToken,
+} from '@/hooks/useThenaIdContract'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
@@ -31,16 +37,17 @@ const DEFAULT_THENAID_DATA = {
 function ThenaContent() {
   const t = useTranslations()
   const pathname = usePathname()
-  const [type, setType] = useState('')
+  const [type, setType] = useState()
   const [thenaIds, setThenaIds] = useState([DEFAULT_THENAID_DATA])
   const { account } = useWallet()
   const { userInfo } = useUserInfo()
+  const isMint = useMemo(() => pathname.includes('mint'), [pathname])
+
   const [address, setAddress] = useState(
-    account?.toLowerCase() !== userInfo?.id?.toLowerCase() ? userInfo?.id?.toLowerCase() : undefined,
+    account?.toLowerCase() !== userInfo?.id.toLowerCase() ? userInfo?.id.toLowerCase() : undefined,
   )
   const assets = useAssets()
-  const { costPerToken } = useUSDTCostPerToken()
-  const isMint = useMemo(() => pathname.includes('mint'), [pathname])
+  const { costPerToken, loading } = useUSDTCostPerToken()
 
   // Only allowed USDT
   const USDTAsset = useMemo(
@@ -48,10 +55,62 @@ function ThenaContent() {
       assets.find(item => item.address.toLowerCase() === '0x55d398326f99059fF775485246999027B3197955'.toLowerCase()),
     [assets],
   )
+
+  const isValid = useMemo(() => thenaIds.every(item => item.username && !item.errorMessage && item.cost), [thenaIds])
   const totalCost = useMemo(
     () => thenaIds.reduce((sum, curr) => (curr.cost ? sum.plus(curr.cost) : sum), new BigNumber(0)),
     [thenaIds],
   )
+
+  const { loading: gifting, giftThenaId } = useGiftThenaId()
+  const { loading: minting, buyThenaId } = useMintThenaId()
+  const { loading: batchMinting, batchMintThenaId } = useBatchMintThenaId()
+  const { loading: batchGifting, batchGiftThenaId } = useBatchGiftThenaId()
+
+  const isMinting = useMemo(
+    () => gifting || minting || batchGifting || batchMinting,
+    [batchMinting, batchGifting, gifting, minting],
+  )
+
+  const onMint = useCallback(async () => {
+    if (!isValid) {
+      return
+    }
+    if (type === 'gift') {
+      if (thenaIds.length === 1) {
+        await giftThenaId(thenaIds[0].username, address, thenaIds[0].cost)
+      } else {
+        await batchGiftThenaId(
+          thenaIds.map(item => item.username),
+          address,
+          totalCost,
+        )
+      }
+    } else if (thenaIds.length === 1) {
+      await buyThenaId(thenaIds[0].username, thenaIds[0].cost)
+    } else {
+      await batchMintThenaId(
+        thenaIds.map(item => item.username),
+        totalCost,
+      )
+    }
+  }, [isValid, type, thenaIds, batchGiftThenaId, address, giftThenaId, batchMintThenaId, totalCost, buyThenaId])
+
+  const onChangeThenaItem = useCallback((id, { errorMessage, cost, username }) => {
+    setThenaIds(prev =>
+      prev.map(item => {
+        if (item.id === id) {
+          return {
+            id: item.id,
+            username,
+            errorMessage,
+            cost,
+          }
+        }
+        return item
+      }),
+    )
+  }, [])
 
   useEffect(() => {
     if (isMint) {
@@ -99,25 +158,11 @@ function ThenaContent() {
         <div className='w-full'>
           <div className='w-full'>
             <LabelTooltip label={type === 'get' ? 'Your Thena Id' : 'Thena Id'} />
-            {thenaIds.map((thenaItem, index) => (
+            {thenaIds.map(thenaItem => (
               <ThenaIdInput
-                onChange={({ errorMessage, cost, username }) => {
-                  setThenaIds(prev =>
-                    prev.map(item => {
-                      if (item.id === thenaItem.id) {
-                        return {
-                          id: item.id,
-                          username,
-                          errorMessage,
-                          cost,
-                        }
-                      }
-                      return item
-                    }),
-                  )
-                }}
+                key={thenaItem.id}
+                onChange={value => onChangeThenaItem(thenaItem.id, value)}
                 costPerToken={costPerToken}
-                key={index}
               />
             ))}
           </div>
@@ -183,8 +228,8 @@ function ThenaContent() {
       <div className='mt-3 flex w-full flex-row justify-center gap-4'>
         <EmphasisButton
           className='py-3.5 text-white lg:px-16 lg:py-3'
-          // disabled={!isValid || loading || isMinting}
-          // onClick={onMint}
+          disabled={!isValid || loading || isMinting}
+          onClick={onMint}
         >
           {t('Mint Now')}
         </EmphasisButton>
