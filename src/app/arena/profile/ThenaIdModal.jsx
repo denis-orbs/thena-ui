@@ -70,9 +70,10 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
         await batchGiftThenaId(
           thenaIds.map(item => item.username),
           address,
+          totalCost,
         )
       } else {
-        await giftThenaId(thenaId, address)
+        await giftThenaId(thenaId, address, totalCost)
       }
     } else if (thenaIds.length > 1) {
       await batchMintThenaId(
@@ -94,6 +95,22 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
     totalCost,
     buyThenaId,
   ])
+
+  const onChangeThenaItem = useCallback((id, { errorMessage, cost, username }) => {
+    setThenaIds(prev =>
+      prev.map(item => {
+        if (item.id === id) {
+          return {
+            id: item.id,
+            username,
+            errorMessage,
+            cost,
+          }
+        }
+        return item
+      }),
+    )
+  }, [])
 
   return (
     <Modal isOpen={!!tab} title='Mint Thena Id' closeModal={onClose} fontSizeTitle='text-xl' width={550}>
@@ -133,21 +150,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
                 <LabelTooltip label={type === 'get' ? 'Your Thena Id' : 'Thena Id'} />
                 {thenaIds.map(thenaItem => (
                   <ThenaIdInput
-                    onChange={({ errorMessage, cost, username }) => {
-                      setThenaIds(prev =>
-                        prev.map(item => {
-                          if (item.id === thenaItem.id) {
-                            return {
-                              id: item.id,
-                              username,
-                              errorMessage,
-                              cost,
-                            }
-                          }
-                          return item
-                        }),
-                      )
-                    }}
+                    onChange={value => onChangeThenaItem(thenaItem.id, value)}
                     costPerToken={costPerToken}
                   />
                 ))}

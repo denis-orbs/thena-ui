@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import { maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
@@ -26,11 +27,6 @@ export const useValidateUserName = () => {
           readCall(contract, 'getLength', [username]),
         ])
 
-        console.log({
-          available,
-          valid,
-          length,
-        })
         return {
           available,
           valid,
@@ -112,7 +108,7 @@ export const useMintThenaId = () => {
         if (!isApprovedToken) {
           const isSuccess = await writeTxn(key, approveTokenUuid, tokenContract, 'approve', [
             thenaIdContract.address,
-            estimateCost,
+            maxUint256,
           ])
           if (!isSuccess) {
             setLoading(false)
@@ -149,22 +145,25 @@ export const useGiftThenaId = () => {
   const [loading, setLoading] = useState(false)
   const t = useTranslations()
   const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
+  const { account, chainId } = useWallet()
   const giftThenaId = useCallback(
-    async (username, toAddress) => {
+    async (username, toAddress, estimateCost) => {
       const contract = getThenaIDContract()
       if (username && contract && USDT_TOKEN_ADDRESS) {
         const key = uuidv4()
         const mintUuid = uuidv4()
-        const allowedUuid = uuidv4()
-        const allowedToken = await readCall(contract, 'allowedTokens', [USDT_TOKEN_ADDRESS])
+        const approveTokenUuid = uuidv4()
+        const tokenContract = getERC20Contract(USDT_TOKEN_ADDRESS, chainId)
+        const allowance = await readCall(tokenContract, 'allowance', [account, contract.address])
+        const isApprovedToken = fromWei(allowance).gte(fromWei(estimateCost))
 
         setLoading(true)
         startTxn({
           key,
           title: t('Send As Gift'),
           transactions: {
-            ...(!allowedToken && {
-              [allowedUuid]: {
+            ...(!isApprovedToken && {
+              [approveTokenUuid]: {
                 desc: `${t('Approve')} ${t('Token')}`,
                 status: TXN_STATUS.START,
                 hash: null,
@@ -178,8 +177,11 @@ export const useGiftThenaId = () => {
           },
         })
 
-        if (!allowedToken) {
-          const isSuccess = await writeTxn(key, allowedUuid, contract, 'approve', [USDT_TOKEN_ADDRESS, 0])
+        if (!isApprovedToken) {
+          const isSuccess = await writeTxn(key, approveTokenUuid, tokenContract, 'approve', [
+            contract.address,
+            maxUint256,
+          ])
           if (!isSuccess) {
             setLoading(false)
             return false
@@ -205,7 +207,7 @@ export const useGiftThenaId = () => {
         return true
       }
     },
-    [closeTxnModal, endTxn, startTxn, t, writeTxn],
+    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
   )
 
   return { loading, giftThenaId }
@@ -251,7 +253,7 @@ export const useBatchMintThenaId = () => {
         if (!isApprovedToken) {
           const isSuccess = await writeTxn(key, approveTokenUuid, tokenContract, 'approve', [
             thenaIdContract.address,
-            estimateCost,
+            maxUint256,
           ])
           if (!isSuccess) {
             setLoading(false)
@@ -288,22 +290,25 @@ export const useBatchGiftThenaId = () => {
   const [loading, setLoading] = useState(false)
   const t = useTranslations()
   const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
+  const { account, chainId } = useWallet()
   const batchGiftThenaId = useCallback(
-    async (usernames, toAddress) => {
+    async (usernames, toAddress, estimateCost) => {
       const contract = getThenaIDContract()
       if (usernames.length && contract && USDT_TOKEN_ADDRESS) {
         const key = uuidv4()
         const mintUuid = uuidv4()
-        const allowedUuid = uuidv4()
-        const allowedToken = await readCall(contract, 'allowedTokens', [USDT_TOKEN_ADDRESS])
+        const approveTokenUuid = uuidv4()
+        const tokenContract = getERC20Contract(USDT_TOKEN_ADDRESS, chainId)
+        const allowance = await readCall(tokenContract, 'allowance', [account, contract.address])
+        const isApprovedToken = fromWei(allowance).gte(fromWei(estimateCost))
 
         setLoading(true)
         startTxn({
           key,
           title: t('Send As Gift'),
           transactions: {
-            ...(!allowedToken && {
-              [allowedUuid]: {
+            ...(!isApprovedToken && {
+              [approveTokenUuid]: {
                 desc: `${t('Approve')} ${t('Token')}`,
                 status: TXN_STATUS.START,
                 hash: null,
@@ -317,8 +322,11 @@ export const useBatchGiftThenaId = () => {
           },
         })
 
-        if (!allowedToken) {
-          const isSuccess = await writeTxn(key, allowedUuid, contract, 'approve', [USDT_TOKEN_ADDRESS, 0])
+        if (!isApprovedToken) {
+          const isSuccess = await writeTxn(key, approveTokenUuid, tokenContract, 'approve', [
+            contract.address,
+            maxUint256,
+          ])
           if (!isSuccess) {
             setLoading(false)
             return false
@@ -344,7 +352,7 @@ export const useBatchGiftThenaId = () => {
         return true
       }
     },
-    [closeTxnModal, endTxn, startTxn, t, writeTxn],
+    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
   )
 
   return { loading, batchGiftThenaId }

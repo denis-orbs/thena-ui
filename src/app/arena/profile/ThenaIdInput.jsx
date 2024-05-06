@@ -51,7 +51,8 @@ function ThenaIdInput({ onChange, costPerToken }) {
       cost,
       username: debounceThenaId,
     })
-  }, [cost, debounceThenaId, error, onChange])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cost, debounceThenaId, error])
 
   return (
     <div className='pt-2'>
