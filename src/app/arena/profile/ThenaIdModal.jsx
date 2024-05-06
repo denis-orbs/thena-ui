@@ -33,7 +33,6 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
   const t = useTranslations()
   const [type, setType] = useState(tab)
   const [thenaIds, setThenaIds] = useState([DEFAULT_THENAID_DATA])
-  const [thenaId] = useState('')
   const [address, setAddress] = useState(targetAddress)
   const assets = useAssets()
   const { costPerToken, loading } = useUSDTCostPerToken()
@@ -66,35 +65,24 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
       return
     }
     if (type === 'gift') {
-      if (thenaIds.length > 1) {
+      if (thenaIds.length === 1) {
+        await giftThenaId(thenaIds[0].username, address, thenaIds[0].cost)
+      } else {
         await batchGiftThenaId(
           thenaIds.map(item => item.username),
           address,
           totalCost,
         )
-      } else {
-        await giftThenaId(thenaId, address, totalCost)
       }
-    } else if (thenaIds.length > 1) {
+    } else if (thenaIds.length === 1) {
+      await buyThenaId(thenaIds[0].username, thenaIds[0].cost)
+    } else {
       await batchMintThenaId(
         thenaIds.map(item => item.username),
         totalCost,
       )
-    } else {
-      await buyThenaId(thenaIds[0].username, thenaIds[0].cost)
     }
-  }, [
-    isValid,
-    type,
-    thenaIds,
-    batchGiftThenaId,
-    address,
-    giftThenaId,
-    thenaId,
-    batchMintThenaId,
-    totalCost,
-    buyThenaId,
-  ])
+  }, [isValid, type, thenaIds, batchGiftThenaId, address, giftThenaId, batchMintThenaId, totalCost, buyThenaId])
 
   const onChangeThenaItem = useCallback((id, { errorMessage, cost, username }) => {
     setThenaIds(prev =>
@@ -150,6 +138,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
                 <LabelTooltip label={type === 'get' ? 'Your Thena Id' : 'Thena Id'} />
                 {thenaIds.map(thenaItem => (
                   <ThenaIdInput
+                    key={thenaItem.id}
                     onChange={value => onChangeThenaItem(thenaItem.id, value)}
                     costPerToken={costPerToken}
                   />

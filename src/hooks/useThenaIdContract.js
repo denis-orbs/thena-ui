@@ -149,7 +149,8 @@ export const useGiftThenaId = () => {
   const giftThenaId = useCallback(
     async (username, toAddress, estimateCost) => {
       const contract = getThenaIDContract()
-      if (username && contract && USDT_TOKEN_ADDRESS) {
+      console.log(username, toAddress, estimateCost, contract, USDT_TOKEN_ADDRESS)
+      if (username && contract) {
         const key = uuidv4()
         const mintUuid = uuidv4()
         const approveTokenUuid = uuidv4()
@@ -294,7 +295,7 @@ export const useBatchGiftThenaId = () => {
   const batchGiftThenaId = useCallback(
     async (usernames, toAddress, estimateCost) => {
       const contract = getThenaIDContract()
-      if (usernames.length && contract && USDT_TOKEN_ADDRESS) {
+      if (usernames.length && contract) {
         const key = uuidv4()
         const mintUuid = uuidv4()
         const approveTokenUuid = uuidv4()
