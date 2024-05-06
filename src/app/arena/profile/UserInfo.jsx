@@ -94,11 +94,7 @@ export function UserInfo({ userInfo, following, followers }) {
                           : '',
                       }}
                     >
-                      {userInfo.username
-                        ? userInfo.username.length > 12
-                          ? formatAddress(userInfo.username)
-                          : userInfo.username
-                        : formatAddress(userInfo.id)}
+                      {userInfo.username || formatAddress(userInfo.id)}
                     </span>
                   </TextHeading>
                   {userInfo.isVerified &&
@@ -159,15 +155,21 @@ export function UserInfo({ userInfo, following, followers }) {
                 </div>
               </div>
             </div>
-            {isOwnProfile && (
+            {isOwnProfile && !userInfo.usernameNfts.length && (
               <Box className='flex items-center justify-between space-x-2 border border-primary-800 bg-primary-950 p-2 pl-3 lg:p-2 lg:pl-3'>
                 <InfoIcon className='h-4 w-4 stroke-primary-600' />
                 <TextHeading className='text-base'>
                   {t(userInfo.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}
                 </TextHeading>
-                <OutlinedButton className='text-nowrap border-primary-600 p-2 text-primary-600 hover:bg-primary-900'>
-                  {t('Learn More')}
-                </OutlinedButton>
+                <Link
+                  href={'https://thena.gitbook.io/thena/arena/thena-ids'}
+                  rel='nofollow noopener noreferrer'
+                  target='_blank'
+                >
+                  <OutlinedButton className='text-nowrap border-primary-600 p-2 text-primary-600 hover:bg-primary-900'>
+                    {t('Learn More')}
+                  </OutlinedButton>
+                </Link>
               </Box>
             )}
           </div>

@@ -64,7 +64,7 @@ export function UserProfileCard({
     <div className='flex items-center gap-1'>
       <LinkComponent>
         <CircleImage src={avatar ?? Avatar} alt='avatar' className='size-8' />
-        <div className='flex flex-col gap-1'>
+        <div className='mr-1 flex flex-col gap-1'>
           <TextHeading
             className={cn('text-nowrap text-base', nameColor && !String(nameColor).startsWith('#') ? nameColor : '')}
           >
