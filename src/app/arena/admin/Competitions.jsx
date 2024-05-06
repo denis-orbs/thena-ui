@@ -13,7 +13,8 @@ import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
 import { getFromSessionStorage } from '@/lib/helper'
-import { errorToast, successToast } from '@/lib/notify'
+import { successToast } from '@/lib/notify'
+import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
 import CompetitionItem from '../CompetitionItem'
 import NoCompetition from '../NoCompetition'
@@ -149,6 +150,8 @@ function Competitions() {
     () => fetchCompetition(selectedTab, debounceSearchText),
   )
 
+  const { signWallet } = useSignWallet()
+
   useEffect(() => {
     if (!isLoading) {
       if (dataCompetitions && Array.isArray(dataCompetitions)) {
@@ -188,28 +191,28 @@ function Competitions() {
     [selectedTab, t],
   )
 
+  const updateIsHiddenFn = useCallback(async ({ isHidden, tcId }) => {
+    const { data: res } = await v4Client.request(
+      V4_HIDE_TC,
+      {
+        isHidden,
+        tcId,
+      },
+      {
+        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+      },
+    )
+    return res
+  }, [])
+
   const updateIsHidden = useCallback(
-    async (isHidden, tcId) => {
-      try {
-        const { data: res } = await v4Client.request(
-          V4_HIDE_TC,
-          {
-            isHidden,
-            tcId,
-          },
-          {
-            authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
-          },
-        )
+    async (...params) => {
+      actionWithAuthentication(updateIsHiddenFn, signWallet, params, () => {
         setRefetch(refetch + 1)
         successToast('Successfully')
-        return res
-      } catch (error) {
-        errorToast('Error')
-        console.log(error)
-      }
+      })
     },
-    [refetch],
+    [updateIsHiddenFn, signWallet, refetch],
   )
 
   return (

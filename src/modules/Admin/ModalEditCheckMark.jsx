@@ -7,8 +7,8 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
-import { updateCheckMarkIcon, useUpload } from '@/hooks/useUploadFile'
-import { errorToast, successToast } from '@/lib/notify'
+import { useUpload } from '@/hooks/useUploadFile'
+import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 
 function ModalEditCheckMark({ isOpen, mutate, closeModal = () => {}, user = {} }) {
@@ -23,23 +23,14 @@ function ModalEditCheckMark({ isOpen, mutate, closeModal = () => {}, user = {} }
   })
 
   const handleSave = useCallback(async () => {
-    try {
-      setLoading(true)
-      if (user?.id) {
-        if (selectedImage) {
-          await upload(selectedImage, user.id)
-        } else {
-          updateCheckMarkIcon(null, user.id)
-        }
+    setLoading(true)
+    if (user?.id) {
+      await upload(selectedImage, user.id, async () => {
         successToast('Successfully')
         await mutate()
+        setLoading(false)
         closeModal()
-      }
-    } catch (error) {
-      errorToast('Error')
-      console.error(error)
-    } finally {
-      setLoading(false)
+      })
     }
   }, [selectedImage, user?.id, mutate, closeModal, upload])
 

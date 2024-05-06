@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 
 import { v4Client } from '@/lib/graphql'
 import { getFromSessionStorage } from '@/lib/helper'
+import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
 const V4_GENERATE_URL = gql`
   mutation V4_GENERATE_URL($fileName: String!, $fileType: String!, $userId: String!) {
@@ -37,39 +38,51 @@ export const updateCheckMarkIcon = async (value, userId) => {
 }
 
 export const useUpload = () => {
-  const upload = useCallback(async (file, userId) => {
-    const {
-      generatePresignedUrl: { signedRequest, url },
-    } = await v4Client.request(
-      V4_GENERATE_URL,
-      {
-        fileName: file.name,
-        fileType: file.type,
-        userId,
-      },
-      {
-        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
-      },
-    )
+  const { signWallet } = useSignWallet()
 
-    if (signedRequest && url) {
-      const { status, statusText } = await fetch(signedRequest, {
-        method: 'PUT',
-        body: file,
-        redirect: 'follow',
-        headers: {
-          'Content-Type': file.type,
+  const uploadFn = useCallback(async ({ file, userId }) => {
+    if (file) {
+      const {
+        generatePresignedUrl: { signedRequest, url },
+      } = await v4Client.request(
+        V4_GENERATE_URL,
+        {
+          fileName: file.name,
+          fileType: file.type,
+          userId,
         },
-      })
-      if (status !== 200) {
-        throw new Error(statusText)
-      } else {
-        await updateCheckMarkIcon(url, userId)
+        {
+          authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+        },
+      )
+
+      if (signedRequest && url) {
+        const { status, statusText } = await fetch(signedRequest, {
+          method: 'PUT',
+          body: file,
+          redirect: 'follow',
+          headers: {
+            'Content-Type': file.type,
+          },
+        })
+        if (status !== 200) {
+          throw new Error(statusText)
+        } else {
+          return await updateCheckMarkIcon(url, userId)
+        }
       }
-      return true
+    } else {
+      return await updateCheckMarkIcon(null, userId)
     }
-    throw new Error()
+    return false
   }, [])
+
+  const upload = useCallback(
+    async (file, userId, callOnSuccess) => {
+      actionWithAuthentication(uploadFn, signWallet, { file, userId }, callOnSuccess)
+    },
+    [uploadFn, signWallet],
+  )
 
   return { upload }
 }

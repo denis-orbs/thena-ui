@@ -54,7 +54,7 @@ export const useSignWallet = () => {
   )
 
   const signWallet = useCallback(
-    (loginCallback, params) => {
+    (loginCallback, params, callOnSuccess) => {
       if (account && !signData) {
         signMessage(
           {
@@ -67,6 +67,7 @@ export const useSignWallet = () => {
               await sleep(3000)
               if (getFromSessionStorage('token')) {
                 await loginCallback?.(params)
+                callOnSuccess?.()
               }
             },
           },
@@ -91,7 +92,7 @@ export async function actionWithAuthentication(action, callOnFailed, params, cal
       err?.response?.errors?.[0]?.message === 'Missing Authorization Header' ||
       err?.response?.errors?.[0]?.message === 'Invalid Access Token'
     ) {
-      callOnFailed(action, params)
+      callOnFailed(action, params, callOnSuccess)
     } else {
       errorToast('Error')
     }
