@@ -237,7 +237,7 @@ function TopUser() {
       pnlUSD: item.pnlUSD,
       avatar: item.participant.avatar || Avatar,
       nameColor: item.participant.nameColor,
-      showVerified: item.participant.showVerified,
+      isVerified: item.participant.isVerified,
       verifyImage: item.participant.checkMarkIcon,
       isAdmin: item.participant.isAdmin,
       isSuperAdmin: item.participant.isSuperAdmin,
