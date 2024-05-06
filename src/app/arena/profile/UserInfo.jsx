@@ -105,7 +105,7 @@ export function UserInfo({ userInfo, following, followers }) {
                   <CopyIcon onClick={onCopy} className='ml-1 h-5 w-5 cursor-pointer stroke-neutral-200' />
                   {isOwnProfile && !hasThenaId && (
                     <PrimaryButton
-                      className='ml-4 p-2 text-sm text-black'
+                      className='ml-4 bg-gradient-to-r from-[#B386FF] to-[#FF86FA] p-2 text-sm text-black'
                       onClick={() => handleClickThenaButton('get')}
                     >
                       {t('Get ID')}
@@ -113,7 +113,7 @@ export function UserInfo({ userInfo, following, followers }) {
                   )}
                   {!isOwnProfile && (
                     <PrimaryButton
-                      className='ml-4 p-2 text-sm text-black'
+                      className='ml-4 bg-gradient-to-r from-[#B386FF] to-[#FF86FA] p-2 text-sm text-black'
                       onClick={() => handleClickThenaButton('gift')}
                     >
                       {t('Gift Thena ID')}
@@ -193,7 +193,10 @@ export function UserInfo({ userInfo, following, followers }) {
             <TextHeading className='text-2xl'>{t('About')}</TextHeading>
             <div className='relative h-full w-full'>
               <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-sm'>
-                <EmphasisButton onClick={() => handleClickThenaButton('get')}>
+                <EmphasisButton
+                  className='bg-gradient-to-r from-primary-500 to-primary-700'
+                  onClick={() => handleClickThenaButton('get')}
+                >
                   {t('To Edit Your About Section')}
                 </EmphasisButton>
               </div>

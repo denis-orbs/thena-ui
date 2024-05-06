@@ -54,7 +54,7 @@ export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton
       )}
       <EmphasisButton
         onClick={() => handleClickThenaButton(isOwnProfile ? 'get' : 'gift')}
-        className='p-2 text-xs lg:py-3 lg:text-base'
+        className='bg-gradient-to-r from-primary-500 to-primary-700 p-2 text-xs lg:py-3 lg:text-base'
       >
         {t(isOwnProfile ? 'Get ID' : 'Gift Thena ID')}
       </EmphasisButton>
