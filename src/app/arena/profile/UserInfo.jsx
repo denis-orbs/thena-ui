@@ -204,14 +204,18 @@ export function UserInfo({ userInfo, following, followers }) {
             </TextHeading>
             <TextSubHeading className='text-sm'>{t('Balance')}</TextSubHeading>
           </Box>
-          <Box className='flex flex-col gap-2 bg-neutral-800'>
-            <TextHeading className='text-lg'>{followersCount}</TextHeading>
-            <TextSubHeading className='text-sm'>{t('Followers')}</TextSubHeading>
-          </Box>
-          <Box className='flex flex-col gap-2 bg-neutral-800'>
-            <TextHeading className='text-lg'>{followingCount}</TextHeading>
-            <TextSubHeading className='text-sm'>{t('Following')}</TextSubHeading>
-          </Box>
+          <Link href='/arena/profile/followers'>
+            <Box className='flex flex-col gap-2 bg-neutral-800'>
+              <TextHeading className='text-lg'>{followersCount}</TextHeading>
+              <TextSubHeading className='text-sm'>{t('Followers')}</TextSubHeading>
+            </Box>
+          </Link>
+          <Link href='/arena/profile/following'>
+            <Box className='flex flex-col gap-2 bg-neutral-800'>
+              <TextHeading className='text-lg'>{followingCount}</TextHeading>
+              <TextSubHeading className='text-sm'>{t('Following')}</TextSubHeading>
+            </Box>
+          </Link>
         </div>
 
         {isOwnProfile && !hasThenaId && !userInfo.biography && (

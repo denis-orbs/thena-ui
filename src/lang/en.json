@@ -738,6 +738,15 @@
   "Gift ID": "Gift ID",
   "Basic Color": "Basic Color",
   "Username": "Username",
-  "Select Your Username": "Select your username.",
-  "Trading Starts Soon": "Trading Starts Soon"
+  "Trading Starts Soon": "Trading Starts Soon",
+  "Select Your Username": "Select your username",
+  "Follower Profiles": "Follower Profiles",
+  "THENA IDs": "THENA IDs",
+  "THENA ID": "THENA ID",
+  "Recent THENA ID Mints": "Recent THENA ID Mints",
+  "Available THENA IDs": "Available THENA IDs",
+  "Recently minted THENA IDs": "Recently minted THENA IDs",
+  "Time ago": "Time ago",
+  "Owner": "Owner",
+  "Top users": "Top users"
 }

@@ -13,7 +13,7 @@ export function FollowedProfileItem({ user }) {
   const t = useTranslations()
   const { account } = useWallet()
 
-  const { followUser } = useFollow(user?.user.id)
+  const { followUser } = useFollow(user?.user?.id)
 
   const { following } = useCurrentUserFollow()
 
@@ -22,8 +22,8 @@ export function FollowedProfileItem({ user }) {
   }, [followUser])
 
   const isFollowed = useMemo(
-    () => following?.find(follow => follow?.user?.id === user.user.id),
-    [following, user.user.id],
+    () => following?.find(follow => follow?.user?.id === user?.user?.id),
+    [following, user?.user?.id],
   )
 
   return (
@@ -41,11 +41,11 @@ export function FollowedProfileItem({ user }) {
       </div>
       {account &&
         (isFollowed ? (
-          <EmphasisButton className='invisible px-2 py-1 text-base text-sm group-hover/item:visible' onClick={onFollow}>
+          <EmphasisButton className='invisible px-2 py-1 text-sm group-hover/item:visible' onClick={onFollow}>
             {t('UnFollow')}
           </EmphasisButton>
         ) : (
-          <PrimaryButton className='invisible px-2 py-1 text-base text-sm group-hover/item:visible' onClick={onFollow}>
+          <PrimaryButton className='invisible px-2 py-1 text-sm group-hover/item:visible' onClick={onFollow}>
             {t('Follow')}
           </PrimaryButton>
         ))}

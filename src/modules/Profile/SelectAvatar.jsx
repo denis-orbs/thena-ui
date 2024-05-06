@@ -23,7 +23,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo }) {
   )
 
   return isHaveThenaNfts ? (
-    <div className='flex max-w-52 flex-2 gap-2 overflow-x-auto py-2 lg:max-w-4xl'>
+    <div className='flex max-w-52 flex-2 flex-wrap gap-2 overflow-x-auto py-2 lg:max-w-4xl'>
       {userInfo.thenianNfts.map(thenianNfts => (
         <NextImage
           alt='avatar'

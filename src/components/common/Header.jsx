@@ -425,9 +425,24 @@ function Header() {
         account
           ? {
               label: t('Profile'),
-              active: pathname === '/arena/profile' || pathname === '/arena/profile/edit',
+              active:
+                pathname === '/arena/profile' ||
+                pathname === '/arena/profile/edit' ||
+                pathname === '/arena/profile/following' ||
+                pathname === '/arena/profile/followers',
               isLink: true,
               href: '/arena/profile',
+            }
+          : undefined,
+        account
+          ? {
+              label: t('THENA ID'),
+              active:
+                pathname === '/arena/thena-id/mint' ||
+                pathname === '/arena/thena-id/gift' ||
+                pathname === '/arena/thena-id/recently-minted',
+              isLink: true,
+              href: '/arena/thena-id/mint',
             }
           : undefined,
         account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)

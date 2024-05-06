@@ -9,6 +9,7 @@ import { fetchFollower, fetchFollowing } from '@/hooks/useUserFollow'
 import { FollowedProfiles } from './FollowedProfiles'
 import { UserCompetitions } from './UserCompetitions'
 import { UserInfo } from './UserInfo'
+import UserThenaIds from './UserThenaIds'
 
 export function ProfilePage({ address }) {
   const { data: userInfo, isLoading } = useSWR(['user info', address], () => fetchUserInfo(address), {
@@ -90,6 +91,7 @@ export function ProfilePage({ address }) {
   return (
     <div className='mt-10 space-y-10'>
       <UserInfo userInfo={userInfo} following={following} followers={followers} />
+      {userInfo && userInfo.usernameNfts?.length > 0 && <UserThenaIds thenaIds={userInfo.usernameNfts} />}
       {(!!joinedCompetitions.length || !!hostedCompetitions.length) && (
         <UserCompetitions hostedCompetitions={hostedCompetitions} joinedTCs={joinedCompetitions} />
       )}

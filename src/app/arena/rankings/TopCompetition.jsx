@@ -28,14 +28,23 @@ const V4_TOP_COMPETITIONS = gql`
       }
       participantCount
       name
+      entryFeeUSD
+      totalPrizeUSD
     }
   }
 `
 
-const fetchTopCompetition = async direction => {
+const fetchTopCompetition = async sort => {
   try {
     const { tradingCompetitions: topCompetition } = await v4Client.request(V4_TOP_COMPETITIONS, {
-      orderBy: direction === 'DESC' ? ['participantCount_DESC', 'id_ASC'] : ['participantCount_ASC', 'id_ASC'],
+      orderBy:
+        sort?.value === 'participants'
+          ? ['participantCount_DESC', 'id_ASC']
+          : sort?.value === 'entryFee'
+            ? ['entryFeeUSD_DESC', 'id_ASC']
+            : sort?.value === 'totalPrize'
+              ? ['totalPrizeUSD_DESC', 'id_ASC']
+              : ['participantCount_ASC', 'id_ASC'],
     })
     return topCompetition
   } catch (error) {
@@ -74,6 +83,18 @@ function TopCompetition() {
         width: 'w-[20%]',
         isDesc: true,
       },
+      {
+        label: 'Entry fee',
+        value: 'entryFee',
+        width: 'w-[20%]',
+        isDesc: true,
+      },
+      {
+        label: 'Total prize',
+        value: 'totalPrize',
+        width: 'w-[20%]',
+        isDesc: true,
+      },
     ],
     [isAll],
   )
@@ -82,21 +103,18 @@ function TopCompetition() {
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[3])
 
-  const [direction, setDirection] = useState('DESC')
+  // const [direction, setDirection] = useState('DESC')
 
   const t = useTranslations()
 
-  const { data: topTCRes } = useSWR(['top competition api', direction], () => fetchTopCompetition(direction), {
+  const { data: topTCRes, isLoading } = useSWR(['top competition api', sort], () => fetchTopCompetition(sort), {
     refreshInterval: 30000,
     revalidateOnFocus: true,
   })
 
   useEffect(() => {
-    if (sort.value === 'participants') {
-      setDirection(sort.isDesc ? 'DESC' : 'ASC')
-    }
     setCurrentPage(1)
-  }, [sort.value, sort.isDesc])
+  }, [sort?.value, sort?.isDesc])
 
   const calcTotalVolume = useCallback(
     comp => {
@@ -118,7 +136,7 @@ function TopCompetition() {
     if (topTCRes && Array.isArray(topTCRes) && !topTCRes.errors) {
       let rank = 0
       let arr = []
-      if (sort.value === 'participants') {
+      if (sort.value !== 'volume') {
         let prevCount = -1
 
         arr = topTCRes.map((item, index) => {
@@ -135,9 +153,11 @@ function TopCompetition() {
             participants: item.participantCount,
             volume,
             id: item.id,
+            entryFee: item.entryFeeUSD,
+            totalPrize: item.totalPrizeUSD,
           }
         })
-      } else {
+      } else if (sort?.value === 'volume') {
         // Sort by Total Volume
         const temp = topTCRes.map(item => {
           const volume = calcTotalVolume(item)
@@ -147,6 +167,8 @@ function TopCompetition() {
             participants: item.participantCount,
             volume,
             id: item.id,
+            entryFee: item.entryFeeUSD,
+            totalPrize: item.totalPrizeUSD,
           }
         })
         let prevVol = -1
@@ -188,6 +210,8 @@ function TopCompetition() {
         ),
         participants: <Paragraph>{item.participants}</Paragraph>,
         volume: <Paragraph>${formatAmount(item.volume)}</Paragraph>,
+        entryFee: <Paragraph>${formatAmount(item.entryFee)}</Paragraph>,
+        totalPrize: <Paragraph>${formatAmount(item.totalPrize)}</Paragraph>,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(competitions)],
@@ -215,6 +239,7 @@ function TopCompetition() {
             data={isAll ? finalData : finalData.slice(0, 5)}
             onlySortDesc
             enabledRedirectOnClickPagination={isAll}
+            loading={isLoading}
           />
         </div>
       </Box>

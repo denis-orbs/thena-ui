@@ -2,16 +2,19 @@
 
 import { gql } from 'graphql-request'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import Box from '@/components/box'
+import { EmphasisButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
-import { Paragraph } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
@@ -61,6 +64,8 @@ const fetchUsers = async (sort, whereQuery) => {
 }
 
 function TopUser() {
+  const pathname = usePathname()
+  const isAll = pathname.includes('/users')
   const { account } = useWallet()
   const sortOptions = useMemo(
     () => [
@@ -73,7 +78,7 @@ function TopUser() {
       {
         label: 'User',
         value: 'user',
-        width: 'w-[15%]',
+        width: 'w-[30%]',
         disabled: true,
       },
       {
@@ -91,6 +96,7 @@ function TopUser() {
       {
         label: 'Profit & Loss',
         value: 'pnlUSD',
+        width: 'w-[20%]',
         isDesc: true,
         disabled: false,
       },
@@ -338,19 +344,28 @@ function TopUser() {
           <Tabs data={subTabsTime} size={SizeTypes.Small} itemClassName='text-sm' />
         </div>
       </div>
-      <div className='mt-6'>
+      <Box className='mt-6'>
+        <div className='flex flex-row items-center justify-between'>
+          <TextHeading className='text-xl'>{t('Top users')}</TextHeading>
+          {!isAll && (
+            <Link href='/arena/rankings/users'>
+              <EmphasisButton>{t('View all')}</EmphasisButton>
+            </Link>
+          )}
+        </div>
         <Table
           sort={sort}
           setSort={setSort}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           tableBasic
-          data={finalData}
+          data={isAll ? finalData : finalData.slice(0, 8)}
           sortOptions={sortOptions}
           onlySortDesc
-          enabledRedirectOnClickPagination
+          enabledRedirectOnClickPagination={isAll}
+          loading={isLoading}
         />
-      </div>
+      </Box>
     </div>
   )
 }
