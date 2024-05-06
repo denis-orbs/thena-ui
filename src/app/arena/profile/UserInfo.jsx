@@ -4,7 +4,6 @@ import { useWeb3Modal } from '@web3modal/wagmi/react'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -36,7 +35,6 @@ export function UserInfo({ userInfo, following, followers }) {
   const isOwnProfile = useMemo(() => userInfo.id.toLowerCase() === account?.toLowerCase(), [account, userInfo.id])
   const { networkId } = useChainSettings()
   const { open: openConnectWallet } = useWeb3Modal()
-  const router = useRouter()
 
   const [thenaModalTab, setThenaModalTab] = useState()
   const [copied, setCopied] = useState(false)
@@ -206,20 +204,18 @@ export function UserInfo({ userInfo, following, followers }) {
             </TextHeading>
             <TextSubHeading className='text-sm'>{t('Balance')}</TextSubHeading>
           </Box>
-          <Box
-            className='flex flex-col gap-2 bg-neutral-800 hover:cursor-pointer'
-            onClick={() => router.replace('/arena/profile/followers')}
-          >
-            <TextHeading className='text-lg'>{followersCount}</TextHeading>
-            <TextSubHeading className='text-sm'>{t('Followers')}</TextSubHeading>
-          </Box>
-          <Box
-            className='flex flex-col gap-2 bg-neutral-800 hover:cursor-pointer'
-            onClick={() => router.replace('/arena/profile/following')}
-          >
-            <TextHeading className='text-lg'>{followingCount}</TextHeading>
-            <TextSubHeading className='text-sm'>{t('Following')}</TextSubHeading>
-          </Box>
+          <Link href='/arena/profile/followers'>
+            <Box className='flex flex-col gap-2 bg-neutral-800'>
+              <TextHeading className='text-lg'>{followersCount}</TextHeading>
+              <TextSubHeading className='text-sm'>{t('Followers')}</TextSubHeading>
+            </Box>
+          </Link>
+          <Link href='/arena/profile/following'>
+            <Box className='flex flex-col gap-2 bg-neutral-800'>
+              <TextHeading className='text-lg'>{followingCount}</TextHeading>
+              <TextSubHeading className='text-sm'>{t('Following')}</TextSubHeading>
+            </Box>
+          </Link>
         </div>
 
         {isOwnProfile && !hasThenaId && !userInfo.biography && (
