@@ -101,7 +101,18 @@ export function UserInfo({ userInfo, following, followers }) {
                         : formatAddress(userInfo.id)}
                     </span>
                   </TextHeading>
-                  {userInfo.isVerified && <Verified className='ml-1 h-5 w-5' />}
+                  {userInfo.isVerified &&
+                    (userInfo?.checkMarkIcon ? (
+                      <Image
+                        src={userInfo.checkMarkIcon}
+                        width={20}
+                        height={20}
+                        className='h-5 w-5'
+                        alt='demo-checkmark'
+                      />
+                    ) : (
+                      <Verified className='h-5 w-5' />
+                    ))}
                   <CopyIcon onClick={onCopy} className='ml-1 h-5 w-5 cursor-pointer stroke-neutral-200' />
                   {isOwnProfile && !hasThenaId && (
                     <PrimaryButton

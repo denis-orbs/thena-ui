@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
@@ -41,11 +42,12 @@ function TopBar({ userInfo }) {
                   {userInfo.username || sliceAddress(userInfo.id)}
                 </span>
               </TextHeading>
-              {userInfo.isVerified && (
-                <div className='size-4 md:size-5'>
-                  <Verified />
-                </div>
-              )}
+              {userInfo.isVerified &&
+                (userInfo?.checkMarkIcon ? (
+                  <Image src={userInfo.checkMarkIcon} width={20} height={20} className='h-5 w-5' alt='demo-checkmark' />
+                ) : (
+                  <Verified className='h-5 w-5' />
+                ))}
             </div>
             {userInfo.isSuperAdmin ? <Tag>{t('Super Admin')}</Tag> : <Tag>{t('Admin')}</Tag>}
           </div>
