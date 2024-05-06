@@ -9,6 +9,8 @@ const nextConfig = {
   swcMinify: true,
 
   images: {
+    unoptimized: true,
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -29,6 +31,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'thena-icon-checkmark.s3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'thena-icon-checkmark-dev.s3.amazonaws.com',
       },
     ],
   },

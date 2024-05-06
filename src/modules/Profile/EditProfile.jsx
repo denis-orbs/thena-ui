@@ -22,6 +22,7 @@ import { ArrowLeftIcon } from '@/svgs'
 import { SelectAvatar } from './SelectAvatar'
 import { SelectNameColor } from './SelectNameColor'
 import { SelectTheme } from './SelectTheme'
+import { SelectUserName } from './SelectUserName'
 
 const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { ssr: false })
 
@@ -168,6 +169,9 @@ export function EditProfile({ userInfo, isAdmin = false }) {
             )}
           </div>
         </div>
+        {!!userInfo?.usernameNfts?.length && (
+          <SelectUserName dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} userInfo={userInfo} />
+        )}
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
             <TextHeading className='text-xl'>{t('Website URL')}</TextHeading>
@@ -234,7 +238,7 @@ export function EditProfile({ userInfo, isAdmin = false }) {
             </div>
             <div className='flex-2'>
               <Dropdown
-                className='w-full lg:w-80'
+                className='w-full lg:w-72'
                 listClassNames='max-h-64 overflow-y-auto'
                 data={timeZoneData}
                 selected={dataUpdate.timezone ?? currentTimeZone}
