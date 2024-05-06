@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -21,7 +21,7 @@ import { cn, formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { useChainSettings } from '@/state/settings/hooks'
-import { CopyIcon, ExternalIcon, InfoIcon, Verified } from '@/svgs'
+import { CheckIcon, CopyIcon, ExternalIcon, InfoIcon, Verified } from '@/svgs'
 
 import ThenaIdModal from './ThenaIdModal'
 
@@ -37,6 +37,8 @@ export function UserInfo({ userInfo, following, followers }) {
   const { open: openConnectWallet } = useWeb3Modal()
 
   const [thenaModalTab, setThenaModalTab] = useState()
+  const [copied, setCopied] = useState(false)
+
   const theAsset = assets.find(asset => asset.address.toLowerCase() === Contracts.THE[networkId].toLowerCase())
   const hasThenaId = useMemo(() => userInfo.usernameNfts.length, [userInfo.usernameNfts.length])
 
@@ -60,9 +62,18 @@ export function UserInfo({ userInfo, following, followers }) {
       e.preventDefault()
       navigator.clipboard.writeText(userInfo.id)
       successToast(t('Copied'))
+      setCopied(true)
     },
     [t, userInfo.id],
   )
+
+  useEffect(() => {
+    if (copied) {
+      const timeOut = setTimeout(() => setCopied(false), 2000)
+
+      return () => clearTimeout(timeOut)
+    }
+  }, [copied])
 
   return (
     <>
@@ -109,7 +120,9 @@ export function UserInfo({ userInfo, following, followers }) {
                     ) : (
                       <Verified className='h-5 w-5' />
                     ))}
-                  <CopyIcon onClick={onCopy} className='ml-1 h-5 w-5 cursor-pointer stroke-neutral-200' />
+                  <div onClick={onCopy} className='ml-1 h-5 w-5 cursor-pointer stroke-neutral-200'>
+                    {copied ? <CheckIcon /> : <CopyIcon />}
+                  </div>
                   {isOwnProfile && !hasThenaId && (
                     <PrimaryButton
                       className='ml-4 bg-gradient-to-r from-[#B386FF] to-[#FF86FA] p-2 text-sm text-black'
@@ -162,7 +175,7 @@ export function UserInfo({ userInfo, following, followers }) {
                   {t(userInfo.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}
                 </TextHeading>
                 <Link
-                  href={'https://thena.gitbook.io/thena/arena/thena-ids'}
+                  href='https://thena.gitbook.io/thena/arena/thena-ids'
                   rel='nofollow noopener noreferrer'
                   target='_blank'
                 >

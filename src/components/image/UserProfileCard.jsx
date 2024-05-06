@@ -14,7 +14,7 @@ import CircleImage from './CircleImage'
 import { EmphasisButton } from '../buttons/Button'
 import Spinner from '../spinner'
 import Tag from '../tag'
-import { Paragraph, TextHeading } from '../typography'
+import { TextHeading } from '../typography'
 
 export function UserProfileCard({
   avatar,
@@ -76,7 +76,6 @@ export function UserProfileCard({
               {username || sliceAddress(id)}
             </span>
           </TextHeading>
-          {username && <Paragraph>{sliceAddress(id)}</Paragraph>}
         </div>
         {showVerified &&
           (verifyImage ? (
