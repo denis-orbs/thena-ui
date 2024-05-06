@@ -16,12 +16,12 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import dayjs from '@/lib/arenaDayjs'
+import { successToast } from '@/lib/notify'
 import { cn, formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { CopyAddress } from '@/modules/Profile/CopyAddress'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { useChainSettings } from '@/state/settings/hooks'
-import { ExternalIcon, InfoIcon, Verified } from '@/svgs'
+import { CopyIcon, ExternalIcon, InfoIcon, Verified } from '@/svgs'
 
 import ThenaIdModal from './ThenaIdModal'
 
@@ -52,6 +52,16 @@ export function UserInfo({ userInfo, following, followers }) {
       setThenaModalTab(tab)
     },
     [account, openConnectWallet],
+  )
+
+  const onCopy = useCallback(
+    e => {
+      e.stopPropagation()
+      e.preventDefault()
+      navigator.clipboard.writeText(userInfo.id)
+      successToast(t('Copied'))
+    },
+    [t, userInfo.id],
   )
 
   return (
@@ -92,7 +102,7 @@ export function UserInfo({ userInfo, following, followers }) {
                     </span>
                   </TextHeading>
                   {userInfo.isVerified && <Verified className='ml-1 h-5 w-5' />}
-                  <CopyAddress value={userInfo.id} />
+                  <CopyIcon onClick={onCopy} className='ml-1 h-5 w-5 cursor-pointer stroke-neutral-200' />
                   {isOwnProfile && !hasThenaId && (
                     <PrimaryButton
                       className='ml-4 p-2 text-sm text-black'
