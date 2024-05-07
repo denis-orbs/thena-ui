@@ -10,7 +10,7 @@ import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import { successToast } from '@/lib/notify'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
-export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton, username = null }) {
+export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton, hasThenaId, username = null }) {
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -56,7 +56,7 @@ export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton
         onClick={() => handleClickThenaButton(isOwnProfile ? 'get' : 'gift')}
         className='bg-gradient-to-r from-primary-500 to-primary-700 p-2 text-xs lg:py-3 lg:text-base'
       >
-        {t(isOwnProfile ? 'Get ID' : 'Gift Thena ID')}
+        {t(isOwnProfile ? (!hasThenaId ? t('Get ID') : t('Get More IDs')) : 'Gift Thena ID')}
       </EmphasisButton>
       {!isOwnProfile && userInfo && (
         <EmphasisButton

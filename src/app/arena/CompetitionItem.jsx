@@ -68,10 +68,18 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
             <div className='flex items-center gap-1 text-nowrap'>
               {competition.owner.name ? (
                 <h4 className='inline-block bg-gradient-to-r from-[#C72AD0] to-[#AA23DB] bg-clip-text text-3xl font-bold text-transparent'>
-                  by {formatAddress(competition.owner.username)}
+                  {t('by')}{' '}
+                  <span style={competition.owner.nameColor ? { color: competition.owner.nameColor } : {}}>
+                    {formatAddress(competition.owner.username)}
+                  </span>
                 </h4>
               ) : (
-                <h4>by {formatAddress(competition.owner.id)}</h4>
+                <h4>
+                  {t('by')}{' '}
+                  <span style={competition.owner.nameColor ? { color: competition.owner.nameColor } : {}}>
+                    {formatAddress(competition.owner.id)}
+                  </span>
+                </h4>
               )}
               <div className='h-5 w-5'>
                 <Verified />
@@ -80,19 +88,19 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
           )}
         </div>
         <div className='flex w-full flex-wrap items-center justify-start gap-4 text-nowrap py-2'>
-          <Paragraph className='flex gap-1'>
+          <Paragraph className='flex flex-1 gap-1 text-nowrap'>
             <div className='h-5 w-5'>
               <Clock />
             </div>
             {timeDistance}
           </Paragraph>
-          <Paragraph className='flex gap-1'>
+          <Paragraph className='flex flex-1 gap-1 text-nowrap'>
             <div className='h-5 w-5'>
               <Gift />
             </div>
             {totalPrize}
           </Paragraph>
-          <Paragraph className='flex gap-1'>
+          <Paragraph className='flex flex-1 gap-1 text-nowrap'>
             <div className='h-5 w-5'>
               <CoinHand />
             </div>

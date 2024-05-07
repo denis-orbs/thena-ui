@@ -191,6 +191,7 @@ export function UserInfo({ userInfo, following, followers }) {
             userInfoId={userInfo.id}
             handleClickThenaButton={handleClickThenaButton}
             username={userInfo.username}
+            hasThenaId={hasThenaId}
           />
         </div>
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>

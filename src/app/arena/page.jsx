@@ -109,7 +109,7 @@ export default function ArenaPage() {
   const [filter, setFilter] = useState({
     type: searchParams.get('type') ?? null,
     market: searchParams.get('market') ?? null,
-    sortBy: searchParams.get('sortBy') ?? null,
+    sortBy: searchParams.get('sortBy') ?? 'Default',
     free: !!searchParams.get('free'),
   })
 
@@ -139,7 +139,7 @@ export default function ArenaPage() {
       return []
     }
     let result = cloneDeep(competitions || []) ?? []
-    if (filter.market !== null) {
+    if (!!filter.market && filter.market !== 'all') {
       result = result.filter(item => item.market.toLowerCase() === filter.market.toLowerCase())
     }
     switch (filter.sortBy) {

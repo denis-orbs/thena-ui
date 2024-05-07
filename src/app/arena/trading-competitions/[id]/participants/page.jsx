@@ -15,7 +15,6 @@ import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { v4Client } from '@/lib/graphql'
 import { customSort, formatNumberDecimals } from '@/lib/utils'
 
-// TODO: add checkmarkIcon field
 const V4_TC_COMPETITION_DATA = gql`
   query V4_TC_COMPETITION($id: String!) {
     tradingCompetitionById(id: $id) {
@@ -26,6 +25,8 @@ const V4_TC_COMPETITION_DATA = gql`
           username
           avatar
           isVerified
+          nameColor
+          checkMarkIcon
         }
       }
       competitionRules {

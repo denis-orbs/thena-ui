@@ -26,7 +26,7 @@ function FilterDropDown({ filter, setFilter }) {
             data={[
               {
                 label: t('All'),
-                active: filter.market === 'all',
+                active: filter.market === 'all' || filter.market === null,
                 onClickHandler: () => {
                   setFilter({
                     ...filter,

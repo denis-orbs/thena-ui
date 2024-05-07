@@ -20,7 +20,7 @@ function TabItem({ className, item, size, disabled }) {
           'outline outline-2 outline-offset-4 outline-transparent',
           'transition-all duration-150 ease-out',
           'hover:bg-neutral-800 hover:text-neutral-100 active:outline-focus',
-          'disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-200',
+          'disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-500',
           item.active && 'bg-neutral-800',
           className,
         )}
@@ -41,7 +41,7 @@ function TabItem({ className, item, size, disabled }) {
         'outline outline-2 outline-offset-4 outline-transparent',
         'transition-all duration-150 ease-out',
         'hover:bg-neutral-800 hover:text-neutral-100 active:outline-focus',
-        'disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-200',
+        'disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-500',
         item.active && 'bg-neutral-800',
         className,
       )}
