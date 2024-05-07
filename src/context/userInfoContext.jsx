@@ -14,9 +14,18 @@ const V4_USER_RANK = gql`
   }
 `
 
-const V4_USER_INFO = gql`
-  query V4_USER($id: String!) {
-    userById(id: $id) {
+const V4_USER_BY_ID_OR_USERNAME = gql`
+  query GetUserByIdOrUsername($idOrUserName: String!) {
+    users(
+      where: {
+        OR: [
+          { username_eq: $idOrUserName }
+          { id_eq: $idOrUserName }
+          { usernameNfts_some: { name_eq: $idOrUserName } }
+        ]
+      }
+      limit: 1
+    ) {
       id
       firstInteractAt
       biography
@@ -124,20 +133,23 @@ const V4_USER_INFO = gql`
   }
 `
 
-const fetchUserInfo = async id => {
+const fetchUserInfo = async idOrUserName => {
   try {
-    const { userById } = await v4Client.request(
-      V4_USER_INFO,
-      { id: id.toLowerCase() },
+    const { users } = await v4Client.request(
+      V4_USER_BY_ID_OR_USERNAME,
+      { idOrUserName: idOrUserName.toLowerCase() },
       {
         authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
       },
     )
 
-    const { tradeRankByAddress } = await v4Client.request(V4_USER_RANK, { id: id.toLowerCase() })
-    if (userById) {
-      return { ...userById, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
+    if (users.length === 1) {
+      const user = users[0]
+      const { tradeRankByAddress } = await v4Client.request(V4_USER_RANK, { id: user.id.toLowerCase() })
+
+      return { ...user, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
     }
+    return undefined
   } catch (error) {
     return undefined
   }

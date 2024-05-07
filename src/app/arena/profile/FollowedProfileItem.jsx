@@ -13,7 +13,7 @@ export function FollowedProfileItem({ user }) {
   const t = useTranslations()
   const { account } = useWallet()
 
-  const { followUser } = useFollow(user?.user?.id)
+  const { followUser } = useFollow(user?.user?.id, user?.user?.username)
 
   const { following } = useCurrentUserFollow()
 

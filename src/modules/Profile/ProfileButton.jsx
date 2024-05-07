@@ -10,25 +10,29 @@ import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import { successToast } from '@/lib/notify'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
-export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton, hasThenaId, username = null }) {
+export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, hasThenaId, username = null }) {
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const t = useTranslations()
   const onShare = useCallback(() => {
-    console.log('object', isOwnProfile ? `${window.location.href}/${userInfoId}` : window.location.href)
-    navigator.clipboard.writeText(isOwnProfile ? `${window.location.href}/${userInfoId}` : window.location.href)
+    navigator.clipboard.writeText(
+      isOwnProfile ? `${window.location.href}/${userInfo.username ?? userInfo.id}` : window.location.href,
+    )
     setCopied(true)
     successToast(t('Link Has Been Copied'))
-  }, [isOwnProfile, t, userInfoId])
+  }, [isOwnProfile, t, userInfo.id, userInfo.username])
 
   const shareIconButton = useMemo(() => (copied ? CheckIcon : PublicIcon), [copied])
   const { following } = useCurrentUserFollow()
-  const { userInfo } = useUserInfo()
+  const { userInfo: currentUserInfo } = useUserInfo()
 
-  const isFollowed = useMemo(() => following?.find(follow => follow?.user?.id === userInfoId), [following, userInfoId])
+  const isFollowed = useMemo(
+    () => following?.find(follow => follow?.user?.id === userInfo.id),
+    [following, userInfo.id],
+  )
 
-  const { followUser } = useFollow(userInfoId, username, isFollowed)
+  const { followUser } = useFollow(userInfo.id, username, isFollowed)
 
   const onFollow = useCallback(async () => {
     setLoading(true)
@@ -48,7 +52,7 @@ export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton
 
   return (
     <div className='flex items-center space-x-2'>
-      {isOwnProfile && !!userInfo?.usernameNfts?.length && (
+      {isOwnProfile && !!currentUserInfo?.usernameNfts?.length && (
         <Link href='/arena/profile/edit'>
           <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
         </Link>
@@ -59,7 +63,7 @@ export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton
       >
         {t(isOwnProfile ? (!hasThenaId ? t('Get ID') : t('Get More IDs')) : 'Gift Thena ID')}
       </EmphasisButton>
-      {!isOwnProfile && userInfo && (
+      {!isOwnProfile && currentUserInfo && (
         <EmphasisButton
           className='min-h-12 min-w-[92px] p-2 text-xs lg:p-3 lg:text-base'
           onClick={onFollow}

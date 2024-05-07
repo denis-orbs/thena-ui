@@ -26,6 +26,7 @@ const V4_RECENTLY_MINTED = gql`
       timestamp
       owner {
         id
+        username
       }
     }
   }
@@ -40,6 +41,7 @@ const V4_RECENTLY_GIFTED = gql`
       timestamp
       owner {
         id
+        username
       }
       giftFrom {
         id
@@ -170,10 +172,12 @@ function RecentlyContent() {
             index: item.index,
             name: item.name,
             owner: item.owner.id,
+            ownerUsername: item.owner.username,
             timestamp: item.timestamp,
             cost: cost ? fromWei(cost, USDTAsset?.decimals) : 0,
             giftFrom: item.giftFrom || undefined,
             giftTo: item.owner.id,
+            giftToUsername: item.owner.username,
           })
         }
 
@@ -239,19 +243,23 @@ function RecentlyContent() {
         ),
         owner: (
           <Paragraph className='block w-full text-left'>
-            <Link href={`/arena/profile/${item.owner}`}>{sliceAddress(item.owner)}</Link>
+            <Link href={`/arena/profile/${item.ownerUsername ? item.ownerUsername : item.owner}`}>
+              {sliceAddress(item.owner)}
+            </Link>
           </Paragraph>
         ),
         giftFrom: (
           <Paragraph className='block w-full text-left'>
-            <Link href={`/arena/profile/${item.giftFrom?.id}`}>
+            <Link href={`/arena/profile/${item.giftFrom?.username ? item.giftFrom.username : item.giftFrom?.id}`}>
               {item.giftFrom?.username ? item.giftFrom.username : sliceAddress(item.giftFrom?.id || '')}
             </Link>
           </Paragraph>
         ),
         giftTo: (
           <Paragraph className='block w-full text-left'>
-            <Link href={`/arena/profile/${item.giftTo}`}>{sliceAddress(item.giftTo)}</Link>
+            <Link href={`/arena/profile/${item.giftToUsername ? item.giftToUsername : item.giftTo}`}>
+              {sliceAddress(item.giftTo)}
+            </Link>
           </Paragraph>
         ),
       })),

@@ -16,21 +16,13 @@ export function ProfilePage({ address }) {
     refreshInterval: 60000,
   })
 
-  const { data: following, mutate: mutateFollowing } = useSWR(
-    ['following', address.toLowerCase()],
-    () => fetchFollowing(address),
-    {
-      refreshInterval: 60000,
-    },
-  )
+  const { data: following, mutate: mutateFollowing } = useSWR(['following', address], () => fetchFollowing(address), {
+    refreshInterval: 60000,
+  })
 
-  const { data: followers, mutate: mutateFollower } = useSWR(
-    ['followers', address.toLowerCase()],
-    () => fetchFollower(address),
-    {
-      refreshInterval: 60000,
-    },
-  )
+  const { data: followers, mutate: mutateFollower } = useSWR(['followers', address], () => fetchFollower(address), {
+    refreshInterval: 60000,
+  })
 
   const assets = useAssets()
   const joinedCompetitions = useMemo(

@@ -31,7 +31,7 @@ export function UserProfileCard({
   const t = useTranslations()
   const { userInfo } = useUserInfo()
   const { account } = useWallet()
-  const { followUser } = useFollow(id)
+  const { followUser } = useFollow(id, username)
   const isOwnProfile = useMemo(() => id.toLowerCase() === account?.toLowerCase(), [account, id])
 
   const { following } = useCurrentUserFollow()
@@ -43,13 +43,13 @@ export function UserProfileCard({
       return (
         <Link
           className='flex cursor-pointer items-center justify-center gap-2'
-          href={`/arena/profile/${id.toLowerCase()}`}
+          href={`/arena/profile/${username ? username.toLowerCase() : id.toLowerCase()}`}
         >
           {children}
         </Link>
       )
     },
-    [disableLink, id],
+    [disableLink, id, username],
   )
 
   const onFollow = useCallback(async () => {

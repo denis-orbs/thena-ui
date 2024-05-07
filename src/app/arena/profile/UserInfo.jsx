@@ -190,7 +190,7 @@ export function UserInfo({ userInfo, following, followers }) {
           </div>
           <ProfileButton
             isOwnProfile={isOwnProfile}
-            userInfoId={userInfo.id}
+            userInfo={userInfo}
             handleClickThenaButton={handleClickThenaButton}
             username={userInfo.username}
             hasThenaId={hasThenaId}

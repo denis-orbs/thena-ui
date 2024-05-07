@@ -13,7 +13,11 @@ import useWallet from '@/lib/wallets/useWallet'
 // follower of current user
 export const V4_FOLLOWERS = gql`
   query V4_USER_FOLLOW($userId: String!) {
-    userFollows(where: { user: { id_eq: $userId } }) {
+    userFollows(
+      where: {
+        user: { OR: [{ id_eq: $userId }, { username_eq: $userId }, { usernameNfts_some: { name_eq: $userId } }] }
+      }
+    ) {
       follower {
         id
         avatar
@@ -28,7 +32,13 @@ export const V4_FOLLOWERS = gql`
 // current user following
 export const V4_FOLLOWING = gql`
   query V4_FOLLOWS_USER($followerId: String!) {
-    userFollows(where: { follower: { id_eq: $followerId } }) {
+    userFollows(
+      where: {
+        follower: {
+          OR: [{ id_eq: $followerId }, { username_eq: $followerId }, { usernameNfts_some: { name_eq: $followerId } }]
+        }
+      }
+    ) {
       user {
         id
         avatar
