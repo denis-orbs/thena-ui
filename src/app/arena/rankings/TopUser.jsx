@@ -16,13 +16,11 @@ import Table from '@/components/table'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
+import { useUserInfo } from '@/context/userInfoContext'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-
-const tabsFilterUser = ['All', 'Hosted', 'Joined']
-const tabsFilterTime = ['24h', '7d', '30d', 'Max']
 
 const V4_TOP_USER = gql`
   query V4_TOP_USER($where: TCParticipantWhereInput = {}, $orderBy: [TCParticipantOrderByInput!] = []) {
@@ -62,6 +60,8 @@ const fetchUsers = async (sort, whereQuery) => {
     return { error: true }
   }
 }
+
+const tabsFilterTime = ['24h', '7d', '30d', 'Max']
 
 function TopUser() {
   const pathname = usePathname()
@@ -103,6 +103,32 @@ function TopUser() {
     ],
     [],
   )
+  const { userInfo } = useUserInfo()
+
+  const isHosted = useMemo(() => {
+    if (userInfo?.tradingCompetitions && userInfo?.tradingCompetitions.length > 0) {
+      return true
+    }
+    return false
+  }, [userInfo])
+
+  const isJoined = useMemo(() => {
+    if (userInfo?.joinedTCs && userInfo?.joinedTCs.length > 0) {
+      return true
+    }
+    return false
+  }, [userInfo])
+
+  const tabsFilterUser = useMemo(() => {
+    const arr = ['All']
+    if (isHosted) {
+      arr.push('Hosted')
+    }
+    if (isJoined) {
+      arr.push('Joined')
+    }
+    return arr
+  }, [isHosted, isJoined])
 
   const t = useTranslations()
   const [searchText, setSearchText] = useState('')
@@ -204,7 +230,7 @@ function TopUser() {
           setSelectedTabUser(tab)
         },
       })),
-    [selectedTabUser, t],
+    [selectedTabUser, t, tabsFilterUser],
   )
 
   const subTabsTime = useMemo(
@@ -359,10 +385,10 @@ function TopUser() {
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           tableBasic
-          data={isAll ? finalData : finalData.slice(0, 8)}
+          data={finalData}
           sortOptions={sortOptions}
           onlySortDesc
-          enabledRedirectOnClickPagination={isAll}
+          enabledRedirectOnClickPagination
           loading={isLoading}
         />
       </Box>
