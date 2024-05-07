@@ -119,7 +119,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
                   <Image
                     alt={item.ticker}
                     src={`https://cdn.thena.fi/assets/${item.ticker}.png`}
-                    className='flex-shrink-0'
+                    className='h-5 w-5 flex-shrink-0'
                     width={20}
                     height={20}
                     loading='lazy'
@@ -220,7 +220,9 @@ export function CompetitionDetail({ competition, isPreview = false }) {
                 )}
                 <div className='flex flex-col'>
                   <Paragraph className='text-sm'>{item.symbol}</Paragraph>
-                  <Paragraph className='text-nowrap text-sm'>{item.name}</Paragraph>
+                  <Paragraph className='w-24 overflow-hidden text-ellipsis whitespace-nowrap text-sm'>
+                    {item.name}
+                  </Paragraph>
                 </div>
               </Box>
             ))}

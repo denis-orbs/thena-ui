@@ -89,22 +89,16 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
         </div>
         <div className='flex w-full flex-wrap items-center justify-start gap-4 text-nowrap py-2'>
           <Paragraph className='flex flex-1 gap-1 text-nowrap'>
-            <div className='h-5 w-5'>
-              <Clock />
-            </div>
-            {timeDistance}
+            <Clock className='h-5 w-5' />
+            <span>{timeDistance}</span>
           </Paragraph>
           <Paragraph className='flex flex-1 gap-1 text-nowrap'>
-            <div className='h-5 w-5'>
-              <Gift />
-            </div>
-            {totalPrize}
+            <Gift className='h-5 w-5' />
+            <span>{totalPrize}</span>
           </Paragraph>
           <Paragraph className='flex flex-1 gap-1 text-nowrap'>
-            <div className='h-5 w-5'>
-              <CoinHand />
-            </div>
-            {entryFee}
+            <CoinHand className='h-5 w-5' />
+            <span>{entryFee}</span>
           </Paragraph>
         </div>
       </div>
