@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Box from '@/components/box'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
-import { useClaimTC, useTCContractInfor } from '@/hooks/useTcSpotContract'
+import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
@@ -23,6 +23,7 @@ function Sidebar({ competition, eventType }) {
   const [showJoinModal, setShowJoinModal] = useState(false)
   const { open } = useWeb3Modal()
   const { account } = useWallet()
+  const { withdrawDeposit } = useWithdrawDepositTC()
 
   const isFull = useMemo(
     () => competition.participantCount === competition.maxParticipants,
@@ -33,7 +34,9 @@ function Sidebar({ competition, eventType }) {
     isOwner: isHosting,
     isClaimable: canClaimRewards,
     refetch,
+    isWithdrawable: canWithdraw,
     checkClaimable,
+    checkWithdrawable,
   } = useTCContractInfor(competition.tradingCompetitionSpot, eventType)
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
@@ -169,13 +172,34 @@ function Sidebar({ competition, eventType }) {
     }
   }, [claimReward, competition.tradingCompetitionSpot, isHosting, checkClaimable])
 
+  const withdraw = useCallback(async () => {
+    try {
+      await withdrawDeposit({
+        tcAddress: competition.tradingCompetitionSpot,
+      })
+      await checkWithdrawable(true)
+    } catch (e) {
+      console.error(e)
+    }
+  }, [withdrawDeposit, competition.tradingCompetitionSpot, checkWithdrawable])
+
   const buttonByStatus = useMemo(() => {
-    if (canClaimRewards && eventType === EVENT_TYPES.ENDED) {
-      return (
-        <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
-          {isHosting ? t('Claim Owner Fee') : t('Claim Rewards')}
-        </PrimaryButton>
-      )
+    if (eventType === EVENT_TYPES.ENDED) {
+      if (canClaimRewards) {
+        return (
+          <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
+            {isHosting ? t('Claim Owner Fee') : t('Claim Rewards')}
+          </PrimaryButton>
+        )
+      }
+
+      if (canWithdraw) {
+        return (
+          <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={withdraw}>
+            {t('Withdraw Deposit')}
+          </PrimaryButton>
+        )
+      }
     }
 
     if (isHosting) {
@@ -246,6 +270,7 @@ function Sidebar({ competition, eventType }) {
   }, [
     account,
     canClaimRewards,
+    canWithdraw,
     claim,
     competition.id,
     eventType,
@@ -257,6 +282,7 @@ function Sidebar({ competition, eventType }) {
     onShare,
     open,
     t,
+    withdraw,
   ])
 
   useEffect(() => {

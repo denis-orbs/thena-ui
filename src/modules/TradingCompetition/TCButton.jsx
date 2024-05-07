@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { useClaimTC, useTCContractInfor } from '@/hooks/useTcSpotContract'
+import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -17,11 +17,14 @@ export function TCButton({ eventType, competition, timestamp }) {
   const { account } = useWallet()
   const [showJoinModal, setShowJoinModal] = useState(false)
   const { claimReward } = useClaimTC()
+  const { withdrawDeposit } = useWithdrawDepositTC()
   const {
     isRegistered: isJoined,
     isOwner: isHosting,
     isClaimable: canClaimRewards,
+    isWithdrawable: canWithdraw,
     checkClaimable,
+    checkWithdrawable,
   } = useTCContractInfor(competition.tradingCompetitionSpot, eventType)
 
   const [joinButtonText, setJoinButtonText] = useState({
@@ -40,6 +43,17 @@ export function TCButton({ eventType, competition, timestamp }) {
       console.error(e)
     }
   }, [claimReward, competition.tradingCompetitionSpot, isHosting, checkClaimable])
+
+  const withdraw = useCallback(async () => {
+    try {
+      await withdrawDeposit({
+        tcAddress: competition.tradingCompetitionSpot,
+      })
+      await checkWithdrawable(true)
+    } catch (e) {
+      console.error(e)
+    }
+  }, [withdrawDeposit, competition.tradingCompetitionSpot, checkWithdrawable])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -85,11 +99,18 @@ export function TCButton({ eventType, competition, timestamp }) {
           <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
         </Link>
       )}
-      {eventType === EVENT_TYPES.ENDED && (isJoined || isHosting) && canClaimRewards && (
-        <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
-          {t('Claim Rewards')}
-        </PrimaryButton>
-      )}
+      {eventType === EVENT_TYPES.ENDED &&
+        ((isJoined || isHosting) && canClaimRewards ? (
+          <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
+            {t('Claim Rewards')}
+          </PrimaryButton>
+        ) : (
+          canWithdraw && (
+            <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={withdraw}>
+              {t('Withdraw Deposit')}
+            </PrimaryButton>
+          )
+        ))}
       {eventType === EVENT_TYPES.UPCOMING && !isJoined && !isHosting && joinButtonText.text && (
         <PrimaryButton
           className='w-full text-wrap'

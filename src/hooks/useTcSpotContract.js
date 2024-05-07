@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -12,7 +13,7 @@ import { fromWei, sleep } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
-const MAX_RETIRES = 3
+const MAX_RETRIES = 3
 
 export const useTCContractInfor = (address, eventType) => {
   const [loaded, setLoaded] = useState(false)
@@ -21,8 +22,10 @@ export const useTCContractInfor = (address, eventType) => {
   const [placement, setPlacement] = useState()
   const [isOwner, setIsOwner] = useState(false)
   const [isClaimable, setIsClaimable] = useState(undefined)
+  const [isWithdrawable, setIsWithdrawable] = useState(undefined)
 
-  const [retries, setRetires] = useState(0)
+  const [retries, setRetries] = useState(0)
+  const [withdrawRetries, setWithdrawRetries] = useState(0)
 
   const tcSpotContract = getTcSpotContract(address)
   const { account } = useWallet()
@@ -97,10 +100,10 @@ export const useTCContractInfor = (address, eventType) => {
             }
           }
         } catch (error) {
-          if (retries === MAX_RETIRES) {
+          if (retries === MAX_RETRIES) {
             setIsClaimable(false)
           } else {
-            setRetires(retries + 1)
+            setRetries(retries + 1)
           }
         }
       }
@@ -120,9 +123,35 @@ export const useTCContractInfor = (address, eventType) => {
     ],
   )
 
+  const checkWithdrawable = useCallback(
+    async (force = false) => {
+      if ((eventType === EVENT_TYPES.ENDED && isWithdrawable === undefined) || force) {
+        try {
+          if (isRegistered) {
+            const userBalanceRes = await readCall(tcSpotContract, 'userBalance', [account])
+            const userBalance = userBalanceRes[0]
+            const hasBalance = Array.isArray(userBalance) && userBalance.some(item => new BigNumber(item).gt(0))
+            setIsWithdrawable(hasBalance)
+          }
+        } catch (error) {
+          if (withdrawRetries === MAX_RETRIES) {
+            setIsWithdrawable(false)
+          } else {
+            setWithdrawRetries(withdrawRetries + 1)
+          }
+        }
+      }
+    },
+    [account, eventType, isRegistered, isWithdrawable, withdrawRetries, tcSpotContract],
+  )
+
   useEffect(() => {
     checkClaimable()
   }, [checkClaimable])
+
+  useEffect(() => {
+    checkWithdrawable()
+  }, [checkWithdrawable])
 
   useEffect(() => {
     getUserData()
@@ -130,7 +159,8 @@ export const useTCContractInfor = (address, eventType) => {
 
   useEffect(() => {
     if (account && address) {
-      setRetires(0)
+      setRetries(0)
+      setWithdrawRetries(0)
       setIsClaimable(undefined)
     }
   }, [account, address])
@@ -141,9 +171,11 @@ export const useTCContractInfor = (address, eventType) => {
     isWinner,
     isOwner,
     isClaimable,
+    isWithdrawable,
     setIsClaimable,
     refetch: getUserData,
     checkClaimable,
+    checkWithdrawable,
   }
 }
 
@@ -439,4 +471,48 @@ export const useClaimTC = () => {
   )
 
   return { loading, claimReward }
+}
+
+export const useWithdrawDepositTC = () => {
+  const { startTxn, endTxn, writeTxn, closeTxnModal, closeTxn } = useTxn()
+  const t = useTranslations()
+  const [loading, setLoading] = useState(false)
+
+  const withdrawDeposit = useCallback(
+    async ({ tcAddress }) => {
+      const key = uuidv4()
+      const withdrawuuid = uuidv4()
+      const tcSpotContract = getTcSpotContract(tcAddress)
+
+      setLoading(true)
+      startTxn({
+        key,
+        title: t('Withdraw Deposit'),
+        transactions: {
+          [withdrawuuid]: {
+            desc: t('Withdraw Deposit'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      const isSuccess = await writeTxn(key, withdrawuuid, tcSpotContract, 'withdrawAllFunds')
+      if (!isSuccess) {
+        setLoading(false)
+        closeTxn()
+        return false
+      }
+      endTxn({
+        key,
+        final: 'Withdraw Successful',
+      })
+      setLoading(false)
+      closeTxnModal()
+      return true
+    },
+    [endTxn, startTxn, t, writeTxn, closeTxnModal, closeTxn],
+  )
+
+  return { loading, withdrawDeposit }
 }
