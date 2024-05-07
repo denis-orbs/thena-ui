@@ -755,5 +755,8 @@
   "Followers of": "Followers of {user}",
   "Following of": "Following of {user}",
   "Total Deposit Required to Join": "Total Deposit Required to Join",
-  "This means": "This means, that the total required to join is"
+  "This means": "This means, that the total required to join is",
+  "Use Banner Default": "Use banner default",
+  "Use Custom Banner": "Use custom banner",
+  "Edit Banner": "Edit banner"
 }

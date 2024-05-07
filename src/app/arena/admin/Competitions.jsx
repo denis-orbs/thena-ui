@@ -26,6 +26,7 @@ const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
       entryFee
       market
       id
+      bannerUrl
       isHidden
       competitionRules {
         winningToken
@@ -74,6 +75,7 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
       market
       id
       isHidden
+      bannerUrl
       competitionRules {
         winningToken
         tradingTokens

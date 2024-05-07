@@ -33,6 +33,7 @@ const V4_COMPETITION_DATAS = gql`
       entryFee
       market
       id
+      bannerUrl
       competitionRules {
         winningToken
         tradingTokens

@@ -13,6 +13,7 @@ import { TextButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
+import { useUserInfo } from '@/context/userInfoContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
@@ -29,6 +30,7 @@ const V4_COMPETITION_DATA = gql`
       description
       id
       name
+      bannerUrl
       entryFee
       timestamp {
         endTimestamp
@@ -88,6 +90,8 @@ function CompetitionDetailLayout({ children, params }) {
     revalidateOnFocus: true,
   })
 
+  const { userInfo } = useUserInfo()
+
   const t = useTranslations()
 
   const pathname = usePathname()
@@ -136,6 +140,14 @@ function CompetitionDetailLayout({ children, params }) {
           : undefined,
       ]),
     [_competition?.participantCount, eventType, params.id, pathname, t],
+  )
+
+  const enableEditBanner = useMemo(
+    () =>
+      (userInfo?.id === competition?.owner?.id && competition?.owner?.isVerified) ||
+      userInfo?.isAdmin ||
+      userInfo?.isSuperAdmin,
+    [userInfo?.isAdmin, userInfo?.isSuperAdmin, competition?.owner?.isVerified, competition?.owner?.id, userInfo?.id],
   )
 
   const retryCompetition = useCallback(async () => {
@@ -203,7 +215,7 @@ function CompetitionDetailLayout({ children, params }) {
                 verifyImage={competition.owner.checkMarkIcon}
               />
             </div>
-            <CompetitionCard competition={_competition} eventType={eventType} />
+            <CompetitionCard competition={_competition} eventType={eventType} enableEditBanner={enableEditBanner} />
             <div className='mt-10 flex w-full flex-col gap-4'>
               <Tabs
                 data={subTabs}

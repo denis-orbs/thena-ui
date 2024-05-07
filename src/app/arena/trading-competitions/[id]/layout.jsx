@@ -11,6 +11,7 @@ const V4_COMPETITION_DATA = gql`
       description
       id
       name
+      bannerUrl
     }
   }
 `

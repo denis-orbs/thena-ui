@@ -7,7 +7,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
-import { useUpload } from '@/hooks/useUploadFile'
+import { useUploadCheckMarkIcon } from '@/hooks/useUploadFile'
 import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 
@@ -16,7 +16,7 @@ function ModalEditCheckMark({ isOpen, mutate, closeModal = () => {}, user = {} }
   const [stateChecked, setStateChecked] = useState('default')
   const [selectedImage, setSelectedImage] = useState(undefined)
   const [loading, setLoading] = useState(false)
-  const { upload } = useUpload()
+  const { upload } = useUploadCheckMarkIcon()
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
     accept: { 'image/*': [] },

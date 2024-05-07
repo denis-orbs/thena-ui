@@ -36,6 +36,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'thena-icon-checkmark-dev.s3.amazonaws.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'thena-image-resource.s3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'thena-image-resource-dev.s3.amazonaws.com',
+      },
     ],
   },
 

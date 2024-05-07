@@ -2,26 +2,34 @@
 
 import isTomorow from 'dayjs/plugin/isTomorrow'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { Paragraph, TextHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { cn } from '@/lib/utils'
+import { EditBannerModal } from '@/modules/TradingCompetition/EditBannerModal'
+import { EditIcon } from '@/svgs'
 
 import { CompetitionCardHeader } from '../../CompetitionCardHeader'
 
 dayjs.extend(isTomorow)
 
-function CompetitionCard({ competition, eventType }) {
+function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
   const t = useTranslations()
 
   const [registerText, setRegisterText] = useState()
   const [startTimeText, setStartTimeText] = useState()
   const [endTimeText, setEndTimeText] = useState()
   const [isRegisterStarted, setIsRegisterStarted] = useState(false)
+  const [editBannerModal, setEditBannerModal] = useState(false)
+
+  const onEditBanner = useCallback(() => {
+    setEditBannerModal(true)
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -114,45 +122,59 @@ function CompetitionCard({ competition, eventType }) {
   }, [competition.timestamp.endTimestamp, eventType, t])
 
   return (
-    <div className='w-full'>
-      <Box className='flex h-full w-full flex-col gap-4 p-6'>
-        <div className='relative'>
-          <CompetitionCardHeader className='h-72 max-w-full rounded-xl' competition={competition} />
-          <div className='absolute left-4 top-4 flex gap-2'>
-            <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
-              {competition.market.toLowerCase()}
-            </NeutralBadge>
-            {eventType && <NeutralBadge className='text-nowrap lg:text-xs'>{t(eventType)}</NeutralBadge>}
-          </div>
-        </div>
-        <div>
-          <h3>{competition.name}</h3>
-          {eventType && (
-            <div
-              className={cn(
-                'flex w-full flex-col items-start gap-4 py-2 lg:flex-row lg:items-center',
-                eventType !== EVENT_TYPES.ENDED ? 'justify-between' : 'space-x-8',
-              )}
-            >
-              {eventType !== EVENT_TYPES.ENDED && (
-                <div className='flex flex-col gap-1'>
-                  <TextHeading>{registerText}</TextHeading>
-                  <Paragraph>{isRegisterStarted ? t('Registration Deadline') : t('Registration Start Time')}</Paragraph>
-                </div>
-              )}
-              <div className='flex flex-col gap-1'>
-                <TextHeading>{startTimeText}</TextHeading>
-                <Paragraph>{t('Start')}</Paragraph>
-              </div>
-              <div className='flex flex-col gap-1'>
-                <TextHeading>{endTimeText}</TextHeading>
-                <Paragraph>{t('End')}</Paragraph>
-              </div>
+    <>
+      <div className='w-full'>
+        <Box className='flex h-full w-full flex-col gap-4 p-6'>
+          <div className='relative'>
+            <CompetitionCardHeader
+              className='h-72 max-w-full rounded-xl'
+              competition={competition}
+              banner={competition.bannerUrl}
+            />
+            <div className='absolute left-4 top-4 flex gap-2'>
+              <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
+                {competition.market.toLowerCase()}
+              </NeutralBadge>
+              {eventType && <NeutralBadge className='text-nowrap lg:text-xs'>{t(eventType)}</NeutralBadge>}
             </div>
-          )}
-        </div>
-      </Box>
-    </div>
+            {enableEditBanner && (
+              <EmphasisIconButton Icon={EditIcon} className='absolute right-4 top-4' onClick={onEditBanner} />
+            )}
+          </div>
+          <div>
+            <h3>{competition.name}</h3>
+            {eventType && (
+              <div
+                className={cn(
+                  'flex w-full flex-col items-start gap-4 py-2 lg:flex-row lg:items-center',
+                  eventType !== EVENT_TYPES.ENDED ? 'justify-between' : 'space-x-8',
+                )}
+              >
+                {eventType !== EVENT_TYPES.ENDED && (
+                  <div className='flex flex-col gap-1'>
+                    <TextHeading>{registerText}</TextHeading>
+                    <Paragraph>
+                      {isRegisterStarted ? t('Registration Deadline') : t('Registration Start Time')}
+                    </Paragraph>
+                  </div>
+                )}
+                <div className='flex flex-col gap-1'>
+                  <TextHeading>{startTimeText}</TextHeading>
+                  <Paragraph>{t('Start')}</Paragraph>
+                </div>
+                <div className='flex flex-col gap-1'>
+                  <TextHeading>{endTimeText}</TextHeading>
+                  <Paragraph>{t('End')}</Paragraph>
+                </div>
+              </div>
+            )}
+          </div>
+        </Box>
+      </div>
+      {editBannerModal && (
+        <EditBannerModal competition={competition} open={editBannerModal} onClose={() => setEditBannerModal(false)} />
+      )}
+    </>
   )
 }
 

@@ -17,6 +17,7 @@ import CoinHand from '~/svgs/coin-hand.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 import CopyIcon from '~/svgs/copy.svg'
 import DownRank from '~/svgs/down-rank.svg'
+import EditIcon from '~/svgs/edit.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import Gift from '~/svgs/gift.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
@@ -70,6 +71,7 @@ export {
   CoinsStackedIcon,
   CopyIcon,
   DownRank,
+  EditIcon,
   ExternalIcon,
   Gift,
   HamburgerIcon,
