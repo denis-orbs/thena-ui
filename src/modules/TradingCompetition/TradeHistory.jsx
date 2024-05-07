@@ -17,26 +17,26 @@ import { TransferIcon } from '@/svgs'
 
 const sortOptions = [
   {
-    label: 'Traded token',
+    label: 'Traded Token',
     value: 'traded_token',
     width: 'w-[30%]',
     isDesc: true,
     minWidth: 'min-w-40',
   },
   {
-    label: 'In amount',
+    label: 'In Amount',
     value: 'amountIn',
     width: 'w-[15%]',
     isDesc: true,
   },
   {
-    label: 'Out amount',
+    label: 'Out Amount',
     value: 'amountOut',
     width: 'w-[15%]',
     isDesc: true,
   },
   {
-    label: 'Transaction hash',
+    label: 'Transaction Hash',
     value: 'txHash',
     width: 'w-[30%]',
     isDesc: true,

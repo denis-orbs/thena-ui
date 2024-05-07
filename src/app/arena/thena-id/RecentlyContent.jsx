@@ -75,7 +75,7 @@ function RecentlyContent() {
         disabled: false,
       },
       {
-        label: 'Time ago',
+        label: 'Time Ago',
         value: 'timestamp',
         width: 'w-[15%]',
         isDesc: true,
@@ -279,7 +279,7 @@ function RecentlyContent() {
           <Link href={`/arena/thena-id/recently-${isMinted ? 'gifted' : 'minted'}`}>
             <Toggle toggleId='seeGiftedOnly' checked={!isMinted} onChange={() => {}} />
           </Link>
-          <TextHeading>{t('See gifted only')}</TextHeading>
+          <TextHeading>{t('See Gifted Only')}</TextHeading>
         </div>
       </div>
       <div className='mt-6 w-full'>
