@@ -1,5 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
+
+'use client'
+
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 
 import CircleImage from '@/components/image/CircleImage'
@@ -17,6 +21,7 @@ function Token({ data, setData }) {
   const [isTradeOpen, setIsTradeOpen] = useState(false)
   const [isWinningOpen, setIsWinningOpen] = useState(false)
   const { tradingTokens } = useTC()
+  const t = useTranslations()
 
   useEffect(() => {
     const { winningToken } = data.competitionRules
@@ -52,21 +57,21 @@ function Token({ data, setData }) {
                 market: TC_MARKET_TYPES.SPOT,
               })
             }}
-            className={`px-6 py-[8.4px] text-white ${
+            className={`px-6 py-[8.4px] uppercase text-white ${
               data.market === TC_MARKET_TYPES.SPOT ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
             } rounded-full`}
             type='button'
           >
-            SPOT
+            {t('Spot')}
           </button>
           <button
             disabled
-            className={`px-6 py-[8.4px] text-white disabled:cursor-not-allowed ${
+            className={`px-6 py-[8.4px] uppercase text-white disabled:cursor-not-allowed ${
               data.market === TC_MARKET_TYPES.PERPETUAL ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
             } rounded-full`}
             type='button'
           >
-            PERPETUAL
+            {t('Perpetual')}
           </button>
         </div>
       </div>

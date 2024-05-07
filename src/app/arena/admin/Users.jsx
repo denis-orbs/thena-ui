@@ -179,7 +179,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           <div className='flex w-full flex-col gap-3 md:flex-row md:items-center'>
             <div className='flex w-full flex-row items-center gap-3'>
               <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenEditCheckMark(item)}>
-                {t('Edit checkmark')}
+                {t('Edit Checkmark')}
               </EmphasisButton>
               {userInfo.isSuperAdmin && userInfo.id !== item.id && (
                 <EmphasisButton
@@ -192,7 +192,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
             </div>
             <div className='w-full'>
               <Link href={`/arena/admin/edit/${item.id}`}>
-                <EmphasisButton className='w-full text-base'>{t('Edit profile')}</EmphasisButton>
+                <EmphasisButton className='w-full text-base'>{t('Edit Profile')}</EmphasisButton>
               </Link>
             </div>
           </div>

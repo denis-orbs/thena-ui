@@ -92,7 +92,7 @@ function AnalyticPage() {
           </NeutralBadge> */}
           <div className='flex flex-col gap-4'>
             <TextHeading className='text-xl'>${formatAmount(valueAnalytics.totalVolume)}</TextHeading>
-            <Paragraph className='text-sm'>{t('Total volume')}</Paragraph>
+            <Paragraph className='text-sm'>{t('Total Volume')}</Paragraph>
           </div>
         </Box>
         {/* <Box className='relative'>
@@ -106,7 +106,7 @@ function AnalyticPage() {
         </Box> */}
         <Box className='flex flex-col gap-4'>
           <TextHeading className='text-xl'>{valueAnalytics.numberOfParticipants}</TextHeading>
-          <Paragraph className='text-sm'>{t('Number of participants')}</Paragraph>
+          <Paragraph className='text-sm'>{t('Number of Participants')}</Paragraph>
         </Box>
         <Box className='flex flex-col gap-4'>
           <TextHeading className='text-xl'>{valueAnalytics.amountOfTrades}</TextHeading>

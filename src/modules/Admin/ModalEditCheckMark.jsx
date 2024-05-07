@@ -43,7 +43,7 @@ function ModalEditCheckMark({ isOpen, mutate, closeModal = () => {}, user = {} }
   }, [acceptedFiles])
 
   return (
-    <Modal isOpen={isOpen} closeModal={closeModal} width={600} title='Edit checkmark'>
+    <Modal isOpen={isOpen} closeModal={closeModal} width={600} title='Edit Checkmark'>
       <ModalBody className='py-0'>
         {user && user.id ? (
           <div className='flex flex-col items-center gap-3'>

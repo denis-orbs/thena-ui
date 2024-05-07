@@ -65,7 +65,7 @@ function TopBar({ userInfo }) {
       </div>
       <div className='flex flex-row justify-end'>
         <Link href='/arena/admin/edit'>
-          <EmphasisButton className='text-base'>{t('Edit profile')}</EmphasisButton>
+          <EmphasisButton className='text-base'>{t('Edit Profile')}</EmphasisButton>
         </Link>
       </div>
     </Box>

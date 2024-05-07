@@ -132,7 +132,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
                   setOpenEditCheckmark(true)
                 }}
               >
-                {t('Edit checkmark')}
+                {t('Edit Checkmark')}
               </EmphasisButton>
               {userInfo.id !== item.id && (
                 <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenModal(item, 'remove')}>
@@ -141,7 +141,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
               )}
             </div>
             <div className='w-full'>
-              <EmphasisButton className='w-full text-base'>{t('Edit profile')}</EmphasisButton>
+              <EmphasisButton className='w-full text-base'>{t('Edit Profile')}</EmphasisButton>
             </div>
           </div>
         ) : null,

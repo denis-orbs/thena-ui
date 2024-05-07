@@ -141,9 +141,12 @@ function Table({
             </thead>
             <tbody className='relative'>
               {loading && (
-                <div className='flex w-full justify-center'>
-                  <Loading />
-                </div>
+                <tr>
+                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                  <td colSpan={sortOptions.length}>
+                    <Loading />
+                  </td>
+                </tr>
               )}
               {!loading &&
                 data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (

@@ -66,7 +66,7 @@ function TopCompetition() {
         disabled: true,
       },
       {
-        label: 'Competition name',
+        label: 'Competition Name',
         value: 'competitionName',
         width: isAll ? 'w-[50%]' : 'w-[15%]',
         disabled: true,
@@ -84,13 +84,13 @@ function TopCompetition() {
         isDesc: true,
       },
       {
-        label: 'Entry fee',
+        label: 'Entry Fee',
         value: 'entryFee',
         width: 'w-[20%]',
         isDesc: true,
       },
       {
-        label: 'Total prize',
+        label: 'Total Prize',
         value: 'totalPrize',
         width: 'w-[20%]',
         isDesc: true,
@@ -221,10 +221,10 @@ function TopCompetition() {
     <div className='z-10 col-span-12 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
       <Box>
         <div className='flex flex-row items-center justify-between'>
-          <TextHeading className='text-xl'>{t('Top competitions')}</TextHeading>
+          <TextHeading className='text-xl'>{t('Top Competitions')}</TextHeading>
           {!isAll && (
             <Link href='/arena/rankings/competitions'>
-              <EmphasisButton>{t('View all')}</EmphasisButton>
+              <EmphasisButton>{t('View All')}</EmphasisButton>
             </Link>
           )}
         </div>

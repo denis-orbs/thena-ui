@@ -82,13 +82,13 @@ function TopUser() {
         disabled: true,
       },
       {
-        label: 'Competition name',
+        label: 'Competition Name',
         value: 'competitionName',
         width: 'w-[20%]',
         disabled: true,
       },
       {
-        label: 'Win amount',
+        label: 'Win Amount',
         value: 'winAmountUSD',
         width: 'w-[20%]',
         disabled: false,
@@ -372,10 +372,10 @@ function TopUser() {
       </div>
       <Box className='mt-6'>
         <div className='flex flex-row items-center justify-between'>
-          <TextHeading className='text-xl'>{t('Top users')}</TextHeading>
+          <TextHeading className='text-xl'>{t('Top Users')}</TextHeading>
           {!isAll && (
             <Link href='/arena/rankings/users'>
-              <EmphasisButton>{t('View all')}</EmphasisButton>
+              <EmphasisButton>{t('View All')}</EmphasisButton>
             </Link>
           )}
         </div>
