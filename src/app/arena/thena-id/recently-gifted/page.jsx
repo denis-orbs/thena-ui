@@ -4,8 +4,8 @@ import React from 'react'
 
 import RecentlyContent from '../RecentlyContent'
 
-function RecentlyMintedPage() {
+function RecentlyGiftedPage() {
   return <RecentlyContent />
 }
 
-export default RecentlyMintedPage
+export default RecentlyGiftedPage

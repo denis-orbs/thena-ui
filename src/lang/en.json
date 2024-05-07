@@ -752,5 +752,10 @@
   "By": "by",
   "Withdraw Deposit": "Withdraw Deposit",
   "Entry fee": "Entry fee",
-  "Total prize": "Total prize"
+  "Total prize": "Total prize",
+  "See gifted only": "See gifted only?",
+  "Cost": "Cost",
+  "Recently gifted THENA IDs": "Recently gifted THENA IDs",
+  "Gift To": "Gift To",
+  "Gift From": "Gift From"
 }
