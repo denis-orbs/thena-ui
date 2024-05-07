@@ -68,14 +68,14 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
             <div className='flex items-center gap-1 text-nowrap'>
               {competition.owner.name ? (
                 <h4 className='inline-block bg-gradient-to-r from-[#C72AD0] to-[#AA23DB] bg-clip-text text-3xl font-bold text-transparent'>
-                  {t('by')}{' '}
+                  {t('By')}{' '}
                   <span style={competition.owner.nameColor ? { color: competition.owner.nameColor } : {}}>
                     {formatAddress(competition.owner.username)}
                   </span>
                 </h4>
               ) : (
                 <h4>
-                  {t('by')}{' '}
+                  {t('By')}{' '}
                   <span style={competition.owner.nameColor ? { color: competition.owner.nameColor } : {}}>
                     {formatAddress(competition.owner.id)}
                   </span>

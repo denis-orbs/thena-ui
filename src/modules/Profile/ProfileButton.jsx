@@ -16,10 +16,11 @@ export function ProfileButton({ isOwnProfile, userInfoId, handleClickThenaButton
 
   const t = useTranslations()
   const onShare = useCallback(() => {
-    navigator.clipboard.writeText(window.location.href)
+    console.log('object', isOwnProfile ? `${window.location.href}/${userInfoId}` : window.location.href)
+    navigator.clipboard.writeText(isOwnProfile ? `${window.location.href}/${userInfoId}` : window.location.href)
     setCopied(true)
     successToast(t('Link Has Been Copied'))
-  }, [t])
+  }, [isOwnProfile, t, userInfoId])
 
   const shareIconButton = useMemo(() => (copied ? CheckIcon : PublicIcon), [copied])
   const { following } = useCurrentUserFollow()
