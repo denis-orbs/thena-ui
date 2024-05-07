@@ -434,17 +434,15 @@ function Header() {
               href: '/arena/profile',
             }
           : undefined,
-        account
-          ? {
-              label: t('THENA ID'),
-              active:
-                pathname === '/arena/thena-id/mint' ||
-                pathname === '/arena/thena-id/gift' ||
-                pathname === '/arena/thena-id/recently-minted',
-              isLink: true,
-              href: '/arena/thena-id/mint',
-            }
-          : undefined,
+        {
+          label: t('THENA ID'),
+          active:
+            pathname === '/arena/thena-id/mint' ||
+            pathname === '/arena/thena-id/gift' ||
+            pathname === '/arena/thena-id/recently-minted',
+          isLink: true,
+          href: '/arena/thena-id/mint',
+        },
         account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
           ? {
               label: t('Admin'),

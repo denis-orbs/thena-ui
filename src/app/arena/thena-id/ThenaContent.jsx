@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import ConnectButton from '@/components/buttons/ConnectButton'
 import CheckBox from '@/components/checkbox'
 import NextImage from '@/components/image/NextImage'
 import Input from '@/components/input'
@@ -226,13 +227,17 @@ function ThenaContent() {
         </div>
       </div>
       <div className='mt-3 flex w-full flex-row justify-center gap-4'>
-        <EmphasisButton
-          className='py-3.5 text-white lg:px-16 lg:py-3'
-          disabled={!isValid || loading || isMinting}
-          onClick={onMint}
-        >
-          {t('Mint Now')}
-        </EmphasisButton>
+        {account ? (
+          <EmphasisButton
+            className='py-3.5 text-white lg:px-16 lg:py-3'
+            disabled={!isValid || loading || isMinting}
+            onClick={onMint}
+          >
+            {t('Mint Now')}
+          </EmphasisButton>
+        ) : (
+          <ConnectButton />
+        )}
       </div>
     </div>
   )
