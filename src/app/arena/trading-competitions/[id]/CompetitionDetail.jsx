@@ -200,7 +200,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
             </EmphasisButton>
           )}
         </div>
-        <div className='mt-4 grid  grid-cols-2 gap-4 lg:grid-cols-4'>
+        <div className='mt-4 grid  grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-4'>
           {_competition.competitionRules?.tradingTokens
             ?.slice(0, viewAllTradable ? _competition.competitionRules?.tradingTokens?.length : 7)
             .map(item => (
@@ -218,11 +218,9 @@ export function CompetitionDetail({ competition, isPreview = false }) {
                     loading='lazy'
                   />
                 )}
-                <div className='flex flex-col'>
+                <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
                   <Paragraph className='text-sm'>{item.symbol}</Paragraph>
-                  <Paragraph className='w-24 overflow-hidden text-ellipsis whitespace-nowrap text-sm'>
-                    {item.name}
-                  </Paragraph>
+                  <Paragraph className='whitespace-nowrap text-sm'>{item.name}</Paragraph>
                 </div>
               </Box>
             ))}
