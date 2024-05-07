@@ -7,7 +7,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
-import { TextHeading } from '@/components/typography'
+import { TextHeading, TextSubHeading } from '@/components/typography'
 import { formatAmount, ordinals } from '@/lib/utils'
 
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
@@ -89,6 +89,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             TrailingButton={
               data.prize.token ? (
                 <div className='absolute right-4 flex items-center space-x-1.5'>
+                  <TextSubHeading>${formatAmount(data.prize.totalPrize * data.prize.token.price)}</TextSubHeading>
                   <Image alt='' src={data.prize.token.logoURI} width={20} height={20} />
                   <span className='font-figtree text-lg leading-[22px] text-white'>{data.prize.token.symbol}</span>
                 </div>
@@ -140,6 +141,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
               TrailingButton={
                 data.prize.token ? (
                   <div className='absolute right-4 flex items-center space-x-1.5'>
+                    <TextSubHeading>${formatAmount(data.entryFee * data.prize.token.price)}</TextSubHeading>
                     <Image alt='' src={data.prize.token.logoURI} width={20} height={20} />
                     <span className='font-figtree text-lg leading-[22px] text-white'>{data.prize.token.symbol}</span>
                   </div>

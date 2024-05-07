@@ -115,7 +115,7 @@ export default function ArenaPage() {
 
   const competitions = useMemo(
     () =>
-      dataCompetitions?.map(comp => ({
+      (Array.isArray(dataCompetitions) ? dataCompetitions : []).map(comp => ({
         ...comp,
         prize: {
           ...comp.prize,

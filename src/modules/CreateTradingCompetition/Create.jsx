@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
@@ -89,14 +89,6 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
       default:
     }
   }
-
-  useEffect(() => {
-    if (data.entryFee) {
-      setIsEntryFee(true)
-    } else {
-      setIsEntryFee(false)
-    }
-  }, [data.competitionRules?.startingBalance, data.entryFee])
 
   return (
     <Modal
