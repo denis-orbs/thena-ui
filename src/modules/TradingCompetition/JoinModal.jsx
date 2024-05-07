@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
@@ -53,8 +54,6 @@ export function JoinModal({ competition, open, onClose }) {
       console.error(e)
     }
   }, [competition, joinTC, onClose, push])
-
-  const addBalance = async () => {}
 
   const message = useMemo(() => {
     if (isInvalidAmount(entryFee)) {
@@ -126,10 +125,17 @@ export function JoinModal({ competition, open, onClose }) {
           <div className='mt-2'>
             <Alert>
               <p>{t('Not Enough Balance To Join Message')}</p>
-
-              <ErrorButton className='text-nowrap p-2 text-xs' onClick={addBalance}>
-                {t('Add Balance')}
-              </ErrorButton>
+              <Link
+                href={{
+                  pathname: '/swap',
+                  query: {
+                    inputCurrency: 'BNB',
+                    outputCurrency: winningToken.address,
+                  },
+                }}
+              >
+                <ErrorButton className='text-nowrap p-2 text-xs'>{t('Add Balance')}</ErrorButton>
+              </Link>
             </Alert>
           </div>
         )}
