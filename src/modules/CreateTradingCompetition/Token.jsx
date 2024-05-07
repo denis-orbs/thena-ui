@@ -5,10 +5,10 @@ import React, { useEffect, useState } from 'react'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
-import Toggle from '@/components/toggle'
-import { TextHeading } from '@/components/typography'
+import { TextHeading, TextSubHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
+import { formatAmount } from '@/lib/utils'
 
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
@@ -122,7 +122,7 @@ function Token({ data, setData }) {
       </div>
       <div className='mt-3 items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='flex:col flex h-[50px] w-full items-center'>
-          <Toggle checked disabled toggleId='starting' onChange={() => {}} />
+          {/* <Toggle checked disabled toggleId='starting' onChange={() => {}} /> */}
           <LabelTooltip
             id='startingBalance'
             label='Require Deposit to Join'
@@ -147,6 +147,9 @@ function Token({ data, setData }) {
             TrailingButton={
               data.competitionRules.winningToken ? (
                 <div className='absolute right-4 flex items-center space-x-1.5'>
+                  <TextSubHeading>
+                    ${formatAmount(data.competitionRules.startingBalance * data.competitionRules.winningToken.price)}
+                  </TextSubHeading>
                   <Image alt='' src={data.competitionRules.winningToken.logoURI} width={20} height={20} />
                   <span className='font-figtree text-lg leading-[22px] text-white'>
                     {data.competitionRules.winningToken.symbol}

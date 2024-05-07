@@ -49,6 +49,13 @@ function Detail({ data, setData }) {
               description: value,
             })
           }}
+          customToolbar={[
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'strike', 'underline', 'blockquote'],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            [{ indent: '-1' }, { indent: '+1' }],
+            ['emoji', 'code-block'],
+          ]}
         />
       </div>
     </>

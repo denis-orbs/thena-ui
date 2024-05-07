@@ -1,16 +1,9 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import ReactQuill, { Quill } from 'react-quill'
 import quillEmoji from 'react-quill-emoji'
 
 import { cn } from '@/lib/utils'
 
-const toolbarOption = [
-  [{ header: [1, 2, false] }],
-  ['bold', 'italic', 'strike', 'underline', 'blockquote'],
-  [{ list: 'ordered' }, { list: 'bullet' }],
-  [{ indent: '-1' }, { indent: '+1' }],
-  ['emoji', 'image', 'code-block'],
-]
 Quill.register(
   {
     'formats/emoji': quillEmoji.EmojiBlot,
@@ -21,7 +14,20 @@ Quill.register(
   true,
 )
 
-function QuillEditor({ value, onChange, className }) {
+function QuillEditor({ value, onChange, className, customToolbar = undefined }) {
+  const toolbarOption = useMemo(() => {
+    if (!customToolbar) {
+      return [
+        [{ header: [1, 2, false] }],
+        ['bold', 'italic', 'strike', 'underline', 'blockquote'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        [{ indent: '-1' }, { indent: '+1' }],
+        ['emoji', 'image', 'code-block'],
+      ]
+    }
+    return customToolbar
+  }, [customToolbar])
+
   return (
     <ReactQuill
       modules={{

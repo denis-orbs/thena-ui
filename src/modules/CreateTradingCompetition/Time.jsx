@@ -44,11 +44,17 @@ function Time({ data, setData }) {
   )
 
   const handleParticipants = val => {
-    const res = Math.min(Math.max(TC_PARTICIPANTS.MIN, val), TC_PARTICIPANTS.MAX)
-    setData({
-      ...data,
-      maxParticipants: res,
-    })
+    if (val === '') {
+      setData({
+        ...data,
+        maxParticipants: '',
+      })
+    } else {
+      setData({
+        ...data,
+        maxParticipants: parseInt(val, 10),
+      })
+    }
   }
 
   useEffect(() => {
@@ -141,14 +147,7 @@ function Time({ data, setData }) {
             max={TC_PARTICIPANTS.MAX}
             min={TC_PARTICIPANTS.MIN}
             value={data.maxParticipants}
-            onChange={e => {
-              if (e.target.value === '') {
-                setData({
-                  ...data,
-                  maxParticipants: '',
-                })
-              } else handleParticipants(parseInt(e.target.value, 10))
-            }}
+            onChange={e => handleParticipants(e.target.value)}
             TrailingButton={
               <div className='absolute right-3 top-2.5 flex items-center space-x-3'>
                 <button
