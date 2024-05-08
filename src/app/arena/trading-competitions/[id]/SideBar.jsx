@@ -159,9 +159,19 @@ function Sidebar({ competition, eventType }) {
   ])
 
   const onShare = useCallback(() => {
-    navigator.clipboard.writeText(window.location.href)
+    let hostOwnerRef = ''
+    if (competition?.owner) {
+      hostOwnerRef = competition.owner?.username ? competition.owner?.username : competition.owner?.id
+    }
+    let link = window.location.href
+    if (hostOwnerRef) {
+      const urlLink = new URL(link)
+      urlLink.searchParams.set('r', hostOwnerRef)
+      link = urlLink.toString()
+    }
+    navigator.clipboard.writeText(link)
     successToast(t('Link Has Been Copied'))
-  }, [t])
+  }, [t, competition?.owner])
 
   const claim = useCallback(async () => {
     try {

@@ -1,3 +1,4 @@
+import { gql } from 'graphql-request'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -7,21 +8,59 @@ import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Spinner from '@/components/spinner'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
+import { v4Client } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
+import useWallet from '@/lib/wallets/useWallet'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
 export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, hasThenaId, username = null }) {
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(false)
-
+  const { account } = useWallet()
   const t = useTranslations()
-  const onShare = useCallback(() => {
-    navigator.clipboard.writeText(
-      isOwnProfile ? `${window.location.href}/${userInfo.username ?? userInfo.id}` : window.location.href,
-    )
+  const [currentUserRef, setCurrentUserRef] = useState('')
+
+  const V4_USER_INFO = gql`
+    query V4_USER_USERNAME($id: String!) {
+      userById(id: $id) {
+        id
+        username
+      }
+    }
+  `
+
+  useEffect(() => {
+    async function getUserRef() {
+      try {
+        if (account) {
+          const { userById } = await v4Client.request(V4_USER_INFO, { id: account.toLowerCase() })
+          console.log({ userById })
+          if (userById && userById.username) {
+            setCurrentUserRef(userById.username)
+          } else {
+            setCurrentUserRef(account.toLowerCase())
+          }
+        }
+      } catch (_) {
+        setCurrentUserRef('')
+      }
+    }
+
+    getUserRef()
+  }, [V4_USER_INFO, account])
+
+  const onShare = useCallback(async () => {
+    let link = isOwnProfile ? `${window.location.href}/${userInfo.username ?? userInfo.id}` : window.location.href
+    if (currentUserRef) {
+      const urlLink = new URL(link)
+      urlLink.searchParams.set('r', currentUserRef)
+      link = urlLink.toString()
+    }
+
+    navigator.clipboard.writeText(link)
     setCopied(true)
     successToast(t('Link Has Been Copied'))
-  }, [isOwnProfile, t, userInfo.id, userInfo.username])
+  }, [isOwnProfile, userInfo.username, userInfo.id, currentUserRef, t])
 
   const shareIconButton = useMemo(() => (copied ? CheckIcon : PublicIcon), [copied])
   const { following } = useCurrentUserFollow()
