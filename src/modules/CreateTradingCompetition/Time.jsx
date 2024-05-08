@@ -52,7 +52,7 @@ function Time({ data, setData }) {
     } else {
       setData({
         ...data,
-        maxParticipants: parseInt(val, 10),
+        maxParticipants: parseInt(val, 10) > 1000 ? 1000 : parseInt(val, 10),
       })
     }
   }
