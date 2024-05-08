@@ -252,7 +252,7 @@ function Table({
             }}
             disabled={currentPage === 1}
           >
-            <ArrowLeftIcon className='h-4 w-4' />
+            <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
           </PaginateCell>
           {pageCount < 6 &&
             new Array(pageCount).fill(0).map((item, idx) => (
@@ -347,7 +347,7 @@ function Table({
             }}
             disabled={currentPage === pageCount}
           >
-            <ArrowLeftIcon className='h-4 w-4 rotate-180' />
+            <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`} />
           </PaginateCell>
         </ul>
       )}

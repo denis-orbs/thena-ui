@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { SearchIcon } from '@/svgs'
+import { SearchIcon, XIcon } from '@/svgs'
 
 import Input from '.'
 
-function SearchInput({ val, setVal, placeholder = 'Search', ...rest }) {
+function SearchInput({ val, setVal, placeholder = 'Search', showIconClearText = true, ...rest }) {
   return (
     <Input
       type='text'
@@ -12,6 +12,11 @@ function SearchInput({ val, setVal, placeholder = 'Search', ...rest }) {
       onChange={e => setVal(e.target.value)}
       placeholder={placeholder}
       LeadingIcon={<SearchIcon />}
+      TrailingIcon={
+        showIconClearText && val ? (
+          <XIcon className='stroke-neutral-400 hover:cursor-pointer' onClick={() => setVal('')} />
+        ) : null
+      }
       {...rest}
     />
   )

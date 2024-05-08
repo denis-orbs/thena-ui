@@ -34,7 +34,6 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
       try {
         if (account) {
           const { userById } = await v4Client.request(V4_USER_INFO, { id: account.toLowerCase() })
-          console.log({ userById })
           if (userById && userById.username) {
             setCurrentUserRef(userById.username)
           } else {
