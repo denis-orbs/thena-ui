@@ -274,3 +274,9 @@ export const ANALYTIC_CHART = {
   ALL_CHART: 5,
   CHART_COUNT: 60, // limit analytics chart items not more than 60
 }
+
+export const SWAP_TYPES = {
+  SWAP: '1',
+  TWAP: '2',
+  LIMIT: '3',
+}

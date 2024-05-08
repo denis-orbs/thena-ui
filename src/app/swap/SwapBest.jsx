@@ -1,9 +1,10 @@
 'use client'
 
+/* eslint-disable simple-import-sort/imports */
+import { useCallback, useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useState } from 'react'
-
 import { Alert } from '@/components/alert'
 import Box from '@/components/box'
 import { EmphasisButton, TextButton } from '@/components/buttons/Button'
@@ -25,8 +26,25 @@ import TxnSettings from '@/modules/SettingsModal'
 import SwapChart from '@/modules/SwapChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
-
+import { SWAP_TYPES } from '@/constant'
+import Selection from '@/components/selection'
 import WarningModal from './WarningModal'
+
+const Twap = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Twap), {
+  ssr: false,
+  loading: () => <Skeleton className='h-64' />,
+})
+
+const Orders = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Orders), {
+  ssr: false,
+  loading: () => <Skeleton className='h-64' />,
+})
+
+const SWAP_TYPES_ITEMS = [
+  { key: SWAP_TYPES.SWAP, label: 'Swap' },
+  { key: SWAP_TYPES.TWAP, label: 'TWAP' },
+  { key: SWAP_TYPES.LIMIT, label: 'Limit' },
+]
 
 export default function SwapBest({
   fromAsset,
@@ -38,6 +56,8 @@ export default function SwapBest({
   onWrap,
   onUnwrap,
   wrapPending,
+  setSwapType,
+  swapType,
 }) {
   const t = useTranslations()
   const [fromAmount, setFromAmount] = useState('')
@@ -46,11 +66,13 @@ export default function SwapBest({
   const { slippage } = useSettings()
   const { networkId } = useChainSettings()
   const debouncedAmount = useDebounce(fromAmount)
+
   const {
     data: bestTrade,
     isLoading: bestTradePending,
     mutate,
   } = useOdosQuoteSwap(account, fromAsset, toAsset, debouncedAmount, slippage, networkId)
+
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { mutate: onLHSwap, isLoading: LHSwapPending } = liquidityHub.useSwap()
@@ -250,97 +272,146 @@ export default function SwapBest({
     }
   }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap, quotePending, t])
 
+  const title = useMemo(() => {
+    switch (swapType) {
+      case SWAP_TYPES.TWAP:
+        return t('TWAP')
+      case SWAP_TYPES.LIMIT:
+        return t('Limit')
+      default:
+        return t('Swap')
+    }
+  }, [swapType, t])
+
+  const swapTypeSelections = useMemo(
+    () =>
+      SWAP_TYPES_ITEMS.map(ele => ({
+        label: ele.label,
+        active: swapType === ele.key,
+        onClickHandler: () => {
+          setSwapType(ele.key)
+        },
+      })),
+    [swapType, setSwapType],
+  )
+  const isTwap = swapType === SWAP_TYPES.TWAP || swapType === SWAP_TYPES.LIMIT
   return (
     <>
-      <Box className='w-full max-w-[480px]'>
-        <div className='mb-3 flex items-center justify-between'>
-          <h2>{t('Swap')}</h2>
-          <div className='flex items-center gap-2'>
-            {/* <Selection data={selections} /> */}
-            <TxnSettings />
-          </div>
-        </div>
-        <div className='my-3 flex flex-col items-end gap-2'>
-          <Tabs data={percents} />
-          <div className='relative flex w-full flex-col gap-2'>
-            <TokenInput
-              asset={fromAsset}
-              setAsset={asset => setFromAddress(asset.address)}
-              otherAsset={toAsset}
-              setOtherAsset={asset => setToAddress(asset.address)}
-              amount={fromAmount}
-              setAmount={setFromAmount}
-              autoFocus
-            />
-            <TokenInput
-              asset={toAsset}
-              setAsset={asset => setToAddress(asset.address)}
-              otherAsset={fromAsset}
-              setOtherAsset={asset => setFromAddress(asset.address)}
-              amount={toAmount}
-              disabled
-            />
-            <EmphasisIconButton
-              className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
-              Icon={SwitchVerticalIcon}
-              onClick={() => {
-                setFromAddress(toAsset.address)
-                setToAddress(fromAsset.address)
-              }}
-            />
-          </div>
-        </div>
-        {toAmount && (
-          <div className='flex flex-col gap-2 py-3'>
-            <div className='flex items-center justify-between'>
-              <TextHeading>{t('Rate')}</TextHeading>
-              <Paragraph>
-                {`${formatAmount(new BigNumber(toAmount).div(fromAmount))} ${t('[symbolA] per [symbolB]', {
-                  symbolA: toAsset.symbol,
-                  symbolB: fromAsset.symbol,
-                })}`}
-              </Paragraph>
+      <div className='flex w-full flex-1 flex-col gap-5'>
+        <Selection className='w-full' isFull data={swapTypeSelections} />
+        <Box className='w-full max-w-[480px]'>
+          <div className='mb-3 flex items-center justify-between'>
+            <h2>{title}</h2>
+            <div className='flex items-center gap-2'>
+              {/* <Selection data={selections} /> */}
+              <TxnSettings />
             </div>
-            <div className='flex items-center justify-between'>
-              <TextHeading>{t('Minimum Received')}</TextHeading>
-              <Paragraph>{minimumReceived}</Paragraph>
-            </div>
-            <div className='flex items-center justify-between'>
-              <TextHeading>{t('Price Impact')}</TextHeading>
-              <Paragraph>{formatAmount(priceImpact)}%</Paragraph>
-            </div>
-            {priceImpact > 5 && (
-              <Alert>
-                <InfoIcon className='h-4 w-4 stroke-error-600' />
-                <p>{t('Price impact too high')}</p>
-              </Alert>
-            )}
           </div>
-        )}
-        {account ? (
-          <EmphasisButton
-            className='mt-3 w-full'
-            disabled={!fromAmount || quotePending || swapPending || LHSwapPending || wrapPending || btnMsg.isError}
-            onClick={() => {
-              if (priceImpact > 5) {
-                setIsWarning(true)
-              } else if (isWrap) {
-                onWrap(fromAmount)
-              } else if (isUnwrap) {
-                onUnwrap(fromAmount)
-              } else {
-                handleSwap()
-              }
-            }}
-          >
-            {btnMsg.label}
-          </EmphasisButton>
-        ) : (
-          <ConnectButton className='mt-3 w-full' />
-        )}
-      </Box>
+
+          {isTwap ? (
+            <Twap
+              setFromAmount={setFromAmount}
+              fromAsset={fromAsset}
+              toAsset={toAsset}
+              setFromAddress={setFromAddress}
+              setToAddress={setToAddress}
+              outAmount={outAmount}
+              fromAmount={fromAmount}
+              limit={swapType === SWAP_TYPES.LIMIT}
+            />
+          ) : (
+            <>
+              <div className='my-3 flex flex-col items-end gap-2'>
+                <Tabs data={percents} />
+                <div className='relative flex w-full flex-col gap-2'>
+                  <TokenInput
+                    asset={fromAsset}
+                    setAsset={asset => setFromAddress(asset.address)}
+                    otherAsset={toAsset}
+                    setOtherAsset={asset => setToAddress(asset.address)}
+                    amount={fromAmount}
+                    setAmount={setFromAmount}
+                    autoFocus
+                  />
+                  <TokenInput
+                    asset={toAsset}
+                    setAsset={asset => setToAddress(asset.address)}
+                    otherAsset={fromAsset}
+                    setOtherAsset={asset => setFromAddress(asset.address)}
+                    amount={toAmount}
+                    disabled
+                  />
+                  <EmphasisIconButton
+                    className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
+                    Icon={SwitchVerticalIcon}
+                    onClick={() => {
+                      setFromAddress(toAsset.address)
+                      setToAddress(fromAsset.address)
+                    }}
+                  />
+                </div>
+              </div>
+              {toAmount && (
+                <div className='flex flex-col gap-2 py-3'>
+                  <div className='flex items-center justify-between'>
+                    <TextHeading>{t('Rate')}</TextHeading>
+                    <Paragraph>
+                      {`${formatAmount(new BigNumber(toAmount).div(fromAmount))} ${t('[symbolA] per [symbolB]', {
+                        symbolA: toAsset.symbol,
+                        symbolB: fromAsset.symbol,
+                      })}`}
+                    </Paragraph>
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <TextHeading>{t('Minimum Received')}</TextHeading>
+                    <Paragraph>{minimumReceived}</Paragraph>
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <TextHeading>{t('Price Impact')}</TextHeading>
+                    <Paragraph>{formatAmount(priceImpact)}%</Paragraph>
+                  </div>
+                  {priceImpact > 5 && (
+                    <Alert>
+                      <InfoIcon className='h-4 w-4 stroke-error-600' />
+                      <p>{t('Price impact too high')}</p>
+                    </Alert>
+                  )}
+                </div>
+              )}
+              {account ? (
+                <EmphasisButton
+                  className='mt-3 w-full'
+                  disabled={
+                    !fromAmount || quotePending || swapPending || LHSwapPending || wrapPending || btnMsg.isError
+                  }
+                  onClick={() => {
+                    if (priceImpact > 5) {
+                      setIsWarning(true)
+                    } else if (isWrap) {
+                      onWrap(fromAmount)
+                    } else if (isUnwrap) {
+                      onUnwrap(fromAmount)
+                    } else {
+                      handleSwap()
+                    }
+                  }}
+                >
+                  {btnMsg.label}
+                </EmphasisButton>
+              ) : (
+                <ConnectButton className='mt-3 w-full' />
+              )}
+            </>
+          )}
+        </Box>
+      </div>
       <div className='flex w-full max-w-[920px] flex-col gap-4'>
         <SwapChart asset0={toAsset} asset1={fromAsset} />
+        {isTwap && (
+          <Box className='flex flex-col gap-4'>
+            <Orders />
+          </Box>
+        )}
         <Box className='flex flex-col gap-4'>
           <div className='flex justify-between'>
             <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
