@@ -22,7 +22,7 @@ export function cn(...inputs) {
 }
 
 export function formatAddress(string) {
-  return `${string.slice(0, 4)}...${string.slice(-4)}`
+  return `${string?.slice(0, 4)}...${string?.slice(-4)}`
 }
 
 export function getRpcUrl(chainId) {
@@ -90,7 +90,7 @@ export const unwrappedSymbol = asset => (!asset ? null : asset.symbol === 'WBNB'
 
 export const ordinals = n => ['st', 'nd', 'rd'][((((n + 90) % 100) - 10) % 10) - 1] || 'th'
 
-export const sliceAddress = string => `${string.slice(0, 6)}...${string.slice(-4)}`
+export const sliceAddress = string => `${string?.slice(0, 6)}...${string?.slice(-4)}`
 
 export const convertTimestamp = timeStamp => {
   const date = new Date(timeStamp * 1000)
