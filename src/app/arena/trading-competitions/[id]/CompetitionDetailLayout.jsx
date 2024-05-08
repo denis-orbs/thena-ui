@@ -162,6 +162,7 @@ function CompetitionDetailLayout({ children, params }) {
         free: sessionStorage.getItem('free'),
         market: sessionStorage.getItem('market'),
         sortBy: sessionStorage.getItem('sortBy'),
+        status: sessionStorage.getItem('status'),
       }),
     )
   }, [])

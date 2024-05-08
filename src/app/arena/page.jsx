@@ -12,7 +12,6 @@ import SearchInput from '@/components/input/SearchInput'
 import Modal, { ModalBody } from '@/components/modal'
 import Tabs from '@/components/tabs'
 import { INIT_VALUES, TC_STEPS } from '@/constant'
-import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
 import { useTC } from '@/context/tcContext'
 import { v4Client } from '@/lib/graphql'
@@ -99,6 +98,12 @@ export default function ArenaPage() {
     ended: false,
   })
 
+  const [showSubFilterTab, setShowSubFilterTab] = useState({
+    upcoming: false,
+    live: false,
+    ended: false,
+  })
+
   const [showModalCreateCompetition, setShowModalCreateCompetition] = useState(false)
   const [step, setStep] = useState(0)
   const [data, setData] = useState(INIT_VALUES)
@@ -111,6 +116,7 @@ export default function ArenaPage() {
     market: searchParams.get('market') ?? null,
     sortBy: searchParams.get('sortBy') ?? 'Default',
     free: !!searchParams.get('free'),
+    status: searchParams.get('status') ?? null,
   })
 
   const competitions = useMemo(
@@ -194,6 +200,27 @@ export default function ArenaPage() {
         result = cloneDeep(result)
     }
 
+    switch (searchParams.get('status')) {
+      case 'upcoming':
+        result = result.filter(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
+        break
+
+      case 'ended':
+        result = result.filter(item => item.timestamp.endTimestamp < new Date().getTime() / 1000)
+        break
+
+      case 'live':
+        result = result.filter(
+          item =>
+            item.timestamp.endTimestamp >= new Date().getTime() / 1000 &&
+            item.timestamp.startTimestamp <= new Date().getTime() / 1000,
+        )
+        break
+
+      default:
+        result = cloneDeep(result)
+    }
+
     if (filter.free) {
       result = result.filter(item => fromWei(item.entryFee).isZero())
     }
@@ -217,6 +244,7 @@ export default function ArenaPage() {
               onClickHandler: () => {
                 setFilter({
                   ...filter,
+                  status: null,
                   type: 'upcoming',
                 })
               },
@@ -224,6 +252,8 @@ export default function ArenaPage() {
               href: objectToQuery({
                 ...filter,
                 type: 'upcoming',
+                status: null,
+
                 search: searchText,
               }),
             }
@@ -236,6 +266,7 @@ export default function ArenaPage() {
                 setFilter({
                   ...filter,
                   type: 'live',
+                  status: null,
                 })
               },
               isLink: true,
@@ -243,6 +274,7 @@ export default function ArenaPage() {
                 ...filter,
                 type: 'live',
                 search: searchText,
+                status: null,
               }),
             }
           : undefined,
@@ -253,6 +285,7 @@ export default function ArenaPage() {
             setFilter({
               ...filter,
               type: 'all',
+              status: null,
             })
           },
           isLink: true,
@@ -260,6 +293,7 @@ export default function ArenaPage() {
             ...filter,
             type: 'all',
             search: searchText,
+            status: null,
           }),
         },
         showTab.joined
@@ -314,11 +348,70 @@ export default function ArenaPage() {
                 ...filter,
                 type: 'end',
                 search: searchText,
+                status: null,
               }),
             }
           : undefined,
       ]),
     [showTab.upcoming, showTab.live, showTab.joined, showTab.hosted, showTab.ended, t, filter, searchText],
+  )
+
+  const subFilterTabs = useMemo(
+    () =>
+      compact([
+        showSubFilterTab.upcoming
+          ? {
+              label: t('Upcoming'),
+              active: filter.status === 'upcoming',
+              onClickHandler: () => {
+                setFilter({
+                  ...filter,
+                  status: 'upcoming',
+                })
+              },
+              isLink: true,
+              href: objectToQuery({
+                ...filter,
+                status: 'upcoming',
+              }),
+            }
+          : undefined,
+        showSubFilterTab.live
+          ? {
+              label: t('Live'),
+              active: filter.status === 'live',
+              onClickHandler: () => {
+                setFilter({
+                  ...filter,
+                  status: 'live',
+                })
+              },
+              isLink: true,
+              href: objectToQuery({
+                ...filter,
+                status: 'live',
+              }),
+            }
+          : undefined,
+        showSubFilterTab.ended
+          ? {
+              label: t('Ended'),
+              active: filter.status === 'ended',
+              onClickHandler: () => {
+                setFilter({
+                  ...filter,
+                  status: 'ended',
+                })
+              },
+              isLink: true,
+              href: objectToQuery({
+                ...filter,
+                status: 'end',
+              }),
+            }
+          : undefined,
+      ]),
+    [filter, showSubFilterTab.ended, showSubFilterTab.live, showSubFilterTab.upcoming, t],
   )
 
   useEffect(() => {
@@ -327,7 +420,8 @@ export default function ArenaPage() {
     addOrReplaceURLParams('free', filter.free ? true : null)
     addOrReplaceURLParams('market', filter.market !== 'all' ? filter.market : null)
     addOrReplaceURLParams('sortBy', filter.sortBy !== 'Default' ? filter.sortBy : null)
-  }, [filter.free, filter.market, filter.sortBy, searchText, filter.type])
+    addOrReplaceURLParams('status', filter.type === 'joined' || filter.type === 'hosted' ? filter.status : null)
+  }, [filter.free, filter.market, filter.sortBy, searchText, filter.type, filter.status])
 
   useEffect(() => {
     const saveToSessionStorage = (key, value) => {
@@ -343,20 +437,21 @@ export default function ArenaPage() {
     saveToSessionStorage('free', filter.free && true)
     saveToSessionStorage('market', filter.market !== 'all' && filter.market)
     saveToSessionStorage('sortBy', filter.sortBy !== 'Default' && filter.sortBy)
-  }, [filter.free, filter.market, filter.sortBy, filter.type, searchText])
+    saveToSessionStorage('status', filter.type === 'joined' || filter.type === 'hosted' ? filter.status : null)
+  }, [filter.free, filter.market, filter.sortBy, filter.status, filter.type, searchText])
 
   useEffect(() => {
-    if (competitions) {
+    if (competitions.length) {
       const hasUpcoming = competitions?.some(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
       if (firstTime) {
-        setFilter({
-          ...filter,
-          type: searchParams.get('type') ? searchParams.get('type') : hasUpcoming ? 'upcoming' : 'all',
-        })
         addOrReplaceURLParams(
           'type',
           searchParams.get('type') ? searchParams.get('type') : hasUpcoming ? 'upcoming' : null,
         )
+        setFilter({
+          ...filter,
+          type: searchParams.get('type') ? searchParams.get('type') : hasUpcoming ? 'upcoming' : 'all',
+        })
         setFirstTime(false)
       }
       setShowTab({
@@ -379,6 +474,30 @@ export default function ArenaPage() {
         ),
         upcoming: hasUpcoming,
       })
+
+      setShowSubFilterTab({
+        ended: competitions?.some(
+          item =>
+            account &&
+            (account.toLowerCase() === item.owner.id ||
+              item.participants?.find(participant => participant?.participant.id === account.toLowerCase())) &&
+            item.timestamp.endTimestamp < new Date().getTime() / 1000,
+        ),
+        live: competitions?.some(
+          item =>
+            (account.toLowerCase() === item.owner.id ||
+              item.participants?.find(participant => participant?.participant.id === account.toLowerCase())) &&
+            item.timestamp.startTimestamp <= new Date().getTime() / 1000 &&
+            item.timestamp.endTimestamp >= new Date().getTime() / 1000,
+        ),
+        upcoming: competitions?.some(
+          item =>
+            account &&
+            (account.toLowerCase() === item.owner.id ||
+              item.participants?.find(participant => participant?.participant.id === account.toLowerCase())) &&
+            item.timestamp.startTimestamp > new Date().getTime() / 1000,
+        ),
+      })
     }
   }, [account, competitions, firstTime, filter, searchParams])
 
@@ -397,7 +516,7 @@ export default function ArenaPage() {
         </div>
         <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
           <div className='rounded-lg bg-neutral-900 p-1 '>
-            <Tabs data={subTabs} size={SizeTypes.Small} itemClassName='text-sm' />
+            <Tabs data={subTabs} itemClassName='text-sm' />
           </div>
           <div className='flex gap-4'>
             <SearchInput
@@ -414,11 +533,16 @@ export default function ArenaPage() {
         <h3>{t('All Competitions')}</h3>
       </div>
       {filterCompetitions?.length ? (
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-          {filterCompetitions.map(item => (
-            <CompetitionItem competition={item} key={item.id} />
-          ))}
-        </div>
+        <>
+          {(filter.type === 'joined' || filter.type === 'hosted') && (
+            <Tabs data={subFilterTabs} itemClassName='text-xs w-18' className='m-1 flex flex-1 justify-start' />
+          )}
+          <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+            {filterCompetitions.map(item => (
+              <CompetitionItem competition={item} key={item.id} />
+            ))}
+          </div>
+        </>
       ) : (
         <NoCompetition />
       )}
