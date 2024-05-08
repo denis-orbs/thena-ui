@@ -28,7 +28,7 @@ export function VerifyPopover({ verifyImage, verifiedAt }) {
           <div className='h-5 w-5'>
             <VerifiedElement />
           </div>
-          <TextSubHeading>{t('This Account Is Verified')}</TextSubHeading>
+          <TextSubHeading className='text-wrap break-words'>{t('This Account Is Verified')}</TextSubHeading>
         </div>
         {/* TODO: update this */}
         {verifiedAt && (
