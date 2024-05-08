@@ -25,7 +25,7 @@ export function TCButton({ eventType, competition, timestamp }) {
     isWithdrawable: canWithdraw,
     checkClaimable,
     checkWithdrawable,
-  } = useTCContractInfor(competition.tradingCompetitionSpot, eventType)
+  } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.prize?.weights?.length)
 
   const [joinButtonText, setJoinButtonText] = useState({
     text: null,

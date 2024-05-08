@@ -15,11 +15,10 @@ import { useTxn } from '@/state/transactions/hooks'
 
 const MAX_RETRIES = 3
 
-export const useTCContractInfor = (address, eventType) => {
+export const useTCContractInfor = (address, eventType, maxWinner) => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
-  const [placement, setPlacement] = useState()
   const [isOwner, setIsOwner] = useState(false)
   const [isClaimable, setIsClaimable] = useState(undefined)
   const [isWithdrawable, setIsWithdrawable] = useState(undefined)
@@ -51,7 +50,6 @@ export const useTCContractInfor = (address, eventType) => {
       ])
       setIsRegistered(joined)
       setIsWinner(won[0])
-      setPlacement(won[1])
       setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
 
       setLoaded(true)
@@ -60,25 +58,32 @@ export const useTCContractInfor = (address, eventType) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, eventType, address])
 
-  const getWinnersList = useCallback(
-    async userPlacement => {
-      try {
-        return await readCall(tcSpotContract, 'winnersList', [userPlacement])
-      } catch (error) {
-        return false
-      }
-    },
-    [tcSpotContract],
-  )
+  const getWinnersList = useCallback(async () => {
+    if (maxWinner) {
+      const result = await Promise.all(
+        Array.from({ length: maxWinner }).map(async (_, index) => {
+          try {
+            return await readCall(tcSpotContract, 'winnersList', [index])
+          } catch (error) {
+            console.error(error)
+            return undefined
+          }
+        }),
+      )
+      return result
+    }
+    return []
+  }, [tcSpotContract, maxWinner])
 
   const checkClaimable = useCallback(
     async (force = false) => {
       if ((eventType === EVENT_TYPES.ENDED && isClaimable === undefined) || force) {
         try {
-          if (isRegistered && isWinner && placement !== undefined) {
+          if (isRegistered && isWinner) {
+            const winnersList = await getWinnersList()
             const claimable = await readCall(tcSpotContract, 'claimable', [account])
-            const winnersList = await getWinnersList(placement)
-            const isClaimed = winnersList && winnersList.toLowerCase() === account.toLowerCase()
+            const isClaimed =
+              winnersList.length && winnersList.some(claimed => claimed.toLowerCase() === account.toLowerCase())
             const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
             if (!token || isClaimed) {
               setIsClaimable(false)
@@ -108,19 +113,7 @@ export const useTCContractInfor = (address, eventType) => {
         }
       }
     },
-    [
-      account,
-      assets,
-      eventType,
-      getWinnersList,
-      isClaimable,
-      isOwner,
-      isRegistered,
-      isWinner,
-      placement,
-      retries,
-      tcSpotContract,
-    ],
+    [account, assets, eventType, getWinnersList, isClaimable, isOwner, isRegistered, isWinner, retries, tcSpotContract],
   )
 
   const checkWithdrawable = useCallback(

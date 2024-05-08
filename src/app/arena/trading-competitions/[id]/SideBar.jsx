@@ -37,7 +37,7 @@ function Sidebar({ competition, eventType }) {
     isWithdrawable: canWithdraw,
     checkClaimable,
     checkWithdrawable,
-  } = useTCContractInfor(competition.tradingCompetitionSpot, eventType)
+  } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.prize?.weights?.length)
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
 

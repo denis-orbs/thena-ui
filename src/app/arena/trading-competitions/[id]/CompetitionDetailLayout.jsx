@@ -171,7 +171,7 @@ function CompetitionDetailLayout({ children, params }) {
     retryCompetition()
   }, [retryCompetition])
 
-  if (isLoading || !competition) {
+  if (isLoading || !competition || !_competition) {
     return <Loading />
   }
 
