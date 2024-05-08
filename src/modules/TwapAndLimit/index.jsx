@@ -5,10 +5,10 @@ import React, { useCallback } from 'react'
 import { TWAP as ThenaTwap } from '@orbs-network/twap-ui-thena'
 import BN from 'bignumber.js'
 import { useEstimateFeesPerGas } from 'wagmi'
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 import TokenModal from '@/modules/TokenModal'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/lib/wallets/useWallet'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 
 export { Orders } from '@orbs-network/twap-ui-thena'
 
