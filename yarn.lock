@@ -3348,23 +3348,23 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.9.6.tgz#2a880a24eb19b4f8b25adc2a5095f2aa27f39677"
   integrity sha512-xSmezSupL+y9VkHZJGDoCBpmnB2ogM13ccaYDWqJTfS3dbuHkgjuwDFUmaFauBCboQMGB/S5UqUl2y54X99BmA==
 
-"@orbs-network/twap-ui-thena@0.10.17":
-  version "0.10.17"
-  resolved "https://registry.yarnpkg.com/@orbs-network/twap-ui-thena/-/twap-ui-thena-0.10.17.tgz#0e5756fe601d75cbd659dad76c999a6ba3c98d50"
-  integrity sha512-scZFuEUitWj5GQ8N/f7Emqs0pacga8/+PhMzKqdwJ3c297MAJwmwhWJIKXlxL+/UY9O20rxGc40ojgOl1LRJTw==
+"@orbs-network/twap-ui-thena@0.10.19":
+  version "0.10.19"
+  resolved "https://registry.yarnpkg.com/@orbs-network/twap-ui-thena/-/twap-ui-thena-0.10.19.tgz#2a57458a8c1eb6176465839976ff28fa959ba9ef"
+  integrity sha512-Hxlo+Cvw6bj52hT1/IXrvxF4K+zdRQMSjMXxyvB7CJroaZKyP2J4vX1OqTZVEG94BWau4Qbkb1VT9u4VcXWk7Q==
   dependencies:
     "@defi.org/web3-candies" "^4.20"
     "@mui/material" "5.x"
     "@mui/system" "5.x"
     "@orbs-network/twap" "^1.18.x"
-    "@orbs-network/twap-ui" "^0.10.17"
+    "@orbs-network/twap-ui" "^0.10.19"
     lodash "4.x"
     web3 "1.x"
 
-"@orbs-network/twap-ui@^0.10.17":
-  version "0.10.17"
-  resolved "https://registry.yarnpkg.com/@orbs-network/twap-ui/-/twap-ui-0.10.17.tgz#0b701f1ee83207b70a9504c77bdd8a0b953a079d"
-  integrity sha512-1hv8/i/6ZyU13h7yNu6CTZMc0oCQil5mwmSI37xuJtIzoI0jLIOQZhgaVOEW3BRFSMlUfnBXF+Thl6IukwopNw==
+"@orbs-network/twap-ui@^0.10.19":
+  version "0.10.19"
+  resolved "https://registry.yarnpkg.com/@orbs-network/twap-ui/-/twap-ui-0.10.19.tgz#7fd0b1469c07e4a9a44183ad0475f205f1f73efe"
+  integrity sha512-wUykOerhVqvZMGNSl2Z2KoYuDwX0YG0g6at+zM2m9I9wjMEFbg+cuhnaycsA1h/Kwk7ni3bb2hcSFyYTfb121w==
   dependencies:
     "@defi.org/web3-candies" "^4.20"
     "@emotion/react" "11.x"
