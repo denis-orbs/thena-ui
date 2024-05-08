@@ -66,7 +66,7 @@ function Token({ data, setData }) {
           </button>
           <button
             disabled
-            className={`px-6 py-[8.4px] uppercase text-white disabled:cursor-not-allowed ${
+            className={`px-6 py-[8.4px] uppercase disabled:cursor-not-allowed disabled:text-gray-500 ${
               data.market === TC_MARKET_TYPES.PERPETUAL ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
             } rounded-full`}
             type='button'
@@ -130,7 +130,7 @@ function Token({ data, setData }) {
           {/* <Toggle checked disabled toggleId='starting' onChange={() => {}} /> */}
           <LabelTooltip
             id='startingBalance'
-            label='Require Deposit to Join'
+            label='Total Deposit Required to Join'
             tooltip='Minimum balance for participants to join your trading competition.'
             showInfoIcon
             className='mb-0'
