@@ -10,6 +10,7 @@ import Toggle from '@/components/toggle'
 import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
+import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import { TCButton } from '@/modules/TradingCompetition/TCButton'
 import { Clock, CoinHand, Gift, Verified } from '@/svgs'
@@ -40,6 +41,22 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
 
   const { text: timeDistance } = useCountdown(eventType, competition.timestamp.startTimestamp)
 
+  const bgStatus = useMemo(() => {
+    if (eventType) {
+      switch (eventType) {
+        case EVENT_TYPES.UPCOMING:
+          return 'bg-green-700'
+        case EVENT_TYPES.LIVE:
+          return 'bg-blue-500'
+        case EVENT_TYPES.ENDED:
+          return 'bg-red-600'
+        default:
+          return ''
+      }
+    }
+    return ''
+  }, [eventType])
+
   return !timeDistance || !totalPrize || !entryFee || !eventType ? (
     <Skeleton className='h-[320px] w-full' />
   ) : (
@@ -48,7 +65,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
         <CompetitionCardHeader className='h-[200px] w-full' competition={competition} />
         <div className='absolute left-4 top-4 flex gap-2'>
           <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{competition.market.toLowerCase()}</NeutralBadge>
-          <NeutralBadge className='text-nowrap lg:text-xs'>{t(eventType)}</NeutralBadge>
+          <NeutralBadge className={`text-nowrap lg:text-xs ${bgStatus}`}>{t(eventType)}</NeutralBadge>
         </div>
         {!showCheckedHidden ? (
           <NeutralBadge className='absolute right-4 top-4 text-nowrap capitalize lg:text-xs'>
