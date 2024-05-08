@@ -6,8 +6,10 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { ChainId } from 'thena-sdk-core'
 
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { Alert } from '@/components/alert'
+import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import CheckBox from '@/components/checkbox'
 import NextImage from '@/components/image/NextImage'
@@ -25,6 +27,7 @@ import {
 } from '@/hooks/useThenaIdContract'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import { useChainSettings } from '@/state/settings/hooks'
 
 import ThenaIdInput from '../profile/ThenaIdInput'
 
@@ -36,6 +39,8 @@ const DEFAULT_THENAID_DATA = {
 }
 
 function ThenaContent() {
+  const { networkId, updateNetwork } = useChainSettings()
+
   const t = useTranslations()
   const pathname = usePathname()
   const [type, setType] = useState()
@@ -226,11 +231,21 @@ function ThenaContent() {
           </div>
         </div>
       </div>
+      {networkId !== ChainId.BSC && (
+        <div className='mt-5'>
+          <Alert>
+            <p className='text-sm'>{t('Minting Wrong Chain')}</p>
+            <ErrorButton className='text-nowrap p-2 text-xs' onClick={() => updateNetwork(ChainId.BSC)}>
+              {t('Switch Chain')}
+            </ErrorButton>
+          </Alert>
+        </div>
+      )}
       <div className='mt-3 flex w-full flex-row justify-center gap-4'>
         {account ? (
           <EmphasisButton
             className='py-3.5 text-white lg:px-16 lg:py-3'
-            disabled={!isValid || loading || isMinting}
+            disabled={!isValid || loading || isMinting || networkId !== ChainId.BSC}
             onClick={onMint}
           >
             {t('Mint Now')}
