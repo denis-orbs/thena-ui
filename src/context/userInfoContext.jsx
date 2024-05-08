@@ -54,6 +54,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
         prize {
           totalPrize
           token
+          weights
         }
         timestamp {
           endTimestamp
@@ -93,6 +94,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
           prize {
             totalPrize
             token
+            weights
           }
           timestamp {
             endTimestamp

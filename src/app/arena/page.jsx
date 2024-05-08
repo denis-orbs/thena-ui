@@ -41,6 +41,7 @@ const V4_COMPETITION_DATAS = gql`
       prize {
         totalPrize
         token
+        weights
       }
       timestamp {
         endTimestamp

@@ -35,6 +35,7 @@ const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
       prize {
         totalPrize
         token
+        weights
       }
       timestamp {
         endTimestamp
@@ -81,6 +82,7 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
       prize {
         totalPrize
         token
+        weights
       }
       timestamp {
         endTimestamp
