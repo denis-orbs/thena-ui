@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
 import moment from 'moment'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -237,9 +238,21 @@ function RecentlyContent() {
         timestamp: <Paragraph>{moment(item.timestamp).fromNow()}</Paragraph>,
         name: <Paragraph>{item.name}</Paragraph>,
         cost: (
-          <Paragraph>
-            {item.cost ? formatAmount(item.cost) : 0} {USDTAsset?.symbol}
-          </Paragraph>
+          <div className='flex items-center justify-center space-x-2'>
+            {USDTAsset?.logoURI && (
+              <Image
+                alt='token'
+                src={`${USDTAsset.logoURI ?? ''}`}
+                className='flex-shrink-0'
+                width={24}
+                height={24}
+                loading='lazy'
+              />
+            )}
+            <Paragraph>
+              {item.cost ? formatAmount(item.cost) : 0} {USDTAsset?.symbol}
+            </Paragraph>
+          </div>
         ),
         owner: (
           <Paragraph className='block w-full text-left'>
