@@ -71,7 +71,9 @@ export function UserCompetitions({ hostedCompetitions, joinedTCs }) {
 
   return (
     <div>
-      <TextHeading className='text-xl'>{t('Competitions')}</TextHeading>
+      <TextHeading className='text-xl'>
+        {t('Competitions')} ({competitionByTab.length})
+      </TextHeading>
       <div className='flex flex-col items-start justify-between lg:flex-row lg:items-center'>
         <Tabs
           data={subTabs}

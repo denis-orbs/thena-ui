@@ -750,5 +750,9 @@
   "Recently gifted THENA IDs": "Recently gifted THENA IDs",
   "Gift To": "Gift To",
   "Gift From": "Gift From",
-  "Are you sure you want to edit checkmark for user": "Are you sure you want to edit checkmark for user"
+  "Are you sure you want to edit checkmark for user": "Are you sure you want to edit checkmark for user",
+  "Followers of": "Followers of {user}",
+  "Following of": "Following of {user}",
+  "Total Deposit Required to Join": "Total Deposit Required to Join",
+  "This means": "This means, that the total required to join is"
 }

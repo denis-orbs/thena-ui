@@ -79,10 +79,24 @@ export function JoinModal({ competition, open, onClose }) {
     })
   }, [entryFee, prizeToken.decimals, prizeToken.symbol, startingBalance, t, winningToken.decimals, winningToken.symbol])
 
+  const totalToken = useMemo(() => {
+    if (prizeToken.symbol === winningToken.symbol) {
+      return `${formatAmount(
+        fromWei(entryFee, prizeToken.decimals).toNumber() + fromWei(startingBalance, prizeToken.decimals).toNumber(),
+      )} ${prizeToken.symbol}`
+    }
+    return ''
+  }, [entryFee, prizeToken.decimals, prizeToken.symbol, startingBalance, winningToken.symbol])
+
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Join Competition')}>
       <ModalBody>
         <p className='mt-1.5 w-full text-[15px] text-neutral-300  md:text-base md:leading-6'>{message}</p>
+        {totalToken ? (
+          <TextHeading className='my-5 block'>
+            {t('This means')} <span className='underline'>{totalToken}!</span>
+          </TextHeading>
+        ) : null}
         <div className='item-centers mt-3 flex flex-row justify-between gap-4 md:mt-5'>
           {!isInvalidAmount(entryFee) && prizeToken && (
             <div>

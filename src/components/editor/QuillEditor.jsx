@@ -22,7 +22,7 @@ function QuillEditor({ value, onChange, className, customToolbar = undefined }) 
         ['bold', 'italic', 'strike', 'underline', 'blockquote'],
         [{ list: 'ordered' }, { list: 'bullet' }],
         [{ indent: '-1' }, { indent: '+1' }],
-        ['emoji', 'image', 'code-block'],
+        ['emoji', 'code-block'],
       ]
     }
     return customToolbar

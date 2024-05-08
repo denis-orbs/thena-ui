@@ -751,5 +751,9 @@
   "Cost": "Cost",
   "Recently gifted THENA IDs": "Recently gifted THENA IDs",
   "Gift To": "Gift To",
-  "Gift From": "Gift From"
+  "Gift From": "Gift From",
+  "Followers of": "Followers of {user}",
+  "Following of": "Following of {user}",
+  "Total Deposit Required to Join": "Total Deposit Required to Join",
+  "This means": "This means, that the total required to join is"
 }

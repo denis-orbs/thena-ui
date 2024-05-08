@@ -293,6 +293,7 @@ function RecentlyContent() {
           tableBasic
           enabledRedirectOnClickPagination
           loading={isLoading || !dataFetch}
+          pageSize={50}
         />
       </div>
     </div>

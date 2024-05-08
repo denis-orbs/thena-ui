@@ -29,7 +29,9 @@ function UserThenaIds({ thenaIds }) {
     <div>
       <div className='space-y-4'>
         <div className='flex flex-col items-start justify-between lg:flex-row lg:items-center'>
-          <TextHeading className='flex-2 text-xl'>{t('THENA IDs')}</TextHeading>
+          <TextHeading className='flex-2 text-xl'>
+            {t('THENA IDs')} ({thenaIds.length})
+          </TextHeading>
           <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
         </div>
         <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>

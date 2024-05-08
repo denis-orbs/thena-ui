@@ -10,7 +10,7 @@ import { ArrowDownIcon, ArrowLeftIcon } from '@/svgs'
 
 import { TextHeading } from '../typography'
 
-function PaginateCell({ children, className, active, onClick }) {
+function PaginateCell({ children, className, active, onClick, disabled }) {
   return (
     <li
       role='presentation'
@@ -21,6 +21,7 @@ function PaginateCell({ children, className, active, onClick }) {
         'cursor-pointer rounded transition-all duration-150 ease-out',
         'active:outline-focus',
         active && 'bg-neutral-800',
+        disabled && 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
         className,
       )}
       onClick={onClick}
@@ -38,8 +39,6 @@ function TableCell({ children, className, ...rest }) {
   )
 }
 
-const PAGE_SIZE = 10
-
 function Table({
   className,
   sortOptions,
@@ -54,8 +53,9 @@ function Table({
   onlySortDesc = false,
   enabledRedirectOnClickPagination = false,
   loading = false,
+  pageSize = 10,
 }) {
-  const pageCount = Math.ceil(data.length / PAGE_SIZE)
+  const pageCount = Math.ceil(data.length / pageSize)
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
@@ -65,16 +65,18 @@ function Table({
   const handleRedirectPage = useCallback(
     newPage => {
       if (enabledRedirectOnClickPagination) {
-        const query = new URLSearchParams(searchParams.toString())
-        if (newPage > 1) {
-          query.set('page', newPage.toString())
-          router.replace(`${pathname}?${query.toString()}`)
-          return
+        if (newPage !== currentPage) {
+          const query = new URLSearchParams(searchParams.toString())
+          if (newPage > 1) {
+            query.set('page', newPage.toString())
+            router.replace(`${pathname}?${query.toString()}`)
+            return
+          }
+          router.replace(pathname)
         }
-        router.replace(pathname)
       }
     },
-    [enabledRedirectOnClickPagination, pathname, router, searchParams],
+    [currentPage, enabledRedirectOnClickPagination, pathname, router, searchParams],
   )
 
   useEffect(() => {
@@ -149,7 +151,7 @@ function Table({
                 </tr>
               )}
               {!loading &&
-                data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
+                data.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((ele, eleIdx) => (
                   <tr key={`table-row-${eleIdx}`}>
                     {sortOptions.map((cell, cellIdx) => (
                       <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
@@ -198,7 +200,7 @@ function Table({
               </div>
             )}
             {!loading &&
-              data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((ele, eleIdx) => (
+              data.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((ele, eleIdx) => (
                 <div
                   className={cn(
                     'flex w-full flex-wrap items-start rounded-lg border-b border-neutral-700 hover:bg-neutral-800 lg:flex-nowrap lg:items-center lg:border-0',
@@ -243,9 +245,12 @@ function Table({
         <ul className='flex items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
           <PaginateCell
             onClick={() => {
-              setCurrentPage(Math.max(currentPage - 1, 1))
-              handleRedirectPage(Math.max(currentPage - 1, 1))
+              if (currentPage !== 1) {
+                setCurrentPage(Math.max(currentPage - 1, 1))
+                handleRedirectPage(Math.max(currentPage - 1, 1))
+              }
             }}
+            disabled={currentPage === 1}
           >
             <ArrowLeftIcon className='h-4 w-4' />
           </PaginateCell>
@@ -335,9 +340,12 @@ function Table({
           )}
           <PaginateCell
             onClick={() => {
-              setCurrentPage(Math.min(currentPage + 1, pageCount))
-              handleRedirectPage(Math.min(currentPage + 1, pageCount))
+              if (currentPage !== pageCount) {
+                setCurrentPage(Math.min(currentPage + 1, pageCount))
+                handleRedirectPage(Math.min(currentPage + 1, pageCount))
+              }
             }}
+            disabled={currentPage === pageCount}
           >
             <ArrowLeftIcon className='h-4 w-4 rotate-180' />
           </PaginateCell>
