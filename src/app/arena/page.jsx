@@ -485,6 +485,7 @@ export default function ArenaPage() {
         ),
         live: competitions?.some(
           item =>
+            account &&
             (account.toLowerCase() === item.owner.id ||
               item.participants?.find(participant => participant?.participant.id === account.toLowerCase())) &&
             item.timestamp.startTimestamp <= new Date().getTime() / 1000 &&
