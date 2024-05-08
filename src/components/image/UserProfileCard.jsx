@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
@@ -8,7 +7,7 @@ import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import { cn, sliceAddress } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { Verified } from '@/svgs'
+import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 
 import CircleImage from './CircleImage'
 import { EmphasisButton } from '../buttons/Button'
@@ -77,12 +76,7 @@ export function UserProfileCard({
             </span>
           </TextHeading>
         </div>
-        {showVerified &&
-          (verifyImage ? (
-            <Image src={verifyImage} width={20} height={20} className='h-5 w-5' alt='demo-checkmark' />
-          ) : (
-            <Verified className='h-5 w-5' />
-          ))}
+        {showVerified && <VerifyPopover verifyImage={verifyImage} />}
         {isAdmin && <Tag>{t('Admin')}</Tag>}
         {isSuperAdmin && <Tag>{t('Super Admin')}</Tag>}
       </LinkComponent>

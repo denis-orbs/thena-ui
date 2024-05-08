@@ -446,7 +446,6 @@
   "Wrong Network": "网络错误",
   "Select veTHE": "选择 veTHE",
   "Manage Position": "管理仓位",
-
   "Competitions": "Competitions",
   "Rankings": "Rankings",
   "Profile": "Profile",
@@ -759,5 +758,8 @@
   "Use Custom Banner": "Use custom banner",
   "Edit Banner": "Edit banner",
   "Minting Wrong Chain": "THENA ID Minting is only available on BNB Chain, please switch networks",
-  "Switch Chain": "Switch Chain"
+  "Switch Chain": "Switch Chain",
+  "Verified Profile": "Verified profile",
+  "This account is verified": "This account is verified because it is either an admin or a verified partner organization of THENA.",
+  "Verified Since": "Verified since {date}"
 }

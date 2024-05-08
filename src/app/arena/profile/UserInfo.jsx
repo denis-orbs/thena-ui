@@ -21,8 +21,9 @@ import { successToast } from '@/lib/notify'
 import { cn, formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
+import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { useChainSettings } from '@/state/settings/hooks'
-import { CheckIcon, CopyIcon, ExternalIcon, InfoIcon, Verified } from '@/svgs'
+import { CheckIcon, CopyIcon, ExternalIcon, InfoIcon } from '@/svgs'
 
 import ThenaIdModal from './ThenaIdModal'
 
@@ -110,18 +111,7 @@ export function UserInfo({ userInfo, following, followers }) {
                       {userInfo.username || formatAddress(userInfo.id)}
                     </span>
                   </TextHeading>
-                  {userInfo.isVerified &&
-                    (userInfo?.checkMarkIcon ? (
-                      <Image
-                        src={userInfo.checkMarkIcon}
-                        width={20}
-                        height={20}
-                        className='ml-1 h-5 w-5'
-                        alt='demo-checkmark'
-                      />
-                    ) : (
-                      <Verified className='ml-1 h-5 w-5' />
-                    ))}
+                  {userInfo.isVerified && <VerifyPopover verifyImage={userInfo?.checkMarkIcon} />}
                   <div onClick={onCopy} className='ml-1 h-5 w-5 cursor-pointer stroke-neutral-200'>
                     {copied ? <CheckIcon /> : <CopyIcon />}
                   </div>

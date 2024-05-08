@@ -12,8 +12,9 @@ import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
+import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { TCButton } from '@/modules/TradingCompetition/TCButton'
-import { Clock, CoinHand, Gift, Verified } from '@/svgs'
+import { Clock, CoinHand, Gift } from '@/svgs'
 
 import { CompetitionCardHeader } from './CompetitionCardHeader'
 
@@ -98,9 +99,8 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
                   </span>
                 </h4>
               )}
-              <div className='h-5 w-5'>
-                <Verified />
-              </div>
+
+              <VerifyPopover verifyImage={competition.owner.checkMarkIcon} />
             </div>
           )}
         </div>

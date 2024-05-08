@@ -64,6 +64,7 @@ const V4_COMPETITION_DATAS = gql`
         avatar
         username
         nameColor
+        checkMarkIcon
       }
       tradingCompetitionSpot
     }

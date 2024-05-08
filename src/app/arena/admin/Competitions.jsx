@@ -58,6 +58,7 @@ const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
         avatar
         username
         nameColor
+        checkMarkIcon
       }
       tradingCompetitionSpot
     }
@@ -103,6 +104,7 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
       owner {
         id
         isVerified
+        checkMarkIcon
       }
       tradingCompetitionSpot
     }

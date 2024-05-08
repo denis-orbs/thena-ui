@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
@@ -13,7 +12,7 @@ import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
 import { sliceAddress } from '@/lib/utils'
-import { Verified } from '@/svgs'
+import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 
 function TopBar({ userInfo }) {
   const t = useTranslations()
@@ -42,18 +41,7 @@ function TopBar({ userInfo }) {
                   {userInfo.username || sliceAddress(userInfo.id)}
                 </span>
               </TextHeading>
-              {userInfo.isVerified &&
-                (userInfo?.checkMarkIcon ? (
-                  <Image
-                    src={userInfo.checkMarkIcon}
-                    width={20}
-                    height={20}
-                    className='ml-1 h-5 w-5'
-                    alt='demo-checkmark'
-                  />
-                ) : (
-                  <Verified className='ml-1 h-5 w-5' />
-                ))}
+              {userInfo.isVerified && <VerifyPopover verifyImage={userInfo?.checkMarkIcon} />}
             </div>
             {userInfo.isSuperAdmin ? <Tag>{t('Super Admin')}</Tag> : <Tag>{t('Admin')}</Tag>}
           </div>
