@@ -403,7 +403,6 @@ const useQuoteQuery = (fromAsset, toAsset, fromAmount = '', dexAmountOut = '') =
   const query = useQuery({
     queryKey,
     queryFn: async ({ signal }) => {
-      console.log('quote queryFn')
       const res = await LhQuote({
         inToken: fromAsset.address,
         outToken: toAsset.address,
@@ -418,9 +417,7 @@ const useQuoteQuery = (fromAsset, toAsset, fromAmount = '', dexAmountOut = '') =
     },
     refetchInterval: ({ state }) => {
       const refetchCount = state.data?.refetchCount || 0
-      console.log({ refetchCount })
       if (refetchCount > 6) {
-        console.log({ nextInterval: state.data.refetchCount * QUOTE_REFETCH_INTERVAL })
         return state.data.refetchCount * QUOTE_REFETCH_INTERVAL
       }
       return QUOTE_REFETCH_INTERVAL
