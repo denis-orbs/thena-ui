@@ -20,7 +20,10 @@ export const blockGraphUrl = {
 }
 
 // export const v4GraphUrl = 'https://stg-thena-squid.zinza.com.vn/graphql'
+// export const v4GraphWsUrl = 'wss://stg-thena-squid.zinza.com.vn/graphql'
+
 export const v4GraphUrl = 'https://squid.subsquid.io/thena-squid/v/v4/graphql'
+export const v4GraphWsUrl = 'ws://squid.subsquid.io/thena-squid/v/v4/graphql'
 
 export const v1Client = {
   [ChainId.BSC]: new GraphQLClient(v1GraphUrl[ChainId.BSC]),

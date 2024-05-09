@@ -87,7 +87,7 @@ export default function ArenaPage() {
   const { account } = useWallet()
   const { isAllowed } = useTC()
 
-  const { data: dataCompetitions } = useSWR('competition api', () => fetchCompetition())
+  const { data: dataCompetitions, isLoading } = useSWR('competition api', () => fetchCompetition())
 
   const assets = useAssets()
 
@@ -506,7 +506,7 @@ export default function ArenaPage() {
     }
   }, [account, competitions, firstTime, filter, searchParams])
 
-  if (!filterCompetitions.length && !filter.type) return <Loading />
+  if (isLoading) return <Loading />
 
   return (
     <div className='mt-6 flex flex-col gap-4'>

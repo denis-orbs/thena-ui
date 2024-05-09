@@ -1,32 +1,62 @@
 'use client'
 
-import Link from 'next/link'
+// import { useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
+import { useCallback, useMemo } from 'react'
+import { toast } from 'react-toastify'
 import useSWR from 'swr'
 import 'dayjs/locale/en'
 import 'dayjs/locale/zh'
 
-import { fetchUserNotifcations } from '@/hooks/useNotifications'
-import dayjs from '@/lib/arenaDayjs'
+import { fetchUserNotifcations, useMarkNotificationRead, useNotificationsSubscription } from '@/hooks/useNotifications'
 import { cn } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { useLocaleSettings } from '@/state/settings/hooks'
-import { BellIcon, CalendarWhiteIcon } from '@/svgs'
+import { BellIcon } from '@/svgs'
 
+import NotificationItem from './NotificationItem'
+import { TextButton } from '../buttons/Button'
 import { EmphasisIconButton } from '../buttons/IconButton'
-import Highlight from '../highlight'
 import Popover from '../popover'
-import { Paragraph, TextHeading } from '../typography'
+import { TextHeading } from '../typography'
 
 export function Notification() {
   const { account } = useWallet()
-  const { locale } = useLocaleSettings()
-  const { data: notifications } = useSWR(
+  const t = useTranslations()
+
+  const { data: notifications, mutate } = useSWR(
     ['notifications', account?.toLowerCase()],
     () => fetchUserNotifcations(account),
     {
-      refreshInterval: 30000,
+      refreshInterval: 60000,
     },
   )
+
+  const { markRead } = useMarkNotificationRead()
+
+  const markNotiAsRead = useCallback(
+    async id => {
+      await markRead(id)
+      mutate()
+    },
+    [markRead, mutate],
+  )
+
+  const handleNewNotification = useCallback(
+    data => {
+      if (data.newNotification) {
+        toast.success(<NotificationItem notification={data.newNotification} markRead={markNotiAsRead} />, {
+          icon: false,
+        })
+        mutate()
+      }
+    },
+    [markNotiAsRead, mutate],
+  )
+
+  useNotificationsSubscription(handleNewNotification)
+
+  const hasUnread = useMemo(() => notifications?.some(item => !item.isRead), [notifications])
+
   if (!account || !notifications?.length) {
     return null
   }
@@ -38,28 +68,24 @@ export function Notification() {
           <EmphasisIconButton
             Icon={BellIcon}
             className={cn(
-              "relative after:absolute after:right-1/4 after:top-1/4 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-['']",
+              hasUnread
+                ? "relative after:absolute after:right-1/4 after:top-1/4 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-['']"
+                : '',
             )}
           />
         }
       >
-        <div className='max-h-96 min-h-20 max-w-[500px] overflow-y-auto'>
+        <div className='mx-2 flex items-center justify-between'>
+          <TextHeading className='text-xl'>{t('Notifications')}</TextHeading>
+          {hasUnread && (
+            <TextButton className='p-1 text-sm' onClick={() => markRead(null)}>
+              {t('Mark All As Read')}
+            </TextButton>
+          )}
+        </div>
+        <div className='relative max-h-96 min-h-20 max-w-[500px] overflow-y-auto'>
           {notifications?.map(notification => (
-            <Link href={notification.redirectUrl ?? '#'}>
-              <div className='flex h-20 min-w-80 items-center gap-4' key={notification.id}>
-                <Highlight className='bg-gradient-to-t from-[#9A5EFF] to-primary-600'>
-                  <CalendarWhiteIcon className='h-4 w-4 text-black' />
-                </Highlight>
-                <div className='flex flex-col gap-1'>
-                  <TextHeading>{notification.content}</TextHeading>
-                  <Paragraph className='text-sm'>
-                    {dayjs(notification.timestamp * 1000)
-                      .locale(locale) // TODO: change after set language
-                      .fromNow()}
-                  </Paragraph>
-                </div>
-              </div>
-            </Link>
+            <NotificationItem key={notification.id} notification={notification} markRead={markNotiAsRead} />
           ))}
         </div>
       </Popover>

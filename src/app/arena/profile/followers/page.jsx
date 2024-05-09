@@ -9,7 +9,6 @@ import FollowersPage from '../FollowersPage'
 
 function Followers() {
   const { account } = useWallet()
-
   if (!account) {
     return <Loading />
   }

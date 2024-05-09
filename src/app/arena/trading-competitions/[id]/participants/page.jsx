@@ -1,7 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -98,8 +98,11 @@ const fetchCompetitionParticipationData = async id => {
   }
 }
 
+const PAGE_SIZE = 10
+
 function ParticipantsPage() {
   const { id } = useParams()
+  const { user: queryUser } = useSearchParams()
 
   const { data: _competition, isLoading } = useSWR(
     ['competition participants api', id],
@@ -211,6 +214,12 @@ function ParticipantsPage() {
     ],
   )
 
+  const hightLightIndex = useMemo(
+    () =>
+      finalParticipants.findIndex(participant => queryUser?.toLowerCase() === participant.participant.id.toLowerCase),
+    [finalParticipants, queryUser],
+  )
+
   return (
     <>
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
@@ -225,6 +234,8 @@ function ParticipantsPage() {
         setSort={setSort}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        pageSize={PAGE_SIZE}
+        hightLightIndex={hightLightIndex}
         tableBasic
       />
     </>
