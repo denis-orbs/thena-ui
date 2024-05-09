@@ -297,9 +297,9 @@ export default function SwapBest({
   const isTwap = swapType === SWAP_TYPES.TWAP || swapType === SWAP_TYPES.LIMIT
   return (
     <>
-      <div className='flex w-full flex-1 flex-col gap-5'>
+      <div className='flex w-full max-w-[480px] flex-1 flex-col gap-5'>
         <Selection className='w-full' isFull data={swapTypeSelections} />
-        <Box className='w-full max-w-[480px]'>
+        <Box className='w-full'>
           <div className='mb-3 flex items-center justify-between'>
             <h2>{title}</h2>
             <div className='flex items-center gap-2'>
