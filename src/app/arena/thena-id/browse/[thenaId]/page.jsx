@@ -20,6 +20,7 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { fetchUserInfo } from '@/context/userInfoContext'
 import { useUSDTCostPerToken } from '@/hooks/useThenaIdContract'
+import dayjs from '@/lib/arenaDayjs'
 import { readCall } from '@/lib/contractActions'
 import { getThenaIDContract } from '@/lib/contracts'
 import { v4Client } from '@/lib/graphql'
@@ -124,8 +125,8 @@ function ThenaIdPage() {
       const imageAttribute = res.split('data:application/json;base64,')[1]
       const decodedData = atob(imageAttribute)
       const jsonData = JSON.parse(decodedData)
-      setImageUrl(jsonData.image)
-      setAttributes(jsonData.attributes)
+      setImageUrl(jsonData?.image)
+      setAttributes(jsonData?.attributes)
     }
   }, [tokenId])
 
@@ -182,7 +183,7 @@ function ThenaIdPage() {
               </TertiaryButton>
             </div>
           </div>
-          <TextHeading className='my-6 block text-4xl'>{thenaIdFormat}</TextHeading>
+          <TextHeading className='my-6 block break-words text-4xl'>{thenaIdFormat}.thena</TextHeading>
           {!isLoading && (
             <>
               {userInfo ? (
@@ -191,7 +192,7 @@ function ThenaIdPage() {
                   <UserProfileCard user={userInfo} showVerified={userInfo.isVerified} />
                 </div>
               ) : (
-                <div className='flex items-center gap-1'>
+                <div className='flex flex-wrap items-center gap-1'>
                   {t('This THENA ID')}
                   {USDTAsset?.logoURI && (
                     <div className='flex items-center justify-center'>
@@ -246,13 +247,15 @@ function ThenaIdPage() {
           {attributes && (
             <>
               <div className='my-6 flex items-center justify-between'>
-                <h3>{t('Traits')} </h3>
+                <h3>{t('Traits')}</h3>
               </div>
               <div className='grid grid-cols-1 items-center gap-4 md:grid-cols-2 lg:grid-cols-3'>
                 {attributes.map(att => (
-                  <Box className='flex w-full flex-col gap-4' key={att.trait_type}>
+                  <Box className='flex w-full flex-col gap-4 lg:p-4' key={att.trait_type}>
                     <TextHeading className='mb-2 block text-base'>{att.trait_type}</TextHeading>
-                    <TextHeading className='mb-2 block text-xl'>{att.value}</TextHeading>
+                    <TextHeading className='mb-2 block text-base'>
+                      {att?.display_type === 'date' ? dayjs.unix(att.value).format('YYYY-MM-DD HH:mm:ss') : att.value}
+                    </TextHeading>
                   </Box>
                 ))}
               </div>
