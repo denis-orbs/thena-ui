@@ -32,11 +32,11 @@ const DEFAULT_THENAID_DATA = {
   cost: undefined,
 }
 
-export default function ThenaIdModal({ tab, targetAddress, onClose }) {
+export default function ThenaIdModal({ tab, targetAddress, onClose, defaultThenaIdsData = undefined }) {
   const { networkId, updateNetwork } = useChainSettings()
   const t = useTranslations()
   const [type, setType] = useState(tab)
-  const [thenaIds, setThenaIds] = useState([DEFAULT_THENAID_DATA])
+  const [thenaIds, setThenaIds] = useState(defaultThenaIdsData || [DEFAULT_THENAID_DATA])
   const [address, setAddress] = useState(targetAddress)
   const assets = useAssets()
   const { costPerToken, loading } = useUSDTCostPerToken()
@@ -145,6 +145,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose }) {
                     key={thenaItem.id}
                     onChange={value => onChangeThenaItem(thenaItem.id, value)}
                     costPerToken={costPerToken}
+                    defaultThenaId={thenaItem.username || ''}
                   />
                 ))}
               </div>

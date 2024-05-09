@@ -439,7 +439,9 @@ function Header() {
           active:
             pathname === '/arena/thena-id/mint' ||
             pathname === '/arena/thena-id/gift' ||
-            pathname === '/arena/thena-id/recently-minted',
+            pathname === '/arena/thena-id/recently-minted' ||
+            pathname === '/arena/thena-id/recently-gifted' ||
+            pathname.includes('/arena/thena-id/browse'),
           isLink: true,
           href: '/arena/thena-id/mint',
         },

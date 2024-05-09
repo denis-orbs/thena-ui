@@ -13,21 +13,21 @@ import { successToast } from '@/lib/notify'
 import useWallet from '@/lib/wallets/useWallet'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
+const V4_USER_INFO = gql`
+  query V4_USER_USERNAME($id: String!) {
+    userById(id: $id) {
+      id
+      username
+    }
+  }
+`
+
 export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, hasThenaId, username = null }) {
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(false)
   const { account } = useWallet()
   const t = useTranslations()
   const [currentUserRef, setCurrentUserRef] = useState('')
-
-  const V4_USER_INFO = gql`
-    query V4_USER_USERNAME($id: String!) {
-      userById(id: $id) {
-        id
-        username
-      }
-    }
-  `
 
   useEffect(() => {
     async function getUserRef() {
@@ -46,7 +46,7 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
     }
 
     getUserRef()
-  }, [V4_USER_INFO, account])
+  }, [account])
 
   const onShare = useCallback(async () => {
     let link = isOwnProfile ? `${window.location.href}/${userInfo.username ?? userInfo.id}` : window.location.href

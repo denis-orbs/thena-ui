@@ -40,7 +40,7 @@ function UserThenaIds({ thenaIds }) {
               <Box
                 key={index}
                 className='hover:cursor-pointer'
-                onClick={() => router.push(`/thena-id/browse/${item.name}`)}
+                onClick={() => router.push(`/arena/thena-id/browse/${item.name}`)}
               >
                 {item.name}
               </Box>

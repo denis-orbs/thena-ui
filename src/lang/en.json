@@ -764,5 +764,10 @@
   "Verified Profile": "Verified profile",
   "This Account Is Verified": "This account is verified because it is either an admin or a verified partner organization of THENA.",
   "Verified Since": "Verified since {date}",
-  "Deposit More": "Deposit More"
+  "Deposit More": "Deposit More",
+  "Owned By": "Owned by",
+  "This THENA ID": "This THENA ID is not minted yet! It could be yours for",
+  "Make Offer on Element": "Make Offer on Element",
+  "Mint For": "Mint for",
+  "Traits": "Traits"
 }

@@ -8,8 +8,8 @@ import useDebounce from '@/hooks/useDebounce'
 import { useValidateUserName } from '@/hooks/useThenaIdContract'
 import { CheckCircleIcon } from '@/svgs'
 
-function ThenaIdInput({ onChange, costPerToken }) {
-  const [thenaId, setThenaId] = useState('')
+function ThenaIdInput({ onChange, costPerToken, defaultThenaId = '' }) {
+  const [thenaId, setThenaId] = useState(defaultThenaId || '')
   const debounceThenaId = useDebounce(thenaId, 500)
   const t = useTranslations()
   const { validate } = useValidateUserName()
@@ -21,14 +21,18 @@ function ThenaIdInput({ onChange, costPerToken }) {
     let estimateCost
 
     const calculateCost = thenaIdLength => {
-      if (costPerToken[new BigNumber(thenaIdLength).toNumber() - 1]) {
-        return costPerToken[new BigNumber(thenaIdLength).toNumber() - 1]
-      }
-      if (new BigNumber(thenaIdLength).toNumber() > costPerToken.length) {
-        return costPerToken[costPerToken.length - 1]
+      if (costPerToken) {
+        if (costPerToken[new BigNumber(thenaIdLength).toNumber() - 1]) {
+          return costPerToken[new BigNumber(thenaIdLength).toNumber() - 1]
+        }
+        if (new BigNumber(thenaIdLength).toNumber() > costPerToken.length) {
+          return costPerToken[costPerToken.length - 1]
+        }
+        return undefined
       }
       return undefined
     }
+
     if (debounceThenaId) {
       validate(debounceThenaId).then(data => {
         if (!data.available) {
