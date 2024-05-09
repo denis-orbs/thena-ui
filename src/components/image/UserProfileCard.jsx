@@ -15,18 +15,8 @@ import Spinner from '../spinner'
 import Tag from '../tag'
 import { TextHeading } from '../typography'
 
-export function UserProfileCard({
-  avatar,
-  username,
-  id,
-  nameColor,
-  verifyImage,
-  isAdmin,
-  isSuperAdmin,
-  showVerified = false,
-  disableLink = false,
-  enableFollow = true,
-}) {
+export function UserProfileCard({ user, showVerified = false, disableLink = false, enableFollow = true }) {
+  const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt } = user
   const t = useTranslations()
   const { userInfo } = useUserInfo()
   const { account } = useWallet()
@@ -76,7 +66,7 @@ export function UserProfileCard({
             </span>
           </TextHeading>
         </div>
-        {showVerified && <VerifyPopover verifyImage={verifyImage} />}
+        {showVerified && <VerifyPopover verifyImage={checkMarkIcon} verifiedAt={verifiedAt} />}
         {isAdmin && <Tag>{t('Admin')}</Tag>}
         {isSuperAdmin && <Tag>{t('Super Admin')}</Tag>}
       </LinkComponent>

@@ -25,6 +25,7 @@ export const V4_FOLLOWERS = gql`
         isVerified
         nameColor
         checkMarkIcon
+        verifiedAt
       }
     }
   }
@@ -46,6 +47,7 @@ export const V4_FOLLOWING = gql`
         isVerified
         nameColor
         checkMarkIcon
+        verifiedAt
       }
     }
   }

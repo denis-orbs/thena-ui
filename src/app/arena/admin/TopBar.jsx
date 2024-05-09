@@ -41,7 +41,9 @@ function TopBar({ userInfo }) {
                   {userInfo.username || sliceAddress(userInfo.id)}
                 </span>
               </TextHeading>
-              {userInfo.isVerified && <VerifyPopover verifyImage={userInfo?.checkMarkIcon} />}
+              {userInfo.isVerified && (
+                <VerifyPopover verifyImage={userInfo?.checkMarkIcon} verifiedAt={userInfo?.verifiedAt} />
+              )}
             </div>
             {userInfo.isSuperAdmin ? <Tag>{t('Super Admin')}</Tag> : <Tag>{t('Admin')}</Tag>}
           </div>

@@ -91,18 +91,19 @@ function ModalEditCheckMark({ isOpen, mutate, closeModal = () => {}, user = {} }
                 </div>
                 {selectedImage && (
                   <UserProfileCard
-                    avatar={user.avatar}
-                    id={user.id}
+                    user={{
+                      ...user,
+                      checkMarkIcon: isString(selectedImage) ? selectedImage : URL.createObjectURL(selectedImage),
+                    }}
                     showVerified
                     disableLink
-                    verifyImage={isString(selectedImage) ? selectedImage : URL.createObjectURL(selectedImage)}
                     enableFollow={false}
                   />
                 )}
               </>
             )}
             {stateChecked === 'default' && (
-              <UserProfileCard avatar={user.avatar} id={user.id} showVerified disableLink enableFollow={false} />
+              <UserProfileCard user={user} showVerified disableLink enableFollow={false} />
             )}
 
             <div className='mt-2 flex w-full flex-row items-center gap-2'>

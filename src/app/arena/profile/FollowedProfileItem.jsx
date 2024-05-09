@@ -29,15 +29,7 @@ export function FollowedProfileItem({ user }) {
   return (
     <Box className='group/item flex cursor-pointer items-center justify-between gap-5 p-4 lg:p-4'>
       <div className='flex items-center gap-5'>
-        <UserProfileCard
-          avatar={user?.user.avatar}
-          id={user?.user.id}
-          username={user?.user.username}
-          showVerified={user?.user.isVerified}
-          verifyImage={user?.user.checkMarkIcon}
-          nameColor={user?.user.nameColor}
-          enableFollow={false}
-        />
+        <UserProfileCard user={user?.user} showVerified={user?.user.isVerified} enableFollow={false} />
       </div>
       {account &&
         (isFollowed ? (

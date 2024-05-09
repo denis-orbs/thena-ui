@@ -34,6 +34,7 @@ const V4_TOP_USER = gql`
         isAdmin
         isSuperAdmin
         checkMarkIcon
+        verifiedAt
       }
       pnlUSD
       winAmountUSD
@@ -322,18 +323,7 @@ function TopUser() {
     () =>
       filteredTcParticipants?.map(item => ({
         rank: <Paragraph>{item.rank}</Paragraph>,
-        user: (
-          <UserProfileCard
-            avatar={item?.avatar}
-            id={item?.userId}
-            nameColor={item?.nameColor}
-            showVerified={item?.isVerified}
-            username={item?.username}
-            verifyImage={item?.verifyImage}
-            isAdmin={item.isAdmin}
-            isSuperAdmin={item.isSuperAdmin}
-          />
-        ),
+        user: <UserProfileCard user={item} showVerified={item?.isVerified} />,
         competitionName: (
           <Link
             className='max-w-[250px] truncate'

@@ -39,6 +39,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
       balance
       isSuperAdmin
       checkMarkIcon
+      verifiedAt
       isAdmin
       isVerified
       tradingCompetitions {
@@ -76,6 +77,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
           avatar
           username
           checkMarkIcon
+          verifiedAt
           nameColor
         }
         tradingCompetitionSpot
@@ -116,6 +118,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
             avatar
             username
             checkMarkIcon
+            verifiedAt
             nameColor
           }
           tradingCompetitionSpot

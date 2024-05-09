@@ -54,6 +54,7 @@ const V4_COMPETITION_DATA = gql`
         username
         nameColor
         checkMarkIcon
+        verifiedAt
       }
       participants {
         id
@@ -206,14 +207,7 @@ function CompetitionDetailLayout({ children, params }) {
                   {t('Back')}
                 </TextButton>
               </Link>
-              <UserProfileCard
-                avatar={competition.owner.avatar}
-                id={competition.owner.id}
-                username={competition.owner.username}
-                showVerified={competition.owner.isVerified}
-                nameColor={competition.owner.nameColor}
-                verifyImage={competition.owner.checkMarkIcon}
-              />
+              <UserProfileCard user={competition.owner} showVerified={competition.owner.isVerified} />
             </div>
             <CompetitionCard competition={_competition} eventType={eventType} enableEditBanner={enableEditBanner} />
             <div className='mt-10 flex w-full flex-col gap-4'>

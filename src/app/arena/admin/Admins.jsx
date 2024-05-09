@@ -33,6 +33,7 @@ const V4_ADMINS = gql`
       isVerified
       avatar
       checkMarkIcon
+      verifiedAt
       isAdmin
       isSuperAdmin
     }
@@ -105,18 +106,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
   const finalData = useMemo(
     () =>
       dataFetch.map(item => ({
-        user: (
-          <UserProfileCard
-            avatar={item.avatar}
-            id={item.id}
-            nameColor={item.nameColor}
-            showVerified={item.isVerified}
-            username={item.username}
-            verifyImage={item.checkMarkIcon}
-            isAdmin={item.isAdmin}
-            isSuperAdmin={item.isSuperAdmin}
-          />
-        ),
+        user: <UserProfileCard showVerified={item.isVerified} user={item} />,
         walletId: (
           <Paragraph className='text-wrap break-words'>
             {!isMdDown ? (userInfo.isSuperAdmin ? sliceAddress(item.id) : item.id) : item.id}

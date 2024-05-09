@@ -59,6 +59,7 @@ const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
         username
         nameColor
         checkMarkIcon
+        verifiedAt
       }
       tradingCompetitionSpot
     }
@@ -105,6 +106,7 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
         id
         isVerified
         checkMarkIcon
+        verifiedAt
       }
       tradingCompetitionSpot
     }

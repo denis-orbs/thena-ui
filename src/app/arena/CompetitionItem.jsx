@@ -100,7 +100,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
                 </h4>
               )}
 
-              <VerifyPopover verifyImage={competition.owner.checkMarkIcon} />
+              <VerifyPopover verifyImage={competition.owner.checkMarkIcon} verifiedAt={competition.owner.verifiedAt} />
             </div>
           )}
         </div>

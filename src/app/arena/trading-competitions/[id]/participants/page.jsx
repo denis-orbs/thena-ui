@@ -27,6 +27,7 @@ const V4_TC_COMPETITION_DATA = gql`
           isVerified
           nameColor
           checkMarkIcon
+          verifiedAt
         }
       }
       competitionRules {
@@ -195,14 +196,7 @@ function ParticipantsPage() {
       return sortedData?.map(participant => ({
         rank: <Paragraph>{participant.rank ?? '-'}</Paragraph>,
         user: participant.participant && (
-          <UserProfileCard
-            avatar={participant.participant.avatar}
-            username={participant.participant.username}
-            id={participant.participant.id}
-            nameColor={participant.participant.nameColor}
-            verifyImage={participant.participant.checkMarkIcon}
-            showVerified={participant.participant.isVerified}
-          />
+          <UserProfileCard user={participant.participant} showVerified={participant.participant.isVerified} />
         ),
         volume: <Paragraph>{participant.volume ? `$${formatNumberDecimals(participant.volume, 2)}` : '-'}</Paragraph>,
       }))

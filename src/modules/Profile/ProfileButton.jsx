@@ -89,7 +89,7 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
   }, [copied])
 
   return (
-    <div className='flex items-center space-x-2'>
+    <div className='flex items-center justify-end space-x-2'>
       {isOwnProfile && !!currentUserInfo?.usernameNfts?.length && (
         <Link href='/arena/profile/edit'>
           <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
@@ -102,11 +102,7 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
         {t(isOwnProfile ? (!hasThenaId ? 'Get ID' : 'Get More IDs') : 'Gift Thena ID')}
       </EmphasisButton>
       {!isOwnProfile && currentUserInfo && (
-        <EmphasisButton
-          className='min-h-12 min-w-[92px] p-2 text-xs lg:p-3 lg:text-base'
-          onClick={onFollow}
-          disabled={loading}
-        >
+        <EmphasisButton className='p-2 text-xs lg:p-3 lg:py-3 lg:text-base' onClick={onFollow} disabled={loading}>
           {!loading ? t(isFollowed ? 'UnFollow' : 'Follow') : <Spinner />}
         </EmphasisButton>
       )}

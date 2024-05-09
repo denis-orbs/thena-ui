@@ -18,6 +18,7 @@ const V4_COMPETITION_DATA = gql`
           nameColor
           isVerified
           checkMarkIcon
+          verifiedAt
         }
         winAmount
         winTokenDecimal

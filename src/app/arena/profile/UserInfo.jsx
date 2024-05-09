@@ -81,7 +81,7 @@ export function UserInfo({ userInfo, following, followers }) {
   return (
     <>
       <Box className='space-y-4'>
-        <div className='flex flex-col-reverse items-end justify-between gap-4 lg:flex-row lg:items-center'>
+        <div className='flex flex-col-reverse justify-between gap-4 lg:flex-row lg:items-center'>
           <div className='flex flex-1 flex-col items-start justify-between gap-4 lg:flex-row lg:items-center'>
             <div className='flex items-start gap-5 lg:items-center'>
               <Image
@@ -111,7 +111,9 @@ export function UserInfo({ userInfo, following, followers }) {
                       {userInfo.username || formatAddress(userInfo.id)}
                     </span>
                   </TextHeading>
-                  {userInfo.isVerified && <VerifyPopover verifyImage={userInfo?.checkMarkIcon} />}
+                  {userInfo.isVerified && (
+                    <VerifyPopover verifyImage={userInfo?.checkMarkIcon} verifiedAt={userInfo?.verifiedAt} />
+                  )}
                   <div onClick={onCopy} className='ml-1 h-5 w-5 cursor-pointer stroke-neutral-200'>
                     {copied ? <CheckIcon /> : <CopyIcon />}
                   </div>
