@@ -114,16 +114,7 @@ export function LeaderBoard({ competition }) {
         const pnl = fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal)
         return {
           rank: <Paragraph>{leader.rank}</Paragraph>,
-          user: (
-            <UserProfileCard
-              avatar={leader.participant.avatar}
-              username={leader.participant.username}
-              id={leader.participant.id}
-              nameColor={leader.participant.nameColor}
-              verifyImage={leader.participant.checkMarkIcon}
-              showVerified={leader.participant.isVerified}
-            />
-          ),
+          user: <UserProfileCard user={leader.participant} showVerified={leader.participant.isVerified} />,
           pnl: (
             <Paragraph className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}>
               {`${formatAmount(pnl, false, 5, false)}
