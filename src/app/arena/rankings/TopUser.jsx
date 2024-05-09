@@ -323,7 +323,7 @@ function TopUser() {
     () =>
       filteredTcParticipants?.map(item => ({
         rank: <Paragraph>{item.rank}</Paragraph>,
-        user: <UserProfileCard user={item} showVerified={item?.isVerified} />,
+        user: <UserProfileCard user={{ ...item, id: item.userId }} showVerified={item?.isVerified} />,
         competitionName: (
           <Link
             className='max-w-[250px] truncate'
