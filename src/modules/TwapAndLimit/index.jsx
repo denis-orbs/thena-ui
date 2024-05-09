@@ -26,7 +26,6 @@ export function Twap({
   const baseAssets = useAssets()
   const estimate = useEstimateFeesPerGas().data
   const { open } = useWeb3Modal()
-
   const onSrcTokenSelected = useCallback(
     asset => {
       setFromAddress(asset.address)
@@ -34,7 +33,7 @@ export function Twap({
     [setFromAddress],
   )
 
-  const onDestTokenSelected = useCallback(
+  const onDstTokenSelected = useCallback(
     asset => {
       setToAddress(asset.address)
     },
@@ -59,7 +58,7 @@ export function Twap({
       srcToken={fromAsset?.address}
       dstToken={toAsset?.address}
       onSrcTokenSelected={onSrcTokenSelected}
-      onDestTokenSelected={onDestTokenSelected}
+      onDstTokenSelected={onDstTokenSelected}
       setFromAmount={setFromAmount}
       outAmount={outAmount}
       outAmountLoading={!BN(fromAmount || '0').isZero() && !outAmount}
