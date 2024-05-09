@@ -78,6 +78,12 @@ export function UserInfo({ userInfo, following, followers }) {
     }
   }, [copied])
 
+  const rankToPageRanking = useMemo(
+    () =>
+      userInfo.rank !== '-' ? `?sort=tradeVolume&rank=${userInfo.rank}&page=${Math.ceil(userInfo.rank / 50)}` : '',
+    [userInfo.rank],
+  )
+
   return (
     <>
       <Box className='space-y-4'>
@@ -189,10 +195,12 @@ export function UserInfo({ userInfo, following, followers }) {
           />
         </div>
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>
-          <Box className='flex flex-col gap-2 bg-neutral-800'>
-            <TextHeading className='text-lg'>{userInfo.rank}</TextHeading>
-            <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
-          </Box>
+          <Link href={`/arena/rankings/users${rankToPageRanking}`}>
+            <Box className='flex flex-col gap-2 bg-neutral-800'>
+              <TextHeading className='text-lg'>{userInfo.rank}</TextHeading>
+              <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
+            </Box>
+          </Link>
           <Box className='flex flex-col gap-2 bg-neutral-800'>
             <TextHeading className='text-lg'>
               {`${formatAmount(fromWei(userInfo.balance, theAsset?.decimal))} ${theAsset?.symbol}`}

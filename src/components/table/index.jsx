@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import { cn } from '@/lib/utils'
@@ -54,29 +54,40 @@ function Table({
   enabledRedirectOnClickPagination = false,
   loading = false,
   pageSize = 10,
+  totalItems = undefined,
+  limitPage = undefined,
+  enabledRedirectOnClickSort = false,
+  hightLightIndex = undefined,
 }) {
-  const pageCount = Math.ceil(data.length / pageSize)
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [pageQuery, setPageQuery] = useState(1)
+  const query = useMemo(() => new URLSearchParams(searchParams.toString()), [searchParams])
+
+  const pageCount = useMemo(() => {
+    const count = Math.ceil((totalItems || data.length) / pageSize)
+
+    return limitPage && limitPage < count ? limitPage : count
+  }, [data.length, limitPage, pageSize, totalItems])
 
   const handleRedirectPage = useCallback(
     newPage => {
       if (enabledRedirectOnClickPagination) {
         if (newPage !== currentPage) {
-          const query = new URLSearchParams(searchParams.toString())
+          query.delete('rank', undefined)
+          query.delete('page', undefined)
           if (newPage > 1) {
             query.set('page', newPage.toString())
             router.replace(`${pathname}?${query.toString()}`)
             return
           }
-          router.replace(pathname)
+          router.replace(`${pathname}?${query.toString()}`)
         }
       }
     },
-    [currentPage, enabledRedirectOnClickPagination, pathname, router, searchParams],
+    [currentPage, enabledRedirectOnClickPagination, pathname, query, router],
   )
 
   useEffect(() => {
@@ -90,6 +101,23 @@ function Table({
       setCurrentPage(pageQuery)
     }
   }, [pageQuery, setCurrentPage, enabledRedirectOnClickPagination])
+
+  useEffect(() => {
+    if (sort && enabledRedirectOnClickSort) {
+      query.set('sort', sort.value.toString())
+      router.replace(`${pathname}?${query.toString()}`)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, router, sort, enabledRedirectOnClickSort])
+
+  useEffect(() => {
+    if (hightLightIndex) {
+      const element = document.getElementById(`table-row-${hightLightIndex}`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+  }, [hightLightIndex])
 
   return (
     <div className={cn('relative flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
@@ -110,16 +138,19 @@ function Table({
                     key={`header-${idx}`}
                     onClick={() => {
                       if (!option.disabled) {
+                        handleRedirectPage(1)
                         if (!onlySortDesc) {
                           setSort({
                             ...option,
                             isDesc: sort.value === option.value ? !sort.isDesc : true,
                           })
+                          setCurrentPage(1)
                         } else {
                           setSort({
                             ...option,
                             isDesc: true,
                           })
+                          setCurrentPage(1)
                         }
                       }
                     }}
@@ -151,17 +182,23 @@ function Table({
                 </tr>
               )}
               {!loading &&
-                data.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((ele, eleIdx) => (
-                  <tr key={`table-row-${eleIdx}`}>
-                    {sortOptions.map((cell, cellIdx) => (
-                      <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
-                        <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
-                          {ele[cell.value]}
-                        </TableCell>
-                      </td>
-                    ))}
-                  </tr>
-                ))}
+                (totalItems ? data : data.slice((currentPage - 1) * pageSize, currentPage * pageSize)).map(
+                  (ele, eleIdx) => (
+                    <tr
+                      key={`table-row-${eleIdx}`}
+                      id={`table-row-${eleIdx}`}
+                      className={eleIdx === hightLightIndex ? 'bg-neutral-500' : 'asd'}
+                    >
+                      {sortOptions.map((cell, cellIdx) => (
+                        <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
+                          <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                            {ele[cell.value]}
+                          </TableCell>
+                        </td>
+                      ))}
+                    </tr>
+                  ),
+                )}
             </tbody>
           </table>
         ) : (
@@ -173,10 +210,12 @@ function Table({
                   key={`header-${idx}`}
                   onClick={() => {
                     if (!option.disabled) {
+                      handleRedirectPage(1)
                       setSort({
                         ...option,
                         isDesc: sort.value === option.value ? !sort.isDesc : true,
                       })
+                      setCurrentPage(1)
                     }
                   }}
                 >
@@ -200,44 +239,46 @@ function Table({
               </div>
             )}
             {!loading &&
-              data.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((ele, eleIdx) => (
-                <div
-                  className={cn(
-                    'flex w-full flex-wrap items-start rounded-lg border-b border-neutral-700 hover:bg-neutral-800 lg:flex-nowrap lg:items-center lg:border-0',
-                    ele.onRowClick && 'cursor-pointer',
-                  )}
-                  onClick={() => ele.onRowClick && ele.onRowClick()}
-                  key={`table-row-${eleIdx}`}
-                >
-                  <TableCell
+              (totalItems ? data : data.slice((currentPage - 1) * pageSize, currentPage * pageSize)).map(
+                (ele, eleIdx) => (
+                  <div
                     className={cn(
-                      'flex w-full',
-                      sortOptions[0].width,
-                      sortOptions[0].hiddenMobile ? 'max-lg:hidden' : 'flex',
+                      'flex w-full flex-wrap items-start rounded-lg border-b border-neutral-700 hover:bg-neutral-800 lg:flex-nowrap lg:items-center lg:border-0',
+                      ele.onRowClick && 'cursor-pointer',
                     )}
+                    onClick={() => ele.onRowClick && ele.onRowClick()}
+                    key={`table-row-${eleIdx}`}
                   >
-                    {ele[sortOptions[0].value]}
-                  </TableCell>
-                  {sortOptions.slice(1, sortOptions.length - (notAction ? 0 : 1)).map((cell, cellIdx) => (
                     <TableCell
                       className={cn(
-                        'flex w-1/2 flex-col lg:flex-row',
-                        cell.width,
-                        !cell.hiddenMobile ? 'lg:flex-row' : 'hidden',
+                        'flex w-full',
+                        sortOptions[0].width,
+                        sortOptions[0].hiddenMobile ? 'max-lg:hidden' : 'flex',
                       )}
-                      key={`${cell.value}-${cellIdx}`}
                     >
-                      <TextHeading className='lg:hidden'>{t(cell.label)}</TextHeading>
-                      {ele[cell.value]}
+                      {ele[sortOptions[0].value]}
                     </TableCell>
-                  ))}
-                  {!notAction && (
-                    <TableCell className={cn('flex w-full flex-col', sortOptions[sortOptions.length - 1].width)}>
-                      {ele[sortOptions[sortOptions.length - 1].value]}
-                    </TableCell>
-                  )}
-                </div>
-              ))}
+                    {sortOptions.slice(1, sortOptions.length - (notAction ? 0 : 1)).map((cell, cellIdx) => (
+                      <TableCell
+                        className={cn(
+                          'flex w-1/2 flex-col lg:flex-row',
+                          cell.width,
+                          !cell.hiddenMobile ? 'lg:flex-row' : 'hidden',
+                        )}
+                        key={`${cell.value}-${cellIdx}`}
+                      >
+                        <TextHeading className='lg:hidden'>{t(cell.label)}</TextHeading>
+                        {ele[cell.value]}
+                      </TableCell>
+                    ))}
+                    {!notAction && (
+                      <TableCell className={cn('flex w-full flex-col', sortOptions[sortOptions.length - 1].width)}>
+                        {ele[sortOptions[sortOptions.length - 1].value]}
+                      </TableCell>
+                    )}
+                  </div>
+                ),
+              )}
           </>
         )}
       </div>

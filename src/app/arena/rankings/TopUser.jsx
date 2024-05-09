@@ -2,7 +2,7 @@
 
 import { gql } from 'graphql-request'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -13,61 +13,113 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
-import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { SizeTypes } from '@/constant/type'
-import { useUserInfo } from '@/context/userInfoContext'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
-import { formatAmount } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
+import { formatAmount, fromWei } from '@/lib/utils'
 
 const V4_TOP_USER = gql`
-  query V4_TOP_USER($where: TCParticipantWhereInput = {}, $orderBy: [TCParticipantOrderByInput!] = []) {
-    tcParticipants(orderBy: $orderBy, where: $where, limit: 25) {
-      participant {
-        id
-        isVerified
+  query V4_TOP_USER(
+    $user: UserWhereInput = {}
+    $orderBy: [UserLeaderboardOrderByInput!] = user_id_ASC
+    $offset: Int = 0
+    $limit: Int = 20
+  ) {
+    userLeaderboards(limit: $limit, orderBy: $orderBy, where: { user: $user }, offset: $offset) {
+      totalPnLUSD
+      totalWinAmountUSD
+      tradeVolume
+      followingCount
+      followerCount
+      entryFeesPaid
+      user {
         username
+        id
         nameColor
         avatar
         isAdmin
         isSuperAdmin
         checkMarkIcon
         verifiedAt
-      }
-      pnlUSD
-      winAmountUSD
-      tradingCompetition {
-        name
-        id
-        timestamp {
-          endTimestamp
-        }
+        balance
       }
     }
   }
 `
 
-const fetchUsers = async (sort, whereQuery) => {
+const V4_TOTAL_USERS = gql`
+  query V4_TOTAL_USERS($q: String = "") {
+    usersTotalCount(q: $q)
+  }
+`
+
+const fetchUsers = async (sort, userFilter, offset = 0, limit = 50) => {
   try {
-    const { tcParticipants } = await v4Client.request(V4_TOP_USER, {
-      where: whereQuery,
-      orderBy: sort?.value === 'pnlUSD' ? ['pnl_DESC', 'id_ASC'] : ['winAmountUSD_DESC', 'id_ASC'],
+    const orderBy = ['user_id_ASC']
+    switch (sort?.value) {
+      case 'tradeVolume':
+        orderBy.unshift('tradeVolume_DESC')
+        break
+
+      case 'balance':
+        orderBy.unshift('user_balance_DESC')
+        break
+
+      case 'totalPnLUSD':
+        orderBy.unshift('totalPnLUSD_DESC')
+        break
+
+      case 'totalWinAmountUSD':
+        orderBy.unshift('totalWinAmountUSD_DESC')
+        break
+
+      case 'followingCount':
+        orderBy.unshift('followingCount_DESC')
+        break
+
+      case 'followerCount':
+        orderBy.unshift('followerCount_DESC')
+        break
+
+      case 'entryFeesPaid':
+        orderBy.unshift('entryFeesPaid_DESC')
+        break
+
+      default:
+        break
+    }
+    const { userLeaderboards } = await v4Client.request(V4_TOP_USER, {
+      user: userFilter,
+      orderBy,
+      offset,
+      limit,
     })
-    return tcParticipants
+    return userLeaderboards
   } catch (error) {
     console.log(error)
     return { error: true }
   }
 }
 
-const tabsFilterTime = ['24h', '7d', '30d', 'Max']
+const fetchTotalCount = async query => {
+  try {
+    const { usersTotalCount } = await v4Client.request(V4_TOTAL_USERS, {
+      q: query,
+    })
+    return usersTotalCount
+  } catch (error) {
+    console.log(error)
+    return { error: true }
+  }
+}
 
 function TopUser() {
   const pathname = usePathname()
   const isAll = pathname.includes('/users')
-  const { account } = useWallet()
+  const pageSize = useMemo(() => (isAll ? 50 : 20), [isAll])
+  const searchParams = useSearchParams()
+  const rank = searchParams.get('rank')
+
   const sortOptions = useMemo(
     () => [
       {
@@ -79,176 +131,90 @@ function TopUser() {
       {
         label: 'User',
         value: 'user',
-        width: 'w-[30%]',
+        width: 'w-[20%]',
         disabled: true,
       },
       {
-        label: 'Competition Name',
-        value: 'competitionName',
+        label: 'Total Trading Volume',
+        value: 'tradeVolume',
         width: 'w-[20%]',
-        disabled: true,
+        isDesc: true,
+        disabled: false,
+      },
+      {
+        label: 'Total THE balance',
+        value: 'balance',
+        width: 'w-[15%]',
+        isDesc: true,
+        disabled: false,
+      },
+      {
+        label: 'Followings',
+        value: 'followingCount',
+        width: 'w-[10%]',
+        isDesc: true,
+        disabled: false,
+      },
+      {
+        label: 'Followers',
+        value: 'followerCount',
+        width: 'w-[10%]',
+        isDesc: true,
+        disabled: false,
       },
       {
         label: 'Win Amount',
-        value: 'winAmountUSD',
-        width: 'w-[20%]',
+        value: 'totalWinAmountUSD',
+        width: 'w-[15%]',
         disabled: false,
       },
       {
         label: 'Profit & Loss',
-        value: 'pnlUSD',
-        width: 'w-[20%]',
+        value: 'totalPnLUSD',
+        width: 'w-[15%]',
+        isDesc: true,
+        disabled: false,
+      },
+      {
+        label: 'Entry Fees Paid',
+        value: 'entryFeesPaid',
+        width: 'w-[10%]',
         isDesc: true,
         disabled: false,
       },
     ],
     [],
   )
-  const { userInfo } = useUserInfo()
-
-  const isHosted = useMemo(() => {
-    if (userInfo?.tradingCompetitions && userInfo?.tradingCompetitions.length > 0) {
-      return true
-    }
-    return false
-  }, [userInfo])
-
-  const isJoined = useMemo(() => {
-    if (userInfo?.joinedTCs && userInfo?.joinedTCs.length > 0) {
-      return true
-    }
-    return false
-  }, [userInfo])
-
-  const tabsFilterUser = useMemo(() => {
-    const arr = ['All']
-    if (isHosted) {
-      arr.push('Hosted')
-    }
-    if (isJoined) {
-      arr.push('Joined')
-    }
-    return arr
-  }, [isHosted, isJoined])
 
   const t = useTranslations()
   const [searchText, setSearchText] = useState('')
-  const [selectedTabUser, setSelectedTabUser] = useState(tabsFilterUser[0])
-  const [selectedTabTime, setSelectedTabTime] = useState(tabsFilterTime[3])
 
   const [currentPage, setCurrentPage] = useState(1)
-  const [sort, setSort] = useState(sortOptions[4])
+  const [sort, setSort] = useState(sortOptions[2])
   const [dataFetch, setDataFetch] = useState([])
 
   const debounceSearch = useDebounce(searchText.trim(), 300)
 
-  const tradingCompetitionFilter = useMemo(() => {
-    let filter = {}
-    if (selectedTabTime !== 'Max') {
-      switch (selectedTabTime) {
-        case '24h':
-          filter = {
-            ...filter,
-            timestamp: { endTimestamp_gte: Math.floor(Number(Date.now() / 1000 - 60 * 60 * 24)) },
-          }
-          break
-        case '7d':
-          filter = {
-            ...filter,
-            timestamp: { endTimestamp_gte: Math.floor(Date.now() / 1000 - 7 * 60 * 60 * 24) },
-          }
-          break
-        case '30d':
-          filter = {
-            ...filter,
-            timestamp: { endTimestamp_gte: Math.floor(Date.now() / 1000 - 30 * 60 * 60 * 24) },
-          }
-          break
-        default:
-          break
-      }
-    }
-
-    if (account) {
-      switch (selectedTabUser) {
-        case 'Hosted':
-          filter = {
-            ...filter,
-            owner: {
-              id_eq: account.toLowerCase(),
-            },
-          }
-          break
-        case 'Joined':
-          filter = {
-            ...filter,
-            participants_some: {
-              participant: {
-                id_eq: account.toLowerCase(),
-              },
-            },
-          }
-          break
-        default:
-          break
-      }
-    }
-    return filter
-  }, [selectedTabTime, account, selectedTabUser])
-
-  const whereQuery = useMemo(() => {
-    let where = {
-      tradingCompetition: tradingCompetitionFilter,
-    }
-
+  const userFilter = useMemo(() => {
     if (debounceSearch) {
-      where = {
-        ...where,
-        AND: {
-          OR: [
-            {
-              participant: {
-                OR: [{ id_containsInsensitive: debounceSearch }, { username_containsInsensitive: debounceSearch }],
-              },
-            },
-            { tradingCompetition: { name_containsInsensitive: debounceSearch } },
-          ],
-        },
+      return {
+        OR: [{ id_containsInsensitive: debounceSearch }, { username_containsInsensitive: debounceSearch }],
       }
     }
 
-    return where
-  }, [debounceSearch, tradingCompetitionFilter])
+    return {}
+  }, [debounceSearch])
 
-  const { data: topUsers, isLoading } = useSWR(['top users api', whereQuery, sort], () => fetchUsers(sort, whereQuery))
+  const offset = useMemo(() => (currentPage - 1) * pageSize, [currentPage, pageSize])
 
-  const subTabsUser = useMemo(
-    () =>
-      tabsFilterUser.map(tab => ({
-        label: t(tab),
-        active: tab === selectedTabUser,
-        onClickHandler: () => {
-          setSelectedTabUser(tab)
-        },
-      })),
-    [selectedTabUser, t, tabsFilterUser],
+  const { data: topUsers, isLoading } = useSWR(['top users api', userFilter, sort, offset, pageSize], () =>
+    fetchUsers(sort, userFilter, offset, pageSize),
   )
-
-  const subTabsTime = useMemo(
-    () =>
-      tabsFilterTime.map(tab => ({
-        label: t(tab),
-        active: tab === selectedTabTime,
-        onClickHandler: () => {
-          setSelectedTabTime(tab)
-        },
-      })),
-    [selectedTabTime, t],
-  )
+  const { data: usersTotalCount } = useSWR(['total users api', debounceSearch], () => fetchTotalCount(debounceSearch))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [debounceSearch, selectedTabTime, selectedTabUser, sort])
+  }, [debounceSearch])
 
   useEffect(() => {
     if (!isLoading) {
@@ -260,105 +226,99 @@ function TopUser() {
     }
   }, [isLoading, topUsers])
 
+  useEffect(() => {
+    const sortParams = searchParams.get('sort')
+    if (sortParams) {
+      switch (sortParams) {
+        case 'tradeVolume':
+          setSort({ label: 'Total Trading Volume', value: 'tradeVolume', isDesc: true })
+          break
+        case 'balance':
+          setSort({ label: 'Total THE balance', value: 'balance', isDesc: true })
+          break
+        case 'totalPnLUSD':
+          setSort({ label: 'Profit & Loss', value: 'totalPnLUSD', isDesc: true })
+          break
+        case 'totalWinAmountUSD':
+          setSort({ label: 'Win Amount', value: 'totalWinAmountUSD', isDesc: true })
+          break
+        case 'followingCount':
+          setSort({ label: 'Followings', value: 'followingCount', isDesc: true })
+          break
+        case 'followerCount':
+          setSort({ label: 'Followers', value: 'followerCount', isDesc: true })
+          break
+        case 'entryFeesPaid':
+          setSort({ label: 'Entry Fees Paid', value: 'entryFeesPaid', isDesc: true })
+          break
+        default:
+          break
+      }
+    }
+  }, [searchParams])
+
   const topUsersFormatted = useMemo(() => {
-    const arr = dataFetch.map(item => ({
-      username: item.participant.username,
-      userId: item.participant.id,
-      competitionName: item.tradingCompetition.name,
-      competitionId: item.tradingCompetition.id,
-      winAmountUSD: item.winAmountUSD,
-      pnlUSD: item.pnlUSD,
-      avatar: item.participant.avatar || Avatar,
-      nameColor: item.participant.nameColor,
-      isVerified: item.participant.isVerified,
-      verifyImage: item.participant.checkMarkIcon,
-      isAdmin: item.participant.isAdmin,
-      isSuperAdmin: item.participant.isSuperAdmin,
+    const arr = dataFetch.map((item, index) => ({
+      username: item.user.username,
+      userId: item.user.id,
+      tradeVolume: item.tradeVolume,
+      totalWinAmountUSD: item.totalWinAmountUSD,
+      totalPnLUSD: item.totalPnLUSD,
+      followingCount: item.followingCount,
+      followerCount: item.followerCount,
+      entryFeesPaid: item.entryFeesPaid,
+      avatar: item.user.avatar || Avatar,
+      nameColor: item.user.nameColor,
+      isVerified: item.user.isVerified,
+      verifyImage: item.user.checkMarkIcon,
+      isAdmin: item.user.isAdmin,
+      isSuperAdmin: item.user.isSuperAdmin,
+      balance: item.user.balance,
+      rank: (currentPage - 1) * pageSize + index + 1,
     }))
     return arr
-  }, [dataFetch])
+  }, [currentPage, dataFetch, pageSize])
 
-  const filteredTcParticipants = useMemo(() => {
-    if (topUsersFormatted && Array.isArray(topUsersFormatted) && !topUsersFormatted.errors) {
-      let rank = 0
-      let arr = []
-      if (sort?.value === 'pnlUSD') {
-        let prevPnl = -99999999999
-
-        arr = topUsersFormatted.map((item, index) => {
-          if (item.pnlUSD !== prevPnl) {
-            rank = index + 1
-            prevPnl = item.pnlUSD
-          }
-
-          return {
-            ...item,
-            rank,
-          }
-        })
-      } else {
-        // Sort by Win Amount
-        let prevWinAmount = -1
-
-        arr = topUsersFormatted.map((item, index) => {
-          if (item.winAmountUSD !== prevWinAmount) {
-            rank = index + 1
-            prevWinAmount = item.winAmountUSD
-          }
-
-          return {
-            ...item,
-            rank,
-          }
-        })
+  const hightLightIndex = useMemo(() => {
+    if (rank) {
+      if (topUsersFormatted) {
+        const index = topUsersFormatted.findIndex(item => item.rank === Number(rank))
+        return index
       }
-
-      return arr
     }
-
-    return []
-  }, [sort?.value, topUsersFormatted])
+  }, [rank, topUsersFormatted])
 
   const finalData = useMemo(
     () =>
-      filteredTcParticipants?.map(item => ({
+      topUsersFormatted?.map(item => ({
         rank: <Paragraph>{item.rank}</Paragraph>,
         user: <UserProfileCard user={{ ...item, id: item.userId }} showVerified={item?.isVerified} />,
-        competitionName: (
-          <Link
-            className='max-w-[250px] truncate'
-            href={`/arena/trading-competitions/${item.competitionId.toLowerCase()}`}
-          >
-            {item.competitionName}
-          </Link>
-        ),
-        winAmountUSD: <Paragraph>${formatAmount(item.winAmountUSD)}</Paragraph>,
-        pnlUSD: (
-          <Paragraph className={item.pnlUSD < 0 ? 'text-red-500' : item.pnlUSD > 0 ? 'text-green-500' : ''}>
-            {item.pnlUSD < 0 ? '-' : item.pnlUSD > 0 ? '+' : ''} $
-            {formatAmount(item.pnlUSD < 0 ? item.pnlUSD * -1 : item.pnlUSD)}
+        tradeVolume: <Paragraph>${formatAmount(item.tradeVolume)}</Paragraph>,
+        balance: <Paragraph>{formatAmount(fromWei(item.balance))} THE</Paragraph>,
+        followingCount: <Paragraph>{formatAmount(item.followingCount)}</Paragraph>,
+        followerCount: <Paragraph>{formatAmount(item.followerCount)}</Paragraph>,
+        totalWinAmountUSD: <Paragraph>${formatAmount(item.totalWinAmountUSD)}</Paragraph>,
+        totalPnLUSD: (
+          <Paragraph className={item.totalPnLUSD < 0 ? 'text-red-500' : item.totalPnLUSD > 0 ? 'text-green-500' : ''}>
+            {item.totalPnLUSD < 0 ? '-' : item.totalPnLUSD > 0 ? '+' : ''} $
+            {formatAmount(item.totalPnLUSD < 0 ? item.totalPnLUSD * -1 : item.totalPnLUSD)}
           </Paragraph>
         ),
+        entryFeesPaid: <Paragraph>${formatAmount(item.entryFeesPaid)}</Paragraph>,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(filteredTcParticipants)],
+    [JSON.stringify(topUsersFormatted)],
   )
 
   return (
     <div className='col-span-12 lg:col-span-7'>
       <div className='flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between'>
-        {account ? <Tabs data={subTabsUser} size={SizeTypes.Medium} itemClassName='text-sm' /> : null}
         <SearchInput
           className='h-11 w-full md:w-[336px]'
           classNames={{ input: 'h-11' }}
           val={searchText}
           setVal={setSearchText}
         />
-      </div>
-      <div className='mt-6 flex justify-end'>
-        <div className='rounded-lg bg-neutral-900 p-1'>
-          <Tabs data={subTabsTime} size={SizeTypes.Small} itemClassName='text-sm' />
-        </div>
       </div>
       <Box className='mt-6'>
         <div className='flex flex-row items-center justify-between'>
@@ -380,6 +340,11 @@ function TopUser() {
           onlySortDesc
           enabledRedirectOnClickPagination
           loading={isLoading}
+          pageSize={pageSize}
+          totalItems={usersTotalCount || 0}
+          limitPage={isAll ? undefined : 10}
+          enabledRedirectOnClickSort
+          hightLightIndex={hightLightIndex}
         />
       </Box>
     </div>
