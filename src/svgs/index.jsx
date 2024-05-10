@@ -45,6 +45,7 @@ import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 import UpRank from '~/svgs/up-rank.svg'
 import User from '~/svgs/user.svg'
+import UserIcon from '~/svgs/user-icon.svg'
 import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
 import XIcon from '~/svgs/x-close.svg'
@@ -99,6 +100,7 @@ export {
   TransferIcon,
   UpRank,
   User,
+  UserIcon,
   Verified,
   WalletIcon,
   XIcon,

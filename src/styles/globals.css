@@ -326,3 +326,11 @@ input[type='radio']:checked:after {
 .bg-color-5 {
   background-color: #00d1ed;
 }
+
+.ellipsis-3 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+}

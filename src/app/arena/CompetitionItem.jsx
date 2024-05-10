@@ -14,7 +14,7 @@ import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { TCButton } from '@/modules/TradingCompetition/TCButton'
-import { Clock, CoinHand, Gift } from '@/svgs'
+import { Clock, CoinHand, Gift, UserIcon } from '@/svgs'
 
 import { CompetitionCardHeader } from './CompetitionCardHeader'
 
@@ -69,7 +69,8 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
           <NeutralBadge className={`text-nowrap lg:text-xs ${bgStatus}`}>{t(eventType)}</NeutralBadge>
         </div>
         {!showCheckedHidden ? (
-          <NeutralBadge className='absolute right-4 top-4 text-nowrap capitalize lg:text-xs'>
+          <NeutralBadge className='absolute right-4 top-4 flex items-center justify-center gap-1 text-nowrap capitalize lg:text-xs'>
+            <UserIcon className='h-3 w-3' />
             {`${competition.participantCount}/${competition.maxParticipants}`}
           </NeutralBadge>
         ) : (
@@ -81,25 +82,17 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
       </div>
       <div>
         <div className='flex items-center gap-2'>
-          <h3>{competition.name}</h3>
+          <h3 title={competition.name} className='ellipsis-3'>
+            {competition.name}
+          </h3>
           {competition.owner.isVerified && (
             <div className='flex items-center gap-1 text-nowrap'>
-              {competition.owner.name ? (
-                <h4 className='inline-block bg-gradient-to-r from-[#C72AD0] to-[#AA23DB] bg-clip-text text-3xl font-bold text-transparent'>
-                  {t('By')}{' '}
-                  <span style={competition.owner.nameColor ? { color: competition.owner.nameColor } : {}}>
-                    {formatAddress(competition.owner.username)}
-                  </span>
-                </h4>
-              ) : (
-                <h4>
-                  {t('By')}{' '}
-                  <span style={competition.owner.nameColor ? { color: competition.owner.nameColor } : {}}>
-                    {formatAddress(competition.owner.id)}
-                  </span>
-                </h4>
-              )}
-
+              <h4 className='inline-block bg-gradient-to-r from-[#C72AD0] to-[#AA23DB] bg-clip-text text-3xl font-bold text-transparent'>
+                {t('By')}{' '}
+                <span style={competition.owner.nameColor ? { color: competition.owner.nameColor } : {}}>
+                  {competition.owner.username ? competition.owner.username : formatAddress(competition.owner.id)}
+                </span>
+              </h4>
               <VerifyPopover verifyImage={competition.owner.checkMarkIcon} verifiedAt={competition.owner.verifiedAt} />
             </div>
           )}

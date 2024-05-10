@@ -11,7 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import Contracts from '@/constant/contracts'
@@ -123,14 +123,6 @@ export function UserInfo({ userInfo, following, followers }) {
                   <div onClick={onCopy} className='ml-1 h-5 w-5 cursor-pointer stroke-neutral-200'>
                     {copied ? <CheckIcon /> : <CopyIcon />}
                   </div>
-                  {isOwnProfile && (
-                    <PrimaryButton
-                      className='ml-4 bg-gradient-to-r from-[#B386FF] to-[#FF86FA] p-2 text-sm text-black'
-                      onClick={() => handleClickThenaButton('get')}
-                    >
-                      {!hasThenaId ? t('Get ID') : t('Get More IDs')}
-                    </PrimaryButton>
-                  )}
                 </div>
                 <TextSubHeading className='text-sm'>
                   {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM DD, YYYY')} {`${t('at')} `}
