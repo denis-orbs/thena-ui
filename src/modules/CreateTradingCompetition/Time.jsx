@@ -1,9 +1,10 @@
-import Image from 'next/image'
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Input from '@/components/input'
 import DateInput from '@/components/input/DateInput'
 import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
+import { MinusIcon, PlusIcon } from '@/svgs'
 
 import LabelTooltip from '../../components/label/LabelTooltip'
 
@@ -158,7 +159,7 @@ function Time({ data, setData }) {
                   className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
                   type='button'
                 >
-                  <Image src='/svgs/minus-v2.svg' alt='minus icon' width={14} height={14} />
+                  <MinusIcon className='h-[18px] w-[18px] stroke-white' />
                 </button>
                 <button
                   onClick={() => {
@@ -168,7 +169,7 @@ function Time({ data, setData }) {
                   className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
                   type='button'
                 >
-                  <Image src='/svgs/plus-v2.svg' alt='plus icon' width={14} height={14} />
+                  <PlusIcon className='h-[18px] w-[18px] stroke-white' />
                 </button>
               </div>
             }

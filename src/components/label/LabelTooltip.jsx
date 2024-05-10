@@ -12,13 +12,15 @@ export default function LabelTooltip({
   id = '',
   className = '',
   translate = true,
+  required = false,
 }) {
   const t = useTranslations()
 
   return (
     <div className={cn('mb-2 flex flex-row items-center', className)}>
       <p className='font-medium text-neutral-50'>
-        {label && typeof label === 'string' ? (translate ? t(label) : label) : ''}
+        {label && typeof label === 'string' ? (translate ? t(label) : label) : ''}{' '}
+        {required ? <span className='text-red-500'>*</span> : ''}
       </p>
       {showInfoIcon && (
         <>
