@@ -57,9 +57,10 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
           const total = weights.reduce((sum, cur) => sum + cur, 0)
           if (!token) {
             error = 'Invalid Prize Token'
-            // } else if (isInvalidAmount(totalPrize)) {
-          } else if (isInvalidAmount(totalPrize) || token.balance.lt(totalPrize)) {
+          } else if (isInvalidAmount(totalPrize)) {
             error = 'Invalid Prize Amount'
+          } else if (token.balance.lt(totalPrize)) {
+            error = 'Not Enough Host Contribution'
           } else if (isEntryFee && isInvalidAmount(data.entryFee)) {
             error = 'Invalid Fee Amount'
           } else if (total !== 100) {

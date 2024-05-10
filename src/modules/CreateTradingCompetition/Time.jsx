@@ -142,6 +142,7 @@ function Time({ data, setData }) {
             showInfoIcon
             tooltip='Select how many participants you would like to have in your trading competition.'
             id='trading-competition-max-participants'
+            required
           />
           <Input
             type='number'

@@ -776,5 +776,6 @@
   "Total THE balance": "Total THE balance",
   "Mark All As Read": "Mark all as read",
   "Notifications": "Notifications",
-  "1": "1"
+  "1": "1",
+  "Not Enough Host Contribution": "For the host contribution it seems like you do not have enough balance."
 }

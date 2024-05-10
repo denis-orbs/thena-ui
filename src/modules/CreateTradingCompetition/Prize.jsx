@@ -51,6 +51,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             label='Prizes Token'
             showInfoIcon
             tooltip='Select the asset you would like to to pay out the prizes in.'
+            required
           />
           <div className='relative flex cursor-pointer items-center' onClick={() => setIsPrizeOpen(true)}>
             <div
@@ -78,6 +79,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
               label='Host Contribution'
               showInfoIcon
               tooltip='You need to contribute at least a dust amount to seed the initial prize pool. You are not going to get this amount back, unless prize distribution includes the host as well, that you can set.'
+              required
             />
             <div className='mb-2 text-white'>
               {t('Balance')}: {formatAmount(data.prize.token?.balance)}

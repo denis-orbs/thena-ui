@@ -48,6 +48,7 @@ function Token({ data, setData }) {
           label='Competition Type'
           showInfoIcon
           tooltip='Select the competition type you would like your trading competition to be in.'
+          required
         />
         <div className='mt-3 flex items-center space-x-3'>
           <button
@@ -81,6 +82,7 @@ function Token({ data, setData }) {
           label='Tradable Tokens Label'
           showInfoIcon
           tooltip='Here you can select whether you would like your participants to trade in any assets or with certain assets only.'
+          required
         />
         <div className='relative flex cursor-pointer items-center' onClick={() => setIsTradeOpen(true)}>
           <div
@@ -100,6 +102,7 @@ function Token({ data, setData }) {
           label='Winning Token'
           showInfoIcon
           tooltip='Select the token that you would like your participants to acquire and be counted towards the competition.'
+          required
         />
         <div className='relative flex cursor-pointer items-center' onClick={() => setIsWinningOpen(true)}>
           <div
@@ -134,6 +137,7 @@ function Token({ data, setData }) {
             tooltip='Minimum balance for participants to join your trading competition.'
             showInfoIcon
             className='mb-0'
+            required
           />
         </div>
         <div className='w-full'>
