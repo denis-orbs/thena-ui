@@ -280,3 +280,5 @@ export const SWAP_TYPES = {
   TWAP: '2',
   LIMIT: '3',
 }
+
+export const trade2EarnStartTime = 1712534400

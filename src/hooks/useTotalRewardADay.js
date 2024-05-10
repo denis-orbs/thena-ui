@@ -12,7 +12,7 @@ export const useTotalRewardADay = () => {
   const fetchTotalRewardADay = useCallback(
     async currentDay => {
       const totalRewardADay = []
-      if (Number(currentDay) && rewardTokenList && rewardTokenList.length) {
+      if (Number(currentDay) && rewardTokenList && rewardTokenList.length && dibsRewarder) {
         for (let i = 0; i < rewardTokenList.length; i++) {
           const res = await readCall(dibsRewarder, 'totalReward', [rewardTokenList[i], Number(currentDay)])
           const asset = assets.find(a => a.address.toLowerCase() === rewardTokenList[i].toLowerCase())
