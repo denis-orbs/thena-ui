@@ -239,7 +239,11 @@ function RecentlyContent() {
       sortedData?.map(item => ({
         index: <Paragraph>{item.index}</Paragraph>,
         timestamp: <Paragraph>{moment(item.timestamp).locale(locale).fromNow()}</Paragraph>,
-        name: <Paragraph>{item.name}</Paragraph>,
+        name: (
+          <Paragraph>
+            <Link href={`/arena/thena-id/browse/${item.name}`}>{item.name}</Link>
+          </Paragraph>
+        ),
         cost: (
           <div className='flex items-center justify-center space-x-2'>
             {USDTAsset?.logoURI && (

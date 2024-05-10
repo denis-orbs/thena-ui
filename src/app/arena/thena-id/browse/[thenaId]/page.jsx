@@ -217,6 +217,7 @@ function ThenaIdPage() {
                     <Link
                       href={`https://element.market/assets/bsc/0xd8cd3f2e2c97d85bcd5bd47ff3f67ed0060f5b14/${tokenId}`}
                       rel='nofollow noopener'
+                      target='_blank'
                     >
                       <EmphasisButton>{t('Make Offer on Element')}</EmphasisButton>
                     </Link>
