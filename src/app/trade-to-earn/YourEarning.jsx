@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import moment from 'moment'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -9,6 +10,7 @@ import { PrimaryButton, TrailingButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Table from '@/components/table'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { trade2EarnStartTime } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
@@ -16,6 +18,8 @@ import { readCall } from '@/lib/contractActions'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { fetchDataTotalVolume, useClaimRewardMutation, useGetMuonMutation } from '@/modules/TradeToEarn'
+
+dayjs.extend(utc)
 
 function YourEarning({ earnings = [], refetchEarnings, setPending }) {
   const assets = useAssets()
@@ -98,7 +102,7 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
               reward.totalReward *
               (fromWei(item.amountAsUser).toNumber() / fromWei(totalTradingADay.amountAsUser).toNumber())
 
-            if (account) {
+            if (account && dibsRewarder) {
               const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
 
               if (fromWei(earnedWei).toNumber() !== 0 && fromWei(claimed).toNumber() === 0) {
@@ -124,9 +128,10 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
         }
 
         if (earned.some(e => e.total)) {
+          const parsedDate = dayjs.unix(trade2EarnStartTime).utc().add(item.day, 'days').format('MMM D, YYYY')
           items.push({
             epoch: item.day,
-            date: item.lastUpdate,
+            date: parsedDate,
             tradingVolume: item.amountAsUser,
             earned,
             inUSD,
@@ -221,7 +226,7 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
     () =>
       sortedData.map(item => ({
         epoch: <Paragraph>{item.epoch}</Paragraph>,
-        date: <Paragraph>{moment(new Date(item.date * 1000)).format('ll')}</Paragraph>,
+        date: <Paragraph>{item.date}</Paragraph>,
         tradingVolume: <Paragraph>${formatAmount(fromWei(item.tradingVolume))}</Paragraph>,
         earned: item.earned.length && (
           <Paragraph>
