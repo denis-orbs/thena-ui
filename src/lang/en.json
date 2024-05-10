@@ -811,5 +811,8 @@
   "Read": "Read",
   "CTR": "CTR",
   "Send": "Send",
-  "Redirect": "Redirect"
+  "Redirect": "Redirect",
+  "TC Created": "TC Created",
+  "Minted": "Minted",
+  "Minting Spend": "Minting Spend"
 }

@@ -311,14 +311,14 @@ function Header() {
       },
       {
         label: t('Arena'),
-        active: pathname === '/arena',
+        active: pathname.includes('/arena'),
         onClickHandler: () => {
           push('/arena')
         },
       },
       {
         label: t('More'),
-        active: pathname.includes('/analytics') || pathname.includes('/protocols'),
+        active: pathname === '/analytics' || pathname.includes('/protocols'),
         sub:
           networkId === ChainId.BSC
             ? [
@@ -421,6 +421,12 @@ function Header() {
           active: pathname === '/arena/rankings' || pathname === '/arena/rankings/competitions',
           isLink: true,
           href: '/arena/rankings',
+        },
+        {
+          label: t('Analytics'),
+          active: pathname.includes('/arena/analytics'),
+          isLink: true,
+          href: '/arena/analytics',
         },
         account
           ? {
