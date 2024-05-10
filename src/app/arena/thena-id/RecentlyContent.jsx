@@ -17,6 +17,7 @@ import { readCall } from '@/lib/contractActions'
 import { getThenaIDContract } from '@/lib/contracts'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount, fromWei, sliceAddress } from '@/lib/utils'
+import { useLocaleSettings } from '@/state/settings/hooks'
 
 const V4_RECENTLY_MINTED = gql`
   query V4_RECENTLY_MINTED {
@@ -134,6 +135,8 @@ function RecentlyContent() {
   const { costPerToken } = useUSDTCostPerToken()
   const assets = useAssets()
 
+  const { locale } = useLocaleSettings()
+
   // Only allowed USDT
   const USDTAsset = useMemo(
     () =>
@@ -235,7 +238,7 @@ function RecentlyContent() {
     () =>
       sortedData?.map(item => ({
         index: <Paragraph>{item.index}</Paragraph>,
-        timestamp: <Paragraph>{moment(item.timestamp).fromNow()}</Paragraph>,
+        timestamp: <Paragraph>{moment(item.timestamp).locale(locale).fromNow()}</Paragraph>,
         name: <Paragraph>{item.name}</Paragraph>,
         cost: (
           <div className='flex items-center justify-center space-x-2'>
@@ -277,7 +280,7 @@ function RecentlyContent() {
         ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [USDTAsset?.symbol, JSON.stringify(sortedData)],
+    [USDTAsset?.symbol, JSON.stringify(sortedData), locale],
   )
 
   useEffect(() => {
