@@ -84,6 +84,14 @@ export function UserInfo({ userInfo, following, followers }) {
     [userInfo.rank],
   )
 
+  const rankToPageRankingBalance = useMemo(
+    () =>
+      userInfo.rankBalance !== '-'
+        ? `?sort=balance&rank=${userInfo.rankBalance}&page=${Math.ceil(userInfo.rankBalance / 50)}`
+        : '',
+    [userInfo.rankBalance],
+  )
+
   return (
     <>
       <Box className='space-y-4'>
@@ -185,12 +193,14 @@ export function UserInfo({ userInfo, following, followers }) {
               <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
             </Box>
           </Link>
-          <Box className='flex flex-col gap-2 bg-neutral-800'>
-            <TextHeading className='text-lg'>
-              {`${formatAmount(fromWei(userInfo.balance, theAsset?.decimal))} ${theAsset?.symbol}`}
-            </TextHeading>
-            <TextSubHeading className='text-sm'>{t('Balance')}</TextSubHeading>
-          </Box>
+          <Link href={`/arena/rankings/users${rankToPageRankingBalance}`}>
+            <Box className='flex flex-col gap-2 bg-neutral-800'>
+              <TextHeading className='text-lg'>
+                {`${formatAmount(fromWei(userInfo.balance, theAsset?.decimal))} ${theAsset?.symbol}`}
+              </TextHeading>
+              <TextSubHeading className='text-sm'>{t('Balance')}</TextSubHeading>
+            </Box>
+          </Link>
           <Link href={`/arena/profile${params?.address ? `/${params?.address}` : ''}/followers`}>
             <Box className='flex flex-col gap-2 bg-neutral-800'>
               <TextHeading className='text-lg'>{followersCount}</TextHeading>

@@ -21,7 +21,7 @@ import { formatAmount, fromWei } from '@/lib/utils'
 const V4_TOP_USER = gql`
   query V4_TOP_USER(
     $user: UserWhereInput = {}
-    $orderBy: [UserLeaderboardOrderByInput!] = user_id_ASC
+    $orderBy: [UserLeaderboardOrderByInput!] = user_id_DESC
     $offset: Int = 0
     $limit: Int = 20
   ) {
@@ -32,6 +32,8 @@ const V4_TOP_USER = gql`
       followingCount
       followerCount
       entryFeesPaid
+      rankBalance
+      rankVolume
       user {
         username
         id
@@ -55,7 +57,7 @@ const V4_TOTAL_USERS = gql`
 
 const fetchUsers = async (sort, userFilter, offset = 0, limit = 50) => {
   try {
-    const orderBy = ['user_id_ASC']
+    const orderBy = ['user_id_DESC']
     switch (sort?.value) {
       case 'tradeVolume':
         orderBy.unshift('tradeVolume_DESC')
@@ -275,6 +277,8 @@ function TopUser() {
       isSuperAdmin: item.user.isSuperAdmin,
       balance: item.user.balance,
       rank: (currentPage - 1) * pageSize + index + 1,
+      rankBalance: item.rankBalance,
+      rankVolume: item.rankVolume,
     }))
     return arr
   }, [currentPage, dataFetch, pageSize])
@@ -291,7 +295,11 @@ function TopUser() {
   const finalData = useMemo(
     () =>
       topUsersFormatted?.map(item => ({
-        rank: <Paragraph>{item.rank}</Paragraph>,
+        rank: (
+          <Paragraph>
+            {sort?.value === 'tradeVolume' ? item.rankVolume : sort?.value === 'balance' ? item.rankBalance : item.rank}
+          </Paragraph>
+        ),
         user: <UserProfileCard user={{ ...item, id: item.userId }} showVerified={item?.isVerified} />,
         tradeVolume: <Paragraph>${formatAmount(item.tradeVolume)}</Paragraph>,
         balance: <Paragraph>{formatAmount(fromWei(item.balance))} THE</Paragraph>,

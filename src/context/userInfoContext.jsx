@@ -7,9 +7,10 @@ import { getFromSessionStorage } from '@/lib/helper'
 import useWallet from '@/lib/wallets/useWallet'
 
 const V4_USER_RANK = gql`
-  query V4_UER_RANK($id: String!) {
-    tradeRankByAddress(address: $id) {
-      rank
+  query V4_USER_RANK($user: UserWhereInput = {}) {
+    userLeaderboards(where: { user: $user }, limit: 1) {
+      rankVolume
+      rankBalance
     }
   }
 `
@@ -150,9 +151,13 @@ const fetchUserInfo = async idOrUserName => {
 
     if (users.length === 1) {
       const user = users[0]
-      const { tradeRankByAddress } = await v4Client.request(V4_USER_RANK, { id: user.id.toLowerCase() })
+      const { userLeaderboards } = await v4Client.request(V4_USER_RANK, { user: { id_eq: user.id } })
 
-      return { ...user, rank: tradeRankByAddress?.[0]?.rank ?? '-' }
+      return {
+        ...user,
+        rank: userLeaderboards?.[0]?.rankVolume ?? '-',
+        rankBalance: userLeaderboards?.[0]?.rankBalance ?? '-',
+      }
     }
     return undefined
   } catch (error) {
