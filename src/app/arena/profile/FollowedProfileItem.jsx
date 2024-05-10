@@ -14,7 +14,7 @@ import useWallet from '@/lib/wallets/useWallet'
 export function FollowedProfileItem({ user }) {
   const t = useTranslations()
   const { account } = useWallet()
-  const { user: queryUser } = useSearchParams()
+  const searchParams = useSearchParams()
   const { followUser } = useFollow(user?.user?.id, user?.user?.username)
 
   const { following } = useCurrentUserFollow()
@@ -28,13 +28,16 @@ export function FollowedProfileItem({ user }) {
     [following, user?.user?.id],
   )
 
+  const hightLight = useMemo(
+    () => searchParams.get('user')?.toLowerCase() === user.user?.id?.toLowerCase(),
+    [searchParams, user.user.id],
+  )
+
   return (
     <Box
       className={cn(
         'group/item flex cursor-pointer items-center justify-between gap-5 p-4 lg:p-4',
-        queryUser && user?.user && queryUser.toLowerCase() === user.user.id.toLowerCase()
-          ? 'bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
-          : '',
+        hightLight ? 'bg-gradient-to-r from-[#B386FF] to-[#FF86FA]' : '',
       )}
     >
       <div className='flex items-center gap-5'>
