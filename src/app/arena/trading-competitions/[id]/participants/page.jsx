@@ -215,11 +215,8 @@ function ParticipantsPage() {
   )
 
   const hightLightIndex = useMemo(
-    () =>
-      finalParticipants.findIndex(
-        participant => queryUser?.toLowerCase() === participant.participant?.id?.toLowerCase(),
-      ),
-    [finalParticipants, queryUser],
+    () => sortedData?.findIndex(participant => queryUser?.toLowerCase() === participant.participant?.id?.toLowerCase()),
+    [sortedData, queryUser],
   )
 
   return (
