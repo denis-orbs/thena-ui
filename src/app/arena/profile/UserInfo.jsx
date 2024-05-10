@@ -133,7 +133,7 @@ export function UserInfo({ userInfo, following, followers }) {
                   </div>
                 </div>
                 <TextSubHeading className='text-sm'>
-                  {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM DD, YYYY')} {`${t('at')} `}
+                  {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM D, YYYY')} {`${t('at')} `}
                   {dayjs(userInfo.firstInteractAt).tz().format('h:ma')}
                 </TextSubHeading>
                 <div className='flex gap-2'>
