@@ -47,7 +47,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
               : !winningToken
                 ? 'Invalid Winning Token'
                 : isInvalidAmount(startingBalance)
-                  ? 'Invalid Amount'
+                  ? 'Invalid Total Deposit'
                   : ''
           break
         }

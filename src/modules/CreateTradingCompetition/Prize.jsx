@@ -77,7 +77,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
               id='hostContribution'
               label='Host Contribution'
               showInfoIcon
-              tooltip='If you would like to contribute anything towards the prize pool yourself, you can do that here. Everything you put up will go towards the prize pool.'
+              tooltip='You need to contribute at least a dust amount to seed the initial prize pool. You are not going to get this amount back, unless prize distribution includes the host as well, that you can set.'
             />
             <div className='mb-2 text-white'>
               {t('Balance')}: {formatAmount(data.prize.token?.balance)}
@@ -86,6 +86,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           <Input
             value={data.prize.totalPrize}
             type='number'
+            placeholder='1'
             TrailingButton={
               data.prize.token ? (
                 <div className='absolute right-4 flex items-center space-x-1.5'>
@@ -214,7 +215,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             if (placements > 2) setData({ ...data, prize: { ...data.prize, placements: placements - 1 } })
           }}
           disabled={placements <= 2}
-          className='bg-red-600 p-[0.5rem] hover:bg-red-600'
+          className={`bg-red-500 p-[0.5rem] hover:bg-red-500 ${placements <= 2 ? 'bg-red-800 hover:bg-red-800' : ''}`}
         >
           <Image src='/svgs/minus-v2.svg' alt='' width={20} height={20} />
         </PrimaryButton>
@@ -222,7 +223,9 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           onClick={() => {
             if (placements < 100) setData({ ...data, prize: { ...data.prize, placements: placements + 1 } })
           }}
-          className='bg-green-600 p-[0.5rem] hover:bg-green-600'
+          className={`bg-green-600 p-[0.5rem] hover:bg-green-600 ${
+            total >= 100 ? 'bg-green-800 hover:bg-green-800' : ''
+          }`}
           disabled={total >= 100}
         >
           <Image src='/svgs/plus-v2.svg' alt='' width={20} height={20} />

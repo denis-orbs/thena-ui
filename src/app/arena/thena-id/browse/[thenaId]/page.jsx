@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { gql } from 'graphql-request'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -28,6 +29,8 @@ import { successToast } from '@/lib/notify'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ArrowLeftIcon } from '@/svgs'
+
+dayjs.extend(localizedFormat)
 
 const V4_USER_INFO = gql`
   query V4_USER_USERNAME($id: String!) {
@@ -217,6 +220,7 @@ function ThenaIdPage() {
                     <Link
                       href={`https://element.market/assets/bsc/0xd8cd3f2e2c97d85bcd5bd47ff3f67ed0060f5b14/${tokenId}`}
                       rel='nofollow noopener'
+                      target='_blank'
                     >
                       <EmphasisButton>{t('Make Offer on Element')}</EmphasisButton>
                     </Link>
@@ -253,9 +257,19 @@ function ThenaIdPage() {
                 {attributes.map(att => (
                   <Box className='flex w-full flex-col gap-4 lg:p-4' key={att.trait_type}>
                     <TextHeading className='mb-2 block text-base'>{att.trait_type}</TextHeading>
-                    <TextHeading className='mb-2 block text-base'>
-                      {att?.display_type === 'date' ? dayjs.unix(att.value).format('YYYY-MM-DD HH:mm:ss') : att.value}
-                    </TextHeading>
+                    {att?.display_type !== 'date' ? (
+                      <TextHeading className='mb-2 block text-base'>{att.value}</TextHeading>
+                    ) : (
+                      <TextHeading className='text-sm'>
+                        {dayjs(att.value * 1000)
+                          .tz()
+                          .format('MMM D, YYYY')}{' '}
+                        {`${t('at')} `}
+                        {dayjs(att.value * 1000)
+                          .tz()
+                          .format('h:ma')}
+                      </TextHeading>
+                    )}
                   </Box>
                 ))}
               </div>

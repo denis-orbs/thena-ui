@@ -59,7 +59,7 @@ function Token({ data, setData }) {
             }}
             className={`px-6 py-[8.4px] uppercase text-white ${
               data.market === TC_MARKET_TYPES.SPOT ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
-            } rounded-full`}
+            } rounded-lg`}
             type='button'
           >
             {t('Spot')}
@@ -68,7 +68,7 @@ function Token({ data, setData }) {
             disabled
             className={`px-6 py-[8.4px] uppercase disabled:cursor-not-allowed disabled:text-gray-500 ${
               data.market === TC_MARKET_TYPES.PERPETUAL ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
-            } rounded-full`}
+            } rounded-lg`}
             type='button'
           >
             {t('Perpetual')}

@@ -21,6 +21,7 @@ function Detail({ data, setData }) {
           showInfoIcon
           tooltip='This is the name of your trading competition, which will be displayed on the trading competition feed.'
           id='trading-competition-name'
+          required
         />
         <Input
           onChange={e =>
@@ -40,6 +41,7 @@ function Detail({ data, setData }) {
           showInfoIcon
           tooltip='Put the description for your trading competition here. You can use up to 2,000 characters and format it whatever way you would like.'
           id='trading-competition-description'
+          required
         />
         <QuillEditor
           value={data.description}

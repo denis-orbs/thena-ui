@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -16,7 +17,8 @@ import { useUSDTCostPerToken } from '@/hooks/useThenaIdContract'
 import { readCall } from '@/lib/contractActions'
 import { getThenaIDContract } from '@/lib/contracts'
 import { v4Client } from '@/lib/graphql'
-import { formatAmount, fromWei, sliceAddress } from '@/lib/utils'
+import { cn, formatAmount, fromWei } from '@/lib/utils'
+import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { useLocaleSettings } from '@/state/settings/hooks'
 
 const V4_RECENTLY_MINTED = gql`
@@ -28,7 +30,21 @@ const V4_RECENTLY_MINTED = gql`
       timestamp
       owner {
         id
+        firstInteractAt
+        biography
+        timezone
+        websiteUrl
+        xProfileUrl
         username
+        theme
+        nameColor
+        avatar
+        balance
+        isSuperAdmin
+        checkMarkIcon
+        verifiedAt
+        isAdmin
+        isVerified
       }
     }
   }
@@ -43,11 +59,39 @@ const V4_RECENTLY_GIFTED = gql`
       timestamp
       owner {
         id
+        firstInteractAt
+        biography
+        timezone
+        websiteUrl
+        xProfileUrl
         username
+        theme
+        nameColor
+        avatar
+        balance
+        isSuperAdmin
+        checkMarkIcon
+        verifiedAt
+        isAdmin
+        isVerified
       }
       giftFrom {
         id
+        firstInteractAt
+        biography
+        timezone
+        websiteUrl
+        xProfileUrl
         username
+        theme
+        nameColor
+        avatar
+        balance
+        isSuperAdmin
+        checkMarkIcon
+        verifiedAt
+        isAdmin
+        isVerified
       }
     }
   }
@@ -133,6 +177,7 @@ function RecentlyContent() {
   const [sort, setSort] = useState(sortOptions[0])
   const [dataFetch, setDataFetch] = useState([])
   const { costPerToken } = useUSDTCostPerToken()
+  const [loading, setLoading] = useState(false)
   const assets = useAssets()
 
   const { locale } = useLocaleSettings()
@@ -166,6 +211,7 @@ function RecentlyContent() {
 
   const getData = useCallback(async () => {
     if (!isLoading) {
+      setLoading(true)
       if (data && Array.isArray(data)) {
         const contract = getThenaIDContract()
         const arr = []
@@ -175,13 +221,12 @@ function RecentlyContent() {
           arr.push({
             index: item.index,
             name: item.name,
-            owner: item.owner.id,
+            owner: item.owner,
             ownerUsername: item.owner.username,
             timestamp: item.timestamp,
             cost: cost ? fromWei(cost, USDTAsset?.decimals) : 0,
             giftFrom: item.giftFrom || undefined,
-            giftTo: item.owner.id,
-            giftToUsername: item.owner.username,
+            giftTo: item.owner,
           })
         }
 
@@ -189,6 +234,7 @@ function RecentlyContent() {
       } else {
         setDataFetch([])
       }
+      setLoading(false)
     } else {
       setDataFetch(undefined)
     }
@@ -213,18 +259,22 @@ function RecentlyContent() {
             res = a.name.localeCompare(b.name) * (sort.isDesc ? -1 : 1)
             break
           case 'owner':
-            res = a.owner.localeCompare(b.owner) * (sort.isDesc ? -1 : 1)
+            res =
+              (a.owner.username || a.owner.id).localeCompare(b.owner.username || b.owner.id) * (sort.isDesc ? -1 : 1)
             break
           case 'cost':
             res = (a.cost - b.cost) * (sort.isDesc ? -1 : 1)
             break
           case 'giftFrom':
             res =
-              (a.giftFrom.username || a.giftFrom.id).localeCompare(b.giftFrom.username || b.giftFrom.id) *
+              (a.giftFrom?.username || a.giftFrom.id).localeCompare(b.giftFrom?.username || b.giftFrom?.id) *
               (sort.isDesc ? -1 : 1)
             break
           case 'giftTo':
-            res = a.giftTo.localeCompare(b.giftTo) * (sort.isDesc ? -1 : 1)
+            res =
+              (a.giftTo?.username || a.giftTo.id).localeCompare(b.giftTo?.username || b.giftTo?.id) *
+              (sort.isDesc ? -1 : 1)
+
             break
           default:
             break
@@ -239,7 +289,36 @@ function RecentlyContent() {
       sortedData?.map(item => ({
         index: <Paragraph>{item.index}</Paragraph>,
         timestamp: <Paragraph>{moment(item.timestamp).locale(locale).fromNow()}</Paragraph>,
-        name: <Paragraph>{item.name}</Paragraph>,
+        name: (
+          <Link
+            className='flex cursor-pointer items-center justify-center gap-2'
+            href={`/arena/thena-id/browse/${encodeURI(item.name)}`}
+          >
+            <div className='mr-1 flex flex-col gap-1'>
+              <TextHeading
+                className={cn(
+                  'text-nowrap text-base',
+                  item.owner.nameColor && !String(item.owner.nameColor).startsWith('#') ? item.owner.nameColor : '',
+                )}
+              >
+                <span
+                  style={{
+                    color: item.owner.nameColor
+                      ? String(item.owner.nameColor).startsWith('#')
+                        ? item.owner.nameColor
+                        : ''
+                      : '',
+                  }}
+                >
+                  {item.name}
+                </span>
+              </TextHeading>
+            </div>
+            {item.owner.isVerified && (
+              <VerifyPopover verifyImage={item.owner.checkMarkIcon} verifiedAt={item.owner.verifiedAt} />
+            )}
+          </Link>
+        ),
         cost: (
           <div className='flex items-center justify-center space-x-2'>
             {USDTAsset?.logoURI && (
@@ -257,27 +336,9 @@ function RecentlyContent() {
             </Paragraph>
           </div>
         ),
-        owner: (
-          <Paragraph className='block w-full text-left'>
-            <Link href={`/arena/profile/${item.ownerUsername ? item.ownerUsername : item.owner}`}>
-              {sliceAddress(item.owner)}
-            </Link>
-          </Paragraph>
-        ),
-        giftFrom: (
-          <Paragraph className='block w-full text-left'>
-            <Link href={`/arena/profile/${item.giftFrom?.username ? item.giftFrom.username : item.giftFrom?.id}`}>
-              {item.giftFrom?.username ? item.giftFrom.username : sliceAddress(item.giftFrom?.id || '')}
-            </Link>
-          </Paragraph>
-        ),
-        giftTo: (
-          <Paragraph className='block w-full text-left'>
-            <Link href={`/arena/profile/${item.giftToUsername ? item.giftToUsername : item.giftTo}`}>
-              {sliceAddress(item.giftTo)}
-            </Link>
-          </Paragraph>
-        ),
+        owner: <UserProfileCard user={item.owner} showVerified={item.owner.isVerified} />,
+        giftFrom: <UserProfileCard user={item.giftFrom} showVerified={item.giftFrom?.isVerified} />,
+        giftTo: <UserProfileCard user={item.giftTo} showVerified={item.giftTo.isVerified} />,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [USDTAsset?.symbol, JSON.stringify(sortedData), locale],
@@ -308,7 +369,7 @@ function RecentlyContent() {
           setSort={setSort}
           tableBasic
           enabledRedirectOnClickPagination
-          loading={isLoading || !dataFetch}
+          loading={isLoading || loading || !dataFetch}
           pageSize={50}
         />
       </div>
