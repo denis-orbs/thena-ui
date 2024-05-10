@@ -3,11 +3,12 @@
 // import { useTranslations } from 'next-intl'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
+import { toast } from 'react-toastify'
 import useSWR from 'swr'
 import 'dayjs/locale/en'
 import 'dayjs/locale/zh'
 
-import { fetchUserNotifcations, useMarkNotificationRead } from '@/hooks/useNotifications'
+import { fetchUserNotifcations, useMarkNotificationRead, useNotificationsSubscription } from '@/hooks/useNotifications'
 import { cn } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { BellIcon } from '@/svgs'
@@ -40,17 +41,19 @@ export function Notification() {
     [markRead, mutate],
   )
 
-  // const handleNewNotification = useCallback(
-  //   data => {
-  //     if (data.newNotification) {
-  //       toast.success(<NotificationItem notification={data.newNotification} markRead={markNotiAsRead} />, {
-  //         icon: false,
-  //       })
-  //       mutate()
-  //     }
-  //   },
-  //   [markNotiAsRead, mutate],
-  // )
+  const handleNewNotification = useCallback(
+    data => {
+      if (data.newNotification) {
+        toast.success(<NotificationItem notification={data.newNotification} markRead={markNotiAsRead} />, {
+          icon: false,
+        })
+        mutate()
+      }
+    },
+    [markNotiAsRead, mutate],
+  )
+
+  useNotificationsSubscription(handleNewNotification)
 
   const hasUnread = useMemo(() => notifications?.some(item => !item.isRead), [notifications])
 
