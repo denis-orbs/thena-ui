@@ -131,14 +131,6 @@ export function UserInfo({ userInfo, following, followers }) {
                       {!hasThenaId ? t('Get ID') : t('Get More IDs')}
                     </PrimaryButton>
                   )}
-                  {!isOwnProfile && (
-                    <PrimaryButton
-                      className='ml-4 bg-gradient-to-r from-[#B386FF] to-[#FF86FA] p-2 text-sm text-black'
-                      onClick={() => handleClickThenaButton('gift')}
-                    >
-                      {t('Gift Thena ID')}
-                    </PrimaryButton>
-                  )}
                 </div>
                 <TextSubHeading className='text-sm'>
                   {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM DD, YYYY')} {`${t('at')} `}
