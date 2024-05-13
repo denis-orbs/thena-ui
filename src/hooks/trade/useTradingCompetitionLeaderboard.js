@@ -31,6 +31,7 @@ const V4_COMPETITION_DATA = gql`
         endTimestamp
         startTimestamp
       }
+      tradingCompetitionSpot
     }
   }
 `

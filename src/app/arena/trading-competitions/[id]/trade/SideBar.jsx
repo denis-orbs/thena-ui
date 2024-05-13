@@ -16,6 +16,7 @@ import CustomTokenInput from '@/components/input/CustomTokenInput'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useTradingCompetition } from '@/context/tradingCompetitionContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useBestV3TradeExactIn } from '@/hooks/fusion/useBestV3Trade'
 import useDebounce from '@/hooks/useDebounce'
@@ -63,6 +64,8 @@ export function SideBar({
   const [ooeData, setOoeData] = useState('')
   const [oneInchData, setOneInchData] = useState('')
   const [service, setService] = useState(serviceList[2])
+
+  const { handleReloadFetch } = useTradingCompetition()
 
   const inCurrency = useCurrency(fromAsset ? fromAsset.address : undefined)
   const outCurrency = useCurrency(toAsset ? toAsset.address : undefined)
@@ -225,6 +228,9 @@ export function SideBar({
 
     if (isSuccess) {
       setReloadFetch(reload => reload + 1)
+      if (handleReloadFetch) {
+        handleReloadFetch()
+      }
     }
   }, [
     service,
@@ -240,6 +246,7 @@ export function SideBar({
     oneInchData,
     onSwapOOE,
     ooeData,
+    handleReloadFetch,
   ])
 
   const btnMsg = useMemo(() => {
