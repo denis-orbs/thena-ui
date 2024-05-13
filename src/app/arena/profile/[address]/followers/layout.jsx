@@ -2,8 +2,8 @@ import { gql } from 'graphql-request'
 import React from 'react'
 
 import { siteConfig } from '@/constant/config'
+import { v4Client } from '@/lib/graphql'
 import { formatAddress } from '@/lib/utils'
-import { v4Client } from '@/modules/TradeToEarn'
 
 const V4_USER_META_DATA = gql`
   query V4_USER_META($address: String!) {
