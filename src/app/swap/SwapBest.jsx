@@ -119,33 +119,6 @@ export default function SwapBest({
     return 0
   }, [isLHToken, bestTrade, fromAsset, toAsset, fromAmount, toAmount, quotePending])
 
-  // const selections = useMemo(
-  //   () => [
-  //     {
-  //       label: 'Market',
-  //       active: pathname.includes('/swap'),
-  //       onClickHandler: () => {
-  //         push('/swap')
-  //       },
-  //     },
-  //     {
-  //       label: 'Limit',
-  //       active: pathname === '/pools',
-  //       onClickHandler: () => {
-  //         push('/swap')
-  //       },
-  //     },
-  //     {
-  //       label: 'TWAP',
-  //       active: pathname === '/dashboard',
-  //       onClickHandler: () => {
-  //         push('/swap')
-  //       },
-  //     },
-  //   ],
-  //   [pathname, push],
-  // )
-
   const percents = useMemo(
     () => [
       {
@@ -296,13 +269,12 @@ export default function SwapBest({
   const isTwap = swapType === SWAP_TYPES.TWAP || swapType === SWAP_TYPES.LIMIT
   return (
     <>
-      <div className='flex w-full max-w-[480px] flex-1 flex-col gap-5'>
-        <Selection className='w-full' isFull data={swapTypeSelections} />
-        <Box className='w-full'>
+      <div className='w-full min-w-0 md:w-[448px] 2xl:w-[480px]'>
+        <Selection className='mb-5 w-full' isFull data={swapTypeSelections} />
+        <Box className='md:p-4'>
           <div className='mb-3 flex items-center justify-between'>
             <h2>{title}</h2>
             <div className='flex items-center gap-2'>
-              {/* <Selection data={selections} /> */}
               <TxnSettings />
             </div>
           </div>
@@ -404,7 +376,7 @@ export default function SwapBest({
           )}
         </Box>
       </div>
-      <div className='flex w-full max-w-[920px] flex-col gap-4'>
+      <div className='flex min-w-0 max-w-[920px] flex-1 flex-col gap-4'>
         <SwapChart asset0={toAsset} asset1={fromAsset} />
         {isTwap ? (
           <Box className='flex flex-col gap-4'>

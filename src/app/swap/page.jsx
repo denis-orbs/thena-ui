@@ -86,7 +86,7 @@ export default function SwapPage() {
   }, [fromAsset, toAsset])
 
   return (
-    <div className='flex w-full flex-col items-center gap-10 lg:flex-row lg:items-start'>
+    <div className='flex w-full flex-col items-center gap-6 lg:flex-row lg:items-start 2xl:gap-10'>
       {networkId === ChainId.BSC && (
         <SwapBest
           fromAsset={fromAsset}
