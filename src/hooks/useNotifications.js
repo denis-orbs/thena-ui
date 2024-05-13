@@ -48,14 +48,19 @@ export const fetchUserNotifcations = async id => {
 export function useNotificationsSubscription(callback) {
   const { account } = useWallet()
   const [client, setClient] = useState()
+  const [socketState, setSocketState] = useState(WebSocket.CONNECTING)
 
   const unSubscribeRef = useRef()
 
   useEffect(() => {
     const newSocket = new WebSocket(v4GraphWsUrl, 'graphql-transport-ws')
     setClient(new GraphQLWebSocketClient(newSocket, {}))
-
-    if (newSocket.readyState !== WebSocket.OPEN) return
+    newSocket.onopen = () => {
+      setSocketState(WebSocket.OPEN)
+    }
+    newSocket.onclose = () => {
+      setSocketState(WebSocket.CLOSED)
+    }
 
     return () => {
       newSocket.close()
@@ -63,7 +68,7 @@ export function useNotificationsSubscription(callback) {
   }, [])
 
   useEffect(() => {
-    if (account && client && client.socket.readyState === WebSocket.OPEN) {
+    if (account && client && socketState === WebSocket.OPEN) {
       if (unSubscribeRef.current) {
         unSubscribeRef.current()
       }
@@ -85,7 +90,7 @@ export function useNotificationsSubscription(callback) {
       unSubscribeRef.current = undefined
     }
     return unSubscribeRef.current
-  }, [account, callback, client])
+  }, [account, callback, client, socketState])
 }
 
 export function useMarkNotificationRead() {
