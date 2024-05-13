@@ -86,5 +86,5 @@ export const useUpdateProfile = account => {
     [updateProfileFn, signWallet, mutateUserInfo],
   )
 
-  return { updateProfile }
+  return { updateProfile, updateProfileFn }
 }

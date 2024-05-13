@@ -8,7 +8,7 @@ import { useUserInfo } from '@/context/userInfoContext'
 import { EditProfile } from '@/modules/Profile/EditProfile'
 
 function EditProfilePage() {
-  const { userInfo, isLoading } = useUserInfo()
+  const { userInfo, isLoading, mutateUserInfo } = useUserInfo()
 
   useEffect(() => {
     if (!isLoading && (!userInfo || !userInfo?.usernameNfts?.length)) {
@@ -20,7 +20,7 @@ function EditProfilePage() {
     return <Loading />
   }
 
-  return <EditProfile userInfo={userInfo} />
+  return <EditProfile userInfo={userInfo} mutateUserInfo={mutateUserInfo} />
 }
 
 export default EditProfilePage

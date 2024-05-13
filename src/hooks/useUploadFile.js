@@ -5,6 +5,8 @@ import { v4Client } from '@/lib/graphql'
 import { getFromSessionStorage } from '@/lib/helper'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
+import { useUpdateProfile } from './useProfile'
+
 const V4_GENERATE_URL = gql`
   mutation V4_GENERATE_URL($fileName: String!, $fileType: String!, $userId: String!, $type: BucketType) {
     generatePresignedUrl(input: { fileName: $fileName, fileType: $fileType, userId: $userId, type: $type }) {
@@ -126,7 +128,6 @@ export const useUploadBanner = () => {
     if (file) {
       const url = await generateUrlUpload({ file, userId, type: 'BANNER' })
       if (url) {
-        console.log('url', url)
         return await updateBanner(url, tcId)
       }
     } else {
@@ -143,4 +144,34 @@ export const useUploadBanner = () => {
   )
 
   return { uploadBanner }
+}
+
+export const useUpdateAvatar = (isAdmin, user) => {
+  const { signWallet } = useSignWallet()
+  const { updateProfileFn } = useUpdateProfile(isAdmin ? user?.id : null)
+
+  const uploadFn = useCallback(
+    async ({ file, userInfo }) => {
+      const { id, ...userData } = userInfo
+      if (file) {
+        const url = await generateUrlUpload({ file, userId: id, type: 'CUSTOM_AVATAR' })
+        if (url) {
+          return await updateProfileFn({ ...userData, avatar: url })
+        }
+      } else {
+        return await updateProfileFn({ ...userData, avatar: null })
+      }
+      return false
+    },
+    [updateProfileFn],
+  )
+
+  const uploadAvatar = useCallback(
+    async (file, userInfo, callOnSuccess) => {
+      actionWithAuthentication(uploadFn, signWallet, { file, userInfo }, callOnSuccess)
+    },
+    [uploadFn, signWallet],
+  )
+
+  return { uploadAvatar }
 }

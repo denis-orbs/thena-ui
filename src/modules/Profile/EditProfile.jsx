@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -8,7 +9,7 @@ import 'react-quill-emoji/dist/quill-emoji.css'
 import './style.css'
 
 import Box from '@/components/box'
-import { PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import Input from '@/components/input'
 import Toggle from '@/components/toggle'
@@ -17,21 +18,22 @@ import { useUpdateProfile } from '@/hooks/useProfile'
 import { errorToast } from '@/lib/notify'
 import { isValidHttpUrl } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { ArrowLeftIcon } from '@/svgs'
+import { ArrowLeftIcon, Verified } from '@/svgs'
 
 import { SelectAvatar } from './SelectAvatar'
 import { SelectNameColor } from './SelectNameColor'
 import { SelectTheme } from './SelectTheme'
 import { SelectUserName } from './SelectUserName'
+import ModalEditCheckMark from '../Admin/ModalEditCheckMark'
 
 const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { ssr: false })
 
-export function EditProfile({ userInfo, isAdmin = false }) {
+export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
   const t = useTranslations()
   const [timeZoneData, setTimeZoneData] = useState([])
   const [currentTimeZone, setCurrentTimeZone] = useState('')
   const [showCustomColor, setShowCustomColor] = useState(false)
-
+  const [openCheckMarkIcon, setOpenCheckMarkIcon] = useState(false)
   const { account } = useWallet()
 
   // const dataPrev = useMemo(
@@ -58,7 +60,7 @@ export function EditProfile({ userInfo, isAdmin = false }) {
     websiteUrl: userInfo?.websiteUrl ?? null,
     xProfileUrl: userInfo?.xProfileUrl ?? null,
     isPublicProfile: userInfo?.isPublicProfile ?? true,
-    nameColor: userInfo?.nameColor ?? 'ffffff',
+    nameColor: userInfo?.nameColor ?? '#ffffff',
   })
 
   const { updateProfile } = useUpdateProfile(isAdmin ? userInfo?.id : null)
@@ -128,15 +130,19 @@ export function EditProfile({ userInfo, isAdmin = false }) {
               {t('You Must Own An TheNFT To Select It As Your Avatar')}
             </TextSubHeading>
           </div>
-          <SelectAvatar dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} userInfo={userInfo} />
+          <SelectAvatar
+            dataUpdate={dataUpdate}
+            setDataUpdate={setDataUpdate}
+            userInfo={userInfo}
+            mutateUserInfo={mutateUserInfo}
+            isAdmin={isAdmin}
+          />
         </div>
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
             <TextHeading className='text-xl'>{t('Change Name Color')}</TextHeading>
             <TextSubHeading className='text-base'>{t('Pick A Color For Your Name')}</TextSubHeading>
           </div>
-
-          {/* eslint-disable-next-line prettier/prettier */}
           <div className='flex flex-2 flex-col items-center gap-3 lg:flex-row'>
             <div>
               <TextSubHeading className='mb-1 block'>
@@ -172,6 +178,34 @@ export function EditProfile({ userInfo, isAdmin = false }) {
             )}
           </div>
         </div>
+        {(isAdmin || userInfo?.isVerified) && (
+          <div className='flex flex-col gap-6 lg:flex-row'>
+            <div className='flex flex-1 flex-col gap-3'>
+              <TextHeading className='text-xl'>{t('Edit Checkmark Image')}</TextHeading>
+              <TextSubHeading className='text-base'>{t('Edit What Your Checkmark Looks Like')}</TextSubHeading>
+            </div>
+            <div className='flex flex-2 items-center gap-3'>
+              {userInfo?.isVerified ? (
+                userInfo?.checkMarkIcon ? (
+                  <Image
+                    src={userInfo?.checkMarkIcon}
+                    width={20}
+                    height={20}
+                    className='ml-2 h-5 w-5 cursor-pointer'
+                    alt='demo-checkmark'
+                  />
+                ) : (
+                  <Verified className='ml-2 h-5 w-5 cursor-pointer' />
+                )
+              ) : (
+                <></>
+              )}
+              <EmphasisButton onClick={() => setOpenCheckMarkIcon(true)} className='my-3'>
+                {t('Edit Checkmark Image')}
+              </EmphasisButton>
+            </div>
+          </div>
+        )}
         <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
             <TextHeading className='text-xl'>{t('Website URL')}</TextHeading>
@@ -293,6 +327,25 @@ export function EditProfile({ userInfo, isAdmin = false }) {
           </div>
         </div>
       </Box>
+      {openCheckMarkIcon && (
+        <ModalEditCheckMark
+          isOpen={openCheckMarkIcon}
+          user={{
+            biography: userInfo?.biography ?? null,
+            avatar: userInfo?.avatar ?? null,
+            theme: userInfo?.theme ?? null,
+            timezone: userInfo?.timezone ?? null,
+            username: userInfo?.username ?? null,
+            websiteUrl: userInfo?.websiteUrl ?? null,
+            xProfileUrl: userInfo?.xProfileUrl ?? null,
+            isPublicProfile: userInfo?.isPublicProfile ?? true,
+            nameColor: userInfo?.nameColor ?? '#ffffff',
+            id: userInfo?.id,
+          }}
+          mutate={mutateUserInfo}
+          closeModal={() => setOpenCheckMarkIcon(false)}
+        />
+      )}
     </div>
   )
 }

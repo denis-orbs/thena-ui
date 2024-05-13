@@ -732,7 +732,7 @@
   "Basic Color": "Basic Color",
   "Username": "Username",
   "Trading Starts Soon": "Trading Starts Soon",
-  "Select Your Username": "Select your username",
+  "Select Your Username": "Select your username.",
   "Follower Profiles": "Follower Profiles",
   "THENA IDs": "THENA IDs",
   "THENA ID": "THENA ID",
@@ -777,5 +777,12 @@
   "1": "1",
   "Not Enough Host Contribution": "For the host contribution it seems like you do not have enough balance.",
   "Less": "Less",
-  "Gifted By": "Gifted By"
+  "Gifted By": "Gifted By",
+  "Edit Checkmark Image": "Edit checkmark image",
+  "Edit What Your Checkmark Looks Like": "Edit what your checkmark looks like.",
+  "Edit Avatar": "Edit Avatar",
+  "Upload Avatar": "Upload Avatar",
+  "Are You Sure You Want To Edit Avatar For User": "Are you sure you want to edit avatar for user",
+  "Use Avatar Default": "Use avatar default",
+  "Use Custom Avatar": "Use custom avatar"
 }

@@ -66,7 +66,11 @@ const fetchUserInfo = async id => {
 function EditAdminProfile() {
   const { account } = useWallet()
 
-  const { data: userInfo, isLoading } = useSWR(['edit user info'], () => fetchUserInfo(account?.toLowerCase()), {
+  const {
+    data: userInfo,
+    isLoading,
+    mutate,
+  } = useSWR(['edit user info'], () => fetchUserInfo(account?.toLowerCase()), {
     refreshInterval: 60000,
   })
 
@@ -74,7 +78,7 @@ function EditAdminProfile() {
     return <Loading />
   }
 
-  return <EditProfile userInfo={userInfo} isAdmin />
+  return <EditProfile userInfo={userInfo} isAdmin mutateUserInfo={mutate} />
 }
 
 export default EditAdminProfile

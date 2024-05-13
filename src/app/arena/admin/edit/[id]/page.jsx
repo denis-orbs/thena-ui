@@ -73,13 +73,13 @@ function EditUserProfile() {
   const { account } = useWallet()
   const router = useRouter()
 
-  const { data: userInfo, isLoading } = useSWR(
-    ['edit user info', params?.id],
-    () => fetchUserInfo(params?.id?.toLowerCase()),
-    {
-      refreshInterval: 60000,
-    },
-  )
+  const {
+    data: userInfo,
+    isLoading,
+    mutate,
+  } = useSWR(['edit user info', params?.id], () => fetchUserInfo(params?.id?.toLowerCase()), {
+    refreshInterval: 60000,
+  })
 
   useEffect(() => {
     if (!account) {
@@ -87,7 +87,7 @@ function EditUserProfile() {
     }
   }, [account, router])
 
-  return params?.id && !isLoading ? <EditProfile userInfo={userInfo} isAdmin /> : <Loading />
+  return params?.id && !isLoading ? <EditProfile userInfo={userInfo} isAdmin mutateUserInfo={mutate} /> : <Loading />
 }
 
 export default EditUserProfile
