@@ -105,6 +105,7 @@ function Table({
   useEffect(() => {
     if (sort && enabledRedirectOnClickSort) {
       query.set('sort', sort.value.toString())
+      query.set('isDesc', sort.isDesc.toString())
       router.replace(`${pathname}?${query.toString()}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

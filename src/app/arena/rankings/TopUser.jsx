@@ -58,33 +58,34 @@ const V4_TOTAL_USERS = gql`
 const fetchUsers = async (sort, userFilter, offset = 0, limit = 50) => {
   try {
     const orderBy = ['user_id_DESC']
+    const isDesc = sort?.isDesc
     switch (sort?.value) {
       case 'tradeVolume':
-        orderBy.unshift('tradeVolume_DESC')
+        orderBy.unshift(isDesc ? 'tradeVolume_DESC' : 'tradeVolume_ASC')
         break
 
       case 'balance':
-        orderBy.unshift('user_balance_DESC')
+        orderBy.unshift(isDesc ? 'user_balance_DESC' : 'user_balance_ASC')
         break
 
       case 'totalPnLUSD':
-        orderBy.unshift('totalPnLUSD_DESC')
+        orderBy.unshift(isDesc ? 'totalPnLUSD_DESC' : 'totalPnLUSD_ASC')
         break
 
       case 'totalWinAmountUSD':
-        orderBy.unshift('totalWinAmountUSD_DESC')
+        orderBy.unshift(isDesc ? 'totalWinAmountUSD_DESC' : 'totalWinAmountUSD_ASC')
         break
 
       case 'followingCount':
-        orderBy.unshift('followingCount_DESC')
+        orderBy.unshift(isDesc ? 'followingCount_DESC' : 'followingCount_ASC')
         break
 
       case 'followerCount':
-        orderBy.unshift('followerCount_DESC')
+        orderBy.unshift(isDesc ? 'followerCount_DESC' : 'followerCount_ASC')
         break
 
       case 'entryFeesPaid':
-        orderBy.unshift('entryFeesPaid_DESC')
+        orderBy.unshift(isDesc ? 'entryFeesPaid_DESC' : 'entryFeesPaid_ASC')
         break
 
       default:
@@ -198,13 +199,20 @@ function TopUser() {
   const debounceSearch = useDebounce(searchText.trim(), 300)
 
   const userFilter = useMemo(() => {
+    let filter = {
+      id_not_in: ['0x000000000000000000000000000000000000dead', '0x0000000000000000000000000000000000000000'],
+    }
     if (debounceSearch) {
-      return {
-        OR: [{ id_containsInsensitive: debounceSearch }, { username_containsInsensitive: debounceSearch }],
+      filter = {
+        AND: [
+          { ...filter },
+          {
+            OR: [{ id_containsInsensitive: debounceSearch }, { username_containsInsensitive: debounceSearch }],
+          },
+        ],
       }
     }
-
-    return {}
+    return filter
   }, [debounceSearch])
 
   const offset = useMemo(() => (currentPage - 1) * pageSize, [currentPage, pageSize])
@@ -228,36 +236,45 @@ function TopUser() {
     }
   }, [isLoading, topUsers])
 
+  const isDescParams = useMemo(() => {
+    let isDesc = true
+    if (searchParams.get('isDesc')) {
+      isDesc = searchParams.get('isDesc') === 'true'
+    }
+    return isDesc
+  }, [searchParams])
+
   useEffect(() => {
     const sortParams = searchParams.get('sort')
+
     if (sortParams) {
       switch (sortParams) {
         case 'tradeVolume':
-          setSort({ label: 'Total Trading Volume', value: 'tradeVolume', isDesc: true })
+          setSort({ label: 'Total Trading Volume', value: 'tradeVolume', isDesc: isDescParams })
           break
         case 'balance':
-          setSort({ label: 'Total THE balance', value: 'balance', isDesc: true })
+          setSort({ label: 'Total THE balance', value: 'balance', isDesc: isDescParams })
           break
         case 'totalPnLUSD':
-          setSort({ label: 'Profit & Loss', value: 'totalPnLUSD', isDesc: true })
+          setSort({ label: 'Profit & Loss', value: 'totalPnLUSD', isDesc: isDescParams })
           break
         case 'totalWinAmountUSD':
-          setSort({ label: 'Win Amount', value: 'totalWinAmountUSD', isDesc: true })
+          setSort({ label: 'Win Amount', value: 'totalWinAmountUSD', isDesc: isDescParams })
           break
         case 'followingCount':
-          setSort({ label: 'Followings', value: 'followingCount', isDesc: true })
+          setSort({ label: 'Followings', value: 'followingCount', isDesc: isDescParams })
           break
         case 'followerCount':
-          setSort({ label: 'Followers', value: 'followerCount', isDesc: true })
+          setSort({ label: 'Followers', value: 'followerCount', isDesc: isDescParams })
           break
         case 'entryFeesPaid':
-          setSort({ label: 'Entry Fees Paid', value: 'entryFeesPaid', isDesc: true })
+          setSort({ label: 'Entry Fees Paid', value: 'entryFeesPaid', isDesc: isDescParams })
           break
         default:
           break
       }
     }
-  }, [searchParams])
+  }, [isDescParams, searchParams])
 
   const topUsersFormatted = useMemo(() => {
     const arr = dataFetch.map((item, index) => ({
@@ -345,7 +362,7 @@ function TopUser() {
           tableBasic
           data={finalData}
           sortOptions={sortOptions}
-          onlySortDesc
+          // onlySortDesc
           enabledRedirectOnClickPagination
           loading={isLoading}
           pageSize={pageSize}
