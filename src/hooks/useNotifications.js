@@ -24,7 +24,6 @@ const NEW_NOTIFICATION_SUB = gql`
   subscription NewNotificationSubscription($userId: String!) {
     newNotification(userId: $userId) {
       content
-      redirectUrl
       timestamp
     }
   }

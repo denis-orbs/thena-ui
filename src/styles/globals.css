@@ -334,3 +334,11 @@ input[type='radio']:checked:after {
 	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
 }
+
+.show-more {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}

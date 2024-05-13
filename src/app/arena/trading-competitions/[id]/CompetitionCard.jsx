@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import TruncateContent from '@/components/common/TruncateContent'
 import { Paragraph, TextHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -142,7 +143,7 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
             )}
           </div>
           <div>
-            <h3>{competition.name}</h3>
+            <TruncateContent content={competition.name} className='h3' />
             {eventType && (
               <div
                 className={cn(

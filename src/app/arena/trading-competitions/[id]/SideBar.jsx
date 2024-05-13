@@ -7,7 +7,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { TextHeading } from '@/components/typography'
+import { useUserInfo } from '@/context/userInfoContext'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -15,6 +17,7 @@ import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { Countdown } from '@/modules/CountDown'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
+import { CheckIcon, PublicIcon } from '@/svgs'
 
 import DepositModal from './trade/DepositModal'
 
@@ -43,6 +46,7 @@ function Sidebar({ competition, eventType }) {
   } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.prize?.weights?.length)
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const headingAndText = useMemo(() => {
     if (!eventType) {
@@ -160,6 +164,18 @@ function Sidebar({ competition, eventType }) {
     competition.prize?.token?.symbol,
     canClaimRewards,
   ])
+
+  const shareIconButton = useMemo(() => (copied ? CheckIcon : PublicIcon), [copied])
+  const { userInfo } = useUserInfo()
+  const onShareTC = useCallback(async () => {
+    let link = window.location.href
+    const urlLink = new URL(link)
+    urlLink.searchParams.set('r', userInfo?.username ?? userInfo?.id)
+    link = urlLink.toString()
+    navigator.clipboard.writeText(link)
+    setCopied(true)
+    successToast(t('Link Has Been Copied'))
+  }, [t, userInfo?.id, userInfo?.username])
 
   const onShare = useCallback(() => {
     let hostOwnerRef = ''
@@ -322,9 +338,20 @@ function Sidebar({ competition, eventType }) {
     return () => clearInterval(interval)
   }, [competition.timestamp.registrationEnd, competition.timestamp.registrationStart])
 
+  useEffect(() => {
+    if (copied) {
+      const timeOut = setTimeout(() => setCopied(false), 2000)
+
+      return () => clearTimeout(timeOut)
+    }
+  }, [copied])
+
   return (
     <div className='col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
-      <h3 className='mb-5'>{headingAndText.heading}</h3>
+      <div className='flex items-center justify-between'>
+        <h3 className='mb-5'>{headingAndText.heading}</h3>
+        {isJoined && account && <EmphasisIconButton Icon={shareIconButton} onClick={onShareTC} />}
+      </div>
       <Box className='flex flex-col space-y-5'>
         {(headingAndText.subText || headingAndText.text) && (
           <Box className='flex flex-col space-y-2 border border-primary-800 bg-primary-950'>

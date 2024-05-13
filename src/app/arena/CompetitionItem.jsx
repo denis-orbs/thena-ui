@@ -87,9 +87,19 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
           </h3>
           {competition.owner.isVerified && (
             <div className='flex items-center gap-1 text-nowrap'>
-              <h4 className='inline-block bg-gradient-to-r from-[#C72AD0] to-[#AA23DB] bg-clip-text text-3xl font-bold text-transparent'>
+              <h4 className='inline-block'>
                 {t('By')}{' '}
-                <span style={competition.owner.nameColor ? { color: competition.owner.nameColor } : {}}>
+                <span
+                  style={
+                    competition.owner.nameColor
+                      ? {
+                          color: competition.owner.nameColor.startsWith('#')
+                            ? competition.owner.nameColor
+                            : `#${competition.owner.nameColor}`,
+                        }
+                      : {}
+                  }
+                >
                   {competition.owner.username ? competition.owner.username : formatAddress(competition.owner.id)}
                 </span>
               </h4>

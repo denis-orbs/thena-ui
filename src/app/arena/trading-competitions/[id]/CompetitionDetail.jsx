@@ -7,6 +7,7 @@ import React, { useMemo, useState } from 'react'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { Collapse } from '@/components/collapse'
+import TruncateContent from '@/components/common/TruncateContent'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
@@ -101,10 +102,14 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       {' '}
       <Box>
         <Collapse title={<TextHeading className='text-xl'>{t('Description')}</TextHeading>}>
-          <div
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: _competition.description }}
-            className='mt-4 text-sm text-neutral-300'
+          <TruncateContent
+            content={
+              <div
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: _competition.description }}
+                className='mt-4 text-sm text-neutral-300'
+              />
+            }
           />
         </Collapse>
       </Box>

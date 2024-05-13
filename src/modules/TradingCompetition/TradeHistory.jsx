@@ -13,6 +13,7 @@ import { useTCTradeHistory } from '@/hooks/trade/useTradingCompetitionTradeHisto
 import useDebounce from '@/hooks/useDebounce'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import { useLocaleSettings } from '@/state/settings/hooks'
 import { TransferIcon } from '@/svgs'
 
 const sortOptions = [
@@ -53,7 +54,7 @@ const sortOptions = [
 export function TradeHistory() {
   const assets = useAssets()
   const { account } = useWallet()
-
+  const { locale } = useLocaleSettings()
   const [searchText, setSearchText] = useState('')
   const t = useTranslations()
   const [currentPage, setCurrentPage] = useState(1)
@@ -178,7 +179,7 @@ export function TradeHistory() {
           ),
           timestamp: (
             <div className='flex flex-col'>
-              <Paragraph>{moment(item.timestamp.split('T')[0]).format('ll')}</Paragraph>
+              <Paragraph>{moment(item.timestamp.split('T')[0]).locale(locale).format('ll')}</Paragraph>
               <TextSubHeading>{item.timestamp.split('T')[1].split('.')[0]} UTC</TextSubHeading>
             </div>
           ),
