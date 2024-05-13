@@ -301,13 +301,24 @@ function TopUser() {
   }, [currentPage, dataFetch, pageSize])
 
   const hightLightIndex = useMemo(() => {
-    if (rank) {
-      if (topUsersFormatted) {
-        const index = topUsersFormatted.findIndex(item => item.rank === Number(rank))
-        return index
+    if (!isLoading) {
+      if (rank) {
+        if (topUsersFormatted) {
+          const index = topUsersFormatted.findIndex(item =>
+            sort?.value === 'tradeVolume'
+              ? item.rankVolume === Number(rank)
+              : sort?.value === 'balance'
+                ? item.rankBalance === Number(rank)
+                : item.rank === Number(rank),
+          )
+
+          if (index !== -1) {
+            return index
+          }
+        }
       }
     }
-  }, [rank, topUsersFormatted])
+  }, [isLoading, rank, sort?.value, topUsersFormatted])
 
   const finalData = useMemo(
     () =>

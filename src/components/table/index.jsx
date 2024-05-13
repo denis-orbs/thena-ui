@@ -111,14 +111,15 @@ function Table({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, router, sort, enabledRedirectOnClickSort])
 
-  useEffect(() => {
-    if (hightLightIndex) {
-      const element = document.getElementById(`table-row-${hightLightIndex}`)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-    }
-  }, [hightLightIndex])
+  // TODO: Disable for now
+  // useEffect(() => {
+  //   if (hightLightIndex) {
+  //     const element = document.getElementById(`table-row-${hightLightIndex}`)
+  //     if (element) {
+  //       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  //     }
+  //   }
+  // }, [hightLightIndex])
 
   return (
     <div className={cn('relative flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
@@ -188,7 +189,7 @@ function Table({
                     <tr
                       key={`table-row-${eleIdx}`}
                       id={`table-row-${eleIdx}`}
-                      className={eleIdx === hightLightIndex ? 'bg-neutral-500' : 'asd'}
+                      className={eleIdx === hightLightIndex ? 'bg-neutral-500' : ''}
                     >
                       {sortOptions.map((cell, cellIdx) => (
                         <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
