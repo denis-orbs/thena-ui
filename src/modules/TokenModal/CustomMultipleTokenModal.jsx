@@ -1,9 +1,10 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
+import { PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
-import Modal from '@/components/modal'
+import Modal, { ModalFooter } from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { formatAmount, goScan } from '@/lib/utils'
@@ -126,6 +127,13 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
           })}
         </div>
       </div>
+      <ModalFooter>
+        <div className='flex justify-center'>
+          <PrimaryButton className='lg:px-5' onClick={() => setPopup(false)}>
+            Save
+          </PrimaryButton>
+        </div>
+      </ModalFooter>
     </Modal>
   )
 }

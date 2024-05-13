@@ -19,7 +19,6 @@ import NextImage from '@/components/image/NextImage'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { fetchUserInfo } from '@/context/userInfoContext'
 import { useUSDTCostPerToken } from '@/hooks/useThenaIdContract'
 import dayjs from '@/lib/arenaDayjs'
 import { readCall } from '@/lib/contractActions'
@@ -40,6 +39,78 @@ const V4_USER_INFO = gql`
     }
   }
 `
+const V4_USERNAME_NFTS = gql`
+  query V4_USERNAME_NFTS($username: String) {
+    usernameNfts(where: { name_eq: $username }) {
+      id
+      index
+      isGift
+      name
+      owner {
+        id
+        avatar
+        checkMarkIcon
+        isAdmin
+        isSuperAdmin
+        isVerified
+        nameColor
+        username
+      }
+      timestamp
+    }
+  }
+`
+
+const V4_USERNAME_NFT_IS_GIFT = gql`
+  query V4_USERNAME_NFT_IS_GIFT($id: String!) {
+    usernameNftById(id: $id) {
+      id
+      index
+      isGift
+      name
+      owner {
+        id
+        avatar
+        checkMarkIcon
+        isAdmin
+        isSuperAdmin
+        isVerified
+        nameColor
+        username
+      }
+      timestamp
+      giftFrom {
+        id
+        avatar
+        checkMarkIcon
+        isAdmin
+        isSuperAdmin
+        isVerified
+        nameColor
+        username
+      }
+    }
+  }
+`
+
+const fetchUsernameNft = async username => {
+  try {
+    const { usernameNfts } = await v4Client.request(V4_USERNAME_NFTS, { username: username.toLowerCase() })
+    if (usernameNfts.length === 1) {
+      const usernameNft = usernameNfts[0]
+      if (usernameNft.isGift) {
+        const { usernameNftById } = await v4Client.request(V4_USERNAME_NFT_IS_GIFT, {
+          id: usernameNft.id.toLowerCase(),
+        })
+        return usernameNftById
+      }
+      return usernameNft
+    }
+    return undefined
+  } catch (error) {
+    return undefined
+  }
+}
 
 function ThenaIdPage() {
   const t = useTranslations()
@@ -101,10 +172,14 @@ function ThenaIdPage() {
     [costPerToken],
   )
 
-  const { data: userInfo, isLoading } = useSWR(['user info', thenaIdFormat], () => fetchUserInfo(thenaIdFormat), {
-    refreshInterval: 60000,
-    revalidateOnMount: true,
-  })
+  const { data: usernameNft, isLoading } = useSWR(
+    ['username nft', thenaIdFormat],
+    () => fetchUsernameNft(thenaIdFormat),
+    {
+      refreshInterval: 60000,
+      revalidateOnMount: true,
+    },
+  )
 
   const amountToMint = useMemo(async () => {
     const contract = getThenaIDContract()
@@ -189,10 +264,18 @@ function ThenaIdPage() {
           <TextHeading className='my-6 block break-words text-4xl'>{thenaIdFormat}.thena</TextHeading>
           {!isLoading && (
             <>
-              {userInfo ? (
-                <div className='flex w-full flex-row items-center'>
-                  <TextSubHeading className='mr-1 block text-base'>{t('Owned By')}</TextSubHeading>
-                  <UserProfileCard user={userInfo} showVerified={userInfo.isVerified} />
+              {usernameNft ? (
+                <div className='flex flex-col gap-6'>
+                  <div className='flex w-full flex-row items-center'>
+                    <TextSubHeading className='mr-1 block text-base'>{t('Owned By')}</TextSubHeading>
+                    <UserProfileCard user={usernameNft.owner} showVerified={usernameNft.owner.isVerified} />
+                  </div>
+                  {usernameNft.giftFrom && (
+                    <div className='flex w-full flex-row items-center'>
+                      <TextSubHeading className='mr-1 block text-base'>{t('Gifted By')}</TextSubHeading>
+                      <UserProfileCard user={usernameNft.giftFrom} showVerified={usernameNft.giftFrom.isVerified} />
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className='flex flex-wrap items-center gap-1'>
@@ -215,8 +298,8 @@ function ThenaIdPage() {
                 </div>
               )}
               <div className='mt-6'>
-                {userInfo ? (
-                  userInfo?.id.toLowerCase() !== account?.toLowerCase() ? (
+                {usernameNft?.owner ? (
+                  usernameNft?.owner?.id.toLowerCase() !== account?.toLowerCase() ? (
                     <Link
                       href={`https://element.market/assets/bsc/0xd8cd3f2e2c97d85bcd5bd47ff3f67ed0060f5b14/${tokenId}`}
                       rel='nofollow noopener'
@@ -256,18 +339,18 @@ function ThenaIdPage() {
               <div className='grid grid-cols-1 items-center gap-4 md:grid-cols-2 lg:grid-cols-3'>
                 {attributes.map(att => (
                   <Box className='flex w-full flex-col gap-4 lg:p-4' key={att.trait_type}>
-                    <TextHeading className='mb-2 block text-base'>{att.trait_type}</TextHeading>
+                    <TextHeading className='mb-2 block text-base capitalize'>{att.trait_type}</TextHeading>
                     {att?.display_type !== 'date' ? (
                       <TextHeading className='mb-2 block text-base'>{att.value}</TextHeading>
                     ) : (
-                      <TextHeading className='text-sm'>
+                      <TextHeading className='mb-2 block text-base'>
                         {dayjs(att.value * 1000)
                           .tz()
                           .format('MMM D, YYYY')}{' '}
                         {`${t('at')} `}
                         {dayjs(att.value * 1000)
                           .tz()
-                          .format('h:ma')}
+                          .format('h:mma')}
                       </TextHeading>
                     )}
                   </Box>

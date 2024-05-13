@@ -13,6 +13,7 @@ import { TextButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Tabs from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
+import { TradingCompetitionContextProvider } from '@/context/tradingCompetitionContext'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
@@ -197,33 +198,35 @@ function CompetitionDetailLayout({ children, params }) {
   }
 
   return (
-    <main className='flex min-h-screen flex-col'>
-      <Suspense fallback={<Loading />}>
-        <div className='grid grid-cols-12 gap-4 lg:gap-12'>
-          <div className='col-span-12 lg:col-span-7'>
-            <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
-              <Link href={`/arena${queryParams}`}>
-                <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
-                  {t('Back')}
-                </TextButton>
-              </Link>
-              <UserProfileCard user={competition.owner} showVerified={competition.owner.isVerified} />
+    <TradingCompetitionContextProvider>
+      <main className='flex min-h-screen flex-col'>
+        <Suspense fallback={<Loading />}>
+          <div className='grid grid-cols-12 gap-4 lg:gap-12'>
+            <div className='col-span-12 lg:col-span-7'>
+              <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
+                <Link href={`/arena${queryParams}`}>
+                  <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
+                    {t('Back')}
+                  </TextButton>
+                </Link>
+                <UserProfileCard user={competition.owner} showVerified={competition.owner.isVerified} />
+              </div>
+              <CompetitionCard competition={_competition} eventType={eventType} enableEditBanner={enableEditBanner} />
+              <div className='mt-10 flex w-full flex-col gap-4'>
+                <Tabs
+                  data={subTabs}
+                  size={SizeTypes.Small}
+                  itemClassName='text-sm'
+                  className='justify-start overflow-x-auto'
+                />
+                {children}
+              </div>
             </div>
-            <CompetitionCard competition={_competition} eventType={eventType} enableEditBanner={enableEditBanner} />
-            <div className='mt-10 flex w-full flex-col gap-4'>
-              <Tabs
-                data={subTabs}
-                size={SizeTypes.Small}
-                itemClassName='text-sm'
-                className='justify-start overflow-x-auto'
-              />
-              {children}
-            </div>
+            <Sidebar competition={_competition} eventType={eventType} />
           </div>
-          <Sidebar competition={_competition} eventType={eventType} />
-        </div>
-      </Suspense>
-    </main>
+        </Suspense>
+      </main>
+    </TradingCompetitionContextProvider>
   )
 }
 

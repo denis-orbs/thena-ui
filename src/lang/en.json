@@ -556,7 +556,7 @@
   "Invalid Winning Token": "You must select at least 1 winning token!",
   "Invalid Prize Token": "You must select a prize token, otherwise the prizes won’t be distributed!",
   "Invalid Prize Amount": "Host contribution is required to be set, so there is an initial prize pool!",
-  "Invalid Fee Amount": "If you’d like to enable trading fees, you must also select the entry fee amount!",
+  "Invalid Fee Amount": "If you’d like to enable entry fees, you must also select the entry fee amount!",
   "Invalid Distribution": "The prize distribution must be a 100%, otherwise the prizes won’t be distributed properly!",
   "Invalid Total Deposit": "You must fill in the deposit field, as users are always required to pay a deposit!",
   "Host (25% Max)": "Host (25% Max)",
@@ -778,5 +778,6 @@
   "Notifications": "Notifications",
   "1": "1",
   "Not Enough Host Contribution": "For the host contribution it seems like you do not have enough balance.",
-  "Less": "Less"
+  "Less": "Less",
+  "Gifted By": "Gifted By"
 }

@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
@@ -6,14 +7,42 @@ import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useTradingCompetition } from '@/context/tradingCompetitionContext'
 import { useEventType } from '@/hooks/useEventType'
+import { useTradeData } from '@/hooks/useTcSpotContract'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
+import useWallet from '@/lib/wallets/useWallet'
 
 export function LeaderBoard({ competition }) {
   const { eventType } = useEventType(competition?.timestamp)
   const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+
+  const { account } = useWallet()
+  const { reloadFetch } = useTradingCompetition()
+
+  const { pnl: pnlUserCurrent, winAmount } = useTradeData(
+    competition?.tradingCompetitionSpot,
+    competition?.competitionRules?.winningToken?.address,
+    reloadFetch,
+  )
+
+  const participants = useMemo(() => {
+    if (Array.isArray(competition?.participants)) {
+      const arr = [...(competition?.participants || [])]
+      const index = arr.findIndex(item => item.participant.id.toLowerCase() === account?.toLowerCase())
+      if (index !== -1) {
+        arr[index] = {
+          ...arr[index],
+          pnl: new BigNumber(pnlUserCurrent).toNumber(),
+          reward: new BigNumber(winAmount).toNumber(),
+        }
+      }
+      return arr
+    }
+    return []
+  }, [account, competition?.participants, pnlUserCurrent, winAmount])
 
   const { push } = useRouter()
   const t = useTranslations()
@@ -55,7 +84,7 @@ export function LeaderBoard({ competition }) {
 
   const dataParticipants = useMemo(
     () =>
-      competition?.participants
+      participants
         .sort(
           (a, b) =>
             fromWei(b.pnl, b.competitionRules?.winningTokenDecimal) -
@@ -65,7 +94,7 @@ export function LeaderBoard({ competition }) {
           ...item,
           rank: index + 1,
         })) ?? [],
-    [competition?.participants],
+    [participants],
   )
 
   const filteredLeaderBoards = useMemo(

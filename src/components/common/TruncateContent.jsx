@@ -1,6 +1,8 @@
 import { useTranslations } from 'next-intl'
 import { memo, useCallback, useLayoutEffect, useRef, useState } from 'react'
 
+import './style.css'
+
 import { cn } from '@/lib/utils'
 
 import { TextButton } from '../buttons/Button'
@@ -40,7 +42,7 @@ function TruncateContent({ content, className }) {
     <div>
       <div
         ref={contentRef}
-        className={cn('whitespace-pre-line break-words ', className, isTruncated ? 'show-more' : '')}
+        className={cn('description whitespace-pre-line break-words', className, isTruncated ? 'show-more' : '')}
       >
         {content}
       </div>

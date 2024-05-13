@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Loading from '@/app/loading'
 import Box from '@/components/box'
 import { TextHeading } from '@/components/typography'
+import { TradingCompetitionContextProvider } from '@/context/tradingCompetitionContext'
 import { useTradeCompetitionData } from '@/hooks/trade/useTradeCompetitionData'
 import { useEventType } from '@/hooks/useEventType'
 import { useTCContractInfor, useTradeData } from '@/hooks/useTcSpotContract'
@@ -98,7 +99,7 @@ export function WrapLayout({ children, params }) {
   }
 
   return (
-    <>
+    <TradingCompetitionContextProvider>
       <TopBar
         handleClickShowModal={() => setShowModalDeposit(true)}
         competition={competition}
@@ -138,6 +139,6 @@ export function WrapLayout({ children, params }) {
         </TradeNotStarted>
       )}
       <DepositModal competition={competition} isOpen={showModalDeposit} closeModal={() => setShowModalDeposit(false)} />
-    </>
+    </TradingCompetitionContextProvider>
   )
 }
