@@ -6,9 +6,9 @@ export async function generateMetadata({ params }) {
   const { address } = params
 
   const metadata = {
-    name: 'Followers of username',
+    name: 'Followers of user',
     image: [`${siteConfig.url}/cover.png`],
-    description: 'See the full followers list of username on THENA Arena.',
+    description: 'See the full followers list of user on THENA Arena.',
   }
 
   return {
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
       url: `${siteConfig.url}/arena/profile/${address}/followers`,
       title: metadata.name,
       description: metadata.description,
-      siteName: 'Followers of username | THENA Arena',
+      siteName: 'Followers of user | THENA Arena',
       images: metadata.image,
       type: 'website',
       locale: 'en_US',

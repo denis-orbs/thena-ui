@@ -6,9 +6,9 @@ export async function generateMetadata({ params }) {
   const { address } = params
 
   const metadata = {
-    name: 'username',
+    name: 'user',
     image: [`${siteConfig.url}/cover.png`],
-    description: `See the profile of username on THENA Arena. 
+    description: `See the profile of user on THENA Arena. 
 Follow them, engage with them or check their analytics and THENA
 IDs out on the decentralized social media platform of THENA Arena`,
   }
