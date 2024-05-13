@@ -1,10 +1,7 @@
 import { gql } from 'graphql-request'
-import React from 'react'
 
 import { siteConfig } from '@/constant/config'
 import { v4Client } from '@/lib/graphql'
-
-import { WrapLayout } from './WrapLayout'
 
 const V4_COMPETITION_DATA = gql`
   query V4_COMPETITION($id: String!) {
@@ -27,19 +24,19 @@ export async function generateMetadata({ params }) {
   const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
 
   const metadata = {
-    name: `Trading Page of  ${competition.name}`,
+    name: `Leaderboard of ${competition.name}`,
     image: [competition.bannerUrl, `${siteConfig.url}/cover.png`],
-    description: `Trade within ${competition.name} on THENA Arena using your deposited balance.`,
+    description: `See the full leaderboard and winners of ${competition.name} on THENA Arena.`,
   }
 
   return {
     title: metadata.name,
     description: metadata.description,
     openGraph: {
-      url: `${siteConfig.url}/arena/trading-competitions/${id}/trade`,
+      url: `${siteConfig.url}/arena/trading-competitions/${id}/leaderboard`,
       title: metadata.name,
       description: metadata.description,
-      siteName: `Trading Page of  ${metadata.name} | THENA Arena`,
+      siteName: `Leaderboard of ${metadata.name} | THENA Arena`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',
@@ -53,6 +50,6 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default function layout({ children, params }) {
-  return <WrapLayout params={params}>{children}</WrapLayout>
-}
+const layout = ({ children }) => <div>{children}</div>
+
+export default layout
