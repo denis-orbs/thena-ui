@@ -1,5 +1,8 @@
 .react-quill-create-tc .ql-toolbar {
   border: none;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  background: rgb(233, 190, 253);
 }
 
 .react-quill-create-tc .ql-container {
