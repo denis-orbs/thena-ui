@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
+import 'moment/locale/zh-cn'
 
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
