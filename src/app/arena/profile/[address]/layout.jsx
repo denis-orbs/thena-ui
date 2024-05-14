@@ -33,20 +33,28 @@ IDs out on the decentralized social media platform of THENA Arena`,
   }
 
   return {
-    title: metadata.name,
+    title: {
+      template: '%s | THENA Arena',
+      default: `${metadata.name} | THENA Arena`,
+    },
     description: metadata.description,
     openGraph: {
       url: `${siteConfig.url}/arena/profile/${address}`,
-      title: metadata.name,
+      title: {
+        default: metadata.name,
+        template: '%s | THENA Arena',
+      },
       description: metadata.description,
-      siteName: `${metadata.name} | THENA Arena`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',
     },
     twitter: {
       card: 'summary_large_image',
-      title: metadata.name,
+      title: {
+        default: metadata.name,
+        template: '%s | THENA Arena',
+      },
       description: metadata.description,
       images: metadata.image,
     },

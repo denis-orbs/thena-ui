@@ -40,22 +40,30 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${metadata.name}`,
+    title: {
+      template: '%s | THENA Arena',
+      default: `${metadata.name}`,
+    },
     description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today! 
 Fully decentralized trading competition on THENA Arena!`,
     openGraph: {
       url: `${siteConfig.url}/arena/trading-competitions/${id}`,
-      title: `${metadata.name}`,
+      title: {
+        template: '%s | THENA Arena',
+        default: `${metadata.name}`,
+      },
       description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today! 
 Fully decentralized trading competition on THENA Arena!`,
-      siteName: `${metadata.name} | THENA Arena`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${metadata.name}`,
+      title: {
+        template: '%s | THENA Arena',
+        default: `${metadata.name}`,
+      },
       description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today! 
 Fully decentralized trading competition on THENA Arena!`,
       images: metadata.image,

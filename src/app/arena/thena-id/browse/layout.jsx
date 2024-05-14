@@ -1,7 +1,10 @@
 import React from 'react'
 
 export const metadata = {
-  title: 'Browse',
+  title: {
+    default: 'Browse',
+    template: '%s | THENA Arena',
+  },
   description: 'Browse Description',
 }
 
