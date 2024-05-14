@@ -13,6 +13,7 @@ function Button({
   isLoading = false,
   children,
   disabled,
+  leading = null,
   onClick = () => {},
   ...rest
 }) {
@@ -121,6 +122,7 @@ function Button({
           )}
         />
       )}
+      {leading}
       {variant === CompTypes.Trailing ? (
         <>
           <span className='z-10'>{children}</span>

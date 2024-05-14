@@ -1,14 +1,17 @@
 'use client'
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import { cn } from '@/lib/utils'
-import { ArrowDownIcon, ArrowLeftIcon } from '@/svgs'
+import { ArrowDownIcon, ArrowLeftIcon, XIcon } from '@/svgs'
 
-import { TextHeading } from '../typography'
+import { TertiaryButton } from '../buttons/Button'
+import { TextIconButton } from '../buttons/IconButton'
+import Input from '../input'
+import { TextHeading, TextSubHeading } from '../typography'
 
 function PaginateCell({ children, className, active, onClick, disabled }) {
   return (
@@ -39,6 +42,56 @@ function TableCell({ children, className, ...rest }) {
   )
 }
 
+function Popover({ inputPage = '', setInputPage, showPopover = false, setShowPopover, pageCount, onClick = () => {} }) {
+  return (
+    <div
+      data-popover
+      id='popover-default-1'
+      role='tooltip'
+      className={`absolute ${
+        showPopover ? '' : 'invisible opacity-0'
+        // eslint-disable-next-line max-len
+      } left-1/2 top-12 z-10 inline-block -translate-x-1/2 rounded-lg border border-neutral-600 bg-neutral-800 text-sm text-neutral-500 shadow-sm transition-opacity duration-300 lg:left-1/2`}
+    >
+      <div className='flex items-center justify-between rounded-t-lg border-b border-neutral-600 bg-neutral-700 px-3 py-2'>
+        <TextSubHeading className='text-nowrap text-white'>Go to page</TextSubHeading>
+        <TextIconButton
+          Icon={XIcon}
+          classNames='p-[2px]'
+          className='!h-5 !w-5 stroke-neutral-400'
+          onClick={() => {
+            setShowPopover(false)
+            setInputPage('')
+          }}
+        />
+      </div>
+      <div className='flex flex-row items-center justify-between gap-2 px-3 py-2'>
+        <Input
+          className='w-[100px]'
+          classNames={{
+            input: 'p-2',
+          }}
+          autoFocus
+          type='number'
+          val={inputPage}
+          onChange={e => {
+            if (e.target.value === '') {
+              setInputPage('')
+            } else {
+              setInputPage(Math.min(Math.max(Number(e.target.value), 1), pageCount))
+            }
+            e.stopPropagation()
+          }}
+        />
+        <TertiaryButton className='h-[42px]' onClick={onClick}>
+          Go
+        </TertiaryButton>
+      </div>
+      <div data-popper-arrow />
+    </div>
+  )
+}
+
 function Table({
   className,
   sortOptions,
@@ -58,13 +111,16 @@ function Table({
   limitPage = undefined,
   enabledRedirectOnClickSort = false,
   hightLightIndex = undefined,
+  showPopoverPagination = false,
 }) {
   const t = useTranslations()
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [pageQuery, setPageQuery] = useState(1)
+  const { page } = useParams()
   const query = useMemo(() => new URLSearchParams(searchParams.toString()), [searchParams])
+  const [inputPage, setInputPage] = useState(undefined)
+  const [showPopover, setShowPopover] = useState(false)
 
   const pageCount = useMemo(() => {
     const count = Math.ceil((totalItems || data.length) / pageSize)
@@ -76,50 +132,72 @@ function Table({
     newPage => {
       if (enabledRedirectOnClickPagination) {
         if (newPage !== currentPage) {
-          query.delete('rank', undefined)
-          query.delete('page', undefined)
-          if (newPage > 1) {
-            query.set('page', newPage.toString())
-            router.replace(`${pathname}?${query.toString()}`)
-            return
+          let pathNew = ''
+          if (!page) {
+            pathNew = `${pathname}/${newPage}`
+          } else {
+            const pathnameReverse = pathname.split('').reverse()
+            const i = pathnameReverse.findIndex(item => item === '/')
+            if (i !== -1) {
+              pathnameReverse.splice(0, i)
+              pathNew = pathnameReverse.reverse().join('') + (newPage === 1 ? '' : newPage)
+            }
           }
-          router.replace(`${pathname}?${query.toString()}`)
+          query.delete('rank', undefined)
+          router.replace(`${pathNew}?${query.toString()}`)
         }
       }
     },
-    [currentPage, enabledRedirectOnClickPagination, pathname, query, router],
+    [currentPage, enabledRedirectOnClickPagination, page, pathname, query, router],
   )
 
   useEffect(() => {
-    if (searchParams.get('page')) {
-      setPageQuery(Number(searchParams.get('page')))
-    }
-  }, [searchParams])
-
-  useEffect(() => {
     if (enabledRedirectOnClickPagination) {
-      setCurrentPage(pageQuery)
+      if (page) {
+        setCurrentPage(Number(page))
+      } else {
+        setCurrentPage(1)
+      }
     }
-  }, [pageQuery, setCurrentPage, enabledRedirectOnClickPagination])
+  }, [enabledRedirectOnClickPagination, page, setCurrentPage])
 
   useEffect(() => {
     if (sort && enabledRedirectOnClickSort) {
-      query.set('sort', sort.value.toString())
-      query.set('isDesc', sort.isDesc.toString())
-      router.replace(`${pathname}?${query.toString()}`)
+      query.set('sort', sort.value?.toString())
+      query.set('isDesc', sort.isDesc?.toString())
+      let pathNew = pathname
+      if (page && page !== currentPage) {
+        const pathnameReverse = pathname.split('').reverse()
+        const i = pathnameReverse.findIndex(item => item === '/')
+        if (i !== -1) {
+          pathnameReverse.splice(0, i)
+          pathNew = pathnameReverse.reverse().join('') + (currentPage === 1 ? '' : currentPage)
+        }
+      }
+      router.replace(`${pathNew}?${query.toString()}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, router, sort, enabledRedirectOnClickSort])
+  }, [sort, enabledRedirectOnClickSort])
 
-  // TODO: Disable for now
-  // useEffect(() => {
-  //   if (hightLightIndex) {
-  //     const element = document.getElementById(`table-row-${hightLightIndex}`)
-  //     if (element) {
-  //       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  //     }
-  //   }
-  // }, [hightLightIndex])
+  useEffect(() => {
+    if (enabledRedirectOnClickSort) {
+      const sortParams = searchParams.get('sort')
+      const sortOption = sortOptions.find(item => item.value === sortParams)
+      if (sortOption && sortOption.value !== sort?.value) {
+        setSort(sortOption)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabledRedirectOnClickSort, searchParams, setSort, sortOptions])
+
+  useEffect(() => {
+    if (hightLightIndex) {
+      const element = document.getElementById(`table-row-${hightLightIndex}`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+  }, [hightLightIndex])
 
   return (
     <div className={cn('relative flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
@@ -285,114 +363,140 @@ function Table({
         )}
       </div>
       {!loading && pageCount > 1 && !hidePagination && (
-        <ul className='flex items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
-          <PaginateCell
-            onClick={() => {
-              if (currentPage !== 1) {
-                setCurrentPage(Math.max(currentPage - 1, 1))
-                handleRedirectPage(Math.max(currentPage - 1, 1))
-              }
-            }}
-            disabled={currentPage === 1}
-          >
-            <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
-          </PaginateCell>
-          {pageCount < 6 &&
-            new Array(pageCount).fill(0).map((item, idx) => (
-              <PaginateCell
-                key={`paginate-${idx}`}
-                active={currentPage === idx + 1}
-                onClick={() => {
-                  setCurrentPage(idx + 1)
-                  handleRedirectPage(idx + 1)
-                }}
-              >
-                {idx + 1}
-              </PaginateCell>
-            ))}
-          {pageCount >= 6 && (
-            <>
-              <PaginateCell
-                active={currentPage === 1}
-                onClick={() => {
-                  setCurrentPage(1)
-                  handleRedirectPage(1)
-                }}
-              >
-                1
-              </PaginateCell>
-              <PaginateCell
-                active={currentPage === 2}
-                onClick={() => {
-                  setCurrentPage(2)
-                  handleRedirectPage(2)
-                }}
-              >
-                2
-              </PaginateCell>
-              {currentPage > 3 && (
+        <div className='flex justify-end'>
+          <ul className='relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
+            <PaginateCell
+              onClick={() => {
+                if (currentPage !== 1) {
+                  handleRedirectPage(Math.max(currentPage - 1, 1))
+                  setCurrentPage(Math.max(currentPage - 1, 1))
+                }
+              }}
+              disabled={currentPage === 1}
+            >
+              <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
+            </PaginateCell>
+            {pageCount < 6 &&
+              new Array(pageCount).fill(0).map((item, idx) => (
                 <PaginateCell
+                  key={`paginate-${idx}`}
+                  active={currentPage === idx + 1}
                   onClick={() => {
-                    setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
-                    handleRedirectPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                    handleRedirectPage(idx + 1)
+                    setCurrentPage(idx + 1)
                   }}
                 >
-                  ...
+                  {idx + 1}
                 </PaginateCell>
-              )}
-              {currentPage > 2 && currentPage < pageCount - 1 && (
+              ))}
+            {pageCount >= 6 && (
+              <>
                 <PaginateCell
-                  active
+                  active={currentPage === 1}
                   onClick={() => {
-                    setCurrentPage(currentPage)
-                    handleRedirectPage(currentPage)
+                    handleRedirectPage(1)
+                    setCurrentPage(1)
                   }}
                 >
-                  {currentPage}
+                  1
                 </PaginateCell>
-              )}
-              {currentPage < pageCount - 2 && (
                 <PaginateCell
+                  active={currentPage === 2}
                   onClick={() => {
-                    setCurrentPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
-                    handleRedirectPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
+                    handleRedirectPage(2)
+                    setCurrentPage(2)
                   }}
                 >
-                  ...
+                  2
                 </PaginateCell>
-              )}
-              <PaginateCell
-                active={currentPage === pageCount - 1}
-                onClick={() => {
-                  setCurrentPage(pageCount - 1)
-                  handleRedirectPage(pageCount - 1)
-                }}
-              >
-                {pageCount - 1}
-              </PaginateCell>
-              <PaginateCell
-                active={currentPage === pageCount}
-                onClick={() => {
-                  setCurrentPage(pageCount)
-                  handleRedirectPage(pageCount)
-                }}
-              >
-                {pageCount}
-              </PaginateCell>
-            </>
-          )}
-          <PaginateCell
-            onClick={() => {
-              if (currentPage !== pageCount) {
-                setCurrentPage(Math.min(currentPage + 1, pageCount))
-                handleRedirectPage(Math.min(currentPage + 1, pageCount))
-              }
-            }}
-            disabled={currentPage === pageCount}
-          >
-            <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`} />
-          </PaginateCell>
-        </ul>
+                {currentPage > 3 && (
+                  <PaginateCell
+                    onClick={() => {
+                      if (showPopoverPagination) {
+                        setShowPopover(true)
+                      } else {
+                        handleRedirectPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                        setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                      }
+                    }}
+                  >
+                    ...
+                  </PaginateCell>
+                )}
+                {currentPage > 2 && currentPage < pageCount - 1 && (
+                  <PaginateCell
+                    active
+                    onClick={() => {
+                      handleRedirectPage(currentPage)
+                      setCurrentPage(currentPage)
+                    }}
+                  >
+                    {currentPage}
+                  </PaginateCell>
+                )}
+                {currentPage < pageCount - 2 && (
+                  <PaginateCell
+                    onClick={() => {
+                      if (showPopoverPagination) {
+                        setShowPopover(true)
+                      } else {
+                        handleRedirectPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
+                        setCurrentPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
+                      }
+                    }}
+                  >
+                    ...
+                  </PaginateCell>
+                )}
+                <PaginateCell
+                  active={currentPage === pageCount - 1}
+                  onClick={() => {
+                    handleRedirectPage(pageCount - 1)
+                    setCurrentPage(pageCount - 1)
+                  }}
+                >
+                  {pageCount - 1}
+                </PaginateCell>
+                <PaginateCell
+                  active={currentPage === pageCount}
+                  onClick={() => {
+                    handleRedirectPage(pageCount)
+                    setCurrentPage(pageCount)
+                  }}
+                >
+                  {pageCount}
+                </PaginateCell>
+              </>
+            )}
+            <PaginateCell
+              onClick={() => {
+                if (currentPage !== pageCount) {
+                  handleRedirectPage(Math.min(currentPage + 1, pageCount))
+                  setCurrentPage(Math.min(currentPage + 1, pageCount))
+                }
+              }}
+              disabled={currentPage === pageCount}
+            >
+              <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`} />
+            </PaginateCell>
+            <Popover
+              inputPage={inputPage}
+              setInputPage={setInputPage}
+              setCurrentPage={setCurrentPage}
+              showPopover={showPopover}
+              setShowPopover={setShowPopover}
+              pageCount={pageCount}
+              onClick={() => {
+                const newPage = Number(inputPage)
+                if (newPage && newPage !== currentPage) {
+                  handleRedirectPage(Number(inputPage))
+                }
+                setShowPopover(false)
+                setInputPage('')
+              }}
+            />
+          </ul>
+        </div>
       )}
     </div>
   )

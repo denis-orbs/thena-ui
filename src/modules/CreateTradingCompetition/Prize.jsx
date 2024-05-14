@@ -8,6 +8,7 @@ import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { useTC } from '@/context/tcContext'
 import { formatAmount, ordinals } from '@/lib/utils'
 
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
@@ -18,6 +19,9 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
   const t = useTranslations()
 
   const [isPrizeOpen, setIsPrizeOpen] = useState(false)
+  const [prizeTokenBalance, setPrizeTokenBalance] = useState(0)
+  const { tradingTokens } = useTC()
+
   const { placements, weights } = data.prize
 
   const total = useMemo(() => weights.reduce((sum, cur) => sum + validNumber(cur), 0), [weights])
@@ -38,6 +42,21 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, weights])
+
+  useEffect(() => {
+    if (data.prize.token) {
+      const token = tradingTokens.find(
+        item => String(item.address).toLowerCase() === String(data.prize.token.address).toLowerCase(),
+      )
+      if (token) {
+        setPrizeTokenBalance(token.balance)
+      } else {
+        setPrizeTokenBalance(0)
+      }
+    } else {
+      setPrizeTokenBalance(0)
+    }
+  }, [data.prize.token, tradingTokens])
 
   return (
     <>
@@ -82,7 +101,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
               required
             />
             <div className='mb-2 text-white'>
-              {t('Balance')}: {formatAmount(data.prize.token?.balance)}
+              {t('Balance')}: {formatAmount(prizeTokenBalance)}
             </div>
           </div>
           <Input

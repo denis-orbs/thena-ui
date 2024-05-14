@@ -2,7 +2,7 @@
 
 import { gql } from 'graphql-request'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { useParams, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -191,10 +191,11 @@ function TopUser() {
 
   const t = useTranslations()
   const [searchText, setSearchText] = useState('')
-
-  const [currentPage, setCurrentPage] = useState(1)
+  const { page } = useParams()
+  const [currentPage, setCurrentPage] = useState(page ? Number(page) : 1)
   const [sort, setSort] = useState(sortOptions[2])
   const [dataFetch, setDataFetch] = useState([])
+  const [initialRender, setInitialRender] = useState(true)
 
   const debounceSearch = useDebounce(searchText.trim(), 300)
 
@@ -223,7 +224,12 @@ function TopUser() {
   const { data: usersTotalCount } = useSWR(['total users api', debounceSearch], () => fetchTotalCount(debounceSearch))
 
   useEffect(() => {
-    setCurrentPage(1)
+    if (!initialRender) {
+      setCurrentPage(1)
+    } else {
+      setInitialRender(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounceSearch])
 
   useEffect(() => {
@@ -236,45 +242,45 @@ function TopUser() {
     }
   }, [isLoading, topUsers])
 
-  const isDescParams = useMemo(() => {
-    let isDesc = true
-    if (searchParams.get('isDesc')) {
-      isDesc = searchParams.get('isDesc') === 'true'
-    }
-    return isDesc
-  }, [searchParams])
+  // const isDescParams = useMemo(() => {
+  //   let isDesc = true
+  //   if (searchParams.get('isDesc')) {
+  //     isDesc = searchParams.get('isDesc') === 'true'
+  //   }
+  //   return isDesc
+  // }, [searchParams])
 
-  useEffect(() => {
-    const sortParams = searchParams.get('sort')
+  // useEffect(() => {
+  //   const sortParams = searchParams.get('sort')
 
-    if (sortParams) {
-      switch (sortParams) {
-        case 'tradeVolume':
-          setSort({ label: 'Total Trading Volume', value: 'tradeVolume', isDesc: isDescParams })
-          break
-        case 'balance':
-          setSort({ label: 'Total THE balance', value: 'balance', isDesc: isDescParams })
-          break
-        case 'totalPnLUSD':
-          setSort({ label: 'Profit & Loss', value: 'totalPnLUSD', isDesc: isDescParams })
-          break
-        case 'totalWinAmountUSD':
-          setSort({ label: 'Win Amount', value: 'totalWinAmountUSD', isDesc: isDescParams })
-          break
-        case 'followingCount':
-          setSort({ label: 'Followings', value: 'followingCount', isDesc: isDescParams })
-          break
-        case 'followerCount':
-          setSort({ label: 'Followers', value: 'followerCount', isDesc: isDescParams })
-          break
-        case 'entryFeesPaid':
-          setSort({ label: 'Entry Fees Paid', value: 'entryFeesPaid', isDesc: isDescParams })
-          break
-        default:
-          break
-      }
-    }
-  }, [isDescParams, searchParams])
+  //   if (sortParams) {
+  //     switch (sortParams) {
+  //       case 'tradeVolume':
+  //         setSort({ label: 'Total Trading Volume', value: 'tradeVolume', isDesc: isDescParams })
+  //         break
+  //       case 'balance':
+  //         setSort({ label: 'Total THE balance', value: 'balance', isDesc: isDescParams })
+  //         break
+  //       case 'totalPnLUSD':
+  //         setSort({ label: 'Profit & Loss', value: 'totalPnLUSD', isDesc: isDescParams })
+  //         break
+  //       case 'totalWinAmountUSD':
+  //         setSort({ label: 'Win Amount', value: 'totalWinAmountUSD', isDesc: isDescParams })
+  //         break
+  //       case 'followingCount':
+  //         setSort({ label: 'Followings', value: 'followingCount', isDesc: isDescParams })
+  //         break
+  //       case 'followerCount':
+  //         setSort({ label: 'Followers', value: 'followerCount', isDesc: isDescParams })
+  //         break
+  //       case 'entryFeesPaid':
+  //         setSort({ label: 'Entry Fees Paid', value: 'entryFeesPaid', isDesc: isDescParams })
+  //         break
+  //       default:
+  //         break
+  //     }
+  //   }
+  // }, [isDescParams, searchParams])
 
   const topUsersFormatted = useMemo(() => {
     const arr = dataFetch.map((item, index) => ({
@@ -381,6 +387,7 @@ function TopUser() {
           limitPage={isAll ? undefined : 10}
           enabledRedirectOnClickSort
           hightLightIndex={hightLightIndex}
+          showPopoverPagination={isAll}
         />
       </Box>
     </div>
