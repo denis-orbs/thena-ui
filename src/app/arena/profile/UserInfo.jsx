@@ -198,7 +198,7 @@ export function UserInfo({ userInfo, following, followers }) {
           <Link href={`/arena/rankings/users${rankToPageRankingBalance}`}>
             <Box className='flex flex-col gap-2 bg-neutral-800'>
               <TextHeading className='text-lg'>
-                {`${formatAmount(fromWei(userInfo.balance, theAsset?.decimal))} ${theAsset?.symbol}`}
+                {`${formatAmount(fromWei(userInfo.balance, theAsset?.decimal))} THE`}
               </TextHeading>
               <TextSubHeading className='text-sm'>{t('Balance')}</TextSubHeading>
             </Box>
