@@ -381,7 +381,7 @@ function TopUser() {
           limitPage={isAll ? undefined : 10}
           enabledRedirectOnClickSort
           hightLightIndex={hightLightIndex}
-          // showPopoverPagination={isAll}
+          showPopoverPagination={isAll}
         />
       </Box>
     </div>
