@@ -80,14 +80,16 @@ export function UserInfo({ userInfo, following, followers }) {
 
   const rankToPageRanking = useMemo(
     () =>
-      userInfo.rank !== '-' ? `?sort=tradeVolume&rank=${userInfo.rank}&page=${Math.ceil(userInfo.rank / 50)}` : '',
+      userInfo.rank !== '-'
+        ? `/${Math.ceil(userInfo.rank / 50)}?sort=tradeVolume&rank=${userInfo.rank}&isDesc=true`
+        : '',
     [userInfo.rank],
   )
 
   const rankToPageRankingBalance = useMemo(
     () =>
       userInfo.rankBalance !== '-'
-        ? `?sort=balance&rank=${userInfo.rankBalance}&page=${Math.ceil(userInfo.rankBalance / 50)}`
+        ? `/${Math.ceil(userInfo.rankBalance / 50)}?sort=balance&rank=${userInfo.rankBalance}&isDesc=true`
         : '',
     [userInfo.rankBalance],
   )

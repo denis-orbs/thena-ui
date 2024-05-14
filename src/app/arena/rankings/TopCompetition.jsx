@@ -2,9 +2,9 @@
 
 import { gql } from 'graphql-request'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Box from '@/components/box'
@@ -36,15 +36,27 @@ const V4_TOP_COMPETITIONS = gql`
 
 const fetchTopCompetition = async sort => {
   try {
+    const orderBy = ['id_ASC']
+    const isDesc = sort?.isDesc
+    switch (sort?.value) {
+      case 'participants':
+        orderBy.unshift(isDesc ? 'participantCount_DESC' : 'participantCount_ASC')
+        break
+      case 'entryFee':
+        orderBy.unshift(isDesc ? 'entryFeeUSD_DESC' : 'entryFeeUSD_ASC')
+        break
+      case 'totalPrize':
+        orderBy.unshift(isDesc ? 'totalPrizeUSD_DESC' : 'totalPrizeUSD_ASC')
+        break
+      case 'volume':
+        orderBy.unshift(isDesc ? 'participantCount_DESC' : 'participantCount_ASC')
+        break
+      default:
+        break
+    }
+
     const { tradingCompetitions: topCompetition } = await v4Client.request(V4_TOP_COMPETITIONS, {
-      orderBy:
-        sort?.value === 'participants'
-          ? ['participantCount_DESC', 'id_ASC']
-          : sort?.value === 'entryFee'
-            ? ['entryFeeUSD_DESC', 'id_ASC']
-            : sort?.value === 'totalPrize'
-              ? ['totalPrizeUSD_DESC', 'id_ASC']
-              : ['participantCount_ASC', 'id_ASC'],
+      orderBy,
     })
     return topCompetition
   } catch (error) {
@@ -100,8 +112,10 @@ function TopCompetition() {
   )
 
   const assets = useAssets()
-  const [currentPage, setCurrentPage] = useState(1)
+  const { page } = useParams()
+  const [currentPage, setCurrentPage] = useState(!isAll ? 1 : page ? Number(page) : 1)
   const [sort, setSort] = useState(sortOptions[3])
+  // const [initialRender, setInitialRender] = useState(true)
 
   // const [direction, setDirection] = useState('DESC')
 
@@ -112,9 +126,14 @@ function TopCompetition() {
     revalidateOnFocus: true,
   })
 
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [sort?.value, sort?.isDesc])
+  // useEffect(() => {
+  //   if (!initialRender) {
+  //     setCurrentPage(1)
+  //   } else {
+  //     setInitialRender(false)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [debounceSearch])
 
   const calcTotalVolume = useCallback(
     comp => {
@@ -237,9 +256,11 @@ function TopCompetition() {
             setCurrentPage={setCurrentPage}
             tableBasic
             data={isAll ? finalData : finalData.slice(0, 5)}
-            onlySortDesc
+            // onlySortDesc
             enabledRedirectOnClickPagination={isAll}
             loading={isLoading}
+            enabledRedirectOnClickSort={isAll}
+            showPopoverPagination={isAll}
           />
         </div>
       </Box>

@@ -3,7 +3,7 @@ import { gql } from 'graphql-request'
 import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -23,7 +23,7 @@ import { useLocaleSettings } from '@/state/settings/hooks'
 
 const V4_RECENTLY_MINTED = gql`
   query V4_RECENTLY_MINTED {
-    usernameNfts {
+    usernameNfts(orderBy: id_DESC) {
       id
       index
       name
@@ -52,7 +52,7 @@ const V4_RECENTLY_MINTED = gql`
 
 const V4_RECENTLY_GIFTED = gql`
   query V4_RECENTLY_GIFTED {
-    usernameNfts(where: { isGift_eq: true }) {
+    usernameNfts(where: { isGift_eq: true }, orderBy: id_DESC) {
       id
       index
       name
@@ -107,10 +107,7 @@ const fetchRecentlyMinted = async (isMinted = false) => {
   }
 }
 
-function RecentlyContent() {
-  const pathname = usePathname()
-  const isMinted = pathname.includes('minted')
-
+function RecentlyContent({ isMinted = true }) {
   const sortOptions = useMemo(() => {
     const arr = [
       {
@@ -173,11 +170,13 @@ function RecentlyContent() {
   }, [isMinted])
 
   const t = useTranslations()
-  const [currentPage, setCurrentPage] = useState(1)
+  const { page } = useParams()
+  const [currentPage, setCurrentPage] = useState(page ? Number(page) : 1)
   const [sort, setSort] = useState(sortOptions[0])
   const [dataFetch, setDataFetch] = useState([])
-  const { costPerToken } = useUSDTCostPerToken()
   const [loading, setLoading] = useState(false)
+
+  const { costPerToken } = useUSDTCostPerToken()
   const assets = useAssets()
 
   const { locale } = useLocaleSettings()
@@ -239,10 +238,6 @@ function RecentlyContent() {
       setDataFetch(undefined)
     }
   }, [USDTAsset?.decimals, calculateCost, data, isLoading])
-
-  useEffect(() => {
-    getData()
-  }, [getData])
 
   const sortedData = useMemo(
     () =>
@@ -345,8 +340,14 @@ function RecentlyContent() {
   )
 
   useEffect(() => {
-    setCurrentPage(1)
-  }, [isMinted])
+    getData()
+  }, [getData])
+
+  useEffect(() => {
+    if (!page) {
+      setCurrentPage(1)
+    }
+  }, [isMinted, page])
 
   return (
     <div>
@@ -371,6 +372,7 @@ function RecentlyContent() {
           enabledRedirectOnClickPagination
           loading={isLoading || loading || !dataFetch}
           pageSize={50}
+          showPopoverPagination
         />
       </div>
     </div>

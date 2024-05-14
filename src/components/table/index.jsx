@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -117,7 +117,7 @@ function Table({
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [pageQuery, setPageQuery] = useState(1)
+  const { page } = useParams()
   const query = useMemo(() => new URLSearchParams(searchParams.toString()), [searchParams])
   const [inputPage, setInputPage] = useState(undefined)
   const [showPopover, setShowPopover] = useState(false)
@@ -132,50 +132,72 @@ function Table({
     newPage => {
       if (enabledRedirectOnClickPagination) {
         if (newPage !== currentPage) {
-          query.delete('rank', undefined)
-          query.delete('page', undefined)
-          if (newPage > 1) {
-            query.set('page', newPage.toString())
-            router.replace(`${pathname}?${query.toString()}`)
-            return
+          let pathNew = ''
+          if (!page) {
+            pathNew = `${pathname}/${newPage}`
+          } else {
+            const pathnameReverse = pathname.split('').reverse()
+            const i = pathnameReverse.findIndex(item => item === '/')
+            if (i !== -1) {
+              pathnameReverse.splice(0, i)
+              pathNew = pathnameReverse.reverse().join('') + (newPage === 1 ? '' : newPage)
+            }
           }
-          router.replace(`${pathname}?${query.toString()}`)
+          query.delete('rank', undefined)
+          router.replace(`${pathNew}?${query.toString()}`)
         }
       }
     },
-    [currentPage, enabledRedirectOnClickPagination, pathname, query, router],
+    [currentPage, enabledRedirectOnClickPagination, page, pathname, query, router],
   )
 
   useEffect(() => {
-    if (searchParams.get('page')) {
-      setPageQuery(Number(searchParams.get('page')))
-    }
-  }, [searchParams])
-
-  useEffect(() => {
     if (enabledRedirectOnClickPagination) {
-      setCurrentPage(pageQuery)
+      if (page) {
+        setCurrentPage(Number(page))
+      } else {
+        setCurrentPage(1)
+      }
     }
-  }, [pageQuery, setCurrentPage, enabledRedirectOnClickPagination])
+  }, [enabledRedirectOnClickPagination, page, setCurrentPage])
 
   useEffect(() => {
     if (sort && enabledRedirectOnClickSort) {
-      query.set('sort', sort.value.toString())
-      query.set('isDesc', sort.isDesc.toString())
-      router.replace(`${pathname}?${query.toString()}`)
+      query.set('sort', sort.value?.toString())
+      query.set('isDesc', sort.isDesc?.toString())
+      let pathNew = pathname
+      if (page && page !== currentPage) {
+        const pathnameReverse = pathname.split('').reverse()
+        const i = pathnameReverse.findIndex(item => item === '/')
+        if (i !== -1) {
+          pathnameReverse.splice(0, i)
+          pathNew = pathnameReverse.reverse().join('') + (currentPage === 1 ? '' : currentPage)
+        }
+      }
+      router.replace(`${pathNew}?${query.toString()}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, router, sort, enabledRedirectOnClickSort])
+  }, [sort, enabledRedirectOnClickSort])
 
-  // TODO: Disable for now
-  // useEffect(() => {
-  //   if (hightLightIndex) {
-  //     const element = document.getElementById(`table-row-${hightLightIndex}`)
-  //     if (element) {
-  //       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  //     }
-  //   }
-  // }, [hightLightIndex])
+  useEffect(() => {
+    if (enabledRedirectOnClickSort) {
+      const sortParams = searchParams.get('sort')
+      const sortOption = sortOptions.find(item => item.value === sortParams)
+      if (sortOption && sortOption.value !== sort?.value) {
+        setSort(sortOption)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabledRedirectOnClickSort, searchParams, setSort, sortOptions])
+
+  useEffect(() => {
+    if (hightLightIndex) {
+      const element = document.getElementById(`table-row-${hightLightIndex}`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+  }, [hightLightIndex])
 
   return (
     <div className={cn('relative flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
@@ -346,8 +368,8 @@ function Table({
             <PaginateCell
               onClick={() => {
                 if (currentPage !== 1) {
-                  setCurrentPage(Math.max(currentPage - 1, 1))
                   handleRedirectPage(Math.max(currentPage - 1, 1))
+                  setCurrentPage(Math.max(currentPage - 1, 1))
                 }
               }}
               disabled={currentPage === 1}
@@ -360,8 +382,8 @@ function Table({
                   key={`paginate-${idx}`}
                   active={currentPage === idx + 1}
                   onClick={() => {
-                    setCurrentPage(idx + 1)
                     handleRedirectPage(idx + 1)
+                    setCurrentPage(idx + 1)
                   }}
                 >
                   {idx + 1}
@@ -372,8 +394,8 @@ function Table({
                 <PaginateCell
                   active={currentPage === 1}
                   onClick={() => {
-                    setCurrentPage(1)
                     handleRedirectPage(1)
+                    setCurrentPage(1)
                   }}
                 >
                   1
@@ -381,8 +403,8 @@ function Table({
                 <PaginateCell
                   active={currentPage === 2}
                   onClick={() => {
-                    setCurrentPage(2)
                     handleRedirectPage(2)
+                    setCurrentPage(2)
                   }}
                 >
                   2
@@ -393,8 +415,8 @@ function Table({
                       if (showPopoverPagination) {
                         setShowPopover(true)
                       } else {
-                        setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
                         handleRedirectPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                        setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
                       }
                     }}
                   >
@@ -405,8 +427,8 @@ function Table({
                   <PaginateCell
                     active
                     onClick={() => {
-                      setCurrentPage(currentPage)
                       handleRedirectPage(currentPage)
+                      setCurrentPage(currentPage)
                     }}
                   >
                     {currentPage}
@@ -418,8 +440,8 @@ function Table({
                       if (showPopoverPagination) {
                         setShowPopover(true)
                       } else {
-                        setCurrentPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
                         handleRedirectPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
+                        setCurrentPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
                       }
                     }}
                   >
@@ -429,8 +451,8 @@ function Table({
                 <PaginateCell
                   active={currentPage === pageCount - 1}
                   onClick={() => {
-                    setCurrentPage(pageCount - 1)
                     handleRedirectPage(pageCount - 1)
+                    setCurrentPage(pageCount - 1)
                   }}
                 >
                   {pageCount - 1}
@@ -438,8 +460,8 @@ function Table({
                 <PaginateCell
                   active={currentPage === pageCount}
                   onClick={() => {
-                    setCurrentPage(pageCount)
                     handleRedirectPage(pageCount)
+                    setCurrentPage(pageCount)
                   }}
                 >
                   {pageCount}
@@ -449,8 +471,8 @@ function Table({
             <PaginateCell
               onClick={() => {
                 if (currentPage !== pageCount) {
-                  setCurrentPage(Math.min(currentPage + 1, pageCount))
                   handleRedirectPage(Math.min(currentPage + 1, pageCount))
+                  setCurrentPage(Math.min(currentPage + 1, pageCount))
                 }
               }}
               disabled={currentPage === pageCount}
@@ -469,8 +491,8 @@ function Table({
                 if (newPage && newPage !== currentPage) {
                   handleRedirectPage(Number(inputPage))
                 }
-                setInputPage('')
                 setShowPopover(false)
+                setInputPage('')
               }}
             />
           </ul>
