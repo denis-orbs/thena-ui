@@ -53,7 +53,7 @@ function Popover({ inputPage = '', setInputPage, showPopover = false, setShowPop
         // eslint-disable-next-line max-len
       } left-1/2 top-12 z-10 inline-block -translate-x-1/2 rounded-lg border border-neutral-200 bg-white text-sm text-neutral-500 shadow-sm transition-opacity duration-300 lg:left-1/2 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-400`}
     >
-      <div className='flex items-center justify-between rounded-t-lg border-b border-neutral-200 bg-neutral-100 px-3 py-2 dark:border-neutral-600 dark:bg-neutral-700'>
+      <div className='flex items-center justify-between rounded-t-lg border-b border-neutral-600 bg-neutral-700 px-3 py-2'>
         <TextSubHeading className='text-nowrap text-gray-900 dark:text-white'>Go to page</TextSubHeading>
         <TextIconButton
           Icon={XIcon}
