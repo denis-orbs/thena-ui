@@ -305,7 +305,11 @@ function ThenaIdPage() {
                       rel='nofollow noopener'
                       target='_blank'
                     >
-                      <EmphasisButton>{t('Make Offer on Element')}</EmphasisButton>
+                      <EmphasisButton
+                        leading={<Image src='/images/icon-button-make-offer.png' width={30} height={30} />}
+                      >
+                        {t('Make Offer on Element')}
+                      </EmphasisButton>
                     </Link>
                   ) : null
                 ) : (
