@@ -33,10 +33,10 @@ export async function generateMetadata({ params }) {
   const findAsset = assets.data.find(asset => asset.address === competition.prize.token.toLowerCase())
 
   const metadata = {
-    name: competition.name,
-    token: findAsset.symbol,
-    prize: formatAmount(fromWei(competition.prize.totalPrize, findAsset.decimals)),
-    image: [competition.bannerUrl, `${siteConfig.url}/cover.png`],
+    name: competition?.name ?? 'competition',
+    token: findAsset?.symbol ?? 'token',
+    prize: formatAmount(fromWei(competition?.prize?.totalPrize, findAsset.decimals)),
+    image: [competition?.bannerUrl, `${siteConfig.url}/cover.png`],
   }
 
   return {

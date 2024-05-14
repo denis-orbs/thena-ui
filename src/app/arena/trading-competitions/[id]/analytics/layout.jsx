@@ -24,9 +24,9 @@ export async function generateMetadata({ params }) {
   const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
 
   const metadata = {
-    name: `Analytics of ${competition.name}`,
-    image: [competition.bannerUrl, `${siteConfig.url}/cover.png`],
-    description: `Analyze ${competition.name} on THENA Arena and see the volume traded, 
+    name: `Analytics of ${competition.name ?? 'competition'}`,
+    image: [competition?.bannerUrl, `${siteConfig.url}/cover.png`],
+    description: `Analyze ${competition?.name ?? 'competition'} on THENA Arena and see the volume traded, 
 the number of transactions and a lot more.`,
   }
 

@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
 
   const { users } = await v4Client.request(V4_USER_META_DATA, { address })
 
-  const username = users[0].username || formatAddress(users[0].id)
+  const username = users?.[0] ? users[0]?.username || formatAddress(users[0]?.id) : 'username'
 
   const metadata = {
     name: `Followers of ${username}`,

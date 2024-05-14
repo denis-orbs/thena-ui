@@ -18,8 +18,8 @@ export async function generateMetadata({ params }) {
   const { usernameNfts } = await v4Client.request(V4_USERNAME_NFTS, { username: decodeURI(thenaId).toLowerCase() })
 
   const metadata = {
-    name: usernameNfts?.[0].name,
-    description: `See all the details about ${usernameNfts?.[0].name}.thena on THENA Arena, 
+    name: usernameNfts?.[0]?.name ?? 'thena',
+    description: `See all the details about ${usernameNfts?.[0]?.name ?? 'thena'}.thena on THENA Arena, 
 whether it is available or not and more.`,
     image: [`${siteConfig.url}/cover.png`],
   }
