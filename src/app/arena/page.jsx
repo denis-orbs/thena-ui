@@ -188,7 +188,7 @@ export default function ArenaPage() {
         result = result.filter(
           item =>
             item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
-            item?.participant?.id === account?.toLowerCase(),
+            item.participants?.find(participant => participant?.participant.id === account.toLowerCase()),
         )
         break
 
@@ -464,7 +464,7 @@ export default function ArenaPage() {
           item =>
             account &&
             item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
-            item.participant?.id === account.toLowerCase(),
+            item.participants?.find(participant => participant?.participant.id === account.toLowerCase()),
         ),
         hosted: competitions?.some(item => account && account.toLowerCase() === item.owner.id),
         joined: competitions?.some(
