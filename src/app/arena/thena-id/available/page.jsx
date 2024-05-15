@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import { PrimaryButton } from '@/components/buttons/Button'
-import Dropdown from '@/components/dropdown'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph } from '@/components/typography'
@@ -54,20 +53,21 @@ const fetchAvailable = async (offset = 0, whereQuery = {}, search = '') => {
 
 function AvailablePage() {
   const t = useTranslations()
+  const { account } = useWallet()
 
   const sortOptions = useMemo(() => {
     const arr = [
       {
         label: 'THENA ID',
         value: 'name',
-        width: 'w-[25%]',
+        width: account ? 'w-[25%]' : 'w-[33%]',
         isDesc: true,
         disabled: false,
       },
       {
         label: 'Cost',
         value: 'cost',
-        width: 'w-[25%]',
+        width: account ? 'w-[25%]' : 'w-[33%]',
         isDesc: true,
         disabled: false,
       },
@@ -78,17 +78,20 @@ function AvailablePage() {
         isDesc: true,
         disabled: false,
       },
-      {
+    ]
+
+    if (account) {
+      arr.push({
         label: '',
         value: 'action',
         width: 'w-[15%]',
         isDesc: true,
         disabled: true,
-      },
-    ]
+      })
+    }
 
     return arr
-  }, [])
+  }, [account])
 
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[2])
@@ -97,9 +100,8 @@ function AvailablePage() {
   const [nameChoose, setNameChoose] = useState(undefined)
   const [showModal, setShowModal] = useState(false)
   const [searchText, setSearchText] = useState('')
-  const [selectFilterField, setSelectFilterField] = useState(FILTERS[1])
+  const [selectFilterField, _] = useState(FILTERS[0])
 
-  const { account } = useWallet()
   const assets = useAssets()
   // Only allowed USDT
   const USDTAsset = useMemo(
@@ -152,6 +154,10 @@ function AvailablePage() {
       }
     }
   }, [data, isLoading])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [debounceSearch])
 
   const sortedData = useMemo(
     () =>
@@ -226,7 +232,7 @@ function AvailablePage() {
           val={searchText}
           setVal={setSearchText}
         />
-        <div className='my-2 flex items-center space-x-2.5'>
+        {/* <div className='my-2 flex items-center space-x-2.5'>
           <span className='whitespace-nowrap text-white'>{t('Filter By')}</span>
           <Dropdown
             className='w-full lg:w-[200px]'
@@ -236,7 +242,7 @@ function AvailablePage() {
             selected={selectFilterField}
             setSelected={ele => setSelectFilterField(ele.label)}
           />
-        </div>
+        </div> */}
       </div>
       <div className='mt-6 w-full'>
         <Table
