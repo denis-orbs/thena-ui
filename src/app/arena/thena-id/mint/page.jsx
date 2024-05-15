@@ -20,9 +20,9 @@ function MintPage() {
         <EmphasisButton>
           <Link href='/arena/thena-id/recently-minted'>Recent THENA ID Mints</Link>
         </EmphasisButton>
-        {/* <EmphasisButton>
+        <EmphasisButton>
           <Link href='/arena/thena-id/available'>Available THENA IDs</Link>
-        </EmphasisButton> */}
+        </EmphasisButton>
       </div>
       <ThenaContent />
     </div>
