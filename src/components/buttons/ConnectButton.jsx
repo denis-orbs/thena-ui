@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect } from 'react'
 import useSWR from 'swr'
 
+import { getFromSessionStorage } from '@/lib/helper'
 import { formatAddress } from '@/lib/utils'
 import { useSignWallet } from '@/lib/wallets/useSignWallet'
 import useWallet from '@/lib/wallets/useWallet'
@@ -21,17 +22,17 @@ export default function ConnectButton({ className }) {
   const { signWallet, deleteToken } = useSignWallet()
 
   const getSign = useCallback(() => {
-    if (account) {
+    if (!getFromSessionStorage('token') && account) {
       signWallet()
     }
-  }, [account, signWallet])
+  }, [signWallet, account])
 
   useEffect(() => {
     getSign()
   }, [getSign])
 
   useEffect(() => {
-    if (!active && !account) {
+    if (!active && !account && getFromSessionStorage('token')) {
       deleteToken()
     }
   }, [active, account, deleteToken])
