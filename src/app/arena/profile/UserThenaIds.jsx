@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
@@ -12,7 +12,6 @@ import useDebounce from '@/hooks/useDebounce'
 
 function UserThenaIds({ thenaIds }) {
   const t = useTranslations()
-  const router = useRouter()
   const [searchText, setSearchText] = useState('')
 
   const debounceSearch = useDebounce(searchText, 300)
@@ -37,13 +36,9 @@ function UserThenaIds({ thenaIds }) {
         <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
           {filterThenaIds &&
             filterThenaIds.map((item, index) => (
-              <Box
-                key={index}
-                className='hover:cursor-pointer'
-                onClick={() => router.push(`/arena/thena-id/browse/${item.name}`)}
-              >
-                {item.name}
-              </Box>
+              <Link key={index} href={`/arena/thena-id/browse/${item.name}`}>
+                <Box>{item.name}</Box>
+              </Link>
             ))}
           {!filterThenaIds && new Array(4).fill(0).map(() => <Skeleton className='h-[279px] w-full' />)}
         </div>

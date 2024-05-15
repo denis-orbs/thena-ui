@@ -479,22 +479,28 @@ function Table({
             >
               <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`} />
             </PaginateCell>
-            <Popover
-              inputPage={inputPage}
-              setInputPage={setInputPage}
-              setCurrentPage={setCurrentPage}
-              showPopover={showPopover}
-              setShowPopover={setShowPopover}
-              pageCount={pageCount}
-              onClick={() => {
-                const newPage = Number(inputPage)
-                if (newPage && newPage !== currentPage) {
-                  handleRedirectPage(Number(inputPage))
-                }
-                setShowPopover(false)
-                setInputPage('')
-              }}
-            />
+            {showPopoverPagination && (
+              <Popover
+                inputPage={inputPage}
+                setInputPage={setInputPage}
+                setCurrentPage={setCurrentPage}
+                showPopover={showPopover}
+                setShowPopover={setShowPopover}
+                pageCount={pageCount}
+                onClick={() => {
+                  const newPage = Number(inputPage)
+                  if (newPage && newPage !== currentPage) {
+                    if (enabledRedirectOnClickPagination) {
+                      handleRedirectPage(Number(newPage))
+                    } else {
+                      setCurrentPage(newPage)
+                    }
+                  }
+                  setShowPopover(false)
+                  setInputPage('')
+                }}
+              />
+            )}
           </ul>
         </div>
       )}
