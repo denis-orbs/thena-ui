@@ -66,6 +66,8 @@ const V4_COMPETITION_DATAS = gql`
         nameColor
         checkMarkIcon
         verifiedAt
+        isAdmin
+        isSuperAdmin
       }
       tradingCompetitionSpot
     }
@@ -169,38 +171,107 @@ export default function ArenaPage() {
         result = cloneDeep(result)
     }
 
+    let tcUpcoming = result.filter(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
+    let tcLive = result.filter(
+      item =>
+        item.timestamp.endTimestamp >= new Date().getTime() / 1000 &&
+        item.timestamp.startTimestamp <= new Date().getTime() / 1000,
+    )
+    const tcEnded = result.filter(item => item.timestamp.endTimestamp < new Date().getTime() / 1000)
+
+    let tcJoined = result.filter(item =>
+      item.participants?.find(participant => participant?.participant.id === account?.toLowerCase()),
+    )
+
+    let tcHosted = result.filter(item => account?.toLowerCase() === item.owner.id)
+
+    const sortUpcomingWhenDefault = array => {
+      let res = [...array]
+      res.sort((a, b) => a.timestamp.startTimestamp - b.timestamp.startTimestamp)
+      const tcUpcomingTop = res
+        .filter(tc => tc.owner.isAdmin || tc.owner.isSuperAdmin || tc.owner.isVerified)
+        .sort((a, b) => Number(a.prize.totalPrize) - Number(b.prize.totalPrize))
+      res = res.filter(tc => !tcUpcomingTop.map(item => item.id).includes(tc.id))
+      res = [...tcUpcomingTop, ...res]
+      return res
+    }
+
+    const sortLiveWhenDefault = array => {
+      let res = [...array]
+      res.sort((a, b) => a.timestamp.endTimestamp - b.timestamp.endTimestamp)
+      const tcLiveTop = res
+        .filter(tc => tc.owner.isAdmin || tc.owner.isSuperAdmin || tc.owner.isVerified)
+        .sort((a, b) => Number(a.prize.totalPrize) - Number(b.prize.totalPrize))
+      res = res.filter(tc => !tcLiveTop.map(item => item.id).includes(tc.id))
+      res = [...tcLiveTop, ...res]
+      return res
+    }
+
+    if (filter.sortBy === FILTERS.Default) {
+      tcUpcoming = sortUpcomingWhenDefault(tcUpcoming)
+      tcLive = sortLiveWhenDefault(tcLive)
+      tcEnded.sort((a, b) => b.timestamp.endTimestamp - a.timestamp.endTimestamp)
+
+      // tcJoined
+      let tcJoinedUpcoming = tcJoined.filter(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
+      tcJoinedUpcoming = sortUpcomingWhenDefault(tcJoinedUpcoming)
+
+      let tcJoinedLive = tcJoined.filter(
+        item =>
+          item.timestamp.endTimestamp >= new Date().getTime() / 1000 &&
+          item.timestamp.startTimestamp <= new Date().getTime() / 1000,
+      )
+      tcJoinedLive = sortLiveWhenDefault(tcJoinedLive)
+
+      const tcJoinedEnd = tcJoined.filter(
+        item =>
+          item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
+          item.participants?.find(participant => participant?.participant.id === account?.toLowerCase()),
+      )
+      tcJoined = [...tcJoinedUpcoming, ...tcJoinedLive, ...tcJoinedEnd]
+
+      // tcHosted
+      let tcHostedUpcoming = tcHosted.filter(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
+      tcHostedUpcoming = sortUpcomingWhenDefault(tcHostedUpcoming)
+
+      let tcHostedLive = tcHosted.filter(
+        item =>
+          item.timestamp.endTimestamp >= new Date().getTime() / 1000 &&
+          item.timestamp.startTimestamp <= new Date().getTime() / 1000,
+      )
+      tcHostedLive = sortLiveWhenDefault(tcHostedLive)
+
+      const tcHostedEnd = tcHosted.filter(
+        item =>
+          item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
+          item.participants?.find(participant => participant?.participant.id === account?.toLowerCase()),
+      )
+      tcHosted = [...tcHostedUpcoming, ...tcHostedLive, ...tcHostedEnd]
+    }
+
     switch (searchParams.get('type')) {
       case 'upcoming':
-        result = result.filter(item => item.timestamp.startTimestamp > new Date().getTime() / 1000)
+        result = cloneDeep(tcUpcoming)
         break
 
       case 'joined':
-        result = result.filter(item =>
-          item.participants?.find(participant => participant?.participant.id === account?.toLowerCase()),
-        )
+        result = cloneDeep(tcJoined)
         break
 
       case 'hosted':
-        result = result.filter(item => account?.toLowerCase() === item.owner.id)
+        result = cloneDeep(tcHosted)
         break
 
       case 'ended':
-        result = result.filter(
-          item =>
-            item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
-            item.participants?.find(participant => participant?.participant.id === account.toLowerCase()),
-        )
+        result = cloneDeep(tcEnded)
         break
 
       case 'live':
-        result = result.filter(
-          item =>
-            item.timestamp.endTimestamp >= new Date().getTime() / 1000 &&
-            item.timestamp.startTimestamp <= new Date().getTime() / 1000,
-        )
+        result = cloneDeep(tcLive)
         break
 
       default:
+        result = [...tcUpcoming, ...tcLive, ...tcEnded]
         result = cloneDeep(result)
     }
 
