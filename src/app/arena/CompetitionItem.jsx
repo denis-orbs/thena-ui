@@ -33,12 +33,12 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
 
   const entryFee = useMemo(() => {
     if (competition.entryFee !== '0') {
-      return `${formatAmount(fromWei(competition.entryFee, competition.competitionRules?.winningToken?.decimals))} ${
-        competition.competitionRules?.winningToken?.symbol
+      return `${formatAmount(fromWei(competition.entryFee, competition.prize?.token?.decimals))} ${
+        competition.prize?.token?.symbol
       }`
     }
     return t('Free To Enter')
-  }, [competition.entryFee, competition.competitionRules.winningToken, t])
+  }, [competition.entryFee, competition.prize?.token?.decimals, competition.prize?.token?.symbol, t])
 
   const { text: timeDistance } = useCountdown(eventType, competition.timestamp.startTimestamp)
 
