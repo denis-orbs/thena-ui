@@ -78,21 +78,19 @@ export function UserInfo({ userInfo, following, followers }) {
     }
   }, [copied])
 
-  const rankToPageRanking = useMemo(
-    () =>
-      userInfo.rank !== '-'
-        ? `/${Math.ceil(userInfo.rank / 50)}?sort=tradeVolume&rank=${userInfo.rank}&isDesc=true`
-        : '',
-    [userInfo.rank],
-  )
+  const rankToPageRanking = useMemo(() => {
+    const page = Math.ceil(userInfo.rank / 50)
+    return userInfo.rank !== '-'
+      ? `${page === 1 ? '' : `/${page}`}?sort=tradeVolume&rank=${userInfo.rank}&isDesc=true`
+      : ''
+  }, [userInfo.rank])
 
-  const rankToPageRankingBalance = useMemo(
-    () =>
-      userInfo.rankBalance !== '-'
-        ? `/${Math.ceil(userInfo.rankBalance / 50)}?sort=balance&rank=${userInfo.rankBalance}&isDesc=true`
-        : '',
-    [userInfo.rankBalance],
-  )
+  const rankToPageRankingBalance = useMemo(() => {
+    const page = Math.ceil(userInfo.rankBalance / 50)
+    return userInfo.rankBalance !== '-'
+      ? `${page === 1 ? '' : `/${page}`}?sort=balance&rank=${userInfo.rankBalance}&isDesc=true`
+      : ''
+  }, [userInfo.rankBalance])
 
   return (
     <>

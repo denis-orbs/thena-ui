@@ -2,7 +2,7 @@
 
 import { gql } from 'graphql-request'
 import Link from 'next/link'
-import { useParams, usePathname, useSearchParams } from 'next/navigation'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -122,6 +122,7 @@ function TopUser() {
   const pageSize = useMemo(() => (isAll ? 50 : 20), [isAll])
   const searchParams = useSearchParams()
   const rank = searchParams.get('rank')
+  const search = searchParams.get('search')
 
   const sortOptions = useMemo(
     () => [
@@ -190,12 +191,13 @@ function TopUser() {
   )
 
   const t = useTranslations()
-  const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] = useState(search || '')
   const { page } = useParams()
   const [currentPage, setCurrentPage] = useState(page ? Number(page) : 1)
   const [sort, setSort] = useState(sortOptions[2])
   const [dataFetch, setDataFetch] = useState([])
   const [initialRender, setInitialRender] = useState(true)
+  const router = useRouter()
 
   const debounceSearch = useDebounce(searchText.trim(), 300)
 
@@ -226,6 +228,22 @@ function TopUser() {
   useEffect(() => {
     if (!initialRender) {
       setCurrentPage(1)
+      const query = new URLSearchParams(searchParams.toString())
+      if (debounceSearch) {
+        query.set('search', debounceSearch)
+      } else {
+        query.delete('search', undefined)
+      }
+      let pathNew = pathname
+      if (page && page !== 1) {
+        const pathnameReverse = pathname.split('').reverse()
+        const i = pathnameReverse.findIndex(item => item === '/')
+        if (i !== -1) {
+          pathnameReverse.splice(0, i)
+          pathNew = pathnameReverse.reverse().join('')
+        }
+      }
+      router.replace(`${pathNew}?${query.toString()}`)
     } else {
       setInitialRender(false)
     }
