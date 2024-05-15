@@ -8,6 +8,7 @@ import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { Collapse } from '@/components/collapse'
 import TruncateContent from '@/components/common/TruncateContent'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
@@ -21,70 +22,86 @@ export function CompetitionDetail({ competition, isPreview = false }) {
 
   const competitionDetail = useMemo(() => {
     const {
-      entryFee,
+      prizeUpdate,
+      entryFeeUpdate,
       maxParticipants,
       participantCount,
-      prize: { token: prizeToken, totalPrize, hostContribution },
       competitionRules: { startingBalance, winningToken },
     } = _competition
 
     return [
       {
         key: 'Participants',
-        data: `${_competition.participantCount} / ${_competition.maxParticipants}`,
+        dataUpdate: [{ data: `${_competition.participantCount} / ${_competition.maxParticipants}` }],
       },
       {
         key: 'Entry Fee',
-        data: isInvalidAmount(entryFee) ? t('Free To Join') : formatAmount(fromWei(entryFee, prizeToken?.decimals)),
-        ticker: isInvalidAmount(entryFee) ? null : prizeToken?.symbol,
+        dataUpdate: entryFeeUpdate.every(entry => isInvalidAmount(entry))
+          ? [{ data: t('Free To Join'), ticker: null }]
+          : entryFeeUpdate.map((entry, index) => ({
+              data: formatAmount(fromWei(entry, prizeUpdate.token?.[index]?.decimals)),
+              ticker: prizeUpdate.token?.[index]?.symbol,
+            })),
       },
       {
         key: 'Competition Type',
-        data: _competition?.market,
+        dataUpdate: [{ data: _competition?.market }],
       },
       {
         key: 'Current Prize Pool',
-        data: formatAmount(fromWei(totalPrize, prizeToken?.decimals)),
-        ticker: prizeToken?.symbol,
+        dataUpdate: entryFeeUpdate.every(entry => isInvalidAmount(entry))
+          ? [{ data: t('Free To Join'), ticker: null }]
+          : prizeUpdate.token.map((item, index) => ({
+              data: formatAmount(fromWei(prizeUpdate.totalPrize[index], item?.decimals)),
+              ticker: item?.symbol,
+            })),
       },
       {
         key: 'Max Prize Pool',
-        data: formatAmount(
-          fromWei(totalPrize).plus(fromWei(entryFee).multipliedBy(maxParticipants - participantCount)),
-        ),
-        ticker: prizeToken?.symbol,
-      },
-      {
-        key: 'Host Contribution',
-        data: formatAmount(fromWei(hostContribution, prizeToken?.decimals)),
-        ticker: prizeToken?.symbol,
+        dataUpdate: prizeUpdate.token.map((item, index) => ({
+          data: formatAmount(
+            fromWei(prizeUpdate.totalPrize[index]).plus(
+              fromWei(entryFeeUpdate[index]).multipliedBy(maxParticipants - participantCount),
+            ),
+          ),
+          ticker: item?.symbol,
+        })),
       },
       {
         key: 'Deposit Token',
-        ticker: winningToken?.symbol,
+        dataUpdate: [{ ticker: winningToken?.symbol }],
       },
       {
         key: 'Required Deposit To Join',
-        data: isInvalidAmount(startingBalance)
-          ? 'No Requirements'
-          : formatAmount(fromWei(startingBalance, winningToken?.decimals)),
-        ticker: isInvalidAmount(startingBalance) ? '' : winningToken?.symbol,
+        dataUpdate: [
+          {
+            data: isInvalidAmount(startingBalance)
+              ? 'No Requirements'
+              : formatAmount(fromWei(startingBalance, winningToken?.decimals)),
+            ticker: isInvalidAmount(startingBalance) ? '' : winningToken?.symbol,
+          },
+        ],
       },
       {
         key: 'Winning Token',
-        ticker: winningToken?.symbol,
+        dataUpdate: [{ ticker: winningToken?.symbol }],
       },
     ]
   }, [_competition, t])
 
   const prizeDistribution = useMemo(() => {
-    const sortedWeights = _competition?.prize?.weights.sort((a, b) => b - a)
+    const sortedWeights = _competition?.prizeUpdate?.weights.sort((a, b) => b - a)
     return sortedWeights?.map(item => {
-      const percentage = ((item - (Number(item) / 100) * ((_competition.prize.ownerFee / 1000) * 100)) / 1000) * 100
+      const percentage =
+        ((item - (Number(item) / 100) * ((_competition.prizeUpdate.ownerFee / 1000) * 100)) / 1000) * 100
       return {
-        data: formatAmount(
-          fromWei(_competition.prize?.totalPrize, _competition.prize?.token?.decimals).times(percentage / 100),
-        ),
+        data: _competition.prizeUpdate.token.map((prize, idx) => ({
+          value: formatAmount(
+            fromWei(_competition.prizeUpdate?.totalPrize?.[idx], prize?.decimals).times(percentage / 100),
+          ),
+          symbol: prize?.symbol ?? '',
+          logoURI: prize?.logoURI ?? '',
+        })),
         percentage: formatAmount(percentage),
       }
     })
@@ -100,7 +117,6 @@ export function CompetitionDetail({ competition, isPreview = false }) {
 
   return (
     <>
-      {' '}
       <Box>
         <Collapse title={<TextHeading className='text-xl'>{t('Description')}</TextHeading>}>
           <TruncateContent
@@ -119,23 +135,35 @@ export function CompetitionDetail({ competition, isPreview = false }) {
         <div className='lg: mt-4 grid grid-flow-col grid-rows-4 gap-4 lg:grid-flow-row lg:grid-cols-3 lg:grid-rows-3'>
           {competitionDetail.map((item, index) => (
             <div className='flex flex-col gap-2' key={`${index}-competition-detail`}>
-              <TextHeading className='text-lg'>{t(`${item.key}`)}</TextHeading>
-              {item.ticker ? (
-                <div className='flex space-x-2'>
-                  {item.ticker !== 'MUSD' && (
-                    <Image
-                      alt={item.ticker}
-                      src={`https://cdn.thena.fi/assets/${item.ticker}.png`}
-                      className='h-5 w-5 flex-shrink-0'
-                      width={20}
-                      height={20}
-                      loading='lazy'
-                    />
-                  )}
-                  <Paragraph>{`${item.data ? `${item.data} ` : ''}${item.ticker}`}</Paragraph>
-                </div>
-              ) : (
-                <Paragraph>{item.data}</Paragraph>
+              <TextHeading className='text-lg' data-tooltip-id='token-tooltip'>
+                {t(`${item.key}`)}
+              </TextHeading>
+              {item.dataUpdate.length > 3 && (
+                <CustomTooltip id='token-tooltip' className='max-w-[500px]'>
+                  {item.dataUpdate
+                    .filter(i => i.filter && i.data)
+                    .map(({ data, ticker }) => `${data} ${ticker}`)
+                    .join(', ')}
+                </CustomTooltip>
+              )}
+              {item.dataUpdate.slice(0, 3).map(({ data, ticker }, idx) =>
+                ticker ? (
+                  <div className='flex space-x-2' key={`${idx}-${ticker}`}>
+                    {ticker !== 'MUSD' && (
+                      <Image
+                        alt={ticker}
+                        src={`https://cdn.thena.fi/assets/${ticker}.png`}
+                        className='h-5 w-5 flex-shrink-0'
+                        width={20}
+                        height={20}
+                        loading='lazy'
+                      />
+                    )}
+                    <Paragraph>{`${data ? `${data} ` : ''}${ticker}`}</Paragraph>
+                  </div>
+                ) : (
+                  <Paragraph key={idx}>{data}</Paragraph>
+                ),
               )}
             </div>
           ))}
@@ -143,7 +171,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       </Box>
       <Box>
         <div className='flex justify-between'>
-          <TextHeading className='text-xl'> {t('Prize Distribution')} </TextHeading>
+          <TextHeading className='text-xl'>{t('Prize Distribution')}</TextHeading>
           {prizeDistribution.length > 2 && (
             <EmphasisButton className='p-2 text-xs' onClick={onViewPrize}>
               {viewAllPrize ? t('View Less') : t('View All')}
@@ -152,47 +180,70 @@ export function CompetitionDetail({ competition, isPreview = false }) {
         </div>
         <div className='mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3'>
           <div className='flex flex-col gap-2'>
-            <TextHeading className='text-lg'>
-              {t('Host', { percent: (Number(_competition.prize?.ownerFee) / 1000) * 100 })}
+            <TextHeading className='text-lg' data-tooltip-id='host-token-tooltip'>
+              {t('Host', { percent: (Number(_competition.prizeUpdate?.ownerFee) / 1000) * 100 })}
             </TextHeading>
-            <div className='flex space-x-2'>
-              {_competition.prize?.token?.logoURI && (
-                <Image
-                  alt={_competition.name}
-                  src={_competition.prize.token.logoURI}
-                  className='flex-shrink-0'
-                  width={20}
-                  height={20}
-                  loading='lazy'
-                />
-              )}
-              <Paragraph>
-                {`${formatAmount(
-                  fromWei(_competition.prize?.totalPrize, _competition.prize?.token?.decimals).times(
-                    _competition.prize.ownerFee / 1000,
-                  ),
-                )} ${_competition.prize?.token?.symbol}`}
-              </Paragraph>
-            </div>
-          </div>
-          {prizeDistribution.slice(0, viewAllPrize ? prizeDistribution.length : 2).map((item, index) => (
-            <div className='flex flex-col gap-2' key={`${index}-prize`}>
-              <TextHeading className='text-lg'>
-                {t('Place', { value: index + 1, percent: item.percentage })}
-              </TextHeading>
+            {_competition.prizeUpdate?.token?.length > 3 && (
+              <CustomTooltip id='host-token-tooltip' className='max-w-[500px]' place='top-start'>
+                {_competition.prizeUpdate?.token
+                  ?.map(
+                    (token, index) =>
+                      `${formatAmount(
+                        fromWei(_competition.prizeUpdate?.totalPrize?.[index], token?.decimals).times(
+                          _competition.prizeUpdate.ownerFee / 1000,
+                        ),
+                      )} ${token?.symbol ?? ''}`,
+                  )
+                  .join(', ')}
+              </CustomTooltip>
+            )}
+            {_competition.prizeUpdate?.token?.slice(0.3).map((token, index) => (
               <div className='flex space-x-2'>
-                {_competition.prize?.token?.logoURI && (
+                {token?.logoURI && (
                   <Image
                     alt={_competition.name}
-                    src={_competition.prize.token.logoURI}
+                    src={token.logoURI}
                     className='flex-shrink-0'
                     width={20}
                     height={20}
                     loading='lazy'
                   />
                 )}
-                <Paragraph>{`${item.data} ${_competition.prize?.token?.symbol}`}</Paragraph>
+                <Paragraph>
+                  {`${formatAmount(
+                    fromWei(_competition.prizeUpdate?.totalPrize?.[index], token?.decimals).times(
+                      _competition.prizeUpdate.ownerFee / 1000,
+                    ),
+                  )} ${token?.symbol ?? ''}`}
+                </Paragraph>
               </div>
+            ))}
+          </div>
+          {prizeDistribution.slice(0, viewAllPrize ? prizeDistribution.length : 2).map((item, index) => (
+            <div className='flex flex-col gap-2' key={`${index}-prize`}>
+              <TextHeading className='text-lg' data-tooltip-id={`place-token-tooltip-${index}`}>
+                {t('Place', { value: index + 1, percent: item.percentage })}
+              </TextHeading>
+              {item.data.length > 3 && (
+                <CustomTooltip id={`place-token-tooltip-${index}`} className='max-w-[500px]' place='top-start'>
+                  {item.data.map(({ value, symbol }) => `${value} ${symbol}`).join(', ')}
+                </CustomTooltip>
+              )}
+              {item.data.map(itm => (
+                <div className='flex space-x-2'>
+                  {itm?.logoURI && (
+                    <Image
+                      alt={_competition.name}
+                      src={itm.logoURI}
+                      className='flex-shrink-0'
+                      width={20}
+                      height={20}
+                      loading='lazy'
+                    />
+                  )}
+                  <Paragraph>{`${itm.value} ${itm?.symbol}`}</Paragraph>
+                </div>
+              ))}
             </div>
           ))}
         </div>

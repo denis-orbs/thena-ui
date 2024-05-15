@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { gql } from 'graphql-request'
+import { cloneDeep } from 'lodash'
 import React from 'react'
 
 import { siteConfig } from '@/constant/config'
@@ -15,6 +16,7 @@ const V4_COMPETITION_DATA = gql`
       id
       name
       bannerUrl
+      defaultBannerUrl
       prizeUpdate {
         totalPrize
         token
@@ -31,13 +33,32 @@ export async function generateMetadata({ params }) {
 
   const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
 
-  const findAsset = assets.data.find(asset => asset.address === competition.prizeUpdate.token?.[0].toLowerCase())
+  const cloneAssets = cloneDeep(assets.data)
+  cloneAssets.push({
+    name: 'MockUSD',
+    symbol: 'MUSD',
+    decimals: 18,
+    address: '0xced4ac14bb1077b995b954c48a87b25ebb4828e5',
+  })
+
+  const findAssets = competition.prizeUpdate.token.map(token => {
+    const asset = cloneAssets.find(ele => ele.address.toLowerCase() === token.toLowerCase())
+    return asset
+  })
+
+  const prizeData = findAssets
+    .map((asset, index) => {
+      const token = asset.symbol
+      const prize = formatAmount(fromWei(competition?.prizeUpdate?.totalPrize[index], asset.decimals))
+
+      return `${prize} ${token}`
+    })
+    .join(', ')
 
   const metadata = {
     name: competition?.name ?? 'competition',
-    token: findAsset?.symbol ?? 'MUSD',
-    prize: formatAmount(fromWei(competition?.prizeUpdate?.totalPrize?.[0], findAsset?.decimals)),
-    image: [competition?.bannerUrl, `${siteConfig.url}/cover.png`],
+    image: [competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner],
+    prizeData,
   }
 
   return {
@@ -45,14 +66,14 @@ export async function generateMetadata({ params }) {
       template: '%s | THENA Arena',
       default: `${metadata.name}`,
     },
-    description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today!  Fully decentralized trading competition on THENA Arena!`,
+    description: `Compete in ${metadata.name} for ${metadata.prizeData} today!  Fully decentralized trading competition on THENA Arena!`,
     openGraph: {
       url: `${siteConfig.url}/arena/trading-competitions/${id}`,
       title: {
         template: '%s | THENA Arena',
         default: `${metadata.name}`,
       },
-      description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today! Fully decentralized trading competition on THENA Arena!`,
+      description: `Compete in ${metadata.name} for ${metadata.prizeData} today! Fully decentralized trading competition on THENA Arena!`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',
@@ -63,7 +84,7 @@ export async function generateMetadata({ params }) {
         template: '%s | THENA Arena',
         default: `${metadata.name}`,
       },
-      description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today! 
+      description: `Compete in ${metadata.name} for ${metadata.prizeData} today! 
 Fully decentralized trading competition on THENA Arena!`,
       images: metadata.image,
     },

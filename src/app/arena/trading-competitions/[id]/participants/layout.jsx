@@ -10,6 +10,11 @@ const V4_COMPETITION_DATA = gql`
       id
       name
       bannerUrl
+      defaultBannerUrl
+      prize {
+        totalPrize
+        token
+      }
     }
   }
 `
@@ -21,7 +26,7 @@ export async function generateMetadata({ params }) {
 
   const metadata = {
     name: `Participants of ${competition?.name ?? 'competition'}`,
-    image: [competition?.bannerUrl, `${siteConfig.url}/cover.png`],
+    image: [competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner],
     description: `See the full list of participants of ${competition?.name ?? 'competition'} on THENA Arena.`,
   }
 
