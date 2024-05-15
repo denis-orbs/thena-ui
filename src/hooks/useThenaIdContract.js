@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request'
-import { merge } from 'lodash'
+import { concat } from 'lodash'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
@@ -115,8 +115,8 @@ export const useTraitsAndProofs = () => {
       ])
 
       return {
-        traits: merge(getNormal.traits, getMerkle.traits),
-        proofs: merge(getNormal.proofs, getMerkle.proofs),
+        traits: concat(getNormal.traits, getMerkle.traits),
+        proofs: concat(getNormal.proofs, getMerkle.proofs),
       }
     },
     [getTraitsAndProofsForMerkle, getTraitsAndProofsForNormal],
