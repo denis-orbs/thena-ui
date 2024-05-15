@@ -19,7 +19,7 @@ function NotificationItem({ notification, markRead }) {
       <div
         onClick={() => markRead(notification.id)}
         className={cn(
-          'flex h-20 min-w-72 items-center gap-4',
+          'flex min-w-72 items-center gap-4',
           !notification.isRead &&
             "relative after:absolute after:right-5 after:top-1/2 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-['']",
         )}
@@ -28,7 +28,7 @@ function NotificationItem({ notification, markRead }) {
           <CalendarWhiteIcon className='h-4 w-4 text-black' />
         </Highlight>
         <div className='flex flex-col gap-1 p-2'>
-          <TextHeading>{notification.content}</TextHeading>
+          <TextHeading className='text-wrap break-all'>{notification.content}</TextHeading>
           <Paragraph className='text-sm'>{moment(notification.timestamp).locale(locale).fromNow()}</Paragraph>
         </div>
       </div>

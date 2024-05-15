@@ -78,12 +78,12 @@ export function Notification() {
         <div className='mx-2 flex items-center justify-between'>
           <TextHeading className='text-xl'>{t('Notifications')}</TextHeading>
           {hasUnread && (
-            <TextButton className='p-1 text-sm' onClick={() => markRead(null)}>
+            <TextButton className='p-1 text-sm' onClick={() => markNotiAsRead(null)}>
               {t('Mark All As Read')}
             </TextButton>
           )}
         </div>
-        <div className='relative max-h-96 min-h-20 max-w-[500px] overflow-y-auto'>
+        <div className='relative max-h-96 min-h-20 w-[350px] overflow-y-auto'>
           {notifications?.map(notification => (
             <NotificationItem key={notification.id} notification={notification} markRead={markNotiAsRead} />
           ))}
