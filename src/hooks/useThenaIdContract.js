@@ -1,3 +1,5 @@
+import { gql } from 'graphql-request'
+import { merge } from 'lodash'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
@@ -8,31 +10,79 @@ import { TXN_STATUS } from '@/constant'
 import { arabicAbi, characterSetAbi, emojiClubAbi, emojiNumeralAbi, hindiNumeralAbi, numeralAbi } from '@/constant/abi'
 import { readCall } from '@/lib/contractActions'
 import { getContract, getERC20Contract, getThenaIDContract } from '@/lib/contracts'
+import { v4Client } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 const NORMAL_TRAITS = ['ARABIC_NUMERALS', 'CHARACTER_SET', 'EMOJI_CLUB', 'EMOJI_NUMERALS', 'HINDI_NUMERALS', 'NUMERALS']
 const NORMAL_TRAIT_ABIS = [arabicAbi, characterSetAbi, emojiClubAbi, emojiNumeralAbi, hindiNumeralAbi, numeralAbi]
+const NORMAL_TRAIT_ADDRESS = [
+  '0x104ea02fe5CCc7545385D56eb98162b84e50987E',
+  '0x4032c9817DAD65AbfD695c5962Ae1A5935F986B6',
+  '0x60509a0b946BE9509B565ae643EFa8E32C7d3C83',
+  '0x281b0a5B444BeaE8124e6dd10690F77D23493F2C',
+  '0xCB0aDEB12FECfF1E3583cEf47b7688BbB3b96807',
+  '0xA14ADF1fCbCe62C0ccf26157D931b85AA345Fa66',
+]
 
 const DEFAULT_TRAITS = ['CHARACTER_SET']
 const DEFAULT_PROOFS = [[]]
 
 const USDT_TOKEN_ADDRESS = '0x55d398326f99059fF775485246999027B3197955'
 
+const V4_THENA_ID_AVAILABLES = gql`
+  query V4_THENA_ID_AVAILABLES($name: String) {
+    thenaIdAvailables(where: { name_eq: $name }) {
+      trait
+      proof
+    }
+  }
+`
+
+const getThenaIdAvailables = async name => {
+  try {
+    const { thenaIdAvailables } = await v4Client.request(V4_THENA_ID_AVAILABLES, { name })
+    return thenaIdAvailables
+  } catch (error) {
+    return []
+  }
+}
+
 export const useTraitsAndProofs = () => {
-  const getTraitsAndProofs = useCallback(async username => {
+  const getTraitsAndProofsForMerkle = useCallback(async username => {
     try {
-      const contract = getThenaIDContract()
       const traits = []
       const proofs = []
-      const addresses = await Promise.all(
-        NORMAL_TRAITS.map(trait => readCall(contract, 'traitToTraitChecker', [trait])),
-      )
+
+      const thenaIdAvailables = await getThenaIdAvailables(username)
+      if (thenaIdAvailables.length) {
+        thenaIdAvailables.forEach(thenaIdName => {
+          traits.push(thenaIdName.trait)
+          proofs.push(thenaIdName.proof)
+        })
+      }
+
+      return {
+        traits,
+        proofs,
+      }
+    } catch (error) {
+      return {
+        traits: [],
+        proofs: [],
+      }
+    }
+  }, [])
+
+  const getTraitsAndProofsForNormal = useCallback(async username => {
+    try {
+      const traits = []
+      const proofs = []
 
       const getTraits = await Promise.all(
         NORMAL_TRAIT_ABIS.map((abi, index) => {
-          const traitContract = getContract(abi, addresses[index], ChainId.BSC)
+          const traitContract = getContract(abi, NORMAL_TRAIT_ADDRESS[index], ChainId.BSC)
 
           return readCall(traitContract, 'getTrait', [username])
         }),
@@ -57,6 +107,20 @@ export const useTraitsAndProofs = () => {
     }
   }, [])
 
+  const getTraitsAndProofs = useCallback(
+    async username => {
+      const [getNormal, getMerkle] = await Promise.all([
+        getTraitsAndProofsForNormal(username),
+        getTraitsAndProofsForMerkle(username),
+      ])
+
+      return {
+        traits: merge(getNormal.traits, getMerkle.traits),
+        proofs: merge(getNormal.proofs, getMerkle.proofs),
+      }
+    },
+    [getTraitsAndProofsForMerkle, getTraitsAndProofsForNormal],
+  )
   return { getTraitsAndProofs }
 }
 
