@@ -24,7 +24,7 @@ export function FollowedProfileItem({ user }) {
   }, [followUser])
 
   const isFollowed = useMemo(
-    () => following?.find(follow => follow?.user?.id === user?.user?.id),
+    () => following?.find(follow => follow?.user?.id?.toLowerCase() === user?.user?.id?.toLowerCase()),
     [following, user?.user?.id],
   )
 
@@ -44,6 +44,7 @@ export function FollowedProfileItem({ user }) {
         <UserProfileCard user={user?.user} showVerified={user?.user.isVerified} enableFollow={false} />
       </div>
       {account &&
+        account?.toLowerCase() !== user?.user?.id?.toLowerCase() &&
         (isFollowed ? (
           <EmphasisButton className='invisible px-2 py-1 text-sm group-hover/item:visible' onClick={onFollow}>
             {t('UnFollow')}
