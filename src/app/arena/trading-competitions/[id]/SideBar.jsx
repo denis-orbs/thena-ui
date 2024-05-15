@@ -19,14 +19,12 @@ import { Countdown } from '@/modules/CountDown'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
-import DepositModal from './trade/DepositModal'
-
 function Sidebar({ competition, eventType }) {
   const t = useTranslations()
   const progressBarRef = useRef()
   const { claimReward } = useClaimTC()
   const [showJoinModal, setShowJoinModal] = useState(false)
-  const [showModalDeposit, setShowModalDeposit] = useState(false)
+  // const [showModalDeposit, setShowModalDeposit] = useState(false)
   const { open } = useWeb3Modal()
   const { account } = useWallet()
   const { withdrawDeposit } = useWithdrawDepositTC()
@@ -258,14 +256,15 @@ function Sidebar({ competition, eventType }) {
 
       if (isJoined) {
         return (
-          <PrimaryButton
-            className='w-full'
-            onClick={() => {
-              setShowModalDeposit(true)
-            }}
-          >
-            {t('Deposit More')} {competition?.competitionRules?.tradingTokens?.label}
-          </PrimaryButton>
+          <></>
+          // <PrimaryButton
+          //   className='w-full'
+          //   onClick={() => {
+          //     setShowModalDeposit(true)
+          //   }}
+          // >
+          //   {t('Deposit More')} {competition?.competitionRules?.tradingTokens?.label}
+          // </PrimaryButton>
         )
       }
 
@@ -306,7 +305,6 @@ function Sidebar({ competition, eventType }) {
     canClaimRewards,
     canWithdraw,
     claim,
-    competition?.competitionRules?.tradingTokens?.label,
     competition.id,
     eventType,
     isEndedRegistration,
@@ -392,13 +390,13 @@ function Sidebar({ competition, eventType }) {
           open={showJoinModal}
         />
       )}
-      {showModalDeposit && (
+      {/* {showModalDeposit && (
         <DepositModal
           competition={competition}
           isOpen={showModalDeposit}
           closeModal={() => setShowModalDeposit(false)}
         />
-      )}
+      )} */}
     </div>
   )
 }

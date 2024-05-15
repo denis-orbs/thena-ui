@@ -16,7 +16,7 @@ import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
-import DepositModal from './DepositModal'
+// import DepositModal from './DepositModal'
 import { SideBar } from './SideBar'
 import TopBar from './TopBar'
 import { TradeNotStarted } from './TradeNotStarted'
@@ -29,7 +29,7 @@ export function WrapLayout({ children, params }) {
   const [toAddress, setToAddress] = useState(null)
   const [reloadFetch, setReloadFetch] = useState(0)
 
-  const [showModalDeposit, setShowModalDeposit] = useState(false)
+  // const [showModalDeposit, setShowModalDeposit] = useState(false)
 
   const { competition } = useTradeCompetitionData(params.id)
   const { userBalance } = useTradeData(
@@ -101,7 +101,7 @@ export function WrapLayout({ children, params }) {
   return (
     <TradingCompetitionContextProvider>
       <TopBar
-        handleClickShowModal={() => setShowModalDeposit(true)}
+        // handleClickShowModal={() => setShowModalDeposit(true)}
         competition={competition}
         reloadFetch={reloadFetch}
         setReloadFetch={setReloadFetch}
@@ -138,7 +138,7 @@ export function WrapLayout({ children, params }) {
           </SideBar>
         </TradeNotStarted>
       )}
-      <DepositModal competition={competition} isOpen={showModalDeposit} closeModal={() => setShowModalDeposit(false)} />
+      {/* <DepositModal competition={competition} isOpen={showModalDeposit} closeModal={() => setShowModalDeposit(false)} /> */}
     </TradingCompetitionContextProvider>
   )
 }

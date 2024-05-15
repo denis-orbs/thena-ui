@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import Box from '@/components/box'
-import { PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { TextButton } from '@/components/buttons/Button'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useCountdown } from '@/hooks/useCountdown'
@@ -21,12 +21,12 @@ import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ArrowLeftIcon, Champion, DownRank, InfoIcon, UpRank } from '@/svgs'
 
-function TopBar({ handleClickShowModal = () => {}, competition = {}, reloadFetch = 0, setReloadFetch }) {
+function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
   const { id } = useParams()
   const t = useTranslations()
   const { account } = useWallet()
 
-  const [isRegistrable, setIsRegistrable] = useState(true)
+  // const [isRegistrable, setIsRegistrable] = useState(true)
   const [currentRank, setCurrentRank] = useState(0)
 
   const [participants, setParticipants] = useState(competition?.participants || [])
@@ -128,20 +128,20 @@ function TopBar({ handleClickShowModal = () => {}, competition = {}, reloadFetch
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [participants, competition.competitionRules?.winningToken?.decimals, account])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = Date.now() / 1000
-      const registerEndTime = competition?.timestamp?.registrationEnd
-      const registerStartTime = competition?.timestamp?.registrationStart
-      if (registerStartTime <= now && now <= registerEndTime) {
-        setIsRegistrable(true)
-      } else {
-        setIsRegistrable(false)
-      }
-    }, 1000)
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const now = Date.now() / 1000
+  //     const registerEndTime = competition?.timestamp?.registrationEnd
+  //     const registerStartTime = competition?.timestamp?.registrationStart
+  //     if (registerStartTime <= now && now <= registerEndTime) {
+  //       setIsRegistrable(true)
+  //     } else {
+  //       setIsRegistrable(false)
+  //     }
+  //   }, 1000)
 
-    return () => clearInterval(interval)
-  }, [competition?.timestamp?.registrationEnd, competition?.timestamp?.registrationStart])
+  //   return () => clearInterval(interval)
+  // }, [competition?.timestamp?.registrationEnd, competition?.timestamp?.registrationStart])
 
   return (
     <div className='my-10 flex flex-col gap-10'>
@@ -153,9 +153,9 @@ function TopBar({ handleClickShowModal = () => {}, competition = {}, reloadFetch
         </Link>
         <div className='flex justify-between'>
           <TextHeading className='text-xl lg:text-3xl'>{competition?.name}</TextHeading>
-          {isRegistrable && (
+          {/* {isRegistrable && (
             <PrimaryButton onClick={handleClickShowModal}>{`${t('Deposit')} ${t('More')}`}</PrimaryButton>
-          )}
+          )} */}
         </div>
       </div>
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>

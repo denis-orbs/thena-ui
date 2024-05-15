@@ -321,10 +321,6 @@ export const INIT_VALUES = {
   description: '',
   maxParticipants: 1000,
   timestamp: {
-    // registrationStart: '',
-    // registrationEnd: '',
-    // startTimestamp: '',
-    // endTimestamp: '',
     registrationStart: roundupTime(), // start timestamp
     registrationEnd: roundupTime() + MIN_REG, // end timestamp
     startTimestamp: roundupTime() + MIN_REG, // registration start timestamp
