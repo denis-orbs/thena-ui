@@ -1,18 +1,64 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
+import { ChainId } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
+import { arabicAbi, characterSetAbi, emojiClubAbi, emojiNumeralAbi, hindiNumeralAbi, numeralAbi } from '@/constant/abi'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getThenaIDContract } from '@/lib/contracts'
+import { getContract, getERC20Contract, getThenaIDContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
+const NORMAL_TRAITS = ['ARABIC_NUMERALS', 'CHARACTER_SET', 'EMOJI_CLUB', 'EMOJI_NUMERALS', 'HINDI_NUMERALS', 'NUMERALS']
+const NORMAL_TRAIT_ABIS = [arabicAbi, characterSetAbi, emojiClubAbi, emojiNumeralAbi, hindiNumeralAbi, numeralAbi]
+
 const DEFAULT_TRAITS = ['CHARACTER_SET']
 const DEFAULT_PROOFS = [[]]
+
 const USDT_TOKEN_ADDRESS = '0x55d398326f99059fF775485246999027B3197955'
+
+export const useTraitsAndProofs = () => {
+  const getTraitsAndProofs = useCallback(async username => {
+    try {
+      const contract = getThenaIDContract()
+      const traits = []
+      const proofs = []
+      const addresses = await Promise.all(
+        NORMAL_TRAITS.map(trait => readCall(contract, 'traitToTraitChecker', [trait])),
+      )
+
+      const getTraits = await Promise.all(
+        NORMAL_TRAIT_ABIS.map((abi, index) => {
+          const traitContract = getContract(abi, addresses[index], ChainId.BSC)
+
+          return readCall(traitContract, 'getTrait', [username])
+        }),
+      )
+
+      getTraits.forEach((trait, index) => {
+        if (trait.length > 0 && trait[0] && trait[1]) {
+          traits.push(NORMAL_TRAITS[index])
+          proofs.push([])
+        }
+      })
+
+      return {
+        traits,
+        proofs,
+      }
+    } catch (error) {
+      return {
+        traits: DEFAULT_TRAITS,
+        proofs: DEFAULT_PROOFS,
+      }
+    }
+  }, [])
+
+  return { getTraitsAndProofs }
+}
 
 export const useValidateUserName = () => {
   const [loading, setLoading] = useState(false)
@@ -74,6 +120,7 @@ export const useMintThenaId = () => {
   const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
   const { account, chainId } = useWallet()
 
+  const { getTraitsAndProofs } = useTraitsAndProofs()
   const buyThenaId = useCallback(
     async (username, estimateCost) => {
       const thenaIdContract = getThenaIDContract()
@@ -116,11 +163,13 @@ export const useMintThenaId = () => {
           }
         }
 
+        const { traits, proofs } = await getTraitsAndProofs(username)
+
         const isSuccess = await writeTxn(key, mintUuid, thenaIdContract, 'mintUsername', [
           username,
           USDT_TOKEN_ADDRESS,
-          DEFAULT_TRAITS,
-          DEFAULT_PROOFS,
+          traits,
+          proofs,
         ])
         if (!isSuccess) {
           setLoading(false)
@@ -135,7 +184,7 @@ export const useMintThenaId = () => {
         return isSuccess
       }
     },
-    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
+    [account, chainId, closeTxnModal, endTxn, getTraitsAndProofs, startTxn, t, writeTxn],
   )
 
   return { loading, buyThenaId }
@@ -146,10 +195,13 @@ export const useGiftThenaId = () => {
   const t = useTranslations()
   const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
   const { account, chainId } = useWallet()
+
+  const { getTraitsAndProofs } = useTraitsAndProofs()
+
   const giftThenaId = useCallback(
     async (username, toAddress, estimateCost) => {
       const contract = getThenaIDContract()
-      console.log(username, toAddress, estimateCost, contract, USDT_TOKEN_ADDRESS)
+
       if (username && contract) {
         const key = uuidv4()
         const mintUuid = uuidv4()
@@ -188,12 +240,15 @@ export const useGiftThenaId = () => {
             return false
           }
         }
+
+        const { traits, proofs } = await getTraitsAndProofs(username)
+
         const isSuccess = await writeTxn(key, mintUuid, contract, 'mintUsernameFor', [
           toAddress,
           username,
           USDT_TOKEN_ADDRESS,
-          DEFAULT_TRAITS,
-          DEFAULT_PROOFS,
+          traits,
+          proofs,
         ])
         if (!isSuccess) {
           setLoading(false)
@@ -208,7 +263,7 @@ export const useGiftThenaId = () => {
         return true
       }
     },
-    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
+    [account, chainId, closeTxnModal, endTxn, getTraitsAndProofs, startTxn, t, writeTxn],
   )
 
   return { loading, giftThenaId }
@@ -219,6 +274,8 @@ export const useBatchMintThenaId = () => {
   const t = useTranslations()
   const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
   const { account, chainId } = useWallet()
+
+  const { getTraitsAndProofs } = useTraitsAndProofs()
 
   const batchMintThenaId = useCallback(
     async (usernames, estimateCost) => {
@@ -262,11 +319,13 @@ export const useBatchMintThenaId = () => {
           }
         }
 
+        const usernamesTraitsAndProofs = await Promise.all(usernames.map(username => getTraitsAndProofs(username)))
+
         const isSuccess = await writeTxn(key, mintUuid, thenaIdContract, 'batchMintUsername', [
           usernames,
           USDT_TOKEN_ADDRESS,
-          usernames.map(() => DEFAULT_TRAITS),
-          usernames.map(() => DEFAULT_PROOFS),
+          usernamesTraitsAndProofs.map(data => data.traits),
+          usernamesTraitsAndProofs.map(data => data.proofs),
         ])
         if (!isSuccess) {
           setLoading(false)
@@ -281,7 +340,7 @@ export const useBatchMintThenaId = () => {
         return isSuccess
       }
     },
-    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
+    [account, chainId, closeTxnModal, endTxn, getTraitsAndProofs, startTxn, t, writeTxn],
   )
 
   return { loading, batchMintThenaId }
@@ -292,6 +351,9 @@ export const useBatchGiftThenaId = () => {
   const t = useTranslations()
   const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
   const { account, chainId } = useWallet()
+
+  const { getTraitsAndProofs } = useTraitsAndProofs()
+
   const batchGiftThenaId = useCallback(
     async (usernames, toAddress, estimateCost) => {
       const contract = getThenaIDContract()
@@ -302,7 +364,6 @@ export const useBatchGiftThenaId = () => {
         const tokenContract = getERC20Contract(USDT_TOKEN_ADDRESS, chainId)
         const allowance = await readCall(tokenContract, 'allowance', [account, contract.address])
         const isApprovedToken = fromWei(allowance).gte(fromWei(estimateCost))
-
         setLoading(true)
         startTxn({
           key,
@@ -333,12 +394,15 @@ export const useBatchGiftThenaId = () => {
             return false
           }
         }
+
+        const usernamesTraitsAndProofs = await Promise.all(usernames.map(username => getTraitsAndProofs(username)))
+
         const isSuccess = await writeTxn(key, mintUuid, contract, 'batchMintUsernameFor', [
           toAddress,
           usernames,
           USDT_TOKEN_ADDRESS,
-          usernames.map(() => DEFAULT_TRAITS),
-          usernames.map(() => DEFAULT_PROOFS),
+          usernamesTraitsAndProofs.map(data => data.traits),
+          usernamesTraitsAndProofs.map(data => data.proofs),
         ])
         if (!isSuccess) {
           setLoading(false)
@@ -353,7 +417,7 @@ export const useBatchGiftThenaId = () => {
         return true
       }
     },
-    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
+    [account, chainId, closeTxnModal, endTxn, getTraitsAndProofs, startTxn, t, writeTxn],
   )
 
   return { loading, batchGiftThenaId }

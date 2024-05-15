@@ -18,6 +18,7 @@ import {
   useBatchMintThenaId,
   useGiftThenaId,
   useMintThenaId,
+  useTraitsAndProofs,
   useUSDTCostPerToken,
 } from '@/hooks/useThenaIdContract'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
@@ -40,6 +41,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose, defaultThena
   const [address, setAddress] = useState(targetAddress)
   const assets = useAssets()
   const { costPerToken, loading } = useUSDTCostPerToken()
+  const { getTraitsAndProofs } = useTraitsAndProofs()
 
   // Only allowed USDT
   const USDTAsset = useMemo(
@@ -88,21 +90,27 @@ export default function ThenaIdModal({ tab, targetAddress, onClose, defaultThena
     }
   }, [isValid, type, thenaIds, batchGiftThenaId, address, giftThenaId, batchMintThenaId, totalCost, buyThenaId])
 
-  const onChangeThenaItem = useCallback((id, { errorMessage, cost, username }) => {
-    setThenaIds(prev =>
-      prev.map(item => {
-        if (item.id === id) {
-          return {
-            id: item.id,
-            username,
-            errorMessage,
-            cost,
+  const onChangeThenaItem = useCallback(
+    (id, { errorMessage, cost, username }) => {
+      setThenaIds(prev =>
+        prev.map(item => {
+          if (item.id === id) {
+            return {
+              id: item.id,
+              username,
+              errorMessage,
+              cost,
+            }
           }
-        }
-        return item
-      }),
-    )
-  }, [])
+          return item
+        }),
+      )
+      if (username) {
+        getTraitsAndProofs(username)
+      }
+    },
+    [getTraitsAndProofs],
+  )
 
   return (
     <Modal isOpen={!!tab} title='Mint Thena Id' closeModal={onClose} fontSizeTitle='text-xl' width={550}>

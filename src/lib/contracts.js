@@ -37,7 +37,7 @@ import {
 } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 
-const getContract = (abi, addressOrAddressMap, chainId) => {
+export const getContract = (abi, addressOrAddressMap, chainId) => {
   if (!addressOrAddressMap || !abi || !chainId) return null
   let address
   if (typeof addressOrAddressMap === 'string') address = addressOrAddressMap
