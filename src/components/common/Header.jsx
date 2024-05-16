@@ -565,8 +565,8 @@ function Header() {
               {t('Enter ALPHA')}
             </OutlinedButton>
             <ConnectButton className='hidden lg:flex' />
-            <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
             <Notification />
+            <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
           </div>
         </div>
         <Modal

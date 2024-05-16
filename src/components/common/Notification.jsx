@@ -1,8 +1,7 @@
 'use client'
 
-// import { useTranslations } from 'next-intl'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { toast } from 'react-toastify'
 import useSWR from 'swr'
 import 'dayjs/locale/en'
@@ -22,7 +21,7 @@ import { TextHeading } from '../typography'
 export function Notification() {
   const { account } = useWallet()
   const t = useTranslations()
-
+  const audioRef = useRef()
   const { data: notifications, mutate } = useSWR(
     ['notifications', account?.toLowerCase()],
     () => fetchUserNotifcations(account),
@@ -48,6 +47,10 @@ export function Notification() {
           icon: false,
         })
         mutate()
+        const { current } = audioRef
+        if (current) {
+          current.play()
+        }
       }
     },
     [markNotiAsRead, mutate],
@@ -57,38 +60,40 @@ export function Notification() {
 
   const hasUnread = useMemo(() => notifications?.some(item => !item.isRead), [notifications])
 
-  if (!account || !notifications?.length) {
-    return null
-  }
-
   return (
     <>
-      <Popover
-        triggerElement={
-          <EmphasisIconButton
-            Icon={BellIcon}
-            className={cn(
-              hasUnread
-                ? "relative after:absolute after:right-1/4 after:top-1/4 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-['']"
-                : '',
+      {account && !!notifications?.length && (
+        <Popover
+          triggerElement={
+            <EmphasisIconButton
+              Icon={BellIcon}
+              className={cn(
+                hasUnread
+                  ? "relative after:absolute after:right-1/4 after:top-1/4 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-['']"
+                  : '',
+              )}
+            />
+          }
+        >
+          <div className='mx-2 flex items-center justify-between'>
+            <TextHeading className='text-xl'>{t('Notifications')}</TextHeading>
+            {hasUnread && (
+              <TextButton className='p-1 text-sm' onClick={() => markNotiAsRead(null)}>
+                {t('Mark All As Read')}
+              </TextButton>
             )}
-          />
-        }
-      >
-        <div className='mx-2 flex items-center justify-between'>
-          <TextHeading className='text-xl'>{t('Notifications')}</TextHeading>
-          {hasUnread && (
-            <TextButton className='p-1 text-sm' onClick={() => markNotiAsRead(null)}>
-              {t('Mark All As Read')}
-            </TextButton>
-          )}
-        </div>
-        <div className='relative max-h-96 min-h-20 w-[350px] overflow-y-auto'>
-          {notifications?.map(notification => (
-            <NotificationItem key={notification.id} notification={notification} markRead={markNotiAsRead} />
-          ))}
-        </div>
-      </Popover>
+          </div>
+          <div className='relative max-h-96 min-h-20 w-[350px] overflow-y-auto'>
+            {notifications?.map(notification => (
+              <NotificationItem key={notification.id} notification={notification} markRead={markNotiAsRead} />
+            ))}
+          </div>
+        </Popover>
+      )}
+      <audio ref={audioRef} className='hide'>
+        <source src='/sounds/notification_sound.mp3' type='audio/mp3' />
+        <track src='captions_en.vtt' kind='captions' srcLang='en' label='english_captions' />
+      </audio>
     </>
   )
 }

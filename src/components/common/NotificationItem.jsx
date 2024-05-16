@@ -6,7 +6,7 @@ import 'moment/locale/zh-cn'
 
 import { cn } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
-import { CalendarWhiteIcon } from '@/svgs'
+import { UserIcon } from '@/svgs'
 
 import Highlight from '../highlight'
 import { Paragraph, TextHeading } from '../typography'
@@ -25,7 +25,7 @@ function NotificationItem({ notification, markRead }) {
         )}
       >
         <Highlight className='bg-gradient-to-t from-[#9A5EFF] to-primary-600'>
-          <CalendarWhiteIcon className='h-4 w-4 text-black' />
+          <UserIcon className='h-4 w-4 text-black' />
         </Highlight>
         <div className='flex flex-col gap-1 p-2'>
           <TextHeading className='text-wrap break-all'>{notification.content}</TextHeading>

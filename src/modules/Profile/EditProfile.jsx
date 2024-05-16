@@ -264,7 +264,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
             />
           </div>
         </div>
-        {(!isAdmin || account?.toLowerCase() === userInfo?.id.toLowerCase()) && (
+        {(!isAdmin || account?.toLowerCase() === userInfo?.id?.toLowerCase()) && (
           <div className='flex flex-col gap-6 lg:flex-row'>
             <div className='flex flex-1 flex-col gap-3'>
               <TextHeading className='text-xl'>{t('Time Zone')}</TextHeading>
