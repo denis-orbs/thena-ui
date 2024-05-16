@@ -259,7 +259,7 @@ function RecentlyContent({ isMinted = true }) {
         name: (
           <Link
             className='flex cursor-pointer items-center justify-center gap-2'
-            href={`/arena/thena-id/browse/${encodeURI(item.name)}`}
+            href={`/arena/thena-id/browse/${encodeURIComponent(item.name)}`}
           >
             <div className='mr-1 flex flex-col gap-1'>
               <TextHeading

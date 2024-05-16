@@ -30,13 +30,9 @@ const V4_AVAILABLE = gql`
   ) {
     thenaIdAvailables(offset: $offset, orderBy: $orderBy, limit: 100, where: $where) {
       id
-      createdAt
       cost
-      isMinted
       name
-      proof
       trait
-      updatedAt
     }
     thenaIdAvailableTotalCount(where: $q)
   }

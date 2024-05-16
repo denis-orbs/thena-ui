@@ -36,7 +36,7 @@ function UserThenaIds({ thenaIds }) {
         <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
           {filterThenaIds &&
             filterThenaIds.map((item, index) => (
-              <Link key={index} href={`/arena/thena-id/browse/${item.name}`}>
+              <Link key={index} href={`/arena/thena-id/browse/${encodeURIComponent(item.name)}`}>
                 <Box>{item.name}</Box>
               </Link>
             ))}

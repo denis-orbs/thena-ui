@@ -15,7 +15,9 @@ const V4_USERNAME_NFTS = gql`
 export async function generateMetadata({ params }) {
   const { thenaId } = params
 
-  const { usernameNfts } = await v4Client.request(V4_USERNAME_NFTS, { username: decodeURI(thenaId).toLowerCase() })
+  const { usernameNfts } = await v4Client.request(V4_USERNAME_NFTS, {
+    username: decodeURIComponent(thenaId).toLowerCase(),
+  })
 
   const metadata = {
     name: usernameNfts?.[0]?.name ?? 'thena',
