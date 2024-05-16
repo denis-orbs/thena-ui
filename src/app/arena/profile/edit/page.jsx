@@ -20,7 +20,13 @@ function EditProfilePage() {
     return <Loading />
   }
 
-  return <EditProfile userInfo={userInfo} mutateUserInfo={mutateUserInfo} />
+  return (
+    <EditProfile
+      userInfo={userInfo}
+      mutateUserInfo={mutateUserInfo}
+      isAdmin={userInfo?.isAdmin || userInfo?.isSuperAdmin}
+    />
+  )
 }
 
 export default EditProfilePage
