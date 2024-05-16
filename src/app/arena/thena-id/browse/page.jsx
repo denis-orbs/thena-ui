@@ -96,7 +96,7 @@ const fetchUsernameNfts = async (offset = 0, debounceSearch = '') => {
 
 function BrowsePage() {
   const t = useTranslations()
-  const [searchText, setSearchText] = useState('')
+  const [searchText] = useState('')
   // const [toggle, setToggle] = useState(false)
   // const [from, setFrom] = useState('')
   // const [to, setTo] = useState('')
