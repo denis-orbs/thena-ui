@@ -47,6 +47,7 @@
     "react-quill": "^2.0.0",
     "react-quill-emoji": "^0.1.9",
     "react-redux": "^9.0.4",
+    "react-tiny-popover": "^8.0.4",
     "react-toastify": "^10.0.4",
     "react-tooltip": "^5.25.1",
     "redux-localstorage-simple": "^2.5.1",
