@@ -144,7 +144,7 @@ function ThenaIdPage() {
 
   const thenaIdFormat = useMemo(() => {
     if (thenaId) {
-      return decodeURI(thenaId)
+      return decodeURIComponent(thenaId)
     }
     return ''
   }, [thenaId])

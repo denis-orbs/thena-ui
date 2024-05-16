@@ -18,11 +18,11 @@ function PaginateCell({ children, className, active, onClick, disabled }) {
     <li
       role='presentation'
       className={cn(
-        'flex h-8 w-8 items-center justify-center stroke-neutral-300 text-neutral-300',
+        'flex h-8 w-fit min-w-8 items-center justify-center stroke-neutral-300 px-[2px] text-neutral-300',
         'hover:bg-neutral-700 hover:stroke-neutral-200 hover:text-neutral-200',
         'outline outline-2 outline-offset-4 outline-transparent',
         'cursor-pointer rounded transition-all duration-150 ease-out',
-        'active:outline-focus',
+        'text-sm active:outline-focus',
         active && 'bg-neutral-800',
         disabled && 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
         className,

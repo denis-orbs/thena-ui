@@ -2,14 +2,17 @@
 
 import { gql } from 'graphql-request'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import { PrimaryButton } from '@/components/buttons/Button'
+import AvailableDropdown from '@/components/dropdown/AvailableDropdown'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph } from '@/components/typography'
+import { LIST_CATEGORY } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
@@ -19,29 +22,42 @@ import useWallet from '@/lib/wallets/useWallet'
 import ThenaIdModal from '../../profile/ThenaIdModal'
 
 const V4_AVAILABLE = gql`
-  query V4_AVAILABLE($offset: Int = 0, $where: ThenaIdAvailableWhereInput = {}, $q: String = "") {
-    thenaIdAvailables(offset: $offset, limit: 100, orderBy: trait_DESC, where: $where) {
+  query V4_AVAILABLE(
+    $offset: Int = 0
+    $where: ThenaIdAvailableWhereInput = {}
+    $q: whereInput = {}
+    $orderBy: [ThenaIdAvailableOrderByInput!] = []
+  ) {
+    thenaIdAvailables(offset: $offset, orderBy: $orderBy, limit: 100, where: $where) {
       id
-      createdAt
       cost
-      isMinted
       name
-      proof
       trait
-      updatedAt
     }
-    thenaIdAvailableTotalCount(q: $q)
+    thenaIdAvailableTotalCount(where: $q)
   }
 `
 
-const FILTERS = ['THENA ID', 'Category']
-
-const fetchAvailable = async (offset = 0, whereQuery = {}, search = '') => {
+const fetchAvailable = async (sort, offset = 0, whereQuery = {}, whereTotal = {}) => {
   try {
+    const orderBy = ['id_DESC']
+
+    switch (sort.value) {
+      case 'name':
+        orderBy.unshift(sort.isDesc ? 'name_DESC' : 'name_ASC')
+        break
+      case 'trait':
+        orderBy.unshift(sort.isDesc ? 'trait_DESC' : 'trait_ASC')
+        break
+      default:
+        break
+    }
+
     const { thenaIdAvailables, thenaIdAvailableTotalCount } = await v4Client.request(V4_AVAILABLE, {
       offset,
       where: whereQuery,
-      q: search,
+      q: whereTotal,
+      orderBy,
     })
 
     return { thenaIdAvailables, thenaIdAvailableTotalCount }
@@ -69,13 +85,13 @@ function AvailablePage() {
         value: 'cost',
         width: account ? 'w-[25%]' : 'w-[33%]',
         isDesc: true,
-        disabled: false,
+        disabled: true,
       },
       {
         label: 'Category',
         value: 'trait',
         width: 'w-[35%]',
-        isDesc: true,
+        isDesc: false,
         disabled: false,
       },
     ]
@@ -93,6 +109,15 @@ function AvailablePage() {
     return arr
   }, [account])
 
+  const listCategory = useMemo(
+    () =>
+      Object.entries(LIST_CATEGORY).map(([key, value]) => ({
+        label: value,
+        value: key,
+      })),
+    [],
+  )
+
   const [currentPage, setCurrentPage] = useState(1)
   const [sort, setSort] = useState(sortOptions[2])
   const [dataFetch, setDataFetch] = useState([])
@@ -100,7 +125,7 @@ function AvailablePage() {
   const [nameChoose, setNameChoose] = useState(undefined)
   const [showModal, setShowModal] = useState(false)
   const [searchText, setSearchText] = useState('')
-  const [selectFilterField, _] = useState(FILTERS[0])
+  const [selectFilterField, setSelectFilterField] = useState(listCategory[0])
 
   const assets = useAssets()
   // Only allowed USDT
@@ -116,13 +141,33 @@ function AvailablePage() {
   const whereQuery = useMemo(() => {
     let filter = {}
     if (debounceSearch) {
-      if (selectFilterField === FILTERS[0]) {
+      filter = {
+        name_containsInsensitive: debounceSearch,
+      }
+    }
+    if (selectFilterField) {
+      if (selectFilterField.value !== 'ALL') {
         filter = {
-          name_containsInsensitive: debounceSearch,
+          ...filter,
+          trait_eq: selectFilterField.value,
         }
-      } else {
+      }
+    }
+    return filter
+  }, [debounceSearch, selectFilterField])
+
+  const whereTotal = useMemo(() => {
+    let filter = {}
+    if (debounceSearch) {
+      filter = {
+        name_contain: debounceSearch,
+      }
+    }
+    if (selectFilterField) {
+      if (selectFilterField.value !== 'ALL') {
         filter = {
-          trait_containsInsensitive: debounceSearch,
+          ...filter,
+          trait_eq: selectFilterField.value,
         }
       }
     }
@@ -130,8 +175,8 @@ function AvailablePage() {
   }, [debounceSearch, selectFilterField])
 
   const { data, isLoading } = useSWR(
-    ['available api', offset, whereQuery],
-    () => fetchAvailable(offset, whereQuery, debounceSearch),
+    ['available api', offset, debounceSearch, sort, selectFilterField],
+    () => fetchAvailable(sort, offset, whereQuery, whereTotal),
     {
       refreshInterval: 30000,
       revalidateOnFocus: true,
@@ -181,10 +226,23 @@ function AvailablePage() {
     [dataFetch, sort],
   )
 
+  const formatCategory = useCallback(category => {
+    const arr = Object.entries(LIST_CATEGORY).map(([key, value]) => ({ key, value }))
+    const index = arr.findIndex(item => category === item.key)
+    if (index !== -1) {
+      return arr[index].value
+    }
+    return category
+  }, [])
+
   const finalData = useMemo(
     () =>
       sortedData?.map(item => ({
-        name: <Paragraph>{item.name}</Paragraph>,
+        name: (
+          <Link href={`/arena/browse/${item.name}`}>
+            <Paragraph>{item.name}</Paragraph>
+          </Link>
+        ),
         cost: (
           <div className='flex items-center justify-center space-x-2'>
             {USDTAsset?.logoURI && (
@@ -202,7 +260,7 @@ function AvailablePage() {
             </Paragraph>
           </div>
         ),
-        trait: <Paragraph>{item.trait}</Paragraph>,
+        trait: <Paragraph>{formatCategory(item.trait)}</Paragraph>,
         action: (
           <div>
             <PrimaryButton
@@ -232,17 +290,19 @@ function AvailablePage() {
           val={searchText}
           setVal={setSearchText}
         />
-        {/* <div className='my-2 flex items-center space-x-2.5'>
-          <span className='whitespace-nowrap text-white'>{t('Filter By')}</span>
-          <Dropdown
+        <div className='my-2 flex items-center space-x-2.5'>
+          <AvailableDropdown
             className='w-full lg:w-[200px]'
-            data={FILTERS.map(item => ({
-              label: item,
-            }))}
+            data={listCategory}
             selected={selectFilterField}
-            setSelected={ele => setSelectFilterField(ele.label)}
+            setSelected={ele => {
+              setSelectFilterField(ele)
+            }}
+            readOnly={false}
+            placeHolder='Select Category'
+            listClassNames='max-h-[400px]'
           />
-        </div> */}
+        </div>
       </div>
       <div className='mt-6 w-full'>
         <Table
@@ -256,6 +316,7 @@ function AvailablePage() {
           pageSize={100}
           totalItems={totalItem}
           showPopoverPagination
+          loading={isLoading}
         />
       </div>
       {showModal && nameChoose && (
