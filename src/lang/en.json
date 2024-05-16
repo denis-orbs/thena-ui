@@ -236,6 +236,8 @@
   "Next Epoch Rewards": "Next Epoch Rewards",
   "ICHI": "ICHI",
   "Gamma": "Gamma",
+  "Narrow": "Narrow",
+  "Wide": "Wide",
   "DefiEdge": "DefiEdge",
   "V1": "V1",
   "No positions to display": "Currently, there are no positions to display.",
@@ -450,6 +452,7 @@
   "Trade perpetual contracts with leverage": "Trade perpetual contracts with leverage",
   "Audited by": "Audited by",
   "Total [symbol] Locked": "Total {symbol} Locked",
+  "ID": "ID",
   "Type of Reward": "Type of Reward",
   "Add a bribe reward for an existing gauge to incentivize votes on it": "Add a bribe reward for an existing gauge to incentivize votes on it.",
   "Choose Category": "Choose Category",
@@ -786,5 +789,7 @@
   "Upload Avatar": "Upload Avatar",
   "Are You Sure You Want To Edit Avatar For User": "Are you sure you want to edit avatar for user",
   "Use Avatar Default": "Use avatar default",
-  "Use Custom Avatar": "Use custom avatar"
+  "Use Custom Avatar": "Use custom avatar",
+  "EtherFi tooltip": "3x EtherFi Points will be distributed to liquidity providers in this pool.",
+  "Eigen tooltip": "EigenLayer Points will be distributed to liquidity providers in this pool."
 }

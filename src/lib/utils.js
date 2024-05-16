@@ -4,7 +4,7 @@ import { sample } from 'lodash'
 import { twMerge } from 'tailwind-merge'
 import { WBNB } from 'thena-sdk-core'
 
-import { RPC_PROVIDERS, RPC_PROVIDERS_REWARDS, SCAN_URLS } from '@/constant'
+import { RPC_PROVIDERS, SCAN_URLS } from '@/constant'
 
 BigNumber.config({
   EXPONENTIAL_AT: 1000,
@@ -27,10 +27,6 @@ export function formatAddress(string) {
 
 export function getRpcUrl(chainId) {
   return sample(RPC_PROVIDERS[chainId])
-}
-
-export function getRpcUrlRewards(chainId) {
-  return sample(RPC_PROVIDERS_REWARDS[chainId])
 }
 
 export const formatAmount = (amount = null, shorted = false, fixed = 3, hideNegative = true) => {

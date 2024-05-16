@@ -26,9 +26,7 @@ function DibsRewarderContextProvider({ children }) {
   const [totalUserEarned, setTotalUserEarned] = useState(0)
   const [dibsRewarder, setDibsRewarder] = useState('')
   const assets = useAssets()
-  const { account } = useWallet()
-
-  const { chainId } = useWallet()
+  const { account, chainId } = useWallet()
 
   const value = useMemo(
     () => ({
@@ -47,6 +45,9 @@ function DibsRewarderContextProvider({ children }) {
       if (chainId) {
         try {
           const dibsRewarderContract = getDibsRewarderContract(chainId)
+          if (!dibsRewarderContract) {
+            return
+          }
           setDibsRewarder(dibsRewarderContract)
           const [res0, res1] = await Promise.all([
             readCall(dibsRewarderContract, 'currentDay', []),
@@ -74,13 +75,15 @@ function DibsRewarderContextProvider({ children }) {
 
           let totalEarned = 0
           const totalClaimedRewards = await fetchDataTotalClaimedRewards(account)
-          totalClaimedRewards.forEach(tcr => {
-            const asset = assets.find(a => a.address.toLowerCase() === tcr.token.toLowerCase())
-            if (asset) {
-              const userEarned = fromWei(new BigNumber(tcr.amount)).toNumber() * asset.price
-              totalEarned += userEarned
-            }
-          })
+          if (Array.isArray(totalClaimedRewards) && totalClaimedRewards.length) {
+            totalClaimedRewards.forEach(tcr => {
+              const asset = assets.find(a => a.address.toLowerCase() === tcr.token.toLowerCase())
+              if (asset) {
+                const userEarned = fromWei(new BigNumber(tcr.amount)).toNumber() * asset.price
+                totalEarned += userEarned
+              }
+            })
+          }
 
           setTotalReward(total)
           setTotalUserEarned(totalEarned)

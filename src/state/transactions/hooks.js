@@ -71,6 +71,18 @@ export const useTxn = () => {
         return hash
       } catch (error) {
         console.log(error)
+        console.log(error?.shortMessage)
+        if (error && error.name === 'TransactionReceiptNotFoundError') {
+          // Fix case if RPC error -> still shows tx
+          updateTxn({
+            key,
+            uuid,
+            status: TXN_STATUS.SUCCESS,
+            hash,
+          })
+          successToast('Transaction confirmed', hash, networkId)
+          return true
+        }
         updateTxn({
           key,
           uuid,
@@ -112,6 +124,18 @@ export const useTxn = () => {
         return true
       } catch (error) {
         console.log(error)
+        console.log(error?.shortMessage)
+        if (error && error.name === 'TransactionReceiptNotFoundError') {
+          // Fix case if RPC error -> still shows tx
+          updateTxn({
+            key,
+            uuid,
+            status: TXN_STATUS.SUCCESS,
+            hash,
+          })
+          successToast('Transaction confirmed', hash, networkId)
+          return true
+        }
         updateTxn({
           key,
           uuid,

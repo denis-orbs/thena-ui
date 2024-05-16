@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { _TypedDataEncoder } from '@ethersproject/hash'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import BN from 'bignumber.js'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -27,6 +27,7 @@ const PARTNER = 'Thena'
 const API_ENDPOINT = 'https://hub.orbs.network'
 const TOKEN_LIST = 'https://lhthena.s3.us-east-2.amazonaws.com/token-list-lh.json'
 const zero = BN(0)
+const QUOTE_REFETCH_INTERVAL = 10_000
 
 // analytics
 const ANALYTICS_VERSION = 0.1
@@ -394,13 +395,15 @@ const useQuoteQuery = (fromAsset, toAsset, fromAmount = '', dexAmountOut = '') =
   const { account } = useWallet()
   const { isFailed } = useStore()
   const [error, setError] = useState(false)
-
+  const queryClient = useQueryClient()
   const fromAddress = fromAsset?.address || ''
   const toAddress = toAsset?.address || ''
+  const queryKey = ['useLHQuoteQuery', fromAddress, toAddress, fromAmount, slippage, account]
+
   const query = useQuery({
-    queryKey: ['useLHQuoteQuery', fromAddress, toAddress, fromAmount, slippage, account],
-    queryFn: async ({ signal }) =>
-      LhQuote({
+    queryKey,
+    queryFn: async ({ signal }) => {
+      const res = await LhQuote({
         inToken: fromAsset.address,
         outToken: toAsset.address,
         inAmount: amountBN(fromAsset, fromAmount).dp(0).toString(),
@@ -408,8 +411,17 @@ const useQuoteQuery = (fromAsset, toAsset, fromAmount = '', dexAmountOut = '') =
         slippage,
         account,
         signal,
-      }),
-    refetchInterval: 10_000,
+      })
+      res.refetchCount = (queryClient.getQueryData(queryKey)?.refetchCount || 0) + 1
+      return res
+    },
+    refetchInterval: ({ state }) => {
+      const refetchCount = state.data?.refetchCount || 0
+      if (refetchCount > 6) {
+        return state.data.refetchCount * QUOTE_REFETCH_INTERVAL
+      }
+      return QUOTE_REFETCH_INTERVAL
+    },
     enabled: !!account && !isInvalidAmount(fromAmount) && !!fromAsset && !!toAsset && !isFailed && liquidityHubEnabled,
     gcTime: 0,
     retry: 2,

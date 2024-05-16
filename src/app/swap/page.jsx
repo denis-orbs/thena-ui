@@ -1,10 +1,12 @@
 'use client'
 
+/* eslint-disable simple-import-sort/imports */
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import Contracts from '@/constant/contracts'
+import { SWAP_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useWrap } from '@/hooks/useSwap'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -17,8 +19,9 @@ export default function SwapPage() {
   const [toAsset, setToAsset] = useState(null)
   const [fromAddress, setFromAddress] = useState(null)
   const [toAddress, setToAddress] = useState(null)
-  const { networkId } = useChainSettings()
   const searchParams = useSearchParams()
+  const [swapType, setSwapType] = useState(searchParams.get('swapType') || SWAP_TYPES.SWAP)
+  const { networkId } = useChainSettings()
   const { push } = useRouter()
   const assets = useAssets()
   const { onWrap, onUnwrap, pending: wrapPending } = useWrap()
@@ -49,9 +52,14 @@ export default function SwapPage() {
   }, [assets, searchParams, fromAddress, toAddress, networkId])
 
   useEffect(() => {
-    if (!fromAddress || !toAddress) return
-    push(`/swap?inputCurrency=${fromAddress}&outputCurrency=${toAddress}`)
-  }, [push, fromAddress, toAddress])
+    if (!fromAddress || !toAddress) {
+      if (swapType) {
+        push(`/swap?swapType=${swapType}`)
+      }
+      return
+    }
+    push(`/swap?inputCurrency=${fromAddress}&outputCurrency=${toAddress}&swapType=${swapType}`)
+  }, [push, fromAddress, toAddress, swapType])
 
   const isWrap = useMemo(() => {
     if (
@@ -78,7 +86,7 @@ export default function SwapPage() {
   }, [fromAsset, toAsset])
 
   return (
-    <div className='flex w-full flex-col items-center gap-10 lg:flex-row lg:items-start'>
+    <div className='flex w-full flex-col items-center gap-6 lg:flex-row lg:items-start 2xl:gap-10'>
       {networkId === ChainId.BSC && (
         <SwapBest
           fromAsset={fromAsset}
@@ -90,6 +98,8 @@ export default function SwapPage() {
           onWrap={onWrap}
           onUnwrap={onUnwrap}
           wrapPending={wrapPending}
+          setSwapType={setSwapType}
+          swapType={swapType}
         />
       )}
       {networkId === ChainId.OPBNB && (

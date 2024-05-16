@@ -11,6 +11,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
+import NextImage from '@/components/image/NextImage'
 import SearchInput from '@/components/input/SearchInput'
 import Selection from '@/components/selection'
 import Table from '@/components/table'
@@ -96,9 +97,10 @@ export default function PoolsPage() {
       final = pairs.filter(ele => ele.highApr > 0)
     }
     final = filter === PAIR_TYPES.All ? final : final.filter(item => item.type === filter)
+    // TODO: hard-coded for SOLVBTC
     final = final.map(pool => {
       if (
-        ['0x751ddd89198af85f801e0592d6b77a0527504a52', '0xc0e1c9fec0d8888039095da014382d027f27069d'].includes(
+        ['0x575a951ad021d4297ac125be88ee4620652d5c12', '0xab6f06a33f38cba5a5312de24151cb91da2b0eb0'].includes(
           pool.address,
         )
       ) {
@@ -165,8 +167,22 @@ export default function PoolsPage() {
   )
 
   const finalPools = useMemo(
-    () =>
-      sortedData.map(pool => ({
+    () => {
+      // Hard-coded for weETH/ETH pool on top
+      const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
+      let previousData = []
+
+      if (Array.isArray(sortedData) && sortedData.length) {
+        const weETHPool = sortedData.find(item => item.address === weETHPoolAddress)
+        if (weETHPool) {
+          const data = sortedData.filter(item => item?.address !== weETHPoolAddress)
+          previousData = [weETHPool, ...data]
+        } else {
+          previousData = [...sortedData]
+        }
+      }
+
+      return previousData.map(pool => ({
         pair: (
           <div className='flex items-center gap-3'>
             <IconGroup
@@ -181,6 +197,34 @@ export default function PoolsPage() {
               <TextHeading>{pool.symbol}</TextHeading>
               <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
             </div>
+            {pool.address === weETHPoolAddress && (
+              <div className='flex items-center gap-2'>
+                <div className='size-6' data-tooltip-id='etherBadgeIcon'>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EtherFi'
+                    src='/images/Etherfi.png'
+                  />
+                </div>
+
+                <div className='size-6' data-tooltip-id='eigenBadgeIcon'>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EigenLayer'
+                    src='/images/Eigenlayer.png'
+                  />
+                </div>
+
+                {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIcon' /> */}
+                {/* <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIcon' /> */}
+                <CustomTooltip id='etherBadgeIcon' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
+                </CustomTooltip>
+                <CustomTooltip id='eigenBadgeIcon' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
+                </CustomTooltip>
+              </div>
+            )}
           </div>
         ),
         apr: (
@@ -229,7 +273,9 @@ export default function PoolsPage() {
             {t('Manage')}
           </EmphasisButton>
         ),
-      })),
+      }))
+    },
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData), push, t],
   )

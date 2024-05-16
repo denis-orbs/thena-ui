@@ -19,12 +19,7 @@ export const CHAIN_LIST = {
 }
 
 export const RPC_PROVIDERS = {
-  [ChainId.BSC]: ['https://rpc.ankr.com/bsc/c524849c12e5d6a1f7c0a4def3ae2b387b9f9a7902adc16822bc6825aff6d5b6'],
-  // [ChainId.BSC]: ['https://bsc-dataseed1.bnbchain.org'],
-  [ChainId.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
-}
-
-export const RPC_PROVIDERS_REWARDS = {
+  // [ChainId.BSC]: ['https://rpc.ankr.com/bsc/c524849c12e5d6a1f7c0a4def3ae2b387b9f9a7902adc16822bc6825aff6d5b6'],
   [ChainId.BSC]: ['https://bsc-dataseed1.bnbchain.org'],
   [ChainId.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
 }
@@ -348,3 +343,11 @@ export const INIT_VALUES = {
   }, // owner address
   tradingCompetitionSpot: ZERO_ADDRESS, // trading competition contract address
 }
+
+export const SWAP_TYPES = {
+  SWAP: '1',
+  TWAP: '2',
+  LIMIT: '3',
+}
+
+export const trade2EarnStartTime = 1712534400

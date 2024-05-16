@@ -12,6 +12,7 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import AddLiquidity from '@/components/common/AddLiquidity'
 import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
+import NextImage from '@/components/image/NextImage'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
@@ -35,9 +36,9 @@ export default function SpecificPoolPage({ params }) {
 
   useEffect(() => {
     if (pool) {
-      // TODO: hard-coded for weETH
+      // TODO: hard-coded for SOLVBTC
       if (
-        ['0x751ddd89198af85f801e0592d6b77a0527504a52', '0xc0e1c9fec0d8888039095da014382d027f27069d'].includes(
+        ['0x575a951ad021d4297ac125be88ee4620652d5c12', '0xab6f06a33f38cba5a5312de24151cb91da2b0eb0'].includes(
           pool.address,
         )
       ) {
@@ -78,8 +79,8 @@ export default function SpecificPoolPage({ params }) {
                 />
                 <div className='flex flex-col gap-2'>
                   <div className='flex items-center gap-3'>
-                    <TextHeading className='text-2xl lg:text-4xl'>{pool.symbol}</TextHeading>
-                    <NeutralBadge>{t(pool.type)}</NeutralBadge>
+                    <TextHeading className='text-xl lg:text-4xl'>{pool.symbol}</TextHeading>
+                    <NeutralBadge className='relative'>{t(pool.type)}</NeutralBadge>
                   </div>
                   <div className='flex items-center gap-0.5'>
                     <Paragraph>{t('Fee')}:</Paragraph>
@@ -106,6 +107,33 @@ export default function SpecificPoolPage({ params }) {
                 </CustomTooltip>
               </div>
             </div>
+            {pool.address === '0xc0e1c9fec0d8888039095da014382d027f27069d' && (
+              <div className='ml-4 mt-5 flex items-center gap-2'>
+                <div className='size-6' data-tooltip-id='etherBadgeIconDetail'>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EtherFi'
+                    src='/images/Etherfi.png'
+                  />
+                </div>
+
+                <div className='size-6' data-tooltip-id='eigenBadgeIconDetail'>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EigenLayer'
+                    src='/images/Eigenlayer.png'
+                  />
+                </div>
+                {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIconDetail' />
+                <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIconDetail' /> */}
+                <CustomTooltip id='etherBadgeIconDetail' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
+                </CustomTooltip>
+                <CustomTooltip id='eigenBadgeIconDetail' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
+                </CustomTooltip>
+              </div>
+            )}
           </div>
           <Box className='mt-10 grid grid-cols-2 gap-5 lg:grid-cols-4'>
             <div className='flex w-full flex-col gap-2'>
