@@ -37,7 +37,7 @@ export function FollowedProfileItem({ user }) {
     <Box
       className={cn(
         'group/item flex cursor-pointer items-center justify-between gap-5 p-4 lg:p-4',
-        hightLight ? 'bg-gradient-to-r from-[#B386FF] to-[#FF86FA]' : '',
+        hightLight ? 'animate-gradient bg-gradient-to-r from-[#B386FF] to-[#FF86FA]' : '',
       )}
     >
       <div className='flex items-center gap-5'>

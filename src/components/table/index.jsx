@@ -267,7 +267,11 @@ function Table({
                     <tr
                       key={`table-row-${eleIdx}`}
                       id={`table-row-${eleIdx}`}
-                      className={eleIdx === hightLightIndex ? 'bg-neutral-500' : ''}
+                      className={
+                        eleIdx === hightLightIndex
+                          ? 'animate-gradient bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+                          : ''
+                      }
                     >
                       {sortOptions.map((cell, cellIdx) => (
                         <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>

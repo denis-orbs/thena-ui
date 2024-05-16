@@ -221,7 +221,7 @@ export function UserInfo({ userInfo, following, followers }) {
             <div className='relative h-full w-full'>
               <div className='absolute z-10 flex h-full w-full flex-col items-center justify-center gap-6 bg-[rgba(0,0,0,0.1)] backdrop-blur-sm'>
                 <EmphasisButton
-                  className='bg-gradient-to-r from-primary-500 to-primary-700'
+                  className='animate-gradient bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
                   onClick={() => handleClickThenaButton('get')}
                 >
                   {t('To Edit Your About Section')}

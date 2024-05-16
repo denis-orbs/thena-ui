@@ -9,6 +9,16 @@ export default {
         archia: ['Archia', 'sans-serif'],
         aeonik: ['Aeonik', 'sans-serif'],
       },
+      keyframes: {
+        gradient: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+      },
+      animation: {
+        gradient: 'gradient 5s ease infinite',
+      },
       colors: {
         primary: {
           100: '#FCE6FB',

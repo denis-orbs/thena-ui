@@ -95,6 +95,11 @@
 }
 
 @layer utilities {
+  .animate-gradient {
+    background: linear-gradient(270deg, #b386ff, #ff86fa, #b386ff);
+    background-size: 400% 400%;
+    animation: gradient 5s ease infinite;
+  }
 }
 
 ::-webkit-scrollbar {
