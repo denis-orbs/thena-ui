@@ -23,11 +23,6 @@ export const RPC_PROVIDERS = {
   [ChainId.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
 }
 
-export const RPC_PROVIDERS_REWARDS = {
-  [ChainId.BSC]: ['https://bsc-dataseed1.bnbchain.org'],
-  [ChainId.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
-}
-
 export const LOCALES = {
   en: 'en',
   zh: 'zh',
