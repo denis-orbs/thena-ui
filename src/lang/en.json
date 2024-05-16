@@ -793,5 +793,6 @@
   "EtherFi tooltip": "3x EtherFi Points will be distributed to liquidity providers in this pool.",
   "Eigen tooltip": "EigenLayer Points will be distributed to liquidity providers in this pool.",
   "Category": "Category",
-  "Select Category": "Select category"
+  "Select Category": "Select category",
+  "Browse THENA IDs": "Browse THENA IDs"
 }

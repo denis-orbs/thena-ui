@@ -7,14 +7,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import ThenaIdModal from '@/app/arena/profile/ThenaIdModal'
 import Box from '@/components/box'
 import { EmphasisButton, TertiaryButton, TextButton } from '@/components/buttons/Button'
-import NextImage from '@/components/image/NextImage'
+import ImageThenaId from '@/components/image/ImageThenaId'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
@@ -119,7 +118,7 @@ function ThenaIdPage() {
   const [tokenId, setTokenId] = useState('')
   const { account } = useWallet()
   const [showModal, setShowModal] = useState(false)
-  const [imageUrl, setImageUrl] = useState('')
+  // const [imageUrl, setImageUrl] = useState('')
   const [attributes, setAttributes] = useState(undefined)
   const [currentUserRef, setCurrentUserRef] = useState('')
 
@@ -202,7 +201,7 @@ function ThenaIdPage() {
       const imageAttribute = res.split('data:application/json;base64,')[1]
       const decodedData = atob(imageAttribute)
       const jsonData = JSON.parse(decodedData)
-      setImageUrl(jsonData?.image)
+      // setImageUrl(jsonData?.image)
       setAttributes(jsonData?.attributes)
     }
   }, [tokenId])
@@ -240,14 +239,8 @@ function ThenaIdPage() {
         </Link>
       </div>
       <div className='flex flex-col gap-5 md:flex-row md:gap-10'>
-        <div>
-          <NextImage
-            width={400}
-            height={400}
-            src={imageUrl || Avatar}
-            alt='avatar'
-            className='h-full w-full md:h-[300px] md:w-[300px] lg:h-[350px] lg:w-[350px] xl:h-[400px] xl:w-[400px]'
-          />
+        <div className='h-full w-full md:h-[300px] md:w-[300px] lg:h-[350px] lg:w-[350px] xl:h-[400px] xl:w-[400px]'>
+          <ImageThenaId name={thenaIdFormat} />
         </div>
         <div className='flex-1'>
           <div className='flex flex-row items-center justify-between'>
