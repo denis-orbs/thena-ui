@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React from 'react'
+import React, { useState } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -12,13 +12,16 @@ import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
 import { sliceAddress } from '@/lib/utils'
+import { ModalCreateNotification } from '@/modules/Admin/ModalCreateNotification'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
+
+const isShowCreateNotification = false
 
 function TopBar({ userInfo }) {
   const t = useTranslations()
-
+  const [openModalNotification, setOpenModalNotification] = useState(false)
   return (
-    <Box className='flex flex-col-reverse md:flex-row md:justify-between'>
+    <Box className='flex flex-col-reverse gap-4 md:flex-row md:justify-between'>
       <div className='flex flex-row items-start gap-4 md:items-center'>
         <CircleImage src={Avatar} alt='avatar' className='size-14 md:size-[124px]' />
         <div className='flex flex-col gap-2 md:gap-3'>
@@ -53,11 +56,19 @@ function TopBar({ userInfo }) {
           </TextSubHeading>
         </div>
       </div>
-      <div className='flex flex-row justify-end'>
+      <div className='flex flex-row items-center justify-end gap-2'>
         <Link href='/arena/admin/edit'>
           <EmphasisButton className='text-base'>{t('Edit Profile')}</EmphasisButton>
         </Link>
+        {isShowCreateNotification && (
+          <EmphasisButton className='text-base' onClick={() => setOpenModalNotification(true)}>
+            {t('Create notification')}
+          </EmphasisButton>
+        )}
       </div>
+      {openModalNotification && (
+        <ModalCreateNotification isOpen={openModalNotification} onClose={() => setOpenModalNotification(false)} />
+      )}
     </Box>
   )
 }

@@ -8,6 +8,7 @@ import BellIcon from '~/svgs/bell.svg'
 import CalendarIcon from '~/svgs/calendar.svg'
 import CalendarWhiteIcon from '~/svgs/calendar-white.svg'
 import Champion from '~/svgs/champion.svg'
+import ChartIcon from '~/svgs/chart-line.svg'
 import CheckIcon from '~/svgs/check.svg'
 import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
@@ -63,6 +64,7 @@ export {
   CalendarIcon,
   CalendarWhiteIcon,
   Champion,
+  ChartIcon,
   CheckCircleIcon,
   CheckGradientIcon,
   CheckIcon,
