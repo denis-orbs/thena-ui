@@ -8,9 +8,8 @@ export async function generateMetadata({ params }) {
   const metadata = {
     name: 'user',
     image: [`${siteConfig.url}/cover.png`],
-    description: `See the profile of user on THENA Arena. 
-Follow them, engage with them or check their analytics and THENA
-IDs out on the decentralized social media platform of THENA Arena`,
+    description:
+      'See the profile of user on THENA Arena. Follow them, engage with them or check their analytics and THENA IDs out on the decentralized social media platform of THENA Arena',
   }
 
   return {

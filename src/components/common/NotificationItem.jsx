@@ -28,7 +28,7 @@ function NotificationItem({ notification, markRead }) {
           <CircleImage src={Avatar} alt='avatar' className='size-9 h-9 w-9' />
         </div>
         <div className='flex flex-col gap-1 p-2'>
-          <TextHeading className='text-wrap break-all'>{notification.content}</TextHeading>
+          <TextHeading className='text-wrap break-words'>{notification.content}</TextHeading>
           <Paragraph className='text-sm'>{moment(notification.timestamp).locale(locale).fromNow()}</Paragraph>
         </div>
       </div>

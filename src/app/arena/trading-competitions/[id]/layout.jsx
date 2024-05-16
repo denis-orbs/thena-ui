@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { gql } from 'graphql-request'
 import React from 'react'
 
@@ -44,16 +45,14 @@ export async function generateMetadata({ params }) {
       template: '%s | THENA Arena',
       default: `${metadata.name}`,
     },
-    description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today! 
-Fully decentralized trading competition on THENA Arena!`,
+    description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today!  Fully decentralized trading competition on THENA Arena!`,
     openGraph: {
       url: `${siteConfig.url}/arena/trading-competitions/${id}`,
       title: {
         template: '%s | THENA Arena',
         default: `${metadata.name}`,
       },
-      description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today! 
-Fully decentralized trading competition on THENA Arena!`,
+      description: `Compete in ${metadata.name} for ${metadata.prize} ${metadata.token} today! Fully decentralized trading competition on THENA Arena!`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',

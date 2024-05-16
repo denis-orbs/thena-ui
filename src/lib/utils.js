@@ -140,3 +140,9 @@ export function isValidHttpUrl(string) {
   )
   return pattern.test(string)
 }
+
+export function isHexColor(string) {
+  const pattern = /^[0-9A-F]{6}[0-9a-f]{0,2}$/i
+
+  return pattern.test(string)
+}

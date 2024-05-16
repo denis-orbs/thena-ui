@@ -11,7 +11,7 @@ import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAddress, formatAmount, fromWei } from '@/lib/utils'
+import { cn, formatAddress, formatAmount, fromWei, isHexColor } from '@/lib/utils'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { TCButton } from '@/modules/TradingCompetition/TCButton'
 import { Clock, CoinHand, Gift, UserIcon } from '@/svgs'
@@ -99,6 +99,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
                         }
                       : {}
                   }
+                  className={cn(!isHexColor(competition.owner.nameColor) && `${competition.owner.nameColor}`)}
                 >
                   {competition.owner.username ? competition.owner.username : formatAddress(competition.owner.id)}
                 </span>

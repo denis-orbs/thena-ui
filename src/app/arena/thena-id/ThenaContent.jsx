@@ -68,6 +68,8 @@ function ThenaContent() {
     [thenaIds],
   )
 
+  console.log('object', thenaIds)
+
   const { loading: gifting, giftThenaId } = useGiftThenaId()
   const { loading: minting, buyThenaId } = useMintThenaId()
   const { loading: batchMinting, batchMintThenaId } = useBatchMintThenaId()

@@ -46,6 +46,8 @@ function ThenaIdInput({ onChange, costPerToken, defaultThenaId = '' }) {
         setError(errorMessage)
         setCost(estimateCost)
       })
+    } else {
+      setCost(undefined)
     }
   }, [costPerToken, debounceThenaId, t, validate])
 

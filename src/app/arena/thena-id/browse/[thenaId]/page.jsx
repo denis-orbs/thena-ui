@@ -12,7 +12,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import ThenaIdModal from '@/app/arena/profile/ThenaIdModal'
-import Loading from '@/app/loading'
 import Box from '@/components/box'
 import { EmphasisButton, TertiaryButton, TextButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
@@ -228,7 +227,7 @@ function ThenaIdPage() {
   }, [getImageAttributes])
 
   if (!thenaId) {
-    return <Loading />
+    return null
   }
 
   return (
