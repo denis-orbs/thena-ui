@@ -7,7 +7,7 @@ import { ChevronDownIcon } from '@/svgs'
 
 import Input from '../input'
 
-function AvailableDropdown({ className, listClassNames, data, selected, setSelected, placeHolder, readOnly = true }) {
+function AvailableDropdown({ className, listClassNames, data, selected, setSelected, placeHolder }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
   const [valueInputSelect, setValueInputSelect] = useState('')
@@ -51,8 +51,8 @@ function AvailableDropdown({ className, listClassNames, data, selected, setSelec
         }}
         type='text'
         val={valueInputSelect}
-        onChange={e => setValueInputSelect(e.target.value)}
-        readOnly={readOnly}
+        readOnly
+        onClick={() => setOpen(!open)}
         placeholder={placeHolder}
         TrailingIcon={
           <ChevronDownIcon

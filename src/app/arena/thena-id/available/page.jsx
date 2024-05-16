@@ -239,7 +239,7 @@ function AvailablePage() {
     () =>
       sortedData?.map(item => ({
         name: (
-          <Link href={`/arena/browse/${item.name}`}>
+          <Link href={`/arena/thena-id/browse/${item.name}`}>
             <Paragraph>{item.name}</Paragraph>
           </Link>
         ),
@@ -298,7 +298,6 @@ function AvailablePage() {
             setSelected={ele => {
               setSelectFilterField(ele)
             }}
-            readOnly={false}
             placeHolder='Select Category'
             listClassNames='max-h-[400px]'
           />
