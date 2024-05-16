@@ -340,6 +340,14 @@ input[type='radio']:checked:after {
   -webkit-box-orient: vertical;
 }
 
+.ellipsis-1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
 .show-more {
   text-overflow: ellipsis;
   overflow: hidden;

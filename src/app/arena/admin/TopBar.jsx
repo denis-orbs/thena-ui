@@ -15,8 +15,6 @@ import { sliceAddress } from '@/lib/utils'
 import { ModalCreateNotification } from '@/modules/Admin/ModalCreateNotification'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 
-const isShowCreateNotification = false
-
 function TopBar({ userInfo }) {
   const t = useTranslations()
   const [openModalNotification, setOpenModalNotification] = useState(false)
@@ -60,11 +58,9 @@ function TopBar({ userInfo }) {
         <Link href='/arena/admin/edit'>
           <EmphasisButton className='text-base'>{t('Edit Profile')}</EmphasisButton>
         </Link>
-        {isShowCreateNotification && (
-          <EmphasisButton className='text-base' onClick={() => setOpenModalNotification(true)}>
-            {t('Create notification')}
-          </EmphasisButton>
-        )}
+        <EmphasisButton className='text-base' onClick={() => setOpenModalNotification(true)}>
+          {t('Create notification')}
+        </EmphasisButton>
       </div>
       {openModalNotification && (
         <ModalCreateNotification isOpen={openModalNotification} onClose={() => setOpenModalNotification(false)} />

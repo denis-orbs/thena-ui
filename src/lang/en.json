@@ -794,5 +794,20 @@
   "Eigen tooltip": "EigenLayer Points will be distributed to liquidity providers in this pool.",
   "Category": "Category",
   "Select Category": "Select category",
-  "Browse THENA IDs": "Browse THENA IDs"
+  "Browse THENA IDs": "Browse THENA IDs",
+  "User Follow Notify": "followed you!",
+  "User UnFollow Notify": "unfollowed you!",
+  "Competition Notify": "joined your trading competition",
+  "Select Users": "Select Users",
+  "Selected": "Selected",
+  "Notification Content": "Notification Content",
+  "Redirect To": "Redirect To",
+  "Link To Redirect": "Link to redirect",
+  "Search By Name Or Address": "Search by name or address",
+  "Create Notification": "Create Notification",
+  "Send To All": "Send To All",
+  "Send At": "Send At",
+  "Delivered": "Delivered",
+  "Read": "Read",
+  "CTR": "CTR"
 }

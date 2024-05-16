@@ -33,8 +33,8 @@ export function Notification() {
   const { markRead } = useMarkNotificationRead()
 
   const markNotiAsRead = useCallback(
-    async id => {
-      await markRead(id)
+    async (id, type) => {
+      await markRead(id, type)
       mutate()
     },
     [markRead, mutate],

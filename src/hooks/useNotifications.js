@@ -16,6 +16,15 @@ export const V4_NOTIFICATIONS = gql`
       isSent
       redirectUrl
       timestamp
+      type
+      userTrigger {
+        id
+        avatar
+        checkMarkIcon
+        isVerified
+        nameColor
+        username
+      }
     }
   }
 `
@@ -32,6 +41,11 @@ const NEW_NOTIFICATION_SUB = gql`
 const MARK_AS_READ = gql`
   mutation ReadNotification($id: String) {
     readNotifications(id: $id)
+  }
+`
+const CLICK_NOTIFICATION = gql`
+  mutation CLICK_NOTIFICATION($id: String!) {
+    clickNotification(id: $id)
   }
 `
 
@@ -95,7 +109,16 @@ export function useNotificationsSubscription(callback) {
 
 export function useMarkNotificationRead() {
   const { signWallet } = useSignWallet()
-  const markReadFn = useCallback(async id => {
+  const markReadFn = useCallback(async ({ id, type }) => {
+    if (type === 'general') {
+      await v4Client.request(
+        CLICK_NOTIFICATION,
+        { id },
+        {
+          authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+        },
+      )
+    }
     await v4Client.request(
       MARK_AS_READ,
       { id },
@@ -106,8 +129,8 @@ export function useMarkNotificationRead() {
   }, [])
 
   const markRead = useCallback(
-    async id => {
-      await actionWithAuthentication(markReadFn, signWallet, id)
+    async (id, type) => {
+      await actionWithAuthentication(markReadFn, signWallet, { id, type })
     },
     [markReadFn, signWallet],
   )

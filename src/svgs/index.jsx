@@ -1,5 +1,6 @@
 import AlertTriangleIcon from '~/svgs/alert-triangle.svg'
 import AnalyticsIcon from '~/svgs/analytics.svg'
+import AnnouncementIcon from '~/svgs/announcement.svg'
 import ArrowDownIcon from '~/svgs/arrow-down.svg'
 import ArrowLeftIcon from '~/svgs/arrow-left.svg'
 import ArrowRightIcon from '~/svgs/arrow-right.svg'
@@ -59,6 +60,7 @@ import ZoomOutIcon from '~/svgs/zoom-out.svg'
 export {
   AlertTriangleIcon,
   AnalyticsIcon,
+  AnnouncementIcon,
   ArrowDownIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
