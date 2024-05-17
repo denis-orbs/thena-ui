@@ -2,17 +2,15 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 
-import Box from '@/components/box'
-import ImageThenaId from '@/components/image/ImageThenaId'
 import SearchInput from '@/components/input/SearchInput'
 import Skeleton from '@/components/skeleton'
-import { TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
+
+import ThenaIdItem from './ThenaIdItem'
 
 const V4_USERNAME_NFTS = gql`
   query V4_USERNAME_NFTS($offset: Int = 0, $where: UsernameNftWhereInput = {}) {
@@ -96,20 +94,7 @@ const fetchAvailableThenaIds = async (page = 1, debounceSearch = '', signal = un
   }
 }
 
-function ThenaIdItem({ item }) {
-  return (
-    <div key={item.name} className='rounded-lg'>
-      <div className='rounded-t-lg bg-neutral-300'>
-        <ImageThenaId name={item.name} />
-      </div>
-      <Link href={`/arena/thena-id/browse/${encodeURIComponent(item.name)}`}>
-        <Box className='rounded-b-lg rounded-t-none px-3 lg:px-3'>
-          <TextHeading className='text-sm'>{item.name}.thena</TextHeading>
-        </Box>
-      </Link>
-    </div>
-  )
-}
+// function
 
 function BrowsePage() {
   const t = useTranslations()
@@ -177,7 +162,7 @@ function BrowsePage() {
             temp = new Map(old)
           }
           availableThenaIdsRes.forEach(ele => {
-            temp.set(ele.id, ele)
+            temp.set(ele.name, ele)
           })
           return temp
         })
@@ -266,7 +251,7 @@ function BrowsePage() {
           </div>
         </div> */}
         <div className='flex-1'>
-          <div className='grid grid-cols-1 items-center gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8'>
+          <div className='grid grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8'>
             {Array.from(usernameNfts.values()).map((item, index) =>
               index === usernameNfts.size - 1 && hasMoreUsernameNfts ? (
                 <div className='last-index' key={item.id} ref={setLastElement}>
