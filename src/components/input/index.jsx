@@ -40,9 +40,7 @@ function Input({
       {suffix && <span className='absolute bottom-0 right-3 top-0 my-auto h-fit text-neutral-400'>{suffix}</span>}
       {TrailingIcon && <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>{TrailingIcon}</div>}
       {TrailingButton && (
-        <div
-          className={cn('absolute bottom-0 top-0 my-auto flex items-center', TrailingButton ? 'right-16' : 'right-3')}
-        >
+        <div className={cn('absolute bottom-0 top-0 my-auto flex items-center', TrailingIcon ? 'right-12' : 'right-3')}>
           {TrailingButton}
         </div>
       )}
