@@ -809,5 +809,7 @@
   "Send At": "Send At",
   "Delivered": "Delivered",
   "Read": "Read",
-  "CTR": "CTR"
+  "CTR": "CTR",
+  "Send": "Send",
+  "Redirect": "Redirect"
 }
