@@ -2,9 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 
+import { EmphasisButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Skeleton from '@/components/skeleton'
 import useDebounce from '@/hooks/useDebounce'
@@ -24,10 +26,7 @@ const V4_USERNAME_NFTS = gql`
         username
         nameColor
         avatar
-        isSuperAdmin
         checkMarkIcon
-        verifiedAt
-        isAdmin
         isVerified
       }
     }
@@ -225,6 +224,14 @@ function BrowsePage() {
     <div className='mt-6'>
       <div className='mb-6'>
         <h2>{t('Browse THENA IDs')}</h2>
+      </div>
+      <div className='mb-6 flex items-center gap-6'>
+        <EmphasisButton>
+          <Link href='/arena/thena-id/recently-minted'>{t('Recent THENA ID Mints')}</Link>
+        </EmphasisButton>
+        <EmphasisButton>
+          <Link href='/arena/thena-id/available'>{t('Available THENA IDs')}</Link>
+        </EmphasisButton>
       </div>
       <div className='mb-8 flex flex-col-reverse gap-6 sm:flex-row sm:items-center sm:justify-between'>
         <div>

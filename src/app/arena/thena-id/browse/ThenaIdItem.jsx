@@ -38,7 +38,7 @@ function ThenaIdItem({ item }) {
           {item.owner ? (
             <div className='flex w-full flex-row flex-wrap items-center'>
               <TextSubHeading className='mr-1 block text-base'>{t('Owned By')}</TextSubHeading>
-              <UserProfileCard user={item.owner} showVerified={item.owner.isVerified} flexWrap />
+              <UserProfileCard user={item.owner} enableFollow={false} showVerified={item.owner.isVerified} flexWrap />
             </div>
           ) : (
             <div className='flex items-center justify-start space-x-2'>
