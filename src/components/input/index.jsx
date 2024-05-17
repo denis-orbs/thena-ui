@@ -28,6 +28,7 @@ function Input({
           'w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500',
           LeadingIcon ? 'pl-12' : prefix ? 'pl-7' : 'pl-4',
           TrailingIcon || suffix ? 'pr-7' : 'pr-3',
+          TrailingIcon && TrailingButton ? 'pr-20' : '',
           classNames?.input,
         )}
         placeholder={isLocale && placeholder !== '' && placeholder !== '0' ? t(placeholder) : placeholder}
@@ -39,7 +40,11 @@ function Input({
       {suffix && <span className='absolute bottom-0 right-3 top-0 my-auto h-fit text-neutral-400'>{suffix}</span>}
       {TrailingIcon && <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>{TrailingIcon}</div>}
       {TrailingButton && (
-        <div className='absolute bottom-0 right-3 top-0 my-auto flex items-center'>{TrailingButton}</div>
+        <div
+          className={cn('absolute bottom-0 top-0 my-auto flex items-center', TrailingButton ? 'right-16' : 'right-3')}
+        >
+          {TrailingButton}
+        </div>
       )}
     </div>
   )

@@ -18,6 +18,7 @@ import {
   useBatchMintThenaId,
   useGiftThenaId,
   useMintThenaId,
+  useRandomThenaId,
   useUSDTCostPerToken,
 } from '@/hooks/useThenaIdContract'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
@@ -40,6 +41,8 @@ export default function ThenaIdModal({ tab, targetAddress, onClose, defaultThena
   const [address, setAddress] = useState(targetAddress)
   const assets = useAssets()
   const { costPerToken, loading } = useUSDTCostPerToken()
+
+  const { randomThenaId, availableCount } = useRandomThenaId()
 
   // Only allowed USDT
   const USDTAsset = useMemo(
@@ -146,6 +149,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose, defaultThena
                     onChange={value => onChangeThenaItem(thenaItem.id, value)}
                     costPerToken={costPerToken}
                     defaultThenaId={thenaItem.username || ''}
+                    randomThenaId={availableCount ? randomThenaId : undefined}
                   />
                 ))}
               </div>

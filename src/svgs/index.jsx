@@ -38,6 +38,7 @@ import PlusIcon from '~/svgs/plus.svg'
 import PlusCircleIcon from '~/svgs/plus-circle.svg'
 import PowerIcon from '~/svgs/power.svg'
 import PublicIcon from '~/svgs/public.svg'
+import RandomDice from '~/svgs/random-dice.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
 import SearchIcon from '~/svgs/search.svg'
 import SettingsIcon from '~/svgs/settings.svg'
@@ -96,6 +97,7 @@ export {
   PlusIcon,
   PowerIcon,
   PublicIcon,
+  RandomDice,
   RefreshIcon,
   SearchIcon,
   SettingsIcon,

@@ -40,6 +40,58 @@ const V4_THENA_ID_AVAILABLES = gql`
   }
 `
 
+const V4_THENA_ID_COUNT_AVAILABLES = gql`
+  query V4_THENA_ID_AVAILABLES {
+    thenaIdAvailableTotalCount
+  }
+`
+
+const V4_AVAILABLE_THENA_ID_BY_OFFSET = gql`
+  query ThenaIdByOffset($offset: Int) {
+    thenaIdAvailables(offset: $offset, limit: 1) {
+      name
+    }
+  }
+`
+
+const getCountThenaIdAvailables = async () => {
+  try {
+    const { thenaIdAvailableTotalCount } = await v4Client.request(V4_THENA_ID_COUNT_AVAILABLES)
+    return thenaIdAvailableTotalCount
+  } catch (error) {
+    return 0
+  }
+}
+
+const getThenaIdByOffset = async offset => {
+  try {
+    const { thenaIdAvailables } = await v4Client.request(V4_AVAILABLE_THENA_ID_BY_OFFSET, { offset })
+    return thenaIdAvailables?.[0]?.name ?? null
+  } catch (error) {
+    return null
+  }
+}
+
+export const useRandomThenaId = () => {
+  const [total, setTotal] = useState()
+
+  const countAvailable = useCallback(async () => {
+    const thenaIdAvailableTotalCount = await getCountThenaIdAvailables()
+    setTotal(thenaIdAvailableTotalCount)
+  }, [])
+  const randomThenaId = useCallback(async () => {
+    const randomIndex = Math.floor(Math.random() * total)
+    return await getThenaIdByOffset(randomIndex)
+  }, [total])
+
+  useEffect(() => {
+    countAvailable()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return { randomThenaId, availableCount: total }
+}
+
 const getThenaIdAvailables = async name => {
   try {
     const { thenaIdAvailables } = await v4Client.request(V4_THENA_ID_AVAILABLES, { name })

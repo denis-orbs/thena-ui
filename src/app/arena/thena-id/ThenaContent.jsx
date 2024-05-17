@@ -23,6 +23,7 @@ import {
   useBatchMintThenaId,
   useGiftThenaId,
   useMintThenaId,
+  useRandomThenaId,
   useUSDTCostPerToken,
 } from '@/hooks/useThenaIdContract'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
@@ -54,6 +55,7 @@ function ThenaContent() {
   )
   const assets = useAssets()
   const { costPerToken, loading } = useUSDTCostPerToken()
+  const { availableCount, randomThenaId } = useRandomThenaId()
 
   // Only allowed USDT
   const USDTAsset = useMemo(
@@ -67,8 +69,6 @@ function ThenaContent() {
     () => thenaIds.reduce((sum, curr) => (curr.cost ? sum.plus(curr.cost) : sum), new BigNumber(0)),
     [thenaIds],
   )
-
-  console.log('object', thenaIds)
 
   const { loading: gifting, giftThenaId } = useGiftThenaId()
   const { loading: minting, buyThenaId } = useMintThenaId()
@@ -171,6 +171,7 @@ function ThenaContent() {
                 key={thenaItem.id}
                 onChange={value => onChangeThenaItem(thenaItem.id, value)}
                 costPerToken={costPerToken}
+                randomThenaId={availableCount ? randomThenaId : undefined}
               />
             ))}
           </div>

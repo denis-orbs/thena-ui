@@ -1,20 +1,23 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
+import { TextIconButton } from '@/components/buttons/IconButton'
 import Input from '@/components/input'
+import Spinner from '@/components/spinner'
 import { Paragraph } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useValidateUserName } from '@/hooks/useThenaIdContract'
-import { CheckCircleIcon } from '@/svgs'
+import { CheckCircleIcon, RandomDice } from '@/svgs'
 
-function ThenaIdInput({ onChange, costPerToken, defaultThenaId = '' }) {
+function ThenaIdInput({ onChange, costPerToken, defaultThenaId = '', randomThenaId }) {
   const [thenaId, setThenaId] = useState(defaultThenaId || '')
   const debounceThenaId = useDebounce(thenaId, 500)
   const t = useTranslations()
   const { validate } = useValidateUserName()
   const [error, setError] = useState('')
   const [cost, setCost] = useState()
+  const [loadingRandom, setLoadingRandom] = useState(false)
 
   useEffect(() => {
     let errorMessage = ''
@@ -60,6 +63,15 @@ function ThenaIdInput({ onChange, costPerToken, defaultThenaId = '' }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cost, debounceThenaId, error])
 
+  const randomId = useCallback(async () => {
+    setLoadingRandom(true)
+    const randomName = await randomThenaId()
+    setLoadingRandom(false)
+    if (randomName) {
+      setThenaId(randomName)
+    }
+  }, [randomThenaId])
+
   return (
     <div className='pt-2'>
       <Input
@@ -70,6 +82,9 @@ function ThenaIdInput({ onChange, costPerToken, defaultThenaId = '' }) {
         value={thenaId || ''}
         placeholder='Type Your Id'
         TrailingIcon={!error && debounceThenaId.length ? <CheckCircleIcon /> : null}
+        TrailingButton={
+          randomThenaId ? <TextIconButton Icon={loadingRandom ? Spinner : RandomDice} onClick={randomId} /> : null
+        }
         classNames={{
           input: error ? 'border-error-500' : undefined,
         }}
