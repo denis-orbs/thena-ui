@@ -40,7 +40,7 @@ const V4_AVAILABLE = gql`
 
 const fetchAvailable = async (sort, offset = 0, whereQuery = {}, whereTotal = {}) => {
   try {
-    const orderBy = ['id_DESC']
+    const orderBy = ['id_ASC']
 
     switch (sort.value) {
       case 'name':

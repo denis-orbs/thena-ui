@@ -1,50 +1,39 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import InfiniteScroll from 'react-infinite-scroll-component'
-import useSWR, { mutate } from 'swr'
+import React, { useEffect, useState } from 'react'
 
-import Box from '@/components/box'
-import ImageThenaId from '@/components/image/ImageThenaId'
+import { EmphasisButton } from '@/components/buttons/Button'
+import SearchInput from '@/components/input/SearchInput'
 import Skeleton from '@/components/skeleton'
-import { TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
+
+import ThenaIdItem from './ThenaIdItem'
 
 const V4_USERNAME_NFTS = gql`
   query V4_USERNAME_NFTS($offset: Int = 0, $where: UsernameNftWhereInput = {}) {
     usernameNfts(orderBy: id_DESC, offset: $offset, limit: 24, where: $where) {
       id
-      index
       name
       timestamp
       cost
       owner {
         id
-        firstInteractAt
-        biography
-        timezone
-        websiteUrl
-        xProfileUrl
         username
-        theme
         nameColor
         avatar
-        balance
-        isSuperAdmin
         checkMarkIcon
-        verifiedAt
-        isAdmin
         isVerified
       }
     }
   }
 `
 
-const fetchUsernameNfts = async (offset = 0, debounceSearch = '') => {
+const fetchUsernameNfts = async (page = 1, debounceSearch = '', signal = undefined) => {
   try {
     let where = {}
     if (debounceSearch) {
@@ -52,10 +41,16 @@ const fetchUsernameNfts = async (offset = 0, debounceSearch = '') => {
         name_containsInsensitive: debounceSearch,
       }
     }
-    const { usernameNfts } = await v4Client.request(V4_USERNAME_NFTS, {
-      offset,
-      where,
+
+    const { usernameNfts } = await v4Client.request({
+      document: V4_USERNAME_NFTS,
+      variables: {
+        offset: (page - 1) * 24,
+        where,
+      },
+      signal,
     })
+
     return usernameNfts
   } catch (error) {
     console.log(error)
@@ -63,115 +58,182 @@ const fetchUsernameNfts = async (offset = 0, debounceSearch = '') => {
   }
 }
 
-// const V4_AVAILABLE = gql`
-//   query V4_AVAILABLE($offset: Int = 0, $where: ThenaIdAvailableWhereInput = {}) {
-//     thenaIdAvailables(offset: $offset, orderBy: name_DESC, limit: 24, where: $where) {
-//       id
-//       cost
-//       name
-//       trait
-//     }
-//   }
-// `
+const V4_AVAILABLE = gql`
+  query V4_AVAILABLE($offset: Int = 0, $where: ThenaIdAvailableWhereInput = {}) {
+    thenaIdAvailables(offset: $offset, orderBy: id_ASC, limit: 24, where: $where) {
+      id
+      cost
+      name
+      trait
+    }
+  }
+`
 
-// const fetchAvailableData = async (offset = 0, debounceSearch = '') => {
-//   try {
-//     let where = {}
-//     if (debounceSearch) {
-//       where = {
-//         name_containsInsensitive: debounceSearch,
-//       }
-//     }
-//     const { thenaIdAvailables } = await v4Client.request(V4_AVAILABLE, {
-//       offset,
-//       where,
-//     })
+const fetchAvailableThenaIds = async (page = 1, debounceSearch = '', signal = undefined) => {
+  try {
+    let where = {}
+    if (debounceSearch) {
+      where = {
+        name_containsInsensitive: debounceSearch,
+      }
+    }
+    const { thenaIdAvailables } = await v4Client.request({
+      document: V4_AVAILABLE,
+      variables: {
+        offset: (page - 1) * 24,
+        where,
+      },
+      signal,
+    })
 
-//     return thenaIdAvailables
-//   } catch (error) {
-//     console.log(error)
-//     return { error: true }
-//   }
-// }
+    return thenaIdAvailables
+  } catch (error) {
+    console.log(error)
+    return { error: true }
+  }
+}
+
+// function
 
 function BrowsePage() {
   const t = useTranslations()
-  const [searchText] = useState('')
-  // const [toggle, setToggle] = useState(false)
+  const [searchText, setSearchText] = useState('')
   // const [from, setFrom] = useState('')
   // const [to, setTo] = useState('')
-  const [dataFetch, setDataFetch] = useState([])
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
-  // const [fetchAvailable, setFetchAvailable] = useState(false)
+  const [usernameNfts, setUsernameNfts] = useState(new Map())
+  const [usernameNftsPage, setUsernameNftsPage] = useState(1)
+  const [hasMoreUsernameNfts, setHasMoreUsernameNfts] = useState(true)
+  const [lastElement, setLastElement] = useState(null)
+  const [isFetchAvailable, setIsFetchAvailable] = useState(false)
+  const [availableThenaIds, setAvailableThenaIds] = useState(new Map())
+  const [availableThenaIdsPage, setAvailableThenaIdsPage] = useState(1)
+  const [hasMoreAvailableThenaIds, setHasMoreAvailableThenaIds] = useState(true)
 
   const debounceSearch = useDebounce(searchText.trim(), 300)
 
-  const offset = useMemo(() => (page - 1) * 24, [page])
+  const { data: usernameNftsRes, isLoading: isLoadingUsernameNfts } = useQuery({
+    queryKey: ['browse username nfts', usernameNftsPage, debounceSearch],
+    queryFn: async ({ signal }) => await fetchUsernameNfts(usernameNftsPage, debounceSearch, signal),
+  })
 
-  const { isLoading } = useSWR(
-    ['usernamenfts api', debounceSearch, offset],
-    () => fetchUsernameNfts(offset, debounceSearch),
-    {
-      refreshInterval: 30000,
-      revalidateOnFocus: false,
-      revalidateOnMount: false,
-    },
-  )
-
-  // const { isLoading: isLoadingAvailable } = useSWR(
-  //   ['available api', offset, debounceSearch],
-  //   () => fetchAvailableData(offset, debounceSearch),
-  //   {
-  //     refreshInterval: 30000,
-  //     revalidateOnFocus: false,
-  //     revalidateOnMount: false,
-  //   },
-  // )
-
-  // const { isLoading } = useSWR(
-  //   ['usernamenfts api', debounceSearch, offset],
-  //   () => fetchUsernameNfts(offset, debounceSearch),
-  //   {
-  //     refreshInterval: 30000,
-  //     revalidateOnFocus: false,
-  //     revalidateOnMount: false,
-  //   },
-  // )
+  const { data: availableThenaIdsRes, isLoading: isLoadingAvailableThenaIdsRes } = useQuery({
+    queryKey: ['browse available thena ids', availableThenaIdsPage, debounceSearch],
+    queryFn: async ({ signal }) => await fetchAvailableThenaIds(availableThenaIdsPage, debounceSearch, signal),
+    enabled: isFetchAvailable,
+  })
 
   useEffect(() => {
-    setDataFetch([])
-    setHasMore(true)
-    setPage(1)
+    if (usernameNftsRes) {
+      if (Array.isArray(usernameNftsRes)) {
+        if (usernameNftsRes.length !== 24) {
+          setIsFetchAvailable(true)
+          setHasMoreUsernameNfts(false)
+        }
+        setUsernameNfts(old => {
+          let temp
+          if (usernameNftsPage === 1) {
+            temp = new Map()
+          } else {
+            temp = new Map(old)
+          }
+          usernameNftsRes.forEach(ele => {
+            temp.set(ele.id, ele)
+          })
+          return temp
+        })
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usernameNftsRes])
+
+  useEffect(() => {
+    if (availableThenaIdsRes) {
+      if (Array.isArray(availableThenaIdsRes)) {
+        if (availableThenaIdsRes.length !== 24) {
+          setHasMoreAvailableThenaIds(false)
+        }
+        setAvailableThenaIds(old => {
+          let temp
+          if (availableThenaIdsPage === 1) {
+            temp = new Map()
+          } else {
+            temp = new Map(old)
+          }
+          availableThenaIdsRes.forEach(ele => {
+            temp.set(ele.name, ele)
+          })
+          return temp
+        })
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableThenaIdsRes])
+
+  useEffect(() => {
+    if (isLoadingUsernameNfts && usernameNftsPage === 1) {
+      setUsernameNfts(new Map())
+    }
+  }, [isLoadingUsernameNfts, usernameNftsPage])
+
+  useEffect(() => {
+    if (!isFetchAvailable || (isLoadingAvailableThenaIdsRes && availableThenaIdsPage === 1)) {
+      setAvailableThenaIds(new Map())
+    }
+  }, [isLoadingAvailableThenaIdsRes, availableThenaIdsPage, isFetchAvailable])
+
+  useEffect(() => {
+    setIsFetchAvailable(false)
+    setHasMoreUsernameNfts(true)
+    setHasMoreAvailableThenaIds(true)
+    setUsernameNftsPage(1)
+    setAvailableThenaIdsPage(1)
   }, [debounceSearch])
 
-  const getMore = useCallback(async () => {
-    // if (!fetchAvailable) {
-    //   dataMore = await mutate(['usernamenfts api', debounceSearch, offset])
-    // } else {
-    //   dataMore = await mutate(['available api', offset, debounceSearch])
-    // }
-    const dataMore = await mutate(['usernamenfts api', debounceSearch, offset])
-    setDataFetch([...dataFetch, ...dataMore])
-    if (dataMore.length > 0) {
-      setHasMore(true)
-    } else {
-      setHasMore(false)
-      // setFetchAvailable(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [offset])
-
   useEffect(() => {
-    getMore()
-  }, [getMore])
+    if (typeof window !== 'undefined') {
+      const currentElement = lastElement
+
+      const observer = new IntersectionObserver(entries => {
+        const first = entries[0]
+        if (first.isIntersecting) {
+          if (isFetchAvailable) {
+            setAvailableThenaIdsPage(pre => pre + 1)
+          } else {
+            setUsernameNftsPage(pre => pre + 1)
+          }
+        }
+      })
+
+      if (observer) {
+        if (currentElement) {
+          observer.observe(currentElement)
+        }
+
+        return () => {
+          if (currentElement) {
+            observer.unobserve(currentElement)
+          }
+        }
+      }
+    }
+  }, [isFetchAvailable, lastElement])
 
   return (
     <div className='mt-6'>
       <div className='mb-6'>
         <h2>{t('Browse THENA IDs')}</h2>
       </div>
-      {/* <div className='mb-8 flex flex-col-reverse gap-6 sm:flex-row sm:items-center sm:justify-between'>
+      <div className='mb-6 flex items-center gap-6'>
+        <EmphasisButton>
+          <Link href='/arena/thena-id/recently-minted'>{t('Recent THENA ID Mints')}</Link>
+        </EmphasisButton>
+        <EmphasisButton>
+          <Link href='/arena/thena-id/available'>{t('Available THENA IDs')}</Link>
+        </EmphasisButton>
+      </div>
+      <div className='mb-8 flex flex-col-reverse gap-6 sm:flex-row sm:items-center sm:justify-between'>
         <div>
           <SearchInput
             className='h-11 w-full md:w-[336px]'
@@ -181,11 +243,7 @@ function BrowsePage() {
             autoFocus
           />
         </div>
-        <div className='flex items-center gap-1'>
-          <Toggle toggleId='availableThenaIds' checked={toggle} onChange={() => setToggle(!toggle)} />
-          <TextHeading>{t('Available THENA IDs')}</TextHeading>
-        </div>
-      </div> */}
+      </div>
       <div className='flex flex-col gap-6 md:flex-row'>
         {/* <div className='w-full sm:w-[320px]'>
           <div className='mb-6 w-full'>
@@ -200,31 +258,38 @@ function BrowsePage() {
           </div>
         </div> */}
         <div className='flex-1'>
-          <InfiniteScroll dataLength={dataFetch.length} next={() => setPage(page + 1)} hasMore={hasMore}>
-            <div className='grid grid-cols-1 items-center gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8'>
-              {dataFetch.map(item => (
-                <div key={item.name} className='w-full rounded-lg'>
-                  <div className='rounded-t-lg bg-neutral-300'>
-                    <ImageThenaId name={item.name} fontSize={110} />
-                  </div>
-                  <Link href={`/arena/thena-id/browse/${encodeURIComponent(item.name)}`}>
-                    <Box className='rounded-b-lg rounded-t-none px-3 lg:px-3'>
-                      <TextHeading className='text-sm'>{item.name}.thena</TextHeading>
-                    </Box>
-                  </Link>
+          <div className='grid grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8'>
+            {Array.from(usernameNfts.values()).map((item, index) =>
+              index === usernameNfts.size - 1 && hasMoreUsernameNfts ? (
+                <div className='last-index' key={item.id} ref={setLastElement}>
+                  <ThenaIdItem item={item} />
                 </div>
-              ))}
-            </div>
-          </InfiniteScroll>
-          {isLoading && (
-            <div className='grid grid-cols-2 items-center gap-6 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8'>
-              {new Array(12).fill(1).map((_, index) => (
+              ) : (
+                <ThenaIdItem item={item} key={item.id} />
+              ),
+            )}
+            {isLoadingUsernameNfts &&
+              new Array(12).fill(1).map((_, index) => (
                 <div key={index} className='w-full rounded-lg'>
-                  <Skeleton className='h-full w-full' />
+                  <Skeleton className='h-[350px]' />
                 </div>
               ))}
-            </div>
-          )}
+            {Array.from(availableThenaIds.values()).map((item, index) =>
+              index === availableThenaIds.size - 1 && hasMoreAvailableThenaIds ? (
+                <div className='last-index-available' key={item.id} ref={setLastElement}>
+                  <ThenaIdItem item={item} />
+                </div>
+              ) : (
+                <ThenaIdItem item={item} key={item.id} />
+              ),
+            )}
+            {isLoadingAvailableThenaIdsRes &&
+              new Array(12).fill(1).map((_, index) => (
+                <div key={index} className='w-full rounded-lg'>
+                  <Skeleton className='h-[350px]' />
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     </div>

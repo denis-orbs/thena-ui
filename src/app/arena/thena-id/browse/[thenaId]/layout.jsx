@@ -12,16 +12,38 @@ const V4_USERNAME_NFTS = gql`
     }
   }
 `
+const V4_AVAILABLE = gql`
+  query V4_AVAILABLE($username: String) {
+    thenaIdAvailables(where: { name_eq: $username }) {
+      id
+      name
+    }
+  }
+`
+
 export async function generateMetadata({ params }) {
   const { thenaId } = params
+
+  let thanaId = {}
 
   const { usernameNfts } = await v4Client.request(V4_USERNAME_NFTS, {
     username: decodeURIComponent(thenaId).toLowerCase(),
   })
 
+  if (usernameNfts && usernameNfts.length > 0) {
+    thanaId = usernameNfts?.[0]
+  } else {
+    const { thenaIdAvailables } = await v4Client.request(V4_AVAILABLE, {
+      username: decodeURIComponent(thenaId).toLowerCase(),
+    })
+    if (thenaIdAvailables && thenaIdAvailables.length) {
+      thanaId = thenaIdAvailables?.[0]
+    }
+  }
+
   const metadata = {
-    name: usernameNfts?.[0]?.name ?? 'thena',
-    description: `See all the details about ${usernameNfts?.[0]?.name ?? 'thena'}.thena on THENA Arena, 
+    name: thanaId?.name ?? 'thena',
+    description: `See all the details about ${thanaId?.name ?? 'thena'}.thena on THENA Arena, 
 whether it is available or not and more.`,
     image: [`${siteConfig.url}/cover.png`],
   }

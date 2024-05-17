@@ -15,7 +15,13 @@ import Spinner from '../spinner'
 import Tag from '../tag'
 import { TextHeading } from '../typography'
 
-export function UserProfileCard({ user, showVerified = false, disableLink = false, enableFollow = true }) {
+export function UserProfileCard({
+  user,
+  showVerified = false,
+  disableLink = false,
+  enableFollow = true,
+  flexWrap = false,
+}) {
   const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt } = user
   const t = useTranslations()
   const { userInfo } = useUserInfo()
@@ -50,7 +56,7 @@ export function UserProfileCard({ user, showVerified = false, disableLink = fals
   }, [followUser])
 
   return (
-    <div className='flex items-center gap-1'>
+    <div className={`flex items-center gap-1 ${flexWrap ? 'flex-wrap' : ''}`}>
       <LinkComponent>
         <CircleImage src={avatar ?? Avatar} alt='avatar' className='size-8' />
         <div className='mr-1 flex flex-col gap-1'>
