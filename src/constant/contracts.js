@@ -73,8 +73,9 @@ const Contracts = {
   },
   tcManager: {
     [ChainId.BSC]: '0xdf1792b7dd6e816bc720af0812ae5f19870397ca',
-    // [ChainId.BSC]: '0xa3122E54E8CB38aa0707c35f0D4034560987cC55',
-    // [ChainId.BSC]: '0x451c2e9ace9a44a883ea290d2b69d221496cb298',
+  },
+  tcPerpetualManager: {
+    [ChainId.BSC]: '0x5b86dDF88d9F75ba794a410532ae4ae9a0985500',
   },
   fusionRouter: FUSION_ROUTER_ADDRESSES,
   fusionQuoter: FUSION_QUOTER_ADDRESSES,
