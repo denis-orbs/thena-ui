@@ -34,11 +34,11 @@ function ThenaIdItem({ item }) {
         </div>
 
         <Box className='rounded-b-lg rounded-t-none p-3 lg:p-3'>
-          <TextHeading className='mb-4 block text-sm'>{item.name}.thena</TextHeading>
+          <TextHeading className='mb-4 block truncate text-sm'>{item.name}.thena</TextHeading>
           {item.owner ? (
-            <div className='flex w-full flex-row flex-wrap items-center'>
+            <div className='flex flex-row flex-wrap items-center overflow-hidden'>
               <TextSubHeading className='mr-1 block text-base'>{t('Owned By')}</TextSubHeading>
-              <UserProfileCard user={item.owner} enableFollow={false} showVerified={item.owner.isVerified} flexWrap />
+              <UserProfileCard user={item.owner} enableFollow={false} showVerified={item.owner.isVerified} />
             </div>
           ) : (
             <div className='flex items-center justify-start space-x-2'>

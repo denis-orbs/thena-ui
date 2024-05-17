@@ -258,7 +258,7 @@ function BrowsePage() {
           </div>
         </div> */}
         <div className='flex-1'>
-          <div className='grid grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8'>
+          <div className='grid grid-cols-2 items-start gap-4 md:gap-6 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8'>
             {Array.from(usernameNfts.values()).map((item, index) =>
               index === usernameNfts.size - 1 && hasMoreUsernameNfts ? (
                 <div className='last-index' key={item.id} ref={setLastElement}>
