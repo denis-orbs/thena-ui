@@ -9,7 +9,7 @@ import useWallet from '@/lib/wallets/useWallet'
 const V4_USER_RANK = gql`
   query V4_USER_RANK($user: UserWhereInput = {}) {
     userLeaderboards(where: { user: $user }, limit: 1) {
-      rankVolume
+      rankTCVolume
       rankBalance
     }
   }
@@ -155,7 +155,7 @@ const fetchUserInfo = async idOrUserName => {
 
       return {
         ...user,
-        rank: userLeaderboards?.[0]?.rankVolume ?? '-',
+        rank: userLeaderboards?.[0]?.rankTCVolume ?? '-',
         rankBalance: userLeaderboards?.[0]?.rankBalance ?? '-',
       }
     }

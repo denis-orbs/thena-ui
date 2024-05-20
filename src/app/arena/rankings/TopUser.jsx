@@ -28,12 +28,12 @@ const V4_TOP_USER = gql`
     userLeaderboards(limit: $limit, orderBy: $orderBy, where: { user: $user }, offset: $offset) {
       totalPnLUSD
       totalWinAmountUSD
-      tradeVolume
+      tradeTCVolume
       followingCount
       followerCount
       entryFeesPaid
       rankBalance
-      rankVolume
+      rankTCVolume
       user {
         username
         id
@@ -60,8 +60,8 @@ const fetchUsers = async (sort, userFilter, offset = 0, limit = 50) => {
     const orderBy = ['user_id_DESC']
     const isDesc = sort?.isDesc
     switch (sort?.value) {
-      case 'tradeVolume':
-        orderBy.unshift(isDesc ? 'tradeVolume_DESC' : 'tradeVolume_ASC')
+      case 'tradeTCVolume':
+        orderBy.unshift(isDesc ? 'tradeTCVolume_DESC' : 'tradeTCVolume_ASC')
         break
 
       case 'balance':
@@ -140,7 +140,7 @@ function TopUser() {
       },
       {
         label: 'Total Trading Volume',
-        value: 'tradeVolume',
+        value: 'tradeTCVolume',
         width: 'w-[20%]',
         isDesc: true,
         disabled: false,
@@ -260,51 +260,11 @@ function TopUser() {
     }
   }, [isLoading, topUsers])
 
-  // const isDescParams = useMemo(() => {
-  //   let isDesc = true
-  //   if (searchParams.get('isDesc')) {
-  //     isDesc = searchParams.get('isDesc') === 'true'
-  //   }
-  //   return isDesc
-  // }, [searchParams])
-
-  // useEffect(() => {
-  //   const sortParams = searchParams.get('sort')
-
-  //   if (sortParams) {
-  //     switch (sortParams) {
-  //       case 'tradeVolume':
-  //         setSort({ label: 'Total Trading Volume', value: 'tradeVolume', isDesc: isDescParams })
-  //         break
-  //       case 'balance':
-  //         setSort({ label: 'Total THE balance', value: 'balance', isDesc: isDescParams })
-  //         break
-  //       case 'totalPnLUSD':
-  //         setSort({ label: 'Profit & Loss', value: 'totalPnLUSD', isDesc: isDescParams })
-  //         break
-  //       case 'totalWinAmountUSD':
-  //         setSort({ label: 'Win Amount', value: 'totalWinAmountUSD', isDesc: isDescParams })
-  //         break
-  //       case 'followingCount':
-  //         setSort({ label: 'Followings', value: 'followingCount', isDesc: isDescParams })
-  //         break
-  //       case 'followerCount':
-  //         setSort({ label: 'Followers', value: 'followerCount', isDesc: isDescParams })
-  //         break
-  //       case 'entryFeesPaid':
-  //         setSort({ label: 'Entry Fees Paid', value: 'entryFeesPaid', isDesc: isDescParams })
-  //         break
-  //       default:
-  //         break
-  //     }
-  //   }
-  // }, [isDescParams, searchParams])
-
   const topUsersFormatted = useMemo(() => {
     const arr = dataFetch.map((item, index) => ({
       username: item.user.username,
       userId: item.user.id,
-      tradeVolume: item.tradeVolume,
+      tradeTCVolume: item.tradeTCVolume,
       totalWinAmountUSD: item.totalWinAmountUSD,
       totalPnLUSD: item.totalPnLUSD,
       followingCount: item.followingCount,
@@ -319,7 +279,7 @@ function TopUser() {
       balance: item.user.balance,
       rank: (currentPage - 1) * pageSize + index + 1,
       rankBalance: item.rankBalance,
-      rankVolume: item.rankVolume,
+      rankTCVolume: item.rankTCVolume,
     }))
     return arr
   }, [currentPage, dataFetch, pageSize])
@@ -329,8 +289,8 @@ function TopUser() {
       if (rank) {
         if (topUsersFormatted) {
           const index = topUsersFormatted.findIndex(item =>
-            sort?.value === 'tradeVolume'
-              ? item.rankVolume === Number(rank)
+            sort?.value === 'tradeTCVolume'
+              ? item.rankTCVolume === Number(rank)
               : sort?.value === 'balance'
                 ? item.rankBalance === Number(rank)
                 : item.rank === Number(rank),
@@ -349,11 +309,15 @@ function TopUser() {
       topUsersFormatted?.map(item => ({
         rank: (
           <Paragraph>
-            {sort?.value === 'tradeVolume' ? item.rankVolume : sort?.value === 'balance' ? item.rankBalance : item.rank}
+            {sort?.value === 'tradeTCVolume'
+              ? item.rankTCVolume
+              : sort?.value === 'balance'
+                ? item.rankBalance
+                : item.rank}
           </Paragraph>
         ),
         user: <UserProfileCard user={{ ...item, id: item.userId }} showVerified={item?.isVerified} />,
-        tradeVolume: <Paragraph>${formatAmount(item.tradeVolume)}</Paragraph>,
+        tradeTCVolume: <Paragraph>${formatAmount(item.tradeTCVolume)}</Paragraph>,
         balance: <Paragraph>{formatAmount(fromWei(item.balance))} THE</Paragraph>,
         followingCount: <Paragraph>{formatAmount(item.followingCount)}</Paragraph>,
         followerCount: <Paragraph>{formatAmount(item.followerCount)}</Paragraph>,
