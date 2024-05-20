@@ -149,7 +149,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
             classNames={{ input: 'h-11' }}
             val={searchText}
             setVal={setSearchText}
-            placeholder='Search by name or  wallet ID'
+            placeholder='Search by name or wallet ID'
           />
         </div>
         {!isMdDown ? (

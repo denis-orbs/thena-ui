@@ -1,11 +1,13 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import { EmphasisButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Skeleton from '@/components/skeleton'
 import { TextHeading } from '@/components/typography'
@@ -56,12 +58,13 @@ const fetchUserInfo = async idOrUserName => {
   }
 }
 
-export function FollowedProfiles({ followingUsers, isFollower = false }) {
+export function FollowedProfiles({ followingUsers, isFollower = false, maxShow, showViewFollowing = false }) {
   const t = useTranslations()
   const [searchText, setSearchText] = useState('')
   const { account } = useWallet()
   const { address } = useParams()
   const pathname = usePathname()
+  const params = useParams()
   const profilePage = !pathname.includes('follow')
 
   const { data: userInfo } = useSWR(
@@ -89,17 +92,26 @@ export function FollowedProfiles({ followingUsers, isFollower = false }) {
   return (
     <div className='space-y-4'>
       <div className='flex flex-col items-start justify-between lg:flex-row lg:items-center'>
-        <TextHeading className='flex-2 text-xl'>
-          {t(isFollower ? 'Followers of' : profilePage ? 'Followed Profiles' : 'Following of', {
-            user: userInfo?.username || sliceAddress(userInfo?.id),
-          })}{' '}
-          ({followingUsers?.length})
-        </TextHeading>
+        <div className='flex flex-2 items-center gap-2'>
+          <TextHeading className='text-xl'>
+            {t(isFollower ? 'Followers of' : profilePage ? 'Followed Profiles' : 'Following of', {
+              user: userInfo?.username || sliceAddress(userInfo?.id),
+            })}{' '}
+            ({followingUsers?.length})
+          </TextHeading>
+          {showViewFollowing && filterFollowingUsers.length > 15 && (
+            <Link href={`/arena/profile${params?.address ? `/${params?.address}` : ''}/following`}>
+              <EmphasisButton>{t('View All')}</EmphasisButton>
+            </Link>
+          )}
+        </div>
         <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
       </div>
       <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
         {filterFollowingUsers
-          ? filterFollowingUsers.map((item, index) => <FollowedProfileItem key={index} user={item} />)
+          ? filterFollowingUsers
+              .slice(0, maxShow ?? filterFollowingUsers.length)
+              .map((item, index) => <FollowedProfileItem key={index} user={item} />)
           : new Array(8).fill(0).map((_, index) => <Skeleton key={index} className='h-16 w-full' />)}
       </div>
     </div>

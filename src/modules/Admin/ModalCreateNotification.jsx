@@ -7,6 +7,7 @@ import CheckBox from '@/components/checkbox'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Modal, { ModalBody } from '@/components/modal'
+import Spinner from '@/components/spinner'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useCreateNotification } from '@/hooks/useAdminCreateNotification'
 import { successToast } from '@/lib/notify'
@@ -18,7 +19,6 @@ import { ModalSelectUser } from './ModalSelectUser'
 
 export function ModalCreateNotification({ onClose, isOpen }) {
   const t = useTranslations()
-  // eslint-disable-next-line unused-imports/no-unused-vars
   const [loading, setLoading] = useState(false)
   const [isOpenSelectUser, setIsOpenSelectUser] = useState(false)
   const [isOpenAnalytic, setIsOpenAnalytic] = useState(false)
@@ -150,8 +150,8 @@ export function ModalCreateNotification({ onClose, isOpen }) {
             {t('Cancel')}
           </EmphasisButton>
           <div className='flex w-full flex-2 items-center justify-center gap-2'>
-            {/* TODO: add loading disable */}
-            <PrimaryButton onClick={handleSave} disabled className='w-full flex-2'>
+            <PrimaryButton onClick={handleSave} disabled={loading} className='w-full flex-2'>
+              {loading && <Spinner />}
               {t('Send')}
             </PrimaryButton>
             <EmphasisIconButton

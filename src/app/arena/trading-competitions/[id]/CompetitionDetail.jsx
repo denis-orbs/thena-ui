@@ -207,7 +207,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
         </div>
         <div className='mt-4 grid  grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-4'>
           {_competition.competitionRules?.tradingTokens
-            ?.slice(0, viewAllTradable ? _competition.competitionRules?.tradingTokens?.length : 7)
+            ?.slice(0, viewAllTradable ? _competition.competitionRules?.tradingTokens?.length : 8)
             .map(item => (
               <Box
                 className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'

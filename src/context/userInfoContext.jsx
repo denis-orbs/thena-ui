@@ -192,11 +192,6 @@ function UserInfoContextProvider({ children }) {
         isLoading,
       }
     }
-    // set localStorage timezone
-
-    if (userInfo.timezone) {
-      localStorage.setItem('timezone', userInfo.timezone)
-    }
 
     return {
       mutateUserInfo,
@@ -222,6 +217,13 @@ function UserInfoContextProvider({ children }) {
 
     if (userInfo?.theme && current) {
       current.style.backgroundImage = `url(${userInfo.theme})`
+    }
+
+    // set localStorage timezone
+    if (userInfo?.timezone) {
+      localStorage.setItem('timezone', userInfo.timezone)
+    } else {
+      localStorage.removeItem('timezone')
     }
   }, [userInfo?.theme, userInfo])
 

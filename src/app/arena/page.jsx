@@ -44,6 +44,7 @@ const V4_COMPETITION_DATAS = gql`
         token
         weights
       }
+      totalPrizeUSD
       timestamp {
         endTimestamp
         startTimestamp
@@ -160,7 +161,7 @@ export default function ArenaPage() {
         break
 
       case FILTERS.totalPrize:
-        result = sortBy(result, o => -parseInt(o.prize.totalPrize, 10))
+        result = sortBy(result, o => -Number(o.totalPrizeUSD))
         break
 
       case FILTERS.participantCount:
@@ -190,7 +191,7 @@ export default function ArenaPage() {
       res.sort((a, b) => a.timestamp.startTimestamp - b.timestamp.startTimestamp)
       const tcUpcomingTop = res
         .filter(tc => tc.owner.isAdmin || tc.owner.isSuperAdmin || tc.owner.isVerified)
-        .sort((a, b) => Number(a.prize.totalPrize) - Number(b.prize.totalPrize))
+        .sort((a, b) => Number(a.totalPrizeUSD) - Number(b.totalPrizeUSD))
       res = res.filter(tc => !tcUpcomingTop.map(item => item.id).includes(tc.id))
       res = [...tcUpcomingTop, ...res]
       return res
@@ -201,7 +202,7 @@ export default function ArenaPage() {
       res.sort((a, b) => a.timestamp.endTimestamp - b.timestamp.endTimestamp)
       const tcLiveTop = res
         .filter(tc => tc.owner.isAdmin || tc.owner.isSuperAdmin || tc.owner.isVerified)
-        .sort((a, b) => Number(a.prize.totalPrize) - Number(b.prize.totalPrize))
+        .sort((a, b) => Number(a.totalPrizeUSD) - Number(b.totalPrizeUSD))
       res = res.filter(tc => !tcLiveTop.map(item => item.id).includes(tc.id))
       res = [...tcLiveTop, ...res]
       return res

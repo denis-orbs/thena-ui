@@ -110,7 +110,7 @@ export function useNotificationsSubscription(callback) {
 export function useMarkNotificationRead() {
   const { signWallet } = useSignWallet()
   const markReadFn = useCallback(async ({ id, type }) => {
-    if (type === 'general') {
+    if (type === 'general' && id) {
       await v4Client.request(
         CLICK_NOTIFICATION,
         { id },

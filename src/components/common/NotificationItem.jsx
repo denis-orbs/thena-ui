@@ -4,15 +4,15 @@ import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import Announcement from 'public/images/announcement.jpg'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import 'moment/locale/zh-cn'
 
 import { cn, formatAddress, isHexColor } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
-import { Verified } from '@/svgs'
+import { AnnouncementIcon, Verified } from '@/svgs'
 
+import Highlight from '../highlight'
 import CircleImage from '../image/CircleImage'
 import { Paragraph, TextHeading } from '../typography'
 
@@ -47,7 +47,7 @@ function NotificationItem({ notification, markRead }) {
           return defaultContent
       }
       return (
-        <TextHeading className='gap-1 text-wrap break-words'>
+        <TextHeading className='flex gap-1 text-wrap break-words'>
           <span
             style={
               notification.userTrigger.nameColor
@@ -85,11 +85,15 @@ function NotificationItem({ notification, markRead }) {
     return defaultContent
   }, [notification.content, notification.type, notification.userTrigger, t])
 
-  const notificationIcon = useMemo(() => {
+  const NotificationIcon = useCallback(() => {
     if (notification.type === 'general') {
-      return Announcement
+      return (
+        <Highlight className='bg-gradient-to-t from-[#9A5EFF] to-primary-600'>
+          <AnnouncementIcon className='h-5 w-5' />
+        </Highlight>
+      )
     }
-    return notification.userTrigger?.avatar ?? Avatar
+    return <CircleImage src={notification.userTrigger?.avatar ?? Avatar} alt='avatar' className='size-9 h-9 w-9' />
   }, [notification.type, notification.userTrigger?.avatar])
 
   const redirectUrl = useMemo(() => {
@@ -113,8 +117,8 @@ function NotificationItem({ notification, markRead }) {
             "relative after:absolute after:right-5 after:top-1/2 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-['']",
         )}
       >
-        <div className='h-12 w-12'>
-          <CircleImage src={notificationIcon} alt='avatar' className='size-9 h-9 w-9' />
+        <div className='flex h-12 w-12 min-w-12 items-center justify-center'>
+          <NotificationIcon />
         </div>
         <div className='flex flex-col gap-1 p-2'>
           {contentElement}
