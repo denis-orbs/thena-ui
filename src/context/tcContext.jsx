@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 import { readCall } from '@/lib/contractActions'
-import { getTCContract } from '@/lib/contracts'
+import { getTCContract, getTCPerpetualManagerContract } from '@/lib/contracts'
 import useWallet from '@/lib/wallets/useWallet'
 
 import { useAssets } from './assetsContext'
@@ -11,6 +11,9 @@ const initialState = {
   protocolFee: 0,
   protocolFeeToken: '',
   tradingTokens: [],
+  isAllowedPerpetual: false,
+  protocolFeePerpetual: 0,
+  protocolFeeTokenPerpetual: '',
 }
 
 const TCContext = createContext(initialState)
@@ -23,23 +26,32 @@ function TCContextProvider({ children }) {
   const [protocolFeeToken, setProtocolFeeToken] = useState(false)
   const [tradingTokens, setTradingTokens] = useState([])
   const [isAllowed, setIsAllowed] = useState(false)
+  const [isAllowedPerpetual, setIsAllowedPerpetual] = useState(false)
+  const [protocolFeePerpetual, setProtocolFeePerpetual] = useState()
+  const [protocolFeeTokenPerpetual, setProtocolFeeTokenPerpetual] = useState(false)
 
   useEffect(() => {
     const fetchTotalInfo = async () => {
       const tcManagerContract = getTCContract()
-      const [res0, res1, res2, res3, res4] = await Promise.all([
+      const tcPerpetualManagerContract = getTCPerpetualManagerContract()
+      const [res0, res1, res2, res3, res4, res5, res6] = await Promise.all([
         readCall(tcManagerContract, 'isPermissionless', []),
         readCall(tcManagerContract, 'protocol_fee', []),
         readCall(tcManagerContract, 'protocol_fee_token', []),
         readCall(tcManagerContract, 'tradingTokens', []),
         readCall(tcManagerContract, 'isAllowedCreator', [account]),
+        readCall(tcPerpetualManagerContract, 'protocol_fee', []),
+        readCall(tcPerpetualManagerContract, 'protocol_fee_token', []),
       ])
       const tradeAssets = assets.filter(ele => res3.map(sub => sub.toLowerCase()).includes(ele.address))
       const feeToken = assets.find(ele => ele.address.toLowerCase() === res2.toLowerCase())
+      const feeTokenPerpetual = assets.find(ele => ele.address.toLowerCase() === res6.toLowerCase())
       setProtocolFee(res1)
       setProtocolFeeToken(feeToken)
       setTradingTokens(tradeAssets)
       setIsAllowed(res0 || res4)
+      setProtocolFeePerpetual(res5)
+      setProtocolFeeTokenPerpetual(feeTokenPerpetual)
     }
 
     const checkIsAllowed = async () => {
@@ -51,20 +63,38 @@ function TCContextProvider({ children }) {
       setIsAllowed(res0 || res4)
     }
 
+    const checkIsAllowedPerpetual = async () => {
+      const tcPerpetualManagerContract = getTCPerpetualManagerContract()
+      const [res0, res4] = await Promise.all([
+        readCall(tcPerpetualManagerContract, 'isPermissionless', []),
+        readCall(tcPerpetualManagerContract, 'isAllowedCreator', [account]),
+      ])
+
+      setIsAllowedPerpetual(res0 || res4)
+    }
+
     const checkForGuest = async () => {
       const tcManagerContract = getTCContract()
-      const [res0, res1, res2, res3] = await Promise.all([
+      const tcPerpetualManagerContract = getTCPerpetualManagerContract()
+      const [res0, res1, res2, res3, res4, res5, res6] = await Promise.all([
         readCall(tcManagerContract, 'isPermissionless', []),
         readCall(tcManagerContract, 'protocol_fee', []),
         readCall(tcManagerContract, 'protocol_fee_token', []),
         readCall(tcManagerContract, 'tradingTokens', []),
+        readCall(tcPerpetualManagerContract, 'isPermissionless', []),
+        readCall(tcPerpetualManagerContract, 'protocol_fee', []),
+        readCall(tcPerpetualManagerContract, 'protocol_fee_token', []),
       ])
       const tradeAssets = assets.filter(ele => res3.map(sub => sub.toLowerCase()).includes(ele.address))
       const feeToken = assets.find(ele => ele.address.toLowerCase() === res2.toLowerCase())
+      const feeTokenPerpetual = assets.find(ele => ele.address.toLowerCase() === res6.toLowerCase())
       setProtocolFee(res1)
       setProtocolFeeToken(feeToken)
       setTradingTokens(tradeAssets)
       setIsAllowed(res0)
+      setIsAllowedPerpetual(res4)
+      setProtocolFeePerpetual(res5)
+      setProtocolFeeTokenPerpetual(feeTokenPerpetual)
     }
 
     if (account && assets.length > 0) {
@@ -74,12 +104,21 @@ function TCContextProvider({ children }) {
         if (!isAllowed) {
           checkIsAllowed()
         }
+        if (!isAllowedPerpetual) {
+          checkIsAllowedPerpetual()
+        }
         const tradingTokenAddresses = tradingTokens.map(sub => sub.address?.toLowerCase())
         const tradeAssets = assets.filter(ele => tradingTokenAddresses.includes(ele.address))
         setTradingTokens(tradeAssets)
         if (protocolFeeToken) {
           const feeToken = assets.find(ele => ele.address.toLowerCase() === protocolFeeToken.address?.toLowerCase())
           setProtocolFeeToken(feeToken)
+        }
+        if (protocolFeeTokenPerpetual) {
+          const feeTokenPerpetual = assets.find(
+            ele => ele.address.toLowerCase() === protocolFeeTokenPerpetual.address?.toLowerCase(),
+          )
+          setProtocolFeeToken(feeTokenPerpetual)
         }
       }
     } else if (!account) {
@@ -94,8 +133,19 @@ function TCContextProvider({ children }) {
       protocolFeeToken,
       isAllowed,
       tradingTokens,
+      isAllowedPerpetual,
+      protocolFeePerpetual,
+      protocolFeeTokenPerpetual,
     }),
-    [protocolFee, protocolFeeToken, isAllowed, tradingTokens],
+    [
+      protocolFee,
+      protocolFeeToken,
+      isAllowed,
+      tradingTokens,
+      isAllowedPerpetual,
+      protocolFeePerpetual,
+      protocolFeeTokenPerpetual,
+    ],
   )
 
   return <TCContext.Provider value={value}>{children}</TCContext.Provider>

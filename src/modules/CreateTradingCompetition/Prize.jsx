@@ -8,6 +8,7 @@ import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { formatAmount, ordinals } from '@/lib/utils'
 
@@ -24,6 +25,15 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
 
   const { placements, weights } = data.prize
 
+  const isSpotType = useMemo(() => data.market === TC_MARKET_TYPES.SPOT, [data.market])
+
+  const USDTAsset = useMemo(
+    () =>
+      tradingTokens.find(
+        item => item.address.toLowerCase() === '0x55d398326f99059fF775485246999027B3197955'.toLowerCase(),
+      ),
+    [tradingTokens],
+  )
   const total = useMemo(() => weights.reduce((sum, cur) => sum + validNumber(cur), 0), [weights])
 
   useEffect(() => {
@@ -45,8 +55,10 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
 
   useEffect(() => {
     if (data.prize.token) {
-      const token = tradingTokens.find(
-        item => String(item.address).toLowerCase() === String(data.prize.token.address).toLowerCase(),
+      const token = tradingTokens.find(item =>
+        isSpotType
+          ? String(item.address).toLowerCase() === String(data.prize.token.address).toLowerCase()
+          : String(item.address).toLowerCase() === USDTAsset?.address.toLowerCase(),
       )
       if (token) {
         setPrizeTokenBalance(token.balance)
@@ -56,7 +68,28 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
     } else {
       setPrizeTokenBalance(0)
     }
-  }, [data.prize.token, tradingTokens])
+  }, [USDTAsset?.address, data.prize.token, isSpotType, tradingTokens])
+
+  useEffect(() => {
+    if (!isSpotType) {
+      setData({
+        ...data,
+        prize: {
+          ...data.prize,
+          token: USDTAsset,
+        },
+      })
+    } else {
+      setData({
+        ...data,
+        prize: {
+          ...data.prize,
+          token: null,
+        },
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [USDTAsset, isSpotType, setData])
 
   return (
     <>
@@ -72,7 +105,14 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             tooltip='Select the asset you would like to to pay out the prizes in.'
             required
           />
-          <div className='relative flex cursor-pointer items-center' onClick={() => setIsPrizeOpen(true)}>
+          <div
+            className={`relative flex ${isSpotType ? 'cursor-pointer' : 'cursor-not-allowed'} items-center`}
+            onClick={() => {
+              if (isSpotType) {
+                setIsPrizeOpen(true)
+              }
+            }}
+          >
             <div
               className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
            placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'
@@ -265,7 +305,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             },
           })
         }}
-        assets={data.competitionRules.tradingTokens}
+        assets={data.market === TC_MARKET_TYPES.SPOT ? data.competitionRules.tradingTokens : tradingTokens}
       />
     </>
   )

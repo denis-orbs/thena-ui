@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { TC_PARTICIPANTS, TC_STEPS } from '@/constant'
+import { TC_MARKET_TYPES, TC_PARTICIPANTS, TC_STEPS } from '@/constant'
 import { warnToast } from '@/lib/notify'
 import { isInvalidAmount } from '@/lib/utils'
 
@@ -17,6 +17,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
   const getErrorMsg = useCallback(
     val => {
       let error = ''
+      const { market } = data
 
       switch (val) {
         case 0:
@@ -40,15 +41,16 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
 
         case 2: {
           const { winningToken, tradingTokens, startingBalance } = data.competitionRules
-
+          const isSpotType = market === TC_MARKET_TYPES.SPOT
           error =
-            tradingTokens.length < 2
+            isSpotType && tradingTokens.length < 2
               ? 'Invalid Tradable Tokens'
-              : !winningToken
+              : isSpotType && !winningToken
                 ? 'Invalid Winning Token'
                 : isInvalidAmount(startingBalance)
                   ? 'Invalid Total Deposit'
                   : ''
+
           break
         }
 
@@ -59,7 +61,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
             error = 'Invalid Prize Token'
           } else if (isInvalidAmount(totalPrize)) {
             error = 'Invalid Prize Amount'
-          } else if (token.balance.lt(totalPrize)) {
+          } else if (token?.balance?.lt(totalPrize)) {
             error = 'Not Enough Host Contribution'
           } else if (isEntryFee && isInvalidAmount(data.entryFee)) {
             error = 'Invalid Fee Amount'

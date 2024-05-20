@@ -5,11 +5,11 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
-import { TXN_STATUS } from '@/constant'
+import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { tcManagerAbi } from '@/constant/abi/core'
 import { useTC } from '@/context/tcContext'
 import { readCall, waitCall } from '@/lib/contractActions'
-import { getERC20Contract, getTCContract } from '@/lib/contracts'
+import { getERC20Contract, getTCContract, getTCPerpetualManagerContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
@@ -27,12 +27,20 @@ export const useCreateTC = () => {
       const approveFeeuuid = uuidv4()
       const approveHostuuid = uuidv4()
       const createuuid = uuidv4()
-      const tcManagerContract = getTCContract()
+      // Check if is Perpetual TC
+      const isPerpetualTC = data?.market === TC_MARKET_TYPES.PERPETUAL
+      console.log({ isPerpetualTC })
+      const tcManagerContract = isPerpetualTC ? getTCPerpetualManagerContract() : getTCContract()
 
-      const tokenContract = getERC20Contract(protocolFeeToken.address, chainId)
+      const tokenContract = getERC20Contract(protocolFeeToken?.address, chainId)
       const allowance = await readCall(tokenContract, 'allowance', [account, tcManagerContract.address])
       const isApprovedFee = fromWei(allowance).gte(fromWei(protocolFee))
 
+      if (isPerpetualTC) {
+        // TODO: Only for testing
+        const MockUSDAddress = '0xced4aC14bB1077B995b954C48a87b25EBb4828E5'
+        data.prize.token.address = MockUSDAddress
+      }
       const prizeTokenContract = getERC20Contract(data.prize.token.address, chainId)
       const allowanceHost = await readCall(prizeTokenContract, 'allowance', [account, tcManagerContract.address])
       const isApprovedHost = fromWei(allowanceHost).gte(fromWei(data.prize.hostContribution))
@@ -87,22 +95,37 @@ export const useCreateTC = () => {
         }
       }
 
+      let competitionRules = {
+        starting_balance: data.competitionRules.startingBalance,
+      }
+
+      if (isPerpetualTC) {
+        competitionRules = {
+          ...competitionRules,
+          // TODO: Hardcode
+          pairIds: [1, 2, 3, 4],
+        }
+      } else {
+        competitionRules = {
+          ...competitionRules,
+          winning_token: data.competitionRules.winningToken.address,
+          tradingTokens: data.competitionRules.tradingTokens.map(ele => ele.address),
+        }
+      }
+
       const tradingComp = {
+        id: isPerpetualTC ? 0 : undefined,
         entryFee: data.entryFee,
         MAX_PARTICIPANTS: data.maxParticipants,
         owner: data.owner.id,
         tradingCompetition: data.tradingCompetitionSpot,
         name: data.name,
         description: data.description,
-        market: 0,
+        market: isPerpetualTC ? undefined : 0,
         timestamp: {
           ...data.timestamp,
         },
-        competitionRules: {
-          starting_balance: data.competitionRules.startingBalance,
-          winning_token: data.competitionRules.winningToken.address,
-          tradingTokens: data.competitionRules.tradingTokens.map(ele => ele.address),
-        },
+        competitionRules,
         prize: {
           win_type: false,
           weights: data.prize.weights,
@@ -112,6 +135,8 @@ export const useCreateTC = () => {
           host_contribution: data.prize.hostContribution,
         },
       }
+
+      console.log({ tradingComp })
 
       const isSuccess = await writeTxn(key, createuuid, tcManagerContract, 'create', [tradingComp])
       if (!isSuccess) {
@@ -127,7 +152,7 @@ export const useCreateTC = () => {
       setPending(false)
       return isSuccess
     },
-    [protocolFeeToken.address, chainId, account, protocolFee, startTxn, t, writeTxn, endTxn],
+    [protocolFeeToken?.address, chainId, account, protocolFee, startTxn, t, writeTxn, endTxn],
   )
 
   const handleGetTCId = useCallback(async txHash => {

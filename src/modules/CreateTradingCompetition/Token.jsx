@@ -4,7 +4,7 @@
 
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
@@ -20,8 +20,18 @@ import CustomTokenModal from '../TokenModal/CustomTokenModal'
 function Token({ data, setData }) {
   const [isTradeOpen, setIsTradeOpen] = useState(false)
   const [isWinningOpen, setIsWinningOpen] = useState(false)
-  const { tradingTokens } = useTC()
+  const { tradingTokens, isAllowedPerpetual } = useTC()
   const t = useTranslations()
+
+  const isSpotType = useMemo(() => data.market === TC_MARKET_TYPES.SPOT, [data.market])
+
+  const USDTAsset = useMemo(
+    () =>
+      tradingTokens.find(
+        item => item.address.toLowerCase() === '0x55d398326f99059fF775485246999027B3197955'.toLowerCase(),
+      ),
+    [tradingTokens],
+  )
 
   useEffect(() => {
     const { winningToken } = data.competitionRules
@@ -39,6 +49,27 @@ function Token({ data, setData }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.competitionRules.tradingTokens])
+
+  useEffect(() => {
+    if (!isSpotType) {
+      setData({
+        ...data,
+        competitionRules: {
+          ...data.competitionRules,
+          winningToken: USDTAsset,
+        },
+      })
+    } else {
+      setData({
+        ...data,
+        competitionRules: {
+          ...data.competitionRules,
+          winningToken: null,
+        },
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [USDTAsset, isSpotType, setData])
 
   return (
     <>
@@ -59,43 +90,52 @@ function Token({ data, setData }) {
               })
             }}
             className={`px-6 py-[8.4px] uppercase text-white ${
-              data.market === TC_MARKET_TYPES.SPOT ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
+              isSpotType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
             } rounded-lg`}
             type='button'
           >
             {t('Spot')}
           </button>
           <button
-            disabled
-            className={`px-6 py-[8.4px] uppercase disabled:cursor-not-allowed disabled:text-gray-500 ${
-              data.market === TC_MARKET_TYPES.PERPETUAL ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
+            className={`d px-6 py-[8.4px] uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
+              !isSpotType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
             } rounded-lg`}
             type='button'
+            disabled={!isAllowedPerpetual}
+            onClick={() => {
+              setData({
+                ...data,
+                market: TC_MARKET_TYPES.PERPETUAL,
+              })
+            }}
           >
             {t('Perpetual')}
           </button>
         </div>
       </div>
-      <div className='mt-3'>
-        <LabelTooltip
-          id='trading-competition-tradable-tokens'
-          label='Tradable Tokens Label'
-          showInfoIcon
-          tooltip='Here you can select whether you would like your participants to trade in any assets or with certain assets only.'
-          required
-        />
-        <div className='relative flex cursor-pointer items-center' onClick={() => setIsTradeOpen(true)}>
-          <div
-            className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
+      {isSpotType && (
+        <div className='mt-3'>
+          <LabelTooltip
+            id='trading-competition-tradable-tokens'
+            label='Tradable Tokens Label'
+            showInfoIcon
+            tooltip='Here you can select whether you would like your participants to trade in any assets or with certain assets only.'
+            required
+          />
+          <div className='relative flex cursor-pointer items-center' onClick={() => setIsTradeOpen(true)}>
+            <div
+              className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
            placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'
-          >
-            {data.competitionRules?.tradingTokens?.length || 0} Selected
-          </div>
-          <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>
-            <Image src='/svgs/chevron-down.svg' alt='down icon' width={20} height={20} />
+            >
+              {data.competitionRules?.tradingTokens?.length || 0} Selected
+            </div>
+            <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>
+              <Image src='/svgs/chevron-down.svg' alt='down icon' width={20} height={20} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
       <div className='mt-3'>
         <LabelTooltip
           id='trading-competition-winning-token'
@@ -104,7 +144,14 @@ function Token({ data, setData }) {
           tooltip='Select the token that you would like your participants to acquire and be counted towards the competition.'
           required
         />
-        <div className='relative flex cursor-pointer items-center' onClick={() => setIsWinningOpen(true)}>
+        <div
+          className={`relative flex ${isSpotType ? 'cursor-pointer' : 'cursor-not-allowed'} items-center`}
+          onClick={() => {
+            if (isSpotType) {
+              setIsWinningOpen(true)
+            }
+          }}
+        >
           <div
             className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
            placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'
