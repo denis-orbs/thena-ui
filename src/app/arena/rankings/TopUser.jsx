@@ -57,8 +57,14 @@ const V4_TOTAL_USERS = gql`
 
 const fetchUsers = async (sort, userFilter, offset = 0, limit = 50) => {
   try {
-    const orderBy = ['user_id_DESC']
+    const orderBy = []
     const isDesc = sort?.isDesc
+
+    if (isDesc) {
+      orderBy.push('user_id_DESC')
+    } else {
+      orderBy.push('user_id_ASC')
+    }
     switch (sort?.value) {
       case 'tradeTCVolume':
         orderBy.unshift(isDesc ? 'tradeTCVolume_DESC' : 'tradeTCVolume_ASC')
@@ -194,7 +200,20 @@ function TopUser() {
   const [searchText, setSearchText] = useState(search || '')
   const { page } = useParams()
   const [currentPage, setCurrentPage] = useState(page ? Number(page) : 1)
-  const [sort, setSort] = useState(sortOptions[2])
+  const sortDefault = useMemo(() => {
+    if (searchParams.get('sort')) {
+      const sortParams = searchParams.get('sort')
+      const isDescParams = searchParams.get('isDesc')
+      const sortOption = sortOptions.find(item => item.value === sortParams)
+      return {
+        ...sortOption,
+        isDesc: isDescParams === 'true',
+      }
+    }
+    return sortOptions[2]
+  }, [searchParams, sortOptions])
+
+  const [sort, setSort] = useState(sortDefault)
   const [dataFetch, setDataFetch] = useState([])
   const [initialRender, setInitialRender] = useState(true)
   const router = useRouter()

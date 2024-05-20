@@ -2,7 +2,7 @@
 
 import { gql } from 'graphql-request'
 import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
+import { useParams, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -110,11 +110,24 @@ function TopCompetition() {
     ],
     [isAll],
   )
-
+  const searchParams = useSearchParams()
   const assets = useAssets()
   const { page } = useParams()
   const [currentPage, setCurrentPage] = useState(!isAll ? 1 : page ? Number(page) : 1)
-  const [sort, setSort] = useState(sortOptions[3])
+  const sortDefault = useMemo(() => {
+    if (isAll && searchParams.get('sort')) {
+      const sortParams = searchParams.get('sort')
+      const isDescParams = searchParams.get('isDesc')
+      const sortOption = sortOptions.find(item => item.value === sortParams)
+      return {
+        ...sortOption,
+        isDesc: isDescParams === 'true',
+      }
+    }
+    return sortOptions[3]
+  }, [isAll, searchParams, sortOptions])
+
+  const [sort, setSort] = useState(sortDefault)
   // const [initialRender, setInitialRender] = useState(true)
 
   // const [direction, setDirection] = useState('DESC')

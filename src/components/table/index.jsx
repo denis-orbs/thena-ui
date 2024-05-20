@@ -182,13 +182,21 @@ function Table({
   useEffect(() => {
     if (enabledRedirectOnClickSort) {
       const sortParams = searchParams.get('sort')
-      const sortOption = sortOptions.find(item => item.value === sortParams)
-      if (sortOption && sortOption.value !== sort?.value) {
-        setSort(sortOption)
+      const isDescParams = searchParams.get('isDesc')
+
+      if (sort?.value !== sortParams && String(sort?.isDesc) !== isDescParams) {
+        const sortOption = sortOptions.find(item => item.value === sortParams)
+        if (sortOption) {
+          setSort({
+            ...sortOption,
+            value: sortParams,
+            isDesc: isDescParams === 'true',
+          })
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabledRedirectOnClickSort, searchParams, setSort, sortOptions])
+  }, [searchParams])
 
   useEffect(() => {
     if (hightLightIndex) {
