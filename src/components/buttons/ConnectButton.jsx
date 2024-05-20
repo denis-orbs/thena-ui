@@ -17,7 +17,7 @@ export default function ConnectButton({ className }) {
   const { account, isWrong, active } = useWallet()
   const t = useTranslations()
 
-  const { data: userInfo } = useSWR(['current user info'])
+  const { data: userInfo } = useSWR('fetchUserInfo')
 
   const { signWallet, deleteToken } = useSignWallet()
 
