@@ -3,23 +3,29 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { Alert } from '@/components/alert'
 import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
+import Input from '@/components/input'
+import LabelTooltip from '@/components/label/LabelTooltip'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
 import { useJoinTCPerpetual } from '@/hooks/useTcPerpetualContract'
 import { useJoinTC } from '@/hooks/useTcSpotContract'
+import { warnToast } from '@/lib/notify'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
 export function JoinModal({ competition, open, onClose }) {
   const t = useTranslations()
+  const [name, setName] = useState('')
+
   const {
     entryFee,
     prize: { token: prizeToken },
     competitionRules: { startingBalance, winningToken },
+    market,
   } = competition
   const { push } = useRouter()
 
@@ -50,9 +56,12 @@ export function JoinModal({ competition, open, onClose }) {
   const handleJoin = useCallback(async () => {
     try {
       let joined = false
-      if (competition?.market === TC_MARKET_TYPES.PERPETUAL) {
-        // TODO: Name input
-        joined = await joinTCPerpetual(competition, 'test-hieupmzz')
+      if (market === TC_MARKET_TYPES.PERPETUAL) {
+        if (!name.trim()) {
+          warnToast('Name is required')
+          return
+        }
+        joined = await joinTCPerpetual(competition, name.trim())
       } else {
         joined = await joinTC(competition)
       }
@@ -63,7 +72,7 @@ export function JoinModal({ competition, open, onClose }) {
     } catch (e) {
       console.error(e)
     }
-  }, [competition, joinTC, joinTCPerpetual, onClose, push])
+  }, [competition, joinTC, joinTCPerpetual, market, name, onClose, push])
 
   const message = useMemo(() => {
     if (isInvalidAmount(entryFee)) {
@@ -107,6 +116,20 @@ export function JoinModal({ competition, open, onClose }) {
             {t('This means')} <span className='underline'>{totalToken}!</span>
           </TextHeading>
         ) : null}
+        {market === TC_MARKET_TYPES.PERPETUAL && (
+          <div>
+            <LabelTooltip label='Name' required />
+            <Input
+              val={name}
+              onChange={e => {
+                setName(e.target.value)
+              }}
+              placeholder='Enter your name'
+              type='text'
+              required
+            />
+          </div>
+        )}
         <div className='item-centers mt-3 flex flex-row justify-between gap-4 md:mt-5'>
           {!isInvalidAmount(entryFee) && prizeToken && (
             <div>

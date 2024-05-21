@@ -9,6 +9,7 @@ const V4_USERNAME_NFTS = gql`
     usernameNfts(where: { name_eq: $username }) {
       id
       name
+      imageUrl
     }
   }
 `
@@ -24,28 +25,30 @@ const V4_AVAILABLE = gql`
 export async function generateMetadata({ params }) {
   const { thenaId } = params
 
-  let thanaId = {}
+  let thenaIdItem = {}
 
   const { usernameNfts } = await v4Client.request(V4_USERNAME_NFTS, {
     username: decodeURIComponent(thenaId).toLowerCase(),
   })
 
   if (usernameNfts && usernameNfts.length > 0) {
-    thanaId = usernameNfts?.[0]
+    thenaIdItem = usernameNfts?.[0]
   } else {
     const { thenaIdAvailables } = await v4Client.request(V4_AVAILABLE, {
       username: decodeURIComponent(thenaId).toLowerCase(),
     })
     if (thenaIdAvailables && thenaIdAvailables.length) {
-      thanaId = thenaIdAvailables?.[0]
+      thenaIdItem = thenaIdAvailables?.[0]
     }
   }
 
+  const imageUrl = thenaIdItem.imageUrl || 'https://thena-image-resource.s3.amazonaws.com/thena-id-image-default.png'
+
   const metadata = {
-    name: thanaId?.name ?? 'thena',
-    description: `See all the details about ${thanaId?.name ?? 'thena'}.thena on THENA Arena, 
+    name: thenaIdItem?.name ?? 'thena',
+    description: `See all the details about ${thenaIdItem?.name ?? 'thena'}.thena on THENA Arena, 
 whether it is available or not and more.`,
-    image: [`${siteConfig.url}/cover.png`],
+    image: [imageUrl],
   }
 
   return {

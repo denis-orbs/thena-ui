@@ -28,7 +28,7 @@ export function TCButton({ eventType, competition, timestamp }) {
     checkWithdrawable,
   } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.prize?.weights?.length)
 
-  const { isOwner, isRegistered, isWinner } = useTCPerpetualInfor(competition.id)
+  const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(competition.id)
 
   const [joinButtonText, setJoinButtonText] = useState({
     text: null,
@@ -114,21 +114,26 @@ export function TCButton({ eventType, competition, timestamp }) {
             </PrimaryButton>
           )
         ))}
-      {eventType === EVENT_TYPES.UPCOMING && !isJoined && !isHosting && joinButtonText.text && (
-        <PrimaryButton
-          className='w-full text-wrap'
-          onClick={() => {
-            if (!account) {
-              open()
-            } else {
-              setShowJoinModal(true)
-            }
-          }}
-          disabled={joinButtonText.disabled}
-        >
-          {joinButtonText.text}
-        </PrimaryButton>
-      )}
+      {eventType === EVENT_TYPES.UPCOMING &&
+        !isJoined &&
+        !isJoinedPerp &&
+        !isHosting && // comment these 2 for testing join as host
+        !isHostingPerp && //
+        joinButtonText.text && (
+          <PrimaryButton
+            className='w-full text-wrap'
+            onClick={() => {
+              if (!account) {
+                open()
+              } else {
+                setShowJoinModal(true)
+              }
+            }}
+            disabled={joinButtonText.disabled}
+          >
+            {joinButtonText.text}
+          </PrimaryButton>
+        )}
 
       {showJoinModal && (
         <JoinModal competition={competition} onClose={() => setShowJoinModal(false)} open={showJoinModal} />

@@ -64,18 +64,12 @@ export const useTCPerpetualInfor = id => {
         id,
       })
 
+      // TODO: Get data from smart contract
       if (tcPerpData) {
-        console.log({ tcPerpData })
+        const foundUserInTC = tcPerpData.participants.some(item => item.participant.id === account.toLowerCase())
+        setIsRegistered(foundUserInTC)
+        setIsOwner(tcPerpData.owner.id === account.toLowerCase())
       }
-
-      // const [joined, won, ownerAddress] = await Promise.all([
-      //   readCall(tcSpotContract, 'isRegistered', [account]),
-      //   readCall(tcSpotContract, 'isWinner', [account]),
-      //   readCall(tcSpotContract, 'owner', []),
-      // ])
-      // setIsRegistered(joined)
-      // setIsWinner(won[0])
-      // setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
 
       setLoaded(true)
     }

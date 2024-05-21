@@ -10,6 +10,7 @@ import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { TextHeading } from '@/components/typography'
 import { useUserInfo } from '@/context/userInfoContext'
+import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -42,9 +43,14 @@ function Sidebar({ competition, eventType }) {
     checkClaimable,
     checkWithdrawable,
   } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.prize?.weights?.length)
+  const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(competition.id)
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
   const [copied, setCopied] = useState(false)
+
+  const isTCJoined = useMemo(() => isJoined || isJoinedPerp, [isJoined, isJoinedPerp])
+
+  const isTCHosting = useMemo(() => isHosting || isHostingPerp, [isHosting, isHostingPerp])
 
   const headingAndText = useMemo(() => {
     if (!eventType) {
@@ -58,15 +64,15 @@ function Sidebar({ competition, eventType }) {
     if (isNotStartRegistration) {
       return {
         heading: t('Registrations open in'),
-        text: isJoined ? t('Competition Joined') : null,
-        subText: isJoined ? t('You Joined This Competition') : null,
+        text: isTCJoined ? t('Competition Joined') : null,
+        subText: isTCJoined ? t('You Joined This Competition') : null,
       }
     }
     if (!isNotStartRegistration && !isEndedRegistration) {
       return {
         heading: t('Registration Ends Soon'),
-        text: isJoined ? t('Competition Joined') : null,
-        subText: isJoined ? t('You Joined This Competition') : null,
+        text: isTCJoined ? t('Competition Joined') : null,
+        subText: isTCJoined ? t('You Joined This Competition') : null,
       }
     }
     if (eventType === EVENT_TYPES.UPCOMING && isEndedRegistration) {
@@ -155,11 +161,12 @@ function Sidebar({ competition, eventType }) {
     isNotStartRegistration,
     isEndedRegistration,
     t,
-    isJoined,
+    isTCJoined,
     competition.participantCount,
     competition.prize?.totalPrize,
     competition.prize?.token?.decimals,
     competition.prize?.token?.symbol,
+    isJoined,
     canClaimRewards,
   ])
 
@@ -211,11 +218,12 @@ function Sidebar({ competition, eventType }) {
   }, [withdrawDeposit, competition.tradingCompetitionSpot, checkWithdrawable])
 
   const buttonByStatus = useMemo(() => {
+    // Ended -> Claim rewards/fee
     if (eventType === EVENT_TYPES.ENDED) {
       if (canClaimRewards) {
         return (
           <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
-            {isHosting ? t('Claim Owner Fee') : t('Claim Rewards')}
+            {isTCHosting ? t('Claim Owner Fee') : t('Claim Rewards')}
           </PrimaryButton>
         )
       }
@@ -229,7 +237,8 @@ function Sidebar({ competition, eventType }) {
       }
     }
 
-    if (isHosting) {
+    // For TC host: Share
+    if (isTCHosting) {
       return (
         <PrimaryButton className='w-full' onClick={onShare}>
           {t('Share')}
@@ -237,7 +246,8 @@ function Sidebar({ competition, eventType }) {
       )
     }
 
-    if (!isHosting && eventType === EVENT_TYPES.LIVE && isJoined) {
+    // For participants
+    if (eventType === EVENT_TYPES.LIVE && isTCJoined) {
       return (
         <Link href={`/arena/trading-competitions/${competition.id}/trade`}>
           <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
@@ -245,7 +255,7 @@ function Sidebar({ competition, eventType }) {
       )
     }
 
-    if (!isHosting && eventType === EVENT_TYPES.UPCOMING) {
+    if (eventType === EVENT_TYPES.UPCOMING) {
       if (isNotStartRegistration) {
         return (
           <PrimaryButton className='w-full' disabled>
@@ -254,7 +264,7 @@ function Sidebar({ competition, eventType }) {
         )
       }
 
-      if (isJoined) {
+      if (isTCJoined) {
         return (
           <></>
           // <PrimaryButton
@@ -293,7 +303,7 @@ function Sidebar({ competition, eventType }) {
       )
     }
 
-    if (!isJoined && eventType === EVENT_TYPES.ENDED) {
+    if (!isTCJoined && eventType === EVENT_TYPES.ENDED) {
       return (
         <SecondaryButton className='w-full' disabled>
           {t('Trading Competition Has Ended')}
@@ -309,9 +319,9 @@ function Sidebar({ competition, eventType }) {
     eventType,
     isEndedRegistration,
     isFull,
-    isHosting,
-    isJoined,
     isNotStartRegistration,
+    isTCHosting,
+    isTCJoined,
     onShare,
     open,
     t,
@@ -322,11 +332,11 @@ function Sidebar({ competition, eventType }) {
     const progress = progressBarRef.current
     if (progress) {
       progress.style.width =
-        !isJoined && eventType === EVENT_TYPES.ENDED
+        !isTCJoined && eventType === EVENT_TYPES.ENDED
           ? '100%'
           : `${(competition.participantCount / competition.maxParticipants) * 100}%`
     }
-  }, [competition.participantCount, competition.maxParticipants, isJoined, eventType])
+  }, [competition.participantCount, competition.maxParticipants, isTCJoined, eventType])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -348,7 +358,7 @@ function Sidebar({ competition, eventType }) {
     <div className='col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
       <div className='flex items-center justify-between'>
         <h3 className='mb-5'>{headingAndText.heading}</h3>
-        {isJoined && account && <EmphasisIconButton Icon={shareIconButton} onClick={onShareTC} />}
+        {isTCJoined && account && <EmphasisIconButton Icon={shareIconButton} onClick={onShareTC} />}
       </div>
       <Box className='flex flex-col space-y-5'>
         {(headingAndText.subText || headingAndText.text) && (
