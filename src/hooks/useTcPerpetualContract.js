@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js'
-import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -8,39 +7,11 @@ import { maxUint256 } from 'viem'
 import { TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTcPerpetualContract } from '@/lib/contracts'
-import { v4Client } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
-const V4_COMPETITION_BY_ID = gql`
-  query V4_COMPETITION_BY_ID($id: String = "") {
-    tradingCompetitionById(id: $id) {
-      entryFee
-      market
-      id
-      competitionRules {
-        winningToken
-        startingBalance
-      }
-      prize {
-        token
-      }
-      participants {
-        id
-        participant {
-          id
-        }
-      }
-      owner {
-        id
-      }
-      tradingCompetitionSpot
-    }
-  }
-`
-
-export const useTCPerpetualInfor = id => {
+export const useTCPerpetualInfor = tcSpot => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
@@ -51,7 +22,7 @@ export const useTCPerpetualInfor = id => {
   const getUserData = useCallback(async () => {
     setLoaded(false)
 
-    if (id) {
+    if (tcSpot) {
       if (!account) {
         setIsRegistered(false)
         setIsWinner(false)
@@ -61,33 +32,23 @@ export const useTCPerpetualInfor = id => {
         return
       }
 
-      const { tradingCompetitionById: tcPerpData } = await v4Client.request(V4_COMPETITION_BY_ID, {
-        id,
-      })
-
-      // TODO: Get data from smart contract
-      if (tcPerpData) {
-        const foundUserInTC = tcPerpData.participants.some(item => item.participant.id === account.toLowerCase())
-        setIsRegistered(foundUserInTC)
-        setIsOwner(tcPerpData.owner.id === account.toLowerCase())
-        const tcPerpetualContract = getTcPerpetualContract(tcPerpData.tradingCompetitionSpot)
-        try {
-          const res0 = await readCall(tcPerpetualContract, 'getAccountOf', [account])
-          if (res0) {
-            setIsRegistered(true)
-          }
-        } catch (error) {
-          setIsRegistered(false)
+      const tcPerpetualContract = getTcPerpetualContract(tcSpot)
+      try {
+        const res0 = await readCall(tcPerpetualContract, 'getAccountOf', [account])
+        if (res0) {
+          setIsRegistered(true)
         }
-        const res1 = await readCall(tcPerpetualContract, 'tradingCompetition', [])
-        if (res1 && String(res1.owner).toLowerCase() === account?.toLowerCase()) {
-          setIsOwner(true)
-        }
+      } catch (error) {
+        setIsRegistered(false)
+      }
+      const res1 = await readCall(tcPerpetualContract, 'tradingCompetition', [])
+      if (res1 && String(res1.owner).toLowerCase() === account.toLowerCase()) {
+        setIsOwner(true)
       }
 
       setLoaded(true)
     }
-  }, [account, id])
+  }, [account, tcSpot])
 
   useEffect(() => {
     getUserData()

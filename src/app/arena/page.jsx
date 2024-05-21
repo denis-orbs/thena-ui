@@ -11,7 +11,7 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Modal, { ModalBody } from '@/components/modal'
 import Tabs from '@/components/tabs'
-import { INIT_VALUES, TC_STEPS } from '@/constant'
+import { INIT_VALUES, TC_MARKET_TYPES, TC_STEPS } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useTC } from '@/context/tcContext'
 import { v4Client } from '@/lib/graphql'
@@ -165,7 +165,7 @@ export default function ArenaPage() {
       return []
     }
     let result = cloneDeep(competitions || []) ?? []
-    if (!!filter.market && filter.market !== 'all') {
+    if (!!filter.market && filter.market !== TC_MARKET_TYPES.ALL.toLowerCase()) {
       result = result.filter(item => item.market.toLowerCase() === filter.market.toLowerCase())
     }
     switch (filter.sortBy) {
@@ -507,7 +507,7 @@ export default function ArenaPage() {
     addOrReplaceURLParams('type', filter.type !== 'all' ? filter.type : null)
     addOrReplaceURLParams('search', searchText || null)
     addOrReplaceURLParams('free', filter.free ? true : null)
-    addOrReplaceURLParams('market', filter.market !== 'all' ? filter.market : null)
+    addOrReplaceURLParams('market', filter.market !== TC_MARKET_TYPES.ALL.toLowerCase() ? filter.market : null)
     addOrReplaceURLParams('sortBy', filter.sortBy !== 'Default' ? filter.sortBy : null)
     addOrReplaceURLParams('status', filter.type === 'joined' || filter.type === 'hosted' ? filter.status : null)
   }, [filter.free, filter.market, filter.sortBy, searchText, filter.type, filter.status])
@@ -524,7 +524,7 @@ export default function ArenaPage() {
     saveToSessionStorage('type', filter.type !== 'all' ? filter.type : null)
     saveToSessionStorage('search', searchText?.length && searchText)
     saveToSessionStorage('free', filter.free && true)
-    saveToSessionStorage('market', filter.market !== 'all' && filter.market)
+    saveToSessionStorage('market', filter.market !== TC_MARKET_TYPES.ALL.toLowerCase() && filter.market)
     saveToSessionStorage('sortBy', filter.sortBy !== 'Default' && filter.sortBy)
     saveToSessionStorage('status', filter.type === 'joined' || filter.type === 'hosted' ? filter.status : null)
   }, [filter.free, filter.market, filter.sortBy, filter.status, filter.type, searchText])
