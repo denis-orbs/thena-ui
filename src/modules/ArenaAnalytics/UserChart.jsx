@@ -33,7 +33,7 @@ function UserChart() {
   const [filter, setFilter] = useState(null)
 
   const { data: dataChart } = useSWR(['analytic user created', filter], () => fetchCreatedTC(filter))
-  const [tabPanel, setTabPanel] = useState('Cumulative')
+  const [tabPanel, setTabPanel] = useState('New')
 
   const panel = useMemo(
     () => [
