@@ -79,6 +79,22 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           token: USDTAsset,
         },
       })
+    } else if (data?.prize?.token) {
+      if (data?.prize?.token.address.toLowerCase() === USDTAsset?.address.toLowerCase()) {
+        if (
+          data?.competitionRules?.tradingTokens.find(
+            item => item.address.toLowerCase() === data?.prize?.token?.address.toLowerCase(),
+          ) === undefined
+        ) {
+          setData({
+            ...data,
+            prize: {
+              ...data.prize,
+              token: null,
+            },
+          })
+        }
+      }
     } else {
       setData({
         ...data,
@@ -89,7 +105,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [USDTAsset, isSpotType, setData])
+  }, [isSpotType])
 
   return (
     <>

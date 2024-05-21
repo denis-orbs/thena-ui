@@ -60,11 +60,27 @@ function Token({ data, setData }) {
           winningToken: USDTAsset,
         },
       })
+    } else if (data?.competitionRules?.winningToken) {
+      if (data?.competitionRules?.winningToken.address.toLowerCase() === USDTAsset?.address.toLowerCase()) {
+        if (
+          data?.competitionRules?.tradingTokens.find(
+            item => item.address.toLowerCase() === USDTAsset?.address.toLowerCase(),
+          ) === undefined
+        ) {
+          setData({
+            ...data,
+            competitionRules: {
+              ...data?.competitionRules,
+              winningToken: null,
+            },
+          })
+        }
+      }
     } else {
       setData({
         ...data,
         competitionRules: {
-          ...data.competitionRules,
+          ...data?.competitionRules,
           winningToken: null,
         },
       })
