@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -26,6 +27,8 @@ export function TCButton({ eventType, competition, timestamp }) {
     checkClaimable,
     checkWithdrawable,
   } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.prize?.weights?.length)
+
+  const { isOwner, isRegistered, isWinner } = useTCPerpetualInfor(competition.id)
 
   const [joinButtonText, setJoinButtonText] = useState({
     text: null,

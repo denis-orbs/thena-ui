@@ -96,11 +96,13 @@ export default function ArenaPage() {
 
   const assets = useMemo(() => {
     const clone = cloneDeep(_assets)
+    // TODO: just for test
     clone.push({
       name: 'MockUSD',
       symbol: 'MUSD',
       decimals: 18,
       address: '0xced4ac14bb1077b995b954c48a87b25ebb4828e5',
+      balance: '100000000000000000000',
     })
     return clone
   }, [_assets])

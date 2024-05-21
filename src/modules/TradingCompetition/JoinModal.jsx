@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -8,6 +9,8 @@ import { Alert } from '@/components/alert'
 import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { TC_MARKET_TYPES } from '@/constant'
+import { useJoinTCPerpetual } from '@/hooks/useTcPerpetualContract'
 import { useJoinTC } from '@/hooks/useTcSpotContract'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
@@ -21,11 +24,12 @@ export function JoinModal({ competition, open, onClose }) {
   const { push } = useRouter()
 
   const { joinTC, pending } = useJoinTC()
+  const { joinTCPerpetual, pending: pendingPerpetual } = useJoinTCPerpetual()
 
   const showAlertBalance = useMemo(() => {
     if (prizeToken.address === winningToken.address) {
       const totalAmount = fromWei(entryFee, prizeToken.decimals).plus(fromWei(startingBalance, winningToken.decimals))
-      const totalBalance = prizeToken.balance.plus(winningToken.balance)
+      const totalBalance = new BigNumber(prizeToken.balance).plus(winningToken.balance)
       return totalAmount.gt(totalBalance)
     }
     const notEnoughFee = fromWei(entryFee, prizeToken.decimals).gt(prizeToken.balance)
@@ -45,7 +49,13 @@ export function JoinModal({ competition, open, onClose }) {
 
   const handleJoin = useCallback(async () => {
     try {
-      const joined = await joinTC(competition)
+      let joined = false
+      if (competition?.market === TC_MARKET_TYPES.PERPETUAL) {
+        // TODO: Name input
+        joined = await joinTCPerpetual(competition, 'test-hieupmzz')
+      } else {
+        joined = await joinTC(competition)
+      }
       if (joined) {
         push(`/arena/trading-competitions/${competition.id}`)
         onClose()
@@ -53,7 +63,7 @@ export function JoinModal({ competition, open, onClose }) {
     } catch (e) {
       console.error(e)
     }
-  }, [competition, joinTC, onClose, push])
+  }, [competition, joinTC, joinTCPerpetual, onClose, push])
 
   const message = useMemo(() => {
     if (isInvalidAmount(entryFee)) {
@@ -93,7 +103,7 @@ export function JoinModal({ competition, open, onClose }) {
       <ModalBody>
         <p className='mt-1.5 w-full text-[15px] text-neutral-300  md:text-base md:leading-6'>{message}</p>
         {totalToken ? (
-          <TextHeading className='my-5 block'>
+          <TextHeading className='my-4 block'>
             {t('This means')} <span className='underline'>{totalToken}!</span>
           </TextHeading>
         ) : null}
@@ -158,7 +168,12 @@ export function JoinModal({ competition, open, onClose }) {
         <EmphasisButton className='w-full' onClick={onClose}>
           {t('Cancel')}
         </EmphasisButton>
-        <PrimaryButton className='w-full' onClick={handleJoin} disabled={showAlertBalance} isLoading={pending}>
+        <PrimaryButton
+          className='w-full'
+          onClick={handleJoin}
+          disabled={showAlertBalance}
+          isLoading={pending || pendingPerpetual}
+        >
           {t('Join Competition')}
         </PrimaryButton>
       </ModalFooter>
