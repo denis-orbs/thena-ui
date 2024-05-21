@@ -35,6 +35,7 @@ const V4_COMPETITION_BY_ID = gql`
       owner {
         id
       }
+      tradingCompetitionSpot
     }
   }
 `
@@ -69,6 +70,19 @@ export const useTCPerpetualInfor = id => {
         const foundUserInTC = tcPerpData.participants.some(item => item.participant.id === account.toLowerCase())
         setIsRegistered(foundUserInTC)
         setIsOwner(tcPerpData.owner.id === account.toLowerCase())
+        const tcPerpetualContract = getTcPerpetualContract(tcPerpData.tradingCompetitionSpot)
+        try {
+          const res0 = await readCall(tcPerpetualContract, 'getAccountOf', [account])
+          if (res0) {
+            setIsRegistered(true)
+          }
+        } catch (error) {
+          setIsRegistered(false)
+        }
+        const res1 = await readCall(tcPerpetualContract, 'tradingCompetition', [])
+        if (res1 && String(res1.owner).toLowerCase() === account?.toLowerCase()) {
+          setIsOwner(true)
+        }
       }
 
       setLoaded(true)

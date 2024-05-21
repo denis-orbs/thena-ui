@@ -46,14 +46,13 @@ function FilterDropDown({ filter, setFilter }) {
               },
               {
                 label: t('Perpetual'),
-                active: filter.market === 'perpetual',
+                active: filter.market === 'perpetuals',
                 onClickHandler: () => {
                   setFilter({
                     ...filter,
-                    market: 'perpetual',
+                    market: 'perpetuals',
                   })
                 },
-                disabled: true,
               },
             ]}
             size={SizeTypes.Small}
