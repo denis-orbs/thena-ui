@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -26,6 +27,8 @@ export function TCButton({ eventType, competition, timestamp }) {
     checkClaimable,
     checkWithdrawable,
   } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.prize?.weights?.length)
+
+  const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(competition.tradingCompetitionSpot)
 
   const [joinButtonText, setJoinButtonText] = useState({
     text: null,
@@ -111,21 +114,26 @@ export function TCButton({ eventType, competition, timestamp }) {
             </PrimaryButton>
           )
         ))}
-      {eventType === EVENT_TYPES.UPCOMING && !isJoined && !isHosting && joinButtonText.text && (
-        <PrimaryButton
-          className='w-full text-wrap'
-          onClick={() => {
-            if (!account) {
-              open()
-            } else {
-              setShowJoinModal(true)
-            }
-          }}
-          disabled={joinButtonText.disabled}
-        >
-          {joinButtonText.text}
-        </PrimaryButton>
-      )}
+      {eventType === EVENT_TYPES.UPCOMING &&
+        !isJoined &&
+        !isJoinedPerp &&
+        !isHosting && // comment these 2 for testing join as host
+        !isHostingPerp && //
+        joinButtonText.text && (
+          <PrimaryButton
+            className='w-full text-wrap'
+            onClick={() => {
+              if (!account) {
+                open()
+              } else {
+                setShowJoinModal(true)
+              }
+            }}
+            disabled={joinButtonText.disabled}
+          >
+            {joinButtonText.text}
+          </PrimaryButton>
+        )}
 
       {showJoinModal && (
         <JoinModal competition={competition} onClose={() => setShowJoinModal(false)} open={showJoinModal} />

@@ -5,6 +5,7 @@ import Dropdown from '@/components/dropdown'
 import Popover from '@/components/popover'
 import Tabs from '@/components/tabs'
 import Toggle from '@/components/toggle'
+import { TC_MARKET_TYPES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 
 export const FILTERS = {
@@ -26,34 +27,33 @@ function FilterDropDown({ filter, setFilter }) {
             data={[
               {
                 label: t('All'),
-                active: filter.market === 'all' || filter.market === null,
+                active: filter.market === TC_MARKET_TYPES.ALL.toLowerCase() || filter.market === null,
                 onClickHandler: () => {
                   setFilter({
                     ...filter,
-                    market: 'all',
+                    market: TC_MARKET_TYPES.ALL.toLowerCase(),
                   })
                 },
               },
               {
                 label: t('Spot'),
-                active: filter.market === 'spot',
+                active: filter.market === TC_MARKET_TYPES.SPOT.toLowerCase(),
                 onClickHandler: () => {
                   setFilter({
                     ...filter,
-                    market: 'spot',
+                    market: TC_MARKET_TYPES.SPOT.toLowerCase(),
                   })
                 },
               },
               {
                 label: t('Perpetual'),
-                active: filter.market === 'perpetual',
+                active: filter.market === TC_MARKET_TYPES.PERPETUAL.toLowerCase(),
                 onClickHandler: () => {
                   setFilter({
                     ...filter,
-                    market: 'perpetual',
+                    market: TC_MARKET_TYPES.PERPETUAL.toLowerCase(),
                   })
                 },
-                disabled: true,
               },
             ]}
             size={SizeTypes.Small}

@@ -1,31 +1,41 @@
+import BigNumber from 'bignumber.js'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { Alert } from '@/components/alert'
 import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
+import Input from '@/components/input'
+import LabelTooltip from '@/components/label/LabelTooltip'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { TC_MARKET_TYPES } from '@/constant'
+import { useJoinTCPerpetual } from '@/hooks/useTcPerpetualContract'
 import { useJoinTC } from '@/hooks/useTcSpotContract'
+import { warnToast } from '@/lib/notify'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
 export function JoinModal({ competition, open, onClose }) {
   const t = useTranslations()
+  const [name, setName] = useState('')
+
   const {
     entryFee,
     prize: { token: prizeToken },
     competitionRules: { startingBalance, winningToken },
+    market,
   } = competition
   const { push } = useRouter()
 
   const { joinTC, pending } = useJoinTC()
+  const { joinTCPerpetual, pending: pendingPerpetual } = useJoinTCPerpetual()
 
   const showAlertBalance = useMemo(() => {
     if (prizeToken.address === winningToken.address) {
       const totalAmount = fromWei(entryFee, prizeToken.decimals).plus(fromWei(startingBalance, winningToken.decimals))
-      const totalBalance = prizeToken.balance.plus(winningToken.balance)
+      const totalBalance = new BigNumber(prizeToken.balance).plus(winningToken.balance)
       return totalAmount.gt(totalBalance)
     }
     const notEnoughFee = fromWei(entryFee, prizeToken.decimals).gt(prizeToken.balance)
@@ -45,7 +55,16 @@ export function JoinModal({ competition, open, onClose }) {
 
   const handleJoin = useCallback(async () => {
     try {
-      const joined = await joinTC(competition)
+      let joined = false
+      if (market === TC_MARKET_TYPES.PERPETUAL) {
+        if (!name.trim()) {
+          warnToast('Name is required')
+          return
+        }
+        joined = await joinTCPerpetual(competition, name.trim())
+      } else {
+        joined = await joinTC(competition)
+      }
       if (joined) {
         push(`/arena/trading-competitions/${competition.id}`)
         onClose()
@@ -53,7 +72,7 @@ export function JoinModal({ competition, open, onClose }) {
     } catch (e) {
       console.error(e)
     }
-  }, [competition, joinTC, onClose, push])
+  }, [competition, joinTC, joinTCPerpetual, market, name, onClose, push])
 
   const message = useMemo(() => {
     if (isInvalidAmount(entryFee)) {
@@ -93,10 +112,24 @@ export function JoinModal({ competition, open, onClose }) {
       <ModalBody>
         <p className='mt-1.5 w-full text-[15px] text-neutral-300  md:text-base md:leading-6'>{message}</p>
         {totalToken ? (
-          <TextHeading className='my-5 block'>
+          <TextHeading className='my-4 block'>
             {t('This means')} <span className='underline'>{totalToken}!</span>
           </TextHeading>
         ) : null}
+        {market === TC_MARKET_TYPES.PERPETUAL && (
+          <div>
+            <LabelTooltip label='Name' required />
+            <Input
+              val={name}
+              onChange={e => {
+                setName(e.target.value)
+              }}
+              placeholder='Enter your name'
+              type='text'
+              required
+            />
+          </div>
+        )}
         <div className='item-centers mt-3 flex flex-row justify-between gap-4 md:mt-5'>
           {!isInvalidAmount(entryFee) && prizeToken && (
             <div>
@@ -158,7 +191,12 @@ export function JoinModal({ competition, open, onClose }) {
         <EmphasisButton className='w-full' onClick={onClose}>
           {t('Cancel')}
         </EmphasisButton>
-        <PrimaryButton className='w-full' onClick={handleJoin} disabled={showAlertBalance} isLoading={pending}>
+        <PrimaryButton
+          className='w-full'
+          onClick={handleJoin}
+          disabled={showAlertBalance}
+          isLoading={pending || pendingPerpetual}
+        >
           {t('Join Competition')}
         </PrimaryButton>
       </ModalFooter>
