@@ -40,11 +40,11 @@ function AnalyticChart({ numberFormat, chartData, protocolData, valueProperty, C
     if (setFilter) {
       switch (period) {
         case 1:
-          return setFilter(dayjs().subtract(1, 'month').utc().format())
+          return setFilter(dayjs().subtract(1, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'))
         case 3:
-          return setFilter(dayjs().subtract(3, 'month').utc().format())
+          return setFilter(dayjs().subtract(3, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'))
         case 6:
-          return setFilter(dayjs().subtract(6, 'month').utc().format())
+          return setFilter(dayjs().subtract(6, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'))
         default:
           return setFilter(null)
       }
