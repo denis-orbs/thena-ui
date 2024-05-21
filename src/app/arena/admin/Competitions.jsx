@@ -1,6 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import { cloneDeep } from 'lodash'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -147,7 +148,19 @@ function Competitions() {
   const t = useTranslations()
   const [selectedTab, setSelectedTab] = useState(tabs[0])
   const [searchText, setSearchText] = useState('')
-  const assets = useAssets()
+  const _assets = useAssets()
+
+  const assets = useMemo(() => {
+    const clone = cloneDeep(_assets)
+    clone.push({
+      name: 'MockUSD',
+      symbol: 'MUSD',
+      decimals: 18,
+      address: '0xced4ac14bb1077b995b954c48a87b25ebb4828e5',
+    })
+
+    return clone
+  }, [_assets])
   const [refetch, setRefetch] = useState(0)
   const [competitions, setCompetitions] = useState([])
 

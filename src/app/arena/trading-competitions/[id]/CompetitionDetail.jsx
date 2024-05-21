@@ -121,14 +121,16 @@ export function CompetitionDetail({ competition, isPreview = false }) {
               <TextHeading className='text-lg'>{t(`${item.key}`)}</TextHeading>
               {item.ticker ? (
                 <div className='flex space-x-2'>
-                  <Image
-                    alt={item.ticker}
-                    src={`https://cdn.thena.fi/assets/${item.ticker}.png`}
-                    className='h-5 w-5 flex-shrink-0'
-                    width={20}
-                    height={20}
-                    loading='lazy'
-                  />
+                  {item.ticker !== 'MUSD' && (
+                    <Image
+                      alt={item.ticker}
+                      src={`https://cdn.thena.fi/assets/${item.ticker}.png`}
+                      className='h-5 w-5 flex-shrink-0'
+                      width={20}
+                      height={20}
+                      loading='lazy'
+                    />
+                  )}
                   <Paragraph>{`${item.data ? `${item.data} ` : ''}${item.ticker}`}</Paragraph>
                 </div>
               ) : (

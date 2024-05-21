@@ -35,8 +35,8 @@ export async function generateMetadata({ params }) {
 
   const metadata = {
     name: competition?.name ?? 'competition',
-    token: findAsset?.symbol ?? 'token',
-    prize: formatAmount(fromWei(competition?.prize?.totalPrize, findAsset.decimals)),
+    token: findAsset?.symbol ?? 'MUSD',
+    prize: formatAmount(fromWei(competition?.prize?.totalPrize, findAsset?.decimals)),
     image: [competition?.bannerUrl, `${siteConfig.url}/cover.png`],
   }
 

@@ -92,7 +92,18 @@ export default function ArenaPage() {
 
   const { data: dataCompetitions, isLoading } = useSWR('competition api', () => fetchCompetition())
 
-  const assets = useAssets()
+  const _assets = useAssets()
+
+  const assets = useMemo(() => {
+    const clone = cloneDeep(_assets)
+    clone.push({
+      name: 'MockUSD',
+      symbol: 'MUSD',
+      decimals: 18,
+      address: '0xced4ac14bb1077b995b954c48a87b25ebb4828e5',
+    })
+    return clone
+  }, [_assets])
 
   const [firstTime, setFirstTime] = useState(true)
 

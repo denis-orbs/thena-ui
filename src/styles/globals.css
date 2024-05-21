@@ -100,6 +100,12 @@
     background-size: 400% 400%;
     animation: gradient 5s ease infinite;
   }
+
+	.table__animate-gradient {
+		background: linear-gradient(270deg, #8c6ac5, #6d156a, #9765ec);
+    background-size: 400% 400%;
+    animation: gradient 5s ease infinite;
+	}
 }
 
 ::-webkit-scrollbar {

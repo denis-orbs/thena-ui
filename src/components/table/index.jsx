@@ -277,7 +277,7 @@ function Table({
                       id={`table-row-${eleIdx}`}
                       className={
                         eleIdx === hightLightIndex
-                          ? 'animate-gradient bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+                          ? 'table__animate-gradient bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
                           : ''
                       }
                     >
