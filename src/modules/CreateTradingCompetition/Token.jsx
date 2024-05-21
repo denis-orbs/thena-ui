@@ -6,11 +6,12 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import CreateTcMultiSelect from '@/components/dropdown/CreateTcMultiselect'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { TC_MARKET_TYPES } from '@/constant'
+import { LIST_PAIRS, TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { formatAmount } from '@/lib/utils'
 
@@ -113,7 +114,7 @@ function Token({ data, setData }) {
           </button>
         </div>
       </div>
-      {isSpotType && (
+      {isSpotType ? (
         <div className='mt-3'>
           <LabelTooltip
             id='trading-competition-tradable-tokens'
@@ -132,6 +133,35 @@ function Token({ data, setData }) {
             <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>
               <Image src='/svgs/chevron-down.svg' alt='down icon' width={20} height={20} />
             </div>
+          </div>
+        </div>
+      ) : (
+        <div className='mt-3'>
+          <LabelTooltip
+            id='pairs'
+            label='Pairs'
+            showInfoIcon={false}
+            // tooltip='Here you can select whether you would like your participants to trade in any assets or with certain assets only.'
+            required
+          />
+          <div className='flex cursor-pointer items-center'>
+            <CreateTcMultiSelect
+              data={Object.entries(LIST_PAIRS).map(([key, label]) => ({
+                key: Number(key),
+                label,
+              }))}
+              selected={data.competitionRules.pairIds}
+              setSelected={val => {
+                setData({
+                  ...data,
+                  competitionRules: {
+                    ...data.competitionRules,
+                    pairIds: val,
+                  },
+                })
+              }}
+              placeHolder='Select pairs'
+            />
           </div>
         </div>
       )}
