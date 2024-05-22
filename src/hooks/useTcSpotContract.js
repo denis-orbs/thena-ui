@@ -83,7 +83,8 @@ export const useTCContractInfor = (address, eventType, maxWinner) => {
             const winnersList = await getWinnersList()
             const claimable = await readCall(tcSpotContract, 'claimable', [account])
             const isClaimed =
-              winnersList.length && winnersList.some(claimed => claimed.toLowerCase() === account.toLowerCase())
+              winnersList.length &&
+              winnersList.some(claimed => claimed && claimed.toLowerCase() === account.toLowerCase())
             const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
             if (!token || isClaimed) {
               setIsClaimable(false)
