@@ -15,7 +15,7 @@ import { useTxn } from '@/state/transactions/hooks'
 
 const MAX_RETRIES = 3
 
-export const useTCContractInfor = (address, eventType, maxWinner) => {
+export const useTCContractInfor = (address, eventType, participantCount) => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
@@ -58,10 +58,10 @@ export const useTCContractInfor = (address, eventType, maxWinner) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, eventType, address])
 
-  const getWinnersList = useCallback(async () => {
-    if (maxWinner) {
+  const getParticipantList = useCallback(async () => {
+    if (participantCount) {
       const result = await Promise.all(
-        Array.from({ length: maxWinner }).map(async (_, index) => {
+        Array.from({ length: participantCount }).map(async (_, index) => {
           try {
             return await readCall(tcSpotContract, 'winnersList', [index])
           } catch (error) {
@@ -73,17 +73,18 @@ export const useTCContractInfor = (address, eventType, maxWinner) => {
       return result
     }
     return []
-  }, [tcSpotContract, maxWinner])
+  }, [tcSpotContract, participantCount])
 
   const checkClaimable = useCallback(
     async (force = false) => {
       if ((eventType === EVENT_TYPES.ENDED && isClaimable === undefined) || force) {
         try {
           if (isRegistered && isWinner) {
-            const winnersList = await getWinnersList()
+            const winnersList = await getParticipantList()
             const claimable = await readCall(tcSpotContract, 'claimable', [account])
             const isClaimed =
-              winnersList.length && winnersList.some(claimed => claimed.toLowerCase() === account.toLowerCase())
+              winnersList.length &&
+              winnersList.some(claimed => claimed && claimed.toLowerCase() === account.toLowerCase())
             const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
             if (!token || isClaimed) {
               setIsClaimable(false)
@@ -113,7 +114,18 @@ export const useTCContractInfor = (address, eventType, maxWinner) => {
         }
       }
     },
-    [account, assets, eventType, getWinnersList, isClaimable, isOwner, isRegistered, isWinner, retries, tcSpotContract],
+    [
+      account,
+      assets,
+      eventType,
+      getParticipantList,
+      isClaimable,
+      isOwner,
+      isRegistered,
+      isWinner,
+      retries,
+      tcSpotContract,
+    ],
   )
 
   const checkWithdrawable = useCallback(
