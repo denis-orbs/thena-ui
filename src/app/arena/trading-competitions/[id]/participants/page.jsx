@@ -49,18 +49,18 @@ const getCompetitionParticipants = async id => {
 
 const V4_TRADE_RANK_DATA = gql`
   query V4_TRADE_RANK($participantIds: [String!]!) {
-    tradeRankByParticipants(participantIds: $participantIds) {
-      rank
-      volume
-      address
+    userLeaderboards(where: { id_in: $participantIds }) {
+      tradeVolume
+      rankVolume
+      id
     }
   }
 `
 
-const getTradeRankByAddress = async participantIds => {
+const getTradeRank = async participantIds => {
   try {
-    const { tradeRankByParticipants } = await v4Client.request(V4_TRADE_RANK_DATA, { participantIds })
-    return tradeRankByParticipants
+    const { userLeaderboards } = await v4Client.request(V4_TRADE_RANK_DATA, { participantIds })
+    return userLeaderboards
   } catch (error) {
     return { error: true }
   }
@@ -73,21 +73,16 @@ const fetchCompetitionParticipationData = async id => {
     if (competition.participants.length) {
       const participantIds = competition.participants.map(participant => participant.participant.id)
 
-      const ranks = await getTradeRankByAddress(participantIds)
-
-      const rankMap = {}
-      ranks.forEach(rank => {
-        rankMap[rank.address.toLowerCase()] = rank
-      })
+      const ranks = await getTradeRank(participantIds)
 
       competition.participants = competition.participants.map(participant => {
         const address = participant.participant.id.toLowerCase()
-        const rankInfo = rankMap[address]
+        const rank = ranks.find(item => item.id.toLowerCase() === address)
 
         return {
           ...participant,
-          rank: rankInfo?.rank,
-          volume: rankInfo?.volume,
+          rank: rank?.rankVolume,
+          volume: rank?.tradeVolume,
         }
       })
     }
