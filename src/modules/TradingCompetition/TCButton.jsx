@@ -26,7 +26,7 @@ export function TCButton({ eventType, competition, timestamp }) {
     isWithdrawable: canWithdraw,
     checkClaimable,
     checkWithdrawable,
-  } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.prize?.weights?.length)
+  } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.participantCount)
 
   const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(competition.tradingCompetitionSpot)
 
