@@ -42,8 +42,16 @@ function Sidebar({ competition, eventType }) {
     isWithdrawable: canWithdraw,
     checkClaimable,
     checkWithdrawable,
-  } = useTCContractInfor(competition.tradingCompetitionSpot, eventType, competition.participantCount)
-  const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(competition.tradingCompetitionSpot)
+  } = useTCContractInfor(
+    competition.tradingCompetitionSpot,
+    eventType,
+    competition.participantCount,
+    competition.market,
+  )
+  const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(
+    competition.tradingCompetitionSpot,
+    competition.market,
+  )
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
   const [copied, setCopied] = useState(false)

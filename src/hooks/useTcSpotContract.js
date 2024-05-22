@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
-import { TXN_STATUS } from '@/constant'
+import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
@@ -15,7 +15,7 @@ import { useTxn } from '@/state/transactions/hooks'
 
 const MAX_RETRIES = 3
 
-export const useTCContractInfor = (address, eventType, participantCount) => {
+export const useTCContractInfor = (address, eventType, participantCount, type = TC_MARKET_TYPES.SPOT) => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
@@ -34,7 +34,7 @@ export const useTCContractInfor = (address, eventType, participantCount) => {
     setLoaded(false)
 
     if (address) {
-      if (!account || !tcSpotContract) {
+      if (!account || !tcSpotContract || type !== TC_MARKET_TYPES.SPOT) {
         setIsRegistered(false)
         setIsWinner(false)
         setIsOwner(false)
@@ -56,7 +56,7 @@ export const useTCContractInfor = (address, eventType, participantCount) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, eventType, address])
+  }, [account, eventType, address, type])
 
   const getParticipantList = useCallback(async () => {
     if (participantCount) {
@@ -65,7 +65,6 @@ export const useTCContractInfor = (address, eventType, participantCount) => {
           try {
             return await readCall(tcSpotContract, 'winnersList', [index])
           } catch (error) {
-            console.error(error)
             return undefined
           }
         }),
@@ -77,39 +76,41 @@ export const useTCContractInfor = (address, eventType, participantCount) => {
 
   const checkClaimable = useCallback(
     async (force = false) => {
-      if ((eventType === EVENT_TYPES.ENDED && isClaimable === undefined) || force) {
-        try {
-          if (isRegistered && isWinner) {
-            const winnersList = await getParticipantList()
-            const claimable = await readCall(tcSpotContract, 'claimable', [account])
-            const isClaimed =
-              winnersList.length &&
-              winnersList.some(claimed => claimed && claimed.toLowerCase() === account.toLowerCase())
-            const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
-            if (!token || isClaimed) {
-              setIsClaimable(false)
-            } else {
-              const totalClaimable = fromWei(claimable[0], token.decimals)
-              setIsClaimable(!totalClaimable.isZero())
+      if (type === TC_MARKET_TYPES.SPOT) {
+        if ((eventType === EVENT_TYPES.ENDED && isClaimable === undefined) || force) {
+          try {
+            if (isRegistered && isWinner) {
+              const winnersList = await getParticipantList()
+              const claimable = await readCall(tcSpotContract, 'claimable', [account])
+              const isClaimed =
+                winnersList.length &&
+                winnersList.some(claimed => claimed && claimed.toLowerCase() === account.toLowerCase())
+              const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
+              if (!token || isClaimed) {
+                setIsClaimable(false)
+              } else {
+                const totalClaimable = fromWei(claimable[0], token.decimals)
+                setIsClaimable(!totalClaimable.isZero())
+              }
             }
-          }
-          if (isOwner) {
-            const [ownerClaimed, feeAmount] = await Promise.all([
-              readCall(tcSpotContract, 'ownerHasClaimed', [account]),
-              readCall(tcSpotContract, 'ownerFeeAmount', []),
-            ])
+            if (isOwner) {
+              const [ownerClaimed, feeAmount] = await Promise.all([
+                readCall(tcSpotContract, 'ownerHasClaimed', [account]),
+                readCall(tcSpotContract, 'ownerFeeAmount', []),
+              ])
 
-            if (ownerClaimed) {
+              if (ownerClaimed) {
+                setIsClaimable(false)
+              } else {
+                setIsClaimable(!fromWei(feeAmount).isZero())
+              }
+            }
+          } catch (error) {
+            if (retries === MAX_RETRIES) {
               setIsClaimable(false)
             } else {
-              setIsClaimable(!fromWei(feeAmount).isZero())
+              setRetries(retries + 1)
             }
-          }
-        } catch (error) {
-          if (retries === MAX_RETRIES) {
-            setIsClaimable(false)
-          } else {
-            setRetries(retries + 1)
           }
         }
       }
@@ -125,29 +126,32 @@ export const useTCContractInfor = (address, eventType, participantCount) => {
       isWinner,
       retries,
       tcSpotContract,
+      type,
     ],
   )
 
   const checkWithdrawable = useCallback(
     async (force = false) => {
-      if ((eventType === EVENT_TYPES.ENDED && isWithdrawable === undefined) || force) {
-        try {
-          if (isRegistered) {
-            const userBalanceRes = await readCall(tcSpotContract, 'userBalance', [account])
-            const userBalance = userBalanceRes[0]
-            const hasBalance = Array.isArray(userBalance) && userBalance.some(item => new BigNumber(item).gt(0))
-            setIsWithdrawable(hasBalance)
-          }
-        } catch (error) {
-          if (withdrawRetries === MAX_RETRIES) {
-            setIsWithdrawable(false)
-          } else {
-            setWithdrawRetries(withdrawRetries + 1)
+      if (type === TC_MARKET_TYPES.SPOT) {
+        if ((eventType === EVENT_TYPES.ENDED && isWithdrawable === undefined) || force) {
+          try {
+            if (isRegistered) {
+              const userBalanceRes = await readCall(tcSpotContract, 'userBalance', [account])
+              const userBalance = userBalanceRes[0]
+              const hasBalance = Array.isArray(userBalance) && userBalance.some(item => new BigNumber(item).gt(0))
+              setIsWithdrawable(hasBalance)
+            }
+          } catch (error) {
+            if (withdrawRetries === MAX_RETRIES) {
+              setIsWithdrawable(false)
+            } else {
+              setWithdrawRetries(withdrawRetries + 1)
+            }
           }
         }
       }
     },
-    [account, eventType, isRegistered, isWithdrawable, withdrawRetries, tcSpotContract],
+    [type, eventType, isWithdrawable, isRegistered, tcSpotContract, account, withdrawRetries],
   )
 
   useEffect(() => {
