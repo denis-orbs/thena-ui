@@ -39,7 +39,12 @@ export function WrapLayout({ children, params }) {
 
   const { eventType } = useEventType(competition?.timestamp)
 
-  const { isRegistered, loaded } = useTCContractInfor(competition?.tradingCompetitionSpot)
+  const { isRegistered, loaded } = useTCContractInfor(
+    competition?.tradingCompetitionSpot,
+    undefined,
+    undefined,
+    competition?.market,
+  )
 
   const tradingTokens = useMemo(() => {
     const tokens = competition?.competitionRules?.tradingTokens || []

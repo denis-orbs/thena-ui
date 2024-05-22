@@ -4,14 +4,14 @@ import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
-import { TXN_STATUS } from '@/constant'
+import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTcPerpetualContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useTCPerpetualInfor = tcSpot => {
+export const useTCPerpetualInfor = (tcSpot, type = TC_MARKET_TYPES.PERPETUAL) => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
@@ -23,7 +23,7 @@ export const useTCPerpetualInfor = tcSpot => {
     setLoaded(false)
 
     if (tcSpot) {
-      if (!account) {
+      if (!account || type !== TC_MARKET_TYPES.PERPETUAL) {
         setIsRegistered(false)
         setIsWinner(false)
         setIsOwner(false)
@@ -48,7 +48,7 @@ export const useTCPerpetualInfor = tcSpot => {
 
       setLoaded(true)
     }
-  }, [account, tcSpot])
+  }, [account, tcSpot, type])
 
   useEffect(() => {
     getUserData()

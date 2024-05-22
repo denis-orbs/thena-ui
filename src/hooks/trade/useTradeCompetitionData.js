@@ -30,6 +30,7 @@ const V4_TRADE_COMPETITION_DATA = gql`
       tradingCompetitionSpot
       participantCount
       name
+      market
     }
   }
 `
