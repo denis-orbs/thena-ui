@@ -1,16 +1,25 @@
 import { gql } from 'graphql-request'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import LineChart from '@/components/charts/LineChart'
+import MultipleLineChart from '@/components/charts/MultipleLineChart'
+import Tabs, { TabPanel } from '@/components/tabs'
 import { v4Client } from '@/lib/graphql'
 
 import AnalyticChart from './AnalyticChart'
+import { TCLines } from './constants'
 
 const V4_VOLUME_ANALYTICS = gql`
   query V4_VOLUME_ANALYTICS($where: ArenaAnalyticsWhereInput) {
     arenaAnalytics(where: $where, orderBy: date_ASC) {
-      arenaVolume
+      arenaVolume {
+        cumulativePerpetual
+        cumulativeTotal
+        cumulativeSpot
+        perpetual
+        spot
+        total
+      }
       date
     }
   }
@@ -21,7 +30,30 @@ const fetchCreatedTC = async date => {
     const { arenaAnalytics } = await v4Client.request(V4_VOLUME_ANALYTICS, {
       where,
     })
-    return arenaAnalytics
+    if (arenaAnalytics) {
+      const spotData = []
+      const perpetualData = []
+      const totalData = []
+      arenaAnalytics.forEach(item => {
+        spotData.push({
+          date: item.date,
+          total: item.arenaVolume.spot,
+          cumulativeTotal: item.arenaVolume.cumulativeSpot,
+        })
+        perpetualData.push({
+          date: item.date,
+          total: item.arenaVolume.perpetual,
+          cumulativeTotal: item.arenaVolume.cumulativePerpetual,
+        })
+        totalData.push({
+          date: item.date,
+          total: item.arenaVolume.total,
+          cumulativeTotal: item.arenaVolume.cumulativeTotal,
+        })
+      })
+
+      return [[...spotData], [...perpetualData], [...totalData]]
+    }
   } catch (error) {
     return null
   }
@@ -32,13 +64,51 @@ export function VolumeChart() {
 
   const { data: dataChart } = useSWR(['analytic volume', filter], () => fetchCreatedTC(filter))
 
+  const [tabPanel, setTabPanel] = useState('New')
+
+  const panel = useMemo(
+    () => [
+      {
+        label: 'New',
+        active: tabPanel === 'New',
+        onClickHandler: () => {
+          setTabPanel('New')
+        },
+      },
+      {
+        label: 'Cumulative',
+        active: tabPanel === 'Cumulative',
+        onClickHandler: () => {
+          setTabPanel('Cumulative')
+        },
+      },
+    ],
+    [tabPanel],
+  )
+
   return (
-    <AnalyticChart
-      ChartComponent={LineChart}
-      chartData={dataChart}
-      valueProperty='arenaVolume'
-      protocolData={dataChart && dataChart.at(-1)}
-      setFilter={setFilter}
-    />
+    <>
+      <Tabs data={panel} className='my-2 justify-start' />
+      <TabPanel value={tabPanel} select='New'>
+        <AnalyticChart
+          ChartComponent={MultipleLineChart}
+          chartsData={dataChart}
+          valueProperty='total'
+          protocolData={dataChart && dataChart.map(item => item.at(-1))}
+          lines={TCLines}
+          setFilter={setFilter}
+        />
+      </TabPanel>
+      <TabPanel value={tabPanel} select='Cumulative'>
+        <AnalyticChart
+          ChartComponent={MultipleLineChart}
+          chartsData={dataChart}
+          valueProperty='cumulativeTotal'
+          protocolData={dataChart && dataChart.map(item => item.at(-1))}
+          lines={TCLines}
+          setFilter={setFilter}
+        />
+      </TabPanel>
+    </>
   )
 }

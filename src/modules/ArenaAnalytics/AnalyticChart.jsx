@@ -1,5 +1,7 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { isNumber } from 'lodash'
+import { useTranslations } from 'next-intl'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
@@ -10,7 +12,18 @@ import { formatAmount } from '@/lib/utils'
 
 dayjs.extend(utc)
 
-function AnalyticChart({ numberFormat, chartData, protocolData, valueProperty, ChartComponent, setFilter }) {
+function AnalyticChart({
+  numberFormat,
+  chartData,
+  chartsData,
+  protocolData,
+  valueProperty,
+  ChartComponent,
+  setFilter,
+  lines,
+}) {
+  const t = useTranslations()
+
   const [period, setPeriod] = useState(0)
   const [hover, setHover] = useState()
   const [dateHover, setDateHover] = useState()
@@ -21,10 +34,14 @@ function AnalyticChart({ numberFormat, chartData, protocolData, valueProperty, C
 
   useEffect(() => {
     if (typeof hover === 'undefined' && protocolData) {
-      setHover(protocolData[valueProperty])
+      if (chartsData) {
+        setHover(protocolData.map(item => item[valueProperty]))
+      } else {
+        setHover(protocolData[valueProperty])
+      }
       setDateHover()
     }
-  }, [protocolData, hover, valueProperty])
+  }, [protocolData, hover, valueProperty, chartsData])
 
   const formattedData = useMemo(() => {
     if (chartData) {
@@ -33,8 +50,18 @@ function AnalyticChart({ numberFormat, chartData, protocolData, valueProperty, C
         value: day[valueProperty],
       }))
     }
+
+    if (chartsData) {
+      return chartsData.map(chart =>
+        chart.map(day => ({
+          time: dayjs(day.date).toDate(),
+          value: day[valueProperty],
+        })),
+      )
+    }
+
     return []
-  }, [chartData, valueProperty])
+  }, [chartData, chartsData, valueProperty])
 
   useEffect(() => {
     if (setFilter) {
@@ -89,8 +116,24 @@ function AnalyticChart({ numberFormat, chartData, protocolData, valueProperty, C
     <Box>
       <div className='flex items-start justify-between'>
         <div className='flex flex-col gap-1'>
-          {Number(hover) > -1 ? ( // sometimes data is 0
-            <TextHeading className='text-2xl'>{numberFormat ? hover : `$${formatAmount(hover)}`}</TextHeading>
+          {hover !== undefined ? (
+            isNumber(hover) ? ( // sometimes data is 0
+              <TextHeading className='text-2xl'>{numberFormat ? hover : `$${formatAmount(hover)}`}</TextHeading>
+            ) : (
+              <div className='flex gap-2'>
+                {hover.map((h, index) => (
+                  <TextHeading
+                    className='text-base'
+                    style={{
+                      color: lines?.[index]?.color ?? undefined,
+                    }}
+                  >
+                    {lines?.[index]?.label ? `${t(lines[index].label)} :` : ''}{' '}
+                    {numberFormat ? h : `$${formatAmount(h, false, 3)}`}
+                  </TextHeading>
+                ))}
+              </div>
+            )
           ) : (
             <Skeleton className='h-[32px] w-[128px]' />
           )}
