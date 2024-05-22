@@ -6,6 +6,7 @@ import { mutate } from 'swr'
 import { CompetitionCardHeader } from '@/app/arena/CompetitionCardHeader'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody } from '@/components/modal'
+import Spinner from '@/components/spinner'
 import { TextSubHeading } from '@/components/typography'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useUploadBanner } from '@/hooks/useUploadFile'
@@ -95,7 +96,8 @@ export function EditBannerModal({ competition, open, onClose }) {
           <EmphasisButton className='w-full' onClick={onClose}>
             {t('Cancel')}
           </EmphasisButton>
-          <PrimaryButton className='w-full' onClick={handleSave} disabled={loading}>
+          <PrimaryButton className='flex w-full gap-1' onClick={handleSave} disabled={loading}>
+            {loading && <Spinner />}
             {t('Save Change')}
           </PrimaryButton>
         </div>
