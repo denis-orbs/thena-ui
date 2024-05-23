@@ -2,10 +2,10 @@
 
 'use client'
 
+import BigNumber from 'bignumber.js'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
-import useSWR from 'swr'
 
 import CreateTcMultiSelect from '@/components/dropdown/CreateTcMultiselect'
 import CircleImage from '@/components/image/CircleImage'
@@ -16,7 +16,6 @@ import { TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { formatAmount } from '@/lib/utils'
 
-import { fetchListPairs } from '.'
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
 
@@ -26,10 +25,6 @@ function Token({ data, setData }) {
   const { tradingTokens, isAllowedPerpetual, pairLists } = useTC()
 
   const t = useTranslations()
-
-  useEffect(() => {
-    console.log({ pairLists })
-  }, [pairLists])
 
   const isSpotType = useMemo(() => data.market === TC_MARKET_TYPES.SPOT, [data.market])
 
@@ -41,21 +36,16 @@ function Token({ data, setData }) {
     [tradingTokens],
   )
 
-  const { data: res } = useSWR('list pairs', () => fetchListPairs(), {
-    refreshInterval: 30000,
-    revalidateOnFocus: true,
-  })
-
   const dataListPairs = useMemo(() => {
-    if (res && Array.isArray(res.symbols)) {
-      const result = res.symbols.map(item => ({
-        key: Number(item.symbol_id),
+    if (pairLists && Array.isArray(pairLists)) {
+      const result = pairLists.map(item => ({
+        key: new BigNumber(item.symbolId).toNumber(),
         label: item.name,
       }))
       return result
     }
     return []
-  }, [res])
+  }, [pairLists])
 
   useEffect(() => {
     const { winningToken } = data.competitionRules
