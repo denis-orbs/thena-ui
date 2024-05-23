@@ -23,9 +23,13 @@ import CustomTokenModal from '../TokenModal/CustomTokenModal'
 function Token({ data, setData }) {
   const [isTradeOpen, setIsTradeOpen] = useState(false)
   const [isWinningOpen, setIsWinningOpen] = useState(false)
-  const { tradingTokens, isAllowedPerpetual } = useTC()
+  const { tradingTokens, isAllowedPerpetual, pairLists } = useTC()
 
   const t = useTranslations()
+
+  useEffect(() => {
+    console.log({ pairLists })
+  }, [pairLists])
 
   const isSpotType = useMemo(() => data.market === TC_MARKET_TYPES.SPOT, [data.market])
 
