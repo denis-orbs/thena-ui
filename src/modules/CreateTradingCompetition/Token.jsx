@@ -176,7 +176,6 @@ function Token({ data, setData }) {
                   },
                 })
               }}
-              placeHolder='Select pairs'
             />
           </div>
         </div>
