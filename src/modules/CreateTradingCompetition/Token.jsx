@@ -5,16 +5,18 @@
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
+import useSWR from 'swr'
 
 import CreateTcMultiSelect from '@/components/dropdown/CreateTcMultiselect'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { LIST_PAIRS, TC_MARKET_TYPES } from '@/constant'
+import { TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { formatAmount } from '@/lib/utils'
 
+import { fetchListPairs } from '.'
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
 
@@ -22,6 +24,7 @@ function Token({ data, setData }) {
   const [isTradeOpen, setIsTradeOpen] = useState(false)
   const [isWinningOpen, setIsWinningOpen] = useState(false)
   const { tradingTokens, isAllowedPerpetual } = useTC()
+
   const t = useTranslations()
 
   const isSpotType = useMemo(() => data.market === TC_MARKET_TYPES.SPOT, [data.market])
@@ -33,6 +36,22 @@ function Token({ data, setData }) {
       ),
     [tradingTokens],
   )
+
+  const { data: res } = useSWR('list pairs', () => fetchListPairs(), {
+    refreshInterval: 30000,
+    revalidateOnFocus: true,
+  })
+
+  const dataListPairs = useMemo(() => {
+    if (res && Array.isArray(res.symbols)) {
+      const result = res.symbols.map(item => ({
+        key: Number(item.symbol_id),
+        label: item.name,
+      }))
+      return result
+    }
+    return []
+  }, [res])
 
   useEffect(() => {
     const { winningToken } = data.competitionRules
@@ -162,10 +181,7 @@ function Token({ data, setData }) {
           />
           <div className='flex cursor-pointer items-center'>
             <CreateTcMultiSelect
-              data={Object.entries(LIST_PAIRS).map(([key, label]) => ({
-                key: Number(key),
-                label,
-              }))}
+              data={dataListPairs}
               selected={data.competitionRules.pairIds}
               setSelected={val => {
                 setData({

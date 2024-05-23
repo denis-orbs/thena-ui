@@ -22,33 +22,15 @@ function CreateTcMultiSelect({ className, data, selected, setSelected }) {
     return arr
   }, [data, searchText])
 
-  const textInput = useMemo(() => {
-    if (selected.find(item => item === 0) !== undefined) {
-      return 'ALL'
-    }
-    return data
-      .filter(item => selected.includes(item.key))
-      .map(item => item.label)
-      .join(', ')
-  }, [data, selected])
-
   const handleCheckBox = item => {
-    const temp = [...selected]
-    if (temp.find(_item => _item === item.key) !== undefined) {
-      if (item.key !== 0) {
-        setSelected(temp.filter(_item => _item !== item.key && _item !== 0))
-      } else {
-        setSelected([])
-      }
-    } else if (item.key !== 0) {
-      temp.push(item.key)
-      if (temp.length === data.length - 1) {
-        setSelected(data.map(_item => _item.key))
-      } else {
-        setSelected([...temp])
-      }
+    let temp = [...selected]
+    const isChecked = temp.find(_item => _item === item.key)
+    if (isChecked) {
+      temp = selected.filter(ele => ele !== item.key)
+      setSelected(temp)
     } else {
-      setSelected(data.map(_item => _item.key))
+      temp.push(item.key)
+      setSelected(temp)
     }
   }
 
@@ -59,7 +41,7 @@ function CreateTcMultiSelect({ className, data, selected, setSelected }) {
           input: cn('cursor-pointer caret-transparent w-full', className),
         }}
         type='text'
-        val={textInput}
+        val={selected.length ? `${selected.length} Selected` : ''}
         onClick={() => setOpen(!open)}
         placeholder='Select Pairs'
         TrailingIcon={
@@ -82,6 +64,21 @@ function CreateTcMultiSelect({ className, data, selected, setSelected }) {
           <div>
             <SearchInput className='w-full' val={searchText} setVal={setSearchText} placeholder='Search' autoFocus />
             <div className='my-6 h-px w-full border border-neutral-700' />
+            <div className='mb-4 flex justify-between px-6'>
+              <span className='text-gray-400'>{selected.length} Selected</span>
+              <span
+                className='cursor-pointer text-primary-400'
+                onClick={() => {
+                  if (selected.length > 0) {
+                    setSelected([])
+                  } else {
+                    setSelected(data.map(_item => _item.key))
+                  }
+                }}
+              >
+                {selected.length > 0 ? 'Clear All' : 'Select All'}
+              </span>
+            </div>
             <div className='max-h-[400px] overflow-y-auto'>
               {filterData.map((item, idx) => (
                 <div
