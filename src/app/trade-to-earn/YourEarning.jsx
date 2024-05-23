@@ -1,3 +1,5 @@
+'use client'
+
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -17,11 +19,16 @@ import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
 import { readCall } from '@/lib/contractActions'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { fetchDataTotalVolume, useClaimRewardMutation, useGetMuonMutation } from '@/modules/TradeToEarn'
+import {
+  fetchDataEarnings,
+  fetchDataTradeToEarnCount,
+  useClaimRewardMutation,
+  useGetMuonMutation,
+} from '@/modules/TradeToEarn'
 
 dayjs.extend(utc)
 
-function YourEarning({ earnings = [], refetchEarnings, setPending }) {
+function YourEarning({ setPending }) {
   const assets = useAssets()
 
   const [refetchCount, setRefetchCount] = useState(0)
@@ -70,14 +77,6 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
     [],
   )
 
-  const { data: totalVolume } = useQuery({
-    queryKey: ['getTotalVolumeEveryDay'],
-    queryFn: () =>
-      fetchDataTotalVolume('0x0000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000000'),
-    refetchInterval: 30000,
-    gcTime: 0,
-  })
-
   const t = useTranslations()
   const { push } = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
@@ -87,20 +86,36 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
   const [data, setData] = useState([])
   const { dibsRewarder, currentDay } = useDibsRewarder()
 
-  const getDataCallback = useCallback(async () => {
-    if (earnings.length) {
-      const items = []
-      for (const item of earnings) {
-        const totalRewardADay = await fetchTotalRewardADay(item.day)
-        const totalTradingADay = totalVolume?.find(totalVolItem => totalVolItem.day === item.day)
-        const earned = []
+  const {
+    data: earnings,
+    refetch: refetchEarnings,
+    isLoading,
+  } = useQuery({
+    queryKey: ['getEarnings', account, currentPage],
+    queryFn: () => fetchDataEarnings(account?.toLowerCase(), currentPage),
+    refetchInterval: 30000,
+    enabled: Boolean(account),
+    gcTime: 0,
+  })
 
-        let isClaimable = false
-        if (totalTradingADay && totalTradingADay.amountAsUser > 0) {
+  const { data: totalItemEarnings } = useQuery({
+    queryKey: ['getTotalCountTradeToEarn', account],
+    queryFn: () => fetchDataTradeToEarnCount(account?.toLowerCase(), 17),
+    refetchInterval: 30000,
+    enabled: Boolean(account),
+    gcTime: 0,
+  })
+
+  const getDataCallback = useCallback(async () => {
+    if (!isLoading) {
+      if (earnings && earnings.length) {
+        const items = []
+        for (const item of earnings) {
+          const totalRewardADay = await fetchTotalRewardADay(item.day)
+          const earned = []
+          let isClaimable = false
           for (const reward of totalRewardADay) {
-            const earnedWei =
-              reward.totalReward *
-              (fromWei(item.amountAsUser).toNumber() / fromWei(totalTradingADay.amountAsUser).toNumber())
+            const earnedWei = reward.totalReward * item.amountPercent
 
             if (account && dibsRewarder) {
               const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
@@ -114,38 +129,37 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
               symbol: reward.symbol,
             })
           }
-        }
-        let inUSD = 0
-        if (earned.length) {
-          inUSD = earned.reduce((accumulator, currentValue, index) => {
-            let price = 1
-            const asset = assets.find(assetItem => assetItem.symbol === earned[index].symbol)
-            if (asset) {
-              price = asset.price
-            }
-            return accumulator + currentValue.total * price
-          }, 0)
-        }
+          let inUSD = 0
+          if (earned.length) {
+            inUSD = earned.reduce((accumulator, currentValue, index) => {
+              let price = 1
+              const asset = assets.find(assetItem => assetItem.symbol === earned[index].symbol)
+              if (asset) {
+                price = asset.price
+              }
+              return accumulator + currentValue.total * price
+            }, 0)
+          }
 
-        if (earned.some(e => e.total)) {
-          const parsedDate = dayjs.unix(trade2EarnStartTime).utc().add(item.day, 'days').format('MMM D, YYYY')
-          items.push({
-            epoch: item.day,
-            date: parsedDate,
-            tradingVolume: item.amountAsUser,
-            earned,
-            inUSD,
-            isClaimable,
-          })
+          if (earned.some(e => e.total)) {
+            const parsedDate = dayjs.unix(trade2EarnStartTime).utc().add(item.day, 'days').format('MMM D, YYYY')
+            items.push({
+              epoch: item.day,
+              date: parsedDate,
+              tradingVolume: item.amountAsUser,
+              earned,
+              inUSD,
+              isClaimable,
+            })
+          }
         }
+        setData(items)
+      } else {
+        setData([])
       }
-
-      setData(items)
-    } else {
-      setData([])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, assets, dibsRewarder, earnings, fetchTotalRewardADay, totalVolume, refetchCount])
+  }, [account, isLoading, earnings, fetchTotalRewardADay, refetchCount])
 
   const { mutateAsync: getMuon, isPending: pendingGetMuon } = useGetMuonMutation()
 
@@ -196,6 +210,10 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
   useEffect(() => {
     getDataCallback()
   }, [getDataCallback])
+
+  useEffect(() => {
+    refetchEarnings()
+  }, [currentPage, refetchEarnings])
 
   const sortedData = useMemo(
     () =>
@@ -294,6 +312,8 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
               setCurrentPage={setCurrentPage}
               sort={sort}
               setSort={setSort}
+              loading={isLoading}
+              totalItems={totalItemEarnings}
             />
           </div>
         )
