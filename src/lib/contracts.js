@@ -22,7 +22,14 @@ import {
   voterAbi,
   wbnbAbi,
 } from '@/constant/abi'
-import { tcManagerAbi, tcPerpetualAbi, tcPerpetualManagerAbi, tcSpotAbi, thenaIdAbi } from '@/constant/abi/core'
+import {
+  tcManagerAbi,
+  tcPerpetualAbi,
+  tcPerpetualManagerAbi,
+  tcPerpPairsAbi,
+  tcSpotAbi,
+  thenaIdAbi,
+} from '@/constant/abi/core'
 import {
   algebraAbi,
   defiedgeStrategyAbi,
@@ -153,6 +160,8 @@ export const getTCPerpetualManagerContract = () =>
 export const getTcSpotContract = address => getContract(tcSpotAbi, address, ChainId.BSC)
 
 export const getTcPerpetualContract = address => getContract(tcPerpetualAbi, address, ChainId.BSC)
+
+export const getTCPerpPairsContract = () => getContract(tcPerpPairsAbi, Contracts.tcPerpPairs, ChainId.BSC)
 
 /** **************************************************************************************************
                                             Thena ID

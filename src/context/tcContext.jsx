@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 import { readCall } from '@/lib/contractActions'
-import { getTCContract, getTCPerpetualManagerContract } from '@/lib/contracts'
+import { getTCContract, getTCPerpetualManagerContract, getTCPerpPairsContract } from '@/lib/contracts'
 import useWallet from '@/lib/wallets/useWallet'
 
 import { useAssets } from './assetsContext'
@@ -11,6 +11,7 @@ const initialState = {
   protocolFee: 0,
   protocolFeeToken: '',
   tradingTokens: [],
+  pairLists: [],
   isAllowedPerpetual: false,
   protocolFeePerpetual: 0,
   protocolFeeTokenPerpetual: '',
@@ -25,6 +26,7 @@ function TCContextProvider({ children }) {
   const [protocolFee, setProtocolFee] = useState()
   const [protocolFeeToken, setProtocolFeeToken] = useState(false)
   const [tradingTokens, setTradingTokens] = useState([])
+  const [pairLists, setPairLists] = useState([])
   const [isAllowed, setIsAllowed] = useState(false)
   const [isAllowedPerpetual, setIsAllowedPerpetual] = useState(false)
   const [protocolFeePerpetual, setProtocolFeePerpetual] = useState()
@@ -34,7 +36,8 @@ function TCContextProvider({ children }) {
     const fetchTotalInfo = async () => {
       const tcManagerContract = getTCContract()
       const tcPerpetualManagerContract = getTCPerpetualManagerContract()
-      const [res0, res1, res2, res3, res4, res5, res6] = await Promise.all([
+      const tcPerpPairsContract = getTCPerpPairsContract()
+      const [res0, res1, res2, res3, res4, res5, res6, res7] = await Promise.all([
         readCall(tcManagerContract, 'isPermissionless', []),
         readCall(tcManagerContract, 'protocol_fee', []),
         readCall(tcManagerContract, 'protocol_fee_token', []),
@@ -42,6 +45,7 @@ function TCContextProvider({ children }) {
         readCall(tcManagerContract, 'isAllowedCreator', [account]),
         readCall(tcPerpetualManagerContract, 'protocol_fee', []),
         readCall(tcPerpetualManagerContract, 'protocol_fee_token', []),
+        readCall(tcPerpPairsContract, 'getSymbols', [0, 500]),
       ])
       const tradeAssets = assets.filter(ele => res3.map(sub => sub.toLowerCase()).includes(ele.address))
       const feeToken = assets.find(ele => ele.address.toLowerCase() === res2.toLowerCase())
@@ -52,6 +56,7 @@ function TCContextProvider({ children }) {
       setIsAllowed(res0 || res4)
       setProtocolFeePerpetual(res5)
       setProtocolFeeTokenPerpetual(feeTokenPerpetual)
+      setPairLists(res7)
     }
 
     const checkIsAllowed = async () => {
@@ -76,7 +81,8 @@ function TCContextProvider({ children }) {
     const checkForGuest = async () => {
       const tcManagerContract = getTCContract()
       const tcPerpetualManagerContract = getTCPerpetualManagerContract()
-      const [res0, res1, res2, res3, res4, res5, res6] = await Promise.all([
+      const tcPerpPairsContract = getTCPerpPairsContract()
+      const [res0, res1, res2, res3, res4, res5, res6, res7] = await Promise.all([
         readCall(tcManagerContract, 'isPermissionless', []),
         readCall(tcManagerContract, 'protocol_fee', []),
         readCall(tcManagerContract, 'protocol_fee_token', []),
@@ -84,6 +90,7 @@ function TCContextProvider({ children }) {
         readCall(tcPerpetualManagerContract, 'isPermissionless', []),
         readCall(tcPerpetualManagerContract, 'protocol_fee', []),
         readCall(tcPerpetualManagerContract, 'protocol_fee_token', []),
+        readCall(tcPerpPairsContract, 'getSymbols', [0, 500]),
       ])
       const tradeAssets = assets.filter(ele => res3.map(sub => sub.toLowerCase()).includes(ele.address))
       const feeToken = assets.find(ele => ele.address.toLowerCase() === res2.toLowerCase())
@@ -95,6 +102,7 @@ function TCContextProvider({ children }) {
       setIsAllowedPerpetual(res4)
       setProtocolFeePerpetual(res5)
       setProtocolFeeTokenPerpetual(feeTokenPerpetual)
+      setPairLists(res7)
     }
 
     if (account && assets.length > 0) {
@@ -136,6 +144,7 @@ function TCContextProvider({ children }) {
       isAllowedPerpetual,
       protocolFeePerpetual,
       protocolFeeTokenPerpetual,
+      pairLists,
     }),
     [
       protocolFee,
@@ -145,6 +154,7 @@ function TCContextProvider({ children }) {
       isAllowedPerpetual,
       protocolFeePerpetual,
       protocolFeeTokenPerpetual,
+      pairLists,
     ],
   )
 

@@ -77,6 +77,9 @@ const Contracts = {
   tcPerpetualManager: {
     [ChainId.BSC]: '0x5b86dDF88d9F75ba794a410532ae4ae9a0985500',
   },
+  tcPerpPairs: {
+    [ChainId.BSC]: '0x9a9f48888600fc9c05f11e03eab575ebb2fc2c8f',
+  },
   fusionRouter: FUSION_ROUTER_ADDRESSES,
   fusionQuoter: FUSION_QUOTER_ADDRESSES,
   nonfungiblePositionManager: NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
