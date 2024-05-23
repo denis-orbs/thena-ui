@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import React, { useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -19,9 +20,9 @@ const V4_FOLLOWING_ANALYTICS = gql`
     }
   }
 `
-const fetchCreatedTC = async date => {
+const fetchCreatedTC = async period => {
   try {
-    const where = date ? { date_gte: date } : {}
+    const where = period ? { date_gte: dayjs().subtract(period, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]') } : {}
     const { arenaAnalytics } = await v4Client.request(V4_FOLLOWING_ANALYTICS, {
       where,
     })
@@ -38,7 +39,7 @@ const fetchCreatedTC = async date => {
   }
 }
 export function FollowingChart() {
-  const [filter, setFilter] = useState(null)
+  const [filter, setFilter] = useState(0)
 
   const { data: dataChart } = useSWR(['analytic following created', filter], () => fetchCreatedTC(filter))
 
@@ -73,6 +74,7 @@ export function FollowingChart() {
           chartData={dataChart}
           valueProperty='total'
           protocolData={dataChart && dataChart.at(-1)}
+          filter={filter}
           setFilter={setFilter}
           numberFormat
         />
@@ -83,6 +85,7 @@ export function FollowingChart() {
           chartData={dataChart}
           valueProperty='cumulativeTotal'
           protocolData={dataChart && dataChart.at(-1)}
+          filter={filter}
           setFilter={setFilter}
           numberFormat
         />

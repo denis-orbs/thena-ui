@@ -1,8 +1,9 @@
+import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import React, { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import MultipleLineChart from '@/components/charts/MultipleLineChart'
+import LineChart from '@/components/charts/LineChart'
 import Tabs, { TabPanel } from '@/components/tabs'
 import { v4Client } from '@/lib/graphql'
 
@@ -24,9 +25,9 @@ const V4_PRIZE_POOL_ANALYTICS = gql`
     }
   }
 `
-const fetchCreatedTC = async date => {
+const fetchCreatedTC = async period => {
   try {
-    const where = date ? { date_gte: date } : {}
+    const where = period ? { date_gte: dayjs().subtract(period, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]') } : {}
     const { arenaAnalytics } = await v4Client.request(V4_PRIZE_POOL_ANALYTICS, {
       where,
     })
@@ -60,12 +61,25 @@ const fetchCreatedTC = async date => {
 }
 
 export function PrizePoolChart() {
-  const [filter, setFilter] = useState(null)
+  const [filter, setFilter] = useState(0)
 
   const { data: dataChart } = useSWR(['analytic prize pool', filter], () => fetchCreatedTC(filter))
 
   const [tabPanel, setTabPanel] = useState('New')
+  const [tabFilter, setTabFilter] = useState('All')
 
+  const chartDataFilter = useMemo(() => {
+    if (dataChart) {
+      switch (tabFilter) {
+        case 'Spot':
+          return dataChart[0]
+        case 'Perpetual':
+          return dataChart[1]
+        default:
+          return dataChart[2]
+      }
+    }
+  }, [dataChart, tabFilter])
   const panel = useMemo(
     () => [
       {
@@ -86,27 +100,59 @@ export function PrizePoolChart() {
     [tabPanel],
   )
 
+  const filterTC = useMemo(
+    () => [
+      {
+        label: 'All',
+        active: tabFilter === 'All',
+        onClickHandler: () => {
+          setTabFilter('All')
+        },
+      },
+      {
+        label: 'Spot',
+        active: tabFilter === 'Spot',
+        onClickHandler: () => {
+          setTabFilter('Spot')
+        },
+      },
+      {
+        label: 'Perpetual',
+        active: tabFilter === 'Perpetual',
+        onClickHandler: () => {
+          setTabFilter('Perpetual')
+        },
+      },
+    ],
+    [tabFilter],
+  )
+
   return (
     <>
-      <Tabs data={panel} className='my-2 justify-start' />
+      <div className='flex justify-between'>
+        <Tabs data={panel} className='my-2 justify-start' />
+        <Tabs data={filterTC} className='my-2 justify-start' />
+      </div>
       <TabPanel value={tabPanel} select='New'>
         <AnalyticChart
-          ChartComponent={MultipleLineChart}
-          chartsData={dataChart}
+          ChartComponent={LineChart}
+          chartData={chartDataFilter}
           valueProperty='total'
-          protocolData={dataChart && dataChart.map(item => item.at(-1))}
+          protocolData={chartDataFilter && chartDataFilter.at(-1)}
           lines={TCLines}
           setFilter={setFilter}
+          filter={filter}
         />
       </TabPanel>
       <TabPanel value={tabPanel} select='Cumulative'>
         <AnalyticChart
-          ChartComponent={MultipleLineChart}
-          chartsData={dataChart}
+          ChartComponent={LineChart}
+          chartData={chartDataFilter}
           valueProperty='cumulativeTotal'
-          protocolData={dataChart && dataChart.map(item => item.at(-1))}
-          lines={TCLines}
+          protocolData={chartDataFilter && chartDataFilter.at(-1)}
           setFilter={setFilter}
+          filter={filter}
+          lines={TCLines}
         />
       </TabPanel>
     </>

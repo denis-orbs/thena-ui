@@ -20,11 +20,11 @@ function AnalyticChart({
   valueProperty,
   ChartComponent,
   setFilter,
+  filter,
   lines,
 }) {
   const t = useTranslations()
 
-  const [period, setPeriod] = useState(0)
   const [hover, setHover] = useState()
   const [dateHover, setDateHover] = useState()
 
@@ -63,53 +63,38 @@ function AnalyticChart({
     return []
   }, [chartData, chartsData, valueProperty])
 
-  useEffect(() => {
-    if (setFilter) {
-      switch (period) {
-        case 1:
-          return setFilter(dayjs().subtract(1, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'))
-        case 3:
-          return setFilter(dayjs().subtract(3, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'))
-        case 6:
-          return setFilter(dayjs().subtract(6, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]'))
-        default:
-          return setFilter(null)
-      }
-    }
-  }, [period, setFilter])
-
   const periods = useMemo(
     () => [
       {
         label: '1M',
-        active: period === 1,
+        active: filter === 1,
         onClickHandler: () => {
-          setPeriod(1)
+          setFilter(1)
         },
       },
       {
         label: '3M',
-        active: period === 3,
+        active: filter === 3,
         onClickHandler: () => {
-          setPeriod(3)
+          setFilter(3)
         },
       },
       {
         label: '6M',
-        active: period === 6,
+        active: filter === 6,
         onClickHandler: () => {
-          setPeriod(6)
+          setFilter(6)
         },
       },
       {
         label: 'All',
-        active: period === 0,
+        active: filter === 0,
         onClickHandler: () => {
-          setPeriod(0)
+          setFilter(0)
         },
       },
     ],
-    [period],
+    [filter, setFilter],
   )
 
   return (

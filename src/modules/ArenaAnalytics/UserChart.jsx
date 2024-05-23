@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import React, { useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -17,9 +18,9 @@ const V4_USER_CREATED_ANALYTICS = gql`
     }
   }
 `
-const fetchCreatedTC = async date => {
+const fetchCreatedTC = async period => {
   try {
-    const where = date ? { date_gte: date } : {}
+    const where = period ? { date_gte: dayjs().subtract(period, 'month').utc().format('YYYY-MM-DDTHH:mm:ss[Z]') } : {}
     const { arenaAnalytics } = await v4Client.request(V4_USER_CREATED_ANALYTICS, {
       where,
     })
@@ -30,7 +31,7 @@ const fetchCreatedTC = async date => {
 }
 
 function UserChart() {
-  const [filter, setFilter] = useState(null)
+  const [filter, setFilter] = useState(0)
 
   const { data: dataChart } = useSWR(['analytic user created', filter], () => fetchCreatedTC(filter))
   const [tabPanel, setTabPanel] = useState('New')
@@ -64,6 +65,7 @@ function UserChart() {
           chartData={dataChart}
           valueProperty='newUsersCount'
           protocolData={dataChart && dataChart.at(-1)}
+          filter={filter}
           setFilter={setFilter}
           numberFormat
         />
@@ -74,6 +76,7 @@ function UserChart() {
           chartData={dataChart}
           valueProperty='cumulativeUsersCount'
           protocolData={dataChart && dataChart.at(-1)}
+          filter={filter}
           setFilter={setFilter}
           numberFormat
         />
