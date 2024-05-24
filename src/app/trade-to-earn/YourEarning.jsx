@@ -1,6 +1,9 @@
+'use client'
+
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import _ from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -15,14 +18,24 @@ import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
 import { readCall } from '@/lib/contractActions'
+import { getDibsRewarderContract } from '@/lib/contracts'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { fetchDataTotalVolume, useClaimRewardMutation, useGetMuonMutation } from '@/modules/TradeToEarn'
+import {
+  fetchDataEarnings,
+  fetchDataTradeToEarnCount,
+  useClaimRewardMutation,
+  useGetMuonMutation,
+} from '@/modules/TradeToEarn'
+import { useChainSettings } from '@/state/settings/hooks'
+
+import Loading from '../loading'
 
 dayjs.extend(utc)
 
-function YourEarning({ earnings = [], refetchEarnings, setPending }) {
+function YourEarning({ setPending }) {
   const assets = useAssets()
+  const { networkId } = useChainSettings()
 
   const [refetchCount, setRefetchCount] = useState(0)
 
@@ -70,14 +83,6 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
     [],
   )
 
-  const { data: totalVolume } = useQuery({
-    queryKey: ['getTotalVolumeEveryDay'],
-    queryFn: () =>
-      fetchDataTotalVolume('0x0000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000000'),
-    refetchInterval: 30000,
-    gcTime: 0,
-  })
-
   const t = useTranslations()
   const { push } = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
@@ -85,67 +90,92 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
   const { account } = useWallet()
   const { fetchTotalRewardADay } = useTotalRewardADay()
   const [data, setData] = useState([])
-  const { dibsRewarder, currentDay } = useDibsRewarder()
+  const [loading, setLoading] = useState(false)
+  const { currentDay } = useDibsRewarder()
+  const [earningsFetch, setEarningsFetch] = useState([])
+
+  const {
+    data: earnings,
+    refetch: refetchEarnings,
+    isLoading,
+  } = useQuery({
+    queryKey: ['getEarnings', account, currentPage],
+    queryFn: () => fetchDataEarnings(account?.toLowerCase(), currentPage),
+    refetchInterval: 30000,
+    enabled: Boolean(account),
+    gcTime: 0,
+  })
+
+  const { data: totalItemEarnings } = useQuery({
+    queryKey: ['getTotalCountTradeToEarn', account],
+    queryFn: () => fetchDataTradeToEarnCount(account?.toLowerCase(), 17),
+    refetchInterval: 30000,
+    enabled: Boolean(account),
+    gcTime: 0,
+  })
 
   const getDataCallback = useCallback(async () => {
-    if (earnings.length) {
-      const items = []
-      for (const item of earnings) {
-        const totalRewardADay = await fetchTotalRewardADay(item.day)
-        const totalTradingADay = totalVolume?.find(totalVolItem => totalVolItem.day === item.day)
-        const earned = []
+    if (!isLoading) {
+      if (earnings && earnings.length) {
+        if (!_.isEqual(earnings, earningsFetch) || !data.length) {
+          setLoading(true)
+        }
+        const dibsRewarder = getDibsRewarderContract(networkId)
+        const rs = await Promise.all(
+          earnings.map(async item => {
+            const totalRewardADay = await fetchTotalRewardADay(item.day)
+            const earned = []
+            let isClaimable = false
+            for (const reward of totalRewardADay) {
+              const earnedWei = reward.totalReward * item.amountPercent
 
-        let isClaimable = false
-        if (totalTradingADay && totalTradingADay.amountAsUser > 0) {
-          for (const reward of totalRewardADay) {
-            const earnedWei =
-              reward.totalReward *
-              (fromWei(item.amountAsUser).toNumber() / fromWei(totalTradingADay.amountAsUser).toNumber())
+              if (account && dibsRewarder) {
+                const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
 
-            if (account && dibsRewarder) {
-              const claimed = await readCall(dibsRewarder, 'claimed', [account, reward.address, Number(item.day)])
+                if (fromWei(earnedWei).toNumber() !== 0 && fromWei(claimed).toNumber() === 0) {
+                  isClaimable = true
+                }
+              }
+              earned.push({
+                total: fromWei(earnedWei).toNumber(),
+                symbol: reward.symbol,
+              })
+            }
+            let inUSD = 0
+            if (earned.length) {
+              inUSD = earned.reduce((accumulator, currentValue, index) => {
+                let price = 1
+                const asset = assets.find(assetItem => assetItem.symbol === earned[index].symbol)
+                if (asset) {
+                  price = asset.price
+                }
+                return accumulator + currentValue.total * price
+              }, 0)
+            }
 
-              if (fromWei(earnedWei).toNumber() !== 0 && fromWei(claimed).toNumber() === 0) {
-                isClaimable = true
+            if (earned.some(e => e.total)) {
+              const parsedDate = dayjs.unix(trade2EarnStartTime).utc().add(item.day, 'days').format('MMM D, YYYY')
+              return {
+                epoch: item.day,
+                date: parsedDate,
+                tradingVolume: item.amountAsUser,
+                earned,
+                inUSD,
+                isClaimable,
               }
             }
-            earned.push({
-              total: fromWei(earnedWei).toNumber(),
-              symbol: reward.symbol,
-            })
-          }
-        }
-        let inUSD = 0
-        if (earned.length) {
-          inUSD = earned.reduce((accumulator, currentValue, index) => {
-            let price = 1
-            const asset = assets.find(assetItem => assetItem.symbol === earned[index].symbol)
-            if (asset) {
-              price = asset.price
-            }
-            return accumulator + currentValue.total * price
-          }, 0)
-        }
-
-        if (earned.some(e => e.total)) {
-          const parsedDate = dayjs.unix(trade2EarnStartTime).utc().add(item.day, 'days').format('MMM D, YYYY')
-          items.push({
-            epoch: item.day,
-            date: parsedDate,
-            tradingVolume: item.amountAsUser,
-            earned,
-            inUSD,
-            isClaimable,
-          })
-        }
+            return undefined
+          }),
+        )
+        setData(rs.filter(item => item))
+        setLoading(false)
+      } else {
+        setData([])
       }
-
-      setData(items)
-    } else {
-      setData([])
+      setEarningsFetch(earnings)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, assets, dibsRewarder, earnings, fetchTotalRewardADay, totalVolume, refetchCount])
+  }, [isLoading, earnings, fetchTotalRewardADay, assets, refetchCount])
 
   const { mutateAsync: getMuon, isPending: pendingGetMuon } = useGetMuonMutation()
 
@@ -273,18 +303,24 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
         </div>
       </div>
       {account ? (
-        !finalData.length ? (
-          <Box className='flex flex-col items-center gap-4 lg:py-8'>
-            <TextHeading className='text-center text-xl md:text-3xl'>{t('No Earnings Found')}</TextHeading>
-            <TextSubHeading className='text-center text-base'>
-              {t('Go trade on ALPHA and claim your earnings here')}
-            </TextSubHeading>
-            <div className='flex justify-center'>
-              <TrailingButton onClick={() => push('https://alpha.thena.fi/trade/BTCUSDT')}>
-                {t('Trade Now')}
-              </TrailingButton>
-            </div>
-          </Box>
+        !data.length ? (
+          !isLoading && !loading ? (
+            <Box className='flex flex-col items-center gap-4 lg:py-8'>
+              <TextHeading className='text-center text-xl md:text-3xl'>{t('No Earnings Found')}</TextHeading>
+              <TextSubHeading className='text-center text-base'>
+                {t('Go trade on ALPHA and claim your earnings here')}
+              </TextSubHeading>
+              <div className='flex justify-center'>
+                <TrailingButton onClick={() => push('https://alpha.thena.fi/trade/BTCUSDT')}>
+                  {t('Trade Now')}
+                </TrailingButton>
+              </div>
+            </Box>
+          ) : (
+            <Box className='relative min-h-[200px] lg:py-8'>
+              <Loading />
+            </Box>
+          )
         ) : (
           <div className='w-full'>
             <Table
@@ -294,6 +330,8 @@ function YourEarning({ earnings = [], refetchEarnings, setPending }) {
               setCurrentPage={setCurrentPage}
               sort={sort}
               setSort={setSort}
+              loading={loading}
+              totalItems={totalItemEarnings}
             />
           </div>
         )

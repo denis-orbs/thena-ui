@@ -6,49 +6,47 @@ import { getDibsRewarderContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { fetchDataTotalClaimedRewards } from '@/modules/TradeToEarn'
+import { useChainSettings } from '@/state/settings/hooks'
 
 import { useAssets } from './assetsContext'
 
 const DibsRewarderContext = createContext({
   currentDay: 0,
   rewardTokenList: [],
-  totalReward: 0,
+  totalDailyRewardUsd: 0,
   totalRewardCurrDay: [],
   totalUserEarned: 0,
-  dibsRewarder: null,
 })
 
 function DibsRewarderContextProvider({ children }) {
   const [currentDay, setCurrentDay] = useState(0)
-  const [rewardTokenList, setRewardTokenList] = useState([])
-  const [totalReward, setTotalReward] = useState(0)
+  const [totalDailyRewardUsd, setTotalDailyRewardUsd] = useState(0)
   const [totalRewardCurrDay, setTotalRewardCurrDay] = useState([])
   const [totalUserEarned, setTotalUserEarned] = useState(0)
-  const [dibsRewarder, setDibsRewarder] = useState('')
+  const [rewardTokenList, setRewardTokenList] = useState([])
   const assets = useAssets()
-  const { account, chainId } = useWallet()
+  const { account } = useWallet()
+  const { networkId } = useChainSettings()
 
   const value = useMemo(
     () => ({
       currentDay,
       rewardTokenList,
-      totalReward,
+      totalDailyRewardUsd,
       totalRewardCurrDay,
       totalUserEarned,
-      dibsRewarder,
     }),
-    [currentDay, rewardTokenList, totalReward, totalRewardCurrDay, totalUserEarned, dibsRewarder],
+    [currentDay, rewardTokenList, totalDailyRewardUsd, totalRewardCurrDay, totalUserEarned],
   )
 
   useEffect(() => {
     const fetchTotalReward = async () => {
-      if (chainId) {
+      if (networkId) {
         try {
-          const dibsRewarderContract = getDibsRewarderContract(chainId)
+          const dibsRewarderContract = getDibsRewarderContract(networkId)
           if (!dibsRewarderContract) {
             return
           }
-          setDibsRewarder(dibsRewarderContract)
           const [res0, res1] = await Promise.all([
             readCall(dibsRewarderContract, 'currentDay', []),
             readCall(dibsRewarderContract, 'rewardTokenList', []),
@@ -57,7 +55,9 @@ function DibsRewarderContextProvider({ children }) {
             return
           }
           setCurrentDay(new BigNumber(res0).toNumber())
-          setRewardTokenList(res1)
+          if (!rewardTokenList.length) {
+            setRewardTokenList(res1)
+          }
           let total = 0
 
           const arrayTotalRewardCurrDay = []
@@ -73,20 +73,23 @@ function DibsRewarderContextProvider({ children }) {
             }
           }
 
-          let totalEarned = 0
-          const totalClaimedRewards = await fetchDataTotalClaimedRewards(account)
-          if (Array.isArray(totalClaimedRewards) && totalClaimedRewards.length) {
-            totalClaimedRewards.forEach(tcr => {
-              const asset = assets.find(a => a.address.toLowerCase() === tcr.token.toLowerCase())
-              if (asset) {
-                const userEarned = fromWei(new BigNumber(tcr.amount)).toNumber() * asset.price
-                totalEarned += userEarned
-              }
-            })
+          if (account) {
+            let totalEarned = 0
+            const totalClaimedRewards = await fetchDataTotalClaimedRewards(account)
+            if (Array.isArray(totalClaimedRewards) && totalClaimedRewards.length) {
+              totalClaimedRewards.forEach(tcr => {
+                const asset = assets.find(a => a.address.toLowerCase() === tcr.token.toLowerCase())
+                if (asset) {
+                  const userEarned = fromWei(new BigNumber(tcr.amount)).toNumber() * asset.price
+                  totalEarned += userEarned
+                }
+              })
+            }
+
+            setTotalUserEarned(totalEarned)
           }
 
-          setTotalReward(total)
-          setTotalUserEarned(totalEarned)
+          setTotalDailyRewardUsd(total)
           setTotalRewardCurrDay(arrayTotalRewardCurrDay)
         } catch (error) {
           console.log(error)
@@ -95,7 +98,8 @@ function DibsRewarderContextProvider({ children }) {
     }
 
     fetchTotalReward()
-  }, [assets, chainId, account])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assets, account, networkId])
 
   return <DibsRewarderContext.Provider value={value}>{children}</DibsRewarderContext.Provider>
 }
