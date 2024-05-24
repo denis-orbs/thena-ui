@@ -39,21 +39,21 @@ function Information({ dailyUserVolume, dailyTotalVolume, userTotalVolume }) {
   }, [new Date().getTime()])
 
   const dailyUserTradingVolume = useMemo(() => {
-    if (dailyUserVolume && dailyUserVolume.length) {
+    if (dailyUserVolume && Array.isArray(dailyUserVolume) && dailyUserVolume.length) {
       return fromWei(dailyUserVolume[0].amountAsUser).toNumber()
     }
     return 0
   }, [dailyUserVolume])
 
   const dailyTotalTradingVolume = useMemo(() => {
-    if (dailyTotalVolume && dailyTotalVolume.length) {
+    if (dailyTotalVolume && Array.isArray(dailyTotalVolume) && dailyTotalVolume.length) {
       return fromWei(dailyTotalVolume[0].amountAsUser).toNumber()
     }
     return 0
   }, [dailyTotalVolume])
 
   const totalTradingVolume = useMemo(() => {
-    if (userTotalVolume && Array.isArray(userTotalVolume)) {
+    if (userTotalVolume && Array.isArray(userTotalVolume) && userTotalVolume.length) {
       return fromWei(new BigNumber(userTotalVolume[0].totalAmount).toNumber())
     }
     return 0

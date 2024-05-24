@@ -16,16 +16,14 @@ const DibsRewarderContext = createContext({
   totalDailyRewardUsd: 0,
   totalRewardCurrDay: [],
   totalUserEarned: 0,
-  dibsRewarder: null,
 })
 
 function DibsRewarderContextProvider({ children }) {
   const [currentDay, setCurrentDay] = useState(0)
-  const [rewardTokenList, setRewardTokenList] = useState([])
   const [totalDailyRewardUsd, setTotalDailyRewardUsd] = useState(0)
   const [totalRewardCurrDay, setTotalRewardCurrDay] = useState([])
   const [totalUserEarned, setTotalUserEarned] = useState(0)
-  const [dibsRewarder, setDibsRewarder] = useState('')
+  const [rewardTokenList, setRewardTokenList] = useState([])
   const assets = useAssets()
   const { account } = useWallet()
   const { networkId } = useChainSettings()
@@ -37,9 +35,8 @@ function DibsRewarderContextProvider({ children }) {
       totalDailyRewardUsd,
       totalRewardCurrDay,
       totalUserEarned,
-      dibsRewarder,
     }),
-    [currentDay, rewardTokenList, totalDailyRewardUsd, totalRewardCurrDay, totalUserEarned, dibsRewarder],
+    [currentDay, rewardTokenList, totalDailyRewardUsd, totalRewardCurrDay, totalUserEarned],
   )
 
   useEffect(() => {
@@ -50,7 +47,6 @@ function DibsRewarderContextProvider({ children }) {
           if (!dibsRewarderContract) {
             return
           }
-          setDibsRewarder(dibsRewarderContract)
           const [res0, res1] = await Promise.all([
             readCall(dibsRewarderContract, 'currentDay', []),
             readCall(dibsRewarderContract, 'rewardTokenList', []),
@@ -59,7 +55,9 @@ function DibsRewarderContextProvider({ children }) {
             return
           }
           setCurrentDay(new BigNumber(res0).toNumber())
-          setRewardTokenList(res1)
+          if (!rewardTokenList.length) {
+            setRewardTokenList(res1)
+          }
           let total = 0
 
           const arrayTotalRewardCurrDay = []
@@ -100,6 +98,7 @@ function DibsRewarderContextProvider({ children }) {
     }
 
     fetchTotalReward()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assets, account, networkId])
 
   return <DibsRewarderContext.Provider value={value}>{children}</DibsRewarderContext.Provider>
