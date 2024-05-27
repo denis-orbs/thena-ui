@@ -36,6 +36,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
               : registrationStart < new Date().getTime()
                 ? 'Invalid Registration Start'
                 : ''
+
           break
         }
 
@@ -74,6 +75,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
         default:
           break
       }
+
       return error
     },
     [data, isEntryFee],
@@ -117,10 +119,11 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
                     break
                   }
                 }
+
                 return (
                   <PrimaryButton
                     key={idx}
-                    disabled={!valid}
+                    disabled={!valid && idx !== step}
                     onClick={() => setStep(idx)}
                     className={`${idx === step ? '' : 'bg-neutral-700 text-neutral-500'}`}
                   >
@@ -148,8 +151,12 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
           className='w-full py-3.5 text-white lg:w-auto lg:px-16 lg:py-3'
           onClick={() => {
             const errMsg = getErrorMsg(step)
+            const errTime = getErrorMsg(1)
             if (errMsg) {
               warnToast(errMsg)
+            } else if (errTime) {
+              warnToast(errTime)
+              setStep(1)
             } else {
               setStep(step + 1)
               if (step === TC_STEPS.length - 1) {
