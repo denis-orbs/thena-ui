@@ -17,8 +17,9 @@ import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { v4Client } from '@/lib/graphql'
 import { getFromSessionStorage } from '@/lib/helper'
-import { errorToast, successToast } from '@/lib/notify'
+import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
+import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 
 const V4_USERS = gql`
@@ -106,30 +107,31 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
     fetchUser(debounceSearch, userInfo?.id),
   )
 
+  const { signWallet } = useSignWallet()
+
+  const updateVerifyFn = useCallback(async ({ isVerified, userId }) => {
+    const { data: res } = await v4Client.request(
+      V4_UPDATE_VERIFIED,
+      {
+        isVerified,
+        userId,
+      },
+      {
+        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+      },
+    )
+
+    return res
+  }, [])
+
   const updateVerify = useCallback(
     async (isVerified, userId) => {
-      try {
-        const { data: res } = await v4Client.request(
-          V4_UPDATE_VERIFIED,
-          {
-            isVerified,
-            userId,
-          },
-          {
-            authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
-          },
-        )
-
+      await actionWithAuthentication(updateVerifyFn, signWallet, { isVerified, userId }, () => {
         setRefetchUpdated(refetchUpdated + 1)
         successToast('Successfully')
-
-        return res
-      } catch (error) {
-        errorToast('Error')
-        console.log(error)
-      }
+      })
     },
-    [refetchUpdated],
+    [refetchUpdated, signWallet, updateVerifyFn],
   )
 
   const handleClickOpenEditCheckMark = useCallback(user => {

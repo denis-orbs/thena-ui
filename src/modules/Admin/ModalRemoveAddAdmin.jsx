@@ -22,13 +22,11 @@ function ModalRemoveAddAdmin({ type = 'remove', isOpen, closeModal = () => {}, u
 
   const handleUpdatePermission = useCallback(async () => {
     if (user && user.id) {
-      const res = await updateAdminPermission({ userId: user?.id, isAdmin: !isRemoveAdmin })
-
-      if (res) {
+      await updateAdminPermission(user?.id, !isRemoveAdmin, () => {
         successToast('Successfully')
         setReloadFetch(prev => prev + 1)
         closeModal()
-      }
+      })
     }
   }, [user, updateAdminPermission, isRemoveAdmin, setReloadFetch, closeModal])
 
