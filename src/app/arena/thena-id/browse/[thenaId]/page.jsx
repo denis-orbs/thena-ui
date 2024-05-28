@@ -5,7 +5,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat'
 import { gql } from 'graphql-request'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -111,6 +111,7 @@ const fetchUsernameNft = async username => {
 }
 
 function ThenaIdPage() {
+  const router = useRouter()
   const t = useTranslations()
   const { thenaId } = useParams()
   const { costPerToken } = useUSDTCostPerToken()
@@ -232,11 +233,9 @@ function ThenaIdPage() {
   return (
     <div>
       <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
-        <Link href='/arena/thena-id/browse'>
-          <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
-            {t('Back')}
-          </TextButton>
-        </Link>
+        <TextButton className='pl-0' onClick={() => router.back()} LeadingIcon={ArrowLeftIcon}>
+          {t('Back')}
+        </TextButton>
       </div>
       <div className='flex flex-col gap-5 md:flex-row md:gap-10'>
         <div className='h-full w-full md:h-[300px] md:w-[300px] lg:h-[350px] lg:w-[350px] xl:h-[400px] xl:w-[400px]'>
