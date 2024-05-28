@@ -1,11 +1,25 @@
 import React from 'react'
 
+import { siteConfig } from '@/constant/config'
+
 export const metadata = {
-  title: {
-    default: 'Browse',
-    template: '%s | THENA Arena',
+  title: 'Browse THENA IDs',
+  description: 'See all THENA IDs on THENA Arena.',
+  openGraph: {
+    url: `${siteConfig.url}/arena/thena-id/browse`,
+    title: 'Browse THENA IDs',
+    description: 'See all THENA IDs on THENA Arena.',
+    siteName: 'Browse THENA IDs | THENA Arena',
+    images: [`${siteConfig.url}/cover.png`],
+    type: 'website',
+    locale: 'en_US',
   },
-  description: 'Browse Description',
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Browse THENA IDs',
+    description: 'See all THENA IDs on THENA Arena.',
+    images: [`${siteConfig.url}/cover.png`],
+  },
 }
 
 export default function BrowseLayout({ children }) {
