@@ -11,10 +11,10 @@ import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
-function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
+function Information({ dailyUserVolume, dailyTotalVolume, userTotalVolume }) {
   const t = useTranslations()
   const { account } = useWallet()
-  const { totalReward, totalRewardCurrDay, totalUserEarned } = useDibsRewarder()
+  const { totalDailyRewardUsd, totalRewardCurrDay, totalUserEarned } = useDibsRewarder()
   const [countDown, setCountDown] = useState(0)
   const assets = useAssets()
 
@@ -39,30 +39,25 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
   }, [new Date().getTime()])
 
   const dailyUserTradingVolume = useMemo(() => {
-    if (dailyUserVolume && dailyUserVolume.length) {
+    if (dailyUserVolume && Array.isArray(dailyUserVolume) && dailyUserVolume.length) {
       return fromWei(dailyUserVolume[0].amountAsUser).toNumber()
     }
     return 0
   }, [dailyUserVolume])
 
   const dailyTotalTradingVolume = useMemo(() => {
-    if (dailyTotalVolume && dailyTotalVolume.length) {
+    if (dailyTotalVolume && Array.isArray(dailyTotalVolume) && dailyTotalVolume.length) {
       return fromWei(dailyTotalVolume[0].amountAsUser).toNumber()
     }
     return 0
   }, [dailyTotalVolume])
 
   const totalTradingVolume = useMemo(() => {
-    let rs = 0
-    if (totalVolume && Array.isArray(totalVolume) && totalVolume.length) {
-      rs = totalVolume?.reduce(
-        (accumulator, currentValue) =>
-          new BigNumber(accumulator).toNumber() + new BigNumber(currentValue?.amountAsUser || 0).toNumber(),
-        0,
-      )
+    if (userTotalVolume && Array.isArray(userTotalVolume) && userTotalVolume.length) {
+      return fromWei(new BigNumber(userTotalVolume[0].totalAmount).toNumber())
     }
-    return fromWei(rs)
-  }, [totalVolume])
+    return 0
+  }, [userTotalVolume])
 
   const yourEstimatedDailyRewardTotal = useMemo(() => {
     let rs = 0
@@ -82,7 +77,7 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
   const array1 = useMemo(
     () => [
       {
-        value: `$${formatAmount(fromWei(totalReward))}`,
+        value: `$${formatAmount(fromWei(totalDailyRewardUsd))}`,
         label: 'Total daily rewards available',
         show: true,
       },
@@ -122,7 +117,7 @@ function Information({ dailyUserVolume, dailyTotalVolume, totalVolume }) {
       account,
       dailyTotalTradingVolume,
       dailyUserTradingVolume,
-      totalReward,
+      totalDailyRewardUsd,
       totalRewardCurrDay,
       yourEstimatedDailyRewardTotal,
     ],
