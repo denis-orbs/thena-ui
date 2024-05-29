@@ -23,12 +23,8 @@ import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWa
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 
 const V4_USERS = gql`
-  query V4_USERS($search: String) {
-    users(
-      orderBy: firstInteractAt_DESC
-      limit: 8
-      where: { OR: [{ id_containsInsensitive: $search }, { username_containsInsensitive: $search }] }
-    ) {
+  query V4_USERS($where: UserWhereInput = {}) {
+    users(orderBy: firstInteractAt_DESC, limit: 8, where: $where) {
       id
       isVerified
       username
@@ -42,9 +38,18 @@ const V4_USERS = gql`
   }
 `
 
-const fetchUser = async search => {
+const fetchUser = async (search, onlyShowVerifiedUser = false) => {
   try {
-    const { users } = await v4Client.request(V4_USERS, { search })
+    const querySearch = { OR: [{ id_containsInsensitive: search }, { username_containsInsensitive: search }] }
+    let where = {}
+    if (onlyShowVerifiedUser) {
+      where = {
+        AND: [{ isVerified_eq: true }, querySearch],
+      }
+    } else {
+      where = { ...querySearch }
+    }
+    const { users } = await v4Client.request(V4_USERS, { where })
     return users
   } catch (error) {
     return { error: true }
@@ -65,19 +70,19 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
       {
         label: 'User',
         value: 'user',
-        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
+        width: userInfo?.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
         label: 'Wallet ID',
         value: 'walletId',
-        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
+        width: userInfo?.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
         label: 'Verification badge',
         value: 'verification',
-        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
+        width: userInfo?.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
@@ -95,6 +100,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
   const [refetchUpdated, setRefetchUpdated] = useState(0)
   const [showModalEditCheckMark, setShowModalEditCheckMark] = useState(false)
   const [userEditCheckMark, setUserEditCheckMark] = useState(null)
+  const [onlyShowVerifiedUser, setOnlyShowVerifiedUSer] = useState(false)
 
   const [dataFetch, setDataFetch] = useState([])
 
@@ -103,8 +109,9 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data, isLoading, mutate } = useSWR(['user api', debounceSearch, reloadFetch, refetchUpdated], () =>
-    fetchUser(debounceSearch, userInfo?.id),
+  const { data, isLoading, mutate } = useSWR(
+    ['user api', debounceSearch, reloadFetch, refetchUpdated, onlyShowVerifiedUser],
+    () => fetchUser(debounceSearch, onlyShowVerifiedUser),
   )
 
   const { signWallet } = useSignWallet()
@@ -173,7 +180,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
               <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenEditCheckMark(item)}>
                 {t('Edit Checkmark')}
               </EmphasisButton>
-              {userInfo.isSuperAdmin && userInfo.id !== item.id && (
+              {userInfo?.isSuperAdmin && userInfo?.id !== item.id && (
                 <EmphasisButton
                   className='w-full text-base'
                   onClick={() => handleClickOpenModal(item, item.isAdmin ? 'remove' : 'add')}
@@ -197,8 +204,8 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
       isMdDown,
       t,
       updateVerify,
-      userInfo.id,
-      userInfo.isSuperAdmin,
+      userInfo?.id,
+      userInfo?.isSuperAdmin,
     ],
   )
 
@@ -206,6 +213,14 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
     <Box>
       <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
         <TextHeading className='text-xl'>{t('Users')}</TextHeading>
+        <div className='flex items-center gap-1'>
+          <Toggle
+            toggleId='onlyShowVerifiedUser'
+            checked={onlyShowVerifiedUser}
+            onChange={() => setOnlyShowVerifiedUSer(!onlyShowVerifiedUser)}
+          />
+          <TextHeading>{t('Only Show Verified User')}</TextHeading>
+        </div>
         <SearchInput
           className='h-11 w-full md:w-[480px]'
           classNames={{ input: 'h-11' }}

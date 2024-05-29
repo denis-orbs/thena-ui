@@ -204,7 +204,7 @@ export function UserInfo({ userInfo, following, followers }) {
           <Link href={`/arena/profile${params?.address ? `/${params?.address}` : ''}/followers`}>
             <Box className='flex flex-col gap-2 bg-neutral-800'>
               <TextHeading className='text-lg'>{followersCount}</TextHeading>
-              <TextSubHeading className='text-sm'>{t('Followers')}</TextSubHeading>
+              <TextSubHeading className='text-sm'>{t(followersCount !== 1 ? 'Followers' : 'Follower')}</TextSubHeading>
             </Box>
           </Link>
           <Link href={`/arena/profile${params?.address ? `/${params?.address}` : ''}/following`}>

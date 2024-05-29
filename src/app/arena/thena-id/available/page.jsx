@@ -38,7 +38,9 @@ const V4_AVAILABLE = gql`
   }
 `
 
-const fetchAvailable = async (sort, offset = 0, whereQuery = {}, whereTotal = {}) => {
+const fetchAvailable = async (sort, currentPage, whereQuery = {}, whereTotal = {}) => {
+  const offset = (currentPage - 1) * 100
+
   try {
     const orderBy = ['id_ASC']
 
@@ -136,7 +138,6 @@ function AvailablePage() {
   )
 
   const debounceSearch = useDebounce(searchText.trim(), 300)
-  const offset = useMemo(() => (currentPage - 1) * 100, [currentPage])
 
   const whereQuery = useMemo(() => {
     let filter = {}
@@ -175,8 +176,8 @@ function AvailablePage() {
   }, [debounceSearch, selectFilterField])
 
   const { data, isLoading } = useSWR(
-    ['available api', offset, debounceSearch, sort, selectFilterField],
-    () => fetchAvailable(sort, offset, whereQuery, whereTotal),
+    ['available api', currentPage, debounceSearch, sort, selectFilterField],
+    () => fetchAvailable(sort, currentPage, whereQuery, whereTotal),
     {
       refreshInterval: 30000,
       revalidateOnFocus: true,
@@ -202,7 +203,7 @@ function AvailablePage() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [debounceSearch])
+  }, [debounceSearch, selectFilterField, sort])
 
   const sortedData = useMemo(
     () =>
