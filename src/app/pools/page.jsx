@@ -168,21 +168,9 @@ export default function PoolsPage() {
 
   const finalPools = useMemo(
     () => {
-      // Hard-coded for weETH/ETH pool on top
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
-      let previousData = []
 
-      if (Array.isArray(sortedData) && sortedData.length) {
-        const weETHPool = sortedData.find(item => item.address === weETHPoolAddress)
-        if (weETHPool) {
-          const data = sortedData.filter(item => item?.address !== weETHPoolAddress)
-          previousData = [weETHPool, ...data]
-        } else {
-          previousData = [...sortedData]
-        }
-      }
-
-      return previousData.map(pool => ({
+      return sortedData.map(pool => ({
         pair: (
           <div className='flex items-center gap-3'>
             <IconGroup
@@ -275,7 +263,6 @@ export default function PoolsPage() {
         ),
       }))
     },
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData), push, t],
   )
