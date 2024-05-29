@@ -25,8 +25,7 @@ const V4_LOGIN = gql`
 
 export const useSignWallet = () => {
   const { account } = useWallet()
-  const { signMessage, data: signData } = useSignMessage()
-
+  const { signMessage } = useSignMessage()
   const deleteToken = useCallback(() => {
     sessionStorage.removeItem('token')
   }, [])
@@ -55,7 +54,7 @@ export const useSignWallet = () => {
 
   const signWallet = useCallback(
     (loginCallback, params, callOnSuccess, callOnReject) => {
-      if (account && !signData) {
+      if (account && !getFromSessionStorage('token')) {
         signMessage(
           {
             message: "By signing you agree to 'Terms of Service' & 'Privacy Policy' of THENA",
@@ -77,7 +76,7 @@ export const useSignWallet = () => {
         )
       }
     },
-    [account, login, signMessage, signData],
+    [account, login, signMessage],
   )
 
   return {
