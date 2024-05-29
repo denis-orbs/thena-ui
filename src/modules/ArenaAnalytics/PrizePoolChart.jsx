@@ -65,7 +65,7 @@ export function PrizePoolChart() {
 
   const { data: dataChart } = useSWR(['analytic prize pool', filter], () => fetchCreatedTC(filter))
 
-  const [tabPanel, setTabPanel] = useState('New')
+  const [tabPanel, setTabPanel] = useState('Cumulative')
   const [tabFilter, setTabFilter] = useState('All')
 
   const chartDataFilter = useMemo(() => {

@@ -248,7 +248,7 @@ function Header() {
     }
   }, [account, chainId, networkId, updateNetwork])
 
-  const { data: userInfo } = useSWR('fetchUserInfo', () => fetchUserInfo(account), {
+  const { data: userInfo } = useSWR(['fetchUserInfo', account], () => fetchUserInfo(account), {
     refreshInterval: 60000,
   })
 

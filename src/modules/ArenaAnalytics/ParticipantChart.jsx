@@ -64,7 +64,7 @@ export function ParticipantChart() {
   const [filter, setFilter] = useState(0)
 
   const { data: dataChart } = useSWR(['analytic participant', filter], () => fetchCreatedTC(filter))
-  const [tabPanel, setTabPanel] = useState('New')
+  const [tabPanel, setTabPanel] = useState('Cumulative')
   const [tabFilter, setTabFilter] = useState('All')
 
   const chartDataFilter = useMemo(() => {

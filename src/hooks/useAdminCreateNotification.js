@@ -33,8 +33,14 @@ export const useCreateNotification = () => {
   )
 
   const adminCreateNotification = useCallback(
-    async ({ recipients, content, redirectUrl }, callOnSuccess) => {
-      actionWithAuthentication(createNotificationFn, signWallet, { recipients, content, redirectUrl }, callOnSuccess)
+    async ({ recipients, content, redirectUrl }, callOnSuccess, callOnReject) => {
+      actionWithAuthentication(
+        createNotificationFn,
+        signWallet,
+        { recipients, content, redirectUrl },
+        callOnSuccess,
+        callOnReject,
+      )
     },
     [createNotificationFn, signWallet],
   )

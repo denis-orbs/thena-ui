@@ -43,7 +43,7 @@ export function FollowingChart() {
 
   const { data: dataChart } = useSWR(['analytic following created', filter], () => fetchCreatedTC(filter))
 
-  const [tabPanel, setTabPanel] = useState('New')
+  const [tabPanel, setTabPanel] = useState('Cumulative')
 
   const panel = useMemo(
     () => [

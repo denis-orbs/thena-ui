@@ -43,7 +43,7 @@ export function MintedChart() {
 
   const { data: dataChart } = useSWR(['analytic minted', filter], () => fetchCreatedTC(filter))
 
-  const [tabPanel, setTabPanel] = useState('New')
+  const [tabPanel, setTabPanel] = useState('Cumulative')
 
   const panel = useMemo(
     () => [

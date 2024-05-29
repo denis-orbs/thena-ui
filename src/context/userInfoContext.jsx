@@ -176,7 +176,7 @@ const UserInfoContext = createContext(initialState)
 function UserInfoContextProvider({ children }) {
   const { account } = useWallet()
 
-  const { data: userInfo, mutate: mutateUserInfo, isLoading } = useSWR('fetchUserInfo')
+  const { data: userInfo, mutate: mutateUserInfo, isLoading } = useSWR(['fetchUserInfo', account])
 
   const final = useMemo(() => {
     if (!userInfo || !account) {

@@ -65,7 +65,7 @@ export function VolumeChart() {
 
   const { data: dataChart } = useSWR(['analytic volume', filter], () => fetchCreatedTC(filter))
 
-  const [tabPanel, setTabPanel] = useState('New')
+  const [tabPanel, setTabPanel] = useState('Cumulative')
   const [tabFilter, setTabFilter] = useState('All')
 
   const chartDataFilter = useMemo(() => {

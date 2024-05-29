@@ -43,7 +43,7 @@ export function MintingSpendChart() {
 
   const { data: dataChart } = useSWR(['analytic minting spend', filter], () => fetchCreatedTC(filter))
 
-  const [tabPanel, setTabPanel] = useState('New')
+  const [tabPanel, setTabPanel] = useState('Cumulative')
 
   const panel = useMemo(
     () => [

@@ -63,6 +63,10 @@ export function ModalCreateNotification({ onClose, isOpen }) {
         successToast('Successfully')
         onClose()
       },
+      () => {
+        setLoading(false)
+        onClose()
+      },
     )
   }, [adminCreateNotification, data, isSendToAll, onClose])
 
