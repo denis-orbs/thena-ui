@@ -65,7 +65,6 @@ export function ModalCreateNotification({ onClose, isOpen }) {
       },
       () => {
         setLoading(false)
-        onClose()
       },
     )
   }, [adminCreateNotification, data, isSendToAll, onClose])

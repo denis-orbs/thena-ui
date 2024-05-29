@@ -71,11 +71,7 @@ export const useSignWallet = () => {
               }
             },
             onError: () => {
-              if (callOnReject) {
-                callOnReject()
-              } else {
-                errorToast('Sign Rejected')
-              }
+              callOnReject?.()
             },
           },
         )
