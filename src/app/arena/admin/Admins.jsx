@@ -55,17 +55,17 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
       {
         label: 'User',
         value: 'user',
-        width: userInfo.isSuperAdmin ? 'w-[30%]' : 'w-50%',
+        width: userInfo?.isSuperAdmin ? 'w-[30%]' : 'w-50%',
         disabled: true,
       },
       {
         label: 'Wallet ID',
         value: 'walletId',
-        width: userInfo.isSuperAdmin ? 'w-[30%]' : 'w-50%',
+        width: userInfo?.isSuperAdmin ? 'w-[30%]' : 'w-50%',
         disabled: true,
       },
     ]
-    if (userInfo.isSuperAdmin) {
+    if (userInfo?.isSuperAdmin) {
       arr.push({
         value: 'action',
         width: 'w-[50%]',
@@ -109,10 +109,10 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         user: <UserProfileCard showVerified={item.isVerified} user={item} />,
         walletId: (
           <Paragraph className='text-wrap break-words'>
-            {!isMdDown ? (userInfo.isSuperAdmin ? sliceAddress(item.id) : item.id) : item.id}
+            {!isMdDown ? (userInfo?.isSuperAdmin ? sliceAddress(item.id) : item.id) : item.id}
           </Paragraph>
         ),
-        action: userInfo.isSuperAdmin ? (
+        action: userInfo?.isSuperAdmin ? (
           <div className='flex w-full flex-col gap-3 md:flex-row md:items-center'>
             <div className='flex w-full flex-row items-center gap-3'>
               <EmphasisButton
@@ -124,7 +124,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
               >
                 {t('Edit Checkmark')}
               </EmphasisButton>
-              {userInfo.id !== item.id && (
+              {userInfo?.id !== item.id && (
                 <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenModal(item, 'remove')}>
                   {t('Remove Admin')}
                 </EmphasisButton>
@@ -136,7 +136,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           </div>
         ) : null,
       })),
-    [dataFetch, handleClickOpenModal, isMdDown, t, userInfo.id, userInfo.isSuperAdmin],
+    [dataFetch, handleClickOpenModal, isMdDown, t, userInfo?.id, userInfo?.isSuperAdmin],
   )
 
   return (

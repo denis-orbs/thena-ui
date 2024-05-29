@@ -70,19 +70,19 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
       {
         label: 'User',
         value: 'user',
-        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
+        width: userInfo?.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
         label: 'Wallet ID',
         value: 'walletId',
-        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
+        width: userInfo?.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
         label: 'Verification badge',
         value: 'verification',
-        width: userInfo.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
+        width: userInfo?.isSuperAdmin ? 'w-[20%]' : 'w-[30%]',
         disabled: true,
       },
       {
@@ -180,7 +180,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
               <EmphasisButton className='w-full text-base' onClick={() => handleClickOpenEditCheckMark(item)}>
                 {t('Edit Checkmark')}
               </EmphasisButton>
-              {userInfo.isSuperAdmin && userInfo.id !== item.id && (
+              {userInfo?.isSuperAdmin && userInfo?.id !== item.id && (
                 <EmphasisButton
                   className='w-full text-base'
                   onClick={() => handleClickOpenModal(item, item.isAdmin ? 'remove' : 'add')}
@@ -204,8 +204,8 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
       isMdDown,
       t,
       updateVerify,
-      userInfo.id,
-      userInfo.isSuperAdmin,
+      userInfo?.id,
+      userInfo?.isSuperAdmin,
     ],
   )
 
