@@ -53,8 +53,8 @@ export const useSignWallet = () => {
   )
 
   const signWallet = useCallback(
-    (loginCallback, params, callOnSuccess, callOnReject) => {
-      if (account && !getFromSessionStorage('token')) {
+    (loginCallback, params, callOnSuccess, callOnReject, force = false) => {
+      if (account && (force || !getFromSessionStorage('token'))) {
         signMessage(
           {
             message: "By signing you agree to 'Terms of Service' & 'Privacy Policy' of THENA",
@@ -85,6 +85,9 @@ export const useSignWallet = () => {
   }
 }
 
+/**
+ *  set force = true when callOnFailed is signWallet
+ *  */
 export async function actionWithAuthentication(action, callOnFailed, params, callOnSuccess, callOnReject) {
   try {
     await action(params)
@@ -94,7 +97,7 @@ export async function actionWithAuthentication(action, callOnFailed, params, cal
       err?.response?.errors?.[0]?.message === 'Missing Authorization Header' ||
       err?.response?.errors?.[0]?.message === 'Invalid Access Token'
     ) {
-      callOnFailed(action, params, callOnSuccess, callOnReject)
+      callOnFailed(action, params, callOnSuccess, callOnReject, true)
     } else {
       errorToast('Error')
     }
