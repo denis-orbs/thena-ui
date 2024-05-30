@@ -81,7 +81,7 @@ export function UserInfo({ userInfo, following, followers }) {
   const rankToPageRanking = useMemo(() => {
     const page = Math.ceil(userInfo.rank / 50)
     return userInfo.rank !== '-'
-      ? `${page === 1 ? '' : `/${page}`}?sort=tradeVolume&rank=${userInfo.rank}&isDesc=true`
+      ? `${page === 1 ? '' : `/${page}`}?sort=tradeTCVolume&rank=${userInfo.rank}&isDesc=true`
       : ''
   }, [userInfo.rank])
 

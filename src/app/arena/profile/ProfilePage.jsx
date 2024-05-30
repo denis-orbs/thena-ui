@@ -45,6 +45,13 @@ export function ProfilePage({ address }) {
           ...comp.tradingCompetition.prize,
           token: assets.find(ele => ele.address.toLowerCase() === comp.tradingCompetition.prize.token.toLowerCase()),
         },
+        prizeUpdate: {
+          ...comp.tradingCompetition.prizeUpdate,
+          token: comp.tradingCompetition.prizeUpdate.token.map(token => {
+            const asset = assets.find(ele => ele.address.toLowerCase() === token.toLowerCase())
+            return asset
+          }),
+        },
         competitionRules: {
           ...comp.tradingCompetition.competitionRules,
           winningToken: assets.find(
@@ -65,6 +72,13 @@ export function ProfilePage({ address }) {
         prize: {
           ...comp.prize,
           token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
+        },
+        prizeUpdate: {
+          ...comp.prizeUpdate,
+          token: comp.prizeUpdate.token.map(token => {
+            const asset = assets.find(ele => ele.address.toLowerCase() === token.toLowerCase())
+            return asset
+          }),
         },
         competitionRules: {
           ...comp.competitionRules,

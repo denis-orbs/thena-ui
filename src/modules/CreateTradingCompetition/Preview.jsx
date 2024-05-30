@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { INIT_VALUES } from '@/constant'
+import { INIT_VALUES, TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { useCreateTC } from '@/hooks/useTCManager'
 import { warnToast } from '@/lib/notify'
@@ -26,18 +26,37 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
     const weights = data.prize.weights.slice(1).map(ele => Math.round((ele / (100 - data.prize.weights[0])) * 1000))
     const totalWeight = weights.reduce((sum, cur) => sum + cur, 0)
     weights[weights.length - 1] += 1000 - totalWeight
+    const isSpotType = data.market === TC_MARKET_TYPES.SPOT
+
+    const entryFee = data.entryFee.map((e, index) =>
+      !isInvalidAmount(e) ? toWei(e, data.prize.token?.[index]?.decimals).dp(0).toString(10) : 0,
+    )
+
     return {
       ...data,
-      entryFee: !isInvalidAmount(data.entryFee)
-        ? toWei(data.entryFee, data.prize.token.decimals).dp(0).toString(10)
-        : 0,
+      entryFee,
       owner: {
         id: account,
       },
       prize: {
         ...data.prize,
-        totalPrize: toWei(data.prize.totalPrize, data.prize.token.decimals).dp(0).toString(10),
-        hostContribution: toWei(data.prize.totalPrize, data.prize.token.decimals).dp(0).toString(10),
+        totalPrize: isSpotType
+          ? new Array(data.prize.token.length).fill('0')
+          : [toWei(data.prize.totalPrize, data.prize.token[0].decimals).dp(0).toString(10)],
+        hostContribution: isSpotType
+          ? undefined
+          : toWei(data.prize.totalPrize, data.prize.token[0]?.decimals).dp(0).toString(10),
+        ownerFee,
+        weights,
+      },
+      prizeUpdate: {
+        ...data.prize,
+        totalPrize: isSpotType
+          ? new Array(data.prize.token.length).fill('0')
+          : [toWei(data.prize.totalPrize, data.prize.token[0].decimals).dp(0).toString(10)],
+        hostContribution: isSpotType
+          ? undefined
+          : toWei(data.prize.totalPrize, data.prize.token[0]?.decimals).dp(0).toString(10),
         ownerFee,
         weights,
       },
@@ -58,6 +77,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
   }, [data, account])
 
   const handleCreateTC = async () => {
+    console.log({ mainData })
     if (fromWei(protocolFee, protocolFeeToken?.decimals).gt(protocolFeeToken?.balance)) {
       warnToast('Insufficient [Asset] Balance', { symbol: protocolFeeToken?.symbol })
     } else {

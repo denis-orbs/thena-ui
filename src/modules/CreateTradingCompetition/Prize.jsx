@@ -12,7 +12,7 @@ import { TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { formatAmount, ordinals } from '@/lib/utils'
 
-import CustomTokenModal from '../TokenModal/CustomTokenModal'
+import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 
 const validNumber = val => (val === '' ? 0 : Number(val))
 
@@ -20,7 +20,6 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
   const t = useTranslations()
 
   const [isPrizeOpen, setIsPrizeOpen] = useState(false)
-  const [prizeTokenBalance, setPrizeTokenBalance] = useState(0)
   const { tradingTokens } = useTC()
 
   const { placements, weights } = data.prize
@@ -53,59 +52,13 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, weights])
 
-  useEffect(() => {
-    if (data.prize.token) {
-      const token = tradingTokens.find(item =>
-        isSpotType
-          ? String(item.address).toLowerCase() === String(data.prize.token.address).toLowerCase()
-          : String(item.address).toLowerCase() === USDTAsset?.address.toLowerCase(),
-      )
-      if (token) {
-        setPrizeTokenBalance(token.balance)
-      } else {
-        setPrizeTokenBalance(0)
-      }
-    } else {
-      setPrizeTokenBalance(0)
-    }
-  }, [USDTAsset?.address, data.prize.token, isSpotType, tradingTokens])
-
-  useEffect(() => {
-    if (!isSpotType) {
-      setData({
-        ...data,
-        prize: {
-          ...data.prize,
-          token: USDTAsset,
-        },
-      })
-    } else if (data?.prize?.token) {
-      if (data?.prize?.token.address.toLowerCase() === USDTAsset?.address.toLowerCase()) {
-        if (
-          data?.competitionRules?.tradingTokens.find(
-            item => item.address.toLowerCase() === data?.prize?.token?.address.toLowerCase(),
-          ) === undefined
-        ) {
-          setData({
-            ...data,
-            prize: {
-              ...data.prize,
-              token: null,
-            },
-          })
-        }
-      }
-    } else {
-      setData({
-        ...data,
-        prize: {
-          ...data.prize,
-          token: null,
-        },
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSpotType])
+  // useEffect(() => {
+  //   setData({
+  //     ...data,
+  //     entryFee: new Array(data.prize.token.length).fill(''),
+  //   })
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [data.prize.token])
 
   return (
     <>
@@ -133,13 +86,13 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
               className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
            placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'
             >
-              {data.prize.token ? (
+              {!isSpotType ? (
                 <div className='flex items-center space-x-1.5'>
-                  <CircleImage src={data.prize.token.logoURI} width={20} height={20} alt='thena token' />
-                  <TextHeading>{data.prize.token.symbol}</TextHeading>
+                  <CircleImage src={data.prize.token?.[0]?.logoURI} width={20} height={20} alt='thena token' />
+                  <TextHeading>{data.prize.token?.[0]?.symbol}</TextHeading>
                 </div>
               ) : (
-                'Select'
+                `${data.prize.token.length} Selected`
               )}
             </div>
             <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>
@@ -147,57 +100,57 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             </div>
           </div>
         </div>
-        <div className='w-full'>
-          <div className='flex items-center justify-between text-base leading-5'>
-            <LabelTooltip
-              id='hostContribution'
-              label='Host Contribution'
-              showInfoIcon
-              tooltip='You need to contribute at least a dust amount to seed the initial prize pool. You are not going to get this amount back, unless prize distribution includes the host as well, that you can set.'
-              required
-            />
-            <div className='mb-2 text-white'>
-              {t('Balance')}: {formatAmount(prizeTokenBalance)}
+        {!isSpotType && (
+          <div className='w-full'>
+            <div className='flex items-center justify-between text-base leading-5'>
+              <LabelTooltip
+                id='hostContribution'
+                label='Host Contribution'
+                showInfoIcon
+                tooltip='You need to contribute at least a dust amount to seed the initial prize pool. You are not going to get this amount back, unless prize distribution includes the host as well, that you can set.'
+                required
+              />
+              <div className='mb-2 text-white'>
+                {t('Balance')}: {formatAmount(USDTAsset?.balance)}
+              </div>
             </div>
+            <Input
+              value={data.prize.totalPrize[0]}
+              type='number'
+              placeholder='1'
+              TrailingButton={
+                data.prize.token?.length ? (
+                  <div className='absolute right-4 flex items-center space-x-1.5'>
+                    <TextSubHeading>${formatAmount(data.prize.totalPrize * data.prize.token[0].price)}</TextSubHeading>
+                    <Image alt='' src={data.prize.token[0].logoURI} width={20} height={20} />
+                    <span className='font-figtree text-lg leading-[22px] text-white'>{data.prize.token[0].symbol}</span>
+                  </div>
+                ) : undefined
+              }
+              onChange={e => {
+                setData({
+                  ...data,
+                  prize: {
+                    ...data.prize,
+                    totalPrize: [e.target.value],
+                  },
+                })
+              }}
+            />
           </div>
-          <Input
-            value={data.prize.totalPrize}
-            type='number'
-            placeholder='1'
-            TrailingButton={
-              data.prize.token ? (
-                <div className='absolute right-4 flex items-center space-x-1.5'>
-                  <TextSubHeading>${formatAmount(data.prize.totalPrize * data.prize.token.price)}</TextSubHeading>
-                  <Image alt='' src={data.prize.token.logoURI} width={20} height={20} />
-                  <span className='font-figtree text-lg leading-[22px] text-white'>{data.prize.token.symbol}</span>
-                </div>
-              ) : undefined
-            }
-            onChange={e => {
-              setData({
-                ...data,
-                prize: {
-                  ...data.prize,
-                  totalPrize: e.target.value,
-                },
-              })
-            }}
-          />
-        </div>
+        )}
       </div>
-      <div className='mt-4 w-full items-center space-y-4 md:flex md:space-x-6 md:space-y-0'>
-        <div className='w-full'>
-          <div className='flex:col flex h-[50px] w-full items-center'>
+      <div>
+        <div className='mt-4 grid gap-x-[26px] gap-y-4 md:grid-cols-2'>
+          <div className='flex:col flex h-[50px] items-center'>
             <Toggle
               checked={isEntryFee}
               toggleId='starting'
               onChange={() => {
-                if (isEntryFee) {
-                  setData({
-                    ...data,
-                    entryFee: '',
-                  })
-                }
+                setData({
+                  ...data,
+                  entryFee: new Array(data.prize.token.length).fill(''),
+                })
                 setIsEntryFee(!isEntryFee)
               }}
             />
@@ -209,30 +162,56 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
               className='mb-0'
             />
           </div>
-        </div>
-        <div className='w-full'>
-          {isEntryFee && (
+          {isEntryFee && data.prize.token.length === 1 && (
             <Input
-              value={data.entryFee}
+              value={data.entryFee[0]}
               type='number'
               min={0}
               TrailingButton={
-                data.prize.token ? (
-                  <div className='absolute right-4 flex items-center space-x-1.5'>
-                    <TextSubHeading>${formatAmount(data.entryFee * data.prize.token.price)}</TextSubHeading>
-                    <Image alt='' src={data.prize.token.logoURI} width={20} height={20} />
-                    <span className='font-figtree text-lg leading-[22px] text-white'>{data.prize.token.symbol}</span>
-                  </div>
-                ) : undefined
+                <div className='absolute right-4 flex items-center space-x-1.5'>
+                  <TextSubHeading>${formatAmount(data.entryFee[0] * data.prize.token[0].price)}</TextSubHeading>
+                  <Image alt='' src={data.prize.token[0].logoURI} width={20} height={20} />
+                  <span className='font-figtree text-lg leading-[22px] text-white'>{data.prize.token[0].symbol}</span>
+                </div>
               }
               onChange={e => {
+                const entryFee = [...data.entryFee]
+                entryFee.splice(0, 1, e.target.value)
                 setData({
                   ...data,
-                  entryFee: e.target.value,
+                  entryFee,
                 })
               }}
             />
           )}
+        </div>
+        <div className='mt-4 grid gap-x-[26px] gap-y-4 md:grid-cols-2'>
+          {isEntryFee &&
+            data.prize.token.length > 1 &&
+            data.prize.token.map((token, index) => (
+              <div key={index}>
+                <Input
+                  value={data.entryFee[index]}
+                  type='number'
+                  min={0}
+                  TrailingButton={
+                    <div className='absolute right-4 flex items-center space-x-1.5'>
+                      <TextSubHeading>${formatAmount(data.entryFee[index] * token.price)}</TextSubHeading>
+                      <Image alt='' src={token.logoURI} width={20} height={20} />
+                      <span className='font-figtree text-lg leading-[22px] text-white'>{token.symbol}</span>
+                    </div>
+                  }
+                  onChange={e => {
+                    const entryFee = [...data.entryFee]
+                    entryFee.splice(index, 1, e.target.value)
+                    setData({
+                      ...data,
+                      entryFee,
+                    })
+                  }}
+                />
+              </div>
+            ))}
         </div>
       </div>
       <div className='mt-4'>
@@ -308,20 +287,23 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           <Image src='/svgs/plus-v2.svg' alt='' width={20} height={20} />
         </PrimaryButton>
       </div>
-      {/* Select for winning token */}
-      <CustomTokenModal
+
+      <CustomMultipleTokenModal
         popup={isPrizeOpen}
         setPopup={setIsPrizeOpen}
-        setSelectedAsset={val => {
+        selectedAssets={data.prize.token}
+        setSelectedAssets={val => {
           setData({
             ...data,
+            // TODO: Calculate correct entryFee
+            entryFee: new Array(val.length).fill(''),
             prize: {
               ...data.prize,
               token: val,
             },
           })
         }}
-        assets={data.market === TC_MARKET_TYPES.SPOT ? data.competitionRules.tradingTokens : tradingTokens}
+        assets={data.competitionRules.tradingTokens}
       />
     </>
   )
