@@ -31,7 +31,6 @@ export const useCreateTC = () => {
       const isPerpetualTC = data?.market === TC_MARKET_TYPES.PERPETUAL
       console.log({ isPerpetualTC })
       const tcManagerContract = isPerpetualTC ? getTCPerpetualManagerContract() : getTCContract()
-
       const tokenContract = getERC20Contract(protocolFeeToken?.address, chainId)
       const allowance = await readCall(tokenContract, 'allowance', [account, tcManagerContract.address])
       const isApprovedFee = fromWei(allowance).gte(fromWei(protocolFee))
@@ -41,9 +40,15 @@ export const useCreateTC = () => {
         const MockUSDAddress = '0xced4aC14bB1077B995b954C48a87b25EBb4828E5'
         data.prize.token.address = MockUSDAddress
       }
-      const prizeTokenContract = getERC20Contract(data.prize.token.address, chainId)
-      const allowanceHost = await readCall(prizeTokenContract, 'allowance', [account, tcManagerContract.address])
-      const isApprovedHost = fromWei(allowanceHost).gte(fromWei(data.prize.hostContribution))
+
+      let prizeTokenContract = null
+      let allowanceHost = 0n
+      let isApprovedHost = true
+      if (data?.prize?.hostContribution) {
+        prizeTokenContract = getERC20Contract(data.prize.token.address, chainId)
+        allowanceHost = await readCall(prizeTokenContract, 'allowance', [account, tcManagerContract.address])
+        isApprovedHost = fromWei(allowanceHost).gte(fromWei(data.prize.hostContribution))
+      }
 
       startTxn({
         key,
@@ -131,7 +136,7 @@ export const useCreateTC = () => {
           weights: data.prize.weights,
           totalPrize: data.prize.totalPrize,
           owner_fee: data.prize.ownerFee,
-          token: data.prize.token.address,
+          token: isPerpetualTC ? data.prize.token.address : data.prize.token.map(token => token.address),
           host_contribution: data.prize.hostContribution,
         },
       }

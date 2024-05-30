@@ -18,6 +18,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
     val => {
       let error = ''
       const { market } = data
+      const isSpotType = market === TC_MARKET_TYPES.SPOT
 
       switch (val) {
         case 0:
@@ -42,7 +43,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
 
         case 2: {
           const { winningToken, tradingTokens, startingBalance } = data.competitionRules
-          const isSpotType = market === TC_MARKET_TYPES.SPOT
+
           error =
             isSpotType && tradingTokens.length < 2
               ? 'Invalid Tradable Tokens'
@@ -58,13 +59,16 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
         case 3: {
           const { weights, totalPrize, token } = data.prize
           const total = weights.reduce((sum, cur) => sum + cur, 0)
-          if (!token) {
+
+          const validAmountFee = data.entryFee.some(item => !isInvalidAmount(item))
+
+          if (!token || !token.length) {
             error = 'Invalid Prize Token'
-          } else if (isInvalidAmount(totalPrize)) {
+          } else if (!isSpotType && isInvalidAmount(totalPrize)) {
             error = 'Invalid Prize Amount'
-          } else if (token?.balance?.lt(totalPrize)) {
+          } else if (!isSpotType && token?.balance?.lt(totalPrize)) {
             error = 'Not Enough Host Contribution'
-          } else if (isEntryFee && isInvalidAmount(data.entryFee)) {
+          } else if (isEntryFee && !validAmountFee) {
             error = 'Invalid Fee Amount'
           } else if (total !== 100) {
             error = 'Invalid Distribution'
@@ -154,7 +158,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
             const errTime = getErrorMsg(1)
             if (errMsg) {
               warnToast(errMsg)
-            } else if (errTime) {
+            } else if (errTime && step > 0) {
               warnToast(errTime)
               setStep(1)
             } else {

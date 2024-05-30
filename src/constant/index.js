@@ -282,7 +282,7 @@ export const TC_STEPS = ['DETAILS', 'TIME SETTINGS', 'TYPE AND TOKENS', 'FEES AN
 
 export const TC_PARTICIPANTS = {
   MIN: 2,
-  MAX: 1000,
+  MAX: 10000,
 }
 
 export const TC_MARKET_TYPES = {
@@ -314,7 +314,7 @@ const roundupTime = () => {
 export const INIT_VALUES = {
   name: '',
   description: '',
-  maxParticipants: 1000,
+  maxParticipants: 10000,
   timestamp: {
     registrationStart: roundupTime(), // start timestamp
     registrationEnd: roundupTime() + MIN_REG, // end timestamp
@@ -327,8 +327,8 @@ export const INIT_VALUES = {
   prize: {
     placements: 2, //  number of placements
     ownerFee: 0, //  owner fee
-    totalPrize: '', //  total prize amounts
-    token: '', //  prize tokens
+    totalPrize: [''], //  total prize amounts
+    token: [], //  prize tokens
     weights: [0, 0], //  placement weights
     // winType: false, //  win type
   },
@@ -338,7 +338,7 @@ export const INIT_VALUES = {
     tradingTokens: [], //  trading tokens
     pairIds: [],
   },
-  entryFee: '', // entry fee of 0 prize token
+  entryFee: [], // entry fee of 0 prize token
   owner: {
     id: '',
   }, // owner address

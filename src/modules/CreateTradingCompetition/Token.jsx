@@ -117,6 +117,10 @@ function Token({ data, setData }) {
               setData({
                 ...data,
                 market: TC_MARKET_TYPES.SPOT,
+                prize: {
+                  ...data.prize,
+                  token: data.market !== TC_MARKET_TYPES.SPOT ? [] : data.prize.token,
+                },
               })
             }}
             className={`px-6 py-[8.4px] uppercase text-white ${
@@ -136,6 +140,10 @@ function Token({ data, setData }) {
               setData({
                 ...data,
                 market: TC_MARKET_TYPES.PERPETUAL,
+                prize: {
+                  ...data.prize,
+                  token: [USDTAsset],
+                },
               })
             }}
           >
