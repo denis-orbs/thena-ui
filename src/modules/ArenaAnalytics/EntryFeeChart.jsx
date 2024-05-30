@@ -5,6 +5,7 @@ import useSWR from 'swr'
 
 import LineChart from '@/components/charts/LineChart'
 import Tabs, { TabPanel } from '@/components/tabs'
+import { getSubarrayFromFirstDataToLast } from '@/lib/analytics'
 import { v4Client } from '@/lib/graphql'
 
 import AnalyticChart from './AnalyticChart'
@@ -51,7 +52,11 @@ const fetchEntryFees = async period => {
         })
       })
 
-      return [[...spotData], [...perpetualData], [...totalData]]
+      return [
+        [...getSubarrayFromFirstDataToLast(spotData, 'total')],
+        [...getSubarrayFromFirstDataToLast(perpetualData, 'total')],
+        [...getSubarrayFromFirstDataToLast(totalData, 'total')],
+      ]
     }
   } catch (error) {
     return null

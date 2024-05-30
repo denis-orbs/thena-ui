@@ -5,6 +5,7 @@ import useSWR from 'swr'
 
 import LineChart from '@/components/charts/LineChart'
 import Tabs, { TabPanel } from '@/components/tabs'
+import { getSubarrayFromFirstDataToLast } from '@/lib/analytics'
 import { v4Client } from '@/lib/graphql'
 
 import AnalyticChart from './AnalyticChart'
@@ -24,7 +25,7 @@ const fetchCreatedTC = async period => {
     const { arenaAnalytics } = await v4Client.request(V4_USER_CREATED_ANALYTICS, {
       where,
     })
-    return arenaAnalytics
+    return getSubarrayFromFirstDataToLast(arenaAnalytics, 'newUsersCount')
   } catch (error) {
     return null
   }

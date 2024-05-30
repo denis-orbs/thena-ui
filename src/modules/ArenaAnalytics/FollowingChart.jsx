@@ -5,6 +5,7 @@ import useSWR from 'swr'
 
 import LineChart from '@/components/charts/LineChart'
 import Tabs, { TabPanel } from '@/components/tabs'
+import { getSubarrayFromFirstDataToLast } from '@/lib/analytics'
 import { v4Client } from '@/lib/graphql'
 
 import AnalyticChart from './AnalyticChart'
@@ -27,11 +28,14 @@ const fetchCreatedTC = async period => {
       where,
     })
     if (arenaAnalytics) {
-      return arenaAnalytics.map(val => ({
-        total: val.followingCount.total,
-        cumulativeTotal: val.followingCount.cumulativeTotal,
-        date: val.date,
-      }))
+      return getSubarrayFromFirstDataToLast(
+        arenaAnalytics.map(val => ({
+          total: val.followingCount.total,
+          cumulativeTotal: val.followingCount.cumulativeTotal,
+          date: val.date,
+        })),
+        'total',
+      )
     }
     return null
   } catch (error) {
