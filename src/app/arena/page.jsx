@@ -31,6 +31,7 @@ const V4_COMPETITION_DATAS = gql`
     tradingCompetitions(where: { isHidden_eq: false }) {
       name
       entryFee
+      entryFeeUpdate
       market
       id
       bannerUrl
@@ -42,6 +43,11 @@ const V4_COMPETITION_DATAS = gql`
       prize {
         totalPrize
         token
+        weights
+      }
+      prizeUpdate {
+        token
+        totalPrize
         weights
       }
       totalPrizeUSD
@@ -146,6 +152,13 @@ export default function ArenaPage() {
         prize: {
           ...comp.prize,
           token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
+        },
+        prizeUpdate: {
+          ...comp.prizeUpdate,
+          token: comp.prizeUpdate.token.map(token => {
+            const asset = assets.find(ele => ele.address.toLowerCase() === token.toLowerCase())
+            return asset
+          }),
         },
         competitionRules: {
           ...comp.competitionRules,

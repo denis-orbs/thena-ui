@@ -33,6 +33,7 @@ const V4_COMPETITION_DATA = gql`
       name
       bannerUrl
       entryFee
+      entryFeeUpdate
       timestamp {
         endTimestamp
         registrationEnd
@@ -47,6 +48,13 @@ const V4_COMPETITION_DATA = gql`
         hostContribution
         ownerFee
         weights
+      }
+      prizeUpdate {
+        ownerFee
+        token
+        totalPrize
+        weights
+        winType
       }
       owner {
         id

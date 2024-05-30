@@ -11,12 +11,22 @@ import { cn, formatAmount, fromWei } from '@/lib/utils'
 export function CompetitionCardHeader({ competition, className, banner }) {
   const {
     name,
-    prize: { token: prizeToken, totalPrize },
+    prizeUpdate: { token: prizeTokenUpdate, totalPrize: totalPrizeUpdate },
   } = competition
+
   const t = useTranslations()
-  const currentPrizePool = useMemo(
-    () => formatAmount(fromWei(totalPrize, prizeToken?.decimals)),
-    [prizeToken?.decimals, totalPrize],
+  const currentPrizePoolUpdate = useMemo(
+    () =>
+      totalPrizeUpdate.map((item, index) => {
+        const token = prizeTokenUpdate[index]
+        return {
+          amount: formatAmount(fromWei(item, token?.decimals)),
+          symbol: token?.symbol,
+          logoURI: token?.logoURI,
+        }
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [prizeTokenUpdate.length, totalPrizeUpdate.length],
   )
 
   return (
@@ -36,21 +46,28 @@ export function CompetitionCardHeader({ competition, className, banner }) {
           className='-z-1 absolute bottom-0 left-0 right-0 top-0 rounded-xl'
         />
       ) : (
-        totalPrize && (
+        currentPrizePoolUpdate?.length && (
           <div className='z-1 absolute bottom-0 left-0 right-0 top-0 flex transform flex-col items-center justify-center gap-2 rounded-xl bg-white/5 p-4 backdrop-invert backdrop-opacity-5'>
             <TextHeading className='text-center text-2xl'>{t('Compete For')}</TextHeading>
-            <TextHeading className='flex items-center text-nowrap'>
-              {currentPrizePool} {prizeToken?.symbol}
-              {prizeToken?.logoURI && (
-                <Image
-                  alt={name}
-                  src={prizeToken?.logoURI}
-                  className='ml-1 inline-block flex-shrink-0'
-                  width={20}
-                  height={20}
-                  loading='lazy'
-                />
-              )}
+            <TextHeading className='flex items-center gap-1 text-nowrap'>
+              {currentPrizePoolUpdate.map((item, index) => (
+                <span key={index} className='flex text-nowrap'>
+                  <span className='flex items-center text-nowrap'>
+                    {item.amount} {item.symbol}
+                    {item?.logoURI && (
+                      <Image
+                        alt={name}
+                        src={item?.logoURI}
+                        className='ml-1 inline-block flex-shrink-0'
+                        width={20}
+                        height={20}
+                        loading='lazy'
+                      />
+                    )}
+                  </span>
+                  {index !== currentPrizePoolUpdate.length - 1 && <span>,</span>}
+                </span>
+              ))}
             </TextHeading>
           </div>
         )

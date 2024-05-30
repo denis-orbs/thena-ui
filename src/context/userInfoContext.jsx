@@ -46,6 +46,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
       tradingCompetitions {
         name
         entryFee
+        entryFeeUpdate
         market
         id
         competitionRules {
@@ -56,6 +57,11 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
         prize {
           totalPrize
           token
+          weights
+        }
+        prizeUpdate {
+          token
+          totalPrize
           weights
         }
         timestamp {
@@ -87,6 +93,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
         tradingCompetition {
           name
           entryFee
+          entryFeeUpdate
           market
           id
           competitionRules {
@@ -97,6 +104,11 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
           prize {
             totalPrize
             token
+            weights
+          }
+          prizeUpdate {
+            token
+            totalPrize
             weights
           }
           timestamp {

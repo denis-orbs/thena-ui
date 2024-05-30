@@ -52,6 +52,14 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, weights])
 
+  // useEffect(() => {
+  //   setData({
+  //     ...data,
+  //     entryFee: new Array(data.prize.token.length).fill(''),
+  //   })
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [data.prize.token])
+
   return (
     <>
       <p className='font-figtree w-full text-xl font-semibold leading-6 text-white md:text-[22px] md:leading-7'>
@@ -141,7 +149,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
               onChange={() => {
                 setData({
                   ...data,
-                  entryFee: isEntryFee ? [] : new Array(data.prize.token.length).fill(''),
+                  entryFee: new Array(data.prize.token.length).fill(''),
                 })
                 setIsEntryFee(!isEntryFee)
               }}
@@ -287,6 +295,8 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
         setSelectedAssets={val => {
           setData({
             ...data,
+            // TODO: Calculate correct entryFee
+            entryFee: new Array(val.length).fill(''),
             prize: {
               ...data.prize,
               token: val,

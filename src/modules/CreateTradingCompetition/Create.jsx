@@ -12,7 +12,7 @@ import Time from './Time'
 import Token from './Token'
 
 function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = () => {}, data, setData }) {
-  const [isEntryFee, setIsEntryFee] = useState(!isInvalidAmount(data.entryFee))
+  const [isEntryFee, setIsEntryFee] = useState(data.entryFee.some(item => !isInvalidAmount(item)))
 
   const getErrorMsg = useCallback(
     val => {

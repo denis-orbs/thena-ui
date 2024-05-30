@@ -27,6 +27,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       prize: { token: prizeToken, totalPrize, hostContribution },
       competitionRules: { startingBalance, winningToken },
     } = _competition
+
     return [
       {
         key: 'Participants',

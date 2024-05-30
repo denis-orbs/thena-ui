@@ -29,6 +29,13 @@ export const useCompetitionFormat = (competition, isPreview = false) => {
         clone.prize.token = assets.find(ele => ele.address.toLowerCase() === competition?.prize?.token.toLowerCase())
       }
 
+      if (clone.prizeUpdate) {
+        clone.prizeUpdate.token = clone.prizeUpdate.token.map(token => {
+          const asset = assets.find(ele => ele.address.toLowerCase() === token.toLowerCase())
+          return asset
+        })
+      }
+
       if (clone.participants) {
         clone.participantCount = clone.participants.length
       }

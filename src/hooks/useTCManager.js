@@ -120,7 +120,7 @@ export const useCreateTC = () => {
 
       const tradingComp = {
         id: isPerpetualTC ? 0 : undefined,
-        entryFee: data.entryFee,
+        entryFee: isPerpetualTC ? data.entryFee[0] : data.entryFee,
         MAX_PARTICIPANTS: data.maxParticipants,
         owner: data.owner.id,
         tradingCompetition: data.tradingCompetitionSpot,
