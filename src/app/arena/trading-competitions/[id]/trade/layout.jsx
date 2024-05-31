@@ -13,10 +13,6 @@ const V4_COMPETITION_DATA = gql`
       id
       name
       bannerUrl
-      prize {
-        totalPrize
-        token
-      }
     }
   }
 `

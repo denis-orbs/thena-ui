@@ -15,7 +15,7 @@ const V4_COMPETITION_DATA = gql`
       id
       name
       bannerUrl
-      prize {
+      prizeUpdate {
         totalPrize
         token
       }
@@ -31,12 +31,12 @@ export async function generateMetadata({ params }) {
 
   const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
 
-  const findAsset = assets.data.find(asset => asset.address === competition.prize.token.toLowerCase())
+  const findAsset = assets.data.find(asset => asset.address === competition.prizeUpdate.token?.[0].toLowerCase())
 
   const metadata = {
     name: competition?.name ?? 'competition',
     token: findAsset?.symbol ?? 'MUSD',
-    prize: formatAmount(fromWei(competition?.prize?.totalPrize, findAsset?.decimals)),
+    prize: formatAmount(fromWei(competition?.prizeUpdate?.totalPrize?.[0], findAsset?.decimals)),
     image: [competition?.bannerUrl, `${siteConfig.url}/cover.png`],
   }
 
