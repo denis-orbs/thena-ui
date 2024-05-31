@@ -35,6 +35,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
     return {
       ...data,
       entryFee,
+      entryFeeUpdate: entryFee,
       owner: {
         id: account,
       },
