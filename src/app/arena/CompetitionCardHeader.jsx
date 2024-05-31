@@ -26,7 +26,7 @@ export function CompetitionCardHeader({ competition, className, banner }) {
         }
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [prizeTokenUpdate.length, totalPrizeUpdate.length],
+    [JSON.stringify(prizeTokenUpdate), totalPrizeUpdate],
   )
 
   return (
