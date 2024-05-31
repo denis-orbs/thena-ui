@@ -8,6 +8,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Box from '@/components/box'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
@@ -20,11 +21,14 @@ import { Countdown } from '@/modules/CountDown'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
+import IncreasePrizeModal from './IncreasePrizeModal'
+
 function Sidebar({ competition, eventType }) {
   const t = useTranslations()
   const progressBarRef = useRef()
   const { claimReward } = useClaimTC()
   const [showJoinModal, setShowJoinModal] = useState(false)
+  const [showIncreasePrize, setShowIncreasePrize] = useState(false)
   // const [showModalDeposit, setShowModalDeposit] = useState(false)
   const { open } = useWeb3Modal()
   const { account } = useWallet()
@@ -397,6 +401,27 @@ function Sidebar({ competition, eventType }) {
           />
         )}
         {buttonByStatus}
+        {account && !isEndedRegistration && (
+          <>
+            <PrimaryButton
+              data-tooltip-id='showTooltip'
+              disabled={isNotStartRegistration}
+              onClick={() => setShowIncreasePrize(true)}
+            >
+              {t('Increase Prize')}
+            </PrimaryButton>
+            {isNotStartRegistration && (
+              <CustomTooltip
+                className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                id='showTooltip'
+                place='bottom'
+              >
+                {/* TODO: i18n */}
+                You can only increase the prize during the registration period.
+              </CustomTooltip>
+            )}
+          </>
+        )}
       </Box>
       {showJoinModal && (
         <JoinModal
@@ -415,6 +440,13 @@ function Sidebar({ competition, eventType }) {
           closeModal={() => setShowModalDeposit(false)}
         />
       )} */}
+      {showIncreasePrize && (
+        <IncreasePrizeModal
+          isOpen={showIncreasePrize}
+          competition={competition}
+          closeModal={() => setShowIncreasePrize(false)}
+        />
+      )}
     </div>
   )
 }

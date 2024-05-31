@@ -543,3 +543,68 @@ export const useWithdrawDepositTC = () => {
 
   return { loading, withdrawDeposit }
 }
+
+export const useIncreaseTCSpotPrize = () => {
+  const { startTxn, endTxn, writeTxn, closeTxn } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+  const [pending, setPending] = useState(false)
+
+  const increasePrize = useCallback(
+    async (tcAddress, tokenAddress, amount) => {
+      const key = uuidv4()
+      const approveTokenuuid = uuidv4()
+      const increasePrizeuuid = uuidv4()
+      const tcSpotContract = getTcSpotContract(tcAddress)
+
+      const tokenContract = getERC20Contract(tokenAddress, chainId)
+      const allowance = await readCall(tokenContract, 'allowance', [account, tcAddress])
+      const isApprovedToken = fromWei(allowance).gte(fromWei(amount))
+
+      setPending(true)
+      startTxn({
+        key,
+        title: t('Increase Prize'),
+        transactions: {
+          ...(!isApprovedToken && {
+            [approveTokenuuid]: {
+              desc: `${t('Approve')} ${t('Token')}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [increasePrizeuuid]: {
+            desc: t('Increase Prize'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      if (!isApprovedToken) {
+        const isSuccess = await writeTxn(key, approveTokenuuid, tokenContract, 'approve', [tcAddress, maxUint256])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      }
+
+      const isSuccess = await writeTxn(key, increasePrizeuuid, tcSpotContract, 'increasePrize', [amount, tokenAddress])
+      if (!isSuccess) {
+        setPending(false)
+        closeTxn()
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Increase Successful',
+      })
+      setPending(false)
+      return true
+    },
+    [account, chainId, closeTxn, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { pending, increasePrize }
+}
