@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 
 import { useUserInfo } from '@/context/userInfoContext'
 import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
+import { getFromLocalStorage } from '@/lib/helper'
 import { successToast } from '@/lib/notify'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
@@ -68,7 +68,7 @@ export const useUpdateProfile = account => {
           userId: account?.toLocaleLowerCase() ?? null,
         },
         {
-          authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+          authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
         },
       )
       if (updateUserProfile) {

@@ -13,7 +13,7 @@ import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
+import { getFromLocalStorage } from '@/lib/helper'
 import { successToast } from '@/lib/notify'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
@@ -233,7 +233,7 @@ function Competitions() {
         tcId,
       },
       {
-        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
       },
     )
     return res

@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 import FileResizer from 'react-image-file-resizer'
 
 import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
+import { getFromLocalStorage } from '@/lib/helper'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
 import { useUpdateProfile } from './useProfile'
@@ -40,7 +40,7 @@ export const updateCheckMarkIcon = async (value, userId) => {
     V4_UPDATE_CHECKMARK,
     { checkMarkIcon: value, userId },
     {
-      authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+      authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
     },
   )
 
@@ -54,7 +54,7 @@ export const updateBanner = async (value, tcId) => {
     V4_UPDATE_BANNER,
     { bannerUrl: value, tcId },
     {
-      authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+      authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
     },
   )
 
@@ -75,7 +75,7 @@ export const generateUrlUpload = async ({ file, userId, type }) => {
       type,
     },
     {
-      authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+      authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
     },
   )
 

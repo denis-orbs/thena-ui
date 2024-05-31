@@ -2,7 +2,7 @@ import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 
 import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
+import { getFromLocalStorage } from '@/lib/helper'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
 const V4_CREATE_NOTIFICATION = gql`
@@ -15,7 +15,7 @@ export const createNotification = async (recipients, content, redirectUrl) => {
     V4_CREATE_NOTIFICATION,
     { recipients, content, redirectUrl },
     {
-      authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+      authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
     },
   )
 

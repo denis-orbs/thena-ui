@@ -75,8 +75,9 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
   const onFollow = useCallback(async () => {
     setLoading(true)
     setTimeout(async () => {
-      await followUser()
-      setLoading(false)
+      await followUser(() => {
+        setLoading(false)
+      })
     }, 1000)
   }, [followUser])
 

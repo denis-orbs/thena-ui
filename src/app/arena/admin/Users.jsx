@@ -16,7 +16,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
+import { getFromLocalStorage } from '@/lib/helper'
 import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
@@ -124,7 +124,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
         userId,
       },
       {
-        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
       },
     )
 

@@ -44,8 +44,9 @@ export function UserProfileCard({ user, showVerified = false, disableLink = fals
   const onFollow = useCallback(async () => {
     setLoading(true)
     setTimeout(async () => {
-      await followUser()
-      setLoading(false)
+      await followUser(() => {
+        setLoading(false)
+      })
     }, 1000)
   }, [followUser])
 

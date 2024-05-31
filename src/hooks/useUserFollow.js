@@ -5,7 +5,7 @@ import useSWR, { mutate as mutateSWR } from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
+import { getFromLocalStorage } from '@/lib/helper'
 import { errorToast, successToast } from '@/lib/notify'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 import useWallet from '@/lib/wallets/useWallet'
@@ -106,7 +106,7 @@ export const useFollow = (userId, username = null, isFollowed = false) => {
         userId: userId.toLowerCase(),
       },
       {
-        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
       },
     )
 
@@ -140,6 +140,9 @@ export const useFollow = (userId, username = null, isFollowed = false) => {
     }
   }, [account, isFollowed, t, userId, username])
 
-  const follow = useCallback(() => actionWithAuthentication(followFn, signWallet), [followFn, signWallet])
+  const follow = useCallback(
+    callback => actionWithAuthentication(followFn, signWallet, {}, callback, callback),
+    [followFn, signWallet],
+  )
   return { followUser: follow }
 }

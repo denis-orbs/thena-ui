@@ -2,7 +2,7 @@ import { gql, GraphQLWebSocketClient } from 'graphql-request'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { v4Client, v4GraphWsUrl } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
+import { getFromLocalStorage } from '@/lib/helper'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 import useWallet from '@/lib/wallets/useWallet'
 
@@ -115,7 +115,7 @@ export function useMarkNotificationRead() {
         CLICK_NOTIFICATION,
         { id },
         {
-          authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+          authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
         },
       )
     }
@@ -123,7 +123,7 @@ export function useMarkNotificationRead() {
       MARK_AS_READ,
       { id },
       {
-        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
       },
     )
   }, [])

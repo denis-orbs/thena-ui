@@ -2,7 +2,7 @@ import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 
 import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
+import { getFromLocalStorage } from '@/lib/helper'
 import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
 const V4_UPDATE_USER = gql`
@@ -22,7 +22,7 @@ export const useUpdateAdminPermission = () => {
       V4_UPDATE_USER,
       { userId, isAdmin },
       {
-        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
+        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
       },
     )
 

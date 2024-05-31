@@ -6,7 +6,7 @@ import { errorToast } from '@/lib/notify'
 
 import useWallet from './useWallet'
 import { v4Client } from '../graphql'
-import { getFromSessionStorage } from '../helper'
+import { getFromLocalStorage } from '../helper'
 import { sleep } from '../utils'
 
 const V4_LOGIN = gql`
@@ -27,7 +27,7 @@ export const useSignWallet = () => {
   const { account } = useWallet()
   const { signMessage } = useSignMessage()
   const deleteToken = useCallback(() => {
-    sessionStorage.removeItem('token')
+    localStorage.removeItem('token')
   }, [])
 
   const login = useCallback(
@@ -42,19 +42,19 @@ export const useSignWallet = () => {
           })
 
           if (accessToken) {
-            sessionStorage.setItem('token', accessToken)
+            localStorage.setItem('token', accessToken)
           }
         }
       } catch (error) {
-        sessionStorage.removeItem('token')
+        localStorage.removeItem('token')
       }
     },
     [account],
   )
 
   const signWallet = useCallback(
-    (loginCallback, params, callOnSuccess, callOnReject, force = false) => {
-      if (account && (force || !getFromSessionStorage('token'))) {
+    (loginCallback, params, callOnSuccess, callOnReject) => {
+      if (account) {
         signMessage(
           {
             message: "By signing you agree to 'Terms of Service' & 'Privacy Policy' of THENA",
@@ -64,7 +64,7 @@ export const useSignWallet = () => {
             onSuccess: async data => {
               await login(data)
               await sleep(3000)
-              if (getFromSessionStorage('token')) {
+              if (getFromLocalStorage('token')) {
                 await loginCallback?.(params)
                 callOnSuccess?.()
               }
@@ -85,9 +85,6 @@ export const useSignWallet = () => {
   }
 }
 
-/**
- *  set force = true when callOnFailed is signWallet
- *  */
 export async function actionWithAuthentication(action, callOnFailed, params, callOnSuccess, callOnReject) {
   try {
     await action(params)

@@ -7,7 +7,6 @@ import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
 import useWallet from '@/lib/wallets/useWallet'
 import { EditProfile } from '@/modules/Profile/EditProfile'
 
@@ -50,13 +49,7 @@ const V4_USER_INFO = gql`
 
 const fetchUserInfo = async id => {
   try {
-    const { userById } = await v4Client.request(
-      V4_USER_INFO,
-      { id: id.toLowerCase() },
-      {
-        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
-      },
-    )
+    const { userById } = await v4Client.request(V4_USER_INFO, { id: id.toLowerCase() })
 
     const { tradeRankByAddress } = await v4Client.request(V4_USER_RANK, { id: id.toLowerCase() })
 

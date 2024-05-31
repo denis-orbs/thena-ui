@@ -13,7 +13,6 @@ import Skeleton from '@/components/skeleton'
 import { TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
-import { getFromSessionStorage } from '@/lib/helper'
 import { sliceAddress } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
@@ -39,13 +38,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
 
 const fetchUserInfo = async idOrUserName => {
   try {
-    const { users } = await v4Client.request(
-      V4_USER_BY_ID_OR_USERNAME,
-      { idOrUserName: idOrUserName.toLowerCase() },
-      {
-        authorization: getFromSessionStorage('token') ? `Bearer ${getFromSessionStorage('token')}` : '',
-      },
-    )
+    const { users } = await v4Client.request(V4_USER_BY_ID_OR_USERNAME, { idOrUserName: idOrUserName.toLowerCase() })
 
     if (users.length === 1) {
       const user = users[0]
