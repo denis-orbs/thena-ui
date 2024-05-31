@@ -43,14 +43,21 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
         return
       }
 
-      const [joined, won, ownerAddress] = await Promise.all([
+      const [joined, won, ownerAddress] = await Promise.allSettled([
         readCall(tcSpotContract, 'isRegistered', [account]),
         readCall(tcSpotContract, 'isWinner', [account]),
         readCall(tcSpotContract, 'owner', []),
       ])
-      setIsRegistered(joined)
-      setIsWinner(won[0])
-      setIsOwner(ownerAddress.toLowerCase() === account.toLowerCase())
+
+      if (joined && joined.status === 'fulfilled') {
+        setIsRegistered(joined.value)
+      }
+      if (won && won.status === 'fulfilled') {
+        setIsWinner(won.value[0])
+      }
+      if (ownerAddress && ownerAddress.status === 'fulfilled') {
+        setIsOwner(ownerAddress.value.toLowerCase() === account.toLowerCase())
+      }
 
       setLoaded(true)
     }
