@@ -41,10 +41,6 @@ export function ProfilePage({ address }) {
     () =>
       userInfo?.joinedTCs?.map(comp => ({
         ...comp.tradingCompetition,
-        prize: {
-          ...comp.tradingCompetition.prize,
-          token: assets.find(ele => ele.address.toLowerCase() === comp.tradingCompetition.prize.token.toLowerCase()),
-        },
         prizeUpdate: {
           ...comp.tradingCompetition.prizeUpdate,
           token: comp.tradingCompetition.prizeUpdate.token.map(token => {
@@ -69,10 +65,6 @@ export function ProfilePage({ address }) {
     () =>
       userInfo?.tradingCompetitions?.map(comp => ({
         ...comp,
-        prize: {
-          ...comp.prize,
-          token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
-        },
         prizeUpdate: {
           ...comp.prizeUpdate,
           token: comp.prizeUpdate.token.map(token => {

@@ -30,7 +30,6 @@ const V4_COMPETITION_DATAS = gql`
   query V4_COMPETITION {
     tradingCompetitions(where: { isHidden_eq: false }) {
       name
-      entryFee
       entryFeeUpdate
       market
       id
@@ -39,11 +38,6 @@ const V4_COMPETITION_DATAS = gql`
         winningToken
         tradingTokens
         startingBalance
-      }
-      prize {
-        totalPrize
-        token
-        weights
       }
       prizeUpdate {
         token
@@ -149,10 +143,6 @@ export default function ArenaPage() {
     () =>
       (Array.isArray(dataCompetitions) ? dataCompetitions : []).map(comp => ({
         ...comp,
-        prize: {
-          ...comp.prize,
-          token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
-        },
         prizeUpdate: {
           ...comp.prizeUpdate,
           token: comp.prizeUpdate.token.map(token => {

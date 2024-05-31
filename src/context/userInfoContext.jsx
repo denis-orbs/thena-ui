@@ -91,7 +91,6 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
       joinedTCs {
         tradingCompetition {
           name
-          entryFee
           entryFeeUpdate
           market
           id
@@ -99,11 +98,6 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
             winningToken
             tradingTokens
             startingBalance
-          }
-          prize {
-            totalPrize
-            token
-            weights
           }
           prizeUpdate {
             token
