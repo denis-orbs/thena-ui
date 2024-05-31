@@ -22,8 +22,8 @@ export function JoinModal({ competition, open, onClose }) {
   const [name, setName] = useState('')
 
   const {
-    entryFee,
-    prize: { token: prizeToken },
+    entryFeeUpdate,
+    prizeUpdate: { token: prizeToken },
     competitionRules: { startingBalance, winningToken },
     market,
   } = competition
@@ -33,25 +33,24 @@ export function JoinModal({ competition, open, onClose }) {
   const { joinTCPerpetual, pending: pendingPerpetual } = useJoinTCPerpetual()
 
   const showAlertBalance = useMemo(() => {
-    if (prizeToken.address === winningToken.address) {
-      const totalAmount = fromWei(entryFee, prizeToken.decimals).plus(fromWei(startingBalance, winningToken.decimals))
-      const totalBalance = new BigNumber(prizeToken.balance).plus(winningToken.balance)
+    const tokenIndex = prizeToken.findIndex(token => winningToken.address.toLowerCase() === token.address.toLowerCase())
+
+    if (tokenIndex !== -1) {
+      const totalAmount = fromWei(entryFeeUpdate[tokenIndex], prizeToken[tokenIndex].decimals).plus(
+        fromWei(startingBalance, winningToken.decimals),
+      )
+      const totalBalance = new BigNumber(prizeToken[tokenIndex].balance).plus(winningToken.balance)
       return totalAmount.gt(totalBalance)
     }
-    const notEnoughFee = fromWei(entryFee, prizeToken.decimals).gt(prizeToken.balance)
+
+    const notEnoughFee = entryFeeUpdate
+      .map((e, index) => fromWei(e, prizeToken[index].decimals).gt(prizeToken[index].balance))
+      .some(item => item)
+
     const notEnoughDeposit = fromWei(startingBalance, winningToken.decimals).gt(winningToken.balance)
 
     return notEnoughDeposit || notEnoughFee
-  }, [
-    entryFee,
-    prizeToken.address,
-    prizeToken.balance,
-    prizeToken.decimals,
-    startingBalance,
-    winningToken.address,
-    winningToken.balance,
-    winningToken.decimals,
-  ])
+  }, [entryFeeUpdate, prizeToken, startingBalance, winningToken.address, winningToken.balance, winningToken.decimals])
 
   const handleJoin = useCallback(async () => {
     try {
@@ -75,7 +74,7 @@ export function JoinModal({ competition, open, onClose }) {
   }, [competition, joinTC, joinTCPerpetual, market, name, onClose, push])
 
   const message = useMemo(() => {
-    if (isInvalidAmount(entryFee)) {
+    if (isInvalidAmount(entryFeeUpdate)) {
       if (!isInvalidAmount(startingBalance)) {
         return t('Pay Deposit To Join Message', {
           depositAmount: formatAmount(fromWei(startingBalance, winningToken.decimals)),
@@ -86,26 +85,39 @@ export function JoinModal({ competition, open, onClose }) {
     }
     if (isInvalidAmount(startingBalance)) {
       return t('Pay Entry Fee To Join Message', {
-        entryFeeAmount: formatAmount(fromWei(entryFee, prizeToken.decimals)),
-        entryFeeTicker: prizeToken.symbol,
+        entryFeeText: entryFeeUpdate
+          .map((ef, index) => `${formatAmount(fromWei(ef, prizeToken[index]?.decimals))} ${prizeToken[index]?.symbol}`)
+          .join(', '),
       })
     }
     return t('Pay Entry Fee And Deposit To Join Message', {
       depositAmount: formatAmount(fromWei(startingBalance, winningToken.decimals)),
       depositTicker: winningToken.symbol,
-      entryFeeAmount: formatAmount(fromWei(entryFee, prizeToken.decimals)),
-      entryFeeTicker: prizeToken.symbol,
+      entryFeeText: entryFeeUpdate
+        .map((ef, index) => `${formatAmount(fromWei(ef, prizeToken[index]?.decimals))} ${prizeToken[index]?.symbol}`)
+        .join(', '),
     })
-  }, [entryFee, prizeToken.decimals, prizeToken.symbol, startingBalance, t, winningToken.decimals, winningToken.symbol])
+  }, [entryFeeUpdate, prizeToken, startingBalance, t, winningToken.decimals, winningToken.symbol])
 
   const totalToken = useMemo(() => {
-    if (prizeToken.symbol === winningToken.symbol) {
-      return `${formatAmount(
-        fromWei(entryFee, prizeToken.decimals).toNumber() + fromWei(startingBalance, prizeToken.decimals).toNumber(),
-      )} ${prizeToken.symbol}`
+    const indexToken = prizeToken.findIndex(
+      (token, index) => token.symbol === winningToken.symbol && Number(entryFeeUpdate[index]) > 0,
+    )
+
+    if (indexToken !== -1) {
+      return prizeToken
+        .map((pt, index) =>
+          pt.symbol === winningToken.symbol && Number(entryFeeUpdate[index]) > 0
+            ? `${formatAmount(
+                fromWei(entryFeeUpdate[index], pt.decimals).toNumber() +
+                  fromWei(startingBalance, pt.decimals).toNumber(),
+              )} ${pt.symbol}`
+            : `${formatAmount(fromWei(entryFeeUpdate[index], pt.decimals).toNumber())} ${pt.symbol}`,
+        )
+        .join(', ')
     }
     return ''
-  }, [entryFee, prizeToken.decimals, prizeToken.symbol, startingBalance, winningToken.symbol])
+  }, [entryFeeUpdate, prizeToken, startingBalance, winningToken.symbol])
 
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Join Competition')}>
@@ -131,21 +143,28 @@ export function JoinModal({ competition, open, onClose }) {
           </div>
         )}
         <div className='item-centers mt-3 flex flex-row justify-between gap-4 md:mt-5'>
-          {!isInvalidAmount(entryFee) && prizeToken && (
+          {entryFeeUpdate.some(ef => !isInvalidAmount(ef)) && prizeToken && (
             <div>
               <TextHeading className='text-lg'>{t('Entry Fee')}</TextHeading>
-              <div className='mt-2 flex space-x-2'>
-                <Image
-                  alt={prizeToken.name}
-                  src={prizeToken.logoURI}
-                  className='flex-shrink-0'
-                  width={20}
-                  height={20}
-                  loading='lazy'
-                />
-                <Paragraph>
-                  {formatAmount(fromWei(entryFee, prizeToken.decimals))} {prizeToken.symbol}
-                </Paragraph>
+              <div className='mt-2 flex flex-wrap items-center gap-1 text-neutral-300'>
+                {entryFeeUpdate.map((ef, index) => (
+                  <span key={index} className='flex text-nowrap'>
+                    <span className='flex items-center text-nowrap'>
+                      {prizeToken[index]?.logoURI && (
+                        <Image
+                          alt={prizeToken[index]?.symbol}
+                          src={prizeToken[index]?.logoURI}
+                          className='me-1 inline-block flex-shrink-0'
+                          width={20}
+                          height={20}
+                          loading='lazy'
+                        />
+                      )}
+                      {formatAmount(fromWei(ef, prizeToken[index].decimals))} {prizeToken[index].symbol}
+                    </span>
+                    {index !== entryFeeUpdate.length - 1 && <span>,</span>}
+                  </span>
+                ))}
               </div>
             </div>
           )}
