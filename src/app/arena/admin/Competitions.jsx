@@ -24,7 +24,6 @@ const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
   query V4_COMPETITION($search: String) {
     tradingCompetitions(orderBy: timestamp_startTimestamp_DESC, where: { name_containsInsensitive: $search }) {
       name
-      entryFee
       entryFeeUpdate
       market
       id
@@ -34,11 +33,6 @@ const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
         winningToken
         tradingTokens
         startingBalance
-      }
-      prize {
-        totalPrize
-        token
-        weights
       }
       prizeUpdate {
         token
@@ -80,7 +74,7 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
       where: { isHidden_eq: $isHidden, name_containsInsensitive: $search }
     ) {
       name
-      entryFee
+      entryFeeUpdate
       market
       id
       isHidden
@@ -90,9 +84,9 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
         tradingTokens
         startingBalance
       }
-      prize {
-        totalPrize
+      prizeUpdate {
         token
+        totalPrize
         weights
       }
       timestamp {
@@ -112,6 +106,9 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
       owner {
         id
         isVerified
+        avatar
+        username
+        nameColor
         checkMarkIcon
         verifiedAt
       }
@@ -184,10 +181,6 @@ function Competitions() {
       if (dataCompetitions && Array.isArray(dataCompetitions)) {
         const arrDataFormatted = dataCompetitions.map(comp => ({
           ...comp,
-          prize: {
-            ...comp.prize,
-            token: assets.find(ele => ele.address.toLowerCase() === comp.prize.token.toLowerCase()),
-          },
           prizeUpdate: {
             ...comp.prizeUpdate,
             token: comp.prizeUpdate.token.map(token => {

@@ -25,20 +25,32 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
 
   const totalPrize = useMemo(
     () =>
-      `${formatAmount(fromWei(competition.prize.totalPrize, competition.prize?.token?.decimals))} ${
-        competition.prize?.token?.symbol
-      }`,
-    [competition.prize.totalPrize, competition.prize?.token?.decimals, competition.prize?.token?.symbol],
+      competition.prizeUpdate.totalPrize
+        .map(
+          (item, index) =>
+            `${formatAmount(fromWei(item, competition.prizeUpdate?.token?.[index]?.decimals))} ${
+              competition.prizeUpdate?.token?.[index]?.symbol
+            }`,
+        )
+        .join(', '),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [competition.prizeUpdate.totalPrize, competition.prizeUpdate?.token],
   )
 
   const entryFee = useMemo(() => {
-    if (competition.entryFee !== '0') {
-      return `${formatAmount(fromWei(competition.entryFee, competition.prize?.token?.decimals))} ${
-        competition.prize?.token?.symbol
-      }`
+    if (competition.entryFeeUpdate.some(item => Number(item) !== 0)) {
+      return competition.entryFeeUpdate
+        .map(
+          (item, index) =>
+            `${formatAmount(fromWei(item, competition.prizeUpdate?.token?.[index]?.decimals))} ${
+              competition.prizeUpdate?.token?.[index]?.symbol
+            }`,
+        )
+        .join(', ')
     }
     return t('Free To Enter')
-  }, [competition.entryFee, competition.prize?.token?.decimals, competition.prize?.token?.symbol, t])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [competition.entryFeeUpdate, competition.prizeUpdate?.token, t])
 
   const { text: timeDistance } = useCountdown(eventType, competition.timestamp.startTimestamp)
 
