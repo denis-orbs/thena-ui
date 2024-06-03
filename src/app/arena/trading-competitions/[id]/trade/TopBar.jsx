@@ -39,17 +39,19 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
     true,
   )
 
+  console.log({ competition })
+
   const { balance, pnl } = useTradeData(
-    competition?.tradingCompetitionSpot,
+    competition?.tcAddress,
     competition?.competitionRules?.winningToken?.address,
     reloadFetch,
   )
 
   const getPnl = useCallback(async () => {
-    if (competition?.participants && competition?.tradingCompetitionSpot) {
+    if (competition?.participants && competition?.tcAddress) {
       const temp = [...competition.participants]
       if (temp && temp.length) {
-        const tcSpotContract = getTcSpotContract(competition?.tradingCompetitionSpot)
+        const tcSpotContract = getTcSpotContract(competition?.tcAddress)
         for (const ptcp of competition.participants) {
           const pnlRes = await readCall(tcSpotContract, 'getPNLOf', [ptcp.participant.id])
           ptcp.pnl = new BigNumber(pnlRes).toNumber()
@@ -58,13 +60,13 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
         setParticipants(temp)
       }
     }
-  }, [competition.participants, competition?.tradingCompetitionSpot])
+  }, [competition.participants, competition?.tcAddress])
 
   const calcRankAfterSwap = useCallback(async () => {
-    if (competition?.participants && competition?.tradingCompetitionSpot) {
+    if (competition?.participants && competition?.tcAddress) {
       const temp = [...competition.participants]
       if (temp && temp.length) {
-        const tcSpotContract = getTcSpotContract(competition.tradingCompetitionSpot)
+        const tcSpotContract = getTcSpotContract(competition.tcAddress)
         for (const ptcp of competition.participants) {
           const pnlRes = await readCall(tcSpotContract, 'getPNLOf', [ptcp.participant.id])
           ptcp.pnl = new BigNumber(pnlRes).toNumber()
@@ -90,12 +92,7 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
         setCurrentRank(newRank)
       }
     }
-  }, [
-    account,
-    competition.competitionRules?.winningToken?.decimals,
-    competition.participants,
-    competition.tradingCompetitionSpot,
-  ])
+  }, [account, competition.competitionRules?.winningToken?.decimals, competition.participants, competition.tcAddress])
 
   useEffect(() => {
     if (reloadFetch > 0) {

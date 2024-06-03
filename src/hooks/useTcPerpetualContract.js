@@ -75,17 +75,14 @@ export const useJoinTCPerpetual = () => {
       const approveFeeuuid = uuidv4()
       const approveStartuuid = uuidv4()
       const joinuuid = uuidv4()
-      const tcPerpetualContract = getTcPerpetualContract(data.tradingCompetitionSpot)
+      const tcPerpetualContract = getTcPerpetualContract(data.tcAddress)
 
       const feeTokenContract = getERC20Contract(data.prize.token.address, chainId)
-      const allowance = await readCall(feeTokenContract, 'allowance', [account, data.tradingCompetitionSpot])
+      const allowance = await readCall(feeTokenContract, 'allowance', [account, data.tcAddress])
       const isApprovedFee = new BigNumber(data.entryFee).isZero() || fromWei(allowance).gte(data.entryFee)
 
       const winningTokenContract = getERC20Contract(data.competitionRules.winningToken.address, chainId)
-      const allowanceWinningToken = await readCall(winningTokenContract, 'allowance', [
-        account,
-        data.tradingCompetitionSpot,
-      ])
+      const allowanceWinningToken = await readCall(winningTokenContract, 'allowance', [account, data.tcAddress])
       const isApprovedWinningToken = fromWei(allowanceWinningToken).gte(fromWei(data.competitionRules.startingBalance))
 
       setPending(true)
@@ -116,10 +113,7 @@ export const useJoinTCPerpetual = () => {
       })
 
       if (!isApprovedFee) {
-        const isSuccess = await writeTxn(key, approveFeeuuid, feeTokenContract, 'approve', [
-          data.tradingCompetitionSpot,
-          maxUint256,
-        ])
+        const isSuccess = await writeTxn(key, approveFeeuuid, feeTokenContract, 'approve', [data.tcAddress, maxUint256])
         if (!isSuccess) {
           setPending(false)
           return false
@@ -128,7 +122,7 @@ export const useJoinTCPerpetual = () => {
 
       if (!isApprovedWinningToken) {
         const isSuccess = await writeTxn(key, approveStartuuid, winningTokenContract, 'approve', [
-          data.tradingCompetitionSpot,
+          data.tcAddress,
           maxUint256,
         ])
         if (!isSuccess) {

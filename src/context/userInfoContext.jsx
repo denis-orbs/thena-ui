@@ -86,7 +86,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
           verifiedAt
           nameColor
         }
-        tradingCompetitionSpot
+        tcAddress
       }
       joinedTCs {
         tradingCompetition {
@@ -127,7 +127,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
             verifiedAt
             nameColor
           }
-          tradingCompetitionSpot
+          tcAddress
         }
       }
       thenianNfts {

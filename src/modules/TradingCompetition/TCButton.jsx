@@ -26,15 +26,10 @@ export function TCButton({ eventType, competition, timestamp }) {
     isWithdrawable: canWithdraw,
     checkClaimable,
     checkWithdrawable,
-  } = useTCContractInfor(
-    competition.tradingCompetitionSpot,
-    eventType,
-    competition.participantCount,
-    competition.market,
-  )
+  } = useTCContractInfor(competition.tcAddress, eventType, competition.participantCount, competition.market)
 
   const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(
-    competition.tradingCompetitionSpot,
+    competition.tcAddress,
     competition.market,
   )
 
@@ -46,25 +41,25 @@ export function TCButton({ eventType, competition, timestamp }) {
   const claim = useCallback(async () => {
     try {
       await claimReward({
-        tcAddress: competition.tradingCompetitionSpot,
+        tcAddress: competition.tcAddress,
         isOwner: isHosting,
       })
       await checkClaimable(true)
     } catch (e) {
       console.error(e)
     }
-  }, [claimReward, competition.tradingCompetitionSpot, isHosting, checkClaimable])
+  }, [claimReward, competition.tcAddress, isHosting, checkClaimable])
 
   const withdraw = useCallback(async () => {
     try {
       await withdrawDeposit({
-        tcAddress: competition.tradingCompetitionSpot,
+        tcAddress: competition.tcAddress,
       })
       await checkWithdrawable(true)
     } catch (e) {
       console.error(e)
     }
-  }, [withdrawDeposit, competition.tradingCompetitionSpot, checkWithdrawable])
+  }, [withdrawDeposit, competition.tcAddress, checkWithdrawable])
 
   useEffect(() => {
     const interval = setInterval(() => {

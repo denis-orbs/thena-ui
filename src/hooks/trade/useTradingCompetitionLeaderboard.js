@@ -34,7 +34,7 @@ const V4_COMPETITION_DATA = gql`
       prizeUpdate {
         token
       }
-      tradingCompetitionSpot
+      tcAddress
     }
   }
 `

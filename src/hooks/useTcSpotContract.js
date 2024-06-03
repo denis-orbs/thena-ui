@@ -234,7 +234,7 @@ export const useJoinTC = () => {
     async data => {
       const key = uuidv4()
       const joinuuid = uuidv4()
-      const tcSpotContract = getTcSpotContract(data.tradingCompetitionSpot)
+      const tcSpotContract = getTcSpotContract(data.tcAddress)
       const winningTokenContract = getERC20Contract(data.competitionRules.winningToken.address, chainId)
 
       const tokens = {
@@ -269,7 +269,7 @@ export const useJoinTC = () => {
       for (let i = 0; i < Object.keys(tokens).length; i++) {
         const address = Object.keys(tokens)[i]
         const approveFeeuuid = uuidv4()
-        const allowance = await readCall(tokens[address].contract, 'allowance', [account, data.tradingCompetitionSpot])
+        const allowance = await readCall(tokens[address].contract, 'allowance', [account, data.tcAddress])
 
         const isApprovedFee = fromWei(allowance, tokens[address].decimals).gte(
           tokens[address].amount,
@@ -300,7 +300,7 @@ export const useJoinTC = () => {
         const address = Object.keys(tokens)[i]
         if (tokens[address].id) {
           const isSuccess = await writeTxn(key, tokens[address].id, tokens[address].contract, 'approve', [
-            data.tradingCompetitionSpot,
+            data.tcAddress,
             maxUint256,
           ])
 

@@ -38,6 +38,7 @@ function Sidebar({ competition, eventType }) {
     () => competition.participantCount === competition.maxParticipants,
     [competition.maxParticipants, competition.participantCount],
   )
+
   const {
     isRegistered: isJoined,
     isOwner: isHosting,
@@ -46,14 +47,9 @@ function Sidebar({ competition, eventType }) {
     isWithdrawable: canWithdraw,
     checkClaimable,
     checkWithdrawable,
-  } = useTCContractInfor(
-    competition.tradingCompetitionSpot,
-    eventType,
-    competition.participantCount,
-    competition.market,
-  )
+  } = useTCContractInfor(competition.tcAddress, eventType, competition.participantCount, competition.market)
   const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(
-    competition.tradingCompetitionSpot,
+    competition.tcAddress,
     competition.market,
   )
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
@@ -246,23 +242,23 @@ function Sidebar({ competition, eventType }) {
 
   const claim = useCallback(async () => {
     try {
-      await claimReward({ tcAddress: competition.tradingCompetitionSpot, isOwner: isHosting })
+      await claimReward({ tcAddress: competition.tcAddress, isOwner: isHosting })
       checkClaimable(true)
     } catch (e) {
       console.error(e)
     }
-  }, [claimReward, competition.tradingCompetitionSpot, isHosting, checkClaimable])
+  }, [claimReward, competition.tcAddress, isHosting, checkClaimable])
 
   const withdraw = useCallback(async () => {
     try {
       await withdrawDeposit({
-        tcAddress: competition.tradingCompetitionSpot,
+        tcAddress: competition.tcAddress,
       })
       await checkWithdrawable(true)
     } catch (e) {
       console.error(e)
     }
-  }, [withdrawDeposit, competition.tradingCompetitionSpot, checkWithdrawable])
+  }, [withdrawDeposit, competition.tcAddress, checkWithdrawable])
 
   const buttonByStatus = useMemo(() => {
     // Ended -> Claim rewards/fee

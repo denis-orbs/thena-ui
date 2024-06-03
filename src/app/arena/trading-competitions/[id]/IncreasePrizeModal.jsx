@@ -16,18 +16,29 @@ function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} })
 
   const { increasePrize, pending } = useIncreaseTCSpotPrize()
 
+  console.log({ competition })
+
   const handleIncreasePrize = useCallback(async () => {
     if (fromWei(toWei(amount, token?.decimals), token?.decimals).gt(token?.balance)) {
       warnToast('Insufficient [Asset] Balance', { symbol: token?.symbol })
       return false
     }
 
-    const isSuccess = await increasePrize(competition?.tradingCompetitionSpot, token?.address, toWei(amount))
+    const isSuccess = await increasePrize(competition?.tcAddress, token?.address, toWei(amount))
 
     if (isSuccess) {
       closeModal()
     }
-  }, [amount, closeModal, competition?.tradingCompetitionSpot, increasePrize, token])
+  }, [
+    amount,
+    closeModal,
+    competition?.tcAddress,
+    increasePrize,
+    token?.address,
+    token?.balance,
+    token?.decimals,
+    token?.symbol,
+  ])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} title='Increase Prize' onAfterClose={() => setAmount('')}>

@@ -62,7 +62,7 @@ const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
         checkMarkIcon
         verifiedAt
       }
-      tradingCompetitionSpot
+      tcAddress
     }
   }
 `
@@ -112,7 +112,7 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
         checkMarkIcon
         verifiedAt
       }
-      tradingCompetitionSpot
+      tcAddress
     }
   }
 `

@@ -70,7 +70,7 @@ const V4_COMPETITION_DATAS = gql`
         isAdmin
         isSuperAdmin
       }
-      tradingCompetitionSpot
+      tcAddress
     }
   }
 `

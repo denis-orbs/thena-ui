@@ -22,7 +22,7 @@ export function LeaderBoard({ competition }) {
   const { reloadFetch } = useTradingCompetition()
 
   const { pnl: pnlUserCurrent, winAmount } = useTradeData(
-    competition?.tradingCompetitionSpot,
+    competition?.tcAddress,
     competition?.competitionRules?.winningToken?.address,
     reloadFetch,
   )

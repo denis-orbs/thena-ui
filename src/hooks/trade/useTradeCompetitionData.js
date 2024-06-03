@@ -27,7 +27,7 @@ const V4_TRADE_COMPETITION_DATA = gql`
           id
         }
       }
-      tradingCompetitionSpot
+      tcAddress
       participantCount
       name
       market

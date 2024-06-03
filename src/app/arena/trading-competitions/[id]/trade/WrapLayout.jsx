@@ -32,19 +32,11 @@ export function WrapLayout({ children, params }) {
   // const [showModalDeposit, setShowModalDeposit] = useState(false)
 
   const { competition } = useTradeCompetitionData(params.id)
-  const { userBalance } = useTradeData(
-    competition?.tradingCompetitionSpot,
-    competition?.competitionRules?.winningToken?.address,
-  )
+  const { userBalance } = useTradeData(competition?.tcAddress, competition?.competitionRules?.winningToken?.address)
 
   const { eventType } = useEventType(competition?.timestamp)
 
-  const { isRegistered, loaded } = useTCContractInfor(
-    competition?.tradingCompetitionSpot,
-    undefined,
-    undefined,
-    competition?.market,
-  )
+  const { isRegistered, loaded } = useTCContractInfor(competition?.tcAddress, undefined, undefined, competition?.market)
 
   const tradingTokens = useMemo(() => {
     const tokens = competition?.competitionRules?.tradingTokens || []
@@ -124,7 +116,7 @@ export function WrapLayout({ children, params }) {
           setFromAsset={setFromAsset}
           setToAsset={setToAsset}
           assets={tradingTokens}
-          tcSpot={competition?.tradingCompetitionSpot}
+          tcSpot={competition?.tcAddress}
           setReloadFetch={setReloadFetch}
         >
           {children}
@@ -137,7 +129,7 @@ export function WrapLayout({ children, params }) {
             setFromAsset={setFromAsset}
             setToAsset={setToAsset}
             assets={tradingTokens}
-            tcSpot={competition?.tradingCompetitionSpot}
+            tcSpot={competition?.tcAddress}
           >
             {children}
           </SideBar>
