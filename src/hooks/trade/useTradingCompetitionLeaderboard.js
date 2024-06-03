@@ -20,7 +20,7 @@ const V4_COMPETITION_DATA = gql`
           checkMarkIcon
           verifiedAt
         }
-        winAmount
+        winAmounts
         winTokenDecimal
       }
       competitionRules {
@@ -30,6 +30,9 @@ const V4_COMPETITION_DATA = gql`
       timestamp {
         endTimestamp
         startTimestamp
+      }
+      prizeUpdate {
+        token
       }
       tradingCompetitionSpot
     }

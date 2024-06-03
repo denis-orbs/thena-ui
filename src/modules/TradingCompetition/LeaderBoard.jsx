@@ -18,7 +18,6 @@ export function LeaderBoard({ competition }) {
   const { eventType } = useEventType(competition?.timestamp)
   const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-
   const { account } = useWallet()
   const { reloadFetch } = useTradingCompetition()
 
@@ -30,19 +29,31 @@ export function LeaderBoard({ competition }) {
 
   const participants = useMemo(() => {
     if (Array.isArray(competition?.participants)) {
-      const arr = [...(competition?.participants || [])]
+      let arr = [...(competition?.participants || [])]
       const index = arr.findIndex(item => item.participant.id.toLowerCase() === account?.toLowerCase())
+
+      arr = arr.map(item => ({
+        ...item,
+        winAmount: item.winAmounts?.length
+          ? item.winAmounts
+          : new Array(competition?.prizeUpdate?.token?.length).fill('0'),
+        winAmounts: undefined,
+      }))
+
       if (index !== -1) {
         arr[index] = {
           ...arr[index],
           pnl: new BigNumber(pnlUserCurrent).toNumber(),
-          reward: new BigNumber(winAmount).toNumber(),
+          winAmount:
+            !winAmount || !winAmount?.length
+              ? new Array(competition?.prizeUpdate?.token?.length).fill('0')
+              : winAmount.map(item => new BigNumber(item).toNumber()),
         }
       }
       return arr
     }
     return []
-  }, [account, competition?.participants, pnlUserCurrent, winAmount])
+  }, [account, competition?.participants, competition?.prizeUpdate?.token?.length, pnlUserCurrent, winAmount])
 
   const { push } = useRouter()
   const t = useTranslations()
@@ -67,14 +78,12 @@ export function LeaderBoard({ competition }) {
         value: 'pnl',
         width: 'w-[30%]',
         isDesc: true,
-        justify: 'justify-center items-center',
       },
       {
         label: eventType === EVENT_TYPES.LIVE ? 'Potential Reward' : 'Reward',
         value: 'reward',
         width: 'w-[30%]',
         isDesc: true,
-        justify: 'justify-center items-center',
       },
     ],
     [eventType],
@@ -125,7 +134,7 @@ export function LeaderBoard({ competition }) {
             break
           case 'reward':
             res =
-              (fromWei(a.winAmount, a.winTokenDecimal) - fromWei(b.winAmount, b.winTokenDecimal)) *
+              (fromWei(a.winAmount[0], a.winTokenDecimal) - fromWei(b.winAmount[0], b.winTokenDecimal)) *
               (sort.isDesc ? -1 : 1)
             break
 
@@ -151,10 +160,19 @@ export function LeaderBoard({ competition }) {
             </Paragraph>
           ),
           reward: (
-            <Paragraph>
-              {`${formatAmount(fromWei(leader.winAmount, leader.winTokenDecimal), false, 5, false)} ${
-                competition?.competitionRules?.winningToken?.symbol
-              }`}
+            <Paragraph className='w-full'>
+              <div className='flex flex-col items-start'>
+                {leader.winAmount.map((item, index) => (
+                  <Paragraph key={index}>
+                    {`${formatAmount(
+                      fromWei(item, competition.prizeUpdate?.token[index]?.decimals),
+                      false,
+                      5,
+                      false,
+                    )} ${competition.prizeUpdate.token?.[index]?.symbol}`}
+                  </Paragraph>
+                ))}
+              </div>
             </Paragraph>
           ),
         }
