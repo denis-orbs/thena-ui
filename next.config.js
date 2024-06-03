@@ -44,6 +44,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'thena-image-resource-dev.s3.amazonaws.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'w3s.link',
+      },
     ],
   },
 
