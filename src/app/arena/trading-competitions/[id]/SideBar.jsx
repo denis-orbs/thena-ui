@@ -99,21 +99,40 @@ function Sidebar({ competition, eventType }) {
       switch (competition.participantCount) {
         case 0:
           subText = t('No Thenians Are Competing', {
-            totalPrize: formatAmount(fromWei(competition.prize?.totalPrize, competition.prize?.token?.decimals)),
-            ticker: competition.prize?.token?.symbol,
+            totalPrize: competition.prizeUpdate.token
+              .map(
+                (prize, index) =>
+                  `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
+                    prize?.symbol
+                  }`,
+              )
+              .join(', '),
           })
           break
         case 1:
           subText = t('Thenian Is Competing', {
-            totalPrize: formatAmount(fromWei(competition.prize?.totalPrize, competition.prize?.token?.decimals)),
-            ticker: competition.prize?.token?.symbol,
+            totalPrize: competition.prizeUpdate.token
+              .map(
+                (prize, index) =>
+                  `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
+                    prize?.symbol
+                  }`,
+              )
+              .join(', '),
+
             participantCount: competition.participantCount,
           })
           break
         default:
           subText = t('Thenians Are Competing', {
-            totalPrize: formatAmount(fromWei(competition.prize?.totalPrize, competition.prize?.token?.decimals)),
-            ticker: competition.prize?.token?.symbol,
+            totalPrize: competition.prizeUpdate.token
+              .map(
+                (prize, index) =>
+                  `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
+                    prize?.symbol
+                  }`,
+              )
+              .join(', '),
             participantCount: competition.participantCount,
           })
           break
@@ -135,21 +154,39 @@ function Sidebar({ competition, eventType }) {
         switch (competition.participantCount) {
           case 0:
             subText = t('No Thenians Have Competed', {
-              totalPrize: formatAmount(fromWei(competition.prize?.totalPrize, competition.prize?.token?.decimals)),
-              ticker: competition.prize?.token?.symbol,
+              totalPrize: competition.prizeUpdate.token
+                .map(
+                  (prize, index) =>
+                    `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
+                      prize?.symbol
+                    }`,
+                )
+                .join(', '),
             })
             break
           case 1:
             subText = t('Thenian Has Competed', {
-              totalPrize: formatAmount(fromWei(competition.prize?.totalPrize, competition.prize?.token?.decimals)),
-              ticker: competition.prize?.token?.symbol,
+              totalPrize: competition.prizeUpdate.token
+                .map(
+                  (prize, index) =>
+                    `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
+                      prize?.symbol
+                    }`,
+                )
+                .join(', '),
               participantCount: competition.participantCount,
             })
             break
           default:
             subText = t('Thenians Have Competed', {
-              totalPrize: formatAmount(fromWei(competition.prize?.totalPrize, competition.prize?.token?.decimals)),
-              ticker: competition.prize?.token?.symbol,
+              totalPrize: competition.prizeUpdate.token
+                .map(
+                  (prize, index) =>
+                    `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
+                      prize?.symbol
+                    }`,
+                )
+                .join(', '),
               participantCount: competition.participantCount,
             })
             break
@@ -175,9 +212,7 @@ function Sidebar({ competition, eventType }) {
     t,
     isTCJoined,
     competition.participantCount,
-    competition.prize?.totalPrize,
-    competition.prize?.token?.decimals,
-    competition.prize?.token?.symbol,
+    competition.prizeUpdate,
     isJoined,
     canClaimRewards,
   ])
