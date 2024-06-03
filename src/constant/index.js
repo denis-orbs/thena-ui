@@ -342,7 +342,7 @@ export const INIT_VALUES = {
   owner: {
     id: '',
   }, // owner address
-  tradingCompetitionSpot: ZERO_ADDRESS, // trading competition contract address
+  tcAddress: ZERO_ADDRESS, // trading competition contract address
 }
 
 export const SWAP_TYPES = {

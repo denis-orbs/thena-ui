@@ -33,18 +33,18 @@ export function JoinModal({ competition, open, onClose }) {
   const { joinTCPerpetual, pending: pendingPerpetual } = useJoinTCPerpetual()
 
   const showAlertBalance = useMemo(() => {
-    const tokenIndex = prizeToken.findIndex(token => winningToken.address.toLowerCase() === token.address.toLowerCase())
-
-    if (tokenIndex !== -1) {
-      const totalAmount = fromWei(entryFeeUpdate[tokenIndex], prizeToken[tokenIndex].decimals).plus(
-        fromWei(startingBalance, winningToken.decimals),
-      )
-      const totalBalance = new BigNumber(prizeToken[tokenIndex].balance).plus(winningToken.balance)
-      return totalAmount.gt(totalBalance)
-    }
-
     const notEnoughFee = entryFeeUpdate
-      .map((e, index) => fromWei(e, prizeToken[index].decimals).gt(prizeToken[index].balance))
+      .map((e, index) => {
+        if (prizeToken[index].address.toLowerCase() === winningToken.address.toLowerCase()) {
+          const totalAmount = fromWei(entryFeeUpdate[index], prizeToken[index].decimals).plus(
+            fromWei(startingBalance, winningToken.decimals),
+          )
+          const totalBalance = new BigNumber(prizeToken[index].balance)
+          return totalAmount.gt(totalBalance)
+        }
+
+        return fromWei(e, prizeToken[index].decimals).gt(prizeToken[index].balance)
+      })
       .some(item => item)
 
     const notEnoughDeposit = fromWei(startingBalance, winningToken.decimals).gt(winningToken.balance)

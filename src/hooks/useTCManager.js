@@ -123,7 +123,7 @@ export const useCreateTC = () => {
         entryFee: isPerpetualTC ? data.entryFee[0] : data.entryFee,
         MAX_PARTICIPANTS: data.maxParticipants,
         owner: data.owner.id,
-        tradingCompetition: data.tradingCompetitionSpot,
+        tradingCompetition: data.tcAddress,
         name: data.name,
         description: data.description,
         market: isPerpetualTC ? undefined : 0,

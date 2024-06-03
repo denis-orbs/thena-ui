@@ -32,10 +32,7 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
   const [token, setToken] = useState()
   const [filteredAssets, setFilteredAssets] = useState([])
 
-  const { reload } = useTradeData(
-    competition?.tradingCompetitionSpot,
-    competition?.competitionRules?.winningToken?.address,
-  )
+  const { reload } = useTradeData(competition?.tcAddress, competition?.competitionRules?.winningToken?.address)
 
   useEffect(() => {
     if (competition?.competitionRules?.winningToken?.symbol === 'WBNB' && assets.length) {
@@ -64,7 +61,7 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
     const isSuccess = await deposit({
       amount: toWei(amount),
       token,
-      tcAddress: competition?.tradingCompetitionSpot,
+      tcAddress: competition?.tcAddress,
       winningToken: competition?.competitionRules?.winningToken,
     })
 
@@ -72,15 +69,7 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
       await reload()
       closeModal()
     }
-  }, [
-    reload,
-    amount,
-    closeModal,
-    competition?.competitionRules?.winningToken,
-    competition?.tradingCompetitionSpot,
-    deposit,
-    token,
-  ])
+  }, [reload, amount, closeModal, competition?.competitionRules?.winningToken, competition?.tcAddress, deposit, token])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} title='Deposit' onAfterClose={() => setAmount('')}>
