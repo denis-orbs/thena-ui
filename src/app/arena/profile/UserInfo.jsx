@@ -100,7 +100,7 @@ export function UserInfo({ userInfo, following, followers }) {
             <div className='flex items-start gap-5 lg:items-center'>
               <Image
                 alt='avatar'
-                src={userInfo.avatar ?? Avatar}
+                src={userInfo.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
                 className='h-14 w-14 rounded-full lg:h-32 lg:w-32'
                 width={100}
                 height={100}

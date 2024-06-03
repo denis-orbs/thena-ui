@@ -27,7 +27,7 @@ export function SelectUserName({ dataUpdate, setDataUpdate, userInfo }) {
           className='w-full lg:w-72'
           listClassNames='max-h-64 overflow-y-auto w-full'
           data={userNameData}
-          selected={dataUpdate.username}
+          selected={dataUpdate.username ?? ''}
           setSelected={e => {
             setDataUpdate({
               ...dataUpdate,
@@ -35,6 +35,7 @@ export function SelectUserName({ dataUpdate, setDataUpdate, userInfo }) {
             })
           }}
           isLocale={false}
+          placeHolder={t('Select Your Username')}
         />
       </div>
     </div>

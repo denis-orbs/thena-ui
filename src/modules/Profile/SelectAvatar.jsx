@@ -49,14 +49,16 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, mutateUserIn
           userInfo?.thenianNfts?.map((thenianNfts, index) => (
             <NextImage
               alt='avatar'
-              src={userInfo.avatar}
+              src={thenianNfts?.meatadata?.image?.replace('ipfs.io', 'w3s.link')}
               className={cn(
                 'h-14 w-14 rounded-full lg:h-32 lg:w-32',
-                dataUpdate.avatar === thenianNfts?.meatadata?.image ? 'border-4 border-primary-600' : '',
+                dataUpdate.avatar === thenianNfts?.meatadata?.image?.replace('ipfs.io', 'w3s.link')
+                  ? 'border-4 border-primary-600'
+                  : '',
               )}
               width={100}
               height={100}
-              onClick={() => onSelectAvatar(thenianNfts?.meatadata?.image)}
+              onClick={() => onSelectAvatar(thenianNfts?.meatadata?.image?.replace('ipfs.io', 'w3s.link'))}
               key={thenianNfts?.id ?? index}
             />
           ))}

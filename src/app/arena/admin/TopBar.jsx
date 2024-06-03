@@ -23,7 +23,11 @@ function TopBar({ userInfo, isLoading }) {
   return (
     <Box className='flex flex-col-reverse gap-4 md:flex-row md:justify-between'>
       <div className='flex flex-row items-start gap-4 md:items-center'>
-        <CircleImage src={userInfo?.avatar || Avatar} alt='avatar' className='size-14 md:size-[124px]' />
+        <CircleImage
+          src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') || Avatar}
+          alt='avatar'
+          className='size-14 md:size-[124px]'
+        />
         {!isLoading && userInfo ? (
           <div className='flex flex-col gap-2 md:gap-3'>
             <div className='flex flex-col gap-1 md:flex-row md:items-center md:gap-3'>

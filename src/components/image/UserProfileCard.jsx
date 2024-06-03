@@ -53,7 +53,7 @@ export function UserProfileCard({ user, showVerified = false, disableLink = fals
   return (
     <div className='flex items-center gap-1'>
       <LinkComponent>
-        <CircleImage src={avatar ?? Avatar} alt='avatar' className='size-8' />
+        <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className='size-8' />
         <div className='mr-1 flex flex-col gap-1'>
           <TextHeading
             className={cn('text-nowrap text-base', nameColor && !String(nameColor).startsWith('#') ? nameColor : '')}
