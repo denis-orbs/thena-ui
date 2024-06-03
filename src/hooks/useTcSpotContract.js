@@ -7,7 +7,7 @@ import { maxUint256 } from 'viem'
 import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
+import { getERC20Contract, getOldTcSpotContract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei, isInvalidAmount, sleep } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -417,7 +417,7 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
   const [balance, setBalance] = useState(0n)
   const [userBalance, setUserBalance] = useState()
   const [pnl, setPNL] = useState(0n)
-  const [winAmount, setWinAmount] = useState(0n)
+  const [winAmount, setWinAmount] = useState(null)
 
   const fetchData = useCallback(async () => {
     try {
@@ -427,11 +427,11 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
       }
 
       const tcSpotContract = getTcSpotContract(TCAddress)
+      const oldTcSpotContract = getOldTcSpotContract(TCAddress)
 
-      const [pnlRes, balanceRes, winAmountRes] = await Promise.all([
+      const [pnlRes, balanceRes] = await Promise.all([
         readCall(tcSpotContract, 'getPNLOf', [account]),
         readCall(tcSpotContract, 'userBalance', [account]),
-        readCall(tcSpotContract, 'claimable', [account]),
       ])
 
       if (pnlRes) {
@@ -445,9 +445,15 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
         setBalance(value)
       }
 
-      if (winAmountRes) {
-        setWinAmount(winAmountRes[0])
-      }
+      Promise.resolve(readCall(tcSpotContract, 'claimable', [account]))
+        .then(value => {
+          setWinAmount(value[0])
+        })
+        .catch(() => {
+          Promise.resolve(readCall(oldTcSpotContract, 'claimable', [account])).then(value => {
+            setWinAmount(value[0])
+          })
+        })
     } catch (error) {
       console.log(error)
     }

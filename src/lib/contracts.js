@@ -23,6 +23,7 @@ import {
   wbnbAbi,
 } from '@/constant/abi'
 import {
+  oldTcSpotAbi,
   tcManagerAbi,
   tcPerpetualAbi,
   tcPerpetualManagerAbi,
@@ -158,6 +159,7 @@ export const getTCPerpetualManagerContract = () =>
   getContract(tcPerpetualManagerAbi, Contracts.tcPerpetualManager, ChainId.BSC)
 
 export const getTcSpotContract = address => getContract(tcSpotAbi, address, ChainId.BSC)
+export const getOldTcSpotContract = address => getContract(oldTcSpotAbi, address, ChainId.BSC)
 
 export const getTcPerpetualContract = address => getContract(tcPerpetualAbi, address, ChainId.BSC)
 
