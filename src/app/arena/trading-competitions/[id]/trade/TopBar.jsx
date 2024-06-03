@@ -39,8 +39,6 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
     true,
   )
 
-  console.log({ competition })
-
   const { balance, pnl } = useTradeData(
     competition?.tcAddress,
     competition?.competitionRules?.winningToken?.address,

@@ -16,8 +16,6 @@ function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} })
 
   const { increasePrize, pending } = useIncreaseTCSpotPrize()
 
-  console.log({ competition })
-
   const handleIncreasePrize = useCallback(async () => {
     if (fromWei(toWei(amount, token?.decimals), token?.decimals).gt(token?.balance)) {
       warnToast('Insufficient [Asset] Balance', { symbol: token?.symbol })
