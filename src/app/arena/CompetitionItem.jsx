@@ -120,18 +120,20 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
             </div>
           )}
         </div>
-        <div className='w-full py-2'>
+        <div className='w-full space-y-2 py-2'>
           <div>
             <Paragraph className='flex flex-1 gap-1 text-nowrap'>
               <Clock className='h-5 w-5' />
               <span>{timeDistance}</span>
             </Paragraph>
           </div>
-          <div className='mt-2 flex w-full'>
+          <div className='ellipsis-1 w-full' title={totalPrize}>
             <Paragraph className='flex flex-1 gap-1 text-nowrap'>
               <Gift className='h-5 w-5' />
               <span>{totalPrize}</span>
             </Paragraph>
+          </div>
+          <div className='ellipsis-1 w-full' title={entryFee}>
             <Paragraph className='flex flex-1 gap-1 text-nowrap'>
               <CoinHand className='h-5 w-5' />
               <span>{entryFee}</span>

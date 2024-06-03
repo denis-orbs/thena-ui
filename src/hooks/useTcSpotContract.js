@@ -27,6 +27,8 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
   const [withdrawRetries, setWithdrawRetries] = useState(0)
 
   const tcSpotContract = getTcSpotContract(address)
+  const oldTcSpotContract = getOldTcSpotContract(address)
+
   const { account } = useWallet()
   const assets = useAssets()
 
@@ -84,24 +86,48 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
     return []
   }, [tcSpotContract, participantCount])
 
+  const checkIsClaimableOld = useCallback(async () => {
+    const winnersList = await getParticipantList()
+    const claimable = await readCall(oldTcSpotContract, 'claimable', [account])
+    const isClaimed =
+      winnersList.length && winnersList.some(claimed => claimed && claimed.toLowerCase() === account.toLowerCase())
+    const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
+    if (!token || isClaimed) {
+      return false
+    }
+    const totalClaimable = fromWei(claimable[0], token.decimals)
+    return !totalClaimable.isZero()
+  }, [account, assets, getParticipantList, oldTcSpotContract])
+
+  const checkIsClaimableNew = useCallback(async () => {
+    const winnersClaimed = await readCall(tcSpotContract, 'winnersClaimed', [account])
+
+    const [amount, token] = await readCall(tcSpotContract, 'claimable', [account])
+
+    const isValidAmount = amount.some((claim, index) => !fromWei(claim, token[index].decimals).isZero())
+
+    return !winnersClaimed && isValidAmount
+  }, [account, tcSpotContract])
+
   const checkClaimable = useCallback(
     async (force = false) => {
       if (type === TC_MARKET_TYPES.SPOT) {
         if ((eventType === EVENT_TYPES.ENDED && isClaimable === undefined) || force) {
           try {
             if (isRegistered && isWinner) {
-              const winnersList = await getParticipantList()
-              const claimable = await readCall(tcSpotContract, 'claimable', [account])
-              const isClaimed =
-                winnersList.length &&
-                winnersList.some(claimed => claimed && claimed.toLowerCase() === account.toLowerCase())
-              const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
-              if (!token || isClaimed) {
-                setIsClaimable(false)
-              } else {
-                const totalClaimable = fromWei(claimable[0], token.decimals)
-                setIsClaimable(!totalClaimable.isZero())
-              }
+              Promise.resolve(checkIsClaimableNew())
+                .then(value => {
+                  setIsClaimable(value)
+                })
+                .catch(() => {
+                  Promise.resolve(checkIsClaimableOld())
+                    .then(value => {
+                      setIsClaimable(value)
+                    })
+                    .catch(() => {
+                      setIsClaimable(false)
+                    })
+                })
             }
             if (isOwner) {
               const [ownerClaimed, feeAmount] = await Promise.all([
@@ -127,9 +153,9 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
     },
     [
       account,
-      assets,
+      checkIsClaimableNew,
+      checkIsClaimableOld,
       eventType,
-      getParticipantList,
       isClaimable,
       isOwner,
       isRegistered,
