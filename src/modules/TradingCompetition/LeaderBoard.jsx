@@ -44,10 +44,13 @@ export function LeaderBoard({ competition }) {
         arr[index] = {
           ...arr[index],
           pnl: new BigNumber(pnlUserCurrent).toNumber(),
-          winAmount:
-            !winAmount || !winAmount?.length
+          winAmount: Array.isArray(winAmount)
+            ? !winAmount?.length
               ? new Array(competition?.prizeUpdate?.token?.length).fill('0')
-              : winAmount.map(item => new BigNumber(item).toNumber()),
+              : winAmount.map(item => new BigNumber(item).toNumber())
+            : winAmount !== null
+              ? [new BigNumber(winAmount).toNumber()]
+              : new Array(competition?.prizeUpdate?.token?.length).fill('0'),
         }
       }
       return arr
