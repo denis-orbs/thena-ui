@@ -47,7 +47,7 @@ function NotificationItem({ notification, markRead }) {
           return defaultContent
       }
       return (
-        <TextHeading className='flex gap-1 text-wrap break-words'>
+        <TextHeading className='gap-1 text-wrap break-words'>
           <span
             style={
               notification.userTrigger.nameColor
