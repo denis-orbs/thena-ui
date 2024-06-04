@@ -233,8 +233,8 @@ function Competitions() {
   }, [])
 
   const updateIsHidden = useCallback(
-    async (...params) => {
-      actionWithAuthentication(updateIsHiddenFn, signWallet, params, () => {
+    async (isHidden, tcId) => {
+      actionWithAuthentication(updateIsHiddenFn, signWallet, { isHidden, tcId }, () => {
         setRefetch(refetch + 1)
         successToast('Successfully')
       })

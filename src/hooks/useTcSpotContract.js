@@ -13,8 +13,6 @@ import { fromWei, isInvalidAmount, sleep } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
-const MAX_RETRIES = 3
-
 export const useTCContractInfor = (address, eventType, participantCount, type = TC_MARKET_TYPES.SPOT) => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
@@ -22,9 +20,6 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
   const [isOwner, setIsOwner] = useState(false)
   const [isClaimable, setIsClaimable] = useState(undefined)
   const [isWithdrawable, setIsWithdrawable] = useState(undefined)
-
-  const [retries, setRetries] = useState(0)
-  const [withdrawRetries, setWithdrawRetries] = useState(0)
 
   const tcSpotContract = getTcSpotContract(address)
   const oldTcSpotContract = getOldTcSpotContract(address)
@@ -51,11 +46,12 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
       ])
 
       if (joined && joined.status === 'fulfilled') {
+        console.log('join', joined.value)
         setIsRegistered(joined.value)
       }
 
       if (eventType === EVENT_TYPES.ENDED) {
-        Promise.resolve(readCall(tcSpotContract, 'isWinner', [account])).then(value => {
+        await Promise.resolve(readCall(tcSpotContract, 'isWinner', [account])).then(value => {
           setIsWinner(value[0])
         })
       }
@@ -111,44 +107,44 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
 
   const checkClaimable = useCallback(
     async (force = false) => {
-      if (type === TC_MARKET_TYPES.SPOT) {
-        if ((eventType === EVENT_TYPES.ENDED && isClaimable === undefined) || force) {
-          try {
-            if (isRegistered && isWinner) {
-              Promise.resolve(checkIsClaimableNew())
-                .then(value => {
-                  setIsClaimable(value)
-                })
-                .catch(() => {
-                  Promise.resolve(checkIsClaimableOld())
-                    .then(value => {
-                      setIsClaimable(value)
-                    })
-                    .catch(() => {
-                      setIsClaimable(false)
-                    })
-                })
-            }
-            if (isOwner) {
-              const [ownerClaimed, feeAmount] = await Promise.all([
-                readCall(tcSpotContract, 'ownerHasClaimed', [account]),
-                readCall(tcSpotContract, 'ownerFeeAmount', []),
-              ])
-
-              if (ownerClaimed) {
-                setIsClaimable(false)
-              } else {
-                setIsClaimable(!fromWei(feeAmount).isZero())
-              }
-            }
-          } catch (error) {
-            if (retries === MAX_RETRIES) {
-              setIsClaimable(false)
-            } else {
-              setRetries(retries + 1)
-            }
-          }
+      if (type === TC_MARKET_TYPES.SPOT && ((eventType === EVENT_TYPES.ENDED && isClaimable === undefined) || force)) {
+        let canOwnerClaim
+        let canUserClaim
+        if (isRegistered && isWinner) {
+          await Promise.resolve(checkIsClaimableNew())
+            .then(value => (canUserClaim = value))
+            .catch(
+              async () =>
+                await Promise.resolve(checkIsClaimableOld())
+                  .then(value => {
+                    canUserClaim = value
+                  })
+                  .catch(() => {
+                    canUserClaim = false
+                  }),
+            )
         }
+        if (isOwner) {
+          await Promise.all([
+            readCall(tcSpotContract, 'ownerHasClaimed', [account]),
+            readCall(tcSpotContract, 'ownerFeeAmount', []),
+          ])
+            .then(([ownerClaimed, feeAmount]) => (canOwnerClaim = !ownerClaimed && !fromWei(feeAmount).isZero()))
+            .catch(
+              async () =>
+                await Promise.all([
+                  readCall(oldTcSpotContract, 'ownerHasClaimed', [account]),
+                  readCall(oldTcSpotContract, 'ownerFeeAmount', []),
+                ])
+                  .then(([ownerClaimed, feeAmount]) => {
+                    canOwnerClaim = !ownerClaimed && !fromWei(feeAmount).isZero()
+                  })
+                  .catch(() => {
+                    canOwnerClaim = false
+                  }),
+            )
+        }
+        setIsClaimable(canOwnerClaim ?? canUserClaim)
       }
     },
     [
@@ -160,7 +156,7 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
       isOwner,
       isRegistered,
       isWinner,
-      retries,
+      oldTcSpotContract,
       tcSpotContract,
       type,
     ],
@@ -178,16 +174,12 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
               setIsWithdrawable(hasBalance)
             }
           } catch (error) {
-            if (withdrawRetries === MAX_RETRIES) {
-              setIsWithdrawable(false)
-            } else {
-              setWithdrawRetries(withdrawRetries + 1)
-            }
+            setIsWithdrawable(false)
           }
         }
       }
     },
-    [type, eventType, isWithdrawable, isRegistered, tcSpotContract, account, withdrawRetries],
+    [type, eventType, isWithdrawable, isRegistered, tcSpotContract, account],
   )
 
   useEffect(() => {
@@ -204,8 +196,6 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
 
   useEffect(() => {
     if (account && address) {
-      setRetries(0)
-      setWithdrawRetries(0)
       setIsClaimable(undefined)
     }
   }, [account, address])
