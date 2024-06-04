@@ -4,7 +4,6 @@ import { gql } from 'graphql-request'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
@@ -289,7 +288,7 @@ function TopUser() {
       followingCount: item.followingCount,
       followerCount: item.followerCount,
       entryFeesPaid: item.entryFeesPaid,
-      avatar: item.user.avatar || Avatar,
+      avatar: item.user?.avatar,
       nameColor: item.user.nameColor,
       isVerified: item.user.isVerified,
       verifyImage: item.user.checkMarkIcon,
