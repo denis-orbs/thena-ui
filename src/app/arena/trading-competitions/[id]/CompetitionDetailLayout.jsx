@@ -208,7 +208,7 @@ function CompetitionDetailLayout({ children, params }) {
                     {t('Back')}
                   </TextButton>
                 </Link>
-                <UserProfileCard user={competition.owner} showVerified={competition.owner.isVerified} />
+                <UserProfileCard user={competition.owner} showVerified={competition.owner?.isVerified} />
               </div>
               <CompetitionCard competition={_competition} eventType={eventType} enableEditBanner={enableEditBanner} />
               <div className='mt-10 flex w-full flex-col gap-4'>

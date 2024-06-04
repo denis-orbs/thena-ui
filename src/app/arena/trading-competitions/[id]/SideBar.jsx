@@ -10,6 +10,7 @@ import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
+import { TC_MARKET_TYPES } from '@/constant'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
@@ -55,6 +56,7 @@ function Sidebar({ competition, eventType }) {
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   const isTCJoined = useMemo(() => isJoined || isJoinedPerp, [isJoined, isJoinedPerp])
 
@@ -397,6 +399,12 @@ function Sidebar({ competition, eventType }) {
     }
   }, [copied])
 
+  useEffect(() => {
+    const timeOut = setTimeout(() => setMounted(true), 1500)
+
+    return () => clearTimeout(timeOut)
+  }, [])
+
   return (
     <div className='col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
       <div className='flex items-center justify-between'>
@@ -432,7 +440,7 @@ function Sidebar({ competition, eventType }) {
           />
         )}
         {buttonByStatus}
-        {account && !isEndedRegistration && (
+        {account && !isEndedRegistration && competition.market === TC_MARKET_TYPES.SPOT && mounted && (
           <>
             <PrimaryButton
               data-tooltip-id='showTooltip'
@@ -447,8 +455,7 @@ function Sidebar({ competition, eventType }) {
                 id='showTooltip'
                 place='bottom'
               >
-                {/* TODO: i18n */}
-                You can only increase the prize during the registration period.
+                {t('You Can Only Increase The Prize During The Registration Period')}
               </CustomTooltip>
             )}
           </>
