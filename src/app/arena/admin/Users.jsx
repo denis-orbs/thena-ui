@@ -109,7 +109,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data, isLoading, mutate } = useSWR(
+  const { data, isLoading } = useSWR(
     ['user api', debounceSearch, reloadFetch, refetchUpdated, onlyShowVerifiedUser],
     () => fetchUser(debounceSearch, onlyShowVerifiedUser),
   )
@@ -262,7 +262,8 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           isOpen={showModalEditCheckMark}
           closeModal={handleCloseModal}
           user={userEditCheckMark}
-          mutate={mutate}
+          dataUpdate={userEditCheckMark}
+          setDataUpdate={setUserEditCheckMark}
         />
       )}
     </Box>

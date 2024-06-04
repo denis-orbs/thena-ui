@@ -1,7 +1,6 @@
 import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 
-import { useUserInfo } from '@/context/userInfoContext'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { successToast } from '@/lib/notify'
@@ -50,7 +49,6 @@ const V4_UPDATE_PROFILE = gql`
 
 export const useUpdateProfile = account => {
   const { signWallet } = useSignWallet()
-  const { mutateUserInfo } = useUserInfo()
   const updateProfileFn = useCallback(
     async ({ biography, avatar, nameColor, theme, timezone, username, websiteUrl, xProfileUrl, isPublicProfile }) => {
       const { updateUserProfile } = await v4Client.request(
@@ -82,8 +80,8 @@ export const useUpdateProfile = account => {
   )
 
   const updateProfile = useCallback(
-    params => actionWithAuthentication(updateProfileFn, signWallet, params, mutateUserInfo),
-    [updateProfileFn, signWallet, mutateUserInfo],
+    (params, callOnSuccess) => actionWithAuthentication(updateProfileFn, signWallet, params, callOnSuccess),
+    [updateProfileFn, signWallet],
   )
 
   return { updateProfile, updateProfileFn }

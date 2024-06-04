@@ -81,7 +81,11 @@ function EditUserProfile() {
     }
   }, [account, router])
 
-  return params?.id && !isLoading ? <EditProfile userInfo={userInfo} isAdmin mutateUserInfo={mutate} /> : <Loading />
+  return params?.id && !isLoading && userInfo ? (
+    <EditProfile userInfo={userInfo} isAdmin mutateUserInfo={mutate} />
+  ) : (
+    <Loading />
+  )
 }
 
 export default EditUserProfile

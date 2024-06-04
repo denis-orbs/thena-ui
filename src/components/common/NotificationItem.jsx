@@ -70,11 +70,11 @@ function NotificationItem({ notification, markRead }) {
                 src={notification.userTrigger.checkMarkIcon}
                 width={20}
                 height={20}
-                className='ml-1 h-5 w-5 cursor-pointer'
+                className='ml-1 inline-block h-5 w-5 cursor-pointer'
                 alt='demo-checkmark'
               />
             ) : (
-              <Verified className='ml-1 h-5 w-5 cursor-pointer' />
+              <Verified className='ml-1 inline-block h-5 w-5 cursor-pointer' />
             )
           ) : null}{' '}
           {content}

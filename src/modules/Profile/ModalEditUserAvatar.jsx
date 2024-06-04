@@ -11,7 +11,7 @@ import { TextSubHeading } from '@/components/typography'
 import { useUpdateAvatar } from '@/hooks/useUploadFile'
 import { sliceAddress } from '@/lib/utils'
 
-export function ModalEditUserAvatar({ isOpen, mutate, isAdmin, closeModal = () => {}, user = {} }) {
+export function ModalEditUserAvatar({ isOpen, onChange, isAdmin, closeModal = () => {}, user = {} }) {
   const t = useTranslations()
   const [stateChecked, setStateChecked] = useState('default')
   const [selectedImage, setSelectedImage] = useState(undefined)
@@ -25,13 +25,13 @@ export function ModalEditUserAvatar({ isOpen, mutate, isAdmin, closeModal = () =
   const handleSave = useCallback(async () => {
     setLoading(true)
     if (user?.id) {
-      await uploadAvatar(selectedImage, user, async () => {
-        await mutate()
+      await uploadAvatar(selectedImage, user, async data => {
+        if (data !== false) onChange(data)
         setLoading(false)
         closeModal()
       })
     }
-  }, [user, uploadAvatar, selectedImage, mutate, closeModal])
+  }, [user, uploadAvatar, selectedImage, onChange, closeModal])
 
   useEffect(() => {
     if (acceptedFiles.length) {

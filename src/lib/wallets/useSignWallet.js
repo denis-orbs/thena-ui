@@ -65,8 +65,8 @@ export const useSignWallet = () => {
               await login(data)
               await sleep(3000)
               if (getFromLocalStorage('token')) {
-                await loginCallback?.(params)
-                callOnSuccess?.()
+                const res = await loginCallback?.(params)
+                callOnSuccess?.(res)
               }
             },
             onError: () => {
@@ -87,8 +87,8 @@ export const useSignWallet = () => {
 
 export async function actionWithAuthentication(action, callOnFailed, params, callOnSuccess, callOnReject) {
   try {
-    await action(params)
-    callOnSuccess?.()
+    const data = await action(params)
+    callOnSuccess?.(data)
   } catch (err) {
     if (
       err?.response?.errors?.[0]?.message === 'Missing Authorization Header' ||

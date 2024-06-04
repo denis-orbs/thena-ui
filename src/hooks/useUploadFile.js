@@ -104,10 +104,12 @@ export const useUploadCheckMarkIcon = () => {
     if (file) {
       const url = await generateUrlUpload({ file, userId, type: 'CHECK_MARK' })
       if (url) {
-        return await updateCheckMarkIcon(url, userId)
+        await updateCheckMarkIcon(url, userId)
+        return url
       }
     } else {
-      return await updateCheckMarkIcon(null, userId)
+      await updateCheckMarkIcon(null, userId)
+      return null
     }
     return false
   }, [])
@@ -175,10 +177,12 @@ export const useUpdateAvatar = (isAdmin, user) => {
       if (file) {
         const url = await generateUrlUpload({ file, userId: id, type: 'CUSTOM_AVATAR' })
         if (url) {
-          return await updateProfileFn({ ...userData, avatar: url })
+          await updateProfileFn({ ...userData, avatar: url })
+          return url
         }
       } else {
-        return await updateProfileFn({ ...userData, avatar: null })
+        await updateProfileFn({ ...userData, avatar: null })
+        return null
       }
       return false
     },
@@ -186,9 +190,8 @@ export const useUpdateAvatar = (isAdmin, user) => {
   )
 
   const uploadAvatar = useCallback(
-    async (file, userInfo, callOnSuccess) => {
-      actionWithAuthentication(uploadFn, signWallet, { file, userInfo }, callOnSuccess)
-    },
+    async (file, userInfo, callOnSuccess) =>
+      await actionWithAuthentication(uploadFn, signWallet, { file, userInfo }, callOnSuccess),
     [uploadFn, signWallet],
   )
 

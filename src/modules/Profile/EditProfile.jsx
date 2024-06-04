@@ -71,8 +71,15 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
         return errorToast('Error', 'Invalid Website URL')
       }
     }
-    await updateProfile({ ...dataUpdate })
-  }, [dataUpdate, updateProfile])
+    await updateProfile({ ...dataUpdate }, data => {
+      if (data !== false) {
+        mutateUserInfo({
+          ...userInfo,
+          ...data,
+        })
+      }
+    })
+  }, [dataUpdate, mutateUserInfo, updateProfile, userInfo])
 
   useEffect(() => setCurrentTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone), [])
 

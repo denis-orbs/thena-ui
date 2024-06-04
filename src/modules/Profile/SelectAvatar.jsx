@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
@@ -9,16 +9,21 @@ import { cn } from '@/lib/utils'
 
 import { ModalEditUserAvatar } from './ModalEditUserAvatar'
 
-export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, mutateUserInfo, isAdmin }) {
+export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
   const t = useTranslations()
   const [openEditAvatar, setOpenEditAvatar] = useState(false)
   const isHaveThenaNfts = useMemo(() => !!userInfo?.thenianNfts?.length, [userInfo?.thenianNfts?.length])
-  const isCustomAvatar = useMemo(
-    () =>
+  const [customAvatar, setCustomAvatar] = useState(null)
+
+  useEffect(() => {
+    if (
       userInfo?.avatar &&
-      userInfo?.thenianNfts?.every(thenianNfts => thenianNfts?.meatadata?.image !== userInfo.avatar),
-    [userInfo?.avatar, userInfo?.thenianNfts],
-  )
+      userInfo?.thenianNfts?.every(thenianNfts => thenianNfts?.meatadata?.image !== userInfo.avatar)
+    ) {
+      setCustomAvatar(userInfo.avatar)
+    }
+  }, [userInfo?.avatar, userInfo?.thenianNfts])
+
   const onSelectAvatar = useCallback(
     image => {
       setDataUpdate({
@@ -29,18 +34,29 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, mutateUserIn
     [dataUpdate, setDataUpdate],
   )
 
+  const onChangeCustomAvatar = useCallback(
+    url => {
+      setDataUpdate(prev => ({
+        ...prev,
+        avatar: url,
+      }))
+      setCustomAvatar(url)
+    },
+    [setDataUpdate],
+  )
+
   return (
     <div className='flex-2 items-center justify-start space-x-4'>
       <div className='flex max-w-52 items-center gap-2 overflow-x-auto py-2 lg:max-w-4xl'>
-        {isCustomAvatar && (
+        {customAvatar && (
           <NextImage
             alt='avatar'
-            src={userInfo.avatar}
+            src={customAvatar}
             className={cn(
               'h-14 w-14 rounded-full lg:h-32 lg:w-32',
-              dataUpdate.avatar === userInfo.avatar ? 'border-4 border-primary-600' : '',
+              dataUpdate.avatar === customAvatar ? 'border-4 border-primary-600' : '',
             )}
-            onClick={() => onSelectAvatar(userInfo.avatar)}
+            onClick={() => onSelectAvatar(customAvatar)}
             width={100}
             height={100}
           />
@@ -83,7 +99,8 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, mutateUserIn
         <ModalEditUserAvatar
           isOpen={openEditAvatar}
           closeModal={() => setOpenEditAvatar(false)}
-          mutate={mutateUserInfo}
+          dataUpdate={dataUpdate}
+          onChange={onChangeCustomAvatar}
           user={userInfo}
           isAdmin={isAdmin}
         />

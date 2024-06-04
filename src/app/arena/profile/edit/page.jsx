@@ -16,7 +16,7 @@ function EditProfilePage() {
     }
   }, [isLoading, userInfo, userInfo?.usernameNfts])
 
-  if (isLoading) {
+  if (isLoading || !userInfo) {
     return <Loading />
   }
 
