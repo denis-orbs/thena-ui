@@ -29,6 +29,7 @@ const V4_USER_INFO = gql`
       username
       theme
       nameColor
+      isVerified
       avatar
       thenianNfts {
         meatadata {

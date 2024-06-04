@@ -61,6 +61,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
     xProfileUrl: userInfo?.xProfileUrl ?? null,
     isPublicProfile: userInfo?.isPublicProfile ?? true,
     nameColor: userInfo?.nameColor ?? '#ffffff',
+    checkMarkIcon: userInfo?.checkMarkIcon ?? null,
   })
 
   const { updateProfile } = useUpdateProfile(isAdmin ? userInfo?.id : null)
@@ -186,9 +187,9 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
             </div>
             <div className='flex flex-2 items-center gap-3'>
               {userInfo?.isVerified ? (
-                userInfo?.checkMarkIcon ? (
+                dataUpdate?.checkMarkIcon ? (
                   <Image
-                    src={userInfo?.checkMarkIcon}
+                    src={dataUpdate?.checkMarkIcon}
                     width={20}
                     height={20}
                     className='ml-2 h-5 w-5 cursor-pointer'
@@ -344,6 +345,8 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
           }}
           mutate={mutateUserInfo}
           closeModal={() => setOpenCheckMarkIcon(false)}
+          dataUpdate={dataUpdate}
+          setDataUpdate={setDataUpdate}
         />
       )}
     </div>

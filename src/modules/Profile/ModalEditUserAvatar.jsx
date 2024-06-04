@@ -11,12 +11,12 @@ import { TextSubHeading } from '@/components/typography'
 import { useUpdateAvatar } from '@/hooks/useUploadFile'
 import { sliceAddress } from '@/lib/utils'
 
-export function ModalEditUserAvatar({ isOpen, mutate, closeModal = () => {}, user = {} }) {
+export function ModalEditUserAvatar({ isOpen, mutate, isAdmin, closeModal = () => {}, user = {} }) {
   const t = useTranslations()
   const [stateChecked, setStateChecked] = useState('default')
   const [selectedImage, setSelectedImage] = useState(undefined)
   const [loading, setLoading] = useState(false)
-  const { uploadAvatar } = useUpdateAvatar()
+  const { uploadAvatar } = useUpdateAvatar(isAdmin, user)
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
     accept: { 'image/*': [] },

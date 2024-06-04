@@ -85,6 +85,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, mutateUserIn
           closeModal={() => setOpenEditAvatar(false)}
           mutate={mutateUserInfo}
           user={userInfo}
+          isAdmin={isAdmin}
         />
       )}
     </div>
