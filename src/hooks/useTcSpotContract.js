@@ -46,7 +46,6 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
       ])
 
       if (joined && joined.status === 'fulfilled') {
-        console.log('join', joined.value)
         setIsRegistered(joined.value)
       }
 
@@ -470,6 +469,7 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
             setWinAmount(value[0])
           })
         })
+        .catch(() => {})
     } catch (error) {
       console.log(error)
     }
