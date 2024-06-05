@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useState } from 'react'
+import { mutate } from 'swr'
 
 import 'react-quill/dist/quill.snow.css'
 import 'react-quill-emoji/dist/quill-emoji.css'
@@ -73,13 +74,16 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
     }
     await updateProfile({ ...dataUpdate }, data => {
       if (data !== false) {
+        if (isAdmin && userInfo.id === account.toLowerCase()) {
+          mutate(['fetchUserInfo', account])
+        }
         mutateUserInfo({
           ...userInfo,
           ...data,
         })
       }
     })
-  }, [dataUpdate, mutateUserInfo, updateProfile, userInfo])
+  }, [account, dataUpdate, isAdmin, mutateUserInfo, updateProfile, userInfo])
 
   useEffect(() => setCurrentTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone), [])
 
@@ -352,8 +356,12 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
           }}
           mutate={mutateUserInfo}
           closeModal={() => setOpenCheckMarkIcon(false)}
-          dataUpdate={dataUpdate}
-          setDataUpdate={setDataUpdate}
+          onChange={data => {
+            setDataUpdate({
+              ...dataUpdate,
+              checkMarkIcon: data,
+            })
+          }}
         />
       )}
     </div>

@@ -13,7 +13,6 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
 import { LOCALES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
-import { fetchUserInfo } from '@/context/userInfoContext'
 import usePrices from '@/hooks/usePrices'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -248,9 +247,7 @@ function Header() {
     }
   }, [account, chainId, networkId, updateNetwork])
 
-  const { data: userInfo } = useSWR(['fetchUserInfo', account], () => fetchUserInfo(account), {
-    refreshInterval: 60000,
-  })
+  const { data: userInfo } = useSWR(['fetchUserInfo', account])
 
   useEffect(() => {
     if (window?.MetaCRMWidget?.manualConnectWallet) {

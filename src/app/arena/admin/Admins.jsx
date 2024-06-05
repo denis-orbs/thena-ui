@@ -2,7 +2,7 @@
 
 import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Box from '@/components/box'
@@ -87,11 +87,22 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const {
-    data: admins,
-    isLoading,
-    mutate,
-  } = useSWR(['admin api', debounceSearch, reloadFetch], () => fetchAdmin(debounceSearch))
+  const { data: admins, isLoading } = useSWR(['admin api', debounceSearch, reloadFetch], () =>
+    fetchAdmin(debounceSearch),
+  )
+
+  const onUpdateCheckMark = useCallback(
+    url =>
+      setDataFetch(prev =>
+        prev.map(user => {
+          if (user.id === selectedUser?.id) {
+            user.checkMarkIcon = url
+          }
+          return user
+        }),
+      ),
+    [selectedUser?.id],
+  )
 
   useEffect(() => {
     if (!isLoading) {
@@ -190,7 +201,7 @@ function Admins({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
             setSelectedUser(undefined)
           }}
           user={selectedUser}
-          mutate={mutate}
+          onChange={onUpdateCheckMark}
         />
       )}
     </>

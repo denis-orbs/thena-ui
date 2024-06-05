@@ -11,7 +11,7 @@ import { useUploadCheckMarkIcon } from '@/hooks/useUploadFile'
 import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 
-function ModalEditCheckMark({ isOpen, closeModal = () => {}, user = {}, dataUpdate, setDataUpdate }) {
+function ModalEditCheckMark({ isOpen, closeModal = () => {}, user = {}, onChange }) {
   const t = useTranslations()
   const [stateChecked, setStateChecked] = useState('default')
   const [selectedImage, setSelectedImage] = useState(undefined)
@@ -26,17 +26,14 @@ function ModalEditCheckMark({ isOpen, closeModal = () => {}, user = {}, dataUpda
     if (user?.id) {
       await upload(selectedImage, user.id, async data => {
         if (data !== false) {
-          setDataUpdate({
-            ...dataUpdate,
-            checkMarkIcon: data,
-          })
+          onChange(data)
         }
         successToast('Successfully')
         setLoading(false)
         closeModal()
       })
     }
-  }, [user.id, upload, selectedImage, setDataUpdate, dataUpdate, closeModal])
+  }, [user.id, upload, selectedImage, onChange, closeModal])
 
   useEffect(() => {
     if (acceptedFiles.length) {

@@ -42,7 +42,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
       verifiedAt
       isAdmin
       isVerified
-      tradingCompetitions {
+      tradingCompetitions(where: { isHidden_eq: false }) {
         name
         entryFee
         entryFeeUpdate
@@ -88,7 +88,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
         }
         tcAddress
       }
-      joinedTCs {
+      joinedTCs(where: { tradingCompetition: { isHidden_eq: false } }) {
         tradingCompetition {
           name
           entryFeeUpdate

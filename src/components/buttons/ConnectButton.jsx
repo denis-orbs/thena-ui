@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect } from 'react'
 import useSWR from 'swr'
 
+import { fetchUserInfo } from '@/context/userInfoContext'
 import { getFromLocalStorage } from '@/lib/helper'
 import { formatAddress } from '@/lib/utils'
 import { useSignWallet } from '@/lib/wallets/useSignWallet'
@@ -17,7 +18,9 @@ export default function ConnectButton({ className }) {
   const { account, isWrong, active } = useWallet()
   const t = useTranslations()
 
-  const { data: userInfo } = useSWR(['fetchUserInfo', account])
+  const { data: userInfo } = useSWR(account ? ['fetchUserInfo', account] : null, () => fetchUserInfo(account), {
+    refreshInterval: 60000,
+  })
 
   const { signWallet, deleteToken } = useSignWallet()
 
@@ -45,7 +48,7 @@ export default function ConnectButton({ className }) {
     )
   }
 
-  if (account) {
+  if (userInfo || account) {
     return (
       <EmphasisButton className={className} onClick={() => open()}>
         <span

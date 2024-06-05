@@ -151,6 +151,19 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
     setUserEditCheckMark(null)
   }, [])
 
+  const onUpdateCheckMark = useCallback(
+    url =>
+      setDataFetch(prev =>
+        prev.map(user => {
+          if (user.id === userEditCheckMark?.id) {
+            user.checkMarkIcon = url
+          }
+          return user
+        }),
+      ),
+    [userEditCheckMark?.id],
+  )
+
   useEffect(() => {
     if (!isLoading) {
       if (data && Array.isArray(data)) {
@@ -262,8 +275,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal }) {
           isOpen={showModalEditCheckMark}
           closeModal={handleCloseModal}
           user={userEditCheckMark}
-          dataUpdate={userEditCheckMark}
-          setDataUpdate={setUserEditCheckMark}
+          onChange={onUpdateCheckMark}
         />
       )}
     </Box>
