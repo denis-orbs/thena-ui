@@ -12,6 +12,8 @@ import { useAssets } from '@/context/assetsContext'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount, fromWei } from '@/lib/utils'
 
+import IncreasePrizeTable from './IncreasePrizeTable'
+
 const V4_TC_ANALYTICS = gql`
   query V4_TC_ANALYTICS($id: String!) {
     tcTrades(where: { tradingCompetition: { id_eq: $id } }) {
@@ -61,10 +63,10 @@ function AnalyticPage() {
     let amountOfTrades = 0
 
     if (data) {
-      amountOfTrades = data.tcTrades.length
-      numberOfParticipants = data.competition.participantCount
+      amountOfTrades = data.tcTrades?.length
+      numberOfParticipants = data.competition?.participantCount
 
-      data.tcTrades.forEach(item => {
+      data.tcTrades?.forEach(item => {
         const asset = assets.find(a => String(a.address).toLowerCase() === String(item.tokenIn?.id))
         const amount = fromWei(item.amountIn).toNumber()
         if (asset) {
@@ -106,13 +108,14 @@ function AnalyticPage() {
         </Box> */}
         <Box className='flex flex-col gap-4'>
           <TextHeading className='text-xl'>{valueAnalytics.numberOfParticipants}</TextHeading>
-          <Paragraph className='text-sm'>{t('Number of Participants')}</Paragraph>
+          <Paragraph className='text-sm'>{t('Number Of Participants')}</Paragraph>
         </Box>
         <Box className='flex flex-col gap-4'>
           <TextHeading className='text-xl'>{valueAnalytics.amountOfTrades}</TextHeading>
           <Paragraph className='text-sm'>{t('Amount Of Trades')}</Paragraph>
         </Box>
       </div>
+      <IncreasePrizeTable />
     </>
   )
 }
