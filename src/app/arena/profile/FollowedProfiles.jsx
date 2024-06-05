@@ -100,7 +100,7 @@ export function FollowedProfiles({ followingUsers, isFollower = false, maxShow, 
         </div>
         <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
       </div>
-      <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4'>
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4'>
         {filterFollowingUsers
           ? filterFollowingUsers
               .slice(0, maxShow ?? filterFollowingUsers.length)

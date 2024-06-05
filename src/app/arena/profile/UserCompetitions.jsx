@@ -74,7 +74,7 @@ export function UserCompetitions({ hostedCompetitions, joinedTCs }) {
       <TextHeading className='text-xl'>
         {t('Competitions')} ({competitionByTab.length})
       </TextHeading>
-      <div className='flex flex-col items-start justify-between lg:flex-row lg:items-center'>
+      <div className='flex flex-col items-start justify-between gap-2 lg:flex-row lg:items-center'>
         <Tabs
           data={subTabs}
           size={SizeTypes.Small}
