@@ -465,11 +465,12 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
           setWinAmount(value[0])
         })
         .catch(() => {
-          Promise.resolve(readCall(oldTcSpotContract, 'claimable', [account])).then(value => {
-            setWinAmount(value[0])
-          })
+          Promise.resolve(readCall(oldTcSpotContract, 'claimable', [account]))
+            .then(value => {
+              setWinAmount(value[0])
+            })
+            .catch(() => {})
         })
-        .catch(() => {})
     } catch (error) {
       console.log(error)
     }

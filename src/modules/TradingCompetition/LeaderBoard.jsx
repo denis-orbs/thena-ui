@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
@@ -111,8 +111,11 @@ export function LeaderBoard({ competition }) {
 
   const filteredLeaderBoards = useMemo(
     () =>
-      dataParticipants.filter(item => item.participant.id.toLowerCase().includes(searchText?.toLowerCase() || '')) ||
-      [],
+      dataParticipants.filter(
+        item =>
+          item.participant.id.toLowerCase().includes(searchText?.toLowerCase() || '') ||
+          item.participant.username?.toLowerCase().includes(searchText?.toLowerCase() || ''),
+      ) || [],
     [searchText, dataParticipants],
   )
 
@@ -184,9 +187,13 @@ export function LeaderBoard({ competition }) {
     [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
   )
 
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchText])
+
   return (
     <>
-      <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
+      <div className='mb-3 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
         {/* eslint-disable-next-line prettier/prettier */}
         <TextHeading className='text-xl lg:flex-2'>{t('Leaderboard')}</TextHeading>
         <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
