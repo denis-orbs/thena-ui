@@ -82,7 +82,7 @@ function AnalyticPage() {
 
   return (
     <>
-      <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
+      <div className='mb-3 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
         <TextHeading className='text-xl lg:flex-1'>{t('Analytics')}</TextHeading>
       </div>
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
