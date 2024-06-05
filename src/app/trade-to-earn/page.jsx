@@ -5,7 +5,7 @@ import React, { Suspense, useState } from 'react'
 
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import useWallet from '@/lib/wallets/useWallet'
-import { fetchDataDailyVolume, fetchDataEarnings, fetchDataTotalVolume } from '@/modules/TradeToEarn'
+import { fetchDataDailyVolume, fetchDataTotalVolume } from '@/modules/TradeToEarn'
 
 import Hero from './Hero'
 import Information from './Information'
@@ -21,8 +21,8 @@ export default function TradeToEarnPage() {
   const [pending, setPending] = useState(false)
 
   const { data: dailyUserVolume } = useQuery({
-    queryKey: ['getDailyUserVolume', currentDay],
-    queryFn: () => fetchDataDailyVolume(account, String(currentDay), '0x0000000000000000000000000000000000000000'),
+    queryKey: ['getDailyUserVolume', currentDay, account],
+    queryFn: () => fetchDataDailyVolume(account, currentDay),
     refetchInterval: 30000,
     enabled: Boolean(currentDay),
     gcTime: 0,
@@ -30,28 +30,15 @@ export default function TradeToEarnPage() {
 
   const { data: dailyTotalVolume } = useQuery({
     queryKey: ['getDailyTotalVolume', currentDay],
-    queryFn: () =>
-      fetchDataDailyVolume(
-        '0x0000000000000000000000000000000000000000',
-        String(currentDay),
-        '0x0000000000000000000000000000000000000000',
-      ),
+    queryFn: () => fetchDataDailyVolume('0x0000000000000000000000000000000000000000', currentDay),
     refetchInterval: 30000,
     enabled: Boolean(currentDay),
     gcTime: 0,
   })
 
-  const { data: totalVolume } = useQuery({
-    queryKey: ['getTotalVolume'],
-    queryFn: () => fetchDataTotalVolume(account, '0x0000000000000000000000000000000000000000'),
-    refetchInterval: 30000,
-    enabled: Boolean(account),
-    gcTime: 0,
-  })
-
-  const { data: earnings, refetch: refetchEarnings } = useQuery({
-    queryKey: ['getEarnings'],
-    queryFn: () => fetchDataEarnings(account),
+  const { data: userTotalVolume } = useQuery({
+    queryKey: ['getUserTotalVolume', account],
+    queryFn: () => fetchDataTotalVolume(account?.toLowerCase()),
     refetchInterval: 30000,
     enabled: Boolean(account),
     gcTime: 0,
@@ -74,9 +61,9 @@ export default function TradeToEarnPage() {
               <Information
                 dailyUserVolume={dailyUserVolume}
                 dailyTotalVolume={dailyTotalVolume}
-                totalVolume={totalVolume}
+                userTotalVolume={userTotalVolume}
               />
-              <YourEarning earnings={earnings || []} setPending={setPending} refetchEarnings={refetchEarnings} />
+              <YourEarning setPending={setPending} />
               <Work />
             </div>
           </div>

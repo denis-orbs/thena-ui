@@ -2,19 +2,19 @@ import { GraphQLClient } from 'graphql-request'
 import { ChainId } from 'thena-sdk-core/dist'
 
 export const v1GraphUrl = {
-  [ChainId.BSC]: 'https://api.thegraph.com/subgraphs/name/thenaursa/thena-v1',
+  [ChainId.BSC]: 'https://api.studio.thegraph.com/query/53404/thena-bsc-v1/version/latest',
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-v1',
 }
 
 export const fusionGraphUrl = {
-  [ChainId.BSC]: 'https://api.thegraph.com/subgraphs/name/thenaursa/thena-fusion',
+  [ChainId.BSC]: 'https://api.studio.thegraph.com/query/53404/thena-bsc-fusion/version/latest',
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion',
 }
 
 export const blockGraphUrl = {
-  [ChainId.BSC]: 'https://api.thegraph.com/subgraphs/name/iliaazhel/bsc-blocks',
+  [ChainId.BSC]: 'https://api.studio.thegraph.com/query/53404/thena-bsc-blocks/version/latest',
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/opbnb-blocks',
 }
@@ -24,6 +24,8 @@ export const blockGraphUrl = {
 
 export const v4GraphUrl = 'https://squid.subsquid.io/thena-squid/v/v4/graphql'
 export const v4GraphWsUrl = 'wss://squid.subsquid.io/thena-squid/v/v4/graphql'
+
+export const v4SubGraphT2EUrl = 'https://api.studio.thegraph.com/query/70764/thena-subgraph/version/latest'
 
 export const v1Client = {
   [ChainId.BSC]: new GraphQLClient(v1GraphUrl[ChainId.BSC]),
@@ -41,3 +43,4 @@ export const blockClient = {
 }
 
 export const v4Client = new GraphQLClient(v4GraphUrl)
+export const v4ClientSubGraphT2E = new GraphQLClient(v4SubGraphT2EUrl)

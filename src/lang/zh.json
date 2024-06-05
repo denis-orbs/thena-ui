@@ -416,6 +416,7 @@
   "Claim All": "全部领取",
   "Withdraw veTHE [id]": "撤回 veTHE #{id}",
   "Claim Rebase": "领取 Rebase",
+  "Rebase": "Rebase",
   "Claim Incentives": "领取激励",
   "Claim Fees": "领取费用",
   "Claim Incentives + Fees": "领取激励和费用",

@@ -13,8 +13,8 @@ const veTHEsContext = React.createContext({
   veTHEs: [],
 })
 
-async function fetchUserVeTHEs([_, account, chainId]) {
-  console.log('------------------ vethes --------------------------')
+async function fetchVeTHEsFromAddress([_, account, chainId]) {
+  console.log('------------------ vethes from address --------------------------')
   const contract = getVeTHEAPIContract(chainId)
   const veTHEInfos = await readCall(contract, 'getNFTFromAddress', [account], chainId)
   return veTHEInfos.map(veTHE => {
@@ -44,12 +44,41 @@ async function fetchUserVeTHEs([_, account, chainId]) {
   })
 }
 
+export async function fetchVeTHEFromId(veTHEId, chainId) {
+  console.log('------------------ vethes id --------------------------')
+  const contract = getVeTHEAPIContract(chainId)
+  const veTHEInfo = await readCall(contract, 'getNFTFromId', [veTHEId], chainId)
+  const { votes, vote_ts, voted, id, amount, voting_amount, rebase_amount, lockEnd } = veTHEInfo
+  const totalWeight = votes.reduce((sum, current) => sum + current.weight, 0n)
+  const votedWeek = Math.floor(Number(vote_ts) / (86400 * 7))
+  const currentWeek = Math.floor(new Date().getTime() / (86400 * 7 * 1000))
+  const votedCurrentEpoch = votedWeek === currentWeek && voted
+  const diff = dayjs.unix(Number(lockEnd)).diff(dayjs(), 'days')
+
+  return {
+    voted,
+    votedCurrentEpoch,
+    id: Number(id),
+    amount: fromWei(amount),
+    voting_amount: fromWei(voting_amount),
+    rebase_amount: fromWei(rebase_amount),
+    lockedEnd: Number(lockEnd),
+    vote_ts: Number(vote_ts),
+    votes: votes.map(ele => ({
+      address: ele.pair,
+      weight: fromWei(ele.weight),
+      weightPercent: totalWeight > 0 ? new BigNumber(ele.weight).div(totalWeight).times(100) : new BigNumber(0),
+    })),
+    expire: diff,
+  }
+}
+
 function VeTHEsContextProvider({ children }) {
   const { account, chainId } = useWallet()
   const { data, isLoading, error, mutate } = useSWR(
     account && chainId === ChainId.BSC ? ['vethes api', account, chainId] : null,
     {
-      fetcher: fetchUserVeTHEs,
+      fetcher: fetchVeTHEsFromAddress,
     },
   )
 
