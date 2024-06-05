@@ -136,7 +136,7 @@ export function UserInfo({ userInfo, following, followers }) {
                   {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM D, YYYY')} {`${t('at')} `}
                   {dayjs(userInfo.firstInteractAt).tz().format('h:mma')}
                 </TextSubHeading>
-                <div className='flex gap-2'>
+                <div className='flex flex-col gap-2 md:flex-row'>
                   {userInfo.websiteUrl && (
                     <Link
                       href={tarea_regex.test(userInfo.websiteUrl) ? userInfo.websiteUrl : `//${userInfo.websiteUrl}`}
@@ -144,16 +144,19 @@ export function UserInfo({ userInfo, following, followers }) {
                       target='_blank'
                       prefetch={false}
                     >
-                      <NeutralBadge className='flex items-center text-nowrap lg:text-xs '>
-                        <ExternalIcon className='mr-2 h-4 w-4 stroke-neutral-400' />
-                        {userInfo.websiteUrl}
+                      <NeutralBadge className='flex items-center lg:text-xs'>
+                        <div>
+                          <ExternalIcon className='mr-2 h-4 w-4 stroke-neutral-400' />
+                        </div>
+                        <span className='line-clamp-1'>{userInfo.websiteUrl}</span>
                       </NeutralBadge>
                     </Link>
                   )}
                   {userInfo.xProfileUrl && (
                     <Link href={`https://x.com/${userInfo.xProfileUrl}`} rel='nofollow noopener' target='_blank'>
-                      <NeutralBadge className='flex items-center text-nowrap lg:text-xs'>
-                        <NextImage alt='svg' className='mr-2 w-fit' src='/images/footer/x.svg' />@{userInfo.xProfileUrl}
+                      <NeutralBadge className='flex items-center lg:text-xs'>
+                        <NextImage alt='svg' className='mr-2 w-fit' src='/images/footer/x.svg' />
+                        <span className='line-clamp-1'>@{userInfo.xProfileUrl}</span>
                       </NeutralBadge>
                     </Link>
                   )}
