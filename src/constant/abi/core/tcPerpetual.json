@@ -200,7 +200,7 @@
       {
         "components": [
           { "internalType": "uint256", "name": "id", "type": "uint256" },
-          { "internalType": "uint256", "name": "entryFee", "type": "uint256" },
+          { "internalType": "uint256[]", "name": "entryFee", "type": "uint256[]" },
           { "internalType": "uint256", "name": "MAX_PARTICIPANTS", "type": "uint256" },
           { "internalType": "address", "name": "owner", "type": "address" },
           { "internalType": "address", "name": "tradingCompetition", "type": "address" },
@@ -221,10 +221,9 @@
             "components": [
               { "internalType": "bool", "name": "win_type", "type": "bool" },
               { "internalType": "uint256[]", "name": "weights", "type": "uint256[]" },
-              { "internalType": "uint256", "name": "totalPrize", "type": "uint256" },
+              { "internalType": "uint256[]", "name": "totalPrize", "type": "uint256[]" },
               { "internalType": "uint256", "name": "owner_fee", "type": "uint256" },
-              { "internalType": "address", "name": "token", "type": "address" },
-              { "internalType": "uint256", "name": "host_contribution", "type": "uint256" }
+              { "internalType": "address[]", "name": "token", "type": "address[]" }
             ],
             "internalType": "struct ITradingCompetitionManager.Prize",
             "name": "prize",
@@ -427,6 +426,13 @@
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
+    "name": "isRegistered",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "owners",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
@@ -522,7 +528,7 @@
       {
         "components": [
           { "internalType": "uint256", "name": "id", "type": "uint256" },
-          { "internalType": "uint256", "name": "entryFee", "type": "uint256" },
+          { "internalType": "uint256[]", "name": "entryFee", "type": "uint256[]" },
           { "internalType": "uint256", "name": "MAX_PARTICIPANTS", "type": "uint256" },
           { "internalType": "address", "name": "owner", "type": "address" },
           { "internalType": "address", "name": "tradingCompetition", "type": "address" },
@@ -543,10 +549,9 @@
             "components": [
               { "internalType": "bool", "name": "win_type", "type": "bool" },
               { "internalType": "uint256[]", "name": "weights", "type": "uint256[]" },
-              { "internalType": "uint256", "name": "totalPrize", "type": "uint256" },
+              { "internalType": "uint256[]", "name": "totalPrize", "type": "uint256[]" },
               { "internalType": "uint256", "name": "owner_fee", "type": "uint256" },
-              { "internalType": "address", "name": "token", "type": "address" },
-              { "internalType": "uint256", "name": "host_contribution", "type": "uint256" }
+              { "internalType": "address[]", "name": "token", "type": "address[]" }
             ],
             "internalType": "struct ITradingCompetitionManager.Prize",
             "name": "prize",
@@ -571,6 +576,13 @@
     "type": "function"
   },
   { "inputs": [], "name": "unpause", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  {
+    "inputs": [],
+    "name": "users",
+    "outputs": [{ "internalType": "address[]", "name": "", "type": "address[]" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
   {
     "inputs": [
       { "internalType": "address", "name": "account", "type": "address" },
