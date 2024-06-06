@@ -37,10 +37,10 @@ function Token({ data, setData }) {
   )
 
   const dataListPairs = useMemo(() => {
-    if (pairLists && Array.isArray(pairLists)) {
-      const result = pairLists.map(item => ({
-        key: new BigNumber(item.symbolId).toNumber(),
-        label: item.name,
+    if (pairLists?.[1] && Array.isArray(pairLists[1])) {
+      const result = pairLists[1].map((item, index) => ({
+        key: new BigNumber(pairLists[0][index]).toNumber(),
+        label: item,
       }))
       return result
     }

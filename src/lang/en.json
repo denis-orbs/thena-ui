@@ -832,5 +832,7 @@
   "Increased By": "Increased By",
   "Prize Increases": "Prize Increases",
   "Prize Increased": "Prize Increased",
-  "Decode Data Failed": "Decode data failed."
+  "Decode Data Failed": "Decode data failed.",
+	"Prizes": "Prizes",
+	"Invalid Pair Tokens": "Invalid Pair Tokens"
 }

@@ -27,7 +27,6 @@ import {
   tcManagerAbi,
   tcPerpetualAbi,
   tcPerpetualManagerAbi,
-  tcPerpPairsAbi,
   tcSpotAbi,
   thenaIdAbi,
 } from '@/constant/abi/core'
@@ -162,8 +161,6 @@ export const getTcSpotContract = address => getContract(tcSpotAbi, address, Chai
 export const getOldTcSpotContract = address => getContract(oldTcSpotAbi, address, ChainId.BSC)
 
 export const getTcPerpetualContract = address => getContract(tcPerpetualAbi, address, ChainId.BSC)
-
-export const getTCPerpPairsContract = () => getContract(tcPerpPairsAbi, Contracts.tcPerpPairs, ChainId.BSC)
 
 /** **************************************************************************************************
                                             Thena ID

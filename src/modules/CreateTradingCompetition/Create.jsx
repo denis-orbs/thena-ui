@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useCallback, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
@@ -12,6 +13,7 @@ import Time from './Time'
 import Token from './Token'
 
 function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = () => {}, data, setData }) {
+  const t = useTranslations()
   const [isEntryFee, setIsEntryFee] = useState(data.entryFee.some(item => !isInvalidAmount(item)))
 
   const getErrorMsg = useCallback(
@@ -42,32 +44,33 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
         }
 
         case 2: {
-          const { winningToken, tradingTokens, startingBalance } = data.competitionRules
+          const { winningToken, tradingTokens, startingBalance, pairIds } = data.competitionRules
 
-          error =
-            isSpotType && tradingTokens.length < 2
-              ? 'Invalid Tradable Tokens'
-              : isSpotType && !winningToken
-                ? 'Invalid Winning Token'
-                : isInvalidAmount(startingBalance)
-                  ? 'Invalid Total Deposit'
-                  : ''
+          if (isSpotType) {
+            if (tradingTokens.length < 2) {
+              error = 'Invalid Tradable Tokens'
+            }
+            if (!winningToken) {
+              error = 'Invalid Winning Token'
+            }
+          } else if (!pairIds.length) {
+            error = 'Invalid Pair Tokens'
+          } else error = ''
 
+          if (isInvalidAmount(startingBalance)) {
+            error = 'Invalid Total Deposit'
+          }
           break
         }
 
         case 3: {
-          const { weights, totalPrize, token } = data.prize
+          const { weights, token } = data.prize
           const total = weights.reduce((sum, cur) => sum + cur, 0)
 
           const validAmountFee = data.entryFee.some(item => !isInvalidAmount(item))
 
           if (!token || !token.length) {
             error = 'Invalid Prize Token'
-          } else if (!isSpotType && isInvalidAmount(totalPrize)) {
-            error = 'Invalid Prize Amount'
-          } else if (!isSpotType && token?.balance?.lt(totalPrize)) {
-            error = 'Not Enough Host Contribution'
           } else if (isEntryFee && !validAmountFee) {
             error = 'Invalid Fee Amount'
           } else if (total !== 100) {
@@ -148,7 +151,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
             className='w-full py-3.5 text-white lg:w-auto lg:px-16 lg:py-3'
             onClick={() => setStep(step - 1)}
           >
-            Back
+            {t('Back')}
           </EmphasisButton>
         )}
         <PrimaryButton

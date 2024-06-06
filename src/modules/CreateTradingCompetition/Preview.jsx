@@ -17,7 +17,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
   const router = useRouter()
   const t = useTranslations()
   const { account } = useWallet()
-  const { protocolFee, protocolFeeToken } = useTC()
+  const { protocolFee, protocolFeeToken, protocolFeePerpetual, protocolFeeTokenPerpetual } = useTC()
   const { onCreate, pending, handleGetTCId } = useCreateTC()
   const { closeTxnModal } = useTxn()
 
@@ -26,7 +26,6 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
     const weights = data.prize.weights.slice(1).map(ele => Math.round((ele / (100 - data.prize.weights[0])) * 1000))
     const totalWeight = weights.reduce((sum, cur) => sum + cur, 0)
     weights[weights.length - 1] += 1000 - totalWeight
-    const isSpotType = data.market === TC_MARKET_TYPES.SPOT
 
     const entryFee = data.entryFee.map((e, index) =>
       !isInvalidAmount(e) ? toWei(e, data.prize.token?.[index]?.decimals).dp(0).toString(10) : 0,
@@ -41,23 +40,13 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
       },
       prize: {
         ...data.prize,
-        totalPrize: isSpotType
-          ? new Array(data.prize.token.length).fill('0')
-          : [toWei(data.prize.totalPrize, data.prize.token[0].decimals).dp(0).toString(10)],
-        hostContribution: isSpotType
-          ? undefined
-          : toWei(data.prize.totalPrize, data.prize.token[0]?.decimals).dp(0).toString(10),
+        totalPrize: new Array(data.prize.token.length).fill('0'),
         ownerFee,
         weights,
       },
       prizeUpdate: {
         ...data.prize,
-        totalPrize: isSpotType
-          ? new Array(data.prize.token.length).fill('0')
-          : [toWei(data.prize.totalPrize, data.prize.token[0].decimals).dp(0).toString(10)],
-        hostContribution: isSpotType
-          ? undefined
-          : toWei(data.prize.totalPrize, data.prize.token[0]?.decimals).dp(0).toString(10),
+        totalPrize: new Array(data.prize.token.length).fill('0'),
         ownerFee,
         weights,
       },
@@ -102,6 +91,24 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
     }
   }
 
+  const previewFee = useMemo(() => {
+    if (data.market === TC_MARKET_TYPES.SPOT) {
+      return `${formatAmount(fromWei(protocolFee, protocolFeeToken?.decimals))} ${protocolFeeToken?.symbol}`
+    }
+
+    return `${formatAmount(fromWei(protocolFeePerpetual, protocolFeeTokenPerpetual?.decimals))} ${
+      protocolFeeTokenPerpetual?.symbol
+    }`
+  }, [
+    data.market,
+    protocolFee,
+    protocolFeePerpetual,
+    protocolFeeToken?.decimals,
+    protocolFeeToken?.symbol,
+    protocolFeeTokenPerpetual?.decimals,
+    protocolFeeTokenPerpetual?.symbol,
+  ])
+
   return (
     <div className='flex flex-col-reverse md:flex-row'>
       <div className='h-fit w-full rounded-[3px] px-5 py-4 md:max-w-[324px]'>
@@ -113,9 +120,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
         </p>
         <div className='mb-3 w-full'>
           <p className='text-lightGray text-base leading-5'>{t('Creation Fee')}:</p>
-          <p className='text-[25px] font-semibold leading-[30px] text-white'>
-            {formatAmount(fromWei(protocolFee, protocolFeeToken?.decimals))} {protocolFeeToken?.symbol}
-          </p>
+          <p className='text-[25px] font-semibold leading-[30px] text-white'>{previewFee}</p>
         </div>
         <PrimaryButton isLoading={pending} onClick={handleCreateTC} className='w-full py-[15.75px] uppercase'>
           {t('Create')}

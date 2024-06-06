@@ -3,11 +3,10 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
-import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
-import { TextHeading, TextSubHeading } from '@/components/typography'
+import { TextSubHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { formatAmount, ordinals } from '@/lib/utils'
@@ -18,22 +17,20 @@ const validNumber = val => (val === '' ? 0 : Number(val))
 
 function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
   const t = useTranslations()
-
   const [isPrizeOpen, setIsPrizeOpen] = useState(false)
-  const { tradingTokens } = useTC()
-
+  const { prizeTokens } = useTC()
   const { placements, weights } = data.prize
 
   const isSpotType = useMemo(() => data.market === TC_MARKET_TYPES.SPOT, [data.market])
 
-  const USDTAsset = useMemo(
-    () =>
-      tradingTokens.find(
-        item => item.address.toLowerCase() === '0x55d398326f99059fF775485246999027B3197955'.toLowerCase(),
-      ),
-    [tradingTokens],
-  )
   const total = useMemo(() => weights.reduce((sum, cur) => sum + validNumber(cur), 0), [weights])
+
+  const assetsByMarket = useMemo(() => {
+    if (isSpotType) {
+      return data.competitionRules.tradingTokens
+    }
+    return prizeTokens
+  }, [data.competitionRules.tradingTokens, isSpotType, prizeTokens])
 
   useEffect(() => {
     if (weights.length === placements) return
@@ -63,7 +60,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
   return (
     <>
       <p className='font-figtree w-full text-xl font-semibold leading-6 text-white md:text-[22px] md:leading-7'>
-        Prizes
+        {t('Prizes')}
       </p>
       <div className='mt-4 w-full items-center space-y-4 md:flex md:space-x-6 md:space-y-0'>
         <div className='w-full'>
@@ -75,70 +72,22 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             required
           />
           <div
-            className={`relative flex ${isSpotType ? 'cursor-pointer' : 'cursor-not-allowed'} items-center`}
+            className='relative flex cursor-pointer items-center'
             onClick={() => {
-              if (isSpotType) {
-                setIsPrizeOpen(true)
-              }
+              setIsPrizeOpen(true)
             }}
           >
             <div
               className='w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3.5 pl-4 pr-8 text-neutral-50
            placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500'
             >
-              {!isSpotType ? (
-                <div className='flex items-center space-x-1.5'>
-                  <CircleImage src={data.prize.token?.[0]?.logoURI} width={20} height={20} alt='thena token' />
-                  <TextHeading>{data.prize.token?.[0]?.symbol}</TextHeading>
-                </div>
-              ) : (
-                `${data.prize.token.length} Selected`
-              )}
+              {data.prize.token.length} {t('Selected')}
             </div>
             <div className='absolute bottom-0 right-3 top-0 my-auto h-5 w-5'>
               <Image src='/svgs/chevron-down.svg' alt='down icon' width={20} height={20} />
             </div>
           </div>
         </div>
-        {!isSpotType && (
-          <div className='w-full'>
-            <div className='flex items-center justify-between text-base leading-5'>
-              <LabelTooltip
-                id='hostContribution'
-                label='Host Contribution'
-                showInfoIcon
-                tooltip='You need to contribute at least a dust amount to seed the initial prize pool. You are not going to get this amount back, unless prize distribution includes the host as well, that you can set.'
-                required
-              />
-              <div className='mb-2 text-white'>
-                {t('Balance')}: {formatAmount(USDTAsset?.balance)}
-              </div>
-            </div>
-            <Input
-              value={data.prize.totalPrize[0]}
-              type='number'
-              placeholder='1'
-              TrailingButton={
-                data.prize.token?.length ? (
-                  <div className='absolute right-4 flex items-center space-x-1.5'>
-                    <TextSubHeading>${formatAmount(data.prize.totalPrize * data.prize.token[0].price)}</TextSubHeading>
-                    <Image alt='' src={data.prize.token[0].logoURI} width={20} height={20} />
-                    <span className='font-figtree text-lg leading-[22px] text-white'>{data.prize.token[0].symbol}</span>
-                  </div>
-                ) : undefined
-              }
-              onChange={e => {
-                setData({
-                  ...data,
-                  prize: {
-                    ...data.prize,
-                    totalPrize: [e.target.value],
-                  },
-                })
-              }}
-            />
-          </div>
-        )}
       </div>
       <div>
         <div className='mt-4 grid gap-x-[26px] gap-y-4 md:grid-cols-2'>
@@ -303,7 +252,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             },
           })
         }}
-        assets={data.competitionRules.tradingTokens}
+        assets={assetsByMarket}
       />
     </>
   )
