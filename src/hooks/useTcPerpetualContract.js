@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -7,7 +6,7 @@ import { maxUint256 } from 'viem'
 import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTcPerpetualContract } from '@/lib/contracts'
-import { fromWei } from '@/lib/utils'
+import { fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -72,62 +71,81 @@ export const useJoinTCPerpetual = () => {
   const joinTCPerpetual = useCallback(
     async (data, name) => {
       const key = uuidv4()
-      const approveFeeuuid = uuidv4()
-      const approveStartuuid = uuidv4()
       const joinuuid = uuidv4()
       const tcPerpetualContract = getTcPerpetualContract(data.tcAddress)
-
-      const feeTokenContract = getERC20Contract(data.prize.token.address, chainId)
-      const allowance = await readCall(feeTokenContract, 'allowance', [account, data.tcAddress])
-      const isApprovedFee = new BigNumber(data.entryFee).isZero() || fromWei(allowance).gte(data.entryFee)
-
       const winningTokenContract = getERC20Contract(data.competitionRules.winningToken.address, chainId)
-      const allowanceWinningToken = await readCall(winningTokenContract, 'allowance', [account, data.tcAddress])
-      const isApprovedWinningToken = fromWei(allowanceWinningToken).gte(fromWei(data.competitionRules.startingBalance))
 
+      const tokens = {
+        [data.competitionRules.winningToken.address]: {
+          amount: fromWei(data.competitionRules.startingBalance),
+          decimals: 18,
+          symbol: data.competitionRules.winningToken.symbol,
+          contract: winningTokenContract,
+        },
+      }
+      const transactions = {}
+
+      for (let i = 0; i < data.entryFeeUpdate.length; i++) {
+        if (!isInvalidAmount(data.entryFeeUpdate[i])) {
+          if (tokens[data.prizeUpdate.token[i].address]) {
+            const feeAmount = fromWei(data.entryFeeUpdate[i], data.prizeUpdate.token[i].decimals).plus(
+              tokens[data.prizeUpdate.token[i].address].amount,
+            )
+            tokens[data.prizeUpdate.token[i].address].amount = feeAmount
+          } else {
+            const feeTokenContract = getERC20Contract(data.prizeUpdate.token[i].address, chainId)
+            tokens[data.prizeUpdate.token[i].address] = {
+              amount: fromWei(data.entryFeeUpdate[i], data.prizeUpdate.token[i].decimals),
+              decimals: data.prizeUpdate.token[i].decimals,
+              symbol: data.prizeUpdate.token[i].symbol,
+              contract: feeTokenContract,
+            }
+          }
+        }
+      }
+
+      for (let i = 0; i < Object.keys(tokens).length; i++) {
+        const address = Object.keys(tokens)[i]
+        const approveFeeuuid = uuidv4()
+        const allowance = await readCall(tokens[address].contract, 'allowance', [account, data.tcAddress])
+
+        const isApprovedFee = fromWei(allowance, tokens[address].decimals).gte(
+          tokens[address].amount,
+          tokens[address].decimals,
+        )
+
+        if (!isApprovedFee) {
+          tokens[address].id = approveFeeuuid
+          transactions[approveFeeuuid] = {
+            desc: `${t('Approve')} ${tokens[address].symbol}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+      }
+      transactions[joinuuid] = {
+        desc: t('Join Competition'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
       setPending(true)
       startTxn({
         key,
         title: t('Join Competition'),
-        transactions: {
-          ...(!isApprovedFee && {
-            [approveFeeuuid]: {
-              desc: `${t('Approve')} ${t('Fee')}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          ...(!isApprovedWinningToken && {
-            [approveStartuuid]: {
-              desc: `${t('Approve')} ${t('Winning Token')}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          [joinuuid]: {
-            desc: t('Join Competition'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        },
+        transactions,
       })
+      for (let i = 0; i < Object.keys(tokens).length; i++) {
+        const address = Object.keys(tokens)[i]
+        if (tokens[address].id) {
+          const isSuccess = await writeTxn(key, tokens[address].id, tokens[address].contract, 'approve', [
+            data.tcAddress,
+            maxUint256,
+          ])
 
-      if (!isApprovedFee) {
-        const isSuccess = await writeTxn(key, approveFeeuuid, feeTokenContract, 'approve', [data.tcAddress, maxUint256])
-        if (!isSuccess) {
-          setPending(false)
-          return false
-        }
-      }
-
-      if (!isApprovedWinningToken) {
-        const isSuccess = await writeTxn(key, approveStartuuid, winningTokenContract, 'approve', [
-          data.tcAddress,
-          maxUint256,
-        ])
-        if (!isSuccess) {
-          setPending(false)
-          return false
+          if (!isSuccess) {
+            setPending(false)
+            return false
+          }
         }
       }
 

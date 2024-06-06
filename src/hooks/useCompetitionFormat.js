@@ -4,19 +4,7 @@ import { useMemo } from 'react'
 import { useAssets } from '@/context/assetsContext'
 
 export const useCompetitionFormat = (competition, isPreview = false) => {
-  const _assets = useAssets()
-
-  const assets = useMemo(() => {
-    const clone = cloneDeep(_assets)
-    clone.push({
-      name: 'MockUSD',
-      symbol: 'MUSD',
-      decimals: 18,
-      address: '0xced4ac14bb1077b995b954c48a87b25ebb4828e5',
-    })
-
-    return clone
-  }, [_assets])
+  const assets = useAssets()
 
   return useMemo(() => {
     if (isPreview) {
