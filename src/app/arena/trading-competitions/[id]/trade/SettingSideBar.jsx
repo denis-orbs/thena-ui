@@ -9,7 +9,7 @@ import { useSettings } from '@/state/settings/hooks'
 import { SettingsIcon } from '@/svgs'
 
 const slipageTolerance = [0.1, 0.5, 1]
-export const serviceList = ['1inch', 'Algebra', 'OOE']
+export const serviceList = ['1inch', 'Algebra', 'OOE', 'Odos']
 
 function SettingSideBar({ service = serviceList[0], setService }) {
   const [popup, setPopup] = useState(false)

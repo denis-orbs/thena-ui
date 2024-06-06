@@ -8,7 +8,7 @@ import { JSBI, Percent } from 'thena-sdk-core'
 import WarningModal from '@/app/swap/WarningModal'
 import { Alert } from '@/components/alert'
 import Box from '@/components/box'
-import { EmphasisButton } from '@/components/buttons/Button'
+import { EmphasisButton, TextButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import NextImage from '@/components/image/NextImage'
@@ -22,18 +22,23 @@ import { useBestV3TradeExactIn } from '@/hooks/fusion/useBestV3Trade'
 import useDebounce from '@/hooks/useDebounce'
 import {
   useGet1InchSwapData,
+  useGetOdosTxSwap,
   useGetOOESwapData,
+  useOdosQuoteSwapTradeTC,
   useTCSpot1InchSwap,
   useTCSpotAlgebraSwap,
+  useTCSpotOdosSwap,
   useTCSpotOOESwap,
 } from '@/hooks/useSwap'
 import { tryParseAmount } from '@/lib/fusion'
 import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
-import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import { liquidityHub } from '@/modules/LiquidityHub'
+import { LiquidityHubRouting } from '@/modules/LiquidityHub/components'
 import SwapChart from '@/modules/SwapChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
-import { InfoIcon, SwitchVerticalIcon } from '@/svgs'
+import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
 
 import SettingSideBar, { serviceList } from './SettingSideBar'
 
@@ -48,7 +53,7 @@ export function SideBar({
   onUnwrap,
   wrapPending,
   assets,
-  tcSpot,
+  tcAddress,
   children,
   setReloadFetch,
 }) {
@@ -63,7 +68,7 @@ export function SideBar({
   const [minimumReceived, setMinimumReceived] = useState(0)
   const [ooeData, setOoeData] = useState('')
   const [oneInchData, setOneInchData] = useState('')
-  const [service, setService] = useState(serviceList[2])
+  const [service, setService] = useState(serviceList[3])
 
   const { handleReloadFetch } = useTradingCompetition()
 
@@ -89,7 +94,7 @@ export function SideBar({
     debouncedFromTokenAmount,
     slippage,
     networkId,
-    tcSpot,
+    tcAddress,
     Boolean(
       service === 'OOE' &&
         fromAddress &&
@@ -99,13 +104,42 @@ export function SideBar({
     ),
   )
 
+  const {
+    data: quoteOdos,
+    isLoading: _isLoadingGetOdos,
+    mutate,
+  } = useOdosQuoteSwapTradeTC(
+    tcAddress,
+    fromAddress,
+    toAsset?.address,
+    debouncedFromTokenAmount,
+    slippage,
+    networkId,
+    Boolean(
+      service === 'Odos' &&
+        fromAddress &&
+        toAsset?.address &&
+        !isInvalidAmount(debouncedFromTokenAmount) &&
+        fromAddress.toLowerCase() !== toAsset?.address?.toLowerCase(),
+    ),
+  )
+
+  const {
+    data: lhQuote,
+    error: lhQuoteError,
+    isLoading: lhQuotePending,
+  } = liquidityHub.useQuoteQuery(fromAsset, toAsset, debouncedFromTokenAmount, quoteOdos?.outAmounts[0])
+  const isDexTrade = liquidityHub.useIsDexTrade(quoteOdos?.outAmounts[0], lhQuote?.outAmount, lhQuoteError)
+
+  const { data: _txOdos, isLoading: _isLoadingTxOdos } = useGetOdosTxSwap(tcAddress, quoteOdos)
+
   const { data: oneInchQuoteData, isLoading: isLoadingOneInch } = useGet1InchSwapData(
     fromAddress,
     toAsset?.address,
     toWei(debouncedFromTokenAmount),
     slippage,
     networkId,
-    tcSpot,
+    tcAddress,
     Boolean(
       service === '1inch' &&
         fromAddress &&
@@ -118,6 +152,18 @@ export function SideBar({
   const { onSwap: onSwapOOE, pending: pendingOOE } = useTCSpotOOESwap()
   const { onSwap: onSwapAlgebra, pending: pendingAlg } = useTCSpotAlgebraSwap()
   const { onSwap: onSwap1inch, pending: pending1inch } = useTCSpot1InchSwap()
+  const { onSwap: onSwapOdos, pending: pendingOdos } = useTCSpotOdosSwap()
+
+  useEffect(() => {
+    if (service === 'Odos') {
+      if (quoteOdos && quoteOdos.outAmounts) {
+        setToTokenAmount(fromWei(quoteOdos.outAmounts[0], toAsset?.decimals))
+        setMinimumReceived(fromWei(quoteOdos.outAmounts[0], toAsset?.decimals) * ((100 - slippage) / 100))
+      } else {
+        setToTokenAmount('')
+      }
+    }
+  }, [quoteOdos, service, slippage, toAsset?.decimals])
 
   useEffect(() => {
     if (service === '1inch') {
@@ -214,15 +260,18 @@ export function SideBar({
           toAsset,
           toWei(debouncedFromTokenAmount),
           toWei(minimumReceived),
-          tcSpot,
+          tcAddress,
           deadline,
         )
         break
       case '1inch':
-        isSuccess = await onSwap1inch(oneInchData, fromAsset, toAsset, tcSpot)
+        isSuccess = await onSwap1inch(oneInchData, fromAsset, toAsset, tcAddress)
+        break
+      case 'Odos':
+        isSuccess = await onSwapOdos(_txOdos, fromAsset, toAsset, tcAddress)
         break
       default:
-        isSuccess = await onSwapOOE(ooeData, fromAsset, toAsset, tcSpot)
+        isSuccess = await onSwapOOE(ooeData, fromAsset, toAsset, tcAddress)
         break
     }
 
@@ -234,18 +283,20 @@ export function SideBar({
     }
   }, [
     service,
-    setReloadFetch,
     onSwapAlgebra,
     fromAsset,
     toAsset,
     debouncedFromTokenAmount,
     minimumReceived,
-    tcSpot,
+    tcAddress,
     deadline,
     onSwap1inch,
     oneInchData,
+    onSwapOdos,
+    _txOdos,
     onSwapOOE,
     ooeData,
+    setReloadFetch,
     handleReloadFetch,
   ])
 
@@ -307,18 +358,10 @@ export function SideBar({
             <Box className='flex flex-col gap-4'>
               <div className='flex justify-between'>
                 <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
-                {/* <TextButton
-                  className='text-xs'
-                  iconClassName='lg:h-4 lg:w-4'
-                  onClick={() => mutate()}
-                  LeadingIcon={RefreshIcon}
-                >
-                  {t('Refresh Quote')}
-                </TextButton> */}
               </div>
               {isLoading || isLoadingOneInch ? (
                 <Skeleton className='h-[100px] w-full' />
-              ) : (
+              ) : service !== 'Odos' ? (
                 <div>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-2'>
@@ -335,6 +378,46 @@ export function SideBar({
                     </div>
                   </div>
                 </div>
+              ) : (
+                <Box className='flex flex-col gap-4'>
+                  <div className='flex justify-between'>
+                    <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
+                    <TextButton
+                      className='text-xs'
+                      iconClassName='lg:h-4 lg:w-4'
+                      onClick={() => mutate()}
+                      LeadingIcon={RefreshIcon}
+                    >
+                      {t('Refresh Quote')}
+                    </TextButton>
+                  </div>
+                  {lhQuotePending ? (
+                    <Skeleton className='h-[100px] w-full' />
+                  ) : (
+                    <div>
+                      <div className='flex items-center justify-between'>
+                        <div className='flex items-center gap-2'>
+                          <NextImage src={fromAsset?.logoURI} alt='' className='h-5 w-5' />
+                          <Paragraph>
+                            {formatAmount(debouncedFromTokenAmount)} {fromAsset?.symbol}
+                          </Paragraph>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                          <Paragraph>
+                            {formatAmount(toTokenAmount)} {toAsset?.symbol}
+                          </Paragraph>
+                          <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
+                        </div>
+                      </div>
+                      {isDexTrade && (
+                        <div className={cn('-mx-4 lg:-mx-6', quoteOdos && '-mb-[100px]')}>
+                          {quoteOdos && <NextImage className='w-full' src={quoteOdos.pathVizImage} alt='best route' />}
+                        </div>
+                      )}
+                      {!!lhQuote?.outAmount && Number(lhQuote?.outAmount) > 0 && !isDexTrade && <LiquidityHubRouting />}
+                    </div>
+                  )}
+                </Box>
               )}
             </Box>
           </div>
@@ -355,7 +438,7 @@ export function SideBar({
                 <CustomTokenInput
                   asset={fromAsset}
                   setAsset={asset => {
-                    if (asset.address === toAsset.address) {
+                    if (asset?.address === toAsset?.address) {
                       setToAsset(fromAsset)
                     }
                     setFromAsset(asset)
@@ -369,7 +452,7 @@ export function SideBar({
                 <CustomTokenInput
                   asset={toAsset}
                   setAsset={asset => {
-                    if (asset.address === fromAsset.address) {
+                    if (asset.address === fromAsset?.address) {
                       setFromAsset(toAsset)
                     }
                     setToAsset(asset)
@@ -392,13 +475,21 @@ export function SideBar({
             {toTokenAmount && !isLoading && !isLoadingOneInch && (
               <div className='flex flex-col gap-2 py-3'>
                 <div className='flex items-center justify-between'>
+                  <TextHeading>{t('Slippage Tolerance')}</TextHeading>
+                  <Paragraph>{slippage} %</Paragraph>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <TextHeading>{t('Option')}</TextHeading>
+                  <Paragraph>{service}</Paragraph>
+                </div>
+                <div className='flex items-center justify-between'>
                   <TextHeading>{t('Rate')}</TextHeading>
                   <Paragraph>
                     {`${formatAmount(new BigNumber(toTokenAmount).div(fromTokenAmount))} ${t(
                       '[symbolA] per [symbolB]',
                       {
-                        symbolA: toAsset.symbol,
-                        symbolB: fromAsset.symbol,
+                        symbolA: toAsset?.symbol,
+                        symbolB: fromAsset?.symbol,
                       },
                     )}`}
                   </Paragraph>
@@ -406,7 +497,7 @@ export function SideBar({
                 <div className='flex items-center justify-between'>
                   <TextHeading>{t('Minimum Received')}</TextHeading>
                   <Paragraph>
-                    {new BigNumber(minimumReceived).toNumber()} {toAsset.symbol}
+                    {new BigNumber(minimumReceived).toNumber()} {toAsset?.symbol}
                   </Paragraph>
                 </div>
                 <div className='flex items-center justify-between'>
@@ -434,7 +525,13 @@ export function SideBar({
               <EmphasisButton
                 className='mt-3 w-full'
                 disabled={
-                  !debouncedFromTokenAmount || wrapPending || pendingOOE || pendingAlg || pending1inch || btnMsg.isError
+                  !debouncedFromTokenAmount ||
+                  wrapPending ||
+                  pendingOOE ||
+                  pendingAlg ||
+                  pending1inch ||
+                  pendingOdos ||
+                  btnMsg.isError
                 }
                 onClick={() => {
                   if (priceImpact > 5) {

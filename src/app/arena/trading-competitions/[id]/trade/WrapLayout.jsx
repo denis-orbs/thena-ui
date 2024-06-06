@@ -116,7 +116,7 @@ export function WrapLayout({ children, params }) {
           setFromAsset={setFromAsset}
           setToAsset={setToAsset}
           assets={tradingTokens}
-          tcSpot={competition?.tcAddress}
+          tcAddress={competition?.tcAddress}
           setReloadFetch={setReloadFetch}
         >
           {children}
@@ -129,7 +129,7 @@ export function WrapLayout({ children, params }) {
             setFromAsset={setFromAsset}
             setToAsset={setToAsset}
             assets={tradingTokens}
-            tcSpot={competition?.tcAddress}
+            tcAddress={competition?.tcAddress}
           >
             {children}
           </SideBar>

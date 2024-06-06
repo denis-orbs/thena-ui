@@ -198,7 +198,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
               </CustomTooltip>
             )}
             {_competition.prizeUpdate?.token?.slice(0.3).map((token, index) => (
-              <div className='flex space-x-2'>
+              <div className='flex space-x-2' key={index}>
                 {token?.logoURI && (
                   <Image
                     alt={_competition.name}
@@ -229,8 +229,8 @@ export function CompetitionDetail({ competition, isPreview = false }) {
                   {item.data.map(({ value, symbol }) => `${value} ${symbol}`).join(', ')}
                 </CustomTooltip>
               )}
-              {item.data.map(itm => (
-                <div className='flex space-x-2'>
+              {item.data.map((itm, i) => (
+                <div key={i} className='flex space-x-2'>
                   {itm?.logoURI && (
                     <Image
                       alt={_competition.name}
