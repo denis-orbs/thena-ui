@@ -18,37 +18,24 @@ export const useCreateTC = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
   const { account, chainId } = useWallet()
-  const { protocolFeeToken, protocolFee } = useTC()
+  const { protocolFeeToken, protocolFee, protocolFeePerpetual, protocolFeeTokenPerpetual } = useTC()
   const t = useTranslations()
 
   const handleCreate = useCallback(
     async data => {
       const key = uuidv4()
       const approveFeeuuid = uuidv4()
-      const approveHostuuid = uuidv4()
       const createuuid = uuidv4()
       // Check if is Perpetual TC
       const isPerpetualTC = data?.market === TC_MARKET_TYPES.PERPETUAL
       console.log({ isPerpetualTC })
       const tcManagerContract = isPerpetualTC ? getTCPerpetualManagerContract() : getTCContract()
-      const tokenContract = getERC20Contract(protocolFeeToken?.address, chainId)
+      const tokenContract = getERC20Contract(
+        isPerpetualTC ? protocolFeeTokenPerpetual?.address : protocolFeeToken?.address,
+        chainId,
+      )
       const allowance = await readCall(tokenContract, 'allowance', [account, tcManagerContract.address])
-      const isApprovedFee = fromWei(allowance).gte(fromWei(protocolFee))
-
-      if (isPerpetualTC) {
-        // TODO: Only for testing
-        const MockUSDAddress = '0xced4aC14bB1077B995b954C48a87b25EBb4828E5'
-        data.prize.token.address = MockUSDAddress
-      }
-
-      let prizeTokenContract = null
-      let allowanceHost = 0n
-      let isApprovedHost = true
-      if (data?.prize?.hostContribution) {
-        prizeTokenContract = getERC20Contract(data.prize.token.address, chainId)
-        allowanceHost = await readCall(prizeTokenContract, 'allowance', [account, tcManagerContract.address])
-        isApprovedHost = fromWei(allowanceHost).gte(fromWei(data.prize.hostContribution))
-      }
+      const isApprovedFee = fromWei(allowance).gte(fromWei(isPerpetualTC ? protocolFeePerpetual : protocolFee))
 
       startTxn({
         key,
@@ -57,13 +44,6 @@ export const useCreateTC = () => {
           ...(!isApprovedFee && {
             [approveFeeuuid]: {
               desc: `${t('Approve')} ${t('Fee')}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          ...(!isApprovedHost && {
-            [approveHostuuid]: {
-              desc: `${t('Approve')} Host`,
               status: TXN_STATUS.START,
               hash: null,
             },
@@ -89,38 +69,26 @@ export const useCreateTC = () => {
         }
       }
 
-      if (!isApprovedHost) {
-        const isSuccess = await writeTxn(key, approveHostuuid, prizeTokenContract, 'approve', [
-          tcManagerContract.address,
-          maxUint256,
-        ])
-        if (!isSuccess) {
-          setPending(false)
-          return false
-        }
-      }
-
       let competitionRules = {
         starting_balance: data.competitionRules.startingBalance,
+        winning_token: data.competitionRules.winningToken.address,
       }
 
       if (isPerpetualTC) {
         competitionRules = {
           ...competitionRules,
-          // TODO: Hardcode
-          pairIds: [1, 2, 3, 4],
+          pairIds: data.competitionRules.pairIds,
         }
       } else {
         competitionRules = {
           ...competitionRules,
-          winning_token: data.competitionRules.winningToken.address,
           tradingTokens: data.competitionRules.tradingTokens.map(ele => ele.address),
         }
       }
 
       const tradingComp = {
         id: isPerpetualTC ? 0 : undefined,
-        entryFee: isPerpetualTC ? data.entryFee[0] : data.entryFee,
+        entryFee: data.entryFee,
         MAX_PARTICIPANTS: data.maxParticipants,
         owner: data.owner.id,
         tradingCompetition: data.tcAddress,
@@ -136,12 +104,9 @@ export const useCreateTC = () => {
           weights: data.prize.weights,
           totalPrize: data.prize.totalPrize,
           owner_fee: data.prize.ownerFee,
-          token: isPerpetualTC ? data.prize.token.address : data.prize.token.map(token => token.address),
-          host_contribution: data.prize.hostContribution,
+          token: data.prize.token.map(token => token.address),
         },
       }
-
-      console.log({ tradingComp })
 
       const isSuccess = await writeTxn(key, createuuid, tcManagerContract, 'create', [tradingComp])
       if (!isSuccess) {
@@ -157,7 +122,18 @@ export const useCreateTC = () => {
       setPending(false)
       return isSuccess
     },
-    [protocolFeeToken?.address, chainId, account, protocolFee, startTxn, t, writeTxn, endTxn],
+    [
+      protocolFeeTokenPerpetual?.address,
+      chainId,
+      protocolFeeToken?.address,
+      account,
+      protocolFeePerpetual,
+      protocolFee,
+      startTxn,
+      t,
+      writeTxn,
+      endTxn,
+    ],
   )
 
   const handleGetTCId = useCallback(async txHash => {

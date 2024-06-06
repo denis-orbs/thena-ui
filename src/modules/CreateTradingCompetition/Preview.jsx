@@ -67,7 +67,6 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
   }, [data, account])
 
   const handleCreateTC = async () => {
-    console.log({ mainData })
     if (fromWei(protocolFee, protocolFeeToken?.decimals).gt(protocolFeeToken?.balance)) {
       warnToast('Insufficient [Asset] Balance', { symbol: protocolFeeToken?.symbol })
     } else {
