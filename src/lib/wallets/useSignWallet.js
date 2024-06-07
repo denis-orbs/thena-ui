@@ -30,27 +30,24 @@ export const useSignWallet = () => {
     localStorage.removeItem('token')
   }, [])
 
-  const login = useCallback(
-    async data => {
-      try {
-        if (!!data && !!account) {
-          const {
-            login: { accessToken },
-          } = await v4Client.request(V4_LOGIN, {
-            signature: data,
-            address: account,
-          })
+  const login = useCallback(async (data, address) => {
+    try {
+      if (data && address) {
+        const {
+          login: { accessToken },
+        } = await v4Client.request(V4_LOGIN, {
+          signature: data,
+          address,
+        })
 
-          if (accessToken) {
-            localStorage.setItem('token', accessToken)
-          }
+        if (accessToken) {
+          localStorage.setItem('token', accessToken)
         }
-      } catch (error) {
-        localStorage.removeItem('token')
       }
-    },
-    [account],
-  )
+    } catch (error) {
+      localStorage.removeItem('token')
+    }
+  }, [])
 
   const signWallet = useCallback(
     (loginCallback, params, callOnSuccess, callOnReject) => {
@@ -62,7 +59,7 @@ export const useSignWallet = () => {
           },
           {
             onSuccess: async data => {
-              await login(data)
+              await login(data, account)
               await sleep(3000)
               if (getFromLocalStorage('token')) {
                 const res = await loginCallback?.(params)

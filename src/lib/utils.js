@@ -166,3 +166,10 @@ export const recursivelyDecodeResult = result => {
     return result.toArray().map(item => recursivelyDecodeResult(item))
   }
 }
+
+export const isSmallScreen = () => {
+  if (typeof window !== 'undefined') {
+    return window.innerWidth < 1024
+  }
+  return false
+}

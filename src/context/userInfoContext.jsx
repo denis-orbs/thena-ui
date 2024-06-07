@@ -208,8 +208,12 @@ function UserInfoContextProvider({ children }) {
   useEffect(() => {
     const { current } = mainRef
 
-    if (userInfo?.theme && current) {
-      current.style.backgroundImage = `url(${userInfo.theme})`
+    if (current) {
+      if (userInfo?.theme) {
+        current.style.backgroundImage = `url(${userInfo.theme})`
+      } else {
+        current.style.backgroundImage = 'url(/images/background.png)'
+      }
     }
 
     // set localStorage timezone

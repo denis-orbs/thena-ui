@@ -14,7 +14,7 @@ import Modal, { ModalFooter } from '@/components/modal'
 import { LOCALES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import usePrices from '@/hooks/usePrices'
-import { cn, formatAmount, goToDoc } from '@/lib/utils'
+import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
@@ -567,7 +567,7 @@ function Header() {
             <OutlinedButton className='hidden lg:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton>
-            <ConnectButton className='hidden lg:flex' />
+            {!isSmallScreen() && <ConnectButton className='flex' />}
             <Notification />
             <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
           </div>

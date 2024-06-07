@@ -25,10 +25,10 @@ export default function ConnectButton({ className }) {
   const { signWallet, deleteToken } = useSignWallet()
 
   const getSign = useCallback(() => {
-    if (!getFromLocalStorage('token') && account) {
+    if (!getFromLocalStorage('token')) {
       signWallet()
     }
-  }, [signWallet, account])
+  }, [signWallet])
 
   useEffect(() => {
     getSign()

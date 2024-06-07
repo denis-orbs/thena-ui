@@ -4,17 +4,10 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import ReactModal from 'react-modal'
 
-import { cn } from '@/lib/utils'
+import { cn, isSmallScreen } from '@/lib/utils'
 import { ArrowLeftIcon, XIcon } from '@/svgs'
 
 import { TextIconButton } from '../buttons/IconButton'
-
-const isSmallScreen = () => {
-  if (typeof window !== 'undefined') {
-    return window.innerWidth < 1024
-  }
-  return false
-}
 
 export function ModalBody({ children, className }) {
   return <div className={cn('flex flex-col gap-5 p-3 lg:px-6', className)}>{children}</div>
