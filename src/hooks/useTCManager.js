@@ -71,7 +71,6 @@ export const useCreateTC = () => {
 
       let competitionRules = {
         starting_balance: data.competitionRules.startingBalance,
-        winning_token: data.competitionRules.winningToken.address,
       }
 
       if (isPerpetualTC) {
@@ -82,6 +81,7 @@ export const useCreateTC = () => {
       } else {
         competitionRules = {
           ...competitionRules,
+          winning_token: data.competitionRules.winningToken.address,
           tradingTokens: data.competitionRules.tradingTokens.map(ele => ele.address),
         }
       }

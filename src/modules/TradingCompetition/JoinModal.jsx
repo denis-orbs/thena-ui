@@ -55,12 +55,26 @@ export function JoinModal({ competition, open, onClose }) {
   const handleJoin = useCallback(async () => {
     try {
       let joined = false
+
       if (market === TC_MARKET_TYPES.PERPETUAL) {
+        const _competition = {
+          ...competition,
+          competitionRules: {
+            ...competition.competitionRules,
+            winningToken: {
+              name: 'MockUSD',
+              symbol: 'MUSD',
+              decimals: 18,
+              address: '0xced4ac14bb1077b995b954c48a87b25ebb4828e5',
+            },
+          },
+        }
+
         if (!name.trim()) {
           warnToast('Name is required')
           return
         }
-        joined = await joinTCPerpetual(competition, name.trim())
+        joined = await joinTCPerpetual(_competition, name.trim())
       } else {
         joined = await joinTC(competition)
       }

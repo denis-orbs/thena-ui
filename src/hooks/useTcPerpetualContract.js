@@ -10,7 +10,7 @@ import { fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useTCPerpetualInfor = (tcSpot, type = TC_MARKET_TYPES.PERPETUAL) => {
+export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL) => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
@@ -21,7 +21,7 @@ export const useTCPerpetualInfor = (tcSpot, type = TC_MARKET_TYPES.PERPETUAL) =>
   const getUserData = useCallback(async () => {
     setLoaded(false)
 
-    if (tcSpot) {
+    if (tcAddress) {
       if (!account || type !== TC_MARKET_TYPES.PERPETUAL) {
         setIsRegistered(false)
         setIsWinner(false)
@@ -31,9 +31,9 @@ export const useTCPerpetualInfor = (tcSpot, type = TC_MARKET_TYPES.PERPETUAL) =>
         return
       }
 
-      const tcPerpetualContract = getTcPerpetualContract(tcSpot)
+      const tcPerpetualContract = getTcPerpetualContract(tcAddress)
       try {
-        const res0 = await readCall(tcPerpetualContract, 'getAccountOf', [account])
+        const res0 = await readCall(tcPerpetualContract, 'isRegistered', [account])
         if (res0) {
           setIsRegistered(true)
         }
@@ -47,7 +47,7 @@ export const useTCPerpetualInfor = (tcSpot, type = TC_MARKET_TYPES.PERPETUAL) =>
 
       setLoaded(true)
     }
-  }, [account, tcSpot, type])
+  }, [account, tcAddress, type])
 
   useEffect(() => {
     getUserData()
