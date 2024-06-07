@@ -97,12 +97,14 @@ export default function PoolsPage() {
       final = pairs.filter(ele => ele.highApr > 0)
     }
     final = filter === PAIR_TYPES.All ? final : final.filter(item => item.type === filter)
-    // TODO: hard-coded for SOLVBTC
+    // TODO: hard-coded for SOLVBTC & USDT/arcUSD
     final = final.map(pool => {
       if (
-        ['0x575a951ad021d4297ac125be88ee4620652d5c12', '0xab6f06a33f38cba5a5312de24151cb91da2b0eb0'].includes(
-          pool.address,
-        )
+        [
+          '0x575a951ad021d4297ac125be88ee4620652d5c12',
+          '0xab6f06a33f38cba5a5312de24151cb91da2b0eb0',
+          '0xfd60a2b164c86751df65c8cf895f7b07e5a48c35',
+        ].includes(pool.address)
       ) {
         const token0 = assets.find(item => item.address === pool.token0.address)
         const token1 = assets.find(item => item.address === pool.token1.address)
@@ -113,6 +115,7 @@ export default function PoolsPage() {
       }
       return pool
     })
+
     const res =
       filter !== PAIR_TYPES.LSD || strategy === STRATEGIES.All
         ? final
