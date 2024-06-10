@@ -538,3 +538,54 @@ export const useBatchGiftThenaId = () => {
 
   return { loading, batchGiftThenaId }
 }
+
+export const useTransferThenaId = () => {
+  const [loading, setLoading] = useState(false)
+  const t = useTranslations()
+  const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
+  const { account } = useWallet()
+
+  const onTransfer = useCallback(
+    async (toAddress, tokenId) => {
+      const thenaIdContract = getThenaIDContract()
+      if (account && toAddress && thenaIdContract) {
+        const key = uuidv4()
+        const transferUuid = uuidv4()
+
+        setLoading(true)
+        startTxn({
+          key,
+          title: t('Transfer THENA ID'),
+          transactions: {
+            [transferUuid]: {
+              desc: t('Transfer THENA ID'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
+        const isSuccess = await writeTxn(key, transferUuid, thenaIdContract, 'safeTransferFrom', [
+          account.toLowerCase(),
+          toAddress.toLowerCase(),
+          tokenId,
+        ])
+
+        if (!isSuccess) {
+          setLoading(false)
+          return false
+        }
+        endTxn({
+          key,
+          final: 'Transfer THENA ID Successful',
+        })
+        setLoading(false)
+        closeTxnModal()
+        return isSuccess
+      }
+    },
+    [account, closeTxnModal, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { loading, onTransfer }
+}

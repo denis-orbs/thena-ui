@@ -27,6 +27,8 @@ import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ArrowLeftIcon } from '@/svgs'
 
+import TransferModal from './TransferModal'
+
 dayjs.extend(localizedFormat)
 
 const V4_USER_INFO = gql`
@@ -119,7 +121,7 @@ function ThenaIdPage() {
   const [tokenId, setTokenId] = useState('')
   const { account } = useWallet()
   const [showModal, setShowModal] = useState(false)
-  // const [imageUrl, setImageUrl] = useState('')
+  const [showTransferModal, setShowTransferModal] = useState(false)
   const [attributes, setAttributes] = useState(undefined)
   const [currentUserRef, setCurrentUserRef] = useState('')
 
@@ -171,14 +173,14 @@ function ThenaIdPage() {
     [costPerToken],
   )
 
-  const { data: usernameNft, isLoading } = useSWR(
-    ['username nft', thenaIdFormat],
-    () => fetchUsernameNft(thenaIdFormat),
-    {
-      refreshInterval: 60000,
-      revalidateOnMount: true,
-    },
-  )
+  const {
+    data: usernameNft,
+    isLoading,
+    mutate,
+  } = useSWR(['username nft', thenaIdFormat], () => fetchUsernameNft(thenaIdFormat), {
+    refreshInterval: 30000,
+    revalidateOnMount: true,
+  })
 
   const amountToMint = useMemo(async () => {
     const contract = getThenaIDContract()
@@ -246,7 +248,14 @@ function ThenaIdPage() {
             <Link href='/arena/thena-id/browse' className='text-green-400'>
               {t('Thena Id')}
             </Link>
-            <div>
+            <div className='flex items-center gap-3'>
+              {usernameNft?.owner?.id &&
+                account &&
+                usernameNft?.owner?.id?.toLowerCase() === account?.toLowerCase() && (
+                  <TertiaryButton className='w-full' onClick={() => setShowTransferModal(true)}>
+                    {t('Transfer')}
+                  </TertiaryButton>
+                )}
               <TertiaryButton className='w-full' onClick={onShare}>
                 {t('Share')}
               </TertiaryButton>
@@ -369,6 +378,15 @@ function ThenaIdPage() {
               cost: undefined,
             },
           ]}
+        />
+      )}
+
+      {showTransferModal && (
+        <TransferModal
+          mutate={mutate}
+          tokenId={tokenId}
+          isOpen={showTransferModal}
+          onClose={() => setShowTransferModal(false)}
         />
       )}
     </div>
