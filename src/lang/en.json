@@ -833,12 +833,16 @@
   "Prize Increases": "Prize Increases",
   "Prize Increase": "Prize Increase",
   "Decode Data Failed": "Decode data failed.",
-	"Prizes": "Prizes",
+  "Prizes": "Prizes",
   "Invalid Pair Tokens": "Invalid Pair Tokens",
   "Upcoming Competitions": "Upcoming Competitions",
   "Live Competitions": "Live Competitions",
   "Ended Competitions": "Ended Competitions",
   "Hosted Competitions": "Hosted Competitions",
   "Joined Competitions": "Joined Competitions",
-  "Users Verified": "Users Verified"
+  "Users Verified": "Users Verified",
+  "Transfer THENA ID": "Transfer THENA ID",
+  "Transfer THENA ID description": "Transfer your THENA ID to a different wallet address for free of charge. Please note, this will make you lose your own THENA ID and all of your referrals. You will also not be able to customize your profile unless you have a different profile.",
+  "Enter to address": "Enter to address",
+  "Transferred successfully": "Transferred successfully. The ThenaID will take around 1 minute to update its owner"
 }
