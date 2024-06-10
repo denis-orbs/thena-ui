@@ -11,6 +11,7 @@ import Admins from './Admins'
 import Competitions from './Competitions'
 import TopBar from './TopBar'
 import Users from './Users'
+import VerifiedUser from './VerifiedUser'
 
 function AdminPage() {
   const router = useRouter()
@@ -42,7 +43,18 @@ function AdminPage() {
   return (
     <div className='mt-8 flex flex-col gap-8'>
       <TopBar userInfo={userInfo} isLoading={isLoading} />
-      <Users userInfo={userInfo} reloadFetch={reloadFetch} handleClickOpenModal={handleClickOpenModal} />
+      <VerifiedUser
+        userInfo={userInfo}
+        reloadFetch={reloadFetch}
+        handleClickOpenModal={handleClickOpenModal}
+        setReloadFetch={setReloadFetch}
+      />
+      <Users
+        userInfo={userInfo}
+        reloadFetch={reloadFetch}
+        handleClickOpenModal={handleClickOpenModal}
+        setReloadFetch={setReloadFetch}
+      />
       <Admins userInfo={userInfo} reloadFetch={reloadFetch} handleClickOpenModal={handleClickOpenModal} />
       <Competitions />
       <ModalRemoveAddAdmin

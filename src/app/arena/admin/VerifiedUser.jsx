@@ -24,7 +24,7 @@ import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
 
 const V4_USERS = gql`
   query V4_USERS($where: UserWhereInput = {}) {
-    users(orderBy: firstInteractAt_DESC, limit: 8, where: $where) {
+    users(orderBy: firstInteractAt_DESC, where: $where) {
       id
       isVerified
       username
@@ -41,7 +41,9 @@ const V4_USERS = gql`
 const fetchUser = async search => {
   try {
     const querySearch = { OR: [{ id_containsInsensitive: search }, { username_containsInsensitive: search }] }
-    const where = { ...querySearch }
+    const where = {
+      AND: [{ isVerified_eq: true }, querySearch],
+    }
 
     const { users } = await v4Client.request(V4_USERS, { where })
     return users
@@ -58,7 +60,7 @@ const V4_UPDATE_VERIFIED = gql`
   }
 `
 
-function Users({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch }) {
+function VerifiedUser({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch }) {
   const sortOptions = useMemo(
     () => [
       {
@@ -102,7 +104,7 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch
 
   const debounceSearch = useDebounce(searchText, 300)
 
-  const { data, isLoading } = useSWR(['all user api', debounceSearch, reloadFetch, refetchUpdated], () =>
+  const { data, isLoading } = useSWR(['verified user api', debounceSearch, reloadFetch, refetchUpdated], () =>
     fetchUser(debounceSearch),
   )
 
@@ -218,7 +220,8 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch
   return (
     <Box>
       <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
-        <TextHeading className='text-xl'>{t('Users')}</TextHeading>
+        <TextHeading className='text-xl'>{t('Users Verified')}</TextHeading>
+
         <SearchInput
           className='h-11 w-full md:w-[480px]'
           classNames={{ input: 'h-11' }}
@@ -267,4 +270,4 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch
   )
 }
 
-export default Users
+export default VerifiedUser
