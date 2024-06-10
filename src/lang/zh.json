@@ -829,8 +829,13 @@
   "Last Updated": "Last Updated",
   "Increased By": "Increased By",
   "Prize Increases": "Prize Increases",
-  "Prize Increased": "Prize Increased",
+  "Prize Increase": "Prize Increase",
   "Decode Data Failed": "Decode data failed.",
 	"Prizes": "Prizes",
-	"Invalid Pair Tokens": "Invalid Pair Tokens"
+  "Invalid Pair Tokens": "Invalid Pair Tokens",
+  "Upcoming Competitions": "Upcoming Competitions",
+  "Live Competitions": "Live Competitions",
+  "Ended Competitions": "Ended Competitions",
+  "Hosted Competitions": "Hosted Competitions",
+  "Joined Competitions": "Joined Competitions"
 }

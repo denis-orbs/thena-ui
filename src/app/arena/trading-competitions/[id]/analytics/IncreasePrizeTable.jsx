@@ -58,7 +58,7 @@ function IncreasePrizeTable() {
   const sortOptions = useMemo(
     () => [
       {
-        label: 'Prize Increases',
+        label: 'Prize Increase',
         value: 'amount',
         width: 'w-[35%]',
         isDesc: true,
@@ -150,7 +150,7 @@ function IncreasePrizeTable() {
   return (
     <div className='mt-6'>
       <div className='mb-3 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
-        <TextHeading className='text-xl lg:flex-1'>{t('Prize Increased')}</TextHeading>
+        <TextHeading className='text-xl lg:flex-1'>{t('Prize Increases')}</TextHeading>
         <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
       </div>
 

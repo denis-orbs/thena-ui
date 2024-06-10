@@ -506,6 +506,23 @@ export default function ArenaPage() {
     [filter, showSubFilterTab.ended, showSubFilterTab.live, showSubFilterTab.upcoming, t],
   )
 
+  const filterTabToLabel = useMemo(() => {
+    switch (filter.type) {
+      case 'upcoming':
+        return `${t('Upcoming')} ${t('Competitions')}`
+      case 'live':
+        return `${t('Live')} ${t('Competitions')}`
+      case 'ended':
+        return `${t('Ended')} ${t('Competitions')}`
+      case 'hosted':
+        return `${t('Hosted')} ${t('Competitions')}`
+      case 'joined':
+        return `${t('Joined')} ${t('Competitions')}`
+      default:
+        return t('All Competitions')
+    }
+  }, [filter.type, t])
+
   useEffect(() => {
     addOrReplaceURLParams('type', filter.type !== 'all' ? filter.type : null)
     addOrReplaceURLParams('search', searchText || null)
@@ -623,7 +640,7 @@ export default function ArenaPage() {
         </div>
       </div>
       <div className='w-full'>
-        <h3>{t('All Competitions')}</h3>
+        <h3>{filterTabToLabel}</h3>
       </div>
       {filterCompetitions?.length ? (
         <>
