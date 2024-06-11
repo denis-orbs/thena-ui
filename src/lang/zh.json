@@ -497,5 +497,6 @@
   "Begin your DeFi journey on THENA": "开始您在 THENA 上的DeFi之旅",
   "You will receive": "您会收到",
   "EtherFi tooltip": "3x EtherFi Points will be distributed to liquidity providers in this pool.",
-  "Eigen tooltip": "EigenLayer Points will be distributed to liquidity providers in this pool."
+  "Eigen tooltip": "EigenLayer Points will be distributed to liquidity providers in this pool.",
+  "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization."
 }

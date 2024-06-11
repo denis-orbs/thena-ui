@@ -12,6 +12,7 @@ import Box from '@/components/box'
 import { PrimaryButton, TrailingButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Table from '@/components/table'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { trade2EarnStartTime } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
@@ -236,7 +237,7 @@ function YourEarning({ setPending }) {
             res = (a.epoch - b.epoch) * (sort.isDesc ? -1 : 1)
             break
           case 'date':
-            res = (a.date - b.date) * (sort.isDesc ? -1 : 1)
+            res = (new Date(a.date).getTime() - new Date(b.date).getTime()) * (sort.isDesc ? -1 : 1)
             break
           case 'tradingVolume':
             res = (a.tradingVolume - b.tradingVolume) * (sort.isDesc ? -1 : 1)
@@ -251,6 +252,12 @@ function YourEarning({ setPending }) {
       }),
     [data, sort],
   )
+
+  // eslint-disable-next-line newline-per-chained-call
+  const isAfter = dayjs().utc().hour() >= 2
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const activeButton = useMemo(() => isAfter, [JSON.stringify(isAfter)])
 
   const finalData = useMemo(
     () =>
@@ -281,13 +288,24 @@ function YourEarning({ setPending }) {
         ),
         inUSD: <Paragraph>{item.inUSD ? `$${formatAmount(item.inUSD)}` : '$0'}</Paragraph>,
         action: Number(item.epoch) !== Number(currentDay) && Boolean(item.earned.find(e => e.total !== 0)) && (
-          <PrimaryButton
-            className='w-full'
-            onClick={() => handleClaimReward(item.epoch)}
-            disabled={!item.isClaimable || pendingGetMuon || pendingClaim}
-          >
-            {t(item.isClaimable ? 'Claim' : 'Claimed')}
-          </PrimaryButton>
+          <div>
+            <PrimaryButton
+              className='w-full'
+              onClick={() => handleClaimReward(item.epoch)}
+              disabled={
+                !item.isClaimable ||
+                pendingGetMuon ||
+                pendingClaim ||
+                (Number(item.epoch) === Number(currentDay) - 1 && !activeButton)
+              }
+              data-tooltip-id={`claim-button${item.epoch}`}
+            >
+              {t(item.isClaimable ? 'Claim' : 'Claimed')}
+            </PrimaryButton>
+            {Number(item.epoch) === Number(currentDay) - 1 && !activeButton && (
+              <CustomTooltip id={`claim-button${item.epoch}`}>{t('Claim tooltip')}</CustomTooltip>
+            )}
+          </div>
         ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps

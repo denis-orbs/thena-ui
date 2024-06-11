@@ -226,7 +226,7 @@
   "Warning": "Warning",
   "Invalid Amount": "Invalid Amount",
   "Wrap BNB": "Wrap {amount} BNB for WBNB",
-  "All done": "All done! You may now close this window.",
+  "All done": "All done! This window will be closed in 5s.",
   "Insufficient [Asset] Balance": "Insufficient {symbol} Balance",
   "[Asset] not available": "{symbol} not available",
   "Transaction confirmed": "Transaction confirmed",
@@ -497,5 +497,6 @@
   "Begin your DeFi journey on THENA": "Begin your DeFi journey on THENA",
   "You will receive": "You will receive",
   "EtherFi tooltip": "3x EtherFi Points will be distributed to liquidity providers in this pool.",
-  "Eigen tooltip": "EigenLayer Points will be distributed to liquidity providers in this pool."
+  "Eigen tooltip": "EigenLayer Points will be distributed to liquidity providers in this pool.",
+  "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization."
 }
