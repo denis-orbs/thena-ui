@@ -20,17 +20,22 @@ export default function TradeToEarnPage() {
 
   const [pending, setPending] = useState(false)
 
-  const { data: dailyUserVolume } = useQuery({
+  const { data: userDailyVolume } = useQuery({
     queryKey: ['getDailyUserVolume', currentDay, account],
-    queryFn: () => fetchDataDailyVolume(account, currentDay),
+    queryFn: () => fetchDataDailyVolume(account, String(currentDay), '0x0000000000000000000000000000000000000000'),
     refetchInterval: 30000,
-    enabled: Boolean(currentDay),
+    enabled: Boolean(account && currentDay),
     gcTime: 0,
   })
 
-  const { data: dailyTotalVolume } = useQuery({
+  const { data: totalDailyVolume } = useQuery({
     queryKey: ['getDailyTotalVolume', currentDay],
-    queryFn: () => fetchDataDailyVolume('0x0000000000000000000000000000000000000000', currentDay),
+    queryFn: () =>
+      fetchDataDailyVolume(
+        '0x0000000000000000000000000000000000000000',
+        String(currentDay),
+        '0x0000000000000000000000000000000000000000',
+      ),
     refetchInterval: 30000,
     enabled: Boolean(currentDay),
     gcTime: 0,
@@ -59,8 +64,8 @@ export default function TradeToEarnPage() {
             <div className='relative z-30'>
               <TopBar />
               <Information
-                dailyUserVolume={dailyUserVolume}
-                dailyTotalVolume={dailyTotalVolume}
+                userDailyVolume={userDailyVolume}
+                totalDailyVolume={totalDailyVolume}
                 userTotalVolume={userTotalVolume}
               />
               <YourEarning setPending={setPending} />

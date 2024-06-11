@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { useMutation } from '@tanstack/react-query'
+import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
 import { toast } from 'react-toastify'
 import { useTranslations } from 'use-intl'
@@ -8,38 +9,32 @@ import { v4 as uuidv4 } from 'uuid'
 import { TXN_STATUS } from '@/constant'
 import { getDibsRewarderContract } from '@/lib/contracts'
 import { v4Client, v4ClientSubGraphT2E } from '@/lib/graphql'
+import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 const V4_DAILY_VOLUME = gql`
-  query V4_DAILY_VOLUME($user: String!, $day: Int!) {
-    userTradeToEarns(where: { user_eq: $user, day_eq: $day }) {
+  query V4_DAILY_VOLUME($user: String!, $day: String!, $pair: String!) {
+    dailyGeneratedVolumes(where: { user: $user, day: $day, pair: $pair, amountAsReferrer_gt: 0 }) {
+      id
+      user
       amountAsUser
-      amountPercent
-      date
       day
-      lastUpdate
-      pair
     }
   }
 `
 
-export const fetchDailyVolume = async (user, day) => {
+export const fetchDataDailyVolume = async (user, day, pair) => {
   try {
-    const { userTradeToEarns } = await v4Client.request(V4_DAILY_VOLUME, {
+    const { dailyGeneratedVolumes } = await v4ClientSubGraphT2E.request(V4_DAILY_VOLUME, {
       user,
       day,
+      pair,
     })
-    return userTradeToEarns
-  } catch (error) {
-    return { error: true }
-  }
-}
-
-export const fetchDataDailyVolume = async (user, day) => {
-  try {
-    const data = await fetchDailyVolume(user, day)
-    return data
+    if (dailyGeneratedVolumes && Array.isArray(dailyGeneratedVolumes) && dailyGeneratedVolumes.length) {
+      return fromWei(dailyGeneratedVolumes[0].amountAsUser).toNumber()
+    }
+    return 0
   } catch (error) {
     return { error: true }
   }
@@ -54,21 +49,15 @@ const V4_TOTAL_VOLUME = gql`
   }
 `
 
-export const fetchTotalVolume = async user => {
+export const fetchDataTotalVolume = async user => {
   try {
     const { userTotalAmountVolumeAlpha } = await v4Client.request(V4_TOTAL_VOLUME, {
       user,
     })
-    return userTotalAmountVolumeAlpha
-  } catch (error) {
-    return { error: true }
-  }
-}
-
-export const fetchDataTotalVolume = async user => {
-  try {
-    const data = await fetchTotalVolume(user)
-    return data
+    if (userTotalAmountVolumeAlpha && Array.isArray(userTotalAmountVolumeAlpha) && userTotalAmountVolumeAlpha.length) {
+      return fromWei(new BigNumber(userTotalAmountVolumeAlpha[0].totalAmount).toNumber())
+    }
+    return 0
   } catch (error) {
     return { error: true }
   }
@@ -87,7 +76,7 @@ const V4_EARNINGS = gql`
   }
 `
 
-export const fetchEarnings = async (user, page) => {
+export const fetchDataEarnings = async (user, page) => {
   const offset = (page - 1) * 10
 
   try {
@@ -102,22 +91,13 @@ export const fetchEarnings = async (user, page) => {
   }
 }
 
-export const fetchDataEarnings = async (user, page = 0) => {
-  try {
-    const data = await fetchEarnings(user, page)
-    return data
-  } catch (error) {
-    return { error: true }
-  }
-}
-
 const V4_TRADE_TO_EARN_COUNT = gql`
   query V4_TRADE_TO_EARN_COUNT($user: String!, $day: Int!) {
     userTradeToEarnTotalCount(user: $user, day_gt: $day)
   }
 `
 
-export const fetchTradeToEarnCount = async (user, day) => {
+export const fetchDataTradeToEarnCount = async (user, day) => {
   try {
     const { userTradeToEarnTotalCount } = await v4Client.request(V4_TRADE_TO_EARN_COUNT, {
       day,
@@ -125,15 +105,6 @@ export const fetchTradeToEarnCount = async (user, day) => {
     })
 
     return userTradeToEarnTotalCount
-  } catch (error) {
-    return { error: true }
-  }
-}
-
-export const fetchDataTradeToEarnCount = async (user, day = 17) => {
-  try {
-    const data = await fetchTradeToEarnCount(user, day)
-    return data
   } catch (error) {
     return { error: true }
   }
