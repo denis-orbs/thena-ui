@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 import { Info } from '@/components/alert'
@@ -21,6 +21,17 @@ function TxnModal() {
     return Object.values(transactions)
   }, [transactions])
 
+  const isCloseOnOverlayClick = useMemo(() => Boolean(final), [final])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (isCloseOnOverlayClick) {
+        closeTxn()
+      }
+    }, 5000)
+    return () => clearTimeout(timeoutId)
+  }, [closeTxn, isCloseOnOverlayClick])
+
   return (
     <Modal
       isOpen={popup}
@@ -30,7 +41,7 @@ function TxnModal() {
       width={480}
       zIndex={70}
       title={title}
-      shouldCloseOnOverlayClick={false}
+      shouldCloseOnOverlayClick={isCloseOnOverlayClick}
     >
       <ModalBody className='pb-0'>
         <div className='flex flex-col gap-5'>
