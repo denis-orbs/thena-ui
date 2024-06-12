@@ -1,6 +1,5 @@
 'use client'
 
-import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
@@ -11,7 +10,7 @@ import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { formatAmount, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
-function Information({ dailyUserVolume, dailyTotalVolume, userTotalVolume }) {
+function Information({ userDailyVolume, totalDailyVolume, userTotalVolume }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { totalDailyRewardUsd, totalRewardCurrDay, totalUserEarned } = useDibsRewarder()
@@ -38,27 +37,6 @@ function Information({ dailyUserVolume, dailyTotalVolume, userTotalVolume }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [new Date().getTime()])
 
-  const dailyUserTradingVolume = useMemo(() => {
-    if (dailyUserVolume && Array.isArray(dailyUserVolume) && dailyUserVolume.length) {
-      return fromWei(dailyUserVolume[0].amountAsUser).toNumber()
-    }
-    return 0
-  }, [dailyUserVolume])
-
-  const dailyTotalTradingVolume = useMemo(() => {
-    if (dailyTotalVolume && Array.isArray(dailyTotalVolume) && dailyTotalVolume.length) {
-      return fromWei(dailyTotalVolume[0].amountAsUser).toNumber()
-    }
-    return 0
-  }, [dailyTotalVolume])
-
-  const totalTradingVolume = useMemo(() => {
-    if (userTotalVolume && Array.isArray(userTotalVolume) && userTotalVolume.length) {
-      return fromWei(new BigNumber(userTotalVolume[0].totalAmount).toNumber())
-    }
-    return 0
-  }, [userTotalVolume])
-
   const yourEstimatedDailyRewardTotal = useMemo(() => {
     let rs = 0
     if (totalRewardCurrDay && totalRewardCurrDay.length) {
@@ -82,25 +60,25 @@ function Information({ dailyUserVolume, dailyTotalVolume, userTotalVolume }) {
         show: true,
       },
       {
-        value: `$${formatAmount(dailyUserTradingVolume)}`,
+        value: `$${formatAmount(userDailyVolume)}`,
         label: 'Your Daily Trading Volume',
-        show: !!account,
+        show: Boolean(account),
       },
       {
         value:
           totalRewardCurrDay && totalRewardCurrDay.length ? (
             <div className='flex flex-row flex-wrap items-center gap-2'>
               <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>
-                ${formatAmount((yourEstimatedDailyRewardTotal * dailyUserTradingVolume) / dailyTotalTradingVolume)}
+                ${formatAmount((yourEstimatedDailyRewardTotal * userDailyVolume) / totalDailyVolume)}
               </TextHeading>
               <TextSubHeading>
                 {totalRewardCurrDay
                   .map(
                     item =>
                       `${
-                        dailyTotalTradingVolume === 0
+                        totalDailyVolume === 0
                           ? 0
-                          : formatAmount((item.totalReward * dailyUserTradingVolume) / dailyTotalTradingVolume)
+                          : formatAmount((item.totalReward * userDailyVolume) / totalDailyVolume)
                       } ${item.symbol}`,
                   )
                   .join(', ')}
@@ -110,13 +88,13 @@ function Information({ dailyUserVolume, dailyTotalVolume, userTotalVolume }) {
             0
           ),
         label: 'Your estimated daily rewards',
-        show: !!account,
+        show: Boolean(account),
       },
     ],
     [
       account,
-      dailyTotalTradingVolume,
-      dailyUserTradingVolume,
+      totalDailyVolume,
+      userDailyVolume,
       totalDailyRewardUsd,
       totalRewardCurrDay,
       yourEstimatedDailyRewardTotal,
@@ -142,17 +120,17 @@ function Information({ dailyUserVolume, dailyTotalVolume, userTotalVolume }) {
   const array3 = useMemo(
     () => [
       {
-        value: `$${formatAmount(totalTradingVolume)}`,
+        value: `$${formatAmount(userTotalVolume)}`,
         label: 'Your Total Trading Volume',
-        show: !!account,
+        show: Boolean(account),
       },
       {
         value: `$${formatAmount(totalUserEarned)}`,
         label: 'Your Total Earnings',
-        show: !!account,
+        show: Boolean(account),
       },
     ],
-    [account, totalTradingVolume, totalUserEarned],
+    [account, userTotalVolume, totalUserEarned],
   )
 
   return (

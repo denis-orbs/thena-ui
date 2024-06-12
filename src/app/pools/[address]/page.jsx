@@ -38,9 +38,11 @@ export default function SpecificPoolPage({ params }) {
     if (pool) {
       // TODO: hard-coded for SOLVBTC
       if (
-        ['0x575a951ad021d4297ac125be88ee4620652d5c12', '0xab6f06a33f38cba5a5312de24151cb91da2b0eb0'].includes(
-          pool.address,
-        )
+        [
+          '0x575a951ad021d4297ac125be88ee4620652d5c12',
+          '0xab6f06a33f38cba5a5312de24151cb91da2b0eb0',
+          '0xfd60a2b164c86751df65c8cf895f7b07e5a48c35',
+        ].includes(pool.address)
       ) {
         const token0 = assets.find(item => item.address === pool.token0.address)
         const token1 = assets.find(item => item.address === pool.token1.address)

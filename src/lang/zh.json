@@ -240,6 +240,7 @@
   "Gamma": "Gamma",
   "Narrow": "Narrow",
   "Wide": "Wide",
+  "Correlated": "Correlated",
   "DefiEdge": "DefiEdge",
   "V1": "V1",
   "No positions to display": "当前没有仓位。",
@@ -842,5 +843,6 @@
   "Transfer THENA ID": "Transfer THENA ID",
   "Transfer THENA ID description": "Transfer your THENA ID to a different wallet address for free of charge. Please note, this will make you lose your own THENA ID and all of your referrals. You will also not be able to customize your profile unless you have a different profile.",
   "Enter to address": "Enter to address",
-  "Transferred successfully": "Transferred successfully. The ThenaID will take around 1 minute to update its owner"
+  "Transferred successfully": "Transferred successfully. The ThenaID will take around 1 minute to update its owner",
+  "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization."
 }

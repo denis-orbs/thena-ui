@@ -226,7 +226,7 @@
   "Warning": "Warning",
   "Invalid Amount": "Invalid Amount",
   "Wrap BNB": "Wrap {amount} BNB for WBNB",
-  "All done": "All done! You may now close this window.",
+  "All done": "All done! This window will be closed in 5s.",
   "Insufficient [Asset] Balance": "Insufficient {symbol} Balance",
   "[Asset] not available": "{symbol} not available",
   "Transaction confirmed": "Transaction confirmed",
@@ -240,6 +240,7 @@
   "Gamma": "Gamma",
   "Narrow": "Narrow",
   "Wide": "Wide",
+  "Correlated": "Correlated",
   "DefiEdge": "DefiEdge",
   "V1": "V1",
   "No positions to display": "Currently, there are no positions to display.",
@@ -844,5 +845,6 @@
   "Transfer THENA ID": "Transfer THENA ID",
   "Transfer THENA ID description": "Transfer your THENA ID to a different wallet address for free of charge. Please note, this will make you lose your own THENA ID and all of your referrals. You will also not be able to customize your profile unless you have a different profile.",
   "Enter to address": "Enter to address",
-  "Transferred successfully": "Transferred successfully. The ThenaID will take around 1 minute to update its owner"
+  "Transferred successfully": "Transferred successfully. The ThenaID will take around 1 minute to update its owner",
+  "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization."
 }
