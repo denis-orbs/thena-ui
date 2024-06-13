@@ -11,6 +11,7 @@ import CreateTcMultiSelect from '@/components/dropdown/CreateTcMultiselect'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
+import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
@@ -19,7 +20,7 @@ import { formatAmount } from '@/lib/utils'
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
 
-function Token({ data, setData }) {
+function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
   const [isTradeOpen, setIsTradeOpen] = useState(false)
   const [isWinningOpen, setIsWinningOpen] = useState(false)
   const { tradingTokens, isAllowedPerpetual, pairLists } = useTC()
@@ -240,44 +241,61 @@ function Token({ data, setData }) {
       </div>
       <div className='mt-3 items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='flex:col flex h-[50px] w-full items-center'>
-          {/* <Toggle checked disabled toggleId='starting' onChange={() => {}} /> */}
+          {!isSpotType && (
+            <Toggle
+              checked={isStartingBalance}
+              toggleId='starting'
+              onChange={() => {
+                setIsStartingBalance(!isStartingBalance)
+                setData({
+                  ...data,
+                  competitionRules: {
+                    ...data.competitionRules,
+                    startingBalance: '',
+                  },
+                })
+              }}
+            />
+          )}
           <LabelTooltip
             id='startingBalance'
-            label='Total Deposit Required to Join'
+            label={isSpotType ? 'Total Deposit Required to Join' : 'Required Deposit to Join'}
             tooltip='Minimum balance for participants to join your trading competition.'
             showInfoIcon
             className='mb-0'
-            required
+            required={isStartingBalance}
           />
         </div>
-        <div className='w-full'>
-          <Input
-            value={data.competitionRules.startingBalance}
-            type='number'
-            onChange={e => {
-              setData({
-                ...data,
-                competitionRules: {
-                  ...data.competitionRules,
-                  startingBalance: e.target.value,
-                },
-              })
-            }}
-            TrailingButton={
-              data.competitionRules.winningToken ? (
-                <div className='absolute right-4 flex items-center space-x-1.5'>
-                  <TextSubHeading>
-                    ${formatAmount(data.competitionRules.startingBalance * data.competitionRules.winningToken.price)}
-                  </TextSubHeading>
-                  <Image alt='' src={data.competitionRules.winningToken.logoURI} width={20} height={20} />
-                  <span className='font-figtree text-lg leading-[22px] text-white'>
-                    {data.competitionRules.winningToken.symbol}
-                  </span>
-                </div>
-              ) : undefined
-            }
-          />
-        </div>
+        {((!isSpotType && isStartingBalance) || isSpotType) && (
+          <div className='w-full'>
+            <Input
+              value={data.competitionRules.startingBalance}
+              type='number'
+              onChange={e => {
+                setData({
+                  ...data,
+                  competitionRules: {
+                    ...data.competitionRules,
+                    startingBalance: e.target.value,
+                  },
+                })
+              }}
+              TrailingButton={
+                data.competitionRules.winningToken ? (
+                  <div className='absolute right-4 flex items-center space-x-1.5'>
+                    <TextSubHeading>
+                      ${formatAmount(data.competitionRules.startingBalance * data.competitionRules.winningToken.price)}
+                    </TextSubHeading>
+                    <Image alt='' src={data.competitionRules.winningToken.logoURI} width={20} height={20} />
+                    <span className='font-figtree text-lg leading-[22px] text-white'>
+                      {data.competitionRules.winningToken.symbol}
+                    </span>
+                  </div>
+                ) : undefined
+              }
+            />
+          </div>
+        )}
       </div>
 
       {/* Multi-select for trading tokens */}
