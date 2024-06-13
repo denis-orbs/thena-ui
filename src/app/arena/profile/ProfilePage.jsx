@@ -13,17 +13,29 @@ import { UserInfo } from './UserInfo'
 import UserThenaIds from './UserThenaIds'
 
 export function ProfilePage({ address }) {
-  const { data: userInfo, isLoading } = useSWR(['user info', address], () => fetchUserInfo(address), {
-    refreshInterval: 60000,
-  })
+  const { data: userInfo, isLoading } = useSWR(
+    ['user info', address],
+    () => fetchUserInfo(decodeURIComponent(address)),
+    {
+      refreshInterval: 60000,
+    },
+  )
 
-  const { data: following, mutate: mutateFollowing } = useSWR(['following', address], () => fetchFollowing(address), {
-    refreshInterval: 60000,
-  })
+  const { data: following, mutate: mutateFollowing } = useSWR(
+    ['following', address],
+    () => fetchFollowing(decodeURIComponent(address)),
+    {
+      refreshInterval: 60000,
+    },
+  )
 
-  const { data: followers, mutate: mutateFollower } = useSWR(['followers', address], () => fetchFollower(address), {
-    refreshInterval: 60000,
-  })
+  const { data: followers, mutate: mutateFollower } = useSWR(
+    ['followers', address],
+    () => fetchFollower(decodeURIComponent(address)),
+    {
+      refreshInterval: 60000,
+    },
+  )
 
   const _assets = useAssets()
 

@@ -49,7 +49,7 @@ export function FollowedProfileItem({ user }) {
     >
       <Link
         className={cn('flex w-2/3 cursor-pointer items-center justify-start gap-1 md:gap-2')}
-        href={`/arena/profile/${username ? username.toLowerCase() : id.toLowerCase()}`}
+        href={`/arena/profile/${username ? encodeURIComponent(username.toLowerCase()) : id.toLowerCase()}`}
       >
         <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className='size-8' />
 

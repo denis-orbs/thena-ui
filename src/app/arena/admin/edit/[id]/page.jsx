@@ -71,7 +71,7 @@ function EditUserProfile() {
     data: userInfo,
     isLoading,
     mutate,
-  } = useSWR(['edit user info', params?.id], () => fetchUserInfo(params?.id?.toLowerCase()), {
+  } = useSWR(['edit user info', params?.id], () => fetchUserInfo(encodeURIComponent(params?.id)?.toLowerCase()), {
     refreshInterval: 60000,
   })
 

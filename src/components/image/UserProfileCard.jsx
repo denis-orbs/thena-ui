@@ -32,7 +32,7 @@ export function UserProfileCard({ user, showVerified = false, disableLink = fals
       return (
         <Link
           className='flex cursor-pointer items-center justify-center gap-2'
-          href={`/arena/profile/${username ? username.toLowerCase() : id.toLowerCase()}`}
+          href={`/arena/profile/${username ? encodeURIComponent(username.toLowerCase()) : id.toLowerCase()}`}
         >
           {children}
         </Link>

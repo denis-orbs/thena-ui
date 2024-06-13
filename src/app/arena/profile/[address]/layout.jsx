@@ -20,7 +20,7 @@ const V4_USER_META_DATA = gql`
 export async function generateMetadata({ params }) {
   const { address } = params
 
-  const { users } = await v4Client.request(V4_USER_META_DATA, { address })
+  const { users } = await v4Client.request(V4_USER_META_DATA, { address: decodeURIComponent(address) })
 
   const username = users?.[0] ? users[0]?.username || formatAddress(users[0]?.id) : 'username'
 
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }) {
     },
     description: metadata.description,
     openGraph: {
-      url: `${siteConfig.url}/arena/profile/${address}`,
+      url: `${siteConfig.url}/arena/profile/${encodeURIComponent(address)}`,
       title: {
         default: metadata.name,
         template: '%s | THENA Arena',

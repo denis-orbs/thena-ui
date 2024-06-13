@@ -15,7 +15,7 @@ export async function generateMetadata({ params }) {
     title: metadata.name,
     description: metadata.description,
     openGraph: {
-      url: `${siteConfig.url}/arena/profile/${address}/followers`,
+      url: `${siteConfig.url}/arena/profile/${encodeURIComponent(address)}/followers`,
       title: metadata.name,
       description: metadata.description,
       siteName: 'Followers of user | THENA Arena',

@@ -62,7 +62,7 @@ export function FollowedProfiles({ followingUsers, isFollower = false, maxShow, 
 
   const { data: userInfo } = useSWR(
     ['user info in follow page', address || account],
-    () => fetchUserInfo(address || account),
+    () => fetchUserInfo(decodeURIComponent(address || account)),
     {
       refreshInterval: 60000,
     },

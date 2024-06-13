@@ -19,7 +19,7 @@ export async function generateMetadata({ params }) {
     },
     description: metadata.description,
     openGraph: {
-      url: `${siteConfig.url}/arena/profile/${address}`,
+      url: `${siteConfig.url}/arena/profile/${encodeURIComponent(address)}`,
       title: {
         default: metadata.name,
         template: '%s | THENA Arena',
