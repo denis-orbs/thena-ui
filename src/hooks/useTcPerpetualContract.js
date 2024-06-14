@@ -171,3 +171,74 @@ export const useJoinTCPerpetual = () => {
     joinTCPerpetual,
   }
 }
+
+export const useDepositToTCPerp = () => {
+  const { startTxn, endTxn, writeTxn, closeTxn } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+  const [pending, setPending] = useState(false)
+
+  const deposit = useCallback(
+    async data => {
+      const key = uuidv4()
+      const approveTokenuuid = uuidv4()
+      const deposituuid = uuidv4()
+      const tcPerpetualContract = getTcPerpetualContract(data.tcAddress)
+
+      const winningTokenContract = getERC20Contract(data.winningToken.address, chainId)
+      const allowance = await readCall(winningTokenContract, 'allowance', [account, data.tcAddress])
+      const isApprovedWinningToken = fromWei(allowance).gte(fromWei(data.amount))
+      const getAccountOf = await readCall(tcPerpetualContract, 'getAccountOf', [account])
+      setPending(true)
+      startTxn({
+        key,
+        title: `${t('Deposit')}`,
+        transactions: {
+          ...(!isApprovedWinningToken && {
+            [approveTokenuuid]: {
+              desc: `${t('Approve')} USDT`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [deposituuid]: {
+            desc: t('Deposit'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      if (!isApprovedWinningToken) {
+        const isSuccess = await writeTxn(key, approveTokenuuid, winningTokenContract, 'approve', [
+          data.tcAddress,
+          maxUint256,
+        ])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      }
+
+      const isSuccess = await writeTxn(key, deposituuid, tcPerpetualContract, 'depositAndAllocateForAccount', [
+        getAccountOf,
+        data.amount,
+      ])
+      if (!isSuccess) {
+        setPending(false)
+        closeTxn()
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Deposit Successful',
+      })
+      setPending(false)
+      return true
+    },
+    [account, chainId, closeTxn, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { pending, deposit }
+}

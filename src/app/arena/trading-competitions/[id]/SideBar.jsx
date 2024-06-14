@@ -23,6 +23,7 @@ import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
 import IncreasePrizeModal from './IncreasePrizeModal'
+import DepositModal from './trade/DepositModal'
 
 function Sidebar({ competition, eventType }) {
   const t = useTranslations()
@@ -30,7 +31,7 @@ function Sidebar({ competition, eventType }) {
   const { claimReward } = useClaimTC()
   const [showJoinModal, setShowJoinModal] = useState(false)
   const [showIncreasePrize, setShowIncreasePrize] = useState(false)
-  // const [showModalDeposit, setShowModalDeposit] = useState(false)
+  const [showModalDeposit, setShowModalDeposit] = useState(false)
   const { open } = useWeb3Modal()
   const { account } = useWallet()
   const { withdrawDeposit } = useWithdrawDepositTC()
@@ -310,17 +311,19 @@ function Sidebar({ competition, eventType }) {
       }
 
       if (isTCJoined) {
-        return (
-          <></>
-          // <PrimaryButton
-          //   className='w-full'
-          //   onClick={() => {
-          //     setShowModalDeposit(true)
-          //   }}
-          // >
-          //   {t('Deposit More')} {competition?.competitionRules?.tradingTokens?.label}
-          // </PrimaryButton>
-        )
+        if (!competition.startingBalance || fromWei(competition.startingBalance).isZero()) {
+          return (
+            <PrimaryButton
+              className='w-full'
+              onClick={() => {
+                setShowModalDeposit(true)
+              }}
+            >
+              {t('Deposit More')} {competition?.competitionRules?.tradingTokens?.label}
+            </PrimaryButton>
+          )
+        }
+        return <></>
       }
 
       if (isEndedRegistration) {
@@ -360,7 +363,9 @@ function Sidebar({ competition, eventType }) {
     canClaimRewards,
     canWithdraw,
     claim,
+    competition?.competitionRules?.tradingTokens?.label,
     competition.id,
+    competition.startingBalance,
     eventType,
     isEndedRegistration,
     isFull,
@@ -471,13 +476,13 @@ function Sidebar({ competition, eventType }) {
           open={showJoinModal}
         />
       )}
-      {/* {showModalDeposit && (
+      {showModalDeposit && (
         <DepositModal
           competition={competition}
           isOpen={showModalDeposit}
           closeModal={() => setShowModalDeposit(false)}
         />
-      )} */}
+      )}
       {showIncreasePrize && (
         <IncreasePrizeModal
           isOpen={showIncreasePrize}
