@@ -322,7 +322,7 @@ function Sidebar({ competition, eventType }) {
                 setShowModalDeposit(true)
               }}
             >
-              {t('Deposit More')} {competition?.competitionRules?.tradingTokens?.label}
+              {t('Deposit')}
             </PrimaryButton>
           )
         }
@@ -366,7 +366,6 @@ function Sidebar({ competition, eventType }) {
     canClaimRewards,
     canWithdraw,
     claim,
-    competition?.competitionRules?.tradingTokens?.label,
     competition.id,
     competition.market,
     competition.startingBalance,
