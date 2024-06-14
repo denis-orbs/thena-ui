@@ -50,10 +50,11 @@ function Sidebar({ competition, eventType }) {
     checkClaimable,
     checkWithdrawable,
   } = useTCContractInfor(competition.tcAddress, eventType, competition.participantCount, competition.market)
-  const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(
-    competition.tcAddress,
-    competition.market,
-  )
+  const {
+    isOwner: isHostingPerp,
+    isRegistered: isJoinedPerp,
+    refetch: refecthPerp,
+  } = useTCPerpetualInfor(competition.tcAddress, competition.market)
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -482,6 +483,9 @@ function Sidebar({ competition, eventType }) {
           onClose={() => {
             setShowJoinModal(false)
             refetch()
+            if (competition.market === TC_MARKET_TYPES.PERPETUAL) {
+              refecthPerp()
+            }
           }}
           open={showJoinModal}
         />

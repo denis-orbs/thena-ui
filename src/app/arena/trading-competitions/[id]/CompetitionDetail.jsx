@@ -38,10 +38,12 @@ export function CompetitionDetail({ competition, isPreview = false }) {
         key: 'Entry Fee',
         dataUpdate: entryFeeUpdate.every(entry => isInvalidAmount(entry))
           ? [{ data: t('Free To Join'), ticker: null }]
-          : entryFeeUpdate.map((entry, index) => ({
-              data: formatAmount(fromWei(entry, prizeUpdate.token?.[index]?.decimals)),
-              ticker: prizeUpdate.token?.[index]?.symbol,
-            })),
+          : entryFeeUpdate
+              .filter(entry => !isInvalidAmount(entry))
+              .map((entry, index) => ({
+                data: formatAmount(fromWei(entry, prizeUpdate.token?.[index]?.decimals)),
+                ticker: prizeUpdate.token?.[index]?.symbol,
+              })),
       },
       {
         key: 'Competition Type',
@@ -51,21 +53,25 @@ export function CompetitionDetail({ competition, isPreview = false }) {
         key: 'Current Prize Pool',
         dataUpdate: entryFeeUpdate.every(entry => isInvalidAmount(entry))
           ? [{ data: t('Free To Join'), ticker: null }]
-          : prizeUpdate.token.map((item, index) => ({
-              data: formatAmount(fromWei(prizeUpdate.totalPrize[index], item?.decimals)),
-              ticker: item?.symbol,
-            })),
+          : prizeUpdate.token
+              .map((item, index) => ({
+                data: formatAmount(fromWei(prizeUpdate.totalPrize[index], item?.decimals)),
+                ticker: item?.symbol,
+              }))
+              .filter(item => item.data !== '0'),
       },
       {
         key: 'Max Prize Pool',
-        dataUpdate: prizeUpdate.token.map((item, index) => ({
-          data: formatAmount(
-            fromWei(prizeUpdate.totalPrize[index]).plus(
-              fromWei(entryFeeUpdate[index]).multipliedBy(maxParticipants - participantCount),
+        dataUpdate: prizeUpdate.token
+          .map((item, index) => ({
+            data: formatAmount(
+              fromWei(prizeUpdate.totalPrize[index]).plus(
+                fromWei(entryFeeUpdate[index]).multipliedBy(maxParticipants - participantCount),
+              ),
             ),
-          ),
-          ticker: item?.symbol,
-        })),
+            ticker: item?.symbol,
+          }))
+          .filter(item => item.data !== '0'),
       },
       {
         key: 'Deposit Token',

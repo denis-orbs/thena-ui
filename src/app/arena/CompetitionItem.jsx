@@ -11,7 +11,7 @@ import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { cn, formatAddress, formatAmount, fromWei, isHexColor } from '@/lib/utils'
+import { cn, formatAddress, formatAmount, fromWei, isHexColor, isInvalidAmount } from '@/lib/utils'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { TCButton } from '@/modules/TradingCompetition/TCButton'
 import { Clock, CoinHand, Gift, UserIcon } from '@/svgs'
@@ -26,6 +26,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
   const totalPrize = useMemo(
     () =>
       competition.prizeUpdate.totalPrize
+        .filter(item => !isInvalidAmount(item))
         .map(
           (item, index) =>
             `${formatAmount(fromWei(item, competition.prizeUpdate?.token?.[index]?.decimals))} ${
@@ -40,6 +41,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
   const entryFee = useMemo(() => {
     if (competition.entryFeeUpdate.some(item => Number(item) !== 0)) {
       return competition.entryFeeUpdate
+        .filter(entry => !isInvalidAmount(entry))
         .map(
           (item, index) =>
             `${formatAmount(fromWei(item, competition.prizeUpdate?.token?.[index]?.decimals))} ${
