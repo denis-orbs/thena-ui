@@ -16,7 +16,7 @@ import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { Countdown } from '@/modules/CountDown'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
@@ -311,7 +311,10 @@ function Sidebar({ competition, eventType }) {
       }
 
       if (isTCJoined) {
-        if (!competition.startingBalance || fromWei(competition.startingBalance).isZero()) {
+        if (
+          (competition.market === TC_MARKET_TYPES.PERPETUAL && !competition.startingBalance) ||
+          isInvalidAmount(competition.startingBalance)
+        ) {
           return (
             <PrimaryButton
               className='w-full'
@@ -365,6 +368,7 @@ function Sidebar({ competition, eventType }) {
     claim,
     competition?.competitionRules?.tradingTokens?.label,
     competition.id,
+    competition.market,
     competition.startingBalance,
     eventType,
     isEndedRegistration,
