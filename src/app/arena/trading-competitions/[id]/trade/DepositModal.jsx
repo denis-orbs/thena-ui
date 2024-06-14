@@ -6,7 +6,6 @@ import BalanceInput from '@/components/input/BalanceInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
 import { useDepositToTCPerp } from '@/hooks/useTcPerpetualContract'
-import { useTradeData } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
 
@@ -18,8 +17,6 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
   const [amount, setAmount] = useState('')
   const token = useMemo(() => competition.competitionRules.winningToken, [competition.competitionRules.winningToken])
 
-  const { reload } = useTradeData(competition?.tcAddress, competition?.competitionRules?.winningToken?.address)
-
   const handleDeposit = useCallback(async () => {
     if (fromWei(toWei(amount, token?.decimals), token?.decimals).gt(token?.balance)) {
       warnToast('Insufficient [Asset] Balance', { symbol: token?.symbol })
@@ -29,14 +26,13 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
     const isSuccess = await deposit({
       amount: toWei(amount),
       tcAddress: competition?.tcAddress,
-      winningToken: competition?.competitionRules?.winningToken,
+      winningToken: token,
     })
 
     if (isSuccess) {
-      await reload()
       closeModal()
     }
-  }, [reload, amount, closeModal, competition?.competitionRules?.winningToken, competition?.tcAddress, deposit, token])
+  }, [amount, closeModal, competition?.tcAddress, deposit, token])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} title='Deposit' onAfterClose={() => setAmount('')}>
