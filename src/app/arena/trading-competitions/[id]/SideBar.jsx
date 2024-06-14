@@ -295,7 +295,13 @@ function Sidebar({ competition, eventType }) {
     // For participants
     if (eventType === EVENT_TYPES.LIVE && isTCJoined) {
       return (
-        <Link href={`/arena/trading-competitions/${competition.id}/trade`}>
+        <Link
+          href={
+            competition.market === TC_MARKET_TYPES.PERPETUAL
+              ? `https://sf-thena-forked-git-feature-tc-liquiddriver.vercel.app/tc/${competition.tcAddress}`
+              : `/arena/trading-competitions/${competition.id}/trade`
+          }
+        >
           <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
         </Link>
       )
@@ -369,6 +375,7 @@ function Sidebar({ competition, eventType }) {
     competition.id,
     competition.market,
     competition.startingBalance,
+    competition.tcAddress,
     eventType,
     isEndedRegistration,
     isFull,

@@ -15,6 +15,7 @@ import Token from './Token'
 function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = () => {}, data, setData }) {
   const t = useTranslations()
   const [isEntryFee, setIsEntryFee] = useState(data.entryFee.some(item => !isInvalidAmount(item)))
+  const [isStartingBalance, setIsStartingBalance] = useState(false)
 
   const getErrorMsg = useCallback(
     val => {
@@ -57,7 +58,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
             error = 'Invalid Pair Tokens'
           } else error = ''
 
-          if (isInvalidAmount(startingBalance)) {
+          if ((isSpotType || (!isSpotType && isStartingBalance)) && isInvalidAmount(startingBalance)) {
             error = 'Invalid Total Deposit'
           }
           break
@@ -85,7 +86,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
 
       return error
     },
-    [data, isEntryFee],
+    [data, isEntryFee, isStartingBalance],
   )
 
   const renderComponent = () => {
@@ -95,7 +96,14 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
       case 1:
         return <Time data={data} setData={setData} />
       case 2:
-        return <Token data={data} setData={setData} />
+        return (
+          <Token
+            isStartingBalance={isStartingBalance}
+            setIsStartingBalance={setIsStartingBalance}
+            data={data}
+            setData={setData}
+          />
+        )
       case 3:
         return <Prize data={data} setData={setData} isEntryFee={isEntryFee} setIsEntryFee={setIsEntryFee} />
       default:
