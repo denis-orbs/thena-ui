@@ -299,7 +299,7 @@ function Sidebar({ competition, eventType }) {
         <Link
           href={
             competition.market === TC_MARKET_TYPES.PERPETUAL
-              ? `https://sf-thena-forked-git-feature-tc-liquiddriver.vercel.app/tc/${competition.tcAddress}`
+              ? `${process.env.NEXT_PUBLIC_ALPHA_THENA_TRADE_TC_LINK}/${competition.tcAddress}`
               : `/arena/trading-competitions/${competition.id}/trade`
           }
         >

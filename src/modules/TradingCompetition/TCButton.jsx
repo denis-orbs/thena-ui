@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { TC_MARKET_TYPES } from '@/constant'
 import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import dayjs from '@/lib/arenaDayjs'
@@ -101,7 +102,14 @@ export function TCButton({ eventType, competition, timestamp }) {
       </Link>
 
       {isJoined && eventType === EVENT_TYPES.LIVE && (
-        <Link href={`/arena/trading-competitions/${competition.id}/trade`} className='w-full'>
+        <Link
+          href={
+            competition.market === TC_MARKET_TYPES.PERPETUAL
+              ? `${process.env.NEXT_PUBLIC_ALPHA_THENA_TRADE_TC_LINK}/${competition.tcAddress}`
+              : `/arena/trading-competitions/${competition.id}/trade`
+          }
+          className='w-full'
+        >
           <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
         </Link>
       )}
