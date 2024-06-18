@@ -69,9 +69,8 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
           const tcPerpetualContract = getTcPerpetualContract(tcAddress)
           let bal = 0
           try {
-            const balanceRes = await readCall(tcPerpetualContract, 'getBalanceOfUser', [account])
-            bal = fromWei(balanceRes).toNumber()
-            if (balanceRes) {
+            bal = await readCall(tcPerpetualContract, 'getBalanceOfUser', [account])
+            if (bal) {
               setBalance(bal)
             }
           } catch (error) {
