@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { TC_MARKET_TYPES } from '@/constant'
+import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import dayjs from '@/lib/arenaDayjs'
@@ -100,13 +102,20 @@ export function TCButton({ eventType, competition, timestamp }) {
         <EmphasisButton className='w-full'>{t('View')}</EmphasisButton>
       </Link>
 
-      {isJoined && eventType === EVENT_TYPES.LIVE && (
-        <Link href={`/arena/trading-competitions/${competition.id}/trade`} className='w-full'>
+      {(isJoined || isJoinedPerp) && eventType === EVENT_TYPES.LIVE && (
+        <Link
+          href={
+            competition.market === TC_MARKET_TYPES.PERPETUAL
+              ? `${alphaThenaTradeTcLink}/${competition.tcAddress}`
+              : `/arena/trading-competitions/${competition.id}/trade`
+          }
+          className='w-full'
+        >
           <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
         </Link>
       )}
       {eventType === EVENT_TYPES.ENDED &&
-        ((isJoined || isHosting) && canClaimRewards ? (
+        ((isJoined || isJoinedPerp || isHosting || isHostingPerp) && canClaimRewards ? (
           <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
             {t('Claim Rewards')}
           </PrimaryButton>
