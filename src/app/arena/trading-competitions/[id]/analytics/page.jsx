@@ -8,6 +8,7 @@ import useSWR from 'swr'
 
 import Box from '@/components/box'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { TC_MARKET_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount, fromWei } from '@/lib/utils'
@@ -24,6 +25,7 @@ const V4_TC_ANALYTICS = gql`
     }
     tradingCompetitionById(id: $id) {
       participantCount
+      market
     }
   }
 `
@@ -115,7 +117,7 @@ function AnalyticPage() {
           <Paragraph className='text-sm'>{t('Amount Of Trades')}</Paragraph>
         </Box>
       </div>
-      <IncreasePrizeTable />
+      {data?.competition?.market === TC_MARKET_TYPES.SPOT && <IncreasePrizeTable />}
     </>
   )
 }
