@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TC_MARKET_TYPES } from '@/constant'
+import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import dayjs from '@/lib/arenaDayjs'
@@ -105,7 +106,7 @@ export function TCButton({ eventType, competition, timestamp }) {
         <Link
           href={
             competition.market === TC_MARKET_TYPES.PERPETUAL
-              ? `${process.env.NEXT_PUBLIC_ALPHA_THENA_TRADE_TC_LINK}/${competition.tcAddress}`
+              ? `${alphaThenaTradeTcLink}/${competition.tcAddress}`
               : `/arena/trading-competitions/${competition.id}/trade`
           }
           className='w-full'

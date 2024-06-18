@@ -11,6 +11,7 @@ import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
+import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
@@ -299,7 +300,7 @@ function Sidebar({ competition, eventType }) {
         <Link
           href={
             competition.market === TC_MARKET_TYPES.PERPETUAL
-              ? `${process.env.NEXT_PUBLIC_ALPHA_THENA_TRADE_TC_LINK}/${competition.tcAddress}`
+              ? `${alphaThenaTradeTcLink}/${competition.tcAddress}`
               : `/arena/trading-competitions/${competition.id}/trade`
           }
         >
