@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
-import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
+import { useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -21,6 +21,8 @@ export function TCButton({ eventType, competition, timestamp }) {
   const [showJoinModal, setShowJoinModal] = useState(false)
   const { claimReward } = useClaimTC()
   const { withdrawDeposit } = useWithdrawDepositTC()
+  const { withdrawTCPerp } = useWithdrawToTCPerp()
+
   const {
     isRegistered: isJoined,
     isOwner: isHosting,
@@ -30,10 +32,13 @@ export function TCButton({ eventType, competition, timestamp }) {
     checkWithdrawable,
   } = useTCContractInfor(competition.tcAddress, eventType, competition.participantCount, competition.market)
 
-  const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(
-    competition.tcAddress,
-    competition.market,
-  )
+  const {
+    isOwner: isHostingPerp,
+    isRegistered: isJoinedPerp,
+    isWithdrawable: canWithdrawPerp,
+    checkWithdrawableTCPerp,
+    balance,
+  } = useTCPerpetualInfor(competition.tcAddress, competition.market)
 
   const [joinButtonText, setJoinButtonText] = useState({
     text: null,
@@ -54,14 +59,30 @@ export function TCButton({ eventType, competition, timestamp }) {
 
   const withdraw = useCallback(async () => {
     try {
-      await withdrawDeposit({
-        tcAddress: competition.tcAddress,
-      })
-      await checkWithdrawable(true)
+      if (competition.market === TC_MARKET_TYPES.SPOT) {
+        await withdrawDeposit({
+          tcAddress: competition.tcAddress,
+        })
+        await checkWithdrawable(true)
+      } else {
+        await withdrawTCPerp({
+          tcAddress: competition.tcAddress,
+          amount: balance,
+        })
+        await checkWithdrawableTCPerp()
+      }
     } catch (e) {
       console.error(e)
     }
-  }, [withdrawDeposit, competition.tcAddress, checkWithdrawable])
+  }, [
+    competition.market,
+    competition.tcAddress,
+    withdrawDeposit,
+    checkWithdrawable,
+    withdrawTCPerp,
+    balance,
+    checkWithdrawableTCPerp,
+  ])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -120,7 +141,7 @@ export function TCButton({ eventType, competition, timestamp }) {
             {t('Claim Rewards')}
           </PrimaryButton>
         ) : (
-          canWithdraw && (
+          (canWithdraw || canWithdrawPerp) && (
             <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={withdraw}>
               {t('Withdraw Deposit')}
             </PrimaryButton>

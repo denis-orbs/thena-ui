@@ -13,7 +13,7 @@ import { TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useUserInfo } from '@/context/userInfoContext'
-import { useTCPerpetualInfor } from '@/hooks/useTcPerpetualContract'
+import { useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -36,6 +36,7 @@ function Sidebar({ competition, eventType }) {
   const { open } = useWeb3Modal()
   const { account } = useWallet()
   const { withdrawDeposit } = useWithdrawDepositTC()
+  const { withdrawTCPerp } = useWithdrawToTCPerp()
 
   const isFull = useMemo(
     () => competition.participantCount === competition.maxParticipants,
@@ -51,11 +52,16 @@ function Sidebar({ competition, eventType }) {
     checkClaimable,
     checkWithdrawable,
   } = useTCContractInfor(competition.tcAddress, eventType, competition.participantCount, competition.market)
+
   const {
     isOwner: isHostingPerp,
     isRegistered: isJoinedPerp,
     refetch: refecthPerp,
+    isWithdrawable: canWithdrawPerp,
+    checkWithdrawableTCPerp,
+    balance,
   } = useTCPerpetualInfor(competition.tcAddress, competition.market)
+
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -256,14 +262,30 @@ function Sidebar({ competition, eventType }) {
 
   const withdraw = useCallback(async () => {
     try {
-      await withdrawDeposit({
-        tcAddress: competition.tcAddress,
-      })
-      await checkWithdrawable(true)
+      if (competition.market === TC_MARKET_TYPES.SPOT) {
+        await withdrawDeposit({
+          tcAddress: competition.tcAddress,
+        })
+        await checkWithdrawable(true)
+      } else {
+        await withdrawTCPerp({
+          tcAddress: competition.tcAddress,
+          amount: balance,
+        })
+        await checkWithdrawableTCPerp()
+      }
     } catch (e) {
       console.error(e)
     }
-  }, [withdrawDeposit, competition.tcAddress, checkWithdrawable])
+  }, [
+    competition.market,
+    competition.tcAddress,
+    withdrawDeposit,
+    checkWithdrawable,
+    withdrawTCPerp,
+    balance,
+    checkWithdrawableTCPerp,
+  ])
 
   const buttonByStatus = useMemo(() => {
     // Ended -> Claim rewards/fee
@@ -276,7 +298,7 @@ function Sidebar({ competition, eventType }) {
         )
       }
 
-      if (canWithdraw) {
+      if (canWithdraw || canWithdrawPerp) {
         return (
           <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={withdraw}>
             {t('Withdraw Deposit')}
@@ -373,6 +395,7 @@ function Sidebar({ competition, eventType }) {
     account,
     canClaimRewards,
     canWithdraw,
+    canWithdrawPerp,
     claim,
     competition.id,
     competition.market,

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -15,6 +16,9 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
+  const [balance, setBalance] = useState(0)
+  const [isWithdrawable, setIsWithdrawable] = useState(false)
+  const [tradingCompetition, setTradingCompetition] = useState(undefined)
 
   const { account } = useWallet()
 
@@ -30,8 +34,8 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
 
         return
       }
-
       const tcPerpetualContract = getTcPerpetualContract(tcAddress)
+
       try {
         const res0 = await readCall(tcPerpetualContract, 'isRegistered', [account])
         if (res0) {
@@ -40,18 +44,58 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
       } catch (error) {
         setIsRegistered(false)
       }
-      const res1 = await readCall(tcPerpetualContract, 'tradingCompetition', [])
-      if (res1 && String(res1.owner).toLowerCase() === account.toLowerCase()) {
-        setIsOwner(true)
+
+      let res1
+      try {
+        res1 = await readCall(tcPerpetualContract, 'tradingCompetition', [])
+        setTradingCompetition(res1)
+        if (res1 && String(res1.owner).toLowerCase() === account.toLowerCase()) {
+          setIsOwner(true)
+        }
+      } catch (error) {
+        setTradingCompetition(undefined)
+        setIsOwner(false)
       }
 
       setLoaded(true)
     }
   }, [account, tcAddress, type])
 
+  const checkWithdrawableTCPerp = useCallback(async () => {
+    if (type === TC_MARKET_TYPES.PERPETUAL) {
+      if (tradingCompetition) {
+        const isTcEnded = Number(tradingCompetition.timestamp.endTimestamp) < dayjs().unix()
+        if (isTcEnded) {
+          const tcPerpetualContract = getTcPerpetualContract(tcAddress)
+          let bal = 0
+          try {
+            const balanceRes = await readCall(tcPerpetualContract, 'getBalanceOfUser', [account])
+            bal = fromWei(balanceRes).toNumber()
+            if (balanceRes) {
+              setBalance(bal)
+            }
+          } catch (error) {
+            setBalance(0)
+          }
+
+          if (bal > 0) {
+            setIsWithdrawable(true)
+          } else {
+            setIsWithdrawable(false)
+          }
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, tradingCompetition])
+
   useEffect(() => {
     getUserData()
   }, [getUserData])
+
+  useEffect(() => {
+    checkWithdrawableTCPerp()
+  }, [checkWithdrawableTCPerp])
 
   return {
     loaded,
@@ -59,6 +103,9 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
     isWinner,
     isOwner,
     refetch: getUserData,
+    balance,
+    isWithdrawable,
+    checkWithdrawableTCPerp,
   }
 }
 
@@ -241,4 +288,58 @@ export const useDepositToTCPerp = () => {
   )
 
   return { pending, deposit }
+}
+
+export const useWithdrawToTCPerp = () => {
+  const { startTxn, endTxn, writeTxn, closeTxn, closeTxnModal } = useTxn()
+  const t = useTranslations()
+  const [loading, setLoading] = useState(false)
+  const { account } = useWallet()
+
+  const withdrawTCPerp = useCallback(
+    async ({ tcAddress, amount }) => {
+      const key = uuidv4()
+      const withdrawuuid = uuidv4()
+      const tcPerpContract = getTcPerpetualContract(tcAddress)
+
+      const symmioAccount = await readCall(tcPerpContract, 'getAccountOf', [account])
+
+      if (!symmioAccount) {
+        return
+      }
+
+      setLoading(true)
+      startTxn({
+        key,
+        title: t('Withdraw Deposit'),
+        transactions: {
+          [withdrawuuid]: {
+            desc: t('Withdraw Deposit'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      const isSuccess = await writeTxn(key, withdrawuuid, tcPerpContract, 'withdrawFromAccount', [
+        symmioAccount,
+        amount,
+      ])
+      if (!isSuccess) {
+        setLoading(false)
+        closeTxn()
+        return false
+      }
+      endTxn({
+        key,
+        final: 'Withdraw Successful',
+      })
+      setLoading(false)
+      closeTxnModal()
+      return true
+    },
+    [account, closeTxn, closeTxnModal, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { loading, withdrawTCPerp }
 }
