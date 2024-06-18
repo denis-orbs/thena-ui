@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
@@ -70,9 +71,7 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
           let bal = 0
           try {
             bal = await readCall(tcPerpetualContract, 'getBalanceOfUser', [account])
-            if (bal) {
-              setBalance(bal)
-            }
+            setBalance(new BigNumber(bal).toNumber())
           } catch (error) {
             setBalance(0)
           }
