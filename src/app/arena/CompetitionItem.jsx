@@ -72,7 +72,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
     return ''
   }, [eventType])
 
-  return !timeDistance || !totalPrize || !entryFee || !eventType ? (
+  return !timeDistance || !entryFee || !eventType ? (
     <Skeleton className='h-[320px] w-full' />
   ) : (
     <Box className='flex w-full flex-col gap-4 p-6'>
@@ -129,12 +129,14 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
               <span>{timeDistance}</span>
             </Paragraph>
           </div>
-          <div className='ellipsis-1 w-full' title={totalPrize}>
-            <Paragraph className='flex flex-1 gap-1 text-nowrap'>
-              <Gift className='h-5 w-5' />
-              <span>{totalPrize}</span>
-            </Paragraph>
-          </div>
+          {totalPrize && (
+            <div className='ellipsis-1 w-full' title={totalPrize}>
+              <Paragraph className='flex flex-1 gap-1 text-nowrap'>
+                <Gift className='h-5 w-5' />
+                <span>{totalPrize}</span>
+              </Paragraph>
+            </div>
+          )}
           <div className='ellipsis-1 w-full' title={entryFee}>
             <Paragraph className='flex flex-1 gap-1 text-nowrap'>
               <CoinHand className='h-5 w-5' />
