@@ -101,7 +101,7 @@ export function TCButton({ eventType, competition, timestamp }) {
         <EmphasisButton className='w-full'>{t('View')}</EmphasisButton>
       </Link>
 
-      {isJoined && eventType === EVENT_TYPES.LIVE && (
+      {(isJoined || isJoinedPerp) && eventType === EVENT_TYPES.LIVE && (
         <Link
           href={
             competition.market === TC_MARKET_TYPES.PERPETUAL
@@ -114,7 +114,7 @@ export function TCButton({ eventType, competition, timestamp }) {
         </Link>
       )}
       {eventType === EVENT_TYPES.ENDED &&
-        ((isJoined || isHosting) && canClaimRewards ? (
+        ((isJoined || isJoinedPerp || isHosting || isHostingPerp) && canClaimRewards ? (
           <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
             {t('Claim Rewards')}
           </PrimaryButton>
