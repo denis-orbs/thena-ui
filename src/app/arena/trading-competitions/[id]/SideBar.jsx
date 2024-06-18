@@ -55,6 +55,7 @@ function Sidebar({ competition, eventType }) {
     isOwner: isHostingPerp,
     isRegistered: isJoinedPerp,
     refetch: refecthPerp,
+    isWithdrawable: canWithdrawPerp,
   } = useTCPerpetualInfor(competition.tcAddress, competition.market)
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
   const [isEndedRegistration, setIsEndedRegistration] = useState(false)
@@ -276,7 +277,7 @@ function Sidebar({ competition, eventType }) {
         )
       }
 
-      if (canWithdraw) {
+      if (canWithdraw || canWithdrawPerp) {
         return (
           <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={withdraw}>
             {t('Withdraw Deposit')}
@@ -373,6 +374,7 @@ function Sidebar({ competition, eventType }) {
     account,
     canClaimRewards,
     canWithdraw,
+    canWithdrawPerp,
     claim,
     competition.id,
     competition.market,

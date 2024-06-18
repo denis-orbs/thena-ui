@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -15,6 +16,9 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
+  const [balance, setBalance] = useState(0)
+  const [isWithdrawable, setIsWithdrawable] = useState(false)
+  const [symmioAccount, setSymmioAccount] = useState('')
 
   const { account } = useWallet()
 
@@ -40,9 +44,44 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
       } catch (error) {
         setIsRegistered(false)
       }
-      const res1 = await readCall(tcPerpetualContract, 'tradingCompetition', [])
-      if (res1 && String(res1.owner).toLowerCase() === account.toLowerCase()) {
-        setIsOwner(true)
+
+      let res1
+      try {
+        res1 = await readCall(tcPerpetualContract, 'tradingCompetition', [])
+        if (res1 && String(res1.owner).toLowerCase() === account.toLowerCase()) {
+          setIsOwner(true)
+        }
+      } catch (error) {
+        setIsOwner(false)
+      }
+
+      let bal = 0
+      try {
+        const balanceRes = await readCall(tcPerpetualContract, 'getBalanceOfUser', [account])
+        bal = fromWei(balanceRes).toNumber()
+        if (balanceRes) {
+          setBalance(bal)
+        }
+      } catch (error) {
+        setBalance(0)
+      }
+
+      if (res1) {
+        const isTcEnded = Number(res1.timestamp.endTimestamp) < dayjs().unix()
+        if (bal > 0 && isTcEnded) {
+          setIsWithdrawable(true)
+        } else {
+          setIsWithdrawable(false)
+        }
+      }
+
+      try {
+        const symmioAccountRes = await readCall(tcPerpetualContract, 'getAccountOf', [account])
+        if (symmioAccountRes) {
+          setSymmioAccount(symmioAccountRes)
+        }
+      } catch (error) {
+        setSymmioAccount('')
       }
 
       setLoaded(true)
@@ -59,6 +98,9 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
     isWinner,
     isOwner,
     refetch: getUserData,
+    balance,
+    isWithdrawable,
+    symmioAccount,
   }
 }
 

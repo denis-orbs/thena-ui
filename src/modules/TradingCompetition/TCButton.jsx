@@ -30,10 +30,11 @@ export function TCButton({ eventType, competition, timestamp }) {
     checkWithdrawable,
   } = useTCContractInfor(competition.tcAddress, eventType, competition.participantCount, competition.market)
 
-  const { isOwner: isHostingPerp, isRegistered: isJoinedPerp } = useTCPerpetualInfor(
-    competition.tcAddress,
-    competition.market,
-  )
+  const {
+    isOwner: isHostingPerp,
+    isRegistered: isJoinedPerp,
+    isWithdrawable: canWithdrawPerp,
+  } = useTCPerpetualInfor(competition.tcAddress, competition.market)
 
   const [joinButtonText, setJoinButtonText] = useState({
     text: null,
@@ -120,7 +121,7 @@ export function TCButton({ eventType, competition, timestamp }) {
             {t('Claim Rewards')}
           </PrimaryButton>
         ) : (
-          canWithdraw && (
+          (canWithdraw || canWithdrawPerp) && (
             <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={withdraw}>
               {t('Withdraw Deposit')}
             </PrimaryButton>
