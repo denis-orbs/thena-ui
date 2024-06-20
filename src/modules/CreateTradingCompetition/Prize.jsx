@@ -62,7 +62,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
       <p className='font-figtree w-full text-xl font-semibold leading-6 text-white md:text-[22px] md:leading-7'>
         {t('Prizes')}
       </p>
-      <div className='mt-4 w-full items-center space-y-4 md:flex md:space-x-6 md:space-y-0'>
+      <div className='mt-4'>
         <div className='w-full'>
           <LabelTooltip
             id='prizesToken'
@@ -88,6 +88,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             </div>
           </div>
         </div>
+        {isSpotType && <TextSubHeading className='mt-2 block'>Note: {t('Prize Token Note')}</TextSubHeading>}
       </div>
       <div>
         <div className='mt-4 grid gap-x-[26px] gap-y-4 md:grid-cols-2'>
@@ -169,6 +170,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           label='Prize Distribution'
           tooltip='Here you can set the distribution for the prize pool. You can give a maximum of 25% to yourself, and you have to divide the rest of the percentages to various placements. The total prize distribution bar must equal to 100% before you can create your trading competition.'
           showInfoIcon
+          required
         />
         <div className='mt-3 flex w-full items-center space-x-6 md:mt-4 md:space-x-9'>
           <span className='whitespace-nowrap text-xl font-semibold leading-6 text-[#E9E9F2] md:text-[22px] md:leading-7'>

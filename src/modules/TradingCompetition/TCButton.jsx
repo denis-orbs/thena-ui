@@ -175,7 +175,7 @@ export function TCButton({ eventType, competition, timestamp }) {
               setShowModalDeposit(true)
             }}
           >
-            {t('Deposit')}
+            {t(competition.market === TC_MARKET_TYPES.PERPETUAL ? 'Deposit And Allocate' : 'Deposit')}
           </PrimaryButton>
         )}
 

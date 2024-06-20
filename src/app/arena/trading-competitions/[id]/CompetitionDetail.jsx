@@ -10,6 +10,7 @@ import { Collapse } from '@/components/collapse'
 import TruncateContent from '@/components/common/TruncateContent'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { TC_MARKET_TYPES } from '@/constant'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
@@ -84,7 +85,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
         dataUpdate: [{ ticker: winningToken?.symbol }],
       },
       {
-        key: 'Required Deposit To Join',
+        key: 'Required Deposit to Join',
         dataUpdate: [
           {
             data: isInvalidAmount(startingBalance)
@@ -263,15 +264,19 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       <Box>
         <div className='flex justify-between'>
           <TextHeading className='text-xl'>
-            {t('Tradable Tokens', { value: _competition.competitionRules?.tradingTokens?.length })}
+            {_competition.market === TC_MARKET_TYPES.SPOT
+              ? t('Tradable Tokens', { value: _competition.competitionRules?.tradingTokens?.length })
+              : `${t('Pairs')} (${_competition.competitionRules?.pairIds.length})`}
           </TextHeading>
-          {_competition.competitionRules?.tradingTokens.length > 8 && (
+          {(_competition.market === TC_MARKET_TYPES.SPOT
+            ? _competition.competitionRules?.tradingTokens.length > 8
+            : _competition.competitionRules?.pairIds.length > 8) && (
             <EmphasisButton className='p-2 text-xs' onClick={onViewTradable}>
               {viewAllTradable ? t('View Less') : t('View All')}
             </EmphasisButton>
           )}
         </div>
-        <div className='mt-4 grid  grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-4'>
+        <div className='mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-4'>
           {_competition.competitionRules?.tradingTokens
             ?.slice(0, viewAllTradable ? _competition.competitionRules?.tradingTokens?.length : 8)
             .map(item => (
@@ -292,6 +297,18 @@ export function CompetitionDetail({ competition, isPreview = false }) {
                 <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
                   <Paragraph className='text-sm'>{item.symbol}</Paragraph>
                   <Paragraph className='whitespace-nowrap text-sm'>{item.name}</Paragraph>
+                </div>
+              </Box>
+            ))}
+          {_competition.competitionRules?.pairIds
+            ?.slice(0, viewAllTradable ? _competition.competitionRules?.pairIds?.length : 8)
+            .map(item => (
+              <Box
+                className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
+                key={item.id}
+              >
+                <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
+                  <Paragraph className='text-sm'>{item.symbol}</Paragraph>
                 </div>
               </Box>
             ))}

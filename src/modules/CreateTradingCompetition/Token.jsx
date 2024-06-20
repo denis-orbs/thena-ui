@@ -260,7 +260,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
           <LabelTooltip
             id='startingBalance'
             label={isSpotType ? 'Total Deposit Required to Join' : 'Required Deposit to Join'}
-            tooltip='Minimum balance for participants to join your trading competition.'
+            tooltip='Required deposit to participate in the competition.'
             showInfoIcon
             className='mb-0'
             required={isSpotType ? true : isStartingBalance}

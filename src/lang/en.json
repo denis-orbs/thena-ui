@@ -508,7 +508,6 @@
   "Current Prize Pool": "Current Prize Pool",
   "Max Prize Pool": "Max Prize Pool",
   "Host Contribution": "Host Contribution",
-  "Required Deposit To Join": "Required Deposit To Join",
   "Prize Distribution": "Prize Distribution",
   "Host": "Host ({percent}%)",
   "Place": "{value, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place ({percent}%)",
@@ -846,5 +845,8 @@
   "Transfer THENA ID description": "Transfer your THENA ID to a different wallet address for free of charge. Please note, this will make you lose your own THENA ID and all of your referrals. You will also not be able to customize your profile unless you have a different profile.",
   "Enter to address": "Enter to address",
   "Transferred successfully": "Transferred successfully. The ThenaID will take around 1 minute to update its owner",
-  "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization."
+  "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization.",
+  "Required Deposit to Join": "Required Deposit to Join",
+  "Prize Token Note": "You can add the prize after the trading competition has been created.",
+  "Deposit And Allocate": "Deposit And Allocate"
 }
