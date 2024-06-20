@@ -1,10 +1,24 @@
+import BigNumber from 'bignumber.js'
 import { cloneDeep } from 'lodash'
 import { useMemo } from 'react'
 
 import { useAssets } from '@/context/assetsContext'
+import { useTC } from '@/context/tcContext'
 
 export const useCompetitionFormat = (competition, isPreview = false) => {
   const _assets = useAssets()
+  const { pairLists } = useTC()
+
+  const dataListPairs = useMemo(() => {
+    if (pairLists?.[1] && Array.isArray(pairLists[1])) {
+      const result = pairLists[1].map((item, index) => ({
+        id: new BigNumber(pairLists[0][index]).toNumber(),
+        symbol: item,
+      }))
+      return result
+    }
+    return []
+  }, [pairLists])
 
   const assets = useMemo(() => {
     const clone = cloneDeep(_assets)
@@ -48,9 +62,18 @@ export const useCompetitionFormat = (competition, isPreview = false) => {
         clone.competitionRules.winningToken = assets.find(
           ele => ele.address.toLowerCase() === competition?.competitionRules.winningToken?.toLowerCase(),
         )
+
+        if (!clone.competitionRules.pairIds) {
+          clone.competitionRules.pairIds = []
+        } else {
+          clone.competitionRules.pairIds = clone.competitionRules.pairIds.map(item => {
+            const pair = dataListPairs.find(p => Number(p.id) === Number(item))
+            return pair
+          })
+        }
       }
       return clone
     }
     return undefined
-  }, [assets, competition, isPreview])
+  }, [assets, competition, dataListPairs, isPreview])
 }
