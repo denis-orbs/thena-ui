@@ -313,15 +313,6 @@ function Sidebar({ competition, eventType }) {
       }
     }
 
-    // For TC host: Share
-    if (isTCHosting) {
-      return (
-        <PrimaryButton className='w-full' onClick={onShare}>
-          {t('Share')}
-        </PrimaryButton>
-      )
-    }
-
     // For participants
     if (eventType === EVENT_TYPES.LIVE && isTCJoined) {
       return (
@@ -413,7 +404,6 @@ function Sidebar({ competition, eventType }) {
     isNotStartRegistration,
     isTCHosting,
     isTCJoined,
-    onShare,
     open,
     t,
     withdraw,
@@ -505,6 +495,11 @@ function Sidebar({ competition, eventType }) {
               </CustomTooltip>
             )}
           </>
+        )}
+        {isTCHosting && eventType !== EVENT_TYPES.ENDED && (
+          <PrimaryButton className='w-full' onClick={onShare}>
+            {t('Share')}
+          </PrimaryButton>
         )}
       </Box>
       {showJoinModal && (

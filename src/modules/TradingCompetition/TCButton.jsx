@@ -150,26 +150,21 @@ export function TCButton({ eventType, competition, timestamp }) {
             </PrimaryButton>
           )
         ))}
-      {eventType === EVENT_TYPES.UPCOMING &&
-        !isJoined &&
-        !isJoinedPerp &&
-        !isHosting && // comment these 2 for testing join as host
-        !isHostingPerp && //
-        joinButtonText.text && (
-          <PrimaryButton
-            className='w-full text-wrap'
-            onClick={() => {
-              if (!account) {
-                open()
-              } else {
-                setShowJoinModal(true)
-              }
-            }}
-            disabled={joinButtonText.disabled}
-          >
-            {joinButtonText.text}
-          </PrimaryButton>
-        )}
+      {eventType === EVENT_TYPES.UPCOMING && !isJoined && !isJoinedPerp && joinButtonText.text && (
+        <PrimaryButton
+          className='w-full text-wrap'
+          onClick={() => {
+            if (!account) {
+              open()
+            } else {
+              setShowJoinModal(true)
+            }
+          }}
+          disabled={joinButtonText.disabled}
+        >
+          {joinButtonText.text}
+        </PrimaryButton>
+      )}
       {eventType === EVENT_TYPES.UPCOMING &&
         (competition.market === TC_MARKET_TYPES.SPOT ? isJoined : isJoinedPerp) &&
         ((competition.market === TC_MARKET_TYPES.PERPETUAL && !competition.startingBalance) ||
