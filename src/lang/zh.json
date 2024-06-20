@@ -497,7 +497,6 @@
   "Current Prize Pool": "Current Prize Pool",
   "Max Prize Pool": "Max Prize Pool",
   "Host Contribution": "Host Contribution",
-  "Required Deposit To Join": "Required Deposit To Join",
   "Prize Distribution": "Prize Distribution",
   "Host": "Host ({percent}%)",
   "Place": "{value, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place ({percent}%)",
@@ -845,5 +844,6 @@
   "Enter to address": "Enter to address",
   "Transferred successfully": "Transferred successfully. The ThenaID will take around 1 minute to update its owner",
   "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization.",
-  "Required Deposit to Join": "Required Deposit to Join"
+  "Required Deposit to Join": "Required Deposit to Join",
+  "Prize Token Note": "You can add the prize after the trading competition has been created."
 }

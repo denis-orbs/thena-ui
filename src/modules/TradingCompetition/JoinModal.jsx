@@ -184,7 +184,7 @@ export function JoinModal({ competition, open, onClose }) {
           )}
           {!isInvalidAmount(startingBalance) && winningToken && (
             <div>
-              <TextHeading className='text-lg'>{t('Required Deposit To Join')}</TextHeading>
+              <TextHeading className='text-lg'>{t('Required Deposit to Join')}</TextHeading>
               <div className='mt-2 flex space-x-2'>
                 <Image
                   alt={winningToken.name}

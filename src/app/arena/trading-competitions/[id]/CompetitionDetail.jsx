@@ -85,7 +85,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
         dataUpdate: [{ ticker: winningToken?.symbol }],
       },
       {
-        key: 'Required Deposit To Join',
+        key: 'Required Deposit to Join',
         dataUpdate: [
           {
             data: isInvalidAmount(startingBalance)
