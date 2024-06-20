@@ -10,6 +10,19 @@
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
+  { "inputs": [], "name": "CallDataLen", "type": "error" },
+  { "inputs": [], "name": "CallFailed", "type": "error" },
+  { "inputs": [], "name": "Create2Failed", "type": "error" },
+  { "inputs": [], "name": "GetQuote", "type": "error" },
+  { "inputs": [], "name": "GetQuoteIdsOf", "type": "error" },
+  { "inputs": [], "name": "GetQuoteLength", "type": "error" },
+  { "inputs": [], "name": "InvalidTarget", "type": "error" },
+  { "inputs": [], "name": "MaxUsers", "type": "error" },
+  { "inputs": [], "name": "NotAccountOwner", "type": "error" },
+  { "inputs": [], "name": "NotAuthorized", "type": "error" },
+  { "inputs": [], "name": "NotRegistered", "type": "error" },
+  { "inputs": [], "name": "Registered", "type": "error" },
+  { "inputs": [], "name": "RegistrationTimestamp", "type": "error" },
   {
     "anonymous": false,
     "inputs": [
@@ -40,6 +53,17 @@
       { "indexed": false, "internalType": "bytes", "name": "_resultData", "type": "bytes" }
     ],
     "name": "Call",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "account", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "target", "type": "address" },
+      { "indexed": false, "internalType": "bytes4", "name": "selector", "type": "bytes4" },
+      { "indexed": false, "internalType": "bool", "name": "state", "type": "bool" }
+    ],
+    "name": "DelegateAccess",
     "type": "event"
   },
   {
@@ -91,6 +115,15 @@
     "anonymous": false,
     "inputs": [{ "indexed": false, "internalType": "address", "name": "account", "type": "address" }],
     "name": "Paused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "regTimestamp", "type": "uint256" }
+    ],
+    "name": "Register",
     "type": "event"
   },
   {
@@ -286,6 +319,41 @@
   {
     "inputs": [
       { "internalType": "address", "name": "account", "type": "address" },
+      { "internalType": "address", "name": "target", "type": "address" },
+      { "internalType": "bytes4", "name": "selector", "type": "bytes4" },
+      { "internalType": "bool", "name": "state", "type": "bool" }
+    ],
+    "name": "delegateAccess",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" },
+      { "internalType": "address", "name": "target", "type": "address" },
+      { "internalType": "bytes4[]", "name": "selector", "type": "bytes4[]" },
+      { "internalType": "bool", "name": "state", "type": "bool" }
+    ],
+    "name": "delegateAccesses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "bytes4", "name": "", "type": "bytes4" }
+    ],
+    "name": "delegatedAccesses",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" },
       { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "depositAndAllocateForAccount",
@@ -352,6 +420,36 @@
     "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
     "name": "getBalanceOfUser",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPnLOfAllUsers",
+    "outputs": [
+      { "internalType": "int256[]", "name": "amount", "type": "int256[]" },
+      { "internalType": "bool[]", "name": "isValid", "type": "bool[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_user", "type": "address" }],
+    "name": "getPnLOfUser",
+    "outputs": [
+      { "internalType": "int256", "name": "amount", "type": "int256" },
+      { "internalType": "bool", "name": "isValid", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address[]", "name": "_user", "type": "address[]" }],
+    "name": "getPnLOfUsers",
+    "outputs": [
+      { "internalType": "int256[]", "name": "amount", "type": "int256[]" },
+      { "internalType": "bool[]", "name": "isValid", "type": "bool[]" }
+    ],
     "stateMutability": "view",
     "type": "function"
   },

@@ -75,7 +75,7 @@ const Contracts = {
     [ChainId.BSC]: '0x0BD32Dd59b40f78b7A9E1E629293b596E60ECF6A',
   },
   tcPerpetualManager: {
-    [ChainId.BSC]: '0xE5Ccf697Efa772De24Cbd256e6d401B5872645c0',
+    [ChainId.BSC]: '0xae47229E279f85f1006B86aFf60Dc6115ACF79bb',
   },
   fusionRouter: FUSION_ROUTER_ADDRESSES,
   fusionQuoter: FUSION_QUOTER_ADDRESSES,
