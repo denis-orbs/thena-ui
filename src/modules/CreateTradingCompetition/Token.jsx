@@ -263,7 +263,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
             tooltip='Minimum balance for participants to join your trading competition.'
             showInfoIcon
             className='mb-0'
-            required={isStartingBalance}
+            required={isSpotType ? true : isStartingBalance}
           />
         </div>
         {((!isSpotType && isStartingBalance) || isSpotType) && (

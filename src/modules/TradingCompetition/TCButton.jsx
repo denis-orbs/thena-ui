@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
+import DepositModal from '@/app/arena/trading-competitions/[id]/trade/DepositModal'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
@@ -10,6 +11,7 @@ import { useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetual
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
+import { isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 import { JoinModal } from './JoinModal'
@@ -22,6 +24,7 @@ export function TCButton({ eventType, competition, timestamp }) {
   const { claimReward } = useClaimTC()
   const { withdrawDeposit } = useWithdrawDepositTC()
   const { withdrawTCPerp } = useWithdrawToTCPerp()
+  const [showModalDeposit, setShowModalDeposit] = useState(false)
 
   const {
     isRegistered: isJoined,
@@ -167,9 +170,29 @@ export function TCButton({ eventType, competition, timestamp }) {
             {joinButtonText.text}
           </PrimaryButton>
         )}
+      {eventType === EVENT_TYPES.UPCOMING &&
+        (competition.market === TC_MARKET_TYPES.SPOT ? isJoined : isJoinedPerp) &&
+        ((competition.market === TC_MARKET_TYPES.PERPETUAL && !competition.startingBalance) ||
+          isInvalidAmount(competition.startingBalance)) && (
+          <PrimaryButton
+            className='w-full'
+            onClick={() => {
+              setShowModalDeposit(true)
+            }}
+          >
+            {t('Deposit')}
+          </PrimaryButton>
+        )}
 
       {showJoinModal && (
         <JoinModal competition={competition} onClose={() => setShowJoinModal(false)} open={showJoinModal} />
+      )}
+      {showModalDeposit && (
+        <DepositModal
+          competition={competition}
+          isOpen={showModalDeposit}
+          closeModal={() => setShowModalDeposit(false)}
+        />
       )}
     </div>
   )
