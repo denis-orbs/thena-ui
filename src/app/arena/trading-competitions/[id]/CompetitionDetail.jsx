@@ -29,6 +29,28 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       competitionRules: { startingBalance, winningToken },
     } = _competition
 
+    let dataCurrentPrizePool = []
+    dataCurrentPrizePool = prizeUpdate.token.map((item, index) => ({
+      data: formatAmount(fromWei(prizeUpdate.totalPrize[index], item?.decimals)),
+      ticker: item?.symbol,
+    }))
+    if (dataCurrentPrizePool.some(item => item.data !== '0')) {
+      dataCurrentPrizePool = dataCurrentPrizePool.filter(item => item.data !== '0')
+    }
+
+    let dataMaxPrizePool = []
+    dataMaxPrizePool = prizeUpdate.token.map((item, index) => ({
+      data: formatAmount(
+        fromWei(prizeUpdate.totalPrize[index]).plus(
+          fromWei(entryFeeUpdate[index]).multipliedBy(maxParticipants - participantCount),
+        ),
+      ),
+      ticker: item?.symbol,
+    }))
+    if (dataMaxPrizePool.some(item => item.data !== '0')) {
+      dataMaxPrizePool = dataMaxPrizePool.filter(item => item.data !== '0')
+    }
+
     return [
       {
         key: 'Participants',
@@ -51,27 +73,11 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       },
       {
         key: 'Current Prize Pool',
-        dataUpdate: entryFeeUpdate.every(entry => isInvalidAmount(entry))
-          ? [{ data: t('Free To Join'), ticker: null }]
-          : prizeUpdate.token
-              .map((item, index) => ({
-                data: formatAmount(fromWei(prizeUpdate.totalPrize[index], item?.decimals)),
-                ticker: item?.symbol,
-              }))
-              .filter(item => item.data !== '0'),
+        dataUpdate: dataCurrentPrizePool,
       },
       {
         key: 'Max Prize Pool',
-        dataUpdate: prizeUpdate.token
-          .map((item, index) => ({
-            data: formatAmount(
-              fromWei(prizeUpdate.totalPrize[index]).plus(
-                fromWei(entryFeeUpdate[index]).multipliedBy(maxParticipants - participantCount),
-              ),
-            ),
-            ticker: item?.symbol,
-          }))
-          .filter(item => item.data !== '0'),
+        dataUpdate: dataMaxPrizePool,
       },
       {
         key: 'Deposit Token',
