@@ -67,9 +67,15 @@ function Sidebar({ competition, eventType }) {
   const [copied, setCopied] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  const isTCJoined = useMemo(() => isJoined || isJoinedPerp, [isJoined, isJoinedPerp])
+  const isTCJoined = useMemo(
+    () => (competition.market === TC_MARKET_TYPES.SPOT ? isJoined : isJoinedPerp),
+    [isJoined, isJoinedPerp, competition.market],
+  )
 
-  const isTCHosting = useMemo(() => isHosting || isHostingPerp, [isHosting, isHostingPerp])
+  const isTCHosting = useMemo(
+    () => (competition.market === TC_MARKET_TYPES.SPOT ? isHosting : isHostingPerp),
+    [isHosting, isHostingPerp, competition.market],
+  )
 
   const headingAndText = useMemo(() => {
     if (!eventType) {
