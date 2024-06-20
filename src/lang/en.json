@@ -847,5 +847,6 @@
   "Transferred successfully": "Transferred successfully. The ThenaID will take around 1 minute to update its owner",
   "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization.",
   "Required Deposit to Join": "Required Deposit to Join",
-  "Prize Token Note": "You can add the prize after the trading competition has been created."
+  "Prize Token Note": "You can add the prize after the trading competition has been created.",
+  "Deposit And Allocate": "Deposit And Allocate"
 }

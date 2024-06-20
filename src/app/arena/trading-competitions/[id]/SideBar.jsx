@@ -349,7 +349,7 @@ function Sidebar({ competition, eventType }) {
                 setShowModalDeposit(true)
               }}
             >
-              {t('Deposit')}
+              {t(competition.market === TC_MARKET_TYPES.PERPETUAL ? 'Deposit And Allocate' : 'Deposit')}
             </PrimaryButton>
           )
         }
