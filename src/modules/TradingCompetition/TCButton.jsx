@@ -167,8 +167,8 @@ export function TCButton({ eventType, competition, timestamp }) {
       )}
       {eventType === EVENT_TYPES.UPCOMING &&
         (competition.market === TC_MARKET_TYPES.SPOT ? isJoined : isJoinedPerp) &&
-        ((competition.market === TC_MARKET_TYPES.PERPETUAL && !competition.competitionRules.startingBalance) ||
-          isInvalidAmount(competition.competitionRules.startingBalance)) && (
+        ((competition.market === TC_MARKET_TYPES.PERPETUAL && !competition.competitionRules?.startingBalance) ||
+          isInvalidAmount(competition.competitionRules?.startingBalance)) && (
           <PrimaryButton
             className='w-full'
             onClick={() => {
