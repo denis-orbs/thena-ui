@@ -258,11 +258,7 @@ export default function ArenaPage() {
       )
       tcHostedLive = sortLiveWhenDefault(tcHostedLive)
 
-      const tcHostedEnd = tcHosted.filter(
-        item =>
-          item.timestamp.endTimestamp < new Date().getTime() / 1000 &&
-          item.participants?.find(participant => participant?.participant.id === account?.toLowerCase()),
-      )
+      const tcHostedEnd = tcHosted.filter(item => item.timestamp.endTimestamp < new Date().getTime() / 1000)
       tcHosted = [...tcHostedUpcoming, ...tcHostedLive, ...tcHostedEnd]
     }
 
