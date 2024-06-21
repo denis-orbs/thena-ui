@@ -1,7 +1,15 @@
 /* eslint-disable no-param-reassign */
 import { createReducer } from '@reduxjs/toolkit'
 
-import { closeTransaction, completeTransaction, openTransaction, updateTransaction } from './actions'
+import {
+  clearRetryParams,
+  closeRetryTransactionModal,
+  closeTransaction,
+  completeTransaction,
+  openRetryTransactionModal,
+  openTransaction,
+  updateTransaction,
+} from './actions'
 
 export const initialState = {
   key: null,
@@ -10,6 +18,9 @@ export const initialState = {
   transactions: {},
   final: null,
   link: null,
+  retryModalIsOpen: false,
+  retryParams: null,
+  retryResolver: null,
 }
 
 export default createReducer(initialState, builder =>
@@ -49,5 +60,30 @@ export default createReducer(initialState, builder =>
       }
       return state
     })
-    .addCase(closeTransaction, () => initialState),
+    .addCase(closeTransaction, state => {
+      if (state.retryResolver) {
+        state.retryResolver(false)
+      }
+      return initialState
+    })
+    .addCase(openRetryTransactionModal, (state, { payload: { params, resolver } }) => ({
+      ...state,
+      retryModalIsOpen: true,
+      retryParams: params,
+      retryResolver: resolver,
+    }))
+    .addCase(closeRetryTransactionModal, state => ({
+      ...state,
+      retryModalIsOpen: false,
+    }))
+    .addCase(clearRetryParams, state => {
+      if (state.retryResolver) {
+        state.retryResolver(false)
+      }
+      return {
+        ...state,
+        retryParams: null,
+        retryResolver: null,
+      }
+    }),
 )

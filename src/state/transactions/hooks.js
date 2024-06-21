@@ -5,7 +5,13 @@ import { TXN_STATUS } from '@/constant'
 import { sendCall, waitCall, writeCall } from '@/lib/contractActions'
 import { errorToast, successToast } from '@/lib/notify'
 
-import { closeTransaction, completeTransaction, openTransaction, updateTransaction } from './actions'
+import {
+  closeTransaction,
+  completeTransaction,
+  openRetryTransactionModal,
+  openTransaction,
+  updateTransaction,
+} from './actions'
 import { useChainSettings } from '../settings/hooks'
 
 export const useTxn = () => {
@@ -36,6 +42,14 @@ export const useTxn = () => {
   const closeTxn = useCallback(() => {
     dispatch(closeTransaction())
   }, [dispatch])
+
+  const askUserToRetry = useCallback(
+    params =>
+      new Promise(resolve => {
+        dispatch(openRetryTransactionModal({ params, resolver: resolve }))
+      }),
+    [dispatch],
+  )
 
   const writeTxn = useCallback(
     async (key, uuid, contract, method, params = [], msgValue = '0') => {
@@ -84,10 +98,16 @@ export const useTxn = () => {
           hash,
         })
         errorToast('Error', error.shortMessage)
+        const userWantsToRetry = await askUserToRetry({ key, uuid, contract, method, params, msgValue })
+        if (userWantsToRetry) {
+          console.log('truuuuuuueeeee')
+          return writeTxn(key, uuid, contract, method, params, msgValue) // retry
+        }
+        console.log('tessttttt')
         return false
       }
     },
-    [updateTxn, networkId],
+    [updateTxn, networkId, askUserToRetry],
   )
 
   const sendTxn = useCallback(

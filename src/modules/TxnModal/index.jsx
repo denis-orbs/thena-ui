@@ -1,20 +1,41 @@
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useCallback, useEffect, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { Info } from '@/components/alert'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
-import Modal, { ModalBody } from '@/components/modal'
+import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import Spinner from '@/components/spinner'
 import { TextHeading } from '@/components/typography'
 import { TXN_STATUS } from '@/constant'
+import { clearRetryParams, closeRetryTransactionModal } from '@/state/transactions/actions'
 import { useTxn } from '@/state/transactions/hooks'
 import { CheckCircleIcon, InfoIcon } from '@/svgs'
 
 function TxnModal() {
-  const { popup, title, transactions, final } = useSelector(state => state.transactions)
+  const { popup, title, transactions, final, retryParams, retryModalIsOpen, retryResolver } = useSelector(
+    state => state.transactions,
+  )
+  const dispatch = useDispatch()
   const { closeTxn } = useTxn()
   const t = useTranslations()
+
+  const handleRetryTxn = useCallback(() => {
+    dispatch(closeRetryTransactionModal())
+    if (retryParams && retryResolver) {
+      retryResolver(true)
+    }
+    dispatch(clearRetryParams())
+  }, [dispatch, retryParams, retryResolver])
+
+  const handleCancelRetry = useCallback(() => {
+    dispatch(closeRetryTransactionModal())
+    if (retryResolver) {
+      retryResolver(false)
+    }
+    dispatch(clearRetryParams())
+  }, [dispatch, retryResolver])
 
   const txns = useMemo(() => {
     if (!transactions) return []
@@ -68,6 +89,21 @@ function TxnModal() {
           </Info>
         )}
       </ModalBody>
+      {retryModalIsOpen && (
+        <ModalFooter className='mt-4 flex gap-4'>
+          <EmphasisButton
+            className='w-full'
+            onClick={() => {
+              handleCancelRetry()
+            }}
+          >
+            {t('Cancel')}
+          </EmphasisButton>
+          <PrimaryButton className='w-full' onClick={handleRetryTxn}>
+            {t('Retry')}
+          </PrimaryButton>
+        </ModalFooter>
+      )}
     </Modal>
   )
 }
