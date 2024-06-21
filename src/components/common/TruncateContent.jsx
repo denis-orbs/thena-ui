@@ -24,7 +24,7 @@ function TruncateContent({ content, className }) {
         fontSize = parseFloat(window.getComputedStyle(target, null).getPropertyValue('font-size'))
       }
 
-      if (target.offsetHeight / fontSize > 3) {
+      if (target.offsetHeight / fontSize > 4) {
         setDisplayBtnTruncate(true)
         setIsTruncated(true)
       } else {

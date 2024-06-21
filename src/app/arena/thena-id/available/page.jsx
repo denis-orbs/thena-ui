@@ -284,25 +284,24 @@ function AvailablePage() {
       <div className='mt-6'>
         <h2>{t('Available THENA IDs')}</h2>
       </div>
-      <div className='mt-6 flex flex-row items-center justify-between'>
+      <div className='mt-6 flex flex-row items-center justify-between gap-3 space-y-2'>
         <SearchInput
           className='h-11 w-full md:w-[336px]'
           classNames={{ input: 'h-11' }}
           val={searchText}
           setVal={setSearchText}
         />
-        <div className='my-2 flex items-center space-x-2.5'>
-          <AvailableDropdown
-            className='w-full lg:w-[200px]'
-            data={listCategory}
-            selected={selectFilterField}
-            setSelected={ele => {
-              setSelectFilterField(ele)
-            }}
-            placeHolder='Select Category'
-            listClassNames='max-h-[400px]'
-          />
-        </div>
+
+        <AvailableDropdown
+          className='h-11 w-full lg:w-[200px]'
+          data={listCategory}
+          selected={selectFilterField}
+          setSelected={ele => {
+            setSelectFilterField(ele)
+          }}
+          placeHolder='Select Category'
+          listClassNames='max-h-[400px]'
+        />
       </div>
       <div className='mt-6 w-full'>
         <Table

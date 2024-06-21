@@ -2,7 +2,7 @@
 
 import isTomorow from 'dayjs/plugin/isTomorrow'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -31,6 +31,22 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
   const onEditBanner = useCallback(() => {
     setEditBannerModal(true)
   }, [])
+
+  const bgStatus = useMemo(() => {
+    if (eventType) {
+      switch (eventType) {
+        case EVENT_TYPES.UPCOMING:
+          return 'bg-green-700'
+        case EVENT_TYPES.LIVE:
+          return 'bg-blue-500'
+        case EVENT_TYPES.ENDED:
+          return 'bg-red-600'
+        default:
+          return ''
+      }
+    }
+    return ''
+  }, [eventType])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -136,7 +152,9 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
               <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
                 {competition.market.toLowerCase()}
               </NeutralBadge>
-              {eventType && <NeutralBadge className='text-nowrap lg:text-xs'>{t(eventType)}</NeutralBadge>}
+              {eventType && (
+                <NeutralBadge className={cn('text-nowrap lg:text-xs', bgStatus)}>{t(eventType)}</NeutralBadge>
+              )}
             </div>
             {enableEditBanner && (
               <EmphasisIconButton Icon={EditIcon} className='absolute right-4 top-4' onClick={onEditBanner} />
@@ -148,7 +166,7 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
               <div
                 className={cn(
                   'flex w-full flex-col items-start gap-4 py-2 lg:flex-row lg:items-center',
-                  eventType !== EVENT_TYPES.ENDED ? 'justify-between' : 'space-x-8',
+                  eventType !== EVENT_TYPES.ENDED ? 'justify-between' : 'lg:space-x-8',
                 )}
               >
                 {eventType !== EVENT_TYPES.ENDED && (
