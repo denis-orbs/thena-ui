@@ -28,15 +28,14 @@ export function TCButton({ eventType, competition, timestamp }) {
 
   const {
     isRegistered: isJoined,
-    isOwner: isHosting,
-    isClaimable: canClaimRewards,
+    isHostClaimable,
+    isClaimable,
     isWithdrawable: canWithdraw,
     checkClaimable,
     checkWithdrawable,
   } = useTCContractInfor(competition.tcAddress, eventType, competition.participantCount, competition.market)
 
   const {
-    isOwner: isHostingPerp,
     isRegistered: isJoinedPerp,
     isWithdrawable: canWithdrawPerp,
     checkWithdrawableTCPerp,
@@ -52,13 +51,13 @@ export function TCButton({ eventType, competition, timestamp }) {
     try {
       await claimReward({
         tcAddress: competition.tcAddress,
-        isOwner: isHosting,
+        isOwner: isHostClaimable,
       })
       await checkClaimable(true)
     } catch (e) {
       console.error(e)
     }
-  }, [claimReward, competition.tcAddress, isHosting, checkClaimable])
+  }, [claimReward, competition.tcAddress, isHostClaimable, checkClaimable])
 
   const withdraw = useCallback(async () => {
     try {
@@ -139,9 +138,9 @@ export function TCButton({ eventType, competition, timestamp }) {
         </Link>
       )}
       {eventType === EVENT_TYPES.ENDED &&
-        ((isJoined || isJoinedPerp || isHosting || isHostingPerp) && canClaimRewards ? (
+        (isClaimable || isHostClaimable ? (
           <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
-            {t('Claim Rewards')}
+            {isHostClaimable ? t('Claim Owner Fee') : t('Claim Rewards')}
           </PrimaryButton>
         ) : (
           (canWithdraw || canWithdrawPerp) && (

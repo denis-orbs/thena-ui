@@ -19,6 +19,7 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
   const [isWinner, setIsWinner] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
   const [isClaimable, setIsClaimable] = useState(undefined)
+  const [isHostClaimable, setIsHostClaimable] = useState(undefined)
   const [isWithdrawable, setIsWithdrawable] = useState(undefined)
 
   const tcSpotContract = getTcSpotContract(address)
@@ -106,44 +107,42 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
 
   const checkClaimable = useCallback(
     async (force = false) => {
-      if (type === TC_MARKET_TYPES.SPOT && ((eventType === EVENT_TYPES.ENDED && isClaimable === undefined) || force)) {
-        let canOwnerClaim
-        let canUserClaim
-        if (isRegistered && isWinner) {
-          await Promise.resolve(checkIsClaimableNew())
-            .then(value => (canUserClaim = value))
-            .catch(
-              async () =>
-                await Promise.resolve(checkIsClaimableOld())
-                  .then(value => {
-                    canUserClaim = value
-                  })
-                  .catch(() => {
-                    canUserClaim = false
-                  }),
-            )
-        }
-        if (isOwner) {
-          await Promise.all([
-            readCall(tcSpotContract, 'ownerHasClaimed', [account]),
-            readCall(tcSpotContract, 'ownerFeeAmount', []),
-          ])
-            .then(([ownerClaimed, feeAmount]) => (canOwnerClaim = !ownerClaimed && !fromWei(feeAmount).isZero()))
-            .catch(
-              async () =>
-                await Promise.all([
-                  readCall(oldTcSpotContract, 'ownerHasClaimed', [account]),
-                  readCall(oldTcSpotContract, 'ownerFeeAmount', []),
-                ])
-                  .then(([ownerClaimed, feeAmount]) => {
-                    canOwnerClaim = !ownerClaimed && !fromWei(feeAmount).isZero()
-                  })
-                  .catch(() => {
-                    canOwnerClaim = false
-                  }),
-            )
-        }
-        setIsClaimable(canOwnerClaim ?? canUserClaim)
+      if (type !== TC_MARKET_TYPES.SPOT || eventType !== EVENT_TYPES.ENDED) {
+        return
+      }
+      if (isRegistered && isWinner && (isClaimable === undefined || force)) {
+        await Promise.resolve(checkIsClaimableNew())
+          .then(value => setIsClaimable(value))
+          .catch(
+            async () =>
+              await Promise.resolve(checkIsClaimableOld())
+                .then(value => {
+                  setIsClaimable(value)
+                })
+                .catch(() => {
+                  setIsClaimable(false)
+                }),
+          )
+      }
+      if (isOwner && (isHostClaimable === undefined || force)) {
+        await Promise.all([
+          readCall(tcSpotContract, 'ownerHasClaimed', [account]),
+          readCall(tcSpotContract, 'ownerFeeAmount', []),
+        ])
+          .then(([ownerClaimed, feeAmount]) => setIsHostClaimable(!ownerClaimed && !fromWei(feeAmount).isZero()))
+          .catch(
+            async () =>
+              await Promise.all([
+                readCall(oldTcSpotContract, 'ownerHasClaimed', [account]),
+                readCall(oldTcSpotContract, 'ownerFeeAmount', []),
+              ])
+                .then(([ownerClaimed, feeAmount]) => {
+                  setIsHostClaimable(!ownerClaimed && !fromWei(feeAmount).isZero())
+                })
+                .catch(() => {
+                  setIsHostClaimable(false)
+                }),
+          )
       }
     },
     [
@@ -152,6 +151,7 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
       checkIsClaimableOld,
       eventType,
       isClaimable,
+      isHostClaimable,
       isOwner,
       isRegistered,
       isWinner,
@@ -196,6 +196,7 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
   useEffect(() => {
     if (account && address) {
       setIsClaimable(undefined)
+      setIsHostClaimable(undefined)
     }
   }, [account, address])
 
@@ -205,8 +206,10 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
     isWinner,
     isOwner,
     isClaimable,
+    isHostClaimable,
     isWithdrawable,
     setIsClaimable,
+    setIsHostClaimable,
     refetch: getUserData,
     checkClaimable,
     checkWithdrawable,

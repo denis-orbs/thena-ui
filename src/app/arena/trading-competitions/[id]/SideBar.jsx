@@ -46,7 +46,8 @@ function Sidebar({ competition, eventType }) {
   const {
     isRegistered: isJoined,
     isOwner: isHosting,
-    isClaimable: canClaimRewards,
+    isClaimable,
+    isHostClaimable,
     refetch,
     isWithdrawable: canWithdraw,
     checkClaimable,
@@ -160,7 +161,7 @@ function Sidebar({ competition, eventType }) {
       let subText = null
       let text = null
 
-      if (isJoined && canClaimRewards) {
+      if (isJoined && isClaimable) {
         text = t('Claim Your Rewards')
         subText = t('You Have Won')
       } else {
@@ -227,7 +228,7 @@ function Sidebar({ competition, eventType }) {
     competition.participantCount,
     competition.prizeUpdate,
     isJoined,
-    canClaimRewards,
+    isClaimable,
   ])
 
   const shareIconButton = useMemo(() => (copied ? CheckIcon : PublicIcon), [copied])
@@ -259,12 +260,12 @@ function Sidebar({ competition, eventType }) {
 
   const claim = useCallback(async () => {
     try {
-      await claimReward({ tcAddress: competition.tcAddress, isOwner: isHosting })
+      await claimReward({ tcAddress: competition.tcAddress, isOwner: isHostClaimable })
       checkClaimable(true)
     } catch (e) {
       console.error(e)
     }
-  }, [claimReward, competition.tcAddress, isHosting, checkClaimable])
+  }, [claimReward, competition.tcAddress, isHostClaimable, checkClaimable])
 
   const withdraw = useCallback(async () => {
     try {
@@ -296,10 +297,10 @@ function Sidebar({ competition, eventType }) {
   const buttonByStatus = useMemo(() => {
     // Ended -> Claim rewards/fee
     if (eventType === EVENT_TYPES.ENDED) {
-      if (canClaimRewards) {
+      if (isClaimable || isHostClaimable) {
         return (
           <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
-            {isTCHosting ? t('Claim Owner Fee') : t('Claim Rewards')}
+            {isHostClaimable ? t('Claim Owner Fee') : t('Claim Rewards')}
           </PrimaryButton>
         )
       }
@@ -390,7 +391,8 @@ function Sidebar({ competition, eventType }) {
     }
   }, [
     account,
-    canClaimRewards,
+    isClaimable,
+    isHostClaimable,
     canWithdraw,
     canWithdrawPerp,
     claim,
@@ -402,7 +404,6 @@ function Sidebar({ competition, eventType }) {
     isEndedRegistration,
     isFull,
     isNotStartRegistration,
-    isTCHosting,
     isTCJoined,
     open,
     t,
