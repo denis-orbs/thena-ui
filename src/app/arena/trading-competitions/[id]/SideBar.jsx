@@ -339,8 +339,8 @@ function Sidebar({ competition, eventType }) {
 
       if (isTCJoined) {
         if (
-          (competition.market === TC_MARKET_TYPES.PERPETUAL && !competition.startingBalance) ||
-          isInvalidAmount(competition.startingBalance)
+          (competition.market === TC_MARKET_TYPES.PERPETUAL && !competition.competitionRules.startingBalance) ||
+          isInvalidAmount(competition.competitionRules.startingBalance)
         ) {
           return (
             <PrimaryButton
@@ -396,7 +396,7 @@ function Sidebar({ competition, eventType }) {
     claim,
     competition.id,
     competition.market,
-    competition.startingBalance,
+    competition.competitionRules.startingBalance,
     competition.tcAddress,
     eventType,
     isEndedRegistration,
