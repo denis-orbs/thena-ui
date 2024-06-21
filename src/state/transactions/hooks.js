@@ -100,10 +100,8 @@ export const useTxn = () => {
         errorToast('Error', error.shortMessage)
         const userWantsToRetry = await askUserToRetry({ key, uuid, contract, method, params, msgValue })
         if (userWantsToRetry) {
-          console.log('truuuuuuueeeee')
           return writeTxn(key, uuid, contract, method, params, msgValue) // retry
         }
-        console.log('tessttttt')
         return false
       }
     },
