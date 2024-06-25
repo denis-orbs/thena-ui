@@ -363,15 +363,29 @@ function Sidebar({ competition, eventType }) {
     // For participants
     if (eventType === EVENT_TYPES.LIVE && isTCJoined) {
       return (
-        <Link
-          href={
-            competition.market === TC_MARKET_TYPES.PERPETUAL
-              ? `${alphaThenaTradeTcLink}/${competition.tcAddress}`
-              : `/arena/trading-competitions/${competition.id}/trade`
-          }
-        >
-          <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
-        </Link>
+        <>
+          <Link
+            href={
+              competition.market === TC_MARKET_TYPES.PERPETUAL
+                ? `${alphaThenaTradeTcLink}/${competition.tcAddress}`
+                : `/arena/trading-competitions/${competition.id}/trade`
+            }
+          >
+            <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
+          </Link>
+          {competition.market === TC_MARKET_TYPES.PERPETUAL &&
+            (!competition.competitionRules?.startingBalance ||
+              isInvalidAmount(competition.competitionRules?.startingBalance)) && (
+              <PrimaryButton
+                className='w-full'
+                onClick={() => {
+                  setShowModalDeposit(true)
+                }}
+              >
+                {t('Deposit And Allocate')}
+              </PrimaryButton>
+            )}
+        </>
       )
     }
 
