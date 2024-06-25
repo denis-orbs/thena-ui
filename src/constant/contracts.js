@@ -97,5 +97,8 @@ const Contracts = {
   dibsRewarder: {
     [ChainId.BSC]: '0x6e298908514c77c2dc1dc8faa150eef46ad7f03b',
   },
+  multiAccount: {
+    [ChainId.BSC]: '0x9a9f48888600fc9c05f11e03eab575ebb2fc2c8f',
+  },
 }
 export default Contracts

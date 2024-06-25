@@ -2,12 +2,13 @@ import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256 } from 'viem'
+import { encodeFunctionData, maxUint256 } from 'viem'
 
 import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getTcPerpetualContract } from '@/lib/contracts'
+import { getERC20Contract, getMultiAccountContract, getTcPerpetualContract } from '@/lib/contracts'
 import { fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
@@ -20,6 +21,7 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
   const [balance, setBalance] = useState(0)
   const [isWithdrawable, setIsWithdrawable] = useState(false)
   const [tradingCompetition, setTradingCompetition] = useState(undefined)
+  const [withdrawCooldown, setWithdrawCooldown] = useState(0)
 
   const { account } = useWallet()
 
@@ -71,6 +73,11 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
           let bal = 0
           try {
             bal = await readCall(tcPerpetualContract, 'getBalanceOfUser', [account])
+            if (!bal) {
+              const multiAccountContract = getMultiAccountContract()
+              const symmioAccount = await readCall(tcPerpetualContract, 'getAccountOf', [account])
+              bal = await readCall(multiAccountContract, 'balanceOf', [symmioAccount])
+            }
             setBalance(new BigNumber(bal).toNumber())
           } catch (error) {
             setBalance(0)
@@ -84,8 +91,20 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, tradingCompetition])
+  }, [account, tcAddress, tradingCompetition, type])
+
+  const getWithdrawCooldown = useCallback(async () => {
+    try {
+      const tcPerpContract = getTcPerpetualContract(tcAddress)
+      const symmioAccount = await readCall(tcPerpContract, 'getAccountOf', [account])
+      if (!symmioAccount) return
+      const multiAccountContract = getMultiAccountContract()
+      const res = await readCall(multiAccountContract, 'withdrawCooldownOf', [symmioAccount])
+      setWithdrawCooldown(new BigNumber(res).toNumber())
+    } catch (error) {
+      setWithdrawCooldown(0)
+    }
+  }, [account, tcAddress])
 
   useEffect(() => {
     getUserData()
@@ -94,6 +113,10 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
   useEffect(() => {
     checkWithdrawableTCPerp()
   }, [checkWithdrawableTCPerp])
+
+  useEffect(() => {
+    getWithdrawCooldown()
+  }, [getWithdrawCooldown])
 
   return {
     loaded,
@@ -104,6 +127,8 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
     balance,
     isWithdrawable,
     checkWithdrawableTCPerp,
+    withdrawCooldown,
+    getWithdrawCooldown,
   }
 }
 
@@ -340,4 +365,232 @@ export const useWithdrawToTCPerp = () => {
   )
 
   return { loading, withdrawTCPerp }
+}
+
+export const MUON_BSC_URLS = ['https://crypto-v3-shield.deus.finance/v1/', 'https://crypto-v3-shield2.deus.finance/v1/']
+
+export const APP_NAME = 'symmio'
+
+function getRequestParams(account, chainId, contractAddress) {
+  if (!account) return new Error('Param `account` is missing.')
+  if (!chainId) return new Error('Param `chainId` is missing.')
+  if (!contractAddress) return new Error('Param `contractAddress` is missing.')
+
+  return [
+    ['partyA', account],
+    ['chainId', chainId.toString()],
+    ['symmio', contractAddress],
+  ]
+}
+
+export const useDeallocateTCPerp = () => {
+  const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
+  const [loading, setLoading] = useState(false)
+  const { account, chainId } = useWallet()
+
+  const deallocate = useCallback(
+    async (tcAddress, balance) => {
+      setLoading(true)
+      const multiAccountContract = getMultiAccountContract()
+      const tcPerpContract = getTcPerpetualContract(tcAddress)
+
+      const symmioAccount = await readCall(tcPerpContract, 'getAccountOf', [account])
+
+      if (!symmioAccount) {
+        return
+      }
+
+      const toastId = toast.loading('requesting data from Muon...', {
+        autoClose: 5000,
+        closeButton: true,
+      })
+      let result
+      let success
+      const requestParams = getRequestParams(symmioAccount, chainId, multiAccountContract.address)
+
+      if (requestParams instanceof Error) throw new Error(requestParams.message)
+
+      for (const url of MUON_BSC_URLS) {
+        try {
+          const MuonURL = new URL(url)
+          MuonURL.searchParams.set('app', 'symmio')
+          MuonURL.searchParams.append('method', 'uPnl_A')
+          requestParams.forEach(param => {
+            MuonURL.searchParams.append(`params[${param[0]}]`, param[1])
+          })
+
+          let response = await fetch(MuonURL)
+          if (response.ok) {
+            response = await response.json()
+          } else {
+            throw new Error(response.statusText)
+          }
+          result = response.result
+          success = response.success
+
+          break // Exit the loop if successful
+        } catch (error) {
+          console.log('Retrying with the next URL...')
+          toast.update(toastId, {
+            autoClose: 5000,
+            closeButton: true,
+            render: 'request failed',
+            isLoading: false,
+            type: 'error',
+          })
+        }
+      }
+
+      if (!success) {
+        throw new Error('')
+      }
+
+      toast.update(toastId, {
+        autoClose: 5000,
+        closeButton: true,
+        render: 'Muon responded',
+        isLoading: false,
+        type: 'success',
+      })
+
+      const { reqId } = result
+      const timestamp = new BigNumber(result.data.timestamp)
+      const upnl = new BigNumber(result.data.result.uPnl)
+      const gatewaySignature = result.nodeSignature
+      const signature = new BigNumber(result.signatures[0].signature)
+      const { owner } = result.signatures[0]
+      const nonce = result.data.init.nonceAddress
+
+      const generatedSignature = {
+        reqId,
+        timestamp,
+        upnl,
+        gatewaySignature,
+        sigs: { signature, owner, nonce },
+      }
+
+      const key = uuidv4()
+      const deallocateuuid = uuidv4()
+
+      startTxn({
+        key,
+        title: t('Deallocate'),
+        transactions: {
+          [deallocateuuid]: {
+            desc: t('Deallocate'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      const deallocateAbi = [
+        {
+          inputs: [
+            {
+              internalType: 'uint256',
+              name: 'amount',
+              type: 'uint256',
+            },
+            {
+              components: [
+                {
+                  internalType: 'bytes',
+                  name: 'reqId',
+                  type: 'bytes',
+                },
+                {
+                  internalType: 'uint256',
+                  name: 'timestamp',
+                  type: 'uint256',
+                },
+                {
+                  internalType: 'int256',
+                  name: 'upnl',
+                  type: 'int256',
+                },
+                {
+                  internalType: 'bytes',
+                  name: 'gatewaySignature',
+                  type: 'bytes',
+                },
+                {
+                  components: [
+                    {
+                      internalType: 'uint256',
+                      name: 'signature',
+                      type: 'uint256',
+                    },
+                    {
+                      internalType: 'address',
+                      name: 'owner',
+                      type: 'address',
+                    },
+                    {
+                      internalType: 'address',
+                      name: 'nonce',
+                      type: 'address',
+                    },
+                  ],
+                  internalType: 'struct SchnorrSign',
+                  name: 'sigs',
+                  type: 'tuple',
+                },
+              ],
+              internalType: 'struct SingleUpnlSig',
+              name: 'upnlSig',
+              type: 'tuple',
+            },
+          ],
+          name: 'deallocate',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function',
+        },
+      ]
+
+      const proxiedData = encodeFunctionData({
+        abi: deallocateAbi,
+        functionName: 'deallocate',
+        args: [balance, generatedSignature],
+      })
+
+      const _callAbi = [
+        {
+          inputs: [
+            { internalType: 'address', name: 'account', type: 'address' },
+            { internalType: 'bytes[]', name: '_callDatas', type: 'bytes[]' },
+          ],
+          name: '_call',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function',
+        },
+      ]
+      const data = encodeFunctionData({
+        abi: _callAbi,
+        functionName: '_call',
+        args: [symmioAccount, [proxiedData]],
+      })
+
+      const res = await sendTxn(key, deallocateuuid, tcAddress, data)
+
+      if (!res) {
+        setLoading(false)
+        return false
+      }
+
+      setLoading(false)
+      endTxn({
+        key,
+        final: 'Deallocated Successful',
+      })
+
+      return res
+    },
+    [account, chainId, endTxn, sendTxn, startTxn, t],
+  )
+
+  return { loading, deallocate }
 }

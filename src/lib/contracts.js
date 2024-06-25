@@ -23,6 +23,7 @@ import {
   wbnbAbi,
 } from '@/constant/abi'
 import {
+  multiAccountAbi,
   oldTcSpotAbi,
   tcManagerAbi,
   tcPerpetualAbi,
@@ -172,3 +173,5 @@ export const getThenaIDContract = () => getContract(thenaIdAbi, Contracts.thenaI
   ************************************************************************************************** */
 
 export const getDibsRewarderContract = chainId => getContract(dibsRewarderAbi, Contracts.dibsRewarder, chainId)
+
+export const getMultiAccountContract = () => getContract(multiAccountAbi, Contracts.multiAccount, ChainId.BSC)

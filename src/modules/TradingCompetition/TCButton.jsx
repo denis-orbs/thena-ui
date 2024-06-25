@@ -1,7 +1,7 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import DepositModal from '@/app/arena/trading-competitions/[id]/trade/DepositModal'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
@@ -14,6 +14,7 @@ import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
+import DeallocateModal from './DeallocateModal'
 import { JoinModal } from './JoinModal'
 
 export function TCButton({ eventType, competition, timestamp }) {
@@ -25,6 +26,11 @@ export function TCButton({ eventType, competition, timestamp }) {
   const { withdrawDeposit } = useWithdrawDepositTC()
   const { withdrawTCPerp } = useWithdrawToTCPerp()
   const [showModalDeposit, setShowModalDeposit] = useState(false)
+  const [showModalDeallocate, setShowModalDeallocate] = useState(false)
+  const [enabledWithdraw, setEnabledWithdraw] = useState(undefined)
+  const [remainingTime, setRemainingTime] = useState(undefined)
+
+  const intervalId = useRef(undefined)
 
   const {
     isRegistered: isJoined,
@@ -40,6 +46,8 @@ export function TCButton({ eventType, competition, timestamp }) {
     isWithdrawable: canWithdrawPerp,
     checkWithdrawableTCPerp,
     balance,
+    withdrawCooldown,
+    getWithdrawCooldown,
   } = useTCPerpetualInfor(competition.tcAddress, competition.market)
 
   const [joinButtonText, setJoinButtonText] = useState({
@@ -67,6 +75,11 @@ export function TCButton({ eventType, competition, timestamp }) {
         })
         await checkWithdrawable(true)
       } else {
+        if (withdrawCooldown === 0 || !enabledWithdraw) {
+          setShowModalDeallocate(true)
+          return
+        }
+        setShowModalDeallocate(false)
         await withdrawTCPerp({
           tcAddress: competition.tcAddress,
           amount: balance,
@@ -81,10 +94,41 @@ export function TCButton({ eventType, competition, timestamp }) {
     competition.tcAddress,
     withdrawDeposit,
     checkWithdrawable,
+    withdrawCooldown,
+    enabledWithdraw,
     withdrawTCPerp,
     balance,
     checkWithdrawableTCPerp,
   ])
+
+  useEffect(() => {
+    function intervalCallback() {
+      if (competition.market !== TC_MARKET_TYPES.PERPETUAL) return
+
+      if (withdrawCooldown === 0) {
+        setEnabledWithdraw(undefined)
+        setRemainingTime(undefined)
+        clearInterval(intervalId.current)
+        return
+      }
+
+      const currentTimestamp = Math.floor(Date.now() / 1000)
+      const totalCooldown = Number(withdrawCooldown) + Number(12 * 60 * 60)
+      if (totalCooldown - currentTimestamp > 0) {
+        setRemainingTime(totalCooldown)
+        setEnabledWithdraw(false)
+      } else {
+        setEnabledWithdraw(true)
+        clearInterval(intervalId.current)
+      }
+    }
+
+    intervalCallback()
+
+    intervalId.current = setInterval(intervalCallback, 1000)
+
+    return () => clearInterval(intervalId.current)
+  }, [competition.market, withdrawCooldown])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -186,6 +230,19 @@ export function TCButton({ eventType, competition, timestamp }) {
           competition={competition}
           isOpen={showModalDeposit}
           closeModal={() => setShowModalDeposit(false)}
+        />
+      )}
+      {showModalDeallocate && (
+        <DeallocateModal
+          open={showModalDeallocate}
+          remainingTime={remainingTime}
+          balance={balance}
+          onClose={() => {
+            setShowModalDeallocate(false)
+          }}
+          tcAddress={competition.tcAddress}
+          getWithdrawCooldown={getWithdrawCooldown}
+          enabledWithdraw={enabledWithdraw}
         />
       )}
     </div>

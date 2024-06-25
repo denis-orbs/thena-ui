@@ -282,12 +282,12 @@ export function CompetitionDetail({ competition, isPreview = false }) {
             .map(item => (
               <Box
                 className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
-                key={item.address}
+                key={item?.address}
               >
                 {item?.logoURI && (
                   <Image
                     alt={_competition.name}
-                    src={item.logoURI}
+                    src={item?.logoURI}
                     className='flex-shrink-0'
                     width={28}
                     height={28}
@@ -295,8 +295,8 @@ export function CompetitionDetail({ competition, isPreview = false }) {
                   />
                 )}
                 <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
-                  <Paragraph className='text-sm'>{item.symbol}</Paragraph>
-                  <Paragraph className='whitespace-nowrap text-sm'>{item.name}</Paragraph>
+                  <Paragraph className='text-sm'>{item?.symbol}</Paragraph>
+                  <Paragraph className='whitespace-nowrap text-sm'>{item?.name}</Paragraph>
                 </div>
               </Box>
             ))}
@@ -305,10 +305,10 @@ export function CompetitionDetail({ competition, isPreview = false }) {
             .map(item => (
               <Box
                 className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
-                key={item.id}
+                key={item?.id}
               >
                 <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
-                  <Paragraph className='text-sm'>{item.symbol}</Paragraph>
+                  <Paragraph className='text-sm'>{item?.symbol}</Paragraph>
                 </div>
               </Box>
             ))}

@@ -20,6 +20,7 @@ import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { Countdown } from '@/modules/CountDown'
+import DeallocateModal from '@/modules/TradingCompetition/DeallocateModal'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
@@ -33,6 +34,12 @@ function Sidebar({ competition, eventType }) {
   const [showJoinModal, setShowJoinModal] = useState(false)
   const [showIncreasePrize, setShowIncreasePrize] = useState(false)
   const [showModalDeposit, setShowModalDeposit] = useState(false)
+  const [showModalDeallocate, setShowModalDeallocate] = useState(false)
+  const [enabledWithdraw, setEnabledWithdraw] = useState(undefined)
+  const [remainingTime, setRemainingTime] = useState(undefined)
+
+  const intervalId = useRef(undefined)
+
   const { open } = useWeb3Modal()
   const { account } = useWallet()
   const { withdrawDeposit } = useWithdrawDepositTC()
@@ -61,6 +68,8 @@ function Sidebar({ competition, eventType }) {
     isWithdrawable: canWithdrawPerp,
     checkWithdrawableTCPerp,
     balance,
+    withdrawCooldown,
+    getWithdrawCooldown,
   } = useTCPerpetualInfor(competition.tcAddress, competition.market)
 
   const [isNotStartRegistration, setIsNotStartRegistration] = useState(false)
@@ -275,6 +284,11 @@ function Sidebar({ competition, eventType }) {
         })
         await checkWithdrawable(true)
       } else {
+        if (withdrawCooldown === 0 || !enabledWithdraw) {
+          setShowModalDeallocate(true)
+          return
+        }
+        setShowModalDeallocate(false)
         await withdrawTCPerp({
           tcAddress: competition.tcAddress,
           amount: balance,
@@ -289,10 +303,42 @@ function Sidebar({ competition, eventType }) {
     competition.tcAddress,
     withdrawDeposit,
     checkWithdrawable,
+    withdrawCooldown,
+    enabledWithdraw,
     withdrawTCPerp,
     balance,
     checkWithdrawableTCPerp,
   ])
+
+  useEffect(() => {
+    function intervalCallback() {
+      if (competition.market !== TC_MARKET_TYPES.PERPETUAL) return
+
+      if (withdrawCooldown === 0) {
+        setEnabledWithdraw(undefined)
+        setRemainingTime(undefined)
+        clearInterval(intervalId.current)
+        return
+      }
+
+      const currentTimestamp = Math.floor(Date.now() / 1000)
+      const totalCooldown = Number(withdrawCooldown) + Number(12 * 60 * 60)
+      if (totalCooldown - currentTimestamp > 0) {
+        setRemainingTime(totalCooldown)
+        setEnabledWithdraw(false)
+      } else {
+        setRemainingTime(0)
+        setEnabledWithdraw(true)
+        clearInterval(intervalId.current)
+      }
+    }
+
+    intervalCallback()
+
+    intervalId.current = setInterval(intervalCallback, 1000)
+
+    return () => clearInterval(intervalId.current)
+  }, [competition.market, withdrawCooldown])
 
   const buttonByStatus = useMemo(() => {
     // Ended -> Claim rewards/fee
@@ -528,6 +574,19 @@ function Sidebar({ competition, eventType }) {
           isOpen={showIncreasePrize}
           competition={competition}
           closeModal={() => setShowIncreasePrize(false)}
+        />
+      )}
+      {showModalDeallocate && (
+        <DeallocateModal
+          open={showModalDeallocate}
+          remainingTime={remainingTime}
+          balance={balance}
+          onClose={() => {
+            setShowModalDeallocate(false)
+          }}
+          tcAddress={competition.tcAddress}
+          getWithdrawCooldown={getWithdrawCooldown}
+          enabledWithdraw={enabledWithdraw}
         />
       )}
     </div>
