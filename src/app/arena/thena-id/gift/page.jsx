@@ -13,9 +13,6 @@ function MintPage() {
 
   return (
     <div className='mt-6'>
-      <div className='mt-6'>
-        <h2>{t('THENA ID')}</h2>
-      </div>
       <div className='mt-6 flex items-center gap-6'>
         <EmphasisButton>
           <Link href='/arena/thena-id/recently-minted'>{t('Recent THENA ID Mints')}</Link>
@@ -23,6 +20,9 @@ function MintPage() {
         <EmphasisButton>
           <Link href='/arena/thena-id/available'>{t('Available THENA IDs')}</Link>
         </EmphasisButton>
+      </div>
+      <div className='mt-6'>
+        <h2>{t('THENA ID')}</h2>
       </div>
       <ThenaContent />
     </div>

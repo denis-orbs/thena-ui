@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import AvailableDropdown from '@/components/dropdown/AvailableDropdown'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
@@ -281,6 +281,14 @@ function AvailablePage() {
 
   return (
     <div>
+      <div className='mt-6 flex items-center gap-6'>
+        <EmphasisButton>
+          <Link href='/arena/thena-id/mint'>{t('Mint Thena Id')}</Link>
+        </EmphasisButton>
+        <EmphasisButton>
+          <Link href='/arena/thena-id/recently-minted'>{t('Recent THENA ID Mints')}</Link>
+        </EmphasisButton>
+      </div>
       <div className='mt-6'>
         <h2>{t('Available THENA IDs')}</h2>
       </div>
