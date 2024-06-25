@@ -88,14 +88,14 @@ export function VolumeChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'New',
+        label: 'Trading Competition Trading Volumes (USD)',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Cumulative',
+        label: 'Total Trading Competition Trading Volumes (USD)',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')
@@ -134,7 +134,7 @@ export function VolumeChart() {
 
   return (
     <>
-      <div className='flex justify-between'>
+      <div className='flex flex-col justify-between'>
         <Tabs data={panel} className='my-2 justify-start' />
         <Tabs data={filterTC} className='my-2 justify-start' />
       </div>

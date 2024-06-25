@@ -40,14 +40,14 @@ function UserChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'New',
+        label: 'New THENA Users',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Cumulative',
+        label: 'Total THENA Users',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')

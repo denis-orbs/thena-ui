@@ -87,14 +87,14 @@ export function ParticipantChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'New',
+        label: 'New Participants',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Cumulative',
+        label: 'Total Participants',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')
@@ -133,7 +133,7 @@ export function ParticipantChart() {
 
   return (
     <>
-      <div className='flex justify-between'>
+      <div className='flex flex-col justify-between'>
         <Tabs data={panel} className='my-2 justify-start' />
         <Tabs data={filterTC} className='my-2 justify-start' />
       </div>

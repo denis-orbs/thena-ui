@@ -52,14 +52,14 @@ export function FollowingChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'New',
+        label: 'New Followers',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Cumulative',
+        label: 'Total Followers',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')

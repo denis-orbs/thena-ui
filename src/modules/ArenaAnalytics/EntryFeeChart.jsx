@@ -86,14 +86,14 @@ export function EntryFeeChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'New',
+        label: 'Entry Fees Paid (USD)',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Cumulative',
+        label: 'Total Entry Fees Paid (USD)',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')
@@ -130,7 +130,7 @@ export function EntryFeeChart() {
   )
   return (
     <>
-      <div className='flex justify-between'>
+      <div className='flex flex-col justify-between'>
         <Tabs data={panel} className='my-2 justify-start' />
         <Tabs data={filterTC} className='my-2 justify-start' />
       </div>

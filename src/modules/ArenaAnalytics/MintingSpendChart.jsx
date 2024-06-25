@@ -52,14 +52,14 @@ export function MintingSpendChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'New',
+        label: 'New THENA IDs Minting Spend',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Cumulative',
+        label: 'Total THENA IDs Minting Spend',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')

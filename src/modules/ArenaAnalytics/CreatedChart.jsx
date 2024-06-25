@@ -89,14 +89,14 @@ export function CreatedChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'New',
+        label: 'New Trading Competitions Created',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Cumulative',
+        label: 'Total Trading Competitions Created',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')
@@ -135,7 +135,7 @@ export function CreatedChart() {
 
   return (
     <>
-      <div className='flex justify-between'>
+      <div className='flex flex-col justify-between'>
         <Tabs data={panel} className='my-2 justify-start' />
         <Tabs data={filterTC} className='my-2 justify-start' />
       </div>

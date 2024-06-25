@@ -52,14 +52,14 @@ export function MintedChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'New',
+        label: 'New Thena IDs Minted',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Cumulative',
+        label: 'Total THENA IDs Minted',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')
