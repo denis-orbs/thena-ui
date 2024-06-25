@@ -582,6 +582,7 @@ export const useOdosQuoteSwapTradeTC = (
   slippage,
   networkId,
   enabled = true,
+  fromAssetDecimals = 18,
 ) => {
   const res = useSWR(
     enabled &&
@@ -590,7 +591,7 @@ export const useOdosQuoteSwapTradeTC = (
       networkId === ChainId.BSC &&
       !isInvalidAmount(fromAmount) && ['useOdosQuoteSwap', tcAddress, fromAddress, toAddress, fromAmount, slippage],
     async () => {
-      const inputAmount = toWei(fromAmount).dp(0).toString(10)
+      const inputAmount = toWei(fromAmount, fromAssetDecimals).dp(0).toString(10)
 
       const quoteRequestBody = {
         chainId: networkId,

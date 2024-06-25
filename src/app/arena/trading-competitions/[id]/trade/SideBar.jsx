@@ -122,6 +122,7 @@ export function SideBar({
         !isInvalidAmount(debouncedFromTokenAmount) &&
         fromAddress.toLowerCase() !== toAsset?.address?.toLowerCase(),
     ),
+    fromAsset?.decimals,
   )
 
   const {
