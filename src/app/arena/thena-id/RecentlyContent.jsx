@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
+import { EmphasisButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
@@ -323,6 +324,15 @@ function RecentlyContent({ isMinted = true }) {
 
   return (
     <div>
+      <div className='mt-6 flex items-center gap-6'>
+        <EmphasisButton>
+          <Link href='/arena/thena-id/mint'>{t('Mint Thena Id')}</Link>
+        </EmphasisButton>
+        <EmphasisButton>
+          <Link href='/arena/thena-id/available'>{t('Available THENA IDs')}</Link>
+        </EmphasisButton>
+      </div>
+
       <div className='mt-6 flex flex-col items-start justify-center gap-3 md:flex-row md:items-center md:justify-between'>
         <h2>{t(isMinted ? 'Recently minted THENA IDs' : 'Recently gifted THENA IDs')}</h2>
         <div className='flex items-center gap-1'>

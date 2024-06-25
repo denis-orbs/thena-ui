@@ -22,7 +22,7 @@ function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} })
       return false
     }
 
-    const isSuccess = await increasePrize(competition?.tcAddress, token?.address, toWei(amount))
+    const isSuccess = await increasePrize(competition?.tcAddress, token?.address, toWei(amount, token?.decimals))
 
     if (isSuccess) {
       closeModal()

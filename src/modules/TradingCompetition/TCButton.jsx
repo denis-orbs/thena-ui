@@ -1,7 +1,7 @@
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import DepositModal from '@/app/arena/trading-competitions/[id]/trade/DepositModal'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
@@ -31,6 +31,8 @@ export function TCButton({ eventType, competition, timestamp }) {
   const [remainingTime, setRemainingTime] = useState(undefined)
 
   const intervalId = useRef(undefined)
+
+  const isTcSpot = useMemo(() => competition?.market === TC_MARKET_TYPES.SPOT, [competition?.market])
 
   const {
     isRegistered: isJoined,
@@ -172,7 +174,7 @@ export function TCButton({ eventType, competition, timestamp }) {
       {(isJoined || isJoinedPerp) && eventType === EVENT_TYPES.LIVE && (
         <Link
           href={
-            competition.market === TC_MARKET_TYPES.PERPETUAL
+            !isTcSpot
               ? `${alphaThenaTradeTcLink}/${competition.tcAddress}`
               : `/arena/trading-competitions/${competition.id}/trade`
           }
@@ -208,9 +210,9 @@ export function TCButton({ eventType, competition, timestamp }) {
           {joinButtonText.text}
         </PrimaryButton>
       )}
-      {eventType === EVENT_TYPES.UPCOMING &&
-        (competition.market === TC_MARKET_TYPES.SPOT ? isJoined : isJoinedPerp) &&
-        ((competition.market === TC_MARKET_TYPES.PERPETUAL && !competition.competitionRules?.startingBalance) ||
+      {(eventType === EVENT_TYPES.UPCOMING || (!isTcSpot && eventType === EVENT_TYPES.LIVE)) &&
+        (isTcSpot ? isJoined : isJoinedPerp) &&
+        ((!isTcSpot && !competition.competitionRules?.startingBalance) ||
           isInvalidAmount(competition.competitionRules?.startingBalance)) && (
           <PrimaryButton
             className='w-full'
@@ -218,7 +220,7 @@ export function TCButton({ eventType, competition, timestamp }) {
               setShowModalDeposit(true)
             }}
           >
-            {t(competition.market === TC_MARKET_TYPES.PERPETUAL ? 'Deposit And Allocate' : 'Deposit')}
+            {t(!isTcSpot ? 'Deposit And Allocate' : 'Deposit')}
           </PrimaryButton>
         )}
 

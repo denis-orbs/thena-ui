@@ -155,7 +155,7 @@ function TopCompetition() {
       comp.tcTrades.forEach(tcTrade => {
         const asset = assets.find(a => a.address.toLowerCase() === tcTrade.tokenIn.id.toLowerCase())
         if (asset) {
-          volume += fromWei(tcTrade.amountIn).toNumber() * asset.price
+          volume += fromWei(tcTrade.amountIn, asset.decimals).toNumber() * asset.price
         }
       })
 

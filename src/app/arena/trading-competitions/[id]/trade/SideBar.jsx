@@ -122,6 +122,7 @@ export function SideBar({
         !isInvalidAmount(debouncedFromTokenAmount) &&
         fromAddress.toLowerCase() !== toAsset?.address?.toLowerCase(),
     ),
+    fromAsset?.decimals,
   )
 
   const {
@@ -136,7 +137,7 @@ export function SideBar({
   const { data: oneInchQuoteData, isLoading: isLoadingOneInch } = useGet1InchSwapData(
     fromAddress,
     toAsset?.address,
-    toWei(debouncedFromTokenAmount),
+    toWei(debouncedFromTokenAmount, fromAsset?.decimals),
     slippage,
     networkId,
     tcAddress,
@@ -258,7 +259,7 @@ export function SideBar({
         isSuccess = await onSwapAlgebra(
           fromAsset,
           toAsset,
-          toWei(debouncedFromTokenAmount),
+          toWei(debouncedFromTokenAmount, fromAsset?.decimals),
           toWei(minimumReceived),
           tcAddress,
           deadline,

@@ -24,7 +24,7 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
     }
 
     const isSuccess = await deposit({
-      amount: toWei(amount),
+      amount: toWei(amount, token?.decimals),
       tcAddress: competition?.tcAddress,
       winningToken: token,
     })
