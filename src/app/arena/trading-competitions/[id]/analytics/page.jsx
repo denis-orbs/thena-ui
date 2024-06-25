@@ -70,7 +70,7 @@ function AnalyticPage() {
 
       data.tcTrades?.forEach(item => {
         const asset = assets.find(a => String(a.address).toLowerCase() === String(item.tokenIn?.id))
-        const amount = fromWei(item.amountIn).toNumber()
+        const amount = fromWei(item.amountIn, asset?.decimals).toNumber()
         if (asset) {
           totalVolume += amount * asset.price
         }
