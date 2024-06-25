@@ -51,9 +51,11 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
       }
 
       if (eventType === EVENT_TYPES.ENDED) {
-        await Promise.resolve(readCall(tcSpotContract, 'isWinner', [account])).then(value => {
-          setIsWinner(value[0])
-        })
+        Promise.resolve(readCall(tcSpotContract, 'isWinner', [account]))
+          .then(value => {
+            setIsWinner(value[0])
+          })
+          .catch(() => {})
       }
 
       if (ownerAddress && ownerAddress.status === 'fulfilled') {
