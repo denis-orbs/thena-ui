@@ -37,7 +37,7 @@ export async function generateMetadata({ params }) {
       url: `${siteConfig.url}/arena/profile/${encodeURIComponent(address)}/followers`,
       title: metadata.name,
       description: metadata.description,
-      siteName: `Followers of ${username} | THENA Arena`,
+      siteName: `${metadata.name} | THENA Arena`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',

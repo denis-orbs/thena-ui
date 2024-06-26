@@ -3,11 +3,11 @@ import React from 'react'
 import { siteConfig } from '@/constant/config'
 
 export const metadata = {
-  title: 'Browse THENA IDs',
+  title: 'Browse THENA IDs | THENA Arena',
   description: 'See all THENA IDs on THENA Arena.',
   openGraph: {
     url: `${siteConfig.url}/arena/thena-id/browse`,
-    title: 'Browse THENA IDs',
+    title: 'Browse THENA IDs | THENA Arena',
     description: 'See all THENA IDs on THENA Arena.',
     siteName: 'Browse THENA IDs | THENA Arena',
     images: [`${siteConfig.url}/cover.png`],

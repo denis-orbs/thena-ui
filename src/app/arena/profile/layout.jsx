@@ -14,16 +14,17 @@ export async function generateMetadata({ params }) {
 
   return {
     title: {
-      default: metadata.name,
       template: '%s | THENA Arena',
+      default: metadata.name,
     },
     description: metadata.description,
     openGraph: {
       url: `${siteConfig.url}/arena/profile/${encodeURIComponent(address)}`,
       title: {
-        default: metadata.name,
         template: '%s | THENA Arena',
+        default: metadata.name,
       },
+      siteName: `${metadata.name} | THENA Arena`,
       description: metadata.description,
       images: metadata.image,
       type: 'website',
@@ -32,8 +33,8 @@ export async function generateMetadata({ params }) {
     twitter: {
       card: 'summary_large_image',
       title: {
-        default: metadata.name,
         template: '%s | THENA Arena',
+        default: metadata.name,
       },
       description: metadata.description,
       images: metadata.image,

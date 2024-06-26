@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
       url: `${siteConfig.url}/arena/profile/${encodeURIComponent(address)}/following`,
       title: metadata.name,
       description: metadata.description,
-      siteName: 'Following of user | THENA Arena',
+      siteName: `${metadata.name} | THENA Arena`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',

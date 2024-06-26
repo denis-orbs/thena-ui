@@ -9,6 +9,7 @@ export const metadata = {
   title: {
     template: '%s | THENA Arena',
     default: 'Browse Trading Competitions',
+    absolute: 'Browse Trading Competitions | THENA Arena',
   },
   description: 'Browse or create decentralized trading competitions on THENA Arena and win big!',
   openGraph: {
@@ -16,6 +17,7 @@ export const metadata = {
     title: {
       template: '%s | THENA Arena',
       default: 'Browse Trading Competitions',
+      absolute: 'Browse Trading Competitions | THENA Arena',
     },
     description: 'Browse or create decentralized trading competitions on THENA Arena and win big!',
     siteName: 'Browse Trading Competitions | THENA Arena',
@@ -28,6 +30,7 @@ export const metadata = {
     title: {
       template: '%s | THENA Arena',
       default: 'Browse Trading Competitions',
+      absolute: 'Browse Trading Competitions | THENA Arena',
     },
     description: 'Browse or create decentralized trading competitions on THENA Arena and win big!',
     images: [`${siteConfig.url}/cover.png`],

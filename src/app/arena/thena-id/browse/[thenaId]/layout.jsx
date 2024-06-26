@@ -52,28 +52,20 @@ whether it is available or not and more.`,
   }
 
   return {
-    title: {
-      template: '%s | THENA Arena',
-      default: `${metadata.name}.thena THENA ID`,
-    },
+    title: `${metadata.name}.thena THENA ID | THENA Arena`,
     description: metadata.description,
     openGraph: {
       url: `${siteConfig.url}/arena/thena-id/browse/${thenaId}`,
-      title: {
-        template: '%s | THENA Arena',
-        default: `${metadata.name}`,
-      },
+      title: `${metadata.name}.thena THENA ID | THENA Arena`,
       description: metadata.description,
+      siteName: `${metadata.name}.thena THENA ID | THENA Arena`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',
     },
     twitter: {
       card: 'summary_large_image',
-      title: {
-        template: '%s | THENA Arena',
-        default: `${metadata.name}`,
-      },
+      title: `${metadata.name}.thena THENA ID | THENA Arena`,
       description: metadata.description,
       images: metadata.image,
     },

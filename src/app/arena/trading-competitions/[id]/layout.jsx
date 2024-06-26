@@ -64,7 +64,7 @@ export async function generateMetadata({ params }) {
   return {
     title: {
       template: '%s | THENA Arena',
-      default: `${metadata.name}`,
+      default: metadata.name,
     },
     description: `Compete in ${metadata.name} for ${metadata.prizeData} today!  Fully decentralized trading competition on THENA Arena!`,
     openGraph: {
@@ -73,6 +73,7 @@ export async function generateMetadata({ params }) {
         template: '%s | THENA Arena',
         default: `${metadata.name}`,
       },
+      siteName: `${metadata.name} | THENA Arena`,
       description: `Compete in ${metadata.name} for ${metadata.prizeData} today! Fully decentralized trading competition on THENA Arena!`,
       images: metadata.image,
       type: 'website',
