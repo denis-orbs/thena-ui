@@ -28,7 +28,7 @@ export async function generateMetadata({ params }) {
   const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
 
   const metadata = {
-    name: `Trading Page of  ${competition?.name ?? 'competition'}`,
+    name: `Trading Page of ${competition?.name ?? 'competition'}`,
     image: [competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner],
     description: `Trade within ${competition?.name ?? 'competition'} on THENA Arena using your deposited balance.`,
   }
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
       url: `${siteConfig.url}/arena/trading-competitions/${id}/trade`,
       title: metadata.name,
       description: metadata.description,
-      siteName: `Trading Page of  ${metadata.name} | THENA Arena`,
+      siteName: `${metadata.name} | THENA Arena`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',

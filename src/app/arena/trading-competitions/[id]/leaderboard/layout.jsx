@@ -37,7 +37,7 @@ export async function generateMetadata({ params }) {
       url: `${siteConfig.url}/arena/trading-competitions/${id}/leaderboard`,
       title: metadata.name,
       description: metadata.description,
-      siteName: `Leaderboard of ${metadata.name} | THENA Arena`,
+      siteName: `${metadata.name} | THENA Arena`,
       images: metadata.image,
       type: 'website',
       locale: 'en_US',
