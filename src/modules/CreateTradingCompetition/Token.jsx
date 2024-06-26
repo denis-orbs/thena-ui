@@ -13,9 +13,10 @@ import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { TC_MARKET_TYPES } from '@/constant'
+import { DEPOSIT_TYPE, TC_MARKET_TYPES, TC_PARTICIPANTS, WIN_TYPE } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { formatAmount } from '@/lib/utils'
+import { MinusIcon, PlusIcon } from '@/svgs'
 
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
@@ -27,7 +28,9 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
 
   const t = useTranslations()
 
+  const depositType = useMemo(() => data.depositType, [data.depositType])
   const isSpotType = useMemo(() => data.market === TC_MARKET_TYPES.SPOT, [data.market])
+  const winType = useMemo(() => data.winType, [data.winType])
 
   const USDTAsset = useMemo(
     () =>
@@ -47,6 +50,20 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
     }
     return []
   }, [pairLists])
+
+  const handleParticipants = val => {
+    if (val === '') {
+      setData({
+        ...data,
+        maxParticipants: '',
+      })
+    } else {
+      setData({
+        ...data,
+        maxParticipants: parseInt(val, 10) > TC_PARTICIPANTS.MAX ? TC_PARTICIPANTS.MAX : parseInt(val, 10),
+      })
+    }
+  }
 
   useEffect(() => {
     const { winningToken } = data.competitionRules
@@ -105,6 +122,50 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
   return (
     <>
       <div>
+        <div className='mb-3 max-w-[100%] md:mt-5 md:flex md:max-w-[50%] md:space-x-6 md:space-y-0'>
+          <div className='w-full'>
+            <LabelTooltip
+              label='Max Participants'
+              showInfoIcon
+              tooltip='Select how many participants you would like to have in your trading competition.'
+              id='trading-competition-max-participants'
+              required
+            />
+            <Input
+              type='number'
+              max={TC_PARTICIPANTS.MAX}
+              min={TC_PARTICIPANTS.MIN}
+              value={data.maxParticipants}
+              onChange={e => handleParticipants(e.target.value)}
+              TrailingButton={
+                <div className='absolute right-3 top-2.5 flex items-center space-x-3'>
+                  <button
+                    onClick={() => {
+                      handleParticipants(data.maxParticipants - 1)
+                    }}
+                    disabled={data.maxParticipants <= TC_PARTICIPANTS.MIN}
+                    className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
+                    type='button'
+                    aria-label='minus-participants'
+                  >
+                    <MinusIcon className='h-[18px] w-[18px] stroke-white' />
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleParticipants(data.maxParticipants + 1)
+                    }}
+                    disabled={data.maxParticipants >= TC_PARTICIPANTS.MAX}
+                    className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
+                    type='button'
+                    aria-label='plus-participants'
+                  >
+                    <PlusIcon className='h-[18px] w-[18px] stroke-white' />
+                  </button>
+                </div>
+              }
+            />
+          </div>
+        </div>
         <LabelTooltip
           id='competition-type'
           label='Competition Type'
@@ -239,46 +300,84 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
           </div>
         </div>
       </div>
-      <div className='mt-3 items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
-        <div className='flex:col flex h-[50px] w-full items-center'>
-          {!isSpotType && (
-            <Toggle
-              checked={isStartingBalance}
-              toggleId='starting'
-              onChange={() => {
-                setIsStartingBalance(!isStartingBalance)
+      {isSpotType && (
+        <div className='mt-3'>
+          <LabelTooltip
+            id='deposit-type'
+            label='Deposit Type'
+            showInfoIcon
+            tooltip='Select the deposit type you would like your trading competition to be in'
+            required
+          />
+          <div className='mt-3 flex items-center space-x-3'>
+            <button
+              onClick={() => {
                 setData({
                   ...data,
-                  competitionRules: {
-                    ...data.competitionRules,
-                    startingBalance: '',
-                  },
+                  depositType: DEPOSIT_TYPE.FREE,
+                  winType: WIN_TYPE.PNL,
                 })
               }}
-            />
-          )}
-          <LabelTooltip
-            id='startingBalance'
-            label={isSpotType ? 'Total Deposit Required to Join' : 'Required Deposit to Join'}
-            tooltip='Required deposit to participate in the competition.'
-            showInfoIcon
-            className='mb-0'
-            required={isSpotType ? true : isStartingBalance}
-          />
-        </div>
-        {((!isSpotType && isStartingBalance) || isSpotType) && (
-          <div className='w-full'>
-            <Input
-              value={data.competitionRules.startingBalance}
-              type='number'
-              onChange={e => {
+              className={`px-6 py-[8.4px] uppercase text-white ${
+                !depositType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
+              } rounded-lg`}
+              type='button'
+            >
+              {t('Free')}
+            </button>
+            <button
+              className={`d px-6 py-[8.4px] uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
+                depositType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
+              } rounded-lg`}
+              type='button'
+              disabled={!isAllowedPerpetual}
+              onClick={() => {
                 setData({
                   ...data,
-                  competitionRules: {
-                    ...data.competitionRules,
-                    startingBalance: e.target.value,
-                  },
+                  depositType: DEPOSIT_TYPE.FIXED,
+                  winType: WIN_TYPE.AMOUNT,
                 })
+              }}
+            >
+              {t('Fixed')}
+            </button>
+          </div>
+
+          <div className='my-2 flex flex-col justify-between md:flex-row'>
+            <LabelTooltip
+              id='balance-label'
+              showInfoIcon={depositType}
+              label={depositType ? 'Required Deposit to Join' : 'Minimum Balance to Join'}
+              required={depositType}
+              tooltip={depositType ? 'Required deposit to participate in the competition.' : undefined}
+            />
+            <Input
+              value={
+                data.depositType === DEPOSIT_TYPE.FREE
+                  ? data.competitionRules.minimumBalance
+                  : data.competitionRules.startingBalance
+              }
+              type='number'
+              className='md:w-72'
+              onWheel={e => e.target.blur()}
+              onChange={e => {
+                if (data.depositType === DEPOSIT_TYPE.FREE) {
+                  setData({
+                    ...data,
+                    competitionRules: {
+                      ...data.competitionRules,
+                      minimumBalance: e.target.value,
+                    },
+                  })
+                } else {
+                  setData({
+                    ...data,
+                    competitionRules: {
+                      ...data.competitionRules,
+                      startingBalance: e.target.value,
+                    },
+                  })
+                }
               }}
               TrailingButton={
                 data.competitionRules.winningToken ? (
@@ -295,8 +394,103 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               }
             />
           </div>
-        )}
-      </div>
+        </div>
+      )}
+      {!isSpotType && (
+        <div className='mt-3 items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
+          <div className='flex:col flex h-[50px] w-full items-center'>
+            <Toggle
+              checked={isStartingBalance}
+              toggleId='starting'
+              onChange={() => {
+                setIsStartingBalance(!isStartingBalance)
+                setData({
+                  ...data,
+                  competitionRules: {
+                    ...data.competitionRules,
+                    startingBalance: '',
+                  },
+                })
+              }}
+            />
+
+            <LabelTooltip
+              id='startingBalance'
+              label='Required Deposit to Join'
+              tooltip='Required deposit to participate in the competition.'
+              showInfoIcon
+              className='mb-0'
+              required={isStartingBalance}
+            />
+          </div>
+          {isStartingBalance && (
+            <div className='w-full'>
+              <Input
+                value={data.competitionRules.startingBalance}
+                type='number'
+                onChange={e => {
+                  setData({
+                    ...data,
+                    competitionRules: {
+                      ...data.competitionRules,
+                      startingBalance: e.target.value,
+                    },
+                  })
+                }}
+                TrailingButton={
+                  data.competitionRules.winningToken ? (
+                    <div className='absolute right-4 flex items-center space-x-1.5'>
+                      <TextSubHeading>
+                        $
+                        {formatAmount(data.competitionRules.startingBalance * data.competitionRules.winningToken.price)}
+                      </TextSubHeading>
+                      <Image alt='' src={data.competitionRules.winningToken.logoURI} width={20} height={20} />
+                      <span className='font-figtree text-lg leading-[22px] text-white'>
+                        {data.competitionRules.winningToken.symbol}
+                      </span>
+                    </div>
+                  ) : undefined
+                }
+              />
+            </div>
+          )}
+        </div>
+      )}
+      {isSpotType && (
+        <>
+          <LabelTooltip id='win-type-label' label='Win Type' showInfoIcon tooltip='Select the win type' required />
+          <div className='mt-3 flex items-center space-x-3'>
+            <button
+              className={`d px-6 py-[8.4px] uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
+                winType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
+              } rounded-lg`}
+              type='button'
+              onClick={() => {
+                setData({
+                  ...data,
+                  winType: WIN_TYPE.PNL,
+                })
+              }}
+            >
+              {t('%PNL')}
+            </button>
+            <button
+              onClick={() => {
+                setData({
+                  ...data,
+                  winType: WIN_TYPE.AMOUNT,
+                })
+              }}
+              className={`px-6 py-[8.4px] uppercase text-white ${
+                !winType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
+              } rounded-lg`}
+              type='button'
+            >
+              {t('Amount')}
+            </button>
+          </div>
+        </>
+      )}
 
       {/* Multi-select for trading tokens */}
       <CustomMultipleTokenModal
@@ -313,6 +507,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
           })
         }}
         assets={tradingTokens}
+        maxAssets={tradingTokens.length}
       />
 
       {/* Select for winning token */}

@@ -845,6 +845,7 @@
   "Transferred successfully": "Transferred successfully. The ThenaID will take around 1 minute to update its owner",
   "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization.",
   "Required Deposit to Join": "Required Deposit to Join",
+  "Minimum Balance to Join": "Minimum Balance to Join",
   "Prize Token Note": "You can add the prize after the trading competition has been created.",
   "Deposit And Allocate": "Deposit And Allocate",
   "Withdraw": "Withdraw",
@@ -867,5 +868,8 @@
   "New THENA Users": "New THENA Users",
   "Total THENA Users": "Total THENA Users",
   "Trading Competition Trading Volumes (USD)": "Trading Competition Trading Volumes (USD)",
-  "Total Trading Competition Trading Volumes (USD)": "Total Trading Competition Trading Volumes (USD)"
+  "Total Trading Competition Trading Volumes (USD)": "Total Trading Competition Trading Volumes (USD)",
+  "Deposit Type": "Deposit Type",
+  "Select the deposit type you would like your trading competition to be in": "Select the deposit type you would like your trading competition to be in.",
+  "Prize Distribution Note": "The maximum number of winners you can set is limited to 100."
 }

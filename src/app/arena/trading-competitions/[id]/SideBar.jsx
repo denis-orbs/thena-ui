@@ -269,7 +269,7 @@ function Sidebar({ competition, eventType }) {
 
   const claim = useCallback(async () => {
     try {
-      await claimReward({ tcAddress: competition.tcAddress, isOwner: isHostClaimable })
+      await claimReward({ tcAddress: competition.tcAddress, isClaimOwnerFee: isHostClaimable })
       checkClaimable(true)
     } catch (e) {
       console.error(e)

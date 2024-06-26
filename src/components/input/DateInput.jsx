@@ -12,6 +12,7 @@ function DateInput({
   onChange,
   showTimeSelect = false,
   dateFormat = 'yyyy/MM/dd',
+  ...rest
 }) {
   return (
     <div className={cn('relative flex items-center', className)}>
@@ -25,6 +26,7 @@ function DateInput({
         placeHolder='Choose date'
         showTimeSelect={showTimeSelect}
         calendarClassName={showTimeSelect ? 'w-[326px]' : ''}
+        {...rest}
       />
       <CalendarIcon className='absolute left-4 top-[14px] h-5 w-5' />
     </div>

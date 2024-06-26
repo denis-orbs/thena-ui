@@ -30,22 +30,20 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
 
         case 1: {
           const {
-            maxParticipants,
             timestamp: { registrationStart },
           } = data
 
-          error =
-            Number(maxParticipants) < TC_PARTICIPANTS.MIN || Number(maxParticipants) > TC_PARTICIPANTS.MAX
-              ? 'Invalid Max Participants'
-              : registrationStart < new Date().getTime()
-                ? 'Invalid Registration Start'
-                : ''
+          error = registrationStart < new Date().getTime() ? 'Invalid Registration Start' : ''
 
           break
         }
 
         case 2: {
-          const { winningToken, tradingTokens, startingBalance, pairIds } = data.competitionRules
+          const { winningToken, tradingTokens, startingBalance, pairIds, maxParticipants } = data.competitionRules
+
+          if (Number(maxParticipants) < TC_PARTICIPANTS.MIN || Number(maxParticipants) > TC_PARTICIPANTS.MAX) {
+            error = 'Invalid Max Participants'
+          }
 
           if (isSpotType) {
             if (tradingTokens.length < 2) {
@@ -58,7 +56,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
             error = 'Invalid Pair Tokens'
           } else error = ''
 
-          if ((isSpotType || (!isSpotType && isStartingBalance)) && isInvalidAmount(startingBalance)) {
+          if ((data.depositType || isStartingBalance) && isInvalidAmount(startingBalance)) {
             error = 'Invalid Total Deposit'
           }
           break
@@ -117,6 +115,8 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
       closeModal={handleClose}
       fontSizeTitle='text-xl'
       width={750}
+      onAfterOpen={() => (document.body.style.overflow = 'hidden')}
+      onAfterClose={() => (document.body.style.overflow = 'unset')}
     >
       <ModalBody className='p-2'>
         <div className='rounded-lg'>

@@ -7,7 +7,7 @@ import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
 import { TextSubHeading } from '@/components/typography'
-import { TC_MARKET_TYPES } from '@/constant'
+import { MAX_ASSETS_PRIZE_TOKEN, TC_MARKET_TYPES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { formatAmount, ordinals } from '@/lib/utils'
 
@@ -183,6 +183,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             />
           </div>
         </div>
+        <TextSubHeading className='mt-2 block'>Note: {t('Prize Distribution Note')}</TextSubHeading>
       </div>
       <div className='mt-4 grid w-full gap-x-[26px] gap-y-4 md:mt-[30px] md:grid-cols-2'>
         {weights.map((item, idx) => (
@@ -233,7 +234,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           className={`bg-green-600 p-[0.5rem] hover:bg-green-600 ${
             total >= 100 ? 'bg-green-800 hover:bg-green-800' : ''
           }`}
-          disabled={total >= 100}
+          disabled={total >= 100 || weights.length >= 100}
         >
           <Image src='/svgs/plus-v2.svg' alt='' width={20} height={20} />
         </PrimaryButton>
@@ -255,6 +256,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
           })
         }}
         assets={assetsByMarket}
+        maxAssets={MAX_ASSETS_PRIZE_TOKEN}
       />
     </>
   )

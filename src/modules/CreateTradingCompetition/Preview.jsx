@@ -62,6 +62,9 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
           ? toWei(data.competitionRules.startingBalance, data.competitionRules.winningToken.decimals).dp(0).toString(10)
           : 0,
         pairIds: data.competitionRules.pairIds.filter(item => item !== 0),
+        minimumBalance: !isInvalidAmount(data.competitionRules.minimumBalance)
+          ? toWei(data.competitionRules.minimumBalance, data.competitionRules.winningToken.decimals).dp(0).toString(10)
+          : 0,
       },
     }
   }, [data, account])

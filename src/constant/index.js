@@ -282,13 +282,25 @@ export const TC_STEPS = ['DETAILS', 'TIME SETTINGS', 'TYPE AND TOKENS', 'FEES AN
 
 export const TC_PARTICIPANTS = {
   MIN: 2,
-  MAX: 10000,
+  MAX: 5000,
 }
+
+export const MAX_ASSETS_PRIZE_TOKEN = 8
 
 export const TC_MARKET_TYPES = {
   ALL: 'ALL',
   SPOT: 'SPOT',
   PERPETUAL: 'PERPETUALS',
+}
+
+export const DEPOSIT_TYPE = {
+  FREE: false,
+  FIXED: true,
+}
+
+export const WIN_TYPE = {
+  AMOUNT: false,
+  PNL: true,
 }
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -314,7 +326,7 @@ const roundupTime = () => {
 export const INIT_VALUES = {
   name: '',
   description: '',
-  maxParticipants: 10000,
+  maxParticipants: 5000,
   timestamp: {
     registrationStart: roundupTime(), // start timestamp
     registrationEnd: roundupTime() + MIN_REG, // end timestamp
@@ -337,12 +349,15 @@ export const INIT_VALUES = {
     winningToken: null, //  winning token
     tradingTokens: [], //  trading tokens
     pairIds: [],
+    minimumBalance: '', // minimum balance
   },
   entryFee: [], // entry fee of 0 prize token
   owner: {
     id: '',
   }, // owner address
   tcAddress: ZERO_ADDRESS, // trading competition contract address
+  depositType: DEPOSIT_TYPE.FREE,
+  winType: WIN_TYPE.PNL,
 }
 
 export const SWAP_TYPES = {

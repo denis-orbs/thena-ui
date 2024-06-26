@@ -7,11 +7,11 @@ import SearchInput from '@/components/input/SearchInput'
 import Modal, { ModalFooter } from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { formatAmount, goScan } from '@/lib/utils'
+import { cn, formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { CheckIcon, ExternalIcon } from '@/svgs'
 
-function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelectedAssets, assets }) {
+function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelectedAssets, assets, maxAssets }) {
   const [searchText, setSearchText] = useState('')
   const { networkId } = useChainSettings()
   const t = useTranslations()
@@ -58,7 +58,7 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
               if (selectedAssets.length > 0) {
                 setSelectedAssets([])
               } else {
-                setSelectedAssets(assets)
+                setSelectedAssets(assets.slice(0, maxAssets))
               }
             }}
           >
@@ -71,14 +71,22 @@ function CustomMultipleTokenModal({ popup, setPopup, selectedAssets, setSelected
 
             return (
               <div
-                className={`flex cursor-pointer items-center justify-between rounded-lg px-6 py-3
-                 hover:bg-slate-800 ${isSelected ? 'bg-neutral-800' : ''} gap-5`}
+                className={cn(
+                  `flex cursor-pointer items-center justify-between gap-5 rounded-lg px-6
+                 py-3 hover:bg-slate-800`,
+                  isSelected && 'bg-neutral-800',
+                  selectedAssets.length >= maxAssets
+                    ? isSelected
+                      ? 'pointer-events-auto cursor-pointer '
+                      : 'pointer-events-none cursor-not-allowed'
+                    : '',
+                )}
                 onClick={() => {
                   let temp = [...selectedAssets]
                   if (isSelected) {
                     temp = selectedAssets.filter(ele => ele.address !== item.address)
                     setSelectedAssets(temp)
-                  } else {
+                  } else if (selectedAssets.length < maxAssets) {
                     temp.push(item)
                     setSelectedAssets(temp)
                   }

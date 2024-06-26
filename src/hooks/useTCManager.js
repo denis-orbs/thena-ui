@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
-import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
+import { DEPOSIT_TYPE, TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { tcManagerAbi } from '@/constant/abi/core'
 import { useTC } from '@/context/tcContext'
 import { readCall, waitCall } from '@/lib/contractActions'
@@ -69,13 +69,12 @@ export const useCreateTC = () => {
         }
       }
 
-      let competitionRules = {
-        starting_balance: data.competitionRules.startingBalance,
-      }
+      let competitionRules = {}
 
       if (isPerpetualTC) {
         competitionRules = {
           ...competitionRules,
+          starting_balance: data.competitionRules.startingBalance,
           pairIds: data.competitionRules.pairIds,
         }
       } else {
@@ -83,6 +82,8 @@ export const useCreateTC = () => {
           ...competitionRules,
           winning_token: data.competitionRules.winningToken.address,
           tradingTokens: data.competitionRules.tradingTokens.map(ele => ele.address),
+          starting_balance: data.depositType === DEPOSIT_TYPE.FREE ? 0 : data.competitionRules.startingBalance,
+          minimum_balance: data.depositType === DEPOSIT_TYPE.FREE ? data.competitionRules.minimumBalance : 0,
         }
       }
 
@@ -100,13 +101,16 @@ export const useCreateTC = () => {
         },
         competitionRules,
         prize: {
-          win_type: false,
+          win_type: data.winType,
           weights: data.prize.weights,
           totalPrize: data.prize.totalPrize,
           owner_fee: data.prize.ownerFee,
           token: data.prize.token.map(token => token.address),
         },
+        deposit_type: data.depositType,
       }
+
+      console.log({ tradingComp })
 
       const isSuccess = await writeTxn(key, createuuid, tcManagerContract, 'create', [tradingComp])
       if (!isSuccess) {

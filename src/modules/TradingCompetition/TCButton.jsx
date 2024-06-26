@@ -61,7 +61,7 @@ export function TCButton({ eventType, competition, timestamp }) {
     try {
       await claimReward({
         tcAddress: competition.tcAddress,
-        isOwner: isHostClaimable,
+        isClaimOwnerFee: isHostClaimable,
       })
       await checkClaimable(true)
     } catch (e) {

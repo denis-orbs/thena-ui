@@ -131,7 +131,9 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
           readCall(tcSpotContract, 'ownerHasClaimed', [account]),
           readCall(tcSpotContract, 'ownerFeeAmount', []),
         ])
-          .then(([ownerClaimed, feeAmount]) => setIsHostClaimable(!ownerClaimed && !fromWei(feeAmount).isZero()))
+          .then(([ownerClaimed, feeAmount]) =>
+            setIsHostClaimable(!ownerClaimed && feeAmount[0].some(fee => !fromWei(fee).isZero())),
+          )
           .catch(
             async () =>
               await Promise.all([
@@ -506,7 +508,7 @@ export const useClaimTC = () => {
   const [loading, setLoading] = useState(false)
 
   const claimReward = useCallback(
-    async ({ tcAddress, isOwner }) => {
+    async ({ tcAddress, isClaimOwnerFee }) => {
       const key = uuidv4()
       const claimuuid = uuidv4()
       const tcSpotContract = getTcSpotContract(tcAddress)
@@ -514,19 +516,23 @@ export const useClaimTC = () => {
       setLoading(true)
       startTxn({
         key,
-        title: isOwner ? t('Claim Owner Fee') : t('Claim Rewards'),
+        title: isClaimOwnerFee ? t('Claim Owner Fee') : t('Claim Rewards'),
         transactions: {
           [claimuuid]: {
-            desc: isOwner ? t('Claim Owner Fee') : t('Claim Rewards'),
+            desc: isClaimOwnerFee ? t('Claim Owner Fee') : t('Claim Rewards'),
             status: TXN_STATUS.START,
             hash: null,
           },
         },
       })
 
-      const isSuccess = await writeTxn(key, claimuuid, tcSpotContract, isOwner ? 'claimOwnerFee' : 'claimPrize', [
-        account,
-      ])
+      const isSuccess = await writeTxn(
+        key,
+        claimuuid,
+        tcSpotContract,
+        isClaimOwnerFee ? 'claimOwnerFee' : 'claimPrize',
+        [account],
+      )
       if (!isSuccess) {
         setLoading(false)
         closeTxn()
