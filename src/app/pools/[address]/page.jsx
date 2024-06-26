@@ -22,6 +22,8 @@ import Position from '@/modules/Position'
 import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/svgs'
 
+import { listPoolAddressSpecial } from '../page'
+
 export default function SpecificPoolPage({ params }) {
   const [currentStep, setCurrentStep] = useState(1)
   const t = useTranslations()
@@ -133,6 +135,20 @@ export default function SpecificPoolPage({ params }) {
                 </CustomTooltip>
                 <CustomTooltip id='eigenBadgeIconDetail' className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
+                </CustomTooltip>
+              </div>
+            )}
+            {listPoolAddressSpecial.includes(pool.address) && (
+              <div className='ml-4 mt-5 flex items-center gap-2'>
+                <div className='size-6' data-tooltip-id={`pool-${pool.address}`}>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EtherFi'
+                    src='/images/GQhgnIEbUAA4gjewe.jpeg'
+                  />
+                </div>
+                <CustomTooltip id={`pool-${pool.address}`} className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Pool Special tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
             )}
