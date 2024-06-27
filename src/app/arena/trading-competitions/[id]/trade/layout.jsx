@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request'
+import { compact } from 'lodash'
 import React from 'react'
 
 import { siteConfig } from '@/constant/config'
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }) {
 
   const metadata = {
     name: `Trading Page of ${competition?.name ?? 'competition'}`,
-    image: [competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner],
+    image: compact([competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner])[0],
     description: `Trade within ${competition?.name ?? 'competition'} on THENA Arena using your deposited balance.`,
   }
 

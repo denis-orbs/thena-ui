@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { gql } from 'graphql-request'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, compact } from 'lodash'
 import React from 'react'
 
 import { siteConfig } from '@/constant/config'
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }) {
 
   const metadata = {
     name: competition?.name ?? 'competition',
-    image: [competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner],
+    image: compact([competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner])[0],
     prizeData,
   }
 

@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request'
+import { compact } from 'lodash'
 
 import { siteConfig } from '@/constant/config'
 import { v4Client } from '@/lib/graphql'
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }) {
 
   const metadata = {
     name: `Analytics of ${competition.name ?? 'competition'}`,
-    image: [competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner],
+    image: compact([competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner])[0],
     description: `Analyze ${competition?.name ?? 'competition'} on THENA Arena and see the volume traded, 
 the number of transactions and a lot more.`,
   }
