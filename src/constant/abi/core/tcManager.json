@@ -88,16 +88,6 @@
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": true, "internalType": "address", "name": "old", "type": "address" },
-      { "indexed": false, "internalType": "address", "name": "newFactory", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "blocktimestamp", "type": "uint256" }
-    ],
-    "name": "SetPerpetualFactory",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
       { "indexed": true, "internalType": "uint256", "name": "oldAmount", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "newAmount", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "blocktimestamp", "type": "uint256" }
@@ -259,6 +249,7 @@
           {
             "components": [
               { "internalType": "uint256", "name": "starting_balance", "type": "uint256" },
+              { "internalType": "uint256", "name": "minimum_balance", "type": "uint256" },
               { "internalType": "address", "name": "winning_token", "type": "address" },
               { "internalType": "address[]", "name": "tradingTokens", "type": "address[]" }
             ],
@@ -326,6 +317,7 @@
           {
             "components": [
               { "internalType": "uint256", "name": "starting_balance", "type": "uint256" },
+              { "internalType": "uint256", "name": "minimum_balance", "type": "uint256" },
               { "internalType": "address", "name": "winning_token", "type": "address" },
               { "internalType": "address[]", "name": "tradingTokens", "type": "address[]" }
             ],
@@ -382,13 +374,6 @@
     "name": "pauseCompetition",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "perpetualFactory",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -451,13 +436,6 @@
   {
     "inputs": [{ "internalType": "bool", "name": "_type", "type": "bool" }],
     "name": "setPermissionlessCreation",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "_perpetualFactory", "type": "address" }],
-    "name": "setPerpetualFactory",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

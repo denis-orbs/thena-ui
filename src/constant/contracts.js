@@ -72,10 +72,10 @@ const Contracts = {
     [ChainId.BSC]: '0x89b8AA89FDd0507a99d334CBe3C808fAFC7d850E',
   },
   tcManager: {
-    [ChainId.BSC]: '0x0BD32Dd59b40f78b7A9E1E629293b596E60ECF6A',
+    [ChainId.BSC]: '0x844392114a345644FA9Ba094ff4DAe5fbdbfdE49',
   },
   tcPerpetualManager: {
-    [ChainId.BSC]: '0xae47229E279f85f1006B86aFf60Dc6115ACF79bb',
+    [ChainId.BSC]: '0xc90992b9aE19ec04b9AA9878A510c2ae3203aEe7',
   },
   fusionRouter: FUSION_ROUTER_ADDRESSES,
   fusionQuoter: FUSION_QUOTER_ADDRESSES,
