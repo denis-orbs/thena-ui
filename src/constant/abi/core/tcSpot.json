@@ -129,6 +129,7 @@
           {
             "components": [
               { "internalType": "uint256", "name": "starting_balance", "type": "uint256" },
+              { "internalType": "uint256", "name": "minimum_balance", "type": "uint256" },
               { "internalType": "address", "name": "winning_token", "type": "address" },
               { "internalType": "address[]", "name": "tradingTokens", "type": "address[]" }
             ],
@@ -432,6 +433,7 @@
           {
             "components": [
               { "internalType": "uint256", "name": "starting_balance", "type": "uint256" },
+              { "internalType": "uint256", "name": "minimum_balance", "type": "uint256" },
               { "internalType": "address", "name": "winning_token", "type": "address" },
               { "internalType": "address[]", "name": "tradingTokens", "type": "address[]" }
             ],
