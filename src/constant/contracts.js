@@ -72,7 +72,7 @@ const Contracts = {
     [ChainId.BSC]: '0x89b8AA89FDd0507a99d334CBe3C808fAFC7d850E',
   },
   tcManager: {
-    [ChainId.BSC]: '0x844392114a345644FA9Ba094ff4DAe5fbdbfdE49',
+    [ChainId.BSC]: '0x8D03FeBF03cD8E6F2388e587A6a1263360f639ec',
   },
   tcPerpetualManager: {
     [ChainId.BSC]: '0xc90992b9aE19ec04b9AA9878A510c2ae3203aEe7',
