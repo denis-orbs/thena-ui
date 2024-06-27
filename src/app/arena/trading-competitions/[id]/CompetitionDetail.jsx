@@ -277,41 +277,42 @@ export function CompetitionDetail({ competition, isPreview = false }) {
           )}
         </div>
         <div className='mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-4'>
-          {_competition.competitionRules?.tradingTokens
-            ?.slice(0, viewAllTradable ? _competition.competitionRules?.tradingTokens?.length : 8)
-            .map(item => (
-              <Box
-                className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
-                key={item?.address}
-              >
-                {item?.logoURI && (
-                  <Image
-                    alt={_competition.name}
-                    src={item?.logoURI}
-                    className='flex-shrink-0'
-                    width={28}
-                    height={28}
-                    loading='lazy'
-                  />
-                )}
-                <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
-                  <Paragraph className='text-sm'>{item?.symbol}</Paragraph>
-                  <Paragraph className='whitespace-nowrap text-sm'>{item?.name}</Paragraph>
-                </div>
-              </Box>
-            ))}
-          {_competition.competitionRules?.pairIds
-            ?.slice(0, viewAllTradable ? _competition.competitionRules?.pairIds?.length : 8)
-            .map(item => (
-              <Box
-                className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
-                key={item?.id}
-              >
-                <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
-                  <Paragraph className='text-sm'>{item?.symbol}</Paragraph>
-                </div>
-              </Box>
-            ))}
+          {_competition.market === TC_MARKET_TYPES.SPOT
+            ? _competition.competitionRules?.tradingTokens
+                ?.slice(0, viewAllTradable ? _competition.competitionRules?.tradingTokens?.length : 8)
+                .map(item => (
+                  <Box
+                    className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
+                    key={item?.address}
+                  >
+                    {item?.logoURI && (
+                      <Image
+                        alt={_competition.name}
+                        src={item?.logoURI}
+                        className='flex-shrink-0'
+                        width={28}
+                        height={28}
+                        loading='lazy'
+                      />
+                    )}
+                    <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
+                      <Paragraph className='text-sm'>{item?.symbol}</Paragraph>
+                      <Paragraph className='whitespace-nowrap text-sm'>{item?.name}</Paragraph>
+                    </div>
+                  </Box>
+                ))
+            : _competition.competitionRules?.pairIds
+                ?.slice(0, viewAllTradable ? _competition.competitionRules?.pairIds?.length : 8)
+                .map(item => (
+                  <Box
+                    className='flex items-center space-x-2.5 bg-neutral-800 px-4 py-4 md:space-x-3 lg:px-4 lg:py-4'
+                    key={item?.id}
+                  >
+                    <div className='flex flex-1 flex-col overflow-hidden text-ellipsis'>
+                      <Paragraph className='text-sm'>{item?.symbol}</Paragraph>
+                    </div>
+                  </Box>
+                ))}
         </div>
       </Box>
     </>

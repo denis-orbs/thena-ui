@@ -875,5 +875,9 @@
   "Select the deposit type you would like your trading competition to be in": "Select the deposit type you would like your trading competition to be in.",
   "Prize Distribution Note": "The maximum number of winners you can set is limited to 100.",
   "Pool Special tooltip": "Liquidity providers in this pool are eligible for The Cosmic Adventure Challenge Season 3",
-  "Zapper": "Zapper"
+  "Zapper": "Zapper",
+  "Win Type": "Win Type",
+  "Minimum Deposit to Join": "Minimum Deposit to Join",
+  "Fixed": "Fixed",
+  "%PNL": "%PNL"
 }
