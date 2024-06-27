@@ -2,8 +2,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 
+import Input from '@/components/input'
 import DateInput from '@/components/input/DateInput'
-import { TC_TIMESTAMP } from '@/constant'
+import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
+import { MinusIcon, PlusIcon } from '@/svgs'
 
 import LabelTooltip from '../../components/label/LabelTooltip'
 
@@ -118,8 +120,66 @@ function Time({ data, setData }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tsStartTime])
 
+  const handleParticipants = val => {
+    if (val === '') {
+      setData({
+        ...data,
+        maxParticipants: '',
+      })
+    } else {
+      setData({
+        ...data,
+        maxParticipants: parseInt(val, 10) > TC_PARTICIPANTS.MAX ? TC_PARTICIPANTS.MAX : parseInt(val, 10),
+      })
+    }
+  }
+
   return (
     <>
+      <div className='mb-3 max-w-[100%] md:mt-5 md:flex md:max-w-[50%] md:space-x-6 md:space-y-0'>
+        <div className='w-full'>
+          <LabelTooltip
+            label='Max Participants'
+            showInfoIcon
+            tooltip='Select how many participants you would like to have in your trading competition.'
+            id='trading-competition-max-participants'
+            required
+          />
+          <Input
+            type='number'
+            max={TC_PARTICIPANTS.MAX}
+            min={TC_PARTICIPANTS.MIN}
+            value={data.maxParticipants}
+            onChange={e => handleParticipants(e.target.value)}
+            TrailingButton={
+              <div className='absolute right-3 top-2.5 flex items-center space-x-3'>
+                <button
+                  onClick={() => {
+                    handleParticipants(data.maxParticipants - 1)
+                  }}
+                  disabled={data.maxParticipants <= TC_PARTICIPANTS.MIN}
+                  className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
+                  type='button'
+                  aria-label='minus-participants'
+                >
+                  <MinusIcon className='h-[18px] w-[18px] stroke-white' />
+                </button>
+                <button
+                  onClick={() => {
+                    handleParticipants(data.maxParticipants + 1)
+                  }}
+                  disabled={data.maxParticipants >= TC_PARTICIPANTS.MAX}
+                  className='flex h-8 w-8 flex-col items-center justify-center rounded-[3px] bg-white bg-opacity-[0.05] disabled:cursor-not-allowed disabled:bg-opacity-[0.02]'
+                  type='button'
+                  aria-label='plus-participants'
+                >
+                  <PlusIcon className='h-[18px] w-[18px] stroke-white' />
+                </button>
+              </div>
+            }
+          />
+        </div>
+      </div>
       <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='w-full'>
           <LabelTooltip label='Registration Start Time' />

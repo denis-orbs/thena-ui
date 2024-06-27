@@ -30,20 +30,21 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
 
         case 1: {
           const {
+            maxParticipants,
             timestamp: { registrationStart },
           } = data
 
-          error = registrationStart < new Date().getTime() ? 'Invalid Registration Start' : ''
+          if (Number(maxParticipants) < TC_PARTICIPANTS.MIN || Number(maxParticipants) > TC_PARTICIPANTS.MAX) {
+            error = 'Invalid Max Participants'
+          } else if (registrationStart < new Date().getTime()) {
+            error = 'Invalid Registration Start'
+          }
 
           break
         }
 
         case 2: {
-          const { winningToken, tradingTokens, startingBalance, pairIds, maxParticipants } = data.competitionRules
-
-          if (Number(maxParticipants) < TC_PARTICIPANTS.MIN || Number(maxParticipants) > TC_PARTICIPANTS.MAX) {
-            error = 'Invalid Max Participants'
-          }
+          const { winningToken, tradingTokens, startingBalance, pairIds } = data.competitionRules
 
           if (isSpotType) {
             if (tradingTokens.length < 2) {

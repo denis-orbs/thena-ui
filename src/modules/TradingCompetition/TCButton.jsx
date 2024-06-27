@@ -171,7 +171,7 @@ export function TCButton({ eventType, competition, timestamp }) {
         <EmphasisButton className='w-full'>{t('View')}</EmphasisButton>
       </Link>
 
-      {(isJoined || isJoinedPerp) && eventType === EVENT_TYPES.LIVE && (
+      {(isTcSpot ? isJoined : isJoinedPerp) && eventType === EVENT_TYPES.LIVE && (
         <Link
           href={
             !isTcSpot
@@ -210,7 +210,7 @@ export function TCButton({ eventType, competition, timestamp }) {
           {joinButtonText.text}
         </PrimaryButton>
       )}
-      {(eventType === EVENT_TYPES.UPCOMING || (!isTcSpot && eventType === EVENT_TYPES.LIVE)) &&
+      {eventType === EVENT_TYPES.UPCOMING &&
         (isTcSpot ? isJoined : isJoinedPerp) &&
         ((!isTcSpot && !competition.competitionRules?.startingBalance) ||
           isInvalidAmount(competition.competitionRules?.startingBalance)) && (
