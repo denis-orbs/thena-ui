@@ -9,6 +9,7 @@ import {
   closeTransaction,
   closeTransactionPopup,
   completeTransaction,
+  openRetryTransactionModal,
   openTransaction,
   updateTransaction,
 } from './actions'
@@ -42,6 +43,14 @@ export const useTxn = () => {
   const closeTxn = useCallback(() => {
     dispatch(closeTransaction())
   }, [dispatch])
+
+  const askUserToRetry = useCallback(
+    params =>
+      new Promise(resolve => {
+        dispatch(openRetryTransactionModal({ params, resolver: resolve }))
+      }),
+    [dispatch],
+  )
 
   const writeTxn = useCallback(
     async (key, uuid, contract, method, params = [], msgValue = '0') => {
@@ -90,10 +99,14 @@ export const useTxn = () => {
           hash,
         })
         errorToast('Error', error.shortMessage)
+        const userWantsToRetry = await askUserToRetry({ key, uuid, contract, method, params, msgValue })
+        if (userWantsToRetry) {
+          return writeTxn(key, uuid, contract, method, params, msgValue) // retry
+        }
         return false
       }
     },
-    [updateTxn, networkId],
+    [updateTxn, networkId, askUserToRetry],
   )
 
   const sendTxn = useCallback(

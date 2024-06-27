@@ -8,3 +8,6 @@ export const clearAllTransactions = createAction('transactions/clearAllTransacti
 export const finalizeTransaction = createAction('transactions/finalizeTransaction')
 export const checkedTransaction = createAction('transactions/checkedTransaction')
 export const closeTransactionPopup = createAction('transactions/closeTransactionPopup')
+export const openRetryTransactionModal = createAction('transactions/openRetryTransactionModal')
+export const closeRetryTransactionModal = createAction('transactions/closeRetryTransactionModal')
+export const clearRetryParams = createAction('transactions/clearRetryParams')

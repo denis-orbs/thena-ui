@@ -2,9 +2,12 @@
 import { createReducer } from '@reduxjs/toolkit'
 
 import {
+  clearRetryParams,
+  closeRetryTransactionModal,
   closeTransaction,
   closeTransactionPopup,
   completeTransaction,
+  openRetryTransactionModal,
   openTransaction,
   updateTransaction,
 } from './actions'
@@ -16,6 +19,9 @@ export const initialState = {
   transactions: {},
   final: null,
   link: null,
+  retryModalIsOpen: false,
+  retryParams: null,
+  retryResolver: null,
 }
 
 export default createReducer(initialState, builder =>
@@ -55,7 +61,32 @@ export default createReducer(initialState, builder =>
       }
       return state
     })
-    .addCase(closeTransaction, () => initialState)
+    .addCase(closeTransaction, state => {
+      if (state.retryResolver) {
+        state.retryResolver(false)
+      }
+      return initialState
+    })
+    .addCase(openRetryTransactionModal, (state, { payload: { params, resolver } }) => ({
+      ...state,
+      retryModalIsOpen: true,
+      retryParams: params,
+      retryResolver: resolver,
+    }))
+    .addCase(closeRetryTransactionModal, state => ({
+      ...state,
+      retryModalIsOpen: false,
+    }))
+    .addCase(clearRetryParams, state => {
+      if (state.retryResolver) {
+        state.retryResolver(false)
+      }
+      return {
+        ...state,
+        retryParams: null,
+        retryResolver: null,
+      }
+    })
     .addCase(closeTransactionPopup, state => ({
       ...state,
       popup: false,
