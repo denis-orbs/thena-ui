@@ -58,6 +58,16 @@
   {
     "anonymous": false,
     "inputs": [
+      { "indexed": false, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "account", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "DeallocateFromAccount",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
       { "indexed": false, "internalType": "address", "name": "account", "type": "address" },
       { "indexed": false, "internalType": "address", "name": "target", "type": "address" },
       { "indexed": false, "internalType": "bytes4", "name": "selector", "type": "bytes4" },
@@ -464,6 +474,13 @@
     "inputs": [{ "internalType": "bytes32", "name": "role", "type": "bytes32" }],
     "name": "getRoleAdmin",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getWeightsLength",
+    "outputs": [{ "internalType": "uint256", "name": "length", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },

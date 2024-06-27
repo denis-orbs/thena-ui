@@ -107,7 +107,6 @@ export const useCreateTC = () => {
           owner_fee: data.prize.ownerFee,
           token: data.prize.token.map(token => token.address),
         },
-        deposit_type: data.depositType,
       }
 
       console.log({ tradingComp })
