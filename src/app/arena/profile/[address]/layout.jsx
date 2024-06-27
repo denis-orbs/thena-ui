@@ -26,7 +26,7 @@ export async function generateMetadata({ params }) {
 
   const metadata = {
     name: username,
-    image: [`${siteConfig.url}/cover.png`],
+    image: siteConfig.thenaCover,
     // eslint-disable-next-line max-len
     description: `See the profile of ${username} on THENA Arena. Follow them, engage with them or check their analytics and THENA IDs out on the decentralized social media platform of THENA Arena`,
   }

@@ -13,7 +13,7 @@ export const metadata = {
     description:
       'See the full rankings on THENA Arena. Sort by total THE balance, volume traded, followers, following, trading competitions joined and created and a lot more.',
     siteName: 'ARENA Rankings | THENA Arena',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
     type: 'website',
     locale: 'en_US',
   },
@@ -22,7 +22,7 @@ export const metadata = {
     title: 'ARENA Rankings',
     description:
       'See the full rankings on THENA Arena. Sort by total THE balance, volume traded, followers, following, trading competitions joined and created and a lot more.',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
   },
 }
 

@@ -12,7 +12,7 @@ export const metadata = {
     description:
       'Gift a own THENA ID to anyone to help them acquire their custom name and be able to customize their profiles on THENA Arena',
     siteName: 'Gift a THENA ID | THENA Arena',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
     type: 'website',
     locale: 'en_US',
   },
@@ -21,7 +21,7 @@ export const metadata = {
     title: 'Gift a THENA ID',
     description:
       'Gift a own THENA ID to anyone to help them acquire their custom name and be able to customize their profiles on THENA Arena',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
   },
 }
 

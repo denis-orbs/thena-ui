@@ -10,7 +10,7 @@ export const metadata = {
     title: 'Admin Panel',
     description: 'Edit user profiles, verify users, hide or unhide trading competitions on THENA Arena.',
     siteName: 'Admin Panel | THENA Arena',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
     type: 'website',
     locale: 'en_US',
   },
@@ -18,7 +18,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Admin Panel',
     description: 'Edit user profiles, verify users, hide or unhide trading competitions on THENA Arena.',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
   },
 }
 

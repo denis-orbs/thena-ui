@@ -12,7 +12,7 @@ export const metadata = {
     description:
       'Mint your own THENA ID to be able to show off your custom name and be able to customize your profile on THENA Arena.',
     siteName: 'Mint your THENA ID | THENA Arena',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
     type: 'website',
     locale: 'en_US',
   },
@@ -21,7 +21,7 @@ export const metadata = {
     title: 'Mint your THENA ID',
     description:
       'Mint your own THENA ID to be able to show off your custom name and be able to customize your profile on THENA Arena.',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
   },
 }
 

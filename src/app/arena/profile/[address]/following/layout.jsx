@@ -26,7 +26,7 @@ export async function generateMetadata({ params }) {
 
   const metadata = {
     name: `Following of ${username}`,
-    image: [`${siteConfig.url}/cover.png`],
+    image: siteConfig.thenaCover,
     description: `See the full following list of ${username} on THENA Arena.`,
   }
 

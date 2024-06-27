@@ -10,7 +10,7 @@ export const metadata = {
     title: 'Recently Gifted THENA IDs',
     description: 'See all recently gifted THENA IDs on THENA Arena.',
     siteName: 'Recently Gifted THENA IDs | THENA Arena',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
     type: 'website',
     locale: 'en_US',
   },
@@ -18,7 +18,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Recently Gifted THENA IDs',
     description: 'See all recently gifted THENA IDs on THENA Arena.',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
   },
 }
 

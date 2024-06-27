@@ -10,7 +10,7 @@ export const metadata = {
     title: 'Edit Profile',
     description: 'Edit your profile on THENA Arena.',
     siteName: 'Edit Profile | THENA Arena',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
     type: 'website',
     locale: 'en_US',
   },
@@ -18,7 +18,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Edit Profile',
     description: 'Edit your profile on THENA Arena.',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
   },
 }
 

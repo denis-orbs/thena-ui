@@ -21,7 +21,7 @@ export const metadata = {
     },
     description: 'Browse or create decentralized trading competitions on THENA Arena and win big!',
     siteName: 'Browse Trading Competitions | THENA Arena',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
     type: 'website',
     locale: 'en_US',
   },
@@ -33,7 +33,7 @@ export const metadata = {
       absolute: 'Browse Trading Competitions | THENA Arena',
     },
     description: 'Browse or create decentralized trading competitions on THENA Arena and win big!',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
   },
 }
 

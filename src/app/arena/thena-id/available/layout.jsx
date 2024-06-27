@@ -10,7 +10,7 @@ export const metadata = {
     title: 'Available THENA IDs',
     description: 'See all available THENA IDs on THENA Arena.',
     siteName: 'Available THENA IDs | THENA Arena',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
     type: 'website',
     locale: 'en_US',
   },
@@ -18,7 +18,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Available THENA IDs',
     description: 'See all available THENA IDs on THENA Arena.',
-    images: [`${siteConfig.url}/cover.png`],
+    images: siteConfig.thenaCover,
   },
 }
 
