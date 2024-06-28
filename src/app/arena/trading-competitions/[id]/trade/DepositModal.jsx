@@ -5,14 +5,17 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import BalanceInput from '@/components/input/BalanceInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
+import { TC_MARKET_TYPES } from '@/constant'
 import { useDepositToTCPerp } from '@/hooks/useTcPerpetualContract'
+import { useDepositToTC } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
 
 function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
   const t = useTranslations()
 
-  const { deposit, pending } = useDepositToTCPerp()
+  const { deposit: depositPerp, pending: pendingPerp } = useDepositToTCPerp()
+  const { deposit: depositSpot, pending: pendingSpot } = useDepositToTC()
 
   const [amount, setAmount] = useState('')
   const token = useMemo(() => competition.competitionRules.winningToken, [competition.competitionRules.winningToken])
@@ -23,16 +26,18 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
       return false
     }
 
-    const isSuccess = await deposit({
+    const data = {
       amount: toWei(amount, token?.decimals),
       tcAddress: competition?.tcAddress,
       winningToken: token,
-    })
+    }
+
+    const isSuccess = await (competition?.market === TC_MARKET_TYPES.PERPETUAL ? depositPerp(data) : depositSpot(data))
 
     if (isSuccess) {
       closeModal()
     }
-  }, [amount, closeModal, competition?.tcAddress, deposit, token])
+  }, [amount, closeModal, competition?.market, competition?.tcAddress, depositPerp, depositSpot, token])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} title='Deposit' onAfterClose={() => setAmount('')}>
@@ -47,7 +52,12 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
         />
       </ModalBody>
       <ModalFooter>
-        <PrimaryButton disabled={!amount} isLoading={pending} className='w-full' onClick={handleDeposit}>
+        <PrimaryButton
+          disabled={!amount}
+          isLoading={pendingPerp || pendingSpot}
+          className='w-full'
+          onClick={handleDeposit}
+        >
           {t('Deposit')}
         </PrimaryButton>
       </ModalFooter>

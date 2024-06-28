@@ -7,9 +7,9 @@ import { maxUint256 } from 'viem'
 import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getOldTcSpotContract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
+import { getERC20Contract, getOldTcSpotContract, getTcSpotContract } from '@/lib/contracts'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { fromWei, isInvalidAmount, sleep } from '@/lib/utils'
+import { fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -353,14 +353,6 @@ export const useDepositToTC = () => {
       const deposituuid = uuidv4()
       const tcSpotContract = getTcSpotContract(data.tcAddress)
 
-      const needToWrap = data.winningToken.address !== data.token.address && data.winningToken.symbol === 'WBNB'
-      let wrapuuid = ''
-      let wbnbContract = null
-      if (needToWrap) {
-        wrapuuid = uuidv4()
-        wbnbContract = getWBNBContract(chainId)
-      }
-
       const winningTokenContract = getERC20Contract(data.winningToken.address, chainId)
       const allowance = await readCall(winningTokenContract, 'allowance', [account, data.tcAddress])
       const isApprovedWinningToken = fromWei(allowance).gte(fromWei(data.amount))
@@ -368,15 +360,8 @@ export const useDepositToTC = () => {
       setPending(true)
       startTxn({
         key,
-        title: needToWrap ? `${t('Wrap')} ${t('And')} ${t('Deposit')}` : t('Deposit'),
+        title: t('Deposit'),
         transactions: {
-          ...(needToWrap && {
-            [wrapuuid]: {
-              desc: t('Wrap'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
           ...(!isApprovedWinningToken && {
             [approveTokenuuid]: {
               desc: `${t('Approve')} ${t('Winning Token')}`,
@@ -391,16 +376,6 @@ export const useDepositToTC = () => {
           },
         },
       })
-
-      if (needToWrap) {
-        const isSuccess = await writeTxn(key, wrapuuid, wbnbContract, 'deposit', [], data.amount.toFixed(0))
-        if (!isSuccess) {
-          setPending(false)
-          return false
-        }
-
-        await sleep(4000)
-      }
 
       if (!isApprovedWinningToken) {
         const isSuccess = await writeTxn(key, approveTokenuuid, winningTokenContract, 'approve', [
