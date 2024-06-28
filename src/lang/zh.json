@@ -885,5 +885,6 @@
   "Deposit Type tooltip": "Choose the type of deposit for your participants. Please note that all final deposits must be made during the registration period in order to calculate PnL correctly.",
   "Win Type tooltip": "Choose how to determine the winners.",
   "Description Modal Warning Create Trading Competition": "If you choose Free Deposit Type with Amount Win Type, this means whoever deposits more would win the competition without any trading challenges. This is not advised.",
-  "Question Confirm": "Are you sure to continue?"
+  "Question Confirm": "Are you sure to continue?",
+  "Must Be Greater Than Minimum Balance": "Must Be Greater Than Minimum Balance"
 }

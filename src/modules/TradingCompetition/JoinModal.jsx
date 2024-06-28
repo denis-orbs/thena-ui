@@ -10,34 +10,45 @@ import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
 import { useJoinTCPerpetual } from '@/hooks/useTcPerpetualContract'
 import { useJoinTC } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 
 export function JoinModal({ competition, open, onClose }) {
   const t = useTranslations()
-  const [name, setName] = useState('')
-
   const {
     entryFeeUpdate,
     prizeUpdate: { token: prizeToken },
-    competitionRules: { startingBalance, winningToken },
+    competitionRules: { startingBalance, winningToken, minimumBalance },
     market,
   } = competition
+  const [name, setName] = useState('')
+  const [inputStartingBalance, setInputStartingBalance] = useState(
+    formatAmount(fromWei(minimumBalance, winningToken?.decimals)),
+  )
+
   const { push } = useRouter()
 
   const { joinTC, pending } = useJoinTC()
   const { joinTCPerpetual, pending: pendingPerpetual } = useJoinTCPerpetual()
 
+  const showAlertMinimum = useMemo(
+    () => formatAmount(fromWei(minimumBalance, winningToken?.decimals)) > Number(inputStartingBalance),
+    [inputStartingBalance, minimumBalance, winningToken?.decimals],
+  )
+
   const showAlertBalance = useMemo(() => {
+    if (!winningToken) return false
+    const depositBalance = isInvalidAmount(startingBalance) ? toWei(Number(inputStartingBalance)) : startingBalance
+
     const notEnoughFee = entryFeeUpdate
       .map((e, index) => {
         if (prizeToken[index].address.toLowerCase() === winningToken.address.toLowerCase()) {
           const totalAmount = fromWei(entryFeeUpdate[index], prizeToken[index].decimals).plus(
-            fromWei(startingBalance, winningToken.decimals),
+            fromWei(depositBalance, winningToken.decimals),
           )
           const totalBalance = new BigNumber(prizeToken[index].balance)
           return totalAmount.gt(totalBalance)
@@ -47,10 +58,10 @@ export function JoinModal({ competition, open, onClose }) {
       })
       .some(item => item)
 
-    const notEnoughDeposit = fromWei(startingBalance, winningToken.decimals).gt(winningToken.balance)
+    const notEnoughDeposit = fromWei(depositBalance, winningToken.decimals).gt(winningToken.balance)
 
     return notEnoughDeposit || notEnoughFee
-  }, [entryFeeUpdate, prizeToken, startingBalance, winningToken.address, winningToken.balance, winningToken.decimals])
+  }, [entryFeeUpdate, inputStartingBalance, prizeToken, startingBalance, winningToken])
 
   const handleJoin = useCallback(async () => {
     try {
@@ -76,7 +87,7 @@ export function JoinModal({ competition, open, onClose }) {
         }
         joined = await joinTCPerpetual(_competition, name.trim())
       } else {
-        joined = await joinTC(competition)
+        joined = await joinTC(competition, toWei(Number(inputStartingBalance), winningToken?.decimals))
       }
       if (joined) {
         push(`/arena/trading-competitions/${competition.id}`)
@@ -85,7 +96,7 @@ export function JoinModal({ competition, open, onClose }) {
     } catch (e) {
       console.error(e)
     }
-  }, [competition, joinTC, joinTCPerpetual, market, name, onClose, push])
+  }, [competition, inputStartingBalance, joinTC, joinTCPerpetual, market, name, onClose, push, winningToken?.decimals])
 
   const message = useMemo(() => {
     if (isInvalidAmount(entryFeeUpdate)) {
@@ -119,19 +130,21 @@ export function JoinModal({ competition, open, onClose }) {
     )
 
     if (indexToken !== -1) {
+      const depositBalance = isInvalidAmount(startingBalance) ? minimumBalance : startingBalance
+
       return prizeToken
         .map((pt, index) =>
           pt.symbol === winningToken.symbol && Number(entryFeeUpdate[index]) > 0
             ? `${formatAmount(
                 fromWei(entryFeeUpdate[index], pt.decimals).toNumber() +
-                  fromWei(startingBalance, pt.decimals).toNumber(),
+                  fromWei(depositBalance, pt.decimals).toNumber(),
               )} ${pt.symbol}`
             : `${formatAmount(fromWei(entryFeeUpdate[index], pt.decimals).toNumber())} ${pt.symbol}`,
         )
         .join(', ')
     }
     return ''
-  }, [entryFeeUpdate, prizeToken, startingBalance, winningToken.symbol])
+  }, [entryFeeUpdate, minimumBalance, prizeToken, startingBalance, winningToken.symbol])
 
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Join Competition')}>
@@ -156,7 +169,7 @@ export function JoinModal({ competition, open, onClose }) {
             />
           </div>
         )}
-        <div className='item-centers mt-3 flex flex-row justify-between gap-4 md:mt-5'>
+        <div className='item-centers flex flex-row justify-between gap-4'>
           {entryFeeUpdate.some(ef => !isInvalidAmount(ef)) && prizeToken && (
             <div>
               <TextHeading className='text-lg'>{t('Entry Fee')}</TextHeading>
@@ -182,25 +195,70 @@ export function JoinModal({ competition, open, onClose }) {
               </div>
             </div>
           )}
-          {!isInvalidAmount(startingBalance) && winningToken && (
-            <div>
-              <TextHeading className='text-lg'>{t('Required Deposit to Join')}</TextHeading>
-              <div className='mt-2 flex space-x-2'>
-                <Image
-                  alt={winningToken.name}
-                  src={winningToken.logoURI}
-                  className='flex-shrink-0'
-                  width={20}
-                  height={20}
-                  loading='lazy'
-                />
-                <Paragraph>
-                  {formatAmount(fromWei(startingBalance, winningToken.decimals))} {winningToken.symbol}
-                </Paragraph>
+          {winningToken ? (
+            (isInvalidAmount(startingBalance) || isInvalidAmount(minimumBalance)) && (
+              <div>
+                <TextHeading className='text-lg'>
+                  {t(isInvalidAmount(startingBalance) ? 'Minimum Deposit to Join' : 'Required Deposit to Join')}
+                </TextHeading>
+                <div className='mt-2 flex space-x-2'>
+                  <Image
+                    alt={winningToken.name}
+                    src={winningToken.logoURI}
+                    className='flex-shrink-0'
+                    width={20}
+                    height={20}
+                    loading='lazy'
+                  />
+                  <Paragraph>
+                    {formatAmount(
+                      fromWei(
+                        isInvalidAmount(startingBalance) ? minimumBalance : startingBalance,
+                        winningToken.decimals,
+                      ),
+                    )}{' '}
+                    {winningToken.symbol}
+                  </Paragraph>
+                </div>
               </div>
-            </div>
+            )
+          ) : (
+            <></>
           )}
         </div>
+        {isInvalidAmount(startingBalance) && winningToken && (
+          <div>
+            <TextHeading className='text-lg'>{t('Deposit')}</TextHeading>
+            <Input
+              value={inputStartingBalance}
+              type='number'
+              className='mt-2 w-full'
+              onWheel={e => e.target.blur()}
+              onChange={e => {
+                setInputStartingBalance(e.target.value)
+              }}
+              classNames={{
+                input: showAlertMinimum ? 'border-error-500' : undefined,
+              }}
+              TrailingButton={
+                winningToken ? (
+                  <div className='absolute right-4 flex items-center space-x-1.5'>
+                    <TextSubHeading>
+                      ${formatAmount(inputStartingBalance * winningToken.price, winningToken.decimals)}
+                    </TextSubHeading>
+                    <Image alt='' src={winningToken.logoURI} width={20} height={20} />
+                    <span className='font-figtree text-lg leading-[22px] text-white'>{winningToken.symbol}</span>
+                  </div>
+                ) : undefined
+              }
+            />
+            {showAlertMinimum && (
+              <Paragraph className='ml-1 mt-1 block text-sm text-error-500'>
+                {t('Must Be Greater Than Minimum Balance')}
+              </Paragraph>
+            )}
+          </div>
+        )}
         {showAlertBalance && (
           <div className='mt-2'>
             <Alert>
@@ -227,7 +285,7 @@ export function JoinModal({ competition, open, onClose }) {
         <PrimaryButton
           className='w-full'
           onClick={handleJoin}
-          disabled={showAlertBalance}
+          disabled={showAlertBalance || showAlertMinimum}
           isLoading={pending || pendingPerpetual}
         >
           {t('Join Competition')}

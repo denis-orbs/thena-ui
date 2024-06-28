@@ -27,7 +27,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       entryFeeUpdate,
       maxParticipants,
       participantCount,
-      competitionRules: { startingBalance, winningToken },
+      competitionRules: { startingBalance, winningToken, minimumBalance },
       market,
     } = _competition
 
@@ -86,13 +86,15 @@ export function CompetitionDetail({ competition, isPreview = false }) {
         dataUpdate: [{ ticker: winningToken?.symbol }],
       },
       {
-        key: 'Required Deposit to Join',
+        key: !isInvalidAmount(startingBalance) ? 'Required Deposit to Join' : 'Minimum Deposit to Join',
         dataUpdate: [
           {
             data: isInvalidAmount(startingBalance)
-              ? 'No Requirements'
+              ? !isInvalidAmount(minimumBalance)
+                ? formatAmount(fromWei(minimumBalance, winningToken?.decimals))
+                : 'No Requirements'
               : formatAmount(fromWei(startingBalance, winningToken?.decimals)),
-            ticker: isInvalidAmount(startingBalance) ? '' : winningToken?.symbol,
+            ticker: !isInvalidAmount(startingBalance) || !isInvalidAmount(minimumBalance) ? winningToken?.symbol : '',
           },
         ],
       },

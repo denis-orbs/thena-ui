@@ -227,7 +227,7 @@ export const useJoinTC = () => {
   const [pending, setPending] = useState(false)
 
   const joinTC = useCallback(
-    async data => {
+    async (data, depositBalance) => {
       const key = uuidv4()
       const joinuuid = uuidv4()
       const tcSpotContract = getTcSpotContract(data.tcAddress)
@@ -307,8 +307,8 @@ export const useJoinTC = () => {
         }
       }
 
-      if (fromWei(data.competitionRules.startingBalance).isZero()) {
-        const isSuccess = await writeTxn(key, joinuuid, tcSpotContract, 'registerAndDeposit', [0])
+      if (isInvalidAmount(data.competitionRules.startingBalance)) {
+        const isSuccess = await writeTxn(key, joinuuid, tcSpotContract, 'registerAndDeposit', [depositBalance])
         if (!isSuccess) {
           setPending(false)
           return false

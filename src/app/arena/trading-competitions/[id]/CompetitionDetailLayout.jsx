@@ -67,6 +67,7 @@ const V4_COMPETITION_DATA = gql`
         startingBalance
         tradingTokens
         pairIds
+        minimumBalance
       }
       tcAddress
     }

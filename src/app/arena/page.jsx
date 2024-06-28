@@ -38,6 +38,7 @@ const V4_COMPETITION_DATAS = gql`
         winningToken
         tradingTokens
         startingBalance
+        minimumBalance
       }
       prizeUpdate {
         token

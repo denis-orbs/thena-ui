@@ -33,6 +33,7 @@ const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
         winningToken
         tradingTokens
         startingBalance
+        minimumBalance
       }
       prizeUpdate {
         token
@@ -83,6 +84,7 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
         winningToken
         tradingTokens
         startingBalance
+        minimumBalance
       }
       prizeUpdate {
         token
