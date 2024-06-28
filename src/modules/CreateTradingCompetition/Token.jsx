@@ -12,10 +12,12 @@ import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Toggle from '@/components/toggle'
+import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { DEPOSIT_TYPE, TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { formatAmount } from '@/lib/utils'
+import { InfoIcon } from '@/svgs'
 
 import CustomMultipleTokenModal from '../TokenModal/CustomMultipleTokenModal'
 import CustomTokenModal from '../TokenModal/CustomTokenModal'
@@ -247,7 +249,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
             id='deposit-type'
             label='Deposit Type'
             showInfoIcon
-            tooltip='Select the deposit type you would like your trading competition to be in'
+            tooltip={t('Deposit Type tooltip')}
             required
           />
           <div className='mt-3 flex items-center space-x-3'>
@@ -259,17 +261,28 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
                   winType: WIN_TYPE.PNL,
                 })
               }}
-              className={`px-6 py-[8.4px] uppercase text-white ${
+              className={`py-[8.4px] pl-6 pr-8 uppercase text-white ${
                 !depositType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
-              } rounded-lg`}
+              } relative rounded-lg`}
               type='button'
             >
+              <InfoIcon
+                className={`absolute right-1 top-1 h-4 w-4 ${!depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                data-tooltip-id='deposit-type-free'
+              />
               {t('Free')}
             </button>
+            <CustomTooltip
+              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              id='deposit-type-free'
+              place='right'
+            >
+              {t('Deposit Type Free tooltip')}
+            </CustomTooltip>
             <button
-              className={`d px-6 py-[8.4px] uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
+              className={`py-[8.4px] pl-6 uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
                 depositType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
-              } rounded-lg`}
+              } relative rounded-lg pr-8`}
               type='button'
               disabled={!isAllowedPerpetual}
               onClick={() => {
@@ -280,8 +293,19 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
                 })
               }}
             >
+              <InfoIcon
+                className={`absolute right-1 top-1 h-4 w-4 ${depositType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                data-tooltip-id='deposit-type-fixed'
+              />
               {t('Fixed')}
             </button>
+            <CustomTooltip
+              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              id='deposit-type-fixed'
+              place='right'
+            >
+              {t('Deposit Type Fixed tooltip')}
+            </CustomTooltip>
           </div>
 
           <div className='my-2 flex flex-col justify-between md:flex-row'>
@@ -408,12 +432,12 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
       )}
       {isSpotType && (
         <>
-          <LabelTooltip id='win-type-label' label='Win Type' showInfoIcon tooltip='Select the win type' required />
+          <LabelTooltip id='win-type-label' label='Win Type' showInfoIcon tooltip={t('Win Type tooltip')} required />
           <div className='mt-3 flex items-center space-x-3'>
             <button
-              className={`d px-6 py-[8.4px] uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
+              className={`py-[8.4px] pl-6 uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
                 winType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
-              } rounded-lg`}
+              } relative rounded-lg pr-8`}
               type='button'
               onClick={() => {
                 setData({
@@ -422,8 +446,19 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
                 })
               }}
             >
+              <InfoIcon
+                className={`absolute right-1 top-1 h-4 w-4 ${winType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                data-tooltip-id='win-type-pnl'
+              />
               {t('%PNL')}
             </button>
+            <CustomTooltip
+              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              id='win-type-pnl'
+              place='right'
+            >
+              {t('Win Type PNL tooltip')}
+            </CustomTooltip>
             <button
               onClick={() => {
                 setData({
@@ -431,13 +466,24 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
                   winType: WIN_TYPE.AMOUNT,
                 })
               }}
-              className={`px-6 py-[8.4px] uppercase text-white ${
+              className={`relative py-[8.4px] pl-6 pr-8 uppercase text-white ${
                 !winType ? 'bg-primary-600 hover:bg-primary-400' : 'bg-neutral-700'
               } rounded-lg`}
               type='button'
             >
+              <InfoIcon
+                className={`absolute right-1 top-1 h-4 w-4 ${!winType ? 'stroke-white' : 'stroke-neutral-400'}`}
+                data-tooltip-id='win-type-amount'
+              />
               {t('Amount')}
             </button>
+            <CustomTooltip
+              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              id='win-type-amount'
+              place='right'
+            >
+              {t('Win Type Amount tooltip')}
+            </CustomTooltip>
           </div>
         </>
       )}

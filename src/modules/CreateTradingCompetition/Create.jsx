@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { TC_MARKET_TYPES, TC_PARTICIPANTS, TC_STEPS } from '@/constant'
+import { DEPOSIT_TYPE, TC_MARKET_TYPES, TC_PARTICIPANTS, TC_STEPS, WIN_TYPE } from '@/constant'
 import { warnToast } from '@/lib/notify'
 import { isInvalidAmount } from '@/lib/utils'
 
@@ -11,11 +11,13 @@ import Detail from './Detail'
 import Prize from './Prize'
 import Time from './Time'
 import Token from './Token'
+import WarningModal from './WarningModal'
 
 function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = () => {}, data, setData }) {
   const t = useTranslations()
   const [isEntryFee, setIsEntryFee] = useState(data.entryFee.some(item => !isInvalidAmount(item)))
   const [isStartingBalance, setIsStartingBalance] = useState(false)
+  const [showModalWarning, setShowModalWarning] = useState(false)
 
   const getErrorMsg = useCallback(
     val => {
@@ -174,6 +176,10 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
               warnToast(errTime)
               setStep(1)
             } else {
+              if (step === 2 && data.depositType === DEPOSIT_TYPE.FREE && data.winType === WIN_TYPE.AMOUNT) {
+                setShowModalWarning(true)
+                return
+              }
               setStep(step + 1)
               if (step === TC_STEPS.length - 1) {
                 handleClose()
@@ -184,6 +190,22 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
           {step === TC_STEPS.length - 1 ? 'Preview' : 'NEXT'}
         </PrimaryButton>
       </ModalFooter>
+      <WarningModal
+        open={showModalWarning}
+        onClose={() => {
+          setShowModalWarning(false)
+        }}
+        onClickNext={() => {
+          setShowModalWarning(false)
+          const errTime = getErrorMsg(1)
+          if (errTime && step > 0) {
+            warnToast(errTime)
+            setStep(1)
+          } else {
+            setStep(3)
+          }
+        }}
+      />
     </Modal>
   )
 }

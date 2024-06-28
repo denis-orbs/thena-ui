@@ -10,7 +10,7 @@ import { Collapse } from '@/components/collapse'
 import TruncateContent from '@/components/common/TruncateContent'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { TC_MARKET_TYPES } from '@/constant'
+import { TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
@@ -28,6 +28,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       maxParticipants,
       participantCount,
       competitionRules: { startingBalance, winningToken },
+      market,
     } = _competition
 
     let dataCurrentPrizePool = []
@@ -98,6 +99,14 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       {
         key: 'Winning Token',
         dataUpdate: [{ ticker: winningToken?.symbol }],
+      },
+      {
+        key: 'Win Type',
+        dataUpdate: [
+          {
+            data: market === TC_MARKET_TYPES.PERPETUAL || prizeUpdate.winType === WIN_TYPE.PNL ? '%PNL' : 'Amount',
+          },
+        ],
       },
     ]
   }, [_competition, t])
