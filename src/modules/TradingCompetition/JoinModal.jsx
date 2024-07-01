@@ -200,10 +200,8 @@ export function JoinModal({ competition, open, onClose }) {
             </div>
           )}
           {winningToken ? (
-            (
-              !isInvalidAmount(startingBalance) ||
-              (market === TC_MARKET_TYPES.SPOT && !isInvalidAmount(minimumBalance))
-            )(
+            (!isInvalidAmount(startingBalance) ||
+              (market === TC_MARKET_TYPES.SPOT && !isInvalidAmount(minimumBalance))) && (
               <div>
                 <TextHeading className='text-lg'>
                   {t(isInvalidAmount(startingBalance) ? 'Minimum Deposit to Join' : 'Required Deposit to Join')}
@@ -227,7 +225,7 @@ export function JoinModal({ competition, open, onClose }) {
                     {winningToken.symbol}
                   </Paragraph>
                 </div>
-              </div>,
+              </div>
             )
           ) : (
             <></>
