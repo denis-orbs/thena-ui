@@ -42,7 +42,10 @@ export function JoinModal({ competition, open, onClose }) {
 
   const showAlertBalance = useMemo(() => {
     if (!winningToken) return false
-    const depositBalance = isInvalidAmount(startingBalance) ? toWei(Number(inputStartingBalance)) : startingBalance
+    const depositBalance =
+      isInvalidAmount(startingBalance) && market === TC_MARKET_TYPES.SPOT
+        ? toWei(Number(inputStartingBalance))
+        : startingBalance
 
     const notEnoughFee = entryFeeUpdate
       .map((e, index) => {
@@ -61,7 +64,7 @@ export function JoinModal({ competition, open, onClose }) {
     const notEnoughDeposit = fromWei(depositBalance, winningToken.decimals).gt(winningToken.balance)
 
     return notEnoughDeposit || notEnoughFee
-  }, [entryFeeUpdate, inputStartingBalance, prizeToken, startingBalance, winningToken])
+  }, [entryFeeUpdate, inputStartingBalance, market, prizeToken, startingBalance, winningToken])
 
   const handleJoin = useCallback(async () => {
     try {
@@ -130,7 +133,8 @@ export function JoinModal({ competition, open, onClose }) {
     )
 
     if (indexToken !== -1) {
-      const depositBalance = isInvalidAmount(startingBalance) ? minimumBalance : startingBalance
+      const depositBalance =
+        isInvalidAmount(startingBalance) && market === TC_MARKET_TYPES.SPOT ? minimumBalance : startingBalance
 
       return prizeToken
         .map((pt, index) =>
@@ -144,7 +148,7 @@ export function JoinModal({ competition, open, onClose }) {
         .join(', ')
     }
     return ''
-  }, [entryFeeUpdate, minimumBalance, prizeToken, startingBalance, winningToken.symbol])
+  }, [entryFeeUpdate, market, minimumBalance, prizeToken, startingBalance, winningToken.symbol])
 
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Join Competition')}>
@@ -196,7 +200,10 @@ export function JoinModal({ competition, open, onClose }) {
             </div>
           )}
           {winningToken ? (
-            (isInvalidAmount(startingBalance) || isInvalidAmount(minimumBalance)) && (
+            (
+              !isInvalidAmount(startingBalance) ||
+              (market === TC_MARKET_TYPES.SPOT && !isInvalidAmount(minimumBalance))
+            )(
               <div>
                 <TextHeading className='text-lg'>
                   {t(isInvalidAmount(startingBalance) ? 'Minimum Deposit to Join' : 'Required Deposit to Join')}
@@ -220,14 +227,14 @@ export function JoinModal({ competition, open, onClose }) {
                     {winningToken.symbol}
                   </Paragraph>
                 </div>
-              </div>
+              </div>,
             )
           ) : (
             <></>
           )}
         </div>
-        {isInvalidAmount(startingBalance) && winningToken && (
-          <div>
+        {isInvalidAmount(startingBalance) && winningToken && market === TC_MARKET_TYPES.SPOT && (
+          <div className='mt-3 md:mt-5'>
             <TextHeading className='text-lg'>{t('Deposit')}</TextHeading>
             <Input
               value={inputStartingBalance}
