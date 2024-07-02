@@ -13,7 +13,7 @@ import { useEventType } from '@/hooks/useEventType'
 import { useTCContractInfor, useTradeData } from '@/hooks/useTcSpotContract'
 import { errorToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 // import DepositModal from './DepositModal'
@@ -56,7 +56,13 @@ export function WrapLayout({ children, params }) {
           balance: value,
         }
       })
-      .sort((a, b) => formatAmount(b.balance) - formatAmount(a.balance))
+      .sort((a, b) => {
+        const aBalance = fromWei(a.balance, a.decimals)
+        const bBalance = fromWei(b.balance, b.decimals)
+        if (aBalance.isGreaterThan(bBalance)) return 1
+        if (bBalance.isGreaterThan(aBalance)) return -1
+        return 0
+      })
   }, [competition?.competitionRules?.tradingTokens, userBalance])
 
   const fromAsset = useMemo(
