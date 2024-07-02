@@ -57,10 +57,8 @@ export function WrapLayout({ children, params }) {
         }
       })
       .sort((a, b) => {
-        const aBalance = fromWei(a.balance, a.decimals)
-        const bBalance = fromWei(b.balance, b.decimals)
-        if (aBalance.isGreaterThan(bBalance)) return 1
-        if (bBalance.isGreaterThan(aBalance)) return -1
+        if (a.balance.times(a.price).lt(b.balance.times(b.price))) return 1
+        if (a.balance.times(a.price).gt(b.balance.times(b.price))) return -1
         return 0
       })
   }, [competition?.competitionRules?.tradingTokens, userBalance])
