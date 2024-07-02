@@ -28,6 +28,15 @@ import { InfoIcon } from '@/svgs'
 
 import AddLiquidityModal from './addLiquidityModal'
 
+export const listPoolAddressSpecial = [
+  '0x755a52d29b24d6871899a84f476339183e9dc95d',
+  '0xa07bbf09b48e8d219774ac9b92622f5260a9c9f4',
+  '0x04d6115703b0127888323f142b8046c7c13f857d',
+  '0x5b0baf66718caabda49a4af32eb455c3b99b5821',
+  '0xbf121d987f9635ed6d2f7bb957fbbe163bdea0e0',
+  '0xf8a4cdf9efc4b9b38eaa6e27ee281cb2111fa664',
+]
+
 const sortOptions = [
   {
     label: 'Pair',
@@ -171,9 +180,23 @@ export default function PoolsPage() {
 
   const finalPools = useMemo(
     () => {
+      // Hard-coded for USDT/LISTA pool on top
+      let previousData = []
+
+      const listaPoolAddress = '0x755a52d29b24d6871899a84f476339183e9dc95d'
+      if (Array.isArray(sortedData) && sortedData.length) {
+        const listaPool = sortedData.find(item => item.address === listaPoolAddress)
+        if (listaPool) {
+          const data = sortedData.filter(item => item?.address !== listaPoolAddress)
+          previousData = [listaPool, ...data]
+        } else {
+          previousData = [...sortedData]
+        }
+      }
+
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
 
-      return sortedData.map(pool => ({
+      return previousData.map(pool => ({
         pair: (
           <div className='flex items-center gap-3'>
             <IconGroup
@@ -206,13 +229,25 @@ export default function PoolsPage() {
                   />
                 </div>
 
-                {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIcon' /> */}
-                {/* <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIcon' /> */}
                 <CustomTooltip id='etherBadgeIcon' className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
                 </CustomTooltip>
                 <CustomTooltip id='eigenBadgeIcon' className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
+                </CustomTooltip>
+              </div>
+            )}
+            {listPoolAddressSpecial.includes(pool.address) && (
+              <div className='flex items-center gap-2'>
+                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}`}>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EtherFi'
+                    src='/images/GQhgnIEbUAA4gjewe.jpeg'
+                  />
+                </div>
+                <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Pool Special tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
             )}

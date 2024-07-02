@@ -498,5 +498,7 @@
   "You will receive": "You will receive",
   "EtherFi tooltip": "3x EtherFi Points will be distributed to liquidity providers in this pool.",
   "Eigen tooltip": "EigenLayer Points will be distributed to liquidity providers in this pool.",
-  "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization."
+  "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization.",
+  "Pool Special tooltip": "Liquidity providers in this pool are eligible for The Cosmic Adventure Challenge Season 3",
+  "Zapper": "Zapper"
 }
