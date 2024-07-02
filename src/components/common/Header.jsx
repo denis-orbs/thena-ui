@@ -584,7 +584,7 @@ function Header() {
       )}
       <Script
         id='widget-dom-id'
-        src='https://widget.metacrm.inc/static/js/widget-1-1-3.js'
+        src='https://widget.metacrm.inc/static/js/widget.js'
         onLoad={() => {
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',
