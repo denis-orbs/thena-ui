@@ -1,12 +1,13 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 
 import CircleImage from '@/components/image/CircleImage'
+import Spinner from '@/components/spinner'
 import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
@@ -84,16 +85,9 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText
   const t = useTranslations()
   const rootRef = useRef(null)
 
-  const {
-    data,
-    mutate,
-    size,
-    setSize,
-    // isValidating,
-		// isLoading,
-  } = useSWRInfinite(
-    seeType === TYPE_SEE.USER ? index => [searchText, index, 'userSearch'] : null,
-    ([queryText, index]) => fetchUser(queryText, 10, index + 1 * 10),
+  const { data, size, setSize } = useSWRInfinite(
+    index => (seeType === TYPE_SEE.USER ? [searchText, index, 'userSearch'] : null),
+    ([queryText, index]) => fetchUser(queryText, 10, index * 10),
   )
 
   const { data: usersTotalCount } = useSWR(seeType === TYPE_SEE.USER ? ['count user', searchText] : null, () =>
@@ -101,17 +95,9 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText
   )
 
   const searchUsers = useMemo(() => (data ? [].concat(...data) : []), [data])
-  // const isLoadingMore = isLoading || (size > 0 && searchUsers && typeof searchUsers[size - 1] === 'undefined')
-  const isEmpty = usersTotalCount === 0
-  const isReachingEnd = isEmpty || (data && data[usersTotalCount - 1]?.length < 10)
-  // const isRefreshing = isValidating && searchUsers && usersTotalCount === size
 
-  useEffect(() => {
-    if (searchText) {
-      setSize(0)
-      mutate()
-    }
-  }, [searchText, mutate, setSize])
+  const isEmpty = usersTotalCount === 0
+  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < 10)
 
   return (
     <div>
@@ -128,16 +114,18 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText
             dataLength={searchUsers?.length ?? 0}
             hasMore={!isReachingEnd}
             next={() => setSize(size + 1)}
-            loader={<p>Loading...</p>}
+            loader={<Spinner className='size-4' />}
             endMessage={
               <p style={{ textAlign: 'center' }}>
-                <b>Yay! You have seen it all</b>
+                <b>{t('You have seen it all')}</b>
               </p>
             }
             scrollableTarget='scrollableDiv'
           >
             {searchUsers?.map(item => (
-              <SearchUserItem user={item} key={item.id} />
+              <RenderIfVisible defaultHeight={60} visibleOffset={700} root={rootRef.current}>
+                <SearchUserItem user={item} key={item.id} />
+              </RenderIfVisible>
             ))}
           </InfiniteScroll>
         )}

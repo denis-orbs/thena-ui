@@ -48,7 +48,9 @@ function SearchContent({ users, tradingCompetitions, isLoading, usersTotalCount,
                   seeType={seeType}
                 />
               )}
-              {!!tradingCompetitions.length && type === TYPE_SEE.ALL && <hr className='my-5 border-neutral-600' />}
+              {!!tradingCompetitions.length && !!users.length && type === TYPE_SEE.ALL && (
+                <hr className='my-5 border-neutral-600' />
+              )}
               {!!users.length && (
                 <SearchUsers
                   users={users}
