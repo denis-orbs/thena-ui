@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import { gql } from 'graphql-request'
 import React, { useEffect, useState } from 'react'
 import { Popover } from 'react-tiny-popover'
 import useSWR from 'swr'
@@ -8,71 +7,16 @@ import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
 import { SearchIcon } from '@/svgs'
 
+import { V4_USERS_COMPETITIONS, V4_USERS_COUNT, V4_USERS_SEARCH } from './constants'
 import SearchContent from './SearchContent'
 import SearchInput from '../../components/input/SearchInput'
-
-const V4_USERS_COMPETITIONS = gql`
-  query V4_USERS_COMPETITIONS($search: String!) {
-    tradingCompetitions(where: { name_containsInsensitive: $search }) {
-      id
-      name
-      bannerUrl
-      defaultBannerUrl
-      timestamp {
-        endTimestamp
-        registrationEnd
-        registrationStart
-        startTimestamp
-      }
-      market
-      prizeUpdate {
-        ownerFee
-        token
-        totalPrize
-        weights
-        winType
-      }
-      owner {
-        id
-        isVerified
-        avatar
-        username
-        nameColor
-        checkMarkIcon
-        verifiedAt
-      }
-    }
-    users(where: { OR: [{ id_containsInsensitive: $search }, { username_containsInsensitive: $search }] }) {
-      id
-      isVerified
-      username
-      nameColor
-      avatar
-      isAdmin
-      isSuperAdmin
-      checkMarkIcon
-      verifiedAt
-    }
-  }
-`
 
 const fetchData = async search => {
   try {
     if (search) {
-      const { users, tradingCompetitions } = await v4Client.request(V4_USERS_COMPETITIONS, { search })
-
-      const sortUsers = users.sort((a, b) => {
-        if (a.isSuperAdmin && !b.isSuperAdmin) return -1
-        if (!a.isSuperAdmin && b.isSuperAdmin) return 1
-
-        if (a.isAdmin && !b.isAdmin) return -1
-        if (!a.isAdmin && b.isAdmin) return 1
-
-        if (a.isVerified && !b.isVerified) return -1
-        if (!a.isVerified && b.isVerified) return 1
-
-        return 0
-      })
+      const { tradingCompetitions } = await v4Client.request(V4_USERS_COMPETITIONS, { search })
+      const { usersTotalCount } = await v4Client.request(V4_USERS_COUNT, { search })
+      const { users } = await v4Client.request(V4_USERS_SEARCH, { search })
 
       const sortTCs = tradingCompetitions.sort((a, b) => {
         const now = dayjs().unix()
@@ -103,11 +47,11 @@ const fetchData = async search => {
 
         return 0
       })
-      return { users: sortUsers, tradingCompetitions: sortTCs }
+      return { users, usersTotalCount, tradingCompetitions: sortTCs }
     }
   } catch (error) {
     console.error(error)
-    return { users: [], tradingCompetitions: [] }
+    return { users: [], usersTotalCount: 0, tradingCompetitions: [] }
   }
 }
 
@@ -138,7 +82,13 @@ export function HeaderSearch({ setToggleSearch, toggleSearch, isSmallScreen }) {
       padding={3}
       onClickOutside={() => setIsPopoverOpen(false)}
       content={
-        <SearchContent tradingCompetitions={data?.tradingCompetitions} users={data?.users} isLoading={isLoading} />
+        <SearchContent
+          tradingCompetitions={data?.tradingCompetitions}
+          users={data?.users}
+          isLoading={isLoading}
+          usersTotalCount={data?.usersTotalCount}
+          searchText={debounceSearch}
+        />
       }
       containerStyle={{
         zIndex: '100',

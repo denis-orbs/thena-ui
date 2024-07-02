@@ -1,15 +1,19 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import { useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import useSWR from 'swr'
+import useSWRInfinite from 'swr/infinite'
 
 import CircleImage from '@/components/image/CircleImage'
 import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
+import { v4Client } from '@/lib/graphql'
 import { cn, sliceAddress } from '@/lib/utils'
 
-import { TYPE_SEE } from './constants'
+import { TYPE_SEE, V4_USERS_COUNT, V4_USERS_SEARCH } from './constants'
 import { SearchSeeAll } from './SearchSeeAll'
 import { VerifyPopover } from '../Profile/VerifyPopover'
 
@@ -53,19 +57,90 @@ function SearchUserItem({ user }) {
   )
 }
 
-export function SearchUsers({ users, showSeeAll, setSeeType, seeType }) {
+const fetchCountUser = async search => {
+  try {
+    if (search) {
+      const { usersTotalCount } = await v4Client.request(V4_USERS_COUNT, { search })
+      return { usersTotalCount }
+    }
+  } catch (error) {
+    return { usersTotalCount: 0 }
+  }
+}
+const fetchUser = async (search, limit, offset) => {
+  try {
+    if (search) {
+      const { users } = await v4Client.request(V4_USERS_SEARCH, { search, limit, offset })
+
+      return users
+    }
+  } catch (error) {
+    console.log('err', error)
+    return []
+  }
+}
+
+export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText, userCount }) {
   const t = useTranslations()
   const rootRef = useRef(null)
+
+  const {
+    data,
+    mutate,
+    size,
+    setSize,
+    // isValidating,
+		// isLoading,
+  } = useSWRInfinite(
+    seeType === TYPE_SEE.USER ? index => [searchText, index, 'userSearch'] : null,
+    ([queryText, index]) => fetchUser(queryText, 10, index + 1 * 10),
+  )
+
+  const { data: usersTotalCount } = useSWR(seeType === TYPE_SEE.USER ? ['count user', searchText] : null, () =>
+    fetchCountUser(searchText),
+  )
+
+  const searchUsers = useMemo(() => (data ? [].concat(...data) : []), [data])
+  // const isLoadingMore = isLoading || (size > 0 && searchUsers && typeof searchUsers[size - 1] === 'undefined')
+  const isEmpty = usersTotalCount === 0
+  const isReachingEnd = isEmpty || (data && data[usersTotalCount - 1]?.length < 10)
+  // const isRefreshing = isValidating && searchUsers && usersTotalCount === size
+
+  useEffect(() => {
+    if (searchText) {
+      setSize(0)
+      mutate()
+    }
+  }, [searchText, mutate, setSize])
 
   return (
     <div>
       <TextHeading className='mb-4 mt-2'>{t('Users')}</TextHeading>
-      <div className='mt-2 max-h-80 overflow-y-auto' ref={rootRef}>
-        {users.slice(0, seeType !== TYPE_SEE.ALL ? users.length : 3)?.map(item => (
-          <RenderIfVisible defaultHeight={60} visibleOffset={700} root={rootRef.current}>
-            <SearchUserItem user={item} key={item.id} />
-          </RenderIfVisible>
-        ))}
+      <div className='mt-2 max-h-80 overflow-y-auto' ref={rootRef} id='scrollableDiv'>
+        {seeType === TYPE_SEE.ALL ? (
+          users?.map(item => (
+            <RenderIfVisible defaultHeight={60} visibleOffset={700} root={rootRef.current}>
+              <SearchUserItem user={item} key={item.id} />
+            </RenderIfVisible>
+          ))
+        ) : (
+          <InfiniteScroll
+            dataLength={searchUsers?.length ?? 0}
+            hasMore={!isReachingEnd}
+            next={() => setSize(size + 1)}
+            loader={<p>Loading...</p>}
+            endMessage={
+              <p style={{ textAlign: 'center' }}>
+                <b>Yay! You have seen it all</b>
+              </p>
+            }
+            scrollableTarget='scrollableDiv'
+          >
+            {searchUsers?.map(item => (
+              <SearchUserItem user={item} key={item.id} />
+            ))}
+          </InfiniteScroll>
+        )}
       </div>
       {showSeeAll && (
         <SearchSeeAll
@@ -74,7 +149,7 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType }) {
             e.preventDefault()
             setSeeType(TYPE_SEE.USER)
           }}
-          count={users.length}
+          count={userCount}
         />
       )}
     </div>

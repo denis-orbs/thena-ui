@@ -9,7 +9,7 @@ import { TYPE_SEE } from './constants'
 import { SearchTCs } from './SearchTCs'
 import { SearchUsers } from './SearchUsers'
 
-function SearchContent({ users, tradingCompetitions, isLoading }) {
+function SearchContent({ users, tradingCompetitions, isLoading, usersTotalCount, searchText }) {
   const t = useTranslations()
 
   const [seeType, setSeeType] = useState(TYPE_SEE.ALL)
@@ -18,7 +18,16 @@ function SearchContent({ users, tradingCompetitions, isLoading }) {
     type => {
       switch (type) {
         case TYPE_SEE.USER:
-          return <SearchUsers users={users} showSeeAll={false} setSeeType={setSeeType} seeType={seeType} />
+          return (
+            <SearchUsers
+              users={users}
+              showSeeAll={false}
+              setSeeType={setSeeType}
+              seeType={seeType}
+              searchText={searchText}
+              userCount={usersTotalCount}
+            />
+          )
         case TYPE_SEE.TC:
           return (
             <SearchTCs
@@ -41,13 +50,20 @@ function SearchContent({ users, tradingCompetitions, isLoading }) {
               )}
               {!!tradingCompetitions.length && type === TYPE_SEE.ALL && <hr className='my-5 border-neutral-600' />}
               {!!users.length && (
-                <SearchUsers users={users} showSeeAll={users.length > 3} setSeeType={setSeeType} seeType={seeType} />
+                <SearchUsers
+                  users={users}
+                  showSeeAll={usersTotalCount > 3}
+                  setSeeType={setSeeType}
+                  seeType={seeType}
+                  userCount={usersTotalCount}
+                  searchText={searchText}
+                />
               )}
             </>
           )
       }
     },
-    [users, tradingCompetitions, seeType],
+    [users, seeType, searchText, tradingCompetitions, usersTotalCount],
   )
 
   if (isLoading) {
