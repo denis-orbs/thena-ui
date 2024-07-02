@@ -15,7 +15,14 @@ import Spinner from '../spinner'
 import Tag from '../tag'
 import { TextHeading } from '../typography'
 
-export function UserProfileCard({ user, showVerified = false, disableLink = false, enableFollow = true }) {
+export function UserProfileCard({
+  user,
+  showVerified = false,
+  disableLink = false,
+  enableFollow = true,
+  userClassName,
+  avatarSize = 'size-8',
+}) {
   const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt } = user
   const t = useTranslations()
   const { userInfo } = useUserInfo()
@@ -53,17 +60,21 @@ export function UserProfileCard({ user, showVerified = false, disableLink = fals
   return (
     <div className='flex items-center gap-1'>
       <LinkComponent>
-        <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className='size-8' />
+        <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className={avatarSize} />
         <div className='mr-1 flex flex-col gap-1'>
           <TextHeading
-            className={cn('text-nowrap text-base', nameColor && !String(nameColor).startsWith('#') ? nameColor : '')}
+            className={cn(
+              'text-nowrap text-base',
+              nameColor && !String(nameColor).startsWith('#') ? nameColor : '',
+              userClassName,
+            )}
           >
             <span
               style={{
                 color: nameColor ? (String(nameColor).startsWith('#') ? nameColor : '') : '',
               }}
             >
-              {username || sliceAddress(id)}
+              {sliceAddress(username || id)}
             </span>
           </TextHeading>
         </div>

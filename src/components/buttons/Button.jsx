@@ -14,7 +14,8 @@ function Button({
   children,
   disabled,
   leading = null,
-  onClick = () => {},
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  onClick = e => {},
   ...rest
 }) {
   return (
@@ -75,7 +76,7 @@ function Button({
         isLoading && [],
         className,
       )}
-      onClick={() => !disabled && onClick()}
+      onClick={e => !disabled && onClick(e)}
       {...rest}
     >
       {LeadingIcon && (

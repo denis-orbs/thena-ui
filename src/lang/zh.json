@@ -886,5 +886,8 @@
   "Win Type tooltip": "Choose how to determine the winners.",
   "Description Modal Warning Create Trading Competition": "If you choose Free Deposit Type with Amount Win Type, this means whoever deposits more would win the competition without any trading challenges. This is not advised.",
   "Question Confirm": "Are you sure to continue?",
-  "Must Be Greater Than Minimum Balance": "Must Be Greater Than Minimum Balance"
+  "Must Be Greater Than Minimum Balance": "Must Be Greater Than Minimum Balance",
+  "See All Result": "See All Result ({value})",
+  "No Users Or Trading Competitions": "No users or trading competitions found",
+  "Search Trading Competition Users": "Search trading competition, users"
 }

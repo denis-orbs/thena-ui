@@ -86,7 +86,10 @@ export function CompetitionDetail({ competition, isPreview = false }) {
         dataUpdate: [{ ticker: winningToken?.symbol }],
       },
       {
-        key: !isInvalidAmount(startingBalance) ? 'Required Deposit to Join' : 'Minimum Deposit to Join',
+        key:
+          !isInvalidAmount(startingBalance) || market === TC_MARKET_TYPES.PERPETUAL
+            ? 'Required Deposit to Join'
+            : 'Minimum Deposit to Join',
         dataUpdate: [
           {
             data: isInvalidAmount(startingBalance)

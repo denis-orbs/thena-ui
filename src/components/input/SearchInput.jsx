@@ -4,7 +4,15 @@ import { SearchIcon, XIcon } from '@/svgs'
 
 import Input from '.'
 
-function SearchInput({ val, setVal, placeholder = 'Search', showIconClearText = true, ...rest }) {
+function SearchInput({
+  val,
+  setVal,
+  placeholder = 'Search',
+  showIconClearText = true,
+  showIconClose = false,
+  onClear,
+  ...rest
+}) {
   return (
     <Input
       type='text'
@@ -13,8 +21,14 @@ function SearchInput({ val, setVal, placeholder = 'Search', showIconClearText = 
       placeholder={placeholder}
       LeadingIcon={<SearchIcon />}
       TrailingIcon={
-        showIconClearText && val ? (
-          <XIcon className='stroke-neutral-400 hover:cursor-pointer' onClick={() => setVal('')} />
+        (showIconClearText && val) || showIconClose ? (
+          <XIcon
+            className='stroke-neutral-400 hover:cursor-pointer'
+            onClick={() => {
+              setVal('')
+              onClear?.()
+            }}
+          />
         ) : null
       }
       {...rest}

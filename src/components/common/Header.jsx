@@ -28,6 +28,7 @@ import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
+import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 
 const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
@@ -233,6 +234,8 @@ function Header() {
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [toggleSearch, setToggleSearch] = useState(false)
+
   const router = useRouter()
   const { push } = router
   const pathname = usePathname()
@@ -646,8 +649,23 @@ function Header() {
         </div>
       )}
       {pathname.includes('/arena') && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
-          <Tabs data={arenaSubmenus} size={SizeTypes.Medium} />
+        <div className='fixed top-[64px] z-[45] flex w-full items-center justify-between bg-neutral-900 p-4 px-2 backdrop-blur-2xl lg:top-[92px] lg:px-60 lg:py-5'>
+          {toggleSearch && isSmallScreen() ? (
+            <HeaderSearch
+              setToggleSearch={setToggleSearch}
+              toggleSearch={toggleSearch}
+              isSmallScreen={isSmallScreen()}
+            />
+          ) : (
+            <>
+              <Tabs data={arenaSubmenus} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
+              <HeaderSearch
+                setToggleSearch={setToggleSearch}
+                toggleSearch={toggleSearch}
+                isSmallScreen={isSmallScreen()}
+              />
+            </>
+          )}
         </div>
       )}
       <Script
