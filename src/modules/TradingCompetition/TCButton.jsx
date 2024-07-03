@@ -7,7 +7,7 @@ import DepositModal from '@/app/arena/trading-competitions/[id]/trade/DepositMod
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
-import { useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
+import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -18,11 +18,15 @@ import DeallocateModal from './DeallocateModal'
 import { JoinModal } from './JoinModal'
 
 export function TCButton({ eventType, competition, timestamp }) {
+  const tcId = useMemo(() => competition?.id?.split('-')?.[1], [competition?.id])
+
   const t = useTranslations()
   const { open } = useWeb3Modal()
   const { account } = useWallet()
   const [showJoinModal, setShowJoinModal] = useState(false)
   const { claimReward } = useClaimTC()
+  const { claimReward: claimRewardPerp, pending: pendingClaimPerp } = useClaimRewardTCPerp()
+
   const { withdrawDeposit } = useWithdrawDepositTC()
   const { withdrawTCPerp } = useWithdrawToTCPerp()
   const [showModalDeposit, setShowModalDeposit] = useState(false)
@@ -50,7 +54,9 @@ export function TCButton({ eventType, competition, timestamp }) {
     balance,
     withdrawCooldown,
     getWithdrawCooldown,
-  } = useTCPerpetualInfor(competition.tcAddress, competition.market)
+    isClaimable: isClaimablePerp,
+    checkClaimable: checkClaimablePerp,
+  } = useTCPerpetualInfor(competition.tcAddress, competition.market, eventType)
 
   const [joinButtonText, setJoinButtonText] = useState({
     text: null,
@@ -59,15 +65,29 @@ export function TCButton({ eventType, competition, timestamp }) {
 
   const claim = useCallback(async () => {
     try {
-      await claimReward({
-        tcAddress: competition.tcAddress,
-        isClaimOwnerFee: isHostClaimable,
-      })
-      await checkClaimable(true)
+      if (competition.market === TC_MARKET_TYPES.SPOT) {
+        await claimReward({
+          tcAddress: competition.tcAddress,
+          isClaimOwnerFee: isHostClaimable,
+        })
+        await checkClaimable(true)
+      } else {
+        await claimRewardPerp({ tcId })
+        checkClaimablePerp()
+      }
     } catch (e) {
       console.error(e)
     }
-  }, [claimReward, competition.tcAddress, isHostClaimable, checkClaimable])
+  }, [
+    competition.market,
+    competition.tcAddress,
+    claimReward,
+    isHostClaimable,
+    checkClaimable,
+    claimRewardPerp,
+    tcId,
+    checkClaimablePerp,
+  ])
 
   const withdraw = useCallback(async () => {
     try {
@@ -184,8 +204,12 @@ export function TCButton({ eventType, competition, timestamp }) {
         </Link>
       )}
       {eventType === EVENT_TYPES.ENDED &&
-        (isClaimable || isHostClaimable ? (
-          <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={claim}>
+        (isClaimable || isClaimablePerp || isHostClaimable ? (
+          <PrimaryButton
+            className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600'
+            disabled={pendingClaimPerp}
+            onClick={claim}
+          >
             {isHostClaimable ? t('Claim Owner Fee') : t('Claim Rewards')}
           </PrimaryButton>
         ) : (

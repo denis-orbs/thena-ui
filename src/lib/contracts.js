@@ -28,6 +28,7 @@ import {
   tcManagerAbi,
   tcPerpetualAbi,
   tcPerpetualManagerAbi,
+  tcPerpRewarderAbi,
   tcSpotAbi,
   thenaIdAbi,
 } from '@/constant/abi/core'
@@ -175,3 +176,5 @@ export const getThenaIDContract = () => getContract(thenaIdAbi, Contracts.thenaI
 export const getDibsRewarderContract = chainId => getContract(dibsRewarderAbi, Contracts.dibsRewarder, chainId)
 
 export const getMultiAccountContract = () => getContract(multiAccountAbi, Contracts.multiAccount, ChainId.BSC)
+
+export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Contracts.tcPerpRewarder, ChainId.BSC)

@@ -1,5 +1,7 @@
+import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
+import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
@@ -8,12 +10,42 @@ import { encodeFunctionData, maxUint256 } from 'viem'
 
 import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getMultiAccountContract, getTcPerpetualContract } from '@/lib/contracts'
+import {
+  getERC20Contract,
+  getMultiAccountContract,
+  getTcPerpetualContract,
+  getTCPerpRewarderContract,
+} from '@/lib/contracts'
+import { v4Client } from '@/lib/graphql'
+import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL) => {
+const V4_TC_PARTICIPANTS_CLAIM = gql`
+  query V4_TC_PARTICIPANTS_CLAIM($tcAddress: String!, $userId: String!) {
+    tcParticipants(where: { tradingCompetition: { tcAddress_eq: $tcAddress }, participant: { id_eq: $userId } }) {
+      winAmounts
+    }
+  }
+`
+
+const fetchTcParticipant = async (tcAddress, userId) => {
+  try {
+    const { tcParticipants } = await v4Client.request(V4_TC_PARTICIPANTS_CLAIM, {
+      tcAddress,
+      userId,
+    })
+    if (tcParticipants && Array.isArray(tcParticipants) && tcParticipants.length) {
+      return tcParticipants[0]
+    }
+    return undefined
+  } catch (error) {
+    return { error: true }
+  }
+}
+
+export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL, eventType = '') => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
@@ -22,6 +54,7 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
   const [isWithdrawable, setIsWithdrawable] = useState(false)
   const [tradingCompetition, setTradingCompetition] = useState(undefined)
   const [withdrawCooldown, setWithdrawCooldown] = useState(0)
+  const [isClaimable, setIsClaimable] = useState(undefined)
 
   const { account } = useWallet()
 
@@ -106,6 +139,54 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
     }
   }, [account, tcAddress])
 
+  const { data: tcParticipant } = useQuery({
+    queryKey: ['getUserTotalVolume', tcAddress, account, isRegistered, type, eventType],
+    queryFn: () => fetchTcParticipant(tcAddress?.toLowerCase(), account?.toLowerCase()),
+    refetchInterval: 30000,
+    enabled: Boolean(
+      type === TC_MARKET_TYPES.PERPETUAL && eventType === EVENT_TYPES.ENDED && tcAddress && account && isRegistered,
+    ),
+    gcTime: 0,
+  })
+
+  const checkClaimable = useCallback(async () => {
+    const checkAfterFiveMinutes =
+      (dayjs().unix() - new BigNumber(tradingCompetition?.timestamp?.endTimestamp).toNumber()) / 60
+    if (checkAfterFiveMinutes < 5) {
+      setIsClaimable(false)
+      return
+    }
+
+    if (!tcParticipant) {
+      setIsClaimable(false)
+      return
+    }
+
+    if (!tcParticipant.winAmounts.some(winAmount => !isInvalidAmount(winAmount))) {
+      setIsClaimable(false)
+      return
+    }
+
+    const tcId = new BigNumber(tradingCompetition?.id).toNumber()
+    const tcPerpRewarderContract = getTCPerpRewarderContract()
+    const claimedList = await Promise.all(
+      tradingCompetition.prize.totalPrize.map((_, index) => {
+        const isClaimed = readCall(tcPerpRewarderContract, 'claimed', [
+          account,
+          tcId,
+          tradingCompetition.prize.token[index],
+        ])
+        return isClaimed
+      }),
+    )
+    if (claimedList.some(item => !isInvalidAmount(item))) {
+      setIsClaimable(false)
+      return
+    }
+
+    setIsClaimable(true)
+  }, [account, tcParticipant, tradingCompetition])
+
   useEffect(() => {
     getUserData()
   }, [getUserData])
@@ -118,6 +199,10 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
     getWithdrawCooldown()
   }, [getWithdrawCooldown])
 
+  useEffect(() => {
+    checkClaimable()
+  }, [checkClaimable])
+
   return {
     loaded,
     isRegistered,
@@ -129,6 +214,8 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL)
     checkWithdrawableTCPerp,
     withdrawCooldown,
     getWithdrawCooldown,
+    isClaimable,
+    checkClaimable,
   }
 }
 
@@ -593,4 +680,107 @@ export const useDeallocateTCPerp = () => {
   )
 
   return { loading, deallocate }
+}
+
+async function getMuonToClaimReward(account, tcId) {
+  let res
+  try {
+    const query = `app=thena_tc&method=position&params[owner]=${account}&params[tcId]=${tcId}`
+    const muonURL = `https://api-muon.thena.fi/v1/?${query}`
+    const response = await fetch(muonURL)
+    res = await response.json()
+  } catch (error) {
+    console.log(error)
+  }
+  return res
+}
+
+export const useClaimRewardTCPerp = () => {
+  const { startTxn, endTxn, writeTxn, closeTxn } = useTxn()
+  const { account } = useWallet()
+  const t = useTranslations()
+  const [pending, setPending] = useState(false)
+
+  const claimReward = useCallback(
+    async ({ tcId }) => {
+      const key = uuidv4()
+      const claimuuid = uuidv4()
+
+      const tcPerpRewarderContract = getTCPerpRewarderContract()
+      if (!tcPerpRewarderContract) return
+
+      setPending(true)
+
+      const toastId = toast.loading('requesting data from Muon...', {
+        autoClose: 5000,
+        closeButton: true,
+      })
+
+      const muonRes = await getMuonToClaimReward(account, tcId)
+      if (!muonRes?.success) {
+        toast.update(toastId, {
+          autoClose: 5000,
+          closeButton: true,
+          render: 'request failed',
+          isLoading: false,
+          type: 'error',
+        })
+        return
+      }
+
+      toast.update(toastId, {
+        autoClose: 5000,
+        closeButton: true,
+        render: 'Muon responded',
+        isLoading: false,
+        type: 'success',
+      })
+
+      const muonResult = muonRes.result
+      const data = [
+        Number(tcId),
+        muonResult.data.result.position,
+        muonResult.data.result.tiecounter,
+        muonResult.data.timestamp,
+        muonResult.reqId,
+        {
+          signature: muonResult.signatures[0].signature,
+          owner: muonResult.signatures[0].owner,
+          nonce: muonResult.data.init.nonceAddress,
+        },
+        muonResult?.nodeSignature,
+      ]
+
+      startTxn({
+        key,
+        title: `${t('Claim Rewards')}`,
+        transactions: {
+          [claimuuid]: {
+            desc: t('Claim Rewards'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      const isSuccess = await writeTxn(key, claimuuid, tcPerpRewarderContract, 'claim', data)
+
+      if (!isSuccess) {
+        setPending(false)
+        closeTxn()
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Claim Successful',
+      })
+
+      setPending(false)
+      return true
+    },
+    [account, closeTxn, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { claimReward, pending }
 }

@@ -3,7 +3,17 @@ import oldTcSpotAbi from './oldTcSpot.json'
 import tcManagerAbi from './tcManager.json'
 import tcPerpetualAbi from './tcPerpetual.json'
 import tcPerpetualManagerAbi from './tcPerpetualManager.json'
+import tcPerpRewarderAbi from './tcPerpRewarder.json'
 import tcSpotAbi from './tcSpot.json'
 import thenaIdAbi from './thenaId.json'
 
-export { multiAccountAbi, oldTcSpotAbi, tcManagerAbi, tcPerpetualAbi, tcPerpetualManagerAbi, tcSpotAbi, thenaIdAbi }
+export {
+  multiAccountAbi,
+  oldTcSpotAbi,
+  tcManagerAbi,
+  tcPerpetualAbi,
+  tcPerpetualManagerAbi,
+  tcPerpRewarderAbi,
+  tcSpotAbi,
+  thenaIdAbi,
+}

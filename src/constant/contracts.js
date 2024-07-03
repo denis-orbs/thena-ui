@@ -100,5 +100,8 @@ const Contracts = {
   multiAccount: {
     [ChainId.BSC]: '0x9a9f48888600fc9c05f11e03eab575ebb2fc2c8f',
   },
+  tcPerpRewarder: {
+    [ChainId.BSC]: '0xA2Bc09C290a260CDc6B63a5434ed81614A9624DE',
+  },
 }
 export default Contracts
