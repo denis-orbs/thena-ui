@@ -7,7 +7,6 @@ import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 
 import CircleImage from '@/components/image/CircleImage'
-import Spinner from '@/components/spinner'
 import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
@@ -17,6 +16,8 @@ import { cn, sliceAddress } from '@/lib/utils'
 import { TYPE_SEE, V4_USERS_COUNT, V4_USERS_SEARCH } from './constants'
 import { SearchSeeAll } from './SearchSeeAll'
 import { VerifyPopover } from '../Profile/VerifyPopover'
+
+const PAGE_SIZE = 30
 
 function SearchUserItem({ user }) {
   const t = useTranslations()
@@ -87,7 +88,7 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText
 
   const { data, size, setSize } = useSWRInfinite(
     index => (seeType === TYPE_SEE.USER ? [searchText, index, 'userSearch'] : null),
-    ([queryText, index]) => fetchUser(queryText, 10, index * 10),
+    ([queryText, index]) => fetchUser(queryText, PAGE_SIZE, index * PAGE_SIZE),
   )
 
   const { data: usersTotalCount } = useSWR(seeType === TYPE_SEE.USER ? ['count user', searchText] : null, () =>
@@ -114,7 +115,6 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText
             dataLength={searchUsers?.length ?? 0}
             hasMore={!isReachingEnd}
             next={() => setSize(size + 1)}
-            loader={<Spinner className='size-4' />}
             endMessage={
               <p style={{ textAlign: 'center' }}>
                 <b>{t('You have seen it all')}</b>

@@ -49,7 +49,12 @@ export const V4_USERS_COUNT = gql`
 export const V4_USERS_SEARCH = gql`
   query V4_USERS_SEARCH($search: String!, $limit: Int = 3, $offset: Int = 0) {
     users(
-      where: { OR: [{ id_containsInsensitive: $search }, { username_containsInsensitive: $search }] }
+      where: {
+        AND: [
+          { isContract_eq: false }
+          { OR: [{ id_containsInsensitive: $search }, { username_containsInsensitive: $search }] }
+        ]
+      }
       limit: $limit
       offset: $offset
       orderBy: [isSuperAdmin_DESC, isAdmin_DESC, isVerified_DESC]
