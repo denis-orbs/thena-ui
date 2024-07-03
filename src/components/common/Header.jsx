@@ -249,6 +249,10 @@ function Header() {
       window.MetaCRMWidget.manualConnectWallet(account)
     }
 
+    if (window?.MetaCRMTracking?.manualConnectWallet) {
+      window.MetaCRMTracking.manualConnectWallet(account)
+    }
+
     const handleConnectWidget = () => {
       window.MetaCRMWidget.manualConnectWallet(account)
     }
