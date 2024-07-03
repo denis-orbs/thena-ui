@@ -74,7 +74,7 @@ export function UserProfileCard({
                 color: nameColor ? (String(nameColor).startsWith('#') ? nameColor : '') : '',
               }}
             >
-              {sliceAddress(username || id)}
+              {username || sliceAddress(id)}
             </span>
           </TextHeading>
         </div>
