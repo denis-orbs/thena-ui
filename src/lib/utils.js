@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
-import { sample } from 'lodash'
+import { isNil, sample } from 'lodash'
 import { twMerge } from 'tailwind-merge'
 import { WBNB } from 'thena-sdk-core'
 
@@ -113,10 +113,11 @@ export const retry = async (callback, breakCondition, maxRetries = 3) => {
   }
 }
 
+/** Sort if null or undefined become last */
 export const customSort = (a, b, isDesc) => {
-  if (a === undefined && b === undefined) return 0
-  if (a === undefined) return 1
-  if (b === undefined) return -1
+  if (isNil(a) && isNil(b)) return 0
+  if (isNil(a)) return 1
+  if (isNil(b)) return -1
   if (a && b) {
     return (a - b) * (isDesc ? -1 : 1)
   }

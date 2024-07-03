@@ -9,8 +9,10 @@ const V4_COMPETITION_DATA = gql`
   query V4_COMPETITION($id: String!) {
     tradingCompetitionById(id: $id) {
       id
+      market
       participants {
         pnl
+        percentagePnl
         participant {
           id
           username
@@ -20,6 +22,7 @@ const V4_COMPETITION_DATA = gql`
           checkMarkIcon
           verifiedAt
         }
+        rank
         winAmounts
         winTokenDecimal
       }
@@ -33,6 +36,7 @@ const V4_COMPETITION_DATA = gql`
       }
       prizeUpdate {
         token
+        winType
       }
       tcAddress
     }

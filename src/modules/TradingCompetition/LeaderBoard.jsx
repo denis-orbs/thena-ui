@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import { compact, isNil } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
@@ -7,11 +8,12 @@ import { UserProfileCard } from '@/components/image/UserProfileCard'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { TC_MARKET_TYPES } from '@/constant'
 import { useTradingCompetition } from '@/context/tradingCompetitionContext'
 import { useEventType } from '@/hooks/useEventType'
 import { useTradeData } from '@/hooks/useTcSpotContract'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { customSort, formatAmount, formatNumberDecimals, fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
 export function LeaderBoard({ competition }) {
@@ -40,7 +42,7 @@ export function LeaderBoard({ competition }) {
         winAmounts: undefined,
       }))
 
-      if (index !== -1) {
+      if (index !== -1 && competition?.market === TC_MARKET_TYPES.SPOT) {
         arr[index] = {
           ...arr[index],
           pnl: new BigNumber(pnlUserCurrent).toNumber(),
@@ -56,40 +58,56 @@ export function LeaderBoard({ competition }) {
       return arr
     }
     return []
-  }, [account, competition?.participants, competition?.prizeUpdate?.token?.length, pnlUserCurrent, winAmount])
+  }, [
+    account,
+    competition?.market,
+    competition?.participants,
+    competition?.prizeUpdate?.token?.length,
+    pnlUserCurrent,
+    winAmount,
+  ])
 
   const { push } = useRouter()
   const t = useTranslations()
 
   const sortOptions = useMemo(
-    () => [
-      {
-        label: <span>#</span>,
-        value: 'rank',
-        width: 'w-[10%]',
-        isDesc: false,
-      },
-      {
-        label: 'User',
-        value: 'user',
-        width: 'w-[35%]',
-        isDesc: true,
-        minWidth: 'min-w-40',
-      },
-      {
-        label: 'Profit & Loss',
-        value: 'pnl',
-        width: 'w-[30%]',
-        isDesc: true,
-      },
-      {
-        label: eventType === EVENT_TYPES.LIVE ? 'Potential Reward' : 'Reward',
-        value: 'reward',
-        width: 'w-[30%]',
-        isDesc: true,
-      },
-    ],
-    [eventType],
+    () =>
+      compact([
+        {
+          label: <span>#</span>,
+          value: 'rank',
+          width: 'w-[10%]',
+          isDesc: false,
+        },
+        {
+          label: 'User',
+          value: 'user',
+          width: 'w-[35%]',
+          isDesc: true,
+          minWidth: 'min-w-40',
+        },
+        competition?.market === TC_MARKET_TYPES.PERPETUAL || competition?.prizeUpdate?.winType
+          ? {
+              label: '%PNL',
+              value: 'percentagePnl',
+              width: 'w-[30%]',
+              isDesc: true,
+            }
+          : undefined,
+        {
+          label: 'Profit & Loss',
+          value: 'pnl',
+          width: 'w-[30%]',
+          isDesc: true,
+        },
+        {
+          label: eventType === EVENT_TYPES.LIVE ? 'Potential Reward' : 'Reward',
+          value: 'reward',
+          width: 'w-[30%]',
+          isDesc: true,
+        },
+      ]),
+    [competition?.market, competition?.prizeUpdate?.winType, eventType],
   )
 
   const [sort, setSort] = useState(sortOptions[0])
@@ -102,9 +120,9 @@ export function LeaderBoard({ competition }) {
             fromWei(b.pnl, b.competitionRules?.winningTokenDecimal) -
             fromWei(a.pnl, a.competitionRules?.winningTokenDecimal),
         )
-        .map((item, index) => ({
+        .map(item => ({
           ...item,
-          rank: index + 1,
+          rank: isNil(item.rank) ? item.rank : item.rank + 1,
         })) ?? [],
     [participants],
   )
@@ -127,10 +145,13 @@ export function LeaderBoard({ competition }) {
         const participantB = b.participant.username ?? b.participant.id
         switch (sort.value) {
           case 'rank':
-            res = (a.rank - b.rank) * (sort.isDesc ? -1 : 1)
+            res = customSort(a.rank, b.rank, sort.isDesc)
             break
           case 'user':
             res = (participantA - participantB) * (sort.isDesc ? 1 : -1)
+            break
+          case 'percentagePnl':
+            res = (a.percentagePnl - b.percentagePnl) * (sort.isDesc ? 1 : -1)
             break
           case 'pnl':
             res =
@@ -157,8 +178,13 @@ export function LeaderBoard({ competition }) {
       sortedData?.map(leader => {
         const pnl = fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal)
         return {
-          rank: <Paragraph>{leader.rank}</Paragraph>,
+          rank: <Paragraph>{leader.rank ?? 'N/A'}</Paragraph>,
           user: <UserProfileCard user={leader.participant} showVerified={leader.participant.isVerified} />,
+          percentagePnl: (
+            <Paragraph className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}>
+              {`${formatNumberDecimals(leader.percentagePnl * 100, 4)}%`}
+            </Paragraph>
+          ),
           pnl: (
             <Paragraph className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}>
               {`${formatAmount(pnl, false, 5, false)}
