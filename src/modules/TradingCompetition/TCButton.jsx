@@ -234,19 +234,20 @@ export function TCButton({ eventType, competition, timestamp }) {
           {joinButtonText.text}
         </PrimaryButton>
       )}
-      {eventType === EVENT_TYPES.UPCOMING &&
-        (isTcSpot ? isJoined : isJoinedPerp) &&
-        ((!isTcSpot && !competition.competitionRules?.startingBalance) ||
-          isInvalidAmount(competition.competitionRules?.startingBalance)) && (
-          <PrimaryButton
-            className='w-full'
-            onClick={() => {
-              setShowModalDeposit(true)
-            }}
-          >
-            {t(!isTcSpot ? 'Deposit And Allocate' : 'Deposit')}
-          </PrimaryButton>
-        )}
+      {(isTcSpot
+        ? isJoined &&
+          Date.now() / 1000 < competition.timestamp?.registrationEnd &&
+          isInvalidAmount(competition.competitionRules?.startingBalance)
+        : isJoinedPerp && eventType === EVENT_TYPES.UPCOMING) && (
+        <PrimaryButton
+          className='w-full'
+          onClick={() => {
+            setShowModalDeposit(true)
+          }}
+        >
+          {t(!isTcSpot ? 'Deposit And Allocate' : 'Deposit')}
+        </PrimaryButton>
+      )}
 
       {showJoinModal && (
         <JoinModal competition={competition} onClose={() => setShowJoinModal(false)} open={showJoinModal} />

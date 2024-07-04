@@ -399,18 +399,16 @@ function Sidebar({ competition, eventType }) {
           >
             <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
           </Link>
-          {competition.market === TC_MARKET_TYPES.PERPETUAL &&
-            (!competition.competitionRules?.startingBalance ||
-              isInvalidAmount(competition.competitionRules?.startingBalance)) && (
-              <PrimaryButton
-                className='w-full'
-                onClick={() => {
-                  setShowModalDeposit(true)
-                }}
-              >
-                {t('Deposit And Allocate')}
-              </PrimaryButton>
-            )}
+          {competition.market === TC_MARKET_TYPES.PERPETUAL && (
+            <PrimaryButton
+              className='w-full'
+              onClick={() => {
+                setShowModalDeposit(true)
+              }}
+            >
+              {t('Deposit And Allocate')}
+            </PrimaryButton>
+          )}
         </>
       )
     }
@@ -426,8 +424,10 @@ function Sidebar({ competition, eventType }) {
 
       if (isTCJoined) {
         if (
-          (competition.market === TC_MARKET_TYPES.PERPETUAL && !competition.competitionRules?.startingBalance) ||
-          isInvalidAmount(competition.competitionRules?.startingBalance)
+          competition.market === TC_MARKET_TYPES.PERPETUAL ||
+          (competition.market === TC_MARKET_TYPES.SPOT &&
+            isInvalidAmount(competition.competitionRules?.startingBalance) &&
+            Date.now() / 1000 < competition.timestamp?.registrationEnd)
         ) {
           return (
             <PrimaryButton
@@ -491,6 +491,7 @@ function Sidebar({ competition, eventType }) {
     competition.tcAddress,
     competition.id,
     competition.competitionRules?.startingBalance,
+    competition.timestamp?.registrationEnd,
     isNotStartRegistration,
     isEndedRegistration,
     isFull,
