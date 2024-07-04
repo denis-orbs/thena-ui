@@ -1,9 +1,10 @@
 'use client'
 
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import { OutlinedButton } from '@/components/buttons/Button'
@@ -29,6 +30,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
+  { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
 ]
 
 const langs = [
@@ -55,6 +57,30 @@ function ChainSelect({ t }) {
     }
   }, [wrapperRef])
 
+  const getElement = useCallback(
+    (item, idx) => (
+      <div
+        className={cn(
+          'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
+          'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
+        )}
+        key={`dropdown-${idx}`}
+        onClick={async () => {
+          if (item.chainId && networkId !== item.chainId) {
+            updateNetwork(item.chainId)
+          }
+          setOpen(false)
+        }}
+      >
+        <div className='flex w-full items-center gap-2'>
+          <CircleImage src={item.img} alt='' className='h-5 w-5' />
+          <TextHeading className='text-nowrap'>{t(item.label)}</TextHeading>
+        </div>
+      </div>
+    ),
+    [t, networkId, updateNetwork],
+  )
+
   return (
     <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
       <div
@@ -74,26 +100,17 @@ function ChainSelect({ t }) {
           !open && 'invisible opacity-0',
         )}
       >
-        {chains.map((item, idx) => (
-          <div
-            className={cn(
-              'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
-              'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
-            )}
-            key={`dropdown-${idx}`}
-            onClick={async () => {
-              if (networkId !== item.chainId) {
-                updateNetwork(item.chainId)
-              }
-              setOpen(false)
-            }}
-          >
-            <div className='flex items-center gap-2'>
-              <CircleImage src={item.img} alt='' className='h-5 w-5' />
-              <TextHeading className='text-nowrap'>{t(item.label)}</TextHeading>
-            </div>
-          </div>
-        ))}
+        {chains.map((item, idx) => {
+          const element = getElement(item, idx)
+          if (item.url) {
+            return (
+              <Link href={item.url} target='_blank'>
+                {element}
+              </Link>
+            )
+          }
+          return element
+        })}
       </div>
     </div>
   )
