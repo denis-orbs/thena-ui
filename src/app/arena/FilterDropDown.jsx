@@ -1,5 +1,7 @@
 import { useTranslations } from 'next-intl'
+import { useCallback } from 'react'
 
+import { PrimaryBadge } from '@/components/badges/Badge'
 import { EmphasisButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import Popover from '@/components/popover'
@@ -15,12 +17,29 @@ export const FILTERS = {
   entryFee: 'Entry Fee',
 }
 
-function FilterDropDown({ filter, setFilter }) {
+function FilterDropDown({ filter, setFilter, hasFilter }) {
   const t = useTranslations()
+
+  const FilterButton = useCallback(
+    () => (
+      <div className='relative'>
+        {!!hasFilter && (
+          <PrimaryBadge
+            className='absolute -right-2 -top-2 z-10 rounded-full p-0 text-[10px] font-medium'
+            childrenClassName='bg-primary-600 px-0.5 py-0.5 lg:px-1 lg:py-1 min-w-5 h-5 flex items-center justify-center'
+          >
+            {hasFilter}
+          </PrimaryBadge>
+        )}
+        <EmphasisButton className=''>{t('Filter')}</EmphasisButton>
+      </div>
+    ),
+    [hasFilter, t],
+  )
 
   return (
     <div>
-      <Popover triggerElement={<EmphasisButton>{t('Filter')}</EmphasisButton>}>
+      <Popover triggerElement={<FilterButton />}>
         <p className='font-figtree text-xl font-semibold leading-6 text-white'>{t('Filters')}</p>
         <div className='my-2 rounded-lg bg-neutral-900 p-1'>
           <Tabs

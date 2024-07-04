@@ -174,3 +174,9 @@ export const isSmallScreen = () => {
   }
   return false
 }
+
+export const objectDiff = (object, other) =>
+  Object.entries(object).reduce((diffCount, [key, value]) => {
+    if (other[key] !== value) return diffCount + 1
+    return diffCount
+  }, 0)

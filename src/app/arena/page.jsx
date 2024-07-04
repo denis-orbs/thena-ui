@@ -1,7 +1,7 @@
 'use client'
 
 import { gql } from 'graphql-request'
-import { cloneDeep, compact, sortBy } from 'lodash'
+import { cloneDeep, compact, omit, sortBy } from 'lodash'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
@@ -16,7 +16,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useTC } from '@/context/tcContext'
 import { v4Client } from '@/lib/graphql'
 import { addOrReplaceURLParams, objectToQuery } from '@/lib/tradingCompetition/utils'
-import { fromWei } from '@/lib/utils'
+import { fromWei, objectDiff } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import Create from '@/modules/CreateTradingCompetition/Create'
 import Preview from '@/modules/CreateTradingCompetition/Preview'
@@ -85,6 +85,11 @@ const fetchCompetition = async () => {
   }
 }
 
+const defaultFilter = {
+  market: 'all',
+  free: false,
+}
+
 export default function ArenaPage() {
   const t = useTranslations()
   const searchParams = useSearchParams()
@@ -134,11 +139,13 @@ export default function ArenaPage() {
 
   const [filter, setFilter] = useState({
     type: searchParams.get('type') ?? null,
-    market: searchParams.get('market') ?? null,
+    market: searchParams.get('market') ?? 'all',
     sortBy: searchParams.get('sortBy') ?? 'Default',
     free: !!searchParams.get('free'),
     status: searchParams.get('status') ?? null,
   })
+
+  const hasFilter = useMemo(() => objectDiff(omit(filter, ['type', 'status', 'sortBy']), defaultFilter), [filter])
 
   const competitions = useMemo(
     () =>
@@ -632,7 +639,7 @@ export default function ArenaPage() {
               val={searchText}
               setVal={setSearchText}
             />
-            <FilterDropDown filter={filter} setFilter={setFilter} />
+            <FilterDropDown filter={filter} setFilter={setFilter} hasFilter={hasFilter} />
           </div>
         </div>
       </div>
