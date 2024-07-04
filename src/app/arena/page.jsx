@@ -31,6 +31,7 @@ const V4_COMPETITION_DATAS = gql`
     tradingCompetitions(where: { isHidden_eq: false }) {
       name
       entryFeeUpdate
+      entryFeeUSD
       market
       id
       bannerUrl
@@ -181,7 +182,7 @@ export default function ArenaPage() {
     }
     switch (filter.sortBy) {
       case FILTERS.entryFee:
-        result = sortBy(result, o => parseInt(o.entryFee, 10))
+        result = sortBy(result, o => Number(o.entryFeeUSD))
         break
 
       case FILTERS.totalPrize:
