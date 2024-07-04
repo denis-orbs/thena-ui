@@ -190,21 +190,20 @@ function ThenaIdPage() {
   }, [USDTAsset?.decimals, calculateCost, thenaIdFormat])
 
   const getTokenId = useCallback(async () => {
-    if (thenaIdFormat) {
+    if (thenaIdFormat && usernameNft) {
       const contract = getThenaIDContract()
       const tokenRes = await readCall(contract, 'usernameToTokenId', [thenaIdFormat])
       setTokenId(new BigNumber(tokenRes).toNumber())
     }
-  }, [thenaIdFormat])
+  }, [thenaIdFormat, usernameNft])
 
   const getImageAttributes = useCallback(async () => {
-    if (tokenId) {
+    if (typeof tokenId === 'number') {
       const contract = getThenaIDContract()
       const res = await readCall(contract, 'tokenURI', [tokenId])
       const imageAttribute = res.split('data:application/json;base64,')[1]
       const decodedData = atob(imageAttribute)
       const jsonData = JSON.parse(decodedData)
-      // setImageUrl(jsonData?.image)
       setAttributes(jsonData?.attributes)
     }
   }, [tokenId])
