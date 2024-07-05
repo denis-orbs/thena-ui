@@ -41,9 +41,12 @@ const fetchData = async search => {
 
       const contract = getThenaIDContract()
       if (contract) {
-        const valid = await readCall(contract, 'validateUsername', [search])
+        const [nameValid, tokkenvalid] = await Promise.all([
+          readCall(contract, 'validateUsername', [search]),
+          readCall(contract, 'usernameToTokenId', [search]),
+        ])
 
-        if (valid) {
+        if (nameValid || !!tokkenvalid) {
           const { usernameNfts: idSearch } = await v4Client.request(V4_ID_SEARCH, { search })
           const _idSearch = idSearch.length
             ? {
