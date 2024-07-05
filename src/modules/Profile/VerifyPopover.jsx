@@ -52,7 +52,13 @@ export function VerifyPopover({ verifyImage, verifiedAt, disablePopover = false 
         </div>
       }
     >
-      <div onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
+      <div
+        onClick={e => {
+          e.stopPropagation()
+          e.preventDefault()
+          setIsPopoverOpen(!isPopoverOpen)
+        }}
+      >
         <VerifiedElement />
       </div>
     </Popover>

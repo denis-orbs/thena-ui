@@ -88,7 +88,7 @@ function SearchContent({
                   setIsPopoverOpen={setIsPopoverOpen}
                 />
               )}
-              {(!!tradingCompetitions.length || !!users.length) && type === TYPE_SEE.ALL && (
+              {(!!tradingCompetitions.length || !!users.length) && !!thenaIds.length && type === TYPE_SEE.ALL && (
                 <hr className='my-5 border-neutral-600' />
               )}
               {!!thenaIds.length && (
