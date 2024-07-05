@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
 import { TYPE_SEE } from './constants'
 import { SearchSeeAll } from './SearchSeeAll'
 
-export function SearchTCItem({ competition }) {
+export function SearchTCItem({ competition, setIsPopoverOpen }) {
   const t = useTranslations()
   const eventType = useMemo(() => getEventType(competition?.timestamp), [competition?.timestamp])
 
@@ -50,7 +50,11 @@ export function SearchTCItem({ competition }) {
       </div>
 
       <div className='flex-1'>
-        <Link className='cursor-pointer' href={`/arena/trading-competitions/${competition.id}`}>
+        <Link
+          className='cursor-pointer'
+          href={`/arena/trading-competitions/${competition.id}`}
+          onClick={() => setIsPopoverOpen(false)}
+        >
           <TextHeading className='ellipsis-1 text-base'>{competition.name}</TextHeading>
         </Link>
         <div className='mt-1 flex items-center justify-start gap-2'>
@@ -75,7 +79,7 @@ export function SearchTCItem({ competition }) {
   )
 }
 
-export function SearchTCs({ tradingCompetitions, showSeeAll, setSeeType, seeType }) {
+export function SearchTCs({ tradingCompetitions, showSeeAll, setSeeType, seeType, setIsPopoverOpen }) {
   const t = useTranslations()
   const rootRef = useRef(null)
 
@@ -85,7 +89,7 @@ export function SearchTCs({ tradingCompetitions, showSeeAll, setSeeType, seeType
       <div className='max-h-80 overflow-y-auto' ref={rootRef}>
         {tradingCompetitions.slice(0, seeType !== TYPE_SEE.ALL ? tradingCompetitions.length : 3).map(tc => (
           <RenderIfVisible defaultHeight={60} root={rootRef.current}>
-            <SearchTCItem competition={tc} key={tc.id} />
+            <SearchTCItem competition={tc} key={tc.id} setIsPopoverOpen={setIsPopoverOpen} />
           </RenderIfVisible>
         ))}
       </div>

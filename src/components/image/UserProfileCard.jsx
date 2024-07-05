@@ -22,6 +22,7 @@ export function UserProfileCard({
   enableFollow = true,
   userClassName,
   avatarSize = 'size-8',
+  disablePopover = false,
 }) {
   const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt } = user
   const t = useTranslations()
@@ -78,7 +79,9 @@ export function UserProfileCard({
             </span>
           </TextHeading>
         </div>
-        {showVerified && <VerifyPopover verifyImage={checkMarkIcon} verifiedAt={verifiedAt} />}
+        {showVerified && (
+          <VerifyPopover verifyImage={checkMarkIcon} verifiedAt={verifiedAt} disablePopover={disablePopover} />
+        )}
         {isAdmin && <Tag>{t('Admin')}</Tag>}
         {isSuperAdmin && <Tag>{t('Super Admin')}</Tag>}
       </LinkComponent>

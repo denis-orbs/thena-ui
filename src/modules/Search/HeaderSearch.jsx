@@ -1,13 +1,22 @@
 import dayjs from 'dayjs'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Popover } from 'react-tiny-popover'
 import useSWR from 'swr'
 
 import useDebounce from '@/hooks/useDebounce'
+import { readCall } from '@/lib/contractActions'
+import { getThenaIDContract } from '@/lib/contracts'
 import { v4Client } from '@/lib/graphql'
 import { SearchIcon } from '@/svgs'
 
-import { V4_USERS_COMPETITIONS, V4_USERS_COUNT, V4_USERS_SEARCH } from './constants'
+import {
+  V4_ID_COUNT,
+  V4_ID_SEARCH,
+  V4_MINTED_ID_SEARCH,
+  V4_USERS_COMPETITIONS,
+  V4_USERS_COUNT,
+  V4_USERS_SEARCH,
+} from './constants'
 import SearchContent from './SearchContent'
 import SearchInput from '../../components/input/SearchInput'
 
@@ -17,6 +26,40 @@ const fetchData = async search => {
       const { tradingCompetitions } = await v4Client.request(V4_USERS_COMPETITIONS, { search })
       const { usersTotalCount } = await v4Client.request(V4_USERS_COUNT, { search })
       const { users } = await v4Client.request(V4_USERS_SEARCH, { search })
+
+      const { usernameNfts: mintedId } = await v4Client.request(V4_MINTED_ID_SEARCH, { search })
+
+      const { usernameNftsCountForSearch } = await v4Client.request(V4_ID_COUNT, { search })
+      let usernameNftsCount = usernameNftsCountForSearch
+
+      const thenaIds = mintedId.length
+        ? mintedId.map(item => ({
+            ...item,
+            available: false,
+          }))
+        : []
+
+      const contract = getThenaIDContract()
+      if (contract) {
+        const valid = await readCall(contract, 'validateUsername', [search])
+
+        if (valid) {
+          const { usernameNfts: idSearch } = await v4Client.request(V4_ID_SEARCH, { search })
+          const _idSearch = idSearch.length
+            ? {
+                ...idSearch[0],
+                available: false,
+              }
+            : {
+                id: 'new',
+                avatar: undefined,
+                name: search,
+                available: true,
+              }
+          usernameNftsCount += 1
+          thenaIds.unshift(_idSearch)
+        }
+      }
 
       const sortTCs = tradingCompetitions.sort((a, b) => {
         const now = dayjs().unix()
@@ -47,11 +90,23 @@ const fetchData = async search => {
 
         return 0
       })
-      return { users, usersTotalCount, tradingCompetitions: sortTCs }
+      return {
+        users,
+        usersTotalCount,
+        tradingCompetitions: sortTCs,
+        thenaIds,
+        thenaIdsCount: usernameNftsCount,
+      }
     }
   } catch (error) {
     console.error(error)
-    return { users: [], usersTotalCount: 0, tradingCompetitions: [] }
+    return {
+      users: [],
+      usersTotalCount: 0,
+      tradingCompetitions: [],
+      thenaIds: [],
+      thenaIdsCount: 0,
+    }
   }
 }
 
@@ -75,21 +130,38 @@ export function HeaderSearch({ setToggleSearch, toggleSearch, isSmallScreen }) {
     }
   }, [searchText])
 
+  const renderContent = useCallback(
+    props => (
+      <SearchContent
+        tradingCompetitions={data?.tradingCompetitions}
+        users={data?.users}
+        usersTotalCount={data?.usersTotalCount}
+        thenaIds={data?.thenaIds}
+        thenaIdTotalCount={data?.thenaIdsCount}
+        isLoading={isLoading}
+        searchText={debounceSearch}
+        setIsPopoverOpen={setIsPopoverOpen}
+        width={props?.childRect?.width}
+      />
+    ),
+    [
+      data?.thenaIds,
+      data?.thenaIdsCount,
+      data?.tradingCompetitions,
+      data?.users,
+      data?.usersTotalCount,
+      debounceSearch,
+      isLoading,
+    ],
+  )
+
   return (
     <Popover
       isOpen={isPopoverOpen}
       positions='bottom'
       padding={3}
       onClickOutside={() => setIsPopoverOpen(false)}
-      content={
-        <SearchContent
-          tradingCompetitions={data?.tradingCompetitions}
-          users={data?.users}
-          isLoading={isLoading}
-          usersTotalCount={data?.usersTotalCount}
-          searchText={debounceSearch}
-        />
-      }
+      content={renderContent}
       containerStyle={{
         zIndex: '100',
       }}

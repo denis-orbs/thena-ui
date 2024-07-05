@@ -7,9 +7,20 @@ import { ArrowLeftIcon } from '@/svgs'
 
 import { TYPE_SEE } from './constants'
 import { SearchTCs } from './SearchTCs'
+import { SearchThenaId } from './SearchThenaId'
 import { SearchUsers } from './SearchUsers'
 
-function SearchContent({ users, tradingCompetitions, isLoading, usersTotalCount, searchText }) {
+function SearchContent({
+  thenaIds,
+  thenaIdTotalCount,
+  users,
+  usersTotalCount,
+  tradingCompetitions,
+  isLoading,
+  searchText,
+  setIsPopoverOpen,
+  width = 360,
+}) {
   const t = useTranslations()
 
   const [seeType, setSeeType] = useState(TYPE_SEE.ALL)
@@ -26,6 +37,7 @@ function SearchContent({ users, tradingCompetitions, isLoading, usersTotalCount,
               seeType={seeType}
               searchText={searchText}
               userCount={usersTotalCount}
+              setIsPopoverOpen={setIsPopoverOpen}
             />
           )
         case TYPE_SEE.TC:
@@ -35,6 +47,19 @@ function SearchContent({ users, tradingCompetitions, isLoading, usersTotalCount,
               showSeeAll={false}
               setSeeType={setSeeType}
               seeType={seeType}
+              setIsPopoverOpen={setIsPopoverOpen}
+            />
+          )
+        case TYPE_SEE.THENA_ID:
+          return (
+            <SearchThenaId
+              thenaIds={thenaIds}
+              showSeeAll={false}
+              setSeeType={setSeeType}
+              seeType={seeType}
+              setIsPopoverOpen={setIsPopoverOpen}
+              searchText={searchText}
+              thenaIdTotalCount={thenaIdTotalCount}
             />
           )
         default:
@@ -46,6 +71,7 @@ function SearchContent({ users, tradingCompetitions, isLoading, usersTotalCount,
                   showSeeAll={tradingCompetitions.length > 3}
                   setSeeType={setSeeType}
                   seeType={seeType}
+                  setIsPopoverOpen={setIsPopoverOpen}
                 />
               )}
               {!!tradingCompetitions.length && !!users.length && type === TYPE_SEE.ALL && (
@@ -59,33 +85,63 @@ function SearchContent({ users, tradingCompetitions, isLoading, usersTotalCount,
                   seeType={seeType}
                   userCount={usersTotalCount}
                   searchText={searchText}
+                  setIsPopoverOpen={setIsPopoverOpen}
+                />
+              )}
+              {(!!tradingCompetitions.length || !!users.length) && type === TYPE_SEE.ALL && (
+                <hr className='my-5 border-neutral-600' />
+              )}
+              {!!thenaIds.length && (
+                <SearchThenaId
+                  thenaIds={thenaIds}
+                  showSeeAll={thenaIdTotalCount > 3}
+                  setSeeType={setSeeType}
+                  seeType={seeType}
+                  searchText={searchText}
+                  setIsPopoverOpen={setIsPopoverOpen}
+                  thenaIdTotalCount={thenaIdTotalCount}
                 />
               )}
             </>
           )
       }
     },
-    [users, seeType, searchText, tradingCompetitions, usersTotalCount],
+    [users, seeType, searchText, tradingCompetitions, usersTotalCount, setIsPopoverOpen, thenaIds, thenaIdTotalCount],
   )
 
   if (isLoading) {
     return (
-      <div className='flex h-60 w-[360px] items-center justify-center rounded-md border border-neutral-600 bg-neutral-800 p-3'>
+      <div
+        className='flex h-60 w-[360px] items-center justify-center rounded-md border border-neutral-600 bg-neutral-800 p-3'
+        style={{
+          width: `${width}px`,
+        }}
+      >
         <Spinner className='size-10' />
       </div>
     )
   }
 
-  if (!users?.length && !tradingCompetitions?.length) {
+  if (!users?.length && !tradingCompetitions?.length && !thenaIds?.length) {
     return (
-      <div className='max-h-64 w-[360px] overflow-y-hidden rounded-md border border-neutral-600 bg-neutral-800 p-3'>
+      <div
+        className='max-h-64 w-[360px] overflow-y-hidden rounded-md border border-neutral-600 bg-neutral-800 p-3'
+        style={{
+          width: `${width}px`,
+        }}
+      >
         {t('No Users Or Trading Competitions')}
       </div>
     )
   }
 
   return (
-    <div className='max-h-[550px] w-[360px] rounded-md border border-neutral-600 bg-neutral-800 p-5'>
+    <div
+      className='max-h-[550px] overflow-y-auto rounded-md border border-neutral-600 bg-neutral-800 p-5'
+      style={{
+        width: `${width}px`,
+      }}
+    >
       {seeType !== TYPE_SEE.ALL && (
         <TextButton
           className='pb-2 pl-0 pt-0 outline-0 outline-offset-0'

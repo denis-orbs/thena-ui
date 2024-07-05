@@ -10,7 +10,7 @@ import { useLocaleSettings } from '@/state/settings/hooks'
 import { CalendarIcon, Verified } from '@/svgs'
 
 dayjs.extend(localizedFormat)
-export function VerifyPopover({ verifyImage, verifiedAt }) {
+export function VerifyPopover({ verifyImage, verifiedAt, disablePopover = false }) {
   const t = useTranslations()
   const { locale } = useLocaleSettings()
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
@@ -26,7 +26,7 @@ export function VerifyPopover({ verifyImage, verifiedAt }) {
 
   return (
     <Popover
-      isOpen={isPopoverOpen}
+      isOpen={isPopoverOpen && !disablePopover}
       positions={['bottom', 'left']}
       onClickOutside={() => setIsPopoverOpen(false)}
       padding={3}

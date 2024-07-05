@@ -3,23 +3,21 @@ import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import { useMemo, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 
 import CircleImage from '@/components/image/CircleImage'
+import Spinner from '@/components/spinner'
 import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
 import { v4Client } from '@/lib/graphql'
 import { cn, sliceAddress } from '@/lib/utils'
 
-import { TYPE_SEE, V4_USERS_COUNT, V4_USERS_SEARCH } from './constants'
+import { PAGE_SIZE, TYPE_SEE, V4_USERS_SEARCH } from './constants'
 import { SearchSeeAll } from './SearchSeeAll'
 import { VerifyPopover } from '../Profile/VerifyPopover'
 
-const PAGE_SIZE = 30
-
-function SearchUserItem({ user }) {
+function SearchUserItem({ user, setIsPopoverOpen }) {
   const t = useTranslations()
 
   const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt, isVerified } = user
@@ -29,6 +27,7 @@ function SearchUserItem({ user }) {
       <Link
         className='flex cursor-pointer items-center justify-center gap-2'
         href={`/arena/profile/${username ? encodeURIComponent(username.toLowerCase()) : id.toLowerCase()}`}
+        onClick={() => setIsPopoverOpen(false)}
       >
         <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className='size-8' />
         <div>
@@ -44,7 +43,7 @@ function SearchUserItem({ user }) {
                 {username || sliceAddress(id)}
               </span>
             </TextHeading>
-            {isVerified && <VerifyPopover verifyImage={checkMarkIcon} verifiedAt={verifiedAt} />}
+            {isVerified && <VerifyPopover verifyImage={checkMarkIcon} verifiedAt={verifiedAt} disablePopover />}
           </div>
           {isSuperAdmin ? (
             <Tag className='text-xs'>{t('Super Admin')}</Tag>
@@ -59,16 +58,6 @@ function SearchUserItem({ user }) {
   )
 }
 
-const fetchCountUser = async search => {
-  try {
-    if (search) {
-      const { usersTotalCount } = await v4Client.request(V4_USERS_COUNT, { search })
-      return { usersTotalCount }
-    }
-  } catch (error) {
-    return { usersTotalCount: 0 }
-  }
-}
 const fetchUser = async (search, limit, offset) => {
   try {
     if (search) {
@@ -82,7 +71,7 @@ const fetchUser = async (search, limit, offset) => {
   }
 }
 
-export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText, userCount }) {
+export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText, userCount, setIsPopoverOpen }) {
   const t = useTranslations()
   const rootRef = useRef(null)
 
@@ -91,14 +80,10 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText
     ([queryText, index]) => fetchUser(queryText, PAGE_SIZE, index * PAGE_SIZE),
   )
 
-  const { data: usersTotalCount } = useSWR(seeType === TYPE_SEE.USER ? ['count user', searchText] : null, () =>
-    fetchCountUser(searchText),
-  )
-
   const searchUsers = useMemo(() => (data ? [].concat(...data) : []), [data])
 
-  const isEmpty = usersTotalCount === 0
-  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < 10)
+  const isEmpty = userCount === 0
+  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < PAGE_SIZE)
 
   return (
     <div>
@@ -107,7 +92,7 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText
         {seeType === TYPE_SEE.ALL ? (
           users?.map(item => (
             <RenderIfVisible defaultHeight={60} visibleOffset={700} root={rootRef.current}>
-              <SearchUserItem user={item} key={item.id} />
+              <SearchUserItem user={item} key={item.id} setIsPopoverOpen={setIsPopoverOpen} />
             </RenderIfVisible>
           ))
         ) : (
@@ -115,16 +100,16 @@ export function SearchUsers({ users, showSeeAll, setSeeType, seeType, searchText
             dataLength={searchUsers?.length ?? 0}
             hasMore={!isReachingEnd}
             next={() => setSize(size + 1)}
-            endMessage={
-              <p style={{ textAlign: 'center' }}>
-                <b>{t('You have seen it all')}</b>
-              </p>
+            loader={
+              <div className='flex h-6 w-full items-center justify-center'>
+                <Spinner className='size-4' />
+              </div>
             }
             scrollableTarget='scrollableDiv'
           >
             {searchUsers?.map(item => (
               <RenderIfVisible defaultHeight={60} visibleOffset={700} root={rootRef.current}>
-                <SearchUserItem user={item} key={item.id} />
+                <SearchUserItem user={item} key={item.id} setIsPopoverOpen={setIsPopoverOpen} />
               </RenderIfVisible>
             ))}
           </InfiniteScroll>
