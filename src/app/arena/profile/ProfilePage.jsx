@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash'
+import { redirect } from 'next/navigation'
 import React, { useCallback, useEffect, useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -13,17 +14,19 @@ import { UserInfo } from './UserInfo'
 import UserThenaIds from './UserThenaIds'
 
 export function ProfilePage({ address }) {
-  const { data: userInfo, isLoading } = useSWR(
-    ['user info', address],
-    () => fetchUserInfo(decodeURIComponent(address)),
-    {
-      refreshInterval: 60000,
-    },
-  )
+  const decodedAddress = useMemo(() => decodeURIComponent(address), [address])
+
+  const { data: userInfo, isLoading } = useSWR(['user info', address], () => fetchUserInfo(decodedAddress), {
+    refreshInterval: 60000,
+  })
+
+  if (userInfo && userInfo.username && ![userInfo.username, userInfo.id].includes(decodedAddress)) {
+    redirect(`/arena/profile/${decodeURIComponent(userInfo.username)}`)
+  }
 
   const { data: following, mutate: mutateFollowing } = useSWR(
     ['following', address],
-    () => fetchFollowing(decodeURIComponent(address)),
+    () => fetchFollowing(decodedAddress),
     {
       refreshInterval: 60000,
     },
@@ -31,7 +34,7 @@ export function ProfilePage({ address }) {
 
   const { data: followers, mutate: mutateFollower } = useSWR(
     ['followers', address],
-    () => fetchFollower(decodeURIComponent(address)),
+    () => fetchFollower(decodedAddress),
     {
       refreshInterval: 60000,
     },
