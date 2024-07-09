@@ -283,10 +283,14 @@ function AvailablePage() {
     <div>
       <div className='mt-6 flex items-center gap-6'>
         <EmphasisButton>
-          <Link href='/arena/thena-id/mint'>{t('Mint Thena Id')}</Link>
+          <Link href='/arena/thena-id/mint' prefetch={false}>
+            {t('Mint Thena Id')}
+          </Link>
         </EmphasisButton>
         <EmphasisButton>
-          <Link href='/arena/thena-id/recently-minted'>{t('Recent THENA ID Mints')}</Link>
+          <Link href='/arena/thena-id/recently-minted' prefetch={false}>
+            {t('Recent THENA ID Mints')}
+          </Link>
         </EmphasisButton>
       </div>
       <div className='mt-6'>

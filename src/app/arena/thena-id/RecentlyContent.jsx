@@ -326,10 +326,14 @@ function RecentlyContent({ isMinted = true }) {
     <div>
       <div className='mt-6 flex items-center gap-6'>
         <EmphasisButton>
-          <Link href='/arena/thena-id/mint'>{t('Mint Thena Id')}</Link>
+          <Link href='/arena/thena-id/mint' prefetch={false}>
+            {t('Mint Thena Id')}
+          </Link>
         </EmphasisButton>
         <EmphasisButton>
-          <Link href='/arena/thena-id/available'>{t('Available THENA IDs')}</Link>
+          <Link href='/arena/thena-id/available' prefetch={false}>
+            {t('Available THENA IDs')}
+          </Link>
         </EmphasisButton>
       </div>
 
