@@ -128,8 +128,6 @@ function IncreasePrizeTable() {
     [filteredData, sort],
   )
 
-  console.log({ sortedData })
-
   const finalData = useMemo(
     () =>
       sortedData?.map(item => ({
