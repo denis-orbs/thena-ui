@@ -50,9 +50,9 @@ const getCompetitionParticipants = async id => {
 const V4_TRADE_RANK_DATA = gql`
   query V4_TRADE_RANK($participantIds: [String!]!) {
     userLeaderboards(where: { id_in: $participantIds }) {
-      tradeVolume
-      rankVolume
       id
+      tradeTCVolume
+      rankTCVolume
     }
   }
 `
@@ -81,8 +81,8 @@ const fetchCompetitionParticipationData = async id => {
 
         return {
           ...participant,
-          rank: rank?.rankVolume,
-          volume: rank?.tradeVolume,
+          rank: rank?.rankTCVolume,
+          volume: rank?.tradeTCVolume,
         }
       })
     }

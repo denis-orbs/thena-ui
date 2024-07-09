@@ -15,10 +15,14 @@ function MintPage() {
     <div className='mt-6'>
       <div className='mt-6 flex items-center gap-6'>
         <EmphasisButton>
-          <Link href='/arena/thena-id/recently-minted'>{t('Recent THENA ID Mints')}</Link>
+          <Link href='/arena/thena-id/recently-minted' prefetch={false}>
+            {t('Recent THENA ID Mints')}
+          </Link>
         </EmphasisButton>
         <EmphasisButton>
-          <Link href='/arena/thena-id/available'>{t('Available THENA IDs')}</Link>
+          <Link href='/arena/thena-id/available' prefetch={false}>
+            {t('Available THENA IDs')}
+          </Link>
         </EmphasisButton>
       </div>
       <div className='mt-6'>

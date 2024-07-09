@@ -137,7 +137,7 @@ function IncreasePrizeTable() {
           </Paragraph>
         ),
         user: <UserProfileCard user={item.user} showVerified={item.user?.isVerified} />,
-        timestamp: <Paragraph>{dayjs(item.timestamp).tz().format('MMM D, YYYY h:mm')}</Paragraph>,
+        timestamp: <Paragraph>{dayjs(item.timestamp).tz().format('MMM D, YYYY h:mm A')}</Paragraph>,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData)],

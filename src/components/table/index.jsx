@@ -199,13 +199,13 @@ function Table({
   }, [searchParams])
 
   useEffect(() => {
-    if (hightLightIndex) {
+    if (hightLightIndex && searchParams.get('rank')) {
       const element = document.getElementById(`table-row-${hightLightIndex}`)
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
-  }, [hightLightIndex])
+  }, [hightLightIndex, searchParams])
 
   return (
     <div className={cn('relative flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
@@ -227,6 +227,7 @@ function Table({
                     onClick={() => {
                       if (!option.disabled) {
                         handleRedirectPage(1)
+                        query.delete('rank', undefined)
                         if (!onlySortDesc) {
                           setSort({
                             ...option,
@@ -303,6 +304,7 @@ function Table({
                   onClick={() => {
                     if (!option.disabled) {
                       handleRedirectPage(1)
+                      query.delete('rank', undefined)
                       setSort({
                         ...option,
                         isDesc: sort.value === option.value ? !sort.isDesc : true,
