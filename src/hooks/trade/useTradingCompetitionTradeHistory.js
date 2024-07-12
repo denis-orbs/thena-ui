@@ -13,9 +13,11 @@ const V4_TC_TRADE_HISTORY = gql`
       txHash
       tokenOut {
         symbol
+        id
       }
       tokenIn {
         symbol
+        id
       }
     }
   }

@@ -69,8 +69,8 @@ export function TradeHistory() {
   useEffect(() => {
     if (dataFetch) {
       const arr = dataFetch.map(history => {
-        const assetIn = assets.find(a => a.symbol === history.tokenIn?.symbol)
-        const assetOut = assets.find(a => a.symbol === history.tokenOut?.symbol)
+        const assetIn = assets.find(a => a.address?.toLowerCase() === history.tokenIn?.id?.toLowerCase())
+        const assetOut = assets.find(a => a.address?.toLowerCase() === history.tokenOut?.id?.toLowerCase())
 
         return {
           traded_token: [
