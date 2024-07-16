@@ -566,7 +566,7 @@ function Sidebar({ competition, eventType }) {
           />
         )}
         {buttonByStatus}
-        {account && !isEndedRegistration && competition.market === TC_MARKET_TYPES.SPOT && mounted && (
+        {account && mounted && eventType !== EVENT_TYPES.ENDED && (
           <>
             <PrimaryButton
               data-tooltip-id='showTooltip'
@@ -581,7 +581,7 @@ function Sidebar({ competition, eventType }) {
                 id='showTooltip'
                 place='bottom'
               >
-                {t('You Can Only Increase The Prize During The Registration Period')}
+                {t('You Can Only Increase The Prize After Registration Starts')}
               </CustomTooltip>
             )}
           </>

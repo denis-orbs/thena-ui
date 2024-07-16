@@ -4,6 +4,8 @@ import React, { useCallback, useState } from 'react'
 import { PrimaryButton } from '@/components/buttons/Button'
 import CustomTokenInput from '@/components/input/CustomTokenInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
+import { TC_MARKET_TYPES } from '@/constant'
+import { useIncreasePrizeTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useIncreaseTCSpotPrize } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
@@ -12,17 +14,21 @@ function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} })
   const t = useTranslations()
 
   const [amount, setAmount] = useState('')
-  const [token, setToken] = useState(competition.prizeUpdate.token[0])
+  const [token, setToken] = useState(competition?.prizeUpdate?.token?.[0])
 
-  const { increasePrize, pending } = useIncreaseTCSpotPrize()
+  const { increasePrize: increasePrizeSpot, pending: pendingSpot } = useIncreaseTCSpotPrize()
+  const { increasePrize: increasePrizePerp, pending: pendingPerp } = useIncreasePrizeTCPerp()
 
   const handleIncreasePrize = useCallback(async () => {
-    if (fromWei(toWei(amount, token?.decimals), token?.decimals).gt(token?.balance)) {
+    const amountToWei = toWei(amount, token?.decimals)
+    if (fromWei(amountToWei, token?.decimals).gt(token?.balance)) {
       warnToast('Insufficient [Asset] Balance', { symbol: token?.symbol })
       return false
     }
 
-    const isSuccess = await increasePrize(competition?.tcAddress, token?.address, toWei(amount, token?.decimals))
+    const isSuccess = await (competition.market === TC_MARKET_TYPES.SPOT
+      ? increasePrizeSpot(competition?.tcAddress, token?.address, amountToWei)
+      : increasePrizePerp(token?.address, amountToWei, Number(competition?.id?.split('-')[1])))
 
     if (isSuccess) {
       closeModal()
@@ -30,8 +36,11 @@ function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} })
   }, [
     amount,
     closeModal,
+    competition?.id,
+    competition?.market,
     competition?.tcAddress,
-    increasePrize,
+    increasePrizePerp,
+    increasePrizeSpot,
     token?.address,
     token?.balance,
     token?.decimals,
@@ -50,7 +59,12 @@ function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} })
         />
       </ModalBody>
       <ModalFooter>
-        <PrimaryButton disabled={!amount} isLoading={pending} className='w-full' onClick={handleIncreasePrize}>
+        <PrimaryButton
+          disabled={!amount}
+          isLoading={pendingSpot || pendingPerp}
+          className='w-full'
+          onClick={handleIncreasePrize}
+        >
           {t('Increase Prize')}
         </PrimaryButton>
       </ModalFooter>
