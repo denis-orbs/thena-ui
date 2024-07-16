@@ -51,6 +51,26 @@ export function VaultsContextProvider({ children }) {
       )
       const totalRewards = reward0PerYearInUsd.plus(reward1PerYearInUsd).plus(isTwoRewards ? 0 : reward2PerYearInUsd)
       const apr = gaugeTvl.isZero() ? ZERO_VALUE : totalRewards.div(gaugeTvl).times(100)
+      const firstApr = gaugeTvl.isZero() ? ZERO_VALUE : reward0PerYearInUsd.div(gaugeTvl).times(100)
+      const secondApr = gaugeTvl.isZero() ? ZERO_VALUE : reward1PerYearInUsd.div(gaugeTvl).times(100)
+      const thirdApr = gaugeTvl.isZero() || isTwoRewards ? null : reward2PerYearInUsd.div(gaugeTvl).times(100)
+      const apr_list = []
+      apr_list.push({
+        symbol: asset0.symbol,
+        apr: firstApr,
+      })
+
+      apr_list.push({
+        symbol: asset1.symbol,
+        apr: secondApr,
+      })
+
+      if (thirdApr) {
+        apr_list.push({
+          symbol: asset2.symbol,
+          apr: thirdApr,
+        })
+      }
 
       const found = userInfo && userInfo.find(item => item.address.toLowerCase() === vault.address.toLowerCase())
       let user = {
@@ -114,6 +134,7 @@ export function VaultsContextProvider({ children }) {
           address: vault.gaugeAddress,
           tvl: gaugeTvl,
           apr,
+          apr_list,
           pooled0: vault.totalSupply ? reserve0.times(vault.gaugeSupply).div(vault.totalSupply) : ZERO_VALUE,
           pooled1: vault.totalSupply ? reserve1.times(vault.gaugeSupply).div(vault.totalSupply) : ZERO_VALUE,
         },
