@@ -33,47 +33,50 @@ export const useCompetitionFormat = (competition, isPreview = false) => {
   }, [_assets])
 
   return useMemo(() => {
-    if (isPreview) {
-      return competition
+    if (!competition) {
+      return undefined
     }
-    if (competition) {
-      const clone = cloneDeep(competition)
 
-      if (clone.prize) {
-        clone.prize.token = assets.find(ele => ele.address.toLowerCase() === competition?.prize?.token.toLowerCase())
-      }
+    const clone = cloneDeep(competition)
 
-      if (clone.prizeUpdate) {
-        clone.prizeUpdate.token = clone.prizeUpdate.token.map(token => {
-          const asset = assets.find(ele => ele.address.toLowerCase() === token.toLowerCase())
-          return asset
-        })
-      }
+    if (!clone.competitionRules.pairIds) {
+      clone.competitionRules.pairIds = []
+    } else {
+      clone.competitionRules.pairIds = clone.competitionRules.pairIds.map(item => {
+        const pair = dataListPairs.find(p => Number(p.id) === Number(item))
+        return pair
+      })
+    }
 
-      if (clone.participants) {
-        clone.participantCount = clone.participants.length
-      }
-
-      if (clone.competitionRules) {
-        clone.competitionRules.tradingTokens = assets.filter(ele =>
-          competition?.competitionRules.tradingTokens?.map(sub => sub.toLowerCase()).includes(ele.address),
-        )
-
-        clone.competitionRules.winningToken = assets.find(
-          ele => ele.address.toLowerCase() === competition?.competitionRules.winningToken?.toLowerCase(),
-        )
-
-        if (!clone.competitionRules.pairIds) {
-          clone.competitionRules.pairIds = []
-        } else {
-          clone.competitionRules.pairIds = clone.competitionRules.pairIds.map(item => {
-            const pair = dataListPairs.find(p => Number(p.id) === Number(item))
-            return pair
-          })
-        }
-      }
+    if (isPreview) {
       return clone
     }
-    return undefined
+
+    if (clone.prize) {
+      clone.prize.token = assets.find(ele => ele.address.toLowerCase() === competition?.prize?.token.toLowerCase())
+    }
+
+    if (clone.prizeUpdate) {
+      clone.prizeUpdate.token = clone.prizeUpdate.token.map(token => {
+        const asset = assets.find(ele => ele.address.toLowerCase() === token.toLowerCase())
+        return asset
+      })
+    }
+
+    if (clone.participants) {
+      clone.participantCount = clone.participants.length
+    }
+
+    if (clone.competitionRules) {
+      clone.competitionRules.tradingTokens = assets.filter(ele =>
+        competition?.competitionRules.tradingTokens?.map(sub => sub.toLowerCase()).includes(ele.address),
+      )
+
+      clone.competitionRules.winningToken = assets.find(
+        ele => ele.address.toLowerCase() === competition?.competitionRules.winningToken?.toLowerCase(),
+      )
+    }
+
+    return clone
   }, [assets, competition, dataListPairs, isPreview])
 }

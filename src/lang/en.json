@@ -568,7 +568,7 @@
   "Host (25% Max)": "Host (25% Max)",
   "Prizes Token": "Prizes Token",
   "Tradable Tokens Label": "Tradable Tokens",
-  "Create Trading Competition Description": "In order to create this trading competition you will have to pay a creation fee.",
+  "Create Trading Competition Description": "Please check all the details on the side and proceed to create the competition when ready.",
   "Join Competition": "Join Competition",
   "Pay Entry Fee And Deposit To Join Message": "In order to join this trading competition, both an entry fee and a deposit is required. The entry fee of {entryFeeText} is the one time, non-refundable joining fee, which will go towards the prize pool. A deposit of {depositAmount} {depositTicker} is also necessary. You’ll be trading with your deposit within the competition and you can withdraw the remaining part of your deposit at the end of the competition.",
   "Pay Deposit To Join Message": "In order to join this trading competition a deposit of {depositAmount} {depositTicker} is necessary. You’ll be trading with your deposit within the competition and you can withdraw the remaining part of your deposit at the end of the competition.",

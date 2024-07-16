@@ -44,7 +44,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
     dataMaxPrizePool = prizeUpdate.token.map((item, index) => ({
       data: formatAmount(
         fromWei(prizeUpdate.totalPrize[index]).plus(
-          fromWei(entryFeeUpdate[index]).multipliedBy(maxParticipants - participantCount),
+          fromWei(entryFeeUpdate[index] || 0).multipliedBy(maxParticipants - participantCount),
         ),
       ),
       ticker: item?.symbol,

@@ -3,11 +3,11 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { INIT_VALUES, TC_MARKET_TYPES } from '@/constant'
+import { INIT_VALUES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { useCreateTC } from '@/hooks/useTCManager'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -17,7 +17,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
   const router = useRouter()
   const t = useTranslations()
   const { account } = useWallet()
-  const { protocolFee, protocolFeeToken, protocolFeePerpetual, protocolFeeTokenPerpetual } = useTC()
+  const { protocolFee, protocolFeeToken } = useTC()
   const { onCreate, pending, handleGetTCId } = useCreateTC()
   const { closeTxnModal } = useTxn()
 
@@ -93,23 +93,23 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
     }
   }
 
-  const previewFee = useMemo(() => {
-    if (data.market === TC_MARKET_TYPES.SPOT) {
-      return `${formatAmount(fromWei(protocolFee, protocolFeeToken?.decimals))} ${protocolFeeToken?.symbol}`
-    }
+  // const previewFee = useMemo(() => {
+  //   if (data.market === TC_MARKET_TYPES.SPOT) {
+  //     return `${formatAmount(fromWei(protocolFee, protocolFeeToken?.decimals))} ${protocolFeeToken?.symbol}`
+  //   }
 
-    return `${formatAmount(fromWei(protocolFeePerpetual, protocolFeeTokenPerpetual?.decimals))} ${
-      protocolFeeTokenPerpetual?.symbol
-    }`
-  }, [
-    data.market,
-    protocolFee,
-    protocolFeePerpetual,
-    protocolFeeToken?.decimals,
-    protocolFeeToken?.symbol,
-    protocolFeeTokenPerpetual?.decimals,
-    protocolFeeTokenPerpetual?.symbol,
-  ])
+  //   return `${formatAmount(fromWei(protocolFeePerpetual, protocolFeeTokenPerpetual?.decimals))} ${
+  //     protocolFeeTokenPerpetual?.symbol
+  //   }`
+  // }, [
+  //   data.market,
+  //   protocolFee,
+  //   protocolFeePerpetual,
+  //   protocolFeeToken?.decimals,
+  //   protocolFeeToken?.symbol,
+  //   protocolFeeTokenPerpetual?.decimals,
+  //   protocolFeeTokenPerpetual?.symbol,
+  // ])
 
   return (
     <div className='flex flex-col-reverse md:flex-row'>
@@ -120,10 +120,10 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
         <p className='text-lightGray mb-3 mt-2 text-base leading-[22px]'>
           {t('Create Trading Competition Description')}
         </p>
-        <div className='mb-3 w-full'>
+        {/* <div className='mb-3 w-full'>
           <p className='text-lightGray text-base leading-5'>{t('Creation Fee')}:</p>
           <p className='text-[25px] font-semibold leading-[30px] text-white'>{previewFee}</p>
-        </div>
+        </div> */}
         <PrimaryButton isLoading={pending} onClick={handleCreateTC} className='w-full py-[15.75px] uppercase'>
           {t('Create')}
         </PrimaryButton>
