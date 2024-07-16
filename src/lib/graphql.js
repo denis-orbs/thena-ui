@@ -8,7 +8,8 @@ export const v1GraphUrl = {
 }
 
 export const fusionGraphUrl = {
-  [ChainId.BSC]: 'https://api.studio.thegraph.com/query/53404/thena-bsc-fusion/version/latest',
+  // eslint-disable-next-line max-len
+  [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt`,
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion',
 }
