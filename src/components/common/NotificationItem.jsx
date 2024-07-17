@@ -18,7 +18,7 @@ import { Paragraph, TextHeading } from '../typography'
 
 const protocol_regex = /^(http|https)/
 
-function NotificationItem({ notification, markRead }) {
+function NotificationItem({ notification, markRead, afterClassName }) {
   const { locale } = useLocaleSettings()
   const t = useTranslations()
 
@@ -116,9 +116,10 @@ function NotificationItem({ notification, markRead }) {
       <div
         onClick={() => markRead(notification.id, notification.type)}
         className={cn(
-          'flex min-w-80 items-center gap-4',
+          'flex min-w-[320px] items-center gap-4',
           !notification.isRead &&
-            "relative after:absolute after:right-5 after:top-1/2 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-['']",
+            // eslint-disable-next-line max-len
+            `relative after:absolute after:right-5 after:top-1/2 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-[''] ${afterClassName}`,
         )}
       >
         <div className='flex h-12 w-12 min-w-12 items-center justify-center'>

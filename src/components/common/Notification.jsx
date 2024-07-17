@@ -1,12 +1,13 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { toast } from 'react-toastify'
 import useSWR from 'swr'
 import 'dayjs/locale/en'
 import 'dayjs/locale/zh'
 
+import { useTitleNotiContext } from '@/context/titleNotiContext'
 import { fetchUserNotifcations, useMarkNotificationRead, useNotificationsSubscription } from '@/hooks/useNotifications'
 import { cn } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -22,6 +23,7 @@ export function Notification() {
   const { account } = useWallet()
   const t = useTranslations()
   const audioRef = useRef()
+  const { setCountNoti } = useTitleNotiContext()
   const { data: notifications, mutate } = useSWR(
     ['notifications', account?.toLowerCase()],
     () => fetchUserNotifcations(account),
@@ -29,6 +31,8 @@ export function Notification() {
       refreshInterval: 60000,
     },
   )
+
+  useEffect(() => setCountNoti(notifications?.filter(item => !item.isRead).length || 0), [notifications, setCountNoti])
 
   const { markRead } = useMarkNotificationRead()
 
@@ -43,9 +47,17 @@ export function Notification() {
   const handleNewNotification = useCallback(
     data => {
       if (data.newNotification) {
-        toast.success(<NotificationItem notification={data.newNotification} markRead={markNotiAsRead} />, {
-          icon: false,
-        })
+        toast.success(
+          <NotificationItem
+            notification={data.newNotification}
+            markRead={markNotiAsRead}
+            afterClassName='after:right-1'
+          />,
+          {
+            icon: false,
+            className: 'min-w-[350px]',
+          },
+        )
         mutate()
         const { current } = audioRef
         if (current) {
