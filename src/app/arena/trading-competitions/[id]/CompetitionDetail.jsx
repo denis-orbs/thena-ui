@@ -122,7 +122,7 @@ export function CompetitionDetail({ competition, isPreview = false }) {
       const percentage =
         ((item - (Number(item) / 100) * ((_competition.prizeUpdate.ownerFee / 1000) * 100)) / 1000) * 100
       return {
-        data: _competition.prizeUpdate.token.map((prize, idx) => ({
+        data: (_competition?.prizeUpdate?.token || []).map((prize, idx) => ({
           value: formatAmount(
             fromWei(_competition.prizeUpdate?.totalPrize?.[idx], prize?.decimals).times(percentage / 100),
           ),

@@ -19,11 +19,12 @@ import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
-import { sleep } from '@/lib/utils'
+import { cn, sleep } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
 import Sidebar from './SideBar'
+import { TCNotReadyYet } from './TCNotReadyYet'
 
 const V4_COMPETITION_DATA = gql`
   query V4_COMPETITION($id: String!) {
@@ -73,6 +74,24 @@ const V4_COMPETITION_DATA = gql`
     }
   }
 `
+const V4_TC_TEMPORARY = gql`
+  query V4_TC_TEMPORARY($tcId: String!) {
+    tcTemporaries(where: { tcId_eq: $tcId }) {
+      id
+      tcId
+    }
+  }
+`
+
+const tcTemporary = async tcId => {
+  try {
+    const { tcTemporaries } = await v4Client.request(V4_TC_TEMPORARY, { tcId })
+
+    return !!tcTemporaries?.length
+  } catch (error) {
+    return undefined
+  }
+}
 
 const fetchCompetition = async id => {
   try {
@@ -92,6 +111,15 @@ function CompetitionDetailLayout({ children, params }) {
     refreshInterval: 30000,
     revalidateOnFocus: true,
   })
+
+  const { data: checkTCReady, isLoading: isLoadingCheckTCReady } = useSWR(
+    ['competition check ready', params.id],
+    () => tcTemporary(params.id),
+    {
+      refreshInterval: 10000,
+      revalidateOnFocus: true,
+    },
+  )
 
   const { userInfo } = useUserInfo()
 
@@ -186,7 +214,7 @@ function CompetitionDetailLayout({ children, params }) {
     retryCompetition()
   }, [retryCompetition])
 
-  if (isLoading || !competition || !_competition) {
+  if (isLoading || isLoadingCheckTCReady || (!checkTCReady && (!competition || !_competition))) {
     return <Loading />
   }
 
@@ -200,31 +228,35 @@ function CompetitionDetailLayout({ children, params }) {
 
   return (
     <TradingCompetitionContextProvider>
-      <main className='flex min-h-screen flex-col'>
+      <main className={cn('flex flex-col', checkTCReady ? 'h-full' : 'min-h-screen')}>
         <Suspense fallback={<Loading />}>
-          <div className='grid grid-cols-12 gap-4 lg:gap-12'>
-            <div className='col-span-12 lg:col-span-7'>
-              <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
-                <Link href={`/arena${queryParams}`}>
-                  <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
-                    {t('Back')}
-                  </TextButton>
-                </Link>
-                <UserProfileCard user={competition.owner} showVerified={competition.owner?.isVerified} />
+          {checkTCReady ? (
+            <TCNotReadyYet />
+          ) : (
+            <div className='grid grid-cols-12 gap-4 lg:gap-12'>
+              <div className='col-span-12 lg:col-span-7'>
+                <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
+                  <Link href={`/arena${queryParams}`}>
+                    <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
+                      {t('Back')}
+                    </TextButton>
+                  </Link>
+                  <UserProfileCard user={competition.owner} showVerified={competition.owner?.isVerified} />
+                </div>
+                <CompetitionCard competition={_competition} eventType={eventType} enableEditBanner={enableEditBanner} />
+                <div className='mt-10 flex w-full flex-col gap-4'>
+                  <Tabs
+                    data={subTabs}
+                    size={SizeTypes.Small}
+                    itemClassName='text-sm'
+                    className='justify-start overflow-x-auto'
+                  />
+                  {children}
+                </div>
               </div>
-              <CompetitionCard competition={_competition} eventType={eventType} enableEditBanner={enableEditBanner} />
-              <div className='mt-10 flex w-full flex-col gap-4'>
-                <Tabs
-                  data={subTabs}
-                  size={SizeTypes.Small}
-                  itemClassName='text-sm'
-                  className='justify-start overflow-x-auto'
-                />
-                {children}
-              </div>
+              <Sidebar competition={_competition} eventType={eventType} />
             </div>
-            <Sidebar competition={_competition} eventType={eventType} />
-          </div>
+          )}
         </Suspense>
       </main>
     </TradingCompetitionContextProvider>

@@ -1,3 +1,4 @@
+import { gql } from 'graphql-request'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
@@ -6,12 +7,31 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { INIT_VALUES } from '@/constant'
 import { useTC } from '@/context/tcContext'
 import { useCreateTC } from '@/hooks/useTCManager'
+import { v4Client } from '@/lib/graphql'
 import { warnToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 import Details from './Details/Details'
+
+const V4_ADD_TC_TEMPORARY = gql`
+  mutation V4_ADD_TC_TEMPORARY($tcId: String!, $ownerId: String!) {
+    addTCTemporary(input: { tcId: $tcId, ownerId: $ownerId }) {
+      id
+      tcId
+      ownerId
+    }
+  }
+`
+
+const addTCTemporary = async (tcId, ownerId) => {
+  try {
+    await v4Client.request(V4_ADD_TC_TEMPORARY, { tcId, ownerId: ownerId?.toLowerCase() })
+  } catch (error) {
+    return undefined
+  }
+}
 
 function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, setShowPreview }) {
   const router = useRouter()
@@ -86,6 +106,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
       if (txHash) {
         const tcId = await handleGetTCId(txHash)
         if (tcId) {
+          await addTCTemporary(tcId, account)
           closeTxnModal()
           return router.push(`/arena/trading-competitions/${tcId}`)
         }

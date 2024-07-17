@@ -31,7 +31,11 @@ function NotificationItem({ notification, markRead }) {
     }
     const defaultContent = <TextHeading className='text-wrap break-words'>{notificationContent}</TextHeading>
 
-    if (notification.type && ['follow', 'unfollow', 'competition', 'general'] && notification.userTrigger) {
+    if (
+      notification.type &&
+      ['follow', 'unfollow', 'competition', 'general'].includes(notification.type) &&
+      notification.userTrigger
+    ) {
       let content = ''
       switch (notification.type) {
         case 'follow':
@@ -112,7 +116,7 @@ function NotificationItem({ notification, markRead }) {
       <div
         onClick={() => markRead(notification.id, notification.type)}
         className={cn(
-          'flex min-w-72 items-center gap-4',
+          'flex min-w-80 items-center gap-4',
           !notification.isRead &&
             "relative after:absolute after:right-5 after:top-1/2 after:h-2 after:w-2 after:rounded-full after:bg-primary-600 after:content-['']",
         )}

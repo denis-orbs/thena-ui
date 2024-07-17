@@ -41,7 +41,7 @@ export async function generateMetadata({ params }) {
     address: '0xced4ac14bb1077b995b954c48a87b25ebb4828e5',
   })
 
-  const findAssets = competition.prizeUpdate.token.map(token => {
+  const findAssets = (competition?.prizeUpdate?.token || []).map(token => {
     const asset = cloneAssets.find(ele => ele.address.toLowerCase() === token.toLowerCase())
     return asset
   })

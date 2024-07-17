@@ -83,7 +83,7 @@ export function Notification() {
               </TextButton>
             )}
           </div>
-          <div className='relative max-h-96 min-h-20 w-[280px] overflow-y-auto lg:w-[350px]'>
+          <div className='relative max-h-96 min-h-20 w-[300px] overflow-y-auto lg:w-[350px]'>
             {notifications?.map(notification => (
               <NotificationItem key={notification.id} notification={notification} markRead={markNotiAsRead} />
             ))}

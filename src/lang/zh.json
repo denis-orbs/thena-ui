@@ -891,5 +891,7 @@
   "No Users Or Trading Competitions": "No users, THENA ID or trading competitions found",
   "Search Trading Competition Users": "Search trading competition, users",
   "You have seen it all": "You have seen it all",
-  "Available": "Available"
+  "Available": "Available",
+  "Competition Is Not Ready Yet": "The trading competition is getting ready to be launched.",
+  "Competition Is Not Ready Yet SubText ": "This may take a while. Thank you for your patience."
 }
