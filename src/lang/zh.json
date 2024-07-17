@@ -893,5 +893,10 @@
   "You have seen it all": "You have seen it all",
   "Available": "Available",
   "Competition Is Not Ready Yet": "The trading competition is getting ready to be launched.",
-  "Competition Is Not Ready Yet SubText ": "This may take a while. Thank you for your patience."
+  "Competition Is Not Ready Yet SubText ": "This may take a while. Thank you for your patience.",
+  "Add Deposit to trade before competition starts": "Add Deposit to trade before competition starts.",
+  "Add Deposit to trade before competition ends": "Add Deposit to trade before competition ends.",
+  "Your Deposit": "Your Deposit",
+  "You can add more Deposit until the competition starts": "You can add more Deposit until the competition starts.",
+  "You can add more Deposit until the competition ends": "You can add more Deposit until the competition ends."
 }

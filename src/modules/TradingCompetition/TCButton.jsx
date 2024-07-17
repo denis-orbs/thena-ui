@@ -199,6 +199,7 @@ export function TCButton({ eventType, competition, timestamp }) {
               : `/arena/trading-competitions/${competition.id}/trade`
           }
           className='w-full'
+          target={isTcSpot ? '_self' : '_blank'}
         >
           <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
         </Link>

@@ -1,9 +1,11 @@
 'use client'
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { gql } from 'graphql-request'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import useSWR from 'swr'
 
 import Box from '@/components/box'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
@@ -15,6 +17,7 @@ import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
+import { v4Client } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
@@ -26,6 +29,25 @@ import { CheckIcon, PublicIcon } from '@/svgs'
 
 import IncreasePrizeModal from './IncreasePrizeModal'
 import DepositModal from './trade/DepositModal'
+
+const V4_DEPOSIT_OF_USER = gql`
+  query V4_DEPOSIT_OF_USER($tcId: String!, $userId: String!) {
+    tcDeposits(where: { tradingCompetition: { id_eq: $tcId }, user: { id_eq: $userId } }) {
+      id
+      amount
+    }
+  }
+`
+
+const getDepositOfUser = async (tcId, userId) => {
+  try {
+    const { tcDeposits } = await v4Client.request(V4_DEPOSIT_OF_USER, { tcId, userId })
+    if (tcDeposits && tcDeposits.length) return tcDeposits[0].amount
+    return 0
+  } catch {
+    return 0
+  }
+}
 
 function Sidebar({ competition, eventType }) {
   const tcId = useMemo(() => competition?.id?.split('-')?.[1], [competition?.id])
@@ -52,6 +74,15 @@ function Sidebar({ competition, eventType }) {
   const isFull = useMemo(
     () => competition.participantCount === competition.maxParticipants,
     [competition.maxParticipants, competition.participantCount],
+  )
+
+  const { data: deposit } = useSWR(
+    ['deposit of user in tc', competition?.id, account],
+    () => getDepositOfUser(competition?.id, account?.toLowerCase()),
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    },
   )
 
   const {
@@ -396,6 +427,7 @@ function Sidebar({ competition, eventType }) {
                 ? `${alphaThenaTradeTcLink}/${competition.tcAddress}`
                 : `/arena/trading-competitions/${competition.id}/trade`
             }
+            target={competition.market === TC_MARKET_TYPES.PERPETUAL ? '_blank' : '_self'}
           >
             <PrimaryButton className='w-full'>{t('Trade Now')}</PrimaryButton>
           </Link>
@@ -531,8 +563,25 @@ function Sidebar({ competition, eventType }) {
     return () => clearTimeout(timeOut)
   }, [])
 
+  const checkDisplayTextDeposit = useMemo(
+    () =>
+      isTCJoined &&
+      (competition.market === TC_MARKET_TYPES.SPOT
+        ? eventType === EVENT_TYPES.UPCOMING &&
+          isInvalidAmount(competition.competitionRules?.startingBalance) &&
+          Date.now() / 1000 < competition.timestamp?.registrationEnd
+        : eventType !== EVENT_TYPES.ENDED),
+    [
+      competition.competitionRules?.startingBalance,
+      competition.market,
+      competition.timestamp?.registrationEnd,
+      eventType,
+      isTCJoined,
+    ],
+  )
+
   return (
-    <div className='col-span-12 mt-2 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
+    <div className='col-span-12 mt-2 lg:col-span-5 lg:max-h-[500px]'>
       <div className='flex items-center justify-between'>
         <h3 className='mb-5'>{headingAndText.heading}</h3>
         {isTCJoined && account && <EmphasisIconButton Icon={shareIconButton} onClick={onShareTC} />}
@@ -542,6 +591,34 @@ function Sidebar({ competition, eventType }) {
           <Box className='flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
             {headingAndText.text && <TextHeading className='text-xl'>{headingAndText.text}</TextHeading>}
             {headingAndText.subText && <TextHeading className='text-base'>{headingAndText.subText}</TextHeading>}
+            {deposit !== 0 ? (
+              <>
+                <TextHeading className='text-base'>
+                  {t('Your Deposit')} ={' '}
+                  {formatAmount(fromWei(deposit, competition?.competitionRules?.winningToken?.decimals).toString())}{' '}
+                  {competition.competitionRules?.winningToken?.symbol}
+                </TextHeading>
+                {checkDisplayTextDeposit && (
+                  <TextHeading className='text-base'>
+                    {t(
+                      competition.market === TC_MARKET_TYPES.SPOT
+                        ? 'You can add more Deposit until the competition starts'
+                        : 'You can add more Deposit until the competition ends',
+                    )}
+                  </TextHeading>
+                )}
+              </>
+            ) : (
+              checkDisplayTextDeposit && (
+                <TextHeading className='text-base'>
+                  {t(
+                    competition.market === TC_MARKET_TYPES.SPOT
+                      ? 'Add Deposit to trade before competition starts'
+                      : 'Add Deposit to trade before competition ends',
+                  )}
+                </TextHeading>
+              )
+            )}
           </Box>
         )}
 
