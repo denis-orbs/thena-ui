@@ -23,8 +23,8 @@ const rewardsContext = React.createContext({
 })
 
 const fetchCurrentRewards = async (_, account, chainId, pools) => {
-  console.log('--------------current---------------')
-  return await callMulti(
+  console.log('--------------current start---------------')
+  const res = await callMulti(
     pools.map(pool => ({
       address: Contracts.veTHEAPI[chainId],
       abi: veTHEApiAbi,
@@ -33,6 +33,8 @@ const fetchCurrentRewards = async (_, account, chainId, pools) => {
       chainId,
     })),
   )
+  console.log('-------------current end--------')
+  return res
 }
 
 const fetchNextRewards = async (_, account, chainId, pools) => {
@@ -68,6 +70,7 @@ function RewardsContextProvider({ children }) {
       refreshInterval: 60000,
     },
   )
+
   const {
     data: next,
     error: nextError,

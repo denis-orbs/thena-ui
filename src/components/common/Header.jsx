@@ -1,9 +1,10 @@
 'use client'
 
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import { OutlinedButton } from '@/components/buttons/Button'
@@ -16,7 +17,7 @@ import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, LangIcon } from '@/svgs'
+import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon } from '@/svgs'
 
 import Logo from '~/logo.svg'
 
@@ -29,11 +30,12 @@ import { Paragraph, TextHeading, TextSubHeading } from '../typography'
 const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
+  { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
 ]
 
 const langs = [
   { img: '/images/en.png', lang: LOCALES.en, label: 'English' },
-  { img: '/images/zh.png', lang: LOCALES.zh, label: 'Chinese' },
+  { img: '/images/zh.png', lang: LOCALES.zh, label: '中文' },
 ]
 
 function ChainSelect({ t }) {
@@ -55,6 +57,30 @@ function ChainSelect({ t }) {
     }
   }, [wrapperRef])
 
+  const getElement = useCallback(
+    (item, idx) => (
+      <div
+        className={cn(
+          'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
+          'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
+        )}
+        key={`dropdown-${idx}`}
+        onClick={async () => {
+          if (item.chainId && networkId !== item.chainId) {
+            updateNetwork(item.chainId)
+          }
+          setOpen(false)
+        }}
+      >
+        <div className='flex w-full items-center gap-2'>
+          <CircleImage src={item.img} alt='' className='h-5 w-5' />
+          <TextHeading className='text-nowrap'>{t(item.label)}</TextHeading>
+        </div>
+      </div>
+    ),
+    [t, networkId, updateNetwork],
+  )
+
   return (
     <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
       <div
@@ -74,26 +100,17 @@ function ChainSelect({ t }) {
           !open && 'invisible opacity-0',
         )}
       >
-        {chains.map((item, idx) => (
-          <div
-            className={cn(
-              'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
-              'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
-            )}
-            key={`dropdown-${idx}`}
-            onClick={async () => {
-              if (networkId !== item.chainId) {
-                updateNetwork(item.chainId)
-              }
-              setOpen(false)
-            }}
-          >
-            <div className='flex items-center gap-2'>
-              <CircleImage src={item.img} alt='' className='h-5 w-5' />
-              <TextHeading className='text-nowrap'>{t(item.label)}</TextHeading>
-            </div>
-          </div>
-        ))}
+        {chains.map((item, idx) => {
+          const element = getElement(item, idx)
+          if (item.url) {
+            return (
+              <Link href={item.url} target='_blank'>
+                {element}
+              </Link>
+            )
+          }
+          return element
+        })}
       </div>
     </div>
   )
@@ -126,7 +143,7 @@ function ChainMobileSelect({ t }) {
       >
         <div className='flex items-center gap-2'>
           <CircleImage src={selected.img} alt='' className='h-5 w-5' />
-          <TextHeading>{selected.label}</TextHeading>
+          <TextHeading>{t(selected.label)}</TextHeading>
         </div>
         <ChevronDownIcon
           className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
@@ -182,9 +199,16 @@ function LanguageSelect() {
     }
   }, [wrapperRef])
 
+  const selected = useMemo(() => langs.find(ele => ele.lang === locale), [locale])
+
   return (
-    <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
-      <TextIconButton Icon={LangIcon} onClick={() => setOpen(!open)} />
+    <div className={cn('relative')} ref={wrapperRef}>
+      <CircleImage
+        alt='lang'
+        className='mx-2 h-5 w-5 cursor-pointer'
+        src={selected.img}
+        onClick={() => setOpen(!open)}
+      />
       <div
         className={cn(
           'visible absolute right-0 z-10 mt-2 flex-col items-start justify-start gap-1',
@@ -208,7 +232,7 @@ function LanguageSelect() {
             }}
           >
             <div className='flex items-center gap-2'>
-              <CircleImage src={item.img} alt='' className='h-5 w-5' />
+              <CircleImage src={item.img} alt={item.lang} className='h-5 w-5' />
               <TextHeading className='text-nowrap'>{item.label}</TextHeading>
               {locale === item.lang && <div className='h-2 w-2 rounded-full bg-primary-600' />}
             </div>
@@ -218,8 +242,6 @@ function LanguageSelect() {
     </div>
   )
 }
-
-const showLanguage = false
 
 function Header() {
   const [selected, setSelected] = useState(null)
@@ -242,6 +264,10 @@ function Header() {
   useEffect(() => {
     if (window?.MetaCRMWidget?.manualConnectWallet) {
       window.MetaCRMWidget.manualConnectWallet(account)
+    }
+
+    if (window?.MetaCRMTracking?.manualConnectWallet) {
+      window.MetaCRMTracking.manualConnectWallet(account)
     }
 
     const handleConnectWidget = () => {
@@ -341,6 +367,13 @@ function Header() {
                   },
                 },
               ],
+      },
+      {
+        label: 'Trade To Earn',
+        active: pathname.includes('/trade-to-earn'),
+        onClickHandler: () => {
+          push('/trade-to-earn')
+        },
       },
     ],
     [pathname, networkId, push],
@@ -489,7 +522,7 @@ function Header() {
               )}
             </div>
             <ChainSelect t={t} />
-            {showLanguage && <LanguageSelect />}
+            <LanguageSelect />
             <OutlinedButton className='hidden lg:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton>
@@ -511,6 +544,7 @@ function Header() {
               onLogoClick()
             }
           }}
+          isIntl={!selected}
         >
           {selected ? (
             <div className='inline-flex w-full flex-col items-start justify-start gap-3 p-3'>
@@ -547,7 +581,7 @@ function Header() {
                       }
                     }}
                   >
-                    <p className='font-medium text-neutral-200'>{menu.label}</p>
+                    <p className='font-medium text-neutral-200'>{t(menu.label)}</p>
                     {menu.sub && <ArrowRightIcon className='h-4 w-4' />}
                   </div>
                 ))}
@@ -571,7 +605,7 @@ function Header() {
       )}
       <Script
         id='widget-dom-id'
-        src='https://widget.metacrm.inc/static/js/widget-1-1-3.js'
+        src='https://widget.metacrm.inc/static/js/widget.js'
         onLoad={() => {
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',

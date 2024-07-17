@@ -179,18 +179,16 @@ export default function LockPage() {
       <h2>{t('Lock')}</h2>
       {account ? (
         <div className='flex flex-col'>
-          <div className='flex flex-col gap-4'>
-            <Info className='justify-between lg:p-8'>
-              <InfoCirclePrimary className='h-4 w-4 min-w-fit lg:h-8 lg:w-8' />
-              <p>{t('Lock THE Desciption')}</p>
-              <TertiaryButton
-                className='min-w-fit'
-                onClick={() => goToDoc('https://thena.gitbook.io/thena/the-tokenomics/vethe')}
-              >
-                {t('Learn More')}
-              </TertiaryButton>
-            </Info>
-          </div>
+          <Info className='justify-between lg:p-8'>
+            <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+            <p>{t('Lock THE Desciption')}</p>
+            <TertiaryButton
+              className='min-w-fit'
+              onClick={() => goToDoc('https://thena.gitbook.io/thena/the-tokenomics/vethe')}
+            >
+              {t('Learn More')}
+            </TertiaryButton>
+          </Info>
           <div className='mb-4 mt-10 flex items-center justify-between'>
             <TextHeading className='text-xl'>{t('Locked Positions')}</TextHeading>
             {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>{t('Create Lock')}</PrimaryButton>}

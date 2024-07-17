@@ -76,6 +76,9 @@ function AssetsContextProvider({ children }) {
           return 0
         })
     },
+    {
+      refreshInterval: 10000,
+    },
   )
   const final = useMemo(() => {
     if (!account) {

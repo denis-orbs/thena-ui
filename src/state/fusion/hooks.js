@@ -23,7 +23,6 @@ import { PoolState, useFusion } from '@/hooks/fusion/useFusions'
 import { callMulti } from '@/lib/contractActions'
 import { getTickToPrice, maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 
 import {
   Bound,
@@ -37,6 +36,7 @@ import {
   updatePresetRange,
 } from './actions'
 import { tryParseTick } from './utils'
+import { useChainSettings } from '../settings/hooks'
 
 const BIG_INT_ZERO = JSBI.BigInt(0)
 
@@ -151,7 +151,7 @@ export const useV3DerivedMintInfo = (
   // override for existing position
   existingPosition,
 ) => {
-  const { chainId } = useWallet()
+  const { networkId: chainId } = useChainSettings()
   const {
     independentField,
     typedValue,

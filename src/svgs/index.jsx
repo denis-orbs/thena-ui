@@ -10,6 +10,8 @@ import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
+import EigenBadgeIcon from '~/svgs/eigen_badge.svg'
+import EtherFiBadgeIcon from '~/svgs/etherfi_badge.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
@@ -31,6 +33,7 @@ import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
 import SplitIcon from '~/svgs/split.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
+import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 import WalletIcon from '~/svgs/wallet.svg'
 import XIcon from '~/svgs/x-close.svg'
@@ -50,6 +53,8 @@ export {
   CheckIcon,
   ChevronDownIcon,
   CoinsStackedIcon,
+  EigenBadgeIcon,
+  EtherFiBadgeIcon,
   ExternalIcon,
   HamburgerIcon,
   InfoCircleGradient,
@@ -70,6 +75,7 @@ export {
   SettingsIcon,
   ShadowIcon,
   SplitIcon,
+  SwitchHorizontalV2Icon,
   SwitchVerticalIcon,
   TransferIcon,
   WalletIcon,

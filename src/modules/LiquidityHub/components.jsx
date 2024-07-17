@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl'
 
 import NextImage from '@/components/image/NextImage'
 import Toggle from '@/components/toggle'
+import { LOCALES } from '@/constant'
+import { useLocaleSettings } from '@/state/settings/hooks'
 
 import { usePersistedStore } from '.'
 
@@ -54,6 +56,7 @@ function OrbsLink({ children, href }) {
 
 export function LiquidityHubSettings() {
   const { liquidityHubEnabled, updateLiquidityHubEnabled } = usePersistedStore()
+  const { locale } = useLocaleSettings()
   const t = useTranslations()
 
   return (
@@ -64,9 +67,18 @@ export function LiquidityHubSettings() {
       </div>
       <div className='mt-[9px] flex items-center space-x-[9px]'>
         <p className='inline text-sm text-neutral-300'>
-          <OrbsLogo /> <OrbsLink href='https://www.orbs.com/liquidity-hub/'>Liquidity Hub</OrbsLink>, powered by{' '}
-          <OrbsLink href='https://www.orbs.com'>Orbs</OrbsLink>, may provide better price by aggregating liquidity from
-          multiple sources.{' '}
+          {locale === LOCALES.en ? (
+            <>
+              <OrbsLogo /> <OrbsLink href='https://www.orbs.com/liquidity-hub/'>Liquidity Hub</OrbsLink>, powered by{' '}
+              <OrbsLink href='https://www.orbs.com'>Orbs</OrbsLink>
+            </>
+          ) : (
+            <>
+              由 <OrbsLink href='https://www.orbs.com'>Orbs</OrbsLink> 提供支持的 <OrbsLogo />{' '}
+              <OrbsLink href='https://www.orbs.com/liquidity-hub/'>Liquidity Hub</OrbsLink>
+            </>
+          )}
+          {t('Provide better price')}{' '}
           <span>
             <OrbsLink href='https://www.orbs.com/liquidity-hub/'>{t('Learn More')}</OrbsLink>
           </span>

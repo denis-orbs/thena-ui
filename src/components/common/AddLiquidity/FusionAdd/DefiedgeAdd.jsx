@@ -1,96 +1,134 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
+import Spinner from '@/components/spinner'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
-import { useFusionPairs } from '@/context/fusionsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useDefiedgeAdd, useDefiedgeAddAndStake } from '@/hooks/fusion/useDefiedge'
-import { readCall } from '@/lib/contractActions'
+import { readCall, simulateCall } from '@/lib/contractActions'
 import { getDefiedgeStrategyContract } from '@/lib/contracts'
+import { maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, fromWei, unwrappedSymbol } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import PoolTitle from '@/modules/PoolTitle'
-import { Field, updateSelectedPreset } from '@/state/fusion/actions'
-import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
+import { Field } from '@/state/fusion/actions'
+import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { EnterAmounts } from './containers/EnterAmounts'
+import { TokenAmountCard } from './containers/TokenAmountCard'
 
 const feeAmount = 3000
 
-export const fetchDefiedgeInfo = async (chainId, strategy, currentTick) => {
+export const fetchDefiedgeInfo = async (chainId, strategy) => {
   const contract = getDefiedgeStrategyContract(strategy.address, chainId)
-  const res = await readCall(contract, 'getTicks', [], chainId)
-  const lowerValue = 1.0001 ** (Number(res[0].tickLower) - currentTick)
-  const upperValue = 1.0001 ** (Number(res[0].tickUpper) - currentTick)
+  const factory = await readCall(contract, 'factory', [], chainId)
+  const isTwap = factory.toLowerCase() === '0x657761b0040ea03ce668c3a392da6a1751c43331'
+  let token0Price = 0
+  let token1Price = 0
+  if (isTwap) {
+    const aumWithFees = await simulateCall(contract, 'getAUMWithFees', [false], chainId)
+
+    const amount0 = fromWei(aumWithFees[0], strategy.token0.decimals)
+    const amount1 = fromWei(aumWithFees[1], strategy.token1.decimals)
+
+    if (!!amount0 && !!amount1) {
+      token0Price = amount0.div(amount1).toNumber()
+      token1Price = amount1.div(amount0).toNumber()
+    }
+  }
   return {
     type: strategy.title,
     title: strategy.title,
     address: strategy.address,
-    min: lowerValue,
-    max: upperValue,
+    isTwap,
+    token0Price,
+    token1Price,
   }
 }
 
-const fetchDefiedgePair = async (chainId, strategy) => {
-  const contract = getDefiedgeStrategyContract(strategy.address, chainId)
-  const res = await readCall(contract, 'pool', [], chainId)
-  return res
-}
-
 export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
-  const fusionPairs = useFusionPairs()
+  const [independentField, setIndependentField] = useState(null)
+  const [typedValue, setTypedValue] = useState(null)
   const baseCurrency = useCurrency(strategy.token0.address)
   const quoteCurrency = useCurrency(strategy.token1.address)
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
-  const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
-    useV3MintActionHandlers(mintInfo.noLiquidity)
-  const { errorMessage } = mintInfo
-  const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
-  const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
+  const { errorMessage, currencyBalances } = mintInfo
+  const { data: preset } = useSWR(
+    strategy && ['defiedge/info', strategy.address],
+    () => fetchDefiedgeInfo(networkId, strategy),
+    {
+      refreshInterval: 0,
+    },
+  )
   const wbnbBalance = useCurrencyBalance(WBNB[networkId])
   const { onDefiedgeAdd, pending } = useDefiedgeAdd()
   const { onDefiedgeAddAndStake, pendingStake } = useDefiedgeAddAndStake()
-  const dispatch = useDispatch()
-  const { data: pairAddress } = useSWR(
-    strategy && ['defiedge/pair', strategy.address],
-    () => fetchDefiedgePair(networkId, strategy),
-    {
-      refreshInterval: 0,
-    },
-  )
   const t = useTranslations()
 
-  const pair = useMemo(
-    () => fusionPairs.find(ele => pairAddress && pairAddress.toLowerCase() === ele.address),
-    [fusionPairs, pairAddress],
-  )
-  const { data: preset } = useSWR(
-    strategy && pair && ['defiedge/info', strategy.address],
-    () => fetchDefiedgeInfo(networkId, strategy, pair.globalState.tick),
-    {
-      refreshInterval: 0,
+  const onFieldAInput = useCallback(
+    val => {
+      setIndependentField(Field.CURRENCY_A)
+      setTypedValue(val)
     },
+    [setIndependentField, setTypedValue],
   )
 
-  const price = useMemo(() => {
-    if (!mintInfo.price) return
+  const onFieldBInput = useCallback(
+    val => {
+      setIndependentField(Field.CURRENCY_B)
+      setTypedValue(val)
+    },
+    [setIndependentField, setTypedValue],
+  )
 
-    return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
-  }, [mintInfo])
+  // get formatted amounts
+  const formattedAmounts = useMemo(() => {
+    const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
+    if (!preset) {
+      return {
+        [independentField]: '',
+        [dependentField]: '',
+      }
+    }
+    const dependentPrice =
+      (independentField === Field.CURRENCY_A ? preset.token1Price : preset.token0Price) * typedValue
+    return {
+      [independentField]: typedValue,
+      [dependentField]: dependentPrice?.toString() ?? '',
+    }
+  }, [preset, independentField, typedValue])
+
+  const amountA = useMemo(
+    () =>
+      !preset
+        ? ''
+        : preset.isTwap
+          ? tryParseAmount(formattedAmounts[Field.CURRENCY_A], baseCurrency)
+          : mintInfo.parsedAmounts[Field.CURRENCY_A],
+    [mintInfo, preset, baseCurrency, formattedAmounts],
+  )
+  const amountB = useMemo(
+    () =>
+      !preset
+        ? ''
+        : preset.isTwap
+          ? tryParseAmount(formattedAmounts[Field.CURRENCY_B], quoteCurrency)
+          : mintInfo.parsedAmounts[Field.CURRENCY_B],
+    [mintInfo, preset, quoteCurrency, formattedAmounts],
+  )
 
   const amountToWrap = useMemo(() => {
     if (!baseCurrency || !quoteCurrency || !amountA || !amountB) return
@@ -108,43 +146,48 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
     }
   }, [amountA, amountB, baseCurrency, quoteCurrency, wbnbBalance, networkId])
 
+  const errMessage = useMemo(() => {
+    if (!preset || !preset.isTwap) return errorMessage
+
+    if (!amountA || !amountB) {
+      return 'Invalid Amount'
+    }
+
+    if (amountA && currencyBalances?.[Field.CURRENCY_A]?.lessThan(amountA)) {
+      console.log('currencyBalances?.[Field.CURRENCY_A] :>> ', currencyBalances?.[Field.CURRENCY_A].toExact())
+      return 'Insufficient Balance'
+    }
+
+    if (amountB && currencyBalances?.[Field.CURRENCY_B]?.lessThan(amountB)) {
+      return 'Insufficient Balance'
+    }
+  }, [errorMessage, currencyBalances, amountA, amountB, preset])
+
   const onAddLiquidity = useCallback(() => {
-    if (errorMessage) {
-      warnToast(errorMessage, 'warn')
+    if (errMessage) {
+      warnToast(errMessage, 'warn')
       return
     }
 
     onDefiedgeAdd(amountA, amountB, amountToWrap, strategy)
-  }, [errorMessage, strategy, amountToWrap, amountA, amountB, onDefiedgeAdd])
+  }, [errMessage, strategy, amountToWrap, amountA, amountB, onDefiedgeAdd])
 
   const onAddLiquidityAndStake = useCallback(() => {
-    if (errorMessage) {
-      warnToast(errorMessage, 'warn')
+    if (errMessage) {
+      warnToast(errMessage, 'warn')
       return
     }
     onDefiedgeAddAndStake(amountA, amountB, amountToWrap, strategy)
-  }, [errorMessage, amountToWrap, onDefiedgeAddAndStake, amountA, amountB, strategy])
+  }, [errMessage, amountToWrap, onDefiedgeAddAndStake, amountA, amountB, strategy])
 
-  useEffect(() => {
-    if (!price || !preset) return
-
-    dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
-
-    onLeftRangeInput(preset ? String(+price * preset.min) : '')
-    onRightRangeInput(preset ? String(+price * preset.max) : '')
-    onChangePresetRange(preset)
-
-    onChangeLiquidityRangeType(FusionRangeType.DEFIEDGE_RANGE)
-  }, [
-    fusionPairs,
-    preset,
-    dispatch,
-    onChangePresetRange,
-    onLeftRangeInput,
-    onRightRangeInput,
-    onChangeLiquidityRangeType,
-    price,
-  ])
+  // get the max amounts user can add
+  const maxAmounts = [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
+    (accumulator, field) => ({
+      ...accumulator,
+      [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
+    }),
+    {},
+  )
 
   return (
     <>
@@ -152,7 +195,32 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
         <div className='flex flex-col gap-5'>
           {isAdd && strategy && <PoolTitle strategy={strategy} />}
           <div className='flex flex-col'>
-            <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
+            {preset ? (
+              preset.isTwap ? (
+                <div className='flex flex-col gap-2'>
+                  <TokenAmountCard
+                    currency={baseCurrency}
+                    value={formattedAmounts[Field.CURRENCY_A]}
+                    handleInput={onFieldAInput}
+                    maxAmount={maxAmounts[Field.CURRENCY_A]}
+                    liquidityRangeType={FusionRangeType.DEFIEDGE_RANGE}
+                    title={`${t('Asset')} 1`}
+                  />
+                  <TokenAmountCard
+                    currency={quoteCurrency}
+                    value={formattedAmounts[Field.CURRENCY_B]}
+                    handleInput={onFieldBInput}
+                    maxAmount={maxAmounts[Field.CURRENCY_B]}
+                    liquidityRangeType={FusionRangeType.DEFIEDGE_RANGE}
+                    title={`${t('Asset')} 2`}
+                  />
+                </div>
+              ) : (
+                <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
+              )
+            ) : (
+              <Spinner />
+            )}
             <div className='mt-5 flex flex-col gap-4'>
               <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
               <div className='flex flex-col gap-3'>

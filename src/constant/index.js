@@ -18,7 +18,8 @@ export const CHAIN_LIST = {
 }
 
 export const RPC_PROVIDERS = {
-  [ChainId.BSC]: ['https://bsc-dataseed.binance.org/', 'https://bsc.publicnode.com/', 'https://bscrpc.com/'],
+  // [ChainId.BSC]: ['https://rpc.ankr.com/bsc/c524849c12e5d6a1f7c0a4def3ae2b387b9f9a7902adc16822bc6825aff6d5b6'],
+  [ChainId.BSC]: ['https://bsc-rpc.publicnode.com'],
   [ChainId.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
 }
 
@@ -268,3 +269,11 @@ export const ANALYTIC_CHART = {
   ALL_CHART: 5,
   CHART_COUNT: 60, // limit analytics chart items not more than 60
 }
+
+export const SWAP_TYPES = {
+  SWAP: '1',
+  TWAP: '2',
+  LIMIT: '3',
+}
+
+export const trade2EarnStartTime = 1712534400

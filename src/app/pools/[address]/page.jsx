@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -12,13 +12,17 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import AddLiquidity from '@/components/common/AddLiquidity'
 import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
+import NextImage from '@/components/image/NextImage'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { formatAmount, goScan } from '@/lib/utils'
 import Position from '@/modules/Position'
 import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/svgs'
+
+import { listPoolAddressSpecial } from '../page'
 
 export default function SpecificPoolPage({ params }) {
   const [currentStep, setCurrentStep] = useState(1)
@@ -26,9 +30,36 @@ export default function SpecificPoolPage({ params }) {
   const { address } = params
   const { push } = useRouter()
   const { pairs, isLoading } = usePairs()
+  const assets = useAssets()
   const { networkId } = useChainSettings()
   const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [pairs, address])
   const userPools = pool ? pool.subpools.filter(ele => ele.account.totalLp.gt(0)) : []
+  const [tvlUSD, setTvlUSD] = useState(0)
+
+  useEffect(() => {
+    if (pool) {
+      // TODO: hard-coded for SOLVBTC
+      if (
+        [
+          '0x575a951ad021d4297ac125be88ee4620652d5c12',
+          '0xab6f06a33f38cba5a5312de24151cb91da2b0eb0',
+          '0xfd60a2b164c86751df65c8cf895f7b07e5a48c35',
+        ].includes(pool.address)
+      ) {
+        const token0 = assets.find(item => item.address === pool.token0.address)
+        const token1 = assets.find(item => item.address === pool.token1.address)
+
+        if (token0 && token1) {
+          setTvlUSD(pool.reserve0 * token0.price + pool.reserve1 * token1.price)
+        } else {
+          setTvlUSD(pool.tvlUSD)
+        }
+      } else {
+        setTvlUSD(pool.tvlUSD)
+      }
+    }
+  }, [pool, assets])
+
   if (isLoading || !pool) {
     return <Loading />
   }
@@ -52,8 +83,8 @@ export default function SpecificPoolPage({ params }) {
                 />
                 <div className='flex flex-col gap-2'>
                   <div className='flex items-center gap-3'>
-                    <TextHeading className='text-2xl lg:text-4xl'>{pool.symbol}</TextHeading>
-                    <NeutralBadge>{t(pool.type)}</NeutralBadge>
+                    <TextHeading className='text-xl lg:text-4xl'>{pool.symbol}</TextHeading>
+                    <NeutralBadge className='relative'>{t(pool.type)}</NeutralBadge>
                   </div>
                   <div className='flex items-center gap-0.5'>
                     <Paragraph>{t('Fee')}:</Paragraph>
@@ -80,6 +111,47 @@ export default function SpecificPoolPage({ params }) {
                 </CustomTooltip>
               </div>
             </div>
+            {pool.address === '0xc0e1c9fec0d8888039095da014382d027f27069d' && (
+              <div className='ml-4 mt-5 flex items-center gap-2'>
+                <div className='size-6' data-tooltip-id='etherBadgeIconDetail'>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EtherFi'
+                    src='/images/Etherfi.png'
+                  />
+                </div>
+
+                <div className='size-6' data-tooltip-id='eigenBadgeIconDetail'>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EigenLayer'
+                    src='/images/Eigenlayer.png'
+                  />
+                </div>
+                {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIconDetail' />
+                <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIconDetail' /> */}
+                <CustomTooltip id='etherBadgeIconDetail' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
+                </CustomTooltip>
+                <CustomTooltip id='eigenBadgeIconDetail' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
+                </CustomTooltip>
+              </div>
+            )}
+            {listPoolAddressSpecial.includes(pool.address) && (
+              <div className='ml-4 mt-5 flex items-center gap-2'>
+                <div className='size-6' data-tooltip-id={`pool-${pool.address}`}>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='EtherFi'
+                    src='/images/GQhgnIEbUAA4gjewe.jpeg'
+                  />
+                </div>
+                <CustomTooltip id={`pool-${pool.address}`} className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Pool Special tooltip')}</TextHeading>
+                </CustomTooltip>
+              </div>
+            )}
           </div>
           <Box className='mt-10 grid grid-cols-2 gap-5 lg:grid-cols-4'>
             <div className='flex w-full flex-col gap-2'>
@@ -87,7 +159,7 @@ export default function SpecificPoolPage({ params }) {
               <Paragraph>{t('APR')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>
-              <TextHeading>${formatAmount(pool.tvlUSD)}</TextHeading>
+              <TextHeading>${formatAmount(tvlUSD)}</TextHeading>
               <Paragraph>{t('TVL')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>

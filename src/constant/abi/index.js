@@ -1,6 +1,7 @@
 import bribeAbi from './bribe.json'
 import dibsAbi from './dibs.json'
 import dibsLotteryAbi from './dibsLottery.json'
+import dibsRewarderAbi from './dibsRewarder.json'
 import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import factoryAbi from './factory.json'
@@ -10,6 +11,7 @@ import multiCallAbi from './multiCall.json'
 import muonAbi from './muon.json'
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
+import rewardEarnedAbi from './rewardEarned.json'
 import rewardsAPIAbi from './rewardsAPI.json'
 import routerAbi from './router.json'
 import royaltyAbi from './royalty.json'
@@ -25,6 +27,7 @@ export {
   bribeAbi,
   dibsAbi,
   dibsLotteryAbi,
+  dibsRewarderAbi,
   ERC20Abi,
   extraRewarderAbi,
   factoryAbi,
@@ -34,6 +37,7 @@ export {
   muonAbi,
   pairAbi,
   pairAPIAbi,
+  rewardEarnedAbi,
   rewardsAPIAbi,
   routerAbi,
   royaltyAbi,

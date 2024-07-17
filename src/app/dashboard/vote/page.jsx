@@ -3,11 +3,14 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
+import useSWR from 'swr'
+import { ChainId } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
+import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
@@ -16,14 +19,18 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useVeTHEsContext } from '@/context/veTHEsContext'
+import { fetchVeTHEFromId, useVeTHEsContext } from '@/context/veTHEsContext'
+import useDebounce from '@/hooks/useDebounce'
 import { useEpochTimer, useVoteEmissions } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import { usePoke, useReset, useVote } from '@/hooks/useVeThe'
+import { readCall } from '@/lib/contractActions'
+import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { usePools } from '@/state/pools/hooks'
+import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
 const sortOptions = [
@@ -87,9 +94,35 @@ export default function VotePage() {
   const { onVote, pending: votePending } = useVote()
   const { onReset, pending: resetPending } = useReset()
   const { onPoke, pending: pokePending } = usePoke()
+  const [approvedId, setApprovedId] = useState('')
+  const { networkId } = useChainSettings()
+  const debouncedId = useDebounce(approvedId)
   const t = useTranslations()
+  const { data: isApproved } = useSWR(
+    debouncedId && account && networkId === ChainId.BSC && ['vethe/approved', debouncedId, account],
+    async () => {
+      const veTHEContract = getVeTHEContract(networkId)
+      return await readCall(veTHEContract, 'isApprovedOrOwner', [account, debouncedId], networkId)
+    },
+    {
+      refreshInterval: 0,
+    },
+  )
+  const { data: approvedInfo } = useSWR(
+    account && isApproved && networkId === ChainId.BSC ? ['vethes/approved api', debouncedId, networkId] : null,
+    () => fetchVeTHEFromId(debouncedId, networkId),
+  )
 
-  const veTHE = useMemo(() => (veTHEId ? veTHEs.find(item => item.id === veTHEId) : null), [veTHEs, veTHEId])
+  useEffect(() => {
+    if (isApproved) {
+      setVeTHEId(approvedId)
+    }
+  }, [isApproved, approvedId])
+
+  const veTHE = useMemo(() => {
+    const list = [...veTHEs, approvedInfo]
+    return veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
+  }, [veTHEs, veTHEId, approvedInfo])
 
   const totalPercent = useMemo(
     () => Object.values(percent).reduce((sum, current) => sum + (!current || current === '' ? 0 : Number(current)), 0),
@@ -415,7 +448,7 @@ export default function VotePage() {
                 toggleId='active'
                 label='Voted Only'
               />
-              <Dropdown
+              <VeTheDropdown
                 className='w-full lg:w-[220px]'
                 data={veTHEs.map(item => ({
                   ...item,
@@ -423,8 +456,11 @@ export default function VotePage() {
                 }))}
                 selected={veTHE ? `veTHE #${veTHE.id}` : ''}
                 setSelected={ele => setVeTHEId(ele.id)}
-                placeHolder='Select veTHE'
+                placeHolder={t('Select veTHE')}
                 isLocale={false}
+                isApproved={isApproved}
+                approvedId={approvedId}
+                setApprovedId={setApprovedId}
               />
               <SearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
             </div>

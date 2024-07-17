@@ -5,7 +5,13 @@ import { TXN_STATUS } from '@/constant'
 import { sendCall, waitCall, writeCall } from '@/lib/contractActions'
 import { errorToast, successToast } from '@/lib/notify'
 
-import { closeTransaction, completeTransaction, openTransaction, updateTransaction } from './actions'
+import {
+  closeTransaction,
+  completeTransaction,
+  openRetryTransactionModal,
+  openTransaction,
+  updateTransaction,
+} from './actions'
 import { useChainSettings } from '../settings/hooks'
 
 export const useTxn = () => {
@@ -37,6 +43,14 @@ export const useTxn = () => {
     dispatch(closeTransaction())
   }, [dispatch])
 
+  const askUserToRetry = useCallback(
+    params =>
+      new Promise(resolve => {
+        dispatch(openRetryTransactionModal({ params, resolver: resolve }))
+      }),
+    [dispatch],
+  )
+
   const writeTxn = useCallback(
     async (key, uuid, contract, method, params = [], msgValue = '0') => {
       let hash
@@ -64,6 +78,19 @@ export const useTxn = () => {
         console.log('txnReceipt :>> ', txnReceipt)
         return hash
       } catch (error) {
+        console.log(error)
+        console.log(error?.shortMessage)
+        if (error && error.name === 'TransactionReceiptNotFoundError') {
+          // Fix case if RPC error -> still shows tx
+          updateTxn({
+            key,
+            uuid,
+            status: TXN_STATUS.SUCCESS,
+            hash,
+          })
+          successToast('Transaction confirmed', hash, networkId)
+          return true
+        }
         updateTxn({
           key,
           uuid,
@@ -71,10 +98,14 @@ export const useTxn = () => {
           hash,
         })
         errorToast('Error', error.shortMessage)
+        const userWantsToRetry = await askUserToRetry({ key, uuid, contract, method, params, msgValue })
+        if (userWantsToRetry) {
+          return writeTxn(key, uuid, contract, method, params, msgValue) // retry
+        }
         return false
       }
     },
-    [updateTxn, networkId],
+    [updateTxn, networkId, askUserToRetry],
   )
 
   const sendTxn = useCallback(
@@ -104,6 +135,19 @@ export const useTxn = () => {
         console.log('txnReceipt :>> ', txnReceipt)
         return true
       } catch (error) {
+        console.log(error)
+        console.log(error?.shortMessage)
+        if (error && error.name === 'TransactionReceiptNotFoundError') {
+          // Fix case if RPC error -> still shows tx
+          updateTxn({
+            key,
+            uuid,
+            status: TXN_STATUS.SUCCESS,
+            hash,
+          })
+          successToast('Transaction confirmed', hash, networkId)
+          return true
+        }
         updateTxn({
           key,
           uuid,
