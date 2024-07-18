@@ -2,8 +2,12 @@ import React from 'react'
 
 import { cn } from '@/lib/utils'
 
-export function Paragraph({ children, className }) {
-  return <span className={cn('text-neutral-300', className)}>{children}</span>
+export function Paragraph({ children, className, title = undefined }) {
+  return (
+    <span className={cn('text-neutral-300', className)} title={title}>
+      {children}
+    </span>
+  )
 }
 
 export function TextHeading({ children, className, ...props }) {

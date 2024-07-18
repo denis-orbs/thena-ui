@@ -181,12 +181,18 @@ export function LeaderBoard({ competition }) {
           rank: <Paragraph>{leader.rank ?? 'N/A'}</Paragraph>,
           user: <UserProfileCard user={leader.participant} showVerified={leader.participant.isVerified} />,
           percentagePnl: (
-            <Paragraph className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}>
+            <Paragraph
+              className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}
+              title={`${formatNumberDecimals(leader.percentagePnl * 100, 12)}%`}
+            >
               {`${formatNumberDecimals(leader.percentagePnl * 100, 4)}%`}
             </Paragraph>
           ),
           pnl: (
-            <Paragraph className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}>
+            <Paragraph
+              className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}
+              title={`${formatAmount(pnl, false, 12, false)} ${competition?.competitionRules?.winningToken?.symbol}`}
+            >
               {`${formatAmount(pnl, false, 5, false)}
               ${competition?.competitionRules?.winningToken?.symbol}`}
             </Paragraph>
