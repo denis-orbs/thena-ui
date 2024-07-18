@@ -339,18 +339,19 @@ export default function ArenaPage() {
               label: t('Upcoming'),
               active: filter.type === 'upcoming',
               onClickHandler: () => {
-                setFilter({
-                  ...filter,
-                  status: null,
-                  type: 'upcoming',
-                })
+                if (filter.type !== 'upcoming') {
+                  setFilter({
+                    ...filter,
+                    status: null,
+                    type: 'upcoming',
+                  })
+                }
               },
-              isLink: true,
+              isLink: filter.type !== 'upcoming',
               href: objectToQuery({
                 ...filter,
                 type: 'upcoming',
                 status: null,
-
                 search: searchText,
               }),
             }
@@ -360,13 +361,15 @@ export default function ArenaPage() {
               label: t('Live'),
               active: filter.type === 'live',
               onClickHandler: () => {
-                setFilter({
-                  ...filter,
-                  type: 'live',
-                  status: null,
-                })
+                if (filter.type !== 'live') {
+                  setFilter({
+                    ...filter,
+                    type: 'live',
+                    status: null,
+                  })
+                }
               },
-              isLink: true,
+              isLink: filter.type !== 'live',
               href: objectToQuery({
                 ...filter,
                 type: 'live',
@@ -379,13 +382,15 @@ export default function ArenaPage() {
           label: t('All'),
           active: filter.type === 'all',
           onClickHandler: () => {
-            setFilter({
-              ...filter,
-              type: 'all',
-              status: null,
-            })
+            if (filter.type !== 'all') {
+              setFilter({
+                ...filter,
+                type: 'all',
+                status: null,
+              })
+            }
           },
-          isLink: true,
+          isLink: filter.type !== 'all',
           href: objectToQuery({
             ...filter,
             type: 'all',
@@ -398,12 +403,14 @@ export default function ArenaPage() {
               label: t('Joined'),
               active: filter.type === 'joined',
               onClickHandler: () => {
-                setFilter({
-                  ...filter,
-                  type: 'joined',
-                })
+                if (filter.type !== 'joined') {
+                  setFilter({
+                    ...filter,
+                    type: 'joined',
+                  })
+                }
               },
-              isLink: true,
+              isLink: filter.type !== 'joined',
               href: objectToQuery({
                 ...filter,
                 type: 'joined',
@@ -416,12 +423,14 @@ export default function ArenaPage() {
               label: t('Hosted'),
               active: filter.type === 'hosted',
               onClickHandler: () => {
-                setFilter({
-                  ...filter,
-                  type: 'hosted',
-                })
+                if (filter.type !== 'hosted') {
+                  setFilter({
+                    ...filter,
+                    type: 'hosted',
+                  })
+                }
               },
-              isLink: true,
+              isLink: filter.type !== 'hosted',
               href: objectToQuery({
                 ...filter,
                 type: 'hosted',
@@ -435,12 +444,14 @@ export default function ArenaPage() {
               label: t('Ended'),
               active: filter.type === 'ended',
               onClickHandler: () => {
-                setFilter({
-                  ...filter,
-                  type: 'ended',
-                })
+                if (filter.type !== 'ended') {
+                  setFilter({
+                    ...filter,
+                    type: 'ended',
+                  })
+                }
               },
-              isLink: true,
+              isLink: filter.type !== 'ended',
               href: objectToQuery({
                 ...filter,
                 type: 'end',

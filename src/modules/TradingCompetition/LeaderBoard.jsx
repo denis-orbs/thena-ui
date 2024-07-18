@@ -194,7 +194,7 @@ export function LeaderBoard({ competition }) {
               title={`${formatAmount(pnl, false, 12, false)} ${competition?.competitionRules?.winningToken?.symbol}`}
             >
               {`${formatAmount(pnl, false, 5, false)}
-              ${competition?.competitionRules?.winningToken?.symbol}`}
+              ${competition?.competitionRules?.winningToken?.symbol || ''}`}
             </Paragraph>
           ),
           reward: (
@@ -207,7 +207,7 @@ export function LeaderBoard({ competition }) {
                       false,
                       5,
                       false,
-                    )} ${competition.prizeUpdate.token?.[index]?.symbol}`}
+                    )} ${competition.prizeUpdate.token?.[index]?.symbol || ''}`}
                   </Paragraph>
                 ))}
               </div>
