@@ -399,25 +399,42 @@ function Sidebar({ competition, eventType }) {
   const buttonByStatus = useMemo(() => {
     // Ended -> Claim rewards/fee
     if (eventType === EVENT_TYPES.ENDED) {
+      let checkMyTradesButton = null
+      if (isJoinedPerp) {
+        checkMyTradesButton = (
+          <Link href={`${alphaThenaTradeTcLink}/${competition.tcAddress}`} target='_blank'>
+            <PrimaryButton className='w-full'>{t('Check my Trades')}</PrimaryButton>
+          </Link>
+        )
+      }
+
       if (isClaimable || isClaimablePerp || isHostClaimable) {
         return (
-          <PrimaryButton
-            className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600'
-            disabled={pendingClaimPerp}
-            onClick={claim}
-          >
-            {isHostClaimable ? t('Claim Owner Fee') : t('Claim Rewards')}
-          </PrimaryButton>
+          <>
+            {checkMyTradesButton}
+            <PrimaryButton
+              className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600'
+              disabled={pendingClaimPerp}
+              onClick={claim}
+            >
+              {isHostClaimable ? t('Claim Owner Fee') : t('Claim Rewards')}
+            </PrimaryButton>
+          </>
         )
       }
 
       if (canWithdraw || canWithdrawPerp) {
         return (
-          <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={withdraw}>
-            {t('Withdraw Deposit')}
-          </PrimaryButton>
+          <>
+            {checkMyTradesButton}
+            <PrimaryButton className='w-full bg-green-900 hover:bg-green-700 active:bg-green-600' onClick={withdraw}>
+              {t('Withdraw Deposit')}
+            </PrimaryButton>
+          </>
         )
       }
+
+      return checkMyTradesButton
     }
 
     // For participants
@@ -513,20 +530,21 @@ function Sidebar({ competition, eventType }) {
   }, [
     eventType,
     isTCJoined,
+    isJoinedPerp,
     isClaimable,
     isClaimablePerp,
     isHostClaimable,
     canWithdraw,
     canWithdrawPerp,
-    pendingClaimPerp,
-    claim,
-    t,
-    withdraw,
-    competition.market,
     competition.tcAddress,
+    competition.market,
     competition.id,
     competition.competitionRules?.startingBalance,
     competition.timestamp?.registrationEnd,
+    t,
+    pendingClaimPerp,
+    claim,
+    withdraw,
     isNotStartRegistration,
     isEndedRegistration,
     isFull,

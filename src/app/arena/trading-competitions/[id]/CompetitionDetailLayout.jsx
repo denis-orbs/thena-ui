@@ -9,9 +9,12 @@ import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'reac
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
+import Box from '@/components/box'
 import { TextButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Tabs from '@/components/tabs'
+import { TextHeading } from '@/components/typography'
+import { TC_MARKET_TYPES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { TradingCompetitionContextProvider } from '@/context/tradingCompetitionContext'
 import { useUserInfo } from '@/context/userInfoContext'
@@ -197,6 +200,12 @@ function CompetitionDetailLayout({ children, params }) {
     }
   }, [competition, mutate])
 
+  const checkJoinTc = useMemo(
+    () =>
+      competition?.participants?.find(p => String(p.id).split('-')[2].toLowerCase() === userInfo?.id?.toLowerCase()),
+    [competition?.participants, userInfo?.id],
+  )
+
   useEffect(() => {
     setQueryParams(
       objectToQuery({
@@ -233,29 +242,40 @@ function CompetitionDetailLayout({ children, params }) {
           {checkTCReady ? (
             <TCNotReadyYet />
           ) : (
-            <div className='grid grid-cols-12 gap-4 lg:gap-12'>
-              <div className='col-span-12 lg:col-span-7'>
-                <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
-                  <Link href={`/arena${queryParams}`}>
-                    <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
-                      {t('Back')}
-                    </TextButton>
-                  </Link>
-                  <UserProfileCard user={competition.owner} showVerified={competition.owner?.isVerified} />
-                </div>
-                <CompetitionCard competition={_competition} eventType={eventType} enableEditBanner={enableEditBanner} />
-                <div className='mt-10 flex w-full flex-col gap-4'>
-                  <Tabs
-                    data={subTabs}
-                    size={SizeTypes.Small}
-                    itemClassName='text-sm'
-                    className='justify-start overflow-x-auto'
+            <>
+              {_competition.market === TC_MARKET_TYPES.PERPETUAL && checkJoinTc && (
+                <Box className='mt-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
+                  <TextHeading className='text-base font-normal'>{t('You MUST close all your positions')}</TextHeading>
+                </Box>
+              )}
+              <div className='grid grid-cols-12 gap-4 lg:gap-12'>
+                <div className='col-span-12 lg:col-span-7'>
+                  <div className='sticky top-[128px] z-20 flex min-h-11 items-center justify-between bg-[#120916] bg-opacity-20 px-1 pb-2 pt-4 backdrop-blur-2xl lg:top-[150px] lg:mb-4 lg:pt-10'>
+                    <Link href={`/arena${queryParams}`}>
+                      <TextButton className='pl-0' LeadingIcon={ArrowLeftIcon}>
+                        {t('Back')}
+                      </TextButton>
+                    </Link>
+                    <UserProfileCard user={competition.owner} showVerified={competition.owner?.isVerified} />
+                  </div>
+                  <CompetitionCard
+                    competition={_competition}
+                    eventType={eventType}
+                    enableEditBanner={enableEditBanner}
                   />
-                  {children}
+                  <div className='mt-10 flex w-full flex-col gap-4'>
+                    <Tabs
+                      data={subTabs}
+                      size={SizeTypes.Small}
+                      itemClassName='text-sm'
+                      className='justify-start overflow-x-auto'
+                    />
+                    {children}
+                  </div>
                 </div>
+                <Sidebar competition={_competition} eventType={eventType} />
               </div>
-              <Sidebar competition={_competition} eventType={eventType} />
-            </div>
+            </>
           )}
         </Suspense>
       </main>

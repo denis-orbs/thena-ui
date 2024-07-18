@@ -898,5 +898,7 @@
   "Add Deposit to trade before competition ends": "Add Deposit to trade before competition ends.",
   "Your Deposit": "Your Deposit",
   "You can add more Deposit until the competition starts": "You can add more Deposit until the competition starts.",
-  "You can add more Deposit until the competition ends": "You can add more Deposit until the competition ends."
+  "You can add more Deposit until the competition ends": "You can add more Deposit until the competition ends.",
+  "Check my Trades": "Check my Trades",
+  "You MUST close all your positions": "You MUST close all your positions before the competition ends for your final PnL to be calculated correctly. Open/Pending positions do not count for your PnL. When you close any position during the competition, your PnL will be updated accordingly."
 }
