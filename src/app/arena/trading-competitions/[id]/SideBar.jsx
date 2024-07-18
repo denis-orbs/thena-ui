@@ -42,7 +42,10 @@ const V4_DEPOSIT_OF_USER = gql`
 const getDepositOfUser = async (tcId, userId) => {
   try {
     const { tcDeposits } = await v4Client.request(V4_DEPOSIT_OF_USER, { tcId, userId })
-    if (tcDeposits && tcDeposits.length) return tcDeposits[0].amount
+    if (tcDeposits && tcDeposits.length) {
+      const deposit = tcDeposits.reduce((total, item) => Number(total) + Number(item.amount), 0)
+      return String(deposit)
+    }
     return 0
   } catch {
     return 0
