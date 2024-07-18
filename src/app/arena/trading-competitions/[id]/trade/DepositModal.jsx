@@ -11,6 +11,8 @@ import { useDepositToTC } from '@/hooks/useTcSpotContract'
 import { warnToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
 
+import { WarningDeposit } from './WarningDeposit'
+
 function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
   const t = useTranslations()
 
@@ -50,6 +52,13 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
           amount={amount}
           onAmountChange={setAmount}
         />
+        {Boolean(amount) && competition?.market === TC_MARKET_TYPES.PERPETUAL && (
+          <WarningDeposit
+            asset={competition?.competitionRules?.winningToken}
+            amount={amount}
+            competition={competition}
+          />
+        )}
       </ModalBody>
       <ModalFooter>
         <PrimaryButton
