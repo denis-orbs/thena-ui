@@ -584,7 +584,7 @@ function Sidebar({ competition, eventType }) {
   )
 
   return (
-    <div className='col-span-12 mt-2 lg:col-span-5 lg:max-h-[500px]'>
+    <div className='col-span-12 mt-2 lg:col-span-5 lg:mt-14 lg:max-h-[500px]'>
       <div className='flex items-center justify-between'>
         <h3 className='mb-5'>{headingAndText.heading}</h3>
         {isTCJoined && account && <EmphasisIconButton Icon={shareIconButton} onClick={onShareTC} />}
