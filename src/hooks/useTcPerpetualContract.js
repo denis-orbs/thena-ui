@@ -102,21 +102,25 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL,
       if (tradingCompetition) {
         const isTcEnded = Number(tradingCompetition.timestamp.endTimestamp) < dayjs().unix()
         if (isTcEnded) {
-          const tcPerpetualContract = getTcPerpetualContract(tcAddress)
           let bal = 0
           try {
-            bal = await readCall(tcPerpetualContract, 'getBalanceOfUser', [account])
+            const tcPerpetualContract = getTcPerpetualContract(tcAddress)
+            const multiAccountContract = getMultiAccountContract()
+            const symmioAccount = await readCall(tcPerpetualContract, 'getAccountOf', [account])
+
+            // get balance to withdraw
+            bal = await readCall(multiAccountContract, 'balanceOf', [symmioAccount])
+
+            // if balance to withdraw = 0, get balance to deallocate
             if (!bal) {
-              const multiAccountContract = getMultiAccountContract()
-              const symmioAccount = await readCall(tcPerpetualContract, 'getAccountOf', [account])
-              bal = await readCall(multiAccountContract, 'balanceOf', [symmioAccount])
+              bal = await readCall(multiAccountContract, 'allocatedBalanceOfPartyA', [symmioAccount])
             }
-            setBalance(new BigNumber(bal).toNumber())
+            setBalance(new BigNumber(bal))
           } catch (error) {
             setBalance(0)
           }
 
-          if (bal > 0) {
+          if (new BigNumber(bal).toNumber() > 0) {
             setIsWithdrawable(true)
           } else {
             setIsWithdrawable(false)
