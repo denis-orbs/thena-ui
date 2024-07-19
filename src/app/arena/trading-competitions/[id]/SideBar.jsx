@@ -32,7 +32,7 @@ import DepositModal from './trade/DepositModal'
 
 const V4_DEPOSIT_OF_USER = gql`
   query V4_DEPOSIT_OF_USER($tcId: String!, $userId: String!) {
-    tcDeposits(where: { tradingCompetition: { id_eq: $tcId }, user: { id_eq: $userId } }) {
+    tcDeposits(where: { tradingCompetition: { id_eq: $tcId }, user: { id_eq: $userId }, type_eq: "deposit" }) {
       id
       amount
     }
