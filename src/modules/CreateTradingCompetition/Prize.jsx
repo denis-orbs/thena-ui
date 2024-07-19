@@ -88,7 +88,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
             </div>
           </div>
         </div>
-        {isSpotType && <TextSubHeading className='mt-2 block'>Note: {t('Prize Token Note')}</TextSubHeading>}
+        <TextSubHeading className='mt-2 block'>Note: {t('Prize Token Note')}</TextSubHeading>
       </div>
       <div>
         <div className='mt-4 grid gap-x-[26px] gap-y-4 md:grid-cols-2'>

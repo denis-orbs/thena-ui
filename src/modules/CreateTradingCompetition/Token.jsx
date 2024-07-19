@@ -147,7 +147,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
                 market: TC_MARKET_TYPES.PERPETUAL,
                 prize: {
                   ...data.prize,
-                  token: [USDTAsset],
+                  token: data.market !== TC_MARKET_TYPES.PERPETUAL ? [] : data.prize.token,
                 },
               })
             }}
