@@ -22,12 +22,13 @@ function DeallocateModal({ remainingTime, open, onClose, balance, tcAddress, get
     try {
       const isSuccess = await deallocate(tcAddress, balance)
       if (isSuccess) {
+        onClose()
         await getWithdrawCooldown()
       }
     } catch (error) {
       console.log(error)
     }
-  }, [balance, deallocate, getWithdrawCooldown, tcAddress])
+  }, [balance, deallocate, getWithdrawCooldown, onClose, tcAddress])
 
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Withdraw')}>

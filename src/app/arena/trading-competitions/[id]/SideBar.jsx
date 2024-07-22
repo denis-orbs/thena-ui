@@ -338,21 +338,21 @@ function Sidebar({ competition, eventType }) {
   const withdraw = useCallback(async () => {
     try {
       if (competition.market === TC_MARKET_TYPES.SPOT) {
-        await withdrawDeposit({
+        const isSuccess = await withdrawDeposit({
           tcAddress: competition.tcAddress,
         })
-        await checkWithdrawable(true)
+        if (isSuccess) await checkWithdrawable(true)
       } else {
         if (withdrawCooldown === 0 || !enabledWithdraw) {
           setShowModalDeallocate(true)
           return
         }
         setShowModalDeallocate(false)
-        await withdrawTCPerp({
+        const isSuccess = await withdrawTCPerp({
           tcAddress: competition.tcAddress,
           amount: balance,
         })
-        await checkWithdrawableTCPerp()
+        if (isSuccess) await checkWithdrawableTCPerp()
       }
     } catch (e) {
       console.error(e)
@@ -368,6 +368,35 @@ function Sidebar({ competition, eventType }) {
     balance,
     checkWithdrawableTCPerp,
   ])
+
+  const checkDisplayTextDeposit = useMemo(
+    () =>
+      isTCJoined &&
+      (competition.market === TC_MARKET_TYPES.SPOT
+        ? eventType === EVENT_TYPES.UPCOMING &&
+          isInvalidAmount(competition.competitionRules?.startingBalance) &&
+          Date.now() / 1000 < competition.timestamp?.registrationEnd
+        : eventType !== EVENT_TYPES.ENDED),
+    [
+      competition.competitionRules?.startingBalance,
+      competition.market,
+      competition.timestamp?.registrationEnd,
+      eventType,
+      isTCJoined,
+    ],
+  )
+
+  const autoWithdrawTcPerp = useCallback(async () => {
+    if (showModalDeallocate && enabledWithdraw) {
+      setShowModalDeallocate(false)
+      const isSuccess = await withdrawTCPerp({
+        tcAddress: competition?.tcAddress,
+        amount: balance,
+      })
+      if (isSuccess) await checkWithdrawableTCPerp()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balance, competition?.tcAddress, enabledWithdraw, showModalDeallocate])
 
   useEffect(() => {
     function intervalCallback() {
@@ -587,22 +616,9 @@ function Sidebar({ competition, eventType }) {
     return () => clearTimeout(timeOut)
   }, [])
 
-  const checkDisplayTextDeposit = useMemo(
-    () =>
-      isTCJoined &&
-      (competition.market === TC_MARKET_TYPES.SPOT
-        ? eventType === EVENT_TYPES.UPCOMING &&
-          isInvalidAmount(competition.competitionRules?.startingBalance) &&
-          Date.now() / 1000 < competition.timestamp?.registrationEnd
-        : eventType !== EVENT_TYPES.ENDED),
-    [
-      competition.competitionRules?.startingBalance,
-      competition.market,
-      competition.timestamp?.registrationEnd,
-      eventType,
-      isTCJoined,
-    ],
-  )
+  useEffect(() => {
+    autoWithdrawTcPerp()
+  }, [autoWithdrawTcPerp])
 
   return (
     <div className='col-span-12 mt-2 lg:col-span-5 lg:mt-14 lg:max-h-[500px]'>

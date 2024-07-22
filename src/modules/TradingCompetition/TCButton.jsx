@@ -92,21 +92,21 @@ export function TCButton({ eventType, competition, timestamp }) {
   const withdraw = useCallback(async () => {
     try {
       if (competition.market === TC_MARKET_TYPES.SPOT) {
-        await withdrawDeposit({
+        const isSuccess = await withdrawDeposit({
           tcAddress: competition.tcAddress,
         })
-        await checkWithdrawable(true)
+        if (isSuccess) await checkWithdrawable(true)
       } else {
         if (withdrawCooldown === 0 || !enabledWithdraw) {
           setShowModalDeallocate(true)
           return
         }
         setShowModalDeallocate(false)
-        await withdrawTCPerp({
+        const isSuccess = await withdrawTCPerp({
           tcAddress: competition.tcAddress,
           amount: balance,
         })
-        await checkWithdrawableTCPerp()
+        if (isSuccess) await checkWithdrawableTCPerp()
       }
     } catch (e) {
       console.error(e)
@@ -122,6 +122,18 @@ export function TCButton({ eventType, competition, timestamp }) {
     balance,
     checkWithdrawableTCPerp,
   ])
+
+  const autoWithdrawTcPerp = useCallback(async () => {
+    if (showModalDeallocate && enabledWithdraw) {
+      setShowModalDeallocate(false)
+      const isSuccess = await withdrawTCPerp({
+        tcAddress: competition?.tcAddress,
+        amount: balance,
+      })
+      if (isSuccess) await checkWithdrawableTCPerp()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balance, competition?.tcAddress, enabledWithdraw, showModalDeallocate])
 
   useEffect(() => {
     function intervalCallback() {
@@ -140,6 +152,7 @@ export function TCButton({ eventType, competition, timestamp }) {
         setRemainingTime(totalCooldown)
         setEnabledWithdraw(false)
       } else {
+        setRemainingTime(0)
         setEnabledWithdraw(true)
         clearInterval(intervalId.current)
       }
@@ -184,6 +197,10 @@ export function TCButton({ eventType, competition, timestamp }) {
     t,
     timestamp,
   ])
+
+  useEffect(() => {
+    autoWithdrawTcPerp()
+  }, [autoWithdrawTcPerp])
 
   return (
     <div className='flex w-full items-center justify-between gap-4'>

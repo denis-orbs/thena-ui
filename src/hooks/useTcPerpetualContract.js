@@ -174,11 +174,11 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL,
     const tcId = new BigNumber(tradingCompetition?.id).toNumber()
     const tcPerpRewarderContract = getTCPerpRewarderContract()
     const claimedList = await Promise.all(
-      tradingCompetition?.prize.totalPrize.map((_, index) => {
+      tradingCompetition?.prize?.totalPrize?.map((_, index) => {
         const isClaimed = readCall(tcPerpRewarderContract, 'claimed', [
           account,
           tcId,
-          tradingCompetition?.prize.token[index],
+          tradingCompetition?.prize?.token?.[index],
         ])
         return isClaimed
       }),
