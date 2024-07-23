@@ -11,6 +11,7 @@ import useSWR from 'swr'
 import Loading from '@/app/loading'
 import Box from '@/components/box'
 import { TextButton } from '@/components/buttons/Button'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Tabs from '@/components/tabs'
 import { TextHeading } from '@/components/typography'
@@ -23,7 +24,7 @@ import { useEventType } from '@/hooks/useEventType'
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES, objectToQuery } from '@/lib/tradingCompetition/utils'
 import { cn, sleep } from '@/lib/utils'
-import { ArrowLeftIcon } from '@/svgs'
+import { ArrowLeftIcon, XIcon } from '@/svgs'
 
 import CompetitionCard from './CompetitionCard'
 import Sidebar from './SideBar'
@@ -206,6 +207,17 @@ function CompetitionDetailLayout({ children, params }) {
     [competition?.participants, userInfo?.id],
   )
 
+  const [showBanner, setShowBanner] = useState(false)
+  const [showIconCloseBanner, setShowIconCloseBanner] = useState(false)
+
+  useEffect(() => {
+    if (competition?.market === TC_MARKET_TYPES.PERPETUAL && checkJoinTc) {
+      setShowBanner(true)
+    } else {
+      setShowBanner(false)
+    }
+  }, [checkJoinTc, competition?.market])
+
   useEffect(() => {
     setQueryParams(
       objectToQuery({
@@ -243,9 +255,21 @@ function CompetitionDetailLayout({ children, params }) {
             <TCNotReadyYet />
           ) : (
             <>
-              {_competition.market === TC_MARKET_TYPES.PERPETUAL && checkJoinTc && (
-                <Box className='mt-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
+              {showBanner && (
+                <Box
+                  onMouseOver={() => setShowIconCloseBanner(true)}
+                  onMouseLeave={() => setShowIconCloseBanner(false)}
+                  className='relative mt-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'
+                >
                   <TextHeading className='text-base font-normal'>{t('You MUST close all your positions')}</TextHeading>
+                  {showIconCloseBanner && (
+                    <EmphasisIconButton
+                      className='absolute right-1 top-1 !m-0 h-6 w-6 lg:h-6 lg:w-6'
+                      classNames='lg:h-4 lg:w-4'
+                      Icon={XIcon}
+                      onClick={() => setShowBanner(false)}
+                    />
+                  )}
                 </Box>
               )}
               <div className='grid grid-cols-12 gap-4 lg:gap-12'>

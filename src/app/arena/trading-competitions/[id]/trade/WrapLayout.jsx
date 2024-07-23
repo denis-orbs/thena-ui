@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import Box from '@/components/box'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { TextHeading } from '@/components/typography'
 import { TradingCompetitionContextProvider } from '@/context/tradingCompetitionContext'
 import { useTradeCompetitionData } from '@/hooks/trade/useTradeCompetitionData'
@@ -15,6 +16,7 @@ import { errorToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
+import { XIcon } from '@/svgs'
 
 // import DepositModal from './DepositModal'
 import { SideBar } from './SideBar'
@@ -28,6 +30,8 @@ export function WrapLayout({ children, params }) {
   const [fromAddress, setFromAddress] = useState(null)
   const [toAddress, setToAddress] = useState(null)
   const [reloadFetch, setReloadFetch] = useState(0)
+  const [showBanner, setShowBanner] = useState(true)
+  const [showIconCloseBanner, setShowIconCloseBanner] = useState(false)
 
   // const [showModalDeposit, setShowModalDeposit] = useState(false)
 
@@ -109,12 +113,26 @@ export function WrapLayout({ children, params }) {
         reloadFetch={reloadFetch}
         setReloadFetch={setReloadFetch}
       />
-      <Box className='mb-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
-        <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
-        <TextHeading className='text-base font-normal'>
-          {t('If You Want To Know The Real PnL', { symbol: competition?.competitionRules?.winningToken?.symbol })}
-        </TextHeading>
-      </Box>
+      {showBanner && (
+        <Box
+          onMouseOver={() => setShowIconCloseBanner(true)}
+          onMouseLeave={() => setShowIconCloseBanner(false)}
+          className='relative mb-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'
+        >
+          <TextHeading className='text-xl'>{t('Whenever You Make A Swap')}</TextHeading>
+          <TextHeading className='text-base font-normal'>
+            {t('If You Want To Know The Real PnL', { symbol: competition?.competitionRules?.winningToken?.symbol })}
+          </TextHeading>
+          {showIconCloseBanner && (
+            <EmphasisIconButton
+              className='absolute right-1 top-1 !m-0 h-6 w-6 lg:h-6 lg:w-6'
+              classNames='lg:h-4 lg:w-4'
+              Icon={XIcon}
+              onClick={() => setShowBanner(false)}
+            />
+          )}
+        </Box>
+      )}
       {eventType === EVENT_TYPES.LIVE ? (
         <SideBar
           fromAsset={fromAsset}
