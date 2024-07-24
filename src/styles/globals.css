@@ -476,6 +476,10 @@ input[type='radio']:checked:after {
 	background-color: #84007F;
 }
 
+.react-datepicker__day--keyboard-selected {
+	background-color: transparent;
+}
+
 .react-datepicker__day--today {
 	background-color: #580055;
 	font-style: italic;
