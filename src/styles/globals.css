@@ -502,5 +502,5 @@ input[type='radio']:checked:after {
 }
 
 .react-datepicker__day--today {
-	background-color: #580055;
+	background-color: #31042f;
 }
