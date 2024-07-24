@@ -39,6 +39,7 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
   const [typeTime, setTypeTime] = useState('am')
   const [hours, setHours] = useState(formatAMPM(value, 'hours'))
   const [minutes, setMinutes] = useState(formatAMPM(value, 'minutes'))
+  const [view, setView] = useState('hours')
 
   useEffect(() => {
     if (new Date(dateValue).getHours() < 12) {
@@ -73,94 +74,101 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
       return (
         <div className=''>
           <TextButton
-            onClick={() => setStep(STEP.DATE)}
+            onClick={() => {
+              setStep(STEP.DATE)
+              setView('hours')
+            }}
             className='mb-3 p-0 hover:bg-transparent'
             LeadingIcon={ArrowLeftIcon}
           >
             {t('Back')}
           </TextButton>
-          <div>
-            <div className='flex flex-row items-center justify-center gap-3'>
-              <Input
-                className='h-[80px] w-[80px]'
-                classNames={{
-                  input: 'p-2 h-[80px] text-5xl text-center focus:bg-primary-600',
-                }}
-                placeholder='00'
-                min='0'
-                max='11'
-                onChange={e => {
-                  setHours(e.target.value)
-                }}
-                onKeyPress={e => {
-                  const key = e.which || e.keyCode
-                  if (key && (key <= 47 || key >= 58) && key !== 8) {
-                    e.preventDefault()
-                  }
-                }}
-                onBlur={e => {
-                  const newValue = e.target.value
-                  let newDateValue
-                  if (!newValue || Number(newValue) > 12) {
-                    if (typeTime === 'am') {
-                      newDateValue = dayjs(dateValue).clone().hour(0)
-                    } else {
-                      newDateValue = dayjs(dateValue).clone().hour(12)
-                    }
-                  } else {
-                    newDateValue = dayjs(dateValue).clone().hour(Number(newValue))
-                  }
-                  if (minDate && dayjs(newDateValue).isBefore(dayjs(minDate))) {
-                    newDateValue = dayjs(minDate)
-                  } else if (maxDate && dayjs(newDateValue).isAfter(dayjs(maxDate))) {
-                    newDateValue = dayjs(maxDate)
-                  }
-                  setDateValue(newDateValue)
-                  setHours(formatAMPM(newDateValue, 'hours'))
-                }}
-                val={hours}
-              />
-              <TextHeading className='text-5xl'>:</TextHeading>
-              <Input
-                className='h-[80px] w-[80px]'
-                classNames={{
-                  input: 'p-2 h-[80px] text-5xl text-center focus:bg-primary-600',
-                }}
-                placeholder='00'
-                min={0}
-                max={59}
-                val={minutes}
-                onChange={e => {
-                  setMinutes(e.target.value)
-                }}
-                onKeyPress={e => {
-                  const key = e.which || e.keyCode
-                  if (key && (key <= 47 || key >= 58) && key !== 8) {
-                    e.preventDefault()
-                  }
-                }}
-                onBlur={e => {
-                  const newValue = e.target.value
-                  let newDateValue
-                  if (!newValue || Number(newValue) > 59) {
-                    if (!newValue) {
-                      newDateValue = dayjs(dateValue).clone().minute(0)
-                    } else {
-                      newDateValue = dayjs(dateValue).clone().minute(59)
-                    }
-                  } else {
-                    newDateValue = dayjs(dateValue).clone().minute(Number(newValue))
-                  }
-                  if (minDate && dayjs(newDateValue).isBefore(dayjs(minDate))) {
-                    newDateValue = dayjs(minDate)
-                  } else if (maxDate && dayjs(newDateValue).isAfter(dayjs(maxDate))) {
-                    newDateValue = dayjs(maxDate)
-                  }
-                  setDateValue(newDateValue)
-                  setMinutes(formatAMPM(newDateValue, 'minutes'))
-                }}
-              />
-            </div>
+          <div className='mb-2 flex flex-row items-center justify-center gap-3'>
+            <Input
+              className='h-[80px] w-[80px]'
+              classNames={{
+                input: 'p-2 h-[80px] text-5xl text-center focus:bg-primary-600',
+              }}
+              placeholder='00'
+              min='0'
+              max='11'
+              val={hours}
+              onChange={e => {
+                setHours(e.target.value)
+              }}
+              onKeyPress={e => {
+                const key = e.which || e.keyCode
+                if (key && (key <= 47 || key >= 58) && key !== 8) {
+                  e.preventDefault()
+                }
+              }}
+              onFocus={() => {
+                setView('hours')
+              }}
+              onBlur={e => {
+                const newValue = e.target.value
+                let newDateValue
+                if (!newValue || Number(newValue) > 12) {
+                  newDateValue = dayjs(dateValue)
+                    .clone()
+                    .hour(typeTime === 'am' ? 0 : 12)
+                } else {
+                  newDateValue = dayjs(dateValue)
+                    .clone()
+                    .hour(typeTime === 'am' ? Number(newValue) : Number(newValue) + 12)
+                }
+                if (minDate && dayjs(newDateValue).isBefore(dayjs(minDate))) {
+                  newDateValue = dayjs(minDate)
+                } else if (maxDate && dayjs(newDateValue).isAfter(dayjs(maxDate))) {
+                  newDateValue = dayjs(maxDate)
+                }
+                setDateValue(newDateValue)
+                setHours(formatAMPM(newDateValue, 'hours'))
+                setView('hours')
+              }}
+            />
+            <TextHeading className='text-5xl'>:</TextHeading>
+            <Input
+              className='h-[80px] w-[80px]'
+              classNames={{
+                input: 'p-2 h-[80px] text-5xl text-center focus:bg-primary-600',
+              }}
+              placeholder='00'
+              min={0}
+              max={59}
+              val={minutes}
+              onChange={e => {
+                setMinutes(e.target.value)
+              }}
+              onFocus={() => {
+                setView('minutes')
+              }}
+              onKeyPress={e => {
+                const key = e.which || e.keyCode
+                if (key && (key <= 47 || key >= 58) && key !== 8) {
+                  e.preventDefault()
+                }
+              }}
+              onBlur={e => {
+                const newValue = e.target.value
+                let newDateValue
+                if (!newValue || Number(newValue) > 59) {
+                  newDateValue = dayjs(dateValue)
+                    .clone()
+                    .minute(!newValue ? 0 : 59)
+                } else {
+                  newDateValue = dayjs(dateValue).clone().minute(Number(newValue))
+                }
+                if (minDate && dayjs(newDateValue).isBefore(dayjs(minDate))) {
+                  newDateValue = dayjs(minDate)
+                } else if (maxDate && dayjs(newDateValue).isAfter(dayjs(maxDate))) {
+                  newDateValue = dayjs(maxDate)
+                }
+                setDateValue(newDateValue)
+                setMinutes(formatAMPM(newDateValue, 'minutes'))
+                setView('minutes')
+              }}
+            />
           </div>
           <TimeClock
             sx={{
@@ -200,12 +208,16 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
               setDateValue(newDateValue)
               setHours(formatAMPM(newDateValue, 'hours'))
               setMinutes(formatAMPM(newDateValue, 'minutes'))
+              if (view === 'hours') {
+                setView('minutes')
+              }
             }}
+            view={view}
           />
         </div>
       )
     }
-  }, [step, dateValue, minDate, maxDate, rest, t, hours, minutes, typeTime])
+  }, [step, dateValue, minDate, maxDate, rest, t, hours, minutes, view, typeTime])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} width={400} title={title} fontSizeTitle='text-xl lg:text-2xl'>
