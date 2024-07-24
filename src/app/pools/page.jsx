@@ -180,23 +180,9 @@ export default function PoolsPage() {
 
   const finalPools = useMemo(
     () => {
-      // Hard-coded for USDT/LISTA pool on top
-      let previousData = []
-
-      const listaPoolAddress = '0x755a52d29b24d6871899a84f476339183e9dc95d'
-      if (Array.isArray(sortedData) && sortedData.length) {
-        const listaPool = sortedData.find(item => item.address === listaPoolAddress)
-        if (listaPool) {
-          const data = sortedData.filter(item => item?.address !== listaPoolAddress)
-          previousData = [listaPool, ...data]
-        } else {
-          previousData = [...sortedData]
-        }
-      }
-
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
 
-      return previousData.map(pool => ({
+      return sortedData.map(pool => ({
         pair: (
           <div className='flex items-center gap-3'>
             <IconGroup
