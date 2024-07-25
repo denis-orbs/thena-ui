@@ -901,5 +901,8 @@
   "You can add more Deposit until the competition ends": "You can add more Deposit until the competition ends.",
   "Check my Trades": "Check my Trades",
   "This Deposit Is Not Enough To Trade": "This deposit is not enough to trade during the competition and the minimum amount to be deposited should be {min} USDT.",
-  "You MUST close all your positions": "You MUST close all your positions before the competition ends for your final PnL to be calculated correctly. Open/Pending positions do not count towards your PnL. When you close any position during the competition, your PnL will be updated accordingly. Also note that this is a cross-margin account which means that if at least one of your positions gets liquidated, the rest of your positions will get liquidated as well. Stop Loss/Take Profit feature will be implemented at a later stage."
+  "You MUST close all your positions": "You MUST close all your positions before the competition ends for your final PnL to be calculated correctly. Open/Pending positions do not count towards your PnL. When you close any position during the competition, your PnL will be updated accordingly. Also note that this is a cross-margin account which means that if at least one of your positions gets liquidated, the rest of your positions will get liquidated as well. Stop Loss/Take Profit feature will be implemented at a later stage.",
+  "Done": "Done",
+  "Next": "Next",
+  "00": "00"
 }

@@ -1,9 +1,8 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { createPortal } from 'react-dom'
 
 import Input from '@/components/input'
-import DateInput from '@/components/input/DateInput'
+import { DateTimePickerCustom } from '@/components/input/DateTimePickerCustom'
 import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
 import { MinusIcon, PlusIcon } from '@/svgs'
 
@@ -183,9 +182,8 @@ function Time({ data, setData }) {
       <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='w-full'>
           <LabelTooltip label='Registration Start Time' />
-          <DateInput
-            popperContainer={({ children }) => createPortal(children, document.body)}
-            popperClassName='z-[1000]'
+          <DateTimePickerCustom
+            title='Registration Start Time'
             selectedDate={regStartTime}
             onChange={date => {
               const newDate = new Date(date).getTime()
@@ -201,14 +199,13 @@ function Time({ data, setData }) {
             }}
             minDate={getIsoString()}
             showTimeSelect
-            dateFormat='yyyy/MM/dd hh:mm aa'
+            dateFormat='YYYY/MM/DD hh:mm A'
           />
         </div>
         <div className='w-full'>
           <LabelTooltip label='Registration End Time' />
-          <DateInput
-            popperContainer={({ children }) => createPortal(children, document.body)}
-            popperClassName='z-[1000]'
+          <DateTimePickerCustom
+            title='Registration End Time'
             selectedDate={regEndTime}
             onChange={date => {
               const newDate = new Date(date).getTime()
@@ -226,16 +223,15 @@ function Time({ data, setData }) {
             minDate={minReg}
             maxDate={maxReg}
             showTimeSelect
-            dateFormat='yyyy/MM/dd hh:mm aa'
+            dateFormat='YYYY/MM/DD hh:mm A'
           />
         </div>
       </div>
       <div className='mt-4 w-full items-center space-y-4 md:mt-5 md:flex md:space-x-6 md:space-y-0'>
         <div className='w-full'>
           <LabelTooltip label='Competition Start Time' />
-          <DateInput
-            popperContainer={({ children }) => createPortal(children, document.body)}
-            popperClassName='z-[1000]'
+          <DateTimePickerCustom
+            title='Competition Start Time'
             selectedDate={tsStartTime}
             onChange={date => {
               const newDate = new Date(date).getTime()
@@ -251,14 +247,13 @@ function Time({ data, setData }) {
             }}
             minDate={minStartTime}
             showTimeSelect
-            dateFormat='yyyy/MM/dd hh:mm aa'
+            dateFormat='YYYY/MM/DD hh:mm A'
           />
         </div>
         <div className='w-full'>
           <LabelTooltip label='Competition End Time' />
-          <DateInput
-            popperContainer={({ children }) => createPortal(children, document.body)}
-            popperClassName='z-[1000]'
+          <DateTimePickerCustom
+            title='Competition End Time'
             selectedDate={tsEndTime}
             onChange={date => {
               const newDate = new Date(date).getTime()
@@ -275,7 +270,7 @@ function Time({ data, setData }) {
             }}
             minDate={minTs}
             maxDate={maxTs}
-            dateFormat='yyyy/MM/dd hh:mm aa'
+            dateFormat='YYYY/MM/DD hh:mm A'
             showTimeSelect
           />
         </div>
