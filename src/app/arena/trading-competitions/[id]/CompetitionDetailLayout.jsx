@@ -262,6 +262,9 @@ function CompetitionDetailLayout({ children, params }) {
                   className='relative mt-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'
                 >
                   <TextHeading className='text-base font-normal'>{t('You MUST close all your positions')}</TextHeading>
+                  <TextHeading className='text-base font-normal'>
+                    {t('Also note that this is a cross-margin account')}
+                  </TextHeading>
                   {showIconCloseBanner && (
                     <EmphasisIconButton
                       className='absolute right-1 top-1 !m-0 h-6 w-6 lg:h-6 lg:w-6'
