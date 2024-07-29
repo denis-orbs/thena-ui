@@ -8,19 +8,15 @@ import useSWR from 'swr'
 
 import Box from '@/components/box'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { useAssets } from '@/context/assetsContext'
 import { v4Client } from '@/lib/graphql'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount } from '@/lib/utils'
 
 import IncreasePrizeTable from './IncreasePrizeTable'
 
 const V4_TC_ANALYTICS = gql`
   query V4_TC_ANALYTICS($id: String!) {
     tcTrades(where: { tradingCompetition: { id_eq: $id } }) {
-      amountIn
-      tokenIn {
-        id
-      }
+      amountUSD
     }
     tradingCompetitionById(id: $id) {
       participantCount
@@ -50,10 +46,9 @@ const fetchTCAnalyticData = async id => {
 
 function AnalyticPage() {
   const t = useTranslations()
-  const assets = useAssets()
   const { id } = useParams()
 
-  const { data } = useSWR(['tc analytics api', id], () => fetchTCAnalyticData(id), {
+  const { data } = useSWR(['tc analytics api', id], () => fetchTCAnalyticData(id.toLowerCase()), {
     refreshInterval: 30000,
     revalidateOnFocus: true,
   })
@@ -67,13 +62,7 @@ function AnalyticPage() {
       amountOfTrades = data.tcTrades?.length
       numberOfParticipants = data.competition?.participantCount
 
-      data.tcTrades?.forEach(item => {
-        const asset = assets.find(a => String(a.address).toLowerCase() === String(item.tokenIn?.id))
-        const amount = fromWei(item.amountIn, asset?.decimals).toNumber()
-        if (asset) {
-          totalVolume += amount * asset.price
-        }
-      })
+      totalVolume = data.tcTrades?.reduce((previous, current) => previous + current.amountUSD, 0)
     }
 
     return {
@@ -81,7 +70,7 @@ function AnalyticPage() {
       numberOfParticipants,
       amountOfTrades,
     }
-  }, [assets, data])
+  }, [data])
 
   return (
     <>
