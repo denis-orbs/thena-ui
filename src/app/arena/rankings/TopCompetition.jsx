@@ -11,20 +11,15 @@ import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { useAssets } from '@/context/assetsContext'
 import { v4Client } from '@/lib/graphql'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount } from '@/lib/utils'
 
 const V4_TOP_COMPETITIONS = gql`
   query V4_TOP_COMPETITIONS($orderBy: [TradingCompetitionOrderByInput!] = []) {
     tradingCompetitions(orderBy: $orderBy) {
       id
       tcTrades {
-        amountIn
-        id
-        tokenIn {
-          id
-        }
+        amountUSD
       }
       participantCount
       name
@@ -111,7 +106,6 @@ function TopCompetition() {
     [isAll],
   )
   const searchParams = useSearchParams()
-  const assets = useAssets()
   const { page } = useParams()
   const [currentPage, setCurrentPage] = useState(!isAll ? 1 : page ? Number(page) : 1)
   const sortDefault = useMemo(() => {
@@ -148,21 +142,15 @@ function TopCompetition() {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [debounceSearch])
 
-  const calcTotalVolume = useCallback(
-    comp => {
-      let volume = 0
+  const calcTotalVolume = useCallback(comp => {
+    let volume = 0
 
-      comp.tcTrades.forEach(tcTrade => {
-        const asset = assets.find(a => a.address.toLowerCase() === tcTrade.tokenIn.id.toLowerCase())
-        if (asset) {
-          volume += fromWei(tcTrade.amountIn, asset.decimals).toNumber() * asset.price
-        }
-      })
+    comp.tcTrades.forEach(tcTrade => {
+      volume += tcTrade.amountUSD
+    })
 
-      return volume
-    },
-    [assets],
-  )
+    return volume
+  }, [])
 
   const competitions = useMemo(() => {
     if (topTCRes && Array.isArray(topTCRes) && !topTCRes.errors) {
