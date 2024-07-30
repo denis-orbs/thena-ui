@@ -1,5 +1,6 @@
 'use client'
 
+import { AuthType } from '@particle-network/auth-core'
 import { AuthCoreContextProvider, PromptSettingType } from '@particle-network/auth-core-modal'
 import { BNBChain, opBNB } from '@particle-network/chains'
 import { NextIntlClientProvider } from 'next-intl'
@@ -65,6 +66,7 @@ export function Providers({ children }) {
         projectId: process.env.NEXT_PUBLIC_PARTICLE_PROJECT_ID,
         clientKey: process.env.NEXT_PUBLIC_PARTICLE_CLIENT_KEY,
         appId: process.env.NEXT_PUBLIC_PARTICLE_APP_ID,
+        authTypes: [AuthType.email, AuthType.google, AuthType.apple],
         themeType: 'dark',
         fiatCoin: 'USD',
         language: 'en',
