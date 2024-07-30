@@ -430,6 +430,14 @@ function Header() {
         },
         account
           ? {
+              label: t('Achievements'),
+              active: pathname === '/arena/achievements',
+              isLink: true,
+              href: '/arena/achievements',
+            }
+          : undefined,
+        account
+          ? {
               label: t('Profile'),
               active:
                 pathname === '/arena/profile' ||
