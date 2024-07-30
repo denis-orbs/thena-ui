@@ -29,6 +29,7 @@ import {
   particlePhoneWallet,
   particleTwitchWallet,
   particleTwitterWallet,
+  particleWallet,
 } from './particleWallet'
 
 const connectors = connectorsForWallets(
@@ -40,6 +41,7 @@ const connectors = connectorsForWallets(
     {
       groupName: 'Social login',
       wallets: [
+        particleWallet,
         particleEmailWallet,
         particlePhoneWallet,
         particleFacebookWallet,
