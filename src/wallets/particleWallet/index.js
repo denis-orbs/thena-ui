@@ -17,32 +17,6 @@ export const particleWallet = () => ({
     })),
 })
 
-export const particleEmailWallet = () => ({
-  id: 'particle_email',
-  name: 'Email',
-  iconUrl: '/images/socials/email.png',
-  iconBackground: '#fff',
-  installed: true,
-  createConnector: walletDetails =>
-    createConnector(config => ({
-      ...particleWagmiWallet({ socialType: AuthType.email })(config),
-      ...walletDetails,
-    })),
-})
-
-export const particlePhoneWallet = () => ({
-  id: 'particle_phone',
-  name: 'Phone',
-  iconUrl: '/images/socials/phone.png',
-  iconBackground: '#fff',
-  installed: true,
-  createConnector: walletDetails =>
-    createConnector(config => ({
-      ...particleWagmiWallet({ socialType: AuthType.phone })(config),
-      ...walletDetails,
-    })),
-})
-
 export const particleFacebookWallet = () => ({
   id: 'particle_facebook',
   name: 'Facebook',

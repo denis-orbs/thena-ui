@@ -20,16 +20,13 @@ import { getRpcUrl } from '@/lib/utils'
 import {
   particleAppleWallet,
   particleDiscordWallet,
-  particleEmailWallet,
   particleFacebookWallet,
   particleGithubWallet,
   particleGoogleWallet,
   particleLinkedinWallet,
   particleMicrosoftWallet,
-  particlePhoneWallet,
   particleTwitchWallet,
   particleTwitterWallet,
-  particleWallet,
 } from './particleWallet'
 
 const connectors = connectorsForWallets(
@@ -41,9 +38,6 @@ const connectors = connectorsForWallets(
     {
       groupName: 'Social login',
       wallets: [
-        particleWallet,
-        particleEmailWallet,
-        particlePhoneWallet,
         particleFacebookWallet,
         particleGoogleWallet,
         particleAppleWallet,
