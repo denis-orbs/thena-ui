@@ -3,10 +3,10 @@ import useSWR from 'swr'
 
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
+import useWallet from '@/hooks/useWallet'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 import { fetchUserVaultsData } from '@/lib/vaults/fetchUserVaults'
 import { fetchVaultsData } from '@/lib/vaults/fetchVaults'
-import useWallet from '@/lib/wallets/useWallet'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const VaultsContext = createContext([])

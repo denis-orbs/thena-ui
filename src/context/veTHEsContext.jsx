@@ -4,10 +4,10 @@ import React, { useContext, useMemo } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core/dist'
 
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEAPIContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 
 const veTHEsContext = React.createContext({
   veTHEs: [],

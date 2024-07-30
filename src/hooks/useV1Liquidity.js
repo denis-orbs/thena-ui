@@ -8,10 +8,10 @@ import { maxUint256 } from 'viem'
 
 import { TAX_ASSETS, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getGaugeContract, getPairContract, getRouterContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 export const useV1Add = () => {

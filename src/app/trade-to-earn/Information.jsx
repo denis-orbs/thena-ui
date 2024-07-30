@@ -7,8 +7,8 @@ import Box from '@/components/box'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
+import useWallet from '@/hooks/useWallet'
 import { formatAmount, fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 
 function Information({ userDailyVolume, totalDailyVolume, userTotalVolume }) {
   const t = useTranslations()

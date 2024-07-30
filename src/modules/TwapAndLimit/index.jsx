@@ -5,10 +5,10 @@ import React, { useCallback } from 'react'
 import { TWAP as ThenaTwap } from '@orbs-network/twap-ui-thena'
 import BN from 'bignumber.js'
 import { useEstimateFeesPerGas } from 'wagmi'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import TokenModal from '@/modules/TokenModal'
 import { useAssets } from '@/context/assetsContext'
-import useWallet from '@/lib/wallets/useWallet'
+import useWallet from '@/hooks/useWallet'
 
 export { Orders } from '@orbs-network/twap-ui-thena'
 
@@ -25,7 +25,7 @@ export function Twap({
   const { account, connector, chainId } = useWallet()
   const baseAssets = useAssets()
   const estimate = useEstimateFeesPerGas().data
-  const { open } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
   const onSrcTokenSelected = useCallback(
     asset => {
       setFromAddress(asset.address)
@@ -41,8 +41,8 @@ export function Twap({
   )
 
   const connect = useCallback(() => {
-    open()
-  }, [open])
+    openConnectModal()
+  }, [openConnectModal])
 
   const maxFeePerGas = estimate?.maxFeePerGas.toString()
   const maxPriorityFeePerGas = estimate?.maxPriorityFeePerGas.toString()

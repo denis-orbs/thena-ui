@@ -8,10 +8,10 @@ import { getAddress, maxUint256, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 const EnabledDexIds = '43,47'

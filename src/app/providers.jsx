@@ -1,5 +1,7 @@
 'use client'
 
+import { AuthCoreContextProvider, PromptSettingType } from '@particle-network/auth-core-modal'
+import { BNBChain, opBNB } from '@particle-network/chains'
 import { NextIntlClientProvider } from 'next-intl'
 import { useMemo } from 'react'
 import { Provider } from 'react-redux'
@@ -21,6 +23,7 @@ import zhMessage from '@/lang/zh.json'
 import { swrGCMiddleware } from '@/lib/swrMiddlewares'
 import store from '@/state'
 import { useLocaleSettings } from '@/state/settings/hooks'
+import { ParticleProvider } from '@/wallets/rainbowkit'
 
 function ContextProviders({ children }) {
   return (
@@ -57,70 +60,80 @@ function IntlProvider({ children }) {
 
 export function Providers({ children }) {
   return (
-    // <AuthCoreContextProvider
-    //   options={{
-    //     projectId: process.env.NEXT_PUBLIC_PARTICLE_PROJECT_ID,
-    //     clientKey: process.env.NEXT_PUBLIC_PARTICLE_CLIENT_KEY,
-    //     appId: process.env.NEXT_PUBLIC_PARTICLE_APP_ID,
-    //     themeType: 'dark',
-    //     customStyle: {
-    //       zIndex: 2147483650, // must greater than 2147483646
-    //       logo: 'https://cdn.thena.fi/assets/THE.png',
-    //       projectName: 'THENA',
-    //       primaryBtnBorderRadius: '8px',
-    //       modalBorderRadius: '12px',
-    //       cardBorderRadius: '12px',
-    //       fontFamily: 'Inter',
-    //       theme: {
-    //         dark: {
-    //           primaryBtnColor: '#FCE6FB',
-    //           primaryBtnBackgroundColor: '#DC00D4',
-    //           secondaryBtnColor: '#ECEAED',
-    //           secondaryBtnBackgroundColor: '#35243D',
-    //           textColor: '#F3F2F4',
-    //           secondaryTextColor: '#B3ABB7',
-    //           themeBackgroundColor: '#1A121E',
-    //           iconBorderColor: '#35243D',
-    //           accentColor: '#DC00D4',
-    //           inputBackgroundColor: '#35243D',
-    //           inputBorderColor: '#685770',
-    //           inputPlaceholderColor: '#8E8194',
-    //           cardBorderColor: '#35243D',
-    //           cardUnclickableBackgroundColor: 'none',
-    //           cardUnclickableBorderColor: '#35243D',
-    //           cardDividerColor: '#35243D',
-    //         },
-    //       },
-    //     },
-    //     wallet: {
-    //       visible: false,
-    //     },
-    //   }}
-    // >
-    <Provider store={store}>
-      <IntlProvider>
-        <SWRConfig
-          value={{
-            refreshInterval: 30000,
-            refreshWhenHidden: false,
-            refreshWhenOffline: false,
-            use: [swrGCMiddleware],
-          }}
-        >
-          <ToastContainer
-            className='notify-class'
-            position='bottom-left'
-            theme='dark'
-            closeOnClick={false}
-            transition={Zoom}
-            autoClose={5000}
-            hideProgressBar
-            closeButton={false}
-          />
-          <ContextProviders>{children}</ContextProviders>
-        </SWRConfig>
-      </IntlProvider>
-    </Provider>
-    // </AuthCoreContextProvider>
+    <AuthCoreContextProvider
+      options={{
+        projectId: process.env.NEXT_PUBLIC_PARTICLE_PROJECT_ID,
+        clientKey: process.env.NEXT_PUBLIC_PARTICLE_CLIENT_KEY,
+        appId: process.env.NEXT_PUBLIC_PARTICLE_APP_ID,
+        themeType: 'dark',
+        fiatCoin: 'USD',
+        language: 'en',
+        customStyle: {
+          logo: 'https://cdn.thena.fi/assets/THE.png',
+          projectName: 'THENA',
+          primaryBtnBorderRadius: '8px',
+          modalBorderRadius: '12px',
+          cardBorderRadius: '12px',
+          fontFamily: 'Inter',
+          theme: {
+            dark: {
+              primaryBtnColor: '#FCE6FB',
+              primaryBtnBackgroundColor: '#DC00D4',
+              secondaryBtnColor: '#ECEAED',
+              secondaryBtnBackgroundColor: '#35243D',
+              textColor: '#F3F2F4',
+              secondaryTextColor: '#B3ABB7',
+              themeBackgroundColor: '#1A121E',
+              iconBorderColor: '#35243D',
+              accentColor: '#DC00D4',
+              inputBackgroundColor: '#35243D',
+              inputBorderColor: '#685770',
+              inputPlaceholderColor: '#8E8194',
+              cardBorderColor: '#35243D',
+              cardUnclickableBackgroundColor: 'none',
+              cardUnclickableBorderColor: '#35243D',
+              cardDividerColor: '#35243D',
+            },
+          },
+        },
+        promptSettingConfig: {
+          promptPaymentPasswordSettingWhenSign: PromptSettingType.first,
+          promptMasterPasswordSettingWhenLogin: PromptSettingType.first,
+        },
+        wallet: {
+          visible: false,
+          customStyle: {
+            supportChains: [BNBChain, opBNB],
+          },
+        },
+      }}
+    >
+      <ParticleProvider>
+        <Provider store={store}>
+          <IntlProvider>
+            <SWRConfig
+              value={{
+                refreshInterval: 30000,
+                refreshWhenHidden: false,
+                refreshWhenOffline: false,
+                use: [swrGCMiddleware],
+              }}
+            >
+              <ToastContainer
+                className='notify-class'
+                position='bottom-left'
+                theme='dark'
+                closeOnClick={false}
+                transition={Zoom}
+                autoClose={5000}
+                hideProgressBar
+                closeButton={false}
+              />
+              <ContextProviders>{children}</ContextProviders>
+            </SWRConfig>
+          </IntlProvider>
+        </Provider>
+      </ParticleProvider>
+    </AuthCoreContextProvider>
   )
 }

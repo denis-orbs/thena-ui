@@ -1,22 +1,24 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useAccountModal, useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
+import useWallet from '@/hooks/useWallet'
 import { formatAddress } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 
 import { EmphasisButton, PrimaryButton, SecondaryButton } from './Button'
 
 export default function ConnectButton({ className }) {
-  const { open } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
+  const { openAccountModal } = useAccountModal()
+  const { openChainModal } = useChainModal()
   const { account, isWrong } = useWallet()
   const t = useTranslations()
 
   if (isWrong) {
     return (
-      <SecondaryButton className={className} onClick={() => open()}>
+      <SecondaryButton className={className} onClick={() => openChainModal()}>
         {t('Wrong Network')}
       </SecondaryButton>
     )
@@ -24,14 +26,14 @@ export default function ConnectButton({ className }) {
 
   if (account) {
     return (
-      <EmphasisButton className={className} onClick={() => open()}>
+      <EmphasisButton className={className} onClick={() => openAccountModal()}>
         {formatAddress(account)}
       </EmphasisButton>
     )
   }
 
   return (
-    <PrimaryButton className={className} onClick={() => open()}>
+    <PrimaryButton className={className} onClick={() => openConnectModal()}>
       {t('Connect Wallet')}
     </PrimaryButton>
   )

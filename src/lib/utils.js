@@ -16,6 +16,35 @@ export const ZERO_VALUE = new BigNumber(0)
 export const fromWei = (number, decimals = 18) => new BigNumber(number).div(new BigNumber(10).pow(decimals))
 export const toWei = (number, decimals = 18) => new BigNumber(number).times(new BigNumber(10).pow(decimals))
 
+export const addToken = async asset => {
+  const provider = window.stargate?.wallet?.ethereum?.signer?.provider?.provider ?? window.ethereum
+  if (provider) {
+    try {
+      // wasAdded is a boolean. Like any RPC method, an error can be thrown.
+      const wasAdded = await provider.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC-20 tokens, but eventually more!
+          options: {
+            address: asset.address, // The address of the token.
+            symbol: asset.symbol, // A ticker symbol or shorthand, up to 5 characters.
+            decimals: asset.decimals, // The number of decimals in the token.
+            image: asset.logoURI, // A string URL of the token logo.
+          },
+        },
+      })
+
+      if (wasAdded) {
+        console.log('Token Added!')
+      } else {
+        console.log('Your loss!')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
 /** Merge classes with tailwind-merge with clsx full feature */
 export function cn(...inputs) {
   return twMerge(clsx(inputs))
