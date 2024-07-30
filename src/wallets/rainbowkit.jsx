@@ -1,8 +1,16 @@
 'use client'
 
 import { connectorsForWallets, darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit'
-import { coinbaseWallet, injectedWallet, trustWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets'
+import {
+  coinbaseWallet,
+  injectedWallet,
+  metaMaskWallet,
+  rabbyWallet,
+  trustWallet,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import merge from 'lodash/merge'
 import { ChainId } from 'thena-sdk-core'
 import { createConfig, http, WagmiProvider } from 'wagmi'
 import { bsc, opBNB } from 'wagmi/chains'
@@ -27,7 +35,7 @@ const connectors = connectorsForWallets(
   [
     {
       groupName: 'Wallets',
-      wallets: [injectedWallet, coinbaseWallet, walletConnectWallet, trustWallet],
+      wallets: [rabbyWallet, metaMaskWallet, walletConnectWallet, coinbaseWallet, trustWallet, injectedWallet],
     },
     {
       groupName: 'Social login',
@@ -62,21 +70,25 @@ export const wagmiConfig = createConfig({
   ssr: true,
 })
 
+const walletTheme = merge(darkTheme(), {
+  colors: {
+    modalBackground: '#1A121E',
+    accentColor: '#DC00D4',
+    menuItemBackground: '#281B2E',
+  },
+  radii: {
+    modal: '12px',
+    menuButton: '4px',
+  },
+})
+
 const queryClient = new QueryClient()
 
 export function ParticleProvider({ children }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          theme={darkTheme({
-            accentColor: '#DC00D4',
-            accentColorForeground: 'white',
-            borderRadius: 'medium',
-            fontStack: 'system',
-            overlayBlur: 'small',
-          })}
-        >
+        <RainbowKitProvider theme={walletTheme} modalSize='compact'>
           {children}
         </RainbowKitProvider>
       </QueryClientProvider>
