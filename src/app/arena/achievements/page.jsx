@@ -30,7 +30,7 @@ const V4_USER_ACHIEVEMENT = gql`
       achievedAt
       ratioAchieved
     }
-    achievements(orderBy: [groupIndex_ASC, typeIndex_ASC]) {
+    achievements(where: { isHidden_eq: false }, orderBy: [groupIndex_ASC, typeIndex_ASC]) {
       id
       name
       quantityTarget

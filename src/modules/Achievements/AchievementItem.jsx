@@ -5,7 +5,7 @@ import './style.css'
 
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { formatNumberDecimals } from '@/lib/utils'
+import { formatAmount, formatNumberDecimals } from '@/lib/utils'
 
 function AchievementItem({ item, onClick = () => {}, showTooltip = true }) {
   const percent = useMemo(() => Math.ceil((item.currentQuantity / item.achievement.quantityTarget) * 100), [item])
@@ -21,7 +21,10 @@ function AchievementItem({ item, onClick = () => {}, showTooltip = true }) {
         className='size-28'
       />
       <p className='text-center'>
-        {item.currentQuantity ?? 0}/{item.achievement.quantityTarget}
+        {item.currentQuantity ? formatAmount(item.currentQuantity, false, 2) : 0}/
+        {Number(item.achievement.quantityTarget) >= 1000000
+          ? formatAmount(Number(item.achievement.quantityTarget), true)
+          : Number(item.achievement.quantityTarget).toLocaleString()}
       </p>
       <div className='h-[3px] w-full max-w-[120px] overflow-hidden rounded-full bg-[#272845]'>
         <div

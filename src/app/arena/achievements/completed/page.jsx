@@ -15,7 +15,7 @@ import NoAchievement from '../NoAchievement'
 const V4_USER_ACHIEVEMENT_COMPLETED = gql`
   query V4_USER_ACHIEVEMENT_COMPLETED($userId: String!) {
     userAchievements(
-      where: { user: { id_eq: $userId }, achievedAt_isNull: false }
+      where: { user: { id_eq: $userId }, achievedAt_isNull: false, achievement: { isHidden_eq: false } }
       orderBy: achievement_groupIndex_ASC
     ) {
       achievement {
@@ -30,6 +30,7 @@ const V4_USER_ACHIEVEMENT_COMPLETED = gql`
       }
       currentQuantity
       achievedAt
+      ratioAchieved
     }
   }
 `
