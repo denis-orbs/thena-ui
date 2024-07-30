@@ -66,6 +66,26 @@ const getTradeRank = async participantIds => {
   }
 }
 
+const V4_TC_TRADES_DATA = gql`
+  query V4_TC_TRADES_DATA($tcTradeId: String = "") {
+    tcTrades(where: { tradingCompetition: { id_eq: $tcTradeId }, user: {} }) {
+      amountUSD
+      user {
+        id
+      }
+    }
+  }
+`
+
+const getTcTrades = async tcTradeId => {
+  try {
+    const { tcTrades } = await v4Client.request(V4_TC_TRADES_DATA, { tcTradeId })
+    return tcTrades
+  } catch (error) {
+    return { error: true }
+  }
+}
+
 const fetchCompetitionParticipationData = async id => {
   try {
     const competition = await getCompetitionParticipants(id)
@@ -74,15 +94,20 @@ const fetchCompetitionParticipationData = async id => {
       const participantIds = competition.participants.map(participant => participant.participant.id)
 
       const ranks = await getTradeRank(participantIds)
+      const tcTrades = await getTcTrades(id.toLowerCase())
+      const userTradingVolumes = Object.groupBy(tcTrades, ({ user }) => user.id)
 
       competition.participants = competition.participants.map(participant => {
         const address = participant.participant.id.toLowerCase()
         const rank = ranks.find(item => item.id.toLowerCase() === address)
+        const tradingVolume =
+          userTradingVolumes[address]?.reduce((previous, current) => previous + current.amountUSD, 0) ?? 0
 
         return {
           ...participant,
           rank: rank?.rankTCVolume,
           volume: rank?.tradeTCVolume,
+          tradingVolume,
         }
       })
     }
@@ -129,8 +154,15 @@ function ParticipantsPage() {
         justify: 'justify-center items-center',
       },
       {
-        label: 'Total Trading Volume',
+        label: 'Total Trading Volume (All TCs)',
         value: 'volume',
+        width: 'w-[30%]',
+        isDesc: true,
+        justify: 'justify-center items-center',
+      },
+      {
+        label: 'Trading Volume (This TC)',
+        value: 'tradingVolume',
         width: 'w-[30%]',
         isDesc: true,
         justify: 'justify-center items-center',
@@ -177,6 +209,9 @@ function ParticipantsPage() {
           case 'volume':
             res = customSort(a.volume, b.volume, sort.isDesc)
             break
+          case 'tradingVolume':
+            res = customSort(a.tradingVolume, b.tradingVolume, sort.isDesc)
+            break
           default:
             break
         }
@@ -193,6 +228,7 @@ function ParticipantsPage() {
             rank: <Skeleton className='h-[30px] w-full' />,
             user: <Skeleton className='h-[30px] w-full' />,
             volume: <Skeleton className='h-[30px] w-full' />,
+            tradingVolume: <Skeleton className='h-[30px] w-full' />,
           },
         ]
       }
@@ -202,6 +238,11 @@ function ParticipantsPage() {
           <UserProfileCard user={participant.participant} showVerified={participant.participant.isVerified} />
         ),
         volume: <Paragraph>{participant.volume ? `$${formatNumberDecimals(participant.volume, 2)}` : '-'}</Paragraph>,
+        tradingVolume: (
+          <Paragraph>
+            {participant.tradingVolume ? `$${formatNumberDecimals(participant.tradingVolume, 2)}` : '-'}
+          </Paragraph>
+        ),
       }))
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
