@@ -101,7 +101,7 @@ export function Providers({ children }) {
           promptMasterPasswordSettingWhenLogin: PromptSettingType.first,
         },
         wallet: {
-          visible: false,
+          visible: true,
           customStyle: {
             supportChains: [BNBChain, opBNB],
           },

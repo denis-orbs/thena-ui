@@ -1,7 +1,18 @@
 import { AuthType } from '@particle-network/auth-core'
 import { createConnector } from 'wagmi'
 
-import { particleIcon } from './icons'
+import {
+  appleIcon,
+  discordIcon,
+  facebookIcon,
+  githubIcon,
+  googleIcon,
+  linkedinIcon,
+  microsoftIcon,
+  particleIcon,
+  twitchIcon,
+  twitterIcon,
+} from './icons'
 import { particleWagmiWallet } from './particleWagmiWallet'
 
 export const particleWallet = () => ({
@@ -20,7 +31,7 @@ export const particleWallet = () => ({
 export const particleFacebookWallet = () => ({
   id: 'particle_facebook',
   name: 'Facebook',
-  iconUrl: '/images/socials/facebook.png',
+  iconUrl: async () => facebookIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
@@ -33,7 +44,7 @@ export const particleFacebookWallet = () => ({
 export const particleGoogleWallet = () => ({
   id: 'particle_google',
   name: 'Google',
-  iconUrl: '/images/socials/google.png',
+  iconUrl: async () => googleIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
@@ -46,7 +57,7 @@ export const particleGoogleWallet = () => ({
 export const particleAppleWallet = () => ({
   id: 'particle_apple',
   name: 'Apple',
-  iconUrl: '/images/socials/apple.png',
+  iconUrl: async () => appleIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
@@ -59,7 +70,7 @@ export const particleAppleWallet = () => ({
 export const particleDiscordWallet = () => ({
   id: 'particle_discord',
   name: 'Discord',
-  iconUrl: '/images/socials/discord.png',
+  iconUrl: async () => discordIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
@@ -72,7 +83,7 @@ export const particleDiscordWallet = () => ({
 export const particleGithubWallet = () => ({
   id: 'particle_github',
   name: 'Github',
-  iconUrl: '/images/socials/github.png',
+  iconUrl: async () => githubIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
@@ -85,7 +96,7 @@ export const particleGithubWallet = () => ({
 export const particleTwitchWallet = () => ({
   id: 'particle_twitch',
   name: 'Twitch',
-  iconUrl: '/images/socials/twitch.png',
+  iconUrl: async () => twitchIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
@@ -98,7 +109,7 @@ export const particleTwitchWallet = () => ({
 export const particleTwitterWallet = () => ({
   id: 'particle_twitter',
   name: 'Twitter',
-  iconUrl: '/images/socials/twitter.png',
+  iconUrl: async () => twitterIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
@@ -111,7 +122,7 @@ export const particleTwitterWallet = () => ({
 export const particleMicrosoftWallet = () => ({
   id: 'particle_microsoft',
   name: 'Microsoft',
-  iconUrl: '/images/socials/microsoft.png',
+  iconUrl: async () => microsoftIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
@@ -124,7 +135,7 @@ export const particleMicrosoftWallet = () => ({
 export const particleLinkedinWallet = () => ({
   id: 'particle_linkedin',
   name: 'LinkedIn',
-  iconUrl: '/images/socials/linkedin.png',
+  iconUrl: async () => linkedinIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
