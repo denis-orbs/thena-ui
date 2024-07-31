@@ -108,7 +108,7 @@ function ChainSelect({ t }) {
           const element = getElement(item, idx)
           if (item.url) {
             return (
-              <Link href={item.url} target='_blank'>
+              <Link href={item.url} target='_blank' key={`chain-${idx}`}>
                 {element}
               </Link>
             )

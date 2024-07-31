@@ -355,7 +355,7 @@ export default function PoolsPage() {
                       <CustomTooltip id={`tvl-${trending.address}`}>
                         <div className='flex flex-col gap-1'>
                           {trending.gauge.apr_list.map(ele => (
-                            <div className='flex justify-between gap-1'>
+                            <div className='flex justify-between gap-1' key={`${ele.symbol}`}>
                               <span>{ele.symbol}</span>
                               <span>{formatAmount(ele.apr)}%</span>
                             </div>
