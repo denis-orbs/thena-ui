@@ -30,6 +30,7 @@ function Modal({
   fontSizeTitle = '',
   showIconX = true,
   style = {},
+  showHeadModal = true,
   ...rest
 }) {
   const t = useTranslations()
@@ -86,17 +87,23 @@ function Modal({
       autoFocus={false}
       {...rest}
     >
-      <div className='inline-flex w-full items-center justify-between px-4 pb-3 pt-6 lg:px-6'>
-        <div className='flex items-center'>
-          {isBack && (
-            <TextIconButton Icon={ArrowLeftIcon} className='mr-2' onClick={() => onClickHandler && onClickHandler()} />
-          )}
-          <div className={`font-archia  font-semibold text-neutral-50 ${fontSizeTitle || 'text-xl lg:text-3xl'}`}>
-            {isIntl ? title : title && typeof title === 'string' && t(title)}
+      {showHeadModal && (
+        <div className='inline-flex w-full items-center justify-between px-4 pb-3 pt-6 lg:px-6'>
+          <div className='flex items-center'>
+            {isBack && (
+              <TextIconButton
+                Icon={ArrowLeftIcon}
+                className='mr-2'
+                onClick={() => onClickHandler && onClickHandler()}
+              />
+            )}
+            <div className={`font-archia  font-semibold text-neutral-50 ${fontSizeTitle || 'text-xl lg:text-3xl'}`}>
+              {isIntl ? title : title && typeof title === 'string' && t(title)}
+            </div>
           </div>
+          {showIconX && <TextIconButton Icon={XIcon} onClick={closeModal} />}
         </div>
-        {showIconX && <TextIconButton Icon={XIcon} onClick={closeModal} />}
-      </div>
+      )}
       {children}
     </ReactModal>
   )
