@@ -25,10 +25,10 @@ const V4_USER_ACHIEVEMENT = gql`
         type
         icon
         description
+        ratioAchieved
       }
       currentQuantity
       achievedAt
-      ratioAchieved
     }
     achievements(where: { isHidden_eq: false }, orderBy: [groupIndex_ASC, typeIndex_ASC]) {
       id
@@ -39,6 +39,7 @@ const V4_USER_ACHIEVEMENT = gql`
       type
       icon
       description
+      ratioAchieved
     }
   }
 `
@@ -62,14 +63,12 @@ const fetchAchievements = async userId => {
           achievement,
           currentQuantity: userAchievement.currentQuantity,
           achievedAt: userAchievement.achievedAt,
-          ratioAchieved: userAchievement.ratioAchieved ?? 0,
         }
       }
       return {
         achievement,
         currentQuantity: 0,
         achievedAt: null,
-        ratioAchieved: 0,
       }
     })
 

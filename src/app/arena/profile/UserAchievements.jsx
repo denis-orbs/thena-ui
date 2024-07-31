@@ -28,7 +28,6 @@ const V4_USER_ACHIEVEMENT_COMPLETED = gql`
       }
       currentQuantity
       achievedAt
-      ratioAchieved
     }
   }
 `

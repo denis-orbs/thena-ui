@@ -19,7 +19,7 @@ function NoAchievement() {
         <div className='flex w-72 flex-col items-center gap-3 lg:w-[416px]'>
           <h2>{t('No Achievement found')}</h2>
 
-          <Paragraph className='mt-3 text-center'>{t('User Have Not Achievement Yet')}</Paragraph>
+          <Paragraph className='mt-3 text-center'>{t('No Achievement found')}</Paragraph>
         </div>
       </div>
     </div>

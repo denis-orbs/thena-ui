@@ -41,7 +41,7 @@ function AchievementItem({ item, onClick = () => {}, showTooltip = true }) {
           id={item.achievement.id}
           place='top'
         >
-          {formatNumberDecimals(item.ratioAchieved * 100, 4)}% users completed this achievement.
+          {formatNumberDecimals((item.achievement.ratioAchieved ?? 0) * 100, 4)}% users completed this achievement.
         </CustomTooltip>
       )}
     </div>

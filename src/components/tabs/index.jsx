@@ -1,15 +1,18 @@
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import { SizeTypes } from '@/constant/type'
 import { cn } from '@/lib/utils'
 
 function TabItem({ className, item, size, disabled }) {
   const t = useTranslations()
+  const searchParams = useSearchParams()
+  const queryString = useMemo(() => (searchParams.get('q') ? `?q=${searchParams.get('q')}` : ''), [searchParams])
 
   return item.isLink ? (
-    <Link href={item.href}>
+    <Link href={item.href + queryString}>
       <div
         type='button'
         className={cn(

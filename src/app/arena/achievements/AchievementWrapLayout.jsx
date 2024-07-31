@@ -27,6 +27,12 @@ export function AchievementWrapLayout({ children }) {
       isLink: true,
       href: '/arena/achievements/completed',
     },
+    {
+      label: t('Not Completed'),
+      active: pathname === '/arena/achievements/not-completed',
+      isLink: true,
+      href: '/arena/achievements/not-completed',
+    },
   ]
 
   useEffect(() => {

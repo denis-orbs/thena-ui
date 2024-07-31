@@ -27,10 +27,10 @@ const V4_USER_ACHIEVEMENT_COMPLETED = gql`
         type
         icon
         description
+        ratioAchieved
       }
       currentQuantity
       achievedAt
-      ratioAchieved
     }
   }
 `
@@ -55,19 +55,12 @@ function AchievementCompletedPage() {
 
   const searchedData = useMemo(() => {
     const search = searchParams.get('q')
-    if (search && userAchievementsCompleted && Object.keys(userAchievementsCompleted)) {
-      const clone = {}
-      Object.keys(userAchievementsCompleted).forEach(key => {
-        const items = userAchievementsCompleted[key].filter(achieve =>
-          achieve.achievement.name.toLowerCase().includes(search.toLowerCase()),
-        )
-        if (items.length) {
-          clone[key] = items
-        }
-      })
-      return clone
+    if (search && userAchievementsCompleted && userAchievementsCompleted?.length) {
+      return userAchievementsCompleted.filter(achievement =>
+        achievement.achievement.name.toLowerCase().includes(search.toLowerCase()),
+      )
     }
-    return userAchievementsCompleted ?? {}
+    return userAchievementsCompleted ?? []
   }, [searchParams, userAchievementsCompleted])
 
   if (isLoading) {
