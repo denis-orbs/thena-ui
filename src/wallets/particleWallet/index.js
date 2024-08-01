@@ -4,12 +4,14 @@ import { createConnector } from 'wagmi'
 import {
   appleIcon,
   discordIcon,
+  emailIcon,
   facebookIcon,
   githubIcon,
   googleIcon,
   linkedinIcon,
   microsoftIcon,
   particleIcon,
+  phoneIcon,
   twitchIcon,
   twitterIcon,
 } from './icons'
@@ -19,6 +21,32 @@ export const particleWallet = () => ({
   id: 'particle',
   name: 'Particle Wallet',
   iconUrl: async () => particleIcon,
+  iconBackground: '#fff',
+  installed: true,
+  createConnector: walletDetails =>
+    createConnector(config => ({
+      ...particleWagmiWallet()(config),
+      ...walletDetails,
+    })),
+})
+
+export const particleEmailWallet = () => ({
+  id: 'particle_email',
+  name: 'Email',
+  iconUrl: async () => emailIcon,
+  iconBackground: '#fff',
+  installed: true,
+  createConnector: walletDetails =>
+    createConnector(config => ({
+      ...particleWagmiWallet()(config),
+      ...walletDetails,
+    })),
+})
+
+export const particlePhoneWallet = () => ({
+  id: 'particle_phone',
+  name: 'Phone',
+  iconUrl: async () => phoneIcon,
   iconBackground: '#fff',
   installed: true,
   createConnector: walletDetails =>
@@ -134,7 +162,7 @@ export const particleMicrosoftWallet = () => ({
 
 export const particleLinkedinWallet = () => ({
   id: 'particle_linkedin',
-  name: 'LinkedIn',
+  name: 'Linkedin',
   iconUrl: async () => linkedinIcon,
   iconBackground: '#fff',
   installed: true,

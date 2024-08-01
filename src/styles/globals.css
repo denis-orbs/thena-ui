@@ -272,3 +272,13 @@ input[type='number'] {
   border: 2px solid #b000aa;
   box-shadow: unset !important;
 }
+
+.particle-pwe-btn {
+  display: none;
+}
+
+.particle-pwe-iframe-content {
+  top: 85px !important;
+  right: 40px !important;
+  left: auto !important;
+}

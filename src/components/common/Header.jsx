@@ -615,7 +615,7 @@ function Header() {
                 <OutlinedButton onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
                   {t('Enter ALPHA')}
                 </OutlinedButton>
-                <ConnectButton />
+                <ConnectButton className='w-full' />
               </ModalFooter>
             </>
           )}
