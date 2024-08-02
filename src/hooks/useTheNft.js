@@ -229,6 +229,69 @@ export const useUnstakeNft = () => {
   return { onUnstake: handleUnstake, pending }
 }
 
+export const useTransferNft = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const handleTransfer = useCallback(
+    async (needToUnstakeAndTransfer, transferingId, fromAddress, toAddress, callback) => {
+      const key = uuidv4()
+      const unstakeuuid = uuidv4()
+      const transferuuid = uuidv4()
+
+      startTxn({
+        key,
+        title: needToUnstakeAndTransfer ? t('Unstake and Transfer') : t('Transfer'),
+        transactions: {
+          ...(needToUnstakeAndTransfer && {
+            [unstakeuuid]: {
+              desc: t('Unstake theNFTs'),
+              status: TXN_STATUS.START,
+            },
+          }),
+          [transferuuid]: {
+            desc: t('Transfer theNFTs'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      if (needToUnstakeAndTransfer) {
+        const nftStakingContract = getNftStakingContract()
+        const isSuccessUnstake = await writeTxn(key, unstakeuuid, nftStakingContract, 'withdraw', [transferingId])
+        if (!isSuccessUnstake) {
+          setPending(false)
+          return false
+        }
+      }
+
+      const theNFTContract = getTheNftContract()
+      const isSuccess = await writeTxn(key, transferuuid, theNFTContract, 'transferFrom', [
+        fromAddress,
+        toAddress,
+        transferingId,
+      ])
+      if (!isSuccess) {
+        setPending(false)
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Transfer Successful',
+      })
+      setPending(false)
+      callback()
+    },
+    [startTxn, endTxn, writeTxn, t],
+  )
+
+  return { handleTransfer, pending }
+}
+
 export const useNftFeesClaim = () => {
   const [pending, setPending] = useState(false)
   const { startTxn, endTxn, writeTxn } = useTxn()
