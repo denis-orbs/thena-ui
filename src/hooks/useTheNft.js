@@ -239,6 +239,7 @@ export const useTransferNft = () => {
       const key = uuidv4()
       const unstakeuuid = uuidv4()
       const transferuuid = uuidv4()
+      const nftId = Number(transferingId)
 
       startTxn({
         key,
@@ -261,7 +262,10 @@ export const useTransferNft = () => {
       setPending(true)
       if (needToUnstakeAndTransfer) {
         const nftStakingContract = getNftStakingContract()
-        const isSuccessUnstake = await writeTxn(key, unstakeuuid, nftStakingContract, 'withdraw', [transferingId])
+        const transferingIdToArray = [nftId]
+        const isSuccessUnstake = await writeTxn(key, unstakeuuid, nftStakingContract, 'withdraw', [
+          transferingIdToArray,
+        ])
         if (!isSuccessUnstake) {
           setPending(false)
           return false
@@ -272,7 +276,7 @@ export const useTransferNft = () => {
       const isSuccess = await writeTxn(key, transferuuid, theNFTContract, 'transferFrom', [
         fromAddress,
         toAddress,
-        transferingId,
+        nftId,
       ])
       if (!isSuccess) {
         setPending(false)
