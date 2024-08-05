@@ -501,5 +501,8 @@
   "Claim tooltip": "You can only claim after 2 AM UTC due to slow synchronization.",
   "Pool Special tooltip": "Liquidity providers in this pool are eligible for The Cosmic Adventure Challenge Season 3",
   "Zapper": "Zapper",
-  "Bridge": "Bridge"
+  "Bridge": "Bridge",
+  "Unstake and Transfer": "解除质押和转移",
+  "Transfer theNFTs": "转移theNFTs",
+  "To Address": "转移到地址"
 }
