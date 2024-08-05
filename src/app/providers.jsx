@@ -102,8 +102,29 @@ export function Providers({ children }) {
         },
         wallet: {
           visible: true,
+          themeType: 'dark',
           customStyle: {
             supportChains: [BNBChain, opBNB],
+            dark: {
+              colorAccent: 'rgba(220,0,212,1)',
+              colorPrimary: 'rgba(26,18,30,1)',
+              colorOnPrimary: 'rgba(209,209,224,1)',
+              primaryButtonBackgroundColors: ['rgba(220,0,212,1)', 'rgba(220,0,212,1)'],
+              primaryIconButtonBackgroundColors: ['rgba(220,0,212,1)', 'rgba(220,0,212,1)'],
+              primaryButtonTextColor: 'rgba(255,255,255,1)',
+              cancelButtonBackgroundColor: 'rgba(102,102,102,1)',
+              backgroundColors: [
+                'rgba(13,9,15,1)',
+                [
+                  ['#e6b1f766', '#e6b1f700'],
+                  ['#7dd5f94d', 'rgba(96,181,216,0)'],
+                ],
+              ],
+              messageColors: ['rgba(249,119,102,1)', 'rgba(249,119,102,1)'],
+              borderGlowColors: ['#7bd5f940', '#323233'],
+              modalMaskBackgroundColor: '#141430b3',
+              primaryTextColor: 'rgba(167,161,169,1)',
+            },
           },
         },
       }}
