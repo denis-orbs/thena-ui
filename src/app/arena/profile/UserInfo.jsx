@@ -14,15 +14,12 @@ import Box from '@/components/box'
 import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import Contracts from '@/constant/contracts'
-import { useAssets } from '@/context/assetsContext'
 import dayjs from '@/lib/arenaDayjs'
 import { successToast } from '@/lib/notify'
-import { cn, formatAddress, formatAmount, fromWei } from '@/lib/utils'
+import { cn, formatAddress, formatAmount } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
-import { useChainSettings } from '@/state/settings/hooks'
 import { CheckIcon, CopyIcon, ExternalIcon, InfoIcon } from '@/svgs'
 
 import ThenaIdModal from './ThenaIdModal'
@@ -33,16 +30,13 @@ const tarea_regex = /^(http|https)/
 export function UserInfo({ userInfo, following, followers }) {
   const t = useTranslations()
   const { account } = useWallet()
-  const assets = useAssets()
   const isOwnProfile = useMemo(() => userInfo.id.toLowerCase() === account?.toLowerCase(), [account, userInfo.id])
-  const { networkId } = useChainSettings()
   const { open: openConnectWallet } = useWeb3Modal()
   const params = useParams()
 
   const [thenaModalTab, setThenaModalTab] = useState()
   const [copied, setCopied] = useState(false)
 
-  const theAsset = assets.find(asset => asset.address.toLowerCase() === Contracts.THE[networkId].toLowerCase())
   const hasThenaId = useMemo(() => userInfo.usernameNfts.length, [userInfo.usernameNfts.length])
 
   const followingCount = useMemo(() => following?.length ?? '-', [following?.length])
@@ -84,13 +78,6 @@ export function UserInfo({ userInfo, following, followers }) {
       ? `${page === 1 ? '' : `/${page}`}?sort=tradeTCVolume&rank=${userInfo.rank}&isDesc=true`
       : ''
   }, [userInfo.rank])
-
-  const rankToPageRankingBalance = useMemo(() => {
-    const page = Math.ceil(userInfo.rankBalance / 50)
-    return userInfo.rankBalance !== '-'
-      ? `${page === 1 ? '' : `/${page}`}?sort=balance&rank=${userInfo.rankBalance}&isDesc=true`
-      : ''
-  }, [userInfo.rankBalance])
 
   return (
     <>
@@ -196,12 +183,10 @@ export function UserInfo({ userInfo, following, followers }) {
               <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
             </Box>
           </Link>
-          <Link href={`/arena/rankings/users${rankToPageRankingBalance}`}>
+          <Link href={`/arena/rankings/users${rankToPageRanking}`}>
             <Box className='flex flex-col gap-2 bg-neutral-800'>
-              <TextHeading className='text-lg'>
-                {`${formatAmount(fromWei(userInfo.balance, theAsset?.decimal))} THE`}
-              </TextHeading>
-              <TextSubHeading className='text-sm'>{t('Balance')}</TextSubHeading>
+              <TextHeading className='text-lg'>{`$${formatAmount(userInfo.tradeTCVolume)}`}</TextHeading>
+              <TextSubHeading className='text-sm'>{t('Total Volume in TCs')}</TextSubHeading>
             </Box>
           </Link>
           <Link href={`/arena/profile${params?.address ? `/${params?.address}` : ''}/followers`}>
