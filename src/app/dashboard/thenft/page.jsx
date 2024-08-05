@@ -236,6 +236,7 @@ export default function TheNftPage() {
         popup={isManageOpen}
         setPopup={setIsManageOpen}
         mutate={mutate}
+        account={account}
       />
     </div>
   )
