@@ -19,7 +19,7 @@ import { particleWagmiWallet } from './particleWagmiWallet'
 
 export const particleWallet = () => ({
   id: 'particle',
-  name: 'Particle Wallet',
+  name: 'Others',
   iconUrl: async () => particleIcon,
   iconBackground: '#fff',
   installed: true,

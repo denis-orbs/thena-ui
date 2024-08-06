@@ -75,6 +75,7 @@ export function Providers({ children }) {
           modalBorderRadius: '12px',
           cardBorderRadius: '12px',
           fontFamily: 'Inter',
+          zIndex: 2147483647,
           theme: {
             dark: {
               primaryBtnColor: '#FCE6FB',
