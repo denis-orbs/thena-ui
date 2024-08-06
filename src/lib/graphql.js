@@ -9,9 +9,9 @@ export const v1GraphUrl = {
 
 export const fusionGraphUrl = {
   // eslint-disable-next-line max-len
-  // [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt`,
+  [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt`,
   // eslint-disable-next-line max-len
-  [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/deployments/id/QmXJF8ptng63aan78aoARrgAv6XEHPVVWKqNzg7im19NaM`,
+  // [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/deployments/id/QmXJF8ptng63aan78aoARrgAv6XEHPVVWKqNzg7im19NaM`,
   // [ChainId.BSC]: 'https://api.studio.thegraph.com/query/53404/thena-bsc-fusion/version/latest',
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion',
