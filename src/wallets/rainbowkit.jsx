@@ -17,13 +17,13 @@ import { bsc, opBNB } from 'wagmi/chains'
 
 import { getRpcUrl } from '@/lib/utils'
 
-import { particleAppleWallet, particleGoogleWallet, particleWallet } from './particleWallet'
+import { particleAppleWallet, particleGoogleWallet, particleTwitterWallet, particleWallet } from './particleWallet'
 
 const connectors = connectorsForWallets(
   [
     {
       groupName: 'Social login',
-      wallets: [particleGoogleWallet, particleAppleWallet, particleWallet],
+      wallets: [particleGoogleWallet, particleAppleWallet, particleTwitterWallet, particleWallet],
     },
     {
       groupName: 'Wallets',
