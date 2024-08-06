@@ -631,7 +631,7 @@ function Sidebar({ competition, eventType }) {
           <Box className='flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
             {headingAndText.text && <TextHeading className='text-xl'>{headingAndText.text}</TextHeading>}
             {headingAndText.subText && <TextHeading className='text-base'>{headingAndText.subText}</TextHeading>}
-            {deposit !== 0 ? (
+            {!isInvalidAmount(deposit) ? (
               <>
                 <TextHeading className='text-base'>
                   {t('Your Deposit')} ={' '}
