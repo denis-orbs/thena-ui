@@ -102,7 +102,7 @@ export function JoinModal({ competition, open, onClose }) {
   }, [competition, inputStartingBalance, joinTC, joinTCPerpetual, market, name, onClose, push, winningToken?.decimals])
 
   const message = useMemo(() => {
-    if (isInvalidAmount(entryFeeUpdate)) {
+    if (entryFeeUpdate.every(isInvalidAmount)) {
       if (!isInvalidAmount(startingBalance)) {
         return t('Pay Deposit To Join Message', {
           depositAmount: formatAmount(fromWei(startingBalance, winningToken.decimals)),
