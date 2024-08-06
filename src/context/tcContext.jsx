@@ -108,6 +108,13 @@ function TCContextProvider({ children }) {
       setPairLists(res7)
     }
 
+    const updatePrizeTokens = async () => {
+      const tcPerpetualManagerContract = getTCPerpetualManagerContract()
+      const res = await readCall(tcPerpetualManagerContract, 'prizeTokens', [])
+      const prizeAssets = assets.filter(ele => res.map(sub => sub.toLowerCase()).includes(ele.address))
+      setPrizeTokens(prizeAssets)
+    }
+
     if (account && assets.length > 0) {
       if (tradingTokens.length === 0) {
         fetchTotalInfo()
@@ -131,6 +138,7 @@ function TCContextProvider({ children }) {
           )
           setProtocolFeeToken(feeTokenPerpetual)
         }
+        updatePrizeTokens()
       }
     } else if (!account) {
       checkForGuest()
