@@ -49,7 +49,6 @@ function TokenModal({
       searchText
         ? baseAssets.filter(
             asset =>
-              asset.name.toLowerCase().includes(searchText.toLowerCase()) ||
               asset.symbol.toLowerCase().includes(searchText.toLowerCase()) ||
               asset.address.toLowerCase().includes(searchText.toLowerCase()),
           )
