@@ -8,9 +8,10 @@ import { useCallback, useMemo, useState } from 'react'
 import { Alert } from '@/components/alert'
 import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import Input from '@/components/input'
+import BalanceInput from '@/components/input/BalanceInput'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
 import { useJoinTCPerpetual } from '@/hooks/useTcPerpetualContract'
 import { useJoinTC } from '@/hooks/useTcSpotContract'
@@ -234,28 +235,11 @@ export function JoinModal({ competition, open, onClose }) {
         {isInvalidAmount(startingBalance) && winningToken && market === TC_MARKET_TYPES.SPOT && (
           <div className='mt-3 md:mt-5'>
             <TextHeading className='text-lg'>{t('Deposit')}</TextHeading>
-            <Input
-              value={inputStartingBalance}
-              type='number'
-              className='mt-2 w-full'
-              onWheel={e => e.target.blur()}
-              onChange={e => {
-                setInputStartingBalance(e.target.value)
-              }}
-              classNames={{
-                input: showAlertMinimum ? 'border-error-500' : undefined,
-              }}
-              TrailingButton={
-                winningToken ? (
-                  <div className='absolute right-4 flex items-center space-x-1.5'>
-                    <TextSubHeading>
-                      ${formatAmount(inputStartingBalance * winningToken.price, winningToken.decimals)}
-                    </TextSubHeading>
-                    <Image alt='' src={winningToken.logoURI} width={20} height={20} />
-                    <span className='font-figtree text-lg leading-[22px] text-white'>{winningToken.symbol}</span>
-                  </div>
-                ) : undefined
-              }
+            <BalanceInput
+              autoFocus
+              asset={competition?.competitionRules?.winningToken}
+              amount={inputStartingBalance}
+              onAmountChange={setInputStartingBalance}
             />
             {showAlertMinimum && (
               <Paragraph className='ml-1 mt-1 block text-sm text-error-500'>
