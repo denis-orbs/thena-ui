@@ -26,8 +26,8 @@ import {
   useRandomThenaId,
   useUSDTCostPerToken,
 } from '@/hooks/useThenaIdContract'
+import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import ThenaIdInput from '../profile/ThenaIdInput'

@@ -6,11 +6,11 @@ import { maxUint256 } from 'viem'
 
 import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getOldTcSpotContract, getTcSpotContract } from '@/lib/contracts'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei, isInvalidAmount } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 export const useTCContractInfor = (address, eventType, participantCount, type = TC_MARKET_TYPES.SPOT) => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { gql } from 'graphql-request'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -17,11 +17,11 @@ import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
+import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { Countdown } from '@/modules/CountDown'
 import DeallocateModal from '@/modules/TradingCompetition/DeallocateModal'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
@@ -72,7 +72,7 @@ function Sidebar({ competition, eventType }) {
 
   const intervalId = useRef(undefined)
 
-  const { open } = useWeb3Modal()
+  const { open: openConnectModal } = useConnectModal()
   const { account } = useWallet()
   const { withdrawDeposit } = useWithdrawDepositTC()
   const { withdrawTCPerp } = useWithdrawToTCPerp()
@@ -541,7 +541,7 @@ function Sidebar({ competition, eventType }) {
           disabled={isFull}
           onClick={() => {
             if (!account) {
-              open()
+              openConnectModal()
             } else {
               setShowJoinModal(true)
             }
@@ -581,7 +581,7 @@ function Sidebar({ competition, eventType }) {
     isEndedRegistration,
     isFull,
     account,
-    open,
+    openConnectModal,
   ])
 
   useEffect(() => {

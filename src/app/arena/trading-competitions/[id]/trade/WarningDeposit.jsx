@@ -5,8 +5,8 @@ import useSWR from 'swr'
 
 import { Paragraph } from '@/components/typography'
 import { usePairsContract } from '@/context/pairsContractContext'
+import useWallet from '@/hooks/useWallet'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 
 const COEFFICIENT = 3
 

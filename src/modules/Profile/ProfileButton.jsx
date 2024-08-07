@@ -8,9 +8,9 @@ import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Spinner from '@/components/spinner'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
+import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
-import useWallet from '@/lib/wallets/useWallet'
 import { CheckIcon, PublicIcon } from '@/svgs'
 
 const V4_USER_INFO = gql`

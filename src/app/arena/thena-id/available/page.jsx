@@ -15,9 +15,9 @@ import { Paragraph } from '@/components/typography'
 import { LIST_CATEGORY } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
+import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 
 import ThenaIdModal from '../../profile/ThenaIdModal'
 

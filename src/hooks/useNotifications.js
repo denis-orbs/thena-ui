@@ -1,10 +1,10 @@
 import { gql, GraphQLWebSocketClient } from 'graphql-request'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
+import useWallet from '@/hooks/useWallet'
 import { v4Client, v4GraphWsUrl } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
-import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
-import useWallet from '@/lib/wallets/useWallet'
 
 // follower of current user
 export const V4_NOTIFICATIONS = gql`

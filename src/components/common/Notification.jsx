@@ -9,8 +9,8 @@ import 'dayjs/locale/zh'
 
 import { useTitleNotiContext } from '@/context/titleNotiContext'
 import { fetchUserNotifcations, useMarkNotificationRead, useNotificationsSubscription } from '@/hooks/useNotifications'
+import useWallet from '@/hooks/useWallet'
 import { cn } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { BellIcon } from '@/svgs'
 
 import NotificationItem from './NotificationItem'

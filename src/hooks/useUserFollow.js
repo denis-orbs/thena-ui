@@ -4,11 +4,11 @@ import { useCallback } from 'react'
 import useSWR, { mutate as mutateSWR } from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
+import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
+import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { errorToast, successToast } from '@/lib/notify'
-import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
-import useWallet from '@/lib/wallets/useWallet'
 
 // follower of current user
 export const V4_FOLLOWERS = gql`

@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getTCContract, getTCPerpetualManagerContract } from '@/lib/contracts'
-import useWallet from '@/lib/wallets/useWallet'
 
 import { useAssets } from './assetsContext'
 

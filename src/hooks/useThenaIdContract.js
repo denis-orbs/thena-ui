@@ -8,11 +8,11 @@ import { maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import { arabicAbi, characterSetAbi, emojiClubAbi, emojiNumeralAbi, hindiNumeralAbi, numeralAbi } from '@/constant/abi'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getContract, getERC20Contract, getThenaIDContract } from '@/lib/contracts'
 import { v4Client } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 const NORMAL_TRAITS = ['ARABIC_NUMERALS', 'CHARACTER_SET', 'EMOJI_CLUB', 'EMOJI_NUMERALS', 'HINDI_NUMERALS', 'NUMERALS']

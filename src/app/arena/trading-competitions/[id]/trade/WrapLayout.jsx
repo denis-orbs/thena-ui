@@ -12,10 +12,10 @@ import { TradingCompetitionContextProvider } from '@/context/tradingCompetitionC
 import { useTradeCompetitionData } from '@/hooks/trade/useTradeCompetitionData'
 import { useEventType } from '@/hooks/useEventType'
 import { useTCContractInfor, useTradeData } from '@/hooks/useTcSpotContract'
+import useWallet from '@/hooks/useWallet'
 import { errorToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { XIcon } from '@/svgs'
 
 // import DepositModal from './DepositModal'

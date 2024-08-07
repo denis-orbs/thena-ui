@@ -1,4 +1,4 @@
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -9,10 +9,10 @@ import { TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
+import useWallet from '@/hooks/useWallet'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { isInvalidAmount } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 
 import DeallocateModal from './DeallocateModal'
 import { JoinModal } from './JoinModal'
@@ -21,7 +21,7 @@ export function TCButton({ eventType, competition, timestamp }) {
   const tcId = useMemo(() => competition?.id?.split('-')?.[1], [competition?.id])
 
   const t = useTranslations()
-  const { open } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
   const { account } = useWallet()
   const [showJoinModal, setShowJoinModal] = useState(false)
   const { claimReward } = useClaimTC()
@@ -242,7 +242,7 @@ export function TCButton({ eventType, competition, timestamp }) {
           className='w-full text-wrap'
           onClick={() => {
             if (!account) {
-              open()
+              openConnectModal()
             } else {
               setShowJoinModal(true)
             }

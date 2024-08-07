@@ -6,8 +6,8 @@ import React, { useMemo } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
+import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
-import useWallet from '@/lib/wallets/useWallet'
 import { NotCompleted } from '@/modules/Achievements/NotCompleted'
 
 import NoAchievement from '../NoAchievement'

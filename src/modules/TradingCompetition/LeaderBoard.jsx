@@ -12,9 +12,9 @@ import { TC_MARKET_TYPES } from '@/constant'
 import { useTradingCompetition } from '@/context/tradingCompetitionContext'
 import { useEventType } from '@/hooks/useEventType'
 import { useTradeData } from '@/hooks/useTcSpotContract'
+import useWallet from '@/hooks/useWallet'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { customSort, formatAmount, formatNumberDecimals, fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 
 export function LeaderBoard({ competition }) {
   const { eventType } = useEventType(competition?.timestamp)

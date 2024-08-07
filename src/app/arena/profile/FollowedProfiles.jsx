@@ -12,9 +12,9 @@ import SearchInput from '@/components/input/SearchInput'
 import Skeleton from '@/components/skeleton'
 import { TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
+import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
 import { sliceAddress } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 
 import { FollowedProfileItem } from './FollowedProfileItem'
 
@@ -85,7 +85,7 @@ export function FollowedProfiles({ followingUsers, isFollower = false, maxShow, 
   return (
     <div className='space-y-4'>
       <div className='flex flex-col items-start justify-between lg:flex-row lg:items-center'>
-        <div className='flex flex-2 items-center gap-2'>
+        <div className='flex flex-1 items-center gap-2'>
           <TextHeading className='text-xl'>
             {t(isFollower ? 'Followers of' : profilePage ? 'Followed Profiles' : 'Following of', {
               user: userInfo?.username || sliceAddress(userInfo?.id),

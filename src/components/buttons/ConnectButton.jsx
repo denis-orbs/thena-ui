@@ -8,10 +8,10 @@ import { useCallback, useEffect } from 'react'
 import useSWR from 'swr'
 
 import { fetchUserInfo } from '@/context/userInfoContext'
+import { useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
 import { getFromLocalStorage } from '@/lib/helper'
 import { formatAddress } from '@/lib/utils'
-import { useSignWallet } from '@/lib/wallets/useSignWallet'
 
 import { EmphasisButton, PrimaryButton, SecondaryButton } from './Button'
 import NextImage from '../image/NextImage'

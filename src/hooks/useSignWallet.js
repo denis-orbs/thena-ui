@@ -2,12 +2,12 @@ import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 import { useSignMessage } from 'wagmi'
 
+import { v4Client } from '@/lib/graphql'
+import { getFromLocalStorage } from '@/lib/helper'
 import { errorToast } from '@/lib/notify'
+import { sleep } from '@/lib/utils'
 
 import useWallet from './useWallet'
-import { v4Client } from '../graphql'
-import { getFromLocalStorage } from '../helper'
-import { sleep } from '../utils'
 
 const V4_LOGIN = gql`
   mutation V4_MUTATION_LOGIN($signature: String!, $address: String!) {

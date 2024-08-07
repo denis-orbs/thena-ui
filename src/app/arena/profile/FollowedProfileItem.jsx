@@ -12,8 +12,8 @@ import CircleImage from '@/components/image/CircleImage'
 import Tag from '@/components/tag'
 import { TextHeading } from '@/components/typography'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
+import useWallet from '@/hooks/useWallet'
 import { cn, sliceAddress } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 
 export function FollowedProfileItem({ user }) {

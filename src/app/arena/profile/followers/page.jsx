@@ -3,7 +3,7 @@
 import React from 'react'
 
 import Loading from '@/app/loading'
-import useWallet from '@/lib/wallets/useWallet'
+import useWallet from '@/hooks/useWallet'
 
 import FollowersPage from '../FollowersPage'
 

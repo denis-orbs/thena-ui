@@ -30,10 +30,10 @@ import {
   useTCSpotOdosSwap,
   useTCSpotOOESwap,
 } from '@/hooks/useSwap'
+import useWallet from '@/hooks/useWallet'
 import { tryParseAmount } from '@/lib/fusion'
 import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
 import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { liquidityHub } from '@/modules/LiquidityHub'
 import { LiquidityHubRouting } from '@/modules/LiquidityHub/components'
 import SwapChart from '@/modules/SwapChart'

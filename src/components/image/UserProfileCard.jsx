@@ -5,8 +5,8 @@ import React, { useCallback, useMemo, useState } from 'react'
 
 import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
+import useWallet from '@/hooks/useWallet'
 import { cn, sliceAddress } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 
 import CircleImage from './CircleImage'

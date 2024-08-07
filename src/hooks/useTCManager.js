@@ -8,10 +8,10 @@ import { maxUint256 } from 'viem'
 import { DEPOSIT_TYPE, TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { tcManagerAbi } from '@/constant/abi/core'
 import { useTC } from '@/context/tcContext'
+import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getTCContract, getTCPerpetualManagerContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 export const useCreateTC = () => {

@@ -6,8 +6,8 @@ import Input from '@/components/input'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
 import { useTransferThenaId } from '@/hooks/useThenaIdContract'
+import useWallet from '@/hooks/useWallet'
 import { successToast } from '@/lib/notify'
-import useWallet from '@/lib/wallets/useWallet'
 
 function TransferModal({ isOpen, onClose, tokenId, mutate }) {
   const t = useTranslations()

@@ -2,9 +2,9 @@ import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 import FileResizer from 'react-image-file-resizer'
 
+import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
-import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
 import { useUpdateProfile } from './useProfile'
 

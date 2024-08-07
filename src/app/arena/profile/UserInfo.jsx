@@ -1,6 +1,6 @@
 'use client'
 
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -14,10 +14,10 @@ import Box from '@/components/box'
 import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import useWallet from '@/hooks/useWallet'
 import dayjs from '@/lib/arenaDayjs'
 import { successToast } from '@/lib/notify'
 import { cn, formatAddress, formatAmount } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { CheckIcon, CopyIcon, ExternalIcon, InfoIcon } from '@/svgs'
@@ -31,7 +31,7 @@ export function UserInfo({ userInfo, following, followers }) {
   const t = useTranslations()
   const { account } = useWallet()
   const isOwnProfile = useMemo(() => userInfo.id.toLowerCase() === account?.toLowerCase(), [account, userInfo.id])
-  const { open: openConnectWallet } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
   const params = useParams()
 
   const [thenaModalTab, setThenaModalTab] = useState()
@@ -46,11 +46,11 @@ export function UserInfo({ userInfo, following, followers }) {
   const handleClickThenaButton = useCallback(
     (tab = 'get') => {
       if (!account) {
-        openConnectWallet()
+        openConnectModal()
       }
       setThenaModalTab(tab)
     },
-    [account, openConnectWallet],
+    [account, openConnectModal],
   )
 
   const onCopy = useCallback(

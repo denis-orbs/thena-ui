@@ -16,9 +16,9 @@ import Input from '@/components/input'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useUpdateProfile } from '@/hooks/useProfile'
+import useWallet from '@/hooks/useWallet'
 import { errorToast } from '@/lib/notify'
 import { isValidHttpUrl } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { ArrowLeftIcon, Verified } from '@/svgs'
 
 import { SelectAvatar } from './SelectAvatar'
@@ -155,7 +155,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
             <TextHeading className='text-xl'>{t('Change Name Color')}</TextHeading>
             <TextSubHeading className='text-base'>{t('Pick A Color For Your Name')}</TextSubHeading>
           </div>
-          <div className='flex flex-2 flex-col items-center gap-3 lg:flex-row'>
+          <div className='flex flex-col items-center gap-3 lg:flex-row'>
             <div>
               <TextSubHeading className='mb-1 block'>
                 {t(!showCustomColor ? 'Basic Color' : 'Custom Color')}:
@@ -196,7 +196,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
               <TextHeading className='text-xl'>{t('Edit Checkmark Image')}</TextHeading>
               <TextSubHeading className='text-base'>{t('Edit What Your Checkmark Looks Like')}</TextSubHeading>
             </div>
-            <div className='flex flex-2 items-center gap-3'>
+            <div className='flex items-center gap-3'>
               {userInfo?.isVerified ? (
                 dataUpdate?.checkMarkIcon ? (
                   <Image
@@ -328,7 +328,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
             </TextSubHeading>
           </div>
           {/* eslint-disable-next-line prettier/prettier */}
-          <div className='grid flex-2 grid-cols-2 gap-3 lg:grid-cols-3 2xl:grid-cols-4'>
+          <div className='grid grid-cols-2 gap-3 lg:grid-cols-3 2xl:grid-cols-4'>
             <SelectTheme dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} isAdmin={isAdmin} />
           </div>
         </div>

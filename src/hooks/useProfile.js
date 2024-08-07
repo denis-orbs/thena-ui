@@ -1,10 +1,10 @@
 import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 
+import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { successToast } from '@/lib/notify'
-import { actionWithAuthentication, useSignWallet } from '@/lib/wallets/useSignWallet'
 
 const V4_UPDATE_PROFILE = gql`
   mutation V4_UPDATE_PROFILE(

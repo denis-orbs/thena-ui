@@ -13,12 +13,12 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
 import { useTradeData } from '@/hooks/useTcSpotContract'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getTcSpotContract } from '@/lib/contracts'
 import { errorToast, successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { ArrowLeftIcon, Champion, DownRank, InfoIcon, UpRank } from '@/svgs'
 
 function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {

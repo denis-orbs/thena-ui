@@ -5,7 +5,7 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import Spinner from '@/components/spinner'
 import { useUserInfo } from '@/context/userInfoContext'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
-import useWallet from '@/lib/wallets/useWallet'
+import useWallet from '@/hooks/useWallet'
 
 export function FollowButtonTopUser({ userInfoId, username = null }) {
   const [copied, setCopied] = useState(false)

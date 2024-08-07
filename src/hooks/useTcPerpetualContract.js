@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { encodeFunctionData, maxUint256 } from 'viem'
 
 import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
@@ -19,7 +20,6 @@ import {
 import { v4Client } from '@/lib/graphql'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei, isInvalidAmount } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 const V4_TC_PARTICIPANTS_CLAIM = gql`

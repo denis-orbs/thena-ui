@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { useUserInfo } from '@/context/userInfoContext'
-import useWallet from '@/lib/wallets/useWallet'
+import useWallet from '@/hooks/useWallet'
 import ModalRemoveAddAdmin from '@/modules/Admin/ModalRemoveAddAdmin'
 
 import Admins from './Admins'
