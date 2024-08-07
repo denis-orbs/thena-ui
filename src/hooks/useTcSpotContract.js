@@ -235,7 +235,9 @@ export const useJoinTC = () => {
 
       const tokens = {
         [data.competitionRules.winningToken.address]: {
-          amount: fromWei(data.competitionRules.startingBalance),
+          amount: isInvalidAmount(data.competitionRules.startingBalance)
+            ? fromWei(depositBalance)
+            : fromWei(data.competitionRules.startingBalance),
           decimals: 18,
           symbol: data.competitionRules.winningToken.symbol,
           contract: winningTokenContract,
