@@ -927,5 +927,9 @@
   "Next": "Next",
   "00": "00",
   "No Achievement found": "No Achievement found",
-  "User Have Not Achievement Yet": "User Have Not Achievement Yet"
+  "User Have Not Achievement Yet": "User Have Not Achievement Yet",
+  "Bridge": "Bridge",
+  "Unstake and Transfer": "解除质押和转移",
+  "Transfer theNFTs": "转移theNFTs",
+  "To Address": "转移到地址"
 }

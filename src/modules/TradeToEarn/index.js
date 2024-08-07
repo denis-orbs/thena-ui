@@ -7,10 +7,10 @@ import { useTranslations } from 'use-intl'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TXN_STATUS } from '@/constant'
+import useWallet from '@/hooks/useWallet'
 import { getDibsRewarderContract } from '@/lib/contracts'
 import { v4Client, v4ClientSubGraphT2E } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 const V4_DAILY_VOLUME = gql`

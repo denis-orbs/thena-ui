@@ -7,9 +7,9 @@ import React, { Suspense } from 'react'
 import '@/styles/globals.css'
 import 'react-datepicker/dist/react-datepicker.css'
 import 'react-toastify/dist/ReactToastify.css'
+import '@rainbow-me/rainbowkit/styles.css'
 
 import { siteConfig } from '@/constant/config'
-import { Web3Modal } from '@/context/Web3Modal'
 
 import Loading from './loading'
 import { Providers } from './providers'
@@ -54,17 +54,30 @@ export default function RootLayout({ children }) {
   const analyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
   return (
     <html lang='en'>
+      <head>
+        <script
+          src='https://attribution.metacrm.inc/tracking-1-2-0.js'
+          data-entity-id='64df0a122effea1f2889adcc'
+          id='metacrm-tracking'
+          integrity='sha384-XXR5g7lSPTOllUzRbn8qgjH1nBfNmJ/wKfvyRO+7r4ldJxMGRCHpjY2jUm8mGsTr'
+          crossOrigin='anonymous'
+          // eslint-disable-next-line react/no-unknown-property
+          apiKey='n4crf9vaq9'
+          // eslint-disable-next-line react/no-unknown-property
+          ecoSystem='EVM'
+          async
+        />
+      </head>
       <body suppressHydrationWarning>
-        <Web3Modal>
-          <Providers>
-            <Updaters />
-            <Header />
-            <Suspense fallback={<Loading />}>{children}</Suspense>
-            <SpeedInsights />
-          </Providers>
-        </Web3Modal>
+        <Providers>
+          <Updaters />
+          <Header />
+          <Suspense fallback={<Loading />}>{children}</Suspense>
+          <SpeedInsights />
+        </Providers>
         <Analytics />
         <div id='widget-dom-id' />
+        <div id='metacrm-tracking' />
       </body>
       <GoogleAnalytics gaId={analyticsId} />
     </html>

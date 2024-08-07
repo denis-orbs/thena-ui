@@ -4,10 +4,10 @@ import { formatEther } from 'viem'
 
 import { DoubleRewarders } from '@/constant'
 import { extraRewarderAbi } from '@/constant/abi'
+import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getMinterContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import usePrices from './usePrices'

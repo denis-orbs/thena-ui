@@ -1,12 +1,16 @@
 'use client'
 
+import { AuthCoreEvent, getLatestAuthType, isSocialAuthType, particleAuth } from '@particle-network/auth-core'
+import { useConnect as useParticleConnect } from '@particle-network/auth-core-modal'
 import { compact } from 'lodash'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
+import { useConnect, useDisconnect } from 'wagmi'
 
 import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
@@ -14,11 +18,12 @@ import Modal, { ModalFooter } from '@/components/modal'
 import { LOCALES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import usePrices from '@/hooks/usePrices'
+import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon } from '@/svgs'
+import { particleWagmiWallet } from '@/wallets/particleWallet/particleWagmiWallet'
 
 import Logo from '~/logo.svg'
 
@@ -33,6 +38,7 @@ import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
+  { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
 ]
 
 const langs = [
@@ -59,6 +65,30 @@ function ChainSelect({ t }) {
     }
   }, [wrapperRef])
 
+  const getElement = useCallback(
+    (item, idx) => (
+      <div
+        className={cn(
+          'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
+          'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
+        )}
+        key={`dropdown-${idx}`}
+        onClick={async () => {
+          if (item.chainId && networkId !== item.chainId) {
+            updateNetwork(item.chainId)
+          }
+          setOpen(false)
+        }}
+      >
+        <div className='flex w-full items-center gap-2'>
+          <CircleImage src={item.img} alt='' className='h-5 w-5' />
+          <TextHeading className='text-nowrap'>{t(item.label)}</TextHeading>
+        </div>
+      </div>
+    ),
+    [t, networkId, updateNetwork],
+  )
+
   return (
     <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
       <div
@@ -78,26 +108,17 @@ function ChainSelect({ t }) {
           !open && 'invisible opacity-0',
         )}
       >
-        {chains.map((item, idx) => (
-          <div
-            className={cn(
-              'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
-              'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
-            )}
-            key={`dropdown-${idx}`}
-            onClick={async () => {
-              if (networkId !== item.chainId) {
-                updateNetwork(item.chainId)
-              }
-              setOpen(false)
-            }}
-          >
-            <div className='flex items-center gap-2'>
-              <CircleImage src={item.img} alt='' className='h-5 w-5' />
-              <TextHeading className='text-nowrap'>{t(item.label)}</TextHeading>
-            </div>
-          </div>
-        ))}
+        {chains.map((item, idx) => {
+          const element = getElement(item, idx)
+          if (item.url) {
+            return (
+              <Link href={item.url} target='_blank' key={`chain-${idx}`}>
+                {element}
+              </Link>
+            )
+          }
+          return element
+        })}
       </div>
     </div>
   )
@@ -243,6 +264,26 @@ function Header() {
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
   const t = useTranslations()
+  // start: fix social auth login
+  const { connect } = useConnect()
+  const { connectionStatus } = useParticleConnect()
+  const { disconnect } = useDisconnect()
+
+  useEffect(() => {
+    if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
+      connect({
+        connector: particleWagmiWallet({ socialType: getLatestAuthType() }),
+      })
+    }
+    const onDisconnect = () => {
+      disconnect()
+    }
+    particleAuth.on(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
+    return () => {
+      particleAuth.off(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
+    }
+  }, [connect, connectionStatus, disconnect])
+  // end: fix social auth login
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
@@ -255,6 +296,10 @@ function Header() {
   useEffect(() => {
     if (window?.MetaCRMWidget?.manualConnectWallet) {
       window.MetaCRMWidget.manualConnectWallet(account)
+    }
+
+    if (window?.MetaCRMTracking?.manualConnectWallet) {
+      window.MetaCRMTracking.manualConnectWallet(account)
     }
 
     const handleConnectWidget = () => {
@@ -644,7 +689,7 @@ function Header() {
                 <OutlinedButton onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
                   {t('Enter ALPHA')}
                 </OutlinedButton>
-                <ConnectButton />
+                <ConnectButton className='w-full' />
               </ModalFooter>
             </>
           )}
@@ -678,7 +723,7 @@ function Header() {
       )}
       <Script
         id='widget-dom-id'
-        src='https://widget.metacrm.inc/static/js/widget-1-1-3.js'
+        src='https://widget.metacrm.inc/static/js/widget.js'
         onLoad={() => {
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',

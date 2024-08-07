@@ -14,9 +14,9 @@ import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useNftFeesClaim, useNftRoyaltyClaim, useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
+import useWallet from '@/hooks/useWallet'
 import { fetchNfts } from '@/lib/api'
 import { formatAmount } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { BankIcon, CoinsStackedIcon, InfoIcon, PiggyIcon, PiggySecondIcon, WalletIcon } from '@/svgs'
 
 import NftModal from './nftModal'
@@ -236,6 +236,7 @@ export default function TheNftPage() {
         popup={isManageOpen}
         setPopup={setIsManageOpen}
         mutate={mutate}
+        account={account}
       />
     </div>
   )

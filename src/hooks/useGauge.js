@@ -4,10 +4,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getGaugeContract, getVoterContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 export const useGuageStake = () => {

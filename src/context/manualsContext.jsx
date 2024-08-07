@@ -4,9 +4,9 @@ import useSWR from 'swr'
 import { algebraAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
+import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getAlgebraNPMContract } from '@/lib/contracts'
-import useWallet from '@/lib/wallets/useWallet'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const initialState = []

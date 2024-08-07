@@ -11,11 +11,11 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { TXN_STATUS } from '@/constant'
+import useWallet from '@/hooks/useWallet'
 import { readCall, signCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
 import { errorToast, successToast } from '@/lib/notify'
 import { formatAmount, isInvalidAmount, toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 

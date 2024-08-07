@@ -215,8 +215,6 @@ export default function PoolsPage() {
                   />
                 </div>
 
-                {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIcon' /> */}
-                {/* <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIcon' /> */}
                 <CustomTooltip id='etherBadgeIcon' className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
                 </CustomTooltip>
@@ -351,7 +349,20 @@ export default function PoolsPage() {
                   </div>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='text-sm'>{t('APR')}</Paragraph>
-                    <TextHeading className='text-sm'>{formatAmount(trending.gauge.apr)}%</TextHeading>
+                    <div className='flex items-center gap-1'>
+                      <TextHeading className='text-sm'>{formatAmount(trending.gauge.apr)}%</TextHeading>
+                      <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`tvl-${trending.address}`} />
+                      <CustomTooltip id={`tvl-${trending.address}`}>
+                        <div className='flex flex-col gap-1'>
+                          {trending.gauge.apr_list.map(ele => (
+                            <div className='flex justify-between gap-1' key={`${ele.symbol}`}>
+                              <span>{ele.symbol}</span>
+                              <span>{formatAmount(ele.apr)}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CustomTooltip>
+                    </div>
                   </div>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='text-sm'>{t('TVL')}</Paragraph>
