@@ -425,7 +425,7 @@ export function SideBar({
           <div>{children}</div>
         </div>
 
-        <div className='col-span-12 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[550px]'>
+        <div className='col-span-12 lg:top-56 lg:col-span-5 lg:max-h-[550px]'>
           <Box className='w-full max-w-[480px]'>
             <div className='mb-3 flex items-center justify-between'>
               <h2>{t('Swap')}</h2>
