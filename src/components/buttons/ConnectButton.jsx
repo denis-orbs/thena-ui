@@ -78,17 +78,7 @@ export default function ConnectButton({ className }) {
             openAccountModal()
           }}
         >
-          <span
-            style={{
-              color: userInfo?.nameColor
-                ? String(userInfo?.nameColor).startsWith('#')
-                  ? userInfo?.nameColor
-                  : ''
-                : '',
-            }}
-          >
-            {userInfo?.username || formatAddress(account)}
-          </span>
+          {formatAddress(account)}
         </EmphasisButton>
         <NextImage
           className='h-[20px] w-[20px] cursor-pointer'
@@ -109,7 +99,13 @@ export default function ConnectButton({ className }) {
           openAccountModal()
         }}
       >
-        {formatAddress(account)}
+        <span
+          style={{
+            color: userInfo?.nameColor ? (String(userInfo?.nameColor).startsWith('#') ? userInfo?.nameColor : '') : '',
+          }}
+        >
+          {userInfo?.username || formatAddress(account)}
+        </span>
       </EmphasisButton>
     )
   }
