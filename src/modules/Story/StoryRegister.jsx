@@ -63,19 +63,19 @@ export default function StoryRegister() {
         </div>
         <div className='mb-6'>
           <label htmlFor='emailAddress' className='mb-1 block text-sm font-medium text-gray-900 dark:text-white'>
-            Email Address
+            Your Email
           </label>
           <Input
             type='email'
             id='emailAddress'
             name='email'
-            placeholder='EVM Address'
+            placeholder='Email Address'
             val={formState.email}
             onChange={handleChange('email')}
             required
           />
         </div>
-        <SecondaryButton type='submit' className='w-full'>
+        <SecondaryButton type='submit' className='w-full text-white'>
           Join now
         </SecondaryButton>
       </form>
