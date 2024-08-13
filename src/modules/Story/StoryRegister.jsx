@@ -37,7 +37,7 @@ export default function StoryRegister() {
           <Input
             type='text'
             id='evmAddress'
-            placeholder='EVM Address'
+            placeholder={t('EVM Address')}
             val={formState.evmAddress}
             onChange={handleChange('evmAddress')}
             required
@@ -71,7 +71,7 @@ export default function StoryRegister() {
             type='email'
             id='emailAddress'
             name='email'
-            placeholder='Email Address'
+            placeholder={t('Email Address')}
             val={formState.email}
             onChange={handleChange('email')}
             required
