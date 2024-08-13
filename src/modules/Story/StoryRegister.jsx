@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
 import Box from '@/components/box'
@@ -11,6 +12,7 @@ const initialFormState = {
 }
 
 export default function StoryRegister() {
+  const t = useTranslations()
   const [formState, setFormState] = useState(initialFormState)
 
   const handleChange = name => event => {
@@ -26,11 +28,11 @@ export default function StoryRegister() {
   }
   return (
     <Box className='z-10 col-span-12 my-auto lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
-      <h2 className='mb-6'>Register Now</h2>
+      <h2 className='mb-6'>{t('Register Now')}</h2>
       <form onSubmit={handleSubmit}>
         <div className='mb-6'>
           <label htmlFor='evmAddress' className='mb-1 block text-sm font-medium text-gray-900 dark:text-white'>
-            Your EVM Address
+            {t('Your EVM Address')}
           </label>
           <Input
             type='text'
@@ -44,7 +46,7 @@ export default function StoryRegister() {
         <div className='mb-6'>
           <div>
             <label htmlFor='countries' className='mb-1 block text-sm font-medium text-gray-900 dark:text-white'>
-              Select Country
+              {t('Select Country')}
             </label>
             <select
               id='countries'
@@ -63,7 +65,7 @@ export default function StoryRegister() {
         </div>
         <div className='mb-6'>
           <label htmlFor='emailAddress' className='mb-1 block text-sm font-medium text-gray-900 dark:text-white'>
-            Your Email
+            {t('Your Email')}
           </label>
           <Input
             type='email'
@@ -76,7 +78,7 @@ export default function StoryRegister() {
           />
         </div>
         <SecondaryButton type='submit' className='w-full text-white'>
-          Join now
+          {t('Join now')}
         </SecondaryButton>
       </form>
     </Box>

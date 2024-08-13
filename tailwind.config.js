@@ -70,6 +70,7 @@ export default {
         },
         rose: '#FEE8E6',
         focus: '#6666F9',
+        gradient: 'rgb(220 0 212 / var(--tw-bg-opacity))',
       },
     },
   },
