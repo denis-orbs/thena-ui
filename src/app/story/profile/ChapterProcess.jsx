@@ -1,0 +1,29 @@
+import { useTranslations } from 'next-intl'
+
+export function ChapterProcess({ chapter }) {
+  const t = useTranslations()
+
+  return (
+    <div className='mt-5'>
+      <p className=' font-bold text-fuchsia-600'>CHAPTER {chapter.index}</p>
+      <h3 className='font-bold'>{chapter.title}</h3>
+
+      <div className=''>
+        {chapter.tasks.map(task => (
+          <div key={task.id} className='mt-3 flex flex-row items-center justify-between rounded-lg bg-neutral-800 p-3 '>
+            <p>{task.title}</p>
+            {task.completed ? (
+              <div className='bg-neutral-700 px-5 lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base'>{t('Completed')}</div>
+            ) : (
+              <a href='./'>
+                <div className='bg-fuchsia-500 px-5 lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base'>
+                  {t('Start task')} &gt;
+                </div>
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

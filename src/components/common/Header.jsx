@@ -331,6 +331,20 @@ function Header() {
       //   },
       // },
       {
+        label: 'Trade To Earn',
+        active: pathname.includes('/trade-to-earn'),
+        onClickHandler: () => {
+          push('/trade-to-earn')
+        },
+      },
+      {
+        label: 'Earn Rewards',
+        active: pathname.includes('/story'),
+        onClickHandler: () => {
+          push('/story')
+        },
+      },
+      {
         label: 'More',
         active: pathname.includes('/analytics') || pathname.includes('/protocols'),
         sub:
@@ -368,13 +382,6 @@ function Header() {
                   },
                 },
               ],
-      },
-      {
-        label: 'Trade To Earn',
-        active: pathname.includes('/trade-to-earn'),
-        onClickHandler: () => {
-          push('/trade-to-earn')
-        },
       },
     ],
     [pathname, networkId, push],
