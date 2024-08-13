@@ -1,10 +1,15 @@
+import { useTranslations } from 'next-intl'
+
 import { ChapterProcess } from './ChapterProcess'
 
 export function WeekProcess({ week }) {
+  const t = useTranslations()
   return (
     <div className='rounded-xl bg-neutral-900 px-4 py-6'>
       <div id='week-process_heading'>
-        <p className='text-center'>{`${week.taskComleted} / ${week.totalTasks} tasks completed`}</p>
+        <p className='text-center'>
+          {`${week.taskComleted} / ${week.totalTasks} ${t('Tasks completed').toLowerCase()}`}
+        </p>
         <div className='mt-2 h-3 w-full rounded-md bg-neutral-500'>
           <div
             style={{

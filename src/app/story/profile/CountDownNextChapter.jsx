@@ -1,9 +1,11 @@
 import moment from 'moment'
+import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
 const targetDateDefault = moment(new Date()).add(3, 'days').toISOString()
 
 export function CountDownNextChapter({ targetDate = targetDateDefault }) {
+  const t = useTranslations()
   const calculateTimeLeft = useCallback(() => {
     const difference = moment(targetDate).diff(moment())
     let timeLeft = {
@@ -39,19 +41,19 @@ export function CountDownNextChapter({ targetDate = targetDateDefault }) {
     <div className='mt-3 grid grid-cols-4 gap-4'>
       <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-5 py-3'>
         <p className='text-xl font-bold text-fuchsia-500'>{timeLeft.days}</p>
-        Days
+        {t('Days')}
       </div>
       <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-5 py-3'>
         <p className='text-xl font-bold text-fuchsia-500'>{timeLeft.hours}</p>
-        Hours
+        {t('Hours')}
       </div>
       <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-5 py-3'>
         <p className='text-xl font-bold text-fuchsia-500'>{timeLeft.minutes}</p>
-        Minutes
+        {t('Minutes')}
       </div>
       <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-5 py-3'>
         <p className='text-xl font-bold text-fuchsia-500'>{timeLeft.seconds}</p>
-        Second
+        {t('Second')}
       </div>
     </div>
   )

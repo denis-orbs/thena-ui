@@ -61,7 +61,7 @@ export function Process() {
     {
       id: 2,
       index: 2,
-      avaiable: false,
+      avaiable: true,
       taskComleted: 2,
       totalTasks: 14,
       chapters: [
@@ -120,7 +120,7 @@ export function Process() {
             type='button'
             className={cn(
               'mr-2 gap-2',
-              'cursor-pointer rounded-lg px-4 py-2.5',
+              'rounded-lg px-4 py-2.5',
               'rounded px-3 py-2 text-xs',
               'lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base',
               'font-medium text-neutral-200',
@@ -128,7 +128,9 @@ export function Process() {
               'transition-all duration-150 ease-out',
               'disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-500',
               week.id === selectedWeek.id && 'bg-neutral-800',
-              !week.avaiable ? 'bg-neutral-900' : 'hover:bg-neutral-800 hover:text-neutral-100 active:outline-focus',
+              !week.avaiable
+                ? 'cursor-not-allowed bg-neutral-900'
+                : 'cursor-pointer hover:bg-neutral-800 hover:text-neutral-100 active:outline-focus ',
             )}
             disabled={!week.avaiable}
             onClick={() => {
@@ -139,7 +141,7 @@ export function Process() {
           >
             <div className='flex  flex-row'>
               {!week.avaiable && <LockIcon className='mr-1 h-5 w-5' />}
-              {`Week ${index + 1}`}
+              {`${t('Week')} ${index + 1}`}
             </div>
           </div>
         ))}

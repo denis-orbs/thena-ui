@@ -5,7 +5,9 @@ export function ChapterProcess({ chapter }) {
 
   return (
     <div className='mt-5'>
-      <p className=' font-bold text-fuchsia-600'>CHAPTER {chapter.index}</p>
+      <p className='font-bold text-gradient'>
+        {t('Chapter').toUpperCase()} {chapter.index}
+      </p>
       <h3 className='font-bold'>{chapter.title}</h3>
 
       <div className=''>
