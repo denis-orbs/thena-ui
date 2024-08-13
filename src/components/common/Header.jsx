@@ -1,5 +1,6 @@
 'use client'
 
+import { compact } from 'lodash'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
@@ -420,6 +421,25 @@ function Header() {
     return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
   }, [pathname, push, networkId])
 
+  const storySubmenus = useMemo(
+    () =>
+      compact([
+        {
+          label: t('Home'),
+          active: pathname === '/story',
+          isLink: true,
+          href: '/story',
+        },
+        {
+          label: t('Profile'),
+          active: pathname === '/story/profile',
+          isLink: true,
+          href: '/story/profile',
+        },
+      ]),
+    [pathname, t],
+  )
+
   const onLogoClick = () => {
     push('/')
     setIsOpen(false)
@@ -601,6 +621,11 @@ function Header() {
       {pathname.includes('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={submenus} size={SizeTypes.Medium} />
+        </div>
+      )}
+      {pathname.includes('/story') && (
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
+          <Tabs data={storySubmenus} size={SizeTypes.Medium} />
         </div>
       )}
       <Script
