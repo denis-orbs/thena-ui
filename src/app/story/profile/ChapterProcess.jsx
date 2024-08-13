@@ -12,13 +12,18 @@ export function ChapterProcess({ chapter }) {
 
       <div className=''>
         {chapter.tasks.map(task => (
-          <div key={task.id} className='mt-3 flex flex-row items-center justify-between rounded-lg bg-neutral-800 p-3 '>
+          <div
+            key={task.id}
+            className='mt-3 flex flex-col items-center justify-between rounded-lg bg-neutral-800 p-3 lg:flex-row '
+          >
             <p>{task.title}</p>
             {task.completed ? (
-              <div className='bg-neutral-700 px-5 lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base'>{t('Completed')}</div>
+              <div className='mt-2 rounded-lg bg-neutral-700 px-5 py-2 lg:mt-0 lg:px-4 lg:py-2.5 lg:text-base'>
+                {t('Completed')}
+              </div>
             ) : (
               <a href='./'>
-                <div className='bg-fuchsia-500 px-5 lg:rounded-lg lg:px-4 lg:py-2.5 lg:text-base'>
+                <div className='mt-2 rounded-lg bg-fuchsia-500 px-5 py-2 lg:mt-0 lg:px-4 lg:py-2.5 lg:text-base'>
                   {t('Start task')} &gt;
                 </div>
               </a>

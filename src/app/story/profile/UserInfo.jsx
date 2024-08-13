@@ -5,17 +5,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import { useCallback, useEffect, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import NextImage from '@/components/image/NextImage'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import dayjs from '@/lib/arenaDayjs'
-import { successToast } from '@/lib/notify'
+import dayjs from '@/lib/dateFormat'
 import { cn, formatAddress } from '@/lib/utils'
-import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
-import { CheckIcon, CopyIcon, ExternalIcon } from '@/svgs'
+import { ExternalIcon } from '@/svgs'
 
 import { ProfileButton } from './ProfileButton'
 
@@ -24,27 +21,6 @@ const tarea_regex = /^(http|https)/
 
 export function UserInfo({ userInfo }) {
   const t = useTranslations()
-
-  const [copied, setCopied] = useState(false)
-
-  const onCopy = useCallback(
-    e => {
-      e.stopPropagation()
-      e.preventDefault()
-      navigator.clipboard.writeText(userInfo.id)
-      successToast(t('Copied'))
-      setCopied(true)
-    },
-    [t, userInfo.id],
-  )
-
-  useEffect(() => {
-    if (copied) {
-      const timeOut = setTimeout(() => setCopied(false), 2000)
-
-      return () => clearTimeout(timeOut)
-    }
-  }, [copied])
 
   return (
     <>
@@ -79,12 +55,6 @@ export function UserInfo({ userInfo }) {
                       {userInfo.username || formatAddress(userInfo.id)}
                     </span>
                   </TextHeading>
-                  {userInfo.isVerified && (
-                    <VerifyPopover verifyImage={userInfo?.checkMarkIcon} verifiedAt={userInfo?.verifiedAt} />
-                  )}
-                  <div onClick={onCopy} className='ml-2 h-5 w-5 cursor-pointer stroke-neutral-200'>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
-                  </div>
                 </div>
                 <TextSubHeading className='text-sm'>
                   {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM D, YYYY')} {`${t('at')} `}

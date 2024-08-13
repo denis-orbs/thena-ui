@@ -30,7 +30,7 @@ export function Process() {
               completed: true,
             },
             {
-              id: 1,
+              id: 2,
               index: 2,
               title: 'Mint .thena ID',
               completed: true,
@@ -43,14 +43,14 @@ export function Process() {
           title: 'Concentrating on Liquidity',
           tasks: [
             {
-              id: 1,
-              index: 1,
+              id: 3,
+              index: 3,
               title: 'Swap THE with any token',
               completed: false,
             },
             {
-              id: 1,
-              index: 2,
+              id: 4,
+              index: 4,
               title: 'Stake into THE/BNB (any CL version)',
               completed: false,
             },
@@ -66,19 +66,19 @@ export function Process() {
       totalTasks: 14,
       chapters: [
         {
-          id: 1,
-          index: 1,
+          id: 3,
+          index: 3,
           title: 'Concentrating on Liquidity',
           tasks: [
             {
-              id: 1,
-              index: 1,
+              id: 5,
+              index: 5,
               title: 'Swap THE with any token',
               completed: false,
             },
             {
-              id: 1,
-              index: 2,
+              id: 5,
+              index: 5,
               title: 'Stake into THE/BNB (any CL version)',
               completed: false,
             },
@@ -88,19 +88,19 @@ export function Process() {
     },
     {
       id: 3,
-      index: 1,
+      index: 3,
       avaiable: false,
       taskComleted: 2,
       totalTasks: 14,
       chapters: [
         {
-          id: 1,
-          index: 1,
+          id: 4,
+          index: 4,
           title: '',
           tasks: [
             {
-              id: 1,
-              index: 1,
+              id: 6,
+              index: 6,
               title: '',
               completed: true,
             },

@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
-import { PublicIcon } from '@/svgs'
+import { ArrowLeftIcon } from '@/svgs'
 
 export function ProfileButton() {
   const t = useTranslations()
@@ -14,7 +14,7 @@ export function ProfileButton() {
         <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
       </Link>
 
-      <EmphasisIconButton Icon={PublicIcon} />
+      <EmphasisIconButton Icon={ArrowLeftIcon} />
     </div>
   )
 }

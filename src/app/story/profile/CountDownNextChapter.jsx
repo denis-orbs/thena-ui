@@ -2,9 +2,9 @@ import moment from 'moment'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
-const targetDateDefault = moment(new Date()).add(3, 'days').toISOString()
+export function CountDownNextChapter() {
+  const targetDate = moment(new Date()).add(3, 'days').toISOString()
 
-export function CountDownNextChapter({ targetDate = targetDateDefault }) {
   const t = useTranslations()
   const calculateTimeLeft = useCallback(() => {
     const difference = moment(targetDate).diff(moment())
