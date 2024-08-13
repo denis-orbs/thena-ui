@@ -434,17 +434,19 @@ function Header() {
         {
           label: t('Home'),
           active: pathname === '/story',
-          isLink: true,
-          href: '/story',
+          onClickHandler: () => {
+            push('/story')
+          },
         },
         {
           label: t('Profile'),
           active: pathname === '/story/profile',
-          isLink: true,
-          href: '/story/profile',
+          onClickHandler: () => {
+            push('/story/profile')
+          },
         },
       ]),
-    [pathname, t],
+    [pathname, push, t],
   )
 
   const onLogoClick = () => {
