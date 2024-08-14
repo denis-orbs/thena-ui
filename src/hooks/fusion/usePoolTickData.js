@@ -64,7 +64,7 @@ function useAllV3Ticks(currencyA, currencyB, feeAmount) {
   const { data, error, isLoading } = useTicksFromSubgraph(currencyA, currencyB, feeAmount, skipNumber)
 
   useEffect(() => {
-    if (data?.ticks.length) {
+    if (data?.ticks?.length) {
       setSubgraphTickData(tickData => [...tickData, ...data.ticks])
       if (data.ticks.length === MAX_THE_GRAPH_TICK_FETCH_VALUE) {
         setSkipNumber(val => val + MAX_THE_GRAPH_TICK_FETCH_VALUE)
