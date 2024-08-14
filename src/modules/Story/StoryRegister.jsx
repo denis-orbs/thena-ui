@@ -27,14 +27,23 @@ export default function StoryRegister() {
     console.log(formState)
   }
   return (
-    <Box className='z-10 col-span-12 my-auto lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
+    <Box
+      className='relative z-10 col-span-12 my-auto h-[463px] w-[610px] rounded-xl bg-[#1A121E] px-[30px] lg:sticky lg:top-56 lg:col-span-6'
+      style={{
+        WebkitMaskImage: '-webkit-radial-gradient(white, black)',
+        borderImage: 'linear-gradient(180deg, rgba(220, 0, 212, 0.5) 0%, rgba(142, 66, 255, 0) 100%) 1',
+        borderWidth: '1px',
+        borderStyle: 'solid',
+      }}
+    >
       <h2 className='mb-6'>{t('Register Now')}</h2>
       <form onSubmit={handleSubmit}>
         <div className='mb-6'>
-          <label htmlFor='evmAddress' className='mb-1 block text-sm font-medium text-gray-900 dark:text-white'>
+          <label htmlFor='evmAddress' className='mb-2 block text-base font-medium text-neutral-50'>
             {t('Your EVM Address')}
           </label>
           <Input
+            className='h-11 w-full'
             type='text'
             id='evmAddress'
             placeholder={t('EVM Address')}
@@ -45,13 +54,13 @@ export default function StoryRegister() {
         </div>
         <div className='mb-6'>
           <div>
-            <label htmlFor='countries' className='mb-1 block text-sm font-medium text-gray-900 dark:text-white'>
+            <label htmlFor='countries' className='mb-2 block text-base font-medium text-neutral-50'>
               {t('Select Country')}
             </label>
             <select
               id='countries'
               name='country'
-              className='w-full cursor-pointer rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 caret-transparent focus:border-neutral-500'
+              className='h-11 w-full cursor-pointer rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 caret-transparent focus:border-neutral-500'
               value={formState.country}
               onChange={handleChange('country')}
             >
@@ -64,7 +73,7 @@ export default function StoryRegister() {
           </div>
         </div>
         <div className='mb-6'>
-          <label htmlFor='emailAddress' className='mb-1 block text-sm font-medium text-gray-900 dark:text-white'>
+          <label htmlFor='emailAddress' className='mb-2 block text-base font-medium text-neutral-50'>
             {t('Your Email')}
           </label>
           <Input
@@ -77,7 +86,7 @@ export default function StoryRegister() {
             required
           />
         </div>
-        <SecondaryButton type='submit' className='w-full text-white'>
+        <SecondaryButton type='submit' className='w-full bg-[#DF08D4] text-white'>
           {t('Join now')}
         </SecondaryButton>
       </form>
