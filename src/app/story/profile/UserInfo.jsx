@@ -12,7 +12,7 @@ import NextImage from '@/components/image/NextImage'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import dayjs from '@/lib/dateFormat'
 import { cn, formatAddress } from '@/lib/utils'
-import { ExternalIcon } from '@/svgs'
+import { DiamondIcon, ExternalIcon, StarLineSmall } from '@/svgs'
 
 import { ProfileButton } from './ProfileButton'
 
@@ -25,7 +25,7 @@ export function UserInfo({ userInfo }) {
   return (
     <>
       <Box className='space-y-4'>
-        <div className='flex flex-col-reverse justify-between gap-4 lg:flex-row lg:items-center'>
+        <div className='flex flex-col-reverse justify-between gap-4 lg:flex-row'>
           <div className='flex flex-1 flex-col items-start justify-between gap-4 lg:flex-row lg:items-center'>
             <div className='flex items-start gap-5 lg:items-center'>
               <Image
@@ -90,7 +90,7 @@ export function UserInfo({ userInfo }) {
           </div>
           <ProfileButton />
         </div>
-        <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>
+        <div className='grid grid-cols-2 gap-4 lg:grid-cols-5'>
           <Link href='/'>
             <Box className='flex flex-col gap-2 bg-neutral-800'>
               <TextHeading className='text-lg'>{userInfo.rank}</TextHeading>
@@ -99,20 +99,32 @@ export function UserInfo({ userInfo }) {
           </Link>
           <Link href='/'>
             <Box className='flex flex-col gap-2 bg-neutral-800'>
-              <TextHeading className='text-lg'>43</TextHeading>
+              <div className='flex items-center'>
+                <StarLineSmall className='h-5 w-5 lg:mr-1' />
+                <TextHeading className='text-lg'>320</TextHeading>
+              </div>
+              <TextSubHeading className='text-sm'>{t('Earned points')}</TextSubHeading>
+            </Box>
+          </Link>
+          <Link href='/'>
+            <Box className='flex flex-col gap-2 bg-neutral-800'>
+              <div className='flex items-center'>
+                <DiamondIcon className='h-5 w-5 lg:mr-1' />
+                <TextHeading className='text-lg'>5</TextHeading>
+              </div>
               <TextSubHeading className='text-sm'>{t('Earned fragments')}</TextSubHeading>
             </Box>
           </Link>
           <Link href='/'>
             <Box className='flex flex-col gap-2 bg-neutral-800'>
-              <TextHeading className='text-lg'>2</TextHeading>
+              <TextHeading className='text-lg'>2 / 14</TextHeading>
               <TextSubHeading className='text-sm'>{t('Tasks completed')}</TextSubHeading>
             </Box>
           </Link>
           <Link href='/'>
             <Box className='flex flex-col gap-2 bg-neutral-800'>
-              <TextHeading className='text-lg'>14</TextHeading>
-              <TextSubHeading className='text-sm'>{t('Tasks remained')}</TextSubHeading>
+              <TextHeading className='text-lg'>4</TextHeading>
+              <TextSubHeading className='text-sm'>{t('Friends invited')}</TextSubHeading>
             </Box>
           </Link>
         </div>

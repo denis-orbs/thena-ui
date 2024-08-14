@@ -71,6 +71,7 @@ export default {
         rose: '#FEE8E6',
         focus: '#6666F9',
         gradient: 'rgb(220 0 212 / var(--tw-bg-opacity))',
+        purple: 'rgba(123, 10, 121, 1)',
       },
     },
   },

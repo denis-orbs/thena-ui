@@ -38,22 +38,22 @@ export function CountDownNextChapter() {
   }, [targetDate, calculateTimeLeft])
 
   return (
-    <div className='mt-3 grid grid-cols-4 gap-4'>
-      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-5 py-3'>
-        <p className='text-xl font-bold text-fuchsia-500'>{timeLeft.days}</p>
-        {t('Days')}
+    <div className='mt-6 grid grid-cols-4 gap-4'>
+      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
+        <p className='text-3xl font-bold text-fuchsia-500'>{timeLeft.days}</p>
+        <span className='text-base leading-5 text-gray-400'>{t('Days')}</span>
       </div>
-      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-5 py-3'>
-        <p className='text-xl font-bold text-fuchsia-500'>{timeLeft.hours}</p>
-        {t('Hours')}
+      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
+        <p className='text-3xl font-bold text-fuchsia-500'>{timeLeft.hours}</p>
+        <span className='text-base leading-5 text-gray-400'>{t('Hours')}</span>
       </div>
-      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-5 py-3'>
-        <p className='text-xl font-bold text-fuchsia-500'>{timeLeft.minutes}</p>
-        {t('Minutes')}
+      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
+        <p className='text-3xl font-bold text-fuchsia-500'>{timeLeft.minutes}</p>
+        <span className='text-base leading-5 text-gray-400'>{t('Minutes')}</span>
       </div>
-      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-5 py-3'>
-        <p className='text-xl font-bold text-fuchsia-500'>{timeLeft.seconds}</p>
-        {t('Second')}
+      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
+        <p className='text-3xl font-bold text-fuchsia-500'>{timeLeft.seconds}</p>
+        <span className='text-base leading-5 text-gray-400'>{t('Second')}</span>
       </div>
     </div>
   )

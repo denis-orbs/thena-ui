@@ -2,13 +2,15 @@ import React from 'react'
 
 import Loading from '@/app/loading'
 
-import { Process } from './Process'
+import { ChaptersOverview } from './ChaptersOverview'
+import { DailyCheckin } from './DailyCheckin'
 import { UserInfo } from './UserInfo'
+import { WeeklyTasks } from './WeeklyTasks'
 
 const userInfo = {
   id: '0xb095069bdeb6be079206cb0a7cca2786d79cba7c',
   avatar: null,
-  rank: 25300,
+  rank: 124,
   firstInteractAt: '2024-08-08',
 }
 
@@ -20,7 +22,9 @@ export function ProfilePage({ address }) {
   return (
     <div className='mt-10 space-y-10'>
       <UserInfo userInfo={userInfo} />
-      <Process />
+      <DailyCheckin />
+      <WeeklyTasks />
+      <ChaptersOverview />
     </div>
   )
 }
