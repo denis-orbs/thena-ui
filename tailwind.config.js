@@ -71,6 +71,10 @@ export default {
         rose: '#FEE8E6',
         focus: '#6666F9',
         gradient: 'linear-gradient(90deg, #B386FF 0%, #FF86FA 100%)',
+        'start-gradient': 'rgba(220, 0, 212, 0.5)',
+        'end-gradient': 'rgba(142, 66, 255, 0)',
+        'start-text-gradient': '#B386FF',
+        'end-text-gradient': '#FF86FA',
       },
       backgroundImage: {
         'custom-gradient': 'linear-gradient(90deg, #B386FF 0%, #FF86FA 100%)',

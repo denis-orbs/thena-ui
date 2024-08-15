@@ -12,6 +12,9 @@ export default function CheckDailyRight() {
             <StartIcon width={88} height={88} />
           </div>
           <p className='text-center text-[23px] text-neutral-50'>+30 PTS</p>
+          <div className='absolute -end-2 -top-2 inline-flex h-7 w-7 items-center justify-center rounded-[12px] bg-[#DC00D4] text-xs font-bold text-white dark:border-gray-900'>
+            3X
+          </div>
         </div>
         <div className='absolute inset-0 z-10 row-span-1 m-auto h-[199px] w-[238px] items-center justify-center rounded-[12px] border-[2px] border-[#0D090F] bg-[#281B2E] p-3'>
           <p className='text-center text-[31px] font-semibold text-neutral-50'>Day 6</p>
@@ -19,6 +22,9 @@ export default function CheckDailyRight() {
             <StartIcon width={88} height={88} />
           </div>
           <p className='text-center text-[23px] text-neutral-50'>+30 PTS</p>
+          <div className='absolute -end-2 -top-2 inline-flex h-7 w-7 items-center justify-center rounded-[12px] bg-[#DC00D4] text-xs font-bold text-white dark:border-gray-900'>
+            3X
+          </div>
         </div>
         <div className='absolute bottom-0 left-0 z-20 row-span-1 h-[199px] w-[238px] rounded-[12px] border-[2px] border-[#0D090F] bg-[#281B2E] p-3'>
           <p className='text-center text-[31px] font-semibold text-neutral-50'>Day 7</p>
@@ -26,6 +32,9 @@ export default function CheckDailyRight() {
             <StartIcon width={88} height={88} />
           </div>
           <p className='text-center text-[23px] text-neutral-50'>+30 PTS</p>
+          <div className='absolute -end-2 -top-2 inline-flex h-7 w-7 items-center justify-center rounded-[12px] bg-[#DC00D4] text-xs font-bold text-white dark:border-gray-900'>
+            3X
+          </div>
         </div>
       </div>
     </div>

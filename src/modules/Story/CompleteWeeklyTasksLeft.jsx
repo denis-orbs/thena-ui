@@ -11,7 +11,7 @@ export default function CompleteWeeklyTasksLeft() {
 
   return (
     <div className='col-span-12 lg:col-span-6'>
-      <div className='col-span-12 my-auto flex h-[178px] w-[589.2px] flex-col justify-between gap-10 px-10 lg:col-span-6'>
+      <div className='col-span-12 my-auto flex h-[178px] w-[589.2px] flex-col justify-between gap-10 lg:col-span-6'>
         <p className='text-[40px] font-semibold text-neutral-50'>{t('Complete Weekly Tasks')}</p>
         <p className='leading-6 text-neutral-300'>
           {t(

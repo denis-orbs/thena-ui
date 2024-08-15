@@ -1,5 +1,7 @@
 import React, { Suspense } from 'react'
 
+import Footer from '@/components/common/Footer'
+
 import Loading from '../loading'
 
 export const metadata = {
@@ -13,6 +15,7 @@ export default function EarnRewardLayout({ children }) {
       <section className='layout-container mt-[128px] lg:mt-[176px]'>
         <Suspense fallback={<Loading />}>{children}</Suspense>
       </section>
+      <Footer />
     </main>
   )
 }
