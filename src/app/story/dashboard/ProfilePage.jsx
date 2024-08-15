@@ -3,7 +3,7 @@ import React from 'react'
 import Loading from '@/app/loading'
 
 import { ChaptersOverview } from './ChaptersOverview'
-import { DailyCheckin } from './DailyCheckin'
+import { DailySwap } from './DailySwap'
 import { UserInfo } from './UserInfo'
 import { WeeklyTasks } from './WeeklyTasks'
 
@@ -22,7 +22,7 @@ export function ProfilePage({ address }) {
   return (
     <div className='mt-10 space-y-10'>
       <UserInfo userInfo={userInfo} />
-      <DailyCheckin />
+      <DailySwap />
       <WeeklyTasks />
       <ChaptersOverview />
     </div>

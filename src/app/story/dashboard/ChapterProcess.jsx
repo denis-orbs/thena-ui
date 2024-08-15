@@ -20,7 +20,7 @@ export function ChapterProcess({ chapter }) {
         </div>
         <hr className='my-5  border-neutral-600' />
         <div>
-          <p className='text-base font-medium leading-5 tracking-[.03em] text-gradient '>
+          <p className='inline-block bg-gradient-to-r from-gradient-primary-start to-gradient-primary-end bg-clip-text text-base font-medium leading-5 tracking-[.03em] text-transparent'>
             {t('Chapter').toUpperCase()} {chapter.index}
           </p>
           <h3 className='text-3xl font-semibold'>{chapter.title}</h3>
@@ -33,29 +33,29 @@ export function ChapterProcess({ chapter }) {
               >
                 <div>
                   <p className='mb-2 text-xl font-medium leading-6'>{task.title}</p>
+                </div>
+                <div>
                   <div className='flex flex-row items-center'>
-                    <span className='mr-1 text-base font-normal'>
-                      {t('Reward')}: +{task.reward.amount}
-                    </span>
+                    <span className='text-lg font-light leading-6 '>+{task.reward.amount}</span>
                     {task.reward.type === 'star' ? (
-                      <StarLineSmall className='inline-block h-6 w-6' />
+                      <StarLineSmall className='ml-1 inline-block h-6 w-6' />
                     ) : (
-                      <DiamondIcon className='inline-block h-6 w-6' />
+                      <DiamondIcon className='ml-1 inline-block h-6 w-6' />
+                    )}
+                    {task.completed ? (
+                      <div className='ml-4 mt-2 w-[124px] rounded-lg bg-neutral-700 px-5 py-2 text-center leading-5 lg:mt-0 lg:px-4 lg:py-2.5 lg:text-base'>
+                        {t('Completed')}
+                      </div>
+                    ) : (
+                      <a href='./'>
+                        <div className='ml-4 mt-2 w-[124px] rounded-lg bg-fuchsia-600 px-5 py-2 text-center leading-5 lg:mt-0 lg:px-4 lg:py-2.5 lg:text-base'>
+                          {t('Start task')}
+                          <ArrowForwardSmallIcon className='inline-block h-4 w-4' />
+                        </div>
+                      </a>
                     )}
                   </div>
                 </div>
-                {task.completed ? (
-                  <div className='mt-2 w-[124px] rounded-lg bg-neutral-700 px-5 py-2 text-center leading-5 lg:mt-0 lg:px-4 lg:py-2.5 lg:text-base'>
-                    {t('Completed')}
-                  </div>
-                ) : (
-                  <a href='./'>
-                    <div className='mt-2 w-[124px] rounded-lg bg-fuchsia-600 px-5 py-2 text-center leading-5 lg:mt-0 lg:px-4 lg:py-2.5 lg:text-base'>
-                      {t('Start task')}
-                      <ArrowForwardSmallIcon className='inline-block h-4 w-4' />
-                    </div>
-                  </a>
-                )}
               </div>
             ))}
           </div>

@@ -439,10 +439,31 @@ function Header() {
           },
         },
         {
-          label: t('Profile'),
-          active: pathname === '/story/profile',
+          label: t('Dashboard'),
+          active: pathname === '/story/dashboard',
           onClickHandler: () => {
-            push('/story/profile')
+            push('/story/dashboard')
+          },
+        },
+        {
+          label: t('Leaderboard'),
+          active: pathname === '/story/leaderboard',
+          onClickHandler: () => {
+            push('/story/leaderboard')
+          },
+        },
+        {
+          label: t('Referral'),
+          active: pathname === '/story/referral',
+          onClickHandler: () => {
+            push('/story/referral')
+          },
+        },
+        {
+          label: t('Rewards'),
+          active: pathname === '/story/rewards',
+          onClickHandler: () => {
+            push('/story/rewards')
           },
         },
       ]),

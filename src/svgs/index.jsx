@@ -7,6 +7,7 @@ import ArrowRightIcon from '~/svgs/arrow-right.svg'
 import BankIcon from '~/svgs/bank.svg'
 import CalendarIcon from '~/svgs/calendar.svg'
 import CheckIcon from '~/svgs/check.svg'
+import CheckPurpleLargeIcon from '~/svgs/check-purple-large.svg'
 import Check2Icon from '~/svgs/check2.svg'
 import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
@@ -60,6 +61,7 @@ export {
   CheckCircleIcon,
   CheckGradientIcon,
   CheckIcon,
+  CheckPurpleLargeIcon,
   ChevronDownIcon,
   CoinsStackedIcon,
   DiamondIcon,

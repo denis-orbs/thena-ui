@@ -60,7 +60,7 @@ export function UserInfo({ userInfo }) {
                   {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM D, YYYY')} {`${t('at')} `}
                   {dayjs(userInfo.firstInteractAt).tz().format('h:mma')}
                 </TextSubHeading>
-                <div className='flex flex-col gap-2 md:flex-row'>
+                <div className='flex flex-col gap-1 md:flex-row'>
                   {userInfo.websiteUrl && (
                     <Link
                       href={tarea_regex.test(userInfo.websiteUrl) ? userInfo.websiteUrl : `//${userInfo.websiteUrl}`}
@@ -92,13 +92,13 @@ export function UserInfo({ userInfo }) {
         </div>
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-5'>
           <Link href='/'>
-            <Box className='flex flex-col gap-2 bg-neutral-800'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
               <TextHeading className='text-lg'>{userInfo.rank}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
             </Box>
           </Link>
           <Link href='/'>
-            <Box className='flex flex-col gap-2 bg-neutral-800'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
               <div className='flex items-center'>
                 <StarLineSmall className='h-5 w-5 lg:mr-1' />
                 <TextHeading className='text-lg'>320</TextHeading>
@@ -107,7 +107,7 @@ export function UserInfo({ userInfo }) {
             </Box>
           </Link>
           <Link href='/'>
-            <Box className='flex flex-col gap-2 bg-neutral-800'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
               <div className='flex items-center'>
                 <DiamondIcon className='h-5 w-5 lg:mr-1' />
                 <TextHeading className='text-lg'>5</TextHeading>
@@ -116,13 +116,13 @@ export function UserInfo({ userInfo }) {
             </Box>
           </Link>
           <Link href='/'>
-            <Box className='flex flex-col gap-2 bg-neutral-800'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
               <TextHeading className='text-lg'>2 / 14</TextHeading>
               <TextSubHeading className='text-sm'>{t('Tasks completed')}</TextSubHeading>
             </Box>
           </Link>
           <Link href='/'>
-            <Box className='flex flex-col gap-2 bg-neutral-800'>
+            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
               <TextHeading className='text-lg'>4</TextHeading>
               <TextSubHeading className='text-sm'>{t('Friends invited')}</TextSubHeading>
             </Box>
