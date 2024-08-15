@@ -1,0 +1,59 @@
+import { useTranslations } from 'next-intl'
+
+import { TextHeading, TextSubHeading } from '@/components/typography'
+import { AlertCirlceSmallIcon, StarLineSmall } from '@/svgs'
+
+import { HowItWork } from './HowItWork'
+import { ReferralHistory } from './ReferralHistory'
+import { ShareReferralLink } from './ShareReferralLink'
+
+export function Referral() {
+  const t = useTranslations()
+  return (
+    <div>
+      <div className='mt-[10px]'>
+        <TextHeading className='block font-archia text-3xl font-semibold leading-9'>{t('Invite Friends')}</TextHeading>
+        <TextSubHeading className='mt-2  block text-base font-normal leading-5 text-gray-400'>
+          {t('Invite Friends description')}
+        </TextSubHeading>
+      </div>
+      <div className='mt-6 grid grid-cols-1 gap-6 md:grid-cols-3'>
+        <div className='rounded-xl bg-neutral-900 p-6'>
+          <TextHeading className='block text-2xl'>5</TextHeading>
+          <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
+            {t('Registered Referrals')}
+            <AlertCirlceSmallIcon className='ml-1 inline-block h-4 w-4' />
+          </TextSubHeading>
+        </div>
+        <div className='rounded-xl bg-neutral-900 p-6'>
+          <TextHeading className='block text-2xl'>3</TextHeading>
+          <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
+            {t('Successful Referrals')}
+            <AlertCirlceSmallIcon className='ml-1 inline-block h-4 w-4' />
+          </TextSubHeading>
+        </div>
+        <div className='rounded-xl bg-neutral-900 p-6'>
+          <TextHeading className='block text-2xl'>
+            <StarLineSmall className='inline-block h-5 w-5' />
+            30
+          </TextHeading>
+          <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
+            {t('Your Earnings')}
+            <AlertCirlceSmallIcon className='ml-1 inline-block h-4 w-4' />
+          </TextSubHeading>
+        </div>
+      </div>
+      <div className='mt-8 grid grid-cols-1 gap-5 md:grid-cols-12'>
+        <div className='md:col-span-7'>
+          <ReferralHistory />
+        </div>
+        <div className='md:col-span-5'>
+          <ShareReferralLink />
+        </div>
+      </div>
+      <div className='mt-16'>
+        <HowItWork />
+      </div>
+    </div>
+  )
+}

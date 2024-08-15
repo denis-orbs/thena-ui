@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 
-import { Check2Icon } from '@/svgs'
+import { Check2Icon, Lock2Icon } from '@/svgs'
 
 export function ChapterOverviewProcess({ chapter }) {
   const t = useTranslations()
@@ -23,7 +23,10 @@ export function ChapterOverviewProcess({ chapter }) {
           <p className='from-gradient-primary-start to-gradient-primary-end inline-block bg-gradient-to-r bg-clip-text text-base font-medium leading-5 tracking-[.03em] text-transparent'>
             {t('Chapter').toUpperCase()} {chapter.index}
           </p>
-          <h3 className='mb-4 mt-1 text-3xl font-semibold'>{chapter.title}</h3>
+          <div className='mb-4 mt-1 flex items-center '>
+            <Lock2Icon className='mr-1 inline-block h-[30px] w-[30px]' />
+            <h3 className='text-3xl font-semibold'>{chapter.title}</h3>
+          </div>
 
           {chapter.tasks?.map(task => (
             <div className='mt-3 flex justify-between' key={task.id}>

@@ -96,7 +96,7 @@ export function WeeklyTasks() {
       </TextSubHeading>
       <div className='mt-5 grid grid-cols-12 gap-8 lg:gap-12'>
         <div className='col-span-12 lg:col-span-7'>
-          <div className='mt-5 grid grid-cols-6 gap-[14px]'>
+          <div className='mt-5 grid grid-cols-2 gap-[14px] lg:grid-cols-6'>
             {chapters.map((chapter, index) => (
               <div
                 key={chapter.id}

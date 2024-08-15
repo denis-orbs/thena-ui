@@ -1,3 +1,4 @@
+import AlertCirlceSmallIcon from '~/svgs/alert-circle-small.svg'
 import AlertTriangleIcon from '~/svgs/alert-triangle.svg'
 import AnalyticsIcon from '~/svgs/analytics.svg'
 import ArrowDownIcon from '~/svgs/arrow-down.svg'
@@ -13,9 +14,11 @@ import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
+import CopyIcon from '~/svgs/copy.svg'
 import DiamondIcon from '~/svgs/diamond.svg'
 import EigenBadgeIcon from '~/svgs/eigen_badge.svg'
 import EtherFiBadgeIcon from '~/svgs/etherfi_badge.svg'
+import ExchangeIcon from '~/svgs/exchange.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
@@ -36,6 +39,7 @@ import RefreshIcon from '~/svgs/refresh.svg'
 import SearchIcon from '~/svgs/search.svg'
 import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
+import ShareIcon from '~/svgs/share.svg'
 import SplitIcon from '~/svgs/split.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 import StarLineSmall from '~/svgs/star-line-small.svg'
@@ -49,6 +53,7 @@ import ZoomInIcon from '~/svgs/zoom-in.svg'
 import ZoomOutIcon from '~/svgs/zoom-out.svg'
 
 export {
+  AlertCirlceSmallIcon,
   AlertTriangleIcon,
   AnalyticsIcon,
   ArrowDownIcon,
@@ -64,9 +69,11 @@ export {
   CheckPurpleLargeIcon,
   ChevronDownIcon,
   CoinsStackedIcon,
+  CopyIcon,
   DiamondIcon,
   EigenBadgeIcon,
   EtherFiBadgeIcon,
+  ExchangeIcon,
   ExternalIcon,
   HamburgerIcon,
   InfoCircleGradient,
@@ -87,6 +94,7 @@ export {
   SearchIcon,
   SettingsIcon,
   ShadowIcon,
+  ShareIcon,
   SplitIcon,
   StarLineLargeIcon,
   StarLineSmall,
