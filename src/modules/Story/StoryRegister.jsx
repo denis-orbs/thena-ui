@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import Input from '@/components/input'
+import LabelTooltip from '@/components/label/LabelTooltip'
 
 const initialFormState = {
   evmAddress: '',
@@ -36,13 +37,9 @@ export default function StoryRegister({ isRegistered }) {
             <h2>{t('Register Now')}</h2>
             <div>
               <div>
+                <LabelTooltip className='mb-1.5' required label='Select Country' />
                 {/* TODO: Common Select component */}
-                <label htmlFor='countries' className='mb-1.5 block text-base font-medium text-neutral-50'>
-                  {t('Select Country')}
-                </label>
                 <select
-                  id='countries'
-                  name='country'
                   className='h-11 w-full cursor-pointer rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 caret-transparent focus:border-neutral-500'
                   value={formState.country}
                   onChange={handleChange('country')}
@@ -56,13 +53,16 @@ export default function StoryRegister({ isRegistered }) {
               </div>
             </div>
             <div>
-              <label htmlFor='emailAddress' className='mb-1.5 block text-base font-medium text-neutral-50'>
-                {t('Your Email')}
-              </label>
+              <LabelTooltip
+                className='mb-1.5'
+                required
+                label='Your Email'
+                tooltip='Email Label Tooltip'
+                showInfoIcon
+                id='email-input'
+              />
               <Input
                 type='email'
-                id='emailAddress'
-                name='email'
                 placeholder={t('Email Address')}
                 val={formState.email}
                 onChange={handleChange('email')}
