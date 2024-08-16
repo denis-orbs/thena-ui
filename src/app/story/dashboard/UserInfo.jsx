@@ -12,9 +12,10 @@ import NextImage from '@/components/image/NextImage'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import dayjs from '@/lib/dateFormat'
 import { cn, formatAddress } from '@/lib/utils'
-import { DiamondIcon, ExternalIcon, StarLineSmall } from '@/svgs'
+import { ExternalIcon } from '@/svgs'
 
 import { ProfileButton } from './ProfileButton'
+import { RewardIconTooltip } from './RewardIconTooltip'
 
 dayjs.extend(localizedFormat)
 const tarea_regex = /^(http|https)/
@@ -100,7 +101,7 @@ export function UserInfo({ userInfo }) {
           <Link href='/'>
             <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
               <div className='flex items-center'>
-                <StarLineSmall className='h-5 w-5 lg:mr-1' />
+                <RewardIconTooltip rewardType='star' id='user-info_earned-point' className='mb-1' />
                 <TextHeading className='text-lg'>320</TextHeading>
               </div>
               <TextSubHeading className='text-sm'>{t('Earned points')}</TextSubHeading>
@@ -109,7 +110,7 @@ export function UserInfo({ userInfo }) {
           <Link href='/'>
             <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
               <div className='flex items-center'>
-                <DiamondIcon className='h-5 w-5 lg:mr-1' />
+                <RewardIconTooltip rewardType='diamond' id='user-info_earned-fragments' className='mb-1' />
                 <TextHeading className='text-lg'>5</TextHeading>
               </div>
               <TextSubHeading className='text-sm'>{t('Earned fragments')}</TextSubHeading>

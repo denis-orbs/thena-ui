@@ -36,7 +36,27 @@ export function ChaptersOverview() {
         {
           id: 3,
           index: 3,
-          title: 'Join Xspace',
+          title: 'Tweet with [Hashtag] and tag @ThenaFi_',
+          completed: false,
+          reward: {
+            amount: 10,
+            type: 'star',
+          },
+        },
+        {
+          id: 4,
+          index: 4,
+          title: 'Daily Swap-in',
+          completed: false,
+          reward: {
+            amount: 10,
+            type: 'star',
+          },
+        },
+        {
+          id: 5,
+          index: 5,
+          title: 'Refer your friends',
           completed: false,
           reward: {
             amount: 10,
@@ -75,16 +95,16 @@ export function ChaptersOverview() {
       index: 4,
       title: 'Coming Soon...',
     },
-    {
-      id: 5,
-      index: 5,
-      title: 'Coming Soon...',
-    },
-    {
-      id: 6,
-      index: 6,
-      title: 'Coming Soon...',
-    },
+    // {
+    //   id: 5,
+    //   index: 5,
+    //   title: 'Coming Soon...',
+    // },
+    // {
+    //   id: 6,
+    //   index: 6,
+    //   title: 'Coming Soon...',
+    // },
   ]
 
   return (
@@ -92,7 +112,7 @@ export function ChaptersOverview() {
       <TextHeading className='block font-archia text-3xl font-semibold leading-9'>
         {t('All Chapters Overview')}
       </TextHeading>
-      <div className='mt-6 grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12'>
+      <div className='mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-[30px]'>
         {chapters.map(chapter => (
           <ChapterOverviewProcess chapter={chapter} key={chapter.id} />
         ))}
