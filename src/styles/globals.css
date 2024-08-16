@@ -273,6 +273,10 @@ input[type='number'] {
   box-shadow: unset !important;
 }
 
-.border-story-gradient {
-  @apply bg-gradient-to-b from-start-gradient to-end-gradient;
+.border-gradient-secondary {
+  @apply bg-gradient-to-b from-gradient-secondary-start to-gradient-secondary-end;
+}
+
+.text-gradient-tertiary {
+  @apply bg-gradient-to-r from-gradient-tertiary-start to-gradient-tertiary-end bg-clip-text text-transparent;
 }

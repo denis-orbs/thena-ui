@@ -40,27 +40,19 @@ export function CountDownNextChapter() {
   return (
     <div className='mt-6 grid grid-cols-4 gap-4'>
       <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
-        <p className='from-gradient-tertiary-start to-gradient-tertiary-end inline-block bg-gradient-to-r bg-clip-text text-3xl font-bold leading-6  text-transparent'>
-          {timeLeft.days}
-        </p>
+        <p className='text-gradient-tertiary inline-block text-3xl font-bold leading-6'>{timeLeft.days}</p>
         <span className='text-base leading-5 text-gray-400'>{t('Days')}</span>
       </div>
       <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
-        <p className='from-gradient-tertiary-start to-gradient-tertiary-end inline-block bg-gradient-to-r bg-clip-text text-3xl font-bold leading-6  text-transparent'>
-          {timeLeft.hours}
-        </p>
+        <p className=' text-gradient-tertiary inline-block text-3xl font-bold leading-6'>{timeLeft.hours}</p>
         <span className='text-base leading-5 text-gray-400'>{t('Hours')}</span>
       </div>
       <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
-        <p className='from-gradient-tertiary-start to-gradient-tertiary-end inline-block bg-gradient-to-r bg-clip-text text-3xl font-bold leading-6  text-transparent'>
-          {timeLeft.minutes}
-        </p>
+        <p className=' text-gradient-tertiary inline-block text-3xl font-bold leading-6'>{timeLeft.minutes}</p>
         <span className='text-base leading-5 text-gray-400'>{t('Minutes')}</span>
       </div>
       <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
-        <p className='from-gradient-tertiary-start to-gradient-tertiary-end inline-block bg-gradient-to-r bg-clip-text text-3xl font-bold leading-6  text-transparent'>
-          {timeLeft.seconds}
-        </p>
+        <p className=' text-gradient-tertiary inline-block text-3xl font-bold leading-6'>{timeLeft.seconds}</p>
         <span className='text-base leading-5 text-gray-400'>{t('Seconds')}</span>
       </div>
     </div>

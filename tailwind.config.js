@@ -85,8 +85,6 @@ export default {
           },
         },
         purple: 'rgba(123, 10, 121, 1)',
-        'start-gradient': 'rgba(220, 0, 212, 0.5)',
-        'end-gradient': 'rgba(142, 66, 255, 0)',
       },
       backgroundImage: {
         'custom-gradient': 'linear-gradient(90deg, #B386FF 0%, #FF86FA 100%)',

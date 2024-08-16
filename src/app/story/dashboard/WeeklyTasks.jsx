@@ -102,9 +102,9 @@ export function WeeklyTasks() {
                 key={chapter.id}
                 type='button'
                 className={cn(
-                  'rounded-xl border-[1px] border-neutral-900 bg-neutral-900  py-[13px] text-[15px] font-medium leading-[35px]',
+                  'cursor-pointer rounded-xl border-[1px] border-neutral-900 bg-neutral-900 py-[13px] text-[15px] font-medium leading-[35px]',
                   chapter.id === selectedChapter.id && 'border-purple',
-                  !chapter.available ? 'cursor-not-allowed' : 'hover:border-purple cursor-pointer',
+                  !chapter.available ? 'cursor-not-allowed' : 'hover:border-purple',
                 )}
                 disabled={!chapter.available}
                 onClick={() => {

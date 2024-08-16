@@ -24,7 +24,7 @@ export default function StoryRegister({ isRegistered }) {
   }
 
   return (
-    <div className='border-story-gradient h-[360px] rounded-xl p-px md:w-[610px]'>
+    <div className='border-gradient-secondary h-[360px] rounded-xl p-px md:w-[610px]'>
       <Box className='h-full rounded-[11px] bg-neutral-900 px-8'>
         {isRegistered ? (
           // TODO: Add element here
