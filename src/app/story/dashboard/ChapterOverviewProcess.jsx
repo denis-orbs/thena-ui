@@ -5,7 +5,7 @@ import { Check2Icon } from '@/svgs'
 export function ChapterOverviewProcess({ chapter }) {
   const t = useTranslations()
   return (
-    <div className='min-h-80 rounded-xl bg-gradient-to-b from-gradient-secondary-start to-gradient-secondary-end p-[1px]'>
+    <div className='from-gradient-secondary-start to-gradient-secondary-end min-h-80 rounded-xl bg-gradient-to-b p-[1px]'>
       <div className='h-full rounded-[11px] bg-neutral-900 px-6 py-5'>
         <p className='text-center text-base font-medium leading-5 text-gray-400'>
           1/3 {t('Tasks completed').toLowerCase()}
@@ -20,7 +20,7 @@ export function ChapterOverviewProcess({ chapter }) {
         </div>
         <hr className='my-4 border-neutral-600' />
         <div>
-          <p className='inline-block bg-gradient-to-r from-gradient-primary-start to-gradient-primary-end bg-clip-text text-base font-medium leading-5 tracking-[.03em] text-transparent'>
+          <p className='from-gradient-primary-start to-gradient-primary-end inline-block bg-gradient-to-r bg-clip-text text-base font-medium leading-5 tracking-[.03em] text-transparent'>
             {t('Chapter').toUpperCase()} {chapter.index}
           </p>
           <h3 className='mb-4 mt-1 text-3xl font-semibold'>{chapter.title}</h3>

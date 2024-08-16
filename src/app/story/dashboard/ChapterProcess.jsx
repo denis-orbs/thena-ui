@@ -5,7 +5,7 @@ import { ArrowForwardSmallIcon, DiamondIcon, StarLineSmall } from '@/svgs'
 export function ChapterProcess({ chapter }) {
   const t = useTranslations()
   return (
-    <div className='rounded-xl border-[1px] border-purple bg-neutral-900 px-4 py-6'>
+    <div className='border-purple rounded-xl border bg-neutral-900 px-4 py-6'>
       <div id='week-process_heading'>
         <p className='text-center text-[18px] font-medium leading-5'>
           {`0 / 6 ${t('Chapters completed').toLowerCase()}`}
@@ -20,7 +20,7 @@ export function ChapterProcess({ chapter }) {
         </div>
         <hr className='my-5  border-neutral-600' />
         <div>
-          <p className='inline-block bg-gradient-to-r from-gradient-primary-start to-gradient-primary-end bg-clip-text text-base font-medium leading-5 tracking-[.03em] text-transparent'>
+          <p className='from-gradient-primary-start to-gradient-primary-end inline-block bg-gradient-to-r bg-clip-text text-base font-medium leading-5 tracking-[.03em] text-transparent'>
             {t('Chapter').toUpperCase()} {chapter.index}
           </p>
           <h3 className='text-3xl font-semibold'>{chapter.title}</h3>
