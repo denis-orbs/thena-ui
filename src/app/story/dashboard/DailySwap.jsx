@@ -63,8 +63,8 @@ export function DailySwap() {
     <Box className='space-y-4'>
       <div className='flex justify-between'>
         <div>
-          <p className='m-0 font-archia text-3xl font-semibold leading-9'>{t('Daily Check-In')}</p>
-          <p className='!mt-2 text-base leading-5 text-gray-400'>{t('Daily Check-In description')}</p>
+          <p className='m-0 font-archia text-3xl font-semibold leading-9'>{t('Daily Swap')}</p>
+          <p className='!mt-2 text-base leading-5 text-gray-400'>{t('Daily Swap description')}</p>
         </div>
         <a href='./'>
           <div className='rounded-lg bg-fuchsia-600 px-5 py-2 text-center leading-5 lg:mt-0 lg:px-4 lg:py-2.5 lg:text-base'>
@@ -78,20 +78,21 @@ export function DailySwap() {
           <div key={swap.id}>
             <div
               className={cn(
-                'hover:border-purple relative flex flex-col items-center rounded-xl border-2 border-neutral-800 bg-neutral-800 py-3',
+                'relative flex flex-col items-center rounded-xl border-2 border-neutral-800 bg-neutral-800 px-[19px] py-3 hover:border-purple',
                 swap.checked ? 'border-purple' : '',
               )}
             >
               <p className='font-archia text-[22px] leading-7'>{`${t('Day')} ${swap.index}`}</p>
+              <hr className='my-4 w-full border-neutral-600' />
               {swap.checked ? (
                 <CheckPurpleLargeIcon className='mt-3 h-[60px] w-[60px]' />
               ) : (
                 <StarLineLargeIcon className='mt-3 h-[60px] w-[60px]' />
               )}
-              <p className='text-[18px] leading-7'>{`+${swap.ratio} ${t('PTS')}`}</p>
+              <p className='text-[18px] leading-7'>{`+${swap.pts} ${t('PTS')}`}</p>
               {swap.ratio !== 1 && (
                 <div className='absolute right-[-2px] top-[-2px] rounded-bl-xl rounded-tr-xl bg-[rgba(220,0,212,1)] px-[5px] text-base font-semibold leading-7'>
-                  {swap.pts}X
+                  {swap.ratio}X
                 </div>
               )}
             </div>

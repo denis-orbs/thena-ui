@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
-import { Lock2Icon } from '@/svgs'
+import { ChapterLogoIcon, Lock2Icon } from '@/svgs'
 
 import { ChapterProcess } from './ChapterProcess'
 import { CountDownNextChapter } from './CountDownNextChapter'
@@ -53,7 +53,7 @@ export function WeeklyTasks() {
       id: 2,
       index: 2,
       title: 'Concentrating on Liquidity',
-      available: false,
+      available: true,
       tasks: [
         {
           id: 3,
@@ -77,14 +77,14 @@ export function WeeklyTasks() {
       id: 4,
       index: 4,
     },
-    {
-      id: 5,
-      index: 5,
-    },
-    {
-      id: 6,
-      index: 6,
-    },
+    // {
+    //   id: 5,
+    //   index: 5,
+    // },
+    // {
+    //   id: 6,
+    //   index: 6,
+    // },
   ]
   const [selectedChapter, setSelectedChapter] = useState(chapters[0])
 
@@ -96,7 +96,7 @@ export function WeeklyTasks() {
       </TextSubHeading>
       <div className='mt-5 grid grid-cols-12 gap-8 lg:gap-12'>
         <div className='col-span-12 lg:col-span-7'>
-          <div className='mt-5 grid grid-cols-6 gap-[14px]'>
+          <div className='mt-5 grid grid-cols-2 gap-[14px] lg:grid-cols-4'>
             {chapters.map((chapter, index) => (
               <div
                 key={chapter.id}
@@ -114,7 +114,11 @@ export function WeeklyTasks() {
                 }}
               >
                 <div className='flex flex-row items-center justify-center '>
-                  {!chapter.available && <Lock2Icon className='mr-1 h-5 w-5' />}
+                  {!chapter.available ? (
+                    <Lock2Icon className='mr-1 h-5 w-5' />
+                  ) : (
+                    <ChapterLogoIcon className='mr-1 h-5 w-5' />
+                  )}
                   <span className={!chapter.available ? 'opacity-40' : ''}>{`${t('Chapter')} ${index + 1}`}</span>
                 </div>
               </div>
