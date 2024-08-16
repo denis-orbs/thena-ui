@@ -78,7 +78,7 @@ export function DailySwap() {
           <div key={swap.id}>
             <div
               className={cn(
-                'relative flex flex-col items-center rounded-xl border-2 border-neutral-800 bg-neutral-800 py-3 hover:border-purple',
+                'hover:border-purple relative flex flex-col items-center rounded-xl border-2 border-neutral-800 bg-neutral-800 py-3',
                 swap.checked ? 'border-purple' : '',
               )}
             >

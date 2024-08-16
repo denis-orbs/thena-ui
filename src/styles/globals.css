@@ -272,3 +272,7 @@ input[type='number'] {
   border: 2px solid #b000aa;
   box-shadow: unset !important;
 }
+
+.border-story-gradient {
+  @apply bg-gradient-to-b from-start-gradient to-end-gradient;
+}

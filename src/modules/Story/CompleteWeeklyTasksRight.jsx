@@ -24,7 +24,7 @@ export default function CompleteWeeklyTasksRight() {
                 <div className='clo-span-1'>
                   <CheckIcon />
                 </div>
-                <li className='col-span-12'>{t('Mint .thena ID')}</li>
+                <li className='col-span-12'>{t('Mint thena ID')}</li>
               </ul>
             </div>
           </div>

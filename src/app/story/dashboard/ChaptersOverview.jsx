@@ -16,7 +16,7 @@ export function ChaptersOverview() {
         {
           id: 1,
           index: 1,
-          title: 'Mint .thena ID',
+          title: 'Mint thena ID',
           completed: true,
           reward: {
             amount: 1,

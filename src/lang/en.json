@@ -506,7 +506,6 @@
   "Transfer theNFTs": "Transfer theNFTs",
   "To Address": "To Address",
   "Register Now": "Register Now",
-  "Your EVM Address": "Your EVM Address",
   "EVM Address": "EVM Address",
   "Select Country": "Select Country",
   "Your Email": "Your Email",
@@ -554,10 +553,12 @@
   "Concentrating on Liquidity": "Concentrating on Liquidity",
   "Join one of the BNB Chain sponsored trading competitions": "Join one of the BNB Chain sponsored trading competitions",
   "Swap THE with any token": "Swap THE with any token",
-  "Mint .thena ID": "Mint .thena ID",
+  "Mint thena ID": "Mint .thena ID",
   "Stake into THE/BNB (any CL version)": "Stake into THE/BNB (any CL version)",
   "Start": "Start",
   "Check-In Daily": "Check-In Daily",
   "Invite Your Friends": "Invite Your Friends",
-  "Join THE Adventure Now": "Join THE Adventure Now"
+  "Join THE Adventure Now": "Join THE Adventure Now",
+  "Leaderboard": "Leaderboard",
+  "Referral": "Referral"
 }

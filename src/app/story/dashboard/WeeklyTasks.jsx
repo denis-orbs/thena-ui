@@ -20,7 +20,7 @@ export function WeeklyTasks() {
         {
           id: 1,
           index: 1,
-          title: 'Mint .thena ID',
+          title: 'Mint thena ID',
           completed: true,
           reward: {
             amount: 1,
@@ -104,7 +104,7 @@ export function WeeklyTasks() {
                 className={cn(
                   'rounded-xl border-[1px] border-neutral-900 bg-neutral-900  py-[13px] text-[15px] font-medium leading-[35px]',
                   chapter.id === selectedChapter.id && 'border-purple',
-                  !chapter.available ? 'cursor-not-allowed' : 'cursor-pointer hover:border-purple',
+                  !chapter.available ? 'cursor-not-allowed' : 'hover:border-purple cursor-pointer',
                 )}
                 disabled={!chapter.available}
                 onClick={() => {
