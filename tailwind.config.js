@@ -70,7 +70,21 @@ export default {
         },
         rose: '#FEE8E6',
         focus: '#6666F9',
-        gradient: 'linear-gradient(90deg, #B386FF 0%, #FF86FA 100%)',
+        gradient: {
+          primary: {
+            start: '#B386FF',
+            end: '#FF86FA',
+          },
+          secondary: {
+            start: 'rgba(220, 0, 212, 0.5)',
+            end: 'rgba(142, 66, 255, 0)',
+          },
+          tertiary: {
+            start: '#C72AD0',
+            end: '#AA23DB',
+          },
+        },
+        purple: 'rgba(123, 10, 121, 1)',
         'start-gradient': 'rgba(220, 0, 212, 0.5)',
         'end-gradient': 'rgba(142, 66, 255, 0)',
       },
