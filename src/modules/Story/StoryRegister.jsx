@@ -3,13 +3,24 @@ import React, { useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
+import Dropdown from '@/components/dropdown'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
+import { SuccessIcon } from '@/svgs'
+
+import ChevronRightIcon from './ChevronRightIcon'
 
 const initialFormState = {
   evmAddress: '',
   country: null,
   email: '',
+}
+
+const countries = {
+  US: 'United States',
+  CA: 'Canada',
+  FR: 'France',
+  DE: 'Germany',
 }
 
 export default function StoryRegister({ isRegistered }) {
@@ -28,28 +39,39 @@ export default function StoryRegister({ isRegistered }) {
       <Box className='h-full rounded-[11px] bg-neutral-900 px-8'>
         {isRegistered ? (
           // TODO: Add element here
-          <div className='flex flex-col'>
-            <p>Test text</p>
-            <PrimaryButton className='w-full'>{t('Join now')}</PrimaryButton>
+          <div className='flex flex-col justify-center'>
+            <SuccessIcon className='mx-auto h-20 w-20' />
+            <p className='mx-auto mb-10 max-w-[400px] text-center text-[30px] font-semibold'>
+              {t('You Have Successfully Registered for THE Story of THENA Adventure')}
+            </p>
+            <PrimaryButton className='w-full'>
+              {t('Go to dashboard')}
+              <ChevronRightIcon />
+            </PrimaryButton>
           </div>
         ) : (
           <div className='my-auto flex flex-col gap-6'>
-            <h2>{t('Register Now')}</h2>
+            <h2>{t('Become a Thenian')}</h2>
             <div>
               <div>
                 <LabelTooltip className='mb-1.5' required label='Select Country' />
                 {/* TODO: Common Select component */}
-                <select
-                  className='h-11 w-full cursor-pointer rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 caret-transparent focus:border-neutral-500'
-                  value={formState.country}
-                  onChange={handleChange('country')}
-                >
-                  <option selected>Choose</option>
-                  <option value='US'>United States</option>
-                  <option value='CA'>Canada</option>
-                  <option value='FR'>France</option>
-                  <option value='DE'>Germany</option>
-                </select>
+                <Dropdown
+                  className='w-full'
+                  data={Object.keys(countries).map(item => ({
+                    label: item,
+                  }))}
+                  selected={formState.country}
+                  setSelected={ele => {
+                    setFormState(prev => ({
+                      ...prev,
+                      country: ele.label,
+                    }))
+                  }}
+                  z
+                  onChange
+                  placeHolder='Choose'
+                />
               </div>
             </div>
             <div>

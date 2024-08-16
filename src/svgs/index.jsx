@@ -51,6 +51,7 @@ import ShareIcon from '~/svgs/share.svg'
 import SplitIcon from '~/svgs/split.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 import StarLineSmall from '~/svgs/star-line-small.svg'
+import SuccessIcon from '~/svgs/successicon.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
@@ -116,6 +117,7 @@ export {
   SplitIcon,
   StarLineLargeIcon,
   StarLineSmall,
+  SuccessIcon,
   SwitchHorizontalV2Icon,
   SwitchVerticalIcon,
   TelegramIcon,
