@@ -280,3 +280,7 @@ input[type='number'] {
 .text-gradient-tertiary {
   @apply bg-gradient-to-r from-gradient-tertiary-start to-gradient-tertiary-end bg-clip-text text-transparent;
 }
+
+.text-gradient-primary {
+  @apply bg-gradient-to-r from-gradient-primary-start to-gradient-primary-end bg-clip-text text-transparent;
+}

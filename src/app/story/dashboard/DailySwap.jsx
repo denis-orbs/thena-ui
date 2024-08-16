@@ -1,6 +1,7 @@
 import { useTranslations } from 'use-intl'
 
 import Box from '@/components/box'
+import { PrimaryButton } from '@/components/buttons/Button'
 import { cn } from '@/lib/utils'
 import { ArrowForwardSmallIcon, CheckPurpleLargeIcon, StarLineLargeIcon } from '@/svgs'
 
@@ -66,12 +67,12 @@ export function DailySwap() {
           <p className='m-0 font-archia text-3xl font-semibold leading-9'>{t('Daily Swap')}</p>
           <p className='!mt-2 text-base leading-5 text-gray-400'>{t('Daily Swap description')}</p>
         </div>
-        <a href='./'>
-          <div className='rounded-lg bg-fuchsia-600 px-5 py-2 text-center leading-5 lg:mt-0 lg:px-4 lg:py-2.5 lg:text-base'>
+        <div>
+          <PrimaryButton>
             <span className='mr-1 '>{t('Swap now')}</span>
             <ArrowForwardSmallIcon className='inline-block h-4 w-4' />
-          </div>
-        </a>
+          </PrimaryButton>
+        </div>
       </div>
       <div className='grid grid-cols-2 gap-5 lg:grid-cols-7'>
         {dailySwap.map(swap => (

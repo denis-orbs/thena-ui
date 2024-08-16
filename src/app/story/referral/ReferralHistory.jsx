@@ -35,7 +35,7 @@ export function ReferralHistory() {
   ]
 
   return (
-    <div className='rounded-xl bg-gradient-to-b from-gradient-secondary-start to-gradient-secondary-end p-[1px]'>
+    <div className='border-gradient-secondary rounded-xl p-[1px]'>
       <div className='rounded-xl bg-neutral-900 p-6'>
         <div>
           <TextHeading className='font-archia text-3xl font-semibold'>{t('Referral History')}</TextHeading>

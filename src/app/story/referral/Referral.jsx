@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { AlertCirlceSmallIcon, StarLineSmall } from '@/svgs'
+import { StarLineSmall } from '@/svgs'
 
 import { HowItWork } from './HowItWork'
 import { ReferralHistory } from './ReferralHistory'
@@ -22,14 +22,12 @@ export function Referral() {
           <TextHeading className='block text-2xl'>5</TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
             {t('Registered Referrals')}
-            <AlertCirlceSmallIcon className='ml-1 inline-block h-4 w-4' />
           </TextSubHeading>
         </div>
         <div className='rounded-xl bg-neutral-900 p-6'>
           <TextHeading className='block text-2xl'>3</TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
             {t('Successful Referrals')}
-            <AlertCirlceSmallIcon className='ml-1 inline-block h-4 w-4' />
           </TextSubHeading>
         </div>
         <div className='rounded-xl bg-neutral-900 p-6'>
@@ -39,15 +37,14 @@ export function Referral() {
           </TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
             {t('Your Earnings')}
-            <AlertCirlceSmallIcon className='ml-1 inline-block h-4 w-4' />
           </TextSubHeading>
         </div>
       </div>
-      <div className='mt-8 grid grid-cols-1 gap-5 md:grid-cols-12'>
-        <div className='md:col-span-7'>
+      <div className='mt-8 grid grid-cols-1 gap-5 lg:grid-cols-12'>
+        <div className='lg:col-span-7'>
           <ReferralHistory />
         </div>
-        <div className='md:col-span-5'>
+        <div className='lg:col-span-5'>
           <ShareReferralLink />
         </div>
       </div>

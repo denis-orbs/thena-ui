@@ -5,7 +5,7 @@ import { ChapterLogoIcon, Check2Icon } from '@/svgs'
 export function ChapterOverviewProcess({ chapter }) {
   const t = useTranslations()
   return (
-    <div className='min-h-80 rounded-xl bg-gradient-to-b from-gradient-secondary-start to-gradient-secondary-end p-[1px]'>
+    <div className='border-gradient-secondary min-h-80 rounded-xl p-[1px]'>
       <div className='h-full rounded-[11px] bg-neutral-900 px-6 py-5'>
         <p className='text-center text-base font-medium leading-5 text-gray-400'>
           1/3 {t('Tasks completed').toLowerCase()}
@@ -22,7 +22,7 @@ export function ChapterOverviewProcess({ chapter }) {
         <div>
           <div className='flex items-center'>
             <ChapterLogoIcon className='inlin h-5 w-5' />
-            <p className='inline-block bg-gradient-to-r from-gradient-primary-start to-gradient-primary-end bg-clip-text text-base font-medium leading-5 tracking-[.03em] text-transparent'>
+            <p className='text-gradient-primary inline-block text-base font-medium leading-5 tracking-[.03em]'>
               {t('Chapter').toUpperCase()} {chapter.index}
             </p>
           </div>
@@ -34,7 +34,7 @@ export function ChapterOverviewProcess({ chapter }) {
           {chapter.tasks?.map(task => (
             <div className='mt-3 flex justify-between' key={task.id}>
               <span className='inline-block max-w-[calc(100%-20px)] text-gray-400'> • {task.title}</span>
-              <Check2Icon className='inline-block h-5 w-5' />
+              {task.completed && <Check2Icon className='inline-block h-5 w-5' />}
             </div>
           ))}
         </div>
