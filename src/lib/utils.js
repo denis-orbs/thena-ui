@@ -79,3 +79,23 @@ export const wrappedAddress = asset =>
   !asset ? null : asset.address === 'BNB' ? WBNB[asset.chainId].address.toLowerCase() : asset.address
 
 export const unwrappedSymbol = asset => (!asset ? null : asset.symbol === 'WBNB' ? 'BNB' : asset.symbol)
+
+export const sleep = delay =>
+  new Promise(resolve => {
+    setTimeout(resolve, delay)
+  })
+
+export const retry = async (callback, breakCondition, maxRetries = 3) => {
+  let retries = 0
+
+  while (retries < maxRetries) {
+    if (breakCondition) {
+      break
+    }
+
+    await callback()
+
+    retries++
+    await sleep(1000)
+  }
+}
