@@ -8,7 +8,7 @@ export function ProfileButton() {
 
   return (
     <div className=''>
-      <Link href='/arena/profile/edit'>
+      <Link href='/story/edit-profile'>
         <EmphasisButton
           className='text-xs leading-5 lg:px-4 lg:py-3 lg:text-base'
           style={{

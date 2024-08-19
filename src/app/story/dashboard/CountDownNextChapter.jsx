@@ -3,8 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
 export function CountDownNextChapter() {
-  const targetDate = moment(new Date()).add(3, 'days').toISOString()
-
+  const targetDate = '2025-01-01T00:00:00.000Z'
   const t = useTranslations()
   const calculateTimeLeft = useCallback(() => {
     const difference = moment(targetDate).diff(moment())

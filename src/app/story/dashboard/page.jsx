@@ -3,16 +3,25 @@
 import React from 'react'
 
 import Loading from '@/app/loading'
+import { UserInfoContextProvider } from '@/context/campaignParticipantsContext'
+import { ChapterTasksProvider } from '@/context/chapterTasksContext'
+import useWallet from '@/lib/wallets/useWallet'
 
 import { ProfilePage } from './ProfilePage'
 
 function Profile() {
-  const address = {}
-  if (!address) {
+  const { account } = useWallet()
+  if (!account) {
     return <Loading />
   }
 
-  return <ProfilePage address={address} />
+  return (
+    <UserInfoContextProvider>
+      <ChapterTasksProvider>
+        <ProfilePage address={account.toLowerCase()} />
+      </ChapterTasksProvider>
+    </UserInfoContextProvider>
+  )
 }
 
 export default Profile
