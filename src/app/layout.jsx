@@ -50,6 +50,13 @@ export const metadata = {
 
 export const revalidate = 30
 
+const metaCrmConfig = {
+  'data-entity-id': '64df0a122effea1f2889adcc',
+  integrity: 'sha384-XXR5g7lSPTOllUzRbn8qgjH1nBfNmJ/wKfvyRO+7r4ldJxMGRCHpjY2jUm8mGsTr',
+  apikey: 'n4crf9vaq9',
+  ecosystem: 'EVM',
+}
+
 export default function RootLayout({ children }) {
   const analyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
   return (
@@ -57,14 +64,9 @@ export default function RootLayout({ children }) {
       <head>
         <script
           src='https://attribution.metacrm.inc/tracking-1-2-0.js'
-          data-entity-id='64df0a122effea1f2889adcc'
           id='metacrm-tracking'
-          integrity='sha384-XXR5g7lSPTOllUzRbn8qgjH1nBfNmJ/wKfvyRO+7r4ldJxMGRCHpjY2jUm8mGsTr'
           crossOrigin='anonymous'
-          // eslint-disable-next-line react/no-unknown-property
-          apiKey='n4crf9vaq9'
-          // eslint-disable-next-line react/no-unknown-property
-          ecoSystem='EVM'
+          {...metaCrmConfig}
           async
         />
       </head>

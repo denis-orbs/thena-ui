@@ -504,5 +504,6 @@
   "Bridge": "Bridge",
   "Unstake and Transfer": "解除质押和转移",
   "Transfer theNFTs": "转移theNFTs",
-  "To Address": "转移到地址"
+  "To Address": "转移到地址",
+  "Deposit Not Allowed Description": "Deposit is currently not allowed. Please try again later."
 }

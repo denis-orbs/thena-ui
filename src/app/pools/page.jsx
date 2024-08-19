@@ -180,9 +180,19 @@ export default function PoolsPage() {
 
   const finalPools = useMemo(
     () => {
+      // Hard-coded for wstETH pools on top
+      let data = []
+
+      const wstETHPools = ['0xd688108301df5d939bf272eb378429488a72ea52', '0xfa71b01d2fe9337fec17a7b5af294f8ef6040f3a']
+      if (Array.isArray(sortedData) && sortedData.length) {
+        data = sortedData
+          .filter(item => wstETHPools.includes(item.address))
+          .concat(sortedData.filter(item => !wstETHPools.includes(item.address)))
+      }
+
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
 
-      return sortedData.map(pool => ({
+      return data.map(pool => ({
         pair: (
           <div className='flex items-center gap-3'>
             <IconGroup
