@@ -9,6 +9,7 @@ import ArrowRightIcon from '~/svgs/arrow-right.svg'
 import BankIcon from '~/svgs/bank.svg'
 import CalendarIcon from '~/svgs/calendar.svg'
 import ChapterLogoIcon from '~/svgs/chapter-logo.svg'
+import ChapterUnlockIcon from '~/svgs/chapter-unlock.svg'
 import CheckIcon from '~/svgs/check.svg'
 import CheckPurpleIcon from '~/svgs/check-purple.svg'
 import CheckPurpleLargeIcon from '~/svgs/check-purple-large.svg'
@@ -75,6 +76,7 @@ export {
   BankIcon,
   CalendarIcon,
   ChapterLogoIcon,
+  ChapterUnlockIcon,
   Check2Icon,
   CheckCircleIcon,
   CheckGradientIcon,

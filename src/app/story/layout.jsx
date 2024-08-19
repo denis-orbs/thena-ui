@@ -12,9 +12,7 @@ export const metadata = {
 export default function EarnRewardLayout({ children }) {
   return (
     <main className='desktop-bg flex min-h-screen flex-col'>
-      <section className='layout-container mt-[128px] lg:mt-[176px]'>
-        <Suspense fallback={<Loading />}>{children}</Suspense>
-      </section>
+      <Suspense fallback={<Loading />}>{children}</Suspense>
       <Footer />
     </main>
   )

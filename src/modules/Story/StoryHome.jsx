@@ -1,6 +1,9 @@
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 
+import { PrimaryButton } from '@/components/buttons/Button'
+
+import Chapters from './Chapters'
 import StoryRegister from './StoryRegister'
 
 function StoryHome({ isUpcoming, isRegistered }) {
@@ -20,8 +23,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
                 height={793}
                 className='w-full rounded-[10px]'
               />
-              {/* TOOD: Change font size, change text */}
-              <div className='absolute bottom-0 left-0 w-full px-4 pb-6 text-center text-[36px] font-semibold text-white md:text-[72px] lg:left-[10%] lg:w-4/5 lg:pb-9'>
+              <div className='absolute bottom-0 left-0 w-full px-4 pb-6 text-center font-archia text-[36px] font-semibold text-white max-sm:text-[28px] md:text-[72px] lg:left-[10%] lg:w-4/5 lg:pb-9'>
                 {t('Get Ready for THE Story of THENA')}
               </div>
             </div>
@@ -34,17 +36,37 @@ function StoryHome({ isUpcoming, isRegistered }) {
       ) : (
         // TODO: add background
         <div>
-          <div className='mb-9 flex justify-center'>
-            <StoryRegister isRegistered={isRegistered} />
-          </div>
+          <div className='z-10 mb-[115px]'>
+            <div className='mb-9 flex justify-center'>
+              <StoryRegister isRegistered={isRegistered} />
+            </div>
 
-          {/* TODO: Add components */}
-          <p className='mx-auto mb-5 max-w-[743px] text-center text-[36px] font-semibold md:text-[72px]'>
-            {t('THE Story of THENA')}
-          </p>
-          <p className='mx-auto max-w-[743px] text-center text-[20px] text-[#D1D0D2]'>
-            {t('Embark on The Story of THENA')}
-          </p>
+            {/* TODO: Add components */}
+            <p className='mx-auto mb-5 max-w-[743px] text-center font-archia text-[36px] font-semibold md:text-[72px]'>
+              {t('THE Story of THENA')}
+            </p>
+            <p className='mx-auto max-w-[743px] text-center text-[20px] text-[#D1D0D2]'>
+              {t('Embark on The Story of THENA')}
+            </p>
+          </div>
+          {isRegistered && (
+            <div className='mx-auto max-w-[850px]'>
+              <Chapters showCountDownNextChapter />
+              <div className='h- mt-[124px] flex max-w-[813px] flex-col justify-center'>
+                <p className='mb-5 text-center font-archia text-[70px] font-semibold'>
+                  {t('Unlock Over $30,000 in Rewards')}
+                </p>
+                <p className='mb-8 text-center'>
+                  {t('Dive into The Story of THENA and stand a chance to win big1')}
+                  <span className='text-[#F0B90B]'>&nbsp;{t('BNB Chain')}.</span>
+                  {t('Dive into The Story of THENA and stand a chance to win big2')}
+                </p>
+                <div className='mx-auto'>
+                  <PrimaryButton className='h-11 w-[174px]'>{t('Start Your Chapter')}</PrimaryButton>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>
