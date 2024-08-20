@@ -83,7 +83,6 @@ export default function StoryRegister({ isRegistered }) {
     <div className='border-gradient-secondary rounded-xl p-px md:w-[610px]'>
       <Box className='z-10 h-full rounded-[11px] bg-neutral-900 px-8'>
         {isRegistered ? (
-          // TODO: Add element here
           <div className='flex flex-col justify-center'>
             <SuccessIcon className='mx-auto h-20 w-20' />
             <p className='mx-auto mb-10 max-w-[400px] text-center font-archia text-[30px] font-semibold'>
@@ -113,7 +112,6 @@ export default function StoryRegister({ isRegistered }) {
               <div>
                 <div>
                   <LabelTooltip className='mb-1.5' required label='Select Country' />
-                  {/* TODO: Common Select component */}
                   <SelectCountry
                     className='w-full'
                     data={countries}

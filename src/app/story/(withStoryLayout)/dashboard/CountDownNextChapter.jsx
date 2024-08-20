@@ -2,9 +2,20 @@ import moment from 'moment'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 
+import Box from '@/components/box'
+
+function TimeBox({ title, value }) {
+  const t = useTranslations()
+  return (
+    <Box className='h-[68px] w-[69px] rounded-xl bg-neutral-700 p-2 md:h-[104px] md:w-[132px] md:p-6'>
+      <p className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>{value}</p>
+      <p className='text-center text-xs text-neutral-300 md:text-[16px]'>{t(title)}</p>
+    </Box>
+  )
+}
+
 export function CountDownNextChapter() {
   const targetDate = '2025-01-01T00:00:00.000Z'
-  const t = useTranslations()
   const calculateTimeLeft = useCallback(() => {
     const difference = moment(targetDate).diff(moment())
     let timeLeft = {
@@ -38,22 +49,10 @@ export function CountDownNextChapter() {
 
   return (
     <div className='mt-6 grid grid-cols-4 gap-4'>
-      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
-        <p className='text-gradient-primary inline-block text-3xl font-bold leading-6'>{timeLeft.days}</p>
-        <span className='text-base leading-5 text-gray-400'>{t('Days')}</span>
-      </div>
-      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
-        <p className=' text-gradient-primary inline-block text-3xl font-bold leading-6'>{timeLeft.hours}</p>
-        <span className='text-base leading-5 text-gray-400'>{t('Hours')}</span>
-      </div>
-      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
-        <p className=' text-gradient-primary inline-block text-3xl font-bold leading-6'>{timeLeft.minutes}</p>
-        <span className='text-base leading-5 text-gray-400'>{t('Minutes')}</span>
-      </div>
-      <div className='col-span-1 flex flex-col items-center rounded-lg bg-neutral-700 px-6 py-6'>
-        <p className=' text-gradient-primary inline-block text-3xl font-bold leading-6'>{timeLeft.seconds}</p>
-        <span className='text-base leading-5 text-gray-400'>{t('Seconds')}</span>
-      </div>
+      <TimeBox title='Days' value={timeLeft.days} />
+      <TimeBox title='Hours' value={timeLeft.hours} />
+      <TimeBox title='Minutes' value={timeLeft.minutes} />
+      <TimeBox title='Seconds' value={timeLeft.seconds} />
     </div>
   )
 }
