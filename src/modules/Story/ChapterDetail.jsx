@@ -1,8 +1,8 @@
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
-import { ChapterProcess } from '@/app/story/dashboard/ChapterProcess'
-import { CountDownNextChapter } from '@/app/story/dashboard/CountDownNextChapter'
+import { ChapterProcess } from '@/app/story/(withStoryLayout)/dashboard/ChapterProcess'
+import { CountDownNextChapter } from '@/app/story/(withStoryLayout)/dashboard/CountDownNextChapter'
 
 function ChapterDetail(selectedChapter) {
   const t = useTranslations()

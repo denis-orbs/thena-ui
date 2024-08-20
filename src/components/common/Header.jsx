@@ -653,7 +653,7 @@ function Header() {
           <Tabs data={submenus} size={SizeTypes.Medium} />
         </div>
       )}
-      {pathname.includes('/story') && (
+      {pathname.startsWith('/story') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={storySubmenus} size={SizeTypes.Medium} />
         </div>

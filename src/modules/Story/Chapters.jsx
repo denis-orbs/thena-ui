@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
-import { ChapterProcess } from '@/app/story/dashboard/ChapterProcess'
+import { ChapterProcess } from '@/app/story/(withStoryLayout)/dashboard/ChapterProcess'
 import { cn } from '@/lib/utils'
 import { ChapterUnlockIcon, Lock2Icon } from '@/svgs'
 
