@@ -8,9 +8,10 @@ import { fetchTHEStoryParticipant } from '@/modules/Story'
 dayjs.extend(utc)
 
 const THEStoryContext = createContext({
-  // campaignStartsAt: dayjs.utc('2024-09-01'),
-  campaignStartsAt: dayjs.utc('2024-08-20'),
+  campaignStartsAt: dayjs.utc('2024-09-01'),
+  // campaignStartsAt: dayjs.utc('2024-08-20'),
   isRegistered: false,
+  setIsRegistered: () => false,
   campaignParticipantInfo: null,
   setCampaignParticipantInfo: () => {},
   isUpcoming: true,
@@ -21,9 +22,9 @@ function THEStoryContextProvider({ children }) {
 
   const [isRegistered, setIsRegistered] = useState(false)
   const [campaignParticipantInfo, setCampaignParticipantInfo] = useState(null)
-  const [isUpcoming, setIsUpcoming] = useState(true)
-  // const campaignStartsAt = useMemo(() => dayjs.utc('2024-09-01'), [])
-  const campaignStartsAt = useMemo(() => dayjs.utc('2024-08-20'), [])
+  const [isUpcoming, setIsUpcoming] = useState(false)
+  const campaignStartsAt = useMemo(() => dayjs.utc('2024-09-01'), [])
+  // const campaignStartsAt = useMemo(() => dayjs.utc('2024-08-20'), [])
 
   useEffect(() => {
     const checkTime = () => {
