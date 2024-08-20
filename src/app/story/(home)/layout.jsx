@@ -9,12 +9,10 @@ export const metadata = {
   description: 'THE Story Description',
 }
 
-export default function THEStoryLayout({ children }) {
+export default function THEStoryHomeLayout({ children }) {
   return (
     <main className='desktop-bg flex min-h-screen flex-col'>
-      <section className='layout-container mt-[128px] lg:mt-[176px]'>
-        <Suspense fallback={<Loading />}>{children}</Suspense>
-      </section>
+      <Suspense fallback={<Loading />}>{children}</Suspense>
       <Footer />
     </main>
   )

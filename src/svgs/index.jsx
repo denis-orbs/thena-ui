@@ -27,6 +27,7 @@ import EtherFiBadgeIcon from '~/svgs/etherfi_badge.svg'
 import ExchangeIcon from '~/svgs/exchange.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import FacebookIcon from '~/svgs/facebook.svg'
+import FirstPrizeIcon from '~/svgs/first-prize.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
@@ -46,17 +47,20 @@ import PowerIcon from '~/svgs/power.svg'
 import RedditIcon from '~/svgs/reddit.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
 import SearchIcon from '~/svgs/search.svg'
+import SecondPrizeIcon from '~/svgs/second-prize.svg'
 import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
 import ShareIcon from '~/svgs/share.svg'
 import SplitIcon from '~/svgs/split.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 import StarLineSmall from '~/svgs/star-line-small.svg'
+import StarLineWhiteIcon from '~/svgs/star-line-white.svg'
 import SuccessIcon from '~/svgs/successicon.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 import TelegramIcon from '~/svgs/telegram.svg'
+import ThirdPrizeIcon from '~/svgs/third-prize.svg'
 import TwitterIcon from '~/svgs/twiiter.svg'
 import UploadIcon from '~/svgs/upload.svg'
 import WalletIcon from '~/svgs/wallet.svg'
@@ -94,6 +98,7 @@ export {
   ExchangeIcon,
   ExternalIcon,
   FacebookIcon,
+  FirstPrizeIcon,
   HamburgerIcon,
   InfoCircleGradient,
   InfoCirclePrimary,
@@ -113,16 +118,19 @@ export {
   RedditIcon,
   RefreshIcon,
   SearchIcon,
+  SecondPrizeIcon,
   SettingsIcon,
   ShadowIcon,
   ShareIcon,
   SplitIcon,
   StarLineLargeIcon,
   StarLineSmall,
+  StarLineWhiteIcon,
   SuccessIcon,
   SwitchHorizontalV2Icon,
   SwitchVerticalIcon,
   TelegramIcon,
+  ThirdPrizeIcon,
   TransferIcon,
   TwitterIcon,
   UploadIcon,

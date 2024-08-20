@@ -8,6 +8,7 @@ export function HowItWork() {
     <div>
       <p className='text-[30px] font-semibold'>{t('How it Works')}</p>
       <div className='grid grid-cols-2 md:grid-cols-4 md:gap-[10]'>
+        {/* TODO: Use HowItWorksItem */}
         <div className='flex max-w-[330px] flex-col items-center justify-center p-6'>
           <ExchangeIcon className='h-12 w-12' />
           <p className='mb-1 text-center text-[16px] font-medium text-neutral-50'>{t('Send Invitation')}</p>

@@ -447,13 +447,13 @@ function Header() {
             push('/story/dashboard')
           },
         },
-        // {
-        //   label: t('Leaderboard'),
-        //   active: pathname === '/story/leaderboard',
-        //   onClickHandler: () => {
-        //     push('/story/leaderboard')
-        //   },
-        // },
+        {
+          label: t('Leaderboard'),
+          active: pathname === '/story/leaderboard',
+          onClickHandler: () => {
+            push('/story/leaderboard')
+          },
+        },
         {
           label: t('Referral'),
           active: pathname === '/story/referral',
