@@ -29,7 +29,6 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
       id
       firstInteractAt
       biography
-      timezone
       websiteUrl
       xProfileUrl
       username
@@ -214,13 +213,6 @@ function UserInfoContextProvider({ children }) {
       } else {
         current.style.backgroundImage = 'url(/images/background.png)'
       }
-    }
-
-    // set localStorage timezone
-    if (userInfo?.timezone) {
-      localStorage.setItem('timezone', userInfo.timezone)
-    } else {
-      localStorage.removeItem('timezone')
     }
   }, [userInfo?.theme, userInfo])
 

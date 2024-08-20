@@ -24,7 +24,6 @@ const V4_USER_INFO = gql`
       id
       firstInteractAt
       biography
-      timezone
       websiteUrl
       xProfileUrl
       username

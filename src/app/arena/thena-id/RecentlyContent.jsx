@@ -30,7 +30,6 @@ const V4_RECENTLY_MINTED = gql`
         id
         firstInteractAt
         biography
-        timezone
         websiteUrl
         xProfileUrl
         username
@@ -60,7 +59,6 @@ const V4_RECENTLY_GIFTED = gql`
         id
         firstInteractAt
         biography
-        timezone
         websiteUrl
         xProfileUrl
         username
@@ -78,7 +76,6 @@ const V4_RECENTLY_GIFTED = gql`
         id
         firstInteractAt
         biography
-        timezone
         websiteUrl
         xProfileUrl
         username

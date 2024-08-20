@@ -15,7 +15,6 @@ const V4_UPDATE_PROFILE = gql`
     $username: String
     $websiteUrl: String
     $xProfileUrl: String
-    $timezone: String
     $theme: String
     $userId: String
   ) {
@@ -29,7 +28,6 @@ const V4_UPDATE_PROFILE = gql`
         username: $username
         websiteUrl: $websiteUrl
         xProfileUrl: $xProfileUrl
-        timezone: $timezone
       }
       userId: $userId
     ) {
@@ -38,7 +36,6 @@ const V4_UPDATE_PROFILE = gql`
       avatar
       nameColor
       theme
-      timezone
       username
       websiteUrl
       xProfileUrl
@@ -50,7 +47,7 @@ const V4_UPDATE_PROFILE = gql`
 export const useUpdateProfile = account => {
   const { signWallet } = useSignWallet()
   const updateProfileFn = useCallback(
-    async ({ biography, avatar, nameColor, theme, timezone, username, websiteUrl, xProfileUrl, isPublicProfile }) => {
+    async ({ biography, avatar, nameColor, theme, username, websiteUrl, xProfileUrl, isPublicProfile }) => {
       const { updateUserProfile } = await v4Client.request(
         V4_UPDATE_PROFILE,
         {
@@ -58,7 +55,6 @@ export const useUpdateProfile = account => {
           avatar,
           nameColor,
           theme,
-          timezone,
           username,
           websiteUrl,
           xProfileUrl,

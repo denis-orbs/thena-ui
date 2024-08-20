@@ -11,7 +11,6 @@ import './style.css'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
-import Dropdown from '@/components/dropdown'
 import Input from '@/components/input'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
@@ -31,32 +30,14 @@ const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { s
 
 export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
   const t = useTranslations()
-  const [timeZoneData, setTimeZoneData] = useState([])
-  const [currentTimeZone, setCurrentTimeZone] = useState('')
   const [showCustomColor, setShowCustomColor] = useState(false)
   const [openCheckMarkIcon, setOpenCheckMarkIcon] = useState(false)
   const { account } = useWallet()
-
-  // const dataPrev = useMemo(
-  //   () => ({
-  //     biography: userInfo?.biography ?? null,
-  //     avatar: userInfo?.avatar ?? null,
-  //     theme: userInfo?.theme ?? null,
-  //     timezone: userInfo?.timezone ?? null,
-  //     username: userInfo?.username ?? null,
-  //     websiteUrl: userInfo?.websiteUrl ?? null,
-  //     xProfileUrl: userInfo?.xProfileUrl ?? null,
-  //     isPublicProfile: userInfo?.isPublicProfile ?? true,
-  //     nameColor: userInfo?.nameColor ?? 'ffffff',
-  //   }),
-  //   [userInfo],
-  // )
 
   const [dataUpdate, setDataUpdate] = useState({
     biography: userInfo?.biography ?? null,
     avatar: userInfo?.avatar ?? null,
     theme: userInfo?.theme ?? null,
-    timezone: userInfo?.timezone ?? null,
     username: userInfo?.username ?? null,
     websiteUrl: userInfo?.websiteUrl ?? null,
     xProfileUrl: userInfo?.xProfileUrl ?? null,
@@ -85,18 +66,6 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
     })
   }, [account, dataUpdate, isAdmin, mutateUserInfo, updateProfile, userInfo])
 
-  useEffect(() => setCurrentTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone), [])
-
-  useEffect(
-    () =>
-      setTimeZoneData(
-        Intl.supportedValuesOf('timeZone').map(value => ({
-          label: value,
-        })),
-      ),
-    [],
-  )
-
   useEffect(() => {
     if (dataUpdate?.nameColor) {
       if (isAdmin && dataUpdate.nameColor && String(dataUpdate.nameColor).startsWith('#')) {
@@ -106,19 +75,6 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
       }
     }
   }, [dataUpdate.nameColor, isAdmin])
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     if (dataPrev && dataUpdate) {
-  //       console.log({ dataPrev })
-  //       console.log({ dataUpdate })
-  //       if (!_.isEqual(dataPrev, dataUpdate)) {
-  //         handleUpdate(true)
-  //       }
-  //     }
-  //   }, 5000)
-  //   return () => clearInterval(interval)
-  // }, [dataPrev, dataUpdate, handleUpdate])
 
   return (
     <div className='flex flex-col space-y-10 pt-10'>
@@ -276,29 +232,6 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
             />
           </div>
         </div>
-        {(!isAdmin || account?.toLowerCase() === userInfo?.id?.toLowerCase()) && (
-          <div className='flex flex-col gap-6 lg:flex-row'>
-            <div className='flex flex-1 flex-col gap-3'>
-              <TextHeading className='text-xl'>{t('Time Zone')}</TextHeading>
-              <TextSubHeading className='text-base'>{t('Select Your Preferred Time Zone')}</TextSubHeading>
-            </div>
-            <div className='flex-2'>
-              <Dropdown
-                className='w-full lg:w-72'
-                listClassNames='max-h-64 overflow-y-auto'
-                data={timeZoneData}
-                selected={dataUpdate.timezone ?? currentTimeZone}
-                setSelected={e => {
-                  setDataUpdate({
-                    ...dataUpdate,
-                    timezone: e.label,
-                  })
-                }}
-                isLocale={false}
-              />
-            </div>
-          </div>
-        )}
         <div className='flex flex-col gap-10 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
             <TextHeading className='text-xl'>{t('Suggest My Profile To Others')}</TextHeading>
@@ -346,7 +279,6 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
             biography: userInfo?.biography ?? null,
             avatar: userInfo?.avatar ?? null,
             theme: userInfo?.theme ?? null,
-            timezone: userInfo?.timezone ?? null,
             username: userInfo?.username ?? null,
             websiteUrl: userInfo?.websiteUrl ?? null,
             xProfileUrl: userInfo?.xProfileUrl ?? null,
