@@ -3,8 +3,8 @@ import { useTranslations } from 'next-intl'
 
 import { CountDownNextChapter } from '@/app/story/(withStoryLayout)/dashboard/CountDownNextChapter'
 import Box from '@/components/box'
-import { PrimaryButton } from '@/components/buttons/Button'
-import { ChevronRightIcon } from '@/svgs'
+import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { ChevronRight, ExpandIcon } from '@/svgs'
 
 import Chapters from './Chapters'
 import StoryRegister from './StoryRegister'
@@ -14,10 +14,9 @@ function StoryHome({ isUpcoming, isRegistered }) {
   return (
     <>
       {isUpcoming ? (
-        // TODO: add background
-        <div>
+        <div className='w-full'>
           {/* Banner */}
-          <div className='h-auto w-auto rounded-[20px] bg-[#382F411F] px-[15px] pt-[15px]'>
+          <div className='h-auto w-auto rounded-[20px] bg-[#382F411F] px-2 pt-2 md:px-[15px] md:pt-[15px]'>
             <div className='relative mb-24 lg:mb-40'>
               <Image
                 src='/images/story/story-banner.png'
@@ -26,39 +25,32 @@ function StoryHome({ isUpcoming, isRegistered }) {
                 height={793}
                 className='w-full rounded-[10px]'
               />
-              <div className='absolute bottom-0 left-0 w-full px-4 pb-6 text-center font-archia text-[36px] font-semibold text-white max-sm:text-[28px] md:text-[72px] lg:left-[10%] lg:w-4/5 lg:pb-9'>
+              <OutlinedButton className='absolute right-4 top-5 border-none p-2 md:hidden'>
+                <ExpandIcon className='h-4 w-4' />
+              </OutlinedButton>
+              <div className='absolute bottom-[-30px] left-0 w-full p-0 text-center font-archia text-[30px] font-semibold text-white lg:bottom-0 lg:px-4 lg:pb-9 lg:text-[72px]'>
                 {t('Get Ready for THE Story of THENA')}
-              </div>
-              <div
-                // eslint-disable-next-line max-len
-                className={`absolute left-0 w-full p-0 text-center font-archia text-[36px] font-semibold text-white lg:bottom-0 lg:px-4 lg:pb-9 lg:text-[72px] ${
-                  isUpcoming ? '' : 'hidden'
-                }`}
-              >
-                {t('Get Ready for THE Story of THENA mobile')}
               </div>
             </div>
           </div>
 
-          <div className='flex justify-center'>
+          <div className='mb-5 flex justify-center'>
             <StoryRegister isRegistered={isRegistered} />
           </div>
           <Box className='mx-auto bg-neutral-900 max-sm:max-w-[413px] lg:w-[610px]'>
-            <p className='mb-4 font-archia text-[26px] font-semibold tracking-wide md:text-3xl'>
+            <p className='mb-4 font-archia text-[26px] font-semibold md:text-3xl md:tracking-wide'>
               {t('First Chapter Available in')}
             </p>
             <CountDownNextChapter />
           </Box>
         </div>
       ) : (
-        // TODO: add background
-        <div>
+        <div className='w-full'>
           <div className='z-10 mb-[115px]'>
             <div className='mb-9 flex justify-center'>
               <StoryRegister isRegistered={isRegistered} />
             </div>
 
-            {/* TODO: Add components */}
             <p className='mx-auto mb-5 max-w-[743px] text-center font-archia text-[36px] font-semibold md:text-[72px]'>
               {t('THE Story of THENA')}
             </p>
@@ -72,7 +64,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
               <div className='mt-6 flex w-full justify-center'>
                 <PrimaryButton className='h-auto w-full md:w-[420px]'>
                   {t('View BNB Chain')}
-                  <ChevronRightIcon className='h-4 w-4 text-white' />
+                  <ChevronRight className='h-4 w-4 text-white' />
                 </PrimaryButton>
               </div>
 

@@ -72,7 +72,9 @@ function THEStoryContextProvider({ children }) {
     () => ({
       campaignStartsAt,
       isRegistered,
+      setIsRegistered,
       campaignParticipantInfo,
+      setCampaignParticipantInfo,
       isUpcoming,
     }),
     [campaignStartsAt, isRegistered, campaignParticipantInfo, isUpcoming],

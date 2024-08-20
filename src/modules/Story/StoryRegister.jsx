@@ -1,11 +1,14 @@
+import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
+import { THEStoryContext } from '@/context/THEStoryContext'
+import { v4Client } from '@/lib/graphql'
 import useWallet from '@/lib/wallets/useWallet'
 import { ArrowForwardSmallIcon, SuccessIcon } from '@/svgs'
 
@@ -18,7 +21,14 @@ const initialFormState = {
   evmAddress: '',
 }
 
+const V4_REGISTER_CAMPAIGN = gql`
+  mutation V4_REGISTER_CAMPAIGN($evmAddress: String!, $email: String, $country: String, $referralCode: String = "") {
+    registerCampaign(input: { evmAddress: $evmAddress, email: $email, country: $country, referralCode: $referralCode })
+  }
+`
+
 export default function StoryRegister({ isRegistered }) {
+  const { setIsRegistered } = useContext(THEStoryContext)
   const [errors, setErrors] = useState({})
   const [isFormValid, setIsFormValid] = useState(false)
   const [isSubmit, setIsSubmit] = useState(false)
@@ -30,7 +40,25 @@ export default function StoryRegister({ isRegistered }) {
     evmAddress: account,
   })
 
-  const validateForm = () => {
+  const registerFn = async ({ evmAddress, email, country, referralCode = '' }) => {
+    try {
+      const { registerCampaign } = await v4Client.request(V4_REGISTER_CAMPAIGN, {
+        evmAddress,
+        email,
+        country,
+        referralCode,
+      })
+
+      if (registerCampaign) {
+        return registerCampaign
+      }
+      return false
+    } catch (error) {
+      return false
+    }
+  }
+
+  const validateForm = useCallback(() => {
     const err = {}
 
     if (!formState.evmAddress) {
@@ -49,11 +77,14 @@ export default function StoryRegister({ isRegistered }) {
       err.country = 'Please select your country'
     }
 
-    setErrors(err)
+    if (isSubmit) {
+      setErrors(err)
+    }
     setIsFormValid(Object.keys(err).length === 0)
-  }
+  }, [account, formState.country, formState.email, formState.evmAddress, isSubmit])
 
   const handleChange = name => event => {
+    validateForm()
     setFormState(prev => ({
       ...prev,
       [name]: event.target.value,
@@ -71,12 +102,19 @@ export default function StoryRegister({ isRegistered }) {
     if (isSubmit) {
       validateForm()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formState, isSubmit])
+  }, [formState, isSubmit, validateForm])
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsSubmit(true)
-    console.log('formState', formState)
+    if (validateForm()) return
+
+    const res = await registerFn(formState)
+
+    if (res) {
+      setIsRegistered(true)
+    } else {
+      setIsRegistered(false)
+    }
   }
 
   return (
@@ -85,7 +123,7 @@ export default function StoryRegister({ isRegistered }) {
         {isRegistered ? (
           <div className='flex flex-col justify-center'>
             <SuccessIcon className='mx-auto h-20 w-20' />
-            <p className='mx-auto mb-10 max-w-[400px] text-center font-archia text-[30px] font-semibold'>
+            <p className='mx-auto mb-10 max-w-[400px] text-center font-archia text-[26px] font-semibold md:text-[30px]'>
               {t('You Have Successfully Registered for THE Story of THENA Adventure')}
             </p>
             <PrimaryButton className='w-full'>
