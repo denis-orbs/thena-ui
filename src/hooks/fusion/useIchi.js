@@ -15,8 +15,8 @@ import {
   getVaultDepositContract,
   getWBNBContract,
 } from '@/lib/contracts'
-import { warnToast } from '@/lib/notify'
-import { fromWei, toWei } from '@/lib/utils'
+import { errorToast, warnToast } from '@/lib/notify'
+import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -24,7 +24,7 @@ export const useIchiManage = () => {
   const [pending, setPending] = useState(false)
   const { account } = useWallet()
   const { networkId } = useChainSettings()
-  const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
+  const { startTxn, endTxn, writeTxn, updateTxn, closeTxn } = useTxn()
   const t = useTranslations()
 
   const onIchiAdd = useCallback(
@@ -94,6 +94,13 @@ export const useIchiManage = () => {
         .dp(0)
         .toString(10)
 
+      if (isInvalidAmount(lpAmount)) {
+        setPending(false)
+        errorToast('Error', 'Deposit Not Allowed Description')
+        closeTxn()
+        return
+      }
+
       if (
         !(await writeTxn(key, supplyuuid, depositGuardContract, 'forwardDepositToICHIVault', [
           vault.address,
@@ -114,7 +121,7 @@ export const useIchiManage = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, endTxn, networkId, t],
+    [networkId, account, startTxn, t, writeTxn, endTxn, closeTxn],
   )
 
   const onIchiAddAndStake = useCallback(
@@ -217,6 +224,13 @@ export const useIchiManage = () => {
         .dp(0)
         .toString(10)
 
+      if (isInvalidAmount(lpAmount)) {
+        setPending(false)
+        errorToast('Error', 'Deposit Not Allowed Description')
+        closeTxn()
+        return
+      }
+
       if (
         !(await writeTxn(key, supplyuuid, depositGuardContract, 'forwardDepositToICHIVault', [
           vault.address,
@@ -262,7 +276,7 @@ export const useIchiManage = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, endTxn, updateTxn, networkId, t],
+    [networkId, account, startTxn, t, writeTxn, endTxn, closeTxn, updateTxn],
   )
 
   return { onIchiAdd, onIchiAddAndStake, pending }

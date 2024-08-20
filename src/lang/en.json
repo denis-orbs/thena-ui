@@ -933,5 +933,6 @@
   "Bridge": "Bridge",
   "Unstake and Transfer": "Unstake and Transfer",
   "Transfer theNFTs": "Transfer theNFTs",
-  "To Address": "To Address"
+  "To Address": "To Address",
+  "Deposit Not Allowed Description": "Deposit is currently not allowed. Please try again later."
 }
