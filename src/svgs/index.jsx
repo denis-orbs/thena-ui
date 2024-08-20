@@ -26,6 +26,7 @@ import EigenBadgeIcon from '~/svgs/eigen_badge.svg'
 import EmailIcon from '~/svgs/email.svg'
 import EtherFiBadgeIcon from '~/svgs/etherfi_badge.svg'
 import ExchangeIcon from '~/svgs/exchange.svg'
+import ExpandIcon from '~/svgs/expand.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import FacebookIcon from '~/svgs/facebook.svg'
 import FirstPrizeIcon from '~/svgs/first-prize.svg'
@@ -98,6 +99,7 @@ export {
   EmailIcon,
   EtherFiBadgeIcon,
   ExchangeIcon,
+  ExpandIcon,
   ExternalIcon,
   FacebookIcon,
   FirstPrizeIcon,

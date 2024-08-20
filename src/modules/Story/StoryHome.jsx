@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { CountDownNextChapter } from '@/app/story/(withStoryLayout)/dashboard/CountDownNextChapter'
 import Box from '@/components/box'
 import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
-import { ChevronRight, ExpandIcon } from '@/svgs'
+import { ChevronRightIcon, ExpandIcon } from '@/svgs'
 
 import Chapters from './Chapters'
 import StoryRegister from './StoryRegister'
@@ -64,7 +64,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
               <div className='mt-6 flex w-full justify-center'>
                 <PrimaryButton className='h-auto w-full md:w-[420px]'>
                   {t('View BNB Chain')}
-                  <ChevronRight className='h-4 w-4 text-white' />
+                  <ChevronRightIcon className='h-4 w-4 text-white' />
                 </PrimaryButton>
               </div>
 
