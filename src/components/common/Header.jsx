@@ -13,6 +13,7 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
 import { LOCALES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
+import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
@@ -255,6 +256,7 @@ function Header() {
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
   const t = useTranslations()
+  const { isUpcoming } = useTHEStory()
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
@@ -338,7 +340,7 @@ function Header() {
         },
       },
       {
-        label: 'Earn Rewards',
+        label: 'THE Story',
         active: pathname.includes('/story'),
         onClickHandler: () => {
           push('/story')
@@ -648,12 +650,12 @@ function Header() {
         </Modal>
         <TxnModal />
       </header>
-      {pathname.includes('/dashboard') && (
+      {pathname.startsWith('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={submenus} size={SizeTypes.Medium} />
         </div>
       )}
-      {pathname.startsWith('/story') && (
+      {pathname.startsWith('/story') && !isUpcoming && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={storySubmenus} size={SizeTypes.Medium} />
         </div>

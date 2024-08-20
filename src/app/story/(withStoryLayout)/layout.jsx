@@ -5,7 +5,7 @@ import Footer from '@/components/common/Footer'
 import Loading from '../../loading'
 
 export const metadata = {
-  title: 'Earn Rewards',
+  title: 'THE Story',
   description: 'Earn Rewards Description',
 }
 

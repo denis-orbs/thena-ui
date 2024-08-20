@@ -1,28 +1,25 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
+import { useTHEStory } from '@/context/THEStoryContext'
 import StoryHome from '@/modules/Story/StoryHome'
 
 function StoryPage() {
-  const [isRegistered, setIsRegistered] = useState(false)
-  const [isUpcoming, setIsUpcoming] = useState(false)
-
-  useEffect(() => {
-    setIsRegistered(false)
-    setIsUpcoming(true)
-  }, [])
+  const { isRegistered, isUpcoming } = useTHEStory()
 
   return (
     <div className='relative'>
       <div
-        className={`absolute h-full w-full bg-cover  opacity-[0.17] ${
-          isRegistered && !isUpcoming
-            ? 'bg-[url("/images/story/background.png")]'
-            : 'bg-[url("/images/story/background2.png")]'
+        className={`absolute h-full w-full bg-cover opacity-10 ${
+          isUpcoming
+            ? 'bg-[url("/images/story/background-teaser.png")]'
+            : isRegistered
+              ? 'bg-[url("/images/story/background-landing.png")]'
+              : ''
         }`}
       />
-      <section className='layout-container relative mt-[128px] lg:mt-[176px]'>
+      <section className={`layout-container relative ${isUpcoming ? 'layout-top' : 'mt-[128px] lg:mt-[176px]'}`}>
         <StoryHome isRegistered={isRegistered} isUpcoming={isUpcoming} />
       </section>
     </div>
