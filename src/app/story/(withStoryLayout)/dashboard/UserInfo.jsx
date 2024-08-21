@@ -12,17 +12,15 @@ import NextImage from '@/components/image/NextImage'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import dayjs from '@/lib/dateFormat'
 import { cn, formatAddress } from '@/lib/utils'
-import { ExternalIcon } from '@/svgs'
 
 import { ProfileButton } from './ProfileButton'
 import { RewardIconTooltip } from './RewardIconTooltip'
+import { RewardType } from '../../constant'
 
 dayjs.extend(localizedFormat)
-const tarea_regex = /^(http|https)/
 
-export function UserInfo({ userInfo }) {
+export function UserInfo({ userInfo, completedChapter, totalChapter, totalSuccessfulRefferal }) {
   const t = useTranslations()
-
   return (
     <>
       <Box className='space-y-4'>
@@ -62,26 +60,11 @@ export function UserInfo({ userInfo }) {
                   {dayjs(userInfo.firstInteractAt).tz().format('h:mma')}
                 </TextSubHeading>
                 <div className='flex flex-col gap-1 md:flex-row'>
-                  {userInfo.websiteUrl && (
-                    <Link
-                      href={tarea_regex.test(userInfo.websiteUrl) ? userInfo.websiteUrl : `//${userInfo.websiteUrl}`}
-                      rel='nofollow noopener noreferrer'
-                      target='_blank'
-                      prefetch={false}
-                    >
-                      <NeutralBadge className='flex items-center lg:text-xs'>
-                        <div>
-                          <ExternalIcon className='mr-2 h-4 w-4 stroke-neutral-400' />
-                        </div>
-                        <span className='line-clamp-1'>{userInfo.websiteUrl}</span>
-                      </NeutralBadge>
-                    </Link>
-                  )}
-                  {userInfo.xProfileUrl && (
-                    <Link href={`https://x.com/${userInfo.xProfileUrl}`} rel='nofollow noopener' target='_blank'>
+                  {userInfo.xProfileUsername && (
+                    <Link href={`https://x.com/${userInfo.xProfileUsername}`} rel='nofollow noopener' target='_blank'>
                       <NeutralBadge className='flex items-center lg:text-xs'>
                         <NextImage alt='svg' className='mr-2 w-fit' src='/images/footer/x.svg' />
-                        <span className='line-clamp-1'>@{userInfo.xProfileUrl}</span>
+                        <span className='line-clamp-1'>@{userInfo.xProfileUsername}</span>
                       </NeutralBadge>
                     </Link>
                   )}
@@ -94,15 +77,15 @@ export function UserInfo({ userInfo }) {
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-5'>
           <Link href='/'>
             <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
-              <TextHeading className='text-lg'>{userInfo.rank}</TextHeading>
+              <TextHeading className='text-lg'>{userInfo.rank ?? '-'}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
             </Box>
           </Link>
           <Link href='/'>
             <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
               <div className='flex items-center'>
-                <RewardIconTooltip rewardType='star' id='user-info_earned-point' className='mb-1' />
-                <TextHeading className='text-lg'>320</TextHeading>
+                <RewardIconTooltip rewardType={RewardType.Point} id='user-info_earned-point' className='mb-1 mr-1' />
+                <TextHeading className='text-lg'>{userInfo.totalPoints ?? '-'}</TextHeading>
               </div>
               <TextSubHeading className='text-sm'>{t('Earned points')}</TextSubHeading>
             </Box>
@@ -110,22 +93,28 @@ export function UserInfo({ userInfo }) {
           <Link href='/'>
             <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
               <div className='flex items-center'>
-                <RewardIconTooltip rewardType='diamond' id='user-info_earned-fragments' className='mb-1' />
-                <TextHeading className='text-lg'>5</TextHeading>
+                <RewardIconTooltip
+                  rewardType={RewardType.Fragment}
+                  id='user-info_earned-fragments'
+                  className='mb-1 mr-1'
+                />
+                <TextHeading className='text-lg'>{userInfo.totalFragments ?? '-'}</TextHeading>
               </div>
               <TextSubHeading className='text-sm'>{t('Earned fragments')}</TextSubHeading>
             </Box>
           </Link>
           <Link href='/'>
             <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
-              <TextHeading className='text-lg'>2 / 14</TextHeading>
-              <TextSubHeading className='text-sm'>{t('Tasks completed')}</TextSubHeading>
+              <TextHeading className='text-lg'>
+                {completedChapter} / {totalChapter}
+              </TextHeading>
+              <TextSubHeading className='text-sm'>{t('Chapters completed')}</TextSubHeading>
             </Box>
           </Link>
           <Link href='/'>
             <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
-              <TextHeading className='text-lg'>4</TextHeading>
-              <TextSubHeading className='text-sm'>{t('Friends invited')}</TextSubHeading>
+              <TextHeading className='text-lg'>{totalSuccessfulRefferal}</TextHeading>
+              <TextSubHeading className='text-sm'>{t('Successful Referrals')}</TextSubHeading>
             </Box>
           </Link>
         </div>

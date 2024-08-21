@@ -13,6 +13,7 @@ const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
       avatarUrl
       totalFragments
       totalPoints
+      xProfileUsername
     }
   }
 `
@@ -28,5 +29,32 @@ export const fetchTHEStoryParticipant = async user => {
     return null
   } catch (error) {
     return { error: true }
+  }
+}
+
+const V4_CAMPAIGN_PARTICIPANT_REFERRALS = gql`
+  query V4_CAMPAIGN_PARTICIPANT_REFERRALS($id_eq: String = "") {
+    campaignParticipantReferrals(where: { user: { id_eq: $id_eq } }) {
+      id
+      invitedWallet
+      isSuccess
+    }
+  }
+`
+
+export const fetchTHEStoryParticipantReferrals = async user => {
+  try {
+    const { campaignParticipantReferrals } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_REFERRALS, {
+      id_eq: String(user).toLowerCase(),
+    })
+
+    if (campaignParticipantReferrals && Array.isArray(campaignParticipantReferrals)) {
+      return campaignParticipantReferrals
+    }
+    return []
+  } catch (error) {
+    return {
+      error: true,
+    }
   }
 }

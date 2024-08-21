@@ -16,8 +16,7 @@ function TimeBox({ title, value }) {
   )
 }
 
-export function CountDownNextChapter() {
-  const targetDate = '2025-01-01T00:00:00.000Z'
+export function CountDownNextChapter({ targetDate }) {
   const calculateTimeLeft = useCallback(() => {
     const difference = moment(targetDate).diff(moment())
     let timeLeft = {
