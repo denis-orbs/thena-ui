@@ -10,6 +10,7 @@ import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import { THEStoryContext } from '@/context/THEStoryContext'
 import { v4Client } from '@/lib/graphql'
+import { errorToast, successToast } from '@/lib/notify'
 import useWallet from '@/lib/wallets/useWallet'
 import { ArrowForwardSmallIcon, SuccessIcon } from '@/svgs'
 
@@ -31,13 +32,14 @@ const V4_REGISTER_CAMPAIGN = gql`
 
 export default function StoryRegister({ isRegistered }) {
   const { setIsRegistered } = useContext(THEStoryContext)
+  const { account } = useWallet()
+  const t = useTranslations()
+  const searchParams = useSearchParams()
+
   const [errorsForm, setErrorsForm] = useState({})
   const [isFormValid, setIsFormValid] = useState(false)
   const [isSubmit, setIsSubmit] = useState(false)
-  const { account } = useWallet()
   const [countryName, setCountryName] = useState('')
-  const t = useTranslations()
-  const searchParams = useSearchParams()
   const [formState, setFormState] = useState({
     ...initialFormState,
     evmAddress: account,
@@ -45,21 +47,29 @@ export default function StoryRegister({ isRegistered }) {
   })
 
   const registerFn = async ({ evmAddress, email, country, referralCode = '' }) => {
-    const { registerCampaign, errors } = await v4Client.request(V4_REGISTER_CAMPAIGN, {
-      evmAddress,
-      email,
-      country,
-      referralCode,
-    })
+    try {
+      const { registerCampaign, errors } = await v4Client.request(V4_REGISTER_CAMPAIGN, {
+        evmAddress,
+        email,
+        country,
+        referralCode,
+      })
 
-    if (errors) {
-      throw errors
-    }
+      if (errors) {
+        errorToast('Error')
+      }
 
-    if (registerCampaign) {
-      return registerCampaign
+      if (registerCampaign) {
+        successToast('Successfully')
+        return registerCampaign
+      }
+
+      errorToast('Error')
+      return false
+    } catch (err) {
+      errorToast('Error')
+      return false
     }
-    return false
   }
 
   const validateForm = useCallback(() => {
@@ -67,8 +77,6 @@ export default function StoryRegister({ isRegistered }) {
 
     if (!formState.evmAddress) {
       err.evmAddress = 'Please enter your Wallet ID'
-    } else if (account && account !== formState.evmAddress) {
-      err.evmAddress = 'Your Wallet ID not connected'
     }
 
     if (!formState.email) {
@@ -85,7 +93,7 @@ export default function StoryRegister({ isRegistered }) {
       setErrorsForm(err)
     }
     setIsFormValid(Object.keys(err).length === 0)
-  }, [account, formState.country, formState.email, formState.evmAddress, isSubmit])
+  }, [formState.country, formState.email, formState.evmAddress, isSubmit])
 
   const handleChange = name => event => {
     validateForm()
@@ -103,28 +111,30 @@ export default function StoryRegister({ isRegistered }) {
     }))
   }, [account, searchParams])
 
-  useEffect(() => {
-    validateForm()
-  }, [formState, isSubmit, validateForm])
-
   const handleSubmit = async () => {
     setIsSubmit(true)
+    if (account && account !== formState.evmAddress) {
+      errorToast('Your Wallet ID is not connected')
+      return
+    }
     if (validateForm()) return
 
-    try {
-      const res = await registerFn({
-        ...formState,
-        evmAddress: formState.evmAddress.toLowerCase(),
-      })
+    const res = await registerFn({
+      ...formState,
+      evmAddress: formState.evmAddress.toLowerCase(),
+    })
 
-      if (res) {
-        setIsRegistered(true)
-      } else {
-        setIsRegistered(false)
-      }
-    } catch (e) {
-      console.log(e)
+    if (res) {
+      setFormState({
+        ...initialFormState,
+        evmAddress: account,
+        referralCode: searchParams.get('ref'),
+      })
+      setIsSubmit(false)
+      setErrorsForm({})
     }
+
+    setIsRegistered(res)
   }
 
   return (
@@ -173,7 +183,7 @@ export default function StoryRegister({ isRegistered }) {
                     }}
                     placeHolder='Choose'
                   />
-                  {setErrorsForm.country && <p className='mb-1.5 text-red-500'>{setErrorsForm.country}</p>}
+                  {errorsForm.country && <p className='mb-1.5 text-red-500'>{errorsForm.country}</p>}
                 </div>
               </div>
               <div>
@@ -192,7 +202,7 @@ export default function StoryRegister({ isRegistered }) {
                   onChange={handleChange('email')}
                   required
                 />
-                {setErrorsForm.email && <p className='mb-1.5 text-red-500'>{setErrorsForm.email}</p>}
+                {errorsForm.email && <p className='mb-1.5 text-red-500'>{errorsForm.email}</p>}
               </div>
               {account ? (
                 <PrimaryButton onClick={handleSubmit} disabled={!isFormValid} className='w-full'>

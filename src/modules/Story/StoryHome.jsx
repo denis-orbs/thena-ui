@@ -1,9 +1,12 @@
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
+import { useMemo } from 'react'
 
 import { CountDownNextChapter } from '@/app/story/(withStoryLayout)/dashboard/CountDownNextChapter'
 import Box from '@/components/box'
 import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { useFetchChaptersAndTasks } from '@/hooks/useChapterAndTasks'
+import useWallet from '@/lib/wallets/useWallet'
 import { ChevronRightIcon, ExpandIcon } from '@/svgs'
 
 import Chapters from './Chapters'
@@ -11,6 +14,15 @@ import StoryRegister from './StoryRegister'
 
 function StoryHome({ isUpcoming, isRegistered }) {
   const t = useTranslations()
+
+  const { account } = useWallet()
+  const { campaignChapters: chapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(
+    account?.toLowerCase(),
+  )
+  const nextChapterTimeStamp = useMemo(
+    () => chapters?.find(chapter => !chapter.available)?.startTimestamp ?? '',
+    [chapters],
+  )
   return (
     <>
       {isUpcoming ? (
@@ -41,7 +53,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
             <p className='mb-4 font-archia text-[26px] font-semibold md:text-3xl md:tracking-wide'>
               {t('First Chapter Available in')}
             </p>
-            <CountDownNextChapter />
+            <CountDownNextChapter targetDate={nextChapterTimeStamp} />
           </Box>
         </div>
       ) : (
@@ -60,7 +72,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
           </div>
           {isRegistered && (
             <div className='mx-auto max-w-[850px]'>
-              <Chapters showCountDownNextChapter />
+              <Chapters chapters={chapters} isLoading={isLoadingChapterTasks} />
               <div className='mt-6 flex w-full justify-center'>
                 <PrimaryButton className='h-auto w-full md:w-[420px]'>
                   {t('View BNB Chain')}
@@ -73,9 +85,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
                   {t('Unlock Over $30,000 in Rewards')}
                 </p>
                 <p className='mb-8 text-center text-[16px] lg:text-[20px]'>
-                  {t('Dive into The Story of THENA and stand a chance to win big1')}
-                  <span className='text-[16px] text-[#F0B90B] lg:text-[20px]'>&nbsp;{t('BNB Chain')}.</span>
-                  {t('Dive into The Story of THENA and stand a chance to win big2')}
+                  {t('Dive into The Story of THENA and stand a chance to win big')}
                 </p>
                 <div className='mx-auto'>
                   <PrimaryButton className='h-11 w-[174px]'>{t('Start Your Chapter')}</PrimaryButton>
