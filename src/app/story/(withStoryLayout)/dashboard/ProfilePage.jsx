@@ -13,14 +13,8 @@ import { WeeklyTasks } from './WeeklyTasks'
 
 export function ProfilePage({ address }) {
   const { dailySwaps, campaignChapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(address)
-  console.log({
-    dailySwaps,
-    campaignChapters,
-    isLoadingChapterTasks,
-  })
 
   const { campaignParticipantInfo: userInfo } = useTHEStory()
-  console.log({ userInfo })
 
   const { data: userRefferal, isLoading: isLoadingReferral } = useSWR(
     ['campaignParticipantReferrals', address],
@@ -38,7 +32,7 @@ export function ProfilePage({ address }) {
     () => [campaignChapters?.filter(chapter => chapter.isCompleted)?.length, campaignChapters?.length],
     [campaignChapters],
   )
-  if (!address || !userInfo || isLoadingReferral) {
+  if (!address || !userInfo || isLoadingReferral || isLoadingChapterTasks) {
     return <Loading />
   }
 

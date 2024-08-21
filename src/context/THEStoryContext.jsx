@@ -12,6 +12,7 @@ const THEStoryContext = createContext({
   campaignStartsAt: dayjs.utc('2024-08-20'),
   isRegistered: false,
   campaignParticipantInfo: null,
+  setCampaignParticipantInfo: () => {},
   isUpcoming: true,
 })
 
@@ -77,7 +78,7 @@ function THEStoryContextProvider({ children }) {
       setCampaignParticipantInfo,
       isUpcoming,
     }),
-    [campaignStartsAt, isRegistered, campaignParticipantInfo, isUpcoming],
+    [campaignStartsAt, isRegistered, campaignParticipantInfo, setCampaignParticipantInfo, isUpcoming],
   )
 
   return <THEStoryContext.Provider value={value}>{children}</THEStoryContext.Provider>

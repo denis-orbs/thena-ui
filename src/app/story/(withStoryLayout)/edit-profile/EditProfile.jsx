@@ -1,5 +1,3 @@
-import { gql } from 'graphql-request'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import { useTranslations } from 'use-intl'
@@ -12,46 +10,29 @@ import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { successToast } from '@/lib/notify'
 import useWallet from '@/lib/wallets/useWallet'
+import { V4_UPDATE_PARTICIPANT_PROFILE } from '@/modules/Story'
 import { ArrowBackwardIcon } from '@/svgs'
 
-const V4_UPDATE_PARTICIPANT_PROFILE = gql`
-  mutation V4_UPDATE_PARTICIPANT_PROFILE(
-    $country: String = ""
-    $email: String = ""
-    $referralText: String = ""
-    $xProfileUsername: String = ""
-    $participantId: String
-  ) {
-    updateParticipantProfile(
-      input: { country: $country, email: $email, referralText: $referralText, xProfileUsername: $xProfileUsername }
-      participantId: $participantId
-    ) {
-      avatar
-      country
-      email
-      xProfileUsername
-    }
-  }
-`
+import { SelectAvatar } from './SelectAvatar'
 
-export function EditProfile({ userInfo, mutateUserInfo, isLoading }) {
-  console.log({
-    userInfo,
-    mutateUserInfo,
-    isLoading,
-  })
+export function EditProfile({ userInfo, updateUserInfo }) {
   const { account } = useWallet()
   const t = useTranslations()
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState(null)
+  console.log({
+    selectedImage,
+    previewUrl,
+  })
 
   const [dataUpdate, setDataUpdate] = useState({ ...userInfo })
 
   const { signWallet } = useSignWallet()
   const updateProfileFn = useCallback(
-    async ({ avatar, country, email, xProfileUsername }) => {
+    async ({ country, email, xProfileUsername }) => {
       const { updateUserProfile } = await v4Client.request(
         V4_UPDATE_PARTICIPANT_PROFILE,
         {
-          avatar,
           country,
           email,
           xProfileUsername,
@@ -84,7 +65,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isLoading }) {
         },
         data => {
           if (data !== false) {
-            mutateUserInfo({
+            updateUserInfo({
               ...userInfo,
               data,
             })
@@ -92,7 +73,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isLoading }) {
         },
       )
     }
-  }, [dataUpdate, mutateUserInfo, updateProfile, userInfo])
+  }, [dataUpdate, updateUserInfo, updateProfile, userInfo])
 
   return (
     <div>
@@ -113,7 +94,13 @@ export function EditProfile({ userInfo, mutateUserInfo, isLoading }) {
             </TextSubHeading>
           </div>
           <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
-            <Image src='/images/apollo.png' alt='user-info-avatar' width={124} height={124} />
+            <SelectAvatar
+              defaultAvatarURL={userInfo.avatarUrl}
+              selectedImage={selectedImage}
+              setSelectedImage={setSelectedImage}
+              previewUrl={previewUrl}
+              setPreviewUrl={setPreviewUrl}
+            />
           </div>
 
           <div className='col-span-3 lg:col-span-1'>

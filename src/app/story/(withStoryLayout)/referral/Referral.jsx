@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { StarLineSmall } from '@/svgs'
+import { StarLineSmallIcon } from '@/svgs'
 
 import { HowItWork } from './HowItWork'
 import { ReferralHistory } from './ReferralHistory'
@@ -32,7 +32,7 @@ export function Referral() {
         </div>
         <div className='rounded-xl bg-neutral-900 p-6'>
           <TextHeading className='block text-2xl'>
-            <StarLineSmall className='inline-block h-5 w-5' />
+            <StarLineSmallIcon className='inline-block h-5 w-5' />
             30
           </TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>

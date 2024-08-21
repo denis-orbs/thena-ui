@@ -20,7 +20,6 @@ export function ChapterProcess({ chapter }) {
     return 0
   }, [totalTask, taskCompleted])
 
-  console.log({ totalTask, taskCompleted, chapter })
   return (
     <div className='rounded-xl border-[1px] border-purple bg-neutral-900 px-4 py-6'>
       <div>
