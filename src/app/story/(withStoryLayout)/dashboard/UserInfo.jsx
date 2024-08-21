@@ -34,11 +34,11 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
                 width={100}
                 height={100}
               />
-              <div className='flex flex-col gap-3'>
+              <div className='flex flex-col gap-2 lg:gap-3'>
                 <div className='flex items-center'>
                   <TextHeading
                     className={cn(
-                      'text-3xl',
+                      ' text-xl lg:text-3xl',
                       userInfo.nameColor && !String(userInfo.nameColor).startsWith('#') ? userInfo.nameColor : '',
                     )}
                   >
@@ -62,7 +62,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
                 <div className='flex flex-col gap-1 md:flex-row'>
                   {userInfo.xProfileUsername && (
                     <Link href={`https://x.com/${userInfo.xProfileUsername}`} rel='nofollow noopener' target='_blank'>
-                      <NeutralBadge className='flex items-center lg:text-xs'>
+                      <NeutralBadge className='flex w-fit items-center lg:text-xs'>
                         <NextImage alt='svg' className='mr-2 w-fit' src='/images/footer/x.svg' />
                         <span className='line-clamp-1'>@{userInfo.xProfileUsername}</span>
                       </NeutralBadge>
@@ -75,14 +75,14 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
           <ProfileButton />
         </div>
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-5'>
-          <Link href='/'>
-            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
+          <Link href='/' className='rounded-xl bg-neutral-800'>
+            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <TextHeading className='text-lg'>{userInfo.rank ?? '-'}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
             </Box>
           </Link>
-          <Link href='/'>
-            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
+          <Link href='/' className='rounded-xl bg-neutral-800'>
+            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <div className='flex items-center'>
                 <RewardIconTooltip rewardType={RewardType.Point} id='user-info_earned-point' className='mb-1 mr-1' />
                 <TextHeading className='text-lg'>{userInfo.totalPoints ?? '-'}</TextHeading>
@@ -90,8 +90,8 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
               <TextSubHeading className='text-sm'>{t('Earned points')}</TextSubHeading>
             </Box>
           </Link>
-          <Link href='/'>
-            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
+          <Link href='/' className='rounded-xl bg-neutral-800'>
+            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <div className='flex items-center'>
                 <RewardIconTooltip
                   rewardType={RewardType.Fragment}
@@ -103,16 +103,16 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
               <TextSubHeading className='text-sm'>{t('Earned fragments')}</TextSubHeading>
             </Box>
           </Link>
-          <Link href='/'>
-            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
+          <Link href='/' className='rounded-xl bg-neutral-800'>
+            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <TextHeading className='text-lg'>
                 {completedChapter} / {totalChapter}
               </TextHeading>
               <TextSubHeading className='text-sm'>{t('Chapters completed')}</TextSubHeading>
             </Box>
           </Link>
-          <Link href='/'>
-            <Box className='flex flex-col gap-1 bg-neutral-800 p-3 lg:p-3'>
+          <Link href='/' className='col-span-2 rounded-xl bg-neutral-800 lg:col-span-1'>
+            <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <TextHeading className='text-lg'>{totalSuccessfulRefferal}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Successful Referrals')}</TextSubHeading>
             </Box>

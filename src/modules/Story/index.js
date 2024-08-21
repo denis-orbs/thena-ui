@@ -1,7 +1,10 @@
 import { gql } from 'graphql-request'
+import { useCallback } from 'react'
 
+import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
+import { successToast } from '@/lib/notify'
 
 const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
   query V4_CAMPAIGN_PARTICIPANT_BY_ID($id_eq: String = "") {
@@ -43,25 +46,6 @@ const V4_CAMPAIGN_PARTICIPANT_REFERRALS = gql`
   }
 `
 
-export const V4_UPDATE_PARTICIPANT_PROFILE = gql`
-  mutation V4_UPDATE_PARTICIPANT_PROFILE(
-    $country: String = ""
-    $email: String = ""
-    $referralText: String = ""
-    $xProfileUsername: String = ""
-    $participantId: String
-  ) {
-    updateParticipantProfile(
-      input: { country: $country, email: $email, referralText: $referralText, xProfileUsername: $xProfileUsername }
-      participantId: $participantId
-    ) {
-      country
-      email
-      xProfileUsername
-    }
-  }
-`
-
 export const fetchTHEStoryParticipantReferrals = async user => {
   try {
     const { campaignParticipantReferrals } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_REFERRALS, {
@@ -73,10 +57,62 @@ export const fetchTHEStoryParticipantReferrals = async user => {
     }
     return []
   } catch (error) {
-    return {
-      error: true,
+    console.log(error)
+    // errorToast(error.errors)
+  }
+}
+
+export const V4_UPDATE_PARTICIPANT_PROFILE = gql`
+  mutation V4_UPDATE_PARTICIPANT_PROFILE(
+    $avatarUrl: String = ""
+    $country: String = ""
+    $email: String = ""
+    $xProfileUsername: String = ""
+  ) {
+    updateParticipantProfile(
+      input: { avatarUrl: $avatarUrl, country: $country, email: $email, xProfileUsername: $xProfileUsername }
+    ) {
+      avatarUrl
+      country
+      email
+      referralCode
+      referralText
+      xProfileUsername
     }
   }
+`
+
+export const useUpdateParticipantProfile = () => {
+  const { signWallet } = useSignWallet()
+
+  const updateParticipantProfileFn = useCallback(async ({ avatarUrl, country, email, xProfileUsername }) => {
+    const { updateParticipantProfile } = await v4Client.request(
+      V4_UPDATE_PARTICIPANT_PROFILE,
+      {
+        avatarUrl,
+        country,
+        email,
+        xProfileUsername,
+      },
+      {
+        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+      },
+    )
+
+    if (updateParticipantProfile) {
+      successToast('Successfully')
+
+      return updateParticipantProfile
+    }
+    return false
+  }, [])
+
+  const updateParticipantProfile = useCallback(
+    (params, callOnSuccess) => actionWithAuthentication(updateParticipantProfileFn, signWallet, params, callOnSuccess),
+    [updateParticipantProfileFn, signWallet],
+  )
+
+  return { updateParticipantProfile, updateParticipantProfileFn }
 }
 
 export const V4_GENERATE_AVATAR_PROFILE_URL = gql`
@@ -88,35 +124,47 @@ export const V4_GENERATE_AVATAR_PROFILE_URL = gql`
   }
 `
 
-export const generateUrlUpload = async ({ file, userId }) => {
-  const {
-    generatePresignedUrl: { signedRequest, url },
-  } = await v4Client.request(
-    V4_GENERATE_AVATAR_PROFILE_URL,
-    {
-      fileName: file.name,
-      fileType: file.type,
-      userId,
-    },
-    {
-      authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
-    },
+export const useCreateParticipantAvatarUploadUrl = () => {
+  const { signWallet } = useSignWallet()
+  const createPresignUrlFn = useCallback(async ({ file, userId }) => {
+    console.log({ file })
+    const {
+      generatePresignedUrl: { signedRequest, url },
+    } = await v4Client.request(
+      V4_GENERATE_AVATAR_PROFILE_URL,
+      {
+        fileName: file.name,
+        fileType: file.type,
+        userId,
+      },
+      {
+        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+      },
+    )
+
+    if (signedRequest && url) {
+      const { status, statusText } = await fetch(signedRequest, {
+        method: 'PUT',
+        body: file,
+        redirect: 'follow',
+        headers: {
+          'Content-Type': file.type,
+        },
+      })
+      if (status !== 200) {
+        throw new Error(statusText)
+      } else {
+        return url
+      }
+    }
+    return null
+  }, [])
+
+  const createPresignUrl = useCallback(
+    (file, userId, callOnSuccess) =>
+      actionWithAuthentication(createPresignUrlFn, signWallet, { file, userId }, callOnSuccess),
+    [createPresignUrlFn, signWallet],
   )
 
-  if (signedRequest && url) {
-    const { status, statusText } = await fetch(signedRequest, {
-      method: 'PUT',
-      body: file,
-      redirect: 'follow',
-      headers: {
-        'Content-Type': file.type,
-      },
-    })
-    if (status !== 200) {
-      throw new Error(statusText)
-    } else {
-      return url
-    }
-  }
-  return null
+  return { createPresignUrlFn, createPresignUrl }
 }

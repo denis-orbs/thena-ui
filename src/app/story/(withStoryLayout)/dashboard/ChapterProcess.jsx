@@ -58,37 +58,38 @@ export function ChapterProcess({ chapter }) {
             {chapter.tasks.map(task => (
               <div
                 key={task.id}
-                className='mt-3 flex flex-row items-center justify-between rounded-lg bg-neutral-800 p-3 px-4 py-5 lg:flex-row '
+                className='mt-3 grid grid-cols-12 gap-4 rounded-lg bg-neutral-800 p-3 px-4 py-5 lg:flex-row'
               >
-                <div>
-                  <p className='text-[18px] font-medium leading-6'>{t(task.name)}</p>
-                </div>
-                <div>
-                  <div className='flex flex-row items-center'>
-                    {task.rewardAmount.map((amount, index) => (
-                      <div key={index} className='flex flex-row items-center'>
-                        {!!amount && (
-                          <>
-                            <span className='text-lg font-light leading-6 '>+{amount}</span>
-                            <RewardIconTooltip
-                              rewardType={task.rewardType[index]}
-                              id={`chapter-${chapter.id}_task-${task.id}_reward`}
-                              iconSize={6}
-                            />
-                          </>
-                        )}
-                      </div>
-                    ))}
+                <div className='col-span-12 flex items-center justify-between lg:col-span-10'>
+                  <div>
+                    <p className='text-[18px] font-medium leading-6'>{t(task.name)}</p>
+                  </div>
 
-                    <div className='ml-4  w-[124px] '>
-                      {task.completed ? (
-                        <EmphasisButton className='w-full' disabled>
-                          {t('Completed')}
-                        </EmphasisButton>
-                      ) : (
-                        <PrimaryButton className='w-full'>{t('Start task')}</PrimaryButton>
+                  {task.rewardAmount.map((amount, index) => (
+                    <>
+                      {!!amount && (
+                        <div key={index} className='flex flex-row items-center'>
+                          <span className='text-lg font-light leading-6 '>+{amount}</span>
+                          <RewardIconTooltip
+                            rewardType={task.rewardType[index]}
+                            id={`chapter-${chapter.id}_task-${task.id}_reward`}
+                            iconSize={6}
+                          />
+                        </div>
                       )}
-                    </div>
+                    </>
+                  ))}
+                </div>
+
+                <div className='col-span-12 flex flex-row items-center lg:col-span-2'>
+                  <div className='w-full '>
+                    {task.completed ? (
+                      <EmphasisButton className='w-full' disabled>
+                        {t('Completed')}
+                      </EmphasisButton>
+                    ) : (
+                      <PrimaryButton className='w-full'>{t('Start task')}</PrimaryButton>
+                    )}
                   </div>
                 </div>
               </div>

@@ -1,65 +1,52 @@
 import Image from 'next/image'
+import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useState } from 'react'
 
 import { cn } from '@/lib/utils'
-import { CloseIcon } from '@/svgs'
 
-export function SelectAvatar({ defaultAvatarURL, setSelectedImage, previewUrl, setPreviewUrl }) {
-  const handleImageChange = event => {
-    const file = event.target.files[0]
-    if (file) {
-      setSelectedImage(file)
-      setPreviewUrl(URL.createObjectURL(file))
-    }
-  }
+import { ModalEditUserAvatar } from './ModalEditUserAvatar'
 
+export function SelectAvatar({ avatarUrl, setAvatarUrl }) {
   const [isHovered, setIsHovered] = useState(false)
-  const handleResetDefault = useCallback(
-    e => {
-      e.stopPropagation()
-      e.preventDefault()
+  const [openModal, setOpenModal] = useState(false)
 
-      setSelectedImage(null)
-      setPreviewUrl(defaultAvatarURL)
+  const onChangeAvatar = useCallback(
+    url => {
+      setAvatarUrl(url)
     },
-    [defaultAvatarURL, setSelectedImage, setPreviewUrl],
+    [setAvatarUrl],
   )
-
   return (
-    <>
+    <div>
       <div
-        className='relative w-min cursor-pointer'
+        className='relative inline-block cursor-pointer '
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={() => setOpenModal(true)}
       >
-        <input type='file' accept='image/*' onChange={handleImageChange} style={{ display: 'none' }} id='fileInput' />
-        <label htmlFor='fileInput' className='relative inline-block cursor-pointer'>
-          <Image
-            src={previewUrl ?? '/images/apollo.png'}
-            alt='Preview'
-            width={124}
-            height={124}
-            className=' rounded-full object-cover'
-          />
-          <div
-            className={cn(
-              'absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-full bg-[]',
-              isHovered ? 'opacity-1' : 'opacity-0',
-            )}
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            }}
-          >
-            Upload
-          </div>
-        </label>
-        {isHovered && (
-          <div onClick={handleResetDefault}>
-            <CloseIcon className='CloseIcon absolute right-0 top-0 h-6 w-6' />
-          </div>
-        )}
+        <Image
+          src={avatarUrl ?? Avatar}
+          alt='Preview'
+          width={124}
+          height={124}
+          className=' h-[124px] w-[124px] rounded-full object-cover'
+        />
+        <div
+          className={cn(
+            'absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-full bg-[]',
+            isHovered ? 'opacity-1' : 'opacity-0',
+          )}
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          }}
+        >
+          Upload
+        </div>
       </div>
-    </>
+      {openModal && (
+        <ModalEditUserAvatar isOpen={openModal} onChange={onChangeAvatar} closeModal={() => setOpenModal(false)} />
+      )}
+    </div>
   )
 }
 

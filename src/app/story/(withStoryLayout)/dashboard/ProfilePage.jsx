@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -12,6 +13,7 @@ import { UserInfo } from './UserInfo'
 import { WeeklyTasks } from './WeeklyTasks'
 
 export function ProfilePage({ address }) {
+  const t = useTranslations()
   const { dailySwaps, campaignChapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(address)
 
   const { campaignParticipantInfo: userInfo } = useTHEStory()
@@ -32,6 +34,7 @@ export function ProfilePage({ address }) {
     () => [campaignChapters?.filter(chapter => chapter.isCompleted)?.length, campaignChapters?.length],
     [campaignChapters],
   )
+
   if (!address || !userInfo || isLoadingReferral || isLoadingChapterTasks) {
     return <Loading />
   }
@@ -47,6 +50,9 @@ export function ProfilePage({ address }) {
       <DailySwap dailySwaps={dailySwaps} />
       <WeeklyTasks chapters={campaignChapters} />
       <ChaptersOverview chapters={campaignChapters} />
+      <div className='mt-4 flex justify-center lg:mt-10'>
+        <span className='font-archia text-3xl font-normal'>{t('More Coming')}</span>
+      </div>
     </div>
   )
 }

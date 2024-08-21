@@ -91,6 +91,8 @@ export async function actionWithAuthentication(action, callOnFailed, params, cal
       err?.response?.errors?.[0]?.message === 'Invalid Access Token'
     ) {
       callOnFailed(action, params, callOnSuccess, callOnReject, true)
+    } else if (err?.response?.errors?.[0]?.message) {
+      errorToast(err?.response?.errors?.[0]?.message)
     } else {
       errorToast('Error')
     }

@@ -1,10 +1,11 @@
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 
-import { ChapterLogoIcon, Check2Icon } from '@/svgs'
+import { Check2Icon } from '@/svgs'
 
 export function ChapterOverviewProcess({ chapter }) {
   const t = useTranslations()
+
   const [totalTask, taskCompleted] = useMemo(
     () => [chapter?.tasks?.length ?? 0, chapter?.tasks?.filter(task => task.isCompleted)?.length ?? 0],
     [chapter],
@@ -33,7 +34,7 @@ export function ChapterOverviewProcess({ chapter }) {
         <hr className='my-4 border-neutral-600' />
         <div>
           <div className='flex items-center'>
-            <ChapterLogoIcon className='inlin h-5 w-5' />
+            {/* <ChapterLogoIcon className='inlin h-5 w-5' /> */}
             <p className='text-gradient-primary inline-block text-base font-medium leading-5 tracking-[.03em]'>
               {t('Chapter').toUpperCase()} {chapter.index}
             </p>
