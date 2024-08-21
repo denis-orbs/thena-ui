@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 
@@ -19,6 +20,7 @@ const initialFormState = {
   country: null,
   email: '',
   evmAddress: '',
+  referralCode: '',
 }
 
 const V4_REGISTER_CAMPAIGN = gql`
@@ -29,33 +31,35 @@ const V4_REGISTER_CAMPAIGN = gql`
 
 export default function StoryRegister({ isRegistered }) {
   const { setIsRegistered } = useContext(THEStoryContext)
-  const [errors, setErrors] = useState({})
+  const [errorsForm, setErrorsForm] = useState({})
   const [isFormValid, setIsFormValid] = useState(false)
   const [isSubmit, setIsSubmit] = useState(false)
   const { account } = useWallet()
   const [countryName, setCountryName] = useState('')
   const t = useTranslations()
+  const searchParams = useSearchParams()
   const [formState, setFormState] = useState({
     ...initialFormState,
     evmAddress: account,
+    referralCode: searchParams.get('ref'),
   })
 
   const registerFn = async ({ evmAddress, email, country, referralCode = '' }) => {
-    try {
-      const { registerCampaign } = await v4Client.request(V4_REGISTER_CAMPAIGN, {
-        evmAddress,
-        email,
-        country,
-        referralCode,
-      })
+    const { registerCampaign, errors } = await v4Client.request(V4_REGISTER_CAMPAIGN, {
+      evmAddress,
+      email,
+      country,
+      referralCode,
+    })
 
-      if (registerCampaign) {
-        return registerCampaign
-      }
-      return false
-    } catch (error) {
-      return false
+    if (errors) {
+      throw errors
     }
+
+    if (registerCampaign) {
+      return registerCampaign
+    }
+    return false
   }
 
   const validateForm = useCallback(() => {
@@ -78,7 +82,7 @@ export default function StoryRegister({ isRegistered }) {
     }
 
     if (isSubmit) {
-      setErrors(err)
+      setErrorsForm(err)
     }
     setIsFormValid(Object.keys(err).length === 0)
   }, [account, formState.country, formState.email, formState.evmAddress, isSubmit])
@@ -95,25 +99,31 @@ export default function StoryRegister({ isRegistered }) {
     setFormState(prev => ({
       ...prev,
       evmAddress: account,
+      referralCode: searchParams.get('ref'),
     }))
-  }, [account])
+  }, [account, searchParams])
 
   useEffect(() => {
-    if (isSubmit) {
-      validateForm()
-    }
+    validateForm()
   }, [formState, isSubmit, validateForm])
 
   const handleSubmit = async () => {
     setIsSubmit(true)
     if (validateForm()) return
 
-    const res = await registerFn(formState)
+    try {
+      const res = await registerFn({
+        ...formState,
+        evmAddress: formState.evmAddress.toLowerCase(),
+      })
 
-    if (res) {
-      setIsRegistered(true)
-    } else {
-      setIsRegistered(false)
+      if (res) {
+        setIsRegistered(true)
+      } else {
+        setIsRegistered(false)
+      }
+    } catch (e) {
+      console.log(e)
     }
   }
 
@@ -145,7 +155,7 @@ export default function StoryRegister({ isRegistered }) {
                   onChange={handleChange('evmAddress')}
                   required
                 />
-                {errors.evmAddress && <p className='mb-1.5 text-red-500'>{errors.evmAddress}</p>}
+                {errorsForm.evmAddress && <p className='mb-1.5 text-red-500'>{errorsForm.evmAddress}</p>}
               </div>
               <div>
                 <div>
@@ -163,7 +173,7 @@ export default function StoryRegister({ isRegistered }) {
                     }}
                     placeHolder='Choose'
                   />
-                  {errors.country && <p className='mb-1.5 text-red-500'>{errors.country}</p>}
+                  {setErrorsForm.country && <p className='mb-1.5 text-red-500'>{setErrorsForm.country}</p>}
                 </div>
               </div>
               <div>
@@ -182,7 +192,7 @@ export default function StoryRegister({ isRegistered }) {
                   onChange={handleChange('email')}
                   required
                 />
-                {errors.email && <p className='mb-1.5 text-red-500'>{errors.email}</p>}
+                {setErrorsForm.email && <p className='mb-1.5 text-red-500'>{setErrorsForm.email}</p>}
               </div>
               {account ? (
                 <PrimaryButton onClick={handleSubmit} disabled={!isFormValid} className='w-full'>
