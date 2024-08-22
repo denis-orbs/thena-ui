@@ -1,9 +1,8 @@
 import { gql } from 'graphql-request'
-import { createContext, useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import useSWR from 'swr'
 
 import { v4Client } from '@/lib/graphql'
-import useWallet from '@/lib/wallets/useWallet'
 
 const V4_CAMPAIGN_CHAPTERS = gql`
   query V4_CAMPAIGN_CHAPTERS {
@@ -41,9 +40,12 @@ const V4_CAMPAIGN_TASKS = gql`
 `
 const fetchCampaignTasks = async () => {
   try {
-    const { campaignTasks = [] } = await v4Client.request(V4_CAMPAIGN_TASKS)
+    const { campaignTasks } = await v4Client.request(V4_CAMPAIGN_TASKS)
+    if (campaignTasks && Array.isArray(campaignTasks)) {
+      return campaignTasks
+    }
 
-    return campaignTasks
+    return []
   } catch (error) {
     return undefined
   }
@@ -70,52 +72,49 @@ const fetchCampaignCompletedTasks = async id => {
 }
 
 const initialState = {
-  campaignChapters: undefined,
+  dailySwaps: [],
+  campaignChapters: [],
   isLoading: true,
 }
 
-const ChapterTasksContext = createContext(initialState)
-
-function ChapterTasksProvider({ children }) {
-  const { account } = useWallet()
+const useFetchChaptersAndTasks = id => {
   const { data: campaignChapters = [], isLoading: isLoadingChapter } = useSWR(
-    ['fetchCampaignChapters', account],
+    ['fetchCampaignChapters', id],
     () => fetchCampaignChapters(),
     {
       refreshInterval: 60000,
     },
   )
 
-  console.log({ campaignChapters })
-
   const { data: campaignTasks = [], isLoading: isLoadingTask } = useSWR(
-    ['fetchCampaignTasks', account],
+    ['fetchCampaignTasks', id],
     () => fetchCampaignTasks(),
     {
       refreshInterval: 60000,
     },
   )
 
-  console.log({ campaignTasks })
-
   const { data: campaignCompletedTask = [], isLoading: isLoadingCompletedTask } = useSWR(
-    ['fetchCampaignCompletedTasks', account],
-    () => fetchCampaignCompletedTasks(),
+    ['fetchCampaignCompletedTasks', id],
+    () => fetchCampaignCompletedTasks(id),
     {
       refreshInterval: 60000,
     },
   )
-
   const final = useMemo(() => {
-    if (!account || isLoadingChapter || isLoadingCompletedTask || isLoadingTask) {
+    const currentDate = new Date()
+    if (!id || isLoadingChapter || isLoadingCompletedTask || isLoadingTask) {
       return initialState
     }
 
+    // check completed chapters and tasks
+    // filter chapter task with type [Main]
     const campaignChaptersDetails = campaignChapters.map((chapter, chapIndex) => {
       const tasks = campaignTasks
-        .filter(task => +task.chapter === chapIndex)
+        .filter(task => +task.chapter === chapIndex + 1 && task.type === 'Main')
         .map(task => {
           const isCompleted = !!campaignCompletedTask.find(completedTask => completedTask.campaignTask.id === task.id)
+
           return {
             ...task,
             isCompleted,
@@ -123,19 +122,55 @@ function ChapterTasksProvider({ children }) {
         })
 
       const isCompleted = tasks.every(task => task.isCompleted)
+
+      const startTime = new Date(chapter.startTimestamp)
+      const endTime = new Date(chapter.endTimestamp)
+      const available = currentDate >= startTime && currentDate <= endTime
       return {
         ...chapter,
+        index: chapIndex + 1,
         tasks,
         isCompleted,
+        available,
+      }
+    })
+
+    let currentChapterIndex = campaignChapters.findIndex(chapter => {
+      const startTime = new Date(chapter.startTimestamp)
+      const endTime = new Date(chapter.endTimestamp)
+
+      return currentDate >= startTime && currentDate <= endTime
+    })
+    // FIXME remove default chapter index 0
+    currentChapterIndex = currentChapterIndex !== -1 ? currentChapterIndex : 0
+
+    let dailySwaps = campaignTasks
+      .filter(task => task.chapter === currentChapterIndex + 1 && task.type === 'Daily')
+      .map(task => {
+        const isCompleted = !!campaignCompletedTask.find(completedTask => completedTask.campaignTask.id === task.id)
+        return {
+          ...task,
+          isCompleted,
+        }
+      })
+      .sort((swap1, swap2) => swap1.index - swap2.index)
+
+    const firstSwapRewardAmount = dailySwaps[0]?.rewardAmount?.[0] ?? 1
+    dailySwaps = dailySwaps.map(swap => {
+      const ratio = swap.rewardAmount[0] / firstSwapRewardAmount
+      return {
+        ...swap,
+        ratio,
       }
     })
 
     return {
+      dailySwaps,
       campaignChapters: campaignChaptersDetails,
       isLoading: isLoadingChapter || isLoadingTask || isLoadingCompletedTask,
     }
   }, [
-    account,
+    id,
     campaignChapters,
     isLoadingChapter,
     campaignTasks,
@@ -144,16 +179,7 @@ function ChapterTasksProvider({ children }) {
     isLoadingCompletedTask,
   ])
 
-  return <ChapterTasksContext.Provider value={final}>{children}</ChapterTasksContext.Provider>
+  return final
 }
 
-const useChapterTasks = () => {
-  const { campaignChapters, isLoading } = useContext(ChapterTasksContext)
-
-  return {
-    campaignChapters,
-    isLoading,
-  }
-}
-
-export { ChapterTasksContext, ChapterTasksProvider, useChapterTasks }
+export { fetchCampaignChapters, fetchCampaignCompletedTasks, fetchCampaignTasks, useFetchChaptersAndTasks }

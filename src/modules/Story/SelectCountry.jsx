@@ -1,12 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import Input from '@/components/input'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
-export default function SelectCountry({ className, data, selected, setSelected, placeHolder }) {
+import { Countries } from './Country'
+
+export default function SelectCountry({ className, selected = '', setSelected }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
+  const displaySelectedCountry = useMemo(() => {
+    const selectedCountry = Countries.find(country => country.isoCode === selected)
+    return `${selectedCountry?.emoji} ${selectedCountry?.name}`
+  }, [selected])
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -27,9 +33,9 @@ export default function SelectCountry({ className, data, selected, setSelected, 
           input: cn('cursor-pointer caret-transparent', className),
         }}
         type='text'
-        val={selected}
+        val={displaySelectedCountry}
         onClick={() => setOpen(!open)}
-        placeholder={placeHolder}
+        placeholder='Choose'
         TrailingIcon={
           <ChevronDownIcon
             className={cn('transfrom transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
@@ -46,7 +52,7 @@ export default function SelectCountry({ className, data, selected, setSelected, 
           className,
         )}
       >
-        {data.map((item, idx) => (
+        {Countries.map((item, idx) => (
           <div
             className={cn(
               'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
@@ -54,7 +60,7 @@ export default function SelectCountry({ className, data, selected, setSelected, 
             )}
             key={`dropdown-${idx}`}
             onClick={() => {
-              setSelected(item)
+              setSelected(item.isoCode)
               setOpen(false)
             }}
           >

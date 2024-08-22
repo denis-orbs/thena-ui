@@ -1,8 +1,11 @@
-import React from 'react'
+import { useTranslations } from 'next-intl'
+import React, { useMemo } from 'react'
+import useSWR from 'swr'
 
 import Loading from '@/app/loading'
-import { useUserInfo } from '@/context/campaignParticipantsContext'
-import { useChapterTasks } from '@/context/chapterTasksContext'
+import { useTHEStory } from '@/context/THEStoryContext'
+import { useFetchChaptersAndTasks } from '@/hooks/useChapterAndTasks'
+import { fetchTHEStoryParticipantReferrals } from '@/modules/Story'
 
 import { ChaptersOverview } from './ChaptersOverview'
 import { DailySwap } from './DailySwap'
@@ -10,33 +13,46 @@ import { UserInfo } from './UserInfo'
 import { WeeklyTasks } from './WeeklyTasks'
 
 export function ProfilePage({ address }) {
-  const { campaignChapters, isLoading: isLoadingChapterTasks } = useChapterTasks()
-  console.log({
-    campaignChapters,
-    isLoadingChapterTasks,
-  })
-  const {
-    userInfo = {
-      id: '0xb095069bdeb6be079206cb0a7cca2786d79cba7c',
-      avatar: null,
-      rank: 124,
-      firstInteractAt: '2024-08-08',
+  const t = useTranslations()
+  const { dailySwaps, campaignChapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(address)
+
+  const { campaignParticipantInfo: userInfo } = useTHEStory()
+
+  const { data: userRefferal, isLoading: isLoadingReferral } = useSWR(
+    ['campaignParticipantReferrals', address],
+    () => fetchTHEStoryParticipantReferrals(address),
+    {
+      refreshInterval: 0,
     },
-    isLoading: isLoadingUser,
-  } = useUserInfo()
+  )
+  const totalSuccessfulRefferal = useMemo(
+    () => userRefferal?.filter(referral => referral.isSuccess)?.length ?? 0,
+    [userRefferal],
+  )
 
-  console.log({ isLoadingUser })
+  const [completedChapter, totalChapter] = useMemo(
+    () => [campaignChapters?.filter(chapter => chapter.isCompleted)?.length, campaignChapters?.length],
+    [campaignChapters],
+  )
 
-  if (!address || !userInfo) {
+  if (!address || !userInfo || isLoadingReferral || isLoadingChapterTasks) {
     return <Loading />
   }
 
   return (
     <div className='mt-10 space-y-10'>
-      <UserInfo userInfo={userInfo} />
-      <DailySwap />
-      <WeeklyTasks />
-      <ChaptersOverview />
+      <UserInfo
+        userInfo={userInfo}
+        completedChapter={completedChapter}
+        totalChapter={totalChapter}
+        totalSuccessfulRefferal={totalSuccessfulRefferal}
+      />
+      <DailySwap dailySwaps={dailySwaps} />
+      <WeeklyTasks chapters={campaignChapters} />
+      <ChaptersOverview chapters={campaignChapters} />
+      <div className='mt-4 flex justify-center lg:mt-10'>
+        <span className='font-archia text-3xl font-normal'>{t('More Coming')}</span>
+      </div>
     </div>
   )
 }

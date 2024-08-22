@@ -3,15 +3,17 @@ import { useMemo } from 'react'
 
 import CustomTooltip from '@/components/tooltip'
 import { cn } from '@/lib/utils'
-import { DiamondIcon, StarLineSmall } from '@/svgs'
+import { DiamondIcon, StarLineSmallIcon } from '@/svgs'
+
+import { RewardType } from '../../constant'
 
 export function RewardIconTooltip({ className = '', iconSize = 5, rewardType, id }) {
   const t = useTranslations()
   const { icon, description } = useMemo(() => {
-    if (rewardType === 'star') {
+    if (rewardType === RewardType.Point) {
       return {
         icon: (
-          <StarLineSmall
+          <StarLineSmallIcon
             className={cn('inline-block cursor-pointer', `h-${iconSize} w-${iconSize}`)}
             data-tooltip-id={id}
           />

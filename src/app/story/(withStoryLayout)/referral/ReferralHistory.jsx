@@ -1,7 +1,7 @@
 import { useTranslations } from 'use-intl'
 
 import { TextHeading } from '@/components/typography'
-import { StarLineSmall } from '@/svgs'
+import { StarLineSmallIcon } from '@/svgs'
 
 export function ReferralHistory() {
   const t = useTranslations()
@@ -55,7 +55,7 @@ export function ReferralHistory() {
               <div className='col-span-2 md:col-span-1'>
                 {referral.rewardAmount ? (
                   <div className='flex items-center'>
-                    {`+${referral.rewardAmount}`} <StarLineSmall className='inline-block h-6 w-6' />
+                    {`+${referral.rewardAmount}`} <StarLineSmallIcon className='inline-block h-6 w-6' />
                   </div>
                 ) : (
                   '-'

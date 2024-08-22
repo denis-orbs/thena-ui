@@ -1,103 +1,67 @@
-import { gql } from 'graphql-request'
-import Image from 'next/image'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import Input from '@/components/input'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
-import { v4Client } from '@/lib/graphql'
-import { getFromLocalStorage } from '@/lib/helper'
-import { successToast } from '@/lib/notify'
-import useWallet from '@/lib/wallets/useWallet'
+import { useUpdateParticipantProfile } from '@/modules/Story'
+import { Countries } from '@/modules/Story/Country'
+import SelectCountry from '@/modules/Story/SelectCountry'
 import { ArrowBackwardIcon } from '@/svgs'
 
-const V4_UPDATE_PARTICIPANT_PROFILE = gql`
-  mutation V4_UPDATE_PARTICIPANT_PROFILE(
-    $country: String = ""
-    $email: String = ""
-    $referralText: String = ""
-    $xProfileUsername: String = ""
-    $participantId: String
-  ) {
-    updateParticipantProfile(
-      input: { country: $country, email: $email, referralText: $referralText, xProfileUsername: $xProfileUsername }
-      participantId: $participantId
-    ) {
-      avatar
-      country
-      email
-      xProfileUsername
-    }
-  }
-`
+import { SelectAvatar } from './SelectAvatar'
 
-export function EditProfile({ userInfo, mutateUserInfo, isLoading }) {
-  console.log({
-    userInfo,
-    mutateUserInfo,
-    isLoading,
-  })
-  const { account } = useWallet()
+export function EditProfile({ userInfo, updateUserInfo }) {
   const t = useTranslations()
+  const { updateParticipantProfile } = useUpdateParticipantProfile()
 
+  const [isSubmit, setIsSubmit] = useState(false)
+  const [errors, setErrors] = useState({})
   const [dataUpdate, setDataUpdate] = useState({ ...userInfo })
+  const isFormValid = useMemo(() => Object.keys(errors).length === 0, [errors])
 
-  const { signWallet } = useSignWallet()
-  const updateProfileFn = useCallback(
-    async ({ avatar, country, email, xProfileUsername }) => {
-      const { updateUserProfile } = await v4Client.request(
-        V4_UPDATE_PARTICIPANT_PROFILE,
-        {
-          avatar,
-          country,
-          email,
-          xProfileUsername,
-          participantId: account?.toLocaleLowerCase() ?? null,
-        },
-        {
-          authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
-        },
-      )
-      if (updateUserProfile) {
-        successToast('Successfully')
+  const validateForm = useCallback(() => {
+    const err = {}
 
-        return updateUserProfile
-      }
-      return false
-    },
-    [account],
-  )
+    if (!dataUpdate.email) {
+      err.email = 'Please enter your email.'
+    } else if (!/\S+@\S+\.\S+/.test(dataUpdate.email)) {
+      err.email = 'Email is invalid.'
+    }
 
-  const updateProfile = useCallback(
-    (params, callOnSuccess) => actionWithAuthentication(updateProfileFn, signWallet, params, callOnSuccess),
-    [updateProfileFn, signWallet],
-  )
+    if (!dataUpdate.country) {
+      err.country = 'Please select your country'
+    }
+
+    setErrors(err)
+  }, [dataUpdate])
+
+  useEffect(() => {
+    if (dataUpdate) {
+      validateForm()
+    }
+  }, [dataUpdate, validateForm])
 
   const handleUpdateProfile = useCallback(async () => {
-    if (dataUpdate) {
-      await updateProfile(
-        {
-          data: dataUpdate,
-        },
-        data => {
-          if (data !== false) {
-            mutateUserInfo({
-              ...userInfo,
-              data,
-            })
-          }
-        },
-      )
+    if (isFormValid) {
+      setIsSubmit(true)
+      await updateParticipantProfile(dataUpdate, newData => {
+        if (newData !== false) {
+          updateUserInfo({
+            ...userInfo,
+            newData,
+          })
+        }
+      })
+      setIsSubmit(false)
     }
-  }, [dataUpdate, mutateUserInfo, updateProfile, userInfo])
+  }, [isFormValid, dataUpdate, updateUserInfo, updateParticipantProfile, userInfo])
 
   return (
-    <div>
+    <form onSubmit={handleUpdateProfile}>
       <div className='mt-[10px]'>
-        <Link className='text-gray-100 ' href='/story'>
+        <Link className='text-gray-100 ' href='/story/dashboard'>
           <ArrowBackwardIcon className='inline-block h-5 w-5 opacity-40' />
           <span className='opacity-40'>{t('Back')}</span>
         </Link>
@@ -106,63 +70,72 @@ export function EditProfile({ userInfo, mutateUserInfo, isLoading }) {
       </div>
       <div className='mt-10 rounded-xl bg-neutral-900 p-6'>
         <div className='grid grid-cols-1 gap-x-[40px] gap-y-0 lg:grid-cols-3 lg:gap-y-[50px]'>
-          <div className='col-span-3 lg:col-span-1'>
+          <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>
             <TextHeading className='block text-xl'>{t('Avatar')}</TextHeading>
-            <TextSubHeading className='block text-[16px] font-normal leading-5'>
+            <TextSubHeading className='my-3 block text-[16px] font-normal leading-5 lg:my-0'>
               {t('Avatar description')}
             </TextSubHeading>
           </div>
           <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
-            <Image src='/images/apollo.png' alt='user-info-avatar' width={124} height={124} />
+            <SelectAvatar
+              avatarUrl={dataUpdate.avatarUrl}
+              setAvatarUrl={url => {
+                setDataUpdate({
+                  ...dataUpdate,
+                  avatarUrl: url,
+                })
+              }}
+            />
           </div>
 
-          <div className='col-span-3 lg:col-span-1'>
+          <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>
             <TextHeading className='block text-xl'>{t('Country')}</TextHeading>
-            <TextSubHeading className='block text-[16px] font-normal leading-5'>
+            <TextSubHeading className='my-3 block text-[16px] font-normal leading-5 lg:my-0'>
               {t('Country description')}
             </TextSubHeading>
           </div>
           <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
-            <Input
+            <SelectCountry
               className='w-full lg:max-w-[550px]'
-              type='text'
-              val={dataUpdate.country ?? ''}
-              onChange={e => {
+              data={Countries}
+              selected={dataUpdate.country}
+              setSelected={value => {
                 setDataUpdate({
                   ...dataUpdate,
-                  country: e.target.value,
+                  country: value,
                 })
               }}
-              placeholder={t('Country description')}
-              isLocale={false}
+              placeHolder='Choose'
             />
+            {errors.country && <p className='mb-1.5 text-red-500'>{errors.country}</p>}
           </div>
 
-          <div className='col-span-3 lg:col-span-1'>
+          <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>
             <TextHeading className='block text-xl'>{t('Email')}</TextHeading>
-            <TextSubHeading className='block text-[16px] font-normal leading-5'>
+            <TextSubHeading className='my-3 block text-[16px] font-normal leading-5 lg:my-0'>
               {t('Email description')}
             </TextSubHeading>
           </div>
           <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
             <Input
               className='w-full lg:max-w-[550px]'
-              type='text'
-              val={dataUpdate.email ?? ''}
-              onChange={e => {
+              type='email'
+              placeholder={t('Email Address')}
+              val={dataUpdate.email}
+              onChange={ele => {
                 setDataUpdate({
                   ...dataUpdate,
-                  email: e.target.value,
+                  email: ele.target.value,
                 })
               }}
-              placeholder={t('Email description')}
-              isLocale={false}
+              required
             />
+            {errors.email && <p className='mb-1.5 text-red-500'>{errors.email}</p>}
           </div>
 
-          <div className='col-span-3 lg:col-span-1'>
+          <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>
             <TextHeading className='block text-xl'>{t('X profile link')}</TextHeading>
-            <TextSubHeading className='block text-[16px] font-normal leading-5'>
+            <TextSubHeading className='my-3 block text-[16px] font-normal leading-5 lg:my-0'>
               {t('X profile link description')}
             </TextSubHeading>
           </div>
@@ -174,7 +147,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isLoading }) {
               onChange={e => {
                 setDataUpdate({
                   ...dataUpdate,
-                  email: e.target.value,
+                  xProfileUsername: e.target.value,
                 })
               }}
               placeholder={t('X profile link description')}
@@ -182,12 +155,18 @@ export function EditProfile({ userInfo, mutateUserInfo, isLoading }) {
             />
           </div>
 
-          <div className='col-span-3 lg:col-span-1' />
+          <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0' />
           <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:mb-6 lg:mt-0'>
-            <PrimaryButton onClick={() => handleUpdateProfile()}>{t('Save changes')}</PrimaryButton>
+            <PrimaryButton
+              className='w-full lg:w-auto'
+              disabled={!isFormValid || isSubmit}
+              onClick={handleUpdateProfile}
+            >
+              {t('Save changes')}
+            </PrimaryButton>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   )
 }

@@ -7,7 +7,7 @@ export function ProfileButton() {
   const t = useTranslations()
 
   return (
-    <div className=''>
+    <div className='flex justify-end lg:block'>
       <Link href='/story/edit-profile'>
         <EmphasisButton
           className='text-xs leading-5 lg:px-4 lg:py-3 lg:text-base'

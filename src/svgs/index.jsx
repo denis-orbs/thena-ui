@@ -18,6 +18,7 @@ import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
+import CloseIcon from '~/svgs/close.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 import CopyIcon from '~/svgs/copy.svg'
 import DiamondIcon from '~/svgs/diamond.svg'
@@ -55,7 +56,7 @@ import ShadowIcon from '~/svgs/shadow.svg'
 import ShareIcon from '~/svgs/share.svg'
 import SplitIcon from '~/svgs/split.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
-import StarLineSmall from '~/svgs/star-line-small.svg'
+import StarLineSmallIcon from '~/svgs/star-line-small.svg'
 import StarLineWhiteIcon from '~/svgs/star-line-white.svg'
 import SuccessIcon from '~/svgs/successicon.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
@@ -91,6 +92,7 @@ export {
   CheckPurpleLargeIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  CloseIcon,
   CoinsStackedIcon,
   CopyIcon,
   DiamondIcon,
@@ -128,7 +130,7 @@ export {
   ShareIcon,
   SplitIcon,
   StarLineLargeIcon,
-  StarLineSmall,
+  StarLineSmallIcon,
   StarLineWhiteIcon,
   SuccessIcon,
   SwitchHorizontalV2Icon,

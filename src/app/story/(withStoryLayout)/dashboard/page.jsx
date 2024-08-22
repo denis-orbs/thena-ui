@@ -4,7 +4,6 @@ import React from 'react'
 
 import Loading from '@/app/loading'
 import { UserInfoContextProvider } from '@/context/campaignParticipantsContext'
-import { ChapterTasksProvider } from '@/context/chapterTasksContext'
 import useWallet from '@/lib/wallets/useWallet'
 
 import { ProfilePage } from './ProfilePage'
@@ -17,9 +16,7 @@ function Profile() {
 
   return (
     <UserInfoContextProvider>
-      <ChapterTasksProvider>
-        <ProfilePage address={account.toLowerCase()} />
-      </ChapterTasksProvider>
+      <ProfilePage address={account.toLowerCase()} />
     </UserInfoContextProvider>
   )
 }

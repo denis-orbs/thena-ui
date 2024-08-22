@@ -99,3 +99,5 @@ export const retry = async (callback, breakCondition, maxRetries = 3) => {
     await sleep(1000)
   }
 }
+
+export const sliceAddress = string => `${string?.slice(0, 6)}...${string?.slice(-4)}`
