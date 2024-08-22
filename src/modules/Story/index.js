@@ -184,3 +184,29 @@ export const useCreateParticipantAvatarUploadUrl = () => {
 
   return { createPresignUrlFn, createPresignUrl }
 }
+
+const V4_CAMPAIGN_CHAPTER = gql`
+  query V4_FIRST_CAMPAIGN_CHAPTER($index: Int) {
+    campaignChapters(where: { index_eq: $index }) {
+      id
+      name
+      startTimestamp
+      endTimestamp
+    }
+  }
+`
+
+export const fetchCampaignChapter = async index => {
+  try {
+    const { campaignChapters } = await v4Client.request(V4_CAMPAIGN_CHAPTER, {
+      index,
+    })
+    if (campaignChapters && Array.isArray(campaignChapters)) {
+      return campaignChapters[0]
+    }
+
+    return null
+  } catch (error) {
+    console.log(error)
+  }
+}

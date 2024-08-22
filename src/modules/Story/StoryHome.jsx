@@ -1,14 +1,15 @@
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { useMemo } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { CountDownNextChapter } from '@/app/story/(withStoryLayout)/dashboard/CountDownNextChapter'
 import Box from '@/components/box'
 import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import { useFetchChaptersAndTasks } from '@/hooks/useChapterAndTasks'
 import useWallet from '@/lib/wallets/useWallet'
-import { ChevronRightIcon, ExpandIcon } from '@/svgs'
+import { ChevronRightIcon, ExpandIcon, LogoTextIcon } from '@/svgs'
 
+import { fetchCampaignChapter } from '.'
 import Chapters from './Chapters'
 import StoryRegister from './StoryRegister'
 
@@ -19,10 +20,18 @@ function StoryHome({ isUpcoming, isRegistered }) {
   const { campaignChapters: chapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(
     account?.toLowerCase(),
   )
-  const nextChapterTimeStamp = useMemo(
-    () => chapters?.find(chapter => !chapter.available)?.startTimestamp ?? '',
-    [chapters],
-  )
+
+  const [timeStartFirstChapter, setTimeStartFirstChapter] = useState(null)
+
+  const fetFirstCampaignChapter = useCallback(async () => {
+    const { startTimestamp } = await fetchCampaignChapter(1)
+    setTimeStartFirstChapter(startTimestamp)
+  }, [])
+
+  useEffect(() => {
+    fetFirstCampaignChapter()
+  }, [fetFirstCampaignChapter])
+
   return (
     <>
       {isUpcoming ? (
@@ -47,27 +56,31 @@ function StoryHome({ isUpcoming, isRegistered }) {
           </div>
 
           <div className='mb-5 flex justify-center'>
-            <StoryRegister isRegistered={isRegistered} />
+            <StoryRegister isRegistered={isRegistered} isUpcoming={isUpcoming} />
           </div>
           <Box className='mx-auto bg-neutral-900 max-sm:max-w-[413px] lg:w-[610px]'>
             <p className='mb-4 font-archia text-[26px] font-semibold md:text-3xl md:tracking-wide'>
               {t('First Chapter Available in')}
             </p>
-            <CountDownNextChapter targetDate={nextChapterTimeStamp} />
+            <CountDownNextChapter targetDate={timeStartFirstChapter} />
           </Box>
         </div>
       ) : (
         <div className='w-full'>
           <div className='z-10 mb-[115px]'>
             <div className='mb-9 flex justify-center'>
-              <StoryRegister isRegistered={isRegistered} />
+              <StoryRegister isRegistered={isRegistered} isUpcoming={isUpcoming} />
             </div>
 
             <p className='mx-auto mb-5 max-w-[743px] text-center font-archia text-[36px] font-semibold md:text-[72px]'>
               {t('THE Story of THENA')}
             </p>
-            <p className='mx-auto max-w-[743px] text-center text-[20px] text-[#D1D0D2]'>
+            <p className='mx-auto max-w-[743px] text-center text-[20px] leading-none text-[#D1D0D2]'>
               {t('Embark on The Story of THENA')}
+              <span className='inline-block align-middle'>
+                <LogoTextIcon className='w-90 mx-1 h-[18px] lg:h-[20px] lg:w-[100px]' />
+              </span>
+              {t('Over 8 epic weeks')}
             </p>
           </div>
           {isRegistered && (
@@ -85,7 +98,9 @@ function StoryHome({ isUpcoming, isRegistered }) {
                   {t('Unlock Over $30,000 in Rewards')}
                 </p>
                 <p className='mb-8 text-center text-[16px] lg:text-[20px]'>
-                  {t('Dive into The Story of THENA and stand a chance to win big')}
+                  {t('Embark on an 8-week adventure where each chapter unlocks')}
+                  <span className='font-semibold text-[#F0B90B]'>&nbsp;{t('BNB Chain’s 4th anniversary')}&nbsp;</span>
+                  {t('and join the journey with more than $30,000 in rewards')}
                 </p>
                 <div className='mx-auto'>
                   <PrimaryButton className='h-11 w-[174px]'>{t('Start Your Chapter')}</PrimaryButton>

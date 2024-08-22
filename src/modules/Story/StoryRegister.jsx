@@ -12,7 +12,7 @@ import { THEStoryContext } from '@/context/THEStoryContext'
 import { v4Client } from '@/lib/graphql'
 import { errorToast, successToast } from '@/lib/notify'
 import useWallet from '@/lib/wallets/useWallet'
-import { ArrowForwardSmallIcon, SuccessIcon } from '@/svgs'
+import { ChevronRightIcon, SuccessIcon } from '@/svgs'
 
 import { Countries as countries } from './Country'
 import SelectCountry from './SelectCountry'
@@ -30,7 +30,7 @@ const V4_REGISTER_CAMPAIGN = gql`
   }
 `
 
-export default function StoryRegister({ isRegistered }) {
+export default function StoryRegister({ isRegistered, isUpcoming }) {
   const { setIsRegistered } = useContext(THEStoryContext)
   const { account } = useWallet()
   const t = useTranslations()
@@ -121,9 +121,9 @@ export default function StoryRegister({ isRegistered }) {
             <p className='mx-auto mb-10 max-w-[400px] text-center font-archia text-[26px] font-semibold md:text-[30px]'>
               {t('You Have Successfully Registered for THE Story of THENA Adventure')}
             </p>
-            <PrimaryButton className='w-full'>
+            <PrimaryButton className='w-full' disabled={isRegistered && isUpcoming}>
               {t('Go to dashboard')}
-              <ArrowForwardSmallIcon className='inline-block h-5 w-5' />
+              <ChevronRightIcon className='h-4 w-4 text-white' />
             </PrimaryButton>
           </div>
         ) : (
