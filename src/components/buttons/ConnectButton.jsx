@@ -1,6 +1,6 @@
 'use client'
 
-import { getLatestAuthType, isSocialAuthType } from '@particle-network/auth-core'
+import { getLatestAuthType } from '@particle-network/auth-core'
 import { useAuthCore } from '@particle-network/auth-core-modal'
 import { useAccountModal, useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useTranslations } from 'next-intl'
@@ -43,8 +43,8 @@ export default function ConnectButton({ className }) {
   }
 
   if (account) {
-    const isSocial = isSocialAuthType(getLatestAuthType())
-    return isSocial ? (
+    const auth = getLatestAuthType()
+    return auth ? (
       <div className={`flex items-center space-x-2 ${className}`}>
         <EmphasisButton
           className={className}
