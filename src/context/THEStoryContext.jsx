@@ -57,8 +57,13 @@ function THEStoryContextProvider({ children }) {
           if (user) {
             setIsRegistered(true)
             setCampaignParticipantInfo(user)
+          } else {
+            setIsRegistered(false)
+            setCampaignParticipantInfo(null)
           }
         } catch (error) {
+          setIsRegistered(false)
+          setCampaignParticipantInfo(null)
           console.log(error)
         }
       } else {

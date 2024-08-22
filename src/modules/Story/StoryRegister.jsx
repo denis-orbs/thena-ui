@@ -123,7 +123,7 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
             </p>
             <PrimaryButton className='w-full' disabled={isRegistered && isUpcoming}>
               {t('Go to dashboard')}
-              <ChevronRightIcon className='h-4 w-4 text-white' />
+              <ChevronRightIcon className={`h-4 w-4 ${isRegistered && isUpcoming ? 'opacity-[0.1]' : 'text-white'}`} />
             </PrimaryButton>
           </div>
         ) : (
