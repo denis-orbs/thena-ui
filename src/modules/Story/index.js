@@ -23,17 +23,13 @@ const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
 `
 
 export const fetchTHEStoryParticipant = async user => {
-  try {
-    const { campaignParticipants } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_BY_ID, {
-      id_eq: String(user).toLowerCase(),
-    })
-    if (campaignParticipants && Array.isArray(campaignParticipants) && campaignParticipants.length) {
-      return campaignParticipants[0]
-    }
-    return null
-  } catch (error) {
-    return { error: true }
+  const { campaignParticipants } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_BY_ID, {
+    id_eq: String(user).toLowerCase(),
+  })
+  if (campaignParticipants && Array.isArray(campaignParticipants) && campaignParticipants.length) {
+    return campaignParticipants[0]
   }
+  return null
 }
 
 const V4_CAMPAIGN_PARTICIPANT_REFERRALS = gql`

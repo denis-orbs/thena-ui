@@ -11,7 +11,7 @@ export default function SelectCountry({ className, selected = '', setSelected })
   const wrapperRef = useRef(null)
   const displaySelectedCountry = useMemo(() => {
     const selectedCountry = Countries.find(country => country.isoCode === selected)
-    return `${selectedCountry?.emoji} ${selectedCountry?.name}`
+    return selectedCountry ? `${selectedCountry?.emoji} ${selectedCountry?.name}` : ''
   }, [selected])
 
   useEffect(() => {
