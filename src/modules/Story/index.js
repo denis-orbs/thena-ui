@@ -22,6 +22,26 @@ const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
   }
 `
 
+// const V4_CAMPAIGN_PARTICIPANT_LIST = gql`
+//   query V4_CAMPAIGN_PARTICIPANT_LIST (
+//     $limit: Int = 10,
+//     $orderBy: String = 'rank_ASC',
+//     $offset: Int = 1,
+//     $id_not_contains: String
+//     ) {
+//       campaignParticipants(
+//         limit: $limit,
+//         orderBy: $orderBy,
+//         offset: $offset,
+//         where: {id_not_contains:  $id_not_contains}
+//         ) {
+//           id
+//           email
+//           rank
+//         }
+//     }
+// `
+
 export const fetchTHEStoryParticipant = async user => {
   const { campaignParticipants } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_BY_ID, {
     id_eq: String(user).toLowerCase(),
