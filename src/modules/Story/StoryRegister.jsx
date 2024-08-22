@@ -61,7 +61,17 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
     } catch (e) {
       if (e?.response && e?.response?.errors && e?.response?.errors.length > 0) {
         const error = e?.response?.errors[0]
-        errorToast(error?.extensions?.exception?.detail)
+        if (
+          error?.extensions?.exception?.validationErrors &&
+          error?.extensions?.exception?.validationErrors.length > 0
+        ) {
+          const validator = error?.extensions?.exception?.validationErrors[0]
+          errorToast(validator?.constraints?.isEmail)
+        } else if (error?.extensions?.exception?.detail) {
+          errorToast(error?.extensions?.exception?.detail)
+        } else {
+          errorToast(error?.message)
+        }
       }
       return false
     }

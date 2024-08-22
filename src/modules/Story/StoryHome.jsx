@@ -78,8 +78,9 @@ function StoryHome({ isUpcoming, isRegistered }) {
             <p className='mx-auto max-w-[743px] text-center text-[20px] leading-none text-[#D1D0D2]'>
               {t('Embark on The Story of THENA')}
               <span className='inline-block align-middle'>
-                <LogoTextIcon className='w-90 mx-1 h-[18px] lg:h-[20px] lg:w-[100px]' />
+                <LogoTextIcon className='w-90 ml-1 mr-0 h-[18px] lg:h-[20px] lg:w-[100px]' />
               </span>
+              <span className='ml-[-8px]'>!&nbsp;</span>
               {t('Over 8 epic weeks')}
             </p>
           </div>
@@ -94,8 +95,9 @@ function StoryHome({ isUpcoming, isRegistered }) {
               </div>
 
               <div className='h- mt-[124px] flex max-w-[813px] flex-col justify-center'>
+                <p className='text-center font-archia text-[31px] font-semibold lg:text-[70px]'>{t('Unlock Over')}</p>
                 <p className='mb-5 text-center font-archia text-[31px] font-semibold lg:text-[70px]'>
-                  {t('Unlock Over $30,000 in Rewards')}
+                  {t('$30,000 in Rewards')}
                 </p>
                 <p className='mb-8 text-center text-[16px] lg:text-[20px]'>
                   {t('Embark on an 8-week adventure where each chapter unlocks')}
