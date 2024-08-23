@@ -64,13 +64,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
       </p>
       <div className='mt-4'>
         <div className='w-full'>
-          <LabelTooltip
-            id='prizesToken'
-            label='Prizes Token'
-            showInfoIcon
-            tooltip='Select the asset you would like to to pay out the prizes in.'
-            required
-          />
+          <LabelTooltip id='prizesToken' label='Prizes Token' showInfoIcon tooltip='Prize Token Tooltip' required />
           <div
             className='relative flex cursor-pointer items-center'
             onClick={() => {
@@ -104,13 +98,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
                 setIsEntryFee(!isEntryFee)
               }}
             />
-            <LabelTooltip
-              id='entryFee'
-              label='Entry Fee'
-              tooltip='If you would like to charge an entry fee from your participants, you can do that here. All entry fee will go towards the prize pool.'
-              showInfoIcon
-              className='mb-0'
-            />
+            <LabelTooltip id='entryFee' label='Entry Fee' tooltip='Entry Fee Tooltip' showInfoIcon className='mb-0' />
           </div>
           {isEntryFee && data.prize.token.length === 1 && (
             <Input
@@ -168,7 +156,7 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
         <LabelTooltip
           id='prizeDistribution'
           label='Prize Distribution'
-          tooltip='Here you can set the distribution for the prize pool. You can give a maximum of 25% to yourself, and you have to divide the rest of the percentages to various placements. The total prize distribution bar must equal to 100% before you can create your trading competition.'
+          tooltip='Prize Distribution Tooltip'
           showInfoIcon
           required
         />

@@ -930,5 +930,17 @@
   "Unstake and Transfer": "解除质押和转移",
   "Transfer theNFTs": "转移theNFTs",
   "To Address": "转移到地址",
-  "Deposit Not Allowed Description": "Deposit is currently not allowed. Please try again later."
+  "Deposit Not Allowed Description": "Deposit is currently not allowed. Please try again later.",
+  "Trading Competition Name Tooltip": "This is the name of your trading competition, which will be displayed on the trading competition feed.",
+  "Trading Competition Description Tooltip": "Put the description for your trading competition here. You can use up to 2,000 characters and format it whatever way you would like.",
+  "Prize Token Tooltip": "Select the asset you would like to to pay out the prizes in.",
+  "Entry Fee Tooltip": "If you would like to charge an entry fee from your participants, you can do that here. All entry fee will go towards the prize pool.",
+  "Prize Distribution Tooltip": "Here you can set the distribution for the prize pool. You can give a maximum of 25% to yourself, and you have to divide the rest of the percentages to various placements. The total prize distribution bar must equal to 100% before you can create your trading competition.",
+  "Max Participants Tooltip": "Select how many participants you would like to have in your trading competition.",
+  "Competition Type Tooltip": "Select the competition type you would like your trading competition to be in.",
+  "Tradable Tokens Tooltip": "Here you can select whether you would like your participants to trade in any assets or with certain assets only.",
+  "Pairs Select Tooltip": "Here you can select whether you would like your participants to trade in any pairs or with certain pairs only.",
+  "Winning Token Tooltip": "Select the token that you would like your participants to acquire and be counted towards the competition.",
+  "Required Deposit to Join Tooltip": "Required deposit to participate in the competition.",
+  "Minimum Deposit to Join Tooltip": "Minimum deposit to participate in the competition."
 }

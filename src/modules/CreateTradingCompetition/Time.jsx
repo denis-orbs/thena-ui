@@ -140,7 +140,7 @@ function Time({ data, setData }) {
           <LabelTooltip
             label='Max Participants'
             showInfoIcon
-            tooltip='Select how many participants you would like to have in your trading competition.'
+            tooltip='Max Participants Tooltip'
             id='trading-competition-max-participants'
             required
           />

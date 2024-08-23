@@ -30,7 +30,7 @@ export default function LabelTooltip({
             id={id}
             place='right'
           >
-            {tooltip}
+            {translate ? t(tooltip) : tooltip}
           </CustomTooltip>
         </>
       )}

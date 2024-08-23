@@ -88,7 +88,7 @@ export function ModalCreateNotification({ onClose, isOpen }) {
                 id='trading-competition-tradable-tokens'
                 label='Select Users'
                 showInfoIcon
-                tooltip={t('Select Users')}
+                tooltip='Select Users'
                 required
               />
               <div className='relative flex cursor-pointer items-center' onClick={() => setIsOpenSelectUser(true)}>
@@ -106,7 +106,7 @@ export function ModalCreateNotification({ onClose, isOpen }) {
           <LabelTooltip
             label='Notification Content'
             showInfoIcon
-            tooltip={t('Notification Content')}
+            tooltip='Notification Content'
             id='notification-content'
             required
           />

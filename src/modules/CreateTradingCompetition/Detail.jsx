@@ -19,7 +19,7 @@ function Detail({ data, setData }) {
         <LabelTooltip
           label='Trading Competition Name'
           showInfoIcon
-          tooltip='This is the name of your trading competition, which will be displayed on the trading competition feed.'
+          tooltip='Trading Competition Name Tooltip'
           id='trading-competition-name'
           required
         />
@@ -39,7 +39,7 @@ function Detail({ data, setData }) {
         <LabelTooltip
           label='Description'
           showInfoIcon
-          tooltip='Put the description for your trading competition here. You can use up to 2,000 characters and format it whatever way you would like.'
+          tooltip='Trading Competition Description Tooltip'
           id='trading-competition-description'
           required
         />

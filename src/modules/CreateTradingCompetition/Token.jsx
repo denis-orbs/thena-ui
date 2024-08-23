@@ -113,7 +113,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
           id='competition-type'
           label='Competition Type'
           showInfoIcon
-          tooltip='Select the competition type you would like your trading competition to be in.'
+          tooltip='Competition Type Tooltip'
           required
         />
         <div className='mt-3 flex items-center space-x-3'>
@@ -162,7 +162,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
             id='trading-competition-tradable-tokens'
             label='Tradable Tokens Label'
             showInfoIcon
-            tooltip='Here you can select whether you would like your participants to trade in any assets or with certain assets only.'
+            tooltip='Tradable Tokens Tooltip'
             required
           />
           <div className='relative flex cursor-pointer items-center' onClick={() => setIsTradeOpen(true)}>
@@ -179,13 +179,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
         </div>
       ) : (
         <div className='mt-3'>
-          <LabelTooltip
-            id='pairs'
-            label='Pairs'
-            showInfoIcon={false}
-            // tooltip='Here you can select whether you would like your participants to trade in any assets or with certain assets only.'
-            required
-          />
+          <LabelTooltip id='pairs' label='Pairs' showInfoIcon={false} tooltip='Pairs Select Tooltip' required />
           <div className='flex cursor-pointer items-center'>
             <CreateTcMultiSelect
               data={dataListPairs}
@@ -209,7 +203,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
           id='trading-competition-winning-token'
           label='Winning Token'
           showInfoIcon
-          tooltip='Select the token that you would like your participants to acquire and be counted towards the competition.'
+          tooltip='Winning Token Tooltip'
           required
         />
         <div
@@ -245,13 +239,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
       </div>
       {isSpotType && (
         <div className='mt-3'>
-          <LabelTooltip
-            id='deposit-type'
-            label='Deposit Type'
-            showInfoIcon
-            tooltip={t('Deposit Type tooltip')}
-            required
-          />
+          <LabelTooltip id='deposit-type' label='Deposit Type' showInfoIcon tooltip='Deposit Type tooltip' required />
           <div className='mt-3 flex items-center space-x-3'>
             <button
               onClick={() => {
@@ -314,11 +302,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
               showInfoIcon
               label={depositType ? 'Required Deposit to Join' : 'Minimum Deposit to Join'}
               required={depositType}
-              tooltip={
-                depositType
-                  ? 'Required deposit to participate in the competition.'
-                  : 'Minimum deposit to participate in the competition.'
-              }
+              tooltip={depositType ? 'Required Deposit to Join Tooltip' : 'Minimum Deposit to Join Tooltip'}
             />
             <Input
               value={
@@ -391,7 +375,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
             <LabelTooltip
               id='startingBalance'
               label='Required Deposit to Join'
-              tooltip='Required deposit to participate in the competition.'
+              tooltip='Required Deposit to Join Tooltip'
               showInfoIcon
               className='mb-0'
               required={isStartingBalance}
@@ -432,7 +416,7 @@ function Token({ data, setData, isStartingBalance, setIsStartingBalance }) {
       )}
       {isSpotType && (
         <>
-          <LabelTooltip id='win-type-label' label='Win Type' showInfoIcon tooltip={t('Win Type tooltip')} required />
+          <LabelTooltip id='win-type-label' label='Win Type' showInfoIcon tooltip='Win Type tooltip' required />
           <div className='mt-3 flex items-center space-x-3'>
             <button
               className={`py-[8.4px] pl-6 uppercase text-white disabled:cursor-not-allowed disabled:text-gray-500 ${
