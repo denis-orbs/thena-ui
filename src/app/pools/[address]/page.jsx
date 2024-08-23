@@ -159,15 +159,15 @@ export default function SpecificPoolPage({ params }) {
               <Paragraph>{t('APR')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>
-              <TextHeading>${formatAmount(tvlUSD)}</TextHeading>
+              <TextHeading className='w-full min-w-0 truncate'>${formatAmount(tvlUSD)}</TextHeading>
               <Paragraph>{t('TVL')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>
-              <TextHeading>${formatAmount(pool.dayVolume)}</TextHeading>
+              <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</TextHeading>
               <Paragraph>{t('Volume (24h)')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>
-              <TextHeading>${formatAmount(pool.dayFees)}</TextHeading>
+              <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool.dayFees)}</TextHeading>
               <Paragraph>{t('Fees (24h)')}</Paragraph>
             </div>
           </Box>
