@@ -86,7 +86,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
       )}
       <div className='lg:flex-column mt-2 flex flex-row gap-2'>
         <Link href='https://element.market/collections/thenian' className='' rel='nofollow noopener' target='_blank'>
-          <EmphasisButton className='w-32 text-nowrap'>{t('Buy TheNFT')}</EmphasisButton>
+          <EmphasisButton className='w-32 text-nowrap'>{t('Buy theNFT')}</EmphasisButton>
         </Link>
         {(isAdmin || userInfo?.isVerified) && (
           <EmphasisButton className='w-32 text-nowrap' onClick={() => setOpenEditAvatar(true)}>

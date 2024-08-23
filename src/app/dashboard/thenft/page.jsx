@@ -94,7 +94,7 @@ export default function TheNftPage() {
               window.open('https://element.market/collections/thenian', '_blank')
             }}
           >
-            {t('Buy TheNFT')}
+            {t('Buy theNFT')}
           </TertiaryButton>
         </Info>
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
