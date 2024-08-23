@@ -1,4 +1,4 @@
-export const Countries = [
+export const countries = [
   {
     name: 'United States',
     dialCode: '+1',

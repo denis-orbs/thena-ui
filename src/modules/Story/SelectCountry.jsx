@@ -1,36 +1,37 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import React, { useMemo, useState } from 'react'
 
 import Input from '@/components/input'
+import SearchInput from '@/components/input/SearchInput'
+import Modal from '@/components/modal'
+import { Paragraph } from '@/components/typography'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
-import { Countries } from './Country'
+import { countries } from './Country'
 
 export default function SelectCountry({ className, selected = '', setSelected }) {
+  const t = useTranslations()
+
   const [open, setOpen] = useState(false)
-  const wrapperRef = useRef(null)
   const displaySelectedCountry = useMemo(() => {
-    const selectedCountry = Countries.find(country => country.isoCode === selected)
-    return selectedCountry ? `${selectedCountry?.emoji} ${selectedCountry?.name}` : ''
+    const selectedCountry = countries.find(country => country.isoCode === selected)
+    return selectedCountry ? selectedCountry?.name : ''
   }, [selected])
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [wrapperRef])
+  // Modal states
+  const [searchText, setSearchText] = useState('')
+  const filteredCountries = useMemo(
+    () =>
+      searchText ? countries.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase())) : countries,
+    [searchText],
+  )
 
   return (
-    <div className={cn('relative', className)} ref={wrapperRef}>
+    <div className={className}>
       <Input
         classNames={{
-          input: cn('cursor-pointer caret-transparent', className),
+          input: cn('cursor-pointer caret-transparent pr-8', className),
         }}
         type='text'
         val={displaySelectedCountry}
@@ -43,34 +44,44 @@ export default function SelectCountry({ className, selected = '', setSelected })
         }
         readOnly
       />
-      <div
-        className={cn(
-          'visible absolute z-10 mt-2 flex-col items-start justify-start gap-1',
-          'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow',
-          'h-[300px] overflow-x-auto transition-all duration-150 ease-out',
-          !open && 'invisible opacity-0',
-          className,
-        )}
+
+      {/* Modal Select country */}
+      <Modal
+        isOpen={open}
+        closeModal={() => {
+          setOpen(false)
+        }}
+        width={480}
+        title='Select Country'
       >
-        {Countries.map((item, idx) => (
-          <div
-            className={cn(
-              'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
-              'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
-            )}
-            key={`dropdown-${idx}`}
-            onClick={() => {
-              setSelected(item.isoCode)
-              setOpen(false)
-            }}
-          >
-            <p>
-              <span className='pr-1'>{item.emoji}</span>
-              {item.name}
-            </p>
+        <div className='mb-3 inline-flex w-full flex-col gap-4 px-6 py-3'>
+          <SearchInput
+            className='w-full'
+            val={searchText}
+            setVal={setSearchText}
+            placeholder='Search by Name'
+            autoFocus
+          />
+        </div>
+        <div className='h-px w-full border border-neutral-700' />
+        <div className='flex flex-col gap-2 p-3'>
+          <Paragraph className='px-3'>{t('Countries')}</Paragraph>
+          <div className='max-h-[340px] overflow-auto'>
+            {filteredCountries.map(item => (
+              <div
+                className='cursor-pointer rounded-lg px-6 py-3 hover:bg-neutral-800'
+                onClick={() => {
+                  setSelected(item.isoCode)
+                  setOpen(false)
+                }}
+                key={item.isoCode}
+              >
+                <p>{item.name}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      </Modal>
     </div>
   )
 }

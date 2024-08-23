@@ -14,7 +14,6 @@ import { errorToast, successToast } from '@/lib/notify'
 import useWallet from '@/lib/wallets/useWallet'
 import { ChevronRightIcon, SuccessIcon } from '@/svgs'
 
-import { Countries as countries } from './Country'
 import SelectCountry from './SelectCountry'
 
 const initialFormState = {
@@ -38,8 +37,8 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
 
   const [formState, setFormState] = useState({
     ...initialFormState,
-    evmAddress: account,
-    referralCode: searchParams.get('ref'),
+    evmAddress: account || '',
+    referralCode: searchParams.get('ref') || '',
   })
 
   const registerFn = async ({ evmAddress, email, country, referralCode = '' }) => {
@@ -93,10 +92,9 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
   useEffect(() => {
     setFormState(prev => ({
       ...prev,
-      evmAddress: account,
-      referralCode: searchParams.get('ref'),
+      evmAddress: account || '',
+      referralCode: searchParams.get('ref') || '',
     }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, searchParams])
 
   const handleSubmit = async e => {
@@ -153,10 +151,16 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
               </div>
               <div>
                 <div>
-                  <LabelTooltip className='mb-1.5' required label='Select Country' />
+                  <LabelTooltip
+                    className='mb-1.5'
+                    required
+                    label='Select Country'
+                    showInfoIcon
+                    id='country-label'
+                    tooltip='This field can be changed later'
+                  />
                   <SelectCountry
                     className='w-full'
-                    data={countries}
                     selected={formState.country}
                     setSelected={value => {
                       setFormState(prev => ({
@@ -164,7 +168,6 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
                         country: value,
                       }))
                     }}
-                    placeHolder='Choose'
                   />
                 </div>
               </div>

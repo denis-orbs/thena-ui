@@ -550,7 +550,7 @@
   "Swap now": "Swap now",
   "Leaderboard": "Leaderboard",
   "Referral": "Referral",
-  "Email Label Tooltip": "This address will be used for THE upcoming Newsletter that allows you to stay up-to-date with the latest updates & news about THENA.",
+  "Email Label Tooltip": "This address will be used for THE upcoming Newsletter that allows you to stay up-to-date with the latest updates & news about THENA. This field can be changed later.",
   "Invite Friends": "Invite Friends",
   "Invite Friends description": "Invite your friends to join the campaign. Once the referred friend completes at least one task, you will get a bonus points.",
   "Registered Referrals": "Registered Referrals",
@@ -620,5 +620,7 @@
   "Drag Drop File Here": "Drag Drop File Here",
   "More Coming": "More Coming!",
   "Successfully": "Successfully",
-  "Your Wallet ID is not connected": "Your Wallet ID is not connected"
+  "Your Wallet ID is not connected": "Your Wallet ID is not connected",
+  "Countries": "Countries",
+  "This field can be changed later": "This field can be changed later."
 }

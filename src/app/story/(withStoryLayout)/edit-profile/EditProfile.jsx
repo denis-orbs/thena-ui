@@ -6,7 +6,6 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import Input from '@/components/input'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useUpdateParticipantProfile } from '@/modules/Story'
-import { Countries } from '@/modules/Story/Country'
 import SelectCountry from '@/modules/Story/SelectCountry'
 import { ArrowBackwardIcon } from '@/svgs'
 
@@ -97,7 +96,6 @@ export function EditProfile({ userInfo, updateUserInfo }) {
           <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
             <SelectCountry
               className='w-full lg:max-w-[550px]'
-              data={Countries}
               selected={dataUpdate.country}
               setSelected={value => {
                 setDataUpdate({
@@ -105,7 +103,6 @@ export function EditProfile({ userInfo, updateUserInfo }) {
                   country: value,
                 })
               }}
-              placeHolder='Choose'
             />
             {errors.country && <p className='mb-1.5 text-red-500'>{errors.country}</p>}
           </div>
