@@ -22,18 +22,34 @@ const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
   }
 `
 
+// const V4_CAMPAIGN_PARTICIPANT_LIST = gql`
+//   query V4_CAMPAIGN_PARTICIPANT_LIST (
+//     $limit: Int = 10,
+//     $orderBy: String = 'rank_ASC',
+//     $offset: Int = 1,
+//     $id_not_contains: String
+//     ) {
+//       campaignParticipants(
+//         limit: $limit,
+//         orderBy: $orderBy,
+//         offset: $offset,
+//         where: {id_not_contains:  $id_not_contains}
+//         ) {
+//           id
+//           email
+//           rank
+//         }
+//     }
+// `
+
 export const fetchTHEStoryParticipant = async user => {
-  try {
-    const { campaignParticipants } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_BY_ID, {
-      id_eq: String(user).toLowerCase(),
-    })
-    if (campaignParticipants && Array.isArray(campaignParticipants) && campaignParticipants.length) {
-      return campaignParticipants[0]
-    }
-    return null
-  } catch (error) {
-    return { error: true }
+  const { campaignParticipants } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_BY_ID, {
+    id_eq: String(user).toLowerCase(),
+  })
+  if (campaignParticipants && Array.isArray(campaignParticipants) && campaignParticipants.length) {
+    return campaignParticipants[0]
   }
+  return null
 }
 
 const V4_CAMPAIGN_PARTICIPANT_REFERRALS = gql`
@@ -167,4 +183,30 @@ export const useCreateParticipantAvatarUploadUrl = () => {
   )
 
   return { createPresignUrlFn, createPresignUrl }
+}
+
+const V4_CAMPAIGN_CHAPTER = gql`
+  query V4_FIRST_CAMPAIGN_CHAPTER($index: Int) {
+    campaignChapters(where: { index_eq: $index }) {
+      id
+      name
+      startTimestamp
+      endTimestamp
+    }
+  }
+`
+
+export const fetchCampaignChapter = async index => {
+  try {
+    const { campaignChapters } = await v4Client.request(V4_CAMPAIGN_CHAPTER, {
+      index,
+    })
+    if (campaignChapters && Array.isArray(campaignChapters)) {
+      return campaignChapters[0]
+    }
+
+    return null
+  } catch (error) {
+    console.log(error)
+  }
 }
