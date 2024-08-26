@@ -8,7 +8,7 @@ import { fetchTHEStoryParticipant } from '@/modules/Story'
 dayjs.extend(utc)
 
 const THEStoryContext = createContext({
-  // campaignStartsAt: dayjs.utc('2024-09-01'),
+  // campaignStartsAt: dayjs.utc('2024-09-01'),`
   campaignStartsAt: dayjs.utc('2024-08-20'),
   isRegistered: false,
   setIsRegistered: () => false,

@@ -52,8 +52,10 @@ import PlusCircleIcon from '~/svgs/plus-circle.svg'
 import PowerIcon from '~/svgs/power.svg'
 import RedditIcon from '~/svgs/reddit.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
+import RegisterIcon from '~/svgs/register.svg'
 import SearchIcon from '~/svgs/search.svg'
 import SecondPrizeIcon from '~/svgs/second-prize.svg'
+import SendIcon from '~/svgs/send.svg'
 import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
 import ShareIcon from '~/svgs/share.svg'
@@ -61,10 +63,12 @@ import SplitIcon from '~/svgs/split.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 import StarLineSmallIcon from '~/svgs/star-line-small.svg'
 import StarLineWhiteIcon from '~/svgs/star-line-white.svg'
+import StarWhiteIcon from '~/svgs/star-white.svg'
 import SuccessIcon from '~/svgs/successicon.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
+import TaskCheckedIcon from '~/svgs/task-checked.svg'
 import TelegramIcon from '~/svgs/telegram.svg'
 import ThirdPrizeIcon from '~/svgs/third-prize.svg'
 import TwitterIcon from '~/svgs/twiiter.svg'
@@ -129,8 +133,10 @@ export {
   PowerIcon,
   RedditIcon,
   RefreshIcon,
+  RegisterIcon,
   SearchIcon,
   SecondPrizeIcon,
+  SendIcon,
   SettingsIcon,
   ShadowIcon,
   ShareIcon,
@@ -138,9 +144,11 @@ export {
   StarLineLargeIcon,
   StarLineSmallIcon,
   StarLineWhiteIcon,
+  StarWhiteIcon,
   SuccessIcon,
   SwitchHorizontalV2Icon,
   SwitchVerticalIcon,
+  TaskCheckedIcon,
   TelegramIcon,
   ThirdPrizeIcon,
   TransferIcon,

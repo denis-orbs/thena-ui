@@ -7,7 +7,7 @@ import Box from '@/components/box'
 function TimeBox({ title, value }) {
   const t = useTranslations()
   return (
-    <Box className='h-[68px] w-[69px] rounded-xl bg-neutral-700 p-2 md:h-[104px] md:w-[132px] md:p-6'>
+    <Box className='h-[68px] rounded-xl bg-neutral-700 p-2 md:h-[104px]  md:p-6'>
       <p className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>
         {value.toString().length <= 1 ? `0${value}` : value}
       </p>

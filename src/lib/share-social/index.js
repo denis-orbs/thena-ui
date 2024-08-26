@@ -30,6 +30,7 @@ export const getShareSocialNetworkUrl = ({ network, content = '', url = '' }) =>
       return `https://www.reddit.com/submit?title=${encodeContent}&url=${encodeURL}`
     }
     case SocialNetwork.Facebook: {
+      // encodeURL must https
       return `https://www.facebook.com/dialog/share?app_id=${facebookAppID}&display=popup&href=${encodeURL}`
     }
     case SocialNetwork.Email: {

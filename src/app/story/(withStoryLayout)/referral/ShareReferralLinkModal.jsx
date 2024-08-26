@@ -5,7 +5,6 @@ import { useTranslations } from 'use-intl'
 import Textarea from '@/components/input/Textarea'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { InstagramIcon } from '@/components/social-icon/ActiveIcon'
-import { useTHEStory } from '@/context/THEStoryContext'
 import { successToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
 import {
@@ -21,28 +20,26 @@ import {
 
 const domain = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN
 
-export function ShareReferralLinkModal({ openModal, setOpenModal }) {
-  const link = 'https://thena.fi/invite?ref=4X0JEX'
+export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }) {
   const t = useTranslations()
   const [copied, setCopied] = useState(false)
-  const { campaignParticipantInfo: userInfo } = useTHEStory()
   const [postContent, setPostContent] = useState(
     // eslint-disable-next-line max-len
-    `Join THE Story with @ThenaFi_ 💜🏛️ Complete tasks, earn NFT fragments, and rise through the ranks.Start your journey now! Referral Link🔗: ${domain}/invite?ref=${userInfo.referralCode}`,
+    `Join THE Story with @ThenaFi_ 💜🏛️ Complete tasks, earn NFT fragments, and rise through the ranks.Start your journey now! Referral Link🔗: ${domain}/story?ref=${referralCode}`,
   )
 
-  const referralLink = useMemo(() => `${domain}/invite?ref=${userInfo.referralCode}`, [userInfo])
+  const referralLink = useMemo(() => `${domain}/story?ref=${referralCode}`, [referralCode])
 
   console.log({ postContent })
   const onCopy = useCallback(
     e => {
       e.stopPropagation()
       e.preventDefault()
-      navigator.clipboard.writeText(link)
+      navigator.clipboard.writeText(referralLink)
       successToast(t('Copied'))
       setCopied(true)
     },
-    [link, t],
+    [referralLink, t],
   )
 
   useEffect(() => {
@@ -59,7 +56,6 @@ export function ShareReferralLinkModal({ openModal, setOpenModal }) {
       closeModal={() => {
         setOpenModal(false)
       }}
-      width={560}
       title={t('Share Your Referral Link')}
     >
       <ModalBody>
@@ -75,7 +71,7 @@ export function ShareReferralLinkModal({ openModal, setOpenModal }) {
         <div className=''>
           <p className='text-lg font-medium'>{t('Customize your text')}</p>
           <Textarea
-            rows={5}
+            className='h-[180px] md:h-[130px]'
             val={postContent}
             onChange={e => {
               setPostContent(e.target.value)
@@ -83,9 +79,9 @@ export function ShareReferralLinkModal({ openModal, setOpenModal }) {
           />
         </div>
       </ModalBody>
-      <ModalFooter>
-        <p className='text-lg font-medium'>{t('Your Referral Code')}</p>
-        <div className='grid grid-cols-7 gap-[27px]'>
+      <ModalFooter className='mt-0'>
+        <p className='text-lg font-medium'>{t('Share on')}</p>
+        <div className='grid grid-cols-5 gap-x-[27px] lg:grid-cols-7'>
           <Link
             href={getShareSocialNetworkUrl({
               network: SocialNetwork.Twitter,

@@ -11,12 +11,12 @@ export function DailySwap({ dailySwaps }) {
   return (
     <div className='border-gradient-secondary space-y-4 rounded-xl p-[1px]'>
       <Box>
-        <div className='flex flex-col justify-between lg:flex-row '>
+        <div className='mb-3 flex flex-col justify-between  lg:flex-row'>
           <div>
             <p className='m-0 font-archia text-3xl font-semibold leading-9'>{t('Daily Swap')}</p>
             <p className='!mt-2 text-base leading-5 text-gray-400'>{t('Daily Swap description')}</p>
           </div>
-          <PrimaryButton className='my-3 w-full lg:my-0 lg:w-auto'>
+          <PrimaryButton className='my-3 h-fit w-full lg:my-0 lg:w-auto'>
             <span className='mr-1 '>{t('Swap now')}</span>
             <ArrowForwardSmallIcon className='inline-block h-4 w-4' />
           </PrimaryButton>
@@ -26,8 +26,8 @@ export function DailySwap({ dailySwaps }) {
             <div key={swap.id}>
               <div
                 className={cn(
-                  'relative flex flex-col items-center rounded-xl border-2 border-neutral-800 bg-neutral-800 px-[19px] py-3 hover:border-purple',
-                  swap.isCompleted ? 'border-purple' : '',
+                  'relative flex flex-col items-center rounded-xl border-2 border-neutral-800 bg-neutral-800 px-[19px] py-3 hover:border-primary-600',
+                  swap.isCompleted ? 'border-primary-600' : '',
                 )}
               >
                 <p className='font-archia text-[22px] leading-7'>{`${t('Day')} ${swap.index + 1}`}</p>

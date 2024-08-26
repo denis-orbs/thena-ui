@@ -1,30 +1,53 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import { ChapterProcess } from '@/app/story/(withStoryLayout)/dashboard/ChapterProcess'
 import { ChapterTabNavigator } from '@/app/story/(withStoryLayout)/dashboard/ChapterTabNavigator'
 
 export default function Chapters({ chapters, isLoading }) {
-  const [selectedChapter, setSelectedChapter] = useState(chapters[0])
+  const [selectedChapterIndex, setSelectedChapterIndex] = useState(0)
 
-  if (isLoading && !selectedChapter) {
+  useEffect(() => {
+    if (chapters) {
+      setSelectedChapterIndex(chapters.findLastIndex(chapter => chapter.available) + 1)
+    }
+  }, [chapters])
+
+  const preChapterIndex = useMemo(() => {
+    const index = selectedChapterIndex - 1
+    if (index < 1) return undefined
+    return index
+  }, [selectedChapterIndex])
+
+  const nextChapterIndex = useMemo(() => {
+    const index = selectedChapterIndex + 1
+    if (index > chapters.length || !chapters[selectedChapterIndex]?.available) return undefined
+    return index
+  }, [chapters, selectedChapterIndex])
+
+  if (isLoading && !selectedChapterIndex) {
     return <Loading />
   }
 
   return (
     <>
-      {selectedChapter && (
+      {chapters[selectedChapterIndex - 1] && (
         <>
           <div className='mb-5 mt-5 grid grid-cols-12 gap-8'>
             <div className='col-span-12'>
               <ChapterTabNavigator
                 chapters={chapters}
-                selectedChapter={selectedChapter}
-                setSelectedChapter={setSelectedChapter}
+                selectedChapterIndex={selectedChapterIndex}
+                setSelectedChapterIndex={setSelectedChapterIndex}
               />
             </div>
           </div>
-          <ChapterProcess chapter={selectedChapter} />
+          <ChapterProcess
+            chapter={chapters[selectedChapterIndex - 1]}
+            preChapterIndex={preChapterIndex}
+            nextChapterIndex={nextChapterIndex}
+            setSelectedChapterIndex={setSelectedChapterIndex}
+          />
         </>
       )}
     </>

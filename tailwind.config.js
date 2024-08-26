@@ -84,7 +84,6 @@ export default {
             end: '#AA23DB',
           },
         },
-        purple: 'rgba(123, 10, 121, 1)',
         social: {
           discord: 'rgba(88, 101, 242, 1)',
           telegram: 'rgba(44, 163, 221, 1)',
