@@ -1,143 +1,192 @@
+'use client'
+
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import Table from '@/components/table'
-import { FirstPrizeIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
-
-// const userInfo = {
-//   id: '0xb095069bdeb6be079206cb0a7cca2786d79cba7c',
-//   avatar: null,
-//   rank: 124,
-//   firstInteractAt: '2024-08-08',
-// }
+import { useTHEStory } from '@/context/THEStoryContext'
+import { useWindowSize } from '@/hooks/useWindowSize'
+import { cn, sliceAddress } from '@/lib/utils'
+import { fetchParticipants } from '@/modules/Story'
+import { FirstPrizeIcon, InfoCircleGradient, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 
 const sortOptions = [
   {
     label: '#',
     value: 'rank',
-    width: 'lg:w-[10%]',
+    isDesc: false,
+    justify: 'text-center',
+    width: 'w-[5%]',
+  },
+  {
+    label: 'Thenian',
+    value: 'thenian',
     isDesc: true,
-    justify: 'text-center lg:flex-col',
+    justify: 'text-wrap',
+    width: 'lg:w-[80%]',
   },
   {
-    label: 'User',
-    value: 'username',
-    width: 'lg:w-[50%]',
+    label: (
+      <div className='flex flex-row'>
+        <span>Point</span>
+        <span>
+          <InfoCircleGradient className='ml-1 h-4 w-4 text-neutral-400' />
+        </span>
+      </div>
+    ),
+    value: 'totalPoints',
     isDesc: true,
-  },
-  {
-    label: 'Point',
-    value: 'point',
-    width: 'lg:w-[40%]',
-    isDesc: true,
-  },
-]
-
-const data = [
-  {
-    rank: 124,
-    username: 'Your name',
-    point: '45',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d79cba7c',
-  },
-  {
-    rank: 1,
-    username: 'User name',
-    point: '899',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d79cba7d',
-  },
-  {
-    rank: 2,
-    username: 'User name',
-    point: '799',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d79cba7e',
-  },
-  {
-    rank: 3,
-    username: 'User name',
-    point: '699',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d79cba7f',
-  },
-  {
-    rank: 4,
-    username: 'User name',
-    point: '599',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d79cba7g',
-  },
-  {
-    rank: 5,
-    username: 'User name',
-    point: '499',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d79cba7h',
-  },
-  {
-    rank: 6,
-    username: 'User name',
-    point: '399',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d79cbss',
-  },
-  {
-    rank: 7,
-    username: 'User name',
-    point: '299',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d79cba4r',
-  },
-  {
-    rank: 8,
-    username: 'User name',
-    point: '199',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d79cdd7c',
-  },
-  {
-    rank: 9,
-    username: 'User name',
-    point: '99',
-    id: '0xb095069bdeb6be079206cb0a7cca2786d7xxba7c',
+    width: 'w-[10%]',
   },
 ]
 
 export default function LeaderboardTable() {
   const t = useTranslations()
-  const [currentPage, setCurrentPage] = useState(1)
-  const [sort, setSort] = useState(sortOptions[1])
+  const windowSize = useWindowSize()
+  const { campaignParticipantInfo: userInfo } = useTHEStory()
 
-  const customData = data.map(item => {
-    if (item.rank === 1) {
-      return {
-        ...item,
-        rank: <FirstPrizeIcon className='size-7' />,
-      }
+  const [sort, setSort] = useState(sortOptions[0])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [data, setData] = useState()
+
+  useMemo(async () => {
+    const res = await fetchParticipants(100, 1, userInfo ? userInfo.id.toLowerCase() : '')
+
+    setData(res)
+  }, [userInfo])
+
+  const sortedData = useMemo(
+    () =>
+      !data
+        ? []
+        : data.sort((a, b) => {
+            let res
+            switch (sort.value) {
+              case 'rank':
+                res = (a.rank - b.rank) * (sort.isDesc ? -1 : 1)
+                break
+              case 'thenian':
+                res = a.id.localeCompare(b.id) * (sort.isDesc ? -1 : 1)
+                break
+              case 'totalPoints':
+                res = (a.totalPoints - b.totalPoints) * (sort.isDesc ? -1 : 1)
+                break
+              default:
+                break
+            }
+            return res
+          }),
+    [data, sort],
+  )
+
+  const finalData = useMemo(() => {
+    let final = sortedData
+
+    if (userInfo) {
+      final = final.filter(item => item.id !== userInfo.id)
+      final.unshift(userInfo)
     }
-    if (item.rank === 2) {
-      return {
-        ...item,
-        rank: <SecondPrizeIcon className='size-7' />,
+
+    final = final.map(item => {
+      if (!item.rank) {
+        item.rank = '-'
       }
-    }
-    if (item.rank === 3) {
-      return {
-        ...item,
-        rank: <ThirdPrizeIcon className='size-7' />,
+      let thenian = (
+        <div className='flex items-center'>
+          <div className='mr-2 flex h-9 w-9 items-center justify-center rounded-[50%] bg-neutral-600 text-center md:mr-3'>
+            Aa
+          </div>
+          <div
+            className={cn(
+              'break-words text-[14px] lg:text-[16px]',
+              windowSize.width > 600 ? 'max-md:max-w-[calc(100%/2)]' : '',
+            )}
+          >
+            {windowSize.width > 600 ? item.id : sliceAddress(item.id)}
+          </div>
+        </div>
+      )
+      if (item.avatarUrl) {
+        thenian = (
+          <div className='flex items-center'>
+            <div className='mr-2 flex h-9 w-9 items-center justify-center rounded-[50%] bg-neutral-600 text-center md:mr-3'>
+              <Image src={item.avatarUrl} className='rounded-[50%]' width={36} height={36} alt='Avatar' />
+            </div>
+            <div
+              className={cn(
+                'break-words text-[14px] lg:text-[16px]',
+                windowSize.width > 600 ? 'max-md:max-w-[calc(100%/2)]' : '',
+              )}
+            >
+              {windowSize.width > 600 ? item.id : sliceAddress(item.id)}
+            </div>
+          </div>
+        )
       }
-    }
-    return item
-  })
+      if (item.rank === 1) {
+        return {
+          rank: <FirstPrizeIcon className='size-7' />,
+          thenian,
+          totalPoints: item.totalPoints,
+        }
+      }
+      if (item.rank === 2) {
+        return {
+          rank: <SecondPrizeIcon className='size-7' />,
+          thenian,
+          totalPoints: item.totalPoints,
+        }
+      }
+      if (item.rank === 3) {
+        return {
+          rank: <ThirdPrizeIcon className='size-7' />,
+          thenian,
+          totalPoints: item.totalPoints,
+        }
+      }
+
+      return {
+        rank: item.rank,
+        thenian,
+        totalPoints: item.totalPoints,
+      }
+    })
+    return final
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(sortedData), windowSize])
+
   return (
     <div className='mb-[60.15px] rounded-xl bg-neutral-900'>
       <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>{t('Leaderboard')}</p>
-      <Table
-        data={customData}
-        className='bg-neutral-900'
-        sortOptions={sortOptions}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        sort={sort}
-        setSort={setSort}
-        tableBasic
-        totalItems={90}
-        hightLightIndex={0}
-        bgHightLight='bg-neutral-800'
-      />
+      {userInfo ? (
+        <Table
+          data={finalData}
+          className='w-full bg-neutral-900'
+          sortOptions={sortOptions}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          sort={sort}
+          setSort={setSort}
+          tableBasic
+          hightLightIndex={0}
+          bgHightLight='bg-neutral-800'
+          loading={!data}
+          pageSize={11}
+        />
+      ) : (
+        <Table
+          data={finalData}
+          className='w-full bg-neutral-900'
+          sortOptions={sortOptions}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          sort={sort}
+          setSort={setSort}
+          tableBasic
+          loading={!data}
+        />
+      )}
     </div>
   )
 }

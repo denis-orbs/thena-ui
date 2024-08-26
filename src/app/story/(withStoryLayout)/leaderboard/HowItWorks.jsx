@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
-import { StarLineWhiteIcon } from '@/svgs'
+import { AwardIcon, CrownIcon, GiftIcon, StarLineWhiteIcon } from '@/svgs'
 
 export default function HowItWorks() {
   const t = useTranslations()
@@ -15,16 +15,20 @@ export default function HowItWorks() {
           title={t('Earn Points')}
           description={t('Accumulate points through referrals, daily swap-ins, and task completion')}
         />
-        {/* TODO: Change Icons */}
         <HowItWorksItem
-          icon={StarLineWhiteIcon}
-          title={t('Reach Top 100 on Leaderboard')}
-          description={t('Top 100 Thenians will receive all kind of rewards')}
+          icon={AwardIcon}
+          title={t('Reach Top 100 After Second Chapter')}
+          description={t('Top 100 Thenians will receive rewards after second chapter via raffle method')}
         />
         <HowItWorksItem
-          icon={StarLineWhiteIcon}
-          title={t('Receive Rewards')}
-          description={t('Receive rewards like veTHE, thenaid, and other')}
+          icon={CrownIcon}
+          title={t('Reach Top 300 After All Chapters')}
+          description={t('Top 300 Thenians will receive rewards after all chapters')}
+        />
+        <HowItWorksItem
+          icon={GiftIcon}
+          title={t('Claim Rewards')}
+          description={t('Claim your rewards after the second and last chapter on the “Rewards” page')}
         />
       </div>
     </div>
