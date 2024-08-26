@@ -1,13 +1,13 @@
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { cn } from '@/lib/utils'
 import { ArrowBackwardIcon, ArrowForwardSmallIcon } from '@/svgs'
 
 import { RewardIconTooltip } from './RewardIconTooltip'
 
-export function ChapterProcess({ chapter }) {
+export function ChapterProcess({ chapter, setSelectedChapterIndex, preChapterIndex, nextChapterIndex }) {
   const t = useTranslations()
   const [totalTask, taskCompleted] = useMemo(
     () => [chapter?.tasks?.length ?? 0, chapter?.tasks?.filter(task => task.isCompleted)?.length ?? 0],
@@ -21,23 +21,32 @@ export function ChapterProcess({ chapter }) {
   }, [totalTask, taskCompleted])
 
   return (
-    <div className='rounded-xl border-[1px] border-purple bg-neutral-900 px-4 py-6'>
+    <div className='rounded-xl border-[1px] border-primary-600 bg-neutral-900 px-4 py-6'>
       <div>
-        <div className='flex items-center justify-between'>
-          <Link className='text-gray-100 ' href='./'>
-            <ArrowBackwardIcon className='inline-block h-5 w-5 opacity-40' />
-            <span className='opacity-40'>{t('Back')}</span>
-          </Link>
-          <p className='text-center text-[18px] font-medium leading-5 text-gray-400'>
+        <div className='flex flex-wrap items-center justify-between lg:flex-nowrap'>
+          <div
+            className={cn('order-1 w-1/2 cursor-pointer text-gray-100 lg:w-auto', preChapterIndex ? '' : 'opacity-40')}
+            onClick={() => preChapterIndex && setSelectedChapterIndex(preChapterIndex)}
+          >
+            <ArrowBackwardIcon className='inline-block h-5 w-5' />
+            <span>{t('Back')}</span>
+          </div>
+          <p className='order-3 mt-3 w-full text-center text-[18px] font-medium leading-5 text-gray-400 lg:order-2 lg:mt-0 lg:w-auto'>
             {`${t('[taskCompleted] / [totalTask] Tasks completed', {
               totalTask,
               taskCompleted,
             })}`}
           </p>
-          <Link className='text-gray-100' href='./'>
-            {t('Next Chapter')}
+          <div
+            className={cn(
+              ' order-2 flex w-1/2 cursor-pointer justify-end  text-gray-100 lg:order-3 lg:w-auto',
+              nextChapterIndex ? '' : 'opacity-40',
+            )}
+            onClick={() => nextChapterIndex && setSelectedChapterIndex(nextChapterIndex)}
+          >
+            <span>{t('Next Chapter')}</span>
             <ArrowForwardSmallIcon className='inline-block h-5 w-5' />
-          </Link>
+          </div>
         </div>
         <div className='4 mt-6 inline-block h-3 w-full rounded-md bg-neutral-500'>
           <div
@@ -65,20 +74,22 @@ export function ChapterProcess({ chapter }) {
                     <p className='text-[18px] font-medium leading-6'>{t(task.name)}</p>
                   </div>
 
-                  {task.rewardAmount.map((amount, index) => (
-                    <>
-                      {!!amount && (
-                        <div key={index} className='flex flex-row items-center'>
-                          <span className='text-lg font-light leading-6 '>+{amount}</span>
-                          <RewardIconTooltip
-                            rewardType={task.rewardType[index]}
-                            id={`chapter-${chapter.id}_task-${task.id}_reward`}
-                            iconSize={6}
-                          />
-                        </div>
-                      )}
-                    </>
-                  ))}
+                  <div>
+                    {task.rewardAmount.map((amount, index) => (
+                      <div key={index}>
+                        {!!amount && (
+                          <div className='flex flex-row items-center'>
+                            <span className='text-lg font-light leading-6 '>+{amount}</span>
+                            <RewardIconTooltip
+                              rewardType={task.rewardType[index]}
+                              id={`chapter-${chapter.id}_task-${task.id}_reward`}
+                              iconSize={6}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div className='col-span-12 flex flex-row items-center lg:col-span-2'>

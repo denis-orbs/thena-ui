@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
 
@@ -7,13 +7,24 @@ import { ChapterProcess } from './ChapterProcess'
 import { ChapterTabNavigator } from './ChapterTabNavigator'
 import { CountDownNextChapter } from './CountDownNextChapter'
 
-export function WeeklyTasks({ chapters }) {
+export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapterIndex }) {
   const t = useTranslations()
-  const [selectedChapter, setSelectedChapter] = useState(chapters[0])
-  const nextChapterTimeStamp = useMemo(
+
+  const nextAvailableChapterTimeStamp = useMemo(
     () => chapters.find(chapter => !chapter.available)?.startTimestamp ?? '',
     [chapters],
   )
+
+  const preChapterIndex = useMemo(() => {
+    const index = selectedChapterIndex - 1
+    if (index < 1) return undefined
+    return index
+  }, [selectedChapterIndex])
+  const nextChapterIndex = useMemo(() => {
+    const index = selectedChapterIndex + 1
+    if (index > chapters.length || !chapters[selectedChapterIndex]?.available) return undefined
+    return index
+  }, [chapters, selectedChapterIndex])
 
   return (
     <div className='mt-[63px]'>
@@ -25,21 +36,28 @@ export function WeeklyTasks({ chapters }) {
         <div className='col-span-12 lg:col-span-7'>
           <ChapterTabNavigator
             chapters={chapters}
-            selectedChapter={selectedChapter}
-            setSelectedChapter={setSelectedChapter}
+            selectedChapterIndex={selectedChapterIndex}
+            setSelectedChapterIndex={setSelectedChapterIndex}
           />
         </div>
       </div>
       <div className='mt-6 grid grid-cols-12 gap-8 lg:gap-12'>
         <div className='col-span-12 lg:col-span-7'>
-          {selectedChapter && <ChapterProcess chapter={selectedChapter} />}
+          {chapters[selectedChapterIndex - 1] && (
+            <ChapterProcess
+              chapter={chapters[selectedChapterIndex - 1]}
+              preChapterIndex={preChapterIndex}
+              nextChapterIndex={nextChapterIndex}
+              setSelectedChapterIndex={setSelectedChapterIndex}
+            />
+          )}
         </div>
         <div className='col-span-12 lg:col-span-5'>
-          {nextChapterTimeStamp && (
+          {nextAvailableChapterTimeStamp && (
             <div className='rounded-lg bg-neutral-900 px-6 py-6'>
               <h2 className='font-archia'>{t('Next Chapter Available in')}</h2>
               <p className='text-lg font-normal leading-5'>{t('Next Chapter description')}</p>
-              <CountDownNextChapter targetDate={nextChapterTimeStamp} />
+              <CountDownNextChapter targetDate={nextAvailableChapterTimeStamp} />
             </div>
           )}
         </div>

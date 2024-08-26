@@ -19,7 +19,7 @@ import { RewardType } from '../../constant'
 
 dayjs.extend(localizedFormat)
 
-export function UserInfo({ userInfo, completedChapter, totalChapter, totalSuccessfulRefferal }) {
+export function UserInfo({ userInfo, completedChapter, totalChapter, totalSuccessfulReferral }) {
   const t = useTranslations()
   return (
     <>
@@ -113,7 +113,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
           </Link>
           <Link href='/' className='col-span-2 rounded-xl bg-neutral-800 lg:col-span-1'>
             <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
-              <TextHeading className='text-lg'>{totalSuccessfulRefferal}</TextHeading>
+              <TextHeading className='text-lg'>{totalSuccessfulReferral}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Successful Referrals')}</TextSubHeading>
             </Box>
           </Link>

@@ -3,7 +3,6 @@
 import React from 'react'
 
 import Loading from '@/app/loading'
-import { UserInfoContextProvider } from '@/context/campaignParticipantsContext'
 import useWallet from '@/lib/wallets/useWallet'
 
 import { ProfilePage } from './ProfilePage'
@@ -14,11 +13,7 @@ function Profile() {
     return <Loading />
   }
 
-  return (
-    <UserInfoContextProvider>
-      <ProfilePage address={account.toLowerCase()} />
-    </UserInfoContextProvider>
-  )
+  return <ProfilePage address={account.toLowerCase()} />
 }
 
 export default Profile

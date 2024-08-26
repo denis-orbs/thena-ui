@@ -5,11 +5,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { CountDownNextChapter } from '@/app/story/(withStoryLayout)/dashboard/CountDownNextChapter'
 import Box from '@/components/box'
 import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
-import { useFetchChaptersAndTasks } from '@/hooks/useChapterAndTasks'
 import useWallet from '@/lib/wallets/useWallet'
 import { ChevronRightIcon, ExpandIcon, LogoTextIcon } from '@/svgs'
 
-import { fetchCampaignChapter } from '.'
+import { fetchCampaignChapter, useFetchChaptersAndTasks } from '.'
 import Chapters from './Chapters'
 import StoryRegister from './StoryRegister'
 

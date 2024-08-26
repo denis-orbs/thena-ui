@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -8,20 +8,23 @@ import { CheckPurpleIcon, CopyIcon, ShareIcon } from '@/svgs'
 
 import { ShareReferralLinkModal } from './ShareReferralLinkModal'
 
-export function ShareReferralLink() {
-  const link = 'https://thena.fi/invite?ref=4X0JEX'
+const domain = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN
+
+export function ShareReferralLink({ referralCode }) {
   const t = useTranslations()
   const [copied, setCopied] = useState(false)
   const [openModal, setOpenModal] = useState(false)
+  const referralLink = useMemo(() => `${domain}/story?ref=${referralCode}`, [referralCode])
+
   const copyHandler = useCallback(
     e => {
       e.stopPropagation()
       e.preventDefault()
-      navigator.clipboard.writeText(link)
+      navigator.clipboard.writeText(referralLink)
       // successToast(t('Copied'))
       setCopied(true)
     },
-    [link],
+    [referralLink],
   )
 
   useEffect(() => {
@@ -45,7 +48,7 @@ export function ShareReferralLink() {
         </TextSubHeading>
         <p className='mt-6 text-lg font-medium'>{t('Your Referral Code')}</p>
         <div className='mt-2 flex cursor-text items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'>
-          <span>https://thena.fi/invite?ref=4X0JEX</span>
+          <span>{referralLink}</span>
           <div onClick={copyHandler} className='inline-block h-6 w-6 cursor-pointer'>
             {copied ? <CheckPurpleIcon /> : <CopyIcon />}
           </div>
@@ -67,7 +70,9 @@ export function ShareReferralLink() {
           </div>
         </div>
       )}
-      {openModal && <ShareReferralLinkModal openModal={openModal} setOpenModal={setOpenModal} />}
+      {openModal && (
+        <ShareReferralLinkModal openModal={openModal} setOpenModal={setOpenModal} referralCode={referralCode} />
+      )}
     </div>
   )
 }

@@ -3,36 +3,10 @@ import { useTranslations } from 'use-intl'
 import { TextHeading } from '@/components/typography'
 import { StarLineSmallIcon } from '@/svgs'
 
-export function ReferralHistory() {
-  const t = useTranslations()
+import { REFERRAL_REWARD } from '../../constant'
 
-  const referralHistory = [
-    {
-      walletId: '0xcbf6dbf1522ce32e45f15efb5549352b211f8303',
-      isSuccessful: true,
-      rewardAmount: 10,
-    },
-    {
-      walletId: '0xCBF6Dbf1522ce32E45f15efb5549352B211F8307',
-      isSuccessful: false,
-      rewardAmount: 0,
-    },
-    {
-      walletId: '0xcbf6dbf1522ce32e45f15efb5549352b211f8303',
-      isSuccessful: true,
-      rewardAmount: 10,
-    },
-    {
-      walletId: '0xcbf6dbf1522ce32e45f15efb5549352b211f8303',
-      isSuccessful: false,
-      rewardAmount: 0,
-    },
-    {
-      walletId: '0xcbf6dbf1522ce32e45f15efb5549352b211f8303',
-      isSuccessful: true,
-      rewardAmount: 10,
-    },
-  ]
+export function ReferralHistory({ referralHistory }) {
+  const t = useTranslations()
 
   return (
     <div className='border-gradient-secondary rounded-xl p-[1px]'>
@@ -49,13 +23,13 @@ export function ReferralHistory() {
           {referralHistory.map((referral, index) => (
             <div className='mb-3 grid grid-cols-12 rounded-xl bg-neutral-800 px-5 py-6' key={index}>
               <div className='col-span-6 overflow-hidden text-ellipsis whitespace-nowrap md:col-span-8'>
-                {referral.walletId}
+                {referral.invitedWallet}
               </div>
-              <div className='col-span-4 md:col-span-3'>{referral.isSuccessful ? t('Yes') : t('No')}</div>
+              <div className='col-span-4 md:col-span-3'>{referral.isSuccess ? t('Yes') : t('No')}</div>
               <div className='col-span-2 md:col-span-1'>
-                {referral.rewardAmount ? (
+                {referral.isSuccess ? (
                   <div className='flex items-center'>
-                    {`+${referral.rewardAmount}`} <StarLineSmallIcon className='inline-block h-6 w-6' />
+                    {`+${REFERRAL_REWARD}`} <StarLineSmallIcon className='inline-block h-6 w-6' />
                   </div>
                 ) : (
                   '-'
