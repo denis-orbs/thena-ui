@@ -491,7 +491,7 @@
   "Start": "Start Date & Time",
   "End": "End Date & Time",
   "Registration Deadline": "Registration Deadline",
-  "Detail": "Detail",
+  "Details": "Details",
   "Leaderboard": "Leaderboard",
   "Participants": "Participants",
   "Competition Type": "Competition Type",
@@ -832,7 +832,7 @@
   "Voting Achievements": "Voting Achievements ({count})",
   "Rewards Achievements": "Rewards Achievements ({count})",
   "Bribe Achievements": "Bribe Achievements ({count})",
-  "theNFT Achievements": "theNFT Achievements ({count})",
+  "TheNFT Achievements": "theNFT Achievements ({count})",
   "Liquidity Achievements": "Liquidity Achievements ({count})",
   "Completed": "Completed",
   "Not Completed": "Not Completed",
@@ -911,7 +911,7 @@
   "You have seen it all": "You have seen it all",
   "Available": "Available",
   "Competition Is Not Ready Yet": "The trading competition is getting ready to be launched.",
-  "Competition Is Not Ready Yet SubText ": "This may take a while. Thank you for your patience.",
+  "Competition Is Not Ready Yet SubText": "This may take a while. Thank you for your patience.",
   "Add Deposit to trade before competition starts": "Add Deposit to trade before competition starts.",
   "Add Deposit to trade before competition ends": "Add Deposit to trade before competition ends.",
   "Your Deposit": "Your Deposit",
@@ -942,5 +942,7 @@
   "Pairs Select Tooltip": "Here you can select whether you would like your participants to trade in any pairs or with certain pairs only.",
   "Winning Token Tooltip": "Select the token that you would like your participants to acquire and be counted towards the competition.",
   "Required Deposit to Join Tooltip": "Required deposit to participate in the competition.",
-  "Minimum Deposit to Join Tooltip": "Minimum deposit to participate in the competition."
+  "Minimum Deposit to Join Tooltip": "Minimum deposit to participate in the competition.",
+  "Buy Additional THENA IDs": "Buy additional THENA IDs",
+  "Type Your Id": "Type Your ID"
 }
