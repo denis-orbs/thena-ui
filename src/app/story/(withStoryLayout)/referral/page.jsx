@@ -8,7 +8,7 @@ import useWallet from '@/lib/wallets/useWallet'
 
 import { Referral } from './Referral'
 
-function Profile() {
+function ReferralPage() {
   const { account } = useWallet()
   const { campaignParticipantInfo: userInfo } = useTHEStory()
 
@@ -19,4 +19,4 @@ function Profile() {
   return <Referral address={account.toLowerCase()} />
 }
 
-export default Profile
+export default ReferralPage

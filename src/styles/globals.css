@@ -284,3 +284,7 @@ input[type='number'] {
 .text-gradient-primary {
   @apply bg-gradient-to-r from-gradient-primary-start to-gradient-primary-end bg-clip-text text-transparent;
 }
+
+.shadow-linear {
+  box-shadow: 0 0 10px 1px rgba(223, 8, 212, 0.38);
+}

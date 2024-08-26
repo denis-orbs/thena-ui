@@ -29,7 +29,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
             <div className='flex items-start gap-5 lg:items-center'>
               <Image
                 alt='avatar'
-                src={userInfo.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
+                src={userInfo.avatarUrl?.replace('ipfs.io', 'w3s.link') ?? Avatar}
                 className='h-14 w-14 rounded-full lg:h-32 lg:w-32'
                 width={100}
                 height={100}
@@ -75,13 +75,13 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
           <ProfileButton />
         </div>
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-5'>
-          <Link href='/' className='rounded-xl bg-neutral-800'>
+          <div className='rounded-xl bg-neutral-800'>
             <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <TextHeading className='text-lg'>{userInfo.rank ?? '-'}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
             </Box>
-          </Link>
-          <Link href='/' className='rounded-xl bg-neutral-800'>
+          </div>
+          <div className='rounded-xl bg-neutral-800'>
             <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <div className='flex items-center'>
                 <RewardIconTooltip rewardType={RewardType.Point} id='user-info_earned-point' className='mb-1 mr-1' />
@@ -89,8 +89,8 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
               </div>
               <TextSubHeading className='text-sm'>{t('Earned points')}</TextSubHeading>
             </Box>
-          </Link>
-          <Link href='/' className='rounded-xl bg-neutral-800'>
+          </div>
+          <div className='rounded-xl bg-neutral-800'>
             <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <div className='flex items-center'>
                 <RewardIconTooltip
@@ -102,21 +102,21 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
               </div>
               <TextSubHeading className='text-sm'>{t('Earned fragments')}</TextSubHeading>
             </Box>
-          </Link>
-          <Link href='/' className='rounded-xl bg-neutral-800'>
+          </div>
+          <div className='rounded-xl bg-neutral-800'>
             <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <TextHeading className='text-lg'>
                 {completedChapter} / {totalChapter}
               </TextHeading>
               <TextSubHeading className='text-sm'>{t('Chapters completed')}</TextSubHeading>
             </Box>
-          </Link>
-          <Link href='/' className='col-span-2 rounded-xl bg-neutral-800 lg:col-span-1'>
+          </div>
+          <div className='col-span-2 rounded-xl bg-neutral-800 lg:col-span-1'>
             <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
               <TextHeading className='text-lg'>{totalSuccessfulReferral}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Successful Referrals')}</TextSubHeading>
             </Box>
-          </Link>
+          </div>
         </div>
       </Box>
     </>

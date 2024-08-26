@@ -18,7 +18,8 @@ export function ProfilePage({ address }) {
 
   useEffect(() => {
     if (chapters) {
-      setSelectedChapterIndex(chapters.findLastIndex(chapter => chapter.available) + 1)
+      const index = chapters.findLast(chapter => chapter.available)?.index ?? 0
+      setSelectedChapterIndex(index)
     }
   }, [chapters])
 
@@ -41,7 +42,7 @@ export function ProfilePage({ address }) {
   )
 
   const selectedDailySwap = useMemo(() => {
-    const selectedChapter = chapters?.[selectedChapterIndex - 1]
+    const selectedChapter = chapters.find(chapter => chapter.index === selectedChapterIndex)
     return dailySwaps.filter(swap => swap?.chapter === selectedChapter?.index)
   }, [chapters, dailySwaps, selectedChapterIndex])
 

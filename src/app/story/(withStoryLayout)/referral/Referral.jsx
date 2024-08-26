@@ -43,7 +43,7 @@ export function Referral({ address }) {
       </div>
       <div className='mt-6 grid grid-cols-6 gap-6'>
         <div className='col-span-3 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
-          <TextHeading className='block text-2xl'>{userReferral.length}</TextHeading>
+          <TextHeading className='block text-2xl'>{userReferral?.length}</TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
             {t('Registered Referrals')}
           </TextSubHeading>

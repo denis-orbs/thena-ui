@@ -24,6 +24,7 @@
   "Lock": "Lock",
   "Vote": "Vote",
   "Rewards": "Rewards",
+  "Reward": "Reward",
   "theNFT": "theNFT",
   "THE ULTIMATE": "THE ULTIMATE",
   "Decentralized Exchange": "Decentralized Exchange",
@@ -557,7 +558,8 @@
   "Invite Friends description": "Invite your friends to join the campaign. Once the referred friend completes at least one task, you will get a bonus points.",
   "Registered Referrals": "Registered Referrals",
   "Successful Referrals": "Successful Referrals",
-  "Wallet ID": "Wallet ID",
+  "Registered Referral": "Registered Referral",
+  "Successful Referral": "Successful Referral",
   "Referral History": "Referral History",
   "Share Your Referral Link": "Share Your Referral Link",
   "Share Your Referral Link Description": "You can also share your referral link by copying and sending it to your friends or sharing it on social media.",
@@ -631,5 +633,12 @@
   "#": "#",
   "Reach Top 100 After Second Chapter": "Reach Top 100 After Second Chapter",
   "Top 100 Thenians will receive rewards after second chapter via raffle method": "Top 100 Thenians will receive rewards after second chapter via raffle method.",
-  "Ascend the leaderboard by gathering": "Ascend the leaderboard by gathering points through daily swaps, referrals, and completing tasks. The earlier you embark on your journey, the greater your chance to secure top rewards!"
+  "Ascend the leaderboard by gathering": "Ascend the leaderboard by gathering points through daily swaps, referrals, and completing tasks. The earlier you embark on your journey, the greater your chance to secure top rewards!",
+  "Reward description": "Complete tasks, rise on the leaderboard, and mint exclusive NFT at the end of THE Story.",
+  "Coming soon": "Coming Soon",
+  "Rewards in USD": "Rewards in USD",
+  "Winners Announcement": "Winners Announcement",
+  "Selection method Raffle": "Selection method: Raffle",
+  "Are You a Winner?": "Are You a Winner?",
+  "The competition has ended": "The competition has ended!"
 }

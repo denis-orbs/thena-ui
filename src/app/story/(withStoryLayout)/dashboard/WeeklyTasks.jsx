@@ -24,15 +24,25 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
     return 0
   }, [chapters])
 
+  const currentChapter = useMemo(
+    () => chapters.find(c => c.index === selectedChapterIndex),
+    [chapters, selectedChapterIndex],
+  )
+
   const preChapterIndex = useMemo(() => {
     const index = selectedChapterIndex - 1
-    if (index < 1) return undefined
-    return index
-  }, [selectedChapterIndex])
+    const chapter = chapters.find(c => c.index === index)
+
+    if (chapter) return index
+    return undefined
+  }, [selectedChapterIndex, chapters])
+
   const nextChapterIndex = useMemo(() => {
     const index = selectedChapterIndex + 1
-    if (index > chapters.length || !chapters[selectedChapterIndex]?.available) return undefined
-    return index
+    const chapter = chapters.find(c => c.index === index)
+
+    if (chapter?.available) return index
+    return undefined
   }, [chapters, selectedChapterIndex])
 
   return (
@@ -52,9 +62,9 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
       </div>
       <div className='mt-6 grid grid-cols-12 gap-8 lg:gap-12'>
         <div className='col-span-12 lg:col-span-7'>
-          {chapters[selectedChapterIndex - 1] && (
+          {currentChapter && (
             <ChapterProcess
-              chapter={chapters[selectedChapterIndex - 1]}
+              chapter={currentChapter}
               preChapterIndex={preChapterIndex}
               nextChapterIndex={nextChapterIndex}
               setSelectedChapterIndex={setSelectedChapterIndex}
