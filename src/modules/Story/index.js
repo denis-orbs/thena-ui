@@ -203,8 +203,8 @@ const V4_CAMPAIGN_CHAPTERS = gql`
   }
 `
 const V4_GET_CAMPAIGN_PARTICIPANTS = gql`
-  query V4_GET_CAMPAIGN_PARTICIPANTS($limit: Int!, $offset: Int!, $id_not_eq: String) {
-    campaignParticipants(limit: $limit, offset: $offset, orderBy: rank_ASC, where: { id_not_eq: $id_not_eq }) {
+  query V4_GET_CAMPAIGN_PARTICIPANTS($limit: Int!) {
+    campaignParticipants(limit: $limit, orderBy: rank_ASC) {
       country
       email
       id
@@ -253,11 +253,10 @@ const fetchCampaignTasks = async () => {
   }
 }
 
-export const fetchParticipants = async (limit, offset, id_not_eq) => {
+export const fetchParticipants = async (limit, id_not_eq) => {
   try {
     const { campaignParticipants } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANTS, {
       limit,
-      offset,
       id_not_eq,
     })
 
