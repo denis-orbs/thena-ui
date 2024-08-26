@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 
@@ -35,6 +35,7 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
   const { account } = useWallet()
   const t = useTranslations()
   const searchParams = useSearchParams()
+  const router = useRouter()
 
   const [formState, setFormState] = useState({
     ...initialFormState,
@@ -130,7 +131,11 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
             <p className='mx-auto mb-10 max-w-[400px] text-center font-archia text-[26px] font-semibold md:text-[30px]'>
               {t('You Have Successfully Registered for THE Story of THENA Adventure')}
             </p>
-            <PrimaryButton className='w-full' disabled={isRegistered && isUpcoming}>
+            <PrimaryButton
+              className='w-full'
+              disabled={isRegistered && isUpcoming}
+              onClick={() => router.push('/story/dashboard')}
+            >
               {t('Go to dashboard')}
               <ChevronRightIcon
                 className={cn('h-4 w-4', isRegistered && isUpcoming ? 'opacity-[0.1]' : 'text-white')}
