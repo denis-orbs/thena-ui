@@ -256,7 +256,7 @@ function Header() {
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
   const t = useTranslations()
-  const { isUpcoming } = useTHEStory()
+  const { isUpcoming, isRegistered } = useTHEStory()
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
@@ -655,7 +655,7 @@ function Header() {
           <Tabs data={submenus} size={SizeTypes.Medium} />
         </div>
       )}
-      {pathname.startsWith('/story') && !isUpcoming && (
+      {pathname.startsWith('/story') && isUpcoming && isRegistered && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={storySubmenus} size={SizeTypes.Medium} />
         </div>
