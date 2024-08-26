@@ -17,7 +17,7 @@ export function ProfilePage({ address }) {
   const { dailySwaps, campaignChapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(address)
 
   const { campaignParticipantInfo: userInfo } = useTHEStory()
-
+  console.log({ userInfo })
   const { data: userRefferal, isLoading: isLoadingReferral } = useSWR(
     ['campaignParticipantReferrals', address],
     () => fetchTHEStoryParticipantReferrals(address),

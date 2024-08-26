@@ -36,6 +36,8 @@ import InfoIcon from '~/svgs/info-circle.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
 import InfoCirclePrimary from '~/svgs/info-circle-primary.svg'
 import InfoCircleWhite from '~/svgs/info-circle-white.svg'
+import InstagramColorIcon from '~/svgs/instagram-color.svg'
+import InstagramNoColorIcon from '~/svgs/instagram-no-color.svg'
 import LangIcon from '~/svgs/lang.svg'
 import LockIcon from '~/svgs/lock.svg'
 import Lock2Icon from '~/svgs/lock-2.svg'
@@ -111,6 +113,8 @@ export {
   InfoCirclePrimary,
   InfoCircleWhite,
   InfoIcon,
+  InstagramColorIcon,
+  InstagramNoColorIcon,
   LangIcon,
   Lock2Icon,
   LockIcon,

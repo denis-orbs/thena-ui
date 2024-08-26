@@ -17,20 +17,20 @@ export function Referral() {
           {t('Invite Friends description')}
         </TextSubHeading>
       </div>
-      <div className='mt-6 grid grid-cols-1 gap-6 md:grid-cols-3'>
-        <div className='rounded-xl bg-neutral-900 p-6'>
+      <div className='mt-6 grid grid-cols-6 gap-6'>
+        <div className='col-span-3 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
           <TextHeading className='block text-2xl'>5</TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
             {t('Registered Referrals')}
           </TextSubHeading>
         </div>
-        <div className='rounded-xl bg-neutral-900 p-6'>
+        <div className='col-span-3 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
           <TextHeading className='block text-2xl'>3</TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
             {t('Successful Referrals')}
           </TextSubHeading>
         </div>
-        <div className='rounded-xl bg-neutral-900 p-6'>
+        <div className='col-span-6 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
           <TextHeading className='block text-2xl'>
             <StarLineSmallIcon className='inline-block h-5 w-5' />
             30

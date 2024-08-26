@@ -85,6 +85,13 @@ export default {
           },
         },
         purple: 'rgba(123, 10, 121, 1)',
+        social: {
+          discord: 'rgba(88, 101, 242, 1)',
+          telegram: 'rgba(44, 163, 221, 1)',
+          reddit: 'rgba(255, 69, 0, 1)',
+          facebook: 'rgba(8, 102, 255, 1)',
+          instagram: 'radial-gradient(circle at 50% 50%, #FFB140 0%, #FF5445 25.59%, #FC2B82 59.9%, #8E40B7 100%)',
+        },
       },
       backgroundImage: {
         'custom-gradient': 'linear-gradient(90deg, #B386FF 0%, #FF86FA 100%)',
