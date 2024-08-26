@@ -11,17 +11,10 @@ export default function LeaderboardPage() {
 
   return (
     <>
-      <div
-        className='absolute left-0 top-[129px] h-full w-full bg-[url("/images/story/background-leaderboard.png")] bg-cover
-        opacity-10'
-      />
+      <div className='absolute left-0 top-[129px] h-[1077px] w-full bg-[url("/images/story/bg-leaderboard.png")] bg-cover' />
       <div className='relative'>
-        <p className='text mt-2 text-[40px] font-semibold leading-9 text-neutral-50'>{t('Leaderboard')}</p>
-        <p className='mb-6 text-neutral-300'>
-          {`${t('Accumulate points through referrals, daily swap-ins, and task completion')} ${t(
-            'Top 100 Thenians will receive all kind of rewards',
-          )}`}
-        </p>
+        <p className='text mb-2 text-[40px] font-semibold leading-9 text-neutral-50'>{t('Leaderboard')}</p>
+        <p className='mb-6 text-neutral-300'>{t('Ascend the leaderboard by gathering')}</p>
         <LeaderboardTable />
         <HowItWorks />
       </div>

@@ -11,6 +11,7 @@ import LabelTooltip from '@/components/label/LabelTooltip'
 import { THEStoryContext } from '@/context/THEStoryContext'
 import { v4Client } from '@/lib/graphql'
 import { errorToast, successToast } from '@/lib/notify'
+import { cn } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ChevronRightIcon, SuccessIcon } from '@/svgs'
 
@@ -131,13 +132,15 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
             </p>
             <PrimaryButton className='w-full' disabled={isRegistered && isUpcoming}>
               {t('Go to dashboard')}
-              <ChevronRightIcon className={`h-4 w-4 ${isRegistered && isUpcoming ? 'opacity-[0.1]' : 'text-white'}`} />
+              <ChevronRightIcon
+                className={cn('h-4 w-4', isRegistered && isUpcoming ? 'opacity-[0.1]' : 'text-white')}
+              />
             </PrimaryButton>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
             <div className='my-auto flex flex-col gap-6'>
-              <h2 className='font-archia'>{t('Become a Thenian')}</h2>
+              <h2 className='font-archia'>{t('Become a Thenian')} 💜🏛</h2>
               <div>
                 <LabelTooltip className='mb-1.5' required label={t('Your Wallet ID')} id='email-input' />
                 <Input
