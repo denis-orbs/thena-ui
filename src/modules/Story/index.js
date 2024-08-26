@@ -23,26 +23,6 @@ const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
   }
 `
 
-// const V4_CAMPAIGN_PARTICIPANT_LIST = gql`
-//   query V4_CAMPAIGN_PARTICIPANT_LIST (
-//     $limit: Int = 10,
-//     $orderBy: String = 'rank_ASC',
-//     $offset: Int = 1,
-//     $id_not_contains: String
-//     ) {
-//       campaignParticipants(
-//         limit: $limit,
-//         orderBy: $orderBy,
-//         offset: $offset,
-//         where: {id_not_contains:  $id_not_contains}
-//         ) {
-//           id
-//           email
-//           rank
-//         }
-//     }
-// `
-
 export const fetchTHEStoryParticipant = async user => {
   const { campaignParticipants } = await v4Client.request(V4_CAMPAIGN_PARTICIPANT_BY_ID, {
     id_eq: String(user).toLowerCase(),
@@ -201,7 +181,7 @@ export const fetchCampaignChapter = async index => {
     const { campaignChapters } = await v4Client.request(V4_CAMPAIGN_CHAPTER, {
       index,
     })
-    if (campaignChapters && Array.isArray(campaignChapters)) {
+    if (campaignChapters && Array.isArray(campaignChapters) && campaignChapters.length > 0) {
       return campaignChapters[0]
     }
 
@@ -219,6 +199,20 @@ const V4_CAMPAIGN_CHAPTERS = gql`
       name
       startTimestamp
       endTimestamp
+    }
+  }
+`
+const V4_GET_CAMPAIGN_PARTICIPANTS = gql`
+  query V4_GET_CAMPAIGN_PARTICIPANTS($limit: Int!, $offset: Int!, $id_not_eq: String) {
+    campaignParticipants(limit: $limit, offset: $offset, orderBy: rank_ASC, where: { id_not_eq: $id_not_eq }) {
+      country
+      email
+      id
+      rank
+      referralCode
+      avatarUrl
+      totalFragments
+      totalPoints
     }
   }
 `
@@ -256,6 +250,25 @@ const fetchCampaignTasks = async () => {
     return []
   } catch (error) {
     return undefined
+  }
+}
+
+export const fetchParticipants = async (limit, offset, id_not_eq) => {
+  try {
+    const { campaignParticipants } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANTS, {
+      limit,
+      offset,
+      id_not_eq,
+    })
+
+    if (campaignParticipants && Array.isArray(campaignParticipants) && campaignParticipants.length > 0) {
+      return campaignParticipants
+    }
+
+    return []
+  } catch (error) {
+    console.trace(error)
+    return []
   }
 }
 
@@ -381,3 +394,34 @@ const useFetchChaptersAndTasks = id => {
 }
 
 export { fetchCampaignChapters, fetchCampaignCompletedTasks, fetchCampaignTasks, useFetchChaptersAndTasks }
+
+const V4_GET_CAMPAIGN_PARTICIPANT_BY_ID = gql`
+  query V4_GET_CAMPAIGN_PARTICIPANT_BY_ID($id_eq: String!) {
+    campaignParticipants(where: { id_eq: $id_eq }) {
+      country
+      email
+      id
+      rank
+      referralCode
+      avatarUrl
+      totalFragments
+      totalPoints
+    }
+  }
+`
+export const fetchParticipantById = async id_eq => {
+  try {
+    const { campaignParticipants } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANT_BY_ID, {
+      id_eq,
+    })
+
+    if (campaignParticipants && Array.isArray(campaignParticipants) && campaignParticipants.length > 0) {
+      return campaignParticipants[0]
+    }
+
+    return null
+  } catch (error) {
+    console.trace(error)
+    return null
+  }
+}

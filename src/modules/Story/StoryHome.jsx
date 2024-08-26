@@ -1,5 +1,6 @@
-import Image from 'next/image'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { useRef } from 'react'
 
 import Box from '@/components/box'
 import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
@@ -10,16 +11,38 @@ import { ChevronRightIcon, ExpandIcon, LogoTextIcon } from '@/svgs'
 import { useFetchChaptersAndTasks } from '.'
 import Chapters from './Chapters'
 import StoryRegister from './StoryRegister'
+import VideoBanner from './Video'
 import { Countdown } from '../Countdown'
 
 function StoryHome({ isUpcoming, isRegistered }) {
   const t = useTranslations()
+
+  const videoRef = useRef(null)
 
   const { account } = useWallet()
   const { campaignStartsAt } = useTHEStory()
   const { campaignChapters: chapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(
     account?.toLowerCase(),
   )
+
+  const handleExpandVideo = () => {
+    if (videoRef.current) {
+      const videoElement = videoRef.current
+
+      if (videoElement.requestFullscreen) {
+        videoElement.requestFullscreen()
+      } else if (videoElement.mozRequestFullScreen) {
+        // Firefox
+        videoElement.mozRequestFullScreen()
+      } else if (videoElement.webkitRequestFullscreen) {
+        // Chrome, Safari & Opera
+        videoElement.webkitRequestFullscreen()
+      } else if (videoElement.msRequestFullscreen) {
+        // IE/Edge
+        videoElement.msRequestFullscreen()
+      }
+    }
+  }
 
   return (
     <>
@@ -28,23 +51,28 @@ function StoryHome({ isUpcoming, isRegistered }) {
           {/* Banner */}
           <div className='h-auto w-auto rounded-[20px] bg-[#382F411F] px-2 pt-2 md:px-[15px] md:pt-[15px]'>
             <div className='relative mb-24 lg:mb-40'>
-              <Image
-                src='/images/story/story-banner.png'
-                alt='Story banner'
+              <VideoBanner
+                src='/videos/TheSpaceFinal.mp4'
                 width={1410}
                 height={793}
                 className='w-full rounded-[10px]'
+                videoRef={videoRef}
               />
-              <OutlinedButton className='absolute right-4 top-5 border-none p-2 md:hidden'>
+              <OutlinedButton className='absolute right-4 top-5 border-none p-2 md:hidden' onClick={handleExpandVideo}>
                 <ExpandIcon className='h-4 w-4' />
               </OutlinedButton>
-              <div className='absolute bottom-[-30px] left-0 w-full p-0 text-center font-archia text-[30px] font-semibold text-white lg:bottom-0 lg:px-4 lg:pb-9 lg:text-[72px]'>
-                {t('Get Ready for THE Story of THENA')}
+              <div className='absolute bottom-[-30px] left-0 w-full p-0 text-center font-archia text-[30px] font-semibold text-white lg:bottom-6 lg:px-4 lg:pb-9 lg:text-[72px]'>
+                <p>{t('Get Ready for THE Story of THENA')}</p>
+                <div className='mt-2 flex w-full justify-center'>
+                  <PrimaryButton>
+                    <Link href='#register-form'>{t('Start Your Chapter')}</Link>
+                  </PrimaryButton>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className='mb-5 flex justify-center'>
+          <div className='mb-5 flex justify-center' id='register-form'>
             <StoryRegister isRegistered={isRegistered} isUpcoming={isUpcoming} />
           </div>
           <Box className='mx-auto bg-neutral-900 max-sm:max-w-[413px] lg:w-[610px]'>

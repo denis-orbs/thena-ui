@@ -6,6 +6,7 @@ import ArrowDownIcon from '~/svgs/arrow-down.svg'
 import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
 import ArrowLeftIcon from '~/svgs/arrow-left.svg'
 import ArrowRightIcon from '~/svgs/arrow-right.svg'
+import AwardIcon from '~/svgs/award.svg'
 import BankIcon from '~/svgs/bank.svg'
 import CalendarIcon from '~/svgs/calendar.svg'
 import ChapterLogoIcon from '~/svgs/chapter-logo.svg'
@@ -21,6 +22,7 @@ import ChevronRightIcon from '~/svgs/chevron-right.svg'
 import CloseIcon from '~/svgs/close.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 import CopyIcon from '~/svgs/copy.svg'
+import CrownIcon from '~/svgs/crown.svg'
 import DiamondIcon from '~/svgs/diamond.svg'
 import DiscordIcon from '~/svgs/discord.svg'
 import EigenBadgeIcon from '~/svgs/eigen_badge.svg'
@@ -31,6 +33,7 @@ import ExpandIcon from '~/svgs/expand.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import FacebookIcon from '~/svgs/facebook.svg'
 import FirstPrizeIcon from '~/svgs/first-prize.svg'
+import GiftIcon from '~/svgs/gift.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
@@ -87,6 +90,7 @@ export {
   ArrowForwardSmallIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
+  AwardIcon,
   BankIcon,
   CalendarIcon,
   ChapterLogoIcon,
@@ -102,6 +106,7 @@ export {
   CloseIcon,
   CoinsStackedIcon,
   CopyIcon,
+  CrownIcon,
   DiamondIcon,
   DiscordIcon,
   EigenBadgeIcon,
@@ -112,6 +117,7 @@ export {
   ExternalIcon,
   FacebookIcon,
   FirstPrizeIcon,
+  GiftIcon,
   HamburgerIcon,
   InfoCircleGradient,
   InfoCirclePrimary,
