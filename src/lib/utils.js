@@ -101,3 +101,5 @@ export const retry = async (callback, breakCondition, maxRetries = 3) => {
 }
 
 export const sliceAddress = string => `${string?.slice(0, 6)}...${string?.slice(-4)}`
+
+export const isoDateToTimeStampSeconds = isoString => Math.floor(new Date(isoString).getTime() / 1000)

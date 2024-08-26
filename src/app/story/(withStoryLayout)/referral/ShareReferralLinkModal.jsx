@@ -30,7 +30,6 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
 
   const referralLink = useMemo(() => `${domain}/story?ref=${referralCode}`, [referralCode])
 
-  console.log({ postContent })
   const onCopy = useCallback(
     e => {
       e.stopPropagation()

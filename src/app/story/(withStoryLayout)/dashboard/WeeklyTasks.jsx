@@ -2,18 +2,27 @@ import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { isoDateToTimeStampSeconds } from '@/lib/utils'
+import { Countdown } from '@/modules/Countdown'
 
 import { ChapterProcess } from './ChapterProcess'
 import { ChapterTabNavigator } from './ChapterTabNavigator'
-import { CountDownNextChapter } from './CountDownNextChapter'
 
 export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapterIndex }) {
   const t = useTranslations()
 
-  const nextAvailableChapterTimeStamp = useMemo(
-    () => chapters.find(chapter => !chapter.available)?.startTimestamp ?? '',
-    [chapters],
-  )
+  const nextAvailableChapterTimeStamp = useMemo(() => {
+    const nextChapter = chapters.find(chapter => !chapter.available)
+    if (nextChapter) {
+      try {
+        return isoDateToTimeStampSeconds(nextChapter.startTimestamp)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    return 0
+  }, [chapters])
 
   const preChapterIndex = useMemo(() => {
     const index = selectedChapterIndex - 1
@@ -55,9 +64,8 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
         <div className='col-span-12 lg:col-span-5'>
           {nextAvailableChapterTimeStamp && (
             <div className='rounded-lg bg-neutral-900 px-6 py-6'>
-              <h2 className='font-archia'>{t('Next Chapter Available in')}</h2>
-              <p className='text-lg font-normal leading-5'>{t('Next Chapter description')}</p>
-              <CountDownNextChapter targetDate={nextAvailableChapterTimeStamp} />
+              <h2 className='mb-6 font-archia'>{t('Next Chapter Available in')}</h2>
+              <Countdown timestamp={nextAvailableChapterTimeStamp} />
             </div>
           )}
         </div>

@@ -301,7 +301,6 @@ const useFetchChaptersAndTasks = id => {
       refreshInterval: 60000,
     },
   )
-  console.log({ campaignTasks })
 
   const { data: campaignCompletedTask = [], isLoading: isLoadingCompletedTask } = useSWR(
     ['fetchCampaignCompletedTasks', id],

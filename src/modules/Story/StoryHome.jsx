@@ -1,35 +1,25 @@
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useState } from 'react'
 
-import { CountDownNextChapter } from '@/app/story/(withStoryLayout)/dashboard/CountDownNextChapter'
 import Box from '@/components/box'
 import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/lib/wallets/useWallet'
 import { ChevronRightIcon, ExpandIcon, LogoTextIcon } from '@/svgs'
 
-import { fetchCampaignChapter, useFetchChaptersAndTasks } from '.'
+import { useFetchChaptersAndTasks } from '.'
 import Chapters from './Chapters'
 import StoryRegister from './StoryRegister'
+import { Countdown } from '../Countdown'
 
 function StoryHome({ isUpcoming, isRegistered }) {
   const t = useTranslations()
 
   const { account } = useWallet()
+  const { campaignStartsAt } = useTHEStory()
   const { campaignChapters: chapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(
     account?.toLowerCase(),
   )
-
-  const [timeStartFirstChapter, setTimeStartFirstChapter] = useState(null)
-
-  const fetFirstCampaignChapter = useCallback(async () => {
-    const { startTimestamp } = await fetchCampaignChapter(1)
-    setTimeStartFirstChapter(startTimestamp)
-  }, [])
-
-  useEffect(() => {
-    fetFirstCampaignChapter()
-  }, [fetFirstCampaignChapter])
 
   return (
     <>
@@ -58,10 +48,10 @@ function StoryHome({ isUpcoming, isRegistered }) {
             <StoryRegister isRegistered={isRegistered} isUpcoming={isUpcoming} />
           </div>
           <Box className='mx-auto bg-neutral-900 max-sm:max-w-[413px] lg:w-[610px]'>
-            <p className='mb-4 font-archia text-[26px] font-semibold md:text-3xl md:tracking-wide'>
+            <p className='mb-5 font-archia text-[26px] font-semibold md:text-3xl md:tracking-wide'>
               {t('First Chapter Available in')}
             </p>
-            <CountDownNextChapter targetDate={timeStartFirstChapter} />
+            <Countdown timestamp={campaignStartsAt} />
           </Box>
         </div>
       ) : (

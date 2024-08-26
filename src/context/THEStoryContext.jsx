@@ -1,15 +1,11 @@
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
+import { isoDateToTimeStampSeconds } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
-import { fetchTHEStoryParticipant } from '@/modules/Story'
-
-dayjs.extend(utc)
+import { fetchCampaignChapter, fetchTHEStoryParticipant } from '@/modules/Story'
 
 const THEStoryContext = createContext({
-  // campaignStartsAt: dayjs.utc('2024-09-01'),`
-  campaignStartsAt: dayjs.utc('2024-08-20'),
+  campaignStartsAt: 1724155200, // 2024-08-20 12:00 UTC
   isRegistered: false,
   setIsRegistered: () => false,
   campaignParticipantInfo: null,
@@ -22,13 +18,31 @@ function THEStoryContextProvider({ children }) {
 
   const [isRegistered, setIsRegistered] = useState(false)
   const [campaignParticipantInfo, setCampaignParticipantInfo] = useState(null)
-  const [isUpcoming, setIsUpcoming] = useState(false)
-  // const campaignStartsAt = useMemo(() => dayjs.utc('2024-09-01'), [])
-  const campaignStartsAt = useMemo(() => dayjs.utc('2024-08-20'), [])
+  const [isUpcoming, setIsUpcoming] = useState(true)
+  const [campaignStartsAt, setCampaignStartsAt] = useState(1724155200) // 2024-08-20 12:00 UTC
+
+  useEffect(() => {
+    const checkCampaignStartsAt = async () => {
+      try {
+        const firstChapter = await fetchCampaignChapter(1)
+        if (firstChapter) {
+          const { startTimestamp } = firstChapter
+          if (startTimestamp) {
+            const timestampInSeconds = isoDateToTimeStampSeconds(startTimestamp)
+            setCampaignStartsAt(timestampInSeconds)
+          }
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    checkCampaignStartsAt()
+  }, [])
 
   useEffect(() => {
     const checkTime = () => {
-      const newIsUpcoming = dayjs().isBefore(campaignStartsAt)
+      const newIsUpcoming = Date.now() / 1000 < campaignStartsAt
       setIsUpcoming(prev => {
         if (prev !== newIsUpcoming) {
           return newIsUpcoming
