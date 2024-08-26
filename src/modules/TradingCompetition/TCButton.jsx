@@ -173,7 +173,7 @@ export function TCButton({ eventType, competition, timestamp }) {
         const registerEnd = dayjs.tz(timestamp.registrationEnd * 1000)
         const start = dayjs.tz(timestamp.startTimestamp * 1000)
 
-        if (competition.participantCount === competition.maxParticipants) {
+        if (competition.participantCount === Number(competition.maxParticipants)) {
           return { text: t('Competition Full'), disabled: true }
         }
 

@@ -78,7 +78,7 @@ function Sidebar({ competition, eventType }) {
   const { withdrawTCPerp } = useWithdrawToTCPerp()
 
   const isFull = useMemo(
-    () => competition.participantCount === competition.maxParticipants,
+    () => competition.participantCount === Number(competition.maxParticipants),
     [competition.maxParticipants, competition.participantCount],
   )
 
