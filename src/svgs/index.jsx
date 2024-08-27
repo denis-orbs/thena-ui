@@ -21,6 +21,7 @@ import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
 import CloseIcon from '~/svgs/close.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
+import CollapseUpIcon from '~/svgs/collapse-up.svg'
 import CopyIcon from '~/svgs/copy.svg'
 import CrownIcon from '~/svgs/crown.svg'
 import DiamondIcon from '~/svgs/diamond.svg'
@@ -30,8 +31,10 @@ import EmailIcon from '~/svgs/email.svg'
 import EtherFiBadgeIcon from '~/svgs/etherfi_badge.svg'
 import ExchangeIcon from '~/svgs/exchange.svg'
 import ExpandIcon from '~/svgs/expand.svg'
+import ExpandDownIcon from '~/svgs/expand-down.svg'
 import ExternalIcon from '~/svgs/external.svg'
 import FacebookIcon from '~/svgs/facebook.svg'
+import FingerprintIcon from '~/svgs/fingerprint.svg'
 import FirstPrizeIcon from '~/svgs/first-prize.svg'
 import GiftIcon from '~/svgs/gift.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
@@ -73,6 +76,8 @@ import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
 import TaskCheckedIcon from '~/svgs/task-checked.svg'
 import TelegramIcon from '~/svgs/telegram.svg'
+import THETokenIcon from '~/svgs/THE-token.svg'
+import RoundedTHETokenIcon from '~/svgs/THE-token-rounded.svg'
 import ThirdPrizeIcon from '~/svgs/third-prize.svg'
 import TwitterIcon from '~/svgs/twiiter.svg'
 import UploadIcon from '~/svgs/upload.svg'
@@ -105,6 +110,7 @@ export {
   ChevronRightIcon,
   CloseIcon,
   CoinsStackedIcon,
+  CollapseUpIcon,
   CopyIcon,
   CrownIcon,
   DiamondIcon,
@@ -113,9 +119,11 @@ export {
   EmailIcon,
   EtherFiBadgeIcon,
   ExchangeIcon,
+  ExpandDownIcon,
   ExpandIcon,
   ExternalIcon,
   FacebookIcon,
+  FingerprintIcon,
   FirstPrizeIcon,
   GiftIcon,
   HamburgerIcon,
@@ -140,6 +148,7 @@ export {
   RedditIcon,
   RefreshIcon,
   RegisterIcon,
+  RoundedTHETokenIcon,
   SearchIcon,
   SecondPrizeIcon,
   SendIcon,
@@ -156,6 +165,7 @@ export {
   SwitchVerticalIcon,
   TaskCheckedIcon,
   TelegramIcon,
+  THETokenIcon,
   ThirdPrizeIcon,
   TransferIcon,
   TwitterIcon,

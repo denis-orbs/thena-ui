@@ -10,7 +10,10 @@ import { RewardIconTooltip } from './RewardIconTooltip'
 export function ChapterProcess({ chapter, setSelectedChapterIndex, preChapterIndex, nextChapterIndex }) {
   const t = useTranslations()
   const [totalTask, taskCompleted] = useMemo(
-    () => [chapter?.tasks?.length ?? 0, chapter?.tasks?.filter(task => task.isCompleted)?.length ?? 0],
+    () => [
+      chapter?.tasks?.filter(task => task.available)?.length ?? 0,
+      chapter?.tasks?.filter(task => task.isCompleted)?.length ?? 0,
+    ],
     [chapter],
   )
   const percentageTaskCompleted = useMemo(() => {
@@ -77,7 +80,7 @@ export function ChapterProcess({ chapter, setSelectedChapterIndex, preChapterInd
                   <div>
                     {task.rewardAmount.map((amount, index) => (
                       <div key={index}>
-                        {!!amount && (
+                        {Boolean(amount) && (
                           <div className='flex flex-row items-center'>
                             <span className='text-lg font-light leading-6 '>+{amount}</span>
                             <RewardIconTooltip

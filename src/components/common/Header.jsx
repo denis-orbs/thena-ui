@@ -441,10 +441,10 @@ function Header() {
           },
         },
         {
-          label: t('Dashboard'),
-          active: pathname === '/story/dashboard',
+          label: t('Chapters'),
+          active: pathname === '/story/chapters',
           onClickHandler: () => {
-            push('/story/dashboard')
+            push('/story/chapters')
           },
         },
         {

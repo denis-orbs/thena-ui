@@ -41,7 +41,7 @@ export function ChapterOverviewProcess({ chapter }) {
           </div>
           <div className='my-4 mt-1 flex items-center '>
             {/* <Lock2Icon className='mr-1 inline-block h-[30px] w-[30px]' /> */}
-            <h3 className='text-3xl font-semibold'>{!!chapter.name && t('Coming soon')}</h3>
+            <h3 className='text-3xl font-semibold'>{Boolean(chapter.name) && t(chapter.name)}</h3>
           </div>
 
           {chapter.tasks?.map(task => (

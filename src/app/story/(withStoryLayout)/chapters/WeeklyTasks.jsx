@@ -72,7 +72,7 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
           )}
         </div>
         <div className='col-span-12 lg:col-span-5'>
-          {nextAvailableChapterTimeStamp && (
+          {Boolean(nextAvailableChapterTimeStamp) && (
             <div className='rounded-lg bg-neutral-900 px-6 py-6'>
               <h2 className='mb-6 font-archia'>{t('Next Chapter Available in')}</h2>
               <Countdown timestamp={nextAvailableChapterTimeStamp} />

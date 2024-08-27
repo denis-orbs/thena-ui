@@ -533,7 +533,7 @@
   "Swap THE with any token": "Swap THE with any token",
   "Mint thena ID": "Mint .thena ID",
   "Register for a BSC TC": "Register for a BNB Chain-sponsored trading competition",
-  "Post a tweet with #[Hashtag] and tag @[ThenaFi_]": "Post a tweet with #[Hashtag] and tag @[ThenaFi_]",
+  "Tweet with hashtag StoryofTHENA": "Post a tweet with #StoryofTHENA and tag @ThenaFi_",
   "Daily Swap-in": "Daily Swap-in",
   "Refer your friends": "Refer your friends",
   "Swap THE": "Swap THE",
@@ -639,5 +639,17 @@
   "Winners Announcement": "Winners Announcement",
   "Selection method Raffle": "Selection method: Raffle",
   "Are You a Winner?": "Are You a Winner?",
-  "The competition has ended": "The competition has ended!"
+  "The competition has ended": "The competition has ended!",
+  "Check now": "Check now",
+  "You Won": "You Won!",
+  "Unfortunately You Didn’t Won Any Rewards": "Unfortunately You Didn’t Won Any Rewards.",
+  "Mint Your NFT": "Mint Your NFT",
+  "Fragments Required": "Fragments Required",
+  "You Minted a New NFT": "You Minted a New NFT",
+  "You Won an NFT": "You Won an NFT!",
+  "Mint an NFT": "Mint an NFT",
+  "Mint now": "Mint now",
+  "Minted": "Minted",
+  "FAQs": "FAQs",
+  "Chapters": "Chapters"
 }

@@ -2,6 +2,7 @@ import { gql } from 'graphql-request'
 import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 
+import { TaskType } from '@/app/story/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
@@ -14,6 +15,7 @@ const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
       email
       id
       rank
+      rankFirstTwoChapters
       referralCode
       avatarUrl
       totalFragments
@@ -278,6 +280,7 @@ const V4_CAMPAIGN_COMPLETED_TASKS = gql`
         id
         chapter
       }
+      timestamp
     }
   }
 `
@@ -331,7 +334,7 @@ const useFetchChaptersAndTasks = id => {
     // filter chapter task with type [Main]
     const campaignChaptersDetails = campaignChapters.map(chapter => {
       const tasks = campaignTasks
-        .filter(task => +task.chapter === chapter.index && task.type === 'Main')
+        .filter(task => (+task.chapter === chapter.index && task.type === TaskType.Main) || task.type === TaskType.Side)
         .map(task => {
           const isCompleted = !!campaignCompletedTask.find(completedTask => completedTask.campaignTask.id === task.id)
 
@@ -354,10 +357,18 @@ const useFetchChaptersAndTasks = id => {
       }
     })
 
+    const currentChapter = campaignChapters?.findLast(chapter => chapter.available)
+
     let dailySwaps = campaignTasks
-      .filter(task => task.type === 'Daily')
+      .filter(task => task.type === TaskType.Daily)
       .map(task => {
-        const isCompleted = !!campaignCompletedTask.find(completedTask => completedTask.campaignTask.id === task.id)
+        const startTime = new Date(currentChapter?.startTimestamp ?? 0)
+        const endTime = new Date(currentChapter?.startTimestamp ?? 0)
+
+        const isCompleted = !!campaignCompletedTask.find(completedTask => {
+          const completedTime = new Date(completedTask.timestamp)
+          return completedTask.campaignTask.id === task.id && completedTime > startTime && completedTime < endTime
+        })
         return {
           ...task,
           isCompleted,

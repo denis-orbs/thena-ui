@@ -41,11 +41,6 @@ export function ProfilePage({ address }) {
     [chapters],
   )
 
-  const selectedDailySwap = useMemo(() => {
-    const selectedChapter = chapters.find(chapter => chapter.index === selectedChapterIndex)
-    return dailySwaps.filter(swap => swap?.chapter === selectedChapter?.index)
-  }, [chapters, dailySwaps, selectedChapterIndex])
-
   if (!address || !userInfo || isLoadingReferral || isLoadingChapterTasks) {
     return <Loading />
   }
@@ -58,7 +53,7 @@ export function ProfilePage({ address }) {
         totalChapter={totalChapter}
         totalSuccessfulReferral={totalSuccessfulReferral}
       />
-      <DailySwap dailySwaps={selectedDailySwap} />
+      <DailySwap dailySwaps={dailySwaps} />
       <WeeklyTasks
         chapters={chapters}
         selectedChapterIndex={selectedChapterIndex}
