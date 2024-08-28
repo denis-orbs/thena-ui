@@ -49,8 +49,6 @@ export default function LeaderboardTable({ userInfo }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [data, setData] = useState()
 
-  const [hightLightIndex, setHightLightIndex] = useState()
-
   useMemo(async () => {
     if (userInfo) {
       const res = await fetchParticipants(100)
@@ -58,20 +56,6 @@ export default function LeaderboardTable({ userInfo }) {
       setData(res)
     }
   }, [userInfo])
-
-  useMemo(() => {
-    if (userInfo) {
-      if (currentPage === 1) {
-        if (userInfo.rank > 10) {
-          setHightLightIndex(0)
-        } else {
-          setHightLightIndex(userInfo.rank)
-        }
-      } else {
-        setHightLightIndex(userInfo.rank)
-      }
-    }
-  }, [currentPage, userInfo])
 
   const sortedData = useMemo(
     () =>
@@ -101,7 +85,9 @@ export default function LeaderboardTable({ userInfo }) {
     let final = sortedData
 
     if (userInfo && userInfo.rank > 10) {
-      final = final.filter(item => item.id !== userInfo.id)
+      if (final[0].id === userInfo.rank) {
+        final.shift()
+      }
       final.unshift(userInfo)
     }
 
@@ -125,6 +111,7 @@ export default function LeaderboardTable({ userInfo }) {
       if (item.rank === 0) {
         console.log('0 item', item.rank)
         return {
+          id: item.id,
           rank: <FirstPrizeIcon className='size-7' />,
           thenian,
           totalPoints: item.totalPoints,
@@ -132,6 +119,7 @@ export default function LeaderboardTable({ userInfo }) {
       }
       if (item.rank === 1) {
         return {
+          id: item.id,
           rank: <SecondPrizeIcon className='size-7' />,
           thenian,
           totalPoints: item.totalPoints,
@@ -139,6 +127,7 @@ export default function LeaderboardTable({ userInfo }) {
       }
       if (item.rank === 2) {
         return {
+          id: item.id,
           rank: <ThirdPrizeIcon className='size-7' />,
           thenian,
           totalPoints: item.totalPoints,
@@ -150,6 +139,7 @@ export default function LeaderboardTable({ userInfo }) {
       }
 
       return {
+        id: item.id,
         rank: item.rank + 1,
         thenian,
         totalPoints: item.totalPoints,
@@ -171,7 +161,7 @@ export default function LeaderboardTable({ userInfo }) {
         sort={sort}
         setSort={setSort}
         tableBasic
-        hightLightIndex={hightLightIndex}
+        hightLightById={userInfo.id}
         bgHightLight='bg-neutral-800'
         loading={!data}
         pageSize={10}
