@@ -515,6 +515,7 @@
   "Earned points": "Earned points",
   "Tasks completed": "Tasks completed",
   "[taskCompleted] / [totalTask] Tasks completed": "{taskCompleted} / {totalTask} tasks completed",
+  "[numberCompletedChapters] / [numberAvailableChapters] chapters completed": "{numberCompletedChapters} / {numberAvailableChapters} chapters completed",
   "Chapters completed": "Chapters completed",
   "Start task": "Start",
   "Next Chapter Available in": "Next Chapter Available in",
@@ -620,7 +621,6 @@
   "Use Custom Avatar": "Use Custom Avatar",
   "Save Change": "Save Change",
   "Drag Drop File Here": "Drag Drop File Here",
-  "More Coming": "More Coming!",
   "Successfully": "Successfully",
   "Your Wallet ID is not connected": "Your Wallet ID is not connected",
   "Countries": "Countries",
@@ -652,5 +652,7 @@
   "FAQs": "FAQs",
   "Chapters": "Chapters",
   "Enter all details": "Enter all details",
-  "Search by Name": "Search by Name"
+  "Search by Name": "Search by Name",
+  "Fragments missing": "Fragments missing",
+  "The Fates Await": "The Fates Await…"
 }

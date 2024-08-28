@@ -5,7 +5,7 @@ import { ChapterProcess } from '@/app/story/(withStoryLayout)/chapters/ChapterPr
 import { ChapterTabNavigator } from '@/app/story/(withStoryLayout)/chapters/ChapterTabNavigator'
 
 export default function Chapters({ chapters, isLoading }) {
-  const [selectedChapterIndex, setSelectedChapterIndex] = useState(0)
+  const [selectedChapterIndex, setSelectedChapterIndex] = useState(1)
 
   useEffect(() => {
     if (chapters) {
@@ -24,6 +24,14 @@ export default function Chapters({ chapters, isLoading }) {
     if (index > chapters.length || !chapters[selectedChapterIndex]?.available) return undefined
     return index
   }, [chapters, selectedChapterIndex])
+
+  const [numberCompletedChapters, numberAvailableChapters] = useMemo(
+    () => [
+      chapters.filter(chapter => chapter.isCompleted).length,
+      chapters.filter(chapter => chapter.available).length,
+    ],
+    [chapters],
+  )
 
   if (isLoading && !selectedChapterIndex) {
     return <Loading />
@@ -47,6 +55,8 @@ export default function Chapters({ chapters, isLoading }) {
             preChapterIndex={preChapterIndex}
             nextChapterIndex={nextChapterIndex}
             setSelectedChapterIndex={setSelectedChapterIndex}
+            numberCompletedChapters={numberCompletedChapters}
+            numberAvailableChapters={numberAvailableChapters}
           />
         </>
       )}

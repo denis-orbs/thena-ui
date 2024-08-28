@@ -3,7 +3,7 @@ import { useTranslations } from 'use-intl'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
-import { isoDateToTimeStampSeconds } from '@/lib/utils'
+import { cn, isoDateToTimeStampSeconds } from '@/lib/utils'
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
 import { AlertCirlceSmallIcon, BankIcon, FingerprintIcon, RoundedTHETokenIcon, THETokenIcon } from '@/svgs'
 
@@ -166,15 +166,21 @@ export function RewardChapter({ chapters }) {
           </TextHeading>
         </div>
 
-        <div className='grid grid-cols-2 lg:grid-cols-2'>
+        <div className='grid grid-cols-2 lg:grid-cols-3'>
           {rewards.map((reward, index) => (
-            <div key={reward.id} className={index === rewards.length - 1 ? 'col-span-2 lg:col-span-1' : 'col-span-1'}>
+            <div
+              key={reward.id}
+              className={cn(
+                'flex items-end justify-center',
+                index === rewards.length - 1 ? 'col-span-2 lg:col-span-1' : 'col-span-1',
+              )}
+            >
               <HowItWorksItem
                 key={reward.id}
                 icon={reward.icon}
                 title={reward.name}
                 description={reward.description}
-                className='w-auto p-0 lg:p-6'
+                className='w-auto p-0 md:w-full lg:p-6'
               />
             </div>
           ))}

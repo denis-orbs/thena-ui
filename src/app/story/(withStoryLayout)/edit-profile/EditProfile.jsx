@@ -60,7 +60,7 @@ export function EditProfile({ userInfo, updateUserInfo }) {
   return (
     <form onSubmit={handleUpdateProfile}>
       <div className='mt-[10px]'>
-        <Link className='text-gray-100 ' href='/story/dashboard'>
+        <Link className='text-gray-100 ' href='/story/chapters'>
           <ArrowBackwardIcon className='inline-block h-5 w-5 opacity-40' />
           <span className='opacity-40'>{t('Back')}</span>
         </Link>

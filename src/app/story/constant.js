@@ -10,5 +10,6 @@ export const TaskType = {
   Side: 'Side',
 }
 
-export const TaskTypeDailyTitle = 'Daily Swap-in'
-export const TaskTypeReferralTitle = 'Refer your friends'
+export const TaskDailyName = 'Daily Swap-in'
+export const TaskReferralName = 'Refer your friends'
+export const TaskTwitterAction = 'tweet'

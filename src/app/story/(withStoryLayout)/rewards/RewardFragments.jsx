@@ -14,49 +14,59 @@ export function RewardFragments() {
   const { campaignParticipantInfo: userInfo } = useTHEStory()
 
   return (
-    <div className='border-gradient-secondary w-full rounded-xl bg-neutral-900 p-[1px] lg:col-span-4'>
-      <div className='rounded-xl bg-neutral-900 p-4 lg:p-8'>
-        <TextHeading>{t('Mint Your NFT')}</TextHeading>
-        <div className='flex flex-col items-center justify-center'>
-          <Image className='my-8 h-auto w-full lg:w-[320px]' src='/images/NFT.png' width={961} height={961} />
+    <div className='border-gradient-secondary w-full rounded-xl  p-[1px] lg:col-span-4'>
+      <div className='rounded-xl bg-neutral-900 '>
+        <div className='p-4 lg:bg-[url("/images/test-2.png")] lg:bg-cover lg:bg-center lg:p-8'>
+          <TextHeading>{t('Mint Your NFT')}</TextHeading>
+          <div className='flex flex-col items-center justify-center'>
+            <div className=''>
+              <Image
+                alt='reward-nft'
+                className='my-8 h-auto w-full lg:w-[320px]'
+                src='/images/NFT.png'
+                width={961}
+                height={961}
+              />
+            </div>
 
-          <span>{`${t('Fragments Required')}: ${userInfo.totalFragments}/${TOTAL_FRAGMENTS}`}</span>
-        </div>
+            <span>{`${t('Fragments Required')}: ${userInfo.totalFragments}/${TOTAL_FRAGMENTS}`}</span>
+          </div>
 
-        <div className='4 mb-6 mt-3 inline-block h-3 w-full rounded-md bg-neutral-500'>
-          <div
-            style={{
-              width: `${userInfo.totalFragments / TOTAL_FRAGMENTS}%`,
-            }}
-            className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
-          />
-        </div>
+          <div className='4 mb-6 mt-3 inline-block h-3 w-full rounded-md bg-neutral-500'>
+            <div
+              style={{
+                width: `${(userInfo.totalFragments * 100) / TOTAL_FRAGMENTS}%`,
+              }}
+              className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+            />
+          </div>
 
-        <div className='flex flex-col items-center justify-between gap-4 rounded-xl border-[1px] border-primary-700 bg-neutral-800 p-4 lg:flex-row lg:gap-0 lg:p-6 '>
-          {userInfo.totalFragments !== TOTAL_FRAGMENTS && (
-            <>
-              <TextHeading className='font-archia text-2xl font-semibold'>{t('Mint an NFT')}</TextHeading>
-              <EmphasisButton className='w-full px-8 lg:w-auto' disabled>
-                {t('Claimed')}
-              </EmphasisButton>
-            </>
-          )}
+          <div className='flex flex-col items-center justify-between gap-4 rounded-xl border-[1px] border-primary-700 bg-neutral-800 p-4 lg:flex-row lg:gap-0 lg:p-6 '>
+            {userInfo.totalFragments !== TOTAL_FRAGMENTS && (
+              <>
+                <TextHeading className='font-archia text-2xl font-semibold'>{t('Mint an NFT')}</TextHeading>
+                <EmphasisButton className='w-full px-8 lg:w-auto' disabled>
+                  {t('Fragments missing')}
+                </EmphasisButton>
+              </>
+            )}
 
-          {userInfo.totalFragments === TOTAL_FRAGMENTS && !minted && (
-            <>
-              <TextHeading className='font-archia text-2xl font-semibold'>{t('You Won an NFT')}</TextHeading>
-              <PrimaryButton className='w-full px-8 lg:w-auto'>{t('Mint now')}</PrimaryButton>
-            </>
-          )}
+            {userInfo.totalFragments === TOTAL_FRAGMENTS && !minted && (
+              <>
+                <TextHeading className='font-archia text-2xl font-semibold'>{t('You Won an NFT')}</TextHeading>
+                <PrimaryButton className='w-full px-8 lg:w-auto'>{t('Mint now')}</PrimaryButton>
+              </>
+            )}
 
-          {userInfo.totalFragments === TOTAL_FRAGMENTS && minted && (
-            <>
-              <TextHeading className='font-archia text-2xl font-semibold'>{t('You Minted a New NFT')}</TextHeading>
-              <EmphasisButton className='w-full px-8 lg:w-auto' disabled>
-                {t('Minted')}
-              </EmphasisButton>
-            </>
-          )}
+            {userInfo.totalFragments === TOTAL_FRAGMENTS && minted && (
+              <>
+                <TextHeading className='font-archia text-2xl font-semibold'>{t('You Minted a New NFT')}</TextHeading>
+                <EmphasisButton className='w-full px-8 lg:w-auto' disabled>
+                  {t('Minted')}
+                </EmphasisButton>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

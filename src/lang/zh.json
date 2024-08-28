@@ -515,6 +515,7 @@
   "Earned points": "已赚取积分",
   "Tasks completed": "完成的任务",
   "[taskCompleted] / [totalTask] Tasks completed": "{taskCompleted} / {totalTask}  项任务已完成",
+  "[numberCompletedChapters] / [numberAvailableChapters] chapters completed": "{numberCompletedChapters} / {numberAvailableChapters} 已完成章节",
   "Chapters completed": "已完成章节",
   "Start task": "Start",
   "Next Chapter Available in": "下一个章节将开始于",
@@ -620,7 +621,6 @@
   "Use Custom Avatar": "自订头像",
   "Save Change": "保存变更",
   "Drag Drop File Here": "拖曳档案至此",
-  "More Coming": "更多即将到来！",
   "Successfully": "成功",
   "Your Wallet ID is not connected": "您的钱包 ID 尚未连结",
   "Countries": "国家",
@@ -652,5 +652,7 @@
   "FAQs": "FAQs",
   "Chapters": "Chapters",
   "Enter all details": "Enter all details",
-  "Search by Name": "Search by Name"
+  "Search by Name": "Search by Name",
+  "Fragments missing": "Fragments missing",
+  "The Fates Await": "The Fates Await…"
 }

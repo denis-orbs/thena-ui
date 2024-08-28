@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl'
+import { useMemo } from 'react'
 
 import { TextHeading } from '@/components/typography'
 
@@ -6,6 +7,12 @@ import { ChapterOverviewProcess } from './ChapterOverviewProcess'
 
 export function ChaptersOverview({ chapters }) {
   const t = useTranslations()
+
+  const numberAvailableChapters = useMemo(() => chapters.filter(chapter => chapter.available).length, [chapters])
+
+  if (!numberAvailableChapters) {
+    return <></>
+  }
 
   return (
     <div className='mt-[70px]'>

@@ -77,7 +77,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-5'>
           <div className='rounded-xl bg-neutral-800'>
             <Box className='flex flex-col gap-1  bg-neutral-800 p-3 pr-0  lg:p-3 lg:pr-3'>
-              <TextHeading className='text-lg'>{userInfo.rank ?? '-'}</TextHeading>
+              <TextHeading className='text-lg'>{userInfo.rank === null ? '-' : userInfo.rank + 1}</TextHeading>
               <TextSubHeading className='text-sm'>{t('Rank')}</TextSubHeading>
             </Box>
           </div>

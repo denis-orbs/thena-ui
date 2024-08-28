@@ -13,14 +13,20 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
 
   const nextAvailableChapterTimeStamp = useMemo(() => {
     const nextChapter = chapters.find(chapter => !chapter.available)
+    const lastAvailableChapter = chapters.findLast(chapter => chapter.available)
     if (nextChapter) {
       try {
         return isoDateToTimeStampSeconds(nextChapter.startTimestamp)
       } catch (error) {
         console.log(error)
       }
+    } else if (lastAvailableChapter) {
+      try {
+        return isoDateToTimeStampSeconds(lastAvailableChapter.endTimestamp)
+      } catch (error) {
+        console.log(error)
+      }
     }
-
     return 0
   }, [chapters])
 
@@ -45,6 +51,14 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
     return undefined
   }, [chapters, selectedChapterIndex])
 
+  const [numberCompletedChapters, numberAvailableChapters] = useMemo(
+    () => [
+      chapters.filter(chapter => chapter.isCompleted).length,
+      chapters.filter(chapter => chapter.available).length,
+    ],
+    [chapters],
+  )
+
   return (
     <div className='mt-[63px]'>
       <TextHeading className='block font-archia text-3xl font-semibold leading-9'>{t('Weekly Tasks')}</TextHeading>
@@ -68,6 +82,8 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
               preChapterIndex={preChapterIndex}
               nextChapterIndex={nextChapterIndex}
               setSelectedChapterIndex={setSelectedChapterIndex}
+              numberCompletedChapters={numberCompletedChapters}
+              numberAvailableChapters={numberAvailableChapters}
             />
           )}
         </div>

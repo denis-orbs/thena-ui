@@ -14,11 +14,11 @@ import { WeeklyTasks } from './WeeklyTasks'
 export function ProfilePage({ address }) {
   const t = useTranslations()
   const { dailySwaps, campaignChapters: chapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(address)
-  const [selectedChapterIndex, setSelectedChapterIndex] = useState(0)
+  const [selectedChapterIndex, setSelectedChapterIndex] = useState(1)
 
   useEffect(() => {
     if (chapters) {
-      const index = chapters.findLast(chapter => chapter.available)?.index ?? 0
+      const index = chapters.findLast(chapter => chapter.available)?.index ?? 1
       setSelectedChapterIndex(index)
     }
   }, [chapters])
@@ -36,8 +36,11 @@ export function ProfilePage({ address }) {
     [userReferral],
   )
 
-  const [completedChapter, totalChapter] = useMemo(
-    () => [chapters?.filter(chapter => chapter.isCompleted)?.length, chapters?.length],
+  const [numberCompletedChapters, numberAvailableChapters] = useMemo(
+    () => [
+      chapters.filter(chapter => chapter.isCompleted).length,
+      chapters.filter(chapter => chapter.available).length,
+    ],
     [chapters],
   )
 
@@ -49,8 +52,8 @@ export function ProfilePage({ address }) {
     <div className='mt-10 space-y-10'>
       <UserInfo
         userInfo={userInfo}
-        completedChapter={completedChapter}
-        totalChapter={totalChapter}
+        completedChapter={numberCompletedChapters}
+        totalChapter={numberAvailableChapters}
         totalSuccessfulReferral={totalSuccessfulReferral}
       />
       <DailySwap dailySwaps={dailySwaps} />
@@ -61,7 +64,7 @@ export function ProfilePage({ address }) {
       />
       <ChaptersOverview chapters={chapters} />
       <div className='mt-4 flex justify-center lg:mt-10'>
-        <span className='font-archia text-3xl font-normal'>{t('More Coming')}</span>
+        <span className='font-archia text-3xl font-normal'>{t('The Fates Await')}</span>
       </div>
     </div>
   )

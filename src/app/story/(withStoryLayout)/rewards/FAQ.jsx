@@ -69,7 +69,7 @@ export function FAQ() {
                 <ExpandDownIcon className='h-5 w-5 cursor-pointer lg:hidden' />
               )}
             </div>
-            <span className={cn('text-base text-neutral-300 md:block', expansions[index] ? 'block' : 'hidden')}>
+            <span className={cn('text-base text-neutral-300 lg:block ', expansions[index] ? 'block ' : 'hidden')}>
               {faq.answer}
             </span>
             {index !== faqs.length - 1 ? (

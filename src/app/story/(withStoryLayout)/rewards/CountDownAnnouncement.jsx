@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import { useEffect, useMemo, useState } from 'react'
 
 export function CountDownAnnouncement({ timestamp }) {
-  console.log(timestamp)
   const [countDown, setCountDown] = useState(timestamp * 1000 - Date.now())
 
   const days = useMemo(() => Math.floor(countDown / (1000 * 60 * 60 * 24)), [countDown])

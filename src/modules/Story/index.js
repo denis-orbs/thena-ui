@@ -75,7 +75,6 @@ export const V4_UPDATE_PARTICIPANT_PROFILE = gql`
       country
       email
       referralCode
-      referralText
       xProfileUsername
     }
   }
@@ -231,13 +230,14 @@ const fetchCampaignChapters = async () => {
 
 const V4_CAMPAIGN_TASKS = gql`
   query V4_CAMPAIGN_TASKS {
-    campaignTasks {
-      id
+    campaignTasks(where: { isHidden_isNull: false }) {
+      actionHandle
       chapter
+      id
       index
       name
-      rewardAmount
       rewardType
+      rewardAmount
       type
     }
   }
@@ -305,7 +305,7 @@ const useFetchChaptersAndTasks = id => {
     ['fetchCampaignChapters', id],
     () => fetchCampaignChapters(),
     {
-      refreshInterval: 60000,
+      refreshInterval: 30000,
     },
   )
 
@@ -313,15 +313,15 @@ const useFetchChaptersAndTasks = id => {
     ['fetchCampaignTasks', id],
     () => fetchCampaignTasks(),
     {
-      refreshInterval: 60000,
+      refreshInterval: 30000,
     },
   )
 
-  const { data: campaignCompletedTask = [], isLoading: isLoadingCompletedTask } = useSWR(
+  const { data: campaignCompletedTasks = [], isLoading: isLoadingCompletedTask } = useSWR(
     ['fetchCampaignCompletedTasks', id],
     () => fetchCampaignCompletedTasks(id),
     {
-      refreshInterval: 60000,
+      refreshInterval: 30000,
     },
   )
   const final = useMemo(() => {
@@ -331,22 +331,49 @@ const useFetchChaptersAndTasks = id => {
     }
 
     // check completed chapters and tasks
-    // filter chapter task with type [Main]
+    // filter chapter task with type [Main], [Side]
     const campaignChaptersDetails = campaignChapters.map(chapter => {
+      const startTime = new Date(chapter?.startTimestamp ?? 0)
+      const endTime = new Date(chapter?.endTimestamp ?? 0)
+
+      const currentChapterCompletedTasks = campaignCompletedTasks.filter(completedTask => {
+        const completedTime = new Date(completedTask.timestamp)
+        return completedTime >= startTime && completedTime <= endTime
+      })
+
       const tasks = campaignTasks
         .filter(task => (+task.chapter === chapter.index && task.type === TaskType.Main) || task.type === TaskType.Side)
         .map(task => {
-          const isCompleted = !!campaignCompletedTask.find(completedTask => completedTask.campaignTask.id === task.id)
+          let isCompleted = false
+
+          if (task.type === TaskType.Main) {
+            isCompleted = !!currentChapterCompletedTasks.find(
+              completedTask => completedTask.campaignTask.id === task.id,
+            )
+          }
 
           return {
             ...task,
             isCompleted,
           }
         })
+        .sort((task1, task2) => {
+          const orderType = [TaskType.Main, TaskType.Side]
+
+          const t1Type = task1.type
+          const t2Type = task2.type
+          if (orderType.indexOf(t1Type) > orderType.indexOf(t2Type)) return 1
+          if (orderType.indexOf(t1Type) < orderType.indexOf(t2Type)) return -1
+
+          const t1TIndex = task1.index
+          const t2Index = task2.index
+          if (t1TIndex > t2Index) return 1
+          if (t1TIndex < t2Index) return -1
+          return 0
+        })
 
       const isCompleted = tasks.every(task => task.isCompleted)
 
-      const startTime = new Date(chapter.startTimestamp)
       const available = currentDate >= startTime
       return {
         ...chapter,
@@ -363,9 +390,9 @@ const useFetchChaptersAndTasks = id => {
       .filter(task => task.type === TaskType.Daily)
       .map(task => {
         const startTime = new Date(currentChapter?.startTimestamp ?? 0)
-        const endTime = new Date(currentChapter?.startTimestamp ?? 0)
+        const endTime = new Date(currentChapter?.endTimestamp ?? 0)
 
-        const isCompleted = !!campaignCompletedTask.find(completedTask => {
+        const isCompleted = !!campaignCompletedTasks.find(completedTask => {
           const completedTime = new Date(completedTask.timestamp)
           return completedTask.campaignTask.id === task.id && completedTime > startTime && completedTime < endTime
         })
@@ -396,7 +423,7 @@ const useFetchChaptersAndTasks = id => {
     isLoadingChapter,
     campaignTasks,
     isLoadingTask,
-    campaignCompletedTask,
+    campaignCompletedTasks,
     isLoadingCompletedTask,
   ])
 
