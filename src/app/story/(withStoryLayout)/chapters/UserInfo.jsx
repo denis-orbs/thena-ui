@@ -1,6 +1,5 @@
 'use client'
 
-import localizedFormat from 'dayjs/plugin/localizedFormat'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -10,17 +9,20 @@ import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import NextImage from '@/components/image/NextImage'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import dayjs from '@/lib/dateFormat'
+import { LOCALES } from '@/constant'
+import { useCommonDayJs } from '@/lib/commonDayjs'
 import { cn, formatAddress } from '@/lib/utils'
+import { useLocaleSettings } from '@/state/settings/hooks'
 
 import { ProfileButton } from './ProfileButton'
 import { RewardIconTooltip } from './RewardIconTooltip'
 import { RewardType } from '../../constant'
 
-dayjs.extend(localizedFormat)
-
 export function UserInfo({ userInfo, completedChapter, totalChapter, totalSuccessfulReferral }) {
   const t = useTranslations()
+  const { locale } = useLocaleSettings()
+  const commonDayjs = useCommonDayJs()
+
   return (
     <>
       <Box className='space-y-4'>
@@ -56,8 +58,11 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
                   </TextHeading>
                 </div>
                 <TextSubHeading className='text-sm'>
-                  {t('Joined')} {dayjs(userInfo.firstInteractAt).tz().format('MMM D, YYYY')} {`${t('at')} `}
-                  {dayjs(userInfo.firstInteractAt).tz().format('h:mma')}
+                  {locale === LOCALES.en
+                    ? `${t('Joined')} ${commonDayjs(userInfo.firstInteractAt).format('MMM D, YYYY')} at ${commonDayjs(
+                        userInfo.firstInteractAt,
+                      ).format('h:mma')}`
+                    : `${commonDayjs(userInfo.firstInteractAt).format('YYYY 年 M 月 D 日a h:mm')} ${t('Joined')}`}
                 </TextSubHeading>
                 <div className='flex flex-col gap-1 md:flex-row'>
                   {userInfo.xProfileUsername && (
