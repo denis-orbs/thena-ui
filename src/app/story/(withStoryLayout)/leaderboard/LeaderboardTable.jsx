@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import Table from '@/components/table'
 import { useWindowSize } from '@/hooks/useWindowSize'
@@ -41,6 +41,42 @@ const sortOptions = [
   },
 ]
 
+function ThenianElement({ data, windowSize }) {
+  return (
+    <div className='flex items-center'>
+      <div className='mr-2 flex h-9 w-9 items-center justify-center rounded-[50%] bg-neutral-600 text-center md:mr-3'>
+        <Image src={data?.avatarUrl ?? Avatar} className='rounded-[50%]' width={36} height={36} alt='Avatar' />
+      </div>
+      <div
+        className={cn(
+          'break-words text-[14px] lg:text-[16px]',
+          windowSize.width > 600 ? 'max-md:max-w-[calc(100%/2)]' : '',
+        )}
+      >
+        {windowSize.width > 600 ? data.id : sliceAddress(data.id)}
+      </div>
+    </div>
+  )
+}
+
+function RankElement({ data }) {
+  switch (data.rank) {
+    case 0: {
+      return <FirstPrizeIcon className='size-7' />
+    }
+    case 1: {
+      return <SecondPrizeIcon className='size-7' />
+    }
+    case 2: {
+      return <ThirdPrizeIcon className='size-7' />
+    }
+
+    default: {
+      return data.rank === null ? <>-</> : <>{data.rank + 1}</>
+    }
+  }
+}
+
 export default function LeaderboardTable({ userInfo }) {
   const t = useTranslations()
   const windowSize = useWindowSize()
@@ -48,14 +84,29 @@ export default function LeaderboardTable({ userInfo }) {
   const [sort, setSort] = useState(sortOptions[0])
   const [currentPage, setCurrentPage] = useState(1)
   const [data, setData] = useState()
+  const [rowDefault, setRowDefault] = useState()
 
-  useMemo(async () => {
-    if (userInfo) {
+  useEffect(() => {
+    const fetData = async () => {
       const res = await fetchParticipants(100)
 
       setData(res)
     }
-  }, [userInfo])
+    if (userInfo) {
+      fetData()
+    }
+  }, [userInfo, windowSize])
+
+  useEffect(() => {
+    if (userInfo) {
+      setRowDefault({
+        id: userInfo.id,
+        rank: userInfo.rank + 1,
+        thenian: <ThenianElement data={userInfo} windowSize={windowSize} />,
+        totalPoints: userInfo.totalPoints,
+      })
+    }
+  }, [userInfo, windowSize])
 
   const sortedData = useMemo(
     () =>
@@ -82,69 +133,12 @@ export default function LeaderboardTable({ userInfo }) {
   )
 
   const finalData = useMemo(() => {
-    let final = sortedData
-
-    if (userInfo && userInfo.rank > 10) {
-      if (final[0].id === userInfo.rank) {
-        final.shift()
-      }
-      final.unshift(userInfo)
-    }
-
-    final = final.map(item => {
-      const thenian = (
-        <div className='flex items-center'>
-          <div className='mr-2 flex h-9 w-9 items-center justify-center rounded-[50%] bg-neutral-600 text-center md:mr-3'>
-            <Image src={item?.avatarUrl ?? Avatar} className='rounded-[50%]' width={36} height={36} alt='Avatar' />
-          </div>
-          <div
-            className={cn(
-              'break-words text-[14px] lg:text-[16px]',
-              windowSize.width > 600 ? 'max-md:max-w-[calc(100%/2)]' : '',
-            )}
-          >
-            {windowSize.width > 600 ? item.id : sliceAddress(item.id)}
-          </div>
-        </div>
-      )
-
-      if (item.rank === 0) {
-        console.log('0 item', item.rank)
-        return {
-          id: item.id,
-          rank: <FirstPrizeIcon className='size-7' />,
-          thenian,
-          totalPoints: item.totalPoints,
-        }
-      }
-      if (item.rank === 1) {
-        return {
-          id: item.id,
-          rank: <SecondPrizeIcon className='size-7' />,
-          thenian,
-          totalPoints: item.totalPoints,
-        }
-      }
-      if (item.rank === 2) {
-        return {
-          id: item.id,
-          rank: <ThirdPrizeIcon className='size-7' />,
-          thenian,
-          totalPoints: item.totalPoints,
-        }
-      }
-
-      if (item.rank === null) {
-        item.rank = '-'
-      }
-
-      return {
-        id: item.id,
-        rank: item.rank + 1,
-        thenian,
-        totalPoints: item.totalPoints,
-      }
-    })
+    const final = sortedData.map(item => ({
+      id: item.id,
+      rank: <RankElement data={item} />,
+      thenian: <ThenianElement data={item} windowSize={windowSize} />,
+      totalPoints: item.totalPoints,
+    }))
     return final
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(sortedData), windowSize])
@@ -165,6 +159,7 @@ export default function LeaderboardTable({ userInfo }) {
         bgHightLight='bg-neutral-800'
         loading={!data}
         pageSize={10}
+        defaultHead={userInfo.rank > 9 && currentPage === 1 ? rowDefault : undefined}
       />
     </div>
   )
