@@ -12,6 +12,18 @@ import { cn, sliceAddress } from '@/lib/utils'
 import { fetchParticipants } from '@/modules/Story'
 import { FirstPrizeIcon, InfoCircleGradient, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 
+function PointHead() {
+  const t = useTranslations()
+  return (
+    <div className='flex flex-row'>
+      <span>{t('Point')}</span>
+      <span>
+        <InfoCircleGradient className='ml-1 h-4 w-4 text-neutral-400' />
+      </span>
+    </div>
+  )
+}
+
 const sortOptions = [
   {
     label: '#',
@@ -28,14 +40,7 @@ const sortOptions = [
     width: 'lg:w-[80%]',
   },
   {
-    label: (
-      <div className='flex flex-row'>
-        <span>Point</span>
-        <span>
-          <InfoCircleGradient className='ml-1 h-4 w-4 text-neutral-400' />
-        </span>
-      </div>
-    ),
+    label: <PointHead />,
     value: 'totalPoints',
     isDesc: true,
     width: 'w-[10%]',
