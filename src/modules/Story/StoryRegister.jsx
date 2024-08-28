@@ -30,7 +30,7 @@ const V4_REGISTER_CAMPAIGN = gql`
   }
 `
 
-export default function StoryRegister({ isRegistered, isUpcoming }) {
+export default function StoryRegister({ isRegistered }) {
   const { setIsRegistered } = useContext(THEStoryContext)
   const { account } = useWallet()
   const t = useTranslations()
@@ -131,15 +131,9 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
             <p className='mx-auto mb-10 max-w-[400px] text-center font-archia text-[26px] font-semibold md:text-[30px]'>
               {t('You Have Successfully Registered for THE Story of THENA Adventure')}
             </p>
-            <PrimaryButton
-              className='w-full'
-              disabled={isRegistered && isUpcoming}
-              onClick={() => router.push('/story/dashboard')}
-            >
-              {t('Go to dashboard')}
-              <ChevronRightIcon
-                className={cn('h-4 w-4', isRegistered && isUpcoming ? 'opacity-[0.1]' : 'text-white')}
-              />
+            <PrimaryButton className='w-full' onClick={() => router.push('/story/dashboard')}>
+              {t('Go to Chapters page')}
+              <ChevronRightIcon className={cn('h-4 w-4 text-white')} />
             </PrimaryButton>
           </div>
         ) : (
@@ -198,7 +192,7 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
               </div>
               {account ? (
                 <PrimaryButton type='submit' disabled={!validateForm()} className='w-full'>
-                  {t('Join now')}
+                  {validateForm() ? t('Start Your Chapter') : t('Enter all details')}
                 </PrimaryButton>
               ) : (
                 <ConnectButton className='w-full' />

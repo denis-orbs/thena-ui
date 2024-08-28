@@ -509,7 +509,6 @@
   "Select Country": "Select Country",
   "Your Email": "Your Email",
   "Email Address": "Email Address",
-  "Join now": "Join now",
   "Home": "Home",
   "THE Story": "THE Story",
   "Earned fragments": "Earned fragments",
@@ -589,7 +588,7 @@
   "Embark on The Story of THENA": "Embark on The Story of",
   "Over 8 epic weeks": "Over 8 epic weeks, conquer quests, collect special artifacts, and ascend the leaderboard to claim your share of over $30,000 in rewards. Gather all the pieces to mint an exclusive NFT at the journey’s end.",
   "You Have Successfully Registered for THE Story of THENA Adventure": "You Have Successfully Registered for THE Story of THENA Adventure!",
-  "Go to dashboard": "Go to dashboard",
+  "Go to Chapters page": "Go to Chapters page",
   "Become a Thenian": "Become a Thenian",
   "Avatar": "Avatar",
   "Avatar description": "Edit icon on hover to trigger upload.",
@@ -633,6 +632,7 @@
   "#": "#",
   "Reach Top 100 After Second Chapter": "Reach Top 100 After Second Chapter",
   "Top 100 Thenians will receive rewards after second chapter via raffle method": "Top 100 Thenians will receive rewards after second chapter via raffle method.",
+  "Ascend the leaderboard by gathering": "Ascend the leaderboard by gathering points through daily swaps, referrals, and completing tasks. The earlier you embark on your journey, the greater your chance to secure top rewards!",
   "Reward description": "Complete tasks, rise on the leaderboard, and mint exclusive NFT at the end of THE Story.",
   "Coming soon": "Coming Soon",
   "Rewards in USD": "Rewards in USD",
@@ -651,5 +651,6 @@
   "Mint now": "Mint now",
   "Minted": "Minted",
   "FAQs": "FAQs",
-  "Chapters": "Chapters"
+  "Chapters": "Chapters",
+  "Enter all details": "Enter all details"
 }

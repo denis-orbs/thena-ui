@@ -6,6 +6,7 @@ import ArrowDownIcon from '~/svgs/arrow-down.svg'
 import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
 import ArrowLeftIcon from '~/svgs/arrow-left.svg'
 import ArrowRightIcon from '~/svgs/arrow-right.svg'
+import ArrowsDownIcon from '~/svgs/arrows-down.svg'
 import AwardIcon from '~/svgs/award.svg'
 import BankIcon from '~/svgs/bank.svg'
 import CalendarIcon from '~/svgs/calendar.svg'
@@ -65,6 +66,8 @@ import SendIcon from '~/svgs/send.svg'
 import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
 import ShareIcon from '~/svgs/share.svg'
+import SoundOffIcon from '~/svgs/sound-off.svg'
+import SoundOnIcon from '~/svgs/sound-on.svg'
 import SplitIcon from '~/svgs/split.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 import StarLineSmallIcon from '~/svgs/star-line-small.svg'
@@ -95,6 +98,7 @@ export {
   ArrowForwardSmallIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
+  ArrowsDownIcon,
   AwardIcon,
   BankIcon,
   CalendarIcon,
@@ -155,6 +159,8 @@ export {
   SettingsIcon,
   ShadowIcon,
   ShareIcon,
+  SoundOffIcon,
+  SoundOnIcon,
   SplitIcon,
   StarLineLargeIcon,
   StarLineSmallIcon,

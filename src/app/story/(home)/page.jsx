@@ -19,7 +19,7 @@ function StoryPage() {
               : ''
         }`}
       />
-      <section className={`layout-container relative ${isUpcoming ? 'layout-top' : 'mt-[128px] lg:mt-[176px]'}`}>
+      <section className={`layout-container relative ${!isRegistered ? 'layout-top' : 'mt-[128px] lg:mt-[176px]'}`}>
         <StoryHome isRegistered={isRegistered} isUpcoming={isUpcoming} />
       </section>
     </div>

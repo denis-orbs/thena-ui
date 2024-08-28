@@ -430,7 +430,8 @@ function Header() {
     return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
   }, [pathname, push, networkId])
 
-  const storySubmenus = useMemo(
+  // isRegister, !isUpcoming
+  const storySubmenus1 = useMemo(
     () =>
       compact([
         {
@@ -466,6 +467,28 @@ function Header() {
           active: pathname === '/story/rewards',
           onClickHandler: () => {
             push('/story/rewards')
+          },
+        },
+      ]),
+    [pathname, push, t],
+  )
+
+  // isRegister && isUpcoming
+  const storySubmenus2 = useMemo(
+    () =>
+      compact([
+        {
+          label: t('Home'),
+          active: pathname === '/story',
+          onClickHandler: () => {
+            push('/story')
+          },
+        },
+        {
+          label: t('Chapters'),
+          active: pathname === '/story/chapters',
+          onClickHandler: () => {
+            push('/story/chapters')
           },
         },
       ]),
@@ -655,9 +678,10 @@ function Header() {
           <Tabs data={submenus} size={SizeTypes.Medium} />
         </div>
       )}
-      {pathname.startsWith('/story') && !isUpcoming && isRegistered && (
+      {pathname.startsWith('/story') && isRegistered && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
-          <Tabs data={storySubmenus} size={SizeTypes.Medium} />
+          {!isUpcoming && <Tabs data={storySubmenus1} size={SizeTypes.Medium} />}
+          {isUpcoming && <Tabs data={storySubmenus2} size={SizeTypes.Medium} />}
         </div>
       )}
       <Script
