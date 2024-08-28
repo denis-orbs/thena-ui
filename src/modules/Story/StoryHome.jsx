@@ -37,7 +37,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
 
   const handleScroll = () => {
     window.scrollBy({
-      top: registerFormRef.current.getBoundingClientRect().top - 200,
+      top: registerFormRef.current.getBoundingClientRect().top - 170,
       left: 0,
       behavior: 'smooth',
     })
