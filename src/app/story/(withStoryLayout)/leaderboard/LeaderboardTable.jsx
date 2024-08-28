@@ -1,5 +1,6 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
@@ -83,65 +84,40 @@ export default function LeaderboardTable({ userInfo }) {
 
   const [sort, setSort] = useState(sortOptions[0])
   const [currentPage, setCurrentPage] = useState(1)
-  const [data, setData] = useState()
+  // const [data, setData] = useState()
   const [rowDefault, setRowDefault] = useState()
 
-  useEffect(() => {
-    const fetData = async () => {
-      const res = await fetchParticipants(100)
-
-      setData(res)
-    }
-    if (userInfo) {
-      fetData()
-    }
-  }, [userInfo, windowSize])
+  const { data } = useQuery({
+    queryKey: ['getParticipants', userInfo],
+    queryFn: () => fetchParticipants(100),
+    refetchInterval: 30000,
+    enabled: Boolean(userInfo),
+    gcTime: 0,
+  })
 
   useEffect(() => {
     if (userInfo) {
       setRowDefault({
         id: userInfo.id,
-        rank: userInfo.rank + 1,
+        rank: <RankElement data={userInfo} />,
         thenian: <ThenianElement data={userInfo} windowSize={windowSize} />,
         totalPoints: userInfo.totalPoints,
       })
     }
   }, [userInfo, windowSize])
 
-  const sortedData = useMemo(
+  const finalData = useMemo(
     () =>
       !data
         ? []
-        : data.sort((a, b) => {
-            let res
-            switch (sort.value) {
-              case 'rank':
-                res = (a.rank - b.rank) * (sort.isDesc ? -1 : 1)
-                break
-              case 'thenian':
-                res = a.id.localeCompare(b.id) * (sort.isDesc ? -1 : 1)
-                break
-              case 'totalPoints':
-                res = (a.totalPoints - b.totalPoints) * (sort.isDesc ? -1 : 1)
-                break
-              default:
-                break
-            }
-            return res
-          }),
-    [data, sort],
+        : data.map(item => ({
+            id: item.id,
+            rank: <RankElement data={item} />,
+            thenian: <ThenianElement data={item} windowSize={windowSize} />,
+            totalPoints: item.totalPoints,
+          })),
+    [data, windowSize],
   )
-
-  const finalData = useMemo(() => {
-    const final = sortedData.map(item => ({
-      id: item.id,
-      rank: <RankElement data={item} />,
-      thenian: <ThenianElement data={item} windowSize={windowSize} />,
-      totalPoints: item.totalPoints,
-    }))
-    return final
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(sortedData), windowSize])
 
   return (
     <div className='mb-[60.15px] rounded-xl bg-neutral-900'>
@@ -149,9 +125,9 @@ export default function LeaderboardTable({ userInfo }) {
       <Table
         data={finalData}
         className='w-full bg-neutral-900'
-        sortOptions={sortOptions}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
+        sortOptions={sortOptions}
         sort={sort}
         setSort={setSort}
         tableBasic
@@ -159,7 +135,7 @@ export default function LeaderboardTable({ userInfo }) {
         bgHightLight='bg-neutral-800'
         loading={!data}
         pageSize={10}
-        defaultHead={userInfo.rank > 9 && currentPage === 1 ? rowDefault : undefined}
+        defaultHead={(userInfo.rank > 9 || userInfo.rank === null) && currentPage === 1 ? rowDefault : undefined}
       />
     </div>
   )

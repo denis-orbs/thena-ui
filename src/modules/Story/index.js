@@ -206,7 +206,7 @@ const V4_CAMPAIGN_CHAPTERS = gql`
 `
 const V4_GET_CAMPAIGN_PARTICIPANTS = gql`
   query V4_GET_CAMPAIGN_PARTICIPANTS($limit: Int!) {
-    campaignParticipants(limit: $limit, orderBy: rank_ASC) {
+    campaignParticipants(limit: $limit, orderBy: [totalPoints_DESC, createdAt_ASC]) {
       country
       email
       id
@@ -438,7 +438,20 @@ export const fetchParticipantById = async id_eq => {
 
 const V4_REGISTER_CAMPAIGN = gql`
   mutation V4_REGISTER_CAMPAIGN($evmAddress: String!, $email: String!, $country: String!, $referralCode: String = "") {
-    registerCampaign(input: { evmAddress: $evmAddress, email: $email, country: $country, referralCode: $referralCode })
+    registerCampaign(
+      input: { evmAddress: $evmAddress, email: $email, country: $country, referralCode: $referralCode }
+    ) {
+      country
+      email
+      id
+      rank
+      rankFirstTwoChapters
+      referralCode
+      avatarUrl
+      totalFragments
+      totalPoints
+      xProfileUsername
+    }
   }
 `
 export const useRegisterToTHEStory = () => {

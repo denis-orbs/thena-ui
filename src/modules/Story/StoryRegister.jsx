@@ -24,7 +24,7 @@ const initialFormState = {
 }
 
 export default function StoryRegister({ isRegistered }) {
-  const { setIsRegistered } = useContext(THEStoryContext)
+  const { setIsRegistered, setCampaignParticipantInfo } = useContext(THEStoryContext)
   const { account } = useWallet()
   const t = useTranslations()
   const searchParams = useSearchParams()
@@ -78,7 +78,7 @@ export default function StoryRegister({ isRegistered }) {
             evmAddress: account,
             referralCode: searchParams.get('ref'),
           })
-          // TODO: Set campaign user info
+          setCampaignParticipantInfo(res)
           setIsRegistered(true)
         }
       },
@@ -94,7 +94,7 @@ export default function StoryRegister({ isRegistered }) {
             <p className='mx-auto mb-10 max-w-[400px] text-center font-archia text-[26px] font-semibold md:text-[30px]'>
               {t('You Have Successfully Registered for THE Story of THENA Adventure')}
             </p>
-            <PrimaryButton className='w-full' onClick={() => router.push('/story/dashboard')}>
+            <PrimaryButton className='w-full' onClick={() => router.push('/story/chapters')}>
               {t('Go to Chapters page')}
               <ChevronRightIcon className={cn('h-4 w-4 text-white')} />
             </PrimaryButton>
