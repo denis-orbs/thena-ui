@@ -111,8 +111,10 @@ function Table({
   limitPage = undefined,
   enabledRedirectOnClickSort = false,
   hightLightIndex = undefined,
+  hightLightById = undefined,
   showPopoverPagination = false,
   bgHightLight = 'bg-neutral-500',
+  defaultHead = undefined,
 }) {
   const t = useTranslations()
   const pathname = usePathname()
@@ -262,24 +264,57 @@ function Table({
                   </td>
                 </tr>
               )}
-              {!loading &&
-                (totalItems ? data : data.slice((currentPage - 1) * pageSize, currentPage * pageSize)).map(
-                  (ele, eleIdx) => (
-                    <tr
-                      key={`table-row-${eleIdx}`}
-                      id={`table-row-${eleIdx}`}
-                      className={eleIdx === hightLightIndex ? bgHightLight : ''}
-                    >
+              {!loading && (
+                <>
+                  {defaultHead && (
+                    <tr className={bgHightLight}>
                       {sortOptions.map((cell, cellIdx) => (
                         <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
                           <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
-                            {ele[cell.value]}
+                            {defaultHead[cell.value]}
                           </TableCell>
                         </td>
                       ))}
                     </tr>
-                  ),
-                )}
+                  )}
+                  {(totalItems ? data : data.slice((currentPage - 1) * pageSize, currentPage * pageSize)).map(
+                    (ele, eleIdx) => {
+                      if (hightLightById) {
+                        return (
+                          <tr
+                            key={`table-row-${eleIdx}`}
+                            id={`table-row-${eleIdx}`}
+                            className={ele.id === hightLightById ? bgHightLight : ''}
+                          >
+                            {sortOptions.map((cell, cellIdx) => (
+                              <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
+                                <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                                  {ele[cell.value]}
+                                </TableCell>
+                              </td>
+                            ))}
+                          </tr>
+                        )
+                      }
+                      return (
+                        <tr
+                          key={`table-row-${eleIdx}`}
+                          id={`table-row-${eleIdx}`}
+                          className={eleIdx === hightLightIndex ? bgHightLight : ''}
+                        >
+                          {sortOptions.map((cell, cellIdx) => (
+                            <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
+                              <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                                {ele[cell.value]}
+                              </TableCell>
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    },
+                  )}
+                </>
+              )}
             </tbody>
           </table>
         ) : (

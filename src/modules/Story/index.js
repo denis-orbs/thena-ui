@@ -6,7 +6,7 @@ import { TaskType } from '@/app/story/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
-import { successToast } from '@/lib/notify'
+import { errorToast, successToast } from '@/lib/notify'
 
 const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
   query V4_CAMPAIGN_PARTICIPANT_BY_ID($id_eq: String = "") {
@@ -434,4 +434,61 @@ export const fetchParticipantById = async id_eq => {
     console.trace(error)
     return null
   }
+}
+
+const V4_REGISTER_CAMPAIGN = gql`
+  mutation V4_REGISTER_CAMPAIGN($evmAddress: String!, $email: String!, $country: String!, $referralCode: String = "") {
+    registerCampaign(input: { evmAddress: $evmAddress, email: $email, country: $country, referralCode: $referralCode })
+  }
+`
+export const useRegisterToTHEStory = () => {
+  const { signWallet } = useSignWallet()
+
+  const registerFn = useCallback(async ({ evmAddress, email, country, referralCode = '' }) => {
+    try {
+      const { registerCampaign } = await v4Client.request(
+        V4_REGISTER_CAMPAIGN,
+        {
+          evmAddress,
+          email,
+          country,
+          referralCode,
+        },
+        {
+          authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+        },
+      )
+
+      if (registerCampaign) {
+        successToast('Successfully')
+        return registerCampaign
+      }
+
+      errorToast('Error')
+      return false
+    } catch (e) {
+      if (e?.response && e?.response?.errors && e?.response?.errors.length > 0) {
+        const error = e?.response?.errors[0]
+        if (
+          error?.extensions?.exception?.validationErrors &&
+          error?.extensions?.exception?.validationErrors.length > 0
+        ) {
+          const validator = error?.extensions?.exception?.validationErrors[0]
+          errorToast(validator?.constraints?.isEmail)
+        } else if (error?.extensions?.exception?.detail) {
+          errorToast(error?.extensions?.exception?.detail)
+        } else {
+          errorToast(error?.message)
+        }
+      }
+      return false
+    }
+  }, [])
+
+  const registerToTHEStory = useCallback(
+    (params, callOnSuccess) => actionWithAuthentication(registerFn, signWallet, params, callOnSuccess),
+    [registerFn, signWallet],
+  )
+
+  return { registerToTHEStory }
 }

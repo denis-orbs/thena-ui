@@ -2,8 +2,9 @@ import React from 'react'
 
 import Loading from '@/app/loading'
 
-export default function VideoBanner({ src, width, height, className, videoRef }) {
+export default function VideoBanner({ src, width, height, className, videoRef, muted = true }) {
   return src ? (
+    // eslint-disable-next-line jsx-a11y/media-has-caption
     <video
       ref={videoRef}
       className={className}
@@ -11,7 +12,7 @@ export default function VideoBanner({ src, width, height, className, videoRef })
       height={height}
       loop
       autoPlay
-      muted
+      muted={muted}
       onError={() => console.error('Video failed to load')}
     >
       <source src={src} type='video/mp4' />

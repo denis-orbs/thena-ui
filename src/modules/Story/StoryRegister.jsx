@@ -1,4 +1,3 @@
-import { gql } from 'graphql-request'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
@@ -9,12 +8,12 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import { THEStoryContext } from '@/context/THEStoryContext'
-import { v4Client } from '@/lib/graphql'
-import { errorToast, successToast } from '@/lib/notify'
+import { errorToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import { ChevronRightIcon, SuccessIcon } from '@/svgs'
 
+import { useRegisterToTHEStory } from '.'
 import SelectCountry from './SelectCountry'
 
 const initialFormState = {
@@ -24,13 +23,7 @@ const initialFormState = {
   referralCode: '',
 }
 
-const V4_REGISTER_CAMPAIGN = gql`
-  mutation V4_REGISTER_CAMPAIGN($evmAddress: String!, $email: String!, $country: String!, $referralCode: String = "") {
-    registerCampaign(input: { evmAddress: $evmAddress, email: $email, country: $country, referralCode: $referralCode })
-  }
-`
-
-export default function StoryRegister({ isRegistered, isUpcoming }) {
+export default function StoryRegister({ isRegistered }) {
   const { setIsRegistered } = useContext(THEStoryContext)
   const { account } = useWallet()
   const t = useTranslations()
@@ -43,40 +36,7 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
     referralCode: searchParams.get('ref') || '',
   })
 
-  const registerFn = async ({ evmAddress, email, country, referralCode = '' }) => {
-    try {
-      const { registerCampaign } = await v4Client.request(V4_REGISTER_CAMPAIGN, {
-        evmAddress,
-        email,
-        country,
-        referralCode,
-      })
-
-      if (registerCampaign) {
-        successToast('Successfully')
-        return registerCampaign
-      }
-
-      errorToast('Error')
-      return false
-    } catch (e) {
-      if (e?.response && e?.response?.errors && e?.response?.errors.length > 0) {
-        const error = e?.response?.errors[0]
-        if (
-          error?.extensions?.exception?.validationErrors &&
-          error?.extensions?.exception?.validationErrors.length > 0
-        ) {
-          const validator = error?.extensions?.exception?.validationErrors[0]
-          errorToast(validator?.constraints?.isEmail)
-        } else if (error?.extensions?.exception?.detail) {
-          errorToast(error?.extensions?.exception?.detail)
-        } else {
-          errorToast(error?.message)
-        }
-      }
-      return false
-    }
-  }
+  const { registerToTHEStory } = useRegisterToTHEStory()
 
   const validateForm = useCallback(() => {
     if (formState.country && formState.email && formState.evmAddress) return true
@@ -106,20 +66,23 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
       return
     }
 
-    const res = await registerFn({
-      ...formState,
-      evmAddress: formState.evmAddress.toLowerCase(),
-    })
-
-    if (res) {
-      setFormState({
-        ...initialFormState,
-        evmAddress: account,
-        referralCode: searchParams.get('ref'),
-      })
-    }
-
-    setIsRegistered(res)
+    await registerToTHEStory(
+      {
+        ...formState,
+        evmAddress: formState.evmAddress.toLowerCase(),
+      },
+      res => {
+        if (res) {
+          setFormState({
+            ...initialFormState,
+            evmAddress: account,
+            referralCode: searchParams.get('ref'),
+          })
+          // TODO: Set campaign user info
+          setIsRegistered(true)
+        }
+      },
+    )
   }
 
   return (
@@ -131,15 +94,9 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
             <p className='mx-auto mb-10 max-w-[400px] text-center font-archia text-[26px] font-semibold md:text-[30px]'>
               {t('You Have Successfully Registered for THE Story of THENA Adventure')}
             </p>
-            <PrimaryButton
-              className='w-full'
-              disabled={isRegistered && isUpcoming}
-              onClick={() => router.push('/story/dashboard')}
-            >
-              {t('Go to dashboard')}
-              <ChevronRightIcon
-                className={cn('h-4 w-4', isRegistered && isUpcoming ? 'opacity-[0.1]' : 'text-white')}
-              />
+            <PrimaryButton className='w-full' onClick={() => router.push('/story/dashboard')}>
+              {t('Go to Chapters page')}
+              <ChevronRightIcon className={cn('h-4 w-4 text-white')} />
             </PrimaryButton>
           </div>
         ) : (
@@ -198,7 +155,7 @@ export default function StoryRegister({ isRegistered, isUpcoming }) {
               </div>
               {account ? (
                 <PrimaryButton type='submit' disabled={!validateForm()} className='w-full'>
-                  {t('Join now')}
+                  {validateForm() ? t('Start Your Chapter') : t('Enter all details')}
                 </PrimaryButton>
               ) : (
                 <ConnectButton className='w-full' />

@@ -2,7 +2,6 @@ import { cn } from '@/lib/utils'
 import { Lock2Icon } from '@/svgs'
 
 export function RewardChapterTabNavigator({ chapters, selectedChapterIndex, setSelectedChapterIndex }) {
-  console.log({ chapters })
   return (
     <div className='grid grid-cols-2 gap-[14px] lg:grid-cols-4'>
       {chapters.map((chapter, index) => (

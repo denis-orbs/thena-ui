@@ -1,23 +1,25 @@
-import Link from 'next/link'
+'use client'
+
 import { useTranslations } from 'next-intl'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 import Box from '@/components/box'
-import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { PrimaryButton } from '@/components/buttons/Button'
 import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/lib/wallets/useWallet'
-import { ChevronRightIcon, ExpandIcon, LogoTextIcon } from '@/svgs'
+import { ChevronRightIcon, LogoTextIcon } from '@/svgs'
 
 import { useFetchChaptersAndTasks } from '.'
+import Banner from './Banner'
 import Chapters from './Chapters'
 import StoryRegister from './StoryRegister'
-import VideoBanner from './Video'
 import { Countdown } from '../Countdown'
 
 function StoryHome({ isUpcoming, isRegistered }) {
   const t = useTranslations()
 
   const videoRef = useRef(null)
+  const registerFormRef = useRef(null)
 
   const { account } = useWallet()
   const { campaignStartsAt } = useTHEStory()
@@ -25,23 +27,20 @@ function StoryHome({ isUpcoming, isRegistered }) {
     account?.toLowerCase(),
   )
 
-  const handleExpandVideo = () => {
-    if (videoRef.current) {
-      const videoElement = videoRef.current
+  const [isMuted, setIsMuted] = useState(true)
 
-      if (videoElement.requestFullscreen) {
-        videoElement.requestFullscreen()
-      } else if (videoElement.mozRequestFullScreen) {
-        // Firefox
-        videoElement.mozRequestFullScreen()
-      } else if (videoElement.webkitRequestFullscreen) {
-        // Chrome, Safari & Opera
-        videoElement.webkitRequestFullscreen()
-      } else if (videoElement.msRequestFullscreen) {
-        // IE/Edge
-        videoElement.msRequestFullscreen()
-      }
+  const settingSound = () => {
+    if (videoRef.current) {
+      setIsMuted(prev => !prev)
     }
+  }
+
+  const handleScroll = () => {
+    window.scrollBy({
+      top: registerFormRef.current.getBoundingClientRect().top - 170,
+      left: 0,
+      behavior: 'smooth',
+    })
   }
 
   return (
@@ -49,31 +48,12 @@ function StoryHome({ isUpcoming, isRegistered }) {
       {isUpcoming ? (
         <div className='w-full'>
           {/* Banner */}
-          <div className='h-auto w-auto rounded-[20px] bg-[#382F411F] px-2 pt-2 md:px-[15px] md:pt-[15px]'>
-            <div className='relative mb-24 lg:mb-40'>
-              <VideoBanner
-                src='/videos/TheSpaceFinal.mp4'
-                width={1410}
-                height={793}
-                className='w-full rounded-[10px]'
-                videoRef={videoRef}
-              />
-              <OutlinedButton className='absolute right-4 top-5 border-none p-2 md:hidden' onClick={handleExpandVideo}>
-                <ExpandIcon className='h-4 w-4' />
-              </OutlinedButton>
-              <div className='absolute bottom-[-30px] left-0 w-full p-0 text-center font-archia text-[30px] font-semibold text-white lg:bottom-6 lg:px-4 lg:pb-9 lg:text-[72px]'>
-                <p>{t('Get Ready for THE Story of THENA')}</p>
-                <div className='mt-2 flex w-full justify-center'>
-                  <PrimaryButton>
-                    <Link href='#register-form'>{t('Start Your Chapter')}</Link>
-                  </PrimaryButton>
-                </div>
-              </div>
-            </div>
-          </div>
+          {!isRegistered && (
+            <Banner handleScroll={handleScroll} isMuted={isMuted} videoRef={videoRef} settingSound={settingSound} />
+          )}
 
-          <div className='mb-5 flex justify-center' id='register-form'>
-            <StoryRegister isRegistered={isRegistered} isUpcoming={isUpcoming} />
+          <div className='mb-5 flex justify-center' ref={registerFormRef}>
+            <StoryRegister isRegistered={isRegistered} />
           </div>
           <Box className='mx-auto bg-neutral-900 max-sm:max-w-[413px] lg:w-[610px]'>
             <p className='mb-5 font-archia text-[26px] font-semibold md:text-3xl md:tracking-wide'>
@@ -85,8 +65,8 @@ function StoryHome({ isUpcoming, isRegistered }) {
       ) : (
         <div className='w-full'>
           <div className='z-10 mb-[115px]'>
-            <div className='mb-9 flex justify-center'>
-              <StoryRegister isRegistered={isRegistered} isUpcoming={isUpcoming} />
+            <div className='mb-9 flex justify-center' ref={registerFormRef}>
+              <StoryRegister isRegistered={isRegistered} />
             </div>
 
             <p className='mx-auto mb-5 max-w-[743px] text-center font-archia text-[36px] font-semibold md:text-[72px]'>
