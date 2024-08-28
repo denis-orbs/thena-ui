@@ -49,7 +49,7 @@ export function EditProfile({ userInfo, updateUserInfo }) {
         if (newData !== false) {
           updateUserInfo({
             ...userInfo,
-            newData,
+            ...newData,
           })
         }
       })
