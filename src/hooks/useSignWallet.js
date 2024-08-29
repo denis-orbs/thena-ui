@@ -2,6 +2,7 @@ import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 import { useSignMessage } from 'wagmi'
 
+import { ThenaAuthToken } from '@/constant'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 import { errorToast } from '@/lib/notify'
@@ -26,7 +27,7 @@ export const useSignWallet = () => {
   const { account } = useWallet()
   const { signMessage } = useSignMessage()
   const deleteToken = useCallback(() => {
-    localStorage.removeItem('token')
+    localStorage.removeItem(ThenaAuthToken)
   }, [])
 
   const login = useCallback(async (data, address) => {
@@ -40,11 +41,11 @@ export const useSignWallet = () => {
         })
 
         if (accessToken) {
-          localStorage.setItem('token', accessToken)
+          localStorage.setItem(ThenaAuthToken, accessToken)
         }
       }
     } catch (error) {
-      localStorage.removeItem('token')
+      localStorage.removeItem(ThenaAuthToken)
     }
   }, [])
 
@@ -60,7 +61,7 @@ export const useSignWallet = () => {
             onSuccess: async data => {
               await login(data, account)
               await sleep(3000)
-              if (getFromLocalStorage('token')) {
+              if (getFromLocalStorage(ThenaAuthToken)) {
                 const res = await loginCallback?.(params)
                 callOnSuccess?.(res)
               }

@@ -11,10 +11,11 @@ import { ChainId } from 'thena-sdk-core'
 import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
-import { LOCALES } from '@/constant'
+import { LOCALES, ThenaAuthToken } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
+import { useSignWallet } from '@/hooks/useSignWallet'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
@@ -257,6 +258,13 @@ function Header() {
   const prices = usePrices()
   const t = useTranslations()
   const { isUpcoming, isRegistered } = useTHEStory()
+  const { signWallet } = useSignWallet()
+
+  useEffect(() => {
+    if (account) {
+      localStorage.removeItem(ThenaAuthToken)
+    }
+  }, [account, signWallet])
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {

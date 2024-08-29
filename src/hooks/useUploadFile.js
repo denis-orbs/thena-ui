@@ -2,6 +2,7 @@ import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 import FileResizer from 'react-image-file-resizer'
 
+import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
@@ -40,7 +41,7 @@ export const updateCheckMarkIcon = async (value, userId) => {
     V4_UPDATE_CHECKMARK,
     { checkMarkIcon: value, userId },
     {
-      authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+      authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
     },
   )
 
@@ -54,7 +55,7 @@ export const updateBanner = async (value, tcId) => {
     V4_UPDATE_BANNER,
     { bannerUrl: value, tcId },
     {
-      authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+      authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
     },
   )
 
@@ -75,7 +76,7 @@ export const generateUrlUpload = async ({ file, userId, type }) => {
       type,
     },
     {
-      authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+      authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
     },
   )
 

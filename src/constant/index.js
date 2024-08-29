@@ -277,3 +277,5 @@ export const SWAP_TYPES = {
 }
 
 export const trade2EarnStartTime = 1712534400
+
+export const ThenaAuthToken = 'thena-token'

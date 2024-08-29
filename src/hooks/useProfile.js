@@ -1,6 +1,7 @@
 import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 
+import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
@@ -66,7 +67,7 @@ export const useUpdateProfile = account => {
           userId: account?.toLocaleLowerCase() ?? null,
         },
         {
-          authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+          authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
         },
       )
       if (updateUserProfile) {

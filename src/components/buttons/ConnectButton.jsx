@@ -4,6 +4,7 @@ import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useTranslations } from 'next-intl'
 import React, { useEffect } from 'react'
 
+import { ThenaAuthToken } from '@/constant'
 import { useSignWallet } from '@/hooks/useSignWallet'
 import { getFromLocalStorage } from '@/lib/helper'
 import { formatAddress } from '@/lib/utils'
@@ -18,7 +19,7 @@ export default function ConnectButton({ className }) {
   const { deleteToken } = useSignWallet()
 
   useEffect(() => {
-    if (!active && !account && getFromLocalStorage('token')) {
+    if (!active && !account && getFromLocalStorage(ThenaAuthToken)) {
       deleteToken()
     }
   }, [active, account, deleteToken])

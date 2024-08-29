@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { TaskType } from '@/app/story/constant'
+import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
@@ -93,7 +94,7 @@ export const useUpdateParticipantProfile = () => {
         xProfileUsername,
       },
       {
-        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
       },
     )
 
@@ -135,7 +136,7 @@ export const useCreateParticipantAvatarUploadUrl = () => {
         userId,
       },
       {
-        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
       },
     )
 
@@ -495,7 +496,7 @@ export const useRegisterToTHEStory = () => {
           referralCode,
         },
         {
-          authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+          authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
         },
       )
 
