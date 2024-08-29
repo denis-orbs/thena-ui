@@ -86,15 +86,7 @@ export function EditProfile({ userInfo, updateUserInfo }) {
             </TextSubHeading>
           </div>
           <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
-            <SelectAvatar
-              avatarUrl={dataUpdate.avatarUrl}
-              setAvatarUrl={url => {
-                setDataUpdate({
-                  ...dataUpdate,
-                  avatarUrl: url,
-                })
-              }}
-            />
+            <SelectAvatar avatarUrl={dataUpdate.avatarUrl} />
           </div>
 
           <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>

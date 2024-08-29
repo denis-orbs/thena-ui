@@ -10,10 +10,6 @@ export const metadata = {
     'Get ready to embark on an epic 8-week journey with THENA! Complete tasks, collect NFT fragments, rise on the leaderboard, and unlock over $30,000 in rewards. Start your adventure today.',
   keywords:
     'THENA, THE Story, DeFi, BNB Chain, NFT, campaign, rewards, leaderboard, crypto, blockchain, 8-week voyage, trading, DEX, staking, SocialFi',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-  },
   openGraph: {
     title: 'THE Story of THENA - Join the Epic 8-Week Voyage Through DeFi',
     description:

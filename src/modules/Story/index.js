@@ -113,10 +113,10 @@ export const useUpdateParticipantProfile = () => {
     [updateParticipantProfileFn, signWallet],
   )
 
-  return { updateParticipantProfile, updateParticipantProfileFn }
+  return { updateParticipantProfile }
 }
 
-export const V4_GENERATE_AVATAR_PROFILE_URL = gql`
+const V4_GENERATE_AVATAR_PROFILE_URL = gql`
   mutation V4_GENERATE_AVATAR_PROFILE_URL($fileName: String!, $fileType: String!, $userId: String!) {
     generatePresignedUrl(input: { fileName: $fileName, fileType: $fileType, userId: $userId, type: CUSTOM_AVATAR }) {
       signedRequest
@@ -124,9 +124,17 @@ export const V4_GENERATE_AVATAR_PROFILE_URL = gql`
     }
   }
 `
+const V4_UPDATE_PARTICIPANT_AVATAR = gql`
+  mutation V4_UPDATE_PARTICIPANT_AVATAR($avatarUrl: String = "") {
+    updateParticipantProfile(input: { avatarUrl: $avatarUrl }) {
+      avatarUrl
+    }
+  }
+`
 
-export const useCreateParticipantAvatarUploadUrl = () => {
+export const useUpdateParticipantAvatar = () => {
   const { signWallet } = useSignWallet()
+
   const createPresignUrlFn = useCallback(async ({ file, userId }) => {
     const {
       generatePresignedUrl: { signedRequest, url },
@@ -166,7 +174,32 @@ export const useCreateParticipantAvatarUploadUrl = () => {
     [createPresignUrlFn, signWallet],
   )
 
-  return { createPresignUrlFn, createPresignUrl }
+  const updateParticipantAvatarFn = useCallback(async avatarUrl => {
+    const { updateParticipantProfile } = await v4Client.request(
+      V4_UPDATE_PARTICIPANT_AVATAR,
+      {
+        avatarUrl,
+      },
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
+
+    if (updateParticipantProfile) {
+      successToast('Successfully')
+
+      return updateParticipantProfile
+    }
+    return false
+  }, [])
+
+  const updateParticipantAvatar = useCallback(
+    async (params, callOnSuccess, callOnReject) =>
+      await actionWithAuthentication(updateParticipantAvatarFn, signWallet, params, callOnSuccess, callOnReject),
+    [updateParticipantAvatarFn, signWallet],
+  )
+
+  return { createPresignUrl, updateParticipantAvatar }
 }
 
 const V4_CAMPAIGN_CHAPTER = gql`

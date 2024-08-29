@@ -163,7 +163,7 @@ function Footer({ isHomePage = false }) {
         <NextImage
           alt='background'
           src='/images/footer/footerbg.png'
-          className='absolute bottom-0 hidden w-full md:block'
+          className='absolute bottom-0 -z-10 hidden w-full md:block'
         />
         <NextImage
           alt='background'
