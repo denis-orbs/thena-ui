@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { ArrowBackwardIcon, ArrowForwardSmallIcon } from '@/svgs'
 
 import { RewardIconTooltip } from './RewardIconTooltip'
-import { TaskTwitterAction, TaskType } from '../../constant'
+import { TaskDailyName, TaskTwitterAction, TaskType } from '../../constant'
 
 const TweetContent = `I’ve just joined THE Story with @ThenaFi_ 💜🏛️
 First tasks completed, NFT fragment collected, and I’m on the path to over $30K in rewards!
@@ -99,7 +99,7 @@ export function ChapterProcess({
                     <div>
                       {task.rewardAmount.map((amount, index) => (
                         <div key={index}>
-                          {Boolean(amount) && (
+                          {Boolean(amount) && task.name !== TaskDailyName && (
                             <div className='flex flex-row items-center'>
                               <span className='text-lg font-light leading-6 '>+{amount}</span>
                               <RewardIconTooltip

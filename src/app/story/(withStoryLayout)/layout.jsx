@@ -12,7 +12,7 @@ export const metadata = {
 export default function THEStoryLayout({ children }) {
   return (
     <main className='desktop-bg flex min-h-screen flex-col'>
-      <section className='layout-container mt-[128px] lg:mt-[176px]'>
+      <section className='layout-container mt-[128px] !pb-0 lg:mt-[176px]'>
         <Suspense fallback={<Loading />}>{children}</Suspense>
       </section>
       <Footer />

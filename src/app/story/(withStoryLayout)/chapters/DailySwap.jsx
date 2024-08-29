@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useTranslations } from 'use-intl'
 
 import Box from '@/components/box'
@@ -16,10 +17,12 @@ export function DailySwap({ dailySwaps }) {
             <p className='m-0 font-archia text-3xl font-semibold leading-9'>{t('Daily Swap')}</p>
             <p className='!mt-2 text-base leading-5 text-gray-400'>{t('Daily Swap description')}</p>
           </div>
-          <PrimaryButton className='my-3 h-fit w-full lg:my-0 lg:w-auto'>
-            <span className='mr-1 '>{t('Swap now')}</span>
-            <ArrowForwardSmallIcon className='inline-block h-4 w-4' />
-          </PrimaryButton>
+          <Link href='/swap'>
+            <PrimaryButton className='my-3 h-fit w-full lg:my-0 lg:w-auto'>
+              <span className='mr-1 '>{t('Swap now')}</span>
+              <ArrowForwardSmallIcon className='inline-block h-4 w-4' />
+            </PrimaryButton>
+          </Link>
         </div>
         <div className='grid grid-cols-2 gap-5 lg:grid-cols-7'>
           {dailySwaps.map(swap => (

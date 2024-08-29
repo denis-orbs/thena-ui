@@ -14,7 +14,7 @@ export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelecte
   }
 
   return (
-    <div className='grid grid-cols-6 gap-3 lg:grid-cols-10'>
+    <div className='grid grid-cols-5 gap-3 lg:grid-cols-9'>
       {chapters.map(chapter => (
         <div
           key={chapter.id}
