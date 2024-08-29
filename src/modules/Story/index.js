@@ -386,7 +386,7 @@ const useFetchChaptersAndTasks = id => {
       }
     })
 
-    const currentChapter = campaignChapters?.findLast(chapter => chapter.available)
+    const currentChapter = campaignChapters?.reverse().find(chapter => chapter.available)
 
     let dailySwaps = campaignTasks
       .filter(task => task.type === TaskType.Daily)

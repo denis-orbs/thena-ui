@@ -18,7 +18,7 @@ export function ProfilePage({ address }) {
 
   useEffect(() => {
     if (chapters) {
-      const index = chapters.findLast(chapter => chapter.available)?.index ?? 1
+      const index = [...chapters].reverse().find(chapter => chapter.available)?.index ?? 1
       setSelectedChapterIndex(index)
     }
   }, [chapters])

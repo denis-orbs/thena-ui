@@ -13,7 +13,7 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
 
   const nextAvailableChapterTimeStamp = useMemo(() => {
     const nextChapter = chapters.find(chapter => !chapter.available)
-    const lastAvailableChapter = chapters.findLast(chapter => chapter.available)
+    const lastAvailableChapter = [...chapters].reverse().find(chapter => chapter.available)
     if (nextChapter) {
       try {
         return isoDateToTimeStampSeconds(nextChapter.startTimestamp)

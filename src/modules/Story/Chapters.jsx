@@ -9,7 +9,7 @@ export default function Chapters({ chapters, isLoading }) {
 
   useEffect(() => {
     if (chapters) {
-      setSelectedChapterIndex(chapters.findLastIndex(chapter => chapter.available) + 1)
+      setSelectedChapterIndex([...chapters].reverse().findIndex(chapter => chapter.available) + 1)
     }
   }, [chapters])
 

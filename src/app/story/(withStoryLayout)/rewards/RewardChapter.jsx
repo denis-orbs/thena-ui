@@ -57,7 +57,7 @@ export function RewardChapter({ chapters }) {
     const c1Start = new Date(chapters?.[0]?.startTimestamp ?? 0)
     const c2End = new Date(chapters?.[1]?.endTimestamp ?? 0)
 
-    const lastEndtime = new Date(chapters?.findLast(() => true)?.endTimestamp ?? 0)
+    const lastEndtime = new Date([...chapters]?.reverse().find(() => true)?.endTimestamp ?? 0)
 
     let progressPercent = 0
     if (currentDate > c1Start && currentDate < lastEndtime) {
