@@ -9,28 +9,47 @@ import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
-import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
-import { useCreateParticipantAvatarUploadUrl } from '@/modules/Story'
+import { useUpdateParticipantAvatar } from '@/modules/Story'
 
 const SelectedAvatarState = {
   custom: 'custom',
   default: 'default',
 }
 
-export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {} }) {
+export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
   const t = useTranslations()
 
   const [stateChecked, setStateChecked] = useState(SelectedAvatarState.default)
   const [selectedImage, setSelectedImage] = useState(undefined)
   const [loading, setLoading] = useState(false)
-  const { campaignParticipantInfo: userInfo } = useTHEStory()
+  const { campaignParticipantInfo: userInfo, setCampaignParticipantInfo } = useTHEStory()
 
-  const { createPresignUrl } = useCreateParticipantAvatarUploadUrl()
+  const { createPresignUrl, updateParticipantAvatar } = useUpdateParticipantAvatar()
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
     accept: { 'image/*': [] },
   })
+
+  const handleUpdateAvatar = useCallback(
+    async avatarUrl => {
+      await updateParticipantAvatar(
+        avatarUrl,
+        newData => {
+          if (newData !== false) {
+            setCampaignParticipantInfo({
+              ...userInfo,
+              ...newData,
+            })
+            closeModal()
+          }
+          setLoading(false)
+        },
+        () => setLoading(false),
+      )
+    },
+    [closeModal, setCampaignParticipantInfo, updateParticipantAvatar, userInfo],
+  )
 
   const handleSave = useCallback(async () => {
     setLoading(true)
@@ -39,10 +58,11 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {} })
         selectedImage,
         userInfo.id,
         async data => {
-          if (data !== false) onChange(data)
-          setLoading(false)
-          successToast('Upload. You can save changes')
-          closeModal()
+          if (data !== false) {
+            await handleUpdateAvatar(data)
+          } else {
+            setLoading(false)
+          }
         },
         () => {
           setLoading(false)
@@ -50,10 +70,9 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {} })
       )
     }
     if (stateChecked === SelectedAvatarState.default) {
-      onChange(null)
-      closeModal()
+      await handleUpdateAvatar(null)
     }
-  }, [userInfo, createPresignUrl, selectedImage, onChange, closeModal, stateChecked])
+  }, [userInfo.id, stateChecked, createPresignUrl, selectedImage, handleUpdateAvatar])
 
   useEffect(() => {
     if (acceptedFiles.length) {

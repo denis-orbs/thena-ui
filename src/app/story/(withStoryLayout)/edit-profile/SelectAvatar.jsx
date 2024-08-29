@@ -1,25 +1,19 @@
 import Image from 'next/image'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
 import { ModalEditUserAvatar } from './ModalEditUserAvatar'
 
-export function SelectAvatar({ avatarUrl, setAvatarUrl }) {
+export function SelectAvatar({ avatarUrl }) {
   const [isHovered, setIsHovered] = useState(false)
   const [openModal, setOpenModal] = useState(false)
 
-  const onChangeAvatar = useCallback(
-    url => {
-      setAvatarUrl(url)
-    },
-    [setAvatarUrl],
-  )
   return (
     <div>
       <div
-        className='relative inline-block cursor-pointer '
+        className='relative inline-block cursor-pointer'
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => setOpenModal(true)}
@@ -29,7 +23,7 @@ export function SelectAvatar({ avatarUrl, setAvatarUrl }) {
           alt='Preview'
           width={124}
           height={124}
-          className=' h-[124px] w-[124px] rounded-full object-cover'
+          className='h-[124px] w-[124px] rounded-full object-cover'
         />
         <div
           className={cn(
@@ -43,9 +37,7 @@ export function SelectAvatar({ avatarUrl, setAvatarUrl }) {
           Upload
         </div>
       </div>
-      {openModal && (
-        <ModalEditUserAvatar isOpen={openModal} onChange={onChangeAvatar} closeModal={() => setOpenModal(false)} />
-      )}
+      {openModal && <ModalEditUserAvatar isOpen={openModal} closeModal={() => setOpenModal(false)} />}
     </div>
   )
 }
