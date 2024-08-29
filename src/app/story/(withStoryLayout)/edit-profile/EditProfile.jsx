@@ -20,6 +20,10 @@ export function EditProfile({ userInfo, updateUserInfo }) {
   const [dataUpdate, setDataUpdate] = useState({ ...userInfo })
   const isFormValid = useMemo(() => Object.keys(errors).length === 0, [errors])
 
+  useEffect(() => {
+    setDataUpdate({ ...userInfo })
+  }, [userInfo])
+
   const validateForm = useCallback(() => {
     const err = {}
 

@@ -34,11 +34,18 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {} })
   const handleSave = useCallback(async () => {
     setLoading(true)
     if (userInfo.id && stateChecked === SelectedAvatarState.custom) {
-      await createPresignUrl(selectedImage, userInfo.id, async data => {
-        if (data !== false) onChange(data)
-        setLoading(false)
-        closeModal()
-      })
+      await createPresignUrl(
+        selectedImage,
+        userInfo.id,
+        async data => {
+          if (data !== false) onChange(data)
+          setLoading(false)
+          closeModal()
+        },
+        () => {
+          setLoading(false)
+        },
+      )
     }
     if (stateChecked === SelectedAvatarState.default) {
       onChange(null)

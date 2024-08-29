@@ -160,8 +160,8 @@ export const useCreateParticipantAvatarUploadUrl = () => {
   }, [])
 
   const createPresignUrl = useCallback(
-    async (file, userId, callOnSuccess) =>
-      await actionWithAuthentication(createPresignUrlFn, signWallet, { file, userId }, callOnSuccess),
+    async (file, userId, callOnSuccess, callOnReject) =>
+      await actionWithAuthentication(createPresignUrlFn, signWallet, { file, userId }, callOnSuccess, callOnReject),
     [createPresignUrlFn, signWallet],
   )
 
