@@ -49,6 +49,7 @@ import LangIcon from '~/svgs/lang.svg'
 import LockIcon from '~/svgs/lock.svg'
 import Lock2Icon from '~/svgs/lock-2.svg'
 import LogoTextIcon from '~/svgs/logo.svg'
+import LogoWithTextIcon from '~/svgs/logo-with-text.svg'
 import MediumIcon from '~/svgs/medium.svg'
 import MergeIcon from '~/svgs/merge.svg'
 import MinusIcon from '~/svgs/minus.svg'
@@ -141,6 +142,7 @@ export {
   Lock2Icon,
   LockIcon,
   LogoTextIcon,
+  LogoWithTextIcon,
   MediumIcon,
   MergeIcon,
   MinusIcon,

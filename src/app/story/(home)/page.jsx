@@ -12,11 +12,9 @@ function StoryPage() {
     <div className='relative'>
       <div
         className={`absolute h-full w-full bg-cover opacity-10 ${
-          isUpcoming
+          isUpcoming && !isRegistered
             ? 'bg-[url("/images/story/background-teaser.png")]'
-            : isRegistered
-              ? 'bg-[url("/images/story/background-landing.png")]'
-              : ''
+            : 'bg-[url("/images/story/background-landing.png")]'
         }`}
       />
       <section className={`layout-container relative ${!isRegistered ? 'layout-top' : 'mt-[128px] lg:mt-[176px]'}`}>
