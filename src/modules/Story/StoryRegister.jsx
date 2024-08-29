@@ -92,8 +92,8 @@ export default function StoryRegister({ isRegistered }) {
   }
 
   return (
-    <div className='border-gradient-secondary rounded-xl p-px md:w-[610px]'>
-      <Box className='z-10 h-full rounded-[11px] bg-neutral-900 px-8'>
+    <div className='border-gradient-secondary w-full rounded-xl p-px md:w-[610px]'>
+      <Box className='z-10 h-full rounded-[11px] bg-neutral-900 px-4 md:px-6 lg:px-8'>
         {isRegistered ? (
           <div className='flex flex-col justify-center'>
             <SuccessIcon className='mx-auto h-20 w-20' />
@@ -107,7 +107,7 @@ export default function StoryRegister({ isRegistered }) {
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <div className='my-auto flex flex-col gap-6'>
+            <div className='my-auto flex flex-col gap-5 md:gap-6'>
               <h2 className='font-archia'>{t('Become a Thenian')} 💜🏛</h2>
               <div>
                 <LabelTooltip className='mb-1.5' required label={t('Your Wallet ID')} id='email-input' />
@@ -118,6 +118,9 @@ export default function StoryRegister({ isRegistered }) {
                   name='evmAddress'
                   onChange={handleChange('evmAddress')}
                   required
+                  classNames={{
+                    input: 'leading-5',
+                  }}
                 />
               </div>
               <div>
@@ -157,6 +160,9 @@ export default function StoryRegister({ isRegistered }) {
                   val={formState.email}
                   onChange={handleChange('email')}
                   required
+                  classNames={{
+                    input: 'leading-5',
+                  }}
                 />
               </div>
               {account ? (

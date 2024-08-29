@@ -22,6 +22,7 @@ const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
       totalFragments
       totalPoints
       xProfileUsername
+      createdAt
     }
   }
 `

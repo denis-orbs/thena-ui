@@ -53,9 +53,9 @@ function StoryHome({ isUpcoming, isRegistered }) {
           )}
 
           <div className='flex flex-col justify-center gap-6 lg:flex-row lg:gap-8'>
-            <div className='max-w-xl md:mx-auto lg:mx-0 lg:mt-10 lg:w-[45%]'>
-              <p className='mb-1 font-archia text-[36px] font-semibold md:mb-4 md:text-[72px]'>THE Story of</p>
-              <LogoWithTextIcon className='mb-5 w-[152px] md:w-[268px]' />
+            <div className='mx-auto max-w-xl lg:mx-0 lg:mt-10 lg:w-[45%]'>
+              <p className='font-archia text-[36px] font-semibold md:text-[72px]'>THE Story of</p>
+              <LogoWithTextIcon className='mb-5 w-[152px] leading-[1.3] md:w-[268px]' />
               <p className='leading-none text-[#D1D0D2] lg:text-[18px]'>
                 {t('Embark on The Story of THENA')}
                 {'! '}

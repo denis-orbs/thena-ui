@@ -31,7 +31,7 @@ export default function SelectCountry({ className, selected = '', setSelected })
     <div className={className}>
       <Input
         classNames={{
-          input: cn('cursor-pointer caret-transparent pr-8', className),
+          input: cn('cursor-pointer caret-transparent pr-8 leading-5', className),
         }}
         type='text'
         val={displaySelectedCountry}

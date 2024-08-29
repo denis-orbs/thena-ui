@@ -59,10 +59,10 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
                 </div>
                 <TextSubHeading className='text-sm'>
                   {locale === LOCALES.en
-                    ? `${t('Joined')} ${commonDayjs(userInfo.firstInteractAt).format('MMM D, YYYY')} at ${commonDayjs(
-                        userInfo.firstInteractAt,
+                    ? `${t('Joined')} ${commonDayjs(userInfo.createdAt).format('MMM D, YYYY')} at ${commonDayjs(
+                        userInfo.createdAt,
                       ).format('h:mma')}`
-                    : `${commonDayjs(userInfo.firstInteractAt).format('YYYY 年 M 月 D 日a h:mm')} ${t('Joined')}`}
+                    : `${commonDayjs(userInfo.createdAt).format('YYYY 年 M 月 D 日a h:mm')} ${t('Joined')}`}
                 </TextSubHeading>
                 <div className='flex flex-col gap-1 md:flex-row'>
                   {userInfo.xProfileUsername && (

@@ -13,7 +13,7 @@ const V4_LOGIN = gql`
   mutation V4_MUTATION_LOGIN($signature: String!, $address: String!) {
     login(
       input: {
-        signedMessage: "By signing you agree to 'Terms of Service' & 'Privacy Policy' of THENA"
+        signedMessage: "Please sign to confirm the ownership of the wallet."
         signature: $signature
         address: $address
       }
