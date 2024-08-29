@@ -17,7 +17,9 @@ function StoryPage() {
             : 'bg-[url("/images/story/background-landing.png")]'
         }`}
       />
-      <section className={`layout-container relative ${!isRegistered ? 'layout-top' : 'mt-[128px] lg:mt-[176px]'}`}>
+      <section
+        className={`layout-container relative !pb-0 ${!isRegistered ? 'layout-top' : 'mt-[128px] lg:mt-[176px]'}`}
+      >
         <StoryHome isRegistered={isRegistered} isUpcoming={isUpcoming} />
       </section>
     </div>
