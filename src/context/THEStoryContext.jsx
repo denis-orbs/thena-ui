@@ -5,7 +5,7 @@ import useWallet from '@/lib/wallets/useWallet'
 import { fetchCampaignChapter, fetchTHEStoryParticipant } from '@/modules/Story'
 
 const THEStoryContext = createContext({
-  campaignStartsAt: 1724155200, // 2024-08-20 12:00 UTC
+  campaignStartsAt: 1725278400, // 2024-09-02 12:00 UTC
   isRegistered: false,
   setIsRegistered: () => false,
   campaignParticipantInfo: null,
@@ -18,8 +18,8 @@ function THEStoryContextProvider({ children }) {
 
   const [isRegistered, setIsRegistered] = useState(false)
   const [campaignParticipantInfo, setCampaignParticipantInfo] = useState(null)
-  const [isUpcoming, setIsUpcoming] = useState(false)
-  const [campaignStartsAt, setCampaignStartsAt] = useState(1724155200) // 2024-08-20 12:00 UTC
+  const [isUpcoming, setIsUpcoming] = useState(true)
+  const [campaignStartsAt, setCampaignStartsAt] = useState(1725278400) // 2024-09-02 12:00 UTC
 
   useEffect(() => {
     const checkCampaignStartsAt = async () => {
