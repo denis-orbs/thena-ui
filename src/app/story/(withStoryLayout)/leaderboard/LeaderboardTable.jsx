@@ -7,6 +7,7 @@ import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import Table from '@/components/table'
+import CustomTooltip from '@/components/tooltip'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, sliceAddress } from '@/lib/utils'
 import { fetchParticipants } from '@/modules/Story'
@@ -18,14 +19,18 @@ function PointHead() {
     <div className='flex flex-row'>
       <span>{t('Point')}</span>
       <span>
-        <InfoCircleGradient className='ml-1 h-4 w-4 text-neutral-400' />
+        <InfoCircleGradient className='ml-1 h-4 w-4 text-neutral-400' data-tooltip-id='point-description' />
       </span>
+      <CustomTooltip id='point-description'>
+        <span className='text-sm font-normal leading-5'>{t('THE Story leaderboard point description')}</span>
+      </CustomTooltip>
     </div>
   )
 }
 
 const sortOptions = [
   {
+    disabled: true,
     label: '#',
     value: 'rank',
     isDesc: false,
@@ -33,6 +38,7 @@ const sortOptions = [
     width: 'w-[5%]',
   },
   {
+    disabled: true,
     label: 'Thenian',
     value: 'thenian',
     isDesc: true,
@@ -40,6 +46,7 @@ const sortOptions = [
     width: 'lg:w-[80%]',
   },
   {
+    disabled: true,
     label: <PointHead />,
     value: 'totalPoints',
     isDesc: true,

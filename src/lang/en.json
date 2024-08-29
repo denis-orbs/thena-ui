@@ -626,7 +626,7 @@
   "Countries": "Countries",
   "This field can be changed later": "This field can be changed later.",
   "Share on": "Share on",
-  "Point": "积分",
+  "Point": "Point",
   "Thenian": "Thenian",
   "#": "#",
   "Reach Top 100 After Second Chapter": "Reach Top 100 After Second Chapter",
@@ -654,5 +654,6 @@
   "Enter all details": "Enter all details",
   "Search by Name": "Search by Name",
   "Fragments missing": "Fragments missing",
-  "The Fates Await": "The Fates Await…"
+  "The Fates Await": "The Fates Await…",
+  "THE Story leaderboard point description": "In case of a tie, ranks will be determined by the order of registration. Early registered users will be ranked higher."
 }
