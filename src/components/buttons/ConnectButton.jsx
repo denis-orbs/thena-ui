@@ -2,7 +2,7 @@
 
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 import { useSignWallet } from '@/hooks/useSignWallet'
 import { getFromLocalStorage } from '@/lib/helper'
@@ -15,17 +15,7 @@ export default function ConnectButton({ className }) {
   const { open } = useWeb3Modal()
   const { account, isWrong, active } = useWallet()
   const t = useTranslations()
-  const { signWallet, deleteToken } = useSignWallet()
-
-  const getSign = useCallback(() => {
-    if (!getFromLocalStorage('token')) {
-      signWallet()
-    }
-  }, [signWallet])
-
-  useEffect(() => {
-    getSign()
-  }, [getSign])
+  const { deleteToken } = useSignWallet()
 
   useEffect(() => {
     if (!active && !account && getFromLocalStorage('token')) {
