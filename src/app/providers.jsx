@@ -13,6 +13,7 @@ import { FusionsContextProvider } from '@/context/fusionsContext'
 import { ManualsContextProvider } from '@/context/manualsContext'
 import { PairsContextProvider } from '@/context/pairsContext'
 import { RewardsContextProvider } from '@/context/rewardsContext'
+import { THEStoryContextProvider } from '@/context/THEStoryContext'
 import { TokensContextProvider } from '@/context/tokensContext'
 import { VaultsContextProvider } from '@/context/vaultsContext'
 import { VeTHEsContextProvider } from '@/context/veTHEsContext'
@@ -32,7 +33,9 @@ function ContextProviders({ children }) {
               <TokensContextProvider>
                 <VeTHEsContextProvider>
                   <RewardsContextProvider>
-                    <DibsRewarderContextProvider>{children}</DibsRewarderContextProvider>
+                    <DibsRewarderContextProvider>
+                      <THEStoryContextProvider>{children}</THEStoryContextProvider>
+                    </DibsRewarderContextProvider>
                   </RewardsContextProvider>
                 </VeTHEsContextProvider>
               </TokensContextProvider>

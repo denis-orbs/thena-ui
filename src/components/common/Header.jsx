@@ -1,5 +1,6 @@
 'use client'
 
+import { compact } from 'lodash'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
@@ -10,9 +11,11 @@ import { ChainId } from 'thena-sdk-core'
 import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
-import { LOCALES } from '@/constant'
+import { LOCALES, ThenaAuthToken } from '@/constant'
 import { SizeTypes } from '@/constant/type'
+import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
+import { useSignWallet } from '@/hooks/useSignWallet'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 import TxnModal from '@/modules/TxnModal'
@@ -254,6 +257,14 @@ function Header() {
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
   const t = useTranslations()
+  const { isUpcoming, isRegistered } = useTHEStory()
+  const { signWallet } = useSignWallet()
+
+  useEffect(() => {
+    if (account) {
+      localStorage.removeItem(ThenaAuthToken)
+    }
+  }, [account, signWallet])
 
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
@@ -330,6 +341,20 @@ function Header() {
       //   },
       // },
       {
+        label: 'Trade To Earn',
+        active: pathname.includes('/trade-to-earn'),
+        onClickHandler: () => {
+          push('/trade-to-earn')
+        },
+      },
+      {
+        label: 'THE Story',
+        active: pathname.includes('/story'),
+        onClickHandler: () => {
+          push('/story')
+        },
+      },
+      {
         label: 'More',
         active: pathname.includes('/analytics') || pathname.includes('/protocols'),
         sub:
@@ -367,13 +392,6 @@ function Header() {
                   },
                 },
               ],
-      },
-      {
-        label: 'Trade To Earn',
-        active: pathname.includes('/trade-to-earn'),
-        onClickHandler: () => {
-          push('/trade-to-earn')
-        },
       },
     ],
     [pathname, networkId, push],
@@ -419,6 +437,71 @@ function Header() {
     ]
     return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
   }, [pathname, push, networkId])
+
+  // isRegister, !isUpcoming
+  const storySubmenus1 = useMemo(
+    () =>
+      compact([
+        {
+          label: t('Home'),
+          active: pathname === '/story',
+          onClickHandler: () => {
+            push('/story')
+          },
+        },
+        {
+          label: t('Chapters'),
+          active: pathname === '/story/chapters',
+          onClickHandler: () => {
+            push('/story/chapters')
+          },
+        },
+        {
+          label: t('Leaderboard'),
+          active: pathname === '/story/leaderboard',
+          onClickHandler: () => {
+            push('/story/leaderboard')
+          },
+        },
+        {
+          label: t('Referral'),
+          active: pathname === '/story/referral',
+          onClickHandler: () => {
+            push('/story/referral')
+          },
+        },
+        {
+          label: t('Rewards'),
+          active: pathname === '/story/rewards',
+          onClickHandler: () => {
+            push('/story/rewards')
+          },
+        },
+      ]),
+    [pathname, push, t],
+  )
+
+  // isRegister && isUpcoming
+  const storySubmenus2 = useMemo(
+    () =>
+      compact([
+        {
+          label: t('Home'),
+          active: pathname === '/story',
+          onClickHandler: () => {
+            push('/story')
+          },
+        },
+        {
+          label: t('Chapters'),
+          active: pathname === '/story/chapters',
+          onClickHandler: () => {
+            push('/story/chapters')
+          },
+        },
+      ]),
+    [pathname, push, t],
+  )
 
   const onLogoClick = () => {
     push('/')
@@ -598,9 +681,15 @@ function Header() {
         </Modal>
         <TxnModal />
       </header>
-      {pathname.includes('/dashboard') && (
+      {pathname.startsWith('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={submenus} size={SizeTypes.Medium} />
+        </div>
+      )}
+      {pathname.startsWith('/story') && isRegistered && (
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
+          {!isUpcoming && <Tabs data={storySubmenus1} size={SizeTypes.Medium} />}
+          {isUpcoming && <Tabs data={storySubmenus2} size={SizeTypes.Medium} />}
         </div>
       )}
       <Script

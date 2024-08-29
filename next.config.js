@@ -26,6 +26,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'tokens.pancakeswap.finance',
       },
+      {
+        protocol: 'https',
+        hostname: 'thena-image-resource.s3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'thena-image-resource-dev.s3.amazonaws.com',
+      },
     ],
   },
 

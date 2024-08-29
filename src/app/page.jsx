@@ -13,7 +13,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <Footer />
+      <Footer isHomePage />
     </>
   )
 }
