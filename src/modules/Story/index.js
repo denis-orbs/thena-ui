@@ -481,6 +481,7 @@ const V4_REGISTER_CAMPAIGN = gql`
       totalFragments
       totalPoints
       xProfileUsername
+      createdAt
     }
   }
 `
