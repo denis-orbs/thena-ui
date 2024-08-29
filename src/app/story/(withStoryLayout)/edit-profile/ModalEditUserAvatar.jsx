@@ -9,6 +9,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
+import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 import { useCreateParticipantAvatarUploadUrl } from '@/modules/Story'
 
@@ -40,6 +41,7 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {} })
         async data => {
           if (data !== false) onChange(data)
           setLoading(false)
+          successToast('Upload. You can save changes')
           closeModal()
         },
         () => {

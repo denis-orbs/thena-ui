@@ -54,7 +54,7 @@ export const useSignWallet = () => {
       if (account) {
         signMessage(
           {
-            message: "By signing you agree to 'Terms of Service' & 'Privacy Policy' of THENA",
+            message: 'Please sign to confirm the ownership of the wallet.',
             account,
           },
           {
