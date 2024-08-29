@@ -107,7 +107,8 @@ export const useUpdateParticipantProfile = () => {
   }, [])
 
   const updateParticipantProfile = useCallback(
-    (params, callOnSuccess) => actionWithAuthentication(updateParticipantProfileFn, signWallet, params, callOnSuccess),
+    async (params, callOnSuccess, callOnReject) =>
+      await actionWithAuthentication(updateParticipantProfileFn, signWallet, params, callOnSuccess, callOnReject),
     [updateParticipantProfileFn, signWallet],
   )
 
@@ -159,8 +160,8 @@ export const useCreateParticipantAvatarUploadUrl = () => {
   }, [])
 
   const createPresignUrl = useCallback(
-    (file, userId, callOnSuccess) =>
-      actionWithAuthentication(createPresignUrlFn, signWallet, { file, userId }, callOnSuccess),
+    async (file, userId, callOnSuccess) =>
+      await actionWithAuthentication(createPresignUrlFn, signWallet, { file, userId }, callOnSuccess),
     [createPresignUrlFn, signWallet],
   )
 
@@ -515,19 +516,19 @@ export const useRegisterToTHEStory = () => {
           error?.extensions?.exception?.validationErrors.length > 0
         ) {
           const validator = error?.extensions?.exception?.validationErrors[0]
-          errorToast(validator?.constraints?.isEmail)
+          throw new Error(validator?.constraints?.isEmail)
         } else if (error?.extensions?.exception?.detail) {
-          errorToast(error?.extensions?.exception?.detail)
-        } else {
-          errorToast(error?.message)
+          throw new Error(error?.extensions?.exception?.detail)
         }
+        throw e
       }
       return false
     }
   }, [])
 
   const registerToTHEStory = useCallback(
-    (params, callOnSuccess) => actionWithAuthentication(registerFn, signWallet, params, callOnSuccess),
+    async (params, callOnSuccess, callOnReject) =>
+      await actionWithAuthentication(registerFn, signWallet, params, callOnSuccess, callOnReject),
     [registerFn, signWallet],
   )
 

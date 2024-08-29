@@ -45,15 +45,21 @@ export function EditProfile({ userInfo, updateUserInfo }) {
   const handleUpdateProfile = useCallback(async () => {
     if (isFormValid) {
       setIsSubmit(true)
-      await updateParticipantProfile(dataUpdate, newData => {
-        if (newData !== false) {
-          updateUserInfo({
-            ...userInfo,
-            ...newData,
-          })
-        }
-      })
-      setIsSubmit(false)
+      await updateParticipantProfile(
+        dataUpdate,
+        newData => {
+          if (newData !== false) {
+            updateUserInfo({
+              ...userInfo,
+              ...newData,
+            })
+          }
+          setIsSubmit(false)
+        },
+        () => {
+          setIsSubmit(false)
+        },
+      )
     }
   }, [isFormValid, dataUpdate, updateUserInfo, updateParticipantProfile, userInfo])
 

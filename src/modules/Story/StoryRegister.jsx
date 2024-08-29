@@ -35,6 +35,7 @@ export default function StoryRegister({ isRegistered }) {
     evmAddress: account || '',
     referralCode: searchParams.get('ref') || '',
   })
+  const [isSubmit, setIsSubmit] = useState(false)
 
   const { registerToTHEStory } = useRegisterToTHEStory()
 
@@ -66,6 +67,7 @@ export default function StoryRegister({ isRegistered }) {
       return
     }
 
+    setIsSubmit(true)
     await registerToTHEStory(
       {
         ...formState,
@@ -81,6 +83,10 @@ export default function StoryRegister({ isRegistered }) {
           setCampaignParticipantInfo(res)
           setIsRegistered(true)
         }
+        setIsSubmit(false)
+      },
+      () => {
+        setIsSubmit(false)
       },
     )
   }
@@ -154,7 +160,7 @@ export default function StoryRegister({ isRegistered }) {
                 />
               </div>
               {account ? (
-                <PrimaryButton type='submit' disabled={!validateForm()} className='w-full'>
+                <PrimaryButton type='submit' disabled={!validateForm() || isSubmit} className='w-full'>
                   {validateForm() ? t('Start Your Chapter') : t('Enter all details')}
                 </PrimaryButton>
               ) : (

@@ -50,7 +50,7 @@ export const useSignWallet = () => {
   }, [])
 
   const signWallet = useCallback(
-    (loginCallback, params, callOnSuccess, callOnReject) => {
+    (action, params, callOnSuccess, callOnReject) => {
       if (account) {
         signMessage(
           {
@@ -60,10 +60,19 @@ export const useSignWallet = () => {
           {
             onSuccess: async data => {
               await login(data, account)
-              await sleep(3000)
+              await sleep(1000)
               if (getFromLocalStorage(ThenaAuthToken)) {
-                const res = await loginCallback?.(params)
-                callOnSuccess?.(res)
+                try {
+                  const res = await action(params)
+                  callOnSuccess?.(res)
+                } catch (err) {
+                  if (err?.response?.errors?.[0]?.message) {
+                    errorToast(err?.response?.errors?.[0]?.message)
+                  } else {
+                    errorToast('Error')
+                  }
+                  callOnReject?.()
+                }
               }
             },
             onError: () => {
@@ -82,7 +91,7 @@ export const useSignWallet = () => {
   }
 }
 
-export async function actionWithAuthentication(action, callOnFailed, params, callOnSuccess, callOnReject) {
+export async function actionWithAuthentication(action, signFunc, params, callOnSuccess, callOnReject) {
   try {
     const data = await action(params)
     callOnSuccess?.(data)
@@ -91,11 +100,14 @@ export async function actionWithAuthentication(action, callOnFailed, params, cal
       err?.response?.errors?.[0]?.message === 'Missing Authorization Header' ||
       err?.response?.errors?.[0]?.message === 'Invalid Access Token'
     ) {
-      callOnFailed(action, params, callOnSuccess, callOnReject, true)
-    } else if (err?.response?.errors?.[0]?.message) {
-      errorToast(err?.response?.errors?.[0]?.message)
+      signFunc(action, params, callOnSuccess, callOnReject, true)
     } else {
-      errorToast('Error')
+      if (err?.response?.errors?.[0]?.message) {
+        errorToast(err?.response?.errors?.[0]?.message)
+      } else {
+        errorToast('Error')
+      }
+      callOnReject?.()
     }
   }
 }
