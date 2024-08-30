@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
 import { cn } from '@/lib/utils'
-import { ArrowBackwardIcon, ArrowForwardSmallIcon } from '@/svgs'
+import { ArrowBackwardIcon, ArrowForwardSmallIcon, ChevronRightIcon } from '@/svgs'
 
 import { RewardIconTooltip } from './RewardIconTooltip'
 import { TaskDailyName, TaskTwitterAction, TaskType } from '../../constant'
@@ -77,7 +77,7 @@ export function ChapterProcess({
             className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
           />
         </div>
-        <hr className='my-5  border-neutral-600' />
+        <hr className='my-5 border-neutral-600' />
         <div>
           <p className='text-gradient-primary inline-block text-base font-medium leading-5 tracking-[.03em]'>
             {t('Chapter').toUpperCase()} {chapter.index}
@@ -85,16 +85,14 @@ export function ChapterProcess({
           <h3 className='text-3xl font-semibold'>{chapter.available ? t(chapter.name) : t('The Fates Await')}</h3>
 
           {chapter.available && (
-            <div className='mt-1'>
+            <div className='mt-4 flex flex-col gap-3'>
               {chapter.tasks.map(task => (
                 <div
                   key={task.id}
-                  className='mt-3 grid grid-cols-12 gap-4 rounded-lg bg-neutral-800 p-3 px-4 py-5 lg:flex-row'
+                  className='flex flex-col items-center gap-3 rounded-lg bg-neutral-800 px-4 py-3 lg:flex-row lg:py-4 xl:gap-4 xl:px-5'
                 >
-                  <div className='col-span-12 flex items-center justify-between lg:col-span-10'>
-                    <div>
-                      <p className='text-[18px] font-medium leading-6'>{t(task.name)}</p>
-                    </div>
+                  <div className='flex flex-1 items-center justify-between'>
+                    <p className='text-lg font-medium'>{t(task.name)}</p>
 
                     <div>
                       {task.rewardAmount.map((amount, index) => (
@@ -114,26 +112,23 @@ export function ChapterProcess({
                     </div>
                   </div>
 
-                  <div className='col-span-12 flex flex-row items-center lg:col-span-2'>
-                    <div className='w-full '>
-                      {task.isCompleted ? (
-                        <EmphasisButton className='w-full' disabled>
-                          {t('Completed')}
-                        </EmphasisButton>
-                      ) : (
-                        <Link href={getTaskHandleUrl(task)} target='_blank' rel='noopener noreferrer'>
-                          <PrimaryButton
-                            className='w-full'
-                            onClick={() => {
-                              getTaskHandleUrl(task)
-                            }}
-                          >
-                            {t('Start task')}
-                          </PrimaryButton>
-                        </Link>
-                      )}
-                    </div>
-                  </div>
+                  {task.isCompleted ? (
+                    <EmphasisButton className='w-full lg:w-28' disabled>
+                      {t('Completed')}
+                    </EmphasisButton>
+                  ) : (
+                    <Link
+                      href={getTaskHandleUrl(task)}
+                      className='w-full lg:w-28'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      <PrimaryButton className='flex w-full items-center justify-center gap-1'>
+                        <span>{t('Start task')}</span>
+                        <ChevronRightIcon className='size-4' />
+                      </PrimaryButton>
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>

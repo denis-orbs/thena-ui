@@ -9,15 +9,11 @@ import { errorToast } from '@/lib/notify'
 import { sleep } from '@/lib/utils'
 import useWallet from '@/lib/wallets/useWallet'
 
+const signedMessage = 'Please sign to confirm the ownership of the wallet.'
+
 const V4_LOGIN = gql`
-  mutation V4_MUTATION_LOGIN($signature: String!, $address: String!) {
-    login(
-      input: {
-        signedMessage: "Please sign to confirm the ownership of the wallet."
-        signature: $signature
-        address: $address
-      }
-    ) {
+  mutation V4_MUTATION_LOGIN($signature: String!, $address: String!, $signedMessage: String!) {
+    login(input: { signedMessage: $signedMessage, signature: $signature, address: $address }) {
       accessToken
     }
   }
@@ -36,6 +32,7 @@ export const useSignWallet = () => {
         const {
           login: { accessToken },
         } = await v4Client.request(V4_LOGIN, {
+          signedMessage,
           signature: data,
           address,
         })
@@ -54,25 +51,29 @@ export const useSignWallet = () => {
       if (account) {
         signMessage(
           {
-            message: 'Please sign to confirm the ownership of the wallet.',
+            message: signedMessage,
             account,
           },
           {
             onSuccess: async data => {
-              await login(data, account)
-              await sleep(1000)
-              if (getFromLocalStorage(ThenaAuthToken)) {
-                try {
+              try {
+                await login(data, account)
+                await sleep(1000)
+
+                if (getFromLocalStorage(ThenaAuthToken)) {
                   const res = await action(params)
                   callOnSuccess?.(res)
-                } catch (err) {
-                  if (err?.response?.errors?.[0]?.message) {
-                    errorToast(err?.response?.errors?.[0]?.message)
-                  } else {
-                    errorToast('Error')
-                  }
+                } else {
+                  errorToast('Error')
                   callOnReject?.()
                 }
+              } catch (err) {
+                if (err?.response?.errors?.[0]?.message) {
+                  errorToast(err?.response?.errors?.[0]?.message)
+                } else {
+                  errorToast('Error')
+                }
+                callOnReject?.()
               }
             },
             onError: () => {
