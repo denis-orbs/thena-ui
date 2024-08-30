@@ -140,20 +140,13 @@ function TopUser() {
       {
         label: 'User',
         value: 'user',
-        width: 'w-[20%]',
+        width: 'w-[25%]',
         disabled: true,
       },
       {
         label: 'Total Trading Volume',
         value: 'tradeTCVolume',
         width: 'w-[20%]',
-        isDesc: true,
-        disabled: false,
-      },
-      {
-        label: 'Total THE balance',
-        value: 'balance',
-        width: 'w-[15%]',
         isDesc: true,
         disabled: false,
       },
@@ -167,7 +160,7 @@ function TopUser() {
       {
         label: 'Followers',
         value: 'followerCount',
-        width: 'w-[10%]',
+        width: 'w-[15%]',
         isDesc: true,
         disabled: false,
       },
@@ -187,7 +180,7 @@ function TopUser() {
       {
         label: 'Entry Fees Paid',
         value: 'entryFeesPaid',
-        width: 'w-[10%]',
+        width: 'w-[15%]',
         isDesc: true,
         disabled: false,
       },
