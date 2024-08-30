@@ -47,6 +47,16 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
     }
   }, [copied])
 
+  const handleOpenShareWindow = data => {
+    const targetUrl = getShareSocialNetworkUrl(data)
+    const width = window.screen.width / 2
+    const height = window.screen.height / 2
+    const left = window.screen.width / 2 - width / 2
+    const top = window.screen.height / 2 - height / 2
+
+    window.open(targetUrl, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
+  }
+
   return (
     <Modal
       isOpen={openModal}
@@ -79,72 +89,85 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
       <ModalFooter className='mt-0'>
         <p className='text-lg font-medium'>{t('Share on')}</p>
         <div className='mt-3 grid grid-cols-5 gap-5 md:grid-cols-7 md:gap-12 lg:gap-7'>
-          <Link
-            href={getShareSocialNetworkUrl({
-              network: SocialNetwork.Twitter,
-              content: postContent,
-              url: referralLink,
-            })}
-            target='_blank'
-            rel='noopener noreferrer'
+          <div
+            onClick={
+              () =>
+                handleOpenShareWindow({
+                  network: SocialNetwork.Twitter,
+                  content: postContent,
+                  url: referralLink,
+                })
+              // eslint-disable-next-line react/jsx-curly-newline
+            }
+            className=''
           >
             <TwitterIcon className='cursor-pointer fill-white/45 hover:fill-white' />
-          </Link>
-          <Link
-            href={getShareSocialNetworkUrl({
-              network: SocialNetwork.Telegram,
-              content: postContent,
-              url: referralLink,
-            })}
-            target='_blank'
-            rel='noopener noreferrer'
+          </div>
+          <div
+            onClick={
+              () =>
+                handleOpenShareWindow({
+                  network: SocialNetwork.Telegram,
+                  content: postContent,
+                  url: referralLink,
+                })
+              // eslint-disable-next-line react/jsx-curly-newline
+            }
           >
             <TelegramIcon className='cursor-pointer fill-white/45 hover:fill-social-telegram' />
-          </Link>
-          <Link
-            href={getShareSocialNetworkUrl({
-              network: SocialNetwork.Facebook,
-              content: postContent,
-              url: referralLink,
-            })}
-            target='_blank'
-            rel='noopener noreferrer'
+          </div>
+          <div
+            onClick={
+              () =>
+                handleOpenShareWindow({
+                  network: SocialNetwork.Facebook,
+                  content: postContent,
+                  url: referralLink,
+                })
+              // eslint-disable-next-line react/jsx-curly-newline
+            }
           >
             <FacebookIcon className='cursor-pointer fill-white/45 hover:fill-social-facebook' />
-          </Link>
-          <Link
-            href={getShareSocialNetworkUrl({
-              network: SocialNetwork.Instagram,
-              content: postContent,
-              url: referralLink,
-            })}
-            target='_blank'
-            rel='noopener noreferrer'
+          </div>
+          <div
+            onClick={
+              () =>
+                handleOpenShareWindow({
+                  network: SocialNetwork.Instagram,
+                  content: postContent,
+                  url: referralLink,
+                })
+              // eslint-disable-next-line react/jsx-curly-newline
+            }
           >
             <InstagramIcon />
-          </Link>
-          <Link
-            href={getShareSocialNetworkUrl({
-              network: SocialNetwork.Discord,
-              content: postContent,
-              url: referralLink,
-            })}
-            target='_blank'
-            rel='noopener noreferrer'
+          </div>
+          <div
+            onClick={
+              () =>
+                handleOpenShareWindow({
+                  network: SocialNetwork.Discord,
+                  content: postContent,
+                  url: referralLink,
+                })
+              // eslint-disable-next-line react/jsx-curly-newline
+            }
           >
             <DiscordIcon className='cursor-pointer fill-white/45 hover:fill-social-discord' />
-          </Link>
-          <Link
-            href={getShareSocialNetworkUrl({
-              network: SocialNetwork.Reddit,
-              content: postContent,
-              url: referralLink,
-            })}
-            target='_blank'
-            rel='noopener noreferrer'
+          </div>
+          <div
+            onClick={
+              () =>
+                handleOpenShareWindow({
+                  network: SocialNetwork.Reddit,
+                  content: postContent,
+                  url: referralLink,
+                })
+              // eslint-disable-next-line react/jsx-curly-newline
+            }
           >
             <RedditIcon className='cursor-pointer fill-white/45 hover:fill-social-reddit' />
-          </Link>
+          </div>
           <Link
             href={getShareSocialNetworkUrl({
               network: SocialNetwork.Email,
