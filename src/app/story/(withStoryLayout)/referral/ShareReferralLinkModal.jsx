@@ -18,17 +18,15 @@ import {
   TwitterIcon,
 } from '@/svgs'
 
-const domain = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN
-
 export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }) {
   const t = useTranslations()
   const [copied, setCopied] = useState(false)
   const [postContent, setPostContent] = useState(
     // eslint-disable-next-line max-len
-    `Join THE Story with @ThenaFi_ 💜🏛️ Complete tasks, earn NFT fragments, and rise through the ranks.Start your journey now! Referral Link🔗: ${domain}/story?ref=${referralCode}`,
+    `Join THE Story with @ThenaFi_ 💜🏛️ Complete tasks, earn NFT fragments, and rise through the ranks.Start your journey now! Referral Link🔗: https://thena.fi/story?ref=${referralCode}`,
   )
 
-  const referralLink = useMemo(() => `${domain}/story?ref=${referralCode}`, [referralCode])
+  const referralLink = useMemo(() => `https://thena.fi/story?ref=${referralCode}`, [referralCode])
 
   const onCopy = useCallback(
     e => {
@@ -61,7 +59,7 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
         <div className=''>
           <p className='text-lg font-medium'>{t('Your Referral Code')}</p>
           <div className='mt-2 flex cursor-text items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'>
-            <span>https://thena.fi/invite?ref=4X0JEX</span>
+            <span>{referralLink}</span>
             <div onClick={onCopy} className='inline-block h-6 w-6 cursor-pointer'>
               {copied ? <CheckPurpleIcon /> : <CopyIcon />}
             </div>

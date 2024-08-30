@@ -8,13 +8,11 @@ import { CheckPurpleIcon, CopyIcon, ShareIcon } from '@/svgs'
 
 import { ShareReferralLinkModal } from './ShareReferralLinkModal'
 
-const domain = process.env.NEXT_PUBLIC_FRONTEND_DOMAIN
-
 export function ShareReferralLink({ referralCode }) {
   const t = useTranslations()
   const [copied, setCopied] = useState(false)
   const [openModal, setOpenModal] = useState(false)
-  const referralLink = useMemo(() => `${domain}/story?ref=${referralCode}`, [referralCode])
+  const referralLink = useMemo(() => `https://thena.fi/story?ref=${referralCode}`, [referralCode])
 
   const copyHandler = useCallback(
     e => {
