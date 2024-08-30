@@ -655,5 +655,8 @@
   "Search by Name": "Search by Name",
   "Fragments missing": "Fragments missing",
   "The Fates Await": "The Fates Await…",
-  "THE Story leaderboard point description": "In case of a tie, ranks will be determined by the order of registration. Early registered users will be ranked higher."
+  "THE Story leaderboard point description": "In case of a tie, ranks will be determined by the order of registration. Early registered users will be ranked higher.",
+  "X Profile Username": "X profile username",
+  "Enter Your X Profile Username To Update X": "Enter your X profile username to display on your profile.",
+  "xprofilehandle": "xprofilehandle"
 }

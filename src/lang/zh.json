@@ -655,5 +655,8 @@
   "Search by Name": "Search by Name",
   "Fragments missing": "碎片数不足",
   "The Fates Await": "等待命运降临...",
-  "THE Story leaderboard point description": "若与参赛者平手，较早注册者将取得较高排行。越早注册的用户将可取得较高排行名次。"
+  "THE Story leaderboard point description": "若与参赛者平手，较早注册者将取得较高排行。越早注册的用户将可取得较高排行名次。",
+  "X Profile Username": "X profile username",
+  "Enter Your X Profile Username To Update X": "Enter your X profile username to display on your profile.",
+  "xprofilehandle": "xprofilehandle"
 }
