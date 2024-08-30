@@ -18,7 +18,7 @@ export function ReferralHistory({ referralHistory }) {
 
   return (
     <div className='border-gradient-secondary rounded-xl p-[1px]'>
-      <div className='rounded-xl bg-neutral-900 p-6'>
+      <div className='rounded-xl bg-neutral-900 p-4 xl:p-6'>
         <div>
           <TextHeading className='font-archia text-3xl font-semibold'>{t('Referral History')}</TextHeading>
         </div>
@@ -28,13 +28,7 @@ export function ReferralHistory({ referralHistory }) {
               <div key={referral.id} className='mt-4 rounded-xl bg-neutral-800 p-4'>
                 <div>
                   <p className='mb-2'>{t('Registered Referral')}</p>
-                  <span
-                    style={{
-                      wordWrap: 'break-word',
-                    }}
-                  >
-                    {referral.invitedWallet}
-                  </span>
+                  <span className='break-all'>{referral.invitedWallet}</span>
                 </div>
                 <div className='mt-4 flex justify-between'>
                   <div>

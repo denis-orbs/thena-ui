@@ -58,7 +58,7 @@ export function Referral({ address }) {
         </div>
         <div className='col-span-6 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
           <TextHeading className='block text-2xl'>
-            <StarLineSmallIcon className='inline-block h-5 w-5' />
+            <StarLineSmallIcon className='mr-1 inline-block size-5' />
             {REFERRAL_REWARD * totalSuccessfulReferral}
           </TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>

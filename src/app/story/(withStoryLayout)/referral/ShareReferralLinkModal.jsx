@@ -56,7 +56,7 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
       title={t('Share Your Referral Link')}
     >
       <ModalBody>
-        <div className=''>
+        <div>
           <p className='text-lg font-medium'>{t('Your Referral Code')}</p>
           <div className='mt-2 flex cursor-text items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'>
             <span>{referralLink}</span>
@@ -78,7 +78,7 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
       </ModalBody>
       <ModalFooter className='mt-0'>
         <p className='text-lg font-medium'>{t('Share on')}</p>
-        <div className='grid grid-cols-5 gap-x-[27px] lg:grid-cols-7'>
+        <div className='mt-3 grid grid-cols-5 gap-5 md:grid-cols-7 md:gap-12 lg:gap-7'>
           <Link
             href={getShareSocialNetworkUrl({
               network: SocialNetwork.Twitter,
