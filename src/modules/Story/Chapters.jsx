@@ -9,7 +9,9 @@ export default function Chapters({ chapters, isLoading }) {
 
   useEffect(() => {
     if (chapters) {
-      setSelectedChapterIndex([...chapters].reverse().findIndex(chapter => chapter.available) + 1)
+      const availableChapters = chapters.filter(chapter => chapter.available).sort((c1, c2) => c1.index - c2.index)
+      const index = availableChapters?.[availableChapters.length - 1]?.index ?? 1
+      setSelectedChapterIndex(index)
     }
   }, [chapters])
 
@@ -27,7 +29,7 @@ export default function Chapters({ chapters, isLoading }) {
 
   const [numberCompletedChapters, numberAvailableChapters] = useMemo(
     () => [
-      chapters.filter(chapter => chapter.isCompleted).length,
+      chapters.filter(chapter => chapter.available && chapter.isCompleted).length,
       chapters.filter(chapter => chapter.available).length,
     ],
     [chapters],

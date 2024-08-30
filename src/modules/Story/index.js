@@ -204,7 +204,7 @@ export const useUpdateParticipantAvatar = () => {
 
 const V4_CAMPAIGN_CHAPTER = gql`
   query V4_FIRST_CAMPAIGN_CHAPTER($index: Int) {
-    campaignChapters(where: { index_eq: $index }) {
+    campaignChapters(orderBy: index_ASC, where: { index_eq: $index }) {
       id
       name
       startTimestamp
@@ -368,57 +368,61 @@ const useFetchChaptersAndTasks = id => {
 
     // check completed chapters and tasks
     // filter chapter task with type [Main], [Side]
-    const campaignChaptersDetails = campaignChapters.map(chapter => {
-      const startTime = new Date(chapter?.startTimestamp ?? 0)
-      const endTime = new Date(chapter?.endTimestamp ?? 0)
+    const campaignChaptersDetails = campaignChapters
+      .map(chapter => {
+        const startTime = new Date(chapter?.startTimestamp ?? 0)
+        const endTime = new Date(chapter?.endTimestamp ?? 0)
 
-      const currentChapterCompletedTasks = campaignCompletedTasks.filter(completedTask => {
-        const completedTime = new Date(completedTask.timestamp)
-        return completedTime >= startTime && completedTime <= endTime
+        const currentChapterCompletedTasks = campaignCompletedTasks.filter(completedTask => {
+          const completedTime = new Date(completedTask.timestamp)
+          return completedTime >= startTime && completedTime <= endTime
+        })
+
+        const tasks = campaignTasks
+          .filter(
+            task => (+task.chapter === chapter.index && task.type === TaskType.Main) || task.type === TaskType.Side,
+          )
+          .map(task => {
+            let isCompleted = false
+
+            if (task.type === TaskType.Main) {
+              isCompleted = !!currentChapterCompletedTasks.find(
+                completedTask => completedTask.campaignTask.id === task.id,
+              )
+            }
+
+            return {
+              ...task,
+              isCompleted,
+            }
+          })
+          .sort((task1, task2) => {
+            const orderType = [TaskType.Main, TaskType.Side]
+
+            const t1Type = task1.type
+            const t2Type = task2.type
+            if (orderType.indexOf(t1Type) > orderType.indexOf(t2Type)) return 1
+            if (orderType.indexOf(t1Type) < orderType.indexOf(t2Type)) return -1
+
+            const t1TIndex = task1.index
+            const t2Index = task2.index
+            if (t1TIndex > t2Index) return 1
+            if (t1TIndex < t2Index) return -1
+            return 0
+          })
+
+        const isCompleted = tasks.filter(task => task.type === TaskType.Main).every(task => task.isCompleted)
+
+        const available = currentDate >= startTime
+        return {
+          ...chapter,
+          index: chapter.index,
+          tasks,
+          isCompleted,
+          available,
+        }
       })
-
-      const tasks = campaignTasks
-        .filter(task => (+task.chapter === chapter.index && task.type === TaskType.Main) || task.type === TaskType.Side)
-        .map(task => {
-          let isCompleted = false
-
-          if (task.type === TaskType.Main) {
-            isCompleted = !!currentChapterCompletedTasks.find(
-              completedTask => completedTask.campaignTask.id === task.id,
-            )
-          }
-
-          return {
-            ...task,
-            isCompleted,
-          }
-        })
-        .sort((task1, task2) => {
-          const orderType = [TaskType.Main, TaskType.Side]
-
-          const t1Type = task1.type
-          const t2Type = task2.type
-          if (orderType.indexOf(t1Type) > orderType.indexOf(t2Type)) return 1
-          if (orderType.indexOf(t1Type) < orderType.indexOf(t2Type)) return -1
-
-          const t1TIndex = task1.index
-          const t2Index = task2.index
-          if (t1TIndex > t2Index) return 1
-          if (t1TIndex < t2Index) return -1
-          return 0
-        })
-
-      const isCompleted = tasks.every(task => task.isCompleted)
-
-      const available = currentDate >= startTime
-      return {
-        ...chapter,
-        index: chapter.index,
-        tasks,
-        isCompleted,
-        available,
-      }
-    })
+      .sort((c1, c2) => c1.index - c2.index)
 
     const currentChapter = campaignChapters?.reverse().find(chapter => chapter.available)
 

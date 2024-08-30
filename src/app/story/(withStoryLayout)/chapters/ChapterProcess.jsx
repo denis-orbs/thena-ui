@@ -1,4 +1,5 @@
-import Link from 'next/link'
+'use client'
+
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 
@@ -30,15 +31,21 @@ export function ChapterProcess({
     return 0
   }, [numberAvailableChapters, numberCompletedChapters])
 
-  const getTaskHandleUrl = task => {
+  const handleTask = task => {
     if (task.type === TaskType.Main && task.actionHandle === TaskTwitterAction) {
       const url = getShareSocialNetworkUrl({
         network: SocialNetwork.Twitter,
         content: TweetContent,
       })
-      return url
+      const width = window.screen.width / 2
+      const height = window.screen.height / 2
+      const left = window.screen.width / 2 - width / 2
+      const top = window.screen.height / 2 - height / 2
+
+      window.open(url, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
+    } else {
+      window.location.href = `/${task.actionHandle}`
     }
-    return `/${task.actionHandle}`
   }
 
   return (
@@ -91,7 +98,7 @@ export function ChapterProcess({
                   key={task.id}
                   className='flex flex-col items-center gap-3 rounded-lg bg-neutral-800 px-4 py-3 lg:flex-row lg:py-4 xl:gap-4 xl:px-5'
                 >
-                  <div className='flex flex-1 items-center justify-between'>
+                  <div className='flex w-full flex-1 items-center justify-between'>
                     <p className='text-lg font-medium'>{t(task.name)}</p>
 
                     <div>
@@ -117,17 +124,13 @@ export function ChapterProcess({
                       {t('Completed')}
                     </EmphasisButton>
                   ) : (
-                    <Link
-                      href={getTaskHandleUrl(task)}
-                      className='w-full lg:w-28'
-                      target='_blank'
-                      rel='noopener noreferrer'
+                    <PrimaryButton
+                      className='flex w-full  items-center justify-center gap-1 lg:w-28'
+                      onClick={() => handleTask(task)}
                     >
-                      <PrimaryButton className='flex w-full items-center justify-center gap-1'>
-                        <span>{t('Start task')}</span>
-                        <ChevronRightIcon className='size-4' />
-                      </PrimaryButton>
-                    </Link>
+                      <span>{t('Start task')}</span>
+                      <ChevronRightIcon className='size-4' />
+                    </PrimaryButton>
                   )}
                 </div>
               ))}

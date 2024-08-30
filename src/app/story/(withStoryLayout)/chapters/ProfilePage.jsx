@@ -18,7 +18,8 @@ export function ProfilePage({ address }) {
 
   useEffect(() => {
     if (chapters) {
-      const index = [...chapters].reverse().find(chapter => chapter.available)?.index ?? 1
+      const availableChapters = chapters.filter(chapter => chapter.available).sort((c1, c2) => c1.index - c2.index)
+      const index = availableChapters?.[availableChapters.length - 1]?.index ?? 1
       setSelectedChapterIndex(index)
     }
   }, [chapters])
@@ -38,7 +39,7 @@ export function ProfilePage({ address }) {
 
   const [numberCompletedChapters, numberAvailableChapters] = useMemo(
     () => [
-      chapters.filter(chapter => chapter.isCompleted).length,
+      chapters.filter(chapter => chapter.available && chapter.isCompleted).length,
       chapters.filter(chapter => chapter.available).length,
     ],
     [chapters],
