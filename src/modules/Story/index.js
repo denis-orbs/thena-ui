@@ -1,6 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useCallback, useMemo } from 'react'
-import useSWR from 'swr'
 
 import { TaskType } from '@/app/story/constant'
 import { ThenaAuthToken } from '@/constant'
@@ -228,17 +228,6 @@ export const fetchCampaignChapter = async index => {
   }
 }
 
-const V4_CAMPAIGN_CHAPTERS = gql`
-  query V4_CAMPAIGN_CHAPTERS {
-    campaignChapters(orderBy: index_ASC) {
-      id
-      index
-      name
-      startTimestamp
-      endTimestamp
-    }
-  }
-`
 const V4_GET_CAMPAIGN_PARTICIPANTS = gql`
   query V4_GET_CAMPAIGN_PARTICIPANTS($limit: Int!) {
     campaignParticipants(limit: $limit, orderBy: [totalPoints_DESC, createdAt_ASC]) {
@@ -253,44 +242,6 @@ const V4_GET_CAMPAIGN_PARTICIPANTS = gql`
     }
   }
 `
-
-const fetchCampaignChapters = async () => {
-  try {
-    const { campaignChapters = [] } = await v4Client.request(V4_CAMPAIGN_CHAPTERS)
-
-    return campaignChapters
-  } catch (error) {
-    return undefined
-  }
-}
-
-const V4_CAMPAIGN_TASKS = gql`
-  query V4_CAMPAIGN_TASKS {
-    campaignTasks(where: { isHidden_isNull: false }) {
-      actionHandle
-      chapter
-      id
-      index
-      name
-      rewardType
-      rewardAmount
-      type
-    }
-  }
-`
-const fetchCampaignTasks = async () => {
-  try {
-    const { campaignTasks } = await v4Client.request(V4_CAMPAIGN_TASKS)
-    if (campaignTasks && Array.isArray(campaignTasks)) {
-      return campaignTasks
-    }
-
-    return []
-  } catch (error) {
-    return undefined
-  }
-}
-
 export const fetchParticipants = async (limit, id_not_eq) => {
   try {
     const { campaignParticipants } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANTS, {
@@ -309,8 +260,25 @@ export const fetchParticipants = async (limit, id_not_eq) => {
   }
 }
 
-const V4_CAMPAIGN_COMPLETED_TASKS = gql`
-  query MyQuery($id: String = "") {
+const V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED = gql`
+  query V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED($id: String = "") {
+    campaignChapters(orderBy: index_ASC) {
+      id
+      index
+      name
+      startTimestamp
+      endTimestamp
+    }
+    campaignTasks(where: { isHidden_isNull: false, type_in: [Main, Side] }, orderBy: [type_ASC, index_ASC]) {
+      actionHandle
+      chapter
+      id
+      index
+      name
+      rewardType
+      rewardAmount
+      type
+    }
     campaignParticipantCompleteTasks(where: { participant: { id_eq: $id } }) {
       campaignTask {
         id
@@ -320,13 +288,26 @@ const V4_CAMPAIGN_COMPLETED_TASKS = gql`
     }
   }
 `
-
-const fetchCampaignCompletedTasks = async id => {
+const fetchCampaignChaptersTasksAndCompletedTasks = async id => {
   try {
-    const { campaignParticipantCompleteTasks = [] } = await v4Client.request(V4_CAMPAIGN_COMPLETED_TASKS, { id })
-    return campaignParticipantCompleteTasks
+    const {
+      campaignParticipantCompleteTasks = [],
+      campaignChapters = [],
+      campaignTasks = [],
+    } = await v4Client.request(V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED, { id })
+
+    return {
+      campaignChapters,
+      campaignTasks,
+      campaignParticipantCompleteTasks,
+    }
   } catch (error) {
-    return undefined
+    console.log(error)
+    return {
+      campaignChapters: [],
+      campaignTasks: [],
+      campaignParticipantCompleteTasks: [],
+    }
   }
 }
 
@@ -336,141 +317,71 @@ const initialState = {
   isLoading: true,
 }
 
-const useFetchChaptersAndTasks = id => {
-  const { data: campaignChapters = [], isLoading: isLoadingChapter } = useSWR(
-    ['fetchCampaignChapters', id],
-    () => fetchCampaignChapters(),
-    {
-      refreshInterval: 30000,
-    },
-  )
+export const useFetchChaptersAndTasks = account => {
+  const { data, isLoading } = useQuery({
+    queryKey: ['fetchCampaignChaptersTasksAndCompletedTasks', account],
+    queryFn: () => fetchCampaignChaptersTasksAndCompletedTasks(account?.toLowerCase()),
+    refetchInterval: 30000,
+    enabled: Boolean(account),
+    gcTime: 0,
+  })
 
-  const { data: campaignTasks = [], isLoading: isLoadingTask } = useSWR(
-    ['fetchCampaignTasks', id],
-    () => fetchCampaignTasks(),
-    {
-      refreshInterval: 30000,
-    },
-  )
-
-  const { data: campaignCompletedTasks = [], isLoading: isLoadingCompletedTask } = useSWR(
-    ['fetchCampaignCompletedTasks', id],
-    () => fetchCampaignCompletedTasks(id),
-    {
-      refreshInterval: 30000,
-    },
-  )
   const final = useMemo(() => {
-    const currentDate = new Date()
-    if (!id || isLoadingChapter || isLoadingCompletedTask || isLoadingTask) {
+    const currentTime = new Date()
+    if (!account || isLoading || !data) {
       return initialState
     }
 
+    const { campaignChapters, campaignTasks, campaignParticipantCompleteTasks: campaignCompletedTasks } = data
+
     // check completed chapters and tasks
-    // filter chapter task with type [Main], [Side]
-    const campaignChaptersDetails = campaignChapters
-      .map(chapter => {
-        const startTime = new Date(chapter?.startTimestamp ?? 0)
-        const endTime = new Date(chapter?.endTimestamp ?? 0)
+    const campaignChaptersDetails = campaignChapters.map(chapter => {
+      const startTime = new Date(chapter?.startTimestamp ?? 0)
+      const endTime = new Date(chapter?.endTimestamp ?? 0)
 
-        const currentChapterCompletedTasks = campaignCompletedTasks.filter(completedTask => {
-          const completedTime = new Date(completedTask.timestamp)
-          return completedTime >= startTime && completedTime <= endTime
+      const currentChapterCompletedTasks = campaignCompletedTasks.filter(completedTask => {
+        const completedTime = new Date(completedTask.timestamp)
+        return completedTime >= startTime && completedTime <= endTime
+      })
+
+      // Assign tasks into chapter
+      const tasks = campaignTasks
+        .filter(task => (+task.chapter === chapter.index && task.type === TaskType.Main) || task.type === TaskType.Side)
+        .map(task => {
+          let isCompleted = false
+
+          if (task.type === TaskType.Main) {
+            isCompleted = !!currentChapterCompletedTasks.find(
+              completedTask => completedTask.campaignTask.id === task.id,
+            )
+          }
+
+          return {
+            ...task,
+            isCompleted,
+          }
         })
 
-        const tasks = campaignTasks
-          .filter(
-            task => (+task.chapter === chapter.index && task.type === TaskType.Main) || task.type === TaskType.Side,
-          )
-          .map(task => {
-            let isCompleted = false
+      const chapterIsCompleted = tasks.filter(task => task.type === TaskType.Main).every(task => task.isCompleted)
 
-            if (task.type === TaskType.Main) {
-              isCompleted = !!currentChapterCompletedTasks.find(
-                completedTask => completedTask.campaignTask.id === task.id,
-              )
-            }
-
-            return {
-              ...task,
-              isCompleted,
-            }
-          })
-          .sort((task1, task2) => {
-            const orderType = [TaskType.Main, TaskType.Side]
-
-            const t1Type = task1.type
-            const t2Type = task2.type
-            if (orderType.indexOf(t1Type) > orderType.indexOf(t2Type)) return 1
-            if (orderType.indexOf(t1Type) < orderType.indexOf(t2Type)) return -1
-
-            const t1TIndex = task1.index
-            const t2Index = task2.index
-            if (t1TIndex > t2Index) return 1
-            if (t1TIndex < t2Index) return -1
-            return 0
-          })
-
-        const isCompleted = tasks.filter(task => task.type === TaskType.Main).every(task => task.isCompleted)
-
-        const available = currentDate >= startTime
-        return {
-          ...chapter,
-          index: chapter.index,
-          tasks,
-          isCompleted,
-          available,
-        }
-      })
-      .sort((c1, c2) => c1.index - c2.index)
-
-    const currentChapter = campaignChapters?.reverse().find(chapter => chapter.available)
-
-    let dailySwaps = campaignTasks
-      .filter(task => task.type === TaskType.Daily)
-      .map(task => {
-        const startTime = new Date(currentChapter?.startTimestamp ?? 0)
-        const endTime = new Date(currentChapter?.endTimestamp ?? 0)
-
-        const isCompleted = !!campaignCompletedTasks.find(completedTask => {
-          const completedTime = new Date(completedTask.timestamp)
-          return completedTask.campaignTask.id === task.id && completedTime > startTime && completedTime < endTime
-        })
-        return {
-          ...task,
-          isCompleted,
-        }
-      })
-      .sort((swap1, swap2) => swap1.index - swap2.index)
-
-    const firstSwapRewardAmount = dailySwaps[0]?.rewardAmount?.[0] ?? 1
-    dailySwaps = dailySwaps.map(swap => {
-      const ratio = swap.rewardAmount[0] / firstSwapRewardAmount
+      const available = currentTime >= startTime
       return {
-        ...swap,
-        ratio,
+        ...chapter,
+        tasks,
+        isCompleted: chapterIsCompleted,
+        available,
       }
     })
 
     return {
-      dailySwaps,
+      dailySwaps: [],
       campaignChapters: campaignChaptersDetails,
-      isLoading: isLoadingChapter || isLoadingTask || isLoadingCompletedTask,
+      isLoading,
     }
-  }, [
-    id,
-    campaignChapters,
-    isLoadingChapter,
-    campaignTasks,
-    isLoadingTask,
-    campaignCompletedTasks,
-    isLoadingCompletedTask,
-  ])
+  }, [account, data, isLoading])
 
   return final
 }
-
-export { fetchCampaignChapters, fetchCampaignCompletedTasks, fetchCampaignTasks, useFetchChaptersAndTasks }
 
 const V4_GET_CAMPAIGN_PARTICIPANT_BY_ID = gql`
   query V4_GET_CAMPAIGN_PARTICIPANT_BY_ID($id_eq: String!) {
