@@ -1,4 +1,3 @@
-import TwitterConnectIcon from '~/svgs/achievements/twitter-connect.svg'
 import AlertTriangleIcon from '~/svgs/alert-triangle.svg'
 import AnalyticsIcon from '~/svgs/analytics.svg'
 import AnnouncementIcon from '~/svgs/announcement.svg'
@@ -109,7 +108,6 @@ export {
   SwitchHorizontalV2Icon,
   SwitchVerticalIcon,
   TransferIcon,
-  TwitterConnectIcon,
   UpRank,
   User,
   UserIcon,
