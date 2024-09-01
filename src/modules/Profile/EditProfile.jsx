@@ -163,11 +163,11 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
                     src={dataUpdate?.checkMarkIcon}
                     width={20}
                     height={20}
-                    className='ml-2 h-5 w-5 cursor-pointer'
+                    className='ml-2 size-5'
                     alt='demo-checkmark'
                   />
                 ) : (
-                  <Verified className='ml-2 h-5 w-5 cursor-pointer' />
+                  <Verified className='ml-2 size-5' />
                 )
               ) : (
                 <></>

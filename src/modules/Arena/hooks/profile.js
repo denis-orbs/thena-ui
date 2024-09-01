@@ -10,7 +10,6 @@ import { successToast } from '@/lib/notify'
 const V4_UPDATE_ARENA_PROFILE = gql`
   mutation V4_UPDATE_PROFILE(
     $isPublicProfile: Boolean
-    $avatar: String
     $biography: String
     $nameColor: String
     $username: String
@@ -22,7 +21,6 @@ const V4_UPDATE_ARENA_PROFILE = gql`
     updateUserProfile(
       input: {
         isPublicProfile: $isPublicProfile
-        avatar: $avatar
         biography: $biography
         nameColor: $nameColor
         theme: $theme
@@ -135,4 +133,43 @@ export const useUpdateArenaAvatar = account => {
   )
 
   return { updateArenaAvatar }
+}
+
+const V4_UPDATE_ARENA_CHECKMARK = gql`
+  mutation V4_UPDATE_ARENA_CHECKMARK($checkMarkIcon: String, $userId: String!) {
+    updateCheckMarkIcon(checkMarkIcon: $checkMarkIcon, userId: $userId) {
+      id
+      checkMarkIcon
+    }
+  }
+`
+export const useUpdateArenaCheckmarkIcon = () => {
+  const { signWallet } = useSignWallet()
+
+  const updateArenacheckMarkIconFn = useCallback(async ({ checkMarkIcon, userId }) => {
+    const res = await v4Client.request(
+      V4_UPDATE_ARENA_CHECKMARK,
+      {
+        checkMarkIcon,
+        userId,
+      },
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
+
+    if (res?.response?.errors) {
+      throw new Error(res?.response?.errors?.[0]?.message)
+    }
+
+    return res?.updateCheckMarkIcon
+  }, [])
+
+  const updateArenacheckMarkIcon = useCallback(
+    async (params, callOnSuccess, callOnReject) =>
+      await actionWithAuthentication(updateArenacheckMarkIconFn, signWallet, params, callOnSuccess, callOnReject),
+    [updateArenacheckMarkIconFn, signWallet],
+  )
+
+  return { updateArenacheckMarkIcon }
 }

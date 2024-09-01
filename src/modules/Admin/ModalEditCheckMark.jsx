@@ -7,33 +7,68 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
-import { useUploadCheckMarkIcon } from '@/hooks/useUploadFile'
+import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 
+import { useUpdateArenaCheckmarkIcon } from '../Arena/hooks/profile'
+
 function ModalEditCheckMark({ isOpen, closeModal = () => {}, user = {}, onChange }) {
   const t = useTranslations()
+
   const [stateChecked, setStateChecked] = useState('default')
   const [selectedImage, setSelectedImage] = useState(undefined)
   const [loading, setLoading] = useState(false)
-  const { upload } = useUploadCheckMarkIcon()
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
     accept: { 'image/*': [] },
   })
+
+  const { createPresignedUrl } = useCreatePresignedUrl()
+  const { updateArenacheckMarkIcon } = useUpdateArenaCheckmarkIcon()
+
+  const handleUpdateCheckmark = useCallback(
+    async url => {
+      await updateArenacheckMarkIcon(
+        { checkMarkIcon: url, userId: user?.id?.toLowerCase() || '' },
+        newData => {
+          if (newData !== false) {
+            successToast('Successfully')
+            onChange(url)
+            closeModal()
+          }
+          setLoading(false)
+        },
+        () => setLoading(false),
+      )
+    },
+    [closeModal, onChange, updateArenacheckMarkIcon, user?.id],
+  )
+
   const handleSave = useCallback(async () => {
-    setLoading(true)
     if (user?.id) {
-      await upload(selectedImage, user.id, async data => {
-        if (data !== false) {
-          onChange(data)
-        }
-        successToast('Successfully')
-        setLoading(false)
-        closeModal()
-      })
+      setLoading(true)
+      if (stateChecked === 'default') {
+        await handleUpdateCheckmark(null)
+      } else {
+        await createPresignedUrl(
+          selectedImage,
+          user.id,
+          'CHECK_MARK',
+          async data => {
+            if (data !== false) {
+              await handleUpdateCheckmark(data)
+            } else {
+              setLoading(false)
+            }
+          },
+          () => {
+            setLoading(false)
+          },
+        )
+      }
     }
-  }, [user.id, upload, selectedImage, onChange, closeModal])
+  }, [createPresignedUrl, handleUpdateCheckmark, selectedImage, stateChecked, user.id])
 
   useEffect(() => {
     if (acceptedFiles.length) {
