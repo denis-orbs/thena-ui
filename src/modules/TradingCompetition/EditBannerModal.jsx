@@ -9,32 +9,85 @@ import Modal, { ModalBody } from '@/components/modal'
 import Spinner from '@/components/spinner'
 import { TextSubHeading } from '@/components/typography'
 import { useUserInfo } from '@/context/userInfoContext'
-import { useUploadBanner } from '@/hooks/useUploadFile'
-import { successToast } from '@/lib/notify'
+import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
+import { errorToast, successToast } from '@/lib/notify'
+
+import { resizeFile, useUpdateTCBanner } from '../Arena/hooks/competitions'
 
 export function EditBannerModal({ competition, open, onClose }) {
   const t = useTranslations()
+  const { userInfo } = useUserInfo()
+
   const [selectedImage, setSelectedImage] = useState(competition.bannerUrl)
   const [loading, setLoading] = useState(false)
-  const { uploadBanner } = useUploadBanner()
   const [stateChecked, setStateChecked] = useState(competition.bannerUrl ? 'custom' : 'default')
-  const { userInfo } = useUserInfo()
 
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
     accept: { 'image/*': [] },
   })
+
+  const { createPresignedUrl } = useCreatePresignedUrl()
+  const { updateTCBanner } = useUpdateTCBanner()
+
+  const handleUpdateTCBanner = useCallback(
+    async bannerUrl => {
+      await updateTCBanner(
+        { bannerUrl, tcId: competition.id },
+        newData => {
+          if (newData !== false) {
+            successToast('Successfully')
+            mutate('competition detail api')
+            onClose()
+          }
+          setLoading(false)
+        },
+        () => setLoading(false),
+      )
+    },
+    [competition?.id, onClose, updateTCBanner],
+  )
+
   const handleSave = useCallback(async () => {
     if (userInfo?.id && competition?.id) {
       setLoading(true)
-      uploadBanner(selectedImage, userInfo.id, competition.id, async () => {
-        successToast('Successfully')
-        await mutate('competition detail api')
-        setLoading(false)
-        onClose()
-      })
+      if (stateChecked === 'default') {
+        await handleUpdateTCBanner(null)
+      } else {
+        // Resize before upload
+        let resizedFile = ''
+        try {
+          resizedFile = await resizeFile(selectedImage)
+        } catch (error) {
+          console.log(error)
+          errorToast('Error')
+          setLoading(false)
+          return
+        }
+
+        if (resizedFile) {
+          await createPresignedUrl(
+            resizedFile,
+            userInfo.id,
+            'BANNER',
+            async data => {
+              if (data !== false) {
+                await handleUpdateTCBanner(data)
+              } else {
+                setLoading(false)
+              }
+            },
+            () => {
+              setLoading(false)
+            },
+          )
+        } else {
+          errorToast('Error')
+          setLoading(false)
+        }
+      }
     }
-  }, [userInfo?.id, competition?.id, onClose, selectedImage, uploadBanner])
+  }, [competition?.id, createPresignedUrl, handleUpdateTCBanner, selectedImage, stateChecked, userInfo.id])
 
   useEffect(() => {
     if (acceptedFiles.length) {
@@ -43,7 +96,7 @@ export function EditBannerModal({ competition, open, onClose }) {
   }, [acceptedFiles, setSelectedImage])
 
   return (
-    <Modal isOpen={open} closeModal={onClose} width={540} title={t('Edit Banner')}>
+    <Modal isOpen={open} closeModal={onClose} width={540} title={t('Edit banner')}>
       <ModalBody>
         <div className='flex flex-row items-center justify-center gap-4'>
           <div

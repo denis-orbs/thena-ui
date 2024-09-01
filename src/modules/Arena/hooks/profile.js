@@ -42,7 +42,6 @@ const V4_UPDATE_ARENA_PROFILE = gql`
     }
   }
 `
-
 export const useUpdateArenaProfile = account => {
   const { signWallet } = useSignWallet()
 
@@ -99,7 +98,6 @@ const V4_UPDATE_ARENA_AVATAR = gql`
     }
   }
 `
-
 export const useUpdateArenaAvatar = account => {
   const { signWallet } = useSignWallet()
 
