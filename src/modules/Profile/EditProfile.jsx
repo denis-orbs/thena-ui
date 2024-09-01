@@ -14,7 +14,6 @@ import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/
 import Input from '@/components/input'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { useUpdateProfile } from '@/hooks/useProfile'
 import useWallet from '@/hooks/useWallet'
 import { errorToast } from '@/lib/notify'
 import { isValidHttpUrl } from '@/lib/utils'
@@ -25,14 +24,16 @@ import { SelectNameColor } from './SelectNameColor'
 import { SelectTheme } from './SelectTheme'
 import { SelectUserName } from './SelectUserName'
 import ModalEditCheckMark from '../Admin/ModalEditCheckMark'
+import { useUpdateArenaProfile } from '../Arena/hooks/profile'
 
 const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { ssr: false })
 
 export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
   const t = useTranslations()
+  const { account } = useWallet()
+
   const [showCustomColor, setShowCustomColor] = useState(false)
   const [openCheckMarkIcon, setOpenCheckMarkIcon] = useState(false)
-  const { account } = useWallet()
 
   const [dataUpdate, setDataUpdate] = useState({
     biography: userInfo?.biography ?? null,
@@ -46,14 +47,17 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
     checkMarkIcon: userInfo?.checkMarkIcon ?? null,
   })
 
-  const { updateProfile } = useUpdateProfile(isAdmin ? userInfo?.id : null)
-  const handleUpdate = useCallback(async () => {
+  const { updateArenaProfile } = useUpdateArenaProfile(
+    account?.toLowerCase() !== userInfo?.id?.toLowerCase() ? userInfo?.id : null,
+  )
+
+  const handleSave = useCallback(async () => {
     if (dataUpdate.websiteUrl) {
       if (!isValidHttpUrl(dataUpdate.websiteUrl)) {
         return errorToast('Error', 'Invalid Website URL')
       }
     }
-    await updateProfile({ ...dataUpdate }, data => {
+    await updateArenaProfile({ ...dataUpdate }, data => {
       if (data !== false) {
         if (isAdmin && userInfo.id === account.toLowerCase()) {
           mutate(['fetchUserInfo', account])
@@ -64,7 +68,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
         })
       }
     })
-  }, [account, dataUpdate, isAdmin, mutateUserInfo, updateProfile, userInfo])
+  }, [account, dataUpdate, isAdmin, mutateUserInfo, updateArenaProfile, userInfo])
 
   useEffect(() => {
     if (dataUpdate?.nameColor) {
@@ -268,7 +272,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
         <div className='flex flex-col lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3' />
           <div className='flex-2'>
-            <PrimaryButton onClick={() => handleUpdate()}>{t('Save Changes')}</PrimaryButton>
+            <PrimaryButton onClick={handleSave}>{t('Save Changes')}</PrimaryButton>
           </div>
         </div>
       </Box>

@@ -2,14 +2,13 @@ import { gql } from 'graphql-request'
 import { useCallback } from 'react'
 import FileResizer from 'react-image-file-resizer'
 
+import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
 import { getFromLocalStorage } from '@/lib/helper'
 
-import { useUpdateProfile } from './useProfile'
-
-const V4_GENERATE_URL = gql`
-  mutation V4_GENERATE_URL($fileName: String!, $fileType: String!, $userId: String!, $type: BucketType) {
+const V4_GENERATE_PRESIGNED_URL = gql`
+  mutation V4_GENERATE_PRESIGNED_URL($fileName: String!, $fileType: String!, $userId: String!, $type: BucketType) {
     generatePresignedUrl(input: { fileName: $fileName, fileType: $fileType, userId: $userId, type: $type }) {
       signedRequest
       url
@@ -67,7 +66,7 @@ export const generateUrlUpload = async ({ file, userId, type }) => {
   const {
     generatePresignedUrl: { signedRequest, url },
   } = await v4Client.request(
-    V4_GENERATE_URL,
+    V4_GENERATE_PRESIGNED_URL,
     {
       fileName: file.name,
       fileType: file.type,
@@ -167,33 +166,54 @@ export const useUploadBanner = () => {
   return { uploadBanner }
 }
 
-export const useUpdateAvatar = (isAdmin, user) => {
+export const useCreatePresignedUrl = () => {
   const { signWallet } = useSignWallet()
-  const { updateProfileFn } = useUpdateProfile(isAdmin ? user?.id : null)
 
-  const uploadFn = useCallback(
-    async ({ file, userInfo }) => {
-      const { id, ...userData } = userInfo
-      if (file) {
-        const url = await generateUrlUpload({ file, userId: id, type: 'CUSTOM_AVATAR' })
-        if (url) {
-          await updateProfileFn({ ...userData, avatar: url })
-          return url
-        }
+  const createPresignedUrlFn = useCallback(async ({ file, userId, type }) => {
+    const {
+      generatePresignedUrl: { signedRequest, url },
+    } = await v4Client.request(
+      V4_GENERATE_PRESIGNED_URL,
+      {
+        fileName: file.name,
+        fileType: file.type,
+        userId,
+        type,
+      },
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
+
+    if (signedRequest && url) {
+      const { status, statusText } = await fetch(signedRequest, {
+        method: 'PUT',
+        body: file,
+        redirect: 'follow',
+        headers: {
+          'Content-Type': file.type,
+        },
+      })
+      if (status !== 200) {
+        throw new Error(statusText)
       } else {
-        await updateProfileFn({ ...userData, avatar: null })
-        return null
+        return url
       }
-      return false
-    },
-    [updateProfileFn],
+    }
+    return null
+  }, [])
+
+  const createPresignedUrl = useCallback(
+    async (file, userId, type, callOnSuccess, callOnReject) =>
+      await actionWithAuthentication(
+        createPresignedUrlFn,
+        signWallet,
+        { file, userId, type },
+        callOnSuccess,
+        callOnReject,
+      ),
+    [createPresignedUrlFn, signWallet],
   )
 
-  const uploadAvatar = useCallback(
-    async (file, userInfo, callOnSuccess) =>
-      await actionWithAuthentication(uploadFn, signWallet, { file, userInfo }, callOnSuccess),
-    [uploadFn, signWallet],
-  )
-
-  return { uploadAvatar }
+  return { createPresignedUrl }
 }

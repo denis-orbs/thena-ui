@@ -102,7 +102,6 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
           dataUpdate={dataUpdate}
           onChange={onChangeCustomAvatar}
           user={userInfo}
-          isAdmin={isAdmin}
         />
       )}
     </div>

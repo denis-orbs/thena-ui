@@ -608,3 +608,5 @@ export const LIST_PAIRS = {
   202: 'SEIUSDT',
   203: 'JTOUSDT',
 }
+
+export const ThenaAuthToken = 'thena-token'

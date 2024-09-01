@@ -4,7 +4,7 @@ import { getLatestAuthType } from '@particle-network/auth-core'
 import { useAuthCore } from '@particle-network/auth-core-modal'
 import { useAccountModal, useChainModal, useConnectModal } from '@rainbow-me/rainbowkit'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import useSWR from 'swr'
 
 import { fetchUserInfo } from '@/context/userInfoContext'
@@ -42,17 +42,7 @@ export default function ConnectButton({ className }) {
     refreshInterval: 60000,
   })
 
-  const { signWallet, deleteToken } = useSignWallet()
-
-  const getSign = useCallback(() => {
-    if (!getFromLocalStorage('token')) {
-      signWallet()
-    }
-  }, [signWallet])
-
-  useEffect(() => {
-    getSign()
-  }, [getSign])
+  const { deleteToken } = useSignWallet()
 
   useEffect(() => {
     if (!active && !account && getFromLocalStorage('token')) {

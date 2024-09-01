@@ -8,30 +8,70 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
-import { useUpdateAvatar } from '@/hooks/useUploadFile'
+import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
+import useWallet from '@/hooks/useWallet'
 import { sliceAddress } from '@/lib/utils'
 
-export function ModalEditUserAvatar({ isOpen, onChange, isAdmin, closeModal = () => {}, user = {} }) {
+import { useUpdateArenaAvatar } from '../Arena/hooks/profile'
+
+export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {}, user = {} }) {
   const t = useTranslations()
+  const { account } = useWallet()
+
   const [stateChecked, setStateChecked] = useState('default')
   const [selectedImage, setSelectedImage] = useState(undefined)
   const [loading, setLoading] = useState(false)
-  const { uploadAvatar } = useUpdateAvatar(isAdmin, user)
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
     accept: { 'image/*': [] },
   })
 
+  const { createPresignedUrl } = useCreatePresignedUrl()
+  const { updateArenaAvatar } = useUpdateArenaAvatar(
+    account?.toLowerCase() !== user?.id?.toLowerCase() ? user?.id : null,
+  )
+
+  const handleUpdateAvatar = useCallback(
+    async avatarUrl => {
+      await updateArenaAvatar(
+        avatarUrl,
+        newData => {
+          if (newData !== false) {
+            onChange(newData)
+            closeModal()
+          }
+          setLoading(false)
+        },
+        () => setLoading(false),
+      )
+    },
+    [closeModal, onChange, updateArenaAvatar],
+  )
+
   const handleSave = useCallback(async () => {
-    setLoading(true)
     if (user?.id) {
-      await uploadAvatar(selectedImage, user, async data => {
-        if (data !== false) onChange(data)
-        setLoading(false)
-        closeModal()
-      })
+      setLoading(true)
+      if (stateChecked === 'default') {
+        await handleUpdateAvatar(null)
+      } else {
+        await createPresignedUrl(
+          selectedImage,
+          user.id,
+          'CUSTOM_AVATAR',
+          async data => {
+            if (data !== false) {
+              await handleUpdateAvatar(data)
+            } else {
+              setLoading(false)
+            }
+          },
+          () => {
+            setLoading(false)
+          },
+        )
+      }
     }
-  }, [user, uploadAvatar, selectedImage, onChange, closeModal])
+  }, [createPresignedUrl, handleUpdateAvatar, selectedImage, stateChecked, user.id])
 
   useEffect(() => {
     if (acceptedFiles.length) {

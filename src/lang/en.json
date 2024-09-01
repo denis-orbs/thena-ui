@@ -943,5 +943,7 @@
   "Pairs Select Tooltip": "Here you can select whether you would like your participants to trade in any pairs or with certain pairs only.",
   "Winning Token Tooltip": "Select the token that you would like your participants to acquire and be counted towards the competition.",
   "Required Deposit to Join Tooltip": "Required deposit to participate in the competition.",
-  "Minimum Deposit to Join Tooltip": "Minimum deposit to participate in the competition."
+  "Minimum Deposit to Join Tooltip": "Minimum deposit to participate in the competition.",
+  "Use Basic Color Instead": "Use Basic Color Instead",
+  "Use Custom Color Instead": "Use Custom Color Instead"
 }
