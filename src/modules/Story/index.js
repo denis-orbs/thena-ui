@@ -266,7 +266,7 @@ const V4_DAILY_SWAPS = gql`
       day
       lastSwap
     }
-    campaignTasks(where: { isHidden_isNull: false, type_in: [Daily] }, orderBy: [index_ASC]) {
+    campaignTasks(where: { isHidden_eq: false, type_in: [Daily] }, orderBy: [index_ASC]) {
       id
       index
       name
@@ -299,7 +299,7 @@ const V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED = gql`
       startTimestamp
       endTimestamp
     }
-    campaignTasks(where: { isHidden_isNull: false, type_in: [Main, Side] }, orderBy: [type_ASC, index_ASC]) {
+    campaignTasks(where: { isHidden_eq: false, type_in: [Main, Side] }, orderBy: [type_ASC, index_ASC]) {
       actionHandle
       chapter
       id
