@@ -15,9 +15,11 @@ import { useConnect, useDisconnect } from 'wagmi'
 import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
-import { LOCALES } from '@/constant'
+import { LOCALES, ThenaAuthToken } from '@/constant'
 import { SizeTypes } from '@/constant/type'
+import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
+import { useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
 import TxnModal from '@/modules/TxnModal'
@@ -285,6 +287,15 @@ function Header() {
   }, [connect, connectionStatus, disconnect])
   // end: fix social auth login
 
+  const { isUpcoming, isRegistered } = useTHEStory()
+  const { signWallet } = useSignWallet()
+
+  useEffect(() => {
+    if (account) {
+      localStorage.removeItem(ThenaAuthToken)
+    }
+  }, [account, signWallet])
+
   useEffect(() => {
     if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
       updateNetwork(chainId)
@@ -362,8 +373,22 @@ function Header() {
         },
       },
       {
-        label: t('More'),
-        active: pathname === '/analytics' || pathname.includes('/protocols'),
+        label: 'Trade To Earn',
+        active: pathname.includes('/trade-to-earn'),
+        onClickHandler: () => {
+          push('/trade-to-earn')
+        },
+      },
+      {
+        label: 'THE Story',
+        active: pathname.includes('/story'),
+        onClickHandler: () => {
+          push('/story')
+        },
+      },
+      {
+        label: 'More',
+        active: pathname.includes('/analytics') || pathname.includes('/protocols'),
         sub:
           networkId === ChainId.BSC
             ? [
@@ -399,13 +424,6 @@ function Header() {
                   },
                 },
               ],
-      },
-      {
-        label: 'Trade To Earn',
-        active: pathname.includes('/trade-to-earn'),
-        onClickHandler: () => {
-          push('/trade-to-earn')
-        },
       },
     ],
     [t, pathname, networkId, push],
@@ -516,6 +534,71 @@ function Header() {
     [account, pathname, t, userInfo],
   )
 
+  // isRegister, !isUpcoming
+  const storySubmenus1 = useMemo(
+    () =>
+      compact([
+        {
+          label: t('Home'),
+          active: pathname === '/story',
+          onClickHandler: () => {
+            push('/story')
+          },
+        },
+        {
+          label: t('Chapters'),
+          active: pathname === '/story/chapters',
+          onClickHandler: () => {
+            push('/story/chapters')
+          },
+        },
+        {
+          label: t('Leaderboard'),
+          active: pathname === '/story/leaderboard',
+          onClickHandler: () => {
+            push('/story/leaderboard')
+          },
+        },
+        {
+          label: t('Referral'),
+          active: pathname === '/story/referral',
+          onClickHandler: () => {
+            push('/story/referral')
+          },
+        },
+        {
+          label: t('Rewards'),
+          active: pathname === '/story/rewards',
+          onClickHandler: () => {
+            push('/story/rewards')
+          },
+        },
+      ]),
+    [pathname, push, t],
+  )
+
+  // isRegister && isUpcoming
+  const storySubmenus2 = useMemo(
+    () =>
+      compact([
+        {
+          label: t('Home'),
+          active: pathname === '/story',
+          onClickHandler: () => {
+            push('/story')
+          },
+        },
+        {
+          label: t('Chapters'),
+          active: pathname === '/story/chapters',
+          onClickHandler: () => {
+            push('/story/chapters')
+          },
+        },
+      ]),
+    [pathname, push, t],
+  )
+
   const onLogoClick = () => {
     push('/')
     setIsOpen(false)
@@ -536,7 +619,7 @@ function Header() {
     <div>
       <header className='fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl lg:h-[92px]'>
         <div className='flex items-center justify-between self-stretch p-4 backdrop-blur-xl lg:px-10 lg:pb-6 lg:pt-3'>
-          <div className='relative inline-flex items-center gap-[60px] xl:gap-20'>
+          <div className='relative inline-flex items-center gap-10 xl:gap-16 2xl:gap-24'>
             <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
             <div className='relative hidden items-center justify-center gap-1 lg:inline-flex'>
               {menus.map((item, idx) => (
@@ -696,7 +779,7 @@ function Header() {
         </Modal>
         <TxnModal />
       </header>
-      {pathname.includes('/dashboard') && (
+      {pathname.startsWith('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={submenus} size={SizeTypes.Medium} />
         </div>
@@ -721,6 +804,12 @@ function Header() {
               </>
             )}
           </div>
+        </div>
+      )}
+      {pathname.startsWith('/story') && isRegistered && (
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
+          {!isUpcoming && <Tabs data={storySubmenus1} size={SizeTypes.Medium} />}
+          {isUpcoming && <Tabs data={storySubmenus2} size={SizeTypes.Medium} />}
         </div>
       )}
       <Script

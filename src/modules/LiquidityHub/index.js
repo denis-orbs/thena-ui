@@ -40,7 +40,7 @@ const TX_UPDATER_KEYS = {
 }
 
 const initialAnalyticsData = {
-  _id: crypto.randomUUID(),
+  _id: '1',
   partner: PARTNER,
   chainId: CHAIN_ID,
   isClobTrade: false,

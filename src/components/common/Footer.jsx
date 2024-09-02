@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
+import { cn } from '@/lib/utils'
+
 import Logo from '~/logo.svg'
 
 import NextImage from '../image/NextImage'
@@ -93,7 +95,7 @@ const footerLinks = [[], []]
 //     },
 //   ],
 // ]
-function Footer() {
+function Footer({ isHomePage = false }) {
   const { push } = useRouter()
   const t = useTranslations()
 
@@ -103,7 +105,12 @@ function Footer() {
   return (
     <>
       <div className='relative w-full'>
-        <div className='footer relative mx-auto mt-28 max-w-[1152px] px-10 pb-[184px] pt-10 lg:mt-36 lg:pb-[269px] lg:pt-[58px] xl:px-0'>
+        <div
+          className={cn(
+            'footer relative mx-auto mt-28 max-w-[1152px] px-10 pb-[184px] pt-10 lg:mt-36 lg:pb-[269px] lg:pt-[58px] xl:px-0',
+            !isHomePage ? 'mt-0 lg:mt-0' : '',
+          )}
+        >
           <NextImage alt='linear gradient line' src='/images/footer/linearGradientLine.svg' className='w-full' />
           <div className='relative z-10 w-full justify-between md:flex lg:pt-[70px]'>
             <div className='flex flex-col justify-between'>
@@ -156,7 +163,7 @@ function Footer() {
         <NextImage
           alt='background'
           src='/images/footer/footerbg.png'
-          className='absolute bottom-0 hidden w-full md:block'
+          className='absolute bottom-0 -z-10 hidden w-full md:block'
         />
         <NextImage
           alt='background'

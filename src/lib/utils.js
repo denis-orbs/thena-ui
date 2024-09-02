@@ -209,3 +209,5 @@ export const objectDiff = (object, other) =>
     if (other[key] !== value) return diffCount + 1
     return diffCount
   }, 0)
+
+export const isoDateToTimeStampSeconds = isoString => Math.floor(new Date(isoString).getTime() / 1000)

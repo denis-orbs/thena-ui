@@ -65,7 +65,7 @@ const sortOptions = [
   {
     label: 'Fees (24h)',
     value: 'fee',
-    width: 'lg:flex-1',
+    width: 'lg:w-[calc(25%-135px)]',
     isDesc: true,
   },
   {
@@ -277,9 +277,9 @@ export default function PoolsPage() {
           </div>
         ),
         tvl: (
-          <div className='flex items-center gap-1'>
-            <Paragraph>${formatAmount(pool.tvlUSD)}</Paragraph>
-            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
+          <div className='flex w-full items-center gap-1'>
+            <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(pool.tvlUSD)}</Paragraph>
+            <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
             <CustomTooltip id={`tvl-${pool.address}`}>
               <div className='flex flex-col gap-1'>
                 <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
@@ -288,8 +288,8 @@ export default function PoolsPage() {
             </CustomTooltip>
           </div>
         ),
-        volume: <Paragraph>${formatAmount(pool.dayVolume)}</Paragraph>,
-        fee: <Paragraph>${formatAmount(pool.dayFees)}</Paragraph>,
+        volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,
+        fee: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayFees)}</Paragraph>,
         action: (
           <EmphasisButton className='w-full lg:w-fit' onClick={() => push(`/pools/${pool.address}`)}>
             {t('Manage')}

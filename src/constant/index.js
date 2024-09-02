@@ -367,6 +367,7 @@ export const SWAP_TYPES = {
 }
 
 export const trade2EarnStartTime = 1712534400
+
 export const LIST_CATEGORY = {
   ALL: 'All',
   '1_LETTER_WORDS': '1 Letter Words',

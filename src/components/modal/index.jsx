@@ -55,6 +55,7 @@ function Modal({
             padding: '0 0 24px',
             display: 'flex',
             flexDirection: 'column',
+            height: 'fit-content',
             maxHeight: '90%',
             overflow: 'auto',
           }
@@ -64,6 +65,7 @@ function Modal({
             right: 'auto',
             bottom: 'auto',
             width: width ? (typeof width === 'string' ? width : `${width}px`) : '540px',
+            height: 'fit-content',
             maxHeight: '90%',
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
