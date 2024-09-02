@@ -14,7 +14,7 @@ import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { cn, formatAddress, formatAmount, fromWei, isHexColor, isInvalidAmount } from '@/lib/utils'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { TCButton } from '@/modules/TradingCompetition/TCButton'
-import { Clock, CoinHand, Gift, UserIcon } from '@/svgs'
+import { Clock, CoinHand, GiftArenaIcon, UserIcon } from '@/svgs'
 
 import { CompetitionCardHeader } from './CompetitionCardHeader'
 
@@ -132,7 +132,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
           {totalPrize && (
             <div className='ellipsis-1 w-full' title={totalPrize}>
               <Paragraph className='flex flex-1 gap-1 text-nowrap'>
-                <Gift className='h-5 w-5' />
+                <GiftArenaIcon className='h-5 w-5' />
                 <span>{totalPrize}</span>
               </Paragraph>
             </div>

@@ -17,13 +17,13 @@ import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import Clock from '~/svgs/clock.svg'
 import CoinHand from '~/svgs/coin-hand.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
-import CopyIcon from '~/svgs/copy.svg'
+import CopyArenaIcon from '~/svgs/copy-arena.svg'
 import DownRank from '~/svgs/down-rank.svg'
 import EditIcon from '~/svgs/edit.svg'
 import EigenBadgeIcon from '~/svgs/eigen_badge.svg'
 import EtherFiBadgeIcon from '~/svgs/etherfi_badge.svg'
 import ExternalIcon from '~/svgs/external.svg'
-import Gift from '~/svgs/gift.svg'
+import GiftArenaIcon from '~/svgs/gift-arena.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
@@ -77,13 +77,13 @@ export {
   Clock,
   CoinHand,
   CoinsStackedIcon,
-  CopyIcon,
+  CopyArenaIcon,
   DownRank,
   EditIcon,
   EigenBadgeIcon,
   EtherFiBadgeIcon,
   ExternalIcon,
-  Gift,
+  GiftArenaIcon,
   HamburgerIcon,
   InfoCircleGradient,
   InfoCirclePrimary,

@@ -20,7 +20,7 @@ import { successToast } from '@/lib/notify'
 import { cn, formatAddress, formatAmount } from '@/lib/utils'
 import { ProfileButton } from '@/modules/Profile/ProfileButton'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
-import { CheckIcon, CopyIcon, ExternalIcon, InfoIcon } from '@/svgs'
+import { CheckIcon, CopyArenaIcon, ExternalIcon, InfoIcon } from '@/svgs'
 
 import ThenaIdModal from './ThenaIdModal'
 
@@ -116,7 +116,7 @@ export function UserInfo({ userInfo, following, followers }) {
                     <VerifyPopover verifyImage={userInfo?.checkMarkIcon} verifiedAt={userInfo?.verifiedAt} />
                   )}
                   <div onClick={onCopy} className='ml-2 h-5 w-5 cursor-pointer stroke-neutral-200'>
-                    {copied ? <CheckIcon /> : <CopyIcon />}
+                    {copied ? <CheckIcon /> : <CopyArenaIcon />}
                   </div>
                 </div>
                 <TextSubHeading className='text-sm'>
