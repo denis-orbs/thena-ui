@@ -373,7 +373,7 @@ function Header() {
         },
       },
       {
-        label: 'Trade To Earn',
+        label: 'T2E',
         active: pathname.includes('/trade-to-earn'),
         onClickHandler: () => {
           push('/trade-to-earn')
@@ -619,7 +619,7 @@ function Header() {
     <div>
       <header className='fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl lg:h-[92px]'>
         <div className='flex items-center justify-between self-stretch p-4 backdrop-blur-xl lg:px-10 lg:pb-6 lg:pt-3'>
-          <div className='relative inline-flex items-center gap-10 xl:gap-16 2xl:gap-24'>
+          <div className='relative inline-flex items-center gap-6 xl:gap-12 2xl:gap-24'>
             <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
             <div className='relative hidden items-center justify-center gap-1 lg:inline-flex'>
               {menus.map((item, idx) => (
@@ -703,7 +703,7 @@ function Header() {
             </div>
             <ChainSelect t={t} />
             <LanguageSelect />
-            <OutlinedButton className='hidden lg:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
+            <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton>
             {!isSmallScreen() && <ConnectButton className='flex' />}
