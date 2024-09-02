@@ -9,7 +9,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useDeallocateTCPerp } from '@/hooks/useTcPerpetualContract'
 import { formatAmount, fromWei } from '@/lib/utils'
 
-import { Countdown } from '../CountDown'
+import { Countdown } from '../Countdown'
 
 function DeallocateModal({ remainingTime, open, onClose, balance, tcAddress, getWithdrawCooldown, enabledWithdraw }) {
   const t = useTranslations()

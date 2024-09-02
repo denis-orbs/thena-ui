@@ -62,8 +62,12 @@ export const useSignWallet = () => {
                 await sleep(1000)
 
                 if (getFromLocalStorage(ThenaAuthToken)) {
-                  const res = await action(params)
-                  callOnSuccess?.(res)
+                  if (action) {
+                    const res = await action(params)
+                    callOnSuccess?.(res)
+                  } else {
+                    callOnSuccess?.()
+                  }
                 } else {
                   errorToast('Error')
                   callOnReject?.()
@@ -100,7 +104,8 @@ export async function actionWithAuthentication(action, signFunc, params, callOnS
   } catch (err) {
     if (
       err?.response?.errors?.[0]?.message === 'Missing Authorization Header' ||
-      err?.response?.errors?.[0]?.message === 'Invalid Access Token'
+      err?.response?.errors?.[0]?.message === 'Invalid Access Token' ||
+      err?.message === 'User not created'
     ) {
       signFunc(action, params, callOnSuccess, callOnReject, true)
     } else {

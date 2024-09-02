@@ -240,3 +240,36 @@ export const useUpdateUserIsVerified = () => {
 
   return { updateUserIsVerified }
 }
+
+const V4_USER_BY_ID = gql`
+  query GetUserById($id: String!) {
+    users(where: { id_eq: $id }, limit: 1) {
+      id
+      firstInteractAt
+    }
+  }
+`
+export const useCheckUserCreated = () => {
+  const { signWallet } = useSignWallet()
+
+  const checkUserCreatedFn = useCallback(async id => {
+    const { users } = await v4Client.request(V4_USER_BY_ID, {
+      id,
+    })
+
+    if (users && users.length === 1) {
+      return users
+    }
+
+    throw new Error('User not created')
+  }, [])
+
+  const checkUserCreated = useCallback(
+    async (params, callOnSuccess, callOnReject) => {
+      await actionWithAuthentication(checkUserCreatedFn, signWallet, params, callOnSuccess, callOnReject)
+    },
+    [signWallet, checkUserCreatedFn],
+  )
+
+  return { checkUserCreated }
+}
