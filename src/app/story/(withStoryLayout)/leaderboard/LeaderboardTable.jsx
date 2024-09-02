@@ -15,7 +15,7 @@ function PointHead() {
   const t = useTranslations()
   return (
     <div className='flex flex-row'>
-      <span>{t('Point')}</span>
+      <span>{t('Points')}</span>
       <span>
         <InfoCircleGradient className='ml-1 size-4 text-neutral-400' data-tooltip-id='point-description' />
       </span>
@@ -124,6 +124,17 @@ export default function LeaderboardTable({ userInfo }) {
     [data],
   )
 
+  const finalRank = useMemo(() => {
+    let rank = 4
+    if (userInfo?.id) {
+      const itemUserIndex = finalData.findIndex(item => item?.id?.toLowerCase() === userInfo?.id.toLowerCase())
+      if (itemUserIndex !== -1) {
+        rank = itemUserIndex
+      }
+    }
+    return rank
+  }, [finalData, userInfo])
+
   return (
     <div className='mb-[60.15px] rounded-xl bg-neutral-900'>
       <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>{t('Leaderboard')}</p>
@@ -140,7 +151,7 @@ export default function LeaderboardTable({ userInfo }) {
         bgHightLight='bg-neutral-800'
         loading={!data}
         pageSize={10}
-        defaultHead={(userInfo.rank > 9 || userInfo.rank === null) && currentPage === 1 ? rowDefault : undefined}
+        defaultHead={finalRank > 9 && currentPage === 1 ? rowDefault : undefined}
       />
     </div>
   )
