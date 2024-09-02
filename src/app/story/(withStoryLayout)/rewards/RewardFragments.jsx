@@ -6,9 +6,9 @@ import { TextHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
 
 // FIXME remove mock data
-const minted = true
+const minted = false
 
-const TOTAL_FRAGMENTS = 7
+const TOTAL_FRAGMENTS = 8
 export function RewardFragments() {
   const t = useTranslations()
   const { campaignParticipantInfo: userInfo } = useTHEStory()

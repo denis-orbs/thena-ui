@@ -149,7 +149,7 @@ export function RewardChapter12({ chapters }) {
           <div
             key={reward.id}
             className={cn(
-              'flex items-end justify-center',
+              'flex items-start justify-center',
               index === rewards.length - 1 ? 'col-span-2 lg:col-span-1' : 'col-span-1',
             )}
           >

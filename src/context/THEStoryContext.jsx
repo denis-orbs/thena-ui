@@ -18,7 +18,7 @@ function THEStoryContextProvider({ children }) {
 
   const [isRegistered, setIsRegistered] = useState(false)
   const [campaignParticipantInfo, setCampaignParticipantInfo] = useState(null)
-  const [isUpcoming, setIsUpcoming] = useState(true)
+  const [isUpcoming, setIsUpcoming] = useState(false)
   const [campaignStartsAt, setCampaignStartsAt] = useState(1725278400) // 2024-09-02 12:00 UTC
 
   useEffect(() => {
