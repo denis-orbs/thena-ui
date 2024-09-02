@@ -1,9 +1,10 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { useTHEStory } from '@/context/THEStoryContext'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
 import { cn } from '@/lib/utils'
 import { ArrowBackwardIcon, ArrowForwardSmallIcon, ChevronRightIcon } from '@/svgs'
@@ -12,8 +13,12 @@ import { RewardIconTooltip } from './RewardIconTooltip'
 import { TaskDailyName, TaskTwitterAction, TaskType } from '../../constant'
 
 const TweetContent = `I’ve just joined THE Story with @ThenaFi_ 💜🏛️
+
 First tasks completed, NFT fragment collected, and I’m on the path to over $30K in rewards!
-Who’s with me? #StoryofTHENA`
+
+Who’s with me? #StoryofTHENA
+
+https://thena.fi/story`
 
 export function ChapterProcess({
   chapter,
@@ -24,6 +29,8 @@ export function ChapterProcess({
   numberAvailableChapters,
 }) {
   const t = useTranslations()
+  const { campaignParticipantInfo } = useTHEStory()
+
   const percentageTaskCompleted = useMemo(() => {
     if (numberAvailableChapters) {
       return (numberCompletedChapters / numberAvailableChapters) * 100
@@ -31,25 +38,30 @@ export function ChapterProcess({
     return 0
   }, [numberAvailableChapters, numberCompletedChapters])
 
-  const handleTask = task => {
-    if (task.type === TaskType.Main && task.actionHandle === TaskTwitterAction) {
-      const url = getShareSocialNetworkUrl({
-        network: SocialNetwork.Twitter,
-        content: TweetContent,
-      })
-      const width = window.screen.width / 2
-      const height = window.screen.height / 2
-      const left = window.screen.width / 2 - width / 2
-      const top = window.screen.height / 2 - height / 2
+  const handleTask = useCallback(
+    task => {
+      if (task.type === TaskType.Main && task.actionHandle === TaskTwitterAction) {
+        const url = getShareSocialNetworkUrl({
+          network: SocialNetwork.Twitter,
+          content: campaignParticipantInfo?.referralCode
+            ? `${TweetContent}?ref=${campaignParticipantInfo.referralCode}`
+            : TweetContent,
+        })
+        const width = window.screen.width / 2
+        const height = window.screen.height / 2
+        const left = window.screen.width / 2 - width / 2
+        const top = window.screen.height / 2 - height / 2
 
-      window.open(url, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
-    } else {
-      window.location.href = `/${task.actionHandle}`
-    }
-  }
+        window.open(url, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
+      } else {
+        window.location.href = `/${task.actionHandle}`
+      }
+    },
+    [campaignParticipantInfo?.referralCode],
+  )
 
   return (
-    <div className='rounded-xl border-[1px] border-primary-600 bg-neutral-900 px-4 py-6'>
+    <div className='rounded-xl border border-primary-600 bg-neutral-900 px-4 py-6'>
       <div>
         <div className='flex flex-wrap items-center justify-between lg:flex-nowrap'>
           <div

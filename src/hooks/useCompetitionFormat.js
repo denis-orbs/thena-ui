@@ -49,6 +49,10 @@ export const useCompetitionFormat = (competition, isPreview = false) => {
     }
 
     if (isPreview) {
+      if (clone?.winType && clone?.prizeUpdate) {
+        clone.prizeUpdate.winType = clone.winType
+      }
+
       return clone
     }
 

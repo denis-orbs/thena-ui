@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 
@@ -103,10 +104,15 @@ function StoryHome({ isUpcoming, isRegistered }) {
             <div className='mx-auto max-w-[850px]'>
               <Chapters chapters={chapters} isLoading={isLoadingChapterTasks} />
               <div className='mt-6 flex w-full justify-center'>
-                <PrimaryButton className='h-auto w-full md:w-[420px]'>
-                  {t('View BNB Chain')}
-                  <ChevronRightIcon className='h-4 w-4 text-white' />
-                </PrimaryButton>
+                <Link
+                  href='https://dappbay.bnbchain.org/campaign/join-bnb-chain-4-year-ecosystem-celebration-with-$300K-in-rewards'
+                  target='_blank'
+                >
+                  <PrimaryButton className='h-auto w-full md:w-[420px]'>
+                    {t('View BNB Chain')}
+                    <ChevronRightIcon className='h-4 w-4 text-white' />
+                  </PrimaryButton>
+                </Link>
               </div>
 
               <div className='h- mt-[124px] flex max-w-[813px] flex-col justify-center'>
@@ -119,9 +125,6 @@ function StoryHome({ isUpcoming, isRegistered }) {
                   <span className='font-semibold text-[#F0B90B]'>&nbsp;{t('BNB Chain’s 4th anniversary')}&nbsp;</span>
                   {t('and join the journey with more than $30,000 in rewards')}
                 </p>
-                <div className='mx-auto'>
-                  <PrimaryButton className='h-11 w-[174px]'>{t('Start Your Chapter')}</PrimaryButton>
-                </div>
               </div>
             </div>
           )}
