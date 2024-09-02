@@ -179,11 +179,11 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
                 )}
                 <div className='flex flex-col gap-1'>
                   <TextHeading>{startTimeText}</TextHeading>
-                  <Paragraph>{t('Start')}</Paragraph>
+                  <Paragraph>{t('Start Date Time')}</Paragraph>
                 </div>
                 <div className='flex flex-col gap-1'>
                   <TextHeading>{endTimeText}</TextHeading>
-                  <Paragraph>{t('End')}</Paragraph>
+                  <Paragraph>{t('End Date Time')}</Paragraph>
                 </div>
               </div>
             )}

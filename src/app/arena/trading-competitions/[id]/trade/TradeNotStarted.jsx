@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import { TextHeading } from '@/components/typography'
-import { Countdown } from '@/modules/CountDown'
+import { Countdown } from '@/modules/Countdown'
 
 export function TradeNotStarted({ startTimestamp, children }) {
   const t = useTranslations()
