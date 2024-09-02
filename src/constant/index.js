@@ -282,7 +282,7 @@ export const TC_STEPS = ['DETAILS', 'TIME SETTINGS', 'TYPE AND TOKENS', 'FEES AN
 
 export const TC_PARTICIPANTS = {
   MIN: 2,
-  MAX: 5000,
+  MAX: 1000,
 }
 
 export const MAX_ASSETS_PRIZE_TOKEN = 8
@@ -326,7 +326,7 @@ const roundupTime = () => {
 export const INIT_VALUES = {
   name: '',
   description: '',
-  maxParticipants: 5000,
+  maxParticipants: 1000,
   timestamp: {
     registrationStart: roundupTime(), // start timestamp
     registrationEnd: roundupTime() + MIN_REG, // end timestamp
