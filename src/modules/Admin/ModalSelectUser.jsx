@@ -68,7 +68,7 @@ export function ModalSelectUser({ popup, setPopup, selectedUsers, setSelectedUse
           className='w-full'
           val={searchText}
           setVal={setSearchText}
-          placeholder={t('Search By Name Or Address')}
+          placeholder={t('Search by name or address')}
           autoFocus
         />
       </div>

@@ -1,6 +1,7 @@
 import { gql, GraphQLWebSocketClient } from 'graphql-request'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
 import { v4Client, v4GraphWsUrl } from '@/lib/graphql'
@@ -115,7 +116,7 @@ export function useMarkNotificationRead() {
         CLICK_NOTIFICATION,
         { id },
         {
-          authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+          authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
         },
       )
     }
@@ -123,7 +124,7 @@ export function useMarkNotificationRead() {
       MARK_AS_READ,
       { id },
       {
-        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
       },
     )
   }, [])

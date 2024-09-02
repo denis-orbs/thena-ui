@@ -144,7 +144,7 @@ export function ModalCreateNotification({ onClose, isOpen }) {
               })
             }}
             value={data.redirectUrl}
-            placeholder={t('Link To Redirect')}
+            placeholder={t('Link to redirect')}
           />
           {errors.redirectUrl && <TextSubHeading className='text-error-600'>{errors.redirectUrl}</TextSubHeading>}
         </div>

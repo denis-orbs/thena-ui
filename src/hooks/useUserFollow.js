@@ -4,6 +4,7 @@ import { useCallback } from 'react'
 import useSWR, { mutate as mutateSWR } from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
+import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
@@ -106,7 +107,7 @@ export const useFollow = (userId, username = null, isFollowed = false) => {
         userId: userId.toLowerCase(),
       },
       {
-        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
       },
     )
 
