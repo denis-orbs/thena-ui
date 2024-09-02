@@ -23,11 +23,13 @@ export const blockGraphUrl = {
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/opbnb-blocks',
 }
 
-export const v4SubGraphT2EUrl = 'https://api.studio.thegraph.com/query/70764/thena-subgraph/version/latest'
+// export const v4GraphUrl = 'https://stg-thena-squid.zinza.com.vn/graphql'
+// export const v4GraphWsUrl = 'wss://stg-thena-squid.zinza.com.vn/graphql'
 
 export const v4GraphUrl = 'https://squid.subsquid.io/thena-squid/v/v4/graphql'
-// TODO
-// export const v4GraphUrl = 'https://stg-thena-squid.zinza.com.vn/graphql'
+export const v4GraphWsUrl = 'wss://squid.subsquid.io/thena-squid/v/v4/graphql'
+
+export const v4SubGraphT2EUrl = 'https://api.studio.thegraph.com/query/70764/thena-subgraph/version/latest'
 
 export const v1Client = {
   [ChainId.BSC]: new GraphQLClient(v1GraphUrl[ChainId.BSC]),

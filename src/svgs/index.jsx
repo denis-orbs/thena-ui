@@ -1,6 +1,7 @@
 import AlertCirlceSmallIcon from '~/svgs/alert-circle-small.svg'
 import AlertTriangleIcon from '~/svgs/alert-triangle.svg'
 import AnalyticsIcon from '~/svgs/analytics.svg'
+import AnnouncementIcon from '~/svgs/announcement.svg'
 import ArrowBackwardIcon from '~/svgs/arrow-backward-small.svg'
 import ArrowDownIcon from '~/svgs/arrow-down.svg'
 import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
@@ -9,9 +10,13 @@ import ArrowRightIcon from '~/svgs/arrow-right.svg'
 import ArrowsDownIcon from '~/svgs/arrows-down.svg'
 import AwardIcon from '~/svgs/award.svg'
 import BankIcon from '~/svgs/bank.svg'
+import BellIcon from '~/svgs/bell.svg'
 import CalendarIcon from '~/svgs/calendar.svg'
+import CalendarWhiteIcon from '~/svgs/calendar-white.svg'
+import Champion from '~/svgs/champion.svg'
 import ChapterLogoIcon from '~/svgs/chapter-logo.svg'
 import ChapterUnlockIcon from '~/svgs/chapter-unlock.svg'
+import ChartIcon from '~/svgs/chart-line.svg'
 import CheckIcon from '~/svgs/check.svg'
 import CheckPurpleIcon from '~/svgs/check-purple.svg'
 import CheckPurpleLargeIcon from '~/svgs/check-purple-large.svg'
@@ -20,13 +25,18 @@ import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
+import Clock from '~/svgs/clock.svg'
 import CloseIcon from '~/svgs/close.svg'
+import CoinHand from '~/svgs/coin-hand.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 import CollapseUpIcon from '~/svgs/collapse-up.svg'
 import CopyIcon from '~/svgs/copy.svg'
+import CopyArenaIcon from '~/svgs/copy-arena.svg'
 import CrownIcon from '~/svgs/crown.svg'
 import DiamondIcon from '~/svgs/diamond.svg'
 import DiscordIcon from '~/svgs/discord.svg'
+import DownRank from '~/svgs/down-rank.svg'
+import EditIcon from '~/svgs/edit.svg'
 import EigenBadgeIcon from '~/svgs/eigen_badge.svg'
 import EmailIcon from '~/svgs/email.svg'
 import EtherFiBadgeIcon from '~/svgs/etherfi_badge.svg'
@@ -38,6 +48,7 @@ import FacebookIcon from '~/svgs/facebook.svg'
 import FingerprintIcon from '~/svgs/fingerprint.svg'
 import FirstPrizeIcon from '~/svgs/first-prize.svg'
 import GiftIcon from '~/svgs/gift.svg'
+import GiftArenaIcon from '~/svgs/gift-arena.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
@@ -58,6 +69,8 @@ import PiggySecondIcon from '~/svgs/piggy-second.svg'
 import PlusIcon from '~/svgs/plus.svg'
 import PlusCircleIcon from '~/svgs/plus-circle.svg'
 import PowerIcon from '~/svgs/power.svg'
+import PublicIcon from '~/svgs/public.svg'
+import RandomDice from '~/svgs/random-dice.svg'
 import RedditIcon from '~/svgs/reddit.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
 import RegisterIcon from '~/svgs/register.svg'
@@ -84,7 +97,11 @@ import THETokenIcon from '~/svgs/THE-token.svg'
 import RoundedTHETokenIcon from '~/svgs/THE-token-rounded.svg'
 import ThirdPrizeIcon from '~/svgs/third-prize.svg'
 import TwitterIcon from '~/svgs/twiiter.svg'
+import UpRank from '~/svgs/up-rank.svg'
 import UploadIcon from '~/svgs/upload.svg'
+import User from '~/svgs/user.svg'
+import UserIcon from '~/svgs/user-icon.svg'
+import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
 import XIcon from '~/svgs/x-close.svg'
 import ZoomInIcon from '~/svgs/zoom-in.svg'
@@ -94,6 +111,7 @@ export {
   AlertCirlceSmallIcon,
   AlertTriangleIcon,
   AnalyticsIcon,
+  AnnouncementIcon,
   ArrowBackwardIcon,
   ArrowDownIcon,
   ArrowForwardSmallIcon,
@@ -102,9 +120,13 @@ export {
   ArrowsDownIcon,
   AwardIcon,
   BankIcon,
+  BellIcon,
   CalendarIcon,
+  CalendarWhiteIcon,
+  Champion,
   ChapterLogoIcon,
   ChapterUnlockIcon,
+  ChartIcon,
   Check2Icon,
   CheckCircleIcon,
   CheckGradientIcon,
@@ -113,13 +135,18 @@ export {
   CheckPurpleLargeIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  Clock,
   CloseIcon,
+  CoinHand,
   CoinsStackedIcon,
   CollapseUpIcon,
+  CopyArenaIcon,
   CopyIcon,
   CrownIcon,
   DiamondIcon,
   DiscordIcon,
+  DownRank,
+  EditIcon,
   EigenBadgeIcon,
   EmailIcon,
   EtherFiBadgeIcon,
@@ -130,6 +157,7 @@ export {
   FacebookIcon,
   FingerprintIcon,
   FirstPrizeIcon,
+  GiftArenaIcon,
   GiftIcon,
   HamburgerIcon,
   InfoCircleGradient,
@@ -151,6 +179,8 @@ export {
   PlusCircleIcon,
   PlusIcon,
   PowerIcon,
+  PublicIcon,
+  RandomDice,
   RedditIcon,
   RefreshIcon,
   RegisterIcon,
@@ -178,6 +208,10 @@ export {
   TransferIcon,
   TwitterIcon,
   UploadIcon,
+  UpRank,
+  User,
+  UserIcon,
+  Verified,
   WalletIcon,
   XIcon,
   ZoomInIcon,

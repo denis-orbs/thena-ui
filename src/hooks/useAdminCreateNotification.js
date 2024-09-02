@@ -1,0 +1,52 @@
+import { gql } from 'graphql-request'
+import { useCallback } from 'react'
+
+import { ThenaAuthToken } from '@/constant'
+import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
+import { v4Client } from '@/lib/graphql'
+import { getFromLocalStorage } from '@/lib/helper'
+
+const V4_CREATE_NOTIFICATION = gql`
+  mutation V4_CREATE_NOTIFICATION($content: String, $recipients: [String!], $redirectUrl: String) {
+    sendGeneralNotification(input: { content: $content, recipients: $recipients, redirectUrl: $redirectUrl })
+  }
+`
+export const createNotification = async (recipients, content, redirectUrl) => {
+  const res = await v4Client.request(
+    V4_CREATE_NOTIFICATION,
+    { recipients, content, redirectUrl },
+    {
+      authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+    },
+  )
+
+  if (res?.response?.errors) {
+    throw new Error(res?.response?.errors?.[0]?.message)
+  }
+}
+
+export const useCreateNotification = () => {
+  const { signWallet } = useSignWallet()
+
+  const createNotificationFn = useCallback(
+    async ({ recipients, content, redirectUrl }) => await createNotification(recipients, content, redirectUrl),
+    [],
+  )
+
+  const adminCreateNotification = useCallback(
+    async ({ recipients, content, redirectUrl }, callOnSuccess, callOnReject) => {
+      actionWithAuthentication(
+        createNotificationFn,
+        signWallet,
+        { recipients, content, redirectUrl },
+        callOnSuccess,
+        callOnReject,
+      )
+    },
+    [createNotificationFn, signWallet],
+  )
+
+  return {
+    adminCreateNotification,
+  }
+}

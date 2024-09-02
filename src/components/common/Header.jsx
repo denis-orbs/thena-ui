@@ -1,12 +1,16 @@
 'use client'
 
+import { AuthCoreEvent, getLatestAuthType, isSocialAuthType, particleAuth } from '@particle-network/auth-core'
+import { useConnect as useParticleConnect } from '@particle-network/auth-core-modal'
 import { compact } from 'lodash'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import Script from 'next/script'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
+import { useConnect, useDisconnect } from 'wagmi'
 
 import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
@@ -16,19 +20,22 @@ import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
 import { useSignWallet } from '@/hooks/useSignWallet'
-import { cn, formatAmount, goToDoc } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
+import useWallet from '@/hooks/useWallet'
+import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon } from '@/svgs'
+import { particleWagmiWallet } from '@/wallets/particleWallet/particleWagmiWallet'
 
 import Logo from '~/logo.svg'
 
+import { Notification } from './Notification'
 import ConnectButton from '../buttons/ConnectButton'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '../typography'
+import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 
 const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
@@ -107,7 +114,7 @@ function ChainSelect({ t }) {
           const element = getElement(item, idx)
           if (item.url) {
             return (
-              <Link href={item.url} target='_blank' key={item.url}>
+              <Link href={item.url} target='_blank' key={`chain-${idx}`}>
                 {element}
               </Link>
             )
@@ -250,6 +257,8 @@ function Header() {
   const [selected, setSelected] = useState(null)
   const [openMenu, setOpenMenu] = useState(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [toggleSearch, setToggleSearch] = useState(false)
+
   const router = useRouter()
   const { push } = router
   const pathname = usePathname()
@@ -257,6 +266,27 @@ function Header() {
   const { networkId, updateNetwork } = useChainSettings()
   const prices = usePrices()
   const t = useTranslations()
+  // start: fix social auth login
+  const { connect } = useConnect()
+  const { connectionStatus } = useParticleConnect()
+  const { disconnect } = useDisconnect()
+
+  useEffect(() => {
+    if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
+      connect({
+        connector: particleWagmiWallet({ socialType: getLatestAuthType() }),
+      })
+    }
+    const onDisconnect = () => {
+      disconnect()
+    }
+    particleAuth.on(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
+    return () => {
+      particleAuth.off(AuthCoreEvent.ParticleAuthDisconnect, onDisconnect)
+    }
+  }, [connect, connectionStatus, disconnect])
+  // end: fix social auth login
+
   const { isUpcoming, isRegistered } = useTHEStory()
   const { signWallet } = useSignWallet()
 
@@ -271,6 +301,8 @@ function Header() {
       updateNetwork(chainId)
     }
   }, [account, chainId, networkId, updateNetwork])
+
+  const { data: userInfo } = useSWR(['fetchUserInfo', account])
 
   useEffect(() => {
     if (window?.MetaCRMWidget?.manualConnectWallet) {
@@ -294,54 +326,54 @@ function Header() {
   const menus = useMemo(
     () => [
       {
-        label: 'Swap',
+        label: t('Swap'),
         active: pathname.includes('/swap'),
         sub: [
           {
-            heading: 'Spot Trade',
-            subheading: 'Easy and user-friendly trading interface',
+            heading: t('Spot Trade'),
+            subheading: t('Easy and user-friendly trading interface'),
             onClickHandler: () => push('/swap'),
           },
           {
-            heading: 'Trade Perps',
-            subheading: 'Trade perpetual contracts with leverage',
+            heading: t('Trade Perps'),
+            subheading: t('Trade perpetual contracts with leverage'),
             onClickHandler: () => window.open('https://alpha.thena.fi', '_blank'),
           },
           {
-            heading: 'Cross-Chain',
-            subheading: 'Trade across different blockchains',
+            heading: t('Cross-Chain'),
+            subheading: t('Trade across different blockchains'),
             onClickHandler: () => push('/swap/cross'),
           },
           {
-            heading: 'Buy Crypto',
-            subheading: 'On-ramp from fiat to crypto',
+            heading: t('Buy Crypto'),
+            subheading: t('On-ramp from fiat to crypto'),
             onClickHandler: () => push('/swap/buy'),
           },
         ],
       },
       {
-        label: 'Pools',
+        label: t('Pools'),
         active: pathname.includes('/pools'),
         onClickHandler: () => {
           push('/pools')
         },
       },
       {
-        label: 'Dashboard',
+        label: t('Dashboard'),
         active: pathname.includes('/dashboard'),
         onClickHandler: () => {
           push('/dashboard')
         },
       },
-      // {
-      //   label: 'Arena',
-      //   active: pathname === '/arena',
-      //   onClickHandler: () => {
-      //     push('/arena')
-      //   },
-      // },
       {
-        label: 'Trade To Earn',
+        label: t('Arena'),
+        active: pathname.includes('/arena'),
+        onClickHandler: () => {
+          push('/arena')
+        },
+      },
+      {
+        label: 'T2E',
         active: pathname.includes('/trade-to-earn'),
         onClickHandler: () => {
           push('/trade-to-earn')
@@ -361,18 +393,18 @@ function Header() {
           networkId === ChainId.BSC
             ? [
                 {
-                  heading: 'Analytics',
-                  subheading: 'See platform data',
+                  heading: t('Analytics'),
+                  subheading: t('See platform data'),
                   onClickHandler: () => push('/analytics'),
                 },
                 {
-                  heading: 'Protocols',
-                  subheading: 'Add gauges and voting incentives',
+                  heading: t('Protocols'),
+                  subheading: t('Add gauges and voting incentives'),
                   onClickHandler: () => push('/protocols'),
                 },
                 {
-                  heading: 'Docs',
-                  subheading: 'Learn more about THENA',
+                  heading: t('Docs'),
+                  subheading: t('Learn more about THENA'),
                   onClickHandler: () => {
                     goToDoc()
                   },
@@ -380,13 +412,13 @@ function Header() {
               ]
             : [
                 {
-                  heading: 'Analytics',
-                  subheading: 'See platform data',
+                  heading: t('Analytics'),
+                  subheading: t('See platform data'),
                   onClickHandler: () => push('/analytics'),
                 },
                 {
-                  heading: 'Docs',
-                  subheading: 'Learn more about THENA',
+                  heading: t('Docs'),
+                  subheading: t('Learn more about THENA'),
                   onClickHandler: () => {
                     goToDoc()
                   },
@@ -394,41 +426,41 @@ function Header() {
               ],
       },
     ],
-    [pathname, networkId, push],
+    [t, pathname, networkId, push],
   )
 
   const submenus = useMemo(() => {
     const subs = [
       {
-        label: 'My Assets',
+        label: t('My Assets'),
         active: pathname === '/dashboard',
         onClickHandler: () => {
           push('/dashboard')
         },
       },
       {
-        label: 'Lock',
+        label: t('Lock'),
         active: pathname === '/dashboard/lock',
         onClickHandler: () => {
           push('/dashboard/lock')
         },
       },
       {
-        label: 'Vote',
+        label: t('Vote'),
         active: pathname === '/dashboard/vote',
         onClickHandler: () => {
           push('/dashboard/vote')
         },
       },
       {
-        label: 'Rewards',
+        label: t('Rewards'),
         active: pathname === '/dashboard/rewards',
         onClickHandler: () => {
           push('/dashboard/rewards')
         },
       },
       {
-        label: 'theNFT',
+        label: t('theNFT'),
         active: pathname === '/dashboard/thenft',
         onClickHandler: () => {
           push('/dashboard/thenft')
@@ -436,7 +468,71 @@ function Header() {
       },
     ]
     return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
-  }, [pathname, push, networkId])
+  }, [t, pathname, networkId, push])
+
+  const arenaSubmenus = useMemo(
+    () =>
+      compact([
+        {
+          label: t('Competitions'),
+          active: pathname === '/arena',
+          isLink: true,
+          href: '/arena',
+        },
+        {
+          label: t('Rankings'),
+          active: pathname === '/arena/rankings' || pathname === '/arena/rankings/competitions',
+          isLink: true,
+          href: '/arena/rankings',
+        },
+        {
+          label: t('Analytics'),
+          active: pathname.includes('/arena/analytics'),
+          isLink: true,
+          href: '/arena/analytics',
+        },
+        account
+          ? {
+              label: t('Achievements'),
+              active: pathname === '/arena/achievements',
+              isLink: true,
+              href: '/arena/achievements',
+            }
+          : undefined,
+        account
+          ? {
+              label: t('Profile'),
+              active:
+                pathname === '/arena/profile' ||
+                pathname === '/arena/profile/edit' ||
+                pathname === '/arena/profile/following' ||
+                pathname === '/arena/profile/followers',
+              isLink: true,
+              href: '/arena/profile',
+            }
+          : undefined,
+        {
+          label: t('THENA ID'),
+          active:
+            pathname === '/arena/thena-id/mint' ||
+            pathname === '/arena/thena-id/gift' ||
+            pathname === '/arena/thena-id/recently-minted' ||
+            pathname === '/arena/thena-id/recently-gifted' ||
+            pathname.includes('/arena/thena-id/browse'),
+          isLink: true,
+          href: '/arena/thena-id/mint',
+        },
+        account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
+          ? {
+              label: t('Admin'),
+              active: pathname === '/arena/admin',
+              isLink: true,
+              href: '/arena/admin',
+            }
+          : undefined,
+      ]),
+    [account, pathname, t, userInfo],
+  )
 
   // isRegister, !isUpcoming
   const storySubmenus1 = useMemo(
@@ -516,13 +612,14 @@ function Header() {
     router.prefetch('/dashboard')
     router.prefetch('/analytics')
     router.prefetch('/protocols')
+    router.prefetch('/arena')
   }, [router])
 
   return (
     <div>
       <header className='fixed top-0 z-50 inline-flex h-[64px] w-full flex-col items-start justify-start bg-opacity-20 backdrop-blur-2xl lg:h-[92px]'>
         <div className='flex items-center justify-between self-stretch p-4 backdrop-blur-xl lg:px-10 lg:pb-6 lg:pt-3'>
-          <div className='relative inline-flex items-center gap-10 xl:gap-16 2xl:gap-24'>
+          <div className='relative inline-flex items-center gap-6 xl:gap-12 2xl:gap-24'>
             <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
             <div className='relative hidden items-center justify-center gap-1 lg:inline-flex'>
               {menus.map((item, idx) => (
@@ -606,10 +703,11 @@ function Header() {
             </div>
             <ChainSelect t={t} />
             <LanguageSelect />
-            <OutlinedButton className='hidden lg:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
+            <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
               {t('Enter ALPHA')}
             </OutlinedButton>
-            <ConnectButton className='hidden lg:flex' />
+            {!isSmallScreen() && <ConnectButton className='flex' />}
+            <Notification />
             <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
           </div>
         </div>
@@ -674,7 +772,7 @@ function Header() {
                 <OutlinedButton onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
                   {t('Enter ALPHA')}
                 </OutlinedButton>
-                <ConnectButton />
+                <ConnectButton className='w-full' />
               </ModalFooter>
             </>
           )}
@@ -684,6 +782,28 @@ function Header() {
       {pathname.startsWith('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={submenus} size={SizeTypes.Medium} />
+        </div>
+      )}
+      {pathname.includes('/arena') && (
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5'>
+          <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
+            {toggleSearch && isSmallScreen() ? (
+              <HeaderSearch
+                setToggleSearch={setToggleSearch}
+                toggleSearch={toggleSearch}
+                isSmallScreen={isSmallScreen()}
+              />
+            ) : (
+              <>
+                <Tabs data={arenaSubmenus} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
+                <HeaderSearch
+                  setToggleSearch={setToggleSearch}
+                  toggleSearch={toggleSearch}
+                  isSmallScreen={isSmallScreen()}
+                />
+              </>
+            )}
+          </div>
         </div>
       )}
       {pathname.startsWith('/story') && isRegistered && (

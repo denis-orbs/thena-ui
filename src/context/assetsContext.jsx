@@ -5,13 +5,12 @@ import useSWRImmutable from 'swr/immutable'
 import { formatEther, formatUnits } from 'viem'
 
 import { ERC20Abi } from '@/constant/abi'
+import useWallet from '@/hooks/useWallet'
 import { fetchAssets } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
-import useWallet from '@/lib/wallets/useWallet'
 import { liquidityHub } from '@/modules/LiquidityHub'
 import { useChainSettings } from '@/state/settings/hooks'
-
-import { wagmiConfig } from './Web3Modal'
+import { wagmiConfig } from '@/wallets/rainbowkit'
 
 const initialState = {
   mutateAssets: () => {},

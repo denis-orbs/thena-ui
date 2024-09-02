@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { ChainId, WBNB } from 'thena-sdk-core'
 
 export const CHAIN_LIST = {
@@ -270,6 +271,95 @@ export const ANALYTIC_CHART = {
   CHART_COUNT: 60, // limit analytics chart items not more than 60
 }
 
+export const TC_TIMESTAMP = {
+  MIN_REG: 3600 * 1000,
+  MAX_REG: 3600 * 24 * 7 * 1000,
+  MIN_TS: 3600 * 1000,
+  MAX_TS: 3600 * 24 * 7 * 1000 * 4,
+}
+
+export const TC_STEPS = ['DETAILS', 'TIME SETTINGS', 'TYPE AND TOKENS', 'FEES AND PRIZES']
+
+export const TC_PARTICIPANTS = {
+  MIN: 2,
+  MAX: 5000,
+}
+
+export const MAX_ASSETS_PRIZE_TOKEN = 8
+
+export const TC_MARKET_TYPES = {
+  ALL: 'ALL',
+  SPOT: 'SPOT',
+  PERPETUAL: 'PERPETUALS',
+}
+
+export const DEPOSIT_TYPE = {
+  FREE: false,
+  FIXED: true,
+}
+
+export const WIN_TYPE = {
+  AMOUNT: false,
+  PNL: true,
+}
+
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+const { MIN_REG, MIN_TS } = TC_TIMESTAMP
+
+const roundupTime = () => {
+  const finalTS = dayjs()
+
+  let hours = finalTS.hour()
+  let minutes = finalTS.minute()
+
+  if (minutes < 30) {
+    minutes = 30
+  } else {
+    minutes = 0
+    hours = hours === 23 ? 0 : hours + 1
+  }
+
+  return dayjs().set('hour', hours).set('minute', minutes).valueOf()
+}
+
+export const INIT_VALUES = {
+  name: '',
+  description: '',
+  maxParticipants: 5000,
+  timestamp: {
+    registrationStart: roundupTime(), // start timestamp
+    registrationEnd: roundupTime() + MIN_REG, // end timestamp
+    startTimestamp: roundupTime() + MIN_REG, // registration start timestamp
+    endTimestamp: roundupTime() + MIN_REG + MIN_TS, // registration end timestamp
+  },
+  market: TC_MARKET_TYPES.SPOT,
+  participantCount: 0,
+  participants: [],
+  prize: {
+    placements: 2, //  number of placements
+    ownerFee: 0, //  owner fee
+    totalPrize: [''], //  total prize amounts
+    token: [], //  prize tokens
+    weights: [0, 0], //  placement weights
+    // winType: false, //  win type
+  },
+  competitionRules: {
+    startingBalance: '', //  starting balance
+    winningToken: null, //  winning token
+    tradingTokens: [], //  trading tokens
+    pairIds: [],
+    minimumBalance: '', // minimum balance
+  },
+  entryFee: [], // entry fee of 0 prize token
+  owner: {
+    id: '',
+  }, // owner address
+  tcAddress: ZERO_ADDRESS, // trading competition contract address
+  depositType: DEPOSIT_TYPE.FREE,
+  winType: WIN_TYPE.PNL,
+}
+
 export const SWAP_TYPES = {
   SWAP: '1',
   TWAP: '2',
@@ -277,5 +367,247 @@ export const SWAP_TYPES = {
 }
 
 export const trade2EarnStartTime = 1712534400
+
+export const LIST_CATEGORY = {
+  ALL: 'All',
+  '1_LETTER_WORDS': '1 Letter Words',
+  '2_LETTER_WORDS': '2 Letter Words',
+  '3_LETTER_WORDS': '3 Letter Words',
+  '4_LETTER_WORDS': '4 Letter Words',
+  '5_LETTER_WORDS': '5 Letter Words',
+  '6_LETTER_WORDS': '6 Letter Words',
+  '7_LETTER_WORDS': '7 Letter Words',
+  '8_LETTER_WORDS': '8 Letter Words',
+  '9_LETTER_WORDS': '9 Letter Words',
+  '10_LETTER_WORDS': '10 Letter Words',
+  '11_LETTER_WORDS': '11 Letter Words',
+  '12_LETTER_WORDS': '12 Letter Words',
+  '13_LETTER_WORDS': '13 Letter Words',
+  '14_LETTER_WORDS': '14 Letter Words',
+  '15_LETTER_WORDS': '15 Letter Words',
+  ADJECTIVES: 'Adjectives',
+  CAPITALS: 'Capitals',
+  CITIES: 'Cities',
+  COMPANIES: 'Companies',
+  CONTINENTS: 'Continents',
+  COUNTRIES: 'Countries',
+  COUNTRY_CODES: 'Country Codes',
+  FEMALE_NAMES: 'Female Names',
+  FIRST_NAMES: ' First Names',
+  FRUITS: 'Fruits',
+  GREEK_GODS: 'Greek Gods',
+  LAST_NAMES: 'Last Names',
+  MALE_NAMES: ' Male Names',
+  NOUNS: 'Nouns',
+  VEGETABLES: 'Vegetables',
+  VERBS: 'Verbs',
+}
+
+export const LIST_PAIRS = {
+  0: 'ALL',
+  1: 'BTCUSDT',
+  2: 'ETHUSDT',
+  3: 'BCHUSDT',
+  4: 'XRPUSDT',
+  5: 'EOSUSDT',
+  6: 'LTCUSDT',
+  7: 'TRXUSDT',
+  8: 'ETCUSDT',
+  9: 'LINKUSDT',
+  10: 'XLMUSDT',
+  11: 'ADAUSDT',
+  12: 'XMRUSDT',
+  13: 'DASHUSDT',
+  14: 'ZECUSDT',
+  15: 'XTZUSDT',
+  16: 'BNBUSDT',
+  17: 'ATOMUSDT',
+  18: 'ONTUSDT',
+  19: 'IOTAUSDT',
+  20: 'BATUSDT',
+  21: 'VETUSDT',
+  22: 'QTUMUSDT',
+  23: 'IOSTUSDT',
+  24: 'THETAUSDT',
+  25: 'ALGOUSDT',
+  26: 'ZILUSDT',
+  27: 'KNCUSDT',
+  28: 'ZRXUSDT',
+  29: 'COMPUSDT',
+  30: 'OMGUSDT',
+  31: 'DOGEUSDT',
+  32: 'SXPUSDT',
+  33: 'KAVAUSDT',
+  34: 'BANDUSDT',
+  35: 'RLCUSDT',
+  36: 'WAVESUSDT',
+  37: 'MKRUSDT',
+  38: 'SNXUSDT',
+  39: 'DOTUSDT',
+  40: 'DEFIUSDT',
+  41: 'YFIUSDT',
+  42: 'BALUSDT',
+  43: 'CRVUSDT',
+  44: 'RUNEUSDT',
+  45: 'SUSHIUSDT',
+  46: 'EGLDUSDT',
+  47: 'SOLUSDT',
+  48: 'STORJUSDT',
+  49: 'UNIUSDT',
+  50: 'AVAXUSDT',
+  51: 'FTMUSDT',
+  52: 'HNTUSDT',
+  53: 'ENJUSDT',
+  54: 'FLMUSDT',
+  55: 'TOMOUSDT',
+  56: 'RENUSDT',
+  57: 'KSMUSDT',
+  58: 'NEARUSDT',
+  59: 'AAVEUSDT',
+  60: 'FILUSDT',
+  61: 'LRCUSDT',
+  62: 'MATICUSDT',
+  63: 'OCEANUSDT',
+  64: 'AXSUSDT',
+  65: 'ZENUSDT',
+  66: 'SKLUSDT',
+  67: 'GRTUSDT',
+  68: '1INCHUSDT',
+  69: 'CHZUSDT',
+  70: 'SANDUSDT',
+  71: 'ANKRUSDT',
+  72: 'LITUSDT',
+  73: 'UNFIUSDT',
+  74: 'REEFUSDT',
+  75: 'COTIUSDT',
+  76: 'CHRUSDT',
+  77: 'MANAUSDT',
+  78: 'ALICEUSDT',
+  79: 'ONEUSDT',
+  80: 'LINAUSDT',
+  81: 'STMXUSDT',
+  82: 'DENTUSDT',
+  83: 'CELRUSDT',
+  84: 'HOTUSDT',
+  85: 'MTLUSDT',
+  86: 'OGNUSDT',
+  87: '1000SHIBUSDT',
+  88: 'BTCDOMUSDT',
+  89: 'IOTXUSDT',
+  90: 'AUDIOUSDT',
+  91: 'C98USDT',
+  92: 'MASKUSDT',
+  93: 'ATAUSDT',
+  94: 'DYDXUSDT',
+  95: '1000XECUSDT',
+  96: 'GALAUSDT',
+  97: 'CELOUSDT',
+  98: 'ARUSDT',
+  99: 'KLAYUSDT',
+  100: 'ARPAUSDT',
+  101: 'ENSUSDT',
+  102: 'PEOPLEUSDT',
+  103: 'ANTUSDT',
+  104: 'ROSEUSDT',
+  105: 'DUSKUSDT',
+  106: 'FLOWUSDT',
+  107: 'IMXUSDT',
+  108: 'API3USDT',
+  109: 'GMTUSDT',
+  110: 'APEUSDT',
+  111: 'WOOUSDT',
+  112: 'JASMYUSDT',
+  113: 'DARUSDT',
+  114: 'GALUSDT',
+  115: 'OPUSDT',
+  116: 'INJUSDT',
+  117: 'STGUSDT',
+  118: 'FOOTBALLUSDT',
+  119: 'SPELLUSDT',
+  120: '1000LUNCUSDT',
+  121: 'LUNA2USDT',
+  122: 'LDOUSDT',
+  123: 'CVXUSDT',
+  124: 'APTUSDT',
+  125: 'QNTUSDT',
+  126: 'BLUEBIRDUSDT',
+  127: 'RNDRUSDT',
+  128: 'BNXUSDT',
+  129: 'ARBUSDT',
+  130: 'JOEUSDT',
+  131: 'SUIUSDT',
+  132: '1000PEPEUSDT',
+  133: 'TRBUSDT',
+  134: 'ASTRUSDT',
+  135: 'SSVUSDT',
+  136: 'PHBUSDT',
+  137: 'LPTUSDT',
+  138: 'GTCUSDT',
+  139: 'CTSIUSDT',
+  140: 'TUSDT',
+  141: 'RDNTUSDT',
+  142: 'BLZUSDT',
+  143: 'BELUSDT',
+  144: 'AGIXUSDT',
+  145: 'HBARUSDT',
+  146: 'XVSUSDT',
+  147: 'RADUSDT',
+  148: 'KEYUSDT',
+  149: 'RSRUSDT',
+  150: 'IDUSDT',
+  151: 'NKNUSDT',
+  152: 'HFTUSDT',
+  153: 'STXUSDT',
+  154: 'PERPUSDT',
+  155: 'UMAUSDT',
+  156: 'TRUUSDT',
+  157: 'BAKEUSDT',
+  158: 'HIGHUSDT',
+  159: 'COMBOUSDT',
+  160: 'ALPHAUSDT',
+  161: 'LEVERUSDT',
+  162: 'XEMUSDT',
+  163: 'MDTUSDT',
+  164: '1000FLOKIUSDT',
+  165: 'MINAUSDT',
+  166: 'CFXUSDT',
+  167: 'TLMUSDT',
+  168: 'CTKUSDT',
+  169: 'CKBUSDT',
+  170: 'GMXUSDT',
+  171: 'SFPUSDT',
+  172: 'NMRUSDT',
+  173: 'FETUSDT',
+  174: 'MAGICUSDT',
+  175: 'ICXUSDT',
+  176: 'DGBUSDT',
+  177: 'EDUUSDT',
+  178: 'USDCUSDT',
+  179: 'ACHUSDT',
+  180: 'LQTYUSDT',
+  181: 'BLURUSDT',
+  182: 'FXSUSDT',
+  183: 'ICPUSDT',
+  184: 'HOOKUSDT',
+  185: 'RVNUSDT',
+  186: 'IDEXUSDT',
+  187: 'NEOUSDT',
+  188: 'AMBUSDT',
+  189: 'WLDUSDT',
+  190: 'PENDLEUSDT',
+  191: 'ARKMUSDT',
+  192: 'AGLDUSDT',
+  193: 'TIAUSDT',
+  194: 'ORDIUSDT',
+  195: 'KASUSDT',
+  196: '1000BONKUSDT',
+  197: 'PYTHUSDT',
+  198: 'ILVUSDT',
+  199: 'MEMEUSDT',
+  200: 'BEAMXUSDT',
+  201: 'USTCUSDT',
+  202: 'SEIUSDT',
+  203: 'JTOUSDT',
+}
 
 export const ThenaAuthToken = 'thena-token'

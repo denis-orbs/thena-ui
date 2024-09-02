@@ -1,0 +1,47 @@
+import React from 'react'
+
+import { siteConfig } from '@/constant/config'
+
+export async function generateMetadata({ params }) {
+  const { address } = params
+
+  const metadata = {
+    name: 'user',
+    image: siteConfig.thenaCover,
+    description:
+      'See the profile of user on THENA Arena. Follow them, engage with them or check their analytics and THENA IDs out on the decentralized social media platform of THENA Arena',
+  }
+
+  return {
+    title: {
+      template: '%s | THENA Arena',
+      default: metadata.name,
+    },
+    description: metadata.description,
+    openGraph: {
+      url: `${siteConfig.url}/arena/profile/${encodeURIComponent(address)}`,
+      title: {
+        template: '%s | THENA Arena',
+        default: metadata.name,
+      },
+      siteName: `${metadata.name} | THENA Arena`,
+      description: metadata.description,
+      images: metadata.image,
+      type: 'website',
+      locale: 'en_US',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: {
+        template: '%s | THENA Arena',
+        default: metadata.name,
+      },
+      description: metadata.description,
+      images: metadata.image,
+    },
+  }
+}
+
+const layout = ({ children }) => <div>{children}</div>
+
+export default layout

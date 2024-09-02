@@ -26,7 +26,7 @@ export function Countdown({ timestamp }) {
   return (
     <div className='flex justify-center gap-x-4'>
       {days > 0 && (
-        <Box className='flex h-20 w-full max-w-32 flex-col items-center justify-center bg-neutral-700 p-2 md:h-24 lg:p-6'>
+        <Box className='flex max-w-32 flex-1 flex-col items-center justify-center bg-neutral-700 px-2 py-2 lg:px-4 lg:py-4 2xl:px-6'>
           <Paragraph className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>
             {days}
           </Paragraph>
@@ -35,7 +35,7 @@ export function Countdown({ timestamp }) {
       )}
 
       {hours > 0 && (
-        <Box className='flex h-20 w-full max-w-32 flex-col items-center justify-center bg-neutral-700 p-2 md:h-24 lg:p-6'>
+        <Box className='flex max-w-32 flex-1 flex-col items-center justify-center bg-neutral-700 p-2 lg:p-4 2xl:p-6'>
           <Paragraph className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>
             {hours}
           </Paragraph>
@@ -44,7 +44,7 @@ export function Countdown({ timestamp }) {
       )}
 
       {minutes > 0 && (
-        <Box className='flex h-20 w-full max-w-32 flex-col items-center justify-center bg-neutral-700 p-2 md:h-24 lg:p-6'>
+        <Box className='flex max-w-32 flex-1 flex-col items-center justify-center bg-neutral-700 p-2 lg:p-4 2xl:p-6'>
           <Paragraph className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>
             {minutes}
           </Paragraph>
@@ -53,7 +53,7 @@ export function Countdown({ timestamp }) {
       )}
 
       {seconds >= 0 && (
-        <Box className='flex h-20 w-full max-w-32 flex-col items-center justify-center bg-neutral-700 p-2 md:h-24 lg:p-6'>
+        <Box className='flex max-w-32 flex-1 flex-col items-center justify-center bg-neutral-700 p-2 lg:p-4 2xl:p-6'>
           <Paragraph className='text-gradient-tertiary text-center font-archia text-xl font-semibold md:text-3xl'>
             {seconds}
           </Paragraph>

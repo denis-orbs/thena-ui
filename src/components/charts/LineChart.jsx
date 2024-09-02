@@ -8,7 +8,7 @@ import { useLocaleSettings } from '@/state/settings/hooks'
 
 import Skeleton from '../skeleton'
 
-function LineChart({ data, setHoverValue, setHoverDate }) {
+function LineChart({ data, setHoverValue, setHoverDate, numberFormat }) {
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
   const { locale } = useLocaleSettings()
@@ -73,7 +73,7 @@ function LineChart({ data, setHoverValue, setHoverDate }) {
 
     chart.applyOptions({
       localization: {
-        priceFormatter: priceValue => `$${formatAmount(priceValue, true)}`,
+        priceFormatter: priceValue => `${numberFormat ? '' : '$'}${formatAmount(priceValue, true, 3, !numberFormat)}`,
       },
     })
 
@@ -83,9 +83,19 @@ function LineChart({ data, setHoverValue, setHoverDate }) {
       topColor: darken(0.01, '#F199EE'),
       bottomColor: '#F199EE00',
       priceFormat: {
-        type: 'price',
+        type: numberFormat ? 'volume' : 'price',
         precision: 4,
-        minMove: 0.0001,
+        minMove: numberFormat ? 1 : 0.0001,
+      },
+      autoscaleInfoProvider: original => {
+        const res = original()
+        const allZero = transformedData.every(val => val.value === 0)
+        // When all data are zero then set default range to 0 - 10
+        if (allZero) {
+          res.priceRange.minValue = 0
+          res.priceRange.maxValue = 10
+        }
+        return res
       },
     })
     setChart(chart)
@@ -118,7 +128,7 @@ function LineChart({ data, setHoverValue, setHoverDate }) {
     return () => {
       chart.remove()
     }
-  }, [transformedData, setHoverValue, setHoverDate, locale])
+  }, [transformedData, setHoverValue, setHoverDate, locale, numberFormat])
 
   const handleMouseLeave = useCallback(() => {
     if (setHoverValue) setHoverValue(undefined)

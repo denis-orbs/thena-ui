@@ -11,11 +11,11 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { TXN_STATUS } from '@/constant'
+import useWallet from '@/hooks/useWallet'
 import { readCall, signCall, waitCall } from '@/lib/contractActions'
 import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
 import { errorToast, successToast } from '@/lib/notify'
 import { formatAmount, isInvalidAmount, toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -508,12 +508,12 @@ const useSubmitTransaction = () => {
   )
 }
 
-const useSwap = () => {
+const useSwap = (autoClose = false) => {
   const { account, chainId } = useWallet()
   const count = counter()
   const submitTx = useSubmitTransaction()
   const { incrementFailures } = useStore()
-  const { startTxn, writeTxn, updateTxn, endTxn } = useTxn()
+  const { startTxn, writeTxn, updateTxn, endTxn, closeTxnModal } = useTxn()
 
   return useMutation({
     mutationFn: async ({ fromAsset, toAsset, fromAmount, setFromAddress, outAmount, quote, callback }) => {
@@ -653,6 +653,9 @@ const useSwap = () => {
         final: 'Swap Successful',
       })
       callback()
+      if (autoClose) {
+        closeTxnModal()
+      }
       return tx
     },
     onError: () => {

@@ -18,11 +18,11 @@ function PaginateCell({ children, className, active, onClick, disabled }) {
     <li
       role='presentation'
       className={cn(
-        'flex h-8 w-8 items-center justify-center stroke-neutral-300 text-neutral-300',
+        'flex h-8 w-fit min-w-8 items-center justify-center stroke-neutral-300 px-[2px] text-neutral-300',
         'hover:bg-neutral-700 hover:stroke-neutral-200 hover:text-neutral-200',
         'outline outline-2 outline-offset-4 outline-transparent',
         'cursor-pointer rounded transition-all duration-150 ease-out',
-        'active:outline-focus',
+        'text-sm active:outline-focus',
         active && 'bg-neutral-800',
         disabled && 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
         className,
@@ -185,22 +185,30 @@ function Table({
   useEffect(() => {
     if (enabledRedirectOnClickSort) {
       const sortParams = searchParams.get('sort')
-      const sortOption = sortOptions.find(item => item.value === sortParams)
-      if (sortOption && sortOption.value !== sort?.value) {
-        setSort(sortOption)
+      const isDescParams = searchParams.get('isDesc')
+
+      if (sort?.value !== sortParams && String(sort?.isDesc) !== isDescParams) {
+        const sortOption = sortOptions.find(item => item.value === sortParams)
+        if (sortOption) {
+          setSort({
+            ...sortOption,
+            value: sortParams,
+            isDesc: isDescParams === 'true',
+          })
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabledRedirectOnClickSort, searchParams, setSort, sortOptions])
+  }, [searchParams])
 
   useEffect(() => {
-    if (hightLightIndex) {
+    if (hightLightIndex && searchParams.get('rank')) {
       const element = document.getElementById(`table-row-${hightLightIndex}`)
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
-  }, [hightLightIndex])
+  }, [hightLightIndex, searchParams])
 
   return (
     <div className={cn('relative flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
@@ -222,6 +230,7 @@ function Table({
                     onClick={() => {
                       if (!option.disabled) {
                         handleRedirectPage(1)
+                        query.delete('rank', undefined)
                         if (!onlySortDesc) {
                           setSort({
                             ...option,
@@ -300,7 +309,11 @@ function Table({
                         <tr
                           key={`table-row-${eleIdx}`}
                           id={`table-row-${eleIdx}`}
-                          className={eleIdx === hightLightIndex ? bgHightLight : ''}
+                          className={
+                            eleIdx === hightLightIndex
+                              ? 'table__animate-gradient bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+                              : ''
+                          }
                         >
                           {sortOptions.map((cell, cellIdx) => (
                             <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
@@ -327,6 +340,7 @@ function Table({
                   onClick={() => {
                     if (!option.disabled) {
                       handleRedirectPage(1)
+                      query.delete('rank', undefined)
                       setSort({
                         ...option,
                         isDesc: sort.value === option.value ? !sort.isDesc : true,
@@ -515,22 +529,28 @@ function Table({
             >
               <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`} />
             </PaginateCell>
-            <Popover
-              inputPage={inputPage}
-              setInputPage={setInputPage}
-              setCurrentPage={setCurrentPage}
-              showPopover={showPopover}
-              setShowPopover={setShowPopover}
-              pageCount={pageCount}
-              onClick={() => {
-                const newPage = Number(inputPage)
-                if (newPage && newPage !== currentPage) {
-                  handleRedirectPage(Number(inputPage))
-                }
-                setShowPopover(false)
-                setInputPage('')
-              }}
-            />
+            {showPopoverPagination && (
+              <Popover
+                inputPage={inputPage}
+                setInputPage={setInputPage}
+                setCurrentPage={setCurrentPage}
+                showPopover={showPopover}
+                setShowPopover={setShowPopover}
+                pageCount={pageCount}
+                onClick={() => {
+                  const newPage = Number(inputPage)
+                  if (newPage && newPage !== currentPage) {
+                    if (enabledRedirectOnClickPagination) {
+                      handleRedirectPage(Number(newPage))
+                    } else {
+                      setCurrentPage(newPage)
+                    }
+                  }
+                  setShowPopover(false)
+                  setInputPage('')
+                }}
+              />
+            )}
           </ul>
         </div>
       )}

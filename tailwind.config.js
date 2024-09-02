@@ -2,9 +2,22 @@ export default {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      flex: {
+        2: '2 2 0%',
+      },
       fontFamily: {
         archia: ['Archia', 'sans-serif'],
         aeonik: ['Aeonik', 'sans-serif'],
+      },
+      keyframes: {
+        gradient: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+      },
+      animation: {
+        gradient: 'gradient 5s ease infinite',
       },
       colors: {
         primary: {

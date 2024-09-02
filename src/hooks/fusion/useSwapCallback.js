@@ -7,12 +7,12 @@ import { usePublicClient } from 'wagmi'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract } from '@/lib/contracts'
 import { isZero } from '@/lib/fusion'
 import { SwapRouter } from '@/lib/fusion/entities/swapRouter'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 /**

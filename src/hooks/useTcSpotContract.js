@@ -1,0 +1,639 @@
+import BigNumber from 'bignumber.js'
+import { useTranslations } from 'next-intl'
+import { useCallback, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+import { maxUint256 } from 'viem'
+
+import { TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
+import useWallet from '@/hooks/useWallet'
+import { readCall } from '@/lib/contractActions'
+import { getERC20Contract, getOldTcSpotContract, getTcSpotContract } from '@/lib/contracts'
+import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
+import { fromWei, isInvalidAmount } from '@/lib/utils'
+import { useTxn } from '@/state/transactions/hooks'
+
+export const useTCContractInfor = (address, eventType, participantCount, type = TC_MARKET_TYPES.SPOT) => {
+  const [loaded, setLoaded] = useState(false)
+  const [isRegistered, setIsRegistered] = useState(false)
+  const [isWinner, setIsWinner] = useState(false)
+  const [isOwner, setIsOwner] = useState(false)
+  const [isClaimable, setIsClaimable] = useState(undefined)
+  const [isHostClaimable, setIsHostClaimable] = useState(undefined)
+  const [isWithdrawable, setIsWithdrawable] = useState(undefined)
+
+  const tcSpotContract = getTcSpotContract(address)
+  const oldTcSpotContract = getOldTcSpotContract(address)
+
+  const { account } = useWallet()
+  const assets = useAssets()
+
+  const getUserData = useCallback(async () => {
+    setLoaded(false)
+
+    if (address) {
+      if (!account || !tcSpotContract || type !== TC_MARKET_TYPES.SPOT) {
+        setIsRegistered(false)
+        setIsWinner(false)
+        setIsOwner(false)
+        setLoaded(true)
+
+        return
+      }
+
+      const [joined, ownerAddress] = await Promise.allSettled([
+        readCall(tcSpotContract, 'isRegistered', [account]),
+        readCall(tcSpotContract, 'owner', []),
+      ])
+
+      if (joined && joined.status === 'fulfilled') {
+        setIsRegistered(joined.value)
+      }
+
+      if (eventType === EVENT_TYPES.ENDED) {
+        Promise.resolve(readCall(tcSpotContract, 'isWinner', [account]))
+          .then(value => {
+            setIsWinner(value[0])
+          })
+          .catch(() => {})
+      }
+
+      if (ownerAddress && ownerAddress.status === 'fulfilled') {
+        setIsOwner(ownerAddress.value.toLowerCase() === account.toLowerCase())
+      }
+
+      setLoaded(true)
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, eventType, address, type])
+
+  const getParticipantList = useCallback(async () => {
+    if (participantCount) {
+      const result = await Promise.all(
+        Array.from({ length: participantCount }).map(async (_, index) => {
+          try {
+            return await readCall(tcSpotContract, 'winnersList', [index])
+          } catch (error) {
+            return undefined
+          }
+        }),
+      )
+      return result
+    }
+    return []
+  }, [tcSpotContract, participantCount])
+
+  const checkIsClaimableOld = useCallback(async () => {
+    const winnersList = await getParticipantList()
+    const claimable = await readCall(oldTcSpotContract, 'claimable', [account])
+    const isClaimed =
+      winnersList.length && winnersList.some(claimed => claimed && claimed.toLowerCase() === account.toLowerCase())
+    const token = assets.find(ele => ele.address.toLowerCase() === claimable[1].toLowerCase())
+    if (!token || isClaimed) {
+      return false
+    }
+    const totalClaimable = fromWei(claimable[0], token.decimals)
+    return !totalClaimable.isZero()
+  }, [account, assets, getParticipantList, oldTcSpotContract])
+
+  const checkIsClaimableNew = useCallback(async () => {
+    const winnersClaimed = await readCall(tcSpotContract, 'winnersClaimed', [account])
+
+    const [amount, token] = await readCall(tcSpotContract, 'claimable', [account])
+
+    const isValidAmount = amount.some((claim, index) => !fromWei(claim, token[index].decimals).isZero())
+
+    return !winnersClaimed && isValidAmount
+  }, [account, tcSpotContract])
+
+  const checkClaimable = useCallback(
+    async (force = false) => {
+      if (type !== TC_MARKET_TYPES.SPOT || eventType !== EVENT_TYPES.ENDED) {
+        return
+      }
+      if (isRegistered && isWinner && (isClaimable === undefined || force)) {
+        await Promise.resolve(checkIsClaimableNew())
+          .then(value => setIsClaimable(value))
+          .catch(
+            async () =>
+              await Promise.resolve(checkIsClaimableOld())
+                .then(value => {
+                  setIsClaimable(value)
+                })
+                .catch(() => {
+                  setIsClaimable(false)
+                }),
+          )
+      }
+      if (isOwner && (isHostClaimable === undefined || force)) {
+        await Promise.all([
+          readCall(tcSpotContract, 'ownerHasClaimed', [account]),
+          readCall(tcSpotContract, 'ownerFeeAmount', []),
+        ])
+          .then(([ownerClaimed, feeAmount]) =>
+            setIsHostClaimable(!ownerClaimed && feeAmount[0].some(fee => !fromWei(fee).isZero())),
+          )
+          .catch(
+            async () =>
+              await Promise.all([
+                readCall(oldTcSpotContract, 'ownerHasClaimed', [account]),
+                readCall(oldTcSpotContract, 'ownerFeeAmount', []),
+              ])
+                .then(([ownerClaimed, feeAmount]) => {
+                  setIsHostClaimable(!ownerClaimed && !fromWei(feeAmount).isZero())
+                })
+                .catch(() => {
+                  setIsHostClaimable(false)
+                }),
+          )
+      }
+    },
+    [
+      account,
+      checkIsClaimableNew,
+      checkIsClaimableOld,
+      eventType,
+      isClaimable,
+      isHostClaimable,
+      isOwner,
+      isRegistered,
+      isWinner,
+      oldTcSpotContract,
+      tcSpotContract,
+      type,
+    ],
+  )
+
+  const checkWithdrawable = useCallback(
+    async (force = false) => {
+      if (type === TC_MARKET_TYPES.SPOT) {
+        if ((eventType === EVENT_TYPES.ENDED && isWithdrawable === undefined) || force) {
+          try {
+            if (isRegistered) {
+              const userBalanceRes = await readCall(tcSpotContract, 'userBalance', [account])
+              const userBalance = userBalanceRes[0]
+              const hasBalance = Array.isArray(userBalance) && userBalance.some(item => new BigNumber(item).gt(0))
+              setIsWithdrawable(hasBalance)
+            }
+          } catch (error) {
+            setIsWithdrawable(false)
+          }
+        }
+      }
+    },
+    [type, eventType, isWithdrawable, isRegistered, tcSpotContract, account],
+  )
+
+  useEffect(() => {
+    checkClaimable()
+  }, [checkClaimable])
+
+  useEffect(() => {
+    checkWithdrawable()
+  }, [checkWithdrawable])
+
+  useEffect(() => {
+    getUserData()
+  }, [getUserData])
+
+  useEffect(() => {
+    if (account && address) {
+      setIsClaimable(undefined)
+      setIsHostClaimable(undefined)
+    }
+  }, [account, address])
+
+  return {
+    loaded,
+    isRegistered,
+    isWinner,
+    isOwner,
+    isClaimable,
+    isHostClaimable,
+    isWithdrawable,
+    setIsClaimable,
+    setIsHostClaimable,
+    refetch: getUserData,
+    checkClaimable,
+    checkWithdrawable,
+  }
+}
+
+export const useJoinTC = () => {
+  const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+  const [pending, setPending] = useState(false)
+
+  const joinTC = useCallback(
+    async (data, depositBalance) => {
+      const key = uuidv4()
+      const joinuuid = uuidv4()
+      const tcSpotContract = getTcSpotContract(data.tcAddress)
+      const winningTokenContract = getERC20Contract(data.competitionRules.winningToken.address, chainId)
+
+      const tokens = {
+        [data.competitionRules.winningToken.address]: {
+          amount: isInvalidAmount(data.competitionRules.startingBalance)
+            ? fromWei(depositBalance)
+            : fromWei(data.competitionRules.startingBalance),
+          decimals: 18,
+          symbol: data.competitionRules.winningToken.symbol,
+          contract: winningTokenContract,
+        },
+      }
+      const transactions = {}
+
+      for (let i = 0; i < data.entryFeeUpdate.length; i++) {
+        if (!isInvalidAmount(data.entryFeeUpdate[i])) {
+          if (tokens[data.prizeUpdate.token[i].address]) {
+            const feeAmount = fromWei(data.entryFeeUpdate[i], data.prizeUpdate.token[i].decimals).plus(
+              tokens[data.prizeUpdate.token[i].address].amount,
+            )
+            tokens[data.prizeUpdate.token[i].address].amount = feeAmount
+          } else {
+            const feeTokenContract = getERC20Contract(data.prizeUpdate.token[i].address, chainId)
+            tokens[data.prizeUpdate.token[i].address] = {
+              amount: fromWei(data.entryFeeUpdate[i], data.prizeUpdate.token[i].decimals),
+              decimals: data.prizeUpdate.token[i].decimals,
+              symbol: data.prizeUpdate.token[i].symbol,
+              contract: feeTokenContract,
+            }
+          }
+        }
+      }
+
+      for (let i = 0; i < Object.keys(tokens).length; i++) {
+        const address = Object.keys(tokens)[i]
+        const approveFeeuuid = uuidv4()
+        const allowance = await readCall(tokens[address].contract, 'allowance', [account, data.tcAddress])
+
+        const isApprovedFee = fromWei(allowance, tokens[address].decimals).gte(
+          tokens[address].amount,
+          tokens[address].decimals,
+        )
+
+        if (!isApprovedFee) {
+          tokens[address].id = approveFeeuuid
+          transactions[approveFeeuuid] = {
+            desc: `${t('Approve')} ${tokens[address].symbol}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+      }
+      transactions[joinuuid] = {
+        desc: t('Join Competition'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+      setPending(true)
+      startTxn({
+        key,
+        title: t('Join Competition'),
+        transactions,
+      })
+      for (let i = 0; i < Object.keys(tokens).length; i++) {
+        const address = Object.keys(tokens)[i]
+        if (tokens[address].id) {
+          const isSuccess = await writeTxn(key, tokens[address].id, tokens[address].contract, 'approve', [
+            data.tcAddress,
+            maxUint256,
+          ])
+
+          if (!isSuccess) {
+            setPending(false)
+            return false
+          }
+        }
+      }
+
+      if (isInvalidAmount(data.competitionRules.startingBalance)) {
+        const isSuccess = await writeTxn(key, joinuuid, tcSpotContract, 'registerAndDeposit', [depositBalance])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      } else {
+        const isSuccess = await writeTxn(key, joinuuid, tcSpotContract, 'registerAndDeposit', [
+          data.competitionRules.startingBalance,
+        ])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      }
+
+      endTxn({
+        key,
+        final: 'Join TC Successful',
+      })
+      setPending(false)
+      closeTxnModal()
+      return true
+    },
+    [account, chainId, closeTxnModal, endTxn, startTxn, t, writeTxn],
+  )
+
+  return {
+    pending,
+    joinTC,
+  }
+}
+
+export const useDepositToTC = () => {
+  const { startTxn, endTxn, writeTxn, closeTxn } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+  const [pending, setPending] = useState(false)
+
+  const deposit = useCallback(
+    async data => {
+      const key = uuidv4()
+      const approveTokenuuid = uuidv4()
+      const deposituuid = uuidv4()
+      const tcSpotContract = getTcSpotContract(data.tcAddress)
+
+      const winningTokenContract = getERC20Contract(data.winningToken.address, chainId)
+      const allowance = await readCall(winningTokenContract, 'allowance', [account, data.tcAddress])
+      const isApprovedWinningToken = fromWei(allowance).gte(fromWei(data.amount))
+
+      setPending(true)
+      startTxn({
+        key,
+        title: t('Deposit'),
+        transactions: {
+          ...(!isApprovedWinningToken && {
+            [approveTokenuuid]: {
+              desc: `${t('Approve')} ${t('Winning Token')}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [deposituuid]: {
+            desc: t('Deposit'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      if (!isApprovedWinningToken) {
+        const isSuccess = await writeTxn(key, approveTokenuuid, winningTokenContract, 'approve', [
+          data.tcAddress,
+          maxUint256,
+        ])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      }
+
+      const isSuccess = await writeTxn(key, deposituuid, tcSpotContract, 'deposit', [data.amount])
+      if (!isSuccess) {
+        setPending(false)
+        closeTxn()
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Deposit Successful',
+      })
+      setPending(false)
+      return true
+    },
+    [account, chainId, closeTxn, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { pending, deposit }
+}
+
+export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) => {
+  const { account } = useWallet()
+
+  const [balance, setBalance] = useState(0n)
+  const [userBalance, setUserBalance] = useState()
+  const [pnl, setPNL] = useState(0n)
+  const [winAmount, setWinAmount] = useState(null)
+
+  const fetchData = useCallback(async () => {
+    try {
+      if (!account || !TCAddress || !winningTokenAddress) {
+        setUserBalance([])
+        return
+      }
+
+      const tcSpotContract = getTcSpotContract(TCAddress)
+      const oldTcSpotContract = getOldTcSpotContract(TCAddress)
+
+      const [pnlRes, balanceRes] = await Promise.all([
+        readCall(tcSpotContract, 'getPNLOf', [account]),
+        readCall(tcSpotContract, 'userBalance', [account]),
+      ])
+
+      if (pnlRes) {
+        setPNL(pnlRes)
+      }
+
+      if (balanceRes) {
+        const find = balanceRes[1].findIndex(item => item.toLowerCase() === winningTokenAddress.toLowerCase())
+        const value = find !== -1 ? balanceRes[0][find] : 0n
+        setUserBalance(balanceRes)
+        setBalance(value)
+      }
+
+      Promise.resolve(readCall(tcSpotContract, 'claimable', [account]))
+        .then(value => {
+          setWinAmount(value[0])
+        })
+        .catch(() => {
+          Promise.resolve(readCall(oldTcSpotContract, 'claimable', [account]))
+            .then(value => {
+              setWinAmount(value[0])
+            })
+            .catch(() => {})
+        })
+    } catch (error) {
+      console.log(error)
+    }
+  }, [TCAddress, account, winningTokenAddress])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchData()
+    }, 30000)
+
+    fetchData()
+    return () => clearInterval(interval)
+  }, [fetchData, reloadFetch])
+
+  return {
+    pnl,
+    balance,
+    reload: fetchData,
+    userBalance,
+    winAmount,
+  }
+}
+
+export const useClaimTC = () => {
+  const { startTxn, endTxn, writeTxn, closeTxnModal, closeTxn } = useTxn()
+  const { account } = useWallet()
+  const t = useTranslations()
+  const [loading, setLoading] = useState(false)
+
+  const claimReward = useCallback(
+    async ({ tcAddress, isClaimOwnerFee }) => {
+      const key = uuidv4()
+      const claimuuid = uuidv4()
+      const tcSpotContract = getTcSpotContract(tcAddress)
+
+      setLoading(true)
+      startTxn({
+        key,
+        title: isClaimOwnerFee ? t('Claim Owner Fee') : t('Claim Rewards'),
+        transactions: {
+          [claimuuid]: {
+            desc: isClaimOwnerFee ? t('Claim Owner Fee') : t('Claim Rewards'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      const isSuccess = await writeTxn(
+        key,
+        claimuuid,
+        tcSpotContract,
+        isClaimOwnerFee ? 'claimOwnerFee' : 'claimPrize',
+        [account],
+      )
+      if (!isSuccess) {
+        setLoading(false)
+        closeTxn()
+        return false
+      }
+      endTxn({
+        key,
+        final: 'Claim Successful',
+      })
+      setLoading(false)
+      closeTxnModal()
+      return true
+    },
+    [account, endTxn, startTxn, t, writeTxn, closeTxnModal, closeTxn],
+  )
+
+  return { loading, claimReward }
+}
+
+export const useWithdrawDepositTC = () => {
+  const { startTxn, endTxn, writeTxn, closeTxnModal, closeTxn } = useTxn()
+  const t = useTranslations()
+  const [loading, setLoading] = useState(false)
+
+  const withdrawDeposit = useCallback(
+    async ({ tcAddress }) => {
+      const key = uuidv4()
+      const withdrawuuid = uuidv4()
+      const tcSpotContract = getTcSpotContract(tcAddress)
+
+      setLoading(true)
+      startTxn({
+        key,
+        title: t('Withdraw Deposit'),
+        transactions: {
+          [withdrawuuid]: {
+            desc: t('Withdraw Deposit'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      const isSuccess = await writeTxn(key, withdrawuuid, tcSpotContract, 'withdrawAllFunds')
+      if (!isSuccess) {
+        setLoading(false)
+        closeTxn()
+        return false
+      }
+      endTxn({
+        key,
+        final: 'Withdraw Successful',
+      })
+      setLoading(false)
+      closeTxnModal()
+      return true
+    },
+    [endTxn, startTxn, t, writeTxn, closeTxnModal, closeTxn],
+  )
+
+  return { loading, withdrawDeposit }
+}
+
+export const useIncreaseTCSpotPrize = () => {
+  const { startTxn, endTxn, writeTxn, closeTxn } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+  const [pending, setPending] = useState(false)
+
+  const increasePrize = useCallback(
+    async (tcAddress, tokenAddress, amount) => {
+      const key = uuidv4()
+      const approveTokenuuid = uuidv4()
+      const increasePrizeuuid = uuidv4()
+      const tcSpotContract = getTcSpotContract(tcAddress)
+
+      const tokenContract = getERC20Contract(tokenAddress, chainId)
+      const allowance = await readCall(tokenContract, 'allowance', [account, tcAddress])
+      const isApprovedToken = fromWei(allowance).gte(fromWei(amount))
+
+      setPending(true)
+      startTxn({
+        key,
+        title: t('Increase Prize'),
+        transactions: {
+          ...(!isApprovedToken && {
+            [approveTokenuuid]: {
+              desc: `${t('Approve')} ${t('Token')}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [increasePrizeuuid]: {
+            desc: t('Increase Prize'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      if (!isApprovedToken) {
+        const isSuccess = await writeTxn(key, approveTokenuuid, tokenContract, 'approve', [tcAddress, maxUint256])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      }
+
+      const isSuccess = await writeTxn(key, increasePrizeuuid, tcSpotContract, 'increasePrize', [amount, tokenAddress])
+      if (!isSuccess) {
+        setPending(false)
+        closeTxn()
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Increase Successful',
+      })
+      setPending(false)
+      return true
+    },
+    [account, chainId, closeTxn, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { pending, increasePrize }
+}

@@ -10,33 +10,27 @@ export function FAQ() {
   const faqs = [
     {
       title: 'How To Win Rewards?',
-      answer:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce non nisi lacinia, tristique arcu a, faucibus orci. Aenean sit amet augue lacus. Proin ullamcorpe.',
+      answer: 'How To Win Rewards Description',
     },
     {
       title: 'How To Earn Points?',
-      answer:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce non nisi lacinia, tristique arcu a, faucibus orci. Aenean sit amet augue lacus. Proin ullamcorpe.',
+      answer: 'How To Earn Points Description',
     },
     {
       title: 'How To Earn Fragments?',
-      answer:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce non nisi lacinia, tristique arcu a, faucibus orci. Aenean sit amet augue lacus. Proin ullamcorpe.',
+      answer: 'How To Earn Fragments Description',
     },
     {
       title: 'How to Claim Rewards?',
-      answer:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce non nisi lacinia, tristique arcu a, faucibus orci. Aenean sit amet augue lacus. Proin ullamcorpe.',
+      answer: 'How to Claim Rewards Description',
     },
     {
-      title: 'What is the Winner Selection Method?',
-      answer:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce non nisi lacinia, tristique arcu a, faucibus orci. Aenean sit amet augue lacus. Proin ullamcorpe.',
+      title: 'How Are Winners Selected?',
+      answer: 'How Are Winners Selected Description',
     },
     {
       title: 'How Many Rewards Will Be In Total?',
-      answer:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce non nisi lacinia, tristique arcu a, faucibus orci. Aenean sit amet augue lacus. Proin ullamcorpe.',
+      answer: 'How Many Rewards Will Be In Total Description',
     },
   ]
 
@@ -61,7 +55,7 @@ export function FAQ() {
           >
             <div className='flex justify-between lg:block'>
               <TextHeading className='block font-archia text-[22px] font-semibold leading-8 tracking-tight'>
-                {faq.title}
+                {t(faq.title)}
               </TextHeading>
               {expansions[index] ? (
                 <CollapseUpIcon className='h-5 w-5 cursor-pointer lg:hidden' />
@@ -70,7 +64,7 @@ export function FAQ() {
               )}
             </div>
             <span className={cn('text-base text-neutral-300 lg:block ', expansions[index] ? 'block ' : 'hidden')}>
-              {faq.answer}
+              {t(faq.answer)}
             </span>
             {index !== faqs.length - 1 ? (
               <hr className='mt-4 border-neutral-600 lg:hidden' />

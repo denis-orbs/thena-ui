@@ -6,10 +6,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { TXN_STATUS } from '@/constant'
 import { rewardEarnedAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
+import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getTheContract, getVeDistContract, getVeTHEContract, getVoterContract } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 export const useCreateLock = () => {

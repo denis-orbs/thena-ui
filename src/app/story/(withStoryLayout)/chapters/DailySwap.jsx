@@ -6,7 +6,9 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import { cn } from '@/lib/utils'
 import { ArrowForwardSmallIcon, CheckPurpleLargeIcon, StarLineLargeIcon } from '@/svgs'
 
-export function DailySwap({ dailySwaps }) {
+const BASE_DAILY_SWAP_POINT = 10
+
+export function DailySwap({ dailySwaps, userSwaps }) {
   const t = useTranslations()
 
   return (
@@ -24,28 +26,30 @@ export function DailySwap({ dailySwaps }) {
             </PrimaryButton>
           </Link>
         </div>
-        <div className='grid grid-cols-2 gap-5 lg:grid-cols-7'>
-          {dailySwaps.map(swap => (
-            <div key={swap.id}>
+        <div className='grid grid-cols-1 gap-[10px] lg:grid-cols-7 lg:gap-5'>
+          {dailySwaps.map(task => (
+            <div key={task.id}>
               <div
                 className={cn(
-                  'relative flex flex-col items-center rounded-xl border-2 border-neutral-800 bg-neutral-800 px-[19px] py-3 hover:border-primary-600',
-                  swap.isCompleted ? 'border-primary-600' : '',
+                  'relative flex flex-row items-center justify-between rounded-xl border-2 border-neutral-800 bg-neutral-800 px-[19px] py-4 hover:border-primary-600 lg:flex-col lg:justify-center lg:py-3',
+                  typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day ? 'border-primary-600' : '',
                 )}
               >
-                <p className='font-archia text-[22px] leading-7'>{`${t('Day')} ${swap.index + 1}`}</p>
-                <hr className='my-4 w-full border-neutral-600' />
-                {swap.isCompleted ? (
-                  <CheckPurpleLargeIcon className='mt-3 h-[60px] w-[60px]' />
-                ) : (
-                  <StarLineLargeIcon className='mt-3 h-[60px] w-[60px]' />
-                )}
-                <p className='text-[18px] leading-7'>{`+${swap.rewardAmount?.[0]} ${t('PTS')}`}</p>
-                {swap.ratio !== 1 && (
-                  <div className='absolute right-[-2px] top-[-2px] rounded-bl-xl rounded-tr-xl bg-[rgba(220,0,212,1)] px-[5px] text-base font-semibold leading-7'>
-                    {swap.ratio}X
-                  </div>
-                )}
+                <p className='font-archia text-[22px] leading-7'>{`${t('Day')} ${task.index + 1}`}</p>
+                <hr className='my-4 hidden w-full border-neutral-600 lg:block' />
+                <div className='flex flex-row items-center justify-between gap-2 lg:flex-col lg:justify-center'>
+                  {typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day ? (
+                    <CheckPurpleLargeIcon className='order-2 h-6 w-6 lg:order-1 lg:mt-3 lg:h-[60px] lg:w-[60px]' />
+                  ) : (
+                    <StarLineLargeIcon className='order-2 h-6 w-6 lg:order-1 lg:mt-3 lg:h-[60px] lg:w-[60px]' />
+                  )}
+                  <p className='order-1 text-[18px] leading-7 lg:order-2'>{`+${task.rewardAmount?.[0]} ${t('PTS')}`}</p>
+                  {task.rewardAmount[0] !== BASE_DAILY_SWAP_POINT && (
+                    <div className='absolute right-[-2px] top-[-2px] rounded-bl-xl rounded-tr-xl bg-[rgba(220,0,212,1)] px-[5px] text-xs font-semibold leading-5 lg:text-base lg:font-semibold lg:leading-7'>
+                      {task.rewardAmount[0] / BASE_DAILY_SWAP_POINT}X
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ))}

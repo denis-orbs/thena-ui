@@ -6,12 +6,12 @@ import Loading from '@/app/loading'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
 import { fetchTHEStoryParticipantReferrals } from '@/modules/Story'
-import { StarLineSmallIcon } from '@/svgs'
 
 import { HowItWork } from './HowItWork'
 import { ReferralHistory } from './ReferralHistory'
 import { ShareReferralLink } from './ShareReferralLink'
-import { REFERRAL_REWARD } from '../../constant'
+import { RewardIconTooltip } from '../chapters/RewardIconTooltip'
+import { REFERRAL_REWARD, RewardType } from '../../constant'
 
 export function Referral({ address }) {
   const t = useTranslations()
@@ -21,7 +21,7 @@ export function Referral({ address }) {
     ['campaignParticipantReferrals', address],
     () => fetchTHEStoryParticipantReferrals(address),
     {
-      refreshInterval: 0,
+      refreshInterval: 30000,
     },
   )
   const totalSuccessfulReferral = useMemo(
@@ -43,21 +43,28 @@ export function Referral({ address }) {
       </div>
       <div className='mt-6 grid grid-cols-6 gap-6'>
         <div className='col-span-3 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
+          {/* TODO: Hard-coded */}
           <TextHeading className='block text-2xl'>{userReferral?.length}</TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
             {t('Registered Referrals')}
           </TextSubHeading>
         </div>
         <div className='col-span-3 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
-          <TextHeading className='block text-2xl'>{totalSuccessfulReferral}</TextHeading>
+          {/* TODO: Hard-coded */}
+          <TextHeading className='block text-2xl'>{totalSuccessfulReferral} / 30</TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
             {t('Successful Referrals')}
           </TextSubHeading>
         </div>
         <div className='col-span-6 rounded-xl bg-neutral-900 p-6 lg:col-span-2'>
           <TextHeading className='block text-2xl'>
-            <StarLineSmallIcon className='inline-block h-5 w-5' />
-            {REFERRAL_REWARD * totalSuccessfulReferral}
+            <RewardIconTooltip
+              rewardType={RewardType.Point}
+              id='referral-info'
+              iconSize={5}
+              className='mr-1 inline leading-5'
+            />
+            {REFERRAL_REWARD * totalSuccessfulReferral <= 300 ? REFERRAL_REWARD * totalSuccessfulReferral : 300}
           </TextHeading>
           <TextSubHeading className='mt-2 text-base font-normal leading-5 text-gray-400'>
             {t('Your Earnings')}

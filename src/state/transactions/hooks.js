@@ -7,6 +7,7 @@ import { errorToast, successToast } from '@/lib/notify'
 
 import {
   closeTransaction,
+  closeTransactionPopup,
   completeTransaction,
   openRetryTransactionModal,
   openTransaction,
@@ -161,5 +162,9 @@ export const useTxn = () => {
     [updateTxn, networkId],
   )
 
-  return { startTxn, updateTxn, endTxn, closeTxn, writeTxn, sendTxn }
+  const closeTxnModal = useCallback(() => {
+    dispatch(closeTransactionPopup())
+  }, [dispatch])
+
+  return { startTxn, updateTxn, endTxn, closeTxn, writeTxn, sendTxn, closeTxnModal }
 }

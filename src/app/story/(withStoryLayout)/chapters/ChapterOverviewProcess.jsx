@@ -3,12 +3,16 @@ import { useMemo } from 'react'
 
 import { Check2Icon } from '@/svgs'
 
+import { TaskType } from '../../constant'
+
 export function ChapterOverviewProcess({ chapter }) {
   const t = useTranslations()
 
+  const mainTasks = useMemo(() => chapter.tasks.filter(task => task.type === TaskType.Main) ?? [], [chapter])
+
   const [totalTask, taskCompleted] = useMemo(
-    () => [chapter?.tasks?.length ?? 0, chapter?.tasks?.filter(task => task.isCompleted)?.length ?? 0],
-    [chapter],
+    () => [mainTasks.length ?? 0, mainTasks.filter(task => task.isCompleted)?.length ?? 0],
+    [mainTasks],
   )
   const percentageTaskCompleted = useMemo(() => {
     if (totalTask) {
@@ -44,7 +48,7 @@ export function ChapterOverviewProcess({ chapter }) {
             <h3 className='text-3xl font-semibold'>{Boolean(chapter.name) && t(chapter.name)}</h3>
           </div>
 
-          {chapter.tasks?.map(task => (
+          {mainTasks.map(task => (
             <div className='mt-3 flex justify-between' key={task.id}>
               <span className='inline-block max-w-[calc(100%-20px)] text-gray-400'> • {t(task.name)}</span>
               {task.isCompleted && <Check2Icon className='inline-block h-5 w-5' />}

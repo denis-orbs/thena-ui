@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 
 import { Paragraph } from '../typography'
 
-function Toggle({ className, onChange, toggleId, label, checked }) {
+function Toggle({ className, onChange, toggleId, label, checked, disabled = false }) {
   const t = useTranslations()
 
   return (
@@ -17,6 +17,7 @@ function Toggle({ className, onChange, toggleId, label, checked }) {
           checked={checked}
           id={toggleId}
           className='peer sr-only focus:outline-none'
+          disabled={disabled}
         />
         <div
           className={cn(
@@ -26,7 +27,7 @@ function Toggle({ className, onChange, toggleId, label, checked }) {
             "after:rounded-full after:bg-neutral-500 after:transition-all after:content-[''] hover:after:bg-neutral-400",
             'peer-checked:after:bg-primary-200 peer-checked:hover:after:bg-primary-300',
             'outline outline-2 outline-offset-4 outline-transparent',
-            'active:outline-focus',
+            disabled ? 'cursor-not-allowed' : 'active:outline-focus',
           )}
         />
       </label>

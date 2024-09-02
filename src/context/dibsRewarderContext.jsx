@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getDibsRewarderContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { fetchDataTotalClaimedRewards } from '@/modules/TradeToEarn'
 import { useChainSettings } from '@/state/settings/hooks'
 

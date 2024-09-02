@@ -5,6 +5,7 @@ import {
   clearRetryParams,
   closeRetryTransactionModal,
   closeTransaction,
+  closeTransactionPopup,
   completeTransaction,
   openRetryTransactionModal,
   openTransaction,
@@ -85,5 +86,9 @@ export default createReducer(initialState, builder =>
         retryParams: null,
         retryResolver: null,
       }
-    }),
+    })
+    .addCase(closeTransactionPopup, state => ({
+      ...state,
+      popup: false,
+    })),
 )

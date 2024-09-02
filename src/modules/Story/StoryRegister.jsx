@@ -8,9 +8,9 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
 import { THEStoryContext } from '@/context/THEStoryContext'
+import useWallet from '@/hooks/useWallet'
 import { errorToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { ChevronRightIcon, SuccessIcon } from '@/svgs'
 
 import { useRegisterToTHEStory } from '.'
@@ -89,6 +89,10 @@ export default function StoryRegister({ isRegistered }) {
         setIsSubmit(false)
       },
     )
+  }
+
+  if (isRegistered) {
+    return <></>
   }
 
   return (

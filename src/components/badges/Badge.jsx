@@ -2,10 +2,12 @@ import React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function Badge({ className, children }) {
+function Badge({ className, children, childrenClassName }) {
   return (
     <div className={cn('rounded-full text-xs lg:text-sm', className)}>
-      <div className='rounded-full bg-[#292929] bg-opacity-50 px-2 py-0.5 lg:px-3 lg:py-1'>{children}</div>
+      <div className={cn('rounded-full bg-[#292929] bg-opacity-50 px-2 py-0.5 lg:px-3 lg:py-1', childrenClassName)}>
+        {children}
+      </div>
     </div>
   )
 }
@@ -36,6 +38,10 @@ export function RedBadge({ children }) {
   return <Badge className='bg-error-600 text-rose'>{children}</Badge>
 }
 
-export function PrimaryBadge({ children }) {
-  return <Badge className='bg-primary-600 text-primary-100'>{children}</Badge>
+export function PrimaryBadge({ children, className, childrenClassName }) {
+  return (
+    <Badge className={cn('bg-primary-600 text-primary-100', className)} childrenClassName={childrenClassName}>
+      {children}
+    </Badge>
+  )
 }

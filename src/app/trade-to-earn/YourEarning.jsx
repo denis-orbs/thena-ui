@@ -18,10 +18,10 @@ import { trade2EarnStartTime } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import { useTotalRewardADay } from '@/hooks/useTotalRewardADay'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getDibsRewarderContract } from '@/lib/contracts'
 import { formatAmount, fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import {
   fetchDataEarnings,
   fetchDataTradeToEarnCount,

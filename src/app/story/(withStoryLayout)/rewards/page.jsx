@@ -4,7 +4,7 @@ import React from 'react'
 
 import Loading from '@/app/loading'
 import { useTHEStory } from '@/context/THEStoryContext'
-import useWallet from '@/lib/wallets/useWallet'
+import useWallet from '@/hooks/useWallet'
 
 import { Rewards } from './Rewards'
 

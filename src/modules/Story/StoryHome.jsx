@@ -6,7 +6,7 @@ import { useRef, useState } from 'react'
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { useTHEStory } from '@/context/THEStoryContext'
-import useWallet from '@/lib/wallets/useWallet'
+import useWallet from '@/hooks/useWallet'
 import { ChevronRightIcon, LogoTextIcon, LogoWithTextIcon } from '@/svgs'
 
 import { useFetchChaptersAndTasks } from '.'

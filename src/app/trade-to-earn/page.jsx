@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import React, { Suspense, useState } from 'react'
 
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
-import useWallet from '@/lib/wallets/useWallet'
+import useWallet from '@/hooks/useWallet'
 import { fetchDataDailyVolume, fetchDataTotalVolume } from '@/modules/TradeToEarn'
 
 import Hero from './Hero'

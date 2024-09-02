@@ -34,7 +34,7 @@ export function RewardIconTooltip({ className = '', iconSize = 5, rewardType, id
   return (
     <div className={cn(className, `h-${iconSize} w-${iconSize}`)}>
       {icon}
-      <CustomTooltip className='max-w-[250px]' id={id}>
+      <CustomTooltip className='z-[9999] max-w-[250px]' id={id}>
         <span className='text-sm font-normal leading-5'>{description}</span>
       </CustomTooltip>
     </div>

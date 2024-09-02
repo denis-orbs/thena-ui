@@ -1,0 +1,18 @@
+<svg id="clock" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#39d1ff"/>
+      <stop offset="1" stop-color="#3149ff"/>
+    </linearGradient>
+  </defs>
+  <g id="Group_24231" data-name="Group 24231" transform="translate(11.07 5.568)">
+    <g id="Group_24230" data-name="Group 24230">
+      <path id="Path_37268" data-name="Path 37268" d="M241.374,127.33l-3.346-2.51v-5.112a.93.93,0,0,0-1.859,0v5.577a.928.928,0,0,0,.372.744l3.718,2.789a.93.93,0,0,0,1.115-1.487Z" transform="translate(-236.169 -118.779)" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+  <g id="Group_24233" data-name="Group 24233">
+    <g id="Group_24232" data-name="Group 24232">
+      <path id="Path_37269" data-name="Path 37269" d="M12,0A12,12,0,1,0,24,12,12.013,12.013,0,0,0,12,0Zm0,22.141A10.141,10.141,0,1,1,22.141,12,10.153,10.153,0,0,1,12,22.141Z" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+</svg>

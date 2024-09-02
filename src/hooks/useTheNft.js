@@ -7,10 +7,10 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getNftStakingContract, getRoyaltyContract, getTheNftContract } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useTxn } from '@/state/transactions/hooks'
 
 import usePrices from './usePrices'

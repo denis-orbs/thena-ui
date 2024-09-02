@@ -72,7 +72,10 @@ const Contracts = {
     [ChainId.BSC]: '0x89b8AA89FDd0507a99d334CBe3C808fAFC7d850E',
   },
   tcManager: {
-    [ChainId.BSC]: '0xa3122E54E8CB38aa0707c35f0D4034560987cC55',
+    [ChainId.BSC]: '0x8D03FeBF03cD8E6F2388e587A6a1263360f639ec',
+  },
+  tcPerpetualManager: {
+    [ChainId.BSC]: '0xc90992b9aE19ec04b9AA9878A510c2ae3203aEe7',
   },
   fusionRouter: FUSION_ROUTER_ADDRESSES,
   fusionQuoter: FUSION_QUOTER_ADDRESSES,
@@ -88,8 +91,17 @@ const Contracts = {
     [ChainId.BSC]: '0x05cC3CA6E768a68A7f86b09e3ceE754437bd5f12',
     [ChainId.OPBNB]: '0xAAC397840fC57F6bE1e3d40496E0823Ff15e1C6D',
   },
+  thenaId: {
+    [ChainId.BSC]: '0xd8cd3f2e2c97d85bcd5bd47ff3f67ed0060f5b14',
+  },
   dibsRewarder: {
     [ChainId.BSC]: '0x6e298908514c77c2dc1dc8faa150eef46ad7f03b',
+  },
+  multiAccount: {
+    [ChainId.BSC]: '0x9a9f48888600fc9c05f11e03eab575ebb2fc2c8f',
+  },
+  tcPerpRewarder: {
+    [ChainId.BSC]: '0xA2Bc09C290a260CDc6B63a5434ed81614A9624DE',
   },
 }
 export default Contracts

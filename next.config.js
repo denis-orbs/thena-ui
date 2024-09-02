@@ -9,6 +9,8 @@ const nextConfig = {
   swcMinify: true,
 
   images: {
+    unoptimized: true,
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -28,11 +30,23 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'thena-icon-checkmark.s3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'thena-icon-checkmark-dev.s3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'thena-image-resource.s3.amazonaws.com',
       },
       {
         protocol: 'https',
         hostname: 'thena-image-resource-dev.s3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'w3s.link',
       },
     ],
   },
@@ -67,6 +81,15 @@ const nextConfig = {
     config.externals.push('pino-pretty', 'lokijs', 'encoding')
 
     return config
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/proxy/1inch/:path*',
+        destination: 'https://api.1inch.dev/:path*',
+      },
+    ]
   },
 }
 

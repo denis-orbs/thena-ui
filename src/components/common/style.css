@@ -1,0 +1,4 @@
+.description pre {
+  overflow-wrap: break-word;
+  text-wrap: wrap;
+}

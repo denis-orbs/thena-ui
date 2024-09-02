@@ -4,17 +4,10 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 import ReactModal from 'react-modal'
 
-import { cn } from '@/lib/utils'
+import { cn, isSmallScreen } from '@/lib/utils'
 import { ArrowLeftIcon, XIcon } from '@/svgs'
 
 import { TextIconButton } from '../buttons/IconButton'
-
-const isSmallScreen = () => {
-  if (typeof window !== 'undefined') {
-    return window.innerWidth < 1024
-  }
-  return false
-}
 
 export function ModalBody({ children, className }) {
   return <div className={cn('flex flex-col gap-5 p-3 lg:px-6', className)}>{children}</div>
@@ -34,6 +27,10 @@ function Modal({
   isBack = false,
   onClickHandler = null,
   isIntl,
+  fontSizeTitle = '',
+  showIconX = true,
+  style = {},
+  showHeadModal = true,
   ...rest
 }) {
   const t = useTranslations()
@@ -67,7 +64,7 @@ function Modal({
             left: '50%',
             right: 'auto',
             bottom: 'auto',
-            width: width ? `${width}px` : '540px',
+            width: width ? (typeof width === 'string' ? width : `${width}px`) : '540px',
             height: 'fit-content',
             maxHeight: '90%',
             marginRight: '-50%',
@@ -86,23 +83,29 @@ function Modal({
     <ReactModal
       isOpen={isOpen}
       onRequestClose={closeModal}
-      style={customStyles}
+      style={{ ...customStyles, ...style }}
       closeTimeoutMS={100}
       ariaHideApp={false}
       autoFocus={false}
       {...rest}
     >
-      <div className='inline-flex w-full items-center justify-between px-4 pb-3 pt-6 lg:px-6'>
-        <div className='flex items-center'>
-          {isBack && (
-            <TextIconButton Icon={ArrowLeftIcon} className='mr-2' onClick={() => onClickHandler && onClickHandler()} />
-          )}
-          <div className='font-archia text-xl font-semibold text-neutral-50 lg:text-3xl'>
-            {isIntl ? title : title && typeof title === 'string' && t(title)}
+      {showHeadModal && (
+        <div className='inline-flex w-full items-center justify-between px-4 pb-3 pt-6 lg:px-6'>
+          <div className='flex items-center'>
+            {isBack && (
+              <TextIconButton
+                Icon={ArrowLeftIcon}
+                className='mr-2'
+                onClick={() => onClickHandler && onClickHandler()}
+              />
+            )}
+            <div className={`font-archia  font-semibold text-neutral-50 ${fontSizeTitle || 'text-xl lg:text-3xl'}`}>
+              {isIntl ? title : title && typeof title === 'string' && t(title)}
+            </div>
           </div>
+          {showIconX && <TextIconButton Icon={XIcon} onClick={closeModal} />}
         </div>
-        <TextIconButton Icon={XIcon} onClick={closeModal} />
-      </div>
+      )}
       {children}
     </ReactModal>
   )

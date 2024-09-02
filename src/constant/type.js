@@ -6,6 +6,7 @@ export const CompTypes = {
   Emphasis: 'Emphasis',
   Outlined: 'Outlined',
   Trailing: 'Trailing',
+  Error: 'Error',
 }
 
 export const SizeTypes = {

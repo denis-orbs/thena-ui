@@ -3,7 +3,7 @@ import { Lock2Icon } from '@/svgs'
 
 export function RewardChapterTabNavigator({ chapters, selectedChapterIndex, setSelectedChapterIndex }) {
   return (
-    <div className='grid grid-cols-2 gap-[14px] lg:grid-cols-4'>
+    <div className='flex [&>div]:w-full [&>div]:lg:w-[188px]'>
       {chapters.map((chapter, index) => (
         <div
           key={chapter.id}

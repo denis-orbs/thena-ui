@@ -20,9 +20,7 @@ export function ChaptersOverview({ chapters }) {
         {t('All Chapters Overview')}
       </TextHeading>
       <div className='mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-[30px]'>
-        {chapters.map(chapter => (
-          <ChapterOverviewProcess chapter={chapter} key={chapter.id} />
-        ))}
+        {chapters.map(chapter => chapter.available && <ChapterOverviewProcess chapter={chapter} key={chapter.id} />)}
       </div>
     </div>
   )

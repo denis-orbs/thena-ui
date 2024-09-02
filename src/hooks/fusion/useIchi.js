@@ -6,6 +6,7 @@ import { maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
@@ -16,7 +17,6 @@ import {
 } from '@/lib/contracts'
 import { errorToast, warnToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 

@@ -23,6 +23,16 @@ import {
   wbnbAbi,
 } from '@/constant/abi'
 import {
+  multiAccountAbi,
+  oldTcSpotAbi,
+  tcManagerAbi,
+  tcPerpetualAbi,
+  tcPerpetualManagerAbi,
+  tcPerpRewarderAbi,
+  tcSpotAbi,
+  thenaIdAbi,
+} from '@/constant/abi/core'
+import {
   algebraAbi,
   defiedgeStrategyAbi,
   fusionQuoterAbi,
@@ -36,7 +46,7 @@ import {
 } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 
-const getContract = (abi, addressOrAddressMap, chainId) => {
+export const getContract = (abi, addressOrAddressMap, chainId) => {
   if (!addressOrAddressMap || !abi || !chainId) return null
   let address
   if (typeof addressOrAddressMap === 'string') address = addressOrAddressMap
@@ -141,7 +151,30 @@ export const getVaultDepositContract = chainId =>
 export const getIchiVaultContract = (address, chainId) => getContract(ichiVaultAbi, address, chainId)
 
 /** **************************************************************************************************
+                                            TC (Trading Competition)
+  ************************************************************************************************** */
+
+export const getTCContract = () => getContract(tcManagerAbi, Contracts.tcManager, ChainId.BSC)
+
+export const getTCPerpetualManagerContract = () =>
+  getContract(tcPerpetualManagerAbi, Contracts.tcPerpetualManager, ChainId.BSC)
+
+export const getTcSpotContract = address => getContract(tcSpotAbi, address, ChainId.BSC)
+export const getOldTcSpotContract = address => getContract(oldTcSpotAbi, address, ChainId.BSC)
+
+export const getTcPerpetualContract = address => getContract(tcPerpetualAbi, address, ChainId.BSC)
+
+/** **************************************************************************************************
+                                            Thena ID
+  ************************************************************************************************** */
+
+export const getThenaIDContract = () => getContract(thenaIdAbi, Contracts.thenaId, ChainId.BSC)
+/** **************************************************************************************************
                                             DibsRewarder
   ************************************************************************************************** */
 
 export const getDibsRewarderContract = chainId => getContract(dibsRewarderAbi, Contracts.dibsRewarder, chainId)
+
+export const getMultiAccountContract = () => getContract(multiAccountAbi, Contracts.multiAccount, ChainId.BSC)
+
+export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Contracts.tcPerpRewarder, ChainId.BSC)

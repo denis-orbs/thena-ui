@@ -133,9 +133,9 @@ export function EditProfile({ userInfo, updateUserInfo }) {
           </div>
 
           <div className='col-span-3 mt-8 lg:col-span-1 lg:mt-0'>
-            <TextHeading className='block text-xl'>{t('X profile link')}</TextHeading>
+            <TextHeading className='block text-xl'>{t('X Profile Username')}</TextHeading>
             <TextSubHeading className='my-3 block text-[16px] font-normal leading-5 lg:my-0'>
-              {t('X profile link description')}
+              {t('Enter Your X Profile Username To Update X')}
             </TextSubHeading>
           </div>
           <div className='col-span-3 mb-5 mt-1 lg:col-span-2 lg:m-0'>
@@ -143,14 +143,14 @@ export function EditProfile({ userInfo, updateUserInfo }) {
               className='w-full lg:max-w-[550px]'
               type='text'
               val={dataUpdate.xProfileUsername ?? ''}
+              prefix='@'
+              placeholder='xprofilehandle'
               onChange={e => {
                 setDataUpdate({
                   ...dataUpdate,
                   xProfileUsername: e.target.value,
                 })
               }}
-              placeholder={t('X profile link description')}
-              isLocale={false}
             />
           </div>
 

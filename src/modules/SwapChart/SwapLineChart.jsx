@@ -128,7 +128,7 @@ function SwapLineChart({ data, locale, setHoverValue, setHoverDate, timeWindow }
   return (
     <>
       {(!chartCreated || !transformedData.length) && <Skeleton />}
-      <div className='flex h-full flex-1' onMouseLeave={handleMouseLeave}>
+      <div className='flex h-full w-full flex-1' onMouseLeave={handleMouseLeave}>
         <div className='max-w-full flex-1' ref={chartRef} />
       </div>
     </>

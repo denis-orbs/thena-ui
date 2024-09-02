@@ -7,9 +7,9 @@ import React, { Suspense } from 'react'
 import '@/styles/globals.css'
 import 'react-datepicker/dist/react-datepicker.css'
 import 'react-toastify/dist/ReactToastify.css'
+import '@rainbow-me/rainbowkit/styles.css'
 
 import { siteConfig } from '@/constant/config'
-import { Web3Modal } from '@/context/Web3Modal'
 
 import Loading from './loading'
 import { Providers } from './providers'
@@ -70,15 +70,13 @@ export default function RootLayout({ children }) {
           async
         />
       </head>
-      <body>
-        <Web3Modal>
-          <Providers>
-            <Updaters />
-            <Header />
-            <Suspense fallback={<Loading />}>{children}</Suspense>
-            <SpeedInsights />
-          </Providers>
-        </Web3Modal>
+      <body suppressHydrationWarning>
+        <Providers>
+          <Updaters />
+          <Header />
+          <Suspense fallback={<Loading />}>{children}</Suspense>
+          <SpeedInsights />
+        </Providers>
         <Analytics />
         <div id='widget-dom-id' />
         <div id='metacrm-tracking' />

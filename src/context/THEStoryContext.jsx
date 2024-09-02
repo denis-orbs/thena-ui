@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
+import useWallet from '@/hooks/useWallet'
 import { isoDateToTimeStampSeconds } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
 import { fetchCampaignChapter, fetchTHEStoryParticipant } from '@/modules/Story'
 
 const THEStoryContext = createContext({
@@ -18,7 +18,7 @@ function THEStoryContextProvider({ children }) {
 
   const [isRegistered, setIsRegistered] = useState(false)
   const [campaignParticipantInfo, setCampaignParticipantInfo] = useState(null)
-  const [isUpcoming, setIsUpcoming] = useState(true)
+  const [isUpcoming, setIsUpcoming] = useState(false)
   const [campaignStartsAt, setCampaignStartsAt] = useState(1725278400) // 2024-09-02 12:00 UTC
 
   useEffect(() => {

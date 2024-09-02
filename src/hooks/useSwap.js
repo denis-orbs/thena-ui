@@ -1,4 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
+import { ethers } from 'ethers'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import useSWR from 'swr'
@@ -8,10 +10,12 @@ import { getAddress, maxUint256, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
+import { oneInchApiKey } from '@/constant/env'
+import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
-import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import useWallet from '@/lib/wallets/useWallet'
+import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
+import { errorToast } from '@/lib/notify'
+import { fromWei, isInvalidAmount, recursivelyDecodeResult, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 const EnabledDexIds = '43,47'
@@ -85,10 +89,10 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
   return res
 }
 
-export const useOdosSwap = () => {
+export const useOdosSwap = (autoClose = false) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
-  const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
+  const { startTxn, endTxn, writeTxn, sendTxn, closeTxnModal } = useTxn()
   const t = useTranslations()
 
   const onOdosSwap = useCallback(
@@ -160,8 +164,11 @@ export const useOdosSwap = () => {
       })
       setPending(false)
       callback()
+      if (autoClose) {
+        closeTxnModal()
+      }
     },
-    [account, chainId, startTxn, writeTxn, endTxn, sendTxn, t],
+    [chainId, startTxn, t, account, sendTxn, endTxn, autoClose, writeTxn, closeTxnModal],
   )
 
   return { onOdosSwap, pending }
@@ -355,4 +362,404 @@ export const useWrap = () => {
   )
 
   return { onWrap, onUnwrap, pending }
+}
+
+export const useGetOOESwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot, enabled) => {
+  const gasPrice = 3
+  const enabledDexIds = '44,47'
+
+  const { data, isFetching } = useQuery({
+    queryKey: ['useGetOOESwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
+    queryFn: async () => {
+      const response = await fetch(
+        // eslint-disable-next-line max-len
+        `https://open-api.openocean.finance/v3/${networkId}/swap_quote?inTokenAddress=${fromAddress}&outTokenAddress=${toAddress}&account=${tcSpot}&amount=${fromAmount}&gasPrice=${gasPrice}&slippage=${slippage}&enabledDexIds=${enabledDexIds}`,
+        {
+          method: 'GET',
+        },
+      )
+      const res = await response.json()
+
+      return res
+    },
+    refetchInterval: 10000,
+    enabled,
+    gcTime: 0,
+  })
+
+  return { data, isLoading: isFetching }
+}
+
+export const useTCSpotOOESwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (ooeData, fromAsset, toAsset, tcAddress) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const swapOpenOceanFunctionHash = '0x60d4bb2c'
+      const data = swapOpenOceanFunctionHash + ooeData.slice(10)
+      const isSuccess = await sendTxn(key, swapuuid, tcAddress, data)
+      // const isSuccess = await sendTxn(key, swapuuid, '0x6352a56caadc4f1e25cd6c75970fa768a3304e64', ooeData)
+      if (!isSuccess) {
+        setPending(false)
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Swap Successful',
+      })
+      setPending(false)
+      return isSuccess
+    },
+    [endTxn, sendTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
+}
+
+export const useTCSpotAlgebraSwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (fromAsset, toAsset, amount, minOutAmount, tcAddress, deadline) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const path = ethers.solidityPacked(['address', 'address'], [fromAsset.address, toAsset.address])
+      const currentTimestamp = parseInt(new Date().getTime() / 1000, 10)
+      if (path) {
+        const exactInputParams = {
+          path,
+          recipient: tcAddress,
+          deadline: currentTimestamp + deadline * 60,
+          amountIn: amount,
+          amountOutMinimum: minOutAmount,
+        }
+
+        const tcSpotContract = getTcSpotContract(tcAddress)
+
+        const isSuccess = await writeTxn(key, swapuuid, tcSpotContract, 'swapAlgebra', [
+          fromAsset.address,
+          toAsset.address,
+          exactInputParams,
+        ])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+
+        endTxn({
+          key,
+          final: 'Swap Successful',
+        })
+
+        setPending(false)
+        return isSuccess
+      }
+
+      setPending(false)
+      return false
+    },
+    [endTxn, writeTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
+}
+
+export const useGet1InchSwapData = (fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot, enabled) => {
+  const { data, isFetching } = useQuery({
+    queryKey: ['useGet1InchSwapQuery', fromAddress, toAddress, fromAmount, slippage, networkId, tcSpot],
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/proxy/1inch/swap/v5.2/${networkId}/swap?${new URLSearchParams({
+          src: fromAddress,
+          dst: toAddress,
+          amount: fromAmount,
+          from: tcSpot,
+          slippage,
+          protocols: ['BSC_THENA', 'BSC_THENA_V3'],
+          disableEstimate: true,
+        })}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${oneInchApiKey}`,
+          },
+        },
+      )
+      const res = await response.json()
+
+      return res
+    },
+    refetchInterval: 10000,
+    enabled,
+    gcTime: 0,
+  })
+
+  return { data, isLoading: isFetching }
+}
+
+export const useTCSpot1InchSwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, sendTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (oneInchData, fromAsset, toAsset, tcAddress) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const swap1InchFunctionHash = '0x2e8b0011'
+      const data = swap1InchFunctionHash + oneInchData.slice(10)
+      const isSuccess = await sendTxn(key, swapuuid, tcAddress, data)
+      // const isSuccess = await sendTxn(key, swapuuid, '0x1111111254EEB25477B68fb85Ed929f73A960582', oneInchData)
+      if (!isSuccess) {
+        setPending(false)
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Swap Successful',
+      })
+      setPending(false)
+      return isSuccess
+    },
+    [endTxn, sendTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
+}
+
+export const useOdosQuoteSwapTradeTC = (
+  tcAddress,
+  fromAddress,
+  toAddress,
+  fromAmount,
+  slippage,
+  networkId,
+  enabled = true,
+  fromAssetDecimals = 18,
+) => {
+  const res = useSWR(
+    enabled &&
+      fromAddress &&
+      toAddress &&
+      networkId === ChainId.BSC &&
+      !isInvalidAmount(fromAmount) && ['useOdosQuoteSwap', tcAddress, fromAddress, toAddress, fromAmount, slippage],
+    async () => {
+      const inputAmount = toWei(fromAmount, fromAssetDecimals).dp(0).toString(10)
+
+      const quoteRequestBody = {
+        chainId: networkId,
+        inputTokens: [
+          {
+            tokenAddress: getAddress(fromAddress === 'BNB' ? zeroAddress : fromAddress),
+            amount: inputAmount,
+          },
+        ],
+        outputTokens: [
+          {
+            tokenAddress: getAddress(toAddress === 'BNB' ? zeroAddress : toAddress),
+            proportion: 1,
+          },
+        ],
+        userAddr: getAddress(tcAddress || zeroAddress),
+        slippageLimitPercent: slippage,
+        referralCode: 121015208,
+        sourceWhitelist: ['Wrapped BNB', 'Thena Stable', 'Thena Volatile', 'Thena Fusion'],
+        pathVizImage: true,
+        disableRFQs: true,
+        compact: false,
+        pathVizImageConfig: {
+          linkColors: ['#B386FF', '#FBA499', '#F9EC66', '#F199EE'],
+          nodeColor: '#422D4C',
+          nodeTextColor: '#D9D5DB',
+          legendTextColor: '#FCE6FB',
+          height: 300,
+        },
+      }
+
+      const response = await fetch(quoteUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quoteRequestBody),
+      })
+      let quote
+      if (response.status === 200) {
+        quote = await response.json()
+      }
+
+      return quote
+    },
+    {
+      refreshInterval: 30000,
+    },
+  )
+  return res
+}
+
+export const useGetOdosTxSwap = (account, quote) => {
+  const { data: assembleData, isFetching } = useQuery({
+    queryKey: ['getTx', quote?.pathId, getAddress(account || zeroAddress)],
+    queryFn: async () => {
+      const assembleUrl = 'https://api.odos.xyz/sor/assemble'
+
+      const assembleRequestBody = {
+        userAddr: getAddress(account || zeroAddress), // the checksummed address used to generate the quote
+        pathId: quote?.pathId, // Replace with the pathId from quote response in step 1
+        simulate: true, // this can be set to true if the user isn't doing their own estimate gas call for the transaction
+      }
+      const response_2 = await fetch(assembleUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(assembleRequestBody),
+      })
+
+      if (response_2.status === 200) {
+        const assembledTransaction = await response_2.json()
+        return assembledTransaction
+      }
+      return undefined
+    },
+    refetchInterval: 10000,
+    enabled: Boolean(quote),
+    gcTime: 0,
+  })
+
+  const abi = [
+    {
+      inputs: [
+        {
+          components: [
+            { internalType: 'address', name: 'inputToken', type: 'address' },
+            { internalType: 'uint256', name: 'inputAmount', type: 'uint256' },
+            { internalType: 'address', name: 'inputReceiver', type: 'address' },
+            { internalType: 'address', name: 'outputToken', type: 'address' },
+            { internalType: 'uint256', name: 'outputQuote', type: 'uint256' },
+            { internalType: 'uint256', name: 'outputMin', type: 'uint256' },
+            { internalType: 'address', name: 'outputReceiver', type: 'address' },
+          ],
+          internalType: 'struct OdosRouterV2.swapTokenInfo',
+          name: 'tokenInfo',
+          type: 'tuple',
+        },
+        { internalType: 'bytes', name: 'pathDefinition', type: 'bytes' },
+        { internalType: 'address', name: 'executor', type: 'address' },
+        { internalType: 'uint32', name: 'referralCode', type: 'uint32' },
+      ],
+      name: 'swap',
+      outputs: [{ internalType: 'uint256', name: 'amountOut', type: 'uint256' }],
+      stateMutability: 'payable',
+      type: 'function',
+    },
+  ]
+
+  const iface = new ethers.Interface(abi)
+  if (assembleData) {
+    try {
+      const decoded = iface.decodeFunctionData('swap', assembleData.transaction.data)
+      const recursiveDecoded = recursivelyDecodeResult(decoded)
+      return { data: recursiveDecoded, isLoading: isFetching }
+    } catch (error) {
+      console.log('error')
+      return { data: undefined, isLoading: false }
+    }
+  }
+
+  return { data: assembleData, isLoading: isFetching }
+}
+
+export const useTCSpotOdosSwap = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onSwap = useCallback(
+    async (odosData, fromAsset, toAsset, tcAddress) => {
+      const key = uuidv4()
+      const swapuuid = uuidv4()
+
+      if (!odosData) {
+        errorToast('Decode Data Failed')
+        return
+      }
+
+      startTxn({
+        key,
+        title: t('Swap'),
+        transactions: {
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+      setPending(true)
+      const tcSpotContract = getTcSpotContract(tcAddress)
+      const isSuccess = await writeTxn(key, swapuuid, tcSpotContract, 'swapOdos', [
+        odosData.tokenInfo,
+        odosData.pathDefinition,
+        odosData.executor,
+        odosData.referralCode,
+      ])
+      if (!isSuccess) {
+        setPending(false)
+        return false
+      }
+      endTxn({
+        key,
+        final: 'Swap Successful',
+      })
+      setPending(false)
+      return isSuccess
+    },
+    [endTxn, writeTxn, startTxn, t],
+  )
+
+  return { onSwap, pending }
 }
