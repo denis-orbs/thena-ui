@@ -1,4 +1,3 @@
-import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
@@ -12,8 +11,12 @@ import { UserInfo } from './UserInfo'
 import { WeeklyTasks } from './WeeklyTasks'
 
 export function ProfilePage({ address }) {
-  const t = useTranslations()
-  const { dailySwaps, campaignChapters: chapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(address)
+  const {
+    dailySwaps,
+    userSwaps,
+    campaignChapters: chapters,
+    isLoading: isLoadingChapterTasks,
+  } = useFetchChaptersAndTasks(address)
   const [selectedChapterIndex, setSelectedChapterIndex] = useState(1)
 
   useEffect(() => {
@@ -57,18 +60,13 @@ export function ProfilePage({ address }) {
         totalChapter={numberAvailableChapters}
         totalSuccessfulReferral={totalSuccessfulReferral}
       />
-      {Boolean(numberAvailableChapters) && <DailySwap dailySwaps={dailySwaps} />}
+      {Boolean(numberAvailableChapters) && <DailySwap dailySwaps={dailySwaps} userSwaps={userSwaps} />}
       <WeeklyTasks
         chapters={chapters}
         selectedChapterIndex={selectedChapterIndex}
         setSelectedChapterIndex={setSelectedChapterIndex}
       />
       <ChaptersOverview chapters={chapters} />
-      {Boolean(numberAvailableChapters) && (
-        <div className='mt-4 flex justify-center lg:mt-10'>
-          <span className='font-archia text-3xl font-normal'>{t('The Fates Await')}</span>
-        </div>
-      )}
     </div>
   )
 }

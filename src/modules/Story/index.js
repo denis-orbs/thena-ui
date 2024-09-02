@@ -260,6 +260,36 @@ export const fetchParticipants = async (limit, id_not_eq) => {
   }
 }
 
+const V4_DAILY_SWAPS = gql`
+  query V4_DAILY_SWAPS($id: String = "") {
+    participantDailySwap(participantId: $id) {
+      day
+      lastSwap
+    }
+    campaignTasks(where: { isHidden_isNull: false, type_in: [Daily] }, orderBy: [index_ASC]) {
+      id
+      index
+      name
+      rewardType
+      rewardAmount
+    }
+  }
+`
+const fetchDailySwaps = async id => {
+  try {
+    const res = await v4Client.request(V4_DAILY_SWAPS, { id })
+
+    if (res) {
+      return res
+    }
+
+    return false
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}
+
 const V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED = gql`
   query V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED($id: String = "") {
     campaignChapters(orderBy: index_ASC) {
@@ -312,6 +342,10 @@ const fetchCampaignChaptersTasksAndCompletedTasks = async id => {
 }
 
 const initialState = {
+  userSwaps: {
+    day: null,
+    lastSwap: null,
+  },
   dailySwaps: [],
   campaignChapters: [],
   isLoading: true,
@@ -326,13 +360,22 @@ export const useFetchChaptersAndTasks = account => {
     gcTime: 0,
   })
 
+  const { data: dataSwaps, isLoading: isLoadingSwaps } = useQuery({
+    queryKey: ['fetchDailySwaps', account],
+    queryFn: () => fetchDailySwaps(account?.toLowerCase()),
+    refetchInterval: 30000,
+    enabled: Boolean(account),
+    gcTime: 0,
+  })
+
   const final = useMemo(() => {
     const currentTime = new Date()
-    if (!account || isLoading || !data) {
+    if (!account || isLoading || !data || isLoadingSwaps || !dataSwaps) {
       return initialState
     }
 
     const { campaignChapters, campaignTasks, campaignParticipantCompleteTasks: campaignCompletedTasks } = data
+    const { campaignTasks: dailySwaps, participantDailySwap: userSwaps } = dataSwaps
 
     // check completed chapters and tasks
     const campaignChaptersDetails = campaignChapters.map(chapter => {
@@ -374,11 +417,12 @@ export const useFetchChaptersAndTasks = account => {
     })
 
     return {
-      dailySwaps: [],
+      dailySwaps,
+      userSwaps,
       campaignChapters: campaignChaptersDetails,
       isLoading,
     }
-  }, [account, data, isLoading])
+  }, [account, data, dataSwaps, isLoading, isLoadingSwaps])
 
   return final
 }
