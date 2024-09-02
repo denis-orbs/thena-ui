@@ -23,8 +23,8 @@ function NotificationItem({ notification, markRead, afterClassName }) {
   const t = useTranslations()
 
   const contentElement = useMemo(() => {
-    let notificationContent = notification.content
-    const splitContent = notificationContent.split(' ')
+    let notificationContent = notification.content || ''
+    const splitContent = notificationContent?.split(' ')
     if (splitContent[0]?.length > 12) {
       splitContent[0] = formatAddress(splitContent[0])
       notificationContent = splitContent.join(' ')
