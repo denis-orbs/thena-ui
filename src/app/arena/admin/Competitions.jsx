@@ -12,10 +12,9 @@ import { TextHeading } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
-import { getFromLocalStorage } from '@/lib/helper'
 import { successToast } from '@/lib/notify'
+import { useUpdateTCIsHidden } from '@/modules/Arena/hooks/competitions'
 
 import CompetitionItem from '../CompetitionItem'
 import NoCompetition from '../NoCompetition'
@@ -139,21 +138,14 @@ const fetchCompetition = async (tab, search) => {
   }
 }
 
-const V4_HIDE_TC = gql`
-  mutation V4_HIDE_TC($isHidden: Boolean!, $tcId: String!) {
-    hideTradingCompetition(input: { isHidden: $isHidden }, tcId: $tcId) {
-      id
-    }
-  }
-`
-
 const tabs = ['All', 'Hidden', 'Unhidden']
 
 function Competitions() {
   const t = useTranslations()
+  const _assets = useAssets()
+
   const [selectedTab, setSelectedTab] = useState(tabs[0])
   const [searchText, setSearchText] = useState('')
-  const _assets = useAssets()
 
   const assets = useMemo(() => {
     const clone = cloneDeep(_assets)
@@ -171,12 +163,12 @@ function Competitions() {
 
   const debounceSearchText = useDebounce(searchText.trim(), 300)
 
+  const { updateTCIsHidden } = useUpdateTCIsHidden()
+
   const { data: dataCompetitions, isLoading } = useSWR(
     ['competition api', refetch, selectedTab, debounceSearchText],
     () => fetchCompetition(selectedTab, debounceSearchText),
   )
-
-  const { signWallet } = useSignWallet()
 
   useEffect(() => {
     if (!isLoading) {
@@ -220,28 +212,14 @@ function Competitions() {
     [selectedTab, t],
   )
 
-  const updateIsHiddenFn = useCallback(async ({ isHidden, tcId }) => {
-    const { data: res } = await v4Client.request(
-      V4_HIDE_TC,
-      {
-        isHidden,
-        tcId,
-      },
-      {
-        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
-      },
-    )
-    return res
-  }, [])
-
-  const updateIsHidden = useCallback(
-    async (isHidden, tcId) => {
-      actionWithAuthentication(updateIsHiddenFn, signWallet, { isHidden, tcId }, () => {
+  const handleUpdateTCIsHidden = useCallback(
+    async ({ isHidden, tcId }) => {
+      await updateTCIsHidden({ isHidden, tcId }, () => {
         setRefetch(refetch + 1)
         successToast('Successfully')
       })
     },
-    [updateIsHiddenFn, signWallet, refetch],
+    [refetch, updateTCIsHidden],
   )
 
   return (
@@ -262,7 +240,7 @@ function Competitions() {
             <CompetitionItem
               competition={item}
               key={item.id}
-              updateIsHidden={() => updateIsHidden(!item.isHidden, item.id)}
+              updateIsHidden={() => handleUpdateTCIsHidden({ isHidden: !item.isHidden, tcId: item.id })}
               showCheckedHidden
             />
           ))}

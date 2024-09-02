@@ -10,25 +10,26 @@ import Highlight from '@/components/highlight'
 import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { useUpdateAdminPermission } from '@/hooks/useUpdateAdminPermission'
 import { successToast } from '@/lib/notify'
 import { User } from '@/svgs'
 
+import { useUpdateUserIsAdmin } from '../Arena/hooks/profile'
+
 function ModalRemoveAddAdmin({ type = 'remove', isOpen, closeModal = () => {}, user = {}, setReloadFetch }) {
-  const { updateAdminPermission } = useUpdateAdminPermission()
+  const { updateUserIsAdmin } = useUpdateUserIsAdmin()
 
   const isRemoveAdmin = type === 'remove'
   const t = useTranslations()
 
-  const handleUpdatePermission = useCallback(async () => {
+  const handleUpdateAdminPermission = useCallback(async () => {
     if (user && user.id) {
-      await updateAdminPermission(user?.id, !isRemoveAdmin, () => {
+      await updateUserIsAdmin({ isAdmin: !isRemoveAdmin, userId: user.id }, () => {
         successToast('Successfully')
         setReloadFetch(prev => prev + 1)
         closeModal()
       })
     }
-  }, [user, updateAdminPermission, isRemoveAdmin, setReloadFetch, closeModal])
+  }, [closeModal, isRemoveAdmin, setReloadFetch, updateUserIsAdmin, user])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} width={600}>
@@ -65,7 +66,7 @@ function ModalRemoveAddAdmin({ type = 'remove', isOpen, closeModal = () => {}, u
             <EmphasisButton className='w-full' onClick={closeModal}>
               {t('Cancel')}
             </EmphasisButton>
-            <PrimaryButton className='w-full' onClick={handleUpdatePermission}>
+            <PrimaryButton className='w-full' onClick={handleUpdateAdminPermission}>
               {t(isRemoveAdmin ? 'Remove Admin' : 'Add Admin')}
             </PrimaryButton>
           </div>

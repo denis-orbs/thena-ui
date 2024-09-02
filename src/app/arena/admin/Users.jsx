@@ -15,12 +15,11 @@ import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
 import useDebounce from '@/hooks/useDebounce'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
 import { v4Client } from '@/lib/graphql'
-import { getFromLocalStorage } from '@/lib/helper'
 import { successToast } from '@/lib/notify'
 import { sliceAddress } from '@/lib/utils'
 import ModalEditCheckMark from '@/modules/Admin/ModalEditCheckMark'
+import { useUpdateUserIsVerified } from '@/modules/Arena/hooks/profile'
 
 const V4_USERS = gql`
   query V4_USERS($where: UserWhereInput = {}) {
@@ -49,14 +48,6 @@ const fetchUser = async search => {
     return { error: true }
   }
 }
-
-const V4_UPDATE_VERIFIED = gql`
-  mutation V4_UPDATE_VERIFIED($isVerified: Boolean!, $userId: String!) {
-    updateVerifiedUser(input: { isVerified: $isVerified }, userId: $userId) {
-      id
-    }
-  }
-`
 
 function Users({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch }) {
   const sortOptions = useMemo(
@@ -100,38 +91,23 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch
   const { isMdDown } = useMediaQuery()
   const t = useTranslations()
 
+  const { updateUserIsVerified } = useUpdateUserIsVerified()
+
   const debounceSearch = useDebounce(searchText, 300)
 
   const { data, isLoading } = useSWR(['all user api', debounceSearch, reloadFetch, refetchUpdated], () =>
     fetchUser(debounceSearch),
   )
 
-  const { signWallet } = useSignWallet()
-
-  const updateVerifyFn = useCallback(async ({ isVerified, userId }) => {
-    const { data: res } = await v4Client.request(
-      V4_UPDATE_VERIFIED,
-      {
-        isVerified,
-        userId,
-      },
-      {
-        authorization: getFromLocalStorage('token') ? `Bearer ${getFromLocalStorage('token')}` : '',
-      },
-    )
-
-    return res
-  }, [])
-
-  const updateVerify = useCallback(
-    async (isVerified, userId) => {
-      await actionWithAuthentication(updateVerifyFn, signWallet, { isVerified, userId }, () => {
+  const handleUpdateUserIsVerified = useCallback(
+    async ({ isVerified, userId }) => {
+      await updateUserIsVerified({ isVerified, userId }, () => {
         setRefetchUpdated(refetchUpdated + 1)
         setReloadFetch(reloadFetch + 1)
         successToast('Successfully')
       })
     },
-    [refetchUpdated, reloadFetch, setReloadFetch, signWallet, updateVerifyFn],
+    [refetchUpdated, reloadFetch, setReloadFetch, updateUserIsVerified],
   )
 
   const handleClickOpenEditCheckMark = useCallback(user => {
@@ -177,7 +153,10 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch
         verification: (
           <Paragraph className='flex flex-row items-center justify-between'>
             {isMdDown ? <TextHeading>{t('Verification badge')}</TextHeading> : ''}
-            <Toggle checked={item.isVerified} onChange={() => updateVerify(!item.isVerified, item.id)} />
+            <Toggle
+              checked={item.isVerified}
+              onChange={() => handleUpdateUserIsVerified({ isVerified: !item.isVerified, userId: item.id })}
+            />
           </Paragraph>
         ),
         action: (
@@ -207,9 +186,9 @@ function Users({ userInfo, reloadFetch = 0, handleClickOpenModal, setReloadFetch
       dataFetch,
       handleClickOpenEditCheckMark,
       handleClickOpenModal,
+      handleUpdateUserIsVerified,
       isMdDown,
       t,
-      updateVerify,
       userInfo?.id,
       userInfo?.isSuperAdmin,
     ],

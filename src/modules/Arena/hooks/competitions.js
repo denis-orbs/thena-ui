@@ -57,3 +57,37 @@ export const useUpdateTCBanner = () => {
 
   return { updateTCBanner }
 }
+
+const V4_UPDATE_TC_IS_HIDDEN = gql`
+  mutation V4_UPDATE_TC_IS_HIDDEN($isHidden: Boolean!, $tcId: String!) {
+    hideTradingCompetition(input: { isHidden: $isHidden }, tcId: $tcId) {
+      id
+    }
+  }
+`
+export const useUpdateTCIsHidden = () => {
+  const { signWallet } = useSignWallet()
+
+  const updateIsHiddenFn = useCallback(async ({ isHidden, tcId }) => {
+    const { data: res } = await v4Client.request(
+      V4_UPDATE_TC_IS_HIDDEN,
+      {
+        isHidden,
+        tcId,
+      },
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
+    return res
+  }, [])
+
+  const updateTCIsHidden = useCallback(
+    async (params, callOnSuccess, callOnReject) => {
+      await actionWithAuthentication(updateIsHiddenFn, signWallet, params, callOnSuccess, callOnReject)
+    },
+    [signWallet, updateIsHiddenFn],
+  )
+
+  return { updateTCIsHidden }
+}

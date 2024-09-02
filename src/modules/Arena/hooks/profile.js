@@ -171,3 +171,72 @@ export const useUpdateArenaCheckmarkIcon = () => {
 
   return { updateArenacheckMarkIcon }
 }
+
+const V4_UPDATE_USER_IS_ADMIN = gql`
+  mutation V4_UPDATE_USER_IS_ADMIN($userId: String!, $isAdmin: Boolean!) {
+    updateAdminPermission(input: { isAdmin: $isAdmin }, userId: $userId) {
+      id
+      isAdmin
+    }
+  }
+`
+export const useUpdateUserIsAdmin = () => {
+  const { signWallet } = useSignWallet()
+
+  const updateIsAdminFn = useCallback(async ({ isAdmin, userId }) => {
+    const { data: res } = await v4Client.request(
+      V4_UPDATE_USER_IS_ADMIN,
+      {
+        isAdmin,
+        userId,
+      },
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
+    return res
+  }, [])
+
+  const updateUserIsAdmin = useCallback(
+    async (params, callOnSuccess, callOnReject) => {
+      await actionWithAuthentication(updateIsAdminFn, signWallet, params, callOnSuccess, callOnReject)
+    },
+    [signWallet, updateIsAdminFn],
+  )
+
+  return { updateUserIsAdmin }
+}
+
+const V4_UPDATE_USER_IS_VERIFIED = gql`
+  mutation V4_UPDATE_USER_IS_VERIFIED($isVerified: Boolean!, $userId: String!) {
+    updateVerifiedUser(input: { isVerified: $isVerified }, userId: $userId) {
+      id
+    }
+  }
+`
+export const useUpdateUserIsVerified = () => {
+  const { signWallet } = useSignWallet()
+
+  const updateIsVerifiedFn = useCallback(async ({ isVerified, userId }) => {
+    const { data: res } = await v4Client.request(
+      V4_UPDATE_USER_IS_VERIFIED,
+      {
+        isVerified,
+        userId,
+      },
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
+    return res
+  }, [])
+
+  const updateUserIsVerified = useCallback(
+    async (params, callOnSuccess, callOnReject) => {
+      await actionWithAuthentication(updateIsVerifiedFn, signWallet, params, callOnSuccess, callOnReject)
+    },
+    [signWallet, updateIsVerifiedFn],
+  )
+
+  return { updateUserIsVerified }
+}

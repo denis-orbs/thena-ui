@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import useSWR from 'swr'
 
+import { ThenaAuthToken } from '@/constant'
 import { fetchUserInfo } from '@/context/userInfoContext'
 import { useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
@@ -45,7 +46,7 @@ export default function ConnectButton({ className }) {
   const { deleteToken } = useSignWallet()
 
   useEffect(() => {
-    if (!active && !account && getFromLocalStorage('token')) {
+    if (!active && !account && getFromLocalStorage(ThenaAuthToken)) {
       deleteToken()
     }
   }, [active, account, deleteToken])
