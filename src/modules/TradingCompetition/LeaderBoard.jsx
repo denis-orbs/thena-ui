@@ -78,6 +78,7 @@ export function LeaderBoard({ competition }) {
           value: 'rank',
           width: 'w-[10%]',
           isDesc: false,
+          disabled: true,
         },
         {
           label: 'User',
@@ -85,6 +86,7 @@ export function LeaderBoard({ competition }) {
           width: 'w-[35%]',
           isDesc: true,
           minWidth: 'min-w-40',
+          disabled: true,
         },
         competition?.market === TC_MARKET_TYPES.PERPETUAL || competition?.prizeUpdate?.winType
           ? {
@@ -92,6 +94,7 @@ export function LeaderBoard({ competition }) {
               value: 'percentagePnl',
               width: 'w-[30%]',
               isDesc: true,
+              disabled: true,
             }
           : undefined,
         {
@@ -99,12 +102,14 @@ export function LeaderBoard({ competition }) {
           value: 'pnl',
           width: 'w-[30%]',
           isDesc: true,
+          disabled: true,
         },
         {
           label: eventType === EVENT_TYPES.LIVE ? 'Potential Reward' : 'Reward',
           value: 'reward',
           width: 'w-[30%]',
           isDesc: true,
+          disabled: true,
         },
       ]),
     [competition?.market, competition?.prizeUpdate?.winType, eventType],

@@ -187,7 +187,7 @@ export function HeaderSearch({ setToggleSearch, toggleSearch, isSmallScreen }) {
         {isSmallScreen ? (
           toggleSearch ? (
             <SearchInput
-              className='h-11 w-full lg:w-[360px]'
+              className='h-11 w-full lg:w-[320px] 2xl:w-[360px]'
               classNames={{ input: 'h-11' }}
               val={searchText}
               setVal={setSearchText}
@@ -204,7 +204,7 @@ export function HeaderSearch({ setToggleSearch, toggleSearch, isSmallScreen }) {
           )
         ) : (
           <SearchInput
-            className='h-11 w-full lg:w-[360px]'
+            className='h-11 w-full lg:w-[320px] 2xl:w-[360px]'
             classNames={{ input: 'h-11' }}
             val={searchText}
             setVal={setSearchText}

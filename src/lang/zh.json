@@ -1035,7 +1035,7 @@
   "Countries": "国家",
   "This field can be changed later": "本区稍后可以更改",
   "Share on": "Share on",
-  "Point": "积分",
+  "Points": "积分",
   "Thenian": "Thenian",
   "#": "#",
   "Reach Top 100 After Second Chapter": "完成第 2 章节后进入排行前 100 名",
@@ -1061,7 +1061,7 @@
   "FAQs": "常见问答",
   "Chapters": "章节",
   "Enter all details": "输入全部内容",
-  "Search by Name": "Search by Name",
+  "Search by Name": "按名称搜索",
   "Fragments missing": "碎片数不足",
   "The Fates Await": "等待命运降临...",
   "THE Story leaderboard point description": "若与参赛者平手，较早注册者将取得较高排行。越早注册的用户将可取得较高排行名次。",
@@ -1079,5 +1079,6 @@
   "How Are Winners Selected?": "如何决定获胜者？",
   "How Are Winners Selected Description": "前两章的获胜者将通过抽奖选出。从第三章开始，排行榜前100名的参赛者将赢取奖励。请密切关注您的排名，确保您在获奖名单中。",
   "How Many Rewards Will Be In Total?": "奖励总价值是多少？",
-  "How Many Rewards Will Be In Total Description": "THE Story 的奖励总价值超过 30,000 美元，将在整个活动期间分发给多位获胜者。请定期查看更新，以了解每章的新竞赛及奖励内容。"
+  "How Many Rewards Will Be In Total Description": "THE Story 的奖励总价值超过 30,000 美元，将在整个活动期间分发给多位获胜者。请定期查看更新，以了解每章的新竞赛及奖励内容。",
+  "T2E": "T2E"
 }
