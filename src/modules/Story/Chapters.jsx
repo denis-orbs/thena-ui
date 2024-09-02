@@ -9,8 +9,7 @@ export default function Chapters({ chapters, isLoading }) {
 
   useEffect(() => {
     if (chapters) {
-      const availableChapters = chapters.filter(chapter => chapter.available).sort((c1, c2) => c1.index - c2.index)
-      const index = availableChapters?.[availableChapters.length - 1]?.index ?? 1
+      const index = chapters.find(item => !item.isCompleted)?.index || 1
       setSelectedChapterIndex(index)
     }
   }, [chapters])

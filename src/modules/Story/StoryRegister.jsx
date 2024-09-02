@@ -91,6 +91,10 @@ export default function StoryRegister({ isRegistered }) {
     )
   }
 
+  if (isRegistered) {
+    return <></>
+  }
+
   return (
     <div className='border-gradient-secondary w-full rounded-xl p-px md:w-[610px]'>
       <Box className='z-10 h-full rounded-[11px] bg-neutral-900 px-4 md:px-6 lg:px-8'>

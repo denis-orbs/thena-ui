@@ -101,7 +101,8 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
               </div>
               <Link
                 href='https://dappbay.bnbchain.org/campaign/join-bnb-chain-4-year-ecosystem-celebration-with-$300K-in-rewards'
-                className='w-full '
+                className='w-full'
+                target='_blank'
               >
                 <PrimaryButton className='mt-4 w-full lg:mt-9'>
                   <div className=' flex items-center justify-between'>
