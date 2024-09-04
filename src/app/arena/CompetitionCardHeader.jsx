@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import { TextHeading } from '@/components/typography'
-import { cn, formatAmount, fromWei } from '@/lib/utils'
+import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
 export function CompetitionCardHeader({ competition, className, banner }) {
   const {
@@ -15,19 +15,24 @@ export function CompetitionCardHeader({ competition, className, banner }) {
   } = competition
 
   const t = useTranslations()
-  const currentPrizePoolUpdate = useMemo(
-    () =>
-      totalPrizeUpdate.map((item, index) => {
-        const token = prizeTokenUpdate[index]
-        return {
-          amount: formatAmount(fromWei(item, token?.decimals)),
-          symbol: token?.symbol,
-          logoURI: token?.logoURI,
-        }
-      }),
+  const currentPrizePoolUpdate = useMemo(() => {
+    const isInvalidPrizePool = totalPrizeUpdate.every(item => isInvalidAmount(item))
+    let prizePool = totalPrizeUpdate.map((item, index) => {
+      const token = prizeTokenUpdate[index]
+      return {
+        amount: formatAmount(fromWei(item, token?.decimals)),
+        symbol: token?.symbol,
+        logoURI: token?.logoURI,
+      }
+    })
+
+    if (!isInvalidPrizePool) {
+      prizePool = prizePool.filter(item => !isInvalidAmount(item.amount))
+    }
+
+    return prizePool
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(prizeTokenUpdate), totalPrizeUpdate],
-  )
+  }, [JSON.stringify(prizeTokenUpdate), totalPrizeUpdate])
 
   return (
     <div
@@ -41,7 +46,7 @@ export function CompetitionCardHeader({ competition, className, banner }) {
         <Image
           alt='background'
           src={isString(banner) ? banner : URL.createObjectURL(banner)}
-          layout='fill'
+          fill
           objectFit='fill'
           className='-z-1 absolute bottom-0 left-0 right-0 top-0 rounded-xl'
         />
@@ -49,7 +54,7 @@ export function CompetitionCardHeader({ competition, className, banner }) {
         currentPrizePoolUpdate?.length && (
           <div className='z-1 absolute bottom-0 left-0 right-0 top-0 flex transform flex-col items-center justify-center gap-2 rounded-xl bg-white/5 p-4 backdrop-invert backdrop-opacity-5'>
             <TextHeading className='text-center text-2xl'>{t('Compete For')}</TextHeading>
-            <TextHeading className='flex items-center gap-1 text-nowrap'>
+            <TextHeading className='flex flex-wrap items-center justify-center gap-1 text-nowrap'>
               {currentPrizePoolUpdate.map((item, index) => (
                 <span key={index} className='flex text-nowrap'>
                   <span className='flex items-center text-nowrap'>
