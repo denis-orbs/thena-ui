@@ -81,6 +81,7 @@ function AchievementCompletedPage() {
     () => fetchAchievements(),
   )
 
+  // TODO: Sort, Progress
   const userAchievementNotComplete = useMemo(() => {
     if (achievements?.length && userAchievementsCompleted?.length) {
       return achievements.filter(

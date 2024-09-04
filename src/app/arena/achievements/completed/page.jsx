@@ -8,6 +8,7 @@ import useSWR from 'swr'
 import Loading from '@/app/loading'
 import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
+import { sortAchievements } from '@/lib/utils'
 import { Completed } from '@/modules/Achievements/Completed'
 
 import NoAchievement from '../NoAchievement'
@@ -55,12 +56,15 @@ function AchievementCompletedPage() {
 
   const searchedData = useMemo(() => {
     const search = searchParams.get('q')
+
+    const sortedAchivements = (userAchievementsCompleted || []).sort(sortAchievements)
+
     if (search && userAchievementsCompleted && userAchievementsCompleted?.length) {
-      return userAchievementsCompleted.filter(achievement =>
+      return sortedAchivements.filter(achievement =>
         achievement.achievement.name.toLowerCase().includes(search.toLowerCase()),
       )
     }
-    return userAchievementsCompleted ?? []
+    return sortedAchivements ?? []
   }, [searchParams, userAchievementsCompleted])
 
   if (isLoading) {

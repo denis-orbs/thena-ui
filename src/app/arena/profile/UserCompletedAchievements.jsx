@@ -1,5 +1,6 @@
 import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
+import { useMemo } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
@@ -7,6 +8,7 @@ import Box from '@/components/box'
 import Highlight from '@/components/highlight'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { v4Client } from '@/lib/graphql'
+import { sortAchievements } from '@/lib/utils'
 import AchievementBasicIcon from '@/modules/Achievements/AchievementBasicIcon'
 import { InfoCircleWhite } from '@/svgs'
 
@@ -40,12 +42,20 @@ const fetchAchievements = async userId => {
   }
 }
 
-export function UserAchievements({ userId }) {
+export function UserCompletedAchievements({ userId }) {
   const t = useTranslations()
 
   const { data: userAchievementsCompleted, isLoading } = useSWR(['userAchievementsCompleted', userId], () =>
     fetchAchievements(userId.toLowerCase()),
   )
+
+  const sortedData = useMemo(() => {
+    if (Array.isArray(userAchievementsCompleted) && userAchievementsCompleted.length) {
+      return userAchievementsCompleted.sort(sortAchievements)
+    }
+
+    return []
+  }, [userAchievementsCompleted])
 
   if (isLoading) {
     return <Loading />
@@ -56,13 +66,13 @@ export function UserAchievements({ userId }) {
       <div className='space-y-3'>
         <TextHeading className='text-xl'>
           {t('Completed Achievements', {
-            count: userAchievementsCompleted.length,
+            count: sortedData.length,
           })}
         </TextHeading>
 
-        {Object.keys(userAchievementsCompleted).length ? (
-          <Box className='grid grid-cols-3 md:grid-cols-6 xl:grid-cols-12'>
-            {userAchievementsCompleted.map(item => (
+        {Object.keys(sortedData).length ? (
+          <Box className='grid grid-cols-3 md:grid-cols-6 lg:grid-cols-9 xl:grid-cols-12'>
+            {sortedData.map(item => (
               <AchievementBasicIcon item={item} key={item.achievement.id} />
             ))}
           </Box>
