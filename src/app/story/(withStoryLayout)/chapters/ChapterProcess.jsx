@@ -5,6 +5,7 @@ import { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { useTHEStory } from '@/context/THEStoryContext'
+import { errorToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
 import { cn } from '@/lib/utils'
 import { ArrowBackwardIcon, ArrowForwardSmallIcon, ChevronRightIcon } from '@/svgs'
@@ -41,6 +42,11 @@ export function ChapterProcess({
   const handleTask = useCallback(
     task => {
       if (task.type === TaskType.Main && task.actionHandle === TaskTwitterAction) {
+        if (!campaignParticipantInfo.xProfileUsername) {
+          errorToast('You have to update the X profile username first!')
+          return
+        }
+
         const url = getShareSocialNetworkUrl({
           network: SocialNetwork.Twitter,
           content: campaignParticipantInfo?.referralCode
@@ -57,7 +63,7 @@ export function ChapterProcess({
         window.location.href = `/${task.actionHandle}`
       }
     },
-    [campaignParticipantInfo?.referralCode],
+    [campaignParticipantInfo.referralCode, campaignParticipantInfo.xProfileUsername],
   )
 
   return (
