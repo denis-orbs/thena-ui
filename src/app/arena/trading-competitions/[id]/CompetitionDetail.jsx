@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { memo, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -14,7 +14,7 @@ import { TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 
-export function CompetitionDetail({ competition, isPreview = false }) {
+function CompetitionDetail({ competition, isPreview = false }) {
   const _competition = useCompetitionFormat(competition, isPreview)
 
   const t = useTranslations()
@@ -142,20 +142,25 @@ export function CompetitionDetail({ competition, isPreview = false }) {
     setViewAllTradable(!viewAllTradable)
   }
 
+  const Description = useMemo(
+    () => (
+      <TruncateContent
+        content={
+          <div
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: _competition.description }}
+            className='mt-4 text-sm text-neutral-300'
+          />
+        }
+      />
+    ),
+    [_competition.description],
+  )
+
   return (
     <>
       <Box>
-        <Collapse title={<TextHeading className='text-xl'>{t('Description')}</TextHeading>}>
-          <TruncateContent
-            content={
-              <div
-                // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={{ __html: _competition.description }}
-                className='mt-4 text-sm text-neutral-300'
-              />
-            }
-          />
-        </Collapse>
+        <Collapse title={<TextHeading className='text-xl'>{t('Description')}</TextHeading>}>{Description}</Collapse>
       </Box>
       <Box>
         <TextHeading className='text-xl'> {t('Details')} </TextHeading>
@@ -332,3 +337,5 @@ export function CompetitionDetail({ competition, isPreview = false }) {
     </>
   )
 }
+
+export default memo(CompetitionDetail)
