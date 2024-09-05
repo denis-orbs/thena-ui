@@ -3,7 +3,7 @@
 import React from 'react'
 import useSWR from 'swr'
 
-import { CompetitionDetail } from './CompetitionDetail'
+import CompetitionDetail from './CompetitionDetail'
 
 function CompetitionDefaultPage() {
   const { data: competition } = useSWR('competition detail api')

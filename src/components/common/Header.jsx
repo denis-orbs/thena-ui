@@ -94,7 +94,7 @@ function ChainSelect({ t }) {
   return (
     <div className={cn('relative hidden lg:block')} ref={wrapperRef}>
       <div
-        className='flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 py-3 pl-3 pr-4'
+        className='flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 py-3 pl-3 pr-4 lg:pl-1.5 lg:pr-2.5 xl:pl-3 xl:pr-4'
         onClick={() => setOpen(!open)}
       >
         <CircleImage src={selected.img} alt='' className='h-5 w-5' />
@@ -371,6 +371,7 @@ function Header() {
         onClickHandler: () => {
           push('/arena')
         },
+        isHighlight: true,
       },
       {
         label: 'T2E',
@@ -385,6 +386,7 @@ function Header() {
         onClickHandler: () => {
           push('/story')
         },
+        isHighlight: true,
       },
       {
         label: 'More',
@@ -625,7 +627,7 @@ function Header() {
               {menus.map((item, idx) => (
                 <div key={`tab-${idx}`}>
                   <div
-                    className='py-3'
+                    className='flex items-center justify-center py-3'
                     onMouseEnter={() => {
                       setOpenMenu(item.label)
                     }}
@@ -633,21 +635,34 @@ function Header() {
                       setOpenMenu(null)
                     }}
                   >
-                    <span
+                    <div
                       className={cn(
-                        'flex h-11 cursor-pointer items-center justify-center',
-                        'rounded-lg px-4 py-2.5 font-medium text-neutral-200',
-                        'outline outline-2 outline-offset-4 outline-transparent',
-                        'transition-all duration-150 ease-out',
-                        'hover:bg-neutral-800',
-                        item.active && 'bg-neutral-800',
+                        item.isHighlight
+                          ? 'animated-border-box after:bg-[rgba(18,9,22,1)] hover:after:bg-neutral-800 '
+                          : '',
+                        item.active && 'after:bg-neutral-800',
                         item.disabled && 'disabled:cursor-not-allowed disabled:outline-transparent',
-                        openMenu === item.label && 'bg-neutral-800',
+                        openMenu === item.label && 'after:bg-neutral-800',
                       )}
-                      onClick={() => item.onClickHandler && item.onClickHandler()}
                     >
-                      {t(item.label)}
-                    </span>
+                      <span
+                        className={cn(
+                          'flex h-11 cursor-pointer items-center justify-center',
+                          'rounded-lg px-4 py-2.5 font-medium text-neutral-200 lg:px-2 xl:px-4',
+                          'outline outline-2 outline-offset-4 outline-transparent',
+                          'transition-all duration-150 ease-out',
+                          !item.isHighlight && 'hover:bg-neutral-800',
+                          !item.isHighlight && item.active && 'bg-neutral-800',
+                          !item.isHighlight &&
+                            item.disabled &&
+                            'disabled:cursor-not-allowed disabled:outline-transparent',
+                          !item.isHighlight && openMenu === item.label && 'bg-neutral-800',
+                        )}
+                        onClick={() => item.onClickHandler && item.onClickHandler()}
+                      >
+                        {t(item.label)}
+                      </span>
+                    </div>
                   </div>
                   {item.sub && (
                     <div
@@ -693,7 +708,7 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:px-3 lg:py-2.5'>
+            <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
               <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
               {prices.THE > 0 ? (
                 <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
@@ -785,7 +800,7 @@ function Header() {
         </div>
       )}
       {pathname.includes('/arena') && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5'>
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5'>
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
             {toggleSearch && isSmallScreen() ? (
               <HeaderSearch
@@ -807,9 +822,15 @@ function Header() {
         </div>
       )}
       {pathname.startsWith('/story') && isRegistered && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
-          {!isUpcoming && <Tabs data={storySubmenus1} size={SizeTypes.Medium} />}
-          {isUpcoming && <Tabs data={storySubmenus2} size={SizeTypes.Medium} />}
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5'>
+          <div className='layout-menu-container flex flex-row justify-between backdrop-blur-2xl'>
+            {!isUpcoming && (
+              <Tabs data={storySubmenus1} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
+            )}
+            {isUpcoming && (
+              <Tabs data={storySubmenus2} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
+            )}
+          </div>
         </div>
       )}
       <Script

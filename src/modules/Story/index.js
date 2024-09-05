@@ -510,9 +510,11 @@ export const useRegisterToTHEStory = () => {
           error?.extensions?.exception?.validationErrors.length > 0
         ) {
           const validator = error?.extensions?.exception?.validationErrors[0]
-          throw new Error(validator?.constraints?.isEmail)
+          const err = { response: { errors: [{ message: validator }] } }
+          throw err
         } else if (error?.extensions?.exception?.detail) {
-          throw new Error(error?.extensions?.exception?.detail)
+          const err = { response: { errors: [{ message: error?.extensions?.exception?.detail }] } }
+          throw err
         }
         throw e
       }

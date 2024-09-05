@@ -9,8 +9,8 @@ import { fetchUserInfo } from '@/context/userInfoContext'
 import { fetchFollower, fetchFollowing } from '@/hooks/useUserFollow'
 
 import { FollowedProfiles } from './FollowedProfiles'
-import { UserAchievements } from './UserAchievements'
 import { UserCompetitions } from './UserCompetitions'
+import { UserCompletedAchievements } from './UserCompletedAchievements'
 import { UserInfo } from './UserInfo'
 import UserThenaIds from './UserThenaIds'
 
@@ -117,7 +117,7 @@ export function ProfilePage({ address }) {
   return (
     <div className='mt-10 space-y-10'>
       <UserInfo userInfo={userInfo} following={following} followers={followers} />
-      <UserAchievements userId={userInfo.id} />
+      <UserCompletedAchievements userId={userInfo.id} />
       {userInfo && userInfo.usernameNfts?.length > 0 && <UserThenaIds thenaIds={userInfo.usernameNfts} />}
       {(!!joinedCompetitions.length || !!hostedCompetitions.length) && (
         <UserCompetitions hostedCompetitions={hostedCompetitions} joinedTCs={joinedCompetitions} />

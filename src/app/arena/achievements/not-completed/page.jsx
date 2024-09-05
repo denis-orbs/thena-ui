@@ -12,10 +12,10 @@ import { NotCompleted } from '@/modules/Achievements/NotCompleted'
 
 import NoAchievement from '../NoAchievement'
 
-const V4_USER_ACHIEVEMENT_COMPLETED = gql`
-  query V4_USER_ACHIEVEMENT_COMPLETED($userId: String!) {
+const V4_USER_ACHIEVEMENTS = gql`
+  query V4_USER_ACHIEVEMENTS($userId: String!) {
     userAchievements(
-      where: { user: { id_eq: $userId }, achievedAt_isNull: false, achievement: { isHidden_eq: false } }
+      where: { user: { id_eq: $userId }, achievement: { isHidden_eq: false } }
       orderBy: achievement_groupIndex_ASC
     ) {
       achievement {
@@ -37,7 +37,7 @@ const V4_USER_ACHIEVEMENT_COMPLETED = gql`
 
 const fetchUserAchievements = async userId => {
   try {
-    const { userAchievements } = await v4Client.request(V4_USER_ACHIEVEMENT_COMPLETED, { userId })
+    const { userAchievements } = await v4Client.request(V4_USER_ACHIEVEMENTS, { userId })
     return userAchievements
   } catch (error) {
     return {}
@@ -46,7 +46,7 @@ const fetchUserAchievements = async userId => {
 
 const V4_ACHIEVEMENTS = gql`
   query V4_ACHIEVEMENTS {
-    achievements(where: { isHidden_eq: false }) {
+    achievements(where: { isHidden_eq: false }, orderBy: [groupIndex_ASC, typeIndex_ASC]) {
       icon
       id
       isHidden
@@ -83,10 +83,22 @@ function AchievementCompletedPage() {
 
   const userAchievementNotComplete = useMemo(() => {
     if (achievements?.length && userAchievementsCompleted?.length) {
-      return achievements.filter(
-        achievement =>
-          !userAchievementsCompleted?.find(userAchievement => userAchievement.achievement.id === achievement.id),
-      )
+      return achievements
+        .filter(
+          achievement =>
+            !userAchievementsCompleted?.find(
+              userAchievement => userAchievement.achievement.id === achievement.id && userAchievement.achievedAt,
+            ),
+        )
+        .map(achievement => {
+          const currentQuantity =
+            userAchievementsCompleted?.find(userAchievement => userAchievement.achievement.id === achievement.id)
+              ?.currentQuantity ?? 0
+          return {
+            ...achievement,
+            currentQuantity,
+          }
+        })
     }
     return []
   }, [userAchievementsCompleted, achievements])

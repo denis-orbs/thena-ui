@@ -1,10 +1,11 @@
+import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
-import { cn, isoDateToTimeStampSeconds } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
 import { AlertCirlceSmallIcon, BankIcon, FingerprintIcon, THETokenIcon } from '@/svgs'
 
@@ -40,27 +41,25 @@ const rewards = [
 export function RewardChapter12({ chapters }) {
   const t = useTranslations()
   const { campaignParticipantInfo: userInfo } = useTHEStory()
-  const currentDate = useMemo(() => new Date(), [])
+  const currentDate = dayjs()
 
   const [chapterProgressPercent, targetCountdown] = useMemo(() => {
-    const startTime = new Date(chapters?.[0]?.startTimestamp ?? 0)
-    const endTime = new Date(chapters?.[1]?.endTimestamp ?? 0)
+    const startTime = dayjs(chapters?.[0]?.startTimestamp ?? 0)
+    const endTime = chapters?.[1]?.endTimestamp ? dayjs(chapters[1].endTimestamp).add(1, 'weeks') : dayjs(0)
 
     let progressPercent = 0
-    if (currentDate > startTime && currentDate < endTime) {
-      progressPercent = ((currentDate - startTime) * 100) / (endTime - startTime)
-    } else if (currentDate >= endTime) {
+    if (currentDate.isAfter(startTime) && currentDate.isBefore(endTime)) {
+      progressPercent = ((currentDate.unix() - startTime.unix()) * 100) / (endTime.unix() - startTime.unix())
+    } else if (currentDate.isAfter(endTime)) {
       progressPercent = 100
     }
 
-    let countDown = startTime
-    if (currentDate > startTime && currentDate < endTime) {
-      countDown = endTime
-    } else if (currentDate >= endTime) {
+    let countDown = endTime
+    if (currentDate.isAfter(endTime)) {
       countDown = undefined
     }
 
-    return [progressPercent, isoDateToTimeStampSeconds(countDown)]
+    return [progressPercent, countDown?.unix() || 0]
   }, [chapters, currentDate])
 
   const renderActionMessage = useCallback(() => {

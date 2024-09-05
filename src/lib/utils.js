@@ -211,3 +211,16 @@ export const objectDiff = (object, other) =>
   }, 0)
 
 export const isoDateToTimeStampSeconds = isoString => Math.floor(new Date(isoString).getTime() / 1000)
+
+export const sortAchievements = (a, b) => {
+  // First, compare by groupIndex
+  if (a.achievement.groupIndex < b.achievement.groupIndex) return -1
+  if (a.achievement.groupIndex > b.achievement.groupIndex) return 1
+
+  // If groupIndex is the same, compare by typeIndex
+  if (a.achievement.typeIndex < b.achievement.typeIndex) return -1
+  if (a.achievement.typeIndex > b.achievement.typeIndex) return 1
+
+  // If both groupIndex and typeIndex are the same, they are equal
+  return 0
+}
