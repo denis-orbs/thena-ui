@@ -15,13 +15,35 @@ import { useTradeData } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { customSort, formatAmount, formatNumberDecimals, fromWei } from '@/lib/utils'
+import { FirstPrizeIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 
-export function LeaderBoard({ competition }) {
+function RankElement({ rank }) {
+  switch (rank) {
+    case 1: {
+      return <FirstPrizeIcon className='size-7 md:size-9' />
+    }
+    case 2: {
+      return <SecondPrizeIcon className='size-7 md:size-9' />
+    }
+    case 3: {
+      return <ThirdPrizeIcon className='size-7 md:size-9' />
+    }
+
+    default: {
+      return <p className='w-full text-center'>{isNil(rank) ? '-' : rank}</p>
+    }
+  }
+}
+
+export function LeaderBoard({ competition, competitionAccount = undefined }) {
   const { eventType } = useEventType(competition?.timestamp)
   const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const { account } = useWallet()
   const { reloadFetch } = useTradingCompetition()
+
+  const { push } = useRouter()
+  const t = useTranslations()
 
   const { pnl: pnlUserCurrent, winAmount } = useTradeData(
     competition?.tcAddress,
@@ -29,46 +51,101 @@ export function LeaderBoard({ competition }) {
     reloadFetch,
   )
 
-  const participants = useMemo(() => {
-    if (Array.isArray(competition?.participants)) {
-      let arr = [...(competition?.participants || [])]
-      const index = arr.findIndex(item => item.participant.id.toLowerCase() === account?.toLowerCase())
+  const handleParticipants = useMemo(
+    () => data => {
+      if (Array.isArray(data?.participants)) {
+        let arr = [...(data?.participants || [])]
+        const index = arr.findIndex(item => item.participant.id.toLowerCase() === account?.toLowerCase())
 
-      arr = arr.map(item => ({
-        ...item,
-        winAmount: item.winAmounts?.length
-          ? item.winAmounts
-          : new Array(competition?.prizeUpdate?.token?.length).fill('0'),
-        winAmounts: undefined,
-      }))
+        arr = arr.map(item => ({
+          ...item,
+          winAmount: item.winAmounts?.length ? item.winAmounts : new Array(data?.prizeUpdate?.token?.length).fill('0'),
+          winAmounts: undefined,
+        }))
 
-      if (index !== -1 && competition?.market === TC_MARKET_TYPES.SPOT) {
-        arr[index] = {
-          ...arr[index],
-          pnl: new BigNumber(pnlUserCurrent).toNumber(),
-          winAmount: Array.isArray(winAmount)
-            ? !winAmount?.length
-              ? new Array(competition?.prizeUpdate?.token?.length).fill('0')
-              : winAmount.map(item => new BigNumber(item).toNumber())
-            : winAmount !== null
-              ? [new BigNumber(winAmount).toNumber()]
-              : new Array(competition?.prizeUpdate?.token?.length).fill('0'),
+        if (index !== -1 && data?.market === TC_MARKET_TYPES.SPOT) {
+          arr[index] = {
+            ...arr[index],
+            pnl: new BigNumber(pnlUserCurrent).toNumber(),
+            winAmount: Array.isArray(winAmount)
+              ? !winAmount?.length
+                ? new Array(data?.prizeUpdate?.token?.length).fill('0')
+                : winAmount.map(item => new BigNumber(item).toNumber())
+              : winAmount !== null
+                ? [new BigNumber(winAmount).toNumber()]
+                : new Array(data?.prizeUpdate?.token?.length).fill('0'),
+          }
         }
+        return arr
       }
-      return arr
-    }
-    return []
-  }, [
-    account,
-    competition?.market,
-    competition?.participants,
-    competition?.prizeUpdate?.token?.length,
-    pnlUserCurrent,
-    winAmount,
-  ])
+      return []
+    },
+    [account, pnlUserCurrent, winAmount],
+  )
 
-  const { push } = useRouter()
-  const t = useTranslations()
+  const participants = useMemo(() => handleParticipants(competition), [competition, handleParticipants])
+
+  const participantsAccount = useMemo(
+    () => handleParticipants(competitionAccount),
+    [competitionAccount, handleParticipants],
+  )
+
+  const handleRenderFinalData = useMemo(
+    () => data => {
+      const result = data.map(leader => {
+        const pnl = fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal)
+        return {
+          id: leader?.participant.id,
+          rank: <RankElement rank={leader.rank} />,
+          user: <UserProfileCard user={leader.participant} showVerified={leader.participant.isVerified} />,
+          percentagePnl: (
+            <Paragraph
+              className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}
+              title={`${formatNumberDecimals(leader.percentagePnl * 100, 12)}%`}
+            >
+              {`${formatNumberDecimals(leader.percentagePnl * 100, 4)}%`}
+            </Paragraph>
+          ),
+          pnl: (
+            <Paragraph
+              className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}
+              title={`${formatAmount(pnl, false, 12, false)} ${competition?.competitionRules?.winningToken?.symbol}`}
+            >
+              {`${formatAmount(pnl, false, 5, false)}
+            ${competition?.competitionRules?.winningToken?.symbol || ''}`}
+            </Paragraph>
+          ),
+          reward: (
+            <Paragraph className='w-full'>
+              <div className='flex flex-col items-start'>
+                {leader.winAmount.map((item, index) => (
+                  <Paragraph key={index}>
+                    {`${formatAmount(
+                      fromWei(item, competition.prizeUpdate?.token[index]?.decimals),
+                      false,
+                      5,
+                      false,
+                    )} ${competition.prizeUpdate.token?.[index]?.symbol || ''}`}
+                  </Paragraph>
+                ))}
+              </div>
+            </Paragraph>
+          ),
+        }
+      })
+      return result
+    },
+    [competition?.competitionRules?.winningToken?.symbol, competition.prizeUpdate.token],
+  )
+
+  const rowDefault = useMemo(() => {
+    const data = participantsAccount.map(item => ({
+      ...item,
+      rank: isNil(item.rank) ? item.rank : item.rank + 1,
+    }))
+    const result = handleRenderFinalData(data)
+    return result[0]
+  }, [handleRenderFinalData, participantsAccount])
 
   const sortOptions = useMemo(
     () =>
@@ -179,64 +256,35 @@ export function LeaderBoard({ competition }) {
   )
 
   const finalLeaderBoards = useMemo(
-    () =>
-      sortedData?.map(leader => {
-        const pnl = fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal)
-        return {
-          rank: <Paragraph>{leader.rank ?? 'N/A'}</Paragraph>,
-          user: <UserProfileCard user={leader.participant} showVerified={leader.participant.isVerified} />,
-          percentagePnl: (
-            <Paragraph
-              className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}
-              title={`${formatNumberDecimals(leader.percentagePnl * 100, 12)}%`}
-            >
-              {`${formatNumberDecimals(leader.percentagePnl * 100, 4)}%`}
-            </Paragraph>
-          ),
-          pnl: (
-            <Paragraph
-              className={`${pnl < 0 ? 'text-red-500' : pnl > 0 ? 'text-green-500' : ''}`}
-              title={`${formatAmount(pnl, false, 12, false)} ${competition?.competitionRules?.winningToken?.symbol}`}
-            >
-              {`${formatAmount(pnl, false, 5, false)}
-              ${competition?.competitionRules?.winningToken?.symbol || ''}`}
-            </Paragraph>
-          ),
-          reward: (
-            <Paragraph className='w-full'>
-              <div className='flex flex-col items-start'>
-                {leader.winAmount.map((item, index) => (
-                  <Paragraph key={index}>
-                    {`${formatAmount(
-                      fromWei(item, competition.prizeUpdate?.token[index]?.decimals),
-                      false,
-                      5,
-                      false,
-                    )} ${competition.prizeUpdate.token?.[index]?.symbol || ''}`}
-                  </Paragraph>
-                ))}
-              </div>
-            </Paragraph>
-          ),
-        }
-      }),
+    () => handleRenderFinalData(sortedData),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
   )
-
   useEffect(() => {
     setCurrentPage(1)
   }, [searchText])
 
+  const finalRank = useMemo(() => {
+    let rank = 0
+    if (account) {
+      const itemUserIndex = finalLeaderBoards.findIndex(item => item?.id?.toLowerCase() === account.toLowerCase())
+      if (itemUserIndex !== -1) {
+        rank = itemUserIndex
+      }
+    }
+    return rank
+  }, [finalLeaderBoards, account])
+
   return (
-    <>
-      <div className='mb-3 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
+    <div className='rounded-xl bg-[url("/images/pink-bg.png")] bg-cover'>
+      <div className='mb-3 flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between'>
         {/* eslint-disable-next-line prettier/prettier */}
         <TextHeading className='text-xl lg:flex-2'>{t('Leaderboard')}</TextHeading>
         <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
       </div>
 
       <Table
+        className='bg-transparent'
         sortOptions={sortOptions}
         data={finalLeaderBoards}
         sort={sort}
@@ -244,7 +292,10 @@ export function LeaderBoard({ competition }) {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         tableBasic
+        hightLightById={account?.toLowerCase() ?? undefined}
+        bgHightLight='bg-white bg-opacity-5'
+        defaultHead={finalRank > 9 && currentPage === 1 ? rowDefault : undefined}
       />
-    </>
+    </div>
   )
 }
