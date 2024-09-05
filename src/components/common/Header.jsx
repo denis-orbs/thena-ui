@@ -785,7 +785,7 @@ function Header() {
         </div>
       )}
       {pathname.includes('/arena') && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5'>
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5'>
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
             {toggleSearch && isSmallScreen() ? (
               <HeaderSearch
@@ -807,9 +807,15 @@ function Header() {
         </div>
       )}
       {pathname.startsWith('/story') && isRegistered && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
-          {!isUpcoming && <Tabs data={storySubmenus1} size={SizeTypes.Medium} />}
-          {isUpcoming && <Tabs data={storySubmenus2} size={SizeTypes.Medium} />}
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5'>
+          <div className='layout-menu-container flex flex-row justify-between backdrop-blur-2xl'>
+            {!isUpcoming && (
+              <Tabs data={storySubmenus1} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
+            )}
+            {isUpcoming && (
+              <Tabs data={storySubmenus2} size={SizeTypes.Medium} itemClassName='text-xs lg:text-base px-1 lg:px-2' />
+            )}
+          </div>
         </div>
       )}
       <Script
