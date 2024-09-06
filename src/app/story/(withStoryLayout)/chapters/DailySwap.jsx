@@ -42,35 +42,35 @@ export function DailySwap({ dailySwaps, userSwaps }) {
             </PrimaryButton>
           </Link>
         </div>
-        <div className='grid grid-cols-1 gap-[10px] lg:grid-cols-7 lg:gap-5'>
+        <div className='grid grid-cols-1 gap-[20px] lg:grid-cols-7 lg:gap-5'>
           {dailySwaps.map(task => (
             <div key={task.id}>
               <div
                 className={cn(
-                  'relative flex flex-row items-center justify-between rounded-xl border-2 border-neutral-800 bg-neutral-800 px-[19px] py-4 pb-8 hover:border-primary-600 lg:flex-col lg:justify-center lg:py-3 lg:pb-7 ',
+                  'relative flex flex-row items-center justify-between rounded-xl border-2 border-neutral-800 bg-neutral-800 px-[19px] py-4 pb-4 hover:border-primary-600 lg:flex-col lg:justify-center lg:px-3 lg:py-3 lg:pb-5 xl:pb-7',
                   typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day ? 'border-primary-600' : '',
                 )}
               >
                 <p className='font-archia text-[22px] leading-7'>{`${t('Day')} ${task.index + 1}`}</p>
-                <hr className='my-4 hidden w-full border-neutral-600 lg:block' />
+                <hr className='my-2 hidden w-full border-neutral-600 lg:block xl:my-4' />
                 <div className='flex flex-row items-center justify-between  lg:flex-col lg:justify-center'>
                   {typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day ? (
-                    <CheckPurpleLargeIcon className='order-2 h-6 w-6 lg:order-1 lg:mt-3 lg:h-[60px] lg:w-[60px]' />
+                    <CheckPurpleLargeIcon className='order-2 h-6 w-6 lg:order-1 lg:mt-1 lg:h-[50px] lg:w-[50px] xl:mt-3 xl:h-[60px] xl:w-[60px]' />
                   ) : (
-                    <StarLineLargeIcon className='order-2 h-6 w-6 lg:order-1 lg:mt-3 lg:h-[60px] lg:w-[60px]' />
+                    <StarLineLargeIcon className='order-2 h-6 w-6 lg:order-1 lg:mt-1 lg:h-[50px] lg:w-[50px] xl:mt-3 xl:h-[60px] xl:w-[60px]' />
                   )}
                   <p className='order-1 mt-2 text-[18px] leading-7 lg:order-2'>
                     {`+${task.rewardAmount?.[0]} ${t('PTS')}`}
                   </p>
                   {task.rewardAmount[0] !== BASE_DAILY_SWAP_POINT && (
-                    <div className='absolute right-[-2px] top-[-2px] w-max rounded-bl-xl rounded-tr-xl bg-[rgba(220,0,212,1)] px-[5px] text-xs font-semibold leading-5 lg:text-base lg:font-semibold lg:leading-7'>
+                    <div className='absolute right-[-2px] top-[-2px] w-max rounded-bl-xl rounded-tr-xl bg-[rgba(220,0,212,1)] px-[5px] text-xs font-semibold leading-5 lg:text-sm  lg:leading-5 xl:text-base  xl:leading-7'>
                       {task.rewardAmount[0] / BASE_DAILY_SWAP_POINT}X
                     </div>
                   )}
 
                   {typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day && (
                     <div
-                      className='absolute bottom-0 left-1/2 rounded-lg bg-primary-800 px-3 py-[5px] text-center text-[15px] font-medium leading-5 tracking-wider'
+                      className='absolute bottom-0 left-1/2 rounded-lg bg-primary-800 px-3 py-[5px] text-center font-medium leading-5 tracking-wider lg:text-xs xl:text-[15px]'
                       style={{
                         transform: 'translate(-50%, 50%)',
                       }}
@@ -82,7 +82,7 @@ export function DailySwap({ dailySwaps, userSwaps }) {
                   {task.index === nextIndexSwap && canSwapToday && (
                     <Link href='/swap'>
                       <div
-                        className='absolute bottom-0 left-1/2 w-max rounded-lg border-[1px] border-[#4F375A] bg-neutral-800 px-3 py-[5px] text-center text-[15px] font-medium leading-5 tracking-wider'
+                        className='absolute bottom-1 left-1/2 w-max rounded-lg border-[1px] border-[#4F375A] bg-neutral-800 px-3 py-[5px] text-center font-medium leading-5 tracking-wider lg:bottom-0 lg:text-xs xl:text-[15px]'
                         style={{
                           transform: 'translate(-50%, 50%)',
                         }}
