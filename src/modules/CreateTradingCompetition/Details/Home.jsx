@@ -1,7 +1,7 @@
 import React from 'react'
 
 import CompetitionCard from '@/app/arena/trading-competitions/[id]/CompetitionCard'
-import { CompetitionDetail } from '@/app/arena/trading-competitions/[id]/CompetitionDetail'
+import CompetitionDetail from '@/app/arena/trading-competitions/[id]/CompetitionDetail'
 
 function Home({ data }) {
   return (

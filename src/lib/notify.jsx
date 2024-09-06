@@ -9,8 +9,9 @@ export function successToast(title, hash = null, chainId = ChainId.BSC, icon = n
   })
 }
 
-export function errorToast(title, desc, icon = null, translate = true) {
+export function errorToast(title, desc, icon = null, translate = true, options = {}) {
   toast.error(<ErrorMessage title={title} desc={desc} icon={icon} translate={translate} />, {
+    ...options,
     icon: false,
   })
 }

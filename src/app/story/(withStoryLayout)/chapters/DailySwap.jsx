@@ -42,7 +42,7 @@ export function DailySwap({ dailySwaps, userSwaps }) {
             </PrimaryButton>
           </Link>
         </div>
-        <div className='grid grid-cols-1 gap-[20px] lg:grid-cols-7 lg:gap-5'>
+        <div className='grid grid-cols-1 gap-[10px] lg:grid-cols-7 lg:gap-3 xl:gap-5'>
           {dailySwaps.map(task => (
             <div key={task.id}>
               <div
