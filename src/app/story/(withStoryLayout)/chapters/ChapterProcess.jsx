@@ -43,7 +43,19 @@ export function ChapterProcess({
     task => {
       if (task.type === TaskType.Main && task.actionHandle === TaskTwitterAction) {
         if (!campaignParticipantInfo.xProfileUsername) {
-          errorToast('You have to update the X profile username first!')
+          errorToast(
+            'You have to update the X profile username first!\nhttps://thena.fi/story/edit-profile',
+            '',
+            null,
+            false,
+            {
+              style: {
+                cursor: 'pointer',
+              },
+              autoClose: 10000,
+              onClick: () => (window.location.href = '/story/edit-profile'),
+            },
+          )
           return
         }
 

@@ -5,7 +5,8 @@ import { useTranslations } from 'use-intl'
 import Textarea from '@/components/input/Textarea'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { InstagramIcon } from '@/components/social-icon/ActiveIcon'
-import { successToast } from '@/lib/notify'
+import { useTHEStory } from '@/context/THEStoryContext'
+import { errorToast, successToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
 import {
   CheckPurpleIcon,
@@ -20,6 +21,7 @@ import {
 
 export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }) {
   const t = useTranslations()
+  const { campaignParticipantInfo } = useTHEStory()
   const [copied, setCopied] = useState(false)
   const [postContent, setPostContent] = useState(
     // eslint-disable-next-line max-len
@@ -47,15 +49,34 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
     }
   }, [copied])
 
-  const handleOpenShareWindow = data => {
-    const targetUrl = getShareSocialNetworkUrl(data)
-    const width = window.screen.width / 2
-    const height = window.screen.height / 2
-    const left = window.screen.width / 2 - width / 2
-    const top = window.screen.height / 2 - height / 2
+  const handleOpenShareWindow = useCallback(
+    data => {
+      const targetUrl = getShareSocialNetworkUrl(data)
+      if (!campaignParticipantInfo.xProfileUsername) {
+        errorToast(
+          'You have to update the X profile username first!\nhttps://thena.fi/story/edit-profile',
+          '',
+          null,
+          false,
+          {
+            style: {
+              cursor: 'pointer',
+            },
+            autoClose: 10000,
+            onClick: () => (window.location.href = '/story/edit-profile'),
+          },
+        )
+        return
+      }
+      const width = window.screen.width / 2
+      const height = window.screen.height / 2
+      const left = window.screen.width / 2 - width / 2
+      const top = window.screen.height / 2 - height / 2
 
-    window.open(targetUrl, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
-  }
+      window.open(targetUrl, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
+    },
+    [campaignParticipantInfo.xProfileUsername],
+  )
 
   return (
     <Modal
