@@ -122,7 +122,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
                 </Link>
               </div>
 
-              <div className='h- mt-[124px] flex max-w-[813px] flex-col justify-center'>
+              <div className='mx-auto mt-16 flex max-w-[813px] flex-col justify-center xl:mt-28'>
                 <p className='text-center font-archia text-[31px] font-semibold lg:text-[70px]'>{t('Unlock Over')}</p>
                 <p className='mb-5 text-center font-archia text-[31px] font-semibold lg:text-[70px]'>
                   {t('$30,000 in Rewards')}
