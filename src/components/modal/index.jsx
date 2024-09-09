@@ -24,6 +24,7 @@ function Modal({
   title,
   zIndex,
   width = null,
+  maxWidth = null,
   isBack = false,
   onClickHandler = null,
   isIntl,
@@ -67,6 +68,7 @@ function Modal({
             bottom: 'auto',
             width: width ? (typeof width === 'string' ? width : `${width}px`) : '540px',
             height: 'fit-content',
+            maxWidth: maxWidth ? `${maxWidth}px` : '540px',
             maxHeight: '90%',
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
@@ -77,7 +79,7 @@ function Modal({
             overflow: 'auto',
           },
     }),
-    [backgroundColor, width, zIndex],
+    [backgroundColor, maxWidth, width, zIndex],
   )
 
   return (

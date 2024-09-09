@@ -62,6 +62,7 @@ import LangIcon from '~/svgs/lang.svg'
 import LockIcon from '~/svgs/lock.svg'
 import Lock2Icon from '~/svgs/lock-2.svg'
 import LogoTextIcon from '~/svgs/logo.svg'
+import LogoFooterIcon from '~/svgs/logo-footer-thena.svg'
 import LogoWithTextIcon from '~/svgs/logo-with-text.svg'
 import MediumIcon from '~/svgs/medium.svg'
 import MergeIcon from '~/svgs/merge.svg'
@@ -82,6 +83,7 @@ import SendIcon from '~/svgs/send.svg'
 import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
 import ShareIcon from '~/svgs/share.svg'
+import ShareProfileIcon from '~/svgs/share-icon.svg'
 import SoundOffIcon from '~/svgs/sound-off.svg'
 import SoundOnIcon from '~/svgs/sound-on.svg'
 import SplitIcon from '~/svgs/split.svg'
@@ -172,6 +174,7 @@ export {
   LangIcon,
   Lock2Icon,
   LockIcon,
+  LogoFooterIcon,
   LogoIcon,
   LogoTextIcon,
   LogoWithTextIcon,
@@ -195,6 +198,7 @@ export {
   SettingsIcon,
   ShadowIcon,
   ShareIcon,
+  ShareProfileIcon,
   SoundOffIcon,
   SoundOnIcon,
   SplitIcon,

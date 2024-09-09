@@ -2,12 +2,12 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
 import CheckBox from '@/components/checkbox'
 import Toggle from '@/components/toggle'
 import { cn } from '@/lib/utils'
-import { DownloadIcon } from '@/svgs'
 
+import DownloadButton from './DownloadImage'
 import SelectAchievement from './SelectAchievement'
 
 export default function ShareProfileStats({
@@ -18,13 +18,12 @@ export default function ShareProfileStats({
   setToggleAchievement,
   achievements,
   selectedAchievements = [],
-  ref,
   onClose = () => null,
   setSelectedAchievement = () => null,
 }) {
   const t = useTranslations()
   return (
-    <Box ref={ref} className={cn('', className)}>
+    <Box className={cn('', className)}>
       <p className='mb-4 font-archia text-[24px] font-semibold'>{t('Share Profile Stats')}</p>
       <div className='mb-6 border-b border-b-neutral-700'>
         <p className='mb-3 text-[16px] text-neutral-50'>{t('Show')}</p>
@@ -46,7 +45,7 @@ export default function ShareProfileStats({
               checked={selectedDefault.completedAchievements}
               setChecked={setSelectedDefault('completedAchievements')}
             />
-            <span className='ml-3'>{t('Completed Achievements')}</span>
+            <span className='ml-3'>{t('Completed Achievements1')}</span>
           </li>
         </ul>
       </div>
@@ -80,10 +79,7 @@ export default function ShareProfileStats({
             onSelected={setSelectedAchievement}
           />
         </div>
-        <PrimaryButton className='mb-3 mt-5'>
-          <DownloadIcon className='mr-2 h-4 w-4' />
-          {t('Download image')}
-        </PrimaryButton>
+        <DownloadButton />
         <EmphasisButton onClick={onClose}>Cancel</EmphasisButton>
       </div>
     </Box>

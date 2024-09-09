@@ -1,33 +1,24 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
-export const useFixViewport = refs => {
+const useFixViewport = (parentRef, childRef) => {
   useEffect(() => {
     const fixViewport = () => {
       let zoom
-      const ww =
-        window.innerWidth > screen.width || document.body.clientWidth > screen.width
-          ? screen.width
-          : window.innerWidth || document.body.clientWidth
-
-      const mw = 1400
+      const info = parentRef.current.getBoundingClientRect()
+      const ww = info.width
+      const mw = 1024
       const ratio = ww / mw
-      if (ww > 1400) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+      console.log('fixViewport', { ww, mw, ratio })
+      if (ww >= 1024) {
         zoom = '100%'
-      } else if (ww >= 768) {
-        zoom = `${Math.floor(ratio * 100 - 1)}%`
       } else {
-        zoom = '50%'
+        zoom = `${Math.floor(ratio * 100)}%`
       }
 
-      if (refs) {
-        refs.forEach(ref => {
-          if (ref.current) {
-            ref.current.style.setProperty('zoom', zoom)
-          }
-        })
+      if (childRef.current) {
+        childRef.current.style.setProperty('zoom', zoom)
       }
     }
     if (window) {
@@ -36,5 +27,28 @@ export const useFixViewport = refs => {
         fixViewport()
       })
     }
-  }, [refs])
+  }, [childRef, parentRef])
 }
+
+const useAspectRatio = (width = 1024, height = 576) => {
+  const ref = useRef(null)
+  const aspectRatio = width / height
+
+  useEffect(() => {
+    function updateSize() {
+      if (ref.current) {
+        ref.current.style.height = `${ref.current.clientWidth / aspectRatio}px`
+      }
+    }
+
+    updateSize()
+
+    window.addEventListener('resize', updateSize)
+
+    return () => window.removeEventListener('resize', updateSize)
+  }, [aspectRatio, ref])
+
+  return ref
+}
+
+export { useAspectRatio, useFixViewport }

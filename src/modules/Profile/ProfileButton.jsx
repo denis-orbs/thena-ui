@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import ShareProfileStatsModal from '@/app/arena/profile/ShareProfileStatsModal'
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Spinner from '@/components/spinner'
 import { useUserInfo } from '@/context/userInfoContext'
@@ -12,7 +12,7 @@ import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
 import { successToast } from '@/lib/notify'
-import { CheckIcon, PublicIcon } from '@/svgs'
+import { CheckIcon, PublicIcon, ShareProfileIcon } from '@/svgs'
 
 const V4_USER_INFO = gql`
   query V4_USER_USERNAME($id: String!) {
@@ -93,13 +93,6 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
 
   return (
     <div className='flex items-center justify-end space-x-2'>
-      <PrimaryButton
-        onClick={() => {
-          setOpenShareProfileStatsModal(true)
-        }}
-      >
-        Share
-      </PrimaryButton>
       {isOwnProfile && !!currentUserInfo?.usernameNfts?.length && (
         <Link href='/arena/profile/edit'>
           <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
@@ -116,6 +109,12 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
           {!loading ? t(isFollowed ? 'UnFollow' : 'Follow') : <Spinner />}
         </EmphasisButton>
       )}
+      <EmphasisIconButton
+        Icon={ShareProfileIcon}
+        onClick={() => {
+          setOpenShareProfileStatsModal(true)
+        }}
+      />
       <EmphasisIconButton Icon={shareIconButton} onClick={onShare} />
       {openShareProfileStatsModal && (
         <ShareProfileStatsModal

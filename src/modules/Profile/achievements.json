@@ -1,0 +1,668 @@
+[
+  {
+    "name": "Rookie Trader",
+    "description": "Complete your first trade on Thena.",
+    "type": "Starting",
+    "groupIndex": 1,
+    "typeIndex": 1,
+    "quantityTarget": 1,
+    "icon": "/images/achievement/rookie-trader.png"
+  },
+  {
+    "name": "Twitter Connect",
+    "description": "Connect your X to your THENA account.",
+    "type": "Starting",
+    "groupIndex": 1,
+    "typeIndex": 2,
+    "quantityTarget": 1,
+    "icon": "/images/achievement/twitter-connect.png"
+  },
+  {
+    "name": "THENA Identity",
+    "description": "Acquire a .thena username.",
+    "type": "Starting",
+    "groupIndex": 1,
+    "typeIndex": 3,
+    "quantityTarget": 1,
+    "icon": "/images/achievement/thena-identity.png"
+  },
+  {
+    "name": "Thenian Fellow",
+    "description": "Follow 3 Thenians.",
+    "type": "Starting",
+    "groupIndex": 1,
+    "typeIndex": 4,
+    "quantityTarget": 3,
+    "icon": "/images/achievement/thenian-fellow.png"
+  },
+  {
+    "name": "Thousand Dollar Club",
+    "description": "Reach a trading volume of $1,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 1,
+    "quantityTarget": 1000,
+    "icon": "/images/achievement/thousand-dollar-club.png"
+  },
+  {
+    "name": "Rising Star",
+    "description": "Reach a trading volume of $25,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 2,
+    "quantityTarget": 25000,
+    "icon": "/images/achievement/rising-star.png"
+  },
+  {
+    "name": "Market Mover",
+    "description": "Reach a trading volume of $50,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 3,
+    "quantityTarget": 50000,
+    "icon": "/images/achievement/market-mover.png"
+  },
+  {
+    "name": "Six-Figure Trader",
+    "description": "Reach a trading volume of $100,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 4,
+    "quantityTarget": 100000,
+    "icon": "/images/achievement/six-figure-trader.png"
+  },
+  {
+    "name": "Half-Million Hero",
+    "description": "Reach a trading volume of $500,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 5,
+    "quantityTarget": 500000,
+    "icon": "/images/achievement/half-million-hero.png"
+  },
+  {
+    "name": "Millionaire Milestone",
+    "description": "Reach a trading volume of $1,000,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 6,
+    "quantityTarget": 1000000,
+    "icon": "/images/achievement/millionaire-milestone.png"
+  },
+  {
+    "name": "Five Million Force",
+    "description": "Reach a trading volume of $5,000,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 7,
+    "quantityTarget": 5000000,
+    "icon": "/images/achievement/five-million-force.png"
+  },
+  {
+    "name": "Deca-Million Dynamo",
+    "description": "Reach a trading volume of $10,000,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 8,
+    "quantityTarget": 10000000,
+    "icon": "/images/achievement/deca-million-dynamo.png"
+  },
+  {
+    "name": "Fifty Million Phenom",
+    "description": "Reach a trading volume of $50,000,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 9,
+    "quantityTarget": 50000000,
+    "icon": "/images/achievement/fifty-million-phenom.png"
+  },
+  {
+    "name": "Nine-Figure Trader",
+    "description": "Reach a trading volume of $100,000,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 10,
+    "quantityTarget": 100000000,
+    "icon": "/images/achievement/nine-figure-trader.png"
+  },
+  {
+    "name": "Billionaire's Club",
+    "description": "Reach a trading volume of $1,000,000,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 11,
+    "quantityTarget": 1000000000,
+    "icon": "/images/achievement/billionaire-club.png"
+  },
+  {
+    "name": "Elite Five",
+    "description": "Reach a trading volume of $5,000,000,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 12,
+    "quantityTarget": 5000000000,
+    "icon": "/images/achievement/elite-five.png"
+  },
+  {
+    "name": "Ten Billion Titans",
+    "description": "Reach a trading volume of $10,000,000,000 USD.",
+    "type": "Volume",
+    "groupIndex": 2,
+    "typeIndex": 13,
+    "quantityTarget": 10000000000,
+    "icon": "/images/achievement/ten-billion-titans.png"
+  },
+  {
+    "name": "Slippery Slope",
+    "description": "Occur over 10% slippage on a single trade.",
+    "type": "Trading",
+    "groupIndex": 3,
+    "typeIndex": 1,
+    "quantityTarget": 10,
+    "icon": "/images/achievement/slippery-slope.png"
+  },
+  {
+    "name": "Market Explorer",
+    "description": "Trade 10 different tokens.",
+    "type": "Trading",
+    "groupIndex": 3,
+    "typeIndex": 2,
+    "quantityTarget": 10,
+    "icon": "/images/achievement/market-explorer.png"
+  },
+  {
+    "name": "Asset Collector",
+    "description": "Trade 50 different tokens.",
+    "type": "Trading",
+    "groupIndex": 3,
+    "typeIndex": 3,
+    "quantityTarget": 50,
+    "icon": "/images/achievement/asset-collector.png"
+  },
+  {
+    "name": "Token Hunter",
+    "description": "Trade 100 different tokens.",
+    "type": "Trading",
+    "groupIndex": 3,
+    "typeIndex": 4,
+    "quantityTarget": 100,
+    "icon": "/images/achievement/token-hunter.png"
+  },
+  {
+    "name": "Competitive Spirit",
+    "description": "Participate in a trading competition.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 1,
+    "quantityTarget": 1,
+    "icon": "/images/achievement/competitive-spirit.png"
+  },
+  {
+    "name": "Battle-Hardened",
+    "description": "Participate in 10 trading competitions.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 2,
+    "quantityTarget": 10,
+    "icon": "/images/achievement/battle-hardened.png"
+  },
+  {
+    "name": "Arena Veteran",
+    "description": "Participate in 100 trading competitions.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 3,
+    "quantityTarget": 100,
+    "icon": "/images/achievement/arena-veteran.png"
+  },
+  {
+    "name": "Triple Threat",
+    "description": "Place in the top 3 in a trading competition.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 4,
+    "quantityTarget": 1,
+    "icon": "/images/achievement/triple-threat.png"
+  },
+  {
+    "name": "Hat Trick Hero",
+    "description": "Place in the top 3 in a trading competition 3 times.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 5,
+    "quantityTarget": 3,
+    "icon": "/images/achievement/hat-trick-hero.png"
+  },
+  {
+    "name": "Top-Three Titan",
+    "description": "Place in the top 3 in a trading competition 10 times.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 6,
+    "quantityTarget": 10,
+    "icon": "/images/achievement/top-three-titan.png"
+  },
+  {
+    "name": "Triple Crown",
+    "description": "Win a trading competition 3 times.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 7,
+    "quantityTarget": 3,
+    "icon": "/images/achievement/triple-crown.png"
+  },
+  {
+    "name": "Five-Star Champion",
+    "description": "Win a trading competition 5 times.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 8,
+    "quantityTarget": 5,
+    "icon": "/images/achievement/five-star-champion.png"
+  },
+  {
+    "name": "Deca-Winner",
+    "description": "Win a trading competition 10 times.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 9,
+    "quantityTarget": 10,
+    "icon": "/images/achievement/deca-winner.png"
+  },
+  {
+    "name": "Century of Champions",
+    "description": "Win a trading competition 100 times.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 10,
+    "quantityTarget": 100,
+    "icon": "/images/achievement/century-of-champions.png"
+  },
+  {
+    "name": "Triple-Strike Triumph",
+    "description": "Win a trading competition 3 times in a row.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 11,
+    "quantityTarget": 3,
+    "icon": "/images/achievement/triple-strike-triumph.png"
+  },
+  {
+    "name": "Ten-Times Conqueror",
+    "description": "Win a trading competition 10 times in a row.",
+    "type": "Trading Competition",
+    "groupIndex": 4,
+    "typeIndex": 12,
+    "quantityTarget": 10,
+    "icon": "/images/achievement/ten-times-conqueror.png"
+  },
+  {
+    "name": "Weekly Warrior",
+    "description": "Trade on THENA every day for a week.",
+    "type": "Trading Consistency",
+    "groupIndex": 5,
+    "typeIndex": 1,
+    "quantityTarget": 1,
+    "icon": "/images/achievement/weekly-warrior.png"
+  },
+  {
+    "name": "Monthly Master",
+    "description": "Trade on THENA every day for a month.",
+    "type": "Trading Consistency",
+    "groupIndex": 5,
+    "typeIndex": 2,
+    "quantityTarget": 1,
+    "icon": "/images/achievement/monthly-master.png"
+  },
+  {
+    "name": "Yearly Victor",
+    "description": "Trade on THENA every day for a year.",
+    "type": "Trading Consistency",
+    "groupIndex": 5,
+    "typeIndex": 3,
+    "quantityTarget": 1,
+    "icon": "/images/achievement/yearly-victor.png"
+  },
+  {
+    "name": "Double-Year Devotee",
+    "description": "Trade on THENA every day for 2 years.",
+    "type": "Trading Consistency",
+    "groupIndex": 5,
+    "typeIndex": 4,
+    "quantityTarget": 2,
+    "icon": "/images/achievement/double-year-devotee.png"
+  },
+  {
+    "name": "Three-Year Veteran",
+    "description": "Trade on THENA every day for 3 years.",
+    "type": "Trading Consistency",
+    "groupIndex": 5,
+    "typeIndex": 5,
+    "quantityTarget": 3,
+    "icon": "/images/achievement/three-year-veteran.png"
+  },
+  {
+    "name": "Four-Year Fanatic",
+    "description": "Trade on THENA every day for 4 years.",
+    "type": "Trading Consistency",
+    "groupIndex": 5,
+    "typeIndex": 6,
+    "quantityTarget": 4,
+    "icon": "/images/achievement/four-year-fanatic.png"
+  },
+  {
+    "name": "Five-Year Legend",
+    "description": "Trade on THENA every day for 5 years.",
+    "type": "Trading Consistency",
+    "groupIndex": 5,
+    "typeIndex": 7,
+    "quantityTarget": 5,
+    "icon": "/images/achievement/five-year-legend.png"
+  },
+  {
+    "name": "Social Butterfly",
+    "description": "Refer 5 friends to the Thena platform.",
+    "type": "Referral",
+    "groupIndex": 6,
+    "typeIndex": 1,
+    "quantityTarget": 5,
+    "icon": "/images/achievement/social-butterfly.png"
+  },
+  {
+    "name": "Ambassador",
+    "description": "Refer 5 friends to the Thena platform.",
+    "type": "Referral",
+    "groupIndex": 6,
+    "typeIndex": 2,
+    "quantityTarget": 25,
+    "icon": "/images/achievement/ambassador.png"
+  },
+  {
+    "name": "Master Recruiter",
+    "description": "Refer 100 friends to the Thena platform.",
+    "type": "Referral",
+    "groupIndex": 6,
+    "typeIndex": 3,
+    "quantityTarget": 100,
+    "icon": "/images/achievement/master-recruiter.png"
+  },
+  {
+    "name": "Thena Tycoon",
+    "description": "Refer 1000 friends to the Thena platform.",
+    "type": "Referral",
+    "groupIndex": 6,
+    "typeIndex": 4,
+    "quantityTarget": 1000,
+    "icon": "/images/achievement/thena-tycoon.png"
+  },
+  {
+    "name": "veTHE Voter",
+    "description": "Vote on 3 different pools with your veTHE.",
+    "type": "Voting",
+    "groupIndex": 7,
+    "typeIndex": 1,
+    "quantityTarget": 3,
+    "icon": "/images/achievement/vethe-voter.png"
+  },
+  {
+    "name": "Democracy Enthusiast",
+    "description": "Vote on 10 different pools with your veTHE.",
+    "type": "Voting",
+    "groupIndex": 7,
+    "typeIndex": 2,
+    "quantityTarget": 10,
+    "icon": "/images/achievement/democracy-enthusiast.png"
+  },
+  {
+    "name": "Governance Guru",
+    "description": "Vote on 100 different pools with your veTHE.",
+    "type": "Voting",
+    "groupIndex": 7,
+    "typeIndex": 3,
+    "quantityTarget": 100,
+    "icon": "/images/achievement/governance-guru.png"
+  },
+  {
+    "name": "Supreme Legislator",
+    "description": "Vote on 1000 different pools with your veTHE.",
+    "type": "Voting",
+    "groupIndex": 7,
+    "typeIndex": 4,
+    "quantityTarget": 1000,
+    "icon": "/images/achievement/supreme-legislator.png"
+  },
+  {
+    "name": "Reward Hunter",
+    "description": "Claim a total of $100 USD voting rewards.",
+    "type": "Rewards Achievements",
+    "groupIndex": 8,
+    "typeIndex": 1,
+    "quantityTarget": 100,
+    "icon": "/images/achievement/reward-hunter.png"
+  },
+  {
+    "name": "Reward Collector",
+    "description": "Claim a total of $500 USD voting rewards.",
+    "type": "Rewards Achievements",
+    "groupIndex": 8,
+    "typeIndex": 2,
+    "quantityTarget": 500,
+    "icon": "/images/achievement/reward-collector.png"
+  },
+  {
+    "name": "Voting Victor",
+    "description": "Claim a total of $1,000 USD voting rewards.",
+    "type": "Rewards Achievements",
+    "groupIndex": 8,
+    "typeIndex": 3,
+    "quantityTarget": 1000,
+    "icon": "/images/achievement/voting-victor.png"
+  },
+  {
+    "name": "Voting Veteran",
+    "description": "Claim a total of $5,000 USD voting rewards.",
+    "type": "Rewards Achievements",
+    "groupIndex": 8,
+    "typeIndex": 4,
+    "quantityTarget": 5000,
+    "icon": "/images/achievement/voting-veteran.png"
+  },
+  {
+    "name": "Voting Virtuoso",
+    "description": "Claim a total of $10,000 USD voting rewards.",
+    "type": "Rewards Achievements",
+    "groupIndex": 8,
+    "typeIndex": 5,
+    "quantityTarget": 10000,
+    "icon": "/images/achievement/voting-virtuoso.png"
+  },
+  {
+    "name": "Rewards Royalty",
+    "description": "Claim a total of $100,000 USD voting rewards.",
+    "type": "Rewards Achievements",
+    "groupIndex": 8,
+    "typeIndex": 6,
+    "quantityTarget": 100000,
+    "icon": "/images/achievement/rewards-royalty.png"
+  },
+  {
+    "name": "Voting Millionaire",
+    "description": "Claim a total of $1,000,000 USD voting rewards.",
+    "type": "Rewards Achievements",
+    "groupIndex": 8,
+    "typeIndex": 7,
+    "quantityTarget": 1000000,
+    "icon": "/images/achievement/voting-millionaire.png"
+  },
+  {
+    "name": "Bribe Buddy",
+    "description": "Add a bribe to 3 different gauges.",
+    "type": "Bribe",
+    "groupIndex": 9,
+    "typeIndex": 1,
+    "quantityTarget": 3,
+    "icon": "/images/achievement/bribe-buddy.png"
+  },
+  {
+    "name": "Bribe Boss",
+    "description": "Add a bribe to 10 different gauges.",
+    "type": "Bribe",
+    "groupIndex": 9,
+    "typeIndex": 2,
+    "quantityTarget": 10,
+    "icon": "/images/achievement/bribe-boss.png"
+  },
+  {
+    "name": "Bribe Baron",
+    "description": "Add a bribe to 100 different gauges.",
+    "type": "Bribe",
+    "groupIndex": 9,
+    "typeIndex": 3,
+    "quantityTarget": 100,
+    "icon": "/images/achievement/bribe-baron.png"
+  },
+  {
+    "name": "Bribery Beginner",
+    "description": "Add total bribes worth $1,000 USD.",
+    "type": "Bribe",
+    "groupIndex": 9,
+    "typeIndex": 4,
+    "quantityTarget": 1000,
+    "icon": "/images/achievement/bribery-beginner.png"
+  },
+  {
+    "name": "Bribery Bonanza",
+    "description": "Add total bribes worth $10,000 USD.",
+    "type": "Bribe",
+    "groupIndex": 9,
+    "typeIndex": 5,
+    "quantityTarget": 10000,
+    "icon": "/images/achievement/bribery-bonanza.png"
+  },
+  {
+    "name": "Bribery Bigwig",
+    "description": "Add total bribes worth $100,000 USD.",
+    "type": "Bribe",
+    "groupIndex": 9,
+    "typeIndex": 6,
+    "quantityTarget": 100000,
+    "icon": "/images/achievement/bribery-bigwig.png"
+  },
+  {
+    "name": "Master Manipulator",
+    "description": "Add total bribes worth $1,000,000 USD.",
+    "type": "Bribe",
+    "groupIndex": 9,
+    "typeIndex": 7,
+    "quantityTarget": 1000000,
+    "icon": "/images/achievement/master-manipulator.png"
+  },
+  {
+    "name": "Bribery Godfather",
+    "description": "Add total bribes worth $10,000,000 USD.",
+    "type": "Bribe",
+    "groupIndex": 9,
+    "typeIndex": 8,
+    "quantityTarget": 1000000,
+    "icon": "/images/achievement/bribery-godfather.png"
+  },
+  {
+    "name": "theNFT Novice",
+    "description": "Own & stake at least 1 theNFTs.",
+    "type": "theNFT",
+    "groupIndex": 10,
+    "typeIndex": 1,
+    "quantityTarget": 1,
+    "icon": "/images/achievement/thenft-novice.png"
+  },
+  {
+    "name": "theNFT Collector",
+    "description": "Own & stake at least 5 theNFTs.",
+    "type": "theNFT",
+    "groupIndex": 10,
+    "typeIndex": 2,
+    "quantityTarget": 5,
+    "icon": "/images/achievement/thenft-collector.png"
+  },
+  {
+    "name": "theNFT Connoisseur",
+    "description": "Own & stake at least 10 theNFTs.",
+    "type": "theNFT",
+    "groupIndex": 10,
+    "typeIndex": 3,
+    "quantityTarget": 10,
+    "icon": "/images/achievement/thenft-connoisseur.png"
+  },
+  {
+    "name": "theNFT King",
+    "description": "Own & stake at least 100 theNFTs.",
+    "type": "theNFT",
+    "groupIndex": 10,
+    "typeIndex": 4,
+    "quantityTarget": 100,
+    "icon": "/images/achievement/thenft-king.png"
+  },
+  {
+    "name": "Liquidity Launchpad",
+    "description": "Add a total of $1,000 USD in liquidity.",
+    "type": "Liquidity",
+    "groupIndex": 11,
+    "typeIndex": 1,
+    "quantityTarget": 1000,
+    "icon": "/images/achievement/liquidity-launchpad.png"
+  },
+  {
+    "name": "Liquidity Leader",
+    "description": "Add a total of $10,000 USD in liquidity.",
+    "type": "Liquidity",
+    "groupIndex": 11,
+    "typeIndex": 2,
+    "quantityTarget": 10000,
+    "icon": "/images/achievement/liquidity-leader.png"
+  },
+  {
+    "name": "Six-Figure Support",
+    "description": "Add a total of $100,000 USD in liquidity.",
+    "type": "Liquidity",
+    "groupIndex": 11,
+    "typeIndex": 3,
+    "quantityTarget": 100000,
+    "icon": "/images/achievement/six-figure-support.png"
+  },
+  {
+    "name": "Million-Dollar Provider",
+    "description": "Add a total of $1,000,000 USD in liquidity.",
+    "type": "Liquidity",
+    "groupIndex": 11,
+    "typeIndex": 4,
+    "quantityTarget": 1000000,
+    "icon": "/images/achievement/million-dollar-provider.png"
+  },
+  {
+    "name": "Five Million Fountain",
+    "description": "Add a total of $5,000,000 USD in liquidity.",
+    "type": "Liquidity",
+    "groupIndex": 11,
+    "typeIndex": 5,
+    "quantityTarget": 5000000,
+    "icon": "/images/achievement/five-million-fountain.png"
+  },
+  {
+    "name": "Ten Million Transformer",
+    "description": "Add a total of $10,000,000 USD in liquidity.",
+    "type": "Liquidity",
+    "groupIndex": 11,
+    "typeIndex": 6,
+    "quantityTarget": 10000000,
+    "icon": "/images/achievement/ten-million-transformer.png"
+  },
+  {
+    "name": "Liquidity Luminary",
+    "description": "Add a total of $100,000,000 USD in liquidity.",
+    "type": "Liquidity",
+    "groupIndex": 11,
+    "typeIndex": 7,
+    "quantityTarget": 100000000,
+    "icon": "/images/achievement/liquidity-luminary.png"
+  }
+]

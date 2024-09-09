@@ -1,10 +1,11 @@
+import { groupBy } from 'lodash'
 import React, { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import Modal, { ModalBody } from '@/components/modal'
 import { isSmallScreen } from '@/lib/utils'
-import { fetchAchievements, fetchAchievementsCompleted } from '@/modules/Profile'
+import { fetchAchievementsCompleted, fetchTradingCompetitionWon } from '@/modules/Profile'
 import ShareProfileStats from '@/modules/Profile/ShareProfileStats'
 import ShareProfileStatsDetail from '@/modules/Profile/ShareProfileStatsDetail'
 
@@ -19,13 +20,15 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
   const [selected, setSelected] = useState(defaultOption)
   const [showAchievement, setShowAchievement] = useState(false)
   const [selectedAchievements, setSelectedAchievement] = useState([])
-  const { data: userAchievements, isLoadingAchievements } = useSWR(['userAchievements', userInfo.id], () =>
-    fetchAchievements(userInfo.id.toLowerCase()),
+
+  const { data, isLoadingAchievementsCompleted } = useSWR(['userAchievement', userInfo.id], () =>
+    fetchAchievementsCompleted(userInfo.id.toLowerCase()),
   )
 
-  const { data: userAchievementsCompleted, isLoadingAchievementsCompleted } = useSWR(
-    ['userAchievementsCompleted', userInfo.id],
-    () => fetchAchievementsCompleted(userInfo.id.toLowerCase()),
+  const userAchievementsCompleted = groupBy(data, 'achievement.type')
+
+  const { data: competition, isLoadingCompetition } = useSWR(['competitionwon', userInfo.id], () =>
+    fetchTradingCompetitionWon(userInfo.id.toLowerCase()),
   )
 
   const handleChecked = name => value => {
@@ -34,6 +37,9 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
 
   const optionData = useMemo(
     () => items => {
+      if (!items) {
+        return []
+      }
       const result = items.map(item => ({
         value: item?.achievement?.id,
         label: item?.achievement?.name,
@@ -46,34 +52,36 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
   )
 
   const achievementsData = useMemo(() => {
-    if (!userAchievements) {
+    if (!userAchievementsCompleted) {
       return []
     }
 
-    const labels = Object.keys(userAchievements)
+    const labels = Object.keys(userAchievementsCompleted)
 
-    const result = Object.values(userAchievements).map((item, idx) => ({
+    const result = Object.values(userAchievementsCompleted).map((item, idx) => ({
       label: labels[idx],
       options: optionData(item),
     }))
     return result
-  }, [optionData, userAchievements])
+  }, [optionData, userAchievementsCompleted])
 
-  if (isLoadingAchievements || isLoadingAchievementsCompleted) return <Loading />
+  if (isLoadingAchievementsCompleted || isLoadingCompetition) return <Loading />
+  console.log(competition)
 
   return (
     <Modal
       isOpen={isOpen}
       closeModal={onClose}
-      fontSizeTitle='text-xl'
-      width={isSmallScreen() ? '95%' : '90%'}
+      fontSizeTitle='text-lg'
+      width={isSmallScreen() ? '1440px' : '90%'}
       backgroundColor='transparent'
       showIconX={false}
+      maxWidth={1440}
     >
-      <ModalBody className='p-2'>
+      <ModalBody className=''>
         <div className='flex w-full flex-col justify-between gap-5 lg:flex-row'>
           <ShareProfileStats
-            className='order-2 w-full bg-neutral-900 lg:order-1 lg:w-[25%]'
+            className='order-2 max-h-[576px] bg-neutral-900 lg:order-1 lg:w-[396px]'
             userInfo={userInfo}
             selectedDefault={selected}
             setSelectedDefault={handleChecked}
@@ -85,13 +93,13 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
             onClose={onClose}
           />
           <ShareProfileStatsDetail
-            className="relative order-1 block h-[576px] w-[1024px] bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover !px-10 !py-6 lg:order-2"
+            className='order-1 lg:order-2'
             userInfo={userInfo}
             selectedDefault={selected}
             showAchievement={showAchievement}
             selectedAchievements={selectedAchievements}
-            userAchievements={userAchievements}
-            userAchievementsCompleted={userAchievementsCompleted}
+            competition={competition?.win}
+            totalCompleted={data?.length}
           />
         </div>
       </ModalBody>
