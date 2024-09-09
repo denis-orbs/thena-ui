@@ -121,11 +121,11 @@ export function LeaderBoard({ competition, competitionAccount = undefined }) {
                 {leader.winAmount.map((item, index) => (
                   <Paragraph key={index}>
                     {`${formatAmount(
-                      fromWei(item, competition.prizeUpdate?.token[index]?.decimals),
+                      fromWei(item, competition?.prizeUpdate?.token[index]?.decimals),
                       false,
                       5,
                       false,
-                    )} ${competition.prizeUpdate.token?.[index]?.symbol || ''}`}
+                    )} ${competition.prizeUpdate?.token?.[index]?.symbol || ''}`}
                   </Paragraph>
                 ))}
               </div>
@@ -135,7 +135,7 @@ export function LeaderBoard({ competition, competitionAccount = undefined }) {
       })
       return result
     },
-    [competition?.competitionRules?.winningToken?.symbol, competition.prizeUpdate.token],
+    [competition?.competitionRules?.winningToken?.symbol, competition?.prizeUpdate?.token],
   )
 
   const rowDefault = useMemo(() => {
