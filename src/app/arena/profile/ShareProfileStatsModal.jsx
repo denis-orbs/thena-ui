@@ -69,8 +69,6 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
 
   if (isLoadingAchievementsCompleted || isLoadingCompetition) return <Loading />
 
-  console.log('windowSize', windowSize)
-
   return (
     <Modal
       isOpen={isOpen}

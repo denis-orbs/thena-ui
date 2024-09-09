@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import { css } from '@emotion/react'
 import React, { useEffect, useState } from 'react'
 import Select, { components } from 'react-select'
@@ -28,22 +29,28 @@ const customStyles = css`
   }
 `
 
-const customOption = props => (
-  <components.Option {...props} innerProps={{ ...props.innerProps, className: 'custom-option bg-neutral-800' }}>
-    <div className='flex cursor-pointer items-center space-x-2 bg-neutral-800 p-2'>
-      <CheckBox checked={props.isSelected} />
-      <span className='ml-2 text-neutral-300'>{props.data.label}</span>
-    </div>
-  </components.Option>
-)
+function CustomOption(props) {
+  return (
+    <components.Option {...props} innerProps={{ ...props.innerProps, className: 'custom-option bg-neutral-800' }}>
+      <div className='flex cursor-pointer items-center space-x-2 bg-neutral-800 p-2'>
+        <CheckBox checked={props.isSelected} />
+        <span className='ml-2 text-neutral-300'>{props.data.label}</span>
+      </div>
+    </components.Option>
+  )
+}
 
-const customValueContainer = props => (
-  <components.ValueContainer className='!block !truncate' {...props}>
-    {props.children}
-  </components.ValueContainer>
-)
+function CustomValueContainer(props) {
+  const { children, hasValue, ...otherProps } = props
 
-function ValueContainer(props) {
+  return (
+    <components.ValueContainer className={`${hasValue ? '!block' : ''} !truncate`} {...otherProps}>
+      {children}
+    </components.ValueContainer>
+  )
+}
+
+function CustomMultiValue(props) {
   const { children, index } = props
   if (index && index > 0) {
     return `, ${children}`
@@ -74,10 +81,10 @@ function SelectAchievement({ data, defaultValue, className, valueSelected = [], 
       defaultValue={defaultValue}
       onChange={handleSelected}
       components={{
-        Option: customOption,
-        MultiValue: ValueContainer,
+        Option: CustomOption,
+        MultiValue: CustomMultiValue,
         IndicatorSeparator: () => null,
-        ValueContainer: customValueContainer,
+        ValueContainer: CustomValueContainer,
       }}
       options={data}
       styles={{
