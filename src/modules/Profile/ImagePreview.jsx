@@ -19,10 +19,10 @@ function BoxShow({ value, title, className }) {
   )
 }
 
-function AchievementItem({ title, subTitle, className }) {
+function AchievementItem({ achievementId, title, subTitle, className }) {
   let localIcon = ''
   achievements.map(item => {
-    if (item.name === title) {
+    if (item.id === achievementId) {
       localIcon = item.icon
     }
     return null
@@ -68,7 +68,13 @@ function ImagePreview({
           <div className='flex justify-center gap-4'>
             {selectedAchievements &&
               selectedAchievements.map(item => (
-                <AchievementItem title={item.label} subTitle={item.description} icon={item.icon} />
+                <AchievementItem
+                  key={item.id}
+                  achievementId={item.id}
+                  title={item.label}
+                  subTitle={item.description}
+                  icon={item.icon}
+                />
               ))}
           </div>
         )}

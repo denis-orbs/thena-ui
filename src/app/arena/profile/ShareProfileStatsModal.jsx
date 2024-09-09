@@ -66,7 +66,6 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
   }, [optionData, userAchievementsCompleted])
 
   if (isLoadingAchievementsCompleted || isLoadingCompetition) return <Loading />
-  console.log(competition)
 
   return (
     <Modal
