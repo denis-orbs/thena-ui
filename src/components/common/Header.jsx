@@ -374,19 +374,19 @@ function Header() {
         isHighlight: true,
       },
       {
-        label: 'T2E',
-        active: pathname.includes('/trade-to-earn'),
-        onClickHandler: () => {
-          push('/trade-to-earn')
-        },
-      },
-      {
         label: 'THE Story',
         active: pathname.includes('/story'),
         onClickHandler: () => {
           push('/story')
         },
         isHighlight: true,
+      },
+      {
+        label: 'T2E',
+        active: pathname.includes('/trade-to-earn'),
+        onClickHandler: () => {
+          push('/trade-to-earn')
+        },
       },
       {
         label: 'More',

@@ -1,3 +1,4 @@
+import LogoIcon from '~/logo.svg'
 import AlertCirlceSmallIcon from '~/svgs/alert-circle-small.svg'
 import AlertTriangleIcon from '~/svgs/alert-triangle.svg'
 import AnalyticsIcon from '~/svgs/analytics.svg'
@@ -36,6 +37,7 @@ import CrownIcon from '~/svgs/crown.svg'
 import DiamondIcon from '~/svgs/diamond.svg'
 import DiscordIcon from '~/svgs/discord.svg'
 import DownRank from '~/svgs/down-rank.svg'
+import DownloadIcon from '~/svgs/download.svg'
 import EditIcon from '~/svgs/edit.svg'
 import EigenBadgeIcon from '~/svgs/eigen_badge.svg'
 import EmailIcon from '~/svgs/email.svg'
@@ -60,6 +62,7 @@ import LangIcon from '~/svgs/lang.svg'
 import LockIcon from '~/svgs/lock.svg'
 import Lock2Icon from '~/svgs/lock-2.svg'
 import LogoTextIcon from '~/svgs/logo.svg'
+import LogoFooterIcon from '~/svgs/logo-footer-thena.svg'
 import LogoWithTextIcon from '~/svgs/logo-with-text.svg'
 import MediumIcon from '~/svgs/medium.svg'
 import MergeIcon from '~/svgs/merge.svg'
@@ -80,6 +83,7 @@ import SendIcon from '~/svgs/send.svg'
 import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
 import ShareIcon from '~/svgs/share.svg'
+import ShareProfileIcon from '~/svgs/share-icon.svg'
 import SoundOffIcon from '~/svgs/sound-off.svg'
 import SoundOnIcon from '~/svgs/sound-on.svg'
 import SplitIcon from '~/svgs/split.svg'
@@ -145,6 +149,7 @@ export {
   CrownIcon,
   DiamondIcon,
   DiscordIcon,
+  DownloadIcon,
   DownRank,
   EditIcon,
   EigenBadgeIcon,
@@ -169,6 +174,8 @@ export {
   LangIcon,
   Lock2Icon,
   LockIcon,
+  LogoFooterIcon,
+  LogoIcon,
   LogoTextIcon,
   LogoWithTextIcon,
   MediumIcon,
@@ -191,6 +198,7 @@ export {
   SettingsIcon,
   ShadowIcon,
   ShareIcon,
+  ShareProfileIcon,
   SoundOffIcon,
   SoundOnIcon,
   SplitIcon,

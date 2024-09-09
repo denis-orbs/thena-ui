@@ -50,7 +50,6 @@ function SearchThenaIdItem({ thenaId, setIsPopoverOpen }) {
           {thenaId.owner && (
             <UserProfileCard
               user={thenaId.owner}
-              disableLink
               enableFollow={false}
               userClassName='text-xs'
               disablePopover
