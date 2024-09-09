@@ -75,9 +75,13 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
   return !timeDistance || !entryFee || !eventType ? (
     <Skeleton className='h-[320px] w-full' />
   ) : (
-    <Box className='flex w-full flex-col gap-4 p-6'>
+    <Box className='flex w-full flex-col gap-3 p-4 lg:p-3 xl:gap-4 xl:p-6'>
       <div className='relative'>
-        <CompetitionCardHeader className='h-[200px] w-full' competition={competition} banner={competition.bannerUrl} />
+        <CompetitionCardHeader
+          className='aspect-video w-full'
+          competition={competition}
+          banner={competition.bannerUrl}
+        />
         <div className='absolute left-4 top-4 flex gap-2'>
           <NeutralBadge className='text-nowrap capitalize lg:text-xs'>{competition.market.toLowerCase()}</NeutralBadge>
           <NeutralBadge className={`text-nowrap lg:text-xs ${bgStatus}`}>{t(eventType)}</NeutralBadge>

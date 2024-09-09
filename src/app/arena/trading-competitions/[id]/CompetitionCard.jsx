@@ -144,7 +144,7 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
         <Box className='flex h-full w-full flex-col gap-4 p-6'>
           <div className='relative'>
             <CompetitionCardHeader
-              className='h-72 max-w-full rounded-xl'
+              className='aspect-video max-w-full rounded-xl'
               competition={competition}
               banner={competition.bannerUrl}
             />

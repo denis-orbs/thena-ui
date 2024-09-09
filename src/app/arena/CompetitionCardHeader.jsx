@@ -37,7 +37,7 @@ export function CompetitionCardHeader({ competition, className, banner }) {
   return (
     <div
       className={cn(
-        'relative rounded-xl p-4',
+        'relative rounded-xl p-3 xl:p-4',
         banner ? '' : competition.owner.isVerified ? 'bg-gradient-to-r from-blue-400 to-blue-500' : 'bg-[#100913]',
         className,
       )}
