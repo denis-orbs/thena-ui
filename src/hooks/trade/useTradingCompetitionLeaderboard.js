@@ -5,12 +5,12 @@ import { v4Client } from '@/lib/graphql'
 
 import { useCompetitionFormat } from '../useCompetitionFormat'
 
-const V4_COMPETITION_DATA = gql`
-  query V4_COMPETITION($id: String!) {
+const V4_COMPETITION_DATA_LEADERBOARD = gql`
+  query V4_COMPETITION_DATA_LEADERBOARD($id: String!) {
     tradingCompetitionById(id: $id) {
       id
       market
-      participants {
+      participants(orderBy: rank_ASC) {
         pnl
         percentagePnl
         participant {
@@ -45,7 +45,7 @@ const V4_COMPETITION_DATA = gql`
 
 const fetchCompetitionLeaderboard = async id => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
+    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA_LEADERBOARD, { id })
 
     return competition
   } catch (error) {

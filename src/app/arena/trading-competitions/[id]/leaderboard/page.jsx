@@ -22,7 +22,6 @@ function LeaderBoardPage() {
   if (isLoading1 || isLoading2) {
     return <Loading />
   }
-  console.log('competitionAccount', competitionAccount)
 
   return (
     <>

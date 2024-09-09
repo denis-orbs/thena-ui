@@ -77,7 +77,6 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
       width={windowSize.width >= 1536 ? '1440px' : windowSize.width}
       backgroundColor='transparent'
       showIconX={false}
-      maxWidth={1440}
     >
       <ModalBody className=''>
         <div className='flex w-full flex-col gap-2 lg:flex-row 2xl:gap-5'>
