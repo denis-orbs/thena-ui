@@ -6,8 +6,10 @@ import { useRef, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
+import { LOCALES } from '@/constant'
 import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/hooks/useWallet'
+import { useLocaleSettings } from '@/state/settings/hooks'
 import { ChevronRightIcon, LogoTextIcon, LogoWithTextIcon } from '@/svgs'
 
 import { useFetchChaptersAndTasks } from '.'
@@ -18,6 +20,7 @@ import { Countdown } from '../Countdown'
 
 function StoryHome({ isUpcoming, isRegistered }) {
   const t = useTranslations()
+  const { locale } = useLocaleSettings()
 
   const videoRef = useRef(null)
   const registerFormRef = useRef(null)
@@ -93,9 +96,13 @@ function StoryHome({ isUpcoming, isRegistered }) {
             </p>
             <p className='mx-auto max-w-[743px] text-center text-[20px] leading-none text-[#D1D0D2]'>
               {t('Embark on The Story of THENA')}
-              <span className='inline-block align-middle'>
-                <LogoTextIcon className='w-90 ml-1 mr-0 h-[18px] lg:h-[20px] lg:w-[100px]' />
-              </span>
+              {locale === LOCALES.en ? (
+                <span className='inline-block align-middle'>
+                  <LogoTextIcon className='w-90 ml-1 mr-0 h-[18px] lg:h-[20px] lg:w-[100px]' />
+                </span>
+              ) : (
+                <></>
+              )}
               <span className='ml-[-8px]'>!&nbsp;</span>
               {t('Over 8 epic weeks')}
             </p>
