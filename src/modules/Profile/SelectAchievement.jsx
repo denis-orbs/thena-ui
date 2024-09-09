@@ -37,6 +37,12 @@ const customOption = props => (
   </components.Option>
 )
 
+const customValueContainer = props => (
+  <components.ValueContainer className='!block !truncate' {...props}>
+    {props.children}
+  </components.ValueContainer>
+)
+
 function ValueContainer(props) {
   const { children, index } = props
   if (index && index > 0) {
@@ -64,7 +70,6 @@ function SelectAchievement({ data, defaultValue, className, valueSelected = [], 
   }
   return (
     <Select
-      classNamePrefix='custom-class'
       value={selected}
       defaultValue={defaultValue}
       onChange={handleSelected}
@@ -72,6 +77,7 @@ function SelectAchievement({ data, defaultValue, className, valueSelected = [], 
         Option: customOption,
         MultiValue: ValueContainer,
         IndicatorSeparator: () => null,
+        ValueContainer: customValueContainer,
       }}
       options={data}
       styles={{

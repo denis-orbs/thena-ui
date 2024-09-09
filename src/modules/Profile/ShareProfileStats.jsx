@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
-import Box from '@/components/box'
 import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
 import CheckBox from '@/components/checkbox'
 import Toggle from '@/components/toggle'
@@ -23,29 +22,34 @@ export default function ShareProfileStats({
 }) {
   const t = useTranslations()
   return (
-    <Box className={cn('', className)}>
+    <div
+      className={cn(
+        'max-h-[576px] rounded-xl bg-neutral-900 px-4 py-6 lg:min-w-[270px] 2xl:w-[396px] 2xl:px-6',
+        className,
+      )}
+    >
       <p className='mb-4 font-archia text-[24px] font-semibold'>{t('Share Profile Stats')}</p>
       <div className='mb-6 border-b border-b-neutral-700'>
         <p className='mb-3 text-[16px] text-neutral-50'>{t('Show')}</p>
         <ul className='list-none gap-5'>
           <li className='mb-5'>
-            <CheckBox checked={selectedDefault.rank} setChecked={setSelectedDefault('rank')} />{' '}
-            <span className='ml-3'>{t('Rank')}</span>
+            <CheckBox checked={selectedDefault.rank} setChecked={setSelectedDefault('rank')} />
+            <span className='ml-2 2xl:ml-3'>{t('Rank')}</span>
           </li>
           <li className='mb-5'>
             <CheckBox checked={selectedDefault.numberOfTCsWon} setChecked={setSelectedDefault('numberOfTCsWon')} />
-            <span className='ml-3'>{t('Number of TCs Won')}</span>
+            <span className='ml-2 2xl:ml-3'>{t('Number of TCs Won')}</span>
           </li>
           <li className='mb-5'>
             <CheckBox checked={selectedDefault.totalVolumeInTCs} setChecked={setSelectedDefault('totalVolumeInTCs')} />
-            <span className='ml-3'>{t('Total Volume in TCs')}</span>
+            <span className='ml-2 2xl:ml-3'>{t('Total Volume in TCs')}</span>
           </li>
           <li className='mb-5'>
             <CheckBox
               checked={selectedDefault.completedAchievements}
               setChecked={setSelectedDefault('completedAchievements')}
             />
-            <span className='ml-3'>{t('Completed Achievements1')}</span>
+            <span className='ml-2 2xl:ml-3'>{t('Completed Achievements1')}</span>
           </li>
         </ul>
       </div>
@@ -81,6 +85,6 @@ export default function ShareProfileStats({
         <DownloadButton />
         <EmphasisButton onClick={onClose}>Cancel</EmphasisButton>
       </div>
-    </Box>
+    </div>
   )
 }

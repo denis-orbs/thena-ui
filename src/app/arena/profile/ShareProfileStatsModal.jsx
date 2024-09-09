@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import Loading from '@/app/loading'
 import Modal, { ModalBody } from '@/components/modal'
-import { getWithScreen } from '@/lib/utils'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { fetchAchievementsCompleted, fetchTradingCompetitionWon } from '@/modules/Profile'
 import ShareProfileStats from '@/modules/Profile/ShareProfileStats'
 import ShareProfileStatsDetail from '@/modules/Profile/ShareProfileStatsDetail'
@@ -65,24 +65,26 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
     return result
   }, [optionData, userAchievementsCompleted])
 
-  const widthScreen = getWithScreen()
+  const windowSize = useWindowSize()
 
   if (isLoadingAchievementsCompleted || isLoadingCompetition) return <Loading />
+
+  console.log('windowSize', windowSize)
 
   return (
     <Modal
       isOpen={isOpen}
       closeModal={onClose}
       fontSizeTitle='text-lg'
-      width={widthScreen >= 1536 ? '1440px' : '95%'}
+      width={windowSize.width >= 1536 ? '1440px' : windowSize.width}
       backgroundColor='transparent'
       showIconX={false}
       maxWidth={1440}
     >
       <ModalBody className=''>
-        <div className='flex w-full flex-col gap-3 xl:flex-row 2xl:gap-5'>
+        <div className='flex w-full flex-col gap-2 lg:flex-row 2xl:gap-5'>
           <ShareProfileStats
-            className='order-2 max-h-[576px] bg-neutral-900 lg:min-w-[280px] xl:order-1 2xl:w-[396px]'
+            className='order-2 lg:order-1'
             userInfo={userInfo}
             selectedDefault={selected}
             setSelectedDefault={handleChecked}
@@ -94,7 +96,7 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
             onClose={onClose}
           />
           <ShareProfileStatsDetail
-            className='order-1 items-center xl:order-2'
+            className='order-1 items-center lg:order-2'
             userInfo={userInfo}
             selectedDefault={selected}
             showAchievement={showAchievement}

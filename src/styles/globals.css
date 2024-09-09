@@ -597,10 +597,3 @@ input[type='radio']:checked:after {
     transform: translate(-50%, -50%) rotate(1turn);
   }
 }
-
-.custom-class__value-container {
-  overflow: hidden !important;
-  display: -webkit-box !important;
-  -webkit-box-orient: vertical !important;
-  -webkit-line-clamp: 1 !important;
-}

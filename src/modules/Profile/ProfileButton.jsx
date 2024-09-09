@@ -109,12 +109,14 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
           {!loading ? t(isFollowed ? 'UnFollow' : 'Follow') : <Spinner />}
         </EmphasisButton>
       )}
-      <EmphasisIconButton
-        Icon={ShareProfileIcon}
-        onClick={() => {
-          setOpenShareProfileStatsModal(true)
-        }}
-      />
+      {isOwnProfile && (
+        <EmphasisIconButton
+          Icon={ShareProfileIcon}
+          onClick={() => {
+            setOpenShareProfileStatsModal(true)
+          }}
+        />
+      )}
       <EmphasisIconButton Icon={shareIconButton} onClick={onShare} />
       {openShareProfileStatsModal && (
         <ShareProfileStatsModal
