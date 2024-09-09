@@ -85,7 +85,7 @@ export default function ShareProfileStatsModal({ isOpen = false, onClose, userIn
             onClose={onClose}
           />
           <ShareProfileStatsDetail
-            className="relative order-1 block w-full bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover lg:order-2 lg:w-[75%]"
+            className="relative order-1 block h-[576px] w-[1024px] bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover !px-10 !py-6 lg:order-2"
             userInfo={userInfo}
             selectedDefault={selected}
             showAchievement={showAchievement}
