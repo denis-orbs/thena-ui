@@ -14,7 +14,7 @@ import { useEventType } from '@/hooks/useEventType'
 import { useTradeData } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { customSort, formatAmount, formatNumberDecimals, fromWei } from '@/lib/utils'
+import { formatAmount, formatNumberDecimals, fromWei } from '@/lib/utils'
 import { FirstPrizeIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 
 function RankElement({ rank }) {
@@ -94,6 +94,7 @@ export function LeaderBoard({ competition, competitionAccount = undefined }) {
     () => data => {
       const result = data.map(leader => {
         const pnl = fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal)
+
         return {
           id: leader?.participant.id,
           rank: <RankElement rank={leader.rank} />,
@@ -196,16 +197,10 @@ export function LeaderBoard({ competition, competitionAccount = undefined }) {
 
   const dataParticipants = useMemo(
     () =>
-      participants
-        .sort(
-          (a, b) =>
-            fromWei(b.pnl, b.competitionRules?.winningTokenDecimal) -
-            fromWei(a.pnl, a.competitionRules?.winningTokenDecimal),
-        )
-        .map(item => ({
-          ...item,
-          rank: isNil(item.rank) ? item.rank : item.rank + 1,
-        })) ?? [],
+      participants.map(item => ({
+        ...item,
+        rank: isNil(item.rank) ? item.rank : item.rank + 1,
+      })) ?? [],
     [participants],
   )
 
@@ -219,47 +214,12 @@ export function LeaderBoard({ competition, competitionAccount = undefined }) {
     [searchText, dataParticipants],
   )
 
-  const sortedData = useMemo(
-    () =>
-      filteredLeaderBoards?.sort((a, b) => {
-        let res
-        const participantA = a.participant.username ?? a.participant.id
-        const participantB = b.participant.username ?? b.participant.id
-        switch (sort.value) {
-          case 'rank':
-            res = customSort(a.rank, b.rank, sort.isDesc)
-            break
-          case 'user':
-            res = (participantA - participantB) * (sort.isDesc ? 1 : -1)
-            break
-          case 'percentagePnl':
-            res = (a.percentagePnl - b.percentagePnl) * (sort.isDesc ? 1 : -1)
-            break
-          case 'pnl':
-            res =
-              (fromWei(a.pnl, a.competitionRules?.winningTokenDecimal) -
-                fromWei(b.pnl, b.competitionRules?.winningTokenDecimal)) *
-              (sort.isDesc ? -1 : 1)
-            break
-          case 'reward':
-            res =
-              (fromWei(a.winAmount[0], a.winTokenDecimal) - fromWei(b.winAmount[0], b.winTokenDecimal)) *
-              (sort.isDesc ? -1 : 1)
-            break
-
-          default:
-            break
-        }
-        return res
-      }),
-    [filteredLeaderBoards, sort],
-  )
-
   const finalLeaderBoards = useMemo(
-    () => handleRenderFinalData(sortedData),
+    () => handleRenderFinalData(filteredLeaderBoards),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(sortedData)],
+    [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(filteredLeaderBoards)],
   )
+
   useEffect(() => {
     setCurrentPage(1)
   }, [searchText])
