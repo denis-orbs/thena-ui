@@ -1,3 +1,4 @@
+import LogoIcon from '~/logo.svg'
 import AlertCirlceSmallIcon from '~/svgs/alert-circle-small.svg'
 import AlertTriangleIcon from '~/svgs/alert-triangle.svg'
 import AnalyticsIcon from '~/svgs/analytics.svg'
@@ -36,6 +37,7 @@ import CrownIcon from '~/svgs/crown.svg'
 import DiamondIcon from '~/svgs/diamond.svg'
 import DiscordIcon from '~/svgs/discord.svg'
 import DownRank from '~/svgs/down-rank.svg'
+import DownloadIcon from '~/svgs/download.svg'
 import EditIcon from '~/svgs/edit.svg'
 import EigenBadgeIcon from '~/svgs/eigen_badge.svg'
 import EmailIcon from '~/svgs/email.svg'
@@ -145,6 +147,7 @@ export {
   CrownIcon,
   DiamondIcon,
   DiscordIcon,
+  DownloadIcon,
   DownRank,
   EditIcon,
   EigenBadgeIcon,
@@ -169,6 +172,7 @@ export {
   LangIcon,
   Lock2Icon,
   LockIcon,
+  LogoIcon,
   LogoTextIcon,
   LogoWithTextIcon,
   MediumIcon,

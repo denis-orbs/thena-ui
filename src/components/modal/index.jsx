@@ -31,6 +31,7 @@ function Modal({
   showIconX = true,
   style = {},
   showHeadModal = true,
+  backgroundColor = undefined,
   ...rest
 }) {
   const t = useTranslations()
@@ -51,7 +52,7 @@ function Modal({
             inset: '12px',
             border: '0px',
             borderRadius: '12px',
-            backgroundColor: '#1A121E',
+            backgroundColor: backgroundColor ?? '#1A121E',
             padding: '0 0 24px',
             display: 'flex',
             flexDirection: 'column',
@@ -71,12 +72,12 @@ function Modal({
             transform: 'translate(-50%, -50%)',
             border: '0px',
             borderRadius: '12px',
-            backgroundColor: '#1A121E',
+            backgroundColor: backgroundColor ?? '#1A121E',
             padding: '0 0 24px',
             overflow: 'auto',
           },
     }),
-    [width, zIndex],
+    [backgroundColor, width, zIndex],
   )
 
   return (

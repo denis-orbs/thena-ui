@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { EmphasisButton } from '@/components/buttons/Button'
+import ShareProfileStatsModal from '@/app/arena/profile/ShareProfileStatsModal'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Spinner from '@/components/spinner'
 import { useUserInfo } from '@/context/userInfoContext'
@@ -28,6 +29,7 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
   const { account } = useWallet()
   const t = useTranslations()
   const [currentUserRef, setCurrentUserRef] = useState('')
+  const [openShareProfileStatsModal, setOpenShareProfileStatsModal] = useState(false)
 
   useEffect(() => {
     async function getUserRef() {
@@ -91,6 +93,13 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
 
   return (
     <div className='flex items-center justify-end space-x-2'>
+      <PrimaryButton
+        onClick={() => {
+          setOpenShareProfileStatsModal(true)
+        }}
+      >
+        Share
+      </PrimaryButton>
       {isOwnProfile && !!currentUserInfo?.usernameNfts?.length && (
         <Link href='/arena/profile/edit'>
           <EmphasisButton className='p-2 text-xs lg:py-3 lg:text-base'>{t('Edit Profile')}</EmphasisButton>
@@ -108,6 +117,15 @@ export function ProfileButton({ isOwnProfile, userInfo, handleClickThenaButton, 
         </EmphasisButton>
       )}
       <EmphasisIconButton Icon={shareIconButton} onClick={onShare} />
+      {openShareProfileStatsModal && (
+        <ShareProfileStatsModal
+          isOpen={openShareProfileStatsModal}
+          userInfo={userInfo}
+          onClose={() => {
+            setOpenShareProfileStatsModal(false)
+          }}
+        />
+      )}
     </div>
   )
 }
