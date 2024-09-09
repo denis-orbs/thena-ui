@@ -204,6 +204,13 @@ export const isSmallScreen = () => {
   return false
 }
 
+export const getWithScreen = () => {
+  if (typeof window !== 'undefined') {
+    return window.innerWidth < 1024
+  }
+  return undefined
+}
+
 export const objectDiff = (object, other) =>
   Object.entries(object).reduce((diffCount, [key, value]) => {
     if (other[key] !== value) return diffCount + 1

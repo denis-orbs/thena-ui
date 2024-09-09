@@ -39,16 +39,10 @@ const customOption = props => (
 
 function ValueContainer(props) {
   const { children, index } = props
-
-  if (index > 0 && index) {
-    return (
-      <>
-        {', '}
-        {children}
-      </>
-    )
+  if (index && index > 0) {
+    return `, ${children}`
   }
-  return <>{children}</>
+  return children
 }
 
 function SelectAchievement({ data, defaultValue, className, valueSelected = [], onSelected = () => null }) {
@@ -70,12 +64,14 @@ function SelectAchievement({ data, defaultValue, className, valueSelected = [], 
   }
   return (
     <Select
+      classNamePrefix='custom-class'
       value={selected}
       defaultValue={defaultValue}
       onChange={handleSelected}
       components={{
         Option: customOption,
         MultiValue: ValueContainer,
+        IndicatorSeparator: () => null,
       }}
       options={data}
       styles={{
@@ -94,6 +90,7 @@ function SelectAchievement({ data, defaultValue, className, valueSelected = [], 
           background: '#281b2e',
         }),
       }}
+      isClearable={false}
       formatGroupLabel={formatGroupLabel}
       closeMenuOnSelect={false}
       hideSelectedOptions={false}

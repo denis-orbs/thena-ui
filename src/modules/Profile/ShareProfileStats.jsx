@@ -60,18 +60,17 @@ export default function ShareProfileStats({
           />
         </div>
         <div className={!toggleAchievement ? 'hidden' : 'block'}>
-          <div className='flex flex-row justify-between'>
-            <label htmlFor='countries' className='mb-2 block text-[17px]'>
-              {t('Select Achievements')}
-            </label>
+          <div className='flex flex-row items-center justify-between'>
+            <label className='lg:text[16px] text-[14px]'>{t('Select Achievements')}</label>
             <OutlinedButton
               type='button'
-              className='border-none text-[17px] text-neutral-300'
+              className='lg:text[16px] border-none text-[14px] text-neutral-300'
               onClick={() => setSelectedAchievement([])}
             >
               {t('Clear all')}
             </OutlinedButton>
           </div>
+
           <SelectAchievement
             data={achievements}
             className='mb-5'

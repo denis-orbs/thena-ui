@@ -30,8 +30,8 @@ export default function ShareProfileStatsDetail({
   }, [selectedDefault])
 
   return (
-    <>
-      <div className={className} ref={parentRef}>
+    <div className={className}>
+      <div ref={parentRef}>
         <div
           ref={childRef}
           className="relative h-[576px] w-[1024px] rounded-xl bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover px-2 py-6 lg:p-6"
@@ -126,6 +126,6 @@ export default function ShareProfileStatsDetail({
           />
         </div>
       </div>
-    </>
+    </div>
   )
 }
