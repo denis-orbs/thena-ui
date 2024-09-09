@@ -33,9 +33,7 @@ import {
 import useWallet from '@/hooks/useWallet'
 import { tryParseAmount } from '@/lib/fusion'
 import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
-import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import { liquidityHub } from '@/modules/LiquidityHub'
-import { LiquidityHubRouting } from '@/modules/LiquidityHub/components'
+import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import SwapChart from '@/modules/SwapChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
@@ -124,13 +122,6 @@ export function SideBar({
     ),
     fromAsset?.decimals,
   )
-
-  const {
-    data: lhQuote,
-    error: lhQuoteError,
-    isLoading: lhQuotePending,
-  } = liquidityHub.useQuoteQuery(fromAsset, toAsset, debouncedFromTokenAmount, quoteOdos?.outAmounts[0])
-  const isDexTrade = liquidityHub.useIsDexTrade(quoteOdos?.outAmounts[0], lhQuote?.outAmount, lhQuoteError)
 
   const { data: _txOdos, isLoading: _isLoadingTxOdos } = useGetOdosTxSwap(tcAddress, quoteOdos)
 
@@ -392,32 +383,22 @@ export function SideBar({
                       {t('Refresh Quote')}
                     </TextButton>
                   </div>
-                  {lhQuotePending ? (
-                    <Skeleton className='h-[100px] w-full' />
-                  ) : (
-                    <div>
-                      <div className='flex items-center justify-between'>
-                        <div className='flex items-center gap-2'>
-                          <NextImage src={fromAsset?.logoURI} alt='' className='h-5 w-5' />
-                          <Paragraph>
-                            {formatAmount(debouncedFromTokenAmount)} {fromAsset?.symbol}
-                          </Paragraph>
-                        </div>
-                        <div className='flex items-center gap-2'>
-                          <Paragraph>
-                            {formatAmount(toTokenAmount)} {toAsset?.symbol}
-                          </Paragraph>
-                          <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
-                        </div>
+                  <div>
+                    <div className='flex items-center justify-between'>
+                      <div className='flex items-center gap-2'>
+                        <NextImage src={fromAsset?.logoURI} alt='' className='h-5 w-5' />
+                        <Paragraph>
+                          {formatAmount(debouncedFromTokenAmount)} {fromAsset?.symbol}
+                        </Paragraph>
                       </div>
-                      {isDexTrade && (
-                        <div className={cn('-mx-4 lg:-mx-6', quoteOdos && '-mb-[100px]')}>
-                          {quoteOdos && <NextImage className='w-full' src={quoteOdos.pathVizImage} alt='best route' />}
-                        </div>
-                      )}
-                      {!!lhQuote?.outAmount && Number(lhQuote?.outAmount) > 0 && !isDexTrade && <LiquidityHubRouting />}
+                      <div className='flex items-center gap-2'>
+                        <Paragraph>
+                          {formatAmount(toTokenAmount)} {toAsset?.symbol}
+                        </Paragraph>
+                        <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </Box>
               )}
             </Box>
