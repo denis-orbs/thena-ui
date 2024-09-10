@@ -6,13 +6,21 @@ import { v4Client } from '@/lib/graphql'
 import { useCompetitionFormat } from '../useCompetitionFormat'
 
 const V4_COMPETITION_DATA_LEADERBOARD = gql`
-  query V4_COMPETITION_DATA_LEADERBOARD($id: String!) {
+  query V4_COMPETITION_DATA_LEADERBOARD($id: String!, $searchText: String) {
     tradingCompetitionById(id: $id) {
       id
       market
-      participants(orderBy: rank_ASC) {
+      participants(
+        orderBy: rank_ASC
+        where: {
+          OR: [{ participant: { id_contains: $searchText } }, { participant: { username_contains: $searchText } }]
+        }
+      ) {
         pnl
         percentagePnl
+        rank
+        winAmounts
+        winTokenDecimal
         participant {
           id
           username
@@ -22,9 +30,6 @@ const V4_COMPETITION_DATA_LEADERBOARD = gql`
           checkMarkIcon
           verifiedAt
         }
-        rank
-        winAmounts
-        winTokenDecimal
       }
       competitionRules {
         winningTokenDecimal
@@ -43,9 +48,12 @@ const V4_COMPETITION_DATA_LEADERBOARD = gql`
   }
 `
 
-const fetchCompetitionLeaderboard = async id => {
+const fetchCompetitionLeaderboard = async (id, searchText) => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA_LEADERBOARD, { id })
+    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA_LEADERBOARD, {
+      id,
+      searchText,
+    })
 
     return competition
   } catch (error) {
@@ -53,13 +61,20 @@ const fetchCompetitionLeaderboard = async id => {
   }
 }
 
-export const useTradingCompetitionLeaderBoard = id => {
-  const { data, isLoading } = useSWR(['competition leader board api', id], () => fetchCompetitionLeaderboard(id), {
-    refreshInterval: 30000,
-    revalidateOnFocus: true,
-  })
+export const useTradingCompetitionLeaderBoard = (id, searchText) => {
+  const { data, isLoading } = useSWR(
+    ['competition leader board api', id, searchText],
+    () => fetchCompetitionLeaderboard(id, searchText),
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    },
+  )
 
-  return { competition: useCompetitionFormat(data), isLoading }
+  return {
+    competition: useCompetitionFormat(data),
+    isLoading,
+  }
 }
 
 const V4_COMPETITION_BY_ACCOUNT = gql`

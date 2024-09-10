@@ -413,7 +413,7 @@ function Table({
         )}
       </div>
       {!loading && pageCount > 1 && !hidePagination && (
-        <div className='flex justify-end'>
+        <div className='flex justify-center sm:justify-end'>
           <ul className='relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
             <PaginateCell
               onClick={() => {

@@ -124,15 +124,15 @@ export default function LeaderboardTable({ userInfo }) {
     [data],
   )
 
-  const finalRank = useMemo(() => {
-    let rank = 4
+  const indexUser = useMemo(() => {
+    let index = -1
     if (userInfo?.id) {
       const itemUserIndex = finalData.findIndex(item => item?.id?.toLowerCase() === userInfo?.id.toLowerCase())
       if (itemUserIndex !== -1) {
-        rank = itemUserIndex
+        index = itemUserIndex
       }
     }
-    return rank
+    return index
   }, [finalData, userInfo])
 
   return (
@@ -151,7 +151,7 @@ export default function LeaderboardTable({ userInfo }) {
         bgHightLight='bg-neutral-800'
         loading={!data}
         pageSize={10}
-        defaultHead={finalRank > 9 && currentPage === 1 ? rowDefault : undefined}
+        defaultHead={(indexUser > 9 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
       />
     </div>
   )
