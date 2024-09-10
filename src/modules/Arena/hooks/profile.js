@@ -17,6 +17,7 @@ const V4_UPDATE_ARENA_PROFILE = gql`
     $xProfileUrl: String
     $theme: String
     $userId: String
+    $avatar: String
   ) {
     updateUserProfile(
       input: {
@@ -27,6 +28,7 @@ const V4_UPDATE_ARENA_PROFILE = gql`
         username: $username
         websiteUrl: $websiteUrl
         xProfileUrl: $xProfileUrl
+        avatar: $avatar
       }
       userId: $userId
     ) {
@@ -272,4 +274,45 @@ export const useCheckUserCreated = () => {
   )
 
   return { checkUserCreated }
+}
+
+const V4_THENIAN_NFTS_OWNED_AND_STAKED = gql`
+  query V4_THENIAN_NFTS_OWNED_AND_STAKED {
+    thenianNftsOwnedAndStaked {
+      id
+      index
+      meatadata {
+        image
+      }
+      ownerId
+      timestamp
+    }
+  }
+`
+
+export const useThenianNftsOwnedAndStaked = () => {
+  const { signWallet } = useSignWallet()
+
+  const getThenianNftsOwnedAndStakedFn = useCallback(async () => {
+    const { thenianNftsOwnedAndStaked } = await v4Client.request(
+      V4_THENIAN_NFTS_OWNED_AND_STAKED,
+      {},
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
+
+    if (thenianNftsOwnedAndStaked && Array.isArray) {
+      return thenianNftsOwnedAndStaked
+    }
+
+    return undefined
+  }, [])
+
+  const getThenianNftsOwnedAndStaked = useCallback(
+    async () => await actionWithAuthentication(getThenianNftsOwnedAndStakedFn, signWallet, {}),
+    [getThenianNftsOwnedAndStakedFn, signWallet],
+  )
+
+  return { getThenianNftsOwnedAndStaked }
 }
