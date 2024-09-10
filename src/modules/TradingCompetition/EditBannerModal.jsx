@@ -1,7 +1,10 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop'
 import { mutate } from 'swr'
+
+import 'react-image-crop/dist/ReactCrop.css'
 
 import { CompetitionCardHeader } from '@/app/arena/CompetitionCardHeader'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
@@ -14,13 +17,36 @@ import { errorToast, successToast } from '@/lib/notify'
 
 import { resizeFile, useUpdateTCBanner } from '../Arena/hooks/competitions'
 
+function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: '%',
+        width: 90,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight,
+    ),
+    mediaWidth,
+    mediaHeight,
+  )
+}
+
+const aspect = 16 / 9
+
 export function EditBannerModal({ competition, open, onClose }) {
   const t = useTranslations()
   const { userInfo } = useUserInfo()
 
+  // const previewCanvasRef = useRef(null)
+
   const [selectedImage, setSelectedImage] = useState(competition.bannerUrl)
   const [loading, setLoading] = useState(false)
   const [stateChecked, setStateChecked] = useState(competition.bannerUrl ? 'custom' : 'default')
+  const [crop, setCrop] = useState()
+  const [completedCrop, setCompletedCrop] = useState()
+  const [initImage, setInitImage] = useState()
 
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
@@ -91,9 +117,25 @@ export function EditBannerModal({ competition, open, onClose }) {
 
   useEffect(() => {
     if (acceptedFiles.length) {
-      setSelectedImage(acceptedFiles[0])
+      // setSelectedImage(acceptedFiles[0])
+      const reader = new FileReader()
+      reader.onload = () => {
+        const dataURL = reader.result
+        setInitImage(dataURL)
+      }
+      reader.readAsDataURL(acceptedFiles[0])
     }
-  }, [acceptedFiles, setSelectedImage])
+  }, [acceptedFiles, setInitImage])
+
+  useEffect(() => {
+    console.log({ completedCrop })
+  }, [completedCrop])
+
+  // useEffect(() => {
+  //   if (selectedImage) {
+  //     setInitImage(URL.createObjectURL(selectedImage))
+  //   }
+  // }, [selectedImage])
 
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Edit banner')}>
@@ -129,6 +171,7 @@ export function EditBannerModal({ competition, open, onClose }) {
 
         {stateChecked === 'custom' && (
           <>
+            <p className='mb-3'>Note: You should use image with 16:9 ratio (For example: 1920x1080)</p>
             <div
               className='mb-2 w-full rounded-xl border border-primary-800 bg-neutral-900 px-4 py-6 lg:p-6'
               {...getRootProps()}
@@ -136,12 +179,42 @@ export function EditBannerModal({ competition, open, onClose }) {
               <input {...getInputProps()} />
               {isDragActive ? <p>{t('Drop The File Here')}</p> : <p>{t('Drag Drop File Here')}</p>}
             </div>
-            {selectedImage && (
-              <CompetitionCardHeader
-                className='h-60 w-full rounded-xl'
-                competition={competition}
-                banner={selectedImage}
+
+            {Boolean(initImage) && (
+              <ReactCrop
+                crop={crop}
+                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                onComplete={c => setCompletedCrop(c)}
+                aspect={aspect}
+                minWidth={300}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  alt='Crop me'
+                  src={initImage}
+                  onLoad={e => {
+                    const { width, height } = e.currentTarget
+                    setCrop(centerAspectCrop(width, height, aspect))
+                  }}
+                />
+              </ReactCrop>
+            )}
+
+            {/* {Boolean(completedCrop) && (
+              <canvas
+                ref={previewCanvasRef}
+                className='object-contain'
               />
+            )} */}
+
+            {selectedImage && (
+              <>
+                <CompetitionCardHeader
+                  className='h-60 w-full rounded-xl'
+                  competition={competition}
+                  banner={selectedImage}
+                />
+              </>
             )}
           </>
         )}
