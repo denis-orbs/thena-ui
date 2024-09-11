@@ -330,7 +330,7 @@ export const INIT_VALUES = {
   timestamp: {
     registrationStart: roundupTime(), // start timestamp
     registrationEnd: roundupTime() + MIN_REG, // end timestamp
-    startTimestamp: roundupTime() + MIN_REG, // registration start timestamp
+    startTimestamp: roundupTime() + MIN_REG * 1.5, // registration start timestamp
     endTimestamp: roundupTime() + MIN_REG + MIN_TS, // registration end timestamp
   },
   market: TC_MARKET_TYPES.SPOT,

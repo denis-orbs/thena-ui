@@ -6,13 +6,21 @@ import { v4Client } from '@/lib/graphql'
 import { useCompetitionFormat } from '../useCompetitionFormat'
 
 const V4_COMPETITION_DATA_LEADERBOARD = gql`
-  query V4_COMPETITION_DATA_LEADERBOARD($id: String!) {
+  query V4_COMPETITION_DATA_LEADERBOARD($id: String!, $searchText: String, $orderBy: [TCParticipantOrderByInput!]) {
     tradingCompetitionById(id: $id) {
       id
       market
-      participants(orderBy: rank_ASC) {
+      participants(
+        orderBy: $orderBy
+        where: {
+          OR: [{ participant: { id_contains: $searchText } }, { participant: { username_contains: $searchText } }]
+        }
+      ) {
         pnl
         percentagePnl
+        rank
+        winAmounts
+        winTokenDecimal
         participant {
           id
           username
@@ -22,9 +30,6 @@ const V4_COMPETITION_DATA_LEADERBOARD = gql`
           checkMarkIcon
           verifiedAt
         }
-        rank
-        winAmounts
-        winTokenDecimal
       }
       competitionRules {
         winningTokenDecimal
@@ -43,9 +48,13 @@ const V4_COMPETITION_DATA_LEADERBOARD = gql`
   }
 `
 
-const fetchCompetitionLeaderboard = async id => {
+const fetchCompetitionLeaderboard = async (id, searchText, orderBy) => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA_LEADERBOARD, { id })
+    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA_LEADERBOARD, {
+      id,
+      searchText,
+      orderBy,
+    })
 
     return competition
   } catch (error) {
@@ -53,13 +62,27 @@ const fetchCompetitionLeaderboard = async id => {
   }
 }
 
-export const useTradingCompetitionLeaderBoard = id => {
-  const { data, isLoading } = useSWR(['competition leader board api', id], () => fetchCompetitionLeaderboard(id), {
-    refreshInterval: 30000,
-    revalidateOnFocus: true,
-  })
+export const useTradingCompetitionLeaderBoard = (id, searchText) => {
+  const { data: competitionData } = useSWR('competition detail api')
+  let orderBy = ['rank_ASC']
+  if (competitionData.prizeUpdate) {
+    orderBy = ['rank_ASC', 'percentagePnl_DESC']
+  } else {
+    orderBy = ['rank_ASC', 'pnl_DESC']
+  }
+  const { data, isLoading } = useSWR(
+    ['competition leader board api', id, searchText],
+    () => fetchCompetitionLeaderboard(id, searchText, orderBy),
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    },
+  )
 
-  return { competition: useCompetitionFormat(data), isLoading }
+  return {
+    competition: useCompetitionFormat(data),
+    isLoading,
+  }
 }
 
 const V4_COMPETITION_BY_ACCOUNT = gql`

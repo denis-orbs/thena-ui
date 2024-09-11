@@ -101,6 +101,7 @@ export async function actionWithAuthentication(action, signFunc, params, callOnS
   try {
     const data = await action(params)
     callOnSuccess?.(data)
+    return data
   } catch (err) {
     if (
       err?.response?.errors?.[0]?.message === 'Missing Authorization Header' ||

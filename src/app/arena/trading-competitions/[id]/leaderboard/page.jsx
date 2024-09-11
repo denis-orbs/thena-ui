@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import React from 'react'
+import React, { useState } from 'react'
 
 import Loading from '@/app/loading'
 import {
@@ -15,7 +15,9 @@ function LeaderBoardPage() {
   const { id } = useParams()
   const { account } = useWallet()
 
-  const { competition, isLoading: isLoading1 } = useTradingCompetitionLeaderBoard(id)
+  const [searchText, setSearchText] = useState('')
+
+  const { competition, isLoading: isLoading1 } = useTradingCompetitionLeaderBoard(id, searchText?.toLowerCase())
 
   const { competitionAccount, isLoading: isLoading2 } = useTradingCompetitionByAccount(id, account?.toLowerCase())
 
@@ -25,7 +27,12 @@ function LeaderBoardPage() {
 
   return (
     <>
-      <LeaderBoard competitionAccount={competitionAccount} competition={competition} />
+      <LeaderBoard
+        competitionAccount={competitionAccount}
+        competition={competition}
+        searchText={searchText}
+        setSearchText={setSearchText}
+      />
     </>
   )
 }

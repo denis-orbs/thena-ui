@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Input from '@/components/input'
 import { DateTimePickerCustom } from '@/components/input/DateTimePickerCustom'
 import { TC_PARTICIPANTS, TC_TIMESTAMP } from '@/constant'
+import { errorToast } from '@/lib/notify'
 import { MinusIcon, PlusIcon } from '@/svgs'
 
 import LabelTooltip from '../../components/label/LabelTooltip'
@@ -81,7 +82,7 @@ function Time({ data, setData }) {
         ...data,
         timestamp: {
           ...data.timestamp,
-          startTimestamp: new Date(regEndTime).getTime(),
+          startTimestamp: new Date(regEndTime).getTime() + 30 * 60 * 1000,
         },
       })
     }
@@ -235,15 +236,18 @@ function Time({ data, setData }) {
             selectedDate={tsStartTime}
             onChange={date => {
               const newDate = new Date(date).getTime()
-              const regEndDate = new Date(regEndTime).getTime()
-              const res = Math.max(newDate, regEndDate)
-              setData({
+              if (newDate <= data.timestamp.registrationEnd) {
+                errorToast('Competition Start Time must be greater than Registration End Time')
+                return
+              }
+              const res = Math.max(newDate, data.timestamp.registrationEnd)
+              setData(() => ({
                 ...data,
                 timestamp: {
                   ...data.timestamp,
                   startTimestamp: res,
                 },
-              })
+              }))
             }}
             minDate={minStartTime}
             showTimeSelect

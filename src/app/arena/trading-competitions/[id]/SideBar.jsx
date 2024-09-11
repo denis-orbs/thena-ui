@@ -19,7 +19,7 @@ import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
-import { successToast } from '@/lib/notify'
+import { errorToast, successToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { Countdown } from '@/modules/Countdown'
@@ -72,7 +72,7 @@ function Sidebar({ competition, eventType }) {
 
   const intervalId = useRef(undefined)
 
-  const { open: openConnectModal } = useConnectModal()
+  const { openConnectModal } = useConnectModal()
   const { account } = useWallet()
   const { withdrawDeposit } = useWithdrawDepositTC()
   const { withdrawTCPerp } = useWithdrawToTCPerp()
@@ -540,6 +540,22 @@ function Sidebar({ competition, eventType }) {
           className='w-full'
           disabled={isFull}
           onClick={() => {
+            if (competition.id.toLowerCase() === '0xcd10f7cc95b1829d78fa5562889410f3e984d27c-5') {
+              errorToast(
+                'Registrations are stopped for this competition. Please check THENA Discord server for more information.',
+                null,
+                null,
+                false,
+                {
+                  style: {
+                    cursor: 'pointer',
+                  },
+                  onClick: () => (window.location.href = 'https://discord.gg/thena'),
+                },
+              )
+              return
+            }
+
             if (!account) {
               openConnectModal()
             } else {

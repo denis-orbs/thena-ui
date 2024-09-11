@@ -8,21 +8,32 @@ import { TextHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 
 import { ModalEditUserAvatar } from './ModalEditUserAvatar'
+import { useThenianNftsOwnedAndStaked } from '../Arena/hooks/profile'
 
 export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
   const t = useTranslations()
+  const { getThenianNftsOwnedAndStaked } = useThenianNftsOwnedAndStaked()
   const [openEditAvatar, setOpenEditAvatar] = useState(false)
-  const isHaveThenaNfts = useMemo(() => !!userInfo?.thenianNfts?.length, [userInfo?.thenianNfts?.length])
   const [customAvatar, setCustomAvatar] = useState(null)
+  const [userNFTs, setUserNFTs] = useState([])
+  const isHaveThenaNfts = useMemo(() => !!userNFTs.length, [userNFTs])
 
   useEffect(() => {
-    if (
-      userInfo?.avatar &&
-      userInfo?.thenianNfts?.every(thenianNfts => thenianNfts?.meatadata?.image !== userInfo.avatar)
-    ) {
+    if (!userInfo) return
+    const getNfts = async () => {
+      const nfts = await getThenianNftsOwnedAndStaked()
+      if (nfts && Array.isArray(nfts)) {
+        setUserNFTs(nfts)
+      }
+    }
+    getNfts()
+  }, [getThenianNftsOwnedAndStaked, userInfo])
+
+  useEffect(() => {
+    if (userInfo?.avatar && userNFTs?.every(thenianNfts => thenianNfts?.meatadata?.image !== userInfo.avatar)) {
       setCustomAvatar(userInfo.avatar)
     }
-  }, [userInfo?.avatar, userInfo?.thenianNfts])
+  }, [userInfo?.avatar, userNFTs])
 
   const onSelectAvatar = useCallback(
     image => {
@@ -62,7 +73,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
           />
         )}
         {isHaveThenaNfts &&
-          userInfo?.thenianNfts?.map((thenianNfts, index) => (
+          userNFTs?.map((thenianNfts, index) => (
             <NextImage
               alt='avatar'
               src={thenianNfts?.meatadata?.image?.replace('ipfs.io', 'w3s.link')}

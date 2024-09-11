@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
 
 import { UserProfileCard } from '@/components/image/UserProfileCard'
-import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
@@ -16,6 +15,8 @@ import useWallet from '@/hooks/useWallet'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, formatNumberDecimals, fromWei } from '@/lib/utils'
 import { FirstPrizeIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
+
+import SearchWithDebounce from './SearchWithDebounce'
 
 function RankElement({ rank }) {
   switch (rank) {
@@ -35,9 +36,8 @@ function RankElement({ rank }) {
   }
 }
 
-export function LeaderBoard({ competition, competitionAccount = undefined }) {
+export function LeaderBoard({ competition, searchText = '', setSearchText, competitionAccount = undefined }) {
   const { eventType } = useEventType(competition?.timestamp)
-  const [searchText, setSearchText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const { account } = useWallet()
   const { reloadFetch } = useTradingCompetition()
@@ -204,35 +204,25 @@ export function LeaderBoard({ competition, competitionAccount = undefined }) {
     [participants],
   )
 
-  const filteredLeaderBoards = useMemo(
-    () =>
-      dataParticipants.filter(
-        item =>
-          item.participant.id.toLowerCase().includes(searchText?.toLowerCase() || '') ||
-          item.participant.username?.toLowerCase().includes(searchText?.toLowerCase() || ''),
-      ) || [],
-    [searchText, dataParticipants],
-  )
-
   const finalLeaderBoards = useMemo(
-    () => handleRenderFinalData(filteredLeaderBoards),
+    () => handleRenderFinalData(dataParticipants),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(filteredLeaderBoards)],
+    [competition?.competitionRules?.winningToken?.symbol, push, JSON.stringify(dataParticipants)],
   )
 
   useEffect(() => {
     setCurrentPage(1)
   }, [searchText])
 
-  const finalRank = useMemo(() => {
-    let rank = 0
+  const indexUser = useMemo(() => {
+    let index = -1
     if (account) {
       const itemUserIndex = finalLeaderBoards.findIndex(item => item?.id?.toLowerCase() === account.toLowerCase())
       if (itemUserIndex !== -1) {
-        rank = itemUserIndex
+        index = itemUserIndex
       }
     }
-    return rank
+    return index
   }, [finalLeaderBoards, account])
 
   return (
@@ -240,7 +230,8 @@ export function LeaderBoard({ competition, competitionAccount = undefined }) {
       <div className='mb-3 flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between'>
         {/* eslint-disable-next-line prettier/prettier */}
         <TextHeading className='text-xl lg:flex-2'>{t('Leaderboard')}</TextHeading>
-        <SearchInput className='w-full lg:flex-1' val={searchText} setVal={setSearchText} />
+        {/* <SearchInput className='w-full lg:flex-1' val={searchText} setVal={handleSearchText} /> */}
+        <SearchWithDebounce searchText={searchText} setSearchText={setSearchText} />
       </div>
 
       <Table
@@ -254,7 +245,7 @@ export function LeaderBoard({ competition, competitionAccount = undefined }) {
         tableBasic
         hightLightById={account?.toLowerCase() ?? undefined}
         bgHightLight='bg-white bg-opacity-5'
-        defaultHead={finalRank > 9 && currentPage === 1 ? rowDefault : undefined}
+        defaultHead={(indexUser > 9 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
       />
     </div>
   )

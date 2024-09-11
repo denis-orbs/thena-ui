@@ -11,6 +11,7 @@ import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
 import dayjs from '@/lib/arenaDayjs'
+import { errorToast } from '@/lib/notify'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { isInvalidAmount } from '@/lib/utils'
 
@@ -241,6 +242,21 @@ export function TCButton({ eventType, competition, timestamp }) {
         <PrimaryButton
           className='w-full text-wrap'
           onClick={() => {
+            if (competition.id?.toLowerCase() === '0xcd10f7cc95b1829d78fa5562889410f3e984d27c-5') {
+              errorToast(
+                'Registrations are stopped for this competition. Please check THENA Discord server for more information.',
+                null,
+                null,
+                false,
+                {
+                  style: {
+                    cursor: 'pointer',
+                  },
+                  onClick: () => (window.location.href = 'https://discord.gg/thena'),
+                },
+              )
+              return
+            }
             if (!account) {
               openConnectModal()
             } else {
