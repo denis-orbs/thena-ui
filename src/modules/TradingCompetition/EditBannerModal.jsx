@@ -1,18 +1,41 @@
+import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop'
 import { mutate } from 'swr'
 
-import { CompetitionCardHeader } from '@/app/arena/CompetitionCardHeader'
+import 'react-image-crop/dist/ReactCrop.css'
+
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody } from '@/components/modal'
 import Spinner from '@/components/spinner'
 import { TextSubHeading } from '@/components/typography'
 import { useUserInfo } from '@/context/userInfoContext'
+import useDebounce from '@/hooks/useDebounce'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import { errorToast, successToast } from '@/lib/notify'
 
+import { canvasPreview } from './canvasPreview'
 import { resizeFile, useUpdateTCBanner } from '../Arena/hooks/competitions'
+
+function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: '%',
+        width: 90,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight,
+    ),
+    mediaWidth,
+    mediaHeight,
+  )
+}
+
+const aspect = 16 / 9
 
 export function EditBannerModal({ competition, open, onClose }) {
   const t = useTranslations()
@@ -21,6 +44,14 @@ export function EditBannerModal({ competition, open, onClose }) {
   const [selectedImage, setSelectedImage] = useState(competition.bannerUrl)
   const [loading, setLoading] = useState(false)
   const [stateChecked, setStateChecked] = useState(competition.bannerUrl ? 'custom' : 'default')
+  const [crop, setCrop] = useState()
+  const [completedCrop, setCompletedCrop] = useState()
+  const [initImage, setInitImage] = useState()
+
+  const previewCanvasRef = useRef(null)
+  const imgRef = useRef(null)
+
+  const debounceCompleteCrop = useDebounce(completedCrop, 100)
 
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
@@ -48,52 +79,115 @@ export function EditBannerModal({ competition, open, onClose }) {
     [competition?.id, onClose, updateTCBanner],
   )
 
-  const handleSave = useCallback(async () => {
-    if (userInfo?.id && competition?.id) {
-      setLoading(true)
-      if (stateChecked === 'default') {
-        await handleUpdateTCBanner(null)
-      } else {
-        // Resize before upload
-        let resizedFile = ''
-        try {
-          resizedFile = await resizeFile(selectedImage)
-        } catch (error) {
-          console.log(error)
-          errorToast('Error')
-          setLoading(false)
-          return
-        }
-
-        if (resizedFile) {
-          await createPresignedUrl(
-            resizedFile,
-            userInfo.id,
-            'BANNER',
-            async data => {
-              if (data !== false) {
-                await handleUpdateTCBanner(data)
-              } else {
-                setLoading(false)
-              }
-            },
-            () => {
-              setLoading(false)
-            },
-          )
+  const handleUploadBannerAndUpdateTC = useCallback(
+    async file => {
+      if (userInfo?.id && competition?.id) {
+        setLoading(true)
+        if (stateChecked === 'default') {
+          await handleUpdateTCBanner(null)
         } else {
-          errorToast('Error')
-          setLoading(false)
+          // Resize before upload
+          let resizedFile = ''
+          try {
+            resizedFile = await resizeFile(file)
+          } catch (error) {
+            console.log(error)
+            errorToast('Error')
+            setLoading(false)
+            return
+          }
+
+          if (resizedFile) {
+            await createPresignedUrl(
+              resizedFile,
+              userInfo.id,
+              'BANNER',
+              async data => {
+                if (data !== false) {
+                  await handleUpdateTCBanner(data)
+                } else {
+                  setLoading(false)
+                }
+              },
+              () => {
+                setLoading(false)
+              },
+            )
+          } else {
+            errorToast('Error')
+            setLoading(false)
+          }
         }
       }
-    }
-  }, [competition?.id, createPresignedUrl, handleUpdateTCBanner, selectedImage, stateChecked, userInfo.id])
+    },
+    [competition?.id, createPresignedUrl, handleUpdateTCBanner, stateChecked, userInfo.id],
+  )
+
+  const exportCropToNewImage = useCallback(
+    async callbackFn => {
+      const image = imgRef.current
+      const previewCanvas = previewCanvasRef.current
+      if (!image || !previewCanvas || !completedCrop) {
+        errorToast('Crop canvas does not exist', null, null, false)
+      }
+
+      const scaleX = image.naturalWidth / image.width
+      const scaleY = image.naturalHeight / image.height
+
+      const offscreen = document.createElement('canvas')
+      offscreen.width = completedCrop.width * scaleX
+      offscreen.height = completedCrop.height * scaleY
+
+      const ctx = offscreen.getContext('2d')
+      if (!ctx) {
+        errorToast('No 2d context', null, null, false)
+      }
+
+      ctx.drawImage(
+        previewCanvas,
+        0,
+        0,
+        previewCanvas.width,
+        previewCanvas.height,
+        0,
+        0,
+        offscreen.width,
+        offscreen.height,
+      )
+
+      offscreen.toBlob(blob => {
+        const [originName, extension] = selectedImage.name.split('.')
+        const timeStamp = dayjs().unix()
+        const newName = `${originName}-${timeStamp}.${extension}`
+
+        const file = new File([blob], newName, { type: selectedImage.type })
+        callbackFn(file)
+      }, selectedImage.type)
+    },
+    [completedCrop, selectedImage],
+  )
+
+  const handleSave = useCallback(() => {
+    exportCropToNewImage(handleUploadBannerAndUpdateTC)
+  }, [handleUploadBannerAndUpdateTC, exportCropToNewImage])
 
   useEffect(() => {
     if (acceptedFiles.length) {
       setSelectedImage(acceptedFiles[0])
+      const reader = new FileReader()
+      reader.onload = () => {
+        const dataURL = reader.result
+        setInitImage(dataURL)
+      }
+      reader.readAsDataURL(acceptedFiles[0])
     }
-  }, [acceptedFiles, setSelectedImage])
+  }, [acceptedFiles, setInitImage])
+
+  useEffect(() => {
+    if (debounceCompleteCrop?.width && debounceCompleteCrop?.height && imgRef.current && previewCanvasRef.current) {
+      canvasPreview(imgRef.current, previewCanvasRef.current, debounceCompleteCrop, 1, 0)
+    }
+  }, [debounceCompleteCrop])
 
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Edit banner')}>
@@ -129,6 +223,7 @@ export function EditBannerModal({ competition, open, onClose }) {
 
         {stateChecked === 'custom' && (
           <>
+            <p className='mb-3'>Note: You should use image with 16:9 ratio (For example: 1920x1080)</p>
             <div
               className='mb-2 w-full rounded-xl border border-primary-800 bg-neutral-900 px-4 py-6 lg:p-6'
               {...getRootProps()}
@@ -136,13 +231,29 @@ export function EditBannerModal({ competition, open, onClose }) {
               <input {...getInputProps()} />
               {isDragActive ? <p>{t('Drop The File Here')}</p> : <p>{t('Drag Drop File Here')}</p>}
             </div>
-            {selectedImage && (
-              <CompetitionCardHeader
-                className='h-60 w-full rounded-xl'
-                competition={competition}
-                banner={selectedImage}
-              />
+
+            {Boolean(initImage) && (
+              <ReactCrop
+                crop={crop}
+                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                onComplete={c => setCompletedCrop(c)}
+                aspect={aspect}
+                minWidth={300}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  ref={imgRef}
+                  alt='Crop me'
+                  src={initImage}
+                  onLoad={e => {
+                    const { width, height } = e.currentTarget
+                    setCrop(centerAspectCrop(width, height, aspect))
+                  }}
+                />
+              </ReactCrop>
             )}
+
+            {Boolean(completedCrop) && <canvas hidden ref={previewCanvasRef} className=' object-contain' />}
           </>
         )}
         <div className='mt-2 flex w-full flex-row items-center gap-2'>
