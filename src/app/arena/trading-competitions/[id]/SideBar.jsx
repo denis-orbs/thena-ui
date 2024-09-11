@@ -72,7 +72,7 @@ function Sidebar({ competition, eventType }) {
 
   const intervalId = useRef(undefined)
 
-  const { open: openConnectModal } = useConnectModal()
+  const { openConnectModal } = useConnectModal()
   const { account } = useWallet()
   const { withdrawDeposit } = useWithdrawDepositTC()
   const { withdrawTCPerp } = useWithdrawToTCPerp()
