@@ -82,7 +82,7 @@ function Time({ data, setData }) {
         ...data,
         timestamp: {
           ...data.timestamp,
-          startTimestamp: new Date(regEndTime).getTime(),
+          startTimestamp: new Date(regEndTime).getTime() + 30 * 60 * 1000,
         },
       })
     }
