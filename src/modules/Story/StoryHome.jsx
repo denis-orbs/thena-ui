@@ -93,8 +93,8 @@ function StoryHome({ isUpcoming, isRegistered }) {
             </p>
             <p className='mx-auto max-w-[743px] text-center text-[20px] leading-none text-[#D1D0D2]'>
               {t('Embark on The Story of THENA')}
-              <span className='inline-block align-middle'>
-                <LogoTextIcon className='w-90 ml-1 mr-0 h-[18px] lg:h-[20px] lg:w-[100px]' />
+              <span className='inline-block align-bottom'>
+                <LogoTextIcon className='ml-1 mr-2 h-[20px] w-[90px]' />
               </span>
               <span className='lg:ml-[-8px]'>!&nbsp;</span>
               {t('Over 8 epic weeks')}
