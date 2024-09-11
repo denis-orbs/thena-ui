@@ -546,6 +546,12 @@ function Sidebar({ competition, eventType }) {
                 null,
                 null,
                 false,
+                {
+                  style: {
+                    cursor: 'pointer',
+                  },
+                  onClick: () => (window.location.href = 'https://discord.gg/thena'),
+                },
               )
               return
             }

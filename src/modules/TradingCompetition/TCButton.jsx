@@ -248,6 +248,12 @@ export function TCButton({ eventType, competition, timestamp }) {
                 null,
                 null,
                 false,
+                {
+                  style: {
+                    cursor: 'pointer',
+                  },
+                  onClick: () => (window.location.href = 'https://discord.gg/thena'),
+                },
               )
               return
             }
