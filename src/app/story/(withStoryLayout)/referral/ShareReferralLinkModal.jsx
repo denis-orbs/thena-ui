@@ -19,13 +19,21 @@ import {
   TwitterIcon,
 } from '@/svgs'
 
+const PostContent = `I’ve just joined THE Story with @ThenaFi_ 💜🏛️
+
+First tasks completed, NFT fragment collected, and I’m on the path to over $30K in rewards!
+
+Who’s with me? #StoryofTHENA
+
+https://thena.fi/story`
+
 export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }) {
   const t = useTranslations()
   const { campaignParticipantInfo } = useTHEStory()
   const [copied, setCopied] = useState(false)
   const [postContent, setPostContent] = useState(
     // eslint-disable-next-line max-len
-    `Join THE Story with @ThenaFi_ 💜🏛️ Complete tasks, earn NFT fragments, and rise through the ranks.Start your journey now! Referral Link🔗: https://thena.fi/story?ref=${referralCode}`,
+    `${PostContent}?ref=${referralCode}`,
   )
 
   const referralLink = useMemo(() => `https://thena.fi/story?ref=${referralCode}`, [referralCode])
@@ -52,7 +60,7 @@ export function ShareReferralLinkModal({ openModal, setOpenModal, referralCode }
   const handleOpenShareWindow = useCallback(
     data => {
       const targetUrl = getShareSocialNetworkUrl(data)
-      if (!campaignParticipantInfo.xProfileUsername) {
+      if (!campaignParticipantInfo.xProfileUsername && data.network === SocialNetwork.Twitter) {
         errorToast(
           'You have to update the X profile username first!\nhttps://thena.fi/story/edit-profile',
           '',
