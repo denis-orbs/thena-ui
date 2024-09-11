@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
@@ -292,6 +292,7 @@ const V4_THENIAN_NFTS_OWNED_AND_STAKED = gql`
 
 export const useThenianNftsOwnedAndStaked = () => {
   const { signWallet } = useSignWallet()
+  const [userNFTs, setUserNFTs] = useState([])
 
   const getThenianNftsOwnedAndStakedFn = useCallback(async () => {
     const { thenianNftsOwnedAndStaked } = await v4Client.request(
@@ -303,16 +304,25 @@ export const useThenianNftsOwnedAndStaked = () => {
     )
 
     if (thenianNftsOwnedAndStaked && Array.isArray) {
-      return thenianNftsOwnedAndStaked
+      return thenianNftsOwnedAndStaked.map(nft => ({
+        ...nft,
+        meatadata: {
+          image: nft?.meatadata?.image?.replace('ipfs.io', 'w3s.link'),
+        },
+      }))
     }
 
     return undefined
   }, [])
 
   const getThenianNftsOwnedAndStaked = useCallback(
-    async () => await actionWithAuthentication(getThenianNftsOwnedAndStakedFn, signWallet, {}),
+    async () => await actionWithAuthentication(getThenianNftsOwnedAndStakedFn, signWallet, {}, setUserNFTs),
     [getThenianNftsOwnedAndStakedFn, signWallet],
   )
 
-  return { getThenianNftsOwnedAndStaked }
+  return {
+    getThenianNftsOwnedAndStaked,
+    userNFTs,
+    setUserNFTs,
+  }
 }

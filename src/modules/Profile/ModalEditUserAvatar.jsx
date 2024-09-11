@@ -37,7 +37,7 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {}, u
         avatarUrl,
         newData => {
           if (newData !== false) {
-            onChange(newData)
+            onChange(newData.avatar)
             closeModal()
           }
           setLoading(false)
