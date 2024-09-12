@@ -136,23 +136,25 @@ export default function LeaderboardTable({ userInfo }) {
   }, [finalData, userInfo])
 
   return (
-    <div className='mb-[60.15px] rounded-xl bg-neutral-900'>
-      <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>{t('Leaderboard')}</p>
-      <Table
-        data={finalData}
-        className='w-full bg-neutral-900'
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        sortOptions={sortOptions}
-        sort={sort}
-        setSort={setSort}
-        tableBasic
-        hightLightById={userInfo.id}
-        bgHightLight='bg-neutral-800'
-        loading={!data}
-        pageSize={10}
-        defaultHead={(indexUser > 9 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
-      />
+    <div className='border-gradient-secondary rounded-xl p-[1px]'>
+      <div className='mb-[60.15px] rounded-xl bg-neutral-900'>
+        <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>{t('Leaderboard')}</p>
+        <Table
+          data={finalData}
+          className='w-full bg-neutral-900'
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          sortOptions={sortOptions}
+          sort={sort}
+          setSort={setSort}
+          tableBasic
+          hightLightById={userInfo.id}
+          bgHightLight='bg-neutral-800'
+          loading={!data}
+          pageSize={10}
+          defaultHead={(indexUser > 9 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
+        />
+      </div>
     </div>
   )
 }

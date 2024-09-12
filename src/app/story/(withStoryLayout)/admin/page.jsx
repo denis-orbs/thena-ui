@@ -37,7 +37,7 @@ function StoryAdminPage() {
       {!isLoadingInfo && account && userInfo && (userInfo.isAdmin || userInfo.isSuperAdmin) && (
         <>
           <div className='mb-3 mt-6'>
-            <TextHeading className='font-archia text-3xl'>{t('User Stats')}</TextHeading>
+            <TextHeading className='font-archia text-3xl font-semibold'>{t('User Stats')}</TextHeading>
           </div>
           <StatsCampaignParticipant statsCampaignParticipant={statsCampaignParticipant} isLoading={isLoadingStats} />
         </>

@@ -23,12 +23,12 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoading }) {
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>
           <Box className='flex flex-col gap-2 bg-neutral-900'>
             <TextHeading className='text-2xl'>{statsCampaignParticipant?.registeredUserCount}</TextHeading>
-            <TextSubHeading className='text-sm'>{t('Registered Users')}</TextSubHeading>
+            <TextSubHeading className='text-sm text-neutral-300'>{t('Registered Users')}</TextSubHeading>
           </Box>
 
           <Box className='flex flex-col gap-2 bg-neutral-900'>
             <TextHeading className='text-2xl'>{statsCampaignParticipant?.activeUserCount}</TextHeading>
-            <TextSubHeading className='flex items-center text-sm'>
+            <TextSubHeading className='flex items-center text-sm text-neutral-300'>
               {t('Active Users')}
               <span className='ml-1'>
                 <InfoCircleWhite className='w-4' />
@@ -38,7 +38,7 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoading }) {
 
           <Box className='flex flex-col gap-2 bg-neutral-900'>
             <TextHeading className='text-2xl'>{statsCampaignParticipant?.registeredReferralCount}</TextHeading>
-            <TextSubHeading className='flex items-center text-sm'>
+            <TextSubHeading className='flex items-center text-sm text-neutral-300'>
               {t('Registered Referrals')}
               <span className='ml-1'>
                 <InfoCircleWhite className='w-4' />
@@ -48,7 +48,7 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoading }) {
 
           <Box className='flex flex-col gap-2 bg-neutral-900'>
             <TextHeading className='text-2xl'>{statsCampaignParticipant?.successReferralCount}</TextHeading>
-            <TextSubHeading className='flex items-center text-sm'>
+            <TextSubHeading className='flex items-center text-sm text-neutral-300'>
               {t('Successful Referrals')}
               <span className='ml-1'>
                 <InfoCircleWhite className='w-4' />

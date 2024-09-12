@@ -71,7 +71,7 @@ function TopBarAdmin({ userInfo, isLoading }) {
           </div>
         )}
       </div>
-      <div className='flex flex-row items-center justify-end gap-2'>
+      <div className='flex flex-row justify-end gap-2'>
         <Link href='/story/edit-profile'>
           <EmphasisButton className='text-base'>{t('Edit Profile')}</EmphasisButton>
         </Link>
