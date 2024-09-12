@@ -4,7 +4,7 @@ import React from 'react'
 import Box from '@/components/box'
 import Skeleton from '@/components/skeleton'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { InfoCircleWhite } from '@/svgs'
+import { InfoNeutralIcon } from '@/svgs'
 
 function ItemLoading() {
   return (
@@ -31,7 +31,7 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoading }) {
             <TextSubHeading className='flex items-center text-sm text-neutral-300'>
               {t('Active Users')}
               <span className='ml-1'>
-                <InfoCircleWhite className='w-4' />
+                <InfoNeutralIcon className='w-4' />
               </span>
             </TextSubHeading>
           </Box>
@@ -41,7 +41,7 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoading }) {
             <TextSubHeading className='flex items-center text-sm text-neutral-300'>
               {t('Registered Referrals')}
               <span className='ml-1'>
-                <InfoCircleWhite className='w-4' />
+                <InfoNeutralIcon className='w-4' />
               </span>
             </TextSubHeading>
           </Box>
@@ -51,7 +51,7 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoading }) {
             <TextSubHeading className='flex items-center text-sm text-neutral-300'>
               {t('Successful Referrals')}
               <span className='ml-1'>
-                <InfoCircleWhite className='w-4' />
+                <InfoNeutralIcon className='w-4' />
               </span>
             </TextSubHeading>
           </Box>
