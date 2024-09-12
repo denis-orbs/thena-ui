@@ -64,11 +64,11 @@ const fetchCompetitionLeaderboard = async (id, searchText, orderBy) => {
 
 export const useTradingCompetitionLeaderBoard = (id, searchText) => {
   const { data: competitionData } = useSWR('competition detail api')
-  let orderBy = ['rank_ASC']
-  if (competitionData.prizeUpdate) {
-    orderBy = ['rank_ASC', 'percentagePnl_DESC']
+  let orderBy = ['rank_ASC', 'winTokenDecimal_DESC', 'id_ASC']
+  if (competitionData.prizeUpdate.winType) {
+    orderBy = ['rank_ASC', 'winTokenDecimal_DESC', 'percentagePnl_DESC', 'id_ASC']
   } else {
-    orderBy = ['rank_ASC', 'pnl_DESC']
+    orderBy = ['rank_ASC', 'winTokenDecimal_DESC', 'pnl_DESC', 'id_ASC']
   }
   const { data, isLoading } = useSWR(
     ['competition leader board api', id, searchText],
