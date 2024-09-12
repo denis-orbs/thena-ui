@@ -21,7 +21,7 @@ export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelecte
           type='button'
           className={cn(
             'cursor-pointer rounded-xl border-[1px] border-neutral-900 bg-neutral-900 py-[13px] text-[15px] font-medium leading-[35px]',
-            chapter.index === selectedChapterIndex && 'shadow-linear col-span-2 border-primary-600',
+            chapter.index === selectedChapterIndex && 'col-span-2 border-primary-600 bg-primary-950',
             !isAvailable(chapter) ? 'cursor-not-allowed opacity-60' : ' hover:border-primary-600',
           )}
           disabled={!isAvailable(chapter)}
