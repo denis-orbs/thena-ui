@@ -575,8 +575,16 @@ function Header() {
             push('/story/rewards')
           },
         },
+        account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
+          ? {
+              label: t('Admin'),
+              active: pathname === '/story/admin',
+              isLink: true,
+              href: '/story/admin',
+            }
+          : undefined,
       ]),
-    [pathname, push, t],
+    [account, pathname, push, t, userInfo],
   )
 
   // isRegister && isUpcoming

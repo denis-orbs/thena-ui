@@ -530,3 +530,29 @@ export const useRegisterToTHEStory = () => {
 
   return { registerToTHEStory }
 }
+
+const V4_STATS_CAMPAIGN_PARTICIPANT = gql`
+  query V4_STATS_CAMPAIGN_PARTICIPANT {
+    statsCampaignParticipant {
+      activeUserCount
+      registeredReferralCount
+      registeredUserCount
+      successReferralCount
+    }
+  }
+`
+
+export const fetchStatsCampaignParticipant = async () => {
+  try {
+    const { statsCampaignParticipant } = await v4Client.request(V4_STATS_CAMPAIGN_PARTICIPANT)
+
+    if (statsCampaignParticipant) {
+      return statsCampaignParticipant
+    }
+
+    return null
+  } catch (error) {
+    console.trace(error)
+    return null
+  }
+}
