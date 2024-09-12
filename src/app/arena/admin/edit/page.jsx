@@ -64,7 +64,7 @@ function EditAdminProfile() {
     data: userInfo,
     isLoading,
     mutate,
-  } = useSWR(['edit user info'], () => fetchUserInfo(account?.toLowerCase()), {
+  } = useSWR(['edit user info', account], () => fetchUserInfo(account?.toLowerCase()), {
     refreshInterval: 60000,
   })
 

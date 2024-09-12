@@ -13,7 +13,7 @@ import { useThenianNftsOwnedAndStaked } from '../Arena/hooks/profile'
 
 export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
   const t = useTranslations()
-  const { getThenianNftsOwnedAndStaked, userNFTs } = useThenianNftsOwnedAndStaked()
+  const { getThenianNftsOwnedAndStaked, userNFTs } = useThenianNftsOwnedAndStaked(userInfo?.id?.toLowerCase())
   const [openEditAvatar, setOpenEditAvatar] = useState(false)
   const [avatar, setAvatar] = useState(dataUpdate.avatar)
 
