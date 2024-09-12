@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -12,28 +13,16 @@ import { useThenianNftsOwnedAndStaked } from '../Arena/hooks/profile'
 
 export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
   const t = useTranslations()
-  const { getThenianNftsOwnedAndStaked } = useThenianNftsOwnedAndStaked()
+  const { getThenianNftsOwnedAndStaked, userNFTs } = useThenianNftsOwnedAndStaked()
   const [openEditAvatar, setOpenEditAvatar] = useState(false)
-  const [customAvatar, setCustomAvatar] = useState(null)
-  const [userNFTs, setUserNFTs] = useState([])
-  const isHaveThenaNfts = useMemo(() => !!userNFTs.length, [userNFTs])
+  const [avatar, setAvatar] = useState(dataUpdate.avatar)
 
   useEffect(() => {
-    if (!userInfo) return
     const getNfts = async () => {
-      const nfts = await getThenianNftsOwnedAndStaked()
-      if (nfts && Array.isArray(nfts)) {
-        setUserNFTs(nfts)
-      }
+      await getThenianNftsOwnedAndStaked()
     }
     getNfts()
-  }, [getThenianNftsOwnedAndStaked, userInfo])
-
-  useEffect(() => {
-    if (userInfo?.avatar && userNFTs?.every(thenianNfts => thenianNfts?.meatadata?.image !== userInfo.avatar)) {
-      setCustomAvatar(userInfo.avatar)
-    }
-  }, [userInfo?.avatar, userNFTs])
+  }, [getThenianNftsOwnedAndStaked])
 
   const onSelectAvatar = useCallback(
     image => {
@@ -51,37 +40,50 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
         ...prev,
         avatar: url,
       }))
-      setCustomAvatar(url)
+      setAvatar(url)
     },
     [setDataUpdate],
   )
 
+  const isUseNFTAvatar = useMemo(() => userNFTs?.find(nft => nft?.meatadata?.image === avatar), [userNFTs, avatar])
+
   return (
     <div className='flex-2 items-center justify-start space-x-4'>
       <div className='flex max-w-52 items-center gap-2 overflow-x-auto py-2 lg:max-w-4xl'>
-        {customAvatar && (
+        {!avatar && (
           <NextImage
             alt='avatar'
-            src={customAvatar}
+            src={Avatar}
             className={cn(
               'h-14 w-14 rounded-full lg:h-32 lg:w-32',
-              dataUpdate.avatar === customAvatar ? 'border-4 border-primary-600' : '',
+              dataUpdate.avatar === null ? 'border-4 border-primary-600' : '',
             )}
-            onClick={() => onSelectAvatar(customAvatar)}
+            onClick={() => onSelectAvatar(null)}
             width={100}
             height={100}
           />
         )}
-        {isHaveThenaNfts &&
+        {avatar && !isUseNFTAvatar && (
+          <NextImage
+            alt='avatar'
+            src={avatar}
+            className={cn(
+              'h-14 w-14 rounded-full lg:h-32 lg:w-32',
+              dataUpdate.avatar === avatar ? 'border-4 border-primary-600' : '',
+            )}
+            onClick={() => onSelectAvatar(avatar)}
+            width={100}
+            height={100}
+          />
+        )}
+        {Boolean(userNFTs.length) &&
           userNFTs?.map((thenianNfts, index) => (
             <NextImage
               alt='avatar'
-              src={thenianNfts?.meatadata?.image?.replace('ipfs.io', 'w3s.link')}
+              src={thenianNfts?.meatadata?.image}
               className={cn(
                 'h-14 w-14 rounded-full lg:h-32 lg:w-32',
-                dataUpdate.avatar === thenianNfts?.meatadata?.image?.replace('ipfs.io', 'w3s.link')
-                  ? 'border-4 border-primary-600'
-                  : '',
+                dataUpdate.avatar === thenianNfts?.meatadata?.image ? 'border-4 border-primary-600' : '',
               )}
               width={100}
               height={100}
@@ -90,7 +92,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
             />
           ))}
       </div>
-      {!isHaveThenaNfts && (
+      {!userNFTs.length && (
         <div className='flex flex-col-reverse lg:flex-col'>
           <TextHeading className='text-3xl'>{t('No TheNFTs Found')}</TextHeading>
         </div>
