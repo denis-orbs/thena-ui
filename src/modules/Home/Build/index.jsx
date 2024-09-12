@@ -43,17 +43,18 @@ const q3_q4Data = [
   },
   {
     value: 'THE Smart Wallet',
-    icon: 'progress',
+    icon: 'checkMark',
   },
   {
     value: 'ARENA V1',
+    icon: 'checkMark',
+  },
+  {
+    value: 'THENA V3',
+    icon: 'process',
   },
   {
     value: 'ALPHA V0 opBNB',
-  },
-
-  {
-    value: 'THENA V3',
   },
   {
     value: 'Cross-Chain Voting',
