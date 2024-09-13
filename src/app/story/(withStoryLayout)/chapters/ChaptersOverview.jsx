@@ -19,7 +19,7 @@ export function ChaptersOverview({ chapters }) {
       <TextHeading className='block font-archia text-3xl font-semibold leading-9'>
         {t('All Chapters Overview')}
       </TextHeading>
-      <div className='mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-[30px]'>
+      <div className='mt-6 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-[30px] 2xl:grid-cols-4'>
         {chapters.map(chapter => chapter.available && <ChapterOverviewProcess chapter={chapter} key={chapter.id} />)}
       </div>
     </div>
