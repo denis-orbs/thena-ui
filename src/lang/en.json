@@ -1086,7 +1086,6 @@
   "Show": "Show",
   "Completed Achievements1": "Completed Achievements",
   "Select Achievements": "Select Achievements",
-  "Clear all": "Clear all",
   "Show Achievements": "Show Achievements",
   "Download image": "Download image",
   "Registered Users": "Registered Users",
@@ -1095,7 +1094,8 @@
   "THE Covenant": "THE Covenant",
   "Lock THE": "Lock THE into veTHE (any amount)",
   "Vote on THENA": "Vote on THENA",
-  "Retweet and Like": "RT and Like our grant post",
+  "Retweet and Like": "ReTweet and Like our grant post",
   "Register for the THENA TC": "Register for our trading competition on ARENA",
-  "Vote on specific pools": "Vote on specific pools or vault strategies provided by these partners (Algebra, Gamma Strategies, Lido, ICHI and DefiEdge)"
+  "Vote on specific pools": "Vote on specific pools or vault strategies provided by these partners (Algebra, Gamma Strategies, Lido, ICHI and DefiEdge)",
+  "All Chapters": "All Chapters"
 }

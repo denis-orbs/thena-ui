@@ -10,7 +10,7 @@ export function RewardChapterTabNavigator({ chapters, selectedChapterIndex, setS
           type='button'
           className={cn(
             'cursor-pointer rounded-xl border-[1px] border-neutral-900 bg-neutral-900 px-4 py-[13px] text-sm font-medium leading-[35px] lg:px-7 lg:text-base',
-            index === selectedChapterIndex - 1 ? 'shadow-linear border-primary-600' : 'border-neutral-700',
+            index === selectedChapterIndex - 1 ? 'col-span-2 border-primary-600 bg-primary-950' : 'border-neutral-700',
             !chapter.available ? 'cursor-not-allowed' : ' hover:border-primary-600',
           )}
           disabled={!chapter.available}

@@ -11,18 +11,20 @@ import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import Tag from '@/components/tag'
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { useTHEStory } from '@/context/THEStoryContext'
 import dayjs from '@/lib/arenaDayjs'
 import { sliceAddress } from '@/lib/utils'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 
 function TopBarAdmin({ userInfo, isLoading }) {
   const t = useTranslations()
+  const { campaignParticipantInfo: adminInfo } = useTHEStory()
 
   return (
     <Box className='flex flex-col-reverse gap-4 md:flex-row md:justify-between'>
       <div className='flex flex-row items-start gap-4 md:items-center'>
         <CircleImage
-          src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') || Avatar}
+          src={adminInfo?.avatarUrl?.replace('ipfs.io', 'w3s.link') ?? Avatar}
           alt='avatar'
           className='size-14 md:size-[124px]'
         />

@@ -3,6 +3,7 @@ import React from 'react'
 
 import Box from '@/components/box'
 import Skeleton from '@/components/skeleton'
+import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { InfoNeutralIcon } from '@/svgs'
 
@@ -30,9 +31,14 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoading }) {
             <TextHeading className='text-2xl'>{statsCampaignParticipant?.activeUserCount}</TextHeading>
             <TextSubHeading className='flex items-center text-sm text-neutral-300'>
               {t('Active Users')}
-              <span className='ml-1'>
-                <InfoNeutralIcon className='w-4' />
-              </span>
+              <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id='active-users-tooltip' />
+              <CustomTooltip
+                className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                id='active-users-tooltip'
+                place='bottom'
+              >
+                Total users who have completed at least 1 task
+              </CustomTooltip>
             </TextSubHeading>
           </Box>
 
@@ -40,9 +46,14 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoading }) {
             <TextHeading className='text-2xl'>{statsCampaignParticipant?.registeredReferralCount}</TextHeading>
             <TextSubHeading className='flex items-center text-sm text-neutral-300'>
               {t('Registered Referrals')}
-              <span className='ml-1'>
-                <InfoNeutralIcon className='w-4' />
-              </span>
+              <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id='registered-referrals-tooltip' />
+              <CustomTooltip
+                className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                id='registered-referrals-tooltip'
+                place='bottom'
+              >
+                Total users registered via the referral link
+              </CustomTooltip>
             </TextSubHeading>
           </Box>
 
@@ -50,9 +61,14 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoading }) {
             <TextHeading className='text-2xl'>{statsCampaignParticipant?.successReferralCount}</TextHeading>
             <TextSubHeading className='flex items-center text-sm text-neutral-300'>
               {t('Successful Referrals')}
-              <span className='ml-1'>
-                <InfoNeutralIcon className='w-4' />
-              </span>
+              <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id='success-referrals-tooltip' />
+              <CustomTooltip
+                className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                id='success-referrals-tooltip'
+                place='bottom'
+              >
+                Total users registered via the referral link who have completed at least 1 task
+              </CustomTooltip>
             </TextSubHeading>
           </Box>
         </div>

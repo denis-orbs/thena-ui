@@ -71,7 +71,7 @@ export default function ShareProfileStats({
               className='lg:text[16px] border-none text-[14px] text-neutral-300'
               onClick={() => setSelectedAchievement([])}
             >
-              {t('Clear all')}
+              {t('Clear All')}
             </OutlinedButton>
           </div>
 
