@@ -32,11 +32,7 @@ export function SelectNameColor({ dataUpdate, setDataUpdate }) {
   return (
     <div className='flex gap-2 py-2 lg:w-[300px]'>
       {LIST_COLOR.map(({ value }) => (
-        <div
-          key={value}
-          className='flex cursor-pointer items-center gap-4 p-2'
-          onClick={() => onSelectNameColor(value)}
-        >
+        <div key={value} className='flex cursor-pointer items-center gap-6' onClick={() => onSelectNameColor(value)}>
           <div
             className='rounded-full p-1'
             style={
