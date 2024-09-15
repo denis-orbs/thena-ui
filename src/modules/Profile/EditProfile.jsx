@@ -16,7 +16,7 @@ import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
 import { errorToast } from '@/lib/notify'
-import { isValidHttpUrl } from '@/lib/utils'
+import { cn, isValidHttpUrl } from '@/lib/utils'
 import { ArrowLeftIcon, Verified } from '@/svgs'
 
 import { SelectAvatar } from './SelectAvatar'
@@ -117,7 +117,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
           </div>
           <div className='flex flex-col items-center gap-3 lg:flex-row'>
             <div>
-              <TextSubHeading className='mb-1 block'>
+              <TextSubHeading className={cn('mb-1 block', !showCustomColor && 'ml-[5px]')}>
                 {t(!showCustomColor ? 'Basic Color' : 'Custom Color')}:
               </TextSubHeading>
               {!showCustomColor ? (

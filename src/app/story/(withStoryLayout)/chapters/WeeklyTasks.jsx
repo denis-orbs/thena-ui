@@ -64,6 +64,12 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
     [chapters],
   )
 
+  const isViewBNBChainButton = useMemo(() => {
+    const currentTime = new Date()
+    const endChapter2 = new Date(chapters?.[1]?.endTimestamp ?? 0)
+    return currentTime < endChapter2
+  }, [chapters])
+
   return (
     <div className='mt-[63px]'>
       <TextHeading className='block font-archia text-3xl font-semibold leading-9'>{t('Weekly Tasks')}</TextHeading>
@@ -99,18 +105,20 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
                 <h2 className='mb-6 font-archia'>{t('Next Chapter Available in')}</h2>
                 <Countdown timestamp={nextAvailableChapterTimeStamp} />
               </div>
-              <Link
-                href='https://dappbay.bnbchain.org/campaign/join-bnb-chain-4-year-ecosystem-celebration-with-$300K-in-rewards'
-                className='w-full'
-                target='_blank'
-              >
-                <PrimaryButton className='mt-4 w-full lg:mt-9'>
-                  <div className=' flex items-center justify-between'>
-                    <span className='mr-1 text-left'>{t('View BNB Chain')}</span>
-                    <ChevronRightIcon className='size-4' />
-                  </div>
-                </PrimaryButton>
-              </Link>
+              {isViewBNBChainButton && (
+                <Link
+                  href='https://dappbay.bnbchain.org/campaign/join-bnb-chain-4-year-ecosystem-celebration-with-$300K-in-rewards'
+                  className='w-full'
+                  target='_blank'
+                >
+                  <PrimaryButton className='mt-4 w-full lg:mt-9'>
+                    <div className=' flex items-center justify-between'>
+                      <span className='mr-1 text-left'>{t('View BNB Chain')}</span>
+                      <ChevronRightIcon className='size-4' />
+                    </div>
+                  </PrimaryButton>
+                </Link>
+              )}
             </>
           )}
         </div>

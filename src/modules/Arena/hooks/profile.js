@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 
 import { ThenaAuthToken } from '@/constant'
 import { actionWithAuthentication, useSignWallet } from '@/hooks/useSignWallet'
@@ -277,8 +277,8 @@ export const useCheckUserCreated = () => {
 }
 
 const V4_THENIAN_NFTS_OWNED_AND_STAKED = gql`
-  query V4_THENIAN_NFTS_OWNED_AND_STAKED {
-    thenianNftsOwnedAndStaked {
+  query V4_THENIAN_NFTS_OWNED_AND_STAKED($userId: String!) {
+    thenianNftsStakedAndOwned(userId: $userId) {
       id
       index
       meatadata {
@@ -290,29 +290,34 @@ const V4_THENIAN_NFTS_OWNED_AND_STAKED = gql`
   }
 `
 
-export const useThenianNftsOwnedAndStaked = () => {
+export const useThenianNftsOwnedAndStaked = userId => {
   const { signWallet } = useSignWallet()
+  const [userNFTs, setUserNFTs] = useState([])
 
   const getThenianNftsOwnedAndStakedFn = useCallback(async () => {
-    const { thenianNftsOwnedAndStaked } = await v4Client.request(
-      V4_THENIAN_NFTS_OWNED_AND_STAKED,
-      {},
-      {
-        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
-      },
-    )
+    if (!userId) return []
+    const { thenianNftsStakedAndOwned } = await v4Client.request(V4_THENIAN_NFTS_OWNED_AND_STAKED, { userId })
 
-    if (thenianNftsOwnedAndStaked && Array.isArray) {
-      return thenianNftsOwnedAndStaked
+    if (thenianNftsStakedAndOwned && Array.isArray) {
+      return thenianNftsStakedAndOwned.map(nft => ({
+        ...nft,
+        meatadata: {
+          image: nft?.meatadata?.image?.replace('ipfs.io', 'w3s.link'),
+        },
+      }))
     }
 
-    return undefined
-  }, [])
+    return []
+  }, [userId])
 
   const getThenianNftsOwnedAndStaked = useCallback(
-    async () => await actionWithAuthentication(getThenianNftsOwnedAndStakedFn, signWallet, {}),
+    async () => await actionWithAuthentication(getThenianNftsOwnedAndStakedFn, signWallet, {}, setUserNFTs),
     [getThenianNftsOwnedAndStakedFn, signWallet],
   )
 
-  return { getThenianNftsOwnedAndStaked }
+  return {
+    getThenianNftsOwnedAndStaked,
+    userNFTs,
+    setUserNFTs,
+  }
 }

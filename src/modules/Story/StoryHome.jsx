@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -43,6 +43,12 @@ function StoryHome({ isUpcoming, isRegistered }) {
       behavior: 'smooth',
     })
   }
+
+  const isViewBNBChainButton = useMemo(() => {
+    const currentTime = new Date()
+    const endChapter2 = new Date(chapters?.[1]?.endTimestamp ?? 0)
+    return currentTime < endChapter2
+  }, [chapters])
 
   return (
     <>
@@ -103,17 +109,19 @@ function StoryHome({ isUpcoming, isRegistered }) {
           {isRegistered && (
             <div className='mx-auto max-w-[850px]'>
               <Chapters chapters={chapters} isLoading={isLoadingChapterTasks} />
-              <div className='mt-6 flex w-full justify-center'>
-                <Link
-                  href='https://dappbay.bnbchain.org/campaign/join-bnb-chain-4-year-ecosystem-celebration-with-$300K-in-rewards'
-                  target='_blank'
-                >
-                  <PrimaryButton className='h-auto w-full md:w-[420px]'>
-                    {t('View BNB Chain')}
-                    <ChevronRightIcon className='h-4 w-4 text-white' />
-                  </PrimaryButton>
-                </Link>
-              </div>
+              {isViewBNBChainButton && (
+                <div className='mt-6 flex w-full justify-center'>
+                  <Link
+                    href='https://dappbay.bnbchain.org/campaign/join-bnb-chain-4-year-ecosystem-celebration-with-$300K-in-rewards'
+                    target='_blank'
+                  >
+                    <PrimaryButton className='h-auto w-full md:w-[420px]'>
+                      {t('View BNB Chain')}
+                      <ChevronRightIcon className='h-4 w-4 text-white' />
+                    </PrimaryButton>
+                  </Link>
+                </div>
+              )}
 
               <div className='mx-auto mt-16 flex max-w-[813px] flex-col justify-center xl:mt-28'>
                 <p className='text-center font-archia text-[31px] font-semibold lg:text-[70px]'>{t('Unlock Over')}</p>
