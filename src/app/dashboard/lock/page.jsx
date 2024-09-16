@@ -184,7 +184,7 @@ export default function LockPage() {
             <p>{t('Lock THE Desciption')}</p>
             <TertiaryButton
               className='min-w-fit'
-              onClick={() => goToDoc('https://thena.gitbook.io/thena/the-tokenomics/vethe')}
+              onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe')}
             >
               {t('Learn More')}
             </TertiaryButton>

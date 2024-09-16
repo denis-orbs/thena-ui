@@ -157,7 +157,7 @@ export function UserInfo({ userInfo, following, followers }) {
                   {t(userInfo.thenianNfts.length ? 'Buy Additional THENA IDs' : 'Buy Your Thena NFT Subdomain')}
                 </TextHeading>
                 <Link
-                  href='https://thena.gitbook.io/thena/arena/thena-ids'
+                  href='https://docs.thena.fi/thena/arena/thena-ids'
                   rel='nofollow noopener noreferrer'
                   target='_blank'
                 >

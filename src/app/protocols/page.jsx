@@ -33,10 +33,7 @@ export default function ProtocolsPage() {
             className='min-w-fit'
             responsive
             onClick={() => {
-              window.open(
-                'https://thena.gitbook.io/thena/the-open-marketplace-for-liquidity/whitelist-tokens',
-                '_blank',
-              )
+              window.open('https://docs.thena.fi/thena/the-open-marketplace-for-liquidity/whitelist-tokens', '_blank')
             }}
           >
             {t('Learn More')}

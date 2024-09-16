@@ -95,7 +95,7 @@ export const formatAmount = (amount = null, shorted = false, fixed = 3, hideNega
 }
 
 export const goToDoc = url => {
-  window.open(url ?? 'https://thena.gitbook.io/', '_blank')
+  window.open(url ?? 'https://docs.thena.fi/', '_blank')
 }
 
 export const goScan = (chainId, address, isTxn) => {

@@ -86,7 +86,7 @@ export function FutureOfTrading() {
         <TrailingButton
           className='mt-7 lg:mt-12'
           onClick={() => {
-            window.open('https://thena.gitbook.io/thena/the-tokenomics/initial-supply-and-emissions-schedule', '_blank')
+            window.open('https://docs.thena.fi/thena/the-tokenomics/initial-supply-and-emissions-schedule', '_blank')
           }}
         >
           {t('Tokenomics')}
