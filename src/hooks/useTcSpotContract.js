@@ -13,7 +13,7 @@ import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei, isInvalidAmount } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useTCContractInfor = (address, eventType, participantCount, type = TC_MARKET_TYPES.SPOT) => {
+export const useTCContractInfor = (tcAddress, eventType, participantCount, type = TC_MARKET_TYPES.SPOT) => {
   const [loaded, setLoaded] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
@@ -22,8 +22,8 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
   const [isHostClaimable, setIsHostClaimable] = useState(undefined)
   const [isWithdrawable, setIsWithdrawable] = useState(undefined)
 
-  const tcSpotContract = getTcSpotContract(address)
-  const oldTcSpotContract = getOldTcSpotContract(address)
+  const tcSpotContract = getTcSpotContract(tcAddress)
+  const oldTcSpotContract = getOldTcSpotContract(tcAddress)
 
   const { account } = useWallet()
   const assets = useAssets()
@@ -31,7 +31,7 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
   const getUserData = useCallback(async () => {
     setLoaded(false)
 
-    if (address) {
+    if (tcAddress) {
       if (!account || !tcSpotContract || type !== TC_MARKET_TYPES.SPOT) {
         setIsRegistered(false)
         setIsWinner(false)
@@ -66,7 +66,7 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, eventType, address, type])
+  }, [account, eventType, tcAddress, type])
 
   const getParticipantList = useCallback(async () => {
     if (participantCount) {
@@ -109,7 +109,11 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
 
   const checkClaimable = useCallback(
     async (force = false) => {
-      if (type !== TC_MARKET_TYPES.SPOT || eventType !== EVENT_TYPES.ENDED) {
+      if (
+        type !== TC_MARKET_TYPES.SPOT ||
+        eventType !== EVENT_TYPES.ENDED ||
+        tcAddress === '0x79a10465231849781c7866aea68f447a71e34263' // hard-coded
+      ) {
         return
       }
       if (isRegistered && isWinner && (isClaimable === undefined || force)) {
@@ -160,6 +164,7 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
       isRegistered,
       isWinner,
       oldTcSpotContract,
+      tcAddress,
       tcSpotContract,
       type,
     ],
@@ -198,11 +203,11 @@ export const useTCContractInfor = (address, eventType, participantCount, type = 
   }, [getUserData])
 
   useEffect(() => {
-    if (account && address) {
+    if (account && tcAddress) {
       setIsClaimable(undefined)
       setIsHostClaimable(undefined)
     }
-  }, [account, address])
+  }, [account, tcAddress])
 
   return {
     loaded,
