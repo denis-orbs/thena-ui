@@ -336,7 +336,7 @@ export default function ArenaPage() {
       compact([
         showTab.upcoming
           ? {
-              label: t('Upcoming'),
+              label: 'Upcoming',
               active: filter.type === 'upcoming',
               onClickHandler: () => {
                 if (filter.type !== 'upcoming') {
@@ -358,7 +358,7 @@ export default function ArenaPage() {
           : undefined,
         showTab.live
           ? {
-              label: t('Live'),
+              label: 'Live',
               active: filter.type === 'live',
               onClickHandler: () => {
                 if (filter.type !== 'live') {
@@ -379,7 +379,7 @@ export default function ArenaPage() {
             }
           : undefined,
         {
-          label: t('All'),
+          label: 'All',
           active: filter.type === 'all',
           onClickHandler: () => {
             if (filter.type !== 'all') {
@@ -400,7 +400,7 @@ export default function ArenaPage() {
         },
         showTab.joined
           ? {
-              label: t('Joined'),
+              label: 'Joined',
               active: filter.type === 'joined',
               onClickHandler: () => {
                 if (filter.type !== 'joined') {
@@ -420,7 +420,7 @@ export default function ArenaPage() {
           : undefined,
         showTab.hosted
           ? {
-              label: t('Hosted'),
+              label: 'Hosted',
               active: filter.type === 'hosted',
               onClickHandler: () => {
                 if (filter.type !== 'hosted') {
@@ -441,7 +441,7 @@ export default function ArenaPage() {
 
         showTab.ended
           ? {
-              label: t('Ended'),
+              label: 'Ended',
               active: filter.type === 'ended',
               onClickHandler: () => {
                 if (filter.type !== 'ended') {
@@ -461,7 +461,7 @@ export default function ArenaPage() {
             }
           : undefined,
       ]),
-    [showTab.upcoming, showTab.live, showTab.joined, showTab.hosted, showTab.ended, t, filter, searchText],
+    [showTab.upcoming, showTab.live, showTab.joined, showTab.hosted, showTab.ended, filter, searchText],
   )
 
   const subFilterTabs = useMemo(
@@ -469,7 +469,7 @@ export default function ArenaPage() {
       compact([
         showSubFilterTab.upcoming
           ? {
-              label: t('Upcoming'),
+              label: 'Upcoming',
               active: filter.status === 'upcoming',
               onClickHandler: () => {
                 setFilter({
@@ -486,7 +486,7 @@ export default function ArenaPage() {
           : undefined,
         showSubFilterTab.live
           ? {
-              label: t('Live'),
+              label: 'Live',
               active: filter.status === 'live',
               onClickHandler: () => {
                 setFilter({
@@ -503,7 +503,7 @@ export default function ArenaPage() {
           : undefined,
         showSubFilterTab.ended
           ? {
-              label: t('Ended'),
+              label: 'Ended',
               active: filter.status === 'ended',
               onClickHandler: () => {
                 setFilter({
@@ -519,7 +519,7 @@ export default function ArenaPage() {
             }
           : undefined,
       ]),
-    [filter, showSubFilterTab.ended, showSubFilterTab.live, showSubFilterTab.upcoming, t],
+    [filter, showSubFilterTab.ended, showSubFilterTab.live, showSubFilterTab.upcoming],
   )
 
   const filterTabToLabel = useMemo(() => {

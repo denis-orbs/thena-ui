@@ -141,14 +141,14 @@ function CompetitionDetailLayout({ children, params }) {
     () =>
       compact([
         {
-          label: t('Details'),
+          label: 'Details',
           active: pathname === `/arena/trading-competitions/${params.id}`,
           href: `/arena/trading-competitions/${params.id}`,
           isLink: true,
         },
         (eventType === EVENT_TYPES.LIVE || eventType === EVENT_TYPES.ENDED) && _competition?.participantCount !== 0
           ? {
-              label: t('Leaderboard'),
+              label: 'Leaderboard',
               active: pathname === `/arena/trading-competitions/${params.id}/leaderboard`,
 
               isLink: true,
@@ -157,7 +157,7 @@ function CompetitionDetailLayout({ children, params }) {
           : undefined,
         _competition?.participantCount !== 0
           ? {
-              label: t('Participants'),
+              label: 'Participants',
               active: pathname === `/arena/trading-competitions/${params.id}/participants`,
 
               isLink: true,
@@ -166,7 +166,7 @@ function CompetitionDetailLayout({ children, params }) {
           : undefined,
         eventType !== EVENT_TYPES.UPCOMING
           ? {
-              label: t('Analytics'),
+              label: 'Analytics',
               active: pathname === `/arena/trading-competitions/${params.id}/analytics`,
 
               isLink: true,
@@ -174,7 +174,7 @@ function CompetitionDetailLayout({ children, params }) {
             }
           : undefined,
       ]),
-    [_competition?.participantCount, eventType, params.id, pathname, t],
+    [_competition?.participantCount, eventType, params.id, pathname],
   )
 
   const enableEditBanner = useMemo(

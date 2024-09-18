@@ -434,35 +434,35 @@ function Header() {
   const submenus = useMemo(() => {
     const subs = [
       {
-        label: t('My Assets'),
+        label: 'My Assets',
         active: pathname === '/dashboard',
         onClickHandler: () => {
           push('/dashboard')
         },
       },
       {
-        label: t('Lock'),
+        label: 'Lock',
         active: pathname === '/dashboard/lock',
         onClickHandler: () => {
           push('/dashboard/lock')
         },
       },
       {
-        label: t('Vote'),
+        label: 'Vote',
         active: pathname === '/dashboard/vote',
         onClickHandler: () => {
           push('/dashboard/vote')
         },
       },
       {
-        label: t('Rewards'),
+        label: 'Rewards',
         active: pathname === '/dashboard/rewards',
         onClickHandler: () => {
           push('/dashboard/rewards')
         },
       },
       {
-        label: t('theNFT'),
+        label: 'theNFT',
         active: pathname === '/dashboard/thenft',
         onClickHandler: () => {
           push('/dashboard/thenft')
@@ -470,32 +470,32 @@ function Header() {
       },
     ]
     return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
-  }, [t, pathname, networkId, push])
+  }, [pathname, networkId, push])
 
   const arenaSubmenus = useMemo(
     () =>
       compact([
         {
-          label: t('Competitions'),
+          label: 'Competitions',
           active: pathname === '/arena',
           isLink: true,
           href: '/arena',
         },
         {
-          label: t('Rankings'),
+          label: 'Rankings',
           active: pathname === '/arena/rankings' || pathname === '/arena/rankings/competitions',
           isLink: true,
           href: '/arena/rankings',
         },
         {
-          label: t('Analytics'),
+          label: 'Analytics',
           active: pathname.includes('/arena/analytics'),
           isLink: true,
           href: '/arena/analytics',
         },
         account
           ? {
-              label: t('Achievements'),
+              label: 'Achievements',
               active: pathname === '/arena/achievements',
               isLink: true,
               href: '/arena/achievements',
@@ -503,7 +503,7 @@ function Header() {
           : undefined,
         account
           ? {
-              label: t('Profile'),
+              label: 'Profile',
               active:
                 pathname === '/arena/profile' ||
                 pathname === '/arena/profile/edit' ||
@@ -514,7 +514,7 @@ function Header() {
             }
           : undefined,
         {
-          label: t('THENA ID'),
+          label: 'THENA ID',
           active:
             pathname === '/arena/thena-id/mint' ||
             pathname === '/arena/thena-id/gift' ||
@@ -526,14 +526,14 @@ function Header() {
         },
         account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
           ? {
-              label: t('Admin'),
+              label: 'Admin',
               active: pathname === '/arena/admin',
               isLink: true,
               href: '/arena/admin',
             }
           : undefined,
       ]),
-    [account, pathname, t, userInfo],
+    [account, pathname, userInfo],
   )
 
   // isRegister, !isUpcoming
@@ -541,35 +541,35 @@ function Header() {
     () =>
       compact([
         {
-          label: t('Home'),
+          label: 'Home',
           active: pathname === '/story',
           onClickHandler: () => {
             push('/story')
           },
         },
         {
-          label: t('Chapters'),
+          label: 'Chapters',
           active: pathname === '/story/chapters',
           onClickHandler: () => {
             push('/story/chapters')
           },
         },
         {
-          label: t('Leaderboard'),
+          label: 'Leaderboard',
           active: pathname === '/story/leaderboard',
           onClickHandler: () => {
             push('/story/leaderboard')
           },
         },
         {
-          label: t('Referral'),
+          label: 'Referral',
           active: pathname === '/story/referral',
           onClickHandler: () => {
             push('/story/referral')
           },
         },
         {
-          label: t('Rewards'),
+          label: 'Rewards',
           active: pathname === '/story/rewards',
           onClickHandler: () => {
             push('/story/rewards')
@@ -577,14 +577,14 @@ function Header() {
         },
         account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
           ? {
-              label: t('Admin'),
+              label: 'Admin',
               active: pathname === '/story/admin',
               isLink: true,
               href: '/story/admin',
             }
           : undefined,
       ]),
-    [account, pathname, push, t, userInfo],
+    [account, pathname, push, userInfo],
   )
 
   // isRegister && isUpcoming
@@ -592,21 +592,21 @@ function Header() {
     () =>
       compact([
         {
-          label: t('Home'),
+          label: 'Home',
           active: pathname === '/story',
           onClickHandler: () => {
             push('/story')
           },
         },
         {
-          label: t('Chapters'),
+          label: 'Chapters',
           active: pathname === '/story/chapters',
           onClickHandler: () => {
             push('/story/chapters')
           },
         },
       ]),
-    [pathname, push, t],
+    [pathname, push],
   )
 
   const onLogoClick = () => {
@@ -668,7 +668,7 @@ function Header() {
                         )}
                         onClick={() => item.onClickHandler && item.onClickHandler()}
                       >
-                        {t(item.label)}
+                        {item.label}
                       </span>
                     </div>
                   </div>
@@ -704,8 +704,8 @@ function Header() {
                               }
                             }}
                           >
-                            <TextHeading>{t(subitem.heading)}</TextHeading>
-                            <TextSubHeading>{t(subitem.subheading)}</TextSubHeading>
+                            <TextHeading>{subitem.heading}</TextHeading>
+                            <TextSubHeading>{subitem.subheading}</TextSubHeading>
                           </div>
                         ))}
                       </div>
@@ -764,8 +764,8 @@ function Header() {
                       }
                     }}
                   >
-                    <TextHeading>{t(submenu.heading)}</TextHeading>
-                    <TextSubHeading>{t(submenu.subheading)}</TextSubHeading>
+                    <TextHeading>{submenu.heading}</TextHeading>
+                    <TextSubHeading>{submenu.subheading}</TextSubHeading>
                   </div>
                 ))}
             </div>
@@ -785,7 +785,7 @@ function Header() {
                       }
                     }}
                   >
-                    <p className='font-medium text-neutral-200'>{t(menu.label)}</p>
+                    <p className='font-medium text-neutral-200'>{menu.label}</p>
                     {menu.sub && <ArrowRightIcon className='h-4 w-4' />}
                   </div>
                 ))}

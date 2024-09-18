@@ -37,7 +37,7 @@ export function UserCompetitions({ hostedCompetitions, joinedTCs }) {
       compact([
         joinedTCs.length
           ? {
-              label: t('Joined'),
+              label: 'Joined',
               active: selectedTab === 'Joined',
               onClickHandler: () => {
                 setSelectedTab('Joined')
@@ -46,7 +46,7 @@ export function UserCompetitions({ hostedCompetitions, joinedTCs }) {
           : undefined,
         hostedCompetitions.length
           ? {
-              label: t('Hosted'),
+              label: 'Hosted',
               active: selectedTab === 'Hosted',
               onClickHandler: () => {
                 setSelectedTab('Hosted')
@@ -54,7 +54,7 @@ export function UserCompetitions({ hostedCompetitions, joinedTCs }) {
             }
           : undefined,
       ]),
-    [hostedCompetitions, joinedTCs, selectedTab, t],
+    [hostedCompetitions, joinedTCs, selectedTab],
   )
 
   const filterCompetitions = useMemo(

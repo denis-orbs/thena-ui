@@ -1,6 +1,5 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 
 import Tabs, { TabPanel } from '@/components/tabs'
@@ -12,8 +11,6 @@ import { LeaderBoard } from '@/modules/TradingCompetition/LeaderBoard'
 import { TradeHistory } from '@/modules/TradingCompetition/TradeHistory'
 
 function TradePage({ params }) {
-  const t = useTranslations()
-
   const [selectedTab, setSelectedTab] = useState('leaderboard')
 
   const { competition } = useTradingCompetitionLeaderBoard(params.id)
@@ -23,21 +20,21 @@ function TradePage({ params }) {
   const subTabs = useMemo(
     () => [
       {
-        label: t('Leaderboard'),
+        label: 'Leaderboard',
         active: selectedTab === 'leaderboard',
         onClickHandler: () => {
           setSelectedTab('leaderboard')
         },
       },
       {
-        label: t('Trade History'),
+        label: 'Trade History',
         active: selectedTab === 'history',
         onClickHandler: () => {
           setSelectedTab('history')
         },
       },
     ],
-    [selectedTab, t],
+    [selectedTab],
   )
 
   if (eventType === EVENT_TYPES.UPCOMING) {
