@@ -51,11 +51,7 @@ function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} })
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} title='Increase Prize Pool' onAfterClose={() => setAmount('')}>
       <ModalBody>
-        <Warning className='text-sm'>
-          {t(
-            'This action will increase the prize pool for all participants. You cannot add to your deposit here. Continue only if you know what you are doing',
-          )}
-        </Warning>
+        <Warning className='text-sm'>{t('Increase Prize Pool warning')}</Warning>
         <CustomTokenInput
           asset={token}
           setAsset={setToken}
