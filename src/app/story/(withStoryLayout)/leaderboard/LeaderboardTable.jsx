@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
-import { fetchParticipants } from '@/modules/Story'
+import { fetchParticipants, fetchParticipantsByChapter } from '@/modules/Story'
 import { FirstPrizeIcon, InfoCircleGradient, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 
 function PointHead() {
@@ -25,8 +25,19 @@ function PointHead() {
     </div>
   )
 }
+function IsEligible() {
+  const t = useTranslations()
+  return (
+    <div className='flex flex-row'>
+      <span>{t('Eligible For Raffle')}</span>
+      <span>
+        <InfoCircleGradient className='ml-1 size-4 text-neutral-400' data-tooltip-id='point-description' />
+      </span>
+    </div>
+  )
+}
 
-const sortOptions = [
+const sortOptions1 = [
   {
     disabled: true,
     label: '#',
@@ -52,7 +63,32 @@ const sortOptions = [
   },
 ]
 
-function ThenianElement({ data }) {
+const sortOptions2 = [
+  {
+    disabled: true,
+    label: 'Thenian',
+    value: 'thenian',
+    isDesc: true,
+    justify: 'text-wrap min-w-[130px]',
+    width: 'lg:w-[90%]',
+  },
+  {
+    disabled: true,
+    label: 'Completed Tasks',
+    value: 'completedTask',
+    isDesc: true,
+    width: 'w-[5%]',
+  },
+  {
+    disabled: true,
+    label: <IsEligible />,
+    value: 'isEligible',
+    isDesc: true,
+    width: 'w-[5%]',
+  },
+]
+
+function ThenianElement({ data, username }) {
   return (
     <div className='flex items-center gap-2 md:gap-3'>
       <Image
@@ -62,7 +98,7 @@ function ThenianElement({ data }) {
         height={36}
         alt='Avatar'
       />
-      <div className='break-all text-sm md:text-base'>{data.id}</div>
+      <div className='break-all text-sm md:text-base'>{username}</div>
     </div>
   )
 }
@@ -85,14 +121,14 @@ function RankElement({ data }) {
   }
 }
 
-export default function LeaderboardTable({ userInfo }) {
+export default function LeaderboardTable({ userInfo, currentTabIndex }) {
   const t = useTranslations()
 
-  const [sort, setSort] = useState(sortOptions[0])
+  const [sort, setSort] = useState(currentTabIndex === 1 ? sortOptions1[0] : sortOptions2[0])
   const [currentPage, setCurrentPage] = useState(1)
   const [rowDefault, setRowDefault] = useState()
 
-  const { data } = useQuery({
+  const { data: participants, isLoading: loadingParticipants } = useQuery({
     queryKey: ['getParticipants', userInfo],
     queryFn: () => fetchParticipants(300),
     refetchInterval: 30000,
@@ -100,29 +136,53 @@ export default function LeaderboardTable({ userInfo }) {
     gcTime: 0,
   })
 
+  const { data: participantsByChapter, isLoading: loadingParticipantsByChapter } = useQuery({
+    queryKey: ['getParticipantsByChapter', userInfo, currentTabIndex],
+    queryFn: () => fetchParticipantsByChapter(300, currentTabIndex),
+    refetchInterval: 30000,
+    enabled: Boolean(userInfo),
+    gcTime: 0,
+  })
+
   useEffect(() => {
+    // TODO: userInfo for chapter
     if (userInfo) {
       setRowDefault({
         id: userInfo.id,
         rank: <RankElement data={userInfo} />,
-        thenian: <ThenianElement data={userInfo} />,
+        thenian: <ThenianElement data={userInfo} username={userInfo.id} />,
         totalPoints: userInfo.totalPoints,
       })
     }
   }, [userInfo])
 
-  const finalData = useMemo(
+  const renderData = useMemo(
     () =>
-      !data
-        ? []
-        : data.map(item => ({
+      currentTabIndex === 1
+        ? participants?.map(item => ({
             id: item.id,
             rank: <RankElement data={item} />,
-            thenian: <ThenianElement data={item} />,
+            thenian: <ThenianElement data={item} username={item.id} />,
             totalPoints: item.totalPoints,
+          }))
+        : participantsByChapter?.results?.map(item => ({
+            id: item.participantId,
+            completedTask: `${item?.completedTask}/${participantsByChapter?.pagination?.totalTask}`,
+            // TODO: Not have avatar
+            thenian: <ThenianElement data={item} username={item.participantId} />,
+            isEligible: item.isEligible ? (
+              <span className='text-success-700'>Yes</span>
+            ) : (
+              <span className='text-error-700'>No</span>
+            ),
           })),
-    [data],
+    [currentTabIndex, participants, participantsByChapter?.pagination?.totalTask, participantsByChapter?.results],
   )
+
+  const finalData = useMemo(() => {
+    const result = currentTabIndex === 1 ? participants : participantsByChapter?.results
+    return !result ? [] : renderData
+  }, [currentTabIndex, participants, participantsByChapter?.results, renderData])
 
   const indexUser = useMemo(() => {
     let index = -1
@@ -144,13 +204,13 @@ export default function LeaderboardTable({ userInfo }) {
           className='w-full bg-neutral-900'
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
-          sortOptions={sortOptions}
+          sortOptions={currentTabIndex === 1 ? sortOptions1 : sortOptions2}
           sort={sort}
           setSort={setSort}
           tableBasic
           hightLightById={userInfo.id}
           bgHightLight='bg-neutral-800'
-          loading={!data}
+          loading={loadingParticipants || loadingParticipantsByChapter}
           pageSize={10}
           defaultHead={(indexUser > 9 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
         />

@@ -231,8 +231,6 @@ export const fetchCampaignChapter = async index => {
 const V4_GET_CAMPAIGN_PARTICIPANTS = gql`
   query V4_GET_CAMPAIGN_PARTICIPANTS($limit: Int!) {
     campaignParticipants(limit: $limit, orderBy: [totalPoints_DESC, createdAt_ASC]) {
-      country
-      email
       id
       rank
       referralCode
@@ -242,15 +240,48 @@ const V4_GET_CAMPAIGN_PARTICIPANTS = gql`
     }
   }
 `
-export const fetchParticipants = async (limit, id_not_eq) => {
+export const fetchParticipants = async limit => {
   try {
     const { campaignParticipants } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANTS, {
       limit,
-      id_not_eq,
     })
 
     if (campaignParticipants && Array.isArray(campaignParticipants) && campaignParticipants.length > 0) {
       return campaignParticipants
+    }
+
+    return []
+  } catch (error) {
+    console.trace(error)
+    return []
+  }
+}
+
+const V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER = gql`
+  query V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER($limit: Int!, $indexChapter: Int!) {
+    campaignLeaderboard(chapterIndex: $indexChapter, limit: $limit, offset: 0) {
+      pagination {
+        totalCount
+        totalTask
+      }
+      results {
+        participantId
+        completedTask
+        isEligible
+      }
+    }
+  }
+`
+
+export const fetchParticipantsByChapter = async (limit, indexChapter) => {
+  try {
+    const { campaignLeaderboard } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER, {
+      limit,
+      indexChapter,
+    })
+
+    if (campaignLeaderboard) {
+      return campaignLeaderboard
     }
 
     return []
