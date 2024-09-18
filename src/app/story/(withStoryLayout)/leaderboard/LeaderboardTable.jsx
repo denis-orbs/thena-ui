@@ -138,15 +138,14 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
 
   const { data: participantsByChapter, isLoading: loadingParticipantsByChapter } = useQuery({
     queryKey: ['getParticipantsByChapter', userInfo, currentTabIndex],
-    queryFn: () => fetchParticipantsByChapter(300, currentTabIndex),
+    queryFn: () => fetchParticipantsByChapter(300, currentTabIndex, userInfo.id.toLowerCase()),
     refetchInterval: 30000,
     enabled: Boolean(userInfo),
     gcTime: 0,
   })
 
   useEffect(() => {
-    // TODO: userInfo for chapter
-    if (userInfo) {
+    if (userInfo && currentTabIndex === 1) {
       setRowDefault({
         id: userInfo.id,
         rank: <RankElement data={userInfo} />,
@@ -154,7 +153,25 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
         totalPoints: userInfo.totalPoints,
       })
     }
-  }, [userInfo])
+    if (currentTabIndex > 1 && participantsByChapter?.participantDetails) {
+      const userDefault = participantsByChapter?.participantDetails
+      setRowDefault({
+        id: userDefault?.participantId,
+        completedTask: `${userDefault?.completedTask}/${participantsByChapter?.pagination?.totalTask}`,
+        thenian: <ThenianElement data={userDefault} username={userDefault?.participantId} />,
+        isEligible: userDefault?.isEligible ? (
+          <span className='text-success-700'>Yes</span>
+        ) : (
+          <span className='text-error-700'>No</span>
+        ),
+      })
+    }
+  }, [
+    currentTabIndex,
+    participantsByChapter?.pagination?.totalTask,
+    participantsByChapter?.participantDetails,
+    userInfo,
+  ])
 
   const renderData = useMemo(
     () =>
@@ -168,7 +185,6 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
         : participantsByChapter?.results?.map(item => ({
             id: item.participantId,
             completedTask: `${item?.completedTask}/${participantsByChapter?.pagination?.totalTask}`,
-            // TODO: Not have avatar
             thenian: <ThenianElement data={item} username={item.participantId} />,
             isEligible: item.isEligible ? (
               <span className='text-success-700'>Yes</span>

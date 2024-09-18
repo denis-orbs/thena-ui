@@ -258,26 +258,34 @@ export const fetchParticipants = async limit => {
 }
 
 const V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER = gql`
-  query V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER($limit: Int!, $indexChapter: Int!) {
-    campaignLeaderboard(chapterIndex: $indexChapter, limit: $limit, offset: 0) {
+  query V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER($limit: Int!, $indexChapter: Int!, $participantId: String!) {
+    campaignLeaderboard(chapterIndex: $indexChapter, limit: $limit, offset: 0, participantId: $participantId) {
       pagination {
         totalCount
         totalTask
       }
-      results {
-        participantId
+      participantDetails {
+        avatarUrl
         completedTask
         isEligible
+        participantId
+      }
+      results {
+        avatarUrl
+        completedTask
+        isEligible
+        participantId
       }
     }
   }
 `
 
-export const fetchParticipantsByChapter = async (limit, indexChapter) => {
+export const fetchParticipantsByChapter = async (limit, indexChapter, participantId) => {
   try {
     const { campaignLeaderboard } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER, {
       limit,
       indexChapter,
+      participantId,
     })
 
     if (campaignLeaderboard) {
