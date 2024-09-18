@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo } from 'react'
 import useSWRImmutable from 'swr/immutable'
 
-const HEDGER_API = 'https://alpha-hedger.rasa.capital/contract-symbols'
+const HEDGER_API = '/api/contract/contract-symbols'
 
 const initialState = {
   pairsContract: [],
