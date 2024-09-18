@@ -809,7 +809,7 @@ export const useIncreasePrizeTCPerp = () => {
       setPending(true)
       startTxn({
         key,
-        title: t('Increase Prize'),
+        title: t('Increase Prize Pool'),
         transactions: {
           ...(!isApprovedToken && {
             [approveTokenuuid]: {
@@ -819,7 +819,7 @@ export const useIncreasePrizeTCPerp = () => {
             },
           }),
           [increasePrizeuuid]: {
-            desc: t('Increase Prize'),
+            desc: t('Increase Prize Pool'),
             status: TXN_STATUS.START,
             hash: null,
           },

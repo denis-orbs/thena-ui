@@ -813,7 +813,7 @@
   "Sign Rejected": "Sign Rejected",
   "Follower": "Follower",
   "Only Show Verified User": "Only show verified user",
-  "Increase Prize": "Increase Prize",
+  "Increase Prize Pool": "Increase Prize Pool",
   "You Can Only Increase The Prize After Registration Starts": "You Can Only Increase The Prize After Registration Starts.",
   "Last Updated": "Last Updated",
   "Increased By": "Increased By",
@@ -1099,5 +1099,6 @@
   "Vote on specific pools": "Vote on specific pools or vault strategies provided by these partners (Algebra, Gamma Strategies, Lido, ICHI and DefiEdge)",
   "All Chapters": "All Chapters",
   "Eligible For Raffle": "Eligible For Raffle",
-  "Completed Tasks": "Completed Tasks"
+  "Completed Tasks": "Completed Tasks",
+  "Increase Prize Pool warning": "This action will increase the prize pool for all participants. You cannot add to your deposit here. Continue only if you know what you are doing."
 }
