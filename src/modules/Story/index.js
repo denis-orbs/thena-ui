@@ -259,7 +259,7 @@ export const fetchParticipants = async limit => {
 
 const V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER = gql`
   query V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER($limit: Int!, $indexChapter: Int!, $participantId: String!) {
-    campaignLeaderboard(chapterIndex: $indexChapter, limit: $limit, offset: 0, participantId: $participantId) {
+    campaignLeaderboard(chapterIndex: $indexChapter, limit: $limit, participantId: $participantId) {
       pagination {
         totalCount
         totalTask
@@ -267,13 +267,11 @@ const V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER = gql`
       participantDetails {
         avatarUrl
         completedTask
-        isEligible
         participantId
       }
       results {
         avatarUrl
         completedTask
-        isEligible
         participantId
       }
     }
@@ -292,10 +290,10 @@ export const fetchParticipantsByChapter = async (limit, indexChapter, participan
       return campaignLeaderboard
     }
 
-    return []
+    return {}
   } catch (error) {
     console.trace(error)
-    return []
+    return {}
   }
 }
 

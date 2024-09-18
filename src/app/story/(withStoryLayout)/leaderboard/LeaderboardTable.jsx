@@ -159,11 +159,12 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
         id: userDefault?.participantId,
         completedTask: `${userDefault?.completedTask}/${participantsByChapter?.pagination?.totalTask}`,
         thenian: <ThenianElement data={userDefault} username={userDefault?.participantId} />,
-        isEligible: userDefault?.isEligible ? (
-          <span className='text-success-700'>Yes</span>
-        ) : (
-          <span className='text-error-700'>No</span>
-        ),
+        isEligible:
+          userDefault?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
+            <span className='text-success-700'>Yes</span>
+          ) : (
+            <span className='text-error-700'>No</span>
+          ),
       })
     }
   }, [
@@ -186,11 +187,12 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
             id: item.participantId,
             completedTask: `${item?.completedTask}/${participantsByChapter?.pagination?.totalTask}`,
             thenian: <ThenianElement data={item} username={item.participantId} />,
-            isEligible: item.isEligible ? (
-              <span className='text-success-700'>Yes</span>
-            ) : (
-              <span className='text-error-700'>No</span>
-            ),
+            isEligible:
+              item?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
+                <span className='text-success-700'>Yes</span>
+              ) : (
+                <span className='text-error-700'>No</span>
+              ),
           })),
     [currentTabIndex, participants, participantsByChapter?.pagination?.totalTask, participantsByChapter?.results],
   )
