@@ -84,6 +84,7 @@ const nextConfig = {
   },
 
   async rewrites() {
+    const isProd = process.env.NODE_ENV === 'production'
     return [
       {
         source: '/api/proxy/1inch/:path*',
@@ -92,6 +93,18 @@ const nextConfig = {
       {
         source: '/api/contract/:path*',
         destination: 'https://alpha-hedger.rasa.capital/:path*',
+      },
+      {
+        source: '/s3/image/:path*',
+        destination: isProd
+          ? 'https://thena-image-resource.s3.amazonaws.com/:path*'
+          : 'https://thena-image-resource-dev.s3.amazonaws.com/:path*',
+      },
+      {
+        source: '/s3/icon-checkmark/:path*',
+        destination: isProd
+          ? 'https://thena-icon-checkmark.s3.amazonaws.com/:path*'
+          : 'https://thena-icon-checkmark-dev.s3.amazonaws.com/:path*',
       },
     ]
   },
