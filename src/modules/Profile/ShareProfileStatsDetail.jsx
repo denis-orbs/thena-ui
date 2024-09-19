@@ -4,10 +4,11 @@ import React, { useMemo, useRef } from 'react'
 
 import { TextHeading } from '@/components/typography'
 import { useFixViewport } from '@/hooks/useFixViewPort'
-import { cn, formatAddress } from '@/lib/utils'
+import { cn, formatAddress, rewriteS3Host, rewriteW3sHost } from '@/lib/utils'
 import { Verified } from '@/svgs'
 
 import ImagePreview from './ImagePreview'
+import { VerifyPopover } from './VerifyPopover'
 
 export default function ShareProfileStatsDetail({
   userInfo,
@@ -34,13 +35,20 @@ export default function ShareProfileStatsDetail({
       <div ref={parentRef}>
         <div
           ref={childRef}
-          className="relative h-[576px] w-[1024px] rounded-xl bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover px-2 py-6 lg:p-6"
+          className="relative h-[576px] w-[1024px] origin-top-left rounded-xl bg-[url('/images/arena/bg-image-share-profile.png')] bg-cover px-2 py-6 lg:p-6"
         >
           <div>
             <div className='mx-auto mb-10 mt-1 flex items-center justify-center'>
               <Image
                 alt='avatar'
-                src={userInfo.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
+                crossOrigin='anonymous'
+                src={
+                  userInfo.avatar?.replace('ipfs.io', 'w3s.link').includes('https://w3s.link/')
+                    ? `/w3s/link/${rewriteW3sHost(userInfo.avatar)}`
+                    : userInfo.avatar
+                      ? `/s3/image/${rewriteS3Host(userInfo.avatar)}`
+                      : Avatar
+                }
                 className={`${userInfo.avatar ? 'rounded-full' : ''}`}
                 width={64}
                 height={64}
@@ -64,7 +72,9 @@ export default function ShareProfileStatsDetail({
                     {userInfo.username || formatAddress(userInfo.id)}
                   </span>
                 </TextHeading>
-                {userInfo?.isVerified && <Verified className='ml-1 h-5 w-5' />}
+                {userInfo?.isVerified && (
+                  <VerifyPopover verifyImage={userInfo?.checkMarkIcon} verifiedAt={userInfo?.verifiedAt} />
+                )}
               </div>
             </div>
             <ImagePreview
@@ -87,7 +97,14 @@ export default function ShareProfileStatsDetail({
           <div className='mx-auto mb-10 mt-1 flex items-center justify-center'>
             <Image
               alt='avatar'
-              src={userInfo.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
+              crossOrigin='anonymous'
+              src={
+                userInfo.avatar?.replace('ipfs.io', 'w3s.link').includes('https://w3s.link/')
+                  ? `/w3s/link/${rewriteW3sHost(userInfo.avatar)}`
+                  : userInfo.avatar
+                    ? `/s3/image/${rewriteS3Host(userInfo.avatar)}`
+                    : Avatar
+              }
               className={`${userInfo.avatar ? 'rounded-full' : ''}`}
               width={64}
               height={64}
@@ -95,7 +112,7 @@ export default function ShareProfileStatsDetail({
             <div className='ml-3 flex items-center'>
               <TextHeading
                 className={cn(
-                  'font-archia text-[26px] leading-[36px]',
+                  'pb-5 font-archia text-[26px] leading-[36px]',
                   userInfo.nameColor && !String(userInfo.nameColor).startsWith('#') ? userInfo.nameColor : '',
                 )}
               >
@@ -111,7 +128,21 @@ export default function ShareProfileStatsDetail({
                   {userInfo.username || formatAddress(userInfo.id)}
                 </span>
               </TextHeading>
-              {userInfo?.isVerified && <Verified className='ml-1 h-5 w-5 cursor-pointer' />}
+              {userInfo?.isVerified && (
+                <>
+                  {userInfo?.checkMarkIcon ? (
+                    <Image
+                      src={`/s3/icon-checkmark/${rewriteS3Host(userInfo?.checkMarkIcon)}`}
+                      width={20}
+                      height={20}
+                      className='ml-1 h-5 w-5 cursor-pointer'
+                      alt='demo-checkmark'
+                    />
+                  ) : (
+                    <Verified className='ml-1 h-5 w-8 cursor-pointer' />
+                  )}
+                </>
+              )}
             </div>
           </div>
 

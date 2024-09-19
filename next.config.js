@@ -106,6 +106,10 @@ const nextConfig = {
           ? 'https://thena-icon-checkmark.s3.amazonaws.com/:path*'
           : 'https://thena-icon-checkmark-dev.s3.amazonaws.com/:path*',
       },
+      {
+        source: '/w3s/link/:path*',
+        destination: 'https://w3s.link/:path*',
+      },
     ]
   },
 }
