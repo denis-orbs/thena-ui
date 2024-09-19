@@ -425,11 +425,11 @@ export default function TransactionTable({ pairs, isFusion }) {
   const filters = useMemo(
     () =>
       Object.values(TXN_TYPE).map(ele => ({
-        label: t(ele),
+        label: ele,
         active: filter === ele,
         onClickHandler: () => setFilter(ele),
       })),
-    [filter, t],
+    [filter],
   )
 
   const sortedData = useMemo(

@@ -231,8 +231,6 @@ export const fetchCampaignChapter = async index => {
 const V4_GET_CAMPAIGN_PARTICIPANTS = gql`
   query V4_GET_CAMPAIGN_PARTICIPANTS($limit: Int!) {
     campaignParticipants(limit: $limit, orderBy: [totalPoints_DESC, createdAt_ASC]) {
-      country
-      email
       id
       rank
       referralCode
@@ -242,11 +240,10 @@ const V4_GET_CAMPAIGN_PARTICIPANTS = gql`
     }
   }
 `
-export const fetchParticipants = async (limit, id_not_eq) => {
+export const fetchParticipants = async limit => {
   try {
     const { campaignParticipants } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANTS, {
       limit,
-      id_not_eq,
     })
 
     if (campaignParticipants && Array.isArray(campaignParticipants) && campaignParticipants.length > 0) {
@@ -257,6 +254,46 @@ export const fetchParticipants = async (limit, id_not_eq) => {
   } catch (error) {
     console.trace(error)
     return []
+  }
+}
+
+const V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER = gql`
+  query V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER($limit: Int!, $indexChapter: Int!, $participantId: String!) {
+    campaignLeaderboard(chapterIndex: $indexChapter, limit: $limit, participantId: $participantId) {
+      pagination {
+        totalCount
+        totalTask
+      }
+      participantDetails {
+        avatarUrl
+        completedTask
+        participantId
+      }
+      results {
+        avatarUrl
+        completedTask
+        participantId
+      }
+    }
+  }
+`
+
+export const fetchParticipantsByChapter = async (limit, indexChapter, participantId) => {
+  try {
+    const { campaignLeaderboard } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER, {
+      limit,
+      indexChapter,
+      participantId,
+    })
+
+    if (campaignLeaderboard) {
+      return campaignLeaderboard
+    }
+
+    return {}
+  } catch (error) {
+    console.trace(error)
+    return {}
   }
 }
 
@@ -380,12 +417,6 @@ export const useFetchChaptersAndTasks = account => {
     // check completed chapters and tasks
     const campaignChaptersDetails = campaignChapters.map(chapter => {
       const startTime = new Date(chapter?.startTimestamp ?? 0)
-      const endTime = new Date(chapter?.endTimestamp ?? 0)
-
-      const currentChapterCompletedTasks = campaignCompletedTasks.filter(completedTask => {
-        const completedTime = new Date(completedTask.timestamp)
-        return completedTime >= startTime && completedTime <= endTime
-      })
 
       // Assign tasks into chapter
       const tasks = campaignTasks
@@ -394,9 +425,7 @@ export const useFetchChaptersAndTasks = account => {
           let isCompleted = false
 
           if (task.type === TaskType.Main) {
-            isCompleted = !!currentChapterCompletedTasks.find(
-              completedTask => completedTask.campaignTask.id === task.id,
-            )
+            isCompleted = campaignCompletedTasks.find(completedTask => completedTask.campaignTask.id === task.id)
           }
 
           return {
@@ -535,9 +564,15 @@ const V4_STATS_CAMPAIGN_PARTICIPANT = gql`
   query V4_STATS_CAMPAIGN_PARTICIPANT {
     statsCampaignParticipant {
       activeUserCount
+      chapterMetrics {
+        activeParticipants
+        chapter
+        completedParticipants
+      }
       registeredReferralCount
-      registeredUserCount
       successReferralCount
+      userCompletedAllTasksCount
+      registeredUserCount
     }
   }
 `

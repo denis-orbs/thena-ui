@@ -2,7 +2,6 @@
 
 import { gql } from 'graphql-request'
 import { cloneDeep } from 'lodash'
-import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
@@ -141,7 +140,6 @@ const fetchCompetition = async (tab, search) => {
 const tabs = ['All', 'Hidden', 'Unhidden']
 
 function Competitions() {
-  const t = useTranslations()
   const _assets = useAssets()
 
   const [selectedTab, setSelectedTab] = useState(tabs[0])
@@ -203,13 +201,13 @@ function Competitions() {
   const subTabs = useMemo(
     () =>
       tabs.map(tab => ({
-        label: t(tab),
+        label: tab,
         active: tab === selectedTab,
         onClickHandler: () => {
           setSelectedTab(tab)
         },
       })),
-    [selectedTab, t],
+    [selectedTab],
   )
 
   const handleUpdateTCIsHidden = useCallback(

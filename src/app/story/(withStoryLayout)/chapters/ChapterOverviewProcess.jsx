@@ -24,7 +24,7 @@ export function ChapterOverviewProcess({ chapter }) {
   return (
     <div className='border-gradient-secondary min-h-80 rounded-xl p-[1px]'>
       <div className='h-full rounded-[11px] bg-neutral-900 px-6 py-5'>
-        <p className='text-center text-base font-medium leading-5 text-gray-400'>
+        <p className='text-center text-base font-medium leading-5 text-neutral-300'>
           {taskCompleted}/{totalTask} {t('Tasks completed').toLowerCase()}
         </p>
         <div className='mt-2  inline-block h-[6px] w-full rounded-md bg-neutral-500'>
@@ -50,7 +50,7 @@ export function ChapterOverviewProcess({ chapter }) {
 
           {mainTasks.map(task => (
             <div className='mt-3 flex justify-between' key={task.id}>
-              <span className='inline-block max-w-[calc(100%-20px)] text-gray-400'> • {t(task.name)}</span>
+              <span className='inline-block max-w-[calc(100%-20px)] text-neutral-300'> • {t(task.name)}</span>
               {task.isCompleted && <Check2Icon className='inline-block h-5 w-5' />}
             </div>
           ))}

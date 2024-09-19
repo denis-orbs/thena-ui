@@ -45,7 +45,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
           <Tabs
             data={[
               {
-                label: t('All'),
+                label: 'All',
                 active: filter.market === TC_MARKET_TYPES.ALL.toLowerCase() || filter.market === null,
                 onClickHandler: () => {
                   setFilter({
@@ -55,7 +55,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
                 },
               },
               {
-                label: t('Spot'),
+                label: 'Spot',
                 active: filter.market === TC_MARKET_TYPES.SPOT.toLowerCase(),
                 onClickHandler: () => {
                   setFilter({
@@ -65,7 +65,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
                 },
               },
               {
-                label: t('Perpetual'),
+                label: 'Perpetual',
                 active: filter.market === TC_MARKET_TYPES.PERPETUAL.toLowerCase(),
                 onClickHandler: () => {
                   setFilter({
@@ -95,7 +95,7 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
           checked={filter.free}
           onChange={() => setFilter({ ...filter, free: !filter.free })}
           toggleId='free-join'
-          label={t('Free To Join')}
+          label='Free To Join'
         />
       </Popover>
     </div>

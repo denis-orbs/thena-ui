@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useState } from 'react'
 
+import { Warning } from '@/components/alert'
 import { PrimaryButton } from '@/components/buttons/Button'
 import CustomTokenInput from '@/components/input/CustomTokenInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
@@ -48,8 +49,9 @@ function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} })
   ])
 
   return (
-    <Modal isOpen={isOpen} closeModal={closeModal} title='Increase Prize' onAfterClose={() => setAmount('')}>
+    <Modal isOpen={isOpen} closeModal={closeModal} title='Increase Prize Pool' onAfterClose={() => setAmount('')}>
       <ModalBody>
+        <Warning className='text-sm'>{t('Increase Prize Pool warning')}</Warning>
         <CustomTokenInput
           asset={token}
           setAsset={setToken}
@@ -65,7 +67,7 @@ function IncreasePrizeModal({ isOpen, closeModal = () => {}, competition = {} })
           className='w-full'
           onClick={handleIncreasePrize}
         >
-          {t('Increase Prize')}
+          {t('Increase Prize Pool')}
         </PrimaryButton>
       </ModalFooter>
     </Modal>

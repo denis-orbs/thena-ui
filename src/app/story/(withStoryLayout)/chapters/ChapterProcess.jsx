@@ -89,7 +89,7 @@ export function ChapterProcess({
             <ArrowBackwardIcon className='inline-block h-5 w-5' />
             <span>{t('Back')}</span>
           </div>
-          <p className='order-3 mt-3 w-full text-center text-[18px] font-medium leading-5 text-gray-400 lg:order-2 lg:mt-0 lg:w-auto'>
+          <p className='order-3 mt-3 w-full text-center text-[18px] font-medium leading-5 text-neutral-300 lg:order-2 lg:mt-0 lg:w-auto'>
             {`${t.rich('[numberCompletedChapters] / [numberAvailableChapters] chapters completed', {
               numberAvailableChapters,
               numberCompletedChapters,

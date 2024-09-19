@@ -1,7 +1,6 @@
 'use client'
 
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 
 import SearchInput from '@/components/input/SearchInput'
@@ -9,26 +8,25 @@ import Tabs from '@/components/tabs'
 import { addOrReplaceURLParams } from '@/lib/tradingCompetition/utils'
 
 export function AchievementWrapLayout({ children }) {
-  const t = useTranslations()
   const searchParams = useSearchParams()
   const [searchText, setSearchText] = useState(searchParams.get('q') ?? undefined)
   const pathname = usePathname()
 
   const subTabs = [
     {
-      label: t('All'),
+      label: 'All',
       active: pathname === '/arena/achievements',
       isLink: true,
       href: '/arena/achievements',
     },
     {
-      label: t('Completed'),
+      label: 'Completed',
       active: pathname === '/arena/achievements/completed',
       isLink: true,
       href: '/arena/achievements/completed',
     },
     {
-      label: t('Not Completed'),
+      label: 'Not Completed',
       active: pathname === '/arena/achievements/not-completed',
       isLink: true,
       href: '/arena/achievements/not-completed',

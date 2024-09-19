@@ -706,7 +706,7 @@ function Sidebar({ competition, eventType }) {
               disabled={isNotStartRegistration}
               onClick={() => setShowIncreasePrize(true)}
             >
-              {t('Increase Prize')}
+              {t('Increase Prize Pool')}
             </PrimaryButton>
             {isNotStartRegistration && (
               <CustomTooltip

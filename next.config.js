@@ -89,6 +89,10 @@ const nextConfig = {
         source: '/api/proxy/1inch/:path*',
         destination: 'https://api.1inch.dev/:path*',
       },
+      {
+        source: '/api/contract/:path*',
+        destination: 'https://alpha-hedger.rasa.capital/:path*',
+      },
     ]
   },
 }
