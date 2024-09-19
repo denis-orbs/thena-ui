@@ -577,10 +577,10 @@ function Header() {
         },
         account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
           ? {
-              label: 'Admin',
-              active: pathname === '/story/admin',
+              label: 'User Stats',
+              active: pathname === '/story/userstats',
               isLink: true,
-              href: '/story/admin',
+              href: '/story/userstats',
             }
           : undefined,
       ]),

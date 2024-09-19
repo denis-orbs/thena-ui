@@ -564,9 +564,15 @@ const V4_STATS_CAMPAIGN_PARTICIPANT = gql`
   query V4_STATS_CAMPAIGN_PARTICIPANT {
     statsCampaignParticipant {
       activeUserCount
+      chapterMetrics {
+        activeParticipants
+        chapter
+        completedParticipants
+      }
       registeredReferralCount
-      registeredUserCount
       successReferralCount
+      userCompletedAllTasksCount
+      registeredUserCount
     }
   }
 `

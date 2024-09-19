@@ -23,15 +23,6 @@ function PointHead() {
     </div>
   )
 }
-function IsEligible() {
-  const t = useTranslations()
-  return (
-    <div className='flex flex-row items-center'>
-      <span>{t('Eligible For Raffle')}</span>
-      <InfoIcon className='ml-1 size-4 stroke-neutral-400' data-tooltip-id='point-description' />
-    </div>
-  )
-}
 
 const sortOptions1 = [
   {
@@ -77,7 +68,7 @@ const sortOptions2 = [
   },
   {
     disabled: true,
-    label: <IsEligible />,
+    label: 'Eligible For Raffle',
     value: 'isEligible',
     isDesc: true,
     width: 'w-[20%]',
