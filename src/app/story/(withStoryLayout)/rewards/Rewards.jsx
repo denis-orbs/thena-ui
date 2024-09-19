@@ -19,8 +19,8 @@ export function Rewards({ address }) {
   return (
     <div>
       <div className='mt-[10px]'>
-        <TextHeading className='block font-archia text-3xl font-semibold leading-9'>{t('Rewards')}</TextHeading>
-        <TextSubHeading>{t('Reward description')}</TextSubHeading>
+        <TextHeading className='block font-archia text-3xl font-semibold'>{t('Rewards')}</TextHeading>
+        <TextSubHeading className='mt-2 block text-base text-neutral-300'>{t('Reward description')}</TextSubHeading>
       </div>
       <div className='mt-6'>
         <div className='grid grid-cols-1 gap-[30px] lg:grid-cols-10'>

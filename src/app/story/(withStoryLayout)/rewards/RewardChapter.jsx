@@ -7,10 +7,10 @@ export function RewardChapter({ chapters }) {
   const currentDate = useMemo(() => new Date(), [])
   const [selectedChapterIndex, setSelectedChapterIndex] = useState(1)
 
-  const [chapter1StartTime, chapter2EndTime] = useMemo(() => {
+  const [chapter1StartTime] = useMemo(() => {
     const c1Start = new Date(chapters?.[0]?.startTimestamp ?? 0)
-    const c2End = new Date(chapters?.[1]?.endTimestamp ?? 0)
-    return [c1Start, c2End]
+    // const c2End = new Date(chapters?.[1]?.endTimestamp ?? 0)
+    return [c1Start]
   }, [chapters])
 
   const chapterNavs = useMemo(
@@ -27,10 +27,10 @@ export function RewardChapter({ chapters }) {
         index: 2,
         name: 'All Chapters',
         isCompleted: false,
-        available: currentDate > chapter2EndTime,
+        available: false,
       },
     ],
-    [chapter1StartTime, currentDate, chapter2EndTime],
+    [chapter1StartTime, currentDate],
   )
 
   return (

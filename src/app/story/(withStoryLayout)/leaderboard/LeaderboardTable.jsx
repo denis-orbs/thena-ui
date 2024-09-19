@@ -9,16 +9,14 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { fetchParticipants, fetchParticipantsByChapter } from '@/modules/Story'
-import { FirstPrizeIcon, InfoCircleGradient, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
+import { FirstPrizeIcon, InfoIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 
 function PointHead() {
   const t = useTranslations()
   return (
-    <div className='flex flex-row'>
+    <div className='flex flex-row items-center'>
       <span>{t('Points')}</span>
-      <span>
-        <InfoCircleGradient className='ml-1 size-4 text-neutral-400' data-tooltip-id='point-description' />
-      </span>
+      <InfoIcon className='ml-1 size-4 stroke-neutral-400' data-tooltip-id='point-description' />
       <CustomTooltip id='point-description'>
         <span className='text-sm font-normal leading-5'>{t('THE Story leaderboard point description')}</span>
       </CustomTooltip>
@@ -28,11 +26,9 @@ function PointHead() {
 function IsEligible() {
   const t = useTranslations()
   return (
-    <div className='flex flex-row'>
+    <div className='flex flex-row items-center'>
       <span>{t('Eligible For Raffle')}</span>
-      <span>
-        <InfoCircleGradient className='ml-1 size-4 text-neutral-400' data-tooltip-id='point-description' />
-      </span>
+      <InfoIcon className='ml-1 size-4 stroke-neutral-400' data-tooltip-id='point-description' />
     </div>
   )
 }
@@ -70,21 +66,21 @@ const sortOptions2 = [
     value: 'thenian',
     isDesc: true,
     justify: 'text-wrap min-w-[130px]',
-    width: 'lg:w-[90%]',
+    width: 'w-[60%]',
   },
   {
     disabled: true,
     label: 'Completed Tasks',
     value: 'completedTask',
     isDesc: true,
-    width: 'w-[5%]',
+    width: 'w-[20%]',
   },
   {
     disabled: true,
     label: <IsEligible />,
     value: 'isEligible',
     isDesc: true,
-    width: 'w-[5%]',
+    width: 'w-[20%]',
   },
 ]
 
@@ -138,7 +134,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
 
   const { data: participantsByChapter, isLoading: loadingParticipantsByChapter } = useQuery({
     queryKey: ['getParticipantsByChapter', userInfo, currentTabIndex],
-    queryFn: () => fetchParticipantsByChapter(300, currentTabIndex, userInfo.id.toLowerCase()),
+    queryFn: () => fetchParticipantsByChapter(10000, currentTabIndex, userInfo.id.toLowerCase()),
     refetchInterval: 30000,
     enabled: Boolean(userInfo),
     gcTime: 0,
@@ -153,6 +149,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
         totalPoints: userInfo.totalPoints,
       })
     }
+
     if (currentTabIndex > 1 && participantsByChapter?.participantDetails) {
       const userDefault = participantsByChapter?.participantDetails
       setRowDefault({
@@ -185,14 +182,18 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
           }))
         : participantsByChapter?.results?.map(item => ({
             id: item.participantId,
-            completedTask: `${item?.completedTask}/${participantsByChapter?.pagination?.totalTask}`,
+            // completedTask: `${item?.completedTask}/${participantsByChapter?.pagination?.totalTask}`,
+            // eslint-disable-next-line max-len
+            completedTask: `${participantsByChapter?.pagination?.totalTask} / ${participantsByChapter?.pagination?.totalTask}`,
             thenian: <ThenianElement data={item} username={item.participantId} />,
-            isEligible:
-              item?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
-                <span className='text-success-700'>Yes</span>
-              ) : (
-                <span className='text-error-700'>No</span>
-              ),
+            isEligible: (
+              // item?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
+              //   <span className='text-success-700'>Yes</span>
+              // ) : (
+              //   <span className='text-error-700'>No</span>
+              // ),
+              <span className='text-success-700'>Yes</span>
+            ),
           })),
     [currentTabIndex, participants, participantsByChapter?.pagination?.totalTask, participantsByChapter?.results],
   )
@@ -215,7 +216,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
 
   return (
     <div className='border-gradient-secondary rounded-xl p-[1px]'>
-      <div className='mb-[60.15px] rounded-xl bg-neutral-900'>
+      <div className='mb-9 rounded-xl bg-neutral-900'>
         <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>{t('Leaderboard')}</p>
         <Table
           data={finalData}

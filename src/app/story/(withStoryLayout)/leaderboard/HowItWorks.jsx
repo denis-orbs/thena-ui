@@ -12,13 +12,15 @@ export default function HowItWorks() {
       <div className='flex flex-col justify-between md:flex-row'>
         <HowItWorksItem
           icon={StarLineWhiteIcon}
-          title={t('Earn Points')}
-          description={t('Accumulate points through referrals, daily swap-ins, and task completion')}
+          title={t('Finish Weekly Tasks and Earn Points')}
+          description={t('Finish weekly tasks and accumulate points')}
         />
         <HowItWorksItem
           icon={AwardIcon}
-          title={t('Reach Top 100 After Second Chapter')}
-          description={t('Top 100 Thenians will receive rewards after second chapter via raffle method')}
+          title={t('Win Rewards After Each Chapter')}
+          description={t(
+            'Complete all tasks for each chapter and you will be eligible to win rewards for that chapter',
+          )}
         />
         <HowItWorksItem
           icon={CrownIcon}

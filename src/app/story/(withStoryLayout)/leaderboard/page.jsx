@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
+import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/hooks/useWallet'
 import { useFetchChaptersAndTasks } from '@/modules/Story'
@@ -30,6 +31,7 @@ export default function LeaderboardPage() {
       chapters?.[6]?.startTimestamp,
       chapters?.[7]?.startTimestamp,
     ]
+
     return [
       {
         id: 1,
@@ -90,8 +92,10 @@ export default function LeaderboardPage() {
     <>
       <div className='absolute left-0 top-[129px] h-[1077px] w-full bg-[url("/images/story/bg-leaderboard.png")] bg-cover' />
       <div className='relative'>
-        <p className='text mb-2 text-[40px] font-semibold leading-9 text-neutral-50'>{t('Leaderboard')}</p>
-        <p className='mb-6 text-neutral-300'>{t('Ascend the leaderboard by gathering')}</p>
+        <TextHeading className='block font-archia text-3xl font-semibold'>{t('Leaderboard')}</TextHeading>
+        <TextSubHeading className='mt-2 block text-base text-neutral-300'>
+          {t('Story Leaderboard Description')}
+        </TextSubHeading>
         <LeaderBoardChapterTabNavigator
           leaderBoardNav={leaderBoardNav}
           currentTabIndex={currentTabIndex}

@@ -5,6 +5,7 @@ import { useTranslations } from 'use-intl'
 
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
+import { TextHeading, TextSubHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 import { ArrowForwardSmallIcon, CheckPurpleLargeIcon, StarLineLargeIcon } from '@/svgs'
 
@@ -32,8 +33,10 @@ export function DailySwap({ dailySwaps, userSwaps }) {
       <Box>
         <div className='mb-3 flex flex-col justify-between  lg:flex-row'>
           <div>
-            <p className='m-0 font-archia text-3xl font-semibold leading-9'>{t('Daily Swap')}</p>
-            <p className='!mt-2 text-base leading-5 text-gray-400'>{t('Daily Swap description')}</p>
+            <TextHeading className='block font-archia text-3xl font-semibold'>{t('Daily Swap')}</TextHeading>
+            <TextSubHeading className='mt-2 block text-base text-neutral-300'>
+              {t('Daily Swap description')}
+            </TextSubHeading>
           </div>
           <Link href='/swap'>
             <PrimaryButton className='my-3 h-fit w-full lg:my-0 lg:w-auto'>
