@@ -417,12 +417,6 @@ export const useFetchChaptersAndTasks = account => {
     // check completed chapters and tasks
     const campaignChaptersDetails = campaignChapters.map(chapter => {
       const startTime = new Date(chapter?.startTimestamp ?? 0)
-      const endTime = new Date(chapter?.endTimestamp ?? 0)
-
-      const currentChapterCompletedTasks = campaignCompletedTasks.filter(completedTask => {
-        const completedTime = new Date(completedTask.timestamp)
-        return completedTime >= startTime && completedTime <= endTime
-      })
 
       // Assign tasks into chapter
       const tasks = campaignTasks
@@ -431,9 +425,7 @@ export const useFetchChaptersAndTasks = account => {
           let isCompleted = false
 
           if (task.type === TaskType.Main) {
-            isCompleted = !!currentChapterCompletedTasks.find(
-              completedTask => completedTask.campaignTask.id === task.id,
-            )
+            isCompleted = campaignCompletedTasks.find(completedTask => completedTask.campaignTask.id === task.id)
           }
 
           return {
