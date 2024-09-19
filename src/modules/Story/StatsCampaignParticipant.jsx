@@ -56,7 +56,7 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoadingInfo, isL
 
   const metricChapter = statsCampaignParticipant?.chapterMetrics
   if (!isLoadingStats && metricChapter?.length < 8) {
-    for (let i = metricChapter.length; i < 8; i++) {
+    for (let i = metricChapter.length + 1; i < 9; i++) {
       metricChapter.push({
         activeParticipants: '-',
         chapter: i,
