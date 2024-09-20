@@ -110,55 +110,53 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
             isAdmin={isAdmin}
           />
         </div>
-        <div className='flex flex-col gap-6 md:flex-row'>
+        <div className='flex flex-col gap-6 lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3'>
             <TextHeading className='text-xl'>{t('Change Name Color')}</TextHeading>
             <TextSubHeading className='text-base'>{t('Pick A Color For Your Name')}</TextSubHeading>
           </div>
-          <div className='flex flex-2 items-center gap-3 max-sm:flex-col'>
+          <div className='flex flex-col items-center gap-3 lg:flex-row'>
             <div>
               <TextSubHeading className={cn('mb-1 block', !showCustomColor && 'ml-[5px]')}>
                 {t(!showCustomColor ? 'Basic Color' : 'Custom Color')}:
               </TextSubHeading>
-              <div className='flex flex-col md:flex-row'>
-                {!showCustomColor ? (
-                  <SelectNameColor dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
-                ) : (
-                  <Input
-                    type='color'
-                    className='w-full lg:w-[300px]'
-                    classNames={{
-                      input: 'h-[58px] py-1 px-2',
-                    }}
-                    val={
-                      dataUpdate.nameColor && String(dataUpdate.nameColor).startsWith('#')
-                        ? dataUpdate.nameColor
-                        : '#32c343'
-                    }
-                    onChange={e => {
-                      setDataUpdate({
-                        ...dataUpdate,
-                        nameColor: e.target.value,
-                      })
-                    }}
-                  />
-                )}
-                {isAdmin && (
-                  <PrimaryButton onClick={() => setShowCustomColor(!showCustomColor)} className='lg:ml-16'>
-                    {t(showCustomColor ? 'Use Basic Color Instead' : 'Use Custom Color Instead')}
-                  </PrimaryButton>
-                )}
-              </div>
+              {!showCustomColor ? (
+                <SelectNameColor dataUpdate={dataUpdate} setDataUpdate={setDataUpdate} />
+              ) : (
+                <Input
+                  type='color'
+                  className='w-full lg:w-[300px]'
+                  classNames={{
+                    input: 'h-[58px] py-1 px-2',
+                  }}
+                  val={
+                    dataUpdate.nameColor && String(dataUpdate.nameColor).startsWith('#')
+                      ? dataUpdate.nameColor
+                      : '#32c343'
+                  }
+                  onChange={e => {
+                    setDataUpdate({
+                      ...dataUpdate,
+                      nameColor: e.target.value,
+                    })
+                  }}
+                />
+              )}
             </div>
+            {isAdmin && (
+              <PrimaryButton onClick={() => setShowCustomColor(!showCustomColor)} className='lg:ml-16'>
+                {t(showCustomColor ? 'Use Basic Color Instead' : 'Use Custom Color Instead')}
+              </PrimaryButton>
+            )}
           </div>
         </div>
         {(isAdmin || userInfo?.isVerified) && (
-          <div className='flex flex-col gap-6 md:flex-row'>
+          <div className='flex flex-col gap-6 lg:flex-row'>
             <div className='flex flex-1 flex-col gap-3'>
               <TextHeading className='text-xl'>{t('Edit Checkmark Image')}</TextHeading>
               <TextSubHeading className='text-base'>{t('Edit What Your Checkmark Looks Like')}</TextSubHeading>
             </div>
-            <div className='flex flex-2 items-center gap-3'>
+            <div className='flex items-center gap-3'>
               {userInfo?.isVerified ? (
                 dataUpdate?.checkMarkIcon ? (
                   <Image
