@@ -145,7 +145,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
       const userDefault = participantsByChapter?.participantDetails
       setRowDefault({
         id: userDefault?.participantId,
-        completedTask: `${userDefault?.completedTask}/${participantsByChapter?.pagination?.totalTask}`,
+        completedTask: `${userDefault?.completedTask} / ${participantsByChapter?.pagination?.totalTask}`,
         thenian: <ThenianElement data={userDefault} username={userDefault?.participantId} />,
         isEligible:
           userDefault?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
@@ -173,18 +173,10 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
           }))
         : participantsByChapter?.results?.map(item => ({
             id: item.participantId,
-            // completedTask: `${item?.completedTask}/${participantsByChapter?.pagination?.totalTask}`,
             // eslint-disable-next-line max-len
             completedTask: `${participantsByChapter?.pagination?.totalTask} / ${participantsByChapter?.pagination?.totalTask}`,
             thenian: <ThenianElement data={item} username={item.participantId} />,
-            isEligible: (
-              // item?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
-              //   <span className='text-success-700'>Yes</span>
-              // ) : (
-              //   <span className='text-error-700'>No</span>
-              // ),
-              <span className='text-success-700'>Yes</span>
-            ),
+            isEligible: <span className='text-success-700'>Yes</span>,
           })),
     [currentTabIndex, participants, participantsByChapter?.pagination?.totalTask, participantsByChapter?.results],
   )

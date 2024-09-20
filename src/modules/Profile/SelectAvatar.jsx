@@ -49,7 +49,7 @@ export function SelectAvatar({ dataUpdate, setDataUpdate, userInfo, isAdmin }) {
 
   return (
     <div className='flex-2 items-center justify-start space-x-4'>
-      <div className='custom-scroll mb-6 flex max-w-52 items-center gap-2 overflow-x-auto py-2 pb-5 lg:max-w-4xl'>
+      <div className='custom-scroll mb-6 flex max-w-52 items-center gap-2 overflow-x-auto py-2 pb-5 sm:max-w-4xl'>
         {!avatar && (
           <NextImage
             alt='avatar'

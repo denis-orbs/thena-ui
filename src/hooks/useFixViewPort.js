@@ -19,7 +19,9 @@ const useFixViewport = (parentRef, childRef) => {
           }
 
           if (childRef?.current) {
-            childRef?.current?.style?.setProperty('zoom', zoom)
+            childRef?.current?.style?.setProperty('transform', `scale(${zoom})`)
+            const childInfo = childRef?.current?.getBoundingClientRect()
+            parentRef?.current?.style?.setProperty('height', `${childInfo?.height}px`)
           }
         }
       }

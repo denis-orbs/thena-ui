@@ -40,6 +40,7 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
       checkMarkIcon
       verifiedAt
       isAdmin
+      ipfsAvatar
       isVerified
       tradingCompetitions(where: { isHidden_eq: false }) {
         name

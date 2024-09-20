@@ -1,14 +1,43 @@
+'use client'
+
 import html2canvas from 'html2canvas'
 import { useTranslations } from 'next-intl'
+import { useCallback } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
+import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
+import useWallet from '@/hooks/useWallet'
+import { useWindowSize } from '@/hooks/useWindowSize'
+import { rewriteS3Host } from '@/lib/utils'
 import { DownloadIcon } from '@/svgs'
 
 export default function DownloadButton() {
   const t = useTranslations()
+  const { account } = useWallet()
+  const { createPresignedUrl } = useCreatePresignedUrl()
+
+  const windowSize = useWindowSize()
+
+  const handleDownloadS3Image = useCallback(async imageUrl => {
+    const tempLink = document.createElement('a')
+    tempLink.href = `/s3/image/${rewriteS3Host(imageUrl)}`
+    tempLink.download = 'profile.png'
+    tempLink.click()
+  }, [])
+
+  const uploadToS3AndDownload = useCallback(
+    async blob => {
+      if (account) {
+        await createPresignedUrl(blob, account.toLowerCase(), 'PROFILE', async data => {
+          handleDownloadS3Image(data)
+        })
+      }
+    },
+    [account, createPresignedUrl, handleDownloadS3Image],
+  )
 
   const handleRender = async () => {
-    const originShare = document.querySelector('#share-origin') || null
+    const originShare = document.getElementById('share-origin') || null
     if (originShare) {
       const canvas = await html2canvas(originShare, {
         width: 1024,
@@ -26,11 +55,18 @@ export default function DownloadButton() {
       })
 
       canvas.toBlob(blob => {
-        const tempLink = document.createElement('a')
-        tempLink.download = 'profile.png'
-        tempLink.href = URL.createObjectURL(blob)
-        tempLink.click()
-      })
+        if (windowSize.width >= 1024) {
+          // If PC: Direct download
+          const tempLink = document.createElement('a')
+          tempLink.href = URL.createObjectURL(blob)
+          tempLink.download = 'profile.png'
+          tempLink.target = '_blank'
+          tempLink.click()
+        } else {
+          const file = new File([blob], 'fileName.jpg', { type: 'image/jpeg' })
+          uploadToS3AndDownload(file)
+        }
+      }, 'image/jpeg')
     }
   }
 

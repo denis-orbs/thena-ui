@@ -1,8 +1,7 @@
 import Image from 'next/image'
 
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { cn, formatAmount } from '@/lib/utils'
-import achievements from '@/modules/Profile/achievements.json'
+import { cn, formatAmount, rewriteS3Host } from '@/lib/utils'
 import { LogoFooterIcon, LogoIcon } from '@/svgs'
 
 function BoxShow({ value, title, className }) {
@@ -19,17 +18,17 @@ function BoxShow({ value, title, className }) {
   )
 }
 
-function AchievementItem({ achievementId, title, subTitle, className }) {
-  let localIcon = ''
-  achievements.map(item => {
-    if (item.id === achievementId) {
-      localIcon = item.icon
-    }
-    return null
-  })
+function AchievementItem({ achievement, title, subTitle, className }) {
   return (
     <div className={cn('flex h-[134px] w-[222px] flex-col bg-transparent', className)}>
-      <Image className='mx-auto mb-[-10px] mt-[-15px]' src={localIcon} width={80} height={85} alt='icon' />
+      <Image
+        className='mx-auto mb-[-10px] mt-[-15px]'
+        crossOrigin='anonymous'
+        src={`/s3/image/${rewriteS3Host(achievement?.icon)}`}
+        width={80}
+        height={85}
+        alt='icon'
+      />
       <TextHeading className='text-center text-[16px] leading-[28px]'>{title}</TextHeading>
       <TextSubHeading className='text-center text-sm text-neutral-300'>{subTitle}</TextSubHeading>
     </div>
@@ -57,7 +56,6 @@ function ImagePreview({
           )}
         >
           {selectedDefault.rank && <BoxShow value={userInfo.rank} title='Rank' />}
-          {/* TODO: change data */}
           {selectedDefault.numberOfTCsWon && <BoxShow value={competition} title='Trading Competitions Won' />}
           {selectedDefault.totalVolumeInTCs && (
             <BoxShow value={`$${formatAmount(userInfo.tradeTCVolume)}`} title='Total Volume in TCs' />
@@ -70,7 +68,7 @@ function ImagePreview({
               selectedAchievements.map(item => (
                 <AchievementItem
                   key={item.id}
-                  achievementId={item.id}
+                  achievement={item}
                   title={item.label}
                   subTitle={item.description}
                   icon={item.icon}

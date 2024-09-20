@@ -224,3 +224,5 @@ export const sortAchievements = (a, b) => {
   // If both groupIndex and typeIndex are the same, they are equal
   return 0
 }
+
+export const rewriteS3Host = host => (host ? host.split('amazonaws.com/')[1] : null)
