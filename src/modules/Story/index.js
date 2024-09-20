@@ -273,6 +273,8 @@ const V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER = gql`
         avatarUrl
         completedTask
         participantId
+        reward
+        username
       }
       results {
         avatarUrl

@@ -108,7 +108,7 @@ export default function LeaderboardPage() {
         <LeaderboardTable
           currentTabIndex={currentTabIndex}
           userInfo={userInfo}
-          rewardTimestamp={chapters[currentTabIndex - 1].rewardsTimestamp}
+          rewardTimestamp={chapters[currentTabIndex - 1]?.rewardsTimestamp}
         />
         <HowItWorks />
       </div>

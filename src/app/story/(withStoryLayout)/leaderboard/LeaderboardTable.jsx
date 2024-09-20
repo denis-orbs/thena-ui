@@ -65,8 +65,6 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
 
   const isWinners = currentDate > rewardTime
 
-  console.log('currentDate, rewardTime', currentDate, rewardTime)
-
   const sortOptions = useMemo(
     () => [
       {
@@ -138,13 +136,18 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
         setRowDefault({
           id: userDefault?.participantId,
           completedTask: `${userDefault?.completedTask} / ${participantsByChapter?.pagination?.totalTask}`,
-          thenian: <ThenianElement data={userDefault} username={userDefault?.participantId} />,
+          thenian: <ThenianElement data={userDefault} username={userDefault?.username ?? userDefault?.participantId} />,
           isEligible:
             userDefault?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
               <span className='text-success-700'>Yes</span>
             ) : (
               <span className='text-error-700'>No</span>
             ),
+          reward: userDefault?.reward ? (
+            <span className='text-success-700'>{userDefault?.reward}</span>
+          ) : (
+            <span className='text-error-700'>No</span>
+          ),
         })
       } else {
         setRowDefault(undefined)

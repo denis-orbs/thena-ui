@@ -272,7 +272,7 @@ export function RewardChapter({ chapters }) {
         <div>
           <RewardChapterDetail
             rewards={rewards[selectedChapterIndex]?.reward}
-            rewardsTimestamp={chapters[selectedChapterIndex].rewardsTimestamp}
+            rewardsTimestamp={chapters[selectedChapterIndex]?.rewardsTimestamp}
           />
           {selectedChapterIndex === 1 ? (
             <RewardChapterFooter
@@ -282,8 +282,8 @@ export function RewardChapter({ chapters }) {
           ) : (
             <RewardChapterFooter
               startTime={dayjs(chapters?.[selectedChapterIndex]?.startTimestamp ?? 0)}
-              endTime={chapters[selectedChapterIndex].rewardsTimestamp}
-              rewardsTimestamp={chapters[selectedChapterIndex].rewardsTimestamp}
+              endTime={chapters[selectedChapterIndex]?.rewardsTimestamp}
+              rewardsTimestamp={chapters[selectedChapterIndex]?.rewardsTimestamp}
             />
           )}
         </div>
