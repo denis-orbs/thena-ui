@@ -270,7 +270,10 @@ export function RewardChapter({ chapters }) {
           classOfButton='lg:!px-3 lg:!py-2'
         />
         <div>
-          <RewardChapterDetail rewards={rewards[selectedChapterIndex]?.reward} />
+          <RewardChapterDetail
+            rewards={rewards[selectedChapterIndex]?.reward}
+            rewardsTimestamp={chapters[selectedChapterIndex].rewardsTimestamp}
+          />
           {selectedChapterIndex === 1 ? (
             <RewardChapterFooter
               startTime={dayjs(chapters?.[0]?.startTimestamp ?? 0)}
@@ -279,11 +282,8 @@ export function RewardChapter({ chapters }) {
           ) : (
             <RewardChapterFooter
               startTime={dayjs(chapters?.[selectedChapterIndex]?.startTimestamp ?? 0)}
-              endTime={
-                chapters?.[selectedChapterIndex]?.endTimestamp
-                  ? dayjs(chapters[selectedChapterIndex].endTimestamp).add(1, 'weeks')
-                  : dayjs(0)
-              }
+              endTime={chapters[selectedChapterIndex].rewardsTimestamp}
+              rewardsTimestamp={chapters[selectedChapterIndex].rewardsTimestamp}
             />
           )}
         </div>

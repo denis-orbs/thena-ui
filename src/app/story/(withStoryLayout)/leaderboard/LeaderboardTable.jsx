@@ -172,7 +172,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
             completedTask: `${participantsByChapter?.pagination?.totalTask} / ${participantsByChapter?.pagination?.totalTask}`,
             thenian: <ThenianElement data={item} username={item.username ?? item.participantId} />,
             isEligible: <span className='text-success-700'>Yes</span>,
-            reward: item.reward,
+            reward: <span className='text-success-700'>{item.reward}</span>,
           })),
     [currentTabIndex, participants, participantsByChapter?.pagination?.totalTask, participantsByChapter?.results],
   )
@@ -197,7 +197,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
     <div className='border-gradient-secondary rounded-xl p-[1px]'>
       <div className='mb-9 rounded-xl bg-neutral-900'>
         <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>
-          {currentTabIndex === 1 ? t('Leaderboard') : t('Winners List')}
+          {currentTabIndex === 1 || !isWinners ? t('Leaderboard') : t('Winners List')}
         </p>
         <Table
           data={finalData}

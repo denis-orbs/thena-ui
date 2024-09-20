@@ -13,7 +13,7 @@ import { CountDownAnnouncement } from '../CountDownAnnouncement'
 const isChecked = true
 const isClaimed = false
 
-function RewardChapterFooter({ startTime, endTime }) {
+function RewardChapterFooter({ startTime, endTime, rewardsTimestamp }) {
   const t = useTranslations()
   const currentDate = dayjs()
   const { campaignParticipantInfo: userInfo } = useTHEStory()
@@ -103,7 +103,11 @@ function RewardChapterFooter({ startTime, endTime }) {
         {targetCountdown ? (
           <div className='font-medium'>
             <span className='text-neutral-300'>{t('Winners Announcement')}: </span>
-            <CountDownAnnouncement timestamp={targetCountdown} className='font-bold text-neutral-50' />
+            {rewardsTimestamp ? (
+              <CountDownAnnouncement timestamp={new Date(rewardsTimestamp)} className='font-bold text-neutral-50' />
+            ) : (
+              'TBA'
+            )}
           </div>
         ) : (
           <span className='font-bold text-neutral-50'>{t('The competition has ended')}</span>
