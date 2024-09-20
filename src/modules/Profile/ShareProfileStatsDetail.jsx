@@ -4,7 +4,7 @@ import React, { useMemo, useRef } from 'react'
 
 import { TextHeading } from '@/components/typography'
 import { useFixViewport } from '@/hooks/useFixViewPort'
-import { cn, formatAddress, rewriteS3Host, rewriteW3sHost } from '@/lib/utils'
+import { cn, formatAddress, rewriteS3Host } from '@/lib/utils'
 import { Verified } from '@/svgs'
 
 import ImagePreview from './ImagePreview'
@@ -44,7 +44,9 @@ export default function ShareProfileStatsDetail({
                 crossOrigin='anonymous'
                 src={
                   userInfo.avatar?.replace('ipfs.io', 'w3s.link').includes('https://w3s.link/')
-                    ? `/w3s/link/${rewriteW3sHost(userInfo.avatar)}`
+                    ? userInfo.ipfsAvatar
+                      ? `/s3/image/${rewriteS3Host(userInfo.ipfsAvatar)}`
+                      : Avatar
                     : userInfo.avatar
                       ? `/s3/image/${rewriteS3Host(userInfo.avatar)}`
                       : Avatar
@@ -100,7 +102,9 @@ export default function ShareProfileStatsDetail({
               crossOrigin='anonymous'
               src={
                 userInfo.avatar?.replace('ipfs.io', 'w3s.link').includes('https://w3s.link/')
-                  ? `/w3s/link/${rewriteW3sHost(userInfo.avatar)}`
+                  ? userInfo.ipfsAvatar
+                    ? `/s3/image/${rewriteS3Host(userInfo.ipfsAvatar)}`
+                    : Avatar
                   : userInfo.avatar
                     ? `/s3/image/${rewriteS3Host(userInfo.avatar)}`
                     : Avatar

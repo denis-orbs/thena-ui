@@ -225,5 +225,4 @@ export const sortAchievements = (a, b) => {
   return 0
 }
 
-export const rewriteS3Host = host => host.split('amazonaws.com/')[1]
-export const rewriteW3sHost = host => host.split('https://w3s.link/')[1]
+export const rewriteS3Host = host => (host ? host.split('amazonaws.com/')[1] : null)
