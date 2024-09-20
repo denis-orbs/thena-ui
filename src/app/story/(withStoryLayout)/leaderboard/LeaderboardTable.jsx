@@ -24,57 +24,6 @@ function PointHead() {
   )
 }
 
-const sortOptions1 = [
-  {
-    disabled: true,
-    label: '#',
-    value: 'rank',
-    isDesc: false,
-    justify: 'text-center',
-    width: 'w-[5%]',
-  },
-  {
-    disabled: true,
-    label: 'Thenian',
-    value: 'thenian',
-    isDesc: true,
-    justify: 'text-wrap',
-    width: 'lg:w-[80%]',
-  },
-  {
-    disabled: true,
-    label: <PointHead />,
-    value: 'totalPoints',
-    isDesc: true,
-    width: 'w-[15%]',
-  },
-]
-
-const sortOptions2 = [
-  {
-    disabled: true,
-    label: 'Thenian',
-    value: 'thenian',
-    isDesc: true,
-    justify: 'text-wrap min-w-[130px]',
-    width: 'w-[60%]',
-  },
-  {
-    disabled: true,
-    label: 'Completed Tasks',
-    value: 'completedTask',
-    isDesc: true,
-    width: 'w-[20%]',
-  },
-  {
-    disabled: true,
-    label: 'Eligible For Raffle',
-    value: 'isEligible',
-    isDesc: true,
-    width: 'w-[20%]',
-  },
-]
-
 function ThenianElement({ data, username }) {
   return (
     <div className='flex items-center gap-2 md:gap-3'>
@@ -108,10 +57,46 @@ function RankElement({ data }) {
   }
 }
 
-export default function LeaderboardTable({ userInfo, currentTabIndex }) {
+export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTimestamp }) {
   const t = useTranslations()
 
-  const [sort, setSort] = useState(currentTabIndex === 1 ? sortOptions1[0] : sortOptions2[0])
+  const currentDate = new Date()
+  const rewardTime = new Date(rewardTimestamp ?? new Date())
+
+  const isWinners = currentDate > rewardTime
+
+  console.log('currentDate, rewardTime', currentDate, rewardTime)
+
+  const sortOptions = useMemo(
+    () => [
+      {
+        disabled: true,
+        label: currentTabIndex === 1 ? '#' : 'Thenian',
+        value: currentTabIndex === 1 ? 'rank' : 'thenian',
+        isDesc: currentTabIndex !== 1,
+        justify: currentTabIndex === 1 ? 'text-center' : 'text-wrap min-w-[130px]',
+        width: currentTabIndex === 1 ? 'w-[5%]' : 'w-[60%]',
+      },
+      {
+        disabled: true,
+        label: currentTabIndex === 1 ? 'Thenian' : 'Completed Tasks',
+        value: currentTabIndex === 1 ? 'thenian' : 'completedTask',
+        isDesc: true,
+        justify: currentTabIndex === 1 ? 'text-wrap' : '',
+        width: currentTabIndex === 1 ? 'lg:w-[80%]' : 'lg:w-[20%]',
+      },
+      {
+        disabled: true,
+        label: currentTabIndex === 1 ? <PointHead /> : isWinners ? 'Reward' : 'Eligible For Raffle',
+        value: currentTabIndex === 1 ? 'totalPoints' : isWinners ? 'reward' : 'isEligible',
+        isDesc: true,
+        width: currentTabIndex === 1 ? 'w-[15%]' : 'w-[20%]',
+      },
+    ],
+    [currentTabIndex, isWinners],
+  )
+
+  const [sort, setSort] = useState(sortOptions[0])
   const [currentPage, setCurrentPage] = useState(1)
   const [rowDefault, setRowDefault] = useState()
 
@@ -125,7 +110,13 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
 
   const { data: participantsByChapter, isLoading: loadingParticipantsByChapter } = useQuery({
     queryKey: ['getParticipantsByChapter', userInfo, currentTabIndex],
-    queryFn: () => fetchParticipantsByChapter(10000, currentTabIndex, userInfo.id.toLowerCase()),
+    queryFn: () =>
+      fetchParticipantsByChapter(
+        10000,
+        currentTabIndex,
+        userInfo.id.toLowerCase(),
+        isWinners ? 'WINNERS' : 'LEADERBOARD',
+      ),
     refetchInterval: 30000,
     enabled: Boolean(userInfo),
     gcTime: 0,
@@ -141,19 +132,23 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
       })
     }
 
-    if (currentTabIndex > 1 && participantsByChapter?.participantDetails) {
-      const userDefault = participantsByChapter?.participantDetails
-      setRowDefault({
-        id: userDefault?.participantId,
-        completedTask: `${userDefault?.completedTask} / ${participantsByChapter?.pagination?.totalTask}`,
-        thenian: <ThenianElement data={userDefault} username={userDefault?.participantId} />,
-        isEligible:
-          userDefault?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
-            <span className='text-success-700'>Yes</span>
-          ) : (
-            <span className='text-error-700'>No</span>
-          ),
-      })
+    if (currentTabIndex > 1) {
+      if (participantsByChapter?.participantDetails) {
+        const userDefault = participantsByChapter?.participantDetails
+        setRowDefault({
+          id: userDefault?.participantId,
+          completedTask: `${userDefault?.completedTask} / ${participantsByChapter?.pagination?.totalTask}`,
+          thenian: <ThenianElement data={userDefault} username={userDefault?.participantId} />,
+          isEligible:
+            userDefault?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
+              <span className='text-success-700'>Yes</span>
+            ) : (
+              <span className='text-error-700'>No</span>
+            ),
+        })
+      } else {
+        setRowDefault(undefined)
+      }
     }
   }, [
     currentTabIndex,
@@ -168,15 +163,16 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
         ? participants?.map(item => ({
             id: item.id,
             rank: <RankElement data={item} />,
-            thenian: <ThenianElement data={item} username={item.id} />,
+            thenian: <ThenianElement data={item} username={item.username ?? item.id} />,
             totalPoints: item.totalPoints,
           }))
         : participantsByChapter?.results?.map(item => ({
             id: item.participantId,
             // eslint-disable-next-line max-len
             completedTask: `${participantsByChapter?.pagination?.totalTask} / ${participantsByChapter?.pagination?.totalTask}`,
-            thenian: <ThenianElement data={item} username={item.participantId} />,
+            thenian: <ThenianElement data={item} username={item.username ?? item.participantId} />,
             isEligible: <span className='text-success-700'>Yes</span>,
+            reward: item.reward,
           })),
     [currentTabIndex, participants, participantsByChapter?.pagination?.totalTask, participantsByChapter?.results],
   )
@@ -208,7 +204,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
           className='w-full bg-neutral-900'
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
-          sortOptions={currentTabIndex === 1 ? sortOptions1 : sortOptions2}
+          sortOptions={sortOptions}
           sort={sort}
           setSort={setSort}
           tableBasic

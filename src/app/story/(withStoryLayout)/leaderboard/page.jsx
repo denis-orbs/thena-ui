@@ -84,6 +84,8 @@ export default function LeaderboardPage() {
     ]
   }, [chapters])
 
+  console.log('rewardsTimestamp', chapters)
+
   if (!userInfo) {
     return <Loading />
   }
@@ -103,7 +105,11 @@ export default function LeaderboardPage() {
             setCurrentTabIndex={setCurrentTabIndex}
           />
         </div>
-        <LeaderboardTable currentTabIndex={currentTabIndex} userInfo={userInfo} />
+        <LeaderboardTable
+          currentTabIndex={currentTabIndex}
+          userInfo={userInfo}
+          rewardTimestamp={chapters[currentTabIndex - 1].rewardsTimestamp}
+        />
         <HowItWorks />
       </div>
     </>

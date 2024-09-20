@@ -258,8 +258,13 @@ export const fetchParticipants = async limit => {
 }
 
 const V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER = gql`
-  query V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER($limit: Int!, $indexChapter: Int!, $participantId: String!) {
-    campaignLeaderboard(chapterIndex: $indexChapter, limit: $limit, participantId: $participantId) {
+  query V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER(
+    $limit: Int!
+    $indexChapter: Int!
+    $participantId: String!
+    $type: CampaignLeaderboardType!
+  ) {
+    campaignLeaderboard(chapterIndex: $indexChapter, limit: $limit, participantId: $participantId, type: $type) {
       pagination {
         totalCount
         totalTask
@@ -273,17 +278,20 @@ const V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER = gql`
         avatarUrl
         completedTask
         participantId
+        reward
+        username
       }
     }
   }
 `
 
-export const fetchParticipantsByChapter = async (limit, indexChapter, participantId) => {
+export const fetchParticipantsByChapter = async (limit, indexChapter, participantId, type) => {
   try {
     const { campaignLeaderboard } = await v4Client.request(V4_GET_CAMPAIGN_PARTICIPANTS_BY_CHAPTER, {
       limit,
       indexChapter,
       participantId,
+      type,
     })
 
     if (campaignLeaderboard) {
@@ -335,6 +343,7 @@ const V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED = gql`
       name
       startTimestamp
       endTimestamp
+      rewardsTimestamp
     }
     campaignTasks(where: { isHidden_eq: false, type_in: [Main, Side] }, orderBy: [type_ASC, index_ASC]) {
       actionHandle
