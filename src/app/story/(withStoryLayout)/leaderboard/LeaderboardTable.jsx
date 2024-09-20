@@ -200,7 +200,9 @@ export default function LeaderboardTable({ userInfo, currentTabIndex }) {
   return (
     <div className='border-gradient-secondary rounded-xl p-[1px]'>
       <div className='mb-9 rounded-xl bg-neutral-900'>
-        <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>{t('Leaderboard')}</p>
+        <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>
+          {currentTabIndex === 1 ? t('Leaderboard') : t('Winners List')}
+        </p>
         <Table
           data={finalData}
           className='w-full bg-neutral-900'

@@ -3,12 +3,12 @@ import { useTranslations } from 'use-intl'
 import { cn } from '@/lib/utils'
 import { Lock2Icon } from '@/svgs'
 
-export function LeaderBoardChapterTabNavigator({ leaderBoardNav, currentTabIndex, setCurrentTabIndex }) {
+export function ChapterTabNavigator({ nav, currentTabIndex, setCurrentTabIndex, classOfButton }) {
   const t = useTranslations()
 
   return (
-    <div className='my-5 flex flex-row gap-3 overflow-x-auto p-3 lg:p-0'>
-      {leaderBoardNav.map(chapterTab => (
+    <div className='flex flex-row gap-3 overflow-x-auto p-3 lg:p-0'>
+      {nav.map(chapterTab => (
         <button
           key={chapterTab.id}
           type='button'
@@ -16,6 +16,7 @@ export function LeaderBoardChapterTabNavigator({ leaderBoardNav, currentTabIndex
             'rounded-xl border-[1px] border-neutral-900 bg-neutral-900 p-2 text-base font-medium lg:px-9 lg:py-4 lg:leading-[35px]',
             chapterTab.index === currentTabIndex && 'col-span-2 border-primary-600 bg-primary-950',
             !chapterTab.available ? 'cursor-not-allowed opacity-60 lg:px-5' : ' hover:border-primary-600',
+            classOfButton,
           )}
           disabled={!chapterTab.available}
           onClick={() => {

@@ -1,51 +1,26 @@
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
-import { cn } from '@/lib/utils'
-import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
-import { AlertCirlceSmallIcon, BankIcon, FingerprintIcon, THETokenIcon } from '@/svgs'
+import { AlertCirlceSmallIcon } from '@/svgs'
 
-import { CountDownAnnouncement } from './CountDownAnnouncement'
+import { CountDownAnnouncement } from '../CountDownAnnouncement'
 
 // FIXME remove mocked data
 const isChecked = true
 const isClaimed = false
-const rewards = [
-  {
-    id: '1',
-    index: 1,
-    name: 'THE Tokens',
-    description: 'Tokens will be distributed among 100 winners.',
-    icon: THETokenIcon,
-  },
-  {
-    id: '2',
-    index: 2,
-    name: '2 theNFTs',
-    description: 'You can stake theNFT to earn THE tokens.',
-    icon: BankIcon,
-  },
-  {
-    id: '3',
-    index: 3,
-    name: '1 THENA ID',
-    description: 'Use Thena ID to customise your THENA profile.',
-    icon: FingerprintIcon,
-  },
-]
 
-export function RewardChapter12({ chapters }) {
+function RewardChapterFooter({ startTime, endTime }) {
   const t = useTranslations()
-  const { campaignParticipantInfo: userInfo } = useTHEStory()
   const currentDate = dayjs()
+  const { campaignParticipantInfo: userInfo } = useTHEStory()
 
   const [chapterProgressPercent, targetCountdown] = useMemo(() => {
-    const startTime = dayjs(chapters?.[0]?.startTimestamp ?? 0)
-    const endTime = chapters?.[1]?.endTimestamp ? dayjs(chapters[1].endTimestamp).add(1, 'weeks') : dayjs(0)
+    // const startTime = dayjs(chapters?.[0]?.startTimestamp ?? 0)
+    // const endTime = chapters?.[1]?.endTimestamp ? dayjs(chapters[1].endTimestamp).add(1, 'weeks') : dayjs(0)
 
     let progressPercent = 0
     if (currentDate.isAfter(startTime) && currentDate.isBefore(endTime)) {
@@ -60,7 +35,7 @@ export function RewardChapter12({ chapters }) {
     }
 
     return [progressPercent, countDown?.unix() || 0]
-  }, [chapters, currentDate])
+  }, [currentDate, endTime, startTime])
 
   const renderActionMessage = useCallback(() => {
     if (targetCountdown || !isChecked) {
@@ -74,10 +49,6 @@ export function RewardChapter12({ chapters }) {
       return (
         <div className='flex flex-row items-center justify-center font-archia text-2xl font-semibold'>
           <span>{t('You Won')} </span>
-          <div className='mx-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary-500'>
-            <FingerprintIcon class='inline h-4 w-4' />
-          </div>
-          <span className='text-primary-500'>1 THENA ID</span>
         </div>
       )
     }
@@ -85,10 +56,6 @@ export function RewardChapter12({ chapters }) {
       return (
         <div className='flex flex-row items-center justify-center font-archia text-2xl font-semibold'>
           <span>{t('You Won')} </span>
-          <div className='mx-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary-500'>
-            <BankIcon class='inline h-4 w-4' />
-          </div>
-          <span className='text-primary-500'>1 theNFTs</span>
         </div>
       )
     }
@@ -96,10 +63,6 @@ export function RewardChapter12({ chapters }) {
       return (
         <div className='flex flex-row items-center justify-center font-archia text-2xl font-semibold'>
           <span>{t('You Won')} </span>
-          <div className='mx-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary-500'>
-            <THETokenIcon class='inline h-4 w-4' />
-          </div>
-          <span className='text-primary-500'>100 THE Tokens</span>
         </div>
       )
     }
@@ -136,35 +99,6 @@ export function RewardChapter12({ chapters }) {
 
   return (
     <>
-      <div className='mb-4 mt-4 lg:mb-[60px] lg:mt-11'>
-        <TextHeading className='font-archia text-3xl font-semibold'>
-          <span>{t('Rewards in USD')}: </span>
-          <span className='text-primary-600'>$16,000</span>
-        </TextHeading>
-      </div>
-
-      <div className='grid grid-cols-2 lg:grid-cols-3'>
-        {rewards.map((reward, index) => (
-          <div
-            key={reward.id}
-            className={cn(
-              'flex items-start justify-center',
-              index === rewards.length - 1 ? 'col-span-2 lg:col-span-1' : 'col-span-1',
-            )}
-          >
-            <HowItWorksItem
-              key={reward.id}
-              icon={reward.icon}
-              title={reward.name}
-              description={reward.description}
-              className='w-auto p-0 md:w-full lg:p-6'
-            />
-          </div>
-        ))}
-      </div>
-
-      <hr className='my-4 border-neutral-600' />
-
       <div className='flex flex-col items-center justify-between lg:flex-row'>
         {targetCountdown ? (
           <div className='font-medium'>
@@ -201,3 +135,5 @@ export function RewardChapter12({ chapters }) {
     </>
   )
 }
+
+export default RewardChapterFooter

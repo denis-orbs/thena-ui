@@ -8,9 +8,9 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/hooks/useWallet'
 import { useFetchChaptersAndTasks } from '@/modules/Story'
+import { ChapterTabNavigator } from '@/modules/Story/ChapterTabNavigator'
 
 import HowItWorks from './HowItWorks'
-import { LeaderBoardChapterTabNavigator } from './LeaderBoardChapterTabNavigator'
 import LeaderboardTable from './LeaderboardTable'
 
 export default function LeaderboardPage() {
@@ -96,11 +96,13 @@ export default function LeaderboardPage() {
         <TextSubHeading className='mt-2 block text-base text-neutral-300'>
           {t('Story Leaderboard Description')}
         </TextSubHeading>
-        <LeaderBoardChapterTabNavigator
-          leaderBoardNav={leaderBoardNav}
-          currentTabIndex={currentTabIndex}
-          setCurrentTabIndex={setCurrentTabIndex}
-        />
+        <div className='my-5'>
+          <ChapterTabNavigator
+            nav={leaderBoardNav}
+            currentTabIndex={currentTabIndex}
+            setCurrentTabIndex={setCurrentTabIndex}
+          />
+        </div>
         <LeaderboardTable currentTabIndex={currentTabIndex} userInfo={userInfo} />
         <HowItWorks />
       </div>
