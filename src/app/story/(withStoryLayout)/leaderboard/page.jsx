@@ -84,8 +84,6 @@ export default function LeaderboardPage() {
     ]
   }, [chapters])
 
-  console.log('rewardsTimestamp', chapters)
-
   if (!userInfo) {
     return <Loading />
   }

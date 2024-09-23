@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
-import { fetchParticipants, fetchParticipantsByChapter } from '@/modules/Story'
+import { fetchLeaderboardByChapter, fetchStoryLeaderboard } from '@/modules/Story'
 import { FirstPrizeIcon, InfoIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 
 function PointHead() {
@@ -60,10 +60,39 @@ function RankElement({ data }) {
 export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTimestamp }) {
   const t = useTranslations()
 
-  const currentDate = new Date()
-  const rewardTime = new Date(rewardTimestamp ?? new Date())
+  const [isWinners, setIsWinners] = useState(false)
 
-  const isWinners = currentDate > rewardTime
+  useEffect(() => {
+    if (!rewardTimestamp) {
+      return
+    }
+
+    const rewardTime = new Date(rewardTimestamp)
+
+    const checkTime = () => {
+      const newIsWinners = new Date() >= rewardTime
+      setIsWinners(prev => {
+        if (prev !== newIsWinners) {
+          return newIsWinners
+        }
+        return prev
+      })
+    }
+
+    checkTime()
+
+    const intervalId = setInterval(checkTime, 1000)
+
+    if (isWinners) {
+      clearInterval(intervalId)
+    }
+
+    return () => clearInterval(intervalId)
+  }, [isWinners, rewardTimestamp])
+
+  useEffect(() => {
+    setIsWinners(false)
+  }, [currentTabIndex])
 
   const sortOptions = useMemo(
     () => [
@@ -100,16 +129,16 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
 
   const { data: participants, isLoading: loadingParticipants } = useQuery({
     queryKey: ['getParticipants', userInfo],
-    queryFn: () => fetchParticipants(300),
+    queryFn: () => fetchStoryLeaderboard(300),
     refetchInterval: 30000,
     enabled: Boolean(userInfo),
     gcTime: 0,
   })
 
   const { data: participantsByChapter, isLoading: loadingParticipantsByChapter } = useQuery({
-    queryKey: ['getParticipantsByChapter', userInfo, currentTabIndex],
+    queryKey: ['getParticipantsByChapter', userInfo, currentTabIndex, isWinners],
     queryFn: () =>
-      fetchParticipantsByChapter(
+      fetchLeaderboardByChapter(
         10000,
         currentTabIndex,
         userInfo.id.toLowerCase(),
