@@ -1,3 +1,4 @@
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'use-intl'
 
 import { cn } from '@/lib/utils'
@@ -6,8 +7,10 @@ import { Lock2Icon } from '@/svgs'
 export function ChapterTabNavigator({ nav, currentTabIndex, setCurrentTabIndex, classOfButton }) {
   const t = useTranslations()
 
+  const pathname = usePathname()
+
   return (
-    <div className='flex flex-row gap-3 overflow-x-auto p-3 lg:p-0'>
+    <div className='flex flex-row gap-2 overflow-x-auto p-3 lg:gap-3 lg:p-0'>
       {nav.map(chapterTab => (
         <button
           key={chapterTab.id}
@@ -30,7 +33,8 @@ export function ChapterTabNavigator({ nav, currentTabIndex, setCurrentTabIndex, 
             <span
               className={cn('flex whitespace-nowrap text-[14px] lg:text-[16px]', !chapterTab.available && 'opacity-40')}
             >
-              {chapterTab.index > 1 && chapterTab.index === currentTabIndex ? (
+              {(pathname.startsWith('/story/rewards') ? chapterTab.index < 8 : chapterTab.index > 1) &&
+              chapterTab.index === currentTabIndex ? (
                 <>
                   <span className='mr-1 hidden lg:block'>{t('Chapter')}</span>
                   <span>{chapterTab.name}</span>

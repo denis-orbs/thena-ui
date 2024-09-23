@@ -271,23 +271,22 @@ export function RewardChapter({ chapters }) {
         />
         <div>
           <RewardChapterDetail
-            rewards={rewards[selectedChapterIndex]?.reward}
-            rewardsTimestamp={chapters[selectedChapterIndex]?.rewardsTimestamp}
+            rewards={rewards[selectedChapterIndex - 1]?.reward}
+            rewardsTimestamp={chapters[selectedChapterIndex - 1]?.rewardsTimestamp}
           />
-          {selectedChapterIndex === 1 ? (
+          {selectedChapterIndex === 8 ? (
             <RewardChapterFooter
               startTime={dayjs(chapters?.[0]?.startTimestamp ?? 0)}
-              endTime={chapters?.[1]?.endTimestamp ? dayjs(chapters[1].endTimestamp).add(1, 'weeks') : dayjs(0)}
+              endTime={chapters?.[1]?.endTimestamp ? dayjs(chapters[1]?.endTimestamp).add(1, 'weeks') : dayjs(0)}
             />
           ) : (
             <RewardChapterFooter
-              startTime={dayjs(chapters?.[selectedChapterIndex]?.startTimestamp ?? 0)}
-              endTime={chapters[selectedChapterIndex]?.rewardsTimestamp}
-              rewardsTimestamp={chapters[selectedChapterIndex]?.rewardsTimestamp}
+              startTime={dayjs(chapters?.[selectedChapterIndex - 1]?.startTimestamp ?? 0)}
+              endTime={dayjs(chapters[selectedChapterIndex - 1]?.rewardsTimestamp)}
+              currentTabIndex={selectedChapterIndex}
             />
           )}
         </div>
-        {/* TODO ALL CHAPTER  */}
       </div>
     </div>
   )

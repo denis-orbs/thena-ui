@@ -184,6 +184,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
     }
   }, [
     currentTabIndex,
+    participantsByChapter,
     participantsByChapter?.pagination?.totalTask,
     participantsByChapter?.participantDetails,
     userInfo,

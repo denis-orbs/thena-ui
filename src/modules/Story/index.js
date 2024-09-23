@@ -307,6 +307,44 @@ export const fetchLeaderboardByChapter = async (limit, indexChapter, participant
   }
 }
 
+const V4_CHECK_WINNER = gql`
+  query V4_CHECK_WINNER($chapterIndex: Int!) {
+    checkWinner(chapterIndex: $chapterIndex) {
+      isWinner
+      reward
+      rewardIndex
+    }
+  }
+`
+
+export const useCheckWinner = () => {
+  const { signWallet } = useSignWallet()
+  const checkWinderFn = useCallback(async chapterIndex => {
+    const { checkWinner } = await v4Client.request(
+      V4_CHECK_WINNER,
+      {
+        chapterIndex,
+      },
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
+
+    if (checkWinner) {
+      return checkWinner
+    }
+    return {}
+  }, [])
+
+  const checkWinner = useCallback(
+    async (params, callOnSuccess, callOnReject) =>
+      await actionWithAuthentication(checkWinderFn, signWallet, params, callOnSuccess, callOnReject),
+    [checkWinderFn, signWallet],
+  )
+
+  return { checkWinner }
+}
+
 const V4_DAILY_SWAPS = gql`
   query V4_DAILY_SWAPS($id: String = "") {
     participantDailySwap(participantId: $id) {

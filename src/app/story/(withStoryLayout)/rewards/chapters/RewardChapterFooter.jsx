@@ -1,22 +1,59 @@
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
-import { useTHEStory } from '@/context/THEStoryContext'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
+import useWallet from '@/hooks/useWallet'
+import { errorToast, successToast } from '@/lib/notify'
+import { useCheckWinner } from '@/modules/Story'
 import { AlertCirlceSmallIcon } from '@/svgs'
 
 import { CountDownAnnouncement } from '../CountDownAnnouncement'
 
 // FIXME remove mocked data
-const isChecked = true
+// const isChecked = false
 const isClaimed = false
 
-function RewardChapterFooter({ startTime, endTime, rewardsTimestamp }) {
+function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
+  const { account } = useWallet()
   const t = useTranslations()
   const currentDate = dayjs()
-  const { campaignParticipantInfo: userInfo } = useTHEStory()
+  const { getWithExpiry, setWithExpiry } = useLocalStorage()
+
+  const { checkWinner } = useCheckWinner()
+
+  const [isChecked, setIsChecked] = useState(
+    getWithExpiry(`isChecked_${currentTabIndex}_${account.toLowerCase()}`)?.isWinner || false,
+  )
+  // const [isClaimed, setIsClaimed] = useState(
+  //   getWithExpiry(`isClaimed_${currentTabIndex}_${account.toLowerCase()}`) || false,
+  // )
+
+  const checkWinnerData = useMemo(
+    () => getWithExpiry(`isChecked_${currentTabIndex}_${account.toLowerCase()}`),
+    [account, currentTabIndex, getWithExpiry],
+  )
+
+  const onCheckWinner = useCallback(async () => {
+    await checkWinner(
+      currentTabIndex + 1,
+      res => {
+        if (res.isWinner) {
+          setIsChecked(true)
+          successToast('You won!')
+          const oneMonthInMilliseconds = 30 * 24 * 60 * 60 * 1000
+          setWithExpiry(`isChecked_${currentTabIndex}_${account.toLowerCase()}`, res, oneMonthInMilliseconds)
+        } else {
+          errorToast('You not won!')
+        }
+      },
+      () => {
+        setIsChecked(false)
+      },
+    )
+  }, [account, checkWinner, currentTabIndex, setWithExpiry])
 
   const [chapterProgressPercent, targetCountdown] = useMemo(() => {
     // const startTime = dayjs(chapters?.[0]?.startTimestamp ?? 0)
@@ -39,39 +76,23 @@ function RewardChapterFooter({ startTime, endTime, rewardsTimestamp }) {
 
   const renderActionMessage = useCallback(() => {
     if (targetCountdown || !isChecked) {
-      // if (!targetCountdown || !isChecked) {
       return <TextHeading className='font-archia text-2xl font-semibold'>{t('Are You a Winner?')}</TextHeading>
     }
 
-    const rank = userInfo.rankFirstTwoChapters
-    // const rank = 102
-    if (rank === 0) {
+    if (checkWinnerData?.isWinner) {
       return (
         <div className='flex flex-row items-center justify-center font-archia text-2xl font-semibold'>
-          <span>{t('You Won')} </span>
+          <span>{t('You Won')}</span> &nbsp; <span className='text-primary-600'>{checkWinnerData?.reward}</span>
         </div>
       )
     }
-    if (rank === 1 || rank === 2) {
-      return (
-        <div className='flex flex-row items-center justify-center font-archia text-2xl font-semibold'>
-          <span>{t('You Won')} </span>
-        </div>
-      )
-    }
-    if (rank <= 102) {
-      return (
-        <div className='flex flex-row items-center justify-center font-archia text-2xl font-semibold'>
-          <span>{t('You Won')} </span>
-        </div>
-      )
-    }
+
     return (
       <TextHeading className='font-archia text-2xl font-semibold'>
         {t('Unfortunately You Didn’t Won Any Rewards')}
       </TextHeading>
     )
-  }, [targetCountdown, t, userInfo.rankFirstTwoChapters])
+  }, [targetCountdown, isChecked, checkWinnerData?.isWinner, checkWinnerData?.reward, t])
 
   const renderActionButton = useCallback(() => {
     if (targetCountdown) {
@@ -82,9 +103,13 @@ function RewardChapterFooter({ startTime, endTime, rewardsTimestamp }) {
       )
     }
     if (!isChecked) {
-      return <PrimaryButton className='w-full lg:w-[140px]'>{t('Check now')}</PrimaryButton>
+      return (
+        <PrimaryButton className='w-full lg:w-[140px]' onClick={onCheckWinner}>
+          {t('Check now')}
+        </PrimaryButton>
+      )
     }
-    if (!userInfo.rankFirstTwoChapters > 102) {
+    if (!checkWinnerData?.isWinner) {
       return
     }
     if (isClaimed) {
@@ -95,7 +120,7 @@ function RewardChapterFooter({ startTime, endTime, rewardsTimestamp }) {
       )
     }
     return <PrimaryButton className='w-full lg:w-[140px]'>{t('Claim')}</PrimaryButton>
-  }, [targetCountdown, t, userInfo.rankFirstTwoChapters])
+  }, [targetCountdown, isChecked, checkWinnerData?.isWinner, t, onCheckWinner])
 
   return (
     <>
@@ -103,8 +128,8 @@ function RewardChapterFooter({ startTime, endTime, rewardsTimestamp }) {
         {targetCountdown ? (
           <div className='font-medium'>
             <span className='text-neutral-300'>{t('Winners Announcement')}: </span>
-            {rewardsTimestamp ? (
-              <CountDownAnnouncement timestamp={new Date(rewardsTimestamp)} className='font-bold text-neutral-50' />
+            {endTime ? (
+              <CountDownAnnouncement timestamp={endTime.unix()} className='font-bold text-neutral-50' />
             ) : (
               'TBA'
             )}
@@ -112,7 +137,7 @@ function RewardChapterFooter({ startTime, endTime, rewardsTimestamp }) {
         ) : (
           <span className='font-bold text-neutral-50'>{t('The competition has ended')}</span>
         )}
-        <div className='hidden lg:hidden'>
+        <div>
           <span className='font-light text-neutral-400'>{t('Selection method Raffle')} </span>
           <AlertCirlceSmallIcon className='inline h-4 w-4 cursor-pointer' />
         </div>
