@@ -14,7 +14,7 @@ import { CountDownAnnouncement } from '../CountDownAnnouncement'
 
 // FIXME remove mocked data
 // const isChecked = false
-const isClaimed = false
+const isClaimed = true
 
 function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
   const { account } = useWallet()
@@ -27,9 +27,6 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
   const [isChecked, setIsChecked] = useState(
     getWithExpiry(`isChecked_${currentTabIndex}_${account.toLowerCase()}`)?.isWinner || false,
   )
-  // const [isClaimed, setIsClaimed] = useState(
-  //   getWithExpiry(`isClaimed_${currentTabIndex}_${account.toLowerCase()}`) || false,
-  // )
 
   const checkWinnerData = useMemo(
     () => getWithExpiry(`isChecked_${currentTabIndex}_${account.toLowerCase()}`),
@@ -37,15 +34,16 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
   )
 
   const onCheckWinner = useCallback(async () => {
+    const oneMonthInMilliseconds = 30 * 24 * 60 * 60 * 1000
     await checkWinner(
-      currentTabIndex + 1,
+      currentTabIndex,
       res => {
         if (res.isWinner) {
           setIsChecked(true)
           successToast('You won!')
-          const oneMonthInMilliseconds = 30 * 24 * 60 * 60 * 1000
           setWithExpiry(`isChecked_${currentTabIndex}_${account.toLowerCase()}`, res, oneMonthInMilliseconds)
         } else {
+          setWithExpiry(`isChecked_${currentTabIndex}_${account.toLowerCase()}`, res, oneMonthInMilliseconds)
           errorToast('You not won!')
         }
       },
@@ -56,11 +54,10 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
   }, [account, checkWinner, currentTabIndex, setWithExpiry])
 
   const [chapterProgressPercent, targetCountdown] = useMemo(() => {
-    // const startTime = dayjs(chapters?.[0]?.startTimestamp ?? 0)
-    // const endTime = chapters?.[1]?.endTimestamp ? dayjs(chapters[1].endTimestamp).add(1, 'weeks') : dayjs(0)
-
     let progressPercent = 0
-    if (currentDate.isAfter(startTime) && currentDate.isBefore(endTime)) {
+    if (endTime === null) {
+      progressPercent = 0
+    } else if (currentDate.isAfter(startTime) && currentDate.isBefore(endTime)) {
       progressPercent = ((currentDate.unix() - startTime.unix()) * 100) / (endTime.unix() - startTime.unix())
     } else if (currentDate.isAfter(endTime)) {
       progressPercent = 100
@@ -95,7 +92,7 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
   }, [targetCountdown, isChecked, checkWinnerData?.isWinner, checkWinnerData?.reward, t])
 
   const renderActionButton = useCallback(() => {
-    if (targetCountdown) {
+    if (targetCountdown || endTime == null) {
       return (
         <EmphasisButton className='w-full lg:w-[140px]' disabled>
           TBA
@@ -120,21 +117,23 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
       )
     }
     return <PrimaryButton className='w-full lg:w-[140px]'>{t('Claim')}</PrimaryButton>
-  }, [targetCountdown, isChecked, checkWinnerData?.isWinner, t, onCheckWinner])
+  }, [targetCountdown, endTime, isChecked, checkWinnerData?.isWinner, t, onCheckWinner])
 
   return (
     <>
       <div className='flex flex-col items-center justify-between lg:flex-row'>
-        {targetCountdown ? (
+        {!!targetCountdown && (
           <div className='font-medium'>
             <span className='text-neutral-300'>{t('Winners Announcement')}: </span>
-            {endTime ? (
-              <CountDownAnnouncement timestamp={endTime.unix()} className='font-bold text-neutral-50' />
-            ) : (
-              'TBA'
-            )}
+            <CountDownAnnouncement timestamp={endTime.unix()} className='font-bold text-neutral-50' />
           </div>
-        ) : (
+        )}
+        {endTime === null && (
+          <div className='font-medium'>
+            <span className='text-neutral-300'>{t('Winners Announcement')}: TBA</span>
+          </div>
+        )}
+        {!targetCountdown && endTime !== null && (
           <span className='font-bold text-neutral-50'>{t('The competition has ended')}</span>
         )}
         <div>
