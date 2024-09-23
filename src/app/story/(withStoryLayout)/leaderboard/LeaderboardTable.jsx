@@ -154,7 +154,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
       setRowDefault({
         id: userInfo.id,
         rank: <RankElement data={userInfo} />,
-        thenian: <ThenianElement data={userInfo} username={userInfo.id} />,
+        thenian: <ThenianElement data={userInfo} username={userInfo?.participant?.username ?? userInfo?.id} />,
         totalPoints: userInfo.totalPoints,
       })
     }
@@ -196,7 +196,7 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
         ? participants?.map(item => ({
             id: item.id,
             rank: <RankElement data={item} />,
-            thenian: <ThenianElement data={item} username={item.username ?? item.id} />,
+            thenian: <ThenianElement data={item} username={item?.participant?.username ?? item.id} />,
             totalPoints: item.totalPoints,
           }))
         : participantsByChapter?.results?.map(item => ({

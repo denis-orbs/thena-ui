@@ -23,6 +23,9 @@ const V4_CAMPAIGN_PARTICIPANT_BY_ID = gql`
       totalPoints
       xProfileUsername
       createdAt
+      participant {
+        username
+      }
     }
   }
 `
@@ -237,6 +240,9 @@ const V4_GET_STORY_LEADERBOARD = gql`
       avatarUrl
       totalFragments
       totalPoints
+      participant {
+        username
+      }
     }
   }
 `
