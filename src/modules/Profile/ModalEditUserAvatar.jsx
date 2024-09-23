@@ -150,7 +150,7 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {}, u
 
             {stateChecked === 'custom' && (
               <>
-                <p className='mb-3'>Note: You should use image with 1:1 ratio (For example: 1080x1080)</p>
+                <p className='mb-3'>Note: You should use image with 1:1 ratio (For example: 300x300)</p>
                 <div
                   className='w-full rounded-xl border border-primary-800 bg-neutral-900 px-4 py-6 lg:p-6'
                   {...getRootProps()}
