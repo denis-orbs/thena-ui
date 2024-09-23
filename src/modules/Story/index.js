@@ -314,8 +314,8 @@ export const fetchLeaderboardByChapter = async (limit, indexChapter, participant
 }
 
 const V4_CHECK_WINNER = gql`
-  query V4_CHECK_WINNER($chapterIndex: Int!) {
-    checkWinner(chapterIndex: $chapterIndex) {
+  query V4_CHECK_WINNER($chapterIndex: Int!, $participantId: String!) {
+    checkWinner(chapterIndex: $chapterIndex, participantId: $participantId) {
       isWinner
       reward
       rewardIndex
@@ -323,32 +323,16 @@ const V4_CHECK_WINNER = gql`
   }
 `
 
-export const useCheckWinner = () => {
-  const { signWallet } = useSignWallet()
-  const checkWinderFn = useCallback(async chapterIndex => {
-    const { checkWinner } = await v4Client.request(
-      V4_CHECK_WINNER,
-      {
-        chapterIndex,
-      },
-      {
-        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
-      },
-    )
+export const fetchCheckWinner = async (chapterIndex, accountId) => {
+  const { checkWinner } = await v4Client.request(V4_CHECK_WINNER, {
+    chapterIndex,
+    participantId: accountId,
+  })
 
-    if (checkWinner) {
-      return checkWinner
-    }
-    return {}
-  }, [])
-
-  const checkWinner = useCallback(
-    async (params, callOnSuccess, callOnReject) =>
-      await actionWithAuthentication(checkWinderFn, signWallet, params, callOnSuccess, callOnReject),
-    [checkWinderFn, signWallet],
-  )
-
-  return { checkWinner }
+  if (checkWinner) {
+    return checkWinner
+  }
+  return {}
 }
 
 const V4_DAILY_SWAPS = gql`
