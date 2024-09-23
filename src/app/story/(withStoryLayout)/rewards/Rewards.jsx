@@ -4,8 +4,8 @@ import Loading from '@/app/loading'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useFetchChaptersAndTasks } from '@/modules/Story'
 
+import { RewardChapter } from './chapters/RewardChapter'
 import { FAQ } from './FAQ'
-import { RewardChapter } from './RewardChapter'
 import { RewardFragments } from './RewardFragments'
 
 export function Rewards({ address }) {

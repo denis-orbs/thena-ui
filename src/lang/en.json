@@ -949,6 +949,7 @@
   "Stake into THE/BNB (ICHI)": "Stake into THE/BNB (ICHI)",
   "Stake into THE/BNB (any CL version)": "Stake into THE/BNB (any CL version)",
   "Friends invited": "Friends invited",
+  "Day [dayNumber]": "Day {dayNumber}",
   "Day": "Day",
   "Hour": "Hour",
   "Minute": "Minute",
@@ -1045,7 +1046,7 @@
   "The competition has ended": "The competition has ended!",
   "Check now": "Check now",
   "You Won": "You Won!",
-  "Unfortunately You Didn’t Won Any Rewards": "Unfortunately You Didn’t Won Any Rewards.",
+  "Unfortunately You Didn’t Won Any Rewards": "Unfortunately, You Didn’t Win Any Rewards.",
   "Mint Your NFT": "Mint Your NFT",
   "Fragments Required": "Fragments Required",
   "You Minted a New NFT": "You Minted a New NFT",
@@ -1104,5 +1105,6 @@
   "Users Completed 1 Task Min": "Users Completed 1 Task Min",
   "Completed Chapters": "Completed Chapters",
   "Global Stats": "Global Stats",
-  "Swap THE": "Swap THE"
+  "Swap THE": "Swap THE",
+  "Winners List": "Winners List"
 }

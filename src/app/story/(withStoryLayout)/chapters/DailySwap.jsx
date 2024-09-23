@@ -54,7 +54,11 @@ export function DailySwap({ dailySwaps, userSwaps }) {
                   typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day ? 'border-primary-600' : '',
                 )}
               >
-                <p className='font-archia text-[22px] leading-7'>{`${t('Day')} ${task.index + 1}`}</p>
+                <p className='font-archia text-[22px] leading-7'>
+                  {`${t.rich('Day [dayNumber]', {
+                    dayNumber: task.index + 1,
+                  })}`}
+                </p>
                 <hr className='my-2 hidden w-full border-neutral-600 lg:block xl:my-4' />
                 <div className='flex flex-row items-center justify-between  lg:flex-col lg:justify-center'>
                   {typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day ? (
