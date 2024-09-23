@@ -4,7 +4,7 @@ import React, { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
 import { fetchCheckWinner } from '@/modules/Story'
@@ -13,7 +13,6 @@ import { CountDownAnnouncement } from '../CountDownAnnouncement'
 
 // FIXME remove mocked data
 // const isChecked = false
-const isClaimed = true
 
 function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
   const { account } = useWallet()
@@ -74,15 +73,8 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
     if (!checkWinnerData?.isWinner) {
       return
     }
-    if (isClaimed) {
-      return (
-        <EmphasisButton className='w-full lg:w-[140px]' disabled>
-          {t('Claimed')}
-        </EmphasisButton>
-      )
-    }
-    return <PrimaryButton className='w-full lg:w-[140px]'>{t('Claim')}</PrimaryButton>
-  }, [targetCountdown, endTime, checkWinnerData?.isWinner, t])
+    return <></>
+  }, [targetCountdown, endTime, checkWinnerData?.isWinner])
 
   if (isLoading) {
     return <Loading />
