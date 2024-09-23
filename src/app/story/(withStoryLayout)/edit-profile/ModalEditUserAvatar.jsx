@@ -1,14 +1,17 @@
-import { isString } from 'lodash'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+import ReactCrop from 'react-image-crop'
+
+import 'react-image-crop/dist/ReactCrop.css'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
+import { centerAspectCrop, useCropImage } from '@/hooks/useCropImages'
 import { sliceAddress } from '@/lib/utils'
 import { useUpdateParticipantAvatar } from '@/modules/Story'
 
@@ -17,12 +20,25 @@ const SelectedAvatarState = {
   default: 'default',
 }
 
+const aspect = 1 / 1
 export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
   const t = useTranslations()
 
   const [stateChecked, setStateChecked] = useState(SelectedAvatarState.default)
   const [selectedImage, setSelectedImage] = useState(undefined)
   const [loading, setLoading] = useState(false)
+  const {
+    initImage,
+    setInitImage,
+    completedCrop,
+    setCompletedCrop,
+    crop,
+    setCrop,
+    previewCanvasRef,
+    imgRef,
+    exportCropToNewImage,
+  } = useCropImage(aspect, selectedImage)
+
   const { campaignParticipantInfo: userInfo, setCampaignParticipantInfo } = useTHEStory()
 
   const { createPresignUrl, updateParticipantAvatar } = useUpdateParticipantAvatar()
@@ -51,11 +67,10 @@ export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
     [closeModal, setCampaignParticipantInfo, updateParticipantAvatar, userInfo],
   )
 
-  const handleSave = useCallback(async () => {
-    setLoading(true)
-    if (userInfo.id && stateChecked === SelectedAvatarState.custom) {
+  const handleUploadAndSaveAvatar = useCallback(
+    async file => {
       await createPresignUrl(
-        selectedImage,
+        file,
         userInfo.id,
         async data => {
           if (data !== false) {
@@ -68,19 +83,33 @@ export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
           setLoading(false)
         },
       )
+    },
+    [userInfo.id, createPresignUrl, handleUpdateAvatar],
+  )
+
+  const handleSave = useCallback(async () => {
+    setLoading(true)
+    if (userInfo.id && stateChecked === SelectedAvatarState.custom) {
+      await exportCropToNewImage(handleUploadAndSaveAvatar)
     }
     if (stateChecked === SelectedAvatarState.default) {
       await handleUpdateAvatar(null)
     }
-  }, [userInfo.id, stateChecked, createPresignUrl, selectedImage, handleUpdateAvatar])
+  }, [exportCropToNewImage, handleUploadAndSaveAvatar, handleUpdateAvatar, userInfo.id, stateChecked])
 
   useEffect(() => {
     if (acceptedFiles.length) {
       setSelectedImage(acceptedFiles[0])
+      const reader = new FileReader()
+      reader.onload = () => {
+        const dataURL = reader.result
+        setInitImage(dataURL)
+      }
+      reader.readAsDataURL(acceptedFiles[0])
     } else {
       setSelectedImage(undefined)
     }
-  }, [acceptedFiles])
+  }, [acceptedFiles, setInitImage])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} width={600} title='Edit Avatar'>
@@ -122,6 +151,7 @@ export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
 
             {stateChecked === SelectedAvatarState.custom && (
               <>
+                <p className='mb-3'>Note: You should use image with 1:1 ratio (For example: 1080x1080)</p>
                 <div
                   className='w-full rounded-xl border border-primary-800 bg-neutral-900 px-4 py-6 lg:p-6'
                   {...getRootProps()}
@@ -129,13 +159,28 @@ export function ModalEditUserAvatar({ isOpen, closeModal = () => {} }) {
                   <input {...getInputProps()} />
                   {isDragActive ? <p>{t('Drop The File Here')}</p> : <p>{t('Drag Drop File Here')}</p>}
                 </div>
-                {selectedImage && (
-                  <CircleImage
-                    src={isString(selectedImage) ? selectedImage : URL.createObjectURL(selectedImage)}
-                    alt='avatar'
-                    className='h-24 w-24'
-                  />
+                {Boolean(initImage) && (
+                  <ReactCrop
+                    crop={crop}
+                    onChange={(_, percentCrop) => setCrop(percentCrop)}
+                    onComplete={c => setCompletedCrop(c)}
+                    aspect={aspect}
+                    minWidth={300}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      ref={imgRef}
+                      alt='Crop me'
+                      src={initImage}
+                      onLoad={e => {
+                        const { width, height } = e.currentTarget
+                        setCrop(centerAspectCrop(width, height, aspect))
+                      }}
+                    />
+                  </ReactCrop>
                 )}
+
+                {Boolean(completedCrop) && <canvas hidden ref={previewCanvasRef} className=' object-contain' />}
               </>
             )}
             {stateChecked === SelectedAvatarState.default && (

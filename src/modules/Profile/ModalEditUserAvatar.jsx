@@ -1,19 +1,23 @@
-import { isString } from 'lodash'
 import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+import ReactCrop from 'react-image-crop'
+
+import 'react-image-crop/dist/ReactCrop.css'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody } from '@/components/modal'
 import { TextSubHeading } from '@/components/typography'
+import { centerAspectCrop, useCropImage } from '@/hooks/useCropImages'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import useWallet from '@/hooks/useWallet'
 import { sliceAddress } from '@/lib/utils'
 
 import { useUpdateArenaAvatar } from '../Arena/hooks/profile'
 
+const aspect = 1 / 1
 export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {}, user = {} }) {
   const t = useTranslations()
   const { account } = useWallet()
@@ -21,6 +25,18 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {}, u
   const [stateChecked, setStateChecked] = useState('default')
   const [selectedImage, setSelectedImage] = useState(undefined)
   const [loading, setLoading] = useState(false)
+  const {
+    initImage,
+    setInitImage,
+    completedCrop,
+    setCompletedCrop,
+    crop,
+    setCrop,
+    previewCanvasRef,
+    imgRef,
+    exportCropToNewImage,
+  } = useCropImage(aspect, selectedImage)
+
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     multiple: false,
     accept: { 'image/*': [] },
@@ -48,38 +64,51 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {}, u
     [closeModal, onChange, updateArenaAvatar],
   )
 
+  const handleUploadAndUpadateAvatar = useCallback(
+    async file => {
+      await createPresignedUrl(
+        file,
+        user.id,
+        'CUSTOM_AVATAR',
+        async data => {
+          if (data !== false) {
+            await handleUpdateAvatar(data)
+          } else {
+            setLoading(false)
+          }
+        },
+        () => {
+          setLoading(false)
+        },
+      )
+    },
+    [createPresignedUrl, handleUpdateAvatar, user.id],
+  )
+
   const handleSave = useCallback(async () => {
     if (user?.id) {
       setLoading(true)
       if (stateChecked === 'default') {
         await handleUpdateAvatar(null)
       } else {
-        await createPresignedUrl(
-          selectedImage,
-          user.id,
-          'CUSTOM_AVATAR',
-          async data => {
-            if (data !== false) {
-              await handleUpdateAvatar(data)
-            } else {
-              setLoading(false)
-            }
-          },
-          () => {
-            setLoading(false)
-          },
-        )
+        await exportCropToNewImage(handleUploadAndUpadateAvatar)
       }
     }
-  }, [createPresignedUrl, handleUpdateAvatar, selectedImage, stateChecked, user.id])
+  }, [handleUpdateAvatar, stateChecked, user.id, exportCropToNewImage, handleUploadAndUpadateAvatar])
 
   useEffect(() => {
     if (acceptedFiles.length) {
       setSelectedImage(acceptedFiles[0])
+      const reader = new FileReader()
+      reader.onload = () => {
+        const dataURL = reader.result
+        setInitImage(dataURL)
+      }
+      reader.readAsDataURL(acceptedFiles[0])
     } else {
       setSelectedImage(undefined)
     }
-  }, [acceptedFiles])
+  }, [acceptedFiles, setInitImage])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} width={600} title='Edit Avatar'>
@@ -121,6 +150,7 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {}, u
 
             {stateChecked === 'custom' && (
               <>
+                <p className='mb-3'>Note: You should use image with 1:1 ratio (For example: 1080x1080)</p>
                 <div
                   className='w-full rounded-xl border border-primary-800 bg-neutral-900 px-4 py-6 lg:p-6'
                   {...getRootProps()}
@@ -128,13 +158,28 @@ export function ModalEditUserAvatar({ isOpen, onChange, closeModal = () => {}, u
                   <input {...getInputProps()} />
                   {isDragActive ? <p>{t('Drop The File Here')}</p> : <p>{t('Drag Drop File Here')}</p>}
                 </div>
-                {selectedImage && (
-                  <CircleImage
-                    src={isString(selectedImage) ? selectedImage : URL.createObjectURL(selectedImage)}
-                    alt='avatar'
-                    className='h-24 w-24'
-                  />
+                {Boolean(initImage) && (
+                  <ReactCrop
+                    crop={crop}
+                    onChange={(_, percentCrop) => setCrop(percentCrop)}
+                    onComplete={c => setCompletedCrop(c)}
+                    aspect={aspect}
+                    minWidth={300}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      ref={imgRef}
+                      alt='Crop me'
+                      src={initImage}
+                      onLoad={e => {
+                        const { width, height } = e.currentTarget
+                        setCrop(centerAspectCrop(width, height, aspect))
+                      }}
+                    />
+                  </ReactCrop>
                 )}
+
+                {Boolean(completedCrop) && <canvas hidden ref={previewCanvasRef} className=' object-contain' />}
               </>
             )}
             {stateChecked === 'default' && <CircleImage src={Avatar} alt='avatar' className='h-24 w-24' />}
