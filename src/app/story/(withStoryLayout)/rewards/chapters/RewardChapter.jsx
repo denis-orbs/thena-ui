@@ -211,51 +211,51 @@ export function RewardChapter({ chapters }) {
     return [
       {
         id: 1,
+        index: 1,
+        name: 'All Chapters',
+        available: false,
+      },
+      {
+        id: 2,
         index: 2,
         name: '1 and 2',
         available: start12 && currentTime > new Date(start12),
       },
       {
-        id: 2,
+        id: 3,
         index: 3,
         name: '3',
         available: start3 && currentTime > new Date(start3),
       },
       {
-        id: 3,
+        id: 4,
         index: 4,
         name: '4',
         available: start4 && currentTime > new Date(start4),
       },
       {
-        id: 4,
+        id: 5,
         index: 5,
         name: '5',
         available: start5 && currentTime > new Date(start5),
       },
       {
-        id: 5,
+        id: 6,
         index: 6,
         name: '6',
         available: start6 && currentTime > new Date(start6),
       },
       {
-        id: 6,
+        id: 7,
         index: 7,
         name: '7',
         available: start7 && currentTime > new Date(start7),
       },
       {
-        id: 7,
+        id: 8,
         index: 8,
         name: '8',
         available: start8 && currentTime > new Date(start8),
-      },
-      {
-        id: 8,
-        index: 9,
-        name: 'All Chapters',
-        available: false,
       },
     ]
   }, [chapters])
@@ -279,7 +279,7 @@ export function RewardChapter({ chapters }) {
             rewards={rewards[selectedChapterIndex]?.reward}
             rewardsTimestamp={currentChapter?.rewardsTimestamp}
           />
-          {selectedChapterIndex === 9 ? (
+          {selectedChapterIndex === 1 ? (
             <RewardChapterFooter
               startTime={dayjs(chapters?.[0]?.startTimestamp ?? 0)}
               endTime={chapters?.[1]?.endTimestamp ? dayjs(chapters[1]?.endTimestamp).add(1, 'weeks') : dayjs(0)}
