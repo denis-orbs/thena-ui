@@ -13,7 +13,9 @@ import { TradeHistory } from '@/modules/TradingCompetition/TradeHistory'
 function TradePage({ params }) {
   const [selectedTab, setSelectedTab] = useState('leaderboard')
 
-  const { competition } = useTradingCompetitionLeaderBoard(params.id)
+  const [searchText, setSearchText] = useState('')
+
+  const { competition } = useTradingCompetitionLeaderBoard(params.id, searchText?.toLowerCase())
 
   const { eventType } = useEventType(competition?.timestamp)
 
@@ -45,7 +47,7 @@ function TradePage({ params }) {
     <div className='mt-10 flex w-full flex-col gap-4'>
       <Tabs data={subTabs} size={SizeTypes.Small} itemClassName='text-sm' className='justify-start overflow-x-auto' />
       <TabPanel value='leaderboard' select={selectedTab}>
-        <LeaderBoard competition={competition} />
+        <LeaderBoard competition={competition} setSearchText={setSearchText} searchText={searchText} />
       </TabPanel>
       <TabPanel value='history' select={selectedTab}>
         <TradeHistory />
