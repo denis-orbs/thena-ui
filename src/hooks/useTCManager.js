@@ -1,9 +1,8 @@
 import BigNumber from 'bignumber.js'
-import { ethers } from 'ethers'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256 } from 'viem'
+import { maxUint256, parseEventLogs } from 'viem'
 
 import { DEPOSIT_TYPE, TC_MARKET_TYPES, TXN_STATUS } from '@/constant'
 import { tcManagerAbi } from '@/constant/abi/core'
@@ -141,19 +140,19 @@ export const useCreateTC = () => {
 
   const handleGetTCId = useCallback(async txHash => {
     const txnReceipt = await waitCall(txHash)
-    const iface = new ethers.Interface(tcManagerAbi)
-    for (let i = 0; i < txnReceipt.logs.length; i++) {
-      const parsed = iface.parseLog(txnReceipt.logs[i])
-      if (parsed && parsed.name === 'Create') {
-        if (parsed.args) {
-          const idCounter = parsed.args.getValue('idCounter')
-          const comp = parsed.args.getValue('competition')
-          if (comp && (idCounter === 0n || idCounter)) {
-            const id = new BigNumber(idCounter).toNumber()
-            if (id === 0 || id) {
-              return `${comp.toLowerCase()}-${id}`
-            }
-          }
+    const logs = parseEventLogs({
+      abi: tcManagerAbi,
+      logs: txnReceipt.logs,
+    })
+    for (let i = 0; i < logs.length; i++) {
+      const parsed = logs[i]
+      const idCounter = parsed.args?.idCounter
+      const competition = parsed.args?.competition
+
+      if (competition && (idCounter === 0n || idCounter)) {
+        const id = new BigNumber(idCounter).toNumber()
+        if (id === 0 || id) {
+          return `${competition.toLowerCase()}-${id}`
         }
       }
     }
