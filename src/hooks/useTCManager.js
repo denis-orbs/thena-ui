@@ -140,19 +140,20 @@ export const useCreateTC = () => {
 
   const handleGetTCId = useCallback(async txHash => {
     const txnReceipt = await waitCall(txHash)
-    const logs = parseEventLogs({
+    const eventLogs = parseEventLogs({
       abi: tcManagerAbi,
+      eventName: 'Create',
       logs: txnReceipt.logs,
     })
-    for (let i = 0; i < logs.length; i++) {
-      const parsed = logs[i]
-      const idCounter = parsed.args?.idCounter
-      const competition = parsed.args?.competition
-
-      if (competition && (idCounter === 0n || idCounter)) {
-        const id = new BigNumber(idCounter).toNumber()
-        if (id === 0 || id) {
-          return `${competition.toLowerCase()}-${id}`
+    if (eventLogs && eventLogs.length > 0) {
+      const parsed = eventLogs[0]
+      if (parsed.args) {
+        const { idCounter, competition: comp } = parsed.args
+        if (comp && (idCounter === 0n || idCounter)) {
+          const id = new BigNumber(idCounter).toNumber()
+          if (id === 0 || id) {
+            return `${comp.toLowerCase()}-${id}`
+          }
         }
       }
     }
