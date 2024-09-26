@@ -78,6 +78,11 @@ const sortOptions = [
   },
 ]
 
+const HIDDEN_POOLS = [
+  '0x5f28dccd24d1fcb6805e6d71ec15fa93cb0cf360', // SolvBTC/BTCB - DefiEdge
+  '0x7ddb9392376359a36847b351db5c3562499fa373', // SolvBTC/BNB - DefiEdge
+]
+
 export default function VotePage() {
   const [searchText, setSearchText] = useState('')
   const [isVoted, setIsVoted] = useState(false)
@@ -133,6 +138,7 @@ export default function VotePage() {
   const userPools = useMemo(
     () =>
       pools
+        .filter(pair => !HIDDEN_POOLS.includes(pair.address))
         .filter(pair => pair.gauge.address !== zeroAddress && pair.gauge.isAlive)
         .map(pair => {
           const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
