@@ -4,7 +4,6 @@ import React, { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
-import { EmphasisButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
 import { fetchCheckWinner } from '@/modules/Story'
@@ -43,7 +42,7 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
 
   const renderActionMessage = useCallback(() => {
     if (targetCountdown) {
-      return <TextHeading className='font-archia text-2xl font-semibold'>{t('Are You a Winner?')}</TextHeading>
+      return <TextHeading className='font-archia text-2xl font-semibold'>{t('To Be Announced')}</TextHeading>
     }
 
     if (checkWinnerData?.isWinner) {
@@ -60,21 +59,6 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
       </TextHeading>
     )
   }, [checkWinnerData, targetCountdown, t])
-
-  const renderActionButton = useCallback(() => {
-    if (targetCountdown || endTime == null) {
-      return (
-        <EmphasisButton className='w-full lg:w-[140px]' disabled>
-          TBA
-        </EmphasisButton>
-      )
-    }
-
-    if (!checkWinnerData?.isWinner) {
-      return
-    }
-    return <></>
-  }, [targetCountdown, endTime, checkWinnerData?.isWinner])
 
   if (isLoading) {
     return <Loading />
@@ -113,7 +97,6 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
 
       <div className='flex flex-col items-center justify-between gap-4 rounded-xl border-[1px] border-primary-700 bg-neutral-800 p-6 lg:flex-row lg:gap-0'>
         {renderActionMessage()}
-        {renderActionButton()}
       </div>
 
       <div className='mt-4 flex items-center justify-center lg:hidden'>

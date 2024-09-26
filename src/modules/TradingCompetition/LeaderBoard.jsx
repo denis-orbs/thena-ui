@@ -126,7 +126,7 @@ export function LeaderBoard({ competition, searchText = '', setSearchText, compe
                       false,
                       5,
                       false,
-                    )} ${competition.prizeUpdate?.token?.[index]?.symbol || ''}`}
+                    )} ${competition?.prizeUpdate?.token?.[index]?.symbol || ''}`}
                   </Paragraph>
                 ))}
               </div>
