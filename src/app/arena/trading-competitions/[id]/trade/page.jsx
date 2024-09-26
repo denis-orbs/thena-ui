@@ -1,21 +1,31 @@
 'use client'
 
+import { useParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
+import Loading from '@/app/loading'
 import Tabs, { TabPanel } from '@/components/tabs'
 import { SizeTypes } from '@/constant/type'
-import { useTradingCompetitionLeaderBoard } from '@/hooks/trade/useTradingCompetitionLeaderboard'
+import {
+  useTradingCompetitionByAccount,
+  useTradingCompetitionLeaderBoard,
+} from '@/hooks/trade/useTradingCompetitionLeaderboard'
 import { useEventType } from '@/hooks/useEventType'
+import useWallet from '@/hooks/useWallet'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { LeaderBoard } from '@/modules/TradingCompetition/LeaderBoard'
 import { TradeHistory } from '@/modules/TradingCompetition/TradeHistory'
 
 function TradePage({ params }) {
+  const { id } = useParams()
+  const { account } = useWallet()
+
   const [selectedTab, setSelectedTab] = useState('leaderboard')
 
   const [searchText, setSearchText] = useState('')
 
-  const { competition } = useTradingCompetitionLeaderBoard(params.id, searchText?.toLowerCase())
+  const { competition, isLoading } = useTradingCompetitionLeaderBoard(params.id, searchText?.toLowerCase())
+  const { competitionAccount, isLoading: isLoadingAccount } = useTradingCompetitionByAccount(id, account?.toLowerCase())
 
   const { eventType } = useEventType(competition?.timestamp)
 
@@ -47,7 +57,16 @@ function TradePage({ params }) {
     <div className='mt-10 flex w-full flex-col gap-4'>
       <Tabs data={subTabs} size={SizeTypes.Small} itemClassName='text-sm' className='justify-start overflow-x-auto' />
       <TabPanel value='leaderboard' select={selectedTab}>
-        <LeaderBoard competition={competition} setSearchText={setSearchText} searchText={searchText} />
+        {isLoadingAccount || isLoading ? (
+          <Loading />
+        ) : (
+          <LeaderBoard
+            competition={competition}
+            setSearchText={setSearchText}
+            searchText={searchText}
+            competitionAccount={competitionAccount}
+          />
+        )}
       </TabPanel>
       <TabPanel value='history' select={selectedTab}>
         <TradeHistory />
