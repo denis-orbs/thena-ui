@@ -1,7 +1,7 @@
 import { useTranslations } from 'use-intl'
 
 import { cn } from '@/lib/utils'
-import { Lock2Icon } from '@/svgs'
+import { Check2Icon, Lock2Icon } from '@/svgs'
 
 export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelectedChapterIndex }) {
   const t = useTranslations()
@@ -12,6 +12,8 @@ export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelecte
     }
     return true
   }
+
+  console.log({ chapters })
 
   return (
     <div className='grid grid-cols-5 gap-3 lg:grid-cols-9'>
@@ -38,6 +40,7 @@ export function ChapterTabNavigator({ chapters, selectedChapterIndex, setSelecte
               <>{/* <ChapterLogoIcon className='mr-1 h-5 w-5' /> */}</>
             )}
             <span className={!isAvailable(chapter) ? 'opacity-40' : ''}>
+              {chapter.isCompleted && <Check2Icon className='mr-1 inline-block h-5 w-5' />}
               {chapter.index === selectedChapterIndex ? `${t('Chapter')} ${chapter.index}` : chapter.index}
             </span>
           </div>

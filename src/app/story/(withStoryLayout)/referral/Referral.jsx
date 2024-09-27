@@ -10,7 +10,7 @@ import { fetchTHEStoryParticipantReferrals } from '@/modules/Story'
 import { HowItWork } from './HowItWork'
 import { ReferralHistory } from './ReferralHistory'
 import { ShareReferralLink } from './ShareReferralLink'
-import { RewardIconTooltip } from '../chapters/RewardIconTooltip'
+import { RewardIconTooltip } from '../profile/RewardIconTooltip'
 import { REFERRAL_REWARD, RewardType } from '../../constant'
 
 export function Referral({ address }) {
