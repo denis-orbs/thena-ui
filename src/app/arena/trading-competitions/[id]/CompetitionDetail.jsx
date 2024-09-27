@@ -36,8 +36,8 @@ function CompetitionDetail({ competition, isPreview = false }) {
       data: formatAmount(fromWei(prizeUpdate.totalPrize[index], item?.decimals)),
       ticker: item?.symbol,
     }))
-    if (dataCurrentPrizePool.some(item => item.data !== '0')) {
-      dataCurrentPrizePool = dataCurrentPrizePool.filter(item => item.data !== '0')
+    if (dataCurrentPrizePool.some(item => !isInvalidAmount(item.data))) {
+      dataCurrentPrizePool = dataCurrentPrizePool.filter(item => !isInvalidAmount(item.data))
     }
 
     let dataMaxPrizePool = []
