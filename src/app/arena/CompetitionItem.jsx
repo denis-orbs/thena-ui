@@ -24,16 +24,19 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
   const { eventType } = useEventType(competition?.timestamp)
 
   const totalPrize = useMemo(
-    () =>
-      competition.prizeUpdate.totalPrize
-        .filter(item => !isInvalidAmount(item))
-        .map(
-          (item, index) =>
-            `${formatAmount(fromWei(item, competition.prizeUpdate?.token?.[index]?.decimals))} ${
-              competition.prizeUpdate?.token?.[index]?.symbol
-            }`,
-        )
-        .join(', '),
+    () => {
+      let totalPrizeArray = []
+      totalPrizeArray = competition.prizeUpdate.token.map((item, index) => ({
+        data: formatAmount(fromWei(competition.prizeUpdate.totalPrize[index], item?.decimals)),
+        ticker: item?.symbol,
+      }))
+
+      if (totalPrizeArray.some(item => !isInvalidAmount(item.data))) {
+        totalPrizeArray = totalPrizeArray.filter(item => !isInvalidAmount(item.data))
+      }
+
+      return totalPrizeArray.map(item => `${item.data} ${item.ticker}`).join(', ')
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [competition.prizeUpdate.totalPrize, competition.prizeUpdate?.token],
   )
