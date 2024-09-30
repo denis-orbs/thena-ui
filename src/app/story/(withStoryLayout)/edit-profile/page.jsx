@@ -12,7 +12,14 @@ function EditProfilePage() {
     return <Loading />
   }
 
-  return <EditProfile userInfo={userInfo} updateUserInfo={updateUserInfo} />
+  return (
+    <>
+      <div className='absolute left-0 top-[129px] h-[960px] w-full bg-[url("/images/edit-profile-bg.png")] bg-cover' />
+      <div className='relative'>
+        <EditProfile userInfo={userInfo} updateUserInfo={updateUserInfo} />
+      </div>
+    </>
+  )
 }
 
 export default EditProfilePage
