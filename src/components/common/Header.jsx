@@ -541,17 +541,17 @@ function Header() {
     () =>
       compact([
         {
-          label: 'Home',
+          label: 'Chapters',
           active: pathname === '/story',
           onClickHandler: () => {
             push('/story')
           },
         },
         {
-          label: 'Chapters',
-          active: pathname === '/story/chapters',
+          label: 'Profile',
+          active: pathname === '/story/profile',
           onClickHandler: () => {
-            push('/story/chapters')
+            push('/story/profile')
           },
         },
         {

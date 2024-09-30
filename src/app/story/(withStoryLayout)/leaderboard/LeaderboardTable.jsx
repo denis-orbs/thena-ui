@@ -227,27 +227,25 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
   }, [finalData, userInfo])
 
   return (
-    <div className='border-gradient-secondary rounded-xl p-[1px]'>
-      <div className='mb-9 rounded-xl bg-neutral-900'>
-        <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>
-          {currentTabIndex === 1 || !isWinners ? t('Leaderboard') : t('Winners List')}
-        </p>
-        <Table
-          data={finalData}
-          className='w-full bg-neutral-900'
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          sortOptions={sortOptions}
-          sort={sort}
-          setSort={setSort}
-          tableBasic
-          hightLightById={userInfo.id}
-          bgHightLight='bg-neutral-800'
-          loading={loadingParticipants || loadingParticipantsByChapter}
-          pageSize={10}
-          defaultHead={(indexUser > 9 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
-        />
-      </div>
+    <div className='mb-9 rounded-xl border border-[#C93FFF] bg-[url("/images/pink-bg.png")] bg-cover'>
+      <p className='pl-6 pt-8 text-[20px] font-medium text-neutral-50'>
+        {currentTabIndex === 1 || !isWinners ? t('Leaderboard') : t('Winners List')}
+      </p>
+      <Table
+        data={finalData}
+        className='w-full bg-transparent'
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        sortOptions={sortOptions}
+        sort={sort}
+        setSort={setSort}
+        tableBasic
+        hightLightById={userInfo.id}
+        bgHightLight='bg-white bg-opacity-5'
+        loading={loadingParticipants || loadingParticipantsByChapter}
+        pageSize={10}
+        defaultHead={(indexUser > 9 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
+      />
     </div>
   )
 }

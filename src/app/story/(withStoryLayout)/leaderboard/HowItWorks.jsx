@@ -12,25 +12,23 @@ export default function HowItWorks() {
       <div className='flex flex-col justify-between md:flex-row'>
         <HowItWorksItem
           icon={StarLineWhiteIcon}
-          title={t('Finish Weekly Tasks and Earn Points')}
-          description={t('Finish weekly tasks and accumulate points')}
+          title={t('Complete Tasks and Stack Points')}
+          description={t('Complete Tasks and Stack Points Description')}
         />
         <HowItWorksItem
           icon={AwardIcon}
-          title={t('Win Rewards After Each Chapter')}
-          description={t(
-            'Complete all tasks for each chapter and you will be eligible to win rewards for that chapter',
-          )}
+          title={t('Score Rewards with Every Chapter')}
+          description={t('Score Rewards with Every Chapter Description')}
         />
         <HowItWorksItem
           icon={CrownIcon}
-          title={t('Reach Top 300 After All Chapters')}
-          description={t('Top 300 Thenians will receive rewards after all chapters')}
+          title={t('Hit the Top 300 and Share')}
+          description={t('Hit the Top 300 and Share Description')}
         />
         <HowItWorksItem
           icon={GiftIcon}
-          title={t('Claim Rewards')}
-          description={t('Claim your rewards after the second and last chapter on the “Rewards” page')}
+          title={t('Mint Your NFT and Unlock VIP Perks')}
+          description={t('Mint Your NFT and Unlock VIP Perks Description')}
         />
       </div>
     </div>

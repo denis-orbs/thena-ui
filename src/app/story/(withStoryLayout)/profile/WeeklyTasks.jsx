@@ -102,7 +102,9 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
           {Boolean(nextAvailableChapterTimeStamp) && (
             <>
               <div className='rounded-lg bg-neutral-900 px-6 py-6'>
-                <h2 className='mb-6 font-archia'>{t('Next Chapter Available in')}</h2>
+                <h2 className='mb-6 font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
+                  {t('Next Chapter Available in')}
+                </h2>
                 <Countdown timestamp={nextAvailableChapterTimeStamp} />
               </div>
               {isViewBNBChainButton && (

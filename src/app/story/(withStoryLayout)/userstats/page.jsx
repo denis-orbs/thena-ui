@@ -21,10 +21,10 @@ function StoryAdminPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (!isLoadingInfo && (!account || (userInfo && !(userInfo.isAdmin || userInfo.isSuperAdmin)))) {
+    if (!isLoadingInfo && !isLoadingStats && (!account || (userInfo && !(userInfo.isAdmin || userInfo.isSuperAdmin)))) {
       router.replace('/story')
     }
-  }, [account, isLoadingInfo, router, userInfo])
+  }, [account, isLoadingInfo, isLoadingStats, router, userInfo])
 
   return (
     <StatsCampaignParticipant

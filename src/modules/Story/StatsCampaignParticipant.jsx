@@ -17,7 +17,7 @@ function ItemLoading() {
   )
 }
 
-function StatsItem({ title, value, tooltip = null }) {
+function StatsItem({ title, value, tooltip = null, tooltipId = 'test' }) {
   return (
     <Box className='flex flex-col gap-2 bg-neutral-900'>
       <TextHeading className='text-2xl'>{value ?? '-'}</TextHeading>
@@ -25,10 +25,10 @@ function StatsItem({ title, value, tooltip = null }) {
         {title}
         {tooltip && (
           <>
-            <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id='success-referrals-tooltip' />
+            <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id={tooltipId} />
             <CustomTooltip
               className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
-              id='success-referrals-tooltip'
+              id={tooltipId}
               place='bottom'
             >
               {tooltip}
@@ -86,11 +86,13 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoadingInfo, isL
             title={t('Registered Referrals')}
             value={statsCampaignParticipant?.registeredReferralCount}
             tooltip='Total users registered via the referral link'
+            tooltipId='registered-referrals'
           />
           <StatsItem
             title={t('Successful Referrals')}
             value={statsCampaignParticipant?.successReferralCount}
             tooltip='Total users registered via the referral link who have completed at least 1 task'
+            tooltipId='successful-referrals'
           />
         </div>
       ) : (

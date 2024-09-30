@@ -53,7 +53,7 @@ export function UserInfo({ userInfo, completedChapter, totalChapter, totalSucces
                           : '',
                       }}
                     >
-                      {userInfo.username || formatAddress(userInfo.id)}
+                      {userInfo?.participant?.username || formatAddress(userInfo.id)}
                     </span>
                   </TextHeading>
                 </div>

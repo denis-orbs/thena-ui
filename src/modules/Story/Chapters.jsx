@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
-import { ChapterProcess } from '@/app/story/(withStoryLayout)/chapters/ChapterProcess'
-import { ChapterTabNavigator } from '@/app/story/(withStoryLayout)/chapters/ChapterTabNavigator'
+import { ChapterProcess } from '@/app/story/(withStoryLayout)/profile/ChapterProcess'
+import { ChapterTabNavigator } from '@/app/story/(withStoryLayout)/profile/ChapterTabNavigator'
 
 export default function Chapters({ chapters, isLoading }) {
   const [selectedChapterIndex, setSelectedChapterIndex] = useState(1)

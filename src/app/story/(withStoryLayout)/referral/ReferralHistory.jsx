@@ -3,7 +3,7 @@ import { useTranslations } from 'use-intl'
 import { TextHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 
-import { RewardIconTooltip } from '../chapters/RewardIconTooltip'
+import { RewardIconTooltip } from '../profile/RewardIconTooltip'
 import { REFERRAL_REWARD, RewardType } from '../../constant'
 
 const isSmallScreen = () => {

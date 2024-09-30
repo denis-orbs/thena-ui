@@ -51,7 +51,10 @@ export function DailySwap({ dailySwaps, userSwaps }) {
               <div
                 className={cn(
                   'relative flex flex-row items-center justify-between rounded-xl border-2 border-neutral-800 bg-neutral-800 px-[19px] py-4 pb-4 hover:border-primary-600 lg:flex-col lg:justify-center lg:px-3 lg:py-3 lg:pb-5 xl:pb-7',
-                  typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day ? 'border-primary-600' : '',
+                  typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day
+                    ? 'mb-[10px] border-primary-600 lg:mb-0'
+                    : '',
+                  task.index === nextIndexSwap && canSwapToday ? 'mb-[10px] lg:mb-0' : '',
                 )}
               >
                 <p className='font-archia text-[22px] leading-7'>
@@ -77,7 +80,7 @@ export function DailySwap({ dailySwaps, userSwaps }) {
 
                   {typeof userSwaps?.day === 'number' && task.index <= userSwaps?.day && (
                     <div
-                      className='absolute bottom-0 left-1/2 rounded-lg bg-primary-800 px-3 py-[5px] text-center font-medium leading-5 tracking-wider lg:text-xs xl:text-[15px]'
+                      className='absolute bottom-1 left-1/2 rounded-lg bg-primary-800 px-3 py-[5px] text-center font-medium leading-5 tracking-wider lg:bottom-0 lg:text-xs xl:text-[15px]'
                       style={{
                         transform: 'translate(-50%, 50%)',
                       }}
