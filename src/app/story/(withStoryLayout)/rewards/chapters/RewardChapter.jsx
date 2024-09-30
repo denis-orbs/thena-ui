@@ -48,8 +48,8 @@ const rewards = [
         {
           id: '1',
           index: 1,
-          name: 'THE Tokens',
-          description: '$3k worth of THE tokens will be distributed among 100 winners',
+          name: 'Tokens',
+          description: '$3k worth of tokens will be distributed among 100 winners',
           icon: THETokenIcon,
         },
         {
