@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { TranslationWithFormatLink } from '@/components/common/TranslationWithFormatLink'
 import { useTHEStory } from '@/context/THEStoryContext'
 import { errorToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
@@ -11,7 +12,7 @@ import { cn } from '@/lib/utils'
 import { ArrowBackwardIcon, ArrowForwardSmallIcon, ChevronRightIcon } from '@/svgs'
 
 import { RewardIconTooltip } from './RewardIconTooltip'
-import { TaskDailyName, TaskTwitterAction, TaskType } from '../../constant'
+import { TaskDailyName, TaskTwitterAction, TaskTwitterRetweet, TaskType } from '../../constant'
 
 const TweetContent = `I’ve just joined THE Story with @ThenaFi_ 💜🏛️
 
@@ -71,11 +72,31 @@ export function ChapterProcess({
         const top = window.screen.height / 2 - height / 2
 
         window.open(url, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
+      }
+      if (task.actionHandle === TaskTwitterRetweet) {
+        window.location.href = 'https://x.com/ThenaFi_/status/1839273788736708771'
       } else {
         window.location.href = `/${task.actionHandle}`
       }
     },
     [campaignParticipantInfo.referralCode, campaignParticipantInfo.xProfileUsername],
+  )
+
+  const renderTaskName = useCallback(
+    task => {
+      if (task.actionHandle === TaskTwitterRetweet) {
+        return (
+          <TranslationWithFormatLink
+            text={task.name}
+            targetText='grant post'
+            className='text-lg font-medium'
+            link='https://x.com/ThenaFi_/status/1839273788736708771'
+          />
+        )
+      }
+      return <p className='text-lg font-medium'>{t(task.name)}</p>
+    },
+    [t],
   )
 
   return (
@@ -129,7 +150,7 @@ export function ChapterProcess({
                   className='flex flex-col items-center gap-3 rounded-lg bg-neutral-800 px-4 py-3 lg:flex-row lg:py-4 xl:gap-4 xl:px-5'
                 >
                   <div className='flex w-full flex-1 items-center justify-between'>
-                    <p className='text-lg font-medium'>{t(task.name)}</p>
+                    {renderTaskName(task)}
 
                     <div>
                       {task.rewardAmount.map((amount, index) => (

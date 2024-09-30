@@ -13,3 +13,4 @@ export const TaskType = {
 export const TaskDailyName = 'Daily Swap-in'
 export const TaskReferralName = 'Refer your friends'
 export const TaskTwitterAction = 'tweet'
+export const TaskTwitterRetweet = 'retweet'
