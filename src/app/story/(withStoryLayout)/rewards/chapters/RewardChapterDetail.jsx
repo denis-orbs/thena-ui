@@ -16,13 +16,20 @@ function RewardChapterDetail({ rewards, rewardsTimestamp }) {
         </TextHeading>
       </div>
 
-      <div className='grid grid-cols-2 lg:grid-cols-3'>
+      <div
+        className={cn(
+          'grid grid-cols-2',
+          rewards?.items?.length && rewards.items.length >= 3
+            ? 'lg:grid-cols-3'
+            : `lg:grid-cols-${rewards.items.length}`,
+        )}
+      >
         {rewards?.items?.map((reward, index) => (
           <div
             key={reward?.id}
             className={cn(
               'flex items-start justify-center',
-              index === rewards.length - 1 ? 'col-span-2 lg:col-span-1' : 'col-span-1',
+              index === (rewards.length % 2 === 1 && rewards.length - 1) ? 'col-span-2 lg:col-span-1' : 'col-span-1',
             )}
           >
             <HowItWorksItem

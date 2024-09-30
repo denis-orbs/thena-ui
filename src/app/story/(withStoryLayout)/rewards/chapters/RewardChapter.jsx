@@ -43,20 +43,20 @@ const rewards = [
     id: 3,
     index: 3,
     reward: {
-      rewardsInUSD: '4,000',
+      rewardsInUSD: '7,000',
       items: [
         {
           id: '1',
           index: 1,
           name: 'THE Tokens',
-          description: 'Tokens will be distributed among 30 winners.',
+          description: '$3k worth of THE tokens will be distributed among 100 winners',
           icon: THETokenIcon,
         },
         {
           id: '3',
           index: 3,
           name: '1 THENA ID',
-          description: 'Use Thena ID to customise your THENA profile.',
+          description: 'One winner will receive cz.thena (worth $4k)',
           icon: FingerprintIcon,
         },
       ],

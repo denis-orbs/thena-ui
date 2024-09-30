@@ -1092,8 +1092,8 @@
   "Vote on THENA": "在 THENA 上投票",
   "Retweet and Like": "按赞并转推 THENA 的 grant 推文",
   "grant post": "grant 推文",
-  "Deposit ICHI Vault": "Deposit any amount of liquidity into any of the following ICHI pools: BNB-THE, USDT-THE, ETH-THE, USDC-THE, BTC-THE",
-  "Deposit Gamma Narrow": "Deposit any amount of liquidity into any of the following Gamma Narrow strategies: ETH-BNB, USDT-BNB",
+  "Deposit ICHI Vault": "在以下 ICHI 的任一流动性池提供任意金额的流动性：BNB-THE, USDT-THE, ETH-THE, USDC-THE, BTC-THE",
+  "Deposit Gamma Narrow": "ETH-BNB, USDT-BNB 在以下 Gamma Narrow strategies 的任一流动性池内提供任意金额的流动性：ETH-BNB, USDT-BNB",
   "Register for the THENA TC": "注册 ARENA 上的交易竞赛",
   "Vote on specific pools": "在指定的合作项目所提供的流动性池或单币质押金库投票（Algebra, Gamma, Strategies, Lido, ICHI 和 DefiEdge）",
   "All Chapters": "所有章节",
@@ -1110,5 +1110,5 @@
   "Completed Chapters": "已完成的章节",
   "Global Stats": "全球数据统计",
   "Swap THE": "兑换 $THE",
-  "Winners List": "得獎者名單"
+  "Winners List": "获胜者名单"
 }
