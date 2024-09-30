@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
 
@@ -12,7 +13,14 @@ import { cn } from '@/lib/utils'
 import { ArrowBackwardIcon, ArrowForwardSmallIcon, ChevronRightIcon } from '@/svgs'
 
 import { RewardIconTooltip } from './RewardIconTooltip'
-import { TaskDailyName, TaskTwitterAction, TaskTwitterRetweet, TaskType } from '../../constant'
+import {
+  TaskDailyName,
+  TaskDepositGamma,
+  TaskDepositIchi,
+  TaskTwitterAction,
+  TaskTwitterRetweet,
+  TaskType,
+} from '../../constant'
 
 const TweetContent = `I’ve just joined THE Story with @ThenaFi_ 💜🏛️
 
@@ -32,6 +40,7 @@ export function ChapterProcess({
 }) {
   const t = useTranslations()
   const { campaignParticipantInfo } = useTHEStory()
+  console.log({ chapter })
 
   const percentageTaskCompleted = useMemo(() => {
     if (numberAvailableChapters) {
@@ -94,6 +103,70 @@ export function ChapterProcess({
           />
         )
       }
+
+      if (task.name === TaskDepositIchi) {
+        return (
+          <span className='text-lg font-medium'>
+            Deposit any amount of liquidity into any of the following ICHI pools:&nbsp;
+            <Link
+              href='https://thena.fi/pools/0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8'
+              className='text-primary-600 underline'
+            >
+              BNB-THE
+            </Link>
+            ,&nbsp;
+            <Link
+              href='https://thena.fi/pools/0x98a0004b8e9fe161369528a2e07de56c15a27d76'
+              className='text-primary-600 underline'
+            >
+              USDT-THE
+            </Link>
+            ,&nbsp;
+            <Link
+              href='https://thena.fi/pools/0x752328a1e16d38933789860b8c09f6f2cc6c63d6'
+              className='text-primary-600 underline'
+            >
+              ETH-THE
+            </Link>
+            ,&nbsp;
+            <Link
+              href='https://thena.fi/pools/0x7c0b5d39765b221810d477e8f02d47a9badf018a'
+              className='text-primary-600 underline'
+            >
+              USDC-THE
+            </Link>
+            ,&nbsp;
+            <Link
+              href='https://thena.fi/pools/0x246505db95e5a60d8524d52b9ed3dbaf6ee2584f'
+              className='text-primary-600 underline'
+            >
+              BTC-THE
+            </Link>
+          </span>
+        )
+      }
+
+      if (task.name === TaskDepositGamma) {
+        return (
+          <span className='text-lg font-medium'>
+            Deposit any amount of liquidity into any of the following Gamma Narrow strategies:&nbsp;
+            <Link
+              href='https://thena.fi/pools/0x1123e75b71019962cd4d21b0f3018a6412edb63c'
+              className='text-primary-600 underline'
+            >
+              ETH-BNB
+            </Link>
+            ,&nbsp;
+            <Link
+              href='https://thena.fi/pools/0xd405b976ac01023c9064024880999fc450a8668b'
+              className='text-primary-600 underline'
+            >
+              USDT-BNB
+            </Link>
+          </span>
+        )
+      }
+
       return <p className='text-lg font-medium'>{t(task.name)}</p>
     },
     [t],
