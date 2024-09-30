@@ -182,8 +182,8 @@ export default function PoolsPage() {
     () => {
       let data = []
 
-      // const pinnedPools = ['0xd688108301df5d939bf272eb378429488a72ea52', '0xfa71b01d2fe9337fec17a7b5af294f8ef6040f3a']
-      const pinnedPools = []
+      const pinnedPools = ['0xab6f06a33f38cba5a5312de24151cb91da2b0eb0']
+      // const pinnedPools = []
       if (Array.isArray(sortedData) && sortedData.length) {
         if (pinnedPools.length) {
           data = sortedData
