@@ -925,7 +925,7 @@
   "Chapters completed": "已完成章节",
   "Start task": "Start",
   "Next Chapter Available in": "下一个章节将开始于",
-  "Current Chapter Ends in": "Current Chapter Ends in",
+  "Current Chapter Ends in": "当前章节将结束于",
   "Chapter": "章节",
   "Joined": "加入",
   "at": "at",
@@ -1109,7 +1109,7 @@
   "Global Stats": "全球数据统计",
   "Swap THE": "兑换 $THE",
   "Winners List": "获胜者名单",
-  "Our Trade2Earn Program Has Ended!": "Our Trade2Earn Program Has Ended!",
-  "Trade to earn description": "You can still trade on ALPHA and check Trading Competitions on ARENA.",
-  "Go to ARENA": "Go to ARENA"
+  "Our Trade2Earn Program Has Ended!": "我们的 Trade2Earn（交易并赚取奖励）活动已结束！",
+  "Trade to earn description": "您仍然可以于 ALPHA 上交易并于 ARENA 上查看交易竞赛。",
+  "Go to ARENA": "前往 ARENA"
 }
