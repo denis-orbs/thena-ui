@@ -411,6 +411,11 @@ function Header() {
                     goToDoc()
                   },
                 },
+                {
+                  heading: t('Forum'),
+                  subheading: t('Discussion for governance proposals'),
+                  onClickHandler: () => window.open('https://forum.thena.fi/', '_blank'),
+                },
               ]
             : [
                 {

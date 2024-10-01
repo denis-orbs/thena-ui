@@ -1045,7 +1045,7 @@
   "The competition has ended": "The competition has ended!",
   "Check now": "Check now",
   "You Won": "You Won!",
-  "Unfortunately You Didn’t Won Any Rewards": "Unfortunately, You Didn’t Won Any Rewards.",
+  "Unfortunately You Didn’t Win Any Rewards": "Unfortunately, You Didn’t Win Any Rewards.",
   "Mint Your NFT": "Mint Your NFT",
   "Fragments Required": "Fragments Required",
   "You Minted a New NFT": "You Minted a New NFT",
@@ -1111,5 +1111,7 @@
   "Winners List": "Winners List",
   "Our Trade2Earn Program Has Ended!": "Our Trade2Earn Program Has Ended!",
   "Trade to earn description": "You can still trade on ALPHA and check Trading Competitions on ARENA.",
-  "Go to ARENA": "Go to ARENA"
+  "Go to ARENA": "Go to ARENA",
+  "Forum": "Forum",
+  "Discussion for governance proposals": "Discussion for governance proposals"
 }
