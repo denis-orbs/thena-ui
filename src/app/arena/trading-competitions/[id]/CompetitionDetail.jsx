@@ -63,11 +63,11 @@ function CompetitionDetail({ competition, isPreview = false }) {
         dataUpdate: entryFeeUpdate.every(entry => isInvalidAmount(entry))
           ? [{ data: t('Free To Join'), ticker: null }]
           : entryFeeUpdate
-              .filter(entry => !isInvalidAmount(entry))
               .map((entry, index) => ({
                 data: formatAmount(fromWei(entry, prizeUpdate.token?.[index]?.decimals)),
                 ticker: prizeUpdate.token?.[index]?.symbol,
-              })),
+              }))
+              .filter(entry => !isInvalidAmount(entry.data)),
       },
       {
         key: 'Competition Type',
