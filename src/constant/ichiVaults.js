@@ -11,7 +11,7 @@ export const ICHI_VAULTS = {
       allowed0: true,
       allowed1: false,
       gaugeAddress: '0xba445618FFcb3edD639304D145e423a57C33E871',
-      rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8',
     },
     // USDT/THE (USDT)
@@ -23,7 +23,7 @@ export const ICHI_VAULTS = {
       allowed0: true,
       allowed1: false,
       gaugeAddress: '0xa95186c80DF0438D4ECbF7DF3DA6b6153bA9b8d6',
-      rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x98a0004b8e9fe161369528a2e07de56c15a27d76',
     },
     // ETH/THE (ETH)
@@ -35,7 +35,7 @@ export const ICHI_VAULTS = {
       allowed0: true,
       allowed1: false,
       gaugeAddress: '0x2F92bcC2dA319262Ba4DDc46D883B23F7E121BB2',
-      rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x752328a1e16d38933789860b8c09f6f2cc6c63d6',
     },
     // USDC/THE (USDC)
@@ -47,7 +47,7 @@ export const ICHI_VAULTS = {
       allowed0: true,
       allowed1: false,
       gaugeAddress: '0xCf2071cc2F8f53f611E528F7558CFcaB5e64541a',
-      rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x7c0b5d39765b221810d477e8f02d47a9badf018a',
     },
     // BTCB/THE (BTCB)
@@ -59,7 +59,7 @@ export const ICHI_VAULTS = {
       allowed0: true,
       allowed1: false,
       gaugeAddress: '0xe6519bab9DBd868Df05584C898Ef3c60fABC3b0C',
-      rewardAddress: '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11',
+      rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x246505db95e5a60d8524d52b9ed3dbaf6ee2584f',
     },
   ],
