@@ -41,7 +41,7 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
   }, [currentDate, endTime, startTime])
 
   const renderActionMessage = useCallback(() => {
-    if (targetCountdown) {
+    if (targetCountdown || !endTime) {
       return <TextHeading className='font-archia text-2xl font-semibold'>{t('To Be Announced')}</TextHeading>
     }
 
@@ -55,10 +55,10 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
 
     return (
       <TextHeading className='font-archia text-2xl font-semibold'>
-        {t('Unfortunately You Didn’t Won Any Rewards')}
+        {t('Unfortunately You Didn’t Win Any Rewards')}
       </TextHeading>
     )
-  }, [checkWinnerData, targetCountdown, t])
+  }, [targetCountdown, endTime, checkWinnerData?.isWinner, checkWinnerData?.reward, t])
 
   if (isLoading) {
     return <Loading />
