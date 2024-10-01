@@ -668,9 +668,6 @@
   "Audit": "审计",
   "Provide better price": "，通过整合多个来源的流动性，可以提供更优的价格。",
   "Trade To Earn": "Trade To Earn",
-  "Trade on ALPHA and Earn Rewards": "在 ALPHA 上交易并赚取奖励",
-  "Trade to earn description part 1": "在 THENA 永续合约交易所上交易并赚取 THE 代币。交易越多，收获越丰富。",
-  "Trade to earn description part 2": "立即开始交易，把握机遇，赚取属于您的THE代币！",
   "Total daily rewards available": "今日奖励总额",
   "Your Daily Trading Volume": "您今日的交易量",
   "Next rewards distribution": "下个奖励分配时间",
@@ -1110,5 +1107,8 @@
   "Completed Chapters": "已完成的章节",
   "Global Stats": "全球数据统计",
   "Swap THE": "兑换 $THE",
-  "Winners List": "获胜者名单"
+  "Winners List": "获胜者名单",
+  "Our Trade2Earn Program Has Ended!": "Our Trade2Earn Program Has Ended!",
+  "Trade to earn description": "You can still trade on ALPHA and check Trading Competitions on ARENA.",
+  "Go to ARENA": "Go to ARENA"
 }

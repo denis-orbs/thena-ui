@@ -13,15 +13,11 @@ import { useAssets } from './assetsContext'
 const DibsRewarderContext = createContext({
   currentDay: 0,
   rewardTokenList: [],
-  totalDailyRewardUsd: 0,
-  totalRewardCurrDay: [],
   totalUserEarned: 0,
 })
 
 function DibsRewarderContextProvider({ children }) {
   const [currentDay, setCurrentDay] = useState(0)
-  const [totalDailyRewardUsd, setTotalDailyRewardUsd] = useState(0)
-  const [totalRewardCurrDay, setTotalRewardCurrDay] = useState([])
   const [totalUserEarned, setTotalUserEarned] = useState(0)
   const [rewardTokenList, setRewardTokenList] = useState([])
   const assets = useAssets()
@@ -32,11 +28,9 @@ function DibsRewarderContextProvider({ children }) {
     () => ({
       currentDay,
       rewardTokenList,
-      totalDailyRewardUsd,
-      totalRewardCurrDay,
       totalUserEarned,
     }),
-    [currentDay, rewardTokenList, totalDailyRewardUsd, totalRewardCurrDay, totalUserEarned],
+    [currentDay, rewardTokenList, totalUserEarned],
   )
 
   useEffect(() => {
@@ -58,20 +52,6 @@ function DibsRewarderContextProvider({ children }) {
           if (!rewardTokenList.length) {
             setRewardTokenList(res1)
           }
-          let total = 0
-
-          const arrayTotalRewardCurrDay = []
-          for (let i = 0; i < res1.length; i++) {
-            const res2 = await readCall(dibsRewarderContract, 'totalReward', [res1[i], new BigNumber(res0).toNumber()])
-            const asset = assets.find(a => a.address.toLowerCase() === res1[i].toLowerCase())
-            if (res2 && asset) {
-              total += new BigNumber(res2).toNumber() * asset.price
-              arrayTotalRewardCurrDay.push({
-                totalReward: fromWei(res2).toNumber(),
-                symbol: asset.symbol,
-              })
-            }
-          }
 
           if (account) {
             let totalEarned = 0
@@ -88,9 +68,6 @@ function DibsRewarderContextProvider({ children }) {
 
             setTotalUserEarned(totalEarned)
           }
-
-          setTotalDailyRewardUsd(total)
-          setTotalRewardCurrDay(arrayTotalRewardCurrDay)
         } catch (error) {
           console.log(error)
         }

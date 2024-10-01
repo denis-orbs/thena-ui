@@ -671,9 +671,6 @@
   "Audit": "",
   "Provide better price": ", may provide better price by aggregating liquidity from multiple sources.",
   "Trade To Earn": "Trade To Earn",
-  "Trade on ALPHA and Earn Rewards": "Trade on ALPHA and Earn Rewards",
-  "Trade to earn description part 1": "Earn THE tokens while trading on our perpetual DEX. The more you trade, the more you earn!",
-  "Trade to earn description part 2": "Start trading now and seize your share of THE tokens today!",
   "Total daily rewards available": "Total daily rewards available",
   "Your Daily Trading Volume": "Your Daily Trading Volume",
   "Next rewards distribution": "Next rewards distribution",
@@ -1110,5 +1107,8 @@
   "Completed Chapters": "Completed Chapters",
   "Global Stats": "Global Stats",
   "Swap THE": "Swap THE",
-  "Winners List": "Winners List"
+  "Winners List": "Winners List",
+  "Our Trade2Earn Program Has Ended!": "Our Trade2Earn Program Has Ended!",
+  "Trade to earn description": "You can still trade on ALPHA and check Trading Competitions on ARENA.",
+  "Go to ARENA": "Go to ARENA"
 }
