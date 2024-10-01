@@ -1,29 +1,50 @@
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
 
-export function TranslationWithFormatLink({ text, targetText, className, link }) {
-  const t = useTranslations()
+function HyperLink({ link, text, target }) {
+  return (
+    <Link target={target} className='text-primary-600 underline' href={link}>
+      {text}
+    </Link>
+  )
+}
 
-  const render = useMemo(() => {
-    const translatedText = t(text)
-    const needReplace = t(targetText)
+export function TranslationWithFormatLink({ text, className, hyperLinks }) {
+  const outputComponents = useMemo(() => {
+    const listTexts = hyperLinks.map(hyperlink => hyperlink.text)
+    const regex = new RegExp(listTexts.join('|'), 'g')
+    const outputs = []
 
-    const position = translatedText.indexOf(needReplace)
+    let match
+    let lastIndex = 0
+    // eslint-disable-next-line no-cond-assign
+    while ((match = regex.exec(text)) !== null) {
+      const { index } = match
+      const beginText = text.slice(lastIndex, index)
+      if (beginText) {
+        outputs.push(beginText)
+      }
 
-    const part1 = translatedText.substring(0, position)
-    const part3 = text.substring(position + needReplace.length)
+      lastIndex = regex.lastIndex
+      const matchText = text.slice(index, lastIndex)
+      const targetLink = hyperLinks?.find(hyperLink => hyperLink.text === matchText)?.link
+      const isTargetBlank = hyperLinks?.find(hyperLink => hyperLink.text === matchText)?.target ?? ''
 
-    return (
-      <span className={className}>
-        {part1}
-        <Link className='text-primary-600 underline' href={link}>
-          {needReplace}
-        </Link>
-        {part3}
-      </span>
-    )
-  }, [t, targetText, text, className, link])
+      outputs.push(<HyperLink link={targetLink} text={matchText} target={isTargetBlank} />)
+    }
 
-  return render
+    if (lastIndex < text.length) {
+      outputs.push(text.slice(lastIndex, text.length))
+    }
+
+    return outputs
+  }, [hyperLinks, text])
+
+  return (
+    <span className={className}>
+      {outputComponents.map((element, index) => (
+        <React.Fragment key={index}>{element}</React.Fragment>
+      ))}
+    </span>
+  )
 }

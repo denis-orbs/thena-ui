@@ -13,11 +13,22 @@ import { ChapterTabNavigator } from './ChapterTabNavigator'
 
 export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapterIndex }) {
   const t = useTranslations()
+  const currentActiveChapter = useMemo(() => {
+    const currentTime = new Date()
+    return chapters.find(chapter => {
+      const startTime = new Date(chapter?.startTimestamp ?? 0)
+      const endTime = new Date(chapter?.endTimestamp ?? 0)
 
-  const nextAvailableChapterTimeStamp = useMemo(() => {
+      return currentTime >= startTime && currentTime <= endTime
+    })
+  }, [chapters])
+
+  const countDownTimeStamp = useMemo(() => {
+    if (currentActiveChapter) {
+      return isoDateToTimeStampSeconds(currentActiveChapter.endTimestamp)
+    }
+
     const nextChapter = chapters.find(chapter => !chapter.available)
-    const availableChapters = chapters.filter(chapter => chapter.available).sort((c1, c2) => c1.index - c2.index)
-    const lastAvailableChapter = availableChapters?.[availableChapters.length - 1]?.index ?? 1
 
     if (nextChapter) {
       try {
@@ -25,15 +36,9 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
       } catch (error) {
         console.log(error)
       }
-    } else if (lastAvailableChapter) {
-      try {
-        return isoDateToTimeStampSeconds(lastAvailableChapter.endTimestamp)
-      } catch (error) {
-        console.log(error)
-      }
     }
     return 0
-  }, [chapters])
+  }, [chapters, currentActiveChapter])
 
   const currentChapter = useMemo(
     () => chapters.find(c => c.index === selectedChapterIndex),
@@ -99,13 +104,14 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
           )}
         </div>
         <div className='col-span-12 lg:col-span-5'>
-          {Boolean(nextAvailableChapterTimeStamp) && (
+          {Boolean(countDownTimeStamp) && (
             <>
               <div className='rounded-lg bg-neutral-900 px-6 py-6'>
                 <h2 className='mb-6 font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
-                  {t('Next Chapter Available in')}
+                  {currentActiveChapter && t('Current Chapter Ends in')}
+                  {!currentActiveChapter && countDownTimeStamp && t('Next Chapter Available in')}
                 </h2>
-                <Countdown timestamp={nextAvailableChapterTimeStamp} />
+                {countDownTimeStamp && <Countdown timestamp={countDownTimeStamp} />}
               </div>
               {isViewBNBChainButton && (
                 <Link

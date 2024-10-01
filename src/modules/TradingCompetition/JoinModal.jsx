@@ -102,9 +102,28 @@ export function JoinModal({ competition, open, onClose }) {
     }
   }, [competition, inputStartingBalance, joinTC, joinTCPerpetual, market, name, onClose, push, winningToken?.decimals])
 
+  const entryFeeArr = useMemo(() => {
+    if (!entryFeeUpdate || !Array.isArray(entryFeeUpdate)) {
+      return []
+    }
+
+    let entryFeeArray = entryFeeUpdate.map((item, index) => ({
+      data: formatAmount(fromWei(item, prizeToken[index]?.decimals)),
+      symbol: prizeToken[index]?.symbol,
+      logo: prizeToken[index]?.logoURI,
+    }))
+
+    if (entryFeeArray.some(item => !isInvalidAmount(item.data))) {
+      entryFeeArray = entryFeeArray.filter(item => !isInvalidAmount(item.data))
+    }
+
+    return entryFeeArray
+  }, [entryFeeUpdate, prizeToken])
+
   const message = useMemo(() => {
+    // No entry fee, deposit required
     if (entryFeeUpdate.every(isInvalidAmount)) {
-      if (!isInvalidAmount(startingBalance)) {
+      if (!isInvalidAmount(startingBalance) || !isInvalidAmount(minimumBalance)) {
         return t('Pay Deposit To Join Message', {
           depositAmount: formatAmount(fromWei(startingBalance, winningToken.decimals)),
           depositTicker: winningToken.symbol,
@@ -112,41 +131,50 @@ export function JoinModal({ competition, open, onClose }) {
       }
       return t('Free To Join Message')
     }
-    if (isInvalidAmount(startingBalance)) {
+
+    // Entry fee required, no deposit required
+    if (isInvalidAmount(startingBalance) && isInvalidAmount(minimumBalance)) {
       return t('Pay Entry Fee To Join Message', {
-        entryFeeText: entryFeeUpdate
-          .map((ef, index) => `${formatAmount(fromWei(ef, prizeToken[index]?.decimals))} ${prizeToken[index]?.symbol}`)
-          .join(', '),
+        entryFeeText: entryFeeArr.map(item => `${item.data} ${item.symbol}`).join(', '),
       })
     }
+
+    // Entry fee and deposit required
     return t('Pay Entry Fee And Deposit To Join Message', {
-      depositAmount: formatAmount(fromWei(startingBalance, winningToken.decimals)),
+      depositAmount: isInvalidAmount(startingBalance)
+        ? formatAmount(fromWei(minimumBalance, winningToken.decimals))
+        : formatAmount(fromWei(startingBalance, winningToken.decimals)),
       depositTicker: winningToken.symbol,
-      entryFeeText: entryFeeUpdate
-        .map((ef, index) => `${formatAmount(fromWei(ef, prizeToken[index]?.decimals))} ${prizeToken[index]?.symbol}`)
-        .join(', '),
+      entryFeeText: entryFeeArr.map(item => `${item.data} ${item.symbol}`).join(', '),
     })
-  }, [entryFeeUpdate, prizeToken, startingBalance, t, winningToken.decimals, winningToken.symbol])
+  }, [entryFeeArr, entryFeeUpdate, minimumBalance, startingBalance, t, winningToken.decimals, winningToken.symbol])
 
   const totalToken = useMemo(() => {
     const indexToken = prizeToken.findIndex(
       (token, index) => token.symbol === winningToken.symbol && Number(entryFeeUpdate[index]) > 0,
     )
-
     if (indexToken !== -1) {
       const depositBalance =
         isInvalidAmount(startingBalance) && market === TC_MARKET_TYPES.SPOT ? minimumBalance : startingBalance
 
-      return prizeToken
-        .map((pt, index) =>
+      let prizeTokenArr = []
+
+      prizeTokenArr = prizeToken.map((pt, index) => ({
+        data:
           pt.symbol === winningToken.symbol && Number(entryFeeUpdate[index]) > 0
-            ? `${formatAmount(
+            ? formatAmount(
                 fromWei(entryFeeUpdate[index], pt.decimals).toNumber() +
                   fromWei(depositBalance, pt.decimals).toNumber(),
-              )} ${pt.symbol}`
-            : `${formatAmount(fromWei(entryFeeUpdate[index], pt.decimals).toNumber())} ${pt.symbol}`,
-        )
-        .join(', ')
+              )
+            : formatAmount(fromWei(entryFeeUpdate[index], pt.decimals).toNumber()),
+        ticker: pt.symbol,
+      }))
+
+      if (prizeTokenArr.some(item => !isInvalidAmount(item.data))) {
+        prizeTokenArr = prizeTokenArr.filter(item => !isInvalidAmount(item.data))
+      }
+
+      return prizeTokenArr.map(item => `${item.data} ${item.ticker}`).join(', ')
     }
     return ''
   }, [entryFeeUpdate, market, minimumBalance, prizeToken, startingBalance, winningToken.symbol])
@@ -175,31 +203,29 @@ export function JoinModal({ competition, open, onClose }) {
           </div>
         )}
         <div className='item-centers flex flex-row justify-between gap-4'>
-          {entryFeeUpdate.some(ef => !isInvalidAmount(ef)) && prizeToken && (
-            <div>
-              <TextHeading className='text-lg'>{t('Entry Fee')}</TextHeading>
-              <div className='mt-2 flex flex-wrap items-center gap-1 text-neutral-300'>
-                {entryFeeUpdate.map((ef, index) => (
-                  <span key={index} className='flex text-nowrap'>
-                    <span className='flex items-center text-nowrap'>
-                      {prizeToken[index]?.logoURI && (
-                        <Image
-                          alt={prizeToken[index]?.symbol}
-                          src={prizeToken[index]?.logoURI}
-                          className='me-1 inline-block flex-shrink-0'
-                          width={20}
-                          height={20}
-                          loading='lazy'
-                        />
-                      )}
-                      {formatAmount(fromWei(ef, prizeToken[index].decimals))} {prizeToken[index].symbol}
-                    </span>
-                    {index !== entryFeeUpdate.length - 1 && <span>,</span>}
+          <div>
+            <TextHeading className='text-lg'>{t('Entry Fee')}</TextHeading>
+            <div className='mt-2 flex flex-wrap items-center gap-1 text-neutral-300'>
+              {entryFeeArr.map((ef, index) => (
+                <span key={ef?.logo} className='flex text-nowrap'>
+                  <span className='flex items-center text-nowrap'>
+                    {ef?.logo && (
+                      <Image
+                        alt={ef?.symbol}
+                        src={ef?.logo}
+                        className='me-1 inline-block flex-shrink-0'
+                        width={20}
+                        height={20}
+                        loading='lazy'
+                      />
+                    )}
+                    {ef.data} {ef?.symbol}
                   </span>
-                ))}
-              </div>
+                  {index !== entryFeeArr.length - 1 && <span>,</span>}
+                </span>
+              ))}
             </div>
-          )}
+          </div>
           {winningToken ? (
             (!isInvalidAmount(startingBalance) ||
               (market === TC_MARKET_TYPES.SPOT && !isInvalidAmount(minimumBalance))) && (

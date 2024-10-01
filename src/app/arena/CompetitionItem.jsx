@@ -23,38 +23,33 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
 
   const { eventType } = useEventType(competition?.timestamp)
 
-  const totalPrize = useMemo(
-    () => {
-      let totalPrizeArray = []
-      totalPrizeArray = competition.prizeUpdate.token.map((item, index) => ({
-        data: formatAmount(fromWei(competition.prizeUpdate.totalPrize[index], item?.decimals)),
-        ticker: item?.symbol,
-      }))
+  const totalPrize = useMemo(() => {
+    let totalPrizeArray = []
+    totalPrizeArray = competition.prizeUpdate.token.map((item, index) => ({
+      data: formatAmount(fromWei(competition.prizeUpdate.totalPrize[index], item?.decimals)),
+      ticker: item?.symbol,
+    }))
 
-      if (totalPrizeArray.some(item => !isInvalidAmount(item.data))) {
-        totalPrizeArray = totalPrizeArray.filter(item => !isInvalidAmount(item.data))
-      }
+    if (totalPrizeArray.some(item => !isInvalidAmount(item.data))) {
+      totalPrizeArray = totalPrizeArray.filter(item => !isInvalidAmount(item.data))
+    }
 
-      return totalPrizeArray.map(item => `${item.data} ${item.ticker}`).join(', ')
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [competition.prizeUpdate.totalPrize, competition.prizeUpdate?.token],
-  )
+    return totalPrizeArray.map(item => `${item.data} ${item.ticker}`).join(', ')
+  }, [competition.prizeUpdate.totalPrize, competition.prizeUpdate?.token])
 
   const entryFee = useMemo(() => {
-    if (competition.entryFeeUpdate.some(item => Number(item) !== 0)) {
-      return competition.entryFeeUpdate
-        .filter(entry => !isInvalidAmount(entry))
-        .map(
-          (item, index) =>
-            `${formatAmount(fromWei(item, competition.prizeUpdate?.token?.[index]?.decimals))} ${
-              competition.prizeUpdate?.token?.[index]?.symbol
-            }`,
-        )
-        .join(', ')
+    let entryFeeArray = competition.entryFeeUpdate.map((item, index) => ({
+      data: formatAmount(fromWei(item, competition.prizeUpdate?.token?.[index]?.decimals)),
+      symbol: competition.prizeUpdate?.token?.[index]?.symbol,
+    }))
+
+    if (entryFeeArray.some(item => !isInvalidAmount(item.data))) {
+      entryFeeArray = entryFeeArray.filter(item => !isInvalidAmount(item.data))
+
+      return entryFeeArray.map(item => `${item.data} ${item.symbol}`).join(', ')
     }
+
     return t('Free To Enter')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [competition.entryFeeUpdate, competition.prizeUpdate?.token, t])
 
   const { text: timeDistance } = useCountdown(eventType, competition.timestamp.startTimestamp)

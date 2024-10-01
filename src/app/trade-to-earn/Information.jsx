@@ -1,123 +1,31 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 
 import Box from '@/components/box'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { useAssets } from '@/context/assetsContext'
 import { useDibsRewarder } from '@/context/dibsRewarderContext'
 import useWallet from '@/hooks/useWallet'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount } from '@/lib/utils'
 
-function Information({ userDailyVolume, totalDailyVolume, userTotalVolume }) {
+function Information({ userDailyVolume, userTotalVolume }) {
   const t = useTranslations()
   const { account } = useWallet()
-  const { totalDailyRewardUsd, totalRewardCurrDay, totalUserEarned } = useDibsRewarder()
-  const [countDown, setCountDown] = useState(0)
-  const assets = useAssets()
-
-  const hours = useMemo(
-    () => (countDown ? Math.floor((countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) : 0),
-    [countDown],
-  )
-  const minutes = useMemo(() => (countDown ? Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60)) : 0), [countDown])
-  const seconds = useMemo(() => (countDown ? Math.floor((countDown % (1000 * 60)) / 1000) : 0), [countDown])
-
-  useEffect(() => {
-    const now = new Date()
-    const endOfDay = new Date(now)
-    endOfDay.setUTCHours(23, 59, 59, 999)
-    const remainingTime = endOfDay - now
-    const interval = setInterval(() => {
-      setCountDown(remainingTime)
-    }, 1000)
-
-    return () => clearInterval(interval)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [new Date().getTime()])
-
-  const yourEstimatedDailyRewardTotal = useMemo(() => {
-    let rs = 0
-    if (totalRewardCurrDay && totalRewardCurrDay.length) {
-      rs = totalRewardCurrDay.reduce((accumulator, currentValue) => {
-        let price = 1
-        const asset = assets.find(assetItem => assetItem.symbol === currentValue.symbol)
-        if (asset) {
-          price = asset.price
-        }
-        return accumulator + currentValue.totalReward * price
-      }, 0)
-    }
-    return rs
-  }, [assets, totalRewardCurrDay])
+  const { totalUserEarned } = useDibsRewarder()
 
   const array1 = useMemo(
     () => [
-      {
-        value: `$${formatAmount(fromWei(totalDailyRewardUsd))}`,
-        label: 'Total daily rewards available',
-        show: true,
-      },
       {
         value: `$${formatAmount(userDailyVolume)}`,
         label: 'Your Daily Trading Volume',
         show: Boolean(account),
       },
-      {
-        value:
-          totalRewardCurrDay && totalRewardCurrDay.length ? (
-            <div className='flex flex-row flex-wrap items-center gap-2'>
-              <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>
-                ${formatAmount((yourEstimatedDailyRewardTotal * userDailyVolume) / totalDailyVolume)}
-              </TextHeading>
-              <TextSubHeading>
-                {totalRewardCurrDay
-                  .map(
-                    item =>
-                      `${
-                        totalDailyVolume === 0
-                          ? 0
-                          : formatAmount((item.totalReward * userDailyVolume) / totalDailyVolume)
-                      } ${item.symbol}`,
-                  )
-                  .join(', ')}
-              </TextSubHeading>
-            </div>
-          ) : (
-            0
-          ),
-        label: 'Your estimated daily rewards',
-        show: Boolean(account),
-      },
     ],
-    [
-      account,
-      totalDailyVolume,
-      userDailyVolume,
-      totalDailyRewardUsd,
-      totalRewardCurrDay,
-      yourEstimatedDailyRewardTotal,
-    ],
+    [account, userDailyVolume],
   )
 
   const array2 = useMemo(
-    () => [
-      {
-        value:
-          hours || minutes || seconds
-            ? (hours ? `${hours}h ` : '') +
-              (minutes ? `${minutes}m ` : hours ? '0m' : '') +
-              (seconds ? `${seconds}s` : minutes ? '0s' : '')
-            : 0,
-        label: 'Next rewards distribution',
-        show: true,
-      },
-    ],
-    [hours, minutes, seconds],
-  )
-
-  const array3 = useMemo(
     () => [
       {
         value: `$${formatAmount(userTotalVolume)}`,
@@ -142,12 +50,6 @@ function Information({ userDailyVolume, totalDailyVolume, userTotalVolume }) {
         </Box>
       ))}
       {array2.map((item, index) => (
-        <Box key={index} className={item.show ? 'flex flex-col items-start gap-1' : 'hidden'}>
-          <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>{item.value}</TextHeading>
-          <TextSubHeading>{t(item.label)}</TextSubHeading>
-        </Box>
-      ))}
-      {array3.map((item, index) => (
         <Box key={index} className={item.show ? 'flex flex-col items-start gap-1' : 'hidden'}>
           <TextHeading className='max-w-full break-all text-xl lg:text-2xl'>{item.value}</TextHeading>
           <TextSubHeading>{t(item.label)}</TextSubHeading>
