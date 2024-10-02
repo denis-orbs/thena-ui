@@ -91,7 +91,7 @@ export function VaultsContextProvider({ children }) {
       if (found) {
         const earned0 = fromWei(found.earned0, asset0.decimals)
         const earned1 = fromWei(found.earned1, asset1.decimals)
-        const earned2 = fromWei(found.earned2, asset1.decimals)
+        const earned2 = fromWei(found.earned2, asset2.decimals)
 
         user = {
           ...found,
