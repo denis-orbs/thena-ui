@@ -3,13 +3,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import Box from '@/components/box'
 import { TextButton } from '@/components/buttons/Button'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { useTradingCompetitionLeaderBoardByUser } from '@/hooks/trade/useTradingCompetitionLeaderboard'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
 import { useTradeData } from '@/hooks/useTcSpotContract'
@@ -39,11 +40,17 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
     true,
   )
 
-  const { balance, pnl } = useTradeData(
+  const { balance } = useTradeData(
     competition?.tcAddress,
     competition?.competitionRules?.winningToken?.address,
     reloadFetch,
   )
+
+  const { competitionUser } = useTradingCompetitionLeaderBoardByUser(id, account?.toLowerCase())
+  const pnl = useMemo(() => {
+    const participantUser = competitionUser?.participants[0]
+    return participantUser.pnl
+  }, [competitionUser?.participants])
 
   const getPnl = useCallback(async () => {
     if (competition?.participants && competition?.tcAddress) {
@@ -137,6 +144,8 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
 
   //   return () => clearInterval(interval)
   // }, [competition?.timestamp?.registrationEnd, competition?.timestamp?.registrationStart])
+
+  console.log({ competition })
 
   return (
     <div className='my-10 flex flex-col gap-10'>

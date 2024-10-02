@@ -85,6 +85,73 @@ export const useTradingCompetitionLeaderBoard = (id, searchText) => {
   }
 }
 
+const V4_COMPETITION_DATA_LEADERBOARD_BY_USER = gql`
+  query V4_COMPETITION_DATA_LEADERBOARD_BY_USER($id: String!, $userId: String!) {
+    tradingCompetitionById(id: $id) {
+      id
+      market
+      participants(where: { participant: { id_eq: $userId } }) {
+        pnl
+        percentagePnl
+        rank
+        winAmounts
+        winTokenDecimal
+        participant {
+          id
+          username
+          avatar
+          nameColor
+          isVerified
+          checkMarkIcon
+          verifiedAt
+        }
+      }
+      competitionRules {
+        winningTokenDecimal
+        winningToken
+      }
+      timestamp {
+        endTimestamp
+        startTimestamp
+      }
+      prizeUpdate {
+        token
+        winType
+      }
+      tcAddress
+    }
+  }
+`
+
+const fetchCompetitionLeaderboardByUser = async (id, userId) => {
+  try {
+    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA_LEADERBOARD_BY_USER, {
+      id,
+      userId,
+    })
+
+    return competition
+  } catch (error) {
+    return { error: true }
+  }
+}
+
+export const useTradingCompetitionLeaderBoardByUser = (id, userId) => {
+  const { data, isLoading } = useSWR(
+    ['competition leader board api by user', id, userId],
+    () => fetchCompetitionLeaderboardByUser(id, userId),
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    },
+  )
+
+  return {
+    competitionUser: data,
+    isLoading,
+  }
+}
+
 const V4_COMPETITION_BY_ACCOUNT = gql`
   query V4_COMPETITION_BY_ACCOUNT($competitionId: String!, $account: String!) {
     tradingCompetitionById(id: $competitionId) {
