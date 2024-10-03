@@ -153,6 +153,38 @@ export default function SpecificPoolPage({ params }) {
                 </CustomTooltip>
               </div>
             )}
+            {pool.address === '0xcfac0990700ed9b67fefbd4b26a79e426468a419' && (
+              <div className='mt-5 flex gap-2'>
+                <div className='flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}`}>
+                    <NextImage
+                      className='h-full w-full rounded-full object-cover'
+                      alt='EtherFi'
+                      src='/images/yieldnest_seed_3d__1__360.png'
+                    />
+                  </div>
+                  <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>
+                      {t('Liquidity providers in this pool are eligible for YieldNest’s 8X Seeds Boost')}
+                    </TextHeading>
+                  </CustomTooltip>
+                </div>
+                <div className='flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}`}>
+                    <NextImage
+                      className='h-full w-full rounded-full object-cover'
+                      alt='EtherFi'
+                      src='/images/Turtle-Seeds.svg'
+                    />
+                  </div>
+                  <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>
+                      {t('Liquidity providers in this pool are eligible for Turtle Club 10% emission boost')}
+                    </TextHeading>
+                  </CustomTooltip>
+                </div>
+              </div>
+            )}
           </div>
           <Box className='mt-10 grid grid-cols-2 gap-5 lg:grid-cols-4'>
             <div className='flex w-full flex-col gap-2'>
