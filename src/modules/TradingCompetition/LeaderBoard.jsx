@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js'
 import { compact, isNil } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -6,15 +5,14 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Table from '@/components/table'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
-import { useTradingCompetition } from '@/context/tradingCompetitionContext'
 import { useEventType } from '@/hooks/useEventType'
-import { useTradeData } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount, formatNumberDecimals, fromWei } from '@/lib/utils'
-import { FirstPrizeIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
+import { FirstPrizeIcon, InfoNeutralIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 
 import SearchWithDebounce from './SearchWithDebounce'
 
@@ -40,47 +38,24 @@ export function LeaderBoard({ competition, searchText = '', setSearchText, compe
   const { eventType } = useEventType(competition?.timestamp)
   const [currentPage, setCurrentPage] = useState(1)
   const { account } = useWallet()
-  const { reloadFetch } = useTradingCompetition()
 
   const { push } = useRouter()
   const t = useTranslations()
-
-  const { pnl: pnlUserCurrent, winAmount } = useTradeData(
-    competition?.tcAddress,
-    competition?.competitionRules?.winningToken?.address,
-    reloadFetch,
-  )
 
   const handleParticipants = useMemo(
     () => data => {
       if (Array.isArray(data?.participants)) {
         let arr = [...(data?.participants || [])]
-        const index = arr.findIndex(item => item.participant.id.toLowerCase() === account?.toLowerCase())
-
         arr = arr.map(item => ({
           ...item,
           winAmount: item.winAmounts?.length ? item.winAmounts : new Array(data?.prizeUpdate?.token?.length).fill('0'),
           winAmounts: undefined,
         }))
-
-        if (index !== -1 && data?.market === TC_MARKET_TYPES.SPOT) {
-          arr[index] = {
-            ...arr[index],
-            pnl: new BigNumber(pnlUserCurrent).toNumber(),
-            winAmount: Array.isArray(winAmount)
-              ? !winAmount?.length
-                ? new Array(data?.prizeUpdate?.token?.length).fill('0')
-                : winAmount.map(item => new BigNumber(item).toNumber())
-              : winAmount !== null
-                ? [new BigNumber(winAmount).toNumber()]
-                : new Array(data?.prizeUpdate?.token?.length).fill('0'),
-          }
-        }
         return arr
       }
       return []
     },
-    [account, pnlUserCurrent, winAmount],
+    [],
   )
 
   const participants = useMemo(() => handleParticipants(competition), [competition, handleParticipants])
@@ -229,7 +204,19 @@ export function LeaderBoard({ competition, searchText = '', setSearchText, compe
     <div className='rounded-xl bg-[url("/images/pink-bg.png")] bg-cover'>
       <div className='mb-3 flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between'>
         {/* eslint-disable-next-line prettier/prettier */}
-        <TextHeading className='text-xl lg:flex-2'>{t('Leaderboard')}</TextHeading>
+        <div className='flex items-center lg:flex-2'>
+          <TextHeading className='text-xl'>{t('Leaderboard')}</TextHeading>
+          <span>
+            <InfoNeutralIcon className='ml-1 w-4' data-tooltip-id='leaderboard-heading' />
+            <CustomTooltip
+              className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+              id='leaderboard-heading'
+              place='bottom'
+            >
+              {t('Leaderboard is updated every 30-60s')}
+            </CustomTooltip>
+          </span>
+        </div>
         {/* <SearchInput className='w-full lg:flex-1' val={searchText} setVal={handleSearchText} /> */}
         <SearchWithDebounce searchText={searchText} setSearchText={setSearchText} />
       </div>

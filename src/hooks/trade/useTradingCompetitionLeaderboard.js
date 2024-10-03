@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request'
+import { useState } from 'react'
 import useSWR from 'swr'
 
 import { v4Client } from '@/lib/graphql'
@@ -82,6 +83,75 @@ export const useTradingCompetitionLeaderBoard = (id, searchText) => {
   return {
     competition: useCompetitionFormat(data),
     isLoading,
+  }
+}
+
+const V4_COMPETITION_DATA_LEADERBOARD_BY_USER = gql`
+  query V4_COMPETITION_DATA_LEADERBOARD_BY_USER($id: String!, $userId: String!) {
+    tradingCompetitionById(id: $id) {
+      id
+      market
+      participants(where: { participant: { id_eq: $userId } }) {
+        pnl
+        percentagePnl
+        rank
+        winAmounts
+        winTokenDecimal
+        participant {
+          id
+          username
+          avatar
+          nameColor
+          isVerified
+          checkMarkIcon
+          verifiedAt
+        }
+      }
+      competitionRules {
+        winningTokenDecimal
+        winningToken
+      }
+      timestamp {
+        endTimestamp
+        startTimestamp
+      }
+      prizeUpdate {
+        token
+        winType
+      }
+      tcAddress
+    }
+  }
+`
+
+const fetchCompetitionLeaderboardByUser = async (id, userId) => {
+  try {
+    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA_LEADERBOARD_BY_USER, {
+      id,
+      userId,
+    })
+
+    return competition
+  } catch (error) {
+    return { error: true }
+  }
+}
+
+export const useTradingCompetitionLeaderBoardByUser = (id, userId) => {
+  const [refresh, setRefresh] = useState(1)
+  const { data, isLoading } = useSWR(
+    ['competition leader board api by user', id, userId, refresh],
+    () => fetchCompetitionLeaderboardByUser(id, userId),
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    },
+  )
+
+  return {
+    competitionUser: data,
+    isLoading,
+    setRefresh,
   }
 }
 

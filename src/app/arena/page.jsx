@@ -22,6 +22,7 @@ import Create from '@/modules/CreateTradingCompetition/Create'
 import Preview from '@/modules/CreateTradingCompetition/Preview'
 
 import CompetitionItem from './CompetitionItem'
+import DiscoverArenaModal from './DiscoverArenaModal'
 import FilterDropDown, { FILTERS } from './FilterDropDown'
 import NoCompetition from './NoCompetition'
 import Loading from '../loading'
@@ -709,6 +710,7 @@ export default function ArenaPage() {
           </ModalBody>
         </Modal>
       )}
+      <DiscoverArenaModal />
     </div>
   )
 }

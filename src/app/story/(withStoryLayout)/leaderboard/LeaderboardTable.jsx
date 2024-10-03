@@ -127,6 +127,10 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
   const [currentPage, setCurrentPage] = useState(1)
   const [rowDefault, setRowDefault] = useState()
 
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [currentTabIndex, userInfo])
+
   const { data: participants, isLoading: loadingParticipants } = useQuery({
     queryKey: ['getParticipants', userInfo],
     queryFn: () => fetchStoryLeaderboard(300),

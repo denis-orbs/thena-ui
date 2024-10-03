@@ -183,7 +183,7 @@ export default function PoolsPage() {
     () => {
       let data = []
 
-      const pinnedPools = ['0xab6f06a33f38cba5a5312de24151cb91da2b0eb0']
+      const pinnedPools = ['0xab6f06a33f38cba5a5312de24151cb91da2b0eb0', '0xcfac0990700ed9b67fefbd4b26a79e426468a419']
       // const pinnedPools = []
       if (Array.isArray(sortedData) && sortedData.length) {
         if (pinnedPools.length) {
@@ -196,6 +196,7 @@ export default function PoolsPage() {
       }
 
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
+      const ynBNBPoolAddress = '0xcfac0990700ed9b67fefbd4b26a79e426468a419'
 
       return data.map(pool => ({
         pair: (
@@ -251,6 +252,39 @@ export default function PoolsPage() {
                   <TextHeading className='text-xs'>{t('Pool Special tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
+            )}
+
+            {pool.address === ynBNBPoolAddress && (
+              <>
+                <div className='flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
+                    <NextImage
+                      className='h-full w-full rounded-full object-cover'
+                      alt='EtherFi'
+                      src='/images/yieldnest_seed_3d__1__360.png'
+                    />
+                  </div>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>
+                      {t('Liquidity providers in this pool are eligible for YieldNest’s 8X Seeds Boost')}
+                    </TextHeading>
+                  </CustomTooltip>
+                </div>
+                <div className='flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip2`}>
+                    <NextImage
+                      className='h-full w-full rounded-full object-cover'
+                      alt='EtherFi'
+                      src='/images/Turtle-Seeds.svg'
+                    />
+                  </div>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>
+                      {t('Liquidity providers in this pool are eligible for Turtle Club 10% emission boost')}
+                    </TextHeading>
+                  </CustomTooltip>
+                </div>
+              </>
             )}
           </div>
         ),
