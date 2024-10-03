@@ -35,7 +35,6 @@ function RankElement({ rank }) {
 }
 
 export function LeaderBoard({ competition, searchText = '', setSearchText, competitionAccount = undefined }) {
-  console.log({ competition })
   const { eventType } = useEventType(competition?.timestamp)
   const [currentPage, setCurrentPage] = useState(1)
   const { account } = useWallet()

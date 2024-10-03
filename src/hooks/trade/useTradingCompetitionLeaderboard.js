@@ -1,4 +1,5 @@
 import { gql } from 'graphql-request'
+import { useState } from 'react'
 import useSWR from 'swr'
 
 import { v4Client } from '@/lib/graphql'
@@ -137,8 +138,9 @@ const fetchCompetitionLeaderboardByUser = async (id, userId) => {
 }
 
 export const useTradingCompetitionLeaderBoardByUser = (id, userId) => {
+  const [refresh, setRefresh] = useState(1)
   const { data, isLoading } = useSWR(
-    ['competition leader board api by user', id, userId],
+    ['competition leader board api by user', id, userId, refresh],
     () => fetchCompetitionLeaderboardByUser(id, userId),
     {
       refreshInterval: 30000,
@@ -149,6 +151,7 @@ export const useTradingCompetitionLeaderBoardByUser = (id, userId) => {
   return {
     competitionUser: data,
     isLoading,
+    setRefresh,
   }
 }
 

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
+import Loading from '@/app/loading'
 import Box from '@/components/box'
 import { TextButton } from '@/components/buttons/Button'
 import CustomTooltip from '@/components/tooltip'
@@ -32,25 +33,34 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
 
   const [participants, setParticipants] = useState(competition?.participants || [])
 
-  const { eventType } = useEventType(competition?.timestamp)
+  const {
+    competitionUser,
+    isLoading: loadingCompetitionUser,
+    setRefresh,
+  } = useTradingCompetitionLeaderBoardByUser(id, account?.toLowerCase())
+
+  const { eventType } = useEventType(competitionUser?.timestamp)
 
   const { text } = useCountdown(
     eventType,
-    eventType === EVENT_TYPES.LIVE ? competition?.timestamp?.endTimestamp : competition?.timestamp?.startTimestamp,
+    eventType === EVENT_TYPES.LIVE
+      ? competitionUser?.timestamp?.endTimestamp
+      : competitionUser?.timestamp?.startTimestamp,
     true,
   )
 
   const { balance } = useTradeData(
-    competition?.tcAddress,
-    competition?.competitionRules?.winningToken?.address,
+    competitionUser?.tcAddress,
+    competitionUser?.competitionRules?.winningToken?.address,
     reloadFetch,
   )
 
-  const { competitionUser } = useTradingCompetitionLeaderBoardByUser(id, account?.toLowerCase())
   const pnl = useMemo(() => {
-    const participantUser = competitionUser?.participants[0]
-    return participantUser.pnl
-  }, [competitionUser?.participants])
+    if (!loadingCompetitionUser) {
+      const participantUser = competitionUser?.participants[0]
+      return participantUser?.pnl
+    }
+  }, [competitionUser?.participants, loadingCompetitionUser])
 
   const getPnl = useCallback(async () => {
     if (competition?.participants && competition?.tcAddress) {
@@ -69,35 +79,33 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
 
   const calcRankAfterSwap = useCallback(async () => {
     if (competition?.participants && competition?.tcAddress) {
+      setRefresh(Date.now())
       const temp = [...competition.participants]
       if (temp && temp.length) {
-        const tcSpotContract = getTcSpotContract(competition.tcAddress)
-        for (const ptcp of competition.participants) {
-          const pnlRes = await readCall(tcSpotContract, 'getPNLOf', [ptcp.participant.id])
-          ptcp.pnl = new BigNumber(pnlRes).toNumber()
+        if (!loadingCompetitionUser) {
+          const rank = competitionUser?.participants[0]?.rank
+          const newRank = rank && !isNaN(rank) ? rank + 1 : '-'
+          if (newRank === 1) {
+            successToast('You’re in 1st place', null, ChainId.BSC, <Champion className='h-4 w-4' />)
+          } else {
+            successToast(
+              `You’re now rank ${newRank} of ${competition.participants.length}`,
+              null,
+              ChainId.BSC,
+              <UpRank className='h-3 w-3' />,
+            )
+          }
+          setCurrentRank(newRank)
         }
-
-        const sort =
-          temp.sort(
-            (a, b) =>
-              fromWei(b.pnl, competition.competitionRules?.winningToken?.decimals) -
-              fromWei(a.pnl, competition.competitionRules?.winningToken?.decimals),
-          ) || []
-        const newRank = sort.findIndex(item => item.participant.id === account?.toLocaleLowerCase()) + 1
-        if (newRank === 1) {
-          successToast('You’re in 1st place', null, ChainId.BSC, <Champion className='h-4 w-4' />)
-        } else {
-          successToast(
-            `You’re now rank ${newRank} of ${competition.participants.length}`,
-            null,
-            ChainId.BSC,
-            <UpRank className='h-3 w-3' />,
-          )
-        }
-        setCurrentRank(newRank)
       }
     }
-  }, [account, competition.competitionRules?.winningToken?.decimals, competition.participants, competition.tcAddress])
+  }, [
+    competition.participants,
+    competition?.tcAddress,
+    competitionUser?.participants,
+    loadingCompetitionUser,
+    setRefresh,
+  ])
 
   useEffect(() => {
     if (reloadFetch > 0) {
@@ -111,24 +119,26 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
   }, [getPnl])
 
   useEffect(() => {
-    const sort =
-      participants.sort(
-        (a, b) =>
-          fromWei(b.pnl, competition.competitionRules?.winningToken?.decimals) -
-          fromWei(a.pnl, competition.competitionRules?.winningToken?.decimals),
-      ) || []
-
-    const newRank = sort.findIndex(item => item.participant.id === account?.toLocaleLowerCase()) + 1
-    if (currentRank === 1 && newRank !== currentRank) {
-      errorToast(
-        `You’re now rank ${newRank} of ${competition.participants.length}`,
-        null,
-        <DownRank className='h-3 w-3' />,
-      )
+    if (!loadingCompetitionUser) {
+      const rank = competitionUser?.participants[0]?.rank
+      const newRank = rank && !isNaN(rank) ? rank + 1 : '-'
+      if (currentRank === 1 && newRank !== currentRank) {
+        errorToast(
+          `You’re now rank ${newRank} of ${competition.participants.length}`,
+          null,
+          <DownRank className='h-3 w-3' />,
+        )
+      }
+      setCurrentRank(newRank)
     }
-    setCurrentRank(newRank)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [participants, competition.competitionRules?.winningToken?.decimals, account])
+  }, [
+    participants,
+    competition.competitionRules?.winningToken?.decimals,
+    account,
+    competitionUser,
+    loadingCompetitionUser,
+  ])
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
@@ -145,7 +155,9 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
   //   return () => clearInterval(interval)
   // }, [competition?.timestamp?.registrationEnd, competition?.timestamp?.registrationStart])
 
-  console.log({ competition })
+  if (loadingCompetitionUser) {
+    return <Loading />
+  }
 
   return (
     <div className='my-10 flex flex-col gap-10'>
@@ -181,7 +193,12 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
                     loading='lazy'
                   />
                   <TextHeading className='text-xl lg:text-2xl'>
-                    {formatAmount(fromWei(pnl, competition.competitionRules?.winningToken?.decimals), false, 10, false)}
+                    {formatAmount(
+                      fromWei(pnl, competitionUser?.competitionRules?.winningTokenDecimal),
+                      false,
+                      10,
+                      false,
+                    )}
                   </TextHeading>
                 </div>
                 <InfoIcon className='hidden h-4 w-4 stroke-neutral-400 lg:block' data-tooltip-id='user-pnl-tooltip' />
