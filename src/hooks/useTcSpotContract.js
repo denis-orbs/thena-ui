@@ -420,8 +420,6 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
 
   const [balance, setBalance] = useState(0n)
   const [userBalance, setUserBalance] = useState()
-  const [pnl, setPNL] = useState(0n)
-  const [winAmount, setWinAmount] = useState(null)
 
   const fetchData = useCallback(async () => {
     try {
@@ -431,16 +429,11 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
       }
 
       const tcSpotContract = getTcSpotContract(TCAddress)
-      const oldTcSpotContract = getOldTcSpotContract(TCAddress)
 
-      const [pnlRes, balanceRes] = await Promise.all([
+      const [balanceRes] = await Promise.all([
         readCall(tcSpotContract, 'getPNLOf', [account]),
         readCall(tcSpotContract, 'userBalance', [account]),
       ])
-
-      if (pnlRes) {
-        setPNL(pnlRes)
-      }
 
       if (balanceRes) {
         const find = balanceRes[1].findIndex(item => item.toLowerCase() === winningTokenAddress.toLowerCase())
@@ -448,18 +441,6 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
         setUserBalance(balanceRes)
         setBalance(value)
       }
-
-      Promise.resolve(readCall(tcSpotContract, 'claimable', [account]))
-        .then(value => {
-          setWinAmount(value[0])
-        })
-        .catch(() => {
-          Promise.resolve(readCall(oldTcSpotContract, 'claimable', [account]))
-            .then(value => {
-              setWinAmount(value[0])
-            })
-            .catch(() => {})
-        })
     } catch (error) {
       console.log(error)
     }
@@ -475,11 +456,9 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
   }, [fetchData, reloadFetch])
 
   return {
-    pnl,
     balance,
     reload: fetchData,
     userBalance,
-    winAmount,
   }
 }
 

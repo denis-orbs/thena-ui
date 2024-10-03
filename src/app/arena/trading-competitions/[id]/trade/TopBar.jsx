@@ -57,7 +57,7 @@ function TopBar({ competition = {}, reloadFetch = 0, setReloadFetch }) {
 
   const pnl = useMemo(() => {
     if (!loadingCompetitionUser) {
-      const participantUser = competitionUser?.participants[0]
+      const participantUser = competitionUser?.participants?.[0]
       return participantUser?.pnl
     }
   }, [competitionUser?.participants, loadingCompetitionUser])
