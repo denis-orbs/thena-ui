@@ -129,8 +129,6 @@ export default function SpecificPoolPage({ params }) {
                     src='/images/Eigenlayer.png'
                   />
                 </div>
-                {/* <EtherFiBadgeIcon className='size-6' data-tooltip-id='etherBadgeIconDetail' />
-                <EigenBadgeIcon className='size-6' data-tooltip-id='eigenBadgeIconDetail' /> */}
                 <CustomTooltip id='etherBadgeIconDetail' className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('EtherFi tooltip')}</TextHeading>
                 </CustomTooltip>
@@ -156,28 +154,28 @@ export default function SpecificPoolPage({ params }) {
             {pool.address === '0xcfac0990700ed9b67fefbd4b26a79e426468a419' && (
               <div className='mt-5 flex gap-2'>
                 <div className='flex items-center gap-2'>
-                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}`}>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
-                      alt='EtherFi'
+                      alt='YieldNest’s'
                       src='/images/yieldnest_seed_3d__1__360.png'
                     />
                   </div>
-                  <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
                     <TextHeading className='text-xs'>
                       {t('Liquidity providers in this pool are eligible for YieldNest’s 8X Seeds Boost')}
                     </TextHeading>
                   </CustomTooltip>
                 </div>
                 <div className='flex items-center gap-2'>
-                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}`}>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip2`}>
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
-                      alt='EtherFi'
+                      alt='Turtle'
                       src='/images/Turtle-Seeds.svg'
                     />
                   </div>
-                  <CustomTooltip id={`pool-special-${pool.address}`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
                     <TextHeading className='text-xs'>
                       {t('Liquidity providers in this pool are eligible for Turtle Club 10% emission boost')}
                     </TextHeading>
