@@ -415,7 +415,7 @@ export const useDepositToTC = () => {
   return { pending, deposit }
 }
 
-export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) => {
+export const useTradeData = (tcAddress, winningTokenAddress, reloadFetch = 0) => {
   const { account } = useWallet()
 
   const [balance, setBalance] = useState(0n)
@@ -423,17 +423,14 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
 
   const fetchData = useCallback(async () => {
     try {
-      if (!account || !TCAddress || !winningTokenAddress) {
+      if (!account || !tcAddress || !winningTokenAddress) {
         setUserBalance([])
         return
       }
 
-      const tcSpotContract = getTcSpotContract(TCAddress)
+      const tcSpotContract = getTcSpotContract(tcAddress)
 
-      const [balanceRes] = await Promise.all([
-        readCall(tcSpotContract, 'getPNLOf', [account]),
-        readCall(tcSpotContract, 'userBalance', [account]),
-      ])
+      const balanceRes = await readCall(tcSpotContract, 'userBalance', [account])
 
       if (balanceRes) {
         const find = balanceRes[1].findIndex(item => item.toLowerCase() === winningTokenAddress.toLowerCase())
@@ -444,7 +441,7 @@ export const useTradeData = (TCAddress, winningTokenAddress, reloadFetch = 0) =>
     } catch (error) {
       console.log(error)
     }
-  }, [TCAddress, account, winningTokenAddress])
+  }, [tcAddress, account, winningTokenAddress])
 
   useEffect(() => {
     const interval = setInterval(() => {
