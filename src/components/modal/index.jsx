@@ -32,6 +32,7 @@ function Modal({
   style = {},
   showHeadModal = true,
   backgroundColor = undefined,
+  background,
   ...rest
 }) {
   const t = useTranslations()
@@ -53,6 +54,7 @@ function Modal({
             border: '0px',
             borderRadius: '12px',
             backgroundColor: backgroundColor ?? '#1A121E',
+            background: background ?? '#1A121E',
             padding: '0 0 24px',
             display: 'flex',
             flexDirection: 'column',
@@ -67,6 +69,7 @@ function Modal({
             bottom: 'auto',
             width: width ? (typeof width === 'string' ? width : `${width}px`) : '540px',
             height: 'fit-content',
+            background: background ?? '#1A121E',
             maxHeight: '90%',
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
@@ -77,7 +80,7 @@ function Modal({
             overflow: 'auto',
           },
     }),
-    [backgroundColor, width, zIndex],
+    [background, backgroundColor, width, zIndex],
   )
 
   return (
