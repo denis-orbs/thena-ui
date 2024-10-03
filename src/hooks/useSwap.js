@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
-import { ethers } from 'ethers'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeFunctionData, getAddress, maxUint256, zeroAddress } from 'viem'
+import { decodeFunctionData, encodePacked, getAddress, maxUint256, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
@@ -456,7 +455,7 @@ export const useTCSpotAlgebraSwap = () => {
       })
 
       setPending(true)
-      const path = ethers.solidityPacked(['address', 'address'], [fromAsset.address, toAsset.address])
+      const path = encodePacked(['address', 'address'], [fromAsset.address, toAsset.address])
       const currentTimestamp = parseInt(new Date().getTime() / 1000, 10)
       if (path) {
         const exactInputParams = {
