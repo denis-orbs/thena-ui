@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useTranslations } from 'use-intl'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
@@ -18,13 +18,16 @@ function DiscoverArenaModal() {
 
   const windowSize = useWindowSize()
 
-  useEffect(() => {
-    if (checked) {
-      localStorage.setItem(NotShowDiscoverArenaModal, true)
-    } else {
+  const handleChecked = () => {
+    setChecked(prev => {
+      if (!prev) {
+        localStorage.setItem(NotShowDiscoverArenaModal, true)
+        return true
+      }
       localStorage.removeItem(NotShowDiscoverArenaModal)
-    }
-  }, [checked])
+      return false
+    })
+  }
 
   return (
     <Modal
@@ -42,7 +45,7 @@ function DiscoverArenaModal() {
             {t('Discover ARENA sub heading')}
           </TextSubHeading>
           <div className='flex items-center'>
-            <CheckBox checked={checked} onClick={() => setChecked(prev => !prev)} />
+            <CheckBox checked={checked} onClick={handleChecked} />
             <span className='ml-2 text-[15px] text-neutral-300 lg:text-[16px] 2xl:ml-3'>
               {t("Don't show this again")}
             </span>

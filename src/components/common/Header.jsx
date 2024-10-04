@@ -493,32 +493,6 @@ function Header() {
           href: '/arena/rankings',
         },
         {
-          label: 'Analytics',
-          active: pathname.includes('/arena/analytics'),
-          isLink: true,
-          href: '/arena/analytics',
-        },
-        account
-          ? {
-              label: 'Achievements',
-              active: pathname === '/arena/achievements',
-              isLink: true,
-              href: '/arena/achievements',
-            }
-          : undefined,
-        account
-          ? {
-              label: 'Profile',
-              active:
-                pathname === '/arena/profile' ||
-                pathname === '/arena/profile/edit' ||
-                pathname === '/arena/profile/following' ||
-                pathname === '/arena/profile/followers',
-              isLink: true,
-              href: '/arena/profile',
-            }
-          : undefined,
-        {
           label: 'THENA ID',
           active:
             pathname === '/arena/thena-id/mint' ||
@@ -529,14 +503,52 @@ function Header() {
           isLink: true,
           href: '/arena/thena-id/mint',
         },
-        account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
-          ? {
-              label: 'Admin',
-              active: pathname === '/arena/admin',
+
+        {
+          label: 'More',
+          active:
+            pathname.includes('/achievements') ||
+            pathname.includes('/profile') ||
+            pathname.includes('/analytics') ||
+            pathname.includes('/admin'),
+          isSub: true,
+          sub: [
+            {
+              label: 'Analytics',
+              active: pathname === '/arena/analytics',
               isLink: true,
-              href: '/arena/admin',
-            }
-          : undefined,
+              href: '/arena/analytics',
+            },
+            account
+              ? {
+                  label: 'Achievements',
+                  active: pathname === '/arena/achievements',
+                  isLink: true,
+                  href: '/arena/achievements',
+                }
+              : undefined,
+            account
+              ? {
+                  label: 'Profile',
+                  active:
+                    pathname === '/arena/profile' ||
+                    pathname === '/arena/profile/edit' ||
+                    pathname === '/arena/profile/following' ||
+                    pathname === '/arena/profile/followers',
+                  isLink: true,
+                  href: '/arena/profile',
+                }
+              : undefined,
+            account && userInfo && userInfo.id && (userInfo.isAdmin || userInfo.isSuperAdmin)
+              ? {
+                  label: 'Admin',
+                  active: pathname === '/arena/admin',
+                  isLink: true,
+                  href: '/arena/admin',
+                }
+              : undefined,
+          ],
+        },
       ]),
     [account, pathname, userInfo],
   )
@@ -813,7 +825,7 @@ function Header() {
         </div>
       )}
       {pathname.includes('/arena') && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5'>
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5'>
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
             {toggleSearch && isSmallScreen() ? (
               <HeaderSearch

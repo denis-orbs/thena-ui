@@ -86,14 +86,14 @@ export function EntryFeeChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'Entry Fees Paid (USD)',
+        label: 'New Fees (USD)',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Total Entry Fees Paid (USD)',
+        label: 'Total Fees (USD)',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')

@@ -89,14 +89,14 @@ export function CreatedChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'New Trading Competitions Created',
+        label: 'New Competitions',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Total Trading Competitions Created',
+        label: 'Total Competitions',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')

@@ -11,15 +11,47 @@ import TruncateContent from '@/components/common/TruncateContent'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+import { InfoIcon } from '@/svgs'
 
 function CompetitionDetail({ competition, isPreview = false }) {
+  const assets = useAssets()
+
   const _competition = useCompetitionFormat(competition, isPreview)
 
   const t = useTranslations()
   const [viewAllPrize, setViewAllPrize] = useState(false)
   const [viewAllTradable, setViewAllTradable] = useState(false)
+
+  const parseToUSD = useMemo(
+    () => data =>
+      data.reduce((acc, cur, index) => {
+        const tokenAsset = assets.find(item => item.address === _competition?.prizeUpdate?.token?.[index]?.address)
+        if (tokenAsset) {
+          const value = cur.dataNumber
+          return acc + value * tokenAsset.price
+        }
+        return acc
+      }, 0),
+    [_competition?.prizeUpdate?.token, assets],
+  )
+
+  const parseToUSD2 = useMemo(
+    () => data =>
+      data.reduce((acc, cur, idx) => {
+        const tokenAsset = assets.find(token => token.address === _competition?.prizeUpdate?.token?.[idx]?.address)
+        if (tokenAsset) {
+          const value = fromWei(_competition.prizeUpdate?.totalPrize?.[idx], cur?.decimals).times(
+            _competition.prizeUpdate.ownerFee / 1000,
+          )
+          return acc + value * tokenAsset.price
+        }
+        return acc
+      }, 0),
+    [_competition.prizeUpdate.ownerFee, _competition.prizeUpdate?.token, _competition.prizeUpdate?.totalPrize, assets],
+  )
 
   const competitionDetail = useMemo(() => {
     const {
@@ -35,6 +67,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
     dataCurrentPrizePool = prizeUpdate.token.map((item, index) => ({
       data: formatAmount(fromWei(prizeUpdate.totalPrize[index], item?.decimals)),
       ticker: item?.symbol,
+      dataNumber: fromWei(prizeUpdate.totalPrize[index], item?.decimals),
     }))
     if (dataCurrentPrizePool.some(item => !isInvalidAmount(item.data))) {
       dataCurrentPrizePool = dataCurrentPrizePool.filter(item => !isInvalidAmount(item.data))
@@ -47,12 +80,14 @@ function CompetitionDetail({ competition, isPreview = false }) {
           fromWei(entryFeeUpdate[index] || 0).multipliedBy(maxParticipants - participantCount),
         ),
       ),
+      dataNumber: fromWei(prizeUpdate.totalPrize[index]).plus(
+        fromWei(entryFeeUpdate[index] || 0).multipliedBy(maxParticipants - participantCount),
+      ),
       ticker: item?.symbol,
     }))
     if (dataMaxPrizePool.some(item => item.data !== '0')) {
       dataMaxPrizePool = dataMaxPrizePool.filter(item => item.data !== '0')
     }
-
     return [
       {
         key: 'Participants',
@@ -68,6 +103,14 @@ function CompetitionDetail({ competition, isPreview = false }) {
                 ticker: prizeUpdate.token?.[index]?.symbol,
               }))
               .filter(entry => !isInvalidAmount(entry.data)),
+        dataUSD: entryFeeUpdate.reduce((acc, cur, index) => {
+          const tokenAsset = assets.find(item => item.address === prizeUpdate.token?.[index]?.address)
+          if (tokenAsset) {
+            const value = formatAmount(fromWei(cur, prizeUpdate.token?.[index]?.decimals))
+            return acc + value * tokenAsset.price
+          }
+          return acc
+        }, 0),
       },
       {
         key: 'Competition Type',
@@ -76,10 +119,12 @@ function CompetitionDetail({ competition, isPreview = false }) {
       {
         key: 'Current Prize Pool',
         dataUpdate: dataCurrentPrizePool,
+        dataUSD: parseToUSD(dataCurrentPrizePool),
       },
       {
         key: 'Max Prize Pool',
         dataUpdate: dataMaxPrizePool,
+        dataUSD: parseToUSD(dataMaxPrizePool),
       },
       {
         key: 'Deposit Token',
@@ -114,7 +159,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
         ],
       },
     ]
-  }, [_competition, t])
+  }, [_competition, assets, parseToUSD, t])
 
   const prizeDistribution = useMemo(() => {
     const sortedWeights = _competition?.prizeUpdate?.weights.sort((a, b) => b - a)
@@ -130,9 +175,23 @@ function CompetitionDetail({ competition, isPreview = false }) {
           logoURI: prize?.logoURI ?? '',
         })),
         percentage: formatAmount(percentage),
+        valueUSD: (_competition?.prizeUpdate?.token || []).reduce((acc, cur, idx) => {
+          const tokenAsset = assets.find(token => token.address === _competition?.prizeUpdate?.token?.[idx]?.address)
+          if (tokenAsset) {
+            const value = fromWei(_competition.prizeUpdate?.totalPrize?.[idx], cur?.decimals).times(percentage / 100)
+            return acc + value * tokenAsset.price
+          }
+          return acc
+        }, 0),
       }
     })
-  }, [_competition])
+  }, [
+    _competition.prizeUpdate.ownerFee,
+    _competition.prizeUpdate?.token,
+    _competition.prizeUpdate?.totalPrize,
+    _competition.prizeUpdate?.weights,
+    assets,
+  ])
 
   const onViewPrize = () => {
     setViewAllPrize(!viewAllPrize)
@@ -170,32 +229,46 @@ function CompetitionDetail({ competition, isPreview = false }) {
               <TextHeading className='text-lg' data-tooltip-id='token-tooltip'>
                 {t(`${item.key}`)}
               </TextHeading>
-              {item.dataUpdate.length > 3 && (
-                <CustomTooltip id='token-tooltip' className='max-w-[500px]'>
-                  {item.dataUpdate
-                    .filter(i => i.filter && i.data)
-                    .map(({ data, ticker }) => `${data} ${ticker}`)
-                    .join(', ')}
-                </CustomTooltip>
-              )}
-              {item.dataUpdate.slice(0, 3).map(({ data, ticker }, idx) =>
-                ticker ? (
-                  <div className='flex space-x-2' key={`${idx}-${ticker}`}>
-                    {ticker !== 'MUSD' && (
-                      <Image
-                        alt={ticker}
-                        src={`https://cdn.thena.fi/assets/${ticker}.png`}
-                        className='h-5 w-5 flex-shrink-0'
-                        width={20}
-                        height={20}
-                        loading='lazy'
-                      />
-                    )}
-                    <Paragraph>{`${data ? `${data} ` : ''}${ticker}`}</Paragraph>
-                  </div>
-                ) : (
-                  <Paragraph key={idx}>{data}</Paragraph>
-                ),
+              {item.dataUSD >= 0 ? (
+                <div className='flex items-center'>
+                  ${formatAmount(item.dataUSD)}
+                  <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id={`${item.key}_${index}`} />
+                  <CustomTooltip id={`${item.key}_${index}`} className='max-w-[500px]'>
+                    {item.dataUpdate.map(({ data, ticker }, idx) => (
+                      <p key={`${idx}_${ticker}`}>{`${data} ${ticker}`}</p>
+                    ))}
+                  </CustomTooltip>
+                </div>
+              ) : (
+                <>
+                  {item.dataUpdate.length > 3 && (
+                    <CustomTooltip id='token-tooltip' className='max-w-[500px]'>
+                      {item.dataUpdate
+                        .filter(i => i.filter && i.data)
+                        .map(({ data, ticker }) => `${data} ${ticker}`)
+                        .join(', ')}
+                    </CustomTooltip>
+                  )}
+                  {item.dataUpdate.slice(0, 3).map(({ data, ticker }, idx) =>
+                    ticker ? (
+                      <div className='flex space-x-2' key={`${idx}-${ticker}`}>
+                        {ticker !== 'MUSD' && (
+                          <Image
+                            alt={ticker}
+                            src={`https://cdn.thena.fi/assets/${ticker}.png`}
+                            className='h-5 w-5 flex-shrink-0'
+                            width={20}
+                            height={20}
+                            loading='lazy'
+                          />
+                        )}
+                        <Paragraph>{`${data ? `${data} ` : ''}${ticker}`}</Paragraph>
+                      </div>
+                    ) : (
+                      <Paragraph key={idx}>{data}</Paragraph>
+                    ),
+                  )}
+                </>
               )}
             </div>
           ))}
@@ -215,67 +288,39 @@ function CompetitionDetail({ competition, isPreview = false }) {
             <TextHeading className='text-lg' data-tooltip-id='host-token-tooltip'>
               {t('Host', { percent: (Number(_competition.prizeUpdate?.ownerFee) / 1000) * 100 })}
             </TextHeading>
-            {_competition.prizeUpdate?.token?.length > 3 && (
-              <CustomTooltip id='host-token-tooltip' className='max-w-[500px]' place='top-start'>
-                {_competition.prizeUpdate?.token
-                  ?.map(
-                    (token, index) =>
-                      `${formatAmount(
-                        fromWei(_competition.prizeUpdate?.totalPrize?.[index], token?.decimals).times(
-                          _competition.prizeUpdate.ownerFee / 1000,
-                        ),
-                      )} ${token?.symbol ?? ''}`,
-                  )
-                  .join(', ')}
+            <div className='flex items-center'>
+              ${formatAmount(parseToUSD2(_competition.prizeUpdate?.token))}
+              <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id='host-info' />
+              <CustomTooltip id='host-info' className='max-w-[500px]'>
+                {_competition.prizeUpdate?.token?.map((token, index) => (
+                  <p key={`${token?.symbol}_${index}`}>
+                    {`${formatAmount(
+                      fromWei(_competition.prizeUpdate?.totalPrize?.[index], token?.decimals).times(
+                        _competition.prizeUpdate.ownerFee / 1000,
+                      ),
+                    )} ${token?.symbol ?? ''}`}
+                  </p>
+                ))}
               </CustomTooltip>
-            )}
-            {_competition.prizeUpdate?.token?.slice(0.3).map((token, index) => (
-              <div className='flex space-x-2' key={index}>
-                {token?.logoURI && (
-                  <Image
-                    alt={_competition.name}
-                    src={token.logoURI}
-                    className='flex-shrink-0'
-                    width={20}
-                    height={20}
-                    loading='lazy'
-                  />
-                )}
-                <Paragraph>
-                  {`${formatAmount(
-                    fromWei(_competition.prizeUpdate?.totalPrize?.[index], token?.decimals).times(
-                      _competition.prizeUpdate.ownerFee / 1000,
-                    ),
-                  )} ${token?.symbol ?? ''}`}
-                </Paragraph>
-              </div>
-            ))}
+            </div>
           </div>
           {prizeDistribution.slice(0, viewAllPrize ? prizeDistribution.length : 2).map((item, index) => (
             <div className='flex flex-col gap-2' key={`${index}-prize`}>
-              <TextHeading className='text-lg' data-tooltip-id={`place-token-tooltip-${index}`}>
+              <TextHeading className='text-lg'>
                 {t('Place', { value: index + 1, percent: item.percentage })}
               </TextHeading>
-              {item.data.length > 3 && (
-                <CustomTooltip id={`place-token-tooltip-${index}`} className='max-w-[500px]' place='top-start'>
-                  {item.data.map(({ value, symbol }) => `${value} ${symbol}`).join(', ')}
+              <div className='flex items-center'>
+                ${formatAmount(item.valueUSD)}
+                <InfoIcon
+                  className='ml-1 h-4 w-4 stroke-neutral-400'
+                  data-tooltip-id={`place-token-tooltip-${index}`}
+                />
+                <CustomTooltip id={`place-token-tooltip-${index}`} className='max-w-[500px]'>
+                  {item.data.map(({ value, symbol }, idx) => (
+                    <p key={`${symbol}_${idx}`}>{`${value} ${symbol}`}</p>
+                  ))}
                 </CustomTooltip>
-              )}
-              {item.data.map((itm, i) => (
-                <div key={i} className='flex space-x-2'>
-                  {itm?.logoURI && (
-                    <Image
-                      alt={_competition.name}
-                      src={itm.logoURI}
-                      className='flex-shrink-0'
-                      width={20}
-                      height={20}
-                      loading='lazy'
-                    />
-                  )}
-                  <Paragraph>{`${itm.value} ${itm?.symbol}`}</Paragraph>
-                </div>
-              ))}
+              </div>
             </div>
           ))}
         </div>

@@ -1,13 +1,12 @@
 import { gql } from 'graphql-request'
-import { useState } from 'react'
 import useSWR from 'swr'
 
 import { v4Client } from '@/lib/graphql'
 
 import { useCompetitionFormat } from '../useCompetitionFormat'
 
-const V4_COMPETITION_DATA_LEADERBOARD = gql`
-  query V4_COMPETITION_DATA_LEADERBOARD($id: String!, $searchText: String, $orderBy: [TCParticipantOrderByInput!]) {
+const TC_WITH_LEADERBOARD = gql`
+  query TC_WITH_LEADERBOARD($id: String!, $searchText: String, $orderBy: [TCParticipantOrderByInput!]) {
     tradingCompetitionById(id: $id) {
       id
       market
@@ -51,7 +50,7 @@ const V4_COMPETITION_DATA_LEADERBOARD = gql`
 
 const fetchCompetitionLeaderboard = async (id, searchText, orderBy) => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA_LEADERBOARD, {
+    const { tradingCompetitionById: competition } = await v4Client.request(TC_WITH_LEADERBOARD, {
       id,
       searchText,
       orderBy,
@@ -75,7 +74,7 @@ export const useTradingCompetitionLeaderBoard = (id, searchText) => {
     ['competition leader board api', id, searchText],
     () => fetchCompetitionLeaderboard(id, searchText, orderBy),
     {
-      refreshInterval: 30000,
+      refreshInterval: 15000,
       revalidateOnFocus: true,
     },
   )
@@ -86,47 +85,21 @@ export const useTradingCompetitionLeaderBoard = (id, searchText) => {
   }
 }
 
-const V4_COMPETITION_DATA_LEADERBOARD_BY_USER = gql`
-  query V4_COMPETITION_DATA_LEADERBOARD_BY_USER($id: String!, $userId: String!) {
+const TC_CURRENT_USER_RANK_AND_PNL = gql`
+  query TC_CURRENT_USER_RANK_AND_PNL($id: String!, $userId: String!) {
     tradingCompetitionById(id: $id) {
       id
-      market
       participants(where: { participant: { id_eq: $userId } }) {
         pnl
-        percentagePnl
         rank
-        winAmounts
-        winTokenDecimal
-        participant {
-          id
-          username
-          avatar
-          nameColor
-          isVerified
-          checkMarkIcon
-          verifiedAt
-        }
       }
-      competitionRules {
-        winningTokenDecimal
-        winningToken
-      }
-      timestamp {
-        endTimestamp
-        startTimestamp
-      }
-      prizeUpdate {
-        token
-        winType
-      }
-      tcAddress
     }
   }
 `
 
-const fetchCompetitionLeaderboardByUser = async (id, userId) => {
+export const fetchUserRankAndPnLInTC = async (id, userId) => {
   try {
-    const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA_LEADERBOARD_BY_USER, {
+    const { tradingCompetitionById: competition } = await v4Client.request(TC_CURRENT_USER_RANK_AND_PNL, {
       id,
       userId,
     })
@@ -134,24 +107,6 @@ const fetchCompetitionLeaderboardByUser = async (id, userId) => {
     return competition
   } catch (error) {
     return { error: true }
-  }
-}
-
-export const useTradingCompetitionLeaderBoardByUser = (id, userId) => {
-  const [refresh, setRefresh] = useState(1)
-  const { data, isLoading } = useSWR(
-    ['competition leader board api by user', id, userId, refresh],
-    () => fetchCompetitionLeaderboardByUser(id, userId),
-    {
-      refreshInterval: 30000,
-      revalidateOnFocus: true,
-    },
-  )
-
-  return {
-    competitionUser: data,
-    isLoading,
-    setRefresh,
   }
 }
 
@@ -214,7 +169,7 @@ export const useTradingCompetitionByAccount = (competitionId, account) => {
     ['competition by account', competitionId, account],
     () => fetchCompetitionByAccount(competitionId, account),
     {
-      refreshInterval: 30000,
+      refreshInterval: 15000,
       revalidateOnFocus: true,
     },
   )

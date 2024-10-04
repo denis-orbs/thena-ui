@@ -88,14 +88,14 @@ export function VolumeChart() {
   const panel = useMemo(
     () => [
       {
-        label: 'Trading Competition Trading Volumes (USD)',
+        label: 'New Trading Volume (USD)',
         active: tabPanel === 'New',
         onClickHandler: () => {
           setTabPanel('New')
         },
       },
       {
-        label: 'Total Trading Competition Trading Volumes (USD)',
+        label: 'Total Trading Volume (USD)',
         active: tabPanel === 'Cumulative',
         onClickHandler: () => {
           setTabPanel('Cumulative')

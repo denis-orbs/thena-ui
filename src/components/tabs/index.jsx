@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 
 import { SizeTypes } from '@/constant/type'
 import { cn } from '@/lib/utils'
+import { ChevronDownIcon } from '@/svgs'
 
 function TabItem({ className, item, size, disabled }) {
   const t = useTranslations()
@@ -57,11 +58,82 @@ function TabItem({ className, item, size, disabled }) {
 }
 
 function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
+  const [hoveredIndex, setHoveredIndex] = useState(null)
+  const [alignLeft, setAlignLeft] = useState(false)
+  const submenuRef = useRef(null)
+
+  const handleMouseEnter = index => {
+    setHoveredIndex(index)
+
+    if (submenuRef.current) {
+      const { right } = submenuRef.current.getBoundingClientRect()
+      const viewportWidth = window.innerWidth
+
+      if (right > viewportWidth) {
+        setAlignLeft(true)
+      } else {
+        setAlignLeft(false)
+      }
+    }
+  }
+
   return (
     <div className={cn('flex items-center justify-center gap-1', className)}>
-      {data.map(item => (
-        <TabItem item={item} key={item.label} size={size} className={itemClassName} disabled={item.disabled || false} />
-      ))}
+      {data.map((item, index) =>
+        item.isSub ? (
+          <div
+            key={item.label}
+            className='relative'
+            onMouseEnter={() => handleMouseEnter(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+            <div
+              className={cn(
+                'flex items-center rounded-sm px-1 hover:bg-neutral-800 hover:text-neutral-100',
+                item.active && 'bg-neutral-800',
+              )}
+            >
+              <TabItem item={item} size={size} className={itemClassName} disabled={item.disabled || false} />
+              <ChevronDownIcon
+                className={cn(
+                  'h-5 w-5 transform transition-all duration-150 ease-out',
+                  hoveredIndex === index ? 'rotate-180' : 'rotate-0',
+                )}
+              />
+            </div>
+            {hoveredIndex === index && (
+              <ul
+                ref={submenuRef}
+                className={cn(
+                  'absolute min-w-[150px] rounded-xl border border-neutral-700 bg-neutral-900 p-4 hover:rounded-xl hover:border-neutral-500',
+                  alignLeft ? 'right-0' : 'left-0',
+                )}
+              >
+                {item?.sub.map(
+                  (sub, idx) =>
+                    sub && (
+                      <TabItem
+                        item={sub}
+                        key={`${sub.label}_${idx}`}
+                        size={size}
+                        className={itemClassName}
+                        disabled={sub.disabled || false}
+                      />
+                    ),
+                )}
+              </ul>
+            )}
+          </div>
+        ) : (
+          <TabItem
+            item={item}
+            key={item.label}
+            size={size}
+            className={itemClassName}
+            disabled={item.disabled || false}
+          />
+        ),
+      )}
     </div>
   )
 }

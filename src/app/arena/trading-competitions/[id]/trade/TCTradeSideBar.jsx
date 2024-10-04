@@ -40,7 +40,7 @@ import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
 
 import SettingSideBar, { serviceList } from './SettingSideBar'
 
-export function SideBar({
+export function TCTradeSideBar({
   fromAsset,
   toAsset,
   setFromAsset,
@@ -53,7 +53,7 @@ export function SideBar({
   assets,
   tcAddress,
   children,
-  setReloadFetch,
+  reloadBalanceData,
 }) {
   const t = useTranslations()
   const [fromAddress, setFromAddress] = useState(fromAsset?.address)
@@ -268,7 +268,7 @@ export function SideBar({
     }
 
     if (isSuccess) {
-      setReloadFetch(reload => reload + 1)
+      reloadBalanceData()
       if (handleReloadFetch) {
         handleReloadFetch()
       }
@@ -288,7 +288,7 @@ export function SideBar({
     _txOdos,
     onSwapOOE,
     ooeData,
-    setReloadFetch,
+    reloadBalanceData,
     handleReloadFetch,
   ])
 
@@ -478,7 +478,7 @@ export function SideBar({
                 </div>
                 <div className='flex items-center justify-between'>
                   <TextHeading>{t('Minimum Received')}</TextHeading>
-                  <Paragraph>
+                  <Paragraph className='text-right'>
                     {new BigNumber(minimumReceived).toNumber()} {toAsset?.symbol}
                   </Paragraph>
                 </div>
