@@ -48,7 +48,7 @@ function ThenaContent() {
   const [thenaIds, setThenaIds] = useState([DEFAULT_THENAID_DATA])
   const { account } = useWallet()
   const { userInfo } = useUserInfo()
-  const isMint = useMemo(() => pathname.includes('mint'), [pathname])
+  const isMint = useMemo(() => pathname.includes('Mint for Yourself'), [pathname])
 
   const [address, setAddress] = useState(
     account?.toLowerCase() !== userInfo?.id.toLowerCase() ? userInfo?.id.toLowerCase() : undefined,
@@ -141,7 +141,7 @@ function ThenaContent() {
           <Link href='/arena/thena-id/mint' className='flex h-full items-center gap-2.5'>
             <CheckBox className='min-w-[21px]' checked={type === 'get'} />
             <div className='flex flex-col gap-2'>
-              <TextHeading>{t('Mint')}</TextHeading>
+              <TextHeading>{t('Mint for Yourself')}</TextHeading>
               <Paragraph className='text-sm'>{t('Mint Desc')}</Paragraph>
             </div>
           </Link>

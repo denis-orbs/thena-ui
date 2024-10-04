@@ -121,7 +121,7 @@ export default function ThenaIdModal({ tab, targetAddress, onClose, defaultThena
             >
               <CheckBox className='min-w-[21px]' checked={type === 'get'} />
               <div className='flex flex-col gap-2'>
-                <TextHeading>{t('Mint')}</TextHeading>
+                <TextHeading>{t('Mint for Yourself')}</TextHeading>
                 <Paragraph className='text-sm'>{t('Mint Desc')}</Paragraph>
               </div>
             </div>
