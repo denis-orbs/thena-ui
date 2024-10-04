@@ -415,7 +415,7 @@ export const useDepositToTC = () => {
   return { pending, deposit }
 }
 
-export const useTradeData = (tcAddress, winningTokenAddress, reloadFetch = 0) => {
+export const useTradeData = (tcAddress, winningTokenAddress) => {
   const { account } = useWallet()
 
   const [balance, setBalance] = useState(0n)
@@ -433,8 +433,10 @@ export const useTradeData = (tcAddress, winningTokenAddress, reloadFetch = 0) =>
       const balanceRes = await readCall(tcSpotContract, 'userBalance', [account])
 
       if (balanceRes) {
-        const find = balanceRes[1].findIndex(item => item.toLowerCase() === winningTokenAddress.toLowerCase())
-        const value = find !== -1 ? balanceRes[0][find] : 0n
+        const winningTokenIndex = balanceRes[1].findIndex(
+          item => item.toLowerCase() === winningTokenAddress.toLowerCase(),
+        )
+        const value = winningTokenIndex !== -1 ? balanceRes[0][winningTokenIndex] : 0n
         setUserBalance(balanceRes)
         setBalance(value)
       }
@@ -450,7 +452,7 @@ export const useTradeData = (tcAddress, winningTokenAddress, reloadFetch = 0) =>
 
     fetchData()
     return () => clearInterval(interval)
-  }, [fetchData, reloadFetch])
+  }, [fetchData])
 
   return {
     balance,

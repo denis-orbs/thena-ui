@@ -18,8 +18,7 @@ import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { fromWei } from '@/lib/utils'
 import { XIcon } from '@/svgs'
 
-// import DepositModal from './DepositModal'
-import { SideBar } from './SideBar'
+import { TCTradeSideBar } from './TCTradeSideBar'
 import TopBar from './TopBar'
 import { TradeNotStarted } from './TradeNotStarted'
 
@@ -29,14 +28,15 @@ export function WrapLayout({ children, params }) {
 
   const [fromAddress, setFromAddress] = useState(null)
   const [toAddress, setToAddress] = useState(null)
-  const [reloadFetch, setReloadFetch] = useState(0)
   const [showBanner, setShowBanner] = useState(true)
   const [showIconCloseBanner, setShowIconCloseBanner] = useState(false)
 
-  // const [showModalDeposit, setShowModalDeposit] = useState(false)
-
   const { competition } = useTradeCompetitionData(params.id)
-  const { userBalance } = useTradeData(competition?.tcAddress, competition?.competitionRules?.winningToken?.address)
+  const {
+    userBalance,
+    balance,
+    reload: reloadBalanceData,
+  } = useTradeData(competition?.tcAddress, competition?.competitionRules?.winningToken?.address)
 
   const { eventType } = useEventType(competition?.timestamp)
 
@@ -107,12 +107,7 @@ export function WrapLayout({ children, params }) {
 
   return (
     <TradingCompetitionContextProvider>
-      <TopBar
-        // handleClickShowModal={() => setShowModalDeposit(true)}
-        competition={competition}
-        reloadFetch={reloadFetch}
-        setReloadFetch={setReloadFetch}
-      />
+      <TopBar competition={competition} balance={balance} />
       {showBanner && (
         <Box
           onMouseOver={() => setShowIconCloseBanner(true)}
@@ -134,20 +129,20 @@ export function WrapLayout({ children, params }) {
         </Box>
       )}
       {eventType === EVENT_TYPES.LIVE ? (
-        <SideBar
+        <TCTradeSideBar
           fromAsset={fromAsset}
           toAsset={toAsset}
           setFromAsset={setFromAsset}
           setToAsset={setToAsset}
           assets={tradingTokens}
           tcAddress={competition?.tcAddress}
-          setReloadFetch={setReloadFetch}
+          reloadBalanceData={reloadBalanceData}
         >
           {children}
-        </SideBar>
+        </TCTradeSideBar>
       ) : (
         <TradeNotStarted startTimestamp={competition?.timestamp?.startTimestamp}>
-          <SideBar
+          <TCTradeSideBar
             fromAsset={fromAsset}
             toAsset={toAsset}
             setFromAsset={setFromAsset}
@@ -156,7 +151,7 @@ export function WrapLayout({ children, params }) {
             tcAddress={competition?.tcAddress}
           >
             {children}
-          </SideBar>
+          </TCTradeSideBar>
         </TradeNotStarted>
       )}
       {/* <DepositModal competition={competition} isOpen={showModalDeposit} closeModal={() => setShowModalDeposit(false)} /> */}
