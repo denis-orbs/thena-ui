@@ -48,7 +48,7 @@ function ThenaContent() {
   const [thenaIds, setThenaIds] = useState([DEFAULT_THENAID_DATA])
   const { account } = useWallet()
   const { userInfo } = useUserInfo()
-  const isMint = useMemo(() => pathname.includes('Mint for Yourself'), [pathname])
+  const isMint = useMemo(() => pathname.includes('mint'), [pathname])
 
   const [address, setAddress] = useState(
     account?.toLowerCase() !== userInfo?.id.toLowerCase() ? userInfo?.id.toLowerCase() : undefined,

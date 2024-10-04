@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 
 import { SizeTypes } from '@/constant/type'
 import { cn } from '@/lib/utils'
@@ -59,6 +59,24 @@ function TabItem({ className, item, size, disabled }) {
 
 function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
   const [hoveredIndex, setHoveredIndex] = useState(null)
+  const [alignLeft, setAlignLeft] = useState(false)
+  const submenuRef = useRef(null)
+
+  const handleMouseEnter = index => {
+    setHoveredIndex(index)
+
+    if (submenuRef.current) {
+      const { right } = submenuRef.current.getBoundingClientRect()
+      const viewportWidth = window.innerWidth
+
+      if (right > viewportWidth) {
+        setAlignLeft(true)
+      } else {
+        setAlignLeft(false)
+      }
+    }
+  }
+
   return (
     <div className={cn('flex items-center justify-center gap-1', className)}>
       {data.map((item, index) =>
@@ -66,7 +84,7 @@ function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
           <div
             key={item.label}
             className='relative'
-            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseEnter={() => handleMouseEnter(index)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
             <div
@@ -78,13 +96,19 @@ function Tabs({ className, data, size = SizeTypes.Small, itemClassName }) {
               <TabItem item={item} size={size} className={itemClassName} disabled={item.disabled || false} />
               <ChevronDownIcon
                 className={cn(
-                  'transfrom h-5 w-5 transition-all duration-150 ease-out',
-                  hoveredIndex ? 'rotate-180' : 'rotate-0',
+                  'h-5 w-5 transform transition-all duration-150 ease-out',
+                  hoveredIndex === index ? 'rotate-180' : 'rotate-0',
                 )}
               />
             </div>
             {hoveredIndex === index && (
-              <ul className='absolute min-w-[150px] rounded-xl border border-neutral-700 bg-neutral-900 p-4 hover:rounded-xl  hover:border-neutral-500'>
+              <ul
+                ref={submenuRef}
+                className={cn(
+                  'absolute min-w-[150px] rounded-xl border border-neutral-700 bg-neutral-900 p-4 hover:rounded-xl hover:border-neutral-500',
+                  alignLeft ? 'right-0' : 'left-0',
+                )}
+              >
                 {item?.sub.map(
                   (sub, idx) =>
                     sub && (

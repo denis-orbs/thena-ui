@@ -825,7 +825,7 @@ function Header() {
         </div>
       )}
       {pathname.includes('/arena') && (
-        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl max-sm:overflow-x-scroll lg:top-[92px] lg:py-5'>
+        <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5'>
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>
             {toggleSearch && isSmallScreen() ? (
               <HeaderSearch
