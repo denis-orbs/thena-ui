@@ -1,6 +1,7 @@
 'use client'
 
 import isTomorow from 'dayjs/plugin/isTomorrow'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -8,13 +9,15 @@ import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import TruncateContent from '@/components/common/TruncateContent'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import dayjs from '@/lib/arenaDayjs'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { cn } from '@/lib/utils'
 import { EditBannerModal } from '@/modules/TradingCompetition/EditBannerModal'
-import { EditIcon } from '@/svgs'
+import { EditIcon, TagIcon } from '@/svgs'
 
+import EditTCTagModal from '../EditTCTagModal'
 import { CompetitionCardHeader } from '../../CompetitionCardHeader'
 
 dayjs.extend(isTomorow)
@@ -27,9 +30,14 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
   const [endTimeText, setEndTimeText] = useState()
   const [isRegisterStarted, setIsRegisterStarted] = useState(false)
   const [editBannerModal, setEditBannerModal] = useState(false)
+  const [editTagModal, setEditTagModal] = useState(false)
 
   const onEditBanner = useCallback(() => {
     setEditBannerModal(true)
+  }, [])
+
+  const onEditTag = useCallback(() => {
+    setEditTagModal(true)
   }, [])
 
   const bgStatus = useMemo(() => {
@@ -152,12 +160,36 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
               <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
                 {competition.market.toLowerCase()}
               </NeutralBadge>
+              {competition?.tcTagAssignments?.map(tag => (
+                <React.Fragment key={tag.id}>
+                  <Link href='./' disabled data-tooltip-id={`tooltip-tags-${tag.id}`}>
+                    <NeutralBadge
+                      className={cn(
+                        'text-nowrap capitalize lg:text-xs',
+                        tag.tcTag.type === 'OFFICIAL' ? 'bg-primary-600' : 'bg-neutral-600',
+                      )}
+                    >
+                      {tag.tcTag.name}
+                    </NeutralBadge>
+                  </Link>
+                  <CustomTooltip
+                    className='z-999999 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                    id={`tooltip-tags-${tag.id}`}
+                    place='bottom'
+                  >
+                    {tag.tcTag.description}
+                  </CustomTooltip>
+                </React.Fragment>
+              ))}
               {eventType && (
                 <NeutralBadge className={cn('text-nowrap lg:text-xs', bgStatus)}>{t(eventType)}</NeutralBadge>
               )}
             </div>
             {enableEditBanner && (
-              <EmphasisIconButton Icon={EditIcon} className='absolute right-4 top-4' onClick={onEditBanner} />
+              <>
+                <EmphasisIconButton Icon={TagIcon} className='absolute right-[68px] top-4' onClick={onEditTag} />
+                <EmphasisIconButton Icon={EditIcon} className='absolute right-4 top-4' onClick={onEditBanner} />
+              </>
             )}
           </div>
           <div>
@@ -192,6 +224,9 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
       </div>
       {editBannerModal && (
         <EditBannerModal competition={competition} open={editBannerModal} onClose={() => setEditBannerModal(false)} />
+      )}
+      {editTagModal && (
+        <EditTCTagModal competition={competition} open={editTagModal} onClose={() => setEditTagModal(false)} />
       )}
     </>
   )

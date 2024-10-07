@@ -98,6 +98,7 @@ import SuccessIcon from '~/svgs/successicon.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
+import TagIcon from '~/svgs/tag-icon.svg'
 import TaskCheckedIcon from '~/svgs/task-checked.svg'
 import TelegramIcon from '~/svgs/telegram.svg'
 import THETokenIcon from '~/svgs/THE-token.svg'
@@ -215,6 +216,7 @@ export {
   SuccessIcon,
   SwitchHorizontalV2Icon,
   SwitchVerticalIcon,
+  TagIcon,
   TaskCheckedIcon,
   TelegramIcon,
   THETokenIcon,

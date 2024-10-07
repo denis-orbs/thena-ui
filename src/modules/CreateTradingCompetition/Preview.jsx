@@ -90,6 +90,12 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
           ? toWei(data.competitionRules.minimumBalance, data.competitionRules.winningToken.decimals).dp(0).toString(10)
           : 0,
       },
+      tcTagAssignments: [
+        {
+          id: undefined,
+          tcTag: data?.tag,
+        },
+      ],
     }
   }, [data, account])
 
@@ -98,7 +104,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
       warnToast('Insufficient [Asset] Balance', { symbol: protocolFeeToken?.symbol })
     } else {
       // eslint-disable-next-line unused-imports/no-unused-vars
-      const { tag, ...dataSubmit } = mainData
+      const { tag, tcTagAssignments, ...dataSubmit } = mainData
       const txHash = await onCreate(dataSubmit)
       // const txHash = '0x6a76e10a7d0903ba844394bf41f55b37d1eb1a02c8a326bf31615d575aafefda'
       if (!txHash) {

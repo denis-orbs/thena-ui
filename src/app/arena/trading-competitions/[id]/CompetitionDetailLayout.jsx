@@ -75,6 +75,15 @@ const V4_COMPETITION_DATA = gql`
         minimumBalance
       }
       tcAddress
+      tcTagAssignments {
+        id
+        tcTag {
+          description
+          id
+          name
+          type
+        }
+      }
     }
   }
 `
