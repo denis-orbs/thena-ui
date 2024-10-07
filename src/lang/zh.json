@@ -1124,9 +1124,15 @@
   "Leaderboard is updated every 30-60s": "Leaderboard is updated every 30-60s",
   "Liquidity providers in this pool are eligible for YieldNest’s 8X Seeds Boost": "Liquidity providers in this pool are eligible for YieldNest’s 8X Seeds Boost",
   "Liquidity providers in this pool are eligible for Turtle Club 10% emission boost": "Liquidity providers in this pool are eligible for Turtle Club 10% emission boost",
-  "Save": "Save",
-  "Add Tag": "Add Tag",
-  "Tag name": "Tag name",
+  "Add Label": "Add Label",
+  "Label name": "Label name",
   "Tags": "Tags",
-  "New Tag": "New Tag"
+  "Delete": "Delete",
+  "Edit": "Edit",
+  "Labels": "Labels",
+  "Choose Label": "Choose Label",
+  "You can only choose one label": "You can choose one label.",
+  "Are You Sure": "Are You Sure?",
+  "Delete label confirm": "If you delete “{labelName}” label it will automatically be removed from all trading competitions that uses this label.",
+  "Delete Label": "Delete Label"
 }

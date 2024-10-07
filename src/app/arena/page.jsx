@@ -98,6 +98,45 @@ export default function ArenaPage() {
   const { account } = useWallet()
   const { isAllowed } = useTC()
 
+  // const handleCreateTC = async (protocolFee, protocolFeeToken, mainData) => {
+  //   if (fromWei(protocolFee, protocolFeeToken?.decimals).gt(protocolFeeToken?.balance)) {
+  //     warnToast('Insufficient [Asset] Balance', { symbol: protocolFeeToken?.symbol })
+  //   } else {
+  //     // eslint-disable-next-line unused-imports/no-unused-vars
+  //     const { tag, ...dataSubmit } = mainData
+  //     // const txHash = await onCreate(dataSubmit)
+  //     const txHash = '0x6a76e10a7d0903ba844394bf41f55b37d1eb1a02c8a326bf31615d575aafefda'
+  //     // if (!txHash) {
+  //     //   setShowModalCreateCompetition(true)
+  //     //   setStep(step - 1)
+  //     // } else {
+  //     //   setShowModalCreateCompetition(false)
+  //     //   setData(INIT_VALUES)
+  //     //   setStep(0)
+  //     // }
+  //     // setShowPreview(false)
+  //     if (txHash) {
+  //       const tcId = await handleGetTCId(txHash)
+  //       if (tcId) {
+  //         // await addTCTemporary(tcId, account)
+  //         if (data?.tag?.id) {
+  //           await assignTCTag(
+  //             { tradingCompetitionId: tcId, tcTagId: data.tag.id },
+  //             () => {
+  //               console.log(123)
+  //             },
+  //             () => {
+  //               console.log(2222)
+  //             },
+  //           )
+  //         }
+  //       }
+  //       // closeTxnModal()
+  //       // return router.push(`/arena/trading-competitions/${tcId}`)
+  //     }
+  //   }
+  // }
+
   const { data: dataCompetitions, isLoading } = useSWR('competition api', () => fetchCompetition())
 
   const _assets = useAssets()
@@ -635,7 +674,7 @@ export default function ArenaPage() {
       <div className='flex flex-col justify-between gap-4'>
         <div className='flex flex-col justify-between gap-2 sm:flex-row'>
           <h2>{t('Competitions')}</h2>
-          {Boolean(!isAllowed) && (
+          {Boolean(isAllowed) && (
             <PrimaryButton onClick={() => setShowModalCreateCompetition(true)}>
               {t('Create Trading Competition')}
             </PrimaryButton>

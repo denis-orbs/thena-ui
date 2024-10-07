@@ -358,7 +358,6 @@ export const INIT_VALUES = {
   tcAddress: ZERO_ADDRESS, // trading competition contract address
   depositType: DEPOSIT_TYPE.FREE,
   winType: WIN_TYPE.PNL,
-  tag: {},
 }
 
 export const SWAP_TYPES = {

@@ -55,9 +55,21 @@ export const V4_GET_TC_TAG = gql`
       id
       name
       description
+      type
     }
   }
 `
+
+export const V4_ASSIGN_TC_TAG = gql`
+  mutation V4_ASSIGN_TC_TAG($tradingCompetitionId: String!, $tcTagId: String!) {
+    assignTCTag(input: { tradingCompetitionId: $tradingCompetitionId, tcTagId: $tcTagId }) {
+      id
+      tcTagId
+      tradingCompetitionId
+    }
+  }
+`
+
 export const fetchGetTCTag = async () => {
   try {
     const { tcTags } = await v4Client.request(V4_GET_TC_TAG)
@@ -75,6 +87,30 @@ export const fetchGetTCTag = async () => {
 
 export const useCreateTcTag = () => {
   const { signWallet } = useSignWallet()
+
+  const assignTCTagFn = useCallback(async ({ tradingCompetitionId, tcTagId }) => {
+    const { assignTCTag } = await v4Client.request(
+      V4_ASSIGN_TC_TAG,
+      {
+        tradingCompetitionId,
+        tcTagId,
+      },
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
+
+    if (assignTCTag) {
+      successToast('Successfully')
+      return assignTCTag
+    }
+  }, [])
+
+  const assignTCTag = useCallback(
+    async (params, callOnSuccess, callOnReject) =>
+      await actionWithAuthentication(assignTCTagFn, signWallet, params, callOnSuccess, callOnReject),
+    [assignTCTagFn, signWallet],
+  )
 
   const createTcTagFn = useCallback(async ({ name, description }) => {
     try {
@@ -109,30 +145,25 @@ export const useCreateTcTag = () => {
   )
 
   const updateTCTagFn = useCallback(async ({ name, description, id }) => {
-    try {
-      const { updateTCTag } = await v4Client.request(
-        V4_UPDATE_TC_TAG,
-        {
-          name,
-          description,
-          tcTagId: id,
-        },
-        {
-          authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
-        },
-      )
+    const { updateTCTag } = await v4Client.request(
+      V4_UPDATE_TC_TAG,
+      {
+        name,
+        description,
+        tcTagId: id,
+      },
+      {
+        authorization: getFromLocalStorage(ThenaAuthToken) ? `Bearer ${getFromLocalStorage(ThenaAuthToken)}` : '',
+      },
+    )
 
-      if (updateTCTag) {
-        successToast('Successfully')
-        return updateTCTag
-      }
-
-      errorToast('Error')
-      return false
-    } catch (e) {
-      handleError(e)
-      return false
+    if (updateTCTag) {
+      successToast('Successfully')
+      return updateTCTag
     }
+
+    errorToast('Error')
+    return false
   }, [])
 
   const updateTCTag = useCallback(
@@ -164,5 +195,5 @@ export const useCreateTcTag = () => {
     [deleteTCTagFn, signWallet],
   )
 
-  return { createTCTag, updateTCTag, deleteTCTag }
+  return { createTCTag, updateTCTag, deleteTCTag, assignTCTag }
 }
