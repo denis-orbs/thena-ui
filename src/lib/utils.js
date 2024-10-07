@@ -144,13 +144,10 @@ export const retry = async (callback, breakCondition, maxRetries = 3) => {
 
 /** Sort if null or undefined become last */
 export const customSort = (a, b, isDesc) => {
-  if (isNil(a) && isNil(b)) return 0
-  if (isNil(a)) return 1
-  if (isNil(b)) return -1
-  if (a && b) {
-    return (a - b) * (isDesc ? -1 : 1)
-  }
-  return 0
+  if ((isNil(a) || isNaN(a)) && (isNil(b) || isNaN(b))) return 0
+  if (isNil(a) || isNaN(a)) return 1
+  if (isNil(b) || isNaN(b)) return -1
+  return (a - b) * (isDesc ? -1 : 1)
 }
 
 export const formatNumberDecimals = (value, precision) => {
