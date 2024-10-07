@@ -1,12 +1,14 @@
 'use client'
 
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import Skeleton from '@/components/skeleton'
 import Toggle from '@/components/toggle'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
@@ -103,6 +105,27 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
             <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
               {competition.market.toLowerCase()}
             </NeutralBadge>
+            {competition.tcTagAssignments.map(tag => (
+              <React.Fragment key={tag.id}>
+                <Link href='./' disabled data-tooltip-id={`tooltip-tags-${tag.id}`}>
+                  <NeutralBadge
+                    className={cn(
+                      'text-nowrap capitalize lg:text-xs',
+                      tag.tcTag.name === 'Official' ? 'bg-primary-600' : 'bg-neutral-600',
+                    )}
+                  >
+                    {tag.tcTag.name}
+                  </NeutralBadge>
+                </Link>
+                <CustomTooltip
+                  className='z-999999 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                  id={`tooltip-tags-${tag.id}`}
+                  place='bottom'
+                >
+                  {tag.tcTag.description}
+                </CustomTooltip>
+              </React.Fragment>
+            ))}
           </div>
 
           {competition.owner.isVerified && (

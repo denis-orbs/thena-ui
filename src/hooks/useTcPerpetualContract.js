@@ -353,7 +353,7 @@ export const useDepositToTCPerp = () => {
       setPending(true)
       startTxn({
         key,
-        title: `${t('Deposit')}`,
+        title: `${t('Deposit And Allocate')}`,
         transactions: {
           ...(!isApprovedWinningToken && {
             [approveTokenuuid]: {
@@ -363,7 +363,7 @@ export const useDepositToTCPerp = () => {
             },
           }),
           [deposituuid]: {
-            desc: t('Deposit'),
+            desc: t('Deposit And Allocate'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -393,7 +393,7 @@ export const useDepositToTCPerp = () => {
 
       endTxn({
         key,
-        final: 'Deposit Successful',
+        final: 'Deposit And Allocate Successful',
       })
       setPending(false)
       return true
