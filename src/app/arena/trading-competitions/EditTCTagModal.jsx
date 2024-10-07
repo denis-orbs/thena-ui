@@ -32,7 +32,7 @@ function EditTCTagModal({ competition, onClose }) {
   }
 
   return (
-    <Modal isOpen={open} closeModal={onClose} title='Warning'>
+    <Modal isOpen={open} closeModal={onClose} title='Edit Label'>
       <ModalBody>
         <div className='flex flex-wrap gap-3'>
           {tcTags?.map(item => (
