@@ -34,6 +34,7 @@ import CollapseUpIcon from '~/svgs/collapse-up.svg'
 import CopyIcon from '~/svgs/copy.svg'
 import CopyArenaIcon from '~/svgs/copy-arena.svg'
 import CrownIcon from '~/svgs/crown.svg'
+import PriceCupIcon from '~/svgs/cup.svg'
 import DiamondIcon from '~/svgs/diamond.svg'
 import DiscordIcon from '~/svgs/discord.svg'
 import DownRank from '~/svgs/down-rank.svg'
@@ -88,6 +89,7 @@ import ShareProfileIcon from '~/svgs/share-icon.svg'
 import SoundOffIcon from '~/svgs/sound-off.svg'
 import SoundOnIcon from '~/svgs/sound-on.svg'
 import SplitIcon from '~/svgs/split.svg'
+import StackCoinIcon from '~/svgs/stack-coin.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 import StarLineSmallIcon from '~/svgs/star-line-small.svg'
 import StarLineWhiteIcon from '~/svgs/star-line-white.svg'
@@ -188,6 +190,7 @@ export {
   PlusCircleIcon,
   PlusIcon,
   PowerIcon,
+  PriceCupIcon as PriceCup,
   PublicIcon,
   RandomDice,
   RedditIcon,
@@ -204,6 +207,7 @@ export {
   SoundOffIcon,
   SoundOnIcon,
   SplitIcon,
+  StackCoinIcon as StackCoin,
   StarLineLargeIcon,
   StarLineSmallIcon,
   StarLineWhiteIcon,

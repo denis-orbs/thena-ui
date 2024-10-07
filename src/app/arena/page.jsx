@@ -74,6 +74,14 @@ const V4_COMPETITION_DATAS = gql`
         isSuperAdmin
       }
       tcAddress
+      tcTagAssignments {
+        id
+        tcTag {
+          description
+          id
+          name
+        }
+      }
     }
   }
 `

@@ -1134,5 +1134,10 @@
   "You can only choose one label": "You can choose one label.",
   "Are You Sure": "Are You Sure?",
   "Delete label confirm": "If you delete “{labelName}” label it will automatically be removed from all trading competitions that uses this label.",
-  "Delete Label": "Delete Label"
+  "Delete Label": "Delete Label",
+  "Registration Starts at": "Registration Starts at",
+  "Time left to join": "Time left to join",
+  "Competition Starts in": "Competition Starts in",
+  "Competition Ends at": "Competition Ends at",
+  "Competition Ended": "Competition Ended"
 }
