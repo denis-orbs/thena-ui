@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
@@ -27,7 +26,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
 
   const { eventType } = useEventType(competition?.timestamp)
 
-  const totalPrize = useMemo(() => {
+  const totalPrizeByToken = useMemo(() => {
     let totalPrizeArray = []
     totalPrizeArray = competition.prizeUpdate.token.map((item, index) => ({
       data: formatAmount(fromWei(competition.prizeUpdate.totalPrize[index], item?.decimals)),
@@ -38,7 +37,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
       totalPrizeArray = totalPrizeArray.filter(item => !isInvalidAmount(item.data))
     }
 
-    return totalPrizeArray.map(item => `${item.data} ${item.ticker}`).join('&#10;')
+    return totalPrizeArray.map(item => `${item.data} ${item.ticker}`)
   }, [competition.prizeUpdate.totalPrize, competition.prizeUpdate?.token])
 
   const entryFee = useMemo(() => {
@@ -79,7 +78,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
   return !timeDistance || !entryFee || !eventType ? (
     <Skeleton className='h-[320px] w-full' />
   ) : (
-    <Box className='flex w-full flex-col justify-between gap-3 p-4 lg:p-3 xl:gap-4 xl:p-6'>
+    <Box className='flex w-full flex-col gap-3 p-4 lg:p-3 xl:gap-4 xl:p-6'>
       <div>
         <div className='relative'>
           <CompetitionCardHeader
@@ -102,21 +101,18 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
         <div className='mt-4 flex items-center justify-between gap-2'>
           <div className='flex gap-2'>
             <NeutralBadge className={`text-nowrap lg:text-xs ${bgStatus}`}>{t(eventType)}</NeutralBadge>
-            <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
-              {competition.market.toLowerCase()}
-            </NeutralBadge>
             {competition.tcTagAssignments.map(tag => (
               <React.Fragment key={tag.id}>
-                <Link href='./' disabled data-tooltip-id={`tooltip-tags-${tag.id}`}>
+                <div data-tooltip-id={`tooltip-tags-${tag.id}`}>
                   <NeutralBadge
                     className={cn(
                       'text-nowrap capitalize lg:text-xs',
-                      tag.tcTag.name === 'Official' ? 'bg-primary-600' : 'bg-neutral-600',
+                      tag.tcTag.name === 'official' ? 'bg-primary-600' : 'bg-neutral-600',
                     )}
                   >
                     {tag.tcTag.name}
                   </NeutralBadge>
-                </Link>
+                </div>
                 <CustomTooltip
                   className='z-999999 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
                   id={`tooltip-tags-${tag.id}`}
@@ -126,6 +122,9 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
                 </CustomTooltip>
               </React.Fragment>
             ))}
+            <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
+              {competition.market.toLowerCase()}
+            </NeutralBadge>
           </div>
 
           {competition.owner.isVerified && (
@@ -153,16 +152,16 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
         </div>
       </div>
 
-      <div>
-        <h3 title={competition.name} className='ellipsis-3 mb-3'>
+      <div className='flex flex-1 flex-col'>
+        <h3 title={competition.name} className='mb-3'>
           {competition.name}
         </h3>
-        <div className='mb-3 flex w-full items-center justify-start gap-6'>
+        <div className='mb-3 flex w-full flex-1 items-start justify-start gap-6'>
           <Paragraph className='flex items-center text-nowrap'>
             <PriceCup className='mr-2 h-5 w-5' />
             <span className='mr-1'>${formatAmount(competition.totalPrizeUSD)}</span>
 
-            <PriceTooltip id={`price-tool-tips-${competition.id}`} tooltip={totalPrize} />
+            <PriceTooltip id={`price-tool-tips-${competition.id}`} tooltip={totalPrizeByToken} />
           </Paragraph>
 
           <Paragraph className='flex items-center text-nowrap'>

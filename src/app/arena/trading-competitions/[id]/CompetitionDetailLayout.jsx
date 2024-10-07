@@ -194,6 +194,11 @@ function CompetitionDetailLayout({ children, params }) {
     [userInfo?.isAdmin, userInfo?.isSuperAdmin, competition?.owner?.isVerified, competition?.owner?.id, userInfo?.id],
   )
 
+  const enableEditTag = useMemo(
+    () => userInfo?.isAdmin || userInfo?.isSuperAdmin,
+    [userInfo?.isAdmin, userInfo?.isSuperAdmin],
+  )
+
   const retryCompetition = useCallback(async () => {
     let retries = 0
     const maxRetries = 5
@@ -298,6 +303,7 @@ function CompetitionDetailLayout({ children, params }) {
                     competition={_competition}
                     eventType={eventType}
                     enableEditBanner={enableEditBanner}
+                    enableEditTag={enableEditTag}
                   />
                   <div className='mt-10 flex w-full flex-col gap-4'>
                     <Tabs

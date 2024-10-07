@@ -22,7 +22,7 @@ import { CompetitionCardHeader } from '../../CompetitionCardHeader'
 
 dayjs.extend(isTomorow)
 
-function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
+function CompetitionCard({ competition, eventType, enableEditBanner = false, enableEditTag = false }) {
   const t = useTranslations()
 
   const [registerText, setRegisterText] = useState()
@@ -166,7 +166,7 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
                     <NeutralBadge
                       className={cn(
                         'text-nowrap capitalize lg:text-xs',
-                        tag.tcTag.type === 'OFFICIAL' ? 'bg-primary-600' : 'bg-neutral-600',
+                        tag.tcTag.name === 'official' ? 'bg-primary-600' : 'bg-neutral-600',
                       )}
                     >
                       {tag.tcTag.name}
@@ -185,11 +185,11 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false }) {
                 <NeutralBadge className={cn('text-nowrap lg:text-xs', bgStatus)}>{t(eventType)}</NeutralBadge>
               )}
             </div>
+            {enableEditTag && (
+              <EmphasisIconButton Icon={TagIcon} className='absolute right-[68px] top-4' onClick={onEditTag} />
+            )}
             {enableEditBanner && (
-              <>
-                <EmphasisIconButton Icon={TagIcon} className='absolute right-[68px] top-4' onClick={onEditTag} />
-                <EmphasisIconButton Icon={EditIcon} className='absolute right-4 top-4' onClick={onEditBanner} />
-              </>
+              <EmphasisIconButton Icon={EditIcon} className='absolute right-4 top-4' onClick={onEditBanner} />
             )}
           </div>
           <div>

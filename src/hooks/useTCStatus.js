@@ -69,7 +69,7 @@ export const useTCStatus = timestamp => {
     const status = getTCStatus(timestamp)
     setTCStatus(status)
 
-    const now = dayjs.unix()
+    const now = dayjs().unix()
 
     const format = locale === LOCALES.en ? 'MMM DD, YYYY hh:mm A' : 'YYYY年MM月DD号 HH点mm分'
     switch (status) {
