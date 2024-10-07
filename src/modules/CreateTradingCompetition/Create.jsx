@@ -9,6 +9,7 @@ import { isInvalidAmount } from '@/lib/utils'
 
 import Detail from './Detail'
 import Prize from './Prize'
+import Tag from './Tag'
 import Time from './Time'
 import Token from './Token'
 import WarningModal from './WarningModal'
@@ -18,6 +19,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
   const [isEntryFee, setIsEntryFee] = useState(data.entryFee.some(item => !isInvalidAmount(item)))
   const [isStartingBalance, setIsStartingBalance] = useState(false)
   const [showModalWarning, setShowModalWarning] = useState(false)
+  const [tagSelected, setTagSelected] = useState(undefined)
 
   const getErrorMsg = useCallback(
     val => {
@@ -154,6 +156,11 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
           <div className='mt-5 flex w-full flex-col items-center justify-center'>
             <div className='w-full'>{renderComponent()}</div>
           </div>
+          {step === 2 && (
+            <div className='mt-6'>
+              <Tag tagSelected={tagSelected} setTagSelected={setTagSelected} />
+            </div>
+          )}
         </div>
       </ModalBody>
       <ModalFooter className='flex flex-row justify-center gap-4'>

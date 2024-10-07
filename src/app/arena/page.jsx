@@ -635,7 +635,7 @@ export default function ArenaPage() {
       <div className='flex flex-col justify-between gap-4'>
         <div className='flex flex-col justify-between gap-2 sm:flex-row'>
           <h2>{t('Competitions')}</h2>
-          {Boolean(isAllowed) && (
+          {Boolean(!isAllowed) && (
             <PrimaryButton onClick={() => setShowModalCreateCompetition(true)}>
               {t('Create Trading Competition')}
             </PrimaryButton>
