@@ -87,6 +87,15 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
           nameColor
         }
         tcAddress
+        tcTagAssignments {
+          id
+          tcTag {
+            description
+            id
+            name
+            type
+          }
+        }
       }
       joinedTCs(where: { tradingCompetition: { isHidden_eq: false } }) {
         tradingCompetition {
@@ -128,6 +137,15 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
             nameColor
           }
           tcAddress
+          tcTagAssignments {
+            id
+            tcTag {
+              description
+              id
+              name
+              type
+            }
+          }
         }
       }
       thenianNfts {

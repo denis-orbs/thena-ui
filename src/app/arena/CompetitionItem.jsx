@@ -101,7 +101,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
         <div className='mt-4 flex items-center justify-between gap-2'>
           <div className='flex gap-2'>
             <NeutralBadge className={`text-nowrap lg:text-xs ${bgStatus}`}>{t(eventType)}</NeutralBadge>
-            {competition.tcTagAssignments.map(tag => (
+            {competition?.tcTagAssignments?.map(tag => (
               <React.Fragment key={tag.id}>
                 <div data-tooltip-id={`tooltip-tags-${tag.id}`}>
                   <NeutralBadge
