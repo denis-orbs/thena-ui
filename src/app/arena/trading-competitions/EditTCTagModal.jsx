@@ -1,6 +1,5 @@
-import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import { useTranslations } from 'use-intl'
 
 import Loading from '@/app/loading'
@@ -10,10 +9,8 @@ import { fetchGetTCTag, useCreateTcTag } from '@/modules/CreateTradingCompetitio
 import { TagItem } from '@/modules/CreateTradingCompetition/Tag'
 
 function EditTCTagModal({ competition, onClose }) {
-  const router = useRouter()
   const t = useTranslations()
   const { data: tcTags, isLoading: isLoadingTcTags } = useSWR(['fetTcTags'], () => fetchGetTCTag(), 30000)
-  console.log({ tcTags })
   const { assignTCTag } = useCreateTcTag()
 
   const [tagSelected, setTagSelected] = useState(competition?.tcTagAssignments?.[0]?.tcTag)
@@ -21,7 +18,7 @@ function EditTCTagModal({ competition, onClose }) {
   const handleSubmit = async () => {
     await assignTCTag({ tradingCompetitionId: competition?.id, tcTagId: tagSelected?.id }, () => {
       onClose()
-      return router.push(`/arena/trading-competitions/${competition?.id}`)
+      mutate('competition detail api')
     })
   }
 

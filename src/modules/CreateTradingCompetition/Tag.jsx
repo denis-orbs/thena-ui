@@ -34,7 +34,7 @@ function Tag({ data, setData }) {
     if (!isLoadingTcTags) {
       setData(prev => ({
         ...prev,
-        tag: tcTags.find(item => item.id === 'a9fec3f1-5ce0-4780-9051-befc2ab518de'),
+        tag: tcTags.find(item => item.type === 'COMMUNITY'),
       }))
     }
   }, [isLoadingTcTags, setData, tcTags])
