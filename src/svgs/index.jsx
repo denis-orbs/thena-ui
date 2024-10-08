@@ -34,6 +34,7 @@ import CollapseUpIcon from '~/svgs/collapse-up.svg'
 import CopyIcon from '~/svgs/copy.svg'
 import CopyArenaIcon from '~/svgs/copy-arena.svg'
 import CrownIcon from '~/svgs/crown.svg'
+import PriceCupIcon from '~/svgs/cup.svg'
 import DiamondIcon from '~/svgs/diamond.svg'
 import DiscordIcon from '~/svgs/discord.svg'
 import DownRank from '~/svgs/down-rank.svg'
@@ -88,6 +89,7 @@ import ShareProfileIcon from '~/svgs/share-icon.svg'
 import SoundOffIcon from '~/svgs/sound-off.svg'
 import SoundOnIcon from '~/svgs/sound-on.svg'
 import SplitIcon from '~/svgs/split.svg'
+import StackCoinIcon from '~/svgs/stack-coin.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 import StarLineSmallIcon from '~/svgs/star-line-small.svg'
 import StarLineWhiteIcon from '~/svgs/star-line-white.svg'
@@ -96,6 +98,7 @@ import SuccessIcon from '~/svgs/successicon.svg'
 import TransferIcon from '~/svgs/switch-horizontal.svg'
 import SwitchHorizontalV2Icon from '~/svgs/switch-horizontal-01.svg'
 import SwitchVerticalIcon from '~/svgs/switch-vertical.svg'
+import TagIcon from '~/svgs/tag-icon.svg'
 import TaskCheckedIcon from '~/svgs/task-checked.svg'
 import TelegramIcon from '~/svgs/telegram.svg'
 import THETokenIcon from '~/svgs/THE-token.svg'
@@ -188,6 +191,7 @@ export {
   PlusCircleIcon,
   PlusIcon,
   PowerIcon,
+  PriceCupIcon as PriceCup,
   PublicIcon,
   RandomDice,
   RedditIcon,
@@ -204,6 +208,7 @@ export {
   SoundOffIcon,
   SoundOnIcon,
   SplitIcon,
+  StackCoinIcon as StackCoin,
   StarLineLargeIcon,
   StarLineSmallIcon,
   StarLineWhiteIcon,
@@ -211,6 +216,7 @@ export {
   SuccessIcon,
   SwitchHorizontalV2Icon,
   SwitchVerticalIcon,
+  TagIcon,
   TaskCheckedIcon,
   TelegramIcon,
   THETokenIcon,

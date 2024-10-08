@@ -103,14 +103,14 @@ function CompetitionDetail({ competition, isPreview = false }) {
                 ticker: prizeUpdate.token?.[index]?.symbol,
               }))
               .filter(entry => !isInvalidAmount(entry.data)),
-        dataUSD: entryFeeUpdate.reduce((acc, cur, index) => {
-          const tokenAsset = assets.find(item => item.address === prizeUpdate.token?.[index]?.address)
-          if (tokenAsset) {
-            const value = formatAmount(fromWei(cur, prizeUpdate.token?.[index]?.decimals))
-            return acc + value * tokenAsset.price
-          }
-          return acc
-        }, 0),
+        // dataUSD: entryFeeUpdate.reduce((acc, cur, index) => {
+        //   const tokenAsset = assets.find(item => item.address === prizeUpdate.token?.[index]?.address)
+        //   if (tokenAsset) {
+        //     const value = formatAmount(fromWei(cur, prizeUpdate.token?.[index]?.decimals))
+        //     return acc + value * tokenAsset.price
+        //   }
+        //   return acc
+        // }, 0),
       },
       {
         key: 'Competition Type',
@@ -159,7 +159,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
         ],
       },
     ]
-  }, [_competition, assets, parseToUSD, t])
+  }, [_competition, parseToUSD, t])
 
   const prizeDistribution = useMemo(() => {
     const sortedWeights = _competition?.prizeUpdate?.weights.sort((a, b) => b - a)
@@ -233,7 +233,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                 <div className='flex items-center'>
                   ${formatAmount(item.dataUSD)}
                   <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id={`${item.key}_${index}`} />
-                  <CustomTooltip id={`${item.key}_${index}`} className='max-w-[500px]'>
+                  <CustomTooltip id={`${item.key}_${index}`} className='max-w-[320px]'>
                     {item.dataUpdate.map(({ data, ticker }, idx) => (
                       <p key={`${idx}_${ticker}`}>{`${data} ${ticker}`}</p>
                     ))}
@@ -242,7 +242,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
               ) : (
                 <>
                   {item.dataUpdate.length > 3 && (
-                    <CustomTooltip id='token-tooltip' className='max-w-[500px]'>
+                    <CustomTooltip id='token-tooltip' className='max-w-[320px]'>
                       {item.dataUpdate
                         .filter(i => i.filter && i.data)
                         .map(({ data, ticker }) => `${data} ${ticker}`)
@@ -291,7 +291,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
             <div className='flex items-center'>
               ${formatAmount(parseToUSD2(_competition.prizeUpdate?.token))}
               <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id='host-info' />
-              <CustomTooltip id='host-info' className='max-w-[500px]'>
+              <CustomTooltip id='host-info' className='max-w-[320px]'>
                 {_competition.prizeUpdate?.token?.map((token, index) => (
                   <p key={`${token?.symbol}_${index}`}>
                     {`${formatAmount(
@@ -315,7 +315,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                   className='ml-1 h-4 w-4 stroke-neutral-400'
                   data-tooltip-id={`place-token-tooltip-${index}`}
                 />
-                <CustomTooltip id={`place-token-tooltip-${index}`} className='max-w-[500px]'>
+                <CustomTooltip id={`place-token-tooltip-${index}`} className='max-w-[320px]'>
                   {item.data.map(({ value, symbol }, idx) => (
                     <p key={`${symbol}_${idx}`}>{`${value} ${symbol}`}</p>
                   ))}

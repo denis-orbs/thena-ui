@@ -8,7 +8,6 @@ import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import { PrimaryButton } from '@/components/buttons/Button'
-import SearchInput from '@/components/input/SearchInput'
 import Modal, { ModalBody } from '@/components/modal'
 import Tabs from '@/components/tabs'
 import { INIT_VALUES, TC_MARKET_TYPES, TC_STEPS } from '@/constant'
@@ -23,7 +22,7 @@ import Preview from '@/modules/CreateTradingCompetition/Preview'
 
 import CompetitionItem from './CompetitionItem'
 import DiscoverArenaModal from './DiscoverArenaModal'
-import FilterDropDown, { FILTERS } from './FilterDropDown'
+import FilterDropDown, { DEFAULT_TAG_ALL_TC, FILTERS } from './FilterDropDown'
 import NoCompetition from './NoCompetition'
 import Loading from '../loading'
 
@@ -74,6 +73,14 @@ const V4_COMPETITION_DATAS = gql`
         isSuperAdmin
       }
       tcAddress
+      tcTagAssignments {
+        id
+        tcTag {
+          description
+          id
+          name
+        }
+      }
     }
   }
 `
@@ -90,6 +97,7 @@ const fetchCompetition = async () => {
 const defaultFilter = {
   market: 'all',
   free: false,
+  tag: DEFAULT_TAG_ALL_TC,
 }
 
 export default function ArenaPage() {
@@ -97,6 +105,45 @@ export default function ArenaPage() {
   const searchParams = useSearchParams()
   const { account } = useWallet()
   const { isAllowed } = useTC()
+
+  // const handleCreateTC = async (protocolFee, protocolFeeToken, mainData) => {
+  //   if (fromWei(protocolFee, protocolFeeToken?.decimals).gt(protocolFeeToken?.balance)) {
+  //     warnToast('Insufficient [Asset] Balance', { symbol: protocolFeeToken?.symbol })
+  //   } else {
+  //     // eslint-disable-next-line unused-imports/no-unused-vars
+  //     const { tag, ...dataSubmit } = mainData
+  //     // const txHash = await onCreate(dataSubmit)
+  //     const txHash = '0x6a76e10a7d0903ba844394bf41f55b37d1eb1a02c8a326bf31615d575aafefda'
+  //     // if (!txHash) {
+  //     //   setShowModalCreateCompetition(true)
+  //     //   setStep(step - 1)
+  //     // } else {
+  //     //   setShowModalCreateCompetition(false)
+  //     //   setData(INIT_VALUES)
+  //     //   setStep(0)
+  //     // }
+  //     // setShowPreview(false)
+  //     if (txHash) {
+  //       const tcId = await handleGetTCId(txHash)
+  //       if (tcId) {
+  //         // await addTCTemporary(tcId, account)
+  //         if (data?.tag?.id) {
+  //           await assignTCTag(
+  //             { tradingCompetitionId: tcId, tcTagId: data.tag.id },
+  //             () => {
+  //               console.log(123)
+  //             },
+  //             () => {
+  //               console.log(2222)
+  //             },
+  //           )
+  //         }
+  //       }
+  //       // closeTxnModal()
+  //       // return router.push(`/arena/trading-competitions/${tcId}`)
+  //     }
+  //   }
+  // }
 
   const { data: dataCompetitions, isLoading } = useSWR('competition api', () => fetchCompetition())
 
@@ -137,14 +184,13 @@ export default function ArenaPage() {
   const [data, setData] = useState(INIT_VALUES)
   const [showPreview, setShowPreview] = useState(true)
 
-  const [searchText, setSearchText] = useState(searchParams.get('search') ?? undefined)
-
   const [filter, setFilter] = useState({
     type: searchParams.get('type') ?? null,
     market: searchParams.get('market') ?? 'all',
     sortBy: searchParams.get('sortBy') ?? 'Default',
     free: !!searchParams.get('free'),
     status: searchParams.get('status') ?? null,
+    tag: searchParams.get('tag') ?? DEFAULT_TAG_ALL_TC,
   })
 
   const hasFilter = useMemo(() => objectDiff(omit(filter, ['type', 'status', 'sortBy']), defaultFilter), [filter])
@@ -180,6 +226,11 @@ export default function ArenaPage() {
     let result = cloneDeep(competitions || []) ?? []
     if (!!filter.market && filter.market !== TC_MARKET_TYPES.ALL.toLowerCase()) {
       result = result.filter(item => item.market.toLowerCase() === filter.market.toLowerCase())
+    }
+    if (filter.tag && filter.tag !== DEFAULT_TAG_ALL_TC) {
+      result = result.filter(item =>
+        item.tcTagAssignments.find(tcTagAssigned => tcTagAssigned.tcTag.name === filter.tag),
+      )
     }
     switch (filter.sortBy) {
       case FILTERS.entryFee:
@@ -323,18 +374,31 @@ export default function ArenaPage() {
       result = result.filter(item => fromWei(item.entryFee).isZero())
     }
 
-    return !searchText?.trim().length
-      ? result
-      : result.filter(
-          item =>
-            item.name?.toLowerCase().includes(searchText.toLowerCase()) ||
-            item.description?.toLowerCase().includes(searchText.toLowerCase()),
-        )
-  }, [filter.type, filter.market, filter.sortBy, filter.free, competitions, searchParams, searchText, account])
+    return result
+  }, [filter.type, filter.market, filter.sortBy, filter.free, competitions, searchParams, account, filter.tag])
 
   const subTabs = useMemo(
     () =>
       compact([
+        {
+          label: 'All',
+          active: filter.type === 'all',
+          onClickHandler: () => {
+            if (filter.type !== 'all') {
+              setFilter({
+                ...filter,
+                type: 'all',
+                status: null,
+              })
+            }
+          },
+          isLink: filter.type !== 'all',
+          href: objectToQuery({
+            ...filter,
+            type: 'all',
+            status: null,
+          }),
+        },
         showTab.upcoming
           ? {
               label: 'Upcoming',
@@ -353,7 +417,6 @@ export default function ArenaPage() {
                 ...filter,
                 type: 'upcoming',
                 status: null,
-                search: searchText,
               }),
             }
           : undefined,
@@ -374,31 +437,30 @@ export default function ArenaPage() {
               href: objectToQuery({
                 ...filter,
                 type: 'live',
-                search: searchText,
                 status: null,
               }),
             }
           : undefined,
-        {
-          label: 'All',
-          active: filter.type === 'all',
-          onClickHandler: () => {
-            if (filter.type !== 'all') {
-              setFilter({
+        showTab.ended
+          ? {
+              label: 'Ended',
+              active: filter.type === 'ended',
+              onClickHandler: () => {
+                if (filter.type !== 'ended') {
+                  setFilter({
+                    ...filter,
+                    type: 'ended',
+                  })
+                }
+              },
+              isLink: filter.type !== 'ended',
+              href: objectToQuery({
                 ...filter,
-                type: 'all',
+                type: 'end',
                 status: null,
-              })
+              }),
             }
-          },
-          isLink: filter.type !== 'all',
-          href: objectToQuery({
-            ...filter,
-            type: 'all',
-            search: searchText,
-            status: null,
-          }),
-        },
+          : undefined,
         showTab.joined
           ? {
               label: 'Joined',
@@ -415,7 +477,6 @@ export default function ArenaPage() {
               href: objectToQuery({
                 ...filter,
                 type: 'joined',
-                search: searchText,
               }),
             }
           : undefined,
@@ -435,34 +496,11 @@ export default function ArenaPage() {
               href: objectToQuery({
                 ...filter,
                 type: 'hosted',
-                search: searchText,
-              }),
-            }
-          : undefined,
-
-        showTab.ended
-          ? {
-              label: 'Ended',
-              active: filter.type === 'ended',
-              onClickHandler: () => {
-                if (filter.type !== 'ended') {
-                  setFilter({
-                    ...filter,
-                    type: 'ended',
-                  })
-                }
-              },
-              isLink: filter.type !== 'ended',
-              href: objectToQuery({
-                ...filter,
-                type: 'end',
-                search: searchText,
-                status: null,
               }),
             }
           : undefined,
       ]),
-    [showTab.upcoming, showTab.live, showTab.joined, showTab.hosted, showTab.ended, filter, searchText],
+    [showTab.upcoming, showTab.live, showTab.joined, showTab.hosted, showTab.ended, filter],
   )
 
   const subFilterTabs = useMemo(
@@ -542,12 +580,13 @@ export default function ArenaPage() {
 
   useEffect(() => {
     addOrReplaceURLParams('type', filter.type !== 'all' ? filter.type : null)
-    addOrReplaceURLParams('search', searchText || null)
+    addOrReplaceURLParams('tag', filter.tag !== DEFAULT_TAG_ALL_TC ? filter.tag : null)
     addOrReplaceURLParams('free', filter.free ? true : null)
     addOrReplaceURLParams('market', filter.market !== TC_MARKET_TYPES.ALL.toLowerCase() ? filter.market : null)
     addOrReplaceURLParams('sortBy', filter.sortBy !== 'Default' ? filter.sortBy : null)
     addOrReplaceURLParams('status', filter.type === 'joined' || filter.type === 'hosted' ? filter.status : null)
-  }, [filter.free, filter.market, filter.sortBy, searchText, filter.type, filter.status])
+    addOrReplaceURLParams('tag', filter.tag !== DEFAULT_TAG_ALL_TC ? filter.tag : null)
+  }, [filter.free, filter.market, filter.tag, filter.sortBy, filter.type, filter.status])
 
   useEffect(() => {
     const saveToSessionStorage = (key, value) => {
@@ -559,12 +598,12 @@ export default function ArenaPage() {
     }
 
     saveToSessionStorage('type', filter.type !== 'all' ? filter.type : null)
-    saveToSessionStorage('search', searchText?.length && searchText)
     saveToSessionStorage('free', filter.free && true)
     saveToSessionStorage('market', filter.market !== TC_MARKET_TYPES.ALL.toLowerCase() && filter.market)
     saveToSessionStorage('sortBy', filter.sortBy !== 'Default' && filter.sortBy)
     saveToSessionStorage('status', filter.type === 'joined' || filter.type === 'hosted' ? filter.status : null)
-  }, [filter.free, filter.market, filter.sortBy, filter.status, filter.type, searchText])
+    saveToSessionStorage('tag', filter.tag !== DEFAULT_TAG_ALL_TC && filter.tag)
+  }, [filter.free, filter.tag, filter.market, filter.sortBy, filter.status, filter.type])
 
   useEffect(() => {
     if (competitions.length) {
@@ -577,6 +616,7 @@ export default function ArenaPage() {
         setFilter({
           ...filter,
           type: searchParams.get('type') ? searchParams.get('type') : hasUpcoming ? 'upcoming' : 'all',
+          tag: searchParams.get('tag') ? searchParams.get('tag') : DEFAULT_TAG_ALL_TC,
         })
         setFirstTime(false)
       }
@@ -635,25 +675,19 @@ export default function ArenaPage() {
       <div className='flex flex-col justify-between gap-4'>
         <div className='flex flex-col justify-between gap-2 sm:flex-row'>
           <h2>{t('Competitions')}</h2>
+        </div>
+        <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
+          <div className='flex gap-4'>
+            <div className='w-fit rounded-lg bg-neutral-900 p-1'>
+              <Tabs data={subTabs} itemClassName='text-sm' />
+            </div>
+            <FilterDropDown filter={filter} setFilter={setFilter} hasFilter={hasFilter} />
+          </div>
           {Boolean(isAllowed) && (
             <PrimaryButton onClick={() => setShowModalCreateCompetition(true)}>
               {t('Create Trading Competition')}
             </PrimaryButton>
           )}
-        </div>
-        <div className='flex flex-col justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
-          <div className='w-fit rounded-lg bg-neutral-900 p-1'>
-            <Tabs data={subTabs} itemClassName='text-sm' />
-          </div>
-          <div className='flex gap-4'>
-            <SearchInput
-              className='h-11 w-full lg:w-[336px]'
-              classNames={{ input: 'h-11' }}
-              val={searchText}
-              setVal={setSearchText}
-            />
-            <FilterDropDown filter={filter} setFilter={setFilter} hasFilter={hasFilter} />
-          </div>
         </div>
       </div>
       <div className='w-full'>

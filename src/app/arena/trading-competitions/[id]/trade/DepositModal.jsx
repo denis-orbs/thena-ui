@@ -41,8 +41,15 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
     }
   }, [amount, closeModal, competition?.market, competition?.tcAddress, depositPerp, depositSpot, token])
 
+  const isTCPerps = useMemo(() => competition?.market === TC_MARKET_TYPES.PERPETUAL, [competition])
+
   return (
-    <Modal isOpen={isOpen} closeModal={closeModal} title='Deposit' onAfterClose={() => setAmount('')}>
+    <Modal
+      isOpen={isOpen}
+      closeModal={closeModal}
+      title={isTCPerps ? 'Deposit And Allocate' : 'Deposit'}
+      onAfterClose={() => setAmount('')}
+    >
       <ModalBody>
         <TextSubHeading>{t('Description Modal Deposit')}</TextSubHeading>
 
@@ -67,7 +74,7 @@ function DepositModal({ isOpen, closeModal = () => {}, competition = {} }) {
           className='w-full'
           onClick={handleDeposit}
         >
-          {t('Deposit')}
+          {t(isTCPerps ? 'Deposit And Allocate' : 'Deposit')}
         </PrimaryButton>
       </ModalFooter>
     </Modal>

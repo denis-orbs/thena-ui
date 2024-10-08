@@ -9,6 +9,7 @@ import { isInvalidAmount } from '@/lib/utils'
 
 import Detail from './Detail'
 import Prize from './Prize'
+import Tag from './Tag'
 import Time from './Time'
 import Token from './Token'
 import WarningModal from './WarningModal'
@@ -98,12 +99,17 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
         return <Time data={data} setData={setData} />
       case 2:
         return (
-          <Token
-            isStartingBalance={isStartingBalance}
-            setIsStartingBalance={setIsStartingBalance}
-            data={data}
-            setData={setData}
-          />
+          <>
+            <Token
+              isStartingBalance={isStartingBalance}
+              setIsStartingBalance={setIsStartingBalance}
+              data={data}
+              setData={setData}
+            />
+            <div className='mt-6'>
+              <Tag data={data} setData={setData} />
+            </div>
+          </>
         )
       case 3:
         return <Prize data={data} setData={setData} isEntryFee={isEntryFee} setIsEntryFee={setIsEntryFee} />

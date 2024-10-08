@@ -1,4 +1,4 @@
-import { isArray, isNil } from 'lodash'
+import { inRange, isArray, isNil } from 'lodash'
 
 export const EVENT_TYPES = {
   UPCOMING: 'Upcoming',
@@ -17,6 +17,33 @@ export const getEventType = detail => {
     event = EVENT_TYPES.ENDED
   }
   return event
+}
+
+export const TC_STATUS = {
+  WAIT_REGISTRATION: 'Not started',
+  IN_REGISTRATION: 'In registration',
+  WAIT_START: 'Wait start',
+  LIVE: 'Live',
+  ENDED: 'Ended',
+}
+
+export const getTCStatus = eventTimeStamp => {
+  let status = ''
+  const currentTimeStamp = Date.now() / 1000
+  const { registrationStart, registrationEnd, startTimestamp, endTimestamp } = eventTimeStamp
+
+  if (currentTimeStamp < registrationStart) {
+    status = TC_STATUS.WAIT_REGISTRATION
+  } else if (inRange(currentTimeStamp, registrationStart, registrationEnd)) {
+    status = TC_STATUS.IN_REGISTRATION
+  } else if (inRange(currentTimeStamp, registrationEnd, startTimestamp)) {
+    status = TC_STATUS.WAIT_START
+  } else if (inRange(currentTimeStamp, startTimestamp, endTimestamp)) {
+    status = TC_STATUS.LIVE
+  } else if (currentTimeStamp > endTimestamp) {
+    status = TC_STATUS.ENDED
+  }
+  return status
 }
 
 export const addOrReplaceURLParams = (type, value) => {

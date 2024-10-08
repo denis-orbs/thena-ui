@@ -13,6 +13,7 @@ import { warnToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
+import { useCreateTcTag } from '.'
 import Details from './Details/Details'
 
 const V4_ADD_TC_TEMPORARY = gql`
@@ -39,6 +40,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
   const { account } = useWallet()
   const { protocolFee, protocolFeeToken } = useTC()
   const { onCreate, pending, handleGetTCId } = useCreateTC()
+  const { assignTCTag } = useCreateTcTag()
   const { closeTxnModal } = useTxn()
 
   const mainData = useMemo(() => {
@@ -50,6 +52,8 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
     const entryFee = data.entryFee.map((e, index) =>
       !isInvalidAmount(e) ? toWei(e, data.prize.token?.[index]?.decimals).dp(0).toString(10) : 0,
     )
+
+    // eslint-disable-next-line unused-imports/no-unused-vars
 
     return {
       ...data,
@@ -86,6 +90,12 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
           ? toWei(data.competitionRules.minimumBalance, data.competitionRules.winningToken.decimals).dp(0).toString(10)
           : 0,
       },
+      tcTagAssignments: [
+        {
+          id: undefined,
+          tcTag: data?.tag,
+        },
+      ],
     }
   }, [data, account])
 
@@ -93,20 +103,34 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
     if (fromWei(protocolFee, protocolFeeToken?.decimals).gt(protocolFeeToken?.balance)) {
       warnToast('Insufficient [Asset] Balance', { symbol: protocolFeeToken?.symbol })
     } else {
-      const txHash = await onCreate(mainData)
+      // eslint-disable-next-line unused-imports/no-unused-vars
+      const { tag, tcTagAssignments, ...dataSubmit } = mainData
+      const txHash = await onCreate(dataSubmit)
+      // const txHash = '0x6a76e10a7d0903ba844394bf41f55b37d1eb1a02c8a326bf31615d575aafefda'
       if (!txHash) {
         setShowModalCreateCompetition(true)
         setStep(step - 1)
-      } else {
-        setShowModalCreateCompetition(false)
-        setData(INIT_VALUES)
-        setStep(0)
+        setShowPreview(false)
       }
-      setShowPreview(false)
       if (txHash) {
         const tcId = await handleGetTCId(txHash)
         if (tcId) {
           await addTCTemporary(tcId, account)
+          if (data?.tag?.id) {
+            await assignTCTag({ tradingCompetitionId: tcId, tcTagId: data.tag.id }, () => {
+              setShowModalCreateCompetition(false)
+              setData(INIT_VALUES)
+              setStep(0)
+              setShowPreview(false)
+              closeTxnModal()
+              return router.push(`/arena/trading-competitions/${tcId}`)
+            })
+          }
+        } else {
+          setShowModalCreateCompetition(false)
+          setData(INIT_VALUES)
+          setStep(0)
+          setShowPreview(false)
           closeTxnModal()
           return router.push(`/arena/trading-competitions/${tcId}`)
         }

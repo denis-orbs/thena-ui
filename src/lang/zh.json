@@ -1123,5 +1123,14 @@
   "Learn more": "Learn more",
   "Leaderboard is updated every 30-60s": "Leaderboard is updated every 30-60s",
   "Liquidity providers in this pool are eligible for YieldNest’s 8X Seeds Boost": "Liquidity providers in this pool are eligible for YieldNest’s 8X Seeds Boost",
-  "Liquidity providers in this pool are eligible for Turtle Club 10% emission boost": "Liquidity providers in this pool are eligible for Turtle Club 10% emission boost"
+  "Liquidity providers in this pool are eligible for Turtle Club 10% emission boost": "Liquidity providers in this pool are eligible for Turtle Club 10% emission boost",
+  "Label": "Label",
+  "Delete Label": "Delete Label",
+  "Registration Starts at": "Registration Starts at",
+  "Time left to join": "Time left to join",
+  "Competition Starts in": "Competition Starts in",
+  "Competition Ends at": "Competition Ends at",
+  "Competition Ended": "Competition Ended",
+  "You can only choose one label": "You can only choose one label.",
+  "Edit Label": "Edit Label"
 }
