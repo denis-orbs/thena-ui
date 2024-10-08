@@ -13,7 +13,6 @@ import LabelTooltip from '../../components/label/LabelTooltip'
 const QuillEditor = dynamic(() => import('@/components/editor/QuillEditor'), { ssr: false })
 
 function Detail({ data, setData }) {
-  console.log({ data })
   return (
     <>
       <div>
