@@ -62,6 +62,15 @@ const V4_COMPETITION_DATA_WITHOUT_ISHIDDEN = gql`
         verifiedAt
       }
       tcAddress
+      tcTagAssignments {
+        id
+        tcTag {
+          description
+          id
+          name
+          type
+        }
+      }
     }
   }
 `
@@ -113,6 +122,15 @@ const V4_COMPETITION_DATA_WITH_ISHIDDEN = gql`
         verifiedAt
       }
       tcAddress
+      tcTagAssignments {
+        id
+        tcTag {
+          description
+          id
+          name
+          type
+        }
+      }
     }
   }
 `
