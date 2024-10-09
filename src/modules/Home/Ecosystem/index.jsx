@@ -21,10 +21,16 @@ const partnerLogos = [
   { url: '/images/home/ecosystem/partners/symmio.svg' },
   { url: '/images/home/ecosystem/partners/venus.svg' },
   { url: '/images/home/ecosystem/partners/xcad.svg' },
+  { url: '/images/home/ecosystem/partners/Gamma.png' },
+  { url: '/images/home/ecosystem/partners/Algebra.png' },
+  { url: '/images/home/ecosystem/partners/EtherFi.png', icon: 'etherfi' },
+  { url: '/images/home/ecosystem/partners/Lido.png' },
+  { url: '/images/home/ecosystem/partners/Solv.svg' },
 ]
 const auditLogos = [
   { url: '/images/home/ecosystem/audits/openzeppelin.svg' },
   { url: '/images/home/ecosystem/audits/peckshield.svg' },
+  { url: '/images/home/ecosystem/audits/Hacken.png', icon: 'hacken' },
 ]
 const grantLogos = [
   { url: '/images/home/ecosystem/grants/bnbchain.svg' },
@@ -83,7 +89,9 @@ function Ecosystem() {
           <div className='flex w-full flex-wrap items-center justify-center gap-6 lg:max-w-[1000px] lg:gap-14'>
             {logos.map((logo, index) => (
               <HomeImage
-                className='min-h-[28px] w-fit object-contain'
+                className={`max-h-[47px] min-h-[26px] w-fit object-contain ${
+                  logo?.icon === 'hacken' ? '!max-h-4 !min-h-4' : logo?.icon === 'etherfi' ? '!max-h-14 !min-h-14' : ''
+                }`}
                 src={logo.url}
                 alt={`Logo ${index + 1}`}
                 key={`first-${index}`}

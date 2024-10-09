@@ -48,7 +48,6 @@ function TopBar({ competition = {}, balance }) {
 
   useEffect(() => {
     if (competitionUser?.participants?.[0] && !isRefetching) {
-      console.log({ user: competitionUser?.participants?.[0] })
       setPnl(competitionUser?.participants?.[0].pnl)
       setRank(prev => {
         const newRank = competitionUser.participants[0].rank
