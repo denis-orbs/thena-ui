@@ -1149,5 +1149,11 @@
   "Competitions Won": "Competitions Won",
   "Total PnL (USD)": "Total PnL (USD)",
   "Total ROI": "Total ROI",
-  "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition."
+  "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition.",
+  "5m": "5m",
+  "1m": "1m",
+  "30m": "30m",
+  "1h": "1h",
+  "4h": "4h",
+  "12h": "12h"
 }

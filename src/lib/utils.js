@@ -94,6 +94,13 @@ export const formatAmount = (amount = null, shorted = false, fixed = 3, hideNega
   return bigAmount.dp(fixed).toFormat()
 }
 
+export const formatPriceForChart = num => {
+  if (num < 0.001) {
+    return num.toFixed(8)
+  }
+  return num.toFixed(4)
+}
+
 export const goToDoc = url => {
   window.open(url ?? 'https://docs.thena.fi/', '_blank')
 }

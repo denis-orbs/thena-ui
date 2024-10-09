@@ -22,3 +22,56 @@ export const getDerivedPricesQueryConstructor = subqueries => gql`
     ${subqueries}
   }
 `
+
+export const getSimpleChartDataCodexQuery = (
+  tokenAddress,
+  networkId,
+  interval,
+  startTimestampUnix,
+  endTimestampUnix,
+) => {
+  const symbol = `${tokenAddress}:${networkId}`
+
+  return gql`
+    query {
+      getBars(
+        symbol: "${symbol}"
+        from: ${startTimestampUnix}
+        to: ${endTimestampUnix}
+        resolution: "${interval}"
+      ) {
+        o,
+        t
+      }
+    }
+  `
+}
+
+export const getAdvanceChartDataCodexQuery = (
+  tokenAddress,
+  networkId,
+  interval,
+  startTimestampUnix,
+  endTimestampUnix,
+) => {
+  const symbol = `${tokenAddress}:${networkId}`
+
+  return gql`
+    query {
+      getBars(
+        symbol: "${symbol}"
+        from: ${startTimestampUnix}
+        to: ${endTimestampUnix}
+        resolution: "${interval}"
+        removeEmptyBars:true
+      ) {
+        o
+        h
+        l
+        c
+        t
+        v
+      }
+    }
+  `
+}

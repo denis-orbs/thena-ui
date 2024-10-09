@@ -34,7 +34,7 @@ import useWallet from '@/hooks/useWallet'
 import { tryParseAmount } from '@/lib/fusion'
 import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
 import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import SwapChart from '@/modules/SwapChart'
+import CandleStickChart from '@/modules/SwapChart/CandleStickChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
 
@@ -346,7 +346,7 @@ export function TCTradeSideBar({
       <div className='grid grid-cols-12 gap-4 lg:gap-12'>
         <div className='col-span-12 lg:col-span-7'>
           <div className='flex w-full max-w-[920px] flex-col gap-4'>
-            <SwapChart asset0={toAsset} asset1={fromAsset} />
+            <CandleStickChart asset0={toAsset} asset1={fromAsset} />
             <Box className='flex flex-col gap-4'>
               <div className='flex justify-between'>
                 <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>

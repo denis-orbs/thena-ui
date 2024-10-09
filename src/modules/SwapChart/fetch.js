@@ -1,14 +1,12 @@
 import dayjs from 'dayjs'
 import request from 'graphql-request'
-import mapValues from 'lodash/mapValues'
-import orderBy from 'lodash/orderBy'
 import { ChainId } from 'thena-sdk-core'
 
 import { FUSION_MULTI_CHAIN_START_TIME } from '@/constant'
-import { fusionGraphUrl, v1GraphUrl } from '@/lib/graphql'
-import { getBlocksFromTimestamps, multiQuery } from '@/lib/subgraph'
+import { codexClient, fusionGraphUrl, v1GraphUrl } from '@/lib/graphql'
 
-import { getDerivedPrices, getDerivedPricesQueryConstructor, getTVL } from './queries'
+import { getAdvanceChartDataCodexQuery, getSimpleChartDataCodexQuery, getTVL } from './queries'
+import { NUMBER_CHART_DATA } from './utils'
 
 const PROTOCOL = ['v1', 'fusion']
 
@@ -28,6 +26,14 @@ export const PairDataTimeWindow = {
   WEEK: 'WEEK',
   MONTH: 'MONTH',
   YEAR: 'YEAR',
+}
+
+// interval in minutes
+export const ChartTimeInterval = {
+  MIN_30: 30,
+  HOUR_1: 60,
+  HOUR_4: 240,
+  HOUR_12: 720,
 }
 
 export const getTokenBestTvlProtocol = async (tokenAddress, chainId) => {
@@ -52,55 +58,100 @@ export const getTokenBestTvlProtocol = async (tokenAddress, chainId) => {
   return bestProtocol
 }
 
-const getTokenDerivedUSDCPrices = async (tokenAddress, blocks, endpoint, isFusion) => {
-  const rawPrices = await multiQuery(
-    getDerivedPricesQueryConstructor,
-    getDerivedPrices(tokenAddress, blocks, isFusion),
-    endpoint,
-    200,
-  )
-
-  if (!rawPrices) {
-    console.error('Price data failed to load')
-    return null
-  }
-
-  const prices = mapValues(rawPrices, value => value.derivedUSD)
-
-  // format token BNB price results
-  const tokenPrices = []
-
-  // Get Token prices in BNB
-  Object.keys(prices).forEach(priceKey => {
-    const timestamp = priceKey.split('t')[1]
-    if (timestamp) {
-      tokenPrices.push({
-        tokenAddress,
-        timestamp,
-        derivedUSD: prices[priceKey] ? parseFloat(prices[priceKey]) : 0,
-      })
-    }
-  })
-
-  return orderBy(tokenPrices, tokenPrice => parseInt(tokenPrice.timestamp, 10))
-}
-
 const getInterval = timeWindow => {
   switch (timeWindow) {
     case PairDataTimeWindow.DAY:
-      return 3600
+      return '60'
     case PairDataTimeWindow.WEEK:
-      return 3600 * 4
+      return '240'
     case PairDataTimeWindow.MONTH:
-      return 3600 * 24
+      return '1D'
     case PairDataTimeWindow.YEAR:
-      return 3600 * 24 * 15
+      return '7D'
     default:
-      return 3600 * 4
+      return '240'
   }
 }
 
-const getSkipDaysToStart = timeWindow => {
+const getSimpleTokenDerivedUSDCPrices = async (
+  tokenAddress,
+  networkId,
+  timeWindow,
+  startTimestampUnix,
+  endTimestampUnix,
+) => {
+  try {
+    const interval = getInterval(timeWindow)
+
+    const { getBars } = await codexClient.request(
+      getSimpleChartDataCodexQuery(tokenAddress, networkId, interval, startTimestampUnix, endTimestampUnix),
+      null,
+      {
+        'Content-Type': 'application/json',
+        Authorization: process.env.NEXT_PUBLIC_CODEX_API_KEY,
+      },
+    )
+    let bars
+
+    if (getBars?.o && Array.isArray(getBars?.o)) {
+      bars = getBars.o.map((o, index) => ({
+        derivedUSD: o,
+        timestamp: getBars?.t?.[index],
+        tokenAddress,
+      }))
+
+      bars.pop()
+      return bars
+    }
+    return []
+  } catch (error) {
+    console.log({ error })
+    return {}
+  }
+}
+
+const getAdvancedTokenDerivedUSDCPrices = async (
+  tokenAddress,
+  networkId,
+  timeInterval,
+  startTimestampUnix,
+  endTimestampUnix,
+) => {
+  try {
+    const { getBars } = await codexClient.request(
+      getAdvanceChartDataCodexQuery(tokenAddress, networkId, timeInterval, startTimestampUnix, endTimestampUnix),
+      null,
+      {
+        'Content-Type': 'application/json',
+        Authorization: process.env.NEXT_PUBLIC_CODEX_API_KEY,
+      },
+    )
+    let bars
+
+    if (getBars?.o && Array.isArray(getBars?.o)) {
+      bars = getBars.o.map((o, index) => ({
+        open: o,
+        close: getBars?.c?.[index],
+        time: getBars?.t?.[index],
+        high: getBars?.h?.[index],
+        low: getBars?.l?.[index],
+      }))
+
+      if (timeInterval === PairDataTimeWindow.YEAR) {
+        bars = bars.filter((bar, index) => index % 2 !== bars.length % 2)
+      }
+
+      // bars.pop()
+      return bars
+    }
+    return []
+  } catch (error) {
+    console.log({ error })
+    return {}
+  }
+}
+
+export const getSkipDaysToStart = timeWindow => {
   switch (timeWindow) {
     case PairDataTimeWindow.DAY:
       return 1
@@ -117,7 +168,7 @@ const getSkipDaysToStart = timeWindow => {
 
 // Fetches derivedBnb values for tokens to calculate derived price
 // Used when no direct pool is available
-export const fetchDerivedPriceData = async (
+export const fetchSimpleDerivedPriceData = async (
   token0Address,
   token1Address,
   timeWindow,
@@ -125,32 +176,29 @@ export const fetchDerivedPriceData = async (
   protocol1,
   chainId,
 ) => {
-  const interval = getInterval(timeWindow)
   const endTimestamp = dayjs()
   const endTimestampUnix = endTimestamp.unix()
-  const startTimestamp = Math.max(
+  const startTimestampUnix = Math.max(
     endTimestamp.subtract(getSkipDaysToStart(timeWindow), 'days').startOf('hour').unix(),
     FUSION_MULTI_CHAIN_START_TIME[chainId],
   )
-  const timestamps = []
-  let time = startTimestamp
-  if (!SWAP_INFO_BY_CHAIN[chainId][protocol0] || !SWAP_INFO_BY_CHAIN[chainId][protocol1]) {
-    return null
-  }
-  while (time <= endTimestampUnix) {
-    timestamps.push(time)
-    time += interval
-  }
 
-  const blocks = await getBlocksFromTimestamps(timestamps, 'asc', 500, chainId)
-  if (!blocks || blocks.length === 0) {
-    console.error('Error fetching blocks for timestamps', timestamps)
-    return null
-  }
-  blocks.pop() // the bsc graph is 32 block behind so pop the last
   const [token0DerivedUSD, token1DerivedUSD] = await Promise.all([
-    getTokenDerivedUSDCPrices(token0Address, blocks, SWAP_INFO_BY_CHAIN[chainId][protocol0], protocol0 === PROTOCOL[1]),
-    getTokenDerivedUSDCPrices(token1Address, blocks, SWAP_INFO_BY_CHAIN[chainId][protocol1], protocol1 === PROTOCOL[1]),
+    getSimpleTokenDerivedUSDCPrices(token0Address, chainId, timeWindow, startTimestampUnix, endTimestampUnix),
+    getSimpleTokenDerivedUSDCPrices(token1Address, chainId, timeWindow, startTimestampUnix, endTimestampUnix),
   ])
   return { token0DerivedUSD, token1DerivedUSD }
+}
+
+export const fetchAdvancedDerivedPriceData = async (token0Address, chainId, currentTimeStamp, timeInterval) => {
+  const from = Math.max(
+    currentTimeStamp
+      .subtract(Number(timeInterval) * NUMBER_CHART_DATA, 'minutes')
+      .startOf('minutes')
+      .unix(),
+    FUSION_MULTI_CHAIN_START_TIME[chainId],
+  )
+  const to = currentTimeStamp.startOf('minutes').unix()
+
+  return await getAdvancedTokenDerivedUSDCPrices(token0Address, chainId, timeInterval, from, to)
 }
