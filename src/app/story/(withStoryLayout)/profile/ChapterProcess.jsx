@@ -49,24 +49,21 @@ export function ChapterProcess({
 
   const handleTask = useCallback(
     task => {
+      if (
+        !campaignParticipantInfo.xProfileUsername &&
+        ((task.type === TaskType.Main && task.actionHandle === TaskTwitterAction) ||
+          task.actionHandle === TaskTwitterRetweet)
+      ) {
+        errorToast('You have to add your X account to Your Profile first', '', null, false, {
+          style: {
+            cursor: 'pointer',
+          },
+          autoClose: 10000,
+          onClick: () => (window.location.href = '/story/edit-profile'),
+        })
+        return
+      }
       if (task.type === TaskType.Main && task.actionHandle === TaskTwitterAction) {
-        if (!campaignParticipantInfo.xProfileUsername) {
-          errorToast(
-            'You have to update the X profile username first!\nhttps://thena.fi/story/edit-profile',
-            '',
-            null,
-            false,
-            {
-              style: {
-                cursor: 'pointer',
-              },
-              autoClose: 10000,
-              onClick: () => (window.location.href = '/story/edit-profile'),
-            },
-          )
-          return
-        }
-
         const url = getShareSocialNetworkUrl({
           network: SocialNetwork.Twitter,
           content: campaignParticipantInfo?.referralCode
@@ -79,9 +76,10 @@ export function ChapterProcess({
         const top = window.screen.height / 2 - height / 2
 
         window.open(url, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
+        return
       }
       if (task.actionHandle === TaskTwitterRetweet) {
-        window.location.href = 'https://x.com/ThenaFi_/status/1839273788736708771'
+        window.open('https://x.com/ThenaFi_/status/1839273788736708771', '_blank')
       } else {
         window.location.href = `/${task.actionHandle}`
       }
@@ -91,22 +89,6 @@ export function ChapterProcess({
 
   const renderTaskName = useCallback(
     task => {
-      if (task.actionHandle === TaskTwitterRetweet) {
-        return (
-          <TranslationWithFormatLink
-            text={t(task.name)}
-            className='text-lg font-medium'
-            hyperLinks={[
-              {
-                text: t('grant post'),
-                link: 'https://x.com/ThenaFi_/status/1839273788736708771',
-                target: '_blank',
-              },
-            ]}
-          />
-        )
-      }
-
       if (task.name === TaskDepositIchi) {
         return (
           <TranslationWithFormatLink

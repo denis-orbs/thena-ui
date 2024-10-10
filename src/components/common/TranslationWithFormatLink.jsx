@@ -8,7 +8,12 @@ function HyperLink({ link, text, target }) {
     </Link>
   )
 }
-
+// hyperLinks=[
+//   {
+//     text: 'BNB-THE',
+//     link: 'https://thena.fi/pools/0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8',
+//   }
+// ]
 export function TranslationWithFormatLink({ text, className, hyperLinks }) {
   const outputComponents = useMemo(() => {
     const listTexts = hyperLinks.map(hyperlink => hyperlink.text)
