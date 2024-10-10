@@ -32,10 +32,7 @@ const auditLogos = [
   { url: '/images/home/ecosystem/audits/peckshield.svg' },
   { url: '/images/home/ecosystem/audits/Hacken.png', icon: 'hacken' },
 ]
-const grantLogos = [
-  { url: '/images/home/ecosystem/grants/bnbchain.svg' },
-  { url: '/images/home/ecosystem/grants/opbnb.svg' },
-]
+const grantLogos = [{ url: '/images/home/ecosystem/grants/bnbchain.svg' }]
 
 function Ecosystem() {
   const [ecosystem, setEcoSystem] = useState(data[0])
