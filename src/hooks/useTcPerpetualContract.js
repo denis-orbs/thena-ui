@@ -166,7 +166,7 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL,
       return
     }
 
-    if (!tcParticipant.winAmounts.some(winAmount => !isInvalidAmount(winAmount))) {
+    if (!(tcParticipant.winAmounts || []).some(winAmount => !isInvalidAmount(winAmount))) {
       setIsClaimable(false)
       return
     }
