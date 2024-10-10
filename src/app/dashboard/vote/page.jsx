@@ -266,8 +266,8 @@ export default function VotePage() {
         ),
         rewards: (
           <div className='flex items-center gap-1'>
-            <Paragraph>${formatAmount(pool.gauge.bribeUsd)}</Paragraph>
-            {pool.gauge.bribeUsd.gt(0) && (
+            <Paragraph>${formatAmount(pool.title === 'DefiEdge' ? 0 : pool.gauge.bribeUsd)}</Paragraph>
+            {pool.gauge.bribeUsd.gt(0) && pool.title !== 'DefiEdge' && (
               <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`projected-${pool.gauge.address}`} />
             )}
             <CustomTooltip className='min-w-[136px]' id={`projected-${pool.gauge.address}`}>
@@ -302,7 +302,7 @@ export default function VotePage() {
         ),
         estimate: (
           <div className='flex flex-col'>
-            <Paragraph>${formatAmount(pool.votes.perRewards)}</Paragraph>
+            <Paragraph>${formatAmount(pool.title === 'DefiEdge' ? 0 : pool.votes.perRewards)}</Paragraph>
             <TextSubHeading className='text-base leading-tight'>{t('Per 1000 Votes')}</TextSubHeading>
           </div>
         ),
