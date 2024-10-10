@@ -92,6 +92,7 @@ const TC_CURRENT_USER_RANK_AND_PNL = gql`
       participants(where: { participant: { id_eq: $userId } }) {
         pnl
         rank
+        winAmountUSD
       }
     }
   }

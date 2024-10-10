@@ -21,7 +21,9 @@ export function ProfilePage({ address }) {
 
   useEffect(() => {
     if (chapters) {
-      const index = chapters.find(item => !item.isCompleted)?.index || 1
+      const lastCompletedChapters =
+        [...chapters].sort((a, b) => b.index - a.index).find(item => item.isCompleted)?.index || 1
+      const index = chapters.find(item => !item.isCompleted && item.available)?.index || lastCompletedChapters
       setSelectedChapterIndex(index)
     }
   }, [chapters])

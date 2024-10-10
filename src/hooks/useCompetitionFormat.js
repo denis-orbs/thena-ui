@@ -39,8 +39,10 @@ export const useCompetitionFormat = (competition, isPreview = false) => {
 
     const clone = cloneDeep(competition)
 
-    if (!clone.competitionRules?.pairIds) {
-      clone.competitionRules.pairIds = []
+    if (!clone?.competitionRules?.pairIds) {
+      if (clone?.competitionRules) {
+        clone.competitionRules.pairIds = []
+      }
     } else {
       clone.competitionRules.pairIds = clone.competitionRules.pairIds.map(item => {
         const pair = dataListPairs.find(p => Number(p.id) === Number(item))

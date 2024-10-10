@@ -112,7 +112,8 @@ export const useTCContractInfor = (tcAddress, eventType, participantCount, type 
       if (
         type !== TC_MARKET_TYPES.SPOT ||
         eventType !== EVENT_TYPES.ENDED ||
-        tcAddress === '0x79a10465231849781c7866aea68f447a71e34263' // hard-coded
+        tcAddress === '0x79a10465231849781c7866aea68f447a71e34263' || // hard-coded
+        tcAddress === '0x1781b0810e89f4d11c25462d7ecb4f6f03109dfe' // hard-coded
       ) {
         return
       }
