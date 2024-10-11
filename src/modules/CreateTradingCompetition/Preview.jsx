@@ -92,7 +92,7 @@ function Preview({ step, setStep, data, setData, setShowModalCreateCompetition, 
       },
       tcTagAssignments: [
         {
-          id: undefined,
+          id: 'tag-id',
           tcTag: data?.tag,
         },
       ],
