@@ -2,6 +2,7 @@ import { gql } from 'graphql-request'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react'
 import useSWR from 'swr'
 
+import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
 
@@ -161,7 +162,6 @@ const V4_USER_BY_ID_OR_USERNAME = gql`
     }
   }
 `
-
 const fetchUserInfo = async idOrUserName => {
   try {
     const { users } = await v4Client.request(V4_USER_BY_ID_OR_USERNAME, { idOrUserName: idOrUserName.toLowerCase() })
@@ -193,6 +193,8 @@ const UserInfoContext = createContext(initialState)
 function UserInfoContextProvider({ children }) {
   const { account } = useWallet()
 
+  const { spaceIdName } = useSpaceIdBNB(account)
+
   const { data: userInfo, mutate: mutateUserInfo, isLoading } = useSWR(['fetchUserInfo', account])
 
   const final = useMemo(() => {
@@ -206,10 +208,13 @@ function UserInfoContextProvider({ children }) {
 
     return {
       mutateUserInfo,
-      userInfo,
+      userInfo: {
+        ...userInfo,
+        spaceIdName,
+      },
       isLoading,
     }
-  }, [account, userInfo, mutateUserInfo, isLoading])
+  }, [userInfo, account, mutateUserInfo, spaceIdName, isLoading])
 
   const mutateData = useCallback(async () => {
     if (account) {

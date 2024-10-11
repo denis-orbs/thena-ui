@@ -4,6 +4,7 @@ import React, { useCallback, useState } from 'react'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { DEPOSIT_TYPE, TC_MARKET_TYPES, TC_PARTICIPANTS, TC_STEPS, WIN_TYPE } from '@/constant'
+import { useUserInfo } from '@/context/userInfoContext'
 import { warnToast } from '@/lib/notify'
 import { isInvalidAmount } from '@/lib/utils'
 
@@ -19,6 +20,7 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
   const [isEntryFee, setIsEntryFee] = useState(data.entryFee.some(item => !isInvalidAmount(item)))
   const [isStartingBalance, setIsStartingBalance] = useState(false)
   const [showModalWarning, setShowModalWarning] = useState(false)
+  const { userInfo } = useUserInfo()
 
   const getErrorMsg = useCallback(
     val => {
@@ -106,9 +108,11 @@ function Create({ step = 1, setStep, showModalCreateCompetition, handleClose = (
               data={data}
               setData={setData}
             />
-            <div className='mt-6'>
-              <Tag data={data} setData={setData} />
-            </div>
+            {userInfo && (userInfo.isAdmin || userInfo.isSuperAdmin) && (
+              <div className='mt-6'>
+                <Tag data={data} setData={setData} />
+              </div>
+            )}
           </>
         )
       case 3:

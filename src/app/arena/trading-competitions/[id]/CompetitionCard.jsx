@@ -1,7 +1,6 @@
 'use client'
 
 import isTomorow from 'dayjs/plugin/isTomorrow'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -160,24 +159,24 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false, ena
               <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
                 {competition.market.toLowerCase()}
               </NeutralBadge>
-              {competition?.tcTagAssignments?.map(tag => (
+              {(competition?.tcTagAssignments || [])?.map(tag => (
                 <React.Fragment key={tag.id}>
-                  <Link href='./' disabled data-tooltip-id={`tooltip-tags-${tag.id}`}>
+                  <div data-tooltip-id={`tooltip-tags-${tag.id}`} className={`${!tag.tcTag ? 'hidden' : ''}`}>
                     <NeutralBadge
                       className={cn(
                         'text-nowrap capitalize lg:text-xs',
-                        tag.tcTag.name === 'official' ? 'bg-primary-600' : 'bg-neutral-600',
+                        tag?.tcTag?.name === 'official' ? 'bg-primary-600' : 'bg-neutral-600',
                       )}
                     >
-                      {tag.tcTag.name}
+                      {tag?.tcTag?.name}
                     </NeutralBadge>
-                  </Link>
+                  </div>
                   <CustomTooltip
                     className='z-999999 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
                     id={`tooltip-tags-${tag.id}`}
                     place='bottom'
                   >
-                    {tag.tcTag.description}
+                    {tag?.tcTag?.description}
                   </CustomTooltip>
                 </React.Fragment>
               ))}
