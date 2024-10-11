@@ -158,7 +158,12 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
       setRowDefault({
         id: userInfo.id,
         rank: <RankElement data={userInfo} />,
-        thenian: <ThenianElement data={userInfo} username={userInfo?.participant?.username ?? userInfo?.id} />,
+        thenian: (
+          <ThenianElement
+            data={userInfo}
+            username={userInfo?.participant?.username ?? userInfo?.participant?.spaceIdName ?? userInfo?.id}
+          />
+        ),
         totalPoints: userInfo.totalPoints,
       })
     }
@@ -169,7 +174,12 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
         setRowDefault({
           id: userDefault?.participantId,
           completedTask: `${userDefault?.completedTask} / ${participantsByChapter?.pagination?.totalTask}`,
-          thenian: <ThenianElement data={userDefault} username={userDefault?.username ?? userDefault?.participantId} />,
+          thenian: (
+            <ThenianElement
+              data={userDefault}
+              username={userDefault?.username ?? userInfo?.participant?.spaceIdName ?? userDefault?.participantId}
+            />
+          ),
           isEligible:
             userDefault?.completedTask >= participantsByChapter?.pagination?.totalTask ? (
               <span className='text-success-700'>Yes</span>
@@ -200,18 +210,45 @@ export default function LeaderboardTable({ userInfo, currentTabIndex, rewardTime
         ? participants?.map(item => ({
             id: item.id,
             rank: <RankElement data={item} />,
-            thenian: <ThenianElement data={item} username={item?.participant?.username ?? item.id} />,
+            thenian: (
+              <ThenianElement
+                data={item}
+                username={
+                  item?.participant?.username ??
+                  (item.id === userInfo.id && userInfo?.participant?.spaceIdName
+                    ? userInfo?.participant?.spaceIdName
+                    : item.id)
+                }
+              />
+            ),
             totalPoints: item.totalPoints,
           }))
         : participantsByChapter?.results?.map(item => ({
             id: item.participantId,
             // eslint-disable-next-line max-len
             completedTask: `${participantsByChapter?.pagination?.totalTask} / ${participantsByChapter?.pagination?.totalTask}`,
-            thenian: <ThenianElement data={item} username={item.username ?? item.participantId} />,
+            thenian: (
+              <ThenianElement
+                data={item}
+                username={
+                  item.username ??
+                  (item.participantId === userInfo.id && userInfo?.participant?.spaceIdName
+                    ? userInfo?.participant?.spaceIdName
+                    : item.participantId)
+                }
+              />
+            ),
             isEligible: <span className='text-success-700'>Yes</span>,
             reward: <span className='text-success-700'>{item.reward}</span>,
           })),
-    [currentTabIndex, participants, participantsByChapter?.pagination?.totalTask, participantsByChapter?.results],
+    [
+      currentTabIndex,
+      participants,
+      participantsByChapter?.pagination?.totalTask,
+      participantsByChapter?.results,
+      userInfo.id,
+      userInfo?.participant?.spaceIdName,
+    ],
   )
 
   const finalData = useMemo(() => {

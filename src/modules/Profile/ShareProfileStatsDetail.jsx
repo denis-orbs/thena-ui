@@ -4,6 +4,7 @@ import React, { useMemo, useRef } from 'react'
 
 import { TextHeading } from '@/components/typography'
 import { useFixViewport } from '@/hooks/useFixViewPort'
+import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import { cn, formatAddress, rewriteS3Host } from '@/lib/utils'
 import { Verified } from '@/svgs'
 
@@ -19,6 +20,8 @@ export default function ShareProfileStatsDetail({
   selectedAchievements,
   competition,
 }) {
+  const { spaceIdName } = useSpaceIdBNB(userInfo.id)
+
   const parentRef = useRef(null)
   const childRef = useRef(null)
 
@@ -71,7 +74,7 @@ export default function ShareProfileStatsDetail({
                         : '',
                     }}
                   >
-                    {userInfo.username || formatAddress(userInfo.id)}
+                    {userInfo.username || spaceIdName || formatAddress(userInfo.id)}
                   </span>
                 </TextHeading>
                 {userInfo?.isVerified && (
@@ -129,7 +132,7 @@ export default function ShareProfileStatsDetail({
                       : '',
                   }}
                 >
-                  {userInfo.username || formatAddress(userInfo.id)}
+                  {userInfo.username || spaceIdName || formatAddress(userInfo.id)}
                 </span>
               </TextHeading>
               {userInfo?.isVerified && (

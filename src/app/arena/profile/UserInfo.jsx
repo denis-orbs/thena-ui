@@ -14,6 +14,7 @@ import Box from '@/components/box'
 import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import dayjs from '@/lib/arenaDayjs'
 import { successToast } from '@/lib/notify'
@@ -42,6 +43,8 @@ export function UserInfo({ userInfo, following, followers }) {
   const followingCount = useMemo(() => following?.length ?? '-', [following?.length])
 
   const followersCount = useMemo(() => followers?.length ?? '-', [followers?.length])
+
+  const { spaceIdName } = useSpaceIdBNB(account)
 
   const handleClickThenaButton = useCallback(
     (tab = 'get') => {
@@ -109,7 +112,7 @@ export function UserInfo({ userInfo, following, followers }) {
                           : '',
                       }}
                     >
-                      {userInfo.username || formatAddress(userInfo.id)}
+                      {userInfo.username || spaceIdName || formatAddress(userInfo.id)}
                     </span>
                   </TextHeading>
                   {userInfo.isVerified && (

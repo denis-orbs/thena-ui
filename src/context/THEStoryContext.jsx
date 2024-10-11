@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
+import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { isoDateToTimeStampSeconds } from '@/lib/utils'
 import { fetchCampaignChapter, fetchTHEStoryParticipant } from '@/modules/Story'
@@ -20,6 +21,7 @@ function THEStoryContextProvider({ children }) {
   const [campaignParticipantInfo, setCampaignParticipantInfo] = useState(null)
   const [isUpcoming, setIsUpcoming] = useState(false)
   const [campaignStartsAt, setCampaignStartsAt] = useState(1725278400) // 2024-09-02 12:00 UTC
+  const { spaceIdName } = useSpaceIdBNB(account)
 
   useEffect(() => {
     const checkCampaignStartsAt = async () => {
@@ -70,7 +72,13 @@ function THEStoryContextProvider({ children }) {
 
           if (user) {
             setIsRegistered(true)
-            setCampaignParticipantInfo(user)
+            setCampaignParticipantInfo({
+              ...user,
+              participant: {
+                ...user?.participant,
+                spaceIdName,
+              },
+            })
           } else {
             setIsRegistered(false)
             setCampaignParticipantInfo(null)
@@ -87,7 +95,7 @@ function THEStoryContextProvider({ children }) {
     }
 
     checkUserIsRegistered()
-  }, [account])
+  }, [account, spaceIdName])
 
   const value = useMemo(
     () => ({
