@@ -376,32 +376,34 @@ function TopCompetition() {
           />
         </div>
       </div>
-      <Box>
-        <div className='flex flex-row items-center justify-between'>
-          <TextHeading className='text-xl'>{t('Top Competitions')}</TextHeading>
-          {!isAll && (
-            <Link href='/arena/rankings/competitions'>
-              <EmphasisButton>{t('View All')}</EmphasisButton>
-            </Link>
-          )}
-        </div>
-        <div>
-          <Table
-            sortOptions={sortOptions}
-            sort={sort}
-            setSort={setSort}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            tableBasic
-            data={isAll ? finalData : finalData.slice(0, 5)}
-            // onlySortDesc
-            enabledRedirectOnClickPagination={isAll}
-            loading={isLoading}
-            enabledRedirectOnClickSort={isAll}
-            showPopoverPagination={isAll}
-          />
-        </div>
-      </Box>
+      <div className='border-gradient-secondary mt-6 rounded-xl p-px'>
+        <Box>
+          <div className='flex flex-row items-center justify-between'>
+            <TextHeading className='text-xl'>{t('Top Competitions')}</TextHeading>
+            {!isAll && (
+              <Link href='/arena/rankings/competitions'>
+                <EmphasisButton>{t('View All')}</EmphasisButton>
+              </Link>
+            )}
+          </div>
+          <div>
+            <Table
+              sortOptions={sortOptions}
+              sort={sort}
+              setSort={setSort}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              tableBasic
+              data={isAll ? finalData : finalData.slice(0, 5)}
+              // onlySortDesc
+              enabledRedirectOnClickPagination={isAll}
+              loading={isLoading}
+              enabledRedirectOnClickSort={isAll}
+              showPopoverPagination={isAll}
+            />
+          </div>
+        </Box>
+      </div>
     </div>
   )
 }

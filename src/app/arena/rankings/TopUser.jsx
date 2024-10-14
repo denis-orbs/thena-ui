@@ -159,7 +159,6 @@ function TopUser() {
   const isAll = pathname.includes('/users')
   const pageSize = useMemo(() => (isAll ? 50 : 20), [isAll])
   const searchParams = useSearchParams()
-  // const rank = searchParams.get('rank')
   const search = searchParams.get('search')
 
   const [activeTab, setActiveTab] = useState(
@@ -297,7 +296,6 @@ function TopUser() {
         const userDefault = topUsers?.participantDetails
 
         setRowDefault(renderRowData(userDefault))
-        console.log({ topUsers })
       } else {
         setDataFetch([])
       }
@@ -388,36 +386,38 @@ function TopUser() {
           />
         </div>
       </div>
-      <Box className='mt-6'>
-        <div className='flex flex-row items-center justify-between'>
-          <TextHeading className='text-xl'>{t('Top Users')}</TextHeading>
-          {!isAll && (
-            <Link href='/arena/rankings/users'>
-              <EmphasisButton>{t('View All')}</EmphasisButton>
-            </Link>
-          )}
-        </div>
-        <Table
-          sort={sort}
-          setSort={setSort}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          tableBasic
-          data={finalData}
-          sortOptions={sortOptions}
-          // onlySortDesc
-          enabledRedirectOnClickPagination
-          hightLightById={account?.toLowerCase()}
-          bgHightLight='bg-white bg-opacity-5'
-          loading={isLoading}
-          pageSize={pageSize}
-          totalItems={topUsers?.pagination?.totalCount || 0}
-          limitPage={isAll ? undefined : 10}
-          enabledRedirectOnClickSort
-          showPopoverPagination={isAll}
-          defaultHead={(indexUser > 49 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
-        />
-      </Box>
+      <div className='border-gradient-secondary mt-6 rounded-xl p-px'>
+        <Box>
+          <div className='flex flex-row items-center justify-between'>
+            <TextHeading className='text-xl'>{t('Top Users')}</TextHeading>
+            {!isAll && (
+              <Link href='/arena/rankings/users'>
+                <EmphasisButton>{t('View All')}</EmphasisButton>
+              </Link>
+            )}
+          </div>
+          <Table
+            sort={sort}
+            setSort={setSort}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            tableBasic
+            data={finalData}
+            sortOptions={sortOptions}
+            onlySortDesc
+            enabledRedirectOnClickPagination
+            hightLightById={account?.toLowerCase()}
+            bgHightLight='bg-white bg-opacity-5'
+            loading={isLoading}
+            pageSize={pageSize}
+            totalItems={topUsers?.pagination?.totalCount || 0}
+            limitPage={isAll ? undefined : 10}
+            enabledRedirectOnClickSort
+            showPopoverPagination={isAll}
+            defaultHead={(indexUser > 49 || indexUser === -1) && currentPage === 1 ? rowDefault : undefined}
+          />
+        </Box>
+      </div>
     </div>
   )
 }

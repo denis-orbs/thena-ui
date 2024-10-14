@@ -79,115 +79,120 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
   return !timeDistance || !entryFee || !eventType ? (
     <Skeleton className='h-[320px] w-full' />
   ) : (
-    <Box className='flex w-full flex-col gap-3 p-4 lg:p-3 xl:gap-4 xl:p-6'>
-      <div>
-        <div className='relative'>
-          <CompetitionCardHeader
-            className='aspect-video w-full'
-            competition={competition}
-            banner={competition.bannerUrl || Banner.src}
-          />
-          {!showCheckedHidden ? (
-            <NeutralBadge className='absolute right-4 top-4 flex items-center justify-center gap-1 text-nowrap capitalize lg:text-xs'>
-              <UserIcon className='h-3 w-3' />
-              {`${competition.participantCount}/${competition.maxParticipants}`}
-            </NeutralBadge>
-          ) : (
-            <div className='absolute right-4 top-4 flex flex-row items-center'>
-              <Toggle checked={competition.isHidden} onChange={updateIsHidden} />
-              <TextSubHeading>Hide</TextSubHeading>
-            </div>
-          )}
-        </div>
-        <div className='mt-4 flex items-center justify-between gap-2'>
-          <div className='flex gap-2'>
-            <NeutralBadge className={`text-nowrap lg:text-xs ${bgStatus}`}>{t(eventType)}</NeutralBadge>
-            {competition?.tcTagAssignments?.map(tag => (
-              <React.Fragment key={tag.id}>
-                <div data-tooltip-id={`tooltip-tags-${tag.id}`}>
-                  <NeutralBadge
-                    className={cn(
-                      'text-nowrap capitalize lg:text-xs',
-                      tag.tcTag.name === 'official' ? 'bg-primary-600' : 'bg-neutral-600',
-                    )}
-                  >
-                    {tag.tcTag.name}
-                  </NeutralBadge>
-                </div>
-                <CustomTooltip
-                  className='z-999999 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
-                  id={`tooltip-tags-${tag.id}`}
-                  place='bottom'
-                >
-                  {tag.tcTag.description}
-                </CustomTooltip>
-              </React.Fragment>
-            ))}
-            <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
-              {competition.market.toLowerCase()}
-            </NeutralBadge>
-          </div>
-
-          {competition.owner.isVerified && (
-            <div className='flex items-center gap-1 text-nowrap'>
-              <h4 className='inline-block'>
-                {t('By')}{' '}
-                <span
-                  style={
-                    competition.owner.nameColor
-                      ? {
-                          color: competition.owner.nameColor.startsWith('#')
-                            ? competition.owner.nameColor
-                            : `#${competition.owner.nameColor}`,
-                        }
-                      : {}
-                  }
-                  className={cn(!isHexColor(competition.owner.nameColor) && `${competition.owner.nameColor}`)}
-                >
-                  {competition.owner.username ? competition.owner.username : formatAddress(competition.owner.id)}
-                </span>
-              </h4>
-              <VerifyPopover verifyImage={competition.owner.checkMarkIcon} verifiedAt={competition.owner.verifiedAt} />
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className='flex flex-1 flex-col'>
-        <h3 title={competition.name} className='mb-3'>
-          {competition.name}
-        </h3>
-        <div className='mb-3 flex w-full flex-1 items-start justify-start gap-6'>
-          <Paragraph className='flex items-center text-nowrap'>
-            <PriceCup className='mr-2 h-5 w-5' />
-            <span className='mr-1'>${formatAmount(competition.totalPrizeUSD)}</span>
-
-            <PriceTooltip id={`price-tool-tips-${competition.id}`} tooltip={totalPrizeByToken} />
-          </Paragraph>
-
-          <Paragraph className='flex items-center text-nowrap'>
-            <StackCoin className='mr-1 h-5 w-5' />
-            <span>{entryFee}</span>
-          </Paragraph>
-        </div>
-        <div className='mb-5'>
-          <p className='text-base font-medium leading-5'>
-            {titleForTargetTime}
-            {targetEventTime && <span className='font-bold'> {targetEventTime}</span>}
-          </p>
-
-          <div className='mt-3 inline-block h-3 w-full rounded-md bg-neutral-500'>
-            <div
-              style={{
-                width: `${percentCountDown}%`,
-              }}
-              className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+    <div className='border-gradient-secondary mt-6 rounded-xl p-px'>
+      <Box className='flex w-full flex-col gap-3 p-4 lg:p-3 xl:gap-4 xl:p-6'>
+        <div>
+          <div className='relative'>
+            <CompetitionCardHeader
+              className='aspect-video w-full'
+              competition={competition}
+              banner={competition.bannerUrl || Banner.src}
             />
+            {!showCheckedHidden ? (
+              <NeutralBadge className='absolute right-4 top-4 flex items-center justify-center gap-1 text-nowrap capitalize lg:text-xs'>
+                <UserIcon className='h-3 w-3' />
+                {`${competition.participantCount}/${competition.maxParticipants}`}
+              </NeutralBadge>
+            ) : (
+              <div className='absolute right-4 top-4 flex flex-row items-center'>
+                <Toggle checked={competition.isHidden} onChange={updateIsHidden} />
+                <TextSubHeading>Hide</TextSubHeading>
+              </div>
+            )}
+          </div>
+          <div className='mt-4 flex items-center justify-between gap-2'>
+            <div className='flex gap-2'>
+              <NeutralBadge className={`text-nowrap lg:text-xs ${bgStatus}`}>{t(eventType)}</NeutralBadge>
+              {competition?.tcTagAssignments?.map(tag => (
+                <React.Fragment key={tag.id}>
+                  <div data-tooltip-id={`tooltip-tags-${tag.id}`}>
+                    <NeutralBadge
+                      className={cn(
+                        'text-nowrap capitalize lg:text-xs',
+                        tag.tcTag.name === 'official' ? 'bg-primary-600' : 'bg-neutral-600',
+                      )}
+                    >
+                      {tag.tcTag.name}
+                    </NeutralBadge>
+                  </div>
+                  <CustomTooltip
+                    className='z-999999 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                    id={`tooltip-tags-${tag.id}`}
+                    place='bottom'
+                  >
+                    {tag.tcTag.description}
+                  </CustomTooltip>
+                </React.Fragment>
+              ))}
+              <NeutralBadge className='text-nowrap capitalize lg:text-xs'>
+                {competition.market.toLowerCase()}
+              </NeutralBadge>
+            </div>
+
+            {competition.owner.isVerified && (
+              <div className='flex items-center gap-1 text-nowrap'>
+                <h4 className='inline-block'>
+                  {t('By')}{' '}
+                  <span
+                    style={
+                      competition.owner.nameColor
+                        ? {
+                            color: competition.owner.nameColor.startsWith('#')
+                              ? competition.owner.nameColor
+                              : `#${competition.owner.nameColor}`,
+                          }
+                        : {}
+                    }
+                    className={cn(!isHexColor(competition.owner.nameColor) && `${competition.owner.nameColor}`)}
+                  >
+                    {competition.owner.username ? competition.owner.username : formatAddress(competition.owner.id)}
+                  </span>
+                </h4>
+                <VerifyPopover
+                  verifyImage={competition.owner.checkMarkIcon}
+                  verifiedAt={competition.owner.verifiedAt}
+                />
+              </div>
+            )}
           </div>
         </div>
-        <TCButton eventType={eventType} competition={competition} timestamp={competition.timestamp} />
-      </div>
-    </Box>
+
+        <div className='flex flex-1 flex-col'>
+          <h3 title={competition.name} className='mb-3'>
+            {competition.name}
+          </h3>
+          <div className='mb-3 flex w-full flex-1 items-start justify-start gap-6'>
+            <Paragraph className='flex items-center text-nowrap'>
+              <PriceCup className='mr-2 h-5 w-5' />
+              <span className='mr-1'>${formatAmount(competition.totalPrizeUSD)}</span>
+
+              <PriceTooltip id={`price-tool-tips-${competition.id}`} tooltip={totalPrizeByToken} />
+            </Paragraph>
+
+            <Paragraph className='flex items-center text-nowrap'>
+              <StackCoin className='mr-1 h-5 w-5' />
+              <span>{entryFee}</span>
+            </Paragraph>
+          </div>
+          <div className='mb-5'>
+            <p className='text-base font-medium leading-5'>
+              {titleForTargetTime}
+              {targetEventTime && <span className='font-bold'> {targetEventTime}</span>}
+            </p>
+
+            <div className='mt-3 inline-block h-3 w-full rounded-md bg-neutral-500'>
+              <div
+                style={{
+                  width: `${percentCountDown}%`,
+                }}
+                className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
+              />
+            </div>
+          </div>
+          <TCButton eventType={eventType} competition={competition} timestamp={competition.timestamp} />
+        </div>
+      </Box>
+    </div>
   )
 }
 

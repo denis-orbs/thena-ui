@@ -51,18 +51,18 @@ export function JoinModal({ competition, open, onClose }) {
     const notEnoughFee = entryFeeUpdate
       .map((e, index) => {
         if (prizeToken[index].address.toLowerCase() === winningToken.address.toLowerCase()) {
-          const totalAmount = fromWei(entryFeeUpdate[index], prizeToken[index].decimals).plus(
-            fromWei(depositBalance, winningToken.decimals),
+          const totalAmount = fromWei(entryFeeUpdate[index], prizeToken[index]?.decimals).plus(
+            fromWei(depositBalance, winningToken?.decimals),
           )
           const totalBalance = new BigNumber(prizeToken[index].balance)
           return totalAmount.gt(totalBalance)
         }
 
-        return fromWei(e, prizeToken[index].decimals).gt(prizeToken[index].balance)
+        return fromWei(e, prizeToken[index]?.decimals).gt(prizeToken[index].balance)
       })
       .some(item => item)
 
-    const notEnoughDeposit = fromWei(depositBalance, winningToken.decimals).gt(winningToken.balance)
+    const notEnoughDeposit = fromWei(depositBalance, winningToken?.decimals).gt(winningToken.balance)
 
     return notEnoughDeposit || notEnoughFee
   }, [entryFeeUpdate, inputStartingBalance, market, prizeToken, startingBalance, winningToken])
@@ -125,7 +125,7 @@ export function JoinModal({ competition, open, onClose }) {
     if (entryFeeUpdate.every(isInvalidAmount)) {
       if (!isInvalidAmount(startingBalance) || !isInvalidAmount(minimumBalance)) {
         return t('Pay Deposit To Join Message', {
-          depositAmount: formatAmount(fromWei(startingBalance, winningToken.decimals)),
+          depositAmount: formatAmount(fromWei(startingBalance, winningToken?.decimals)),
           depositTicker: winningToken.symbol,
         })
       }
