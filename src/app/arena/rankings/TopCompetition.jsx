@@ -97,8 +97,10 @@ function TopCompetition() {
   const searchParams = useSearchParams()
   const marketType = searchParams.get('marketType')
 
+  console.log({ marketType })
+
   const [activeTab, setActiveTab] = useState(
-    marketType !== TAB_TITLE.ALL
+    marketType !== TAB_TITLE.ALL && marketType
       ? marketType === TAB_TITLE.PERPETUAL
         ? TAB_TITLE.PERPETUAL
         : TAB_TITLE.SPOT
