@@ -45,6 +45,7 @@ const V4_TOP_USER = gql`
         totalROI
         tradeTCVolume
         username
+        nameColor
       }
       results {
         avatar
@@ -56,6 +57,7 @@ const V4_TOP_USER = gql`
         totalROI
         tradeTCVolume
         username
+        nameColor
       }
     }
   }
