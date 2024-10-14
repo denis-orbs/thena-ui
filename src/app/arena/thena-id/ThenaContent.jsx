@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import { Alert } from '@/components/alert'
-import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
+import { ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import CheckBox from '@/components/checkbox'
 import NextImage from '@/components/image/NextImage'
@@ -18,6 +18,7 @@ import LabelTooltip from '@/components/label/LabelTooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useUserInfo } from '@/context/userInfoContext'
+import { useConfetti } from '@/hooks/useConfetti'
 import {
   useBatchGiftThenaId,
   useBatchMintThenaId,
@@ -30,6 +31,7 @@ import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
+import SuccessModal from './SuccessModal'
 import ThenaIdInput from '../profile/ThenaIdInput'
 
 const DEFAULT_THENAID_DATA = {
@@ -41,6 +43,11 @@ const DEFAULT_THENAID_DATA = {
 
 function ThenaContent() {
   const { networkId, updateNetwork } = useChainSettings()
+
+  const [bodyRef, triggerConfetti] = useConfetti(2, {
+    spread: 100,
+    angle: 90,
+  })
 
   const t = useTranslations()
   const pathname = usePathname()
@@ -75,6 +82,8 @@ function ThenaContent() {
   const { loading: batchMinting, batchMintThenaId } = useBatchMintThenaId()
   const { loading: batchGifting, batchGiftThenaId } = useBatchGiftThenaId()
 
+  const [openSuccessModal, setOpenSuccessModal] = useState(false)
+
   const isMinting = useMemo(
     () => gifting || minting || batchGifting || batchMinting,
     [batchMinting, batchGifting, gifting, minting],
@@ -82,27 +91,44 @@ function ThenaContent() {
 
   const onMint = useCallback(async () => {
     if (!isValid) {
-      return
+      return false
     }
+    let isSuccess = false
     if (type === 'gift') {
       if (thenaIds.length === 1) {
-        await giftThenaId(thenaIds[0].username, address, thenaIds[0].cost)
+        isSuccess = await giftThenaId(thenaIds[0].username, address, thenaIds[0].cost)
       } else {
-        await batchGiftThenaId(
+        isSuccess = await batchGiftThenaId(
           thenaIds.map(item => item.username),
           address,
           totalCost,
         )
       }
     } else if (thenaIds.length === 1) {
-      await buyThenaId(thenaIds[0].username, thenaIds[0].cost)
+      isSuccess = await buyThenaId(thenaIds[0].username, thenaIds[0].cost)
     } else {
-      await batchMintThenaId(
+      isSuccess = await batchMintThenaId(
         thenaIds.map(item => item.username),
         totalCost,
       )
     }
-  }, [isValid, type, thenaIds, batchGiftThenaId, address, giftThenaId, batchMintThenaId, totalCost, buyThenaId])
+
+    if (isSuccess) {
+      triggerConfetti()
+      setOpenSuccessModal(true)
+    }
+  }, [
+    isValid,
+    type,
+    thenaIds,
+    giftThenaId,
+    address,
+    batchGiftThenaId,
+    totalCost,
+    buyThenaId,
+    batchMintThenaId,
+    triggerConfetti,
+  ])
 
   const onChangeThenaItem = useCallback((id, { errorMessage, cost, username }) => {
     setThenaIds(prev =>
@@ -156,7 +182,7 @@ function ThenaContent() {
           <Link href='/arena/thena-id/gift' className='flex h-full items-center gap-2.5'>
             <CheckBox className='min-w-[21px]' checked={type === 'gift'} />
             <div className='flex flex-col gap-2'>
-              <TextHeading>{t('Send As Gift')}</TextHeading>
+              <TextHeading>{t('Send As Gift')} 🎁</TextHeading>
               <Paragraph className='text-sm'>{t('Send Desc')}</Paragraph>
             </div>
           </Link>
@@ -246,17 +272,24 @@ function ThenaContent() {
       )}
       <div className='mt-3 flex w-full flex-row justify-center gap-4'>
         {account ? (
-          <EmphasisButton
-            className='py-3.5 text-white lg:px-16 lg:py-3'
+          <PrimaryButton
+            className='w-full py-3.5 text-white lg:px-16 lg:py-3'
             disabled={!isValid || loading || isMinting || networkId !== ChainId.BSC}
             onClick={onMint}
           >
             {t('Mint Now')}
-          </EmphasisButton>
+          </PrimaryButton>
         ) : (
-          <ConnectButton />
+          <ConnectButton className='w-full' />
         )}
       </div>
+      <SuccessModal
+        ref={bodyRef}
+        isOpen={openSuccessModal}
+        onClose={() => setOpenSuccessModal(false)}
+        heading={t('Mint Successful')}
+        message={t('You have successfully minted your new THENA ID')}
+      />
     </div>
   )
 }
