@@ -5,7 +5,7 @@ import { isNil } from 'lodash'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Box from '@/components/box'
@@ -13,6 +13,7 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
+import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount } from '@/lib/utils'
 import { FirstPrizeIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
@@ -20,8 +21,15 @@ import { FirstPrizeIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 import MenuTab from './MenuTab'
 
 const V4_TOP_COMPETITIONS = gql`
-  query V4_TOP_COMPETITIONS($orderBy: [TradingCompetitionOrderByInput!] = [], $market_eq: MarketType) {
-    tradingCompetitions(orderBy: $orderBy, where: { market_eq: $market_eq }) {
+  query V4_TOP_COMPETITIONS(
+    $orderBy: [TradingCompetitionOrderByInput!] = []
+    $market_eq: MarketType
+    $name_containsInsensitive: String
+  ) {
+    tradingCompetitions(
+      orderBy: $orderBy
+      where: { market_eq: $market_eq, name_containsInsensitive: $name_containsInsensitive }
+    ) {
       id
       tcTrades {
         amountUSD
@@ -34,7 +42,7 @@ const V4_TOP_COMPETITIONS = gql`
   }
 `
 
-const fetchTopCompetition = async (sort, marketEq) => {
+const fetchTopCompetition = async (sort, marketEq, search) => {
   try {
     const orderBy = ['id_ASC']
     const isDesc = sort?.isDesc
@@ -58,6 +66,7 @@ const fetchTopCompetition = async (sort, marketEq) => {
     const { tradingCompetitions: topCompetition } = await v4Client.request(V4_TOP_COMPETITIONS, {
       orderBy,
       market_eq: marketEq,
+      name_containsInsensitive: search,
     })
     return topCompetition
   } catch (error) {
@@ -97,7 +106,9 @@ function TopCompetition() {
   const searchParams = useSearchParams()
   const marketType = searchParams.get('marketType')
 
-  console.log({ marketType })
+  const search = searchParams.get('search')
+  const [searchText, setSearchText] = useState(search || '')
+  const debounceSearch = useDebounce(searchText.trim(), 300)
 
   const [activeTab, setActiveTab] = useState(
     marketType !== TAB_TITLE.ALL && marketType
@@ -106,8 +117,6 @@ function TopCompetition() {
         : TAB_TITLE.SPOT
       : TAB_TITLE.ALL,
   )
-
-  const [searchText, setSearchText] = useState('')
 
   const sortOptions = useMemo(
     () => [
@@ -166,29 +175,54 @@ function TopCompetition() {
   }, [isAll, searchParams, sortOptions])
 
   const [sort, setSort] = useState(sortDefault)
-  // const [initialRender, setInitialRender] = useState(true)
+  const [initialRender, setInitialRender] = useState(true)
 
   // const [direction, setDirection] = useState('DESC')
 
   const t = useTranslations()
 
+  const searchFilter = useMemo(() => {
+    let filter = ''
+    if (debounceSearch) {
+      filter = debounceSearch
+    }
+    return filter
+  }, [debounceSearch])
+
+  useEffect(() => {
+    if (!initialRender) {
+      setCurrentPage(1)
+      const query = new URLSearchParams(searchParams.toString())
+      if (debounceSearch) {
+        query.set('search', debounceSearch)
+      } else {
+        query.delete('search', undefined)
+      }
+
+      let pathNew = pathname
+      if (page && page !== 1) {
+        const pathnameReverse = pathname.split('').reverse()
+        const i = pathnameReverse.findIndex(item => item === '/')
+        if (i !== -1) {
+          pathnameReverse.splice(0, i)
+          pathNew = pathnameReverse.reverse().join('')
+        }
+      }
+      router.replace(`${pathNew}?${query.toString()}`)
+    } else {
+      setInitialRender(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debounceSearch])
+
   const { data: topTCRes, isLoading } = useSWR(
-    ['top competition api', sort, activeTab],
-    () => fetchTopCompetition(sort, activeTab === TAB_TITLE.ALL ? undefined : activeTab),
+    ['top competition api', sort, activeTab, searchFilter],
+    () => fetchTopCompetition(sort, activeTab === TAB_TITLE.ALL ? undefined : activeTab, searchFilter),
     {
       refreshInterval: 30000,
       revalidateOnFocus: true,
     },
   )
-
-  // useEffect(() => {
-  //   if (!initialRender) {
-  //     setCurrentPage(1)
-  //   } else {
-  //     setInitialRender(false)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [debounceSearch])
 
   const calcTotalVolume = useCallback(comp => {
     let volume = 0
