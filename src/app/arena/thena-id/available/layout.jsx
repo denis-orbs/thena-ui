@@ -23,5 +23,5 @@ export const metadata = {
 }
 
 export default function AvailableThenaIdsLayout({ children }) {
-  return <section className='layout-container pt-0'>{children}</section>
+  return <section className='lg:layout-container pt-0'>{children}</section>
 }

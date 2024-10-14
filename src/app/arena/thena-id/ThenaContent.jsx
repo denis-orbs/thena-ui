@@ -30,6 +30,7 @@ import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
+import SuccessModal from './SuccessModal'
 import ThenaIdInput from '../profile/ThenaIdInput'
 
 const DEFAULT_THENAID_DATA = {
@@ -75,6 +76,8 @@ function ThenaContent() {
   const { loading: batchMinting, batchMintThenaId } = useBatchMintThenaId()
   const { loading: batchGifting, batchGiftThenaId } = useBatchGiftThenaId()
 
+  const [openSuccessModal, setOpenSuccessModal] = useState(false)
+
   const isMinting = useMemo(
     () => gifting || minting || batchGifting || batchMinting,
     [batchMinting, batchGifting, gifting, minting],
@@ -82,25 +85,30 @@ function ThenaContent() {
 
   const onMint = useCallback(async () => {
     if (!isValid) {
-      return
+      return false
     }
+    let isSuccess = false
     if (type === 'gift') {
       if (thenaIds.length === 1) {
-        await giftThenaId(thenaIds[0].username, address, thenaIds[0].cost)
+        isSuccess = await giftThenaId(thenaIds[0].username, address, thenaIds[0].cost)
       } else {
-        await batchGiftThenaId(
+        isSuccess = await batchGiftThenaId(
           thenaIds.map(item => item.username),
           address,
           totalCost,
         )
       }
     } else if (thenaIds.length === 1) {
-      await buyThenaId(thenaIds[0].username, thenaIds[0].cost)
+      isSuccess = await buyThenaId(thenaIds[0].username, thenaIds[0].cost)
     } else {
-      await batchMintThenaId(
+      isSuccess = await batchMintThenaId(
         thenaIds.map(item => item.username),
         totalCost,
       )
+    }
+
+    if (isSuccess) {
+      setOpenSuccessModal(true)
     }
   }, [isValid, type, thenaIds, batchGiftThenaId, address, giftThenaId, batchMintThenaId, totalCost, buyThenaId])
 
@@ -156,7 +164,7 @@ function ThenaContent() {
           <Link href='/arena/thena-id/gift' className='flex h-full items-center gap-2.5'>
             <CheckBox className='min-w-[21px]' checked={type === 'gift'} />
             <div className='flex flex-col gap-2'>
-              <TextHeading>{t('Send As Gift')}</TextHeading>
+              <TextHeading>{t('Send As Gift')} 🎁</TextHeading>
               <Paragraph className='text-sm'>{t('Send Desc')}</Paragraph>
             </div>
           </Link>
@@ -257,6 +265,12 @@ function ThenaContent() {
           <ConnectButton />
         )}
       </div>
+      <SuccessModal
+        isOpen={openSuccessModal}
+        onClose={() => setOpenSuccessModal(false)}
+        heading={t('Mint Successful')}
+        message={t('You have successfully minted your new THENA ID')}
+      />
     </div>
   )
 }

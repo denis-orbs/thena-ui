@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import { EmphasisButton } from '@/components/buttons/Button'
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
@@ -17,6 +16,8 @@ import { v4Client } from '@/lib/graphql'
 import { cn, formatAmount } from '@/lib/utils'
 import { VerifyPopover } from '@/modules/Profile/VerifyPopover'
 import { useLocaleSettings } from '@/state/settings/hooks'
+
+import MenuTab from './MenuTab'
 
 const V4_RECENTLY_MINTED = gql`
   query V4_RECENTLY_MINTED {
@@ -321,28 +322,17 @@ function RecentlyContent({ isMinted = true }) {
 
   return (
     <div>
-      <div className='mt-6 flex items-center gap-6'>
-        <EmphasisButton>
-          <Link href='/arena/thena-id/mint' prefetch={false}>
-            {t('Mint Thena Id')}
-          </Link>
-        </EmphasisButton>
-        <EmphasisButton>
-          <Link href='/arena/thena-id/available' prefetch={false}>
-            {t('Available THENA IDs')}
-          </Link>
-        </EmphasisButton>
+      <div className='mt-6'>
+        <h2>{t('THENA ID')}</h2>
+      </div>
+      <MenuTab />
+      <div className='align-right mt-6 flex justify-end'>
+        <Link href={`/arena/thena-id/recently-${isMinted ? 'gifted' : 'minted'}`}>
+          <Toggle toggleId='seeGiftedOnly' checked={!isMinted} onChange={() => {}} />
+        </Link>
+        <TextHeading>{t('See Gifted Only')}</TextHeading>
       </div>
 
-      <div className='mt-6 flex flex-col items-start justify-center gap-3 md:flex-row md:items-center md:justify-between'>
-        <h2>{t(isMinted ? 'Recently minted THENA IDs' : 'Recently gifted THENA IDs')}</h2>
-        <div className='flex items-center gap-1'>
-          <Link href={`/arena/thena-id/recently-${isMinted ? 'gifted' : 'minted'}`}>
-            <Toggle toggleId='seeGiftedOnly' checked={!isMinted} onChange={() => {}} />
-          </Link>
-          <TextHeading>{t('See Gifted Only')}</TextHeading>
-        </div>
-      </div>
       <div className='mt-6 w-full'>
         <Table
           data={finalData || []}
