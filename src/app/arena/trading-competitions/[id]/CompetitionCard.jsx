@@ -2,6 +2,7 @@
 
 import isTomorow from 'dayjs/plugin/isTomorrow'
 import { useTranslations } from 'next-intl'
+import Banner from 'public/images/arena/tc_cover_image.png'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -153,7 +154,7 @@ function CompetitionCard({ competition, eventType, enableEditBanner = false, ena
             <CompetitionCardHeader
               className='aspect-video max-w-full rounded-xl'
               competition={competition}
-              banner={competition.bannerUrl}
+              banner={competition.bannerUrl || Banner.src}
             />
             <div className='absolute left-4 top-4 flex gap-2'>
               <NeutralBadge className='text-nowrap capitalize lg:text-xs'>

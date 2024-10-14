@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import { PrimaryButton } from '@/components/buttons/Button'
 import AvailableDropdown from '@/components/dropdown/AvailableDropdown'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
@@ -79,14 +78,14 @@ function AvailablePage() {
       {
         label: 'THENA ID',
         value: 'name',
-        width: account ? 'w-[25%]' : 'w-[33%]',
+        width: 'w-[33%]',
         isDesc: true,
         disabled: false,
       },
       {
         label: 'Cost',
         value: 'cost',
-        width: account ? 'w-[25%]' : 'w-[33%]',
+        width: 'w-[33%]',
         isDesc: true,
         disabled: true,
       },
@@ -99,18 +98,8 @@ function AvailablePage() {
       },
     ]
 
-    if (account) {
-      arr.push({
-        label: '',
-        value: 'action',
-        width: 'w-[15%]',
-        isDesc: true,
-        disabled: true,
-      })
-    }
-
     return arr
-  }, [account])
+  }, [])
 
   const listCategory = useMemo(
     () =>
@@ -263,18 +252,6 @@ function AvailablePage() {
           </div>
         ),
         trait: <Paragraph>{formatCategory(item.trait)}</Paragraph>,
-        action: (
-          <div>
-            <PrimaryButton
-              onClick={() => {
-                setNameChoose(item)
-                setShowModal(true)
-              }}
-            >
-              Mint
-            </PrimaryButton>
-          </div>
-        ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [USDTAsset?.symbol, JSON.stringify(sortedData)],

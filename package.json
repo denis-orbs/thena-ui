@@ -27,6 +27,7 @@
     "@vercel/analytics": "^1.1.4",
     "@vercel/speed-insights": "^1.0.2",
     "bignumber.js": "^9.1.2",
+    "canvas-confetti": "^1.9.3",
     "clsx": "^2.0.0",
     "css-box-model": "^1.2.1",
     "d3": "^7.8.5",

@@ -94,7 +94,7 @@ export function JoinModal({ competition, open, onClose }) {
         joined = await joinTC(competition, toWei(Number(inputStartingBalance), winningToken?.decimals))
       }
       if (joined) {
-        push(`/arena/trading-competitions/${competition.id}`)
+        push(`/arena/trading-competitions/${competition.id}?first-join=true`)
         onClose()
       }
     } catch (e) {

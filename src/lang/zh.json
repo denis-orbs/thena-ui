@@ -1137,5 +1137,16 @@
   "You can only choose one label": "You can only choose one label.",
   "Edit Label": "Edit Label",
   "Mint Successful": "Mint Successful!",
-  "You have successfully minted your new THENA ID": "You have successfully minted your new THENA ID."
+  "You have successfully minted your new THENA ID": "You have successfully minted your new THENA ID.",
+  "Weekly": "Weekly",
+  "All Time": "All Time",
+  "Monthly": "Monthly",
+  "SPOT": "SPOT",
+  "PERPETUALS": "PERPETUAL",
+  "Total prize": "Total prize",
+  "Competition Rankings": "Competition Rankings",
+  "User Rankings": "User Rankings",
+  "Competitions Won": "Competitions Won",
+  "Total PnL (USD)": "Total PnL (USD)",
+  "Total ROI": "Total ROI"
 }

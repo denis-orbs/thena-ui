@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
 import { Alert } from '@/components/alert'
-import { EmphasisButton, ErrorButton, PrimaryButton } from '@/components/buttons/Button'
+import { ErrorButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import CheckBox from '@/components/checkbox'
 import NextImage from '@/components/image/NextImage'
@@ -18,6 +18,7 @@ import LabelTooltip from '@/components/label/LabelTooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useUserInfo } from '@/context/userInfoContext'
+import { useConfetti } from '@/hooks/useConfetti'
 import {
   useBatchGiftThenaId,
   useBatchMintThenaId,
@@ -42,6 +43,11 @@ const DEFAULT_THENAID_DATA = {
 
 function ThenaContent() {
   const { networkId, updateNetwork } = useChainSettings()
+
+  const [bodyRef, triggerConfetti] = useConfetti(2, {
+    spread: 100,
+    angle: 90,
+  })
 
   const t = useTranslations()
   const pathname = usePathname()
@@ -108,9 +114,21 @@ function ThenaContent() {
     }
 
     if (isSuccess) {
+      triggerConfetti()
       setOpenSuccessModal(true)
     }
-  }, [isValid, type, thenaIds, batchGiftThenaId, address, giftThenaId, batchMintThenaId, totalCost, buyThenaId])
+  }, [
+    isValid,
+    type,
+    thenaIds,
+    giftThenaId,
+    address,
+    batchGiftThenaId,
+    totalCost,
+    buyThenaId,
+    batchMintThenaId,
+    triggerConfetti,
+  ])
 
   const onChangeThenaItem = useCallback((id, { errorMessage, cost, username }) => {
     setThenaIds(prev =>
@@ -254,18 +272,19 @@ function ThenaContent() {
       )}
       <div className='mt-3 flex w-full flex-row justify-center gap-4'>
         {account ? (
-          <EmphasisButton
-            className='py-3.5 text-white lg:px-16 lg:py-3'
+          <PrimaryButton
+            className='w-full py-3.5 text-white lg:px-16 lg:py-3'
             disabled={!isValid || loading || isMinting || networkId !== ChainId.BSC}
             onClick={onMint}
           >
             {t('Mint Now')}
-          </EmphasisButton>
+          </PrimaryButton>
         ) : (
-          <ConnectButton />
+          <ConnectButton className='w-full' />
         )}
       </div>
       <SuccessModal
+        ref={bodyRef}
         isOpen={openSuccessModal}
         onClose={() => setOpenSuccessModal(false)}
         heading={t('Mint Successful')}

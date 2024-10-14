@@ -1,8 +1,9 @@
 'use client'
 
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { memo, useMemo, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -13,17 +14,37 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES, WIN_TYPE } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useCompetitionFormat } from '@/hooks/useCompetitionFormat'
+import { useConfetti } from '@/hooks/useConfetti'
 import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
+import SuccessModal from '../../thena-id/SuccessModal'
+
 function CompetitionDetail({ competition, isPreview = false }) {
+  const [bodyRef, triggerConfetti] = useConfetti(2, {
+    spread: 100,
+    angle: 90,
+  })
+  const searchParams = useSearchParams()
+
   const assets = useAssets()
 
   const _competition = useCompetitionFormat(competition, isPreview)
 
   const t = useTranslations()
+
+  const [openSuccessModal, setOpenSuccessModal] = useState(false)
   const [viewAllPrize, setViewAllPrize] = useState(false)
   const [viewAllTradable, setViewAllTradable] = useState(false)
+
+  useEffect(() => {
+    const firstJoinValue = searchParams.get('first-join')
+    if (firstJoinValue === 'true') {
+      setOpenSuccessModal(TruncateContent)
+      triggerConfetti()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   const parseToUSD = useMemo(
     () => data =>
@@ -379,6 +400,13 @@ function CompetitionDetail({ competition, isPreview = false }) {
                 ))}
         </div>
       </Box>
+      <SuccessModal
+        ref={bodyRef}
+        isOpen={openSuccessModal}
+        onClose={() => setOpenSuccessModal(false)}
+        heading={t('Registration Successful')}
+        message={t('Registration Successful trading competition', { name: competition.name })}
+      />
     </>
   )
 }
