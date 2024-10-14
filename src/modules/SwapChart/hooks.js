@@ -93,11 +93,12 @@ export const useFetchPairTvlProtocol = ({ token0Address, token1Address }) => {
   }
 }
 
-export const fetchAdvancedPairPrices = async (tokenAddress, networkId, currentTimeStamp, timeInterval) => {
+export const fetchAdvancedPairPrices = async (tokenAddress, networkId, toTimeStamp, timeInterval) => {
   if (!tokenAddress || !networkId || !timeInterval) return []
   try {
-    return await fetchAdvancedDerivedPriceData(tokenAddress, networkId, currentTimeStamp, timeInterval)
+    return await fetchAdvancedDerivedPriceData(tokenAddress, networkId, toTimeStamp, timeInterval)
   } catch (e) {
+    console.log({ error: e })
     return { error: e }
   }
 }

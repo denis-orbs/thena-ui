@@ -190,15 +190,17 @@ export const fetchSimpleDerivedPriceData = async (
   return { token0DerivedUSD, token1DerivedUSD }
 }
 
-export const fetchAdvancedDerivedPriceData = async (token0Address, chainId, currentTimeStamp, timeInterval) => {
+export const fetchAdvancedDerivedPriceData = async (token0Address, chainId, toTimeStamp, timeInterval) => {
   const from = Math.max(
-    currentTimeStamp
+    dayjs
+      .unix(toTimeStamp)
       .subtract(Number(timeInterval) * NUMBER_CHART_DATA, 'minutes')
       .startOf('minutes')
       .unix(),
     FUSION_MULTI_CHAIN_START_TIME[chainId],
   )
-  const to = currentTimeStamp.startOf('minutes').unix()
+  const to = dayjs.unix(toTimeStamp).startOf('minutes').unix()
+  // console.log({ from: dayjs.unix(from).format('YYYY-MM-DD HH:mm'), to: dayjs.unix(to).format('YYYY-MM-DD HH:mm') })
 
   return await getAdvancedTokenDerivedUSDCPrices(token0Address, chainId, timeInterval, from, to)
 }
