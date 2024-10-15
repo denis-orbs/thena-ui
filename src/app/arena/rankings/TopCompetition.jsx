@@ -1,22 +1,35 @@
 'use client'
 
 import { gql } from 'graphql-request'
+import { isNil } from 'lodash'
 import Link from 'next/link'
-import { useParams, usePathname, useSearchParams } from 'next/navigation'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
+import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
+import useDebounce from '@/hooks/useDebounce'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount } from '@/lib/utils'
+import { FirstPrizeIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
+
+import MenuTab from './MenuTab'
 
 const V4_TOP_COMPETITIONS = gql`
-  query V4_TOP_COMPETITIONS($orderBy: [TradingCompetitionOrderByInput!] = []) {
-    tradingCompetitions(orderBy: $orderBy) {
+  query V4_TOP_COMPETITIONS(
+    $orderBy: [TradingCompetitionOrderByInput!] = []
+    $market_eq: MarketType
+    $name_containsInsensitive: String
+  ) {
+    tradingCompetitions(
+      orderBy: $orderBy
+      where: { market_eq: $market_eq, name_containsInsensitive: $name_containsInsensitive }
+    ) {
       id
       tcTrades {
         amountUSD
@@ -29,7 +42,7 @@ const V4_TOP_COMPETITIONS = gql`
   }
 `
 
-const fetchTopCompetition = async sort => {
+const fetchTopCompetition = async (sort, marketEq, search) => {
   try {
     const orderBy = ['id_ASC']
     const isDesc = sort?.isDesc
@@ -52,6 +65,8 @@ const fetchTopCompetition = async sort => {
 
     const { tradingCompetitions: topCompetition } = await v4Client.request(V4_TOP_COMPETITIONS, {
       orderBy,
+      market_eq: marketEq,
+      name_containsInsensitive: search,
     })
     return topCompetition
   } catch (error) {
@@ -60,16 +75,55 @@ const fetchTopCompetition = async sort => {
   }
 }
 
+const TAB_TITLE = {
+  ALL: 'All',
+  SPOT: 'SPOT',
+  PERPETUAL: 'PERPETUALS',
+}
+
+export function RankElement({ rank }) {
+  switch (rank) {
+    case 1: {
+      return <FirstPrizeIcon className='size-7 md:size-9' />
+    }
+    case 2: {
+      return <SecondPrizeIcon className='size-7 md:size-9' />
+    }
+    case 3: {
+      return <ThirdPrizeIcon className='size-7 md:size-9' />
+    }
+
+    default: {
+      return <p className='w-full text-center'>{isNil(rank) ? '-' : rank}</p>
+    }
+  }
+}
+
 function TopCompetition() {
   const pathname = usePathname()
   const isAll = pathname.includes('/competitions')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const marketType = searchParams.get('marketType')
+
+  const search = searchParams.get('search')
+  const [searchText, setSearchText] = useState(search || '')
+  const debounceSearch = useDebounce(searchText.trim(), 300)
+
+  const [activeTab, setActiveTab] = useState(
+    marketType !== TAB_TITLE.ALL && marketType
+      ? marketType === TAB_TITLE.PERPETUAL
+        ? TAB_TITLE.PERPETUAL
+        : TAB_TITLE.SPOT
+      : TAB_TITLE.ALL,
+  )
 
   const sortOptions = useMemo(
     () => [
       {
         label: <span>#</span>,
         value: 'rank',
-        width: 'w-[10%]',
+        width: 'w-[5%]',
         disabled: true,
       },
       {
@@ -77,6 +131,12 @@ function TopCompetition() {
         value: 'competitionName',
         width: isAll ? 'w-[50%]' : 'w-[15%]',
         disabled: true,
+      },
+      {
+        label: 'Total Prize',
+        value: 'totalPrize',
+        width: 'w-[20%]',
+        isDesc: true,
       },
       {
         label: 'Participants',
@@ -96,16 +156,9 @@ function TopCompetition() {
         width: 'w-[20%]',
         isDesc: true,
       },
-      {
-        label: 'Total Prize',
-        value: 'totalPrize',
-        width: 'w-[20%]',
-        isDesc: true,
-      },
     ],
     [isAll],
   )
-  const searchParams = useSearchParams()
   const { page } = useParams()
   const [currentPage, setCurrentPage] = useState(!isAll ? 1 : page ? Number(page) : 1)
   const sortDefault = useMemo(() => {
@@ -122,25 +175,54 @@ function TopCompetition() {
   }, [isAll, searchParams, sortOptions])
 
   const [sort, setSort] = useState(sortDefault)
-  // const [initialRender, setInitialRender] = useState(true)
+  const [initialRender, setInitialRender] = useState(true)
 
   // const [direction, setDirection] = useState('DESC')
 
   const t = useTranslations()
 
-  const { data: topTCRes, isLoading } = useSWR(['top competition api', sort], () => fetchTopCompetition(sort), {
-    refreshInterval: 30000,
-    revalidateOnFocus: true,
-  })
+  const searchFilter = useMemo(() => {
+    let filter = ''
+    if (debounceSearch) {
+      filter = debounceSearch
+    }
+    return filter
+  }, [debounceSearch])
 
-  // useEffect(() => {
-  //   if (!initialRender) {
-  //     setCurrentPage(1)
-  //   } else {
-  //     setInitialRender(false)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [debounceSearch])
+  useEffect(() => {
+    if (!initialRender) {
+      setCurrentPage(1)
+      const query = new URLSearchParams(searchParams.toString())
+      if (debounceSearch) {
+        query.set('search', debounceSearch)
+      } else {
+        query.delete('search', undefined)
+      }
+
+      let pathNew = pathname
+      if (page && page !== 1) {
+        const pathnameReverse = pathname.split('').reverse()
+        const i = pathnameReverse.findIndex(item => item === '/')
+        if (i !== -1) {
+          pathnameReverse.splice(0, i)
+          pathNew = pathnameReverse.reverse().join('')
+        }
+      }
+      router.replace(`${pathNew}?${query.toString()}`)
+    } else {
+      setInitialRender(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debounceSearch])
+
+  const { data: topTCRes, isLoading } = useSWR(
+    ['top competition api', sort, activeTab, searchFilter],
+    () => fetchTopCompetition(sort, activeTab === TAB_TITLE.ALL ? undefined : activeTab, searchFilter),
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    },
+  )
 
   const calcTotalVolume = useCallback(comp => {
     let volume = 0
@@ -219,7 +301,7 @@ function TopCompetition() {
   const finalData = useMemo(
     () =>
       competitions?.map(item => ({
-        rank: <Paragraph>{item.rank}</Paragraph>,
+        rank: <RankElement rank={item.rank} />,
         competitionName: (
           <Link
             href={`/arena/trading-competitions/${item.id}`}
@@ -237,34 +319,91 @@ function TopCompetition() {
     [JSON.stringify(competitions)],
   )
 
+  const onClickMenuTab = useCallback(
+    data => {
+      const query = new URLSearchParams(searchParams.toString())
+      setActiveTab(data)
+      query.set('marketType', data)
+
+      let pathNew = pathname
+      if (page && page !== 1) {
+        const pathnameReverse = pathname.split('').reverse()
+        const i = pathnameReverse.findIndex(item => item === '/')
+        if (i !== -1) {
+          pathnameReverse.splice(0, i)
+          pathNew = pathnameReverse.reverse().join('')
+        }
+      }
+      router.replace(`${pathNew}?${query.toString()}`)
+    },
+    [page, pathname, router, searchParams],
+  )
+
+  const menuData = useMemo(
+    () => [
+      {
+        title: t(TAB_TITLE.ALL),
+        isActive: activeTab === TAB_TITLE.ALL,
+        isLink: false,
+        onClick: () => onClickMenuTab(TAB_TITLE.ALL),
+      },
+      {
+        title: t(TAB_TITLE.SPOT),
+        isActive: activeTab === TAB_TITLE.SPOT,
+        isLink: false,
+        onClick: () => onClickMenuTab(TAB_TITLE.SPOT),
+      },
+      {
+        title: t(TAB_TITLE.PERPETUAL),
+        isActive: activeTab === TAB_TITLE.PERPETUAL,
+        isLink: false,
+        onClick: () => onClickMenuTab(TAB_TITLE.PERPETUAL),
+      },
+    ],
+    [activeTab, onClickMenuTab, t],
+  )
+
   return (
     <div className='z-10 col-span-12 lg:sticky lg:top-56 lg:col-span-5 lg:max-h-[500px]'>
-      <Box>
-        <div className='flex flex-row items-center justify-between'>
-          <TextHeading className='text-xl'>{t('Top Competitions')}</TextHeading>
-          {!isAll && (
-            <Link href='/arena/rankings/competitions'>
-              <EmphasisButton>{t('View All')}</EmphasisButton>
-            </Link>
-          )}
-        </div>
-        <div>
-          <Table
-            sortOptions={sortOptions}
-            sort={sort}
-            setSort={setSort}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            tableBasic
-            data={isAll ? finalData : finalData.slice(0, 5)}
-            // onlySortDesc
-            enabledRedirectOnClickPagination={isAll}
-            loading={isLoading}
-            enabledRedirectOnClickSort={isAll}
-            showPopoverPagination={isAll}
+      <div className='mb-6 flex flex-col items-start gap-3 md:flex-row md:items-center md:justify-between'>
+        <MenuTab className='h-11' menuData={menuData} />
+        <div className='flex flex-col gap-4 md:flex-row'>
+          <SearchInput
+            className='h-11 w-full md:w-[336px]'
+            classNames={{ input: 'h-11' }}
+            val={searchText}
+            setVal={setSearchText}
           />
         </div>
-      </Box>
+      </div>
+      <div className='border-gradient-secondary mt-6 rounded-xl p-px'>
+        <Box>
+          <div className='flex flex-row items-center justify-between'>
+            <TextHeading className='text-xl'>{t('Top Competitions')}</TextHeading>
+            {!isAll && (
+              <Link href='/arena/rankings/competitions'>
+                <EmphasisButton>{t('View All')}</EmphasisButton>
+              </Link>
+            )}
+          </div>
+          <div>
+            <Table
+              sortOptions={sortOptions}
+              sort={sort}
+              setSort={setSort}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              tableBasic
+              data={isAll ? finalData : finalData.slice(0, 5)}
+              // onlySortDesc
+              enabledRedirectOnClickPagination={isAll}
+              loading={isLoading}
+              enabledRedirectOnClickSort={isAll}
+              showPopoverPagination={isAll}
+            />
+          </div>
+        </Box>
+      </div>
     </div>
   )
 }

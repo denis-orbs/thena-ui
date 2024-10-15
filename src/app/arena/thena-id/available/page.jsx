@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import AvailableDropdown from '@/components/dropdown/AvailableDropdown'
 import SearchInput from '@/components/input/SearchInput'
 import Table from '@/components/table'
@@ -19,6 +18,7 @@ import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
 import { formatAmount } from '@/lib/utils'
 
+import MenuTab from '../MenuTab'
 import ThenaIdModal from '../../profile/ThenaIdModal'
 
 const V4_AVAILABLE = gql`
@@ -78,14 +78,14 @@ function AvailablePage() {
       {
         label: 'THENA ID',
         value: 'name',
-        width: account ? 'w-[25%]' : 'w-[33%]',
+        width: 'w-[33%]',
         isDesc: true,
         disabled: false,
       },
       {
         label: 'Cost',
         value: 'cost',
-        width: account ? 'w-[25%]' : 'w-[33%]',
+        width: 'w-[33%]',
         isDesc: true,
         disabled: true,
       },
@@ -98,18 +98,8 @@ function AvailablePage() {
       },
     ]
 
-    if (account) {
-      arr.push({
-        label: '',
-        value: 'action',
-        width: 'w-[15%]',
-        isDesc: true,
-        disabled: true,
-      })
-    }
-
     return arr
-  }, [account])
+  }, [])
 
   const listCategory = useMemo(
     () =>
@@ -262,18 +252,6 @@ function AvailablePage() {
           </div>
         ),
         trait: <Paragraph>{formatCategory(item.trait)}</Paragraph>,
-        action: (
-          <div>
-            <PrimaryButton
-              onClick={() => {
-                setNameChoose(item)
-                setShowModal(true)
-              }}
-            >
-              Mint
-            </PrimaryButton>
-          </div>
-        ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [USDTAsset?.symbol, JSON.stringify(sortedData)],
@@ -281,21 +259,10 @@ function AvailablePage() {
 
   return (
     <div>
-      <div className='mt-6 flex items-center gap-6'>
-        <EmphasisButton>
-          <Link href='/arena/thena-id/mint' prefetch={false}>
-            {t('Mint Thena Id')}
-          </Link>
-        </EmphasisButton>
-        <EmphasisButton>
-          <Link href='/arena/thena-id/recently-minted' prefetch={false}>
-            {t('Recent THENA ID Mints')}
-          </Link>
-        </EmphasisButton>
-      </div>
       <div className='mt-6'>
-        <h2>{t('Available THENA IDs')}</h2>
+        <h2>{t('THENA ID')}</h2>
       </div>
+      <MenuTab />
       <div className='mt-6 flex flex-row items-center justify-between gap-3 space-y-2'>
         <SearchInput
           className='h-11 w-full md:w-[336px]'

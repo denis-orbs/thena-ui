@@ -10,6 +10,7 @@ import useSWR from 'swr'
 import { ThenaAuthToken } from '@/constant'
 import { fetchUserInfo } from '@/context/userInfoContext'
 import { useSignWallet } from '@/hooks/useSignWallet'
+import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import useWallet from '@/hooks/useWallet'
 import { getFromLocalStorage } from '@/lib/helper'
 import { formatAddress } from '@/lib/utils'
@@ -24,6 +25,8 @@ export default function ConnectButton({ className }) {
   const { account, isWrong, active } = useWallet()
   const t = useTranslations()
   const { openWallet } = useAuthCore()
+
+  const { spaceIdName } = useSpaceIdBNB(account)
   // const [walletURL, setWalletURL] = useState(null) // Change type to string | null
   // const [isIframeVisible, setIsIframeVisible] = useState(false)
 
@@ -95,7 +98,7 @@ export default function ConnectButton({ className }) {
             color: userInfo?.nameColor ? (String(userInfo?.nameColor).startsWith('#') ? userInfo?.nameColor : '') : '',
           }}
         >
-          {userInfo?.username || formatAddress(account)}
+          {userInfo?.username || spaceIdName || formatAddress(account)}
         </span>
       </EmphasisButton>
     )

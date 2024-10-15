@@ -505,7 +505,23 @@ function Header() {
           label: 'Rankings',
           active: pathname === '/arena/rankings' || pathname === '/arena/rankings/competitions',
           isLink: true,
-          href: '/arena/rankings',
+          href: '/arena/rankings/users',
+          isSub: true,
+          classNameSub: 'min-w-[250px]',
+          sub: [
+            {
+              label: 'User Rankings',
+              active: pathname === '/arena/rankings/users',
+              isLink: true,
+              href: '/arena/rankings/users',
+            },
+            {
+              label: 'Competition Rankings',
+              active: pathname === '/arena/rankings/competitions',
+              isLink: true,
+              href: '/arena/rankings/competitions',
+            },
+          ],
         },
         {
           label: 'THENA ID',
@@ -527,6 +543,7 @@ function Header() {
             pathname.includes('/analytics') ||
             pathname.includes('/admin'),
           isSub: true,
+          classNameSub: 'min-w-[150px] right-0',
           sub: [
             {
               label: 'Analytics',

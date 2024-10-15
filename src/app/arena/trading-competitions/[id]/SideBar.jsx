@@ -1,6 +1,7 @@
 'use client'
 
 import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { useQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -15,6 +16,7 @@ import { TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useUserInfo } from '@/context/userInfoContext'
+import { fetchUserRankAndPnLInTC } from '@/hooks/trade/useTradingCompetitionLeaderboard'
 import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
@@ -130,6 +132,15 @@ function Sidebar({ competition, eventType }) {
     [isHosting, isHostingPerp, competition.market],
   )
 
+  const isBNBSS3TC = useMemo(() => competition.id === '0x1781b0810e89f4d11c25462d7ecb4f6f03109dfe-9', [competition.id])
+
+  const { data: competitionUser } = useQuery({
+    queryKey: ['user rank and pnl in TC', competition.id, account?.toLowerCase()],
+    queryFn: () => fetchUserRankAndPnLInTC(competition.id, account?.toLowerCase()),
+    gcTime: 0,
+    enabled: Boolean(competition.id && account && isBNBSS3TC),
+  })
+
   const headingAndText = useMemo(() => {
     if (!eventType) {
       return {
@@ -191,7 +202,7 @@ function Sidebar({ competition, eventType }) {
           break
         default:
           subText = t('Thenians Are Competing', {
-            totalPrize: competition.prizeUpdate.token
+            totalPrize: (competition?.prizeUpdate?.token || [])
               .map(
                 (prize, index) =>
                   `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
@@ -212,6 +223,14 @@ function Sidebar({ competition, eventType }) {
     if (eventType === EVENT_TYPES.ENDED) {
       let subText = null
       let text = null
+
+      if (isBNBSS3TC && !isInvalidAmount(competitionUser?.participants?.[0]?.winAmountUSD)) {
+        return {
+          heading: t('Ended'),
+          text: '',
+          subText: t('You Have Won Special'),
+        }
+      }
 
       if (isJoined && (isClaimable || isClaimablePerp)) {
         text = t('Claim Your Rewards')
@@ -280,6 +299,8 @@ function Sidebar({ competition, eventType }) {
     competition.participantCount,
     competition.prizeUpdate?.token,
     competition.prizeUpdate?.totalPrize,
+    isBNBSS3TC,
+    competitionUser?.participants,
     isJoined,
     isClaimable,
     isClaimablePerp,
