@@ -61,6 +61,17 @@ const fetchGaugeReward2 = async chainId =>
     })),
   )
 
+const fetchGaugeReward2Period = async chainId =>
+  await callMulti(
+    ICHI_VAULTS[chainId].map(vault => ({
+      address: vault.gaugeAddress,
+      abi: gaugeSimpleAbi,
+      functionName: 'periodFinish',
+      args: [vault.rewardAddress],
+      chainId,
+    })),
+  )
+
 const fetchGaugeSupply = async chainId => {
   const rawRes = await callMulti(
     ICHI_VAULTS[chainId].map(vault => ({
@@ -75,13 +86,14 @@ const fetchGaugeSupply = async chainId => {
 }
 
 export const fetchVaultsData = async chainId => {
-  const [totalSupply, totalAmounts, reward2, reward0, reward1, gaugeSupply] = await Promise.all([
+  const [totalSupply, totalAmounts, reward2, reward0, reward1, gaugeSupply, reward2Period] = await Promise.all([
     fetchTotalSupply(chainId),
     fetchTotalAmounts(chainId),
     fetchGaugeReward2(chainId),
     fetchGaugeReward0(chainId),
     fetchGaugeReward1(chainId),
     fetchGaugeSupply(chainId),
+    fetchGaugeReward2Period(chainId),
   ])
   return {
     vaults: ICHI_VAULTS[chainId].map((vault, index) => ({
@@ -89,7 +101,7 @@ export const fetchVaultsData = async chainId => {
       totalSupply: totalSupply[index],
       reserve0: totalAmounts[index][0],
       reserve1: totalAmounts[index][1],
-      rewardRate2: reward2[index],
+      rewardRate2: reward2Period > new Date().getTime() / 1000 ? reward2[index] : 0,
       rewardRate0: reward0[index],
       rewardRate1: reward1[index],
       gaugeSupply: gaugeSupply[index],
