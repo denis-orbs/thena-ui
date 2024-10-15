@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
-import { ethers } from 'ethers'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
-import { getAddress, maxUint256, zeroAddress } from 'viem'
+import { decodeFunctionData, encodePacked, getAddress, maxUint256, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
@@ -15,7 +14,7 @@ import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { errorToast } from '@/lib/notify'
-import { fromWei, isInvalidAmount, recursivelyDecodeResult, toWei } from '@/lib/utils'
+import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 const EnabledDexIds = '43,47'
@@ -456,7 +455,7 @@ export const useTCSpotAlgebraSwap = () => {
       })
 
       setPending(true)
-      const path = ethers.solidityPacked(['address', 'address'], [fromAsset.address, toAsset.address])
+      const path = encodePacked(['address', 'address'], [fromAsset.address, toAsset.address])
       const currentTimestamp = parseInt(new Date().getTime() / 1000, 10)
       if (path) {
         const exactInputParams = {
@@ -698,12 +697,13 @@ export const useGetOdosTxSwap = (account, quote) => {
     },
   ]
 
-  const iface = new ethers.Interface(abi)
   if (assembleData) {
     try {
-      const decoded = iface.decodeFunctionData('swap', assembleData.transaction.data)
-      const recursiveDecoded = recursivelyDecodeResult(decoded)
-      return { data: recursiveDecoded, isLoading: isFetching }
+      const { args } = decodeFunctionData({
+        abi,
+        data: assembleData.transaction.data,
+      })
+      return { data: args, isLoading: isFetching }
     } catch (error) {
       console.log('error')
       return { data: undefined, isLoading: false }
@@ -741,12 +741,8 @@ export const useTCSpotOdosSwap = () => {
       })
       setPending(true)
       const tcSpotContract = getTcSpotContract(tcAddress)
-      const isSuccess = await writeTxn(key, swapuuid, tcSpotContract, 'swapOdos', [
-        odosData.tokenInfo,
-        odosData.pathDefinition,
-        odosData.executor,
-        odosData.referralCode,
-      ])
+
+      const isSuccess = await writeTxn(key, swapuuid, tcSpotContract, 'swapOdos', odosData)
       if (!isSuccess) {
         setPending(false)
         return false
