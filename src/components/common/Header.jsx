@@ -876,7 +876,19 @@ function Header() {
       <Script
         id='widget-dom-id'
         src='https://widget.metacrm.inc/static/js/widget.js'
-        onLoad={() => {
+        onLoad={async () => {
+          await new Promise((resolve, reject) => {
+            const fjs = document.getElementsByTagName('script')[0]
+            if (document.getElementById('widget-dom-id')) return
+            const script = document.createElement('script')
+            script.crossOrigin = 'anonymous'
+            script.id = 'widget-dom-id'
+            script.src = 'https://widget.metacrm.inc/static/js/widget.js'
+            script.onload = () => resolve(script)
+            script.onerror = () =>
+              reject(new Error('Script load error for https://widget.metacrm.inc/static/js/widget.js'))
+            fjs.parentNode.insertBefore(script, fjs)
+          })
           window.MetaCRMWidget.init({
             apiKey: 'mqrsxk7605j',
           })
