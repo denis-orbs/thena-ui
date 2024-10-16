@@ -8,7 +8,17 @@ import { ChevronDownIcon } from '@/svgs'
 
 import Input from '../input'
 
-function Dropdown({ className, listClassNames, data, selected, setSelected, placeHolder, isLocale = true }) {
+function Dropdown({
+  className,
+  listClassNames,
+  data,
+  selected,
+  setSelected,
+  placeHolder,
+  isLocale = true,
+  prefix,
+  prefixClass,
+}) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
   const t = useTranslations()
@@ -41,6 +51,8 @@ function Dropdown({ className, listClassNames, data, selected, setSelected, plac
           />
         }
         isLocale={isLocale}
+        prefix={prefix}
+        prefixClass={prefixClass}
         readOnly
       />
       <div
