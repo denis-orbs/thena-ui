@@ -135,11 +135,8 @@ const getAdvancedTokenDerivedUSDCPrices = async (
         time: getBars?.t?.[index],
         high: getBars?.h?.[index],
         low: getBars?.l?.[index],
+        tokenAddress,
       }))
-
-      if (timeInterval === PairDataTimeWindow.YEAR) {
-        bars = bars.filter((bar, index) => index % 2 !== bars.length % 2)
-      }
 
       // bars.pop()
       return bars

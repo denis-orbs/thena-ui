@@ -166,8 +166,11 @@ function CandleStickChart({ asset0, asset1, isResetChart, setResetChart }) {
 
   useEffect(() => {
     if (Array.isArray(loadMoreData) && loadMoreData.length) {
-      setAllData(allPreData => formatChartData([...loadMoreData, ...allPreData]))
+      setAllData(allPreData =>
+        formatChartData([...loadMoreData, ...allPreData]).filter(data => data.tokenAddress === activeToken.address),
+      )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadMoreData])
 
   // logData('loadMoreData', loadMoreData)
@@ -176,15 +179,17 @@ function CandleStickChart({ asset0, asset1, isResetChart, setResetChart }) {
   return (
     <>
       {/* <PrimaryButton onClick={() => {}}>Test</PrimaryButton> */}
-      <CandleStickChartBase
-        data={allData}
-        setLoadMoreData={setLoadMoreData}
-        setData={setAllData}
-        setScrolling={setScrolling}
-        timeInterval={timeInterval}
-        setTimeInterval={setTimeInterval}
-        activeToken={activeToken}
-      />
+      {activeToken && (
+        <CandleStickChartBase
+          data={allData}
+          setLoadMoreData={setLoadMoreData}
+          setData={setAllData}
+          setScrolling={setScrolling}
+          timeInterval={timeInterval}
+          setTimeInterval={setTimeInterval}
+          activeToken={activeToken}
+        />
+      )}
     </>
   )
 }
