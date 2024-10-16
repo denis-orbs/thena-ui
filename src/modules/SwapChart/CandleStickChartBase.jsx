@@ -64,6 +64,10 @@ export function CandleStickChartBase({
     if (!series) {
       setSeries(candlestickSeries)
     }
+    chart.timeScale().applyOptions({
+      fixRightEdge: true,
+      fixLeftEdge: true,
+    })
     chart.subscribeCrosshairMove(param => {
       if (candlestickSeries && param) {
         const { time, seriesData } = param
@@ -77,7 +81,7 @@ export function CandleStickChartBase({
       }
     })
     chart.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
-      if (logicalRange.from < 10) {
+      if (logicalRange.from < 50) {
         // load more data
         // const numberBarsToLoad = 50 - logicalRange.from
         handleScroll()
