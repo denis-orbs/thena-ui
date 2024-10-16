@@ -94,6 +94,21 @@ export const formatAmount = (amount = null, shorted = false, fixed = 3, hideNega
   return bigAmount.dp(fixed).toFormat()
 }
 
+export const formatAmountLP = (amount = null, fixed = 13) => {
+  if (!amount || new BigNumber(amount).isZero()) return '0'
+  const bigAmount = new BigNumber(amount)
+
+  if (bigAmount.gt(1)) {
+    if (bigAmount.lt(100000)) {
+      return bigAmount.dp(2).toFormat()
+    }
+
+    return bigAmount.dp(1).toFormat()
+  }
+
+  return bigAmount.dp(fixed).toFormat()
+}
+
 export const goToDoc = url => {
   window.open(url ?? 'https://docs.thena.fi/', '_blank')
 }
