@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { createChart } from 'lightweight-charts'
+import { createChart, PriceScaleMode } from 'lightweight-charts'
 import { throttle } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -28,7 +28,6 @@ export function CandleStickChartBase({
   const [hoverClose, setHoverClose] = useState()
   const [hoverDate, setHoverDate] = useState()
   const [isReady, setReady] = useState(false)
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleScroll = useCallback(
     throttle(() => {
@@ -64,9 +63,14 @@ export function CandleStickChartBase({
     if (!series) {
       setSeries(candlestickSeries)
     }
+    chart.timeScale().fitContent()
     chart.timeScale().applyOptions({
       fixRightEdge: true,
       fixLeftEdge: true,
+    })
+    chart.priceScale('right').applyOptions({
+      autoScale: true,
+      mode: PriceScaleMode.Logarithmic,
     })
     chart.subscribeCrosshairMove(param => {
       if (candlestickSeries && param) {
@@ -99,8 +103,12 @@ export function CandleStickChartBase({
 
   useEffect(() => {
     if (series && data.length) {
-      series.setData(data)
-      setReady(true)
+      try {
+        series.setData(data)
+        setReady(true)
+      } catch (e) {
+        console.error(e)
+      }
     }
   }, [data, series])
 

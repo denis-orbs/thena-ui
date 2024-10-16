@@ -181,6 +181,7 @@ function CandleStickChart({ asset0, asset1, isResetChart, setResetChart }) {
       {/* <PrimaryButton onClick={() => {}}>Test</PrimaryButton> */}
       {activeToken && (
         <CandleStickChartBase
+          key={activeToken.symbol}
           data={allData}
           setLoadMoreData={setLoadMoreData}
           setData={setAllData}
