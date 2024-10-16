@@ -90,7 +90,9 @@ const fetchTokenChartData = async (chainId, token) => {
   console.log('fetch token chart data ======================')
   const { data: fusiondata } = await getFusionChartData(chainId, token.address)
   const { data: v1data } = await getV1ChartData(chainId, token.address)
-  const isFusionFirst = ((fusiondata && fusiondata[0]?.date) ?? 0) <= ((v1data && v1data[0]?.date) ?? 0)
+  const fusionFirstDate = (fusiondata && fusiondata[0]?.date) ?? 0
+  const v1FirstDate = (v1data && v1data[0]?.date) ?? 0
+  const isFusionFirst = !v1FirstDate || (!!fusionFirstDate && fusionFirstDate <= v1FirstDate)
   const firstData = isFusionFirst ? fusiondata : v1data
   const secondData = isFusionFirst ? v1data : fusiondata
   return firstData.map(ele => {
