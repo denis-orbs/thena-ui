@@ -1149,5 +1149,6 @@
   "Competitions Won": "Competitions Won",
   "Total PnL (USD)": "Total PnL (USD)",
   "Total ROI": "Total ROI",
-  "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition."
+  "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition.",
+  "Pools per page": "Pools per page:"
 }

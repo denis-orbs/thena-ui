@@ -10,6 +10,7 @@ import { ArrowDownIcon, ArrowLeftIcon, XIcon } from '@/svgs'
 
 import { TertiaryButton } from '../buttons/Button'
 import { TextIconButton } from '../buttons/IconButton'
+import Dropdown from '../dropdown'
 import Input from '../input'
 import { TextHeading, TextSubHeading } from '../typography'
 
@@ -115,6 +116,8 @@ function Table({
   showPopoverPagination = false,
   bgHightLight = 'bg-neutral-500',
   defaultHead = undefined,
+  showNumberOfPage = false,
+  setNumberOfPage,
 }) {
   const t = useTranslations()
   const pathname = usePathname()
@@ -412,148 +415,161 @@ function Table({
           </>
         )}
       </div>
-      {!loading && pageCount > 1 && !hidePagination && (
-        <div className='flex justify-center sm:justify-end'>
-          <ul className='relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
-            <PaginateCell
-              onClick={() => {
-                if (currentPage !== 1) {
-                  handleRedirectPage(Math.max(currentPage - 1, 1))
-                  setCurrentPage(Math.max(currentPage - 1, 1))
-                }
-              }}
-              disabled={currentPage === 1}
-            >
-              <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
-            </PaginateCell>
-            {pageCount < 6 &&
-              new Array(pageCount).fill(0).map((item, idx) => (
-                <PaginateCell
-                  key={`paginate-${idx}`}
-                  active={currentPage === idx + 1}
-                  onClick={() => {
-                    handleRedirectPage(idx + 1)
-                    setCurrentPage(idx + 1)
-                  }}
-                >
-                  {idx + 1}
-                </PaginateCell>
-              ))}
-            {pageCount >= 6 && (
-              <>
-                <PaginateCell
-                  active={currentPage === 1}
-                  onClick={() => {
-                    handleRedirectPage(1)
-                    setCurrentPage(1)
-                  }}
-                >
-                  1
-                </PaginateCell>
-                <PaginateCell
-                  active={currentPage === 2}
-                  onClick={() => {
-                    handleRedirectPage(2)
-                    setCurrentPage(2)
-                  }}
-                >
-                  2
-                </PaginateCell>
-                {currentPage > 3 && (
-                  <PaginateCell
-                    onClick={() => {
-                      if (showPopoverPagination) {
-                        setShowPopover(true)
-                      } else {
-                        handleRedirectPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
-                        setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
-                      }
-                    }}
-                  >
-                    ...
-                  </PaginateCell>
-                )}
-                {currentPage > 2 && currentPage < pageCount - 1 && (
-                  <PaginateCell
-                    active
-                    onClick={() => {
-                      handleRedirectPage(currentPage)
-                      setCurrentPage(currentPage)
-                    }}
-                  >
-                    {currentPage}
-                  </PaginateCell>
-                )}
-                {currentPage < pageCount - 2 && (
-                  <PaginateCell
-                    onClick={() => {
-                      if (showPopoverPagination) {
-                        setShowPopover(true)
-                      } else {
-                        handleRedirectPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
-                        setCurrentPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
-                      }
-                    }}
-                  >
-                    ...
-                  </PaginateCell>
-                )}
-                <PaginateCell
-                  active={currentPage === pageCount - 1}
-                  onClick={() => {
-                    handleRedirectPage(pageCount - 1)
-                    setCurrentPage(pageCount - 1)
-                  }}
-                >
-                  {pageCount - 1}
-                </PaginateCell>
-                <PaginateCell
-                  active={currentPage === pageCount}
-                  onClick={() => {
-                    handleRedirectPage(pageCount)
-                    setCurrentPage(pageCount)
-                  }}
-                >
-                  {pageCount}
-                </PaginateCell>
-              </>
-            )}
-            <PaginateCell
-              onClick={() => {
-                if (currentPage !== pageCount) {
-                  handleRedirectPage(Math.min(currentPage + 1, pageCount))
-                  setCurrentPage(Math.min(currentPage + 1, pageCount))
-                }
-              }}
-              disabled={currentPage === pageCount}
-            >
-              <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`} />
-            </PaginateCell>
-            {showPopoverPagination && (
-              <Popover
-                inputPage={inputPage}
-                setInputPage={setInputPage}
-                setCurrentPage={setCurrentPage}
-                showPopover={showPopover}
-                setShowPopover={setShowPopover}
-                pageCount={pageCount}
+      <div className='flex flex-col justify-end gap-1 md:flex-row'>
+        {showNumberOfPage && (
+          <Dropdown
+            className='w-full md:max-w-[200px]'
+            data={[{ label: 10 }, { label: 20 }, { label: 50 }, { label: 100 }]}
+            selected={pageSize}
+            setSelected={ele => setNumberOfPage(ele.label)}
+            prefix={t('Pools per page')}
+            prefixClass='pl-[140px]'
+            isLocale={false}
+          />
+        )}
+        {!loading && pageCount > 1 && !hidePagination && (
+          <div className='flex justify-center sm:justify-end'>
+            <ul className='relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
+              <PaginateCell
                 onClick={() => {
-                  const newPage = Number(inputPage)
-                  if (newPage && newPage !== currentPage) {
-                    if (enabledRedirectOnClickPagination) {
-                      handleRedirectPage(Number(newPage))
-                    } else {
-                      setCurrentPage(newPage)
-                    }
+                  if (currentPage !== 1) {
+                    handleRedirectPage(Math.max(currentPage - 1, 1))
+                    setCurrentPage(Math.max(currentPage - 1, 1))
                   }
-                  setShowPopover(false)
-                  setInputPage('')
                 }}
-              />
-            )}
-          </ul>
-        </div>
-      )}
+                disabled={currentPage === 1}
+              >
+                <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
+              </PaginateCell>
+              {pageCount < 6 &&
+                new Array(pageCount).fill(0).map((item, idx) => (
+                  <PaginateCell
+                    key={`paginate-${idx}`}
+                    active={currentPage === idx + 1}
+                    onClick={() => {
+                      handleRedirectPage(idx + 1)
+                      setCurrentPage(idx + 1)
+                    }}
+                  >
+                    {idx + 1}
+                  </PaginateCell>
+                ))}
+              {pageCount >= 6 && (
+                <>
+                  <PaginateCell
+                    active={currentPage === 1}
+                    onClick={() => {
+                      handleRedirectPage(1)
+                      setCurrentPage(1)
+                    }}
+                  >
+                    1
+                  </PaginateCell>
+                  <PaginateCell
+                    active={currentPage === 2}
+                    onClick={() => {
+                      handleRedirectPage(2)
+                      setCurrentPage(2)
+                    }}
+                  >
+                    2
+                  </PaginateCell>
+                  {currentPage > 3 && (
+                    <PaginateCell
+                      onClick={() => {
+                        if (showPopoverPagination) {
+                          setShowPopover(true)
+                        } else {
+                          handleRedirectPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                          setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                        }
+                      }}
+                    >
+                      ...
+                    </PaginateCell>
+                  )}
+                  {currentPage > 2 && currentPage < pageCount - 1 && (
+                    <PaginateCell
+                      active
+                      onClick={() => {
+                        handleRedirectPage(currentPage)
+                        setCurrentPage(currentPage)
+                      }}
+                    >
+                      {currentPage}
+                    </PaginateCell>
+                  )}
+                  {currentPage < pageCount - 2 && (
+                    <PaginateCell
+                      onClick={() => {
+                        if (showPopoverPagination) {
+                          setShowPopover(true)
+                        } else {
+                          handleRedirectPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
+                          setCurrentPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
+                        }
+                      }}
+                    >
+                      ...
+                    </PaginateCell>
+                  )}
+                  <PaginateCell
+                    active={currentPage === pageCount - 1}
+                    onClick={() => {
+                      handleRedirectPage(pageCount - 1)
+                      setCurrentPage(pageCount - 1)
+                    }}
+                  >
+                    {pageCount - 1}
+                  </PaginateCell>
+                  <PaginateCell
+                    active={currentPage === pageCount}
+                    onClick={() => {
+                      handleRedirectPage(pageCount)
+                      setCurrentPage(pageCount)
+                    }}
+                  >
+                    {pageCount}
+                  </PaginateCell>
+                </>
+              )}
+              <PaginateCell
+                onClick={() => {
+                  if (currentPage !== pageCount) {
+                    handleRedirectPage(Math.min(currentPage + 1, pageCount))
+                    setCurrentPage(Math.min(currentPage + 1, pageCount))
+                  }
+                }}
+                disabled={currentPage === pageCount}
+              >
+                <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`} />
+              </PaginateCell>
+              {showPopoverPagination && (
+                <Popover
+                  inputPage={inputPage}
+                  setInputPage={setInputPage}
+                  setCurrentPage={setCurrentPage}
+                  showPopover={showPopover}
+                  setShowPopover={setShowPopover}
+                  pageCount={pageCount}
+                  onClick={() => {
+                    const newPage = Number(inputPage)
+                    if (newPage && newPage !== currentPage) {
+                      if (enabledRedirectOnClickPagination) {
+                        handleRedirectPage(Number(newPage))
+                      } else {
+                        setCurrentPage(newPage)
+                      }
+                    }
+                    setShowPopover(false)
+                    setInputPage('')
+                  }}
+                />
+              )}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

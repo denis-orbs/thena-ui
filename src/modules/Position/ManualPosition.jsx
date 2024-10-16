@@ -22,9 +22,9 @@ import { simulateCall } from '@/lib/contractActions'
 import { getAlgebraNPMContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
-import { formatAmount, fromWei, unwrappedSymbol } from '@/lib/utils'
+import { formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
-import { InfoIcon } from '@/svgs'
+import { InfoIcon, RefreshIcon } from '@/svgs'
 
 import AddManualModal from './AddManualModal'
 import ClaimModal from './ClaimModal'
@@ -126,6 +126,8 @@ export default function ManualPosition({ pool }) {
     [amount0InUsd, amount1InUsd],
   )
 
+  const [reversePrice, setReversePrice] = useState(false)
+
   const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
 
   return (
@@ -189,36 +191,61 @@ export default function ManualPosition({ pool }) {
             </CustomTooltip>
           </div>
         </div>
-        <Paragraph className='text-sm'>{t('Price Range')}</Paragraph>
+
+        <div className='flex items-center gap-1'>
+          <Paragraph className='text-sm'>{t('Price Range')}</Paragraph>
+          <RefreshIcon
+            className='size-4 cursor-pointer stroke-neutral-50'
+            onClick={() => {
+              setReversePrice(prev => !prev)
+            }}
+          />
+        </div>
         <div className='grid grid-cols-2 gap-4'>
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
             <TextSubHeading className='text-xs'>{t('Min Price')}</TextSubHeading>
-            <TextHeading>{formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)}</TextHeading>
+            <TextHeading>
+              {formatAmountLP(
+                reversePrice
+                  ? 1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)
+                  : formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER),
+              )}
+            </TextHeading>
             <Paragraph className='text-[10px]'>
               {t('[symbolA] per [symbolB]', {
-                symbolA: unwrappedSymbol(asset1),
-                symbolB: unwrappedSymbol(asset0),
+                symbolA: unwrappedSymbol(reversePrice ? asset0 : asset1),
+                symbolB: unwrappedSymbol(reversePrice ? asset1 : asset0),
               })}
             </Paragraph>
           </div>
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
             <TextSubHeading className='text-xs'>{t('Max Price')}</TextSubHeading>
-            <TextHeading>{formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)}</TextHeading>
+            <TextHeading>
+              {formatAmountLP(
+                reversePrice
+                  ? 1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
+                  : formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
+              )}
+            </TextHeading>
             <Paragraph className='text-[10px]'>
               {t('[symbolA] per [symbolB]', {
-                symbolA: unwrappedSymbol(asset1),
-                symbolB: unwrappedSymbol(asset0),
+                symbolA: unwrappedSymbol(reversePrice ? asset0 : asset1),
+                symbolB: unwrappedSymbol(reversePrice ? asset1 : asset0),
               })}
             </Paragraph>
           </div>
         </div>
         <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
           <TextSubHeading className='text-xs'>{t('Current Price')}</TextSubHeading>
-          <TextHeading>{_fusion?.token0Price.toSignificant(6)}</TextHeading>
+          <TextHeading>
+            {formatAmountLP(
+              reversePrice ? 1 / (_fusion?.token0Price.toSignificant(6) || 0) : _fusion?.token0Price.toSignificant(6),
+            )}
+          </TextHeading>
           <Paragraph className='text-[10px]'>
             {t('[symbolA] per [symbolB]', {
-              symbolA: unwrappedSymbol(asset1),
-              symbolB: unwrappedSymbol(asset0),
+              symbolA: unwrappedSymbol(reversePrice ? asset0 : asset1),
+              symbolB: unwrappedSymbol(reversePrice ? asset1 : asset0),
             })}
           </Paragraph>
         </div>
