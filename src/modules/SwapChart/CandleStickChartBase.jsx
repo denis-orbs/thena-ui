@@ -23,7 +23,8 @@ export function CandleStickChartBase({
   setLoadMoreData,
   activeToken,
 }) {
-  const [series, setSeries] = useState()
+  const [candleSeries, setCandleSeries] = useState()
+  const [histogramSeries, setHistogramSeries] = useState()
   const chartContainerRef = useRef()
   const [hoverClose, setHoverClose] = useState()
   const [hoverDate, setHoverDate] = useState()
@@ -40,7 +41,6 @@ export function CandleStickChartBase({
     const chart = createChart(chartContainerRef.current, {
       layout: { textColor: 'white', background: { type: 'solid', color: 'rgba(0,0,0,0)' } },
       localization: {
-        priceFormatter: priceValue => `$${formatPriceForChart(priceValue)}`,
         timeFormatter: time => dayjs.unix(time).utc().format('MMM DD, YYYY, HH:mm UTC'),
       },
       grid: {
@@ -51,17 +51,47 @@ export function CandleStickChartBase({
           color: 'rgba(255,255,255,0.05)',
         },
       },
+      rightPriceScale: {
+        scaleMargins: {
+          top: 0.3,
+          bottom: 0.25,
+        },
+        borderVisible: false,
+      },
     })
 
-    const candlestickSeries = chart.addCandlestickSeries({
+    const candlestickChartSeries = chart.addCandlestickSeries({
       upColor: '#26a69a',
       downColor: '#ef5350',
       borderVisible: false,
       wickUpColor: '#26a69a',
       wickDownColor: '#ef5350',
+      priceFormat: {
+        type: 'custom',
+        formatter: priceValue => `$${formatPriceForChart(priceValue)}`,
+      },
     })
-    if (!series) {
-      setSeries(candlestickSeries)
+
+    const histogramChartSeries = chart.addHistogramSeries({
+      color: '#26a69a',
+      priceFormat: {
+        type: 'volume',
+      },
+      priceScaleId: '',
+    })
+
+    chart.priceScale('').applyOptions({
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
+      },
+    })
+
+    if (!candleSeries) {
+      setCandleSeries(candlestickChartSeries)
+    }
+    if (!histogramSeries) {
+      setHistogramSeries(histogramChartSeries)
     }
     chart.timeScale().fitContent()
     chart.timeScale().applyOptions({
@@ -73,7 +103,7 @@ export function CandleStickChartBase({
       mode: PriceScaleMode.Logarithmic,
     })
     chart.subscribeCrosshairMove(param => {
-      if (candlestickSeries && param) {
+      if (candlestickChartSeries && param) {
         const { time, seriesData } = param
         if (!time) return
         const timeString = dayjs.unix(time).utc().format('MMM DD, YYYY, HH:mm UTC')
@@ -86,13 +116,7 @@ export function CandleStickChartBase({
     })
     chart.timeScale().subscribeVisibleLogicalRangeChange(logicalRange => {
       if (logicalRange.from < 50) {
-        // load more data
-        // const numberBarsToLoad = 50 - logicalRange.from
         handleScroll()
-        // setTimeout(() => {
-        //   setScrolling(true)
-        //   // candlestickSeries.setData(data)
-        // }, 2500) // add a loading delay
       }
     })
     return () => {
@@ -102,15 +126,37 @@ export function CandleStickChartBase({
   }, [])
 
   useEffect(() => {
-    if (series && data.length) {
+    if (candleSeries && data.length) {
       try {
-        series.setData(data)
+        candleSeries.setData(data)
         setReady(true)
       } catch (e) {
         console.error(e)
       }
     }
-  }, [data, series])
+  }, [data, candleSeries])
+
+  const histogramSeriesData = useMemo(() => {
+    if (data?.length) {
+      return data.map(bar => ({
+        time: bar.time,
+        value: bar.volume,
+        color: bar.open > bar.close ? '#ef5350' : '#26a69a',
+      }))
+    }
+    return []
+  }, [data])
+
+  useEffect(() => {
+    if (histogramSeries && histogramSeriesData?.length) {
+      try {
+        histogramSeries.setData(histogramSeriesData)
+        setReady(true)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }, [histogramSeriesData, histogramSeries])
 
   const valueToDisplay = useMemo(() => hoverClose || data[data.length - 1]?.close, [data, hoverClose])
 

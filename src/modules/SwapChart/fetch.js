@@ -135,6 +135,7 @@ const getAdvancedTokenDerivedUSDCPrices = async (
         time: getBars?.t?.[index],
         high: getBars?.h?.[index],
         low: getBars?.l?.[index],
+        volume: getBars?.v?.[index],
         tokenAddress,
       }))
 

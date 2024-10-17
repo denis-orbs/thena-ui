@@ -11,23 +11,6 @@ import { CandleStickChartBase } from './CandleStickChartBase'
 import { ChartTimeInterval } from './fetch'
 import { fetchAdvancedPairPrices } from './hooks'
 
-// const test = [
-//   { open: 10, high: 10.63, low: 9.49, close: 9.55, time: 1642427876 },
-//   { open: 9.55, high: 10.3, low: 9.42, close: 9.94, time: 1642514276 },
-//   { open: 9.94, high: 10.17, low: 9.92, close: 9.78, time: 1642600676 },
-//   { open: 9.78, high: 10.59, low: 9.18, close: 9.51, time: 1642687076 },
-//   { open: 9.51, high: 10.46, low: 9.1, close: 10.17, time: 1642773476 },
-//   { open: 10.17, high: 10.96, low: 10.16, close: 10.47, time: 1642859876 },
-//   { open: 10.47, high: 11.39, low: 10.4, close: 10.81, time: 1642946276 },
-//   { open: 10.81, high: 11.6, low: 10.3, close: 10.75, time: 1643032676 },
-//   { open: 10.75, high: 11.6, low: 10.49, close: 10.93, time: 1643119076 },
-//   { open: 10.93, high: 11.53, low: 10.76, close: 10.96, time: 1643205476 },
-// ]
-
-// const genNewBar = time =>
-//   // const currentTime = dayjs().unix()
-//   ({ open: 10.93, high: 11.53, low: 10.76, close: 10.96, time })
-
 const currentTime = dayjs().unix()
 
 const formatChartData = arr =>
@@ -51,56 +34,10 @@ function CandleStickChart({ asset0, asset1, isResetChart, setResetChart }) {
   const [timeInterval, setTimeInterval] = useState(ChartTimeInterval.MIN_30)
 
   const [loadMoreData, setLoadMoreData] = useState([])
-  // const [dataTest, setDataTest] = useState(test)
   const [isScrolling, setScrolling] = useState(false)
-  // const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [allData, setAllData] = useState([])
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setEndTimeStampFirstPage(dayjs())
-  //   }, 1000 * 60)
-
-  //   return () => clearInterval(interval)
-  // }, [])
-
-  // const handleLoadmoreData = useCallback(async () => {
-  //   if (!activeToken || !networkId || !timeInterval) return
-  //   const firstDataTime = loadMoreData[0]?.time
-  //   console.log({
-  //     firstDataTime,
-  //   })
-  //   if (firstDataTime) {
-  //     const from = Math.max(
-  //       dayjs(firstDataTime)
-  //         .subtract(Number(timeInterval) * NUMBER_CHART_DATA, 'minutes')
-  //         .startOf('minutes')
-  //         .unix(),
-  //       FUSION_MULTI_CHAIN_START_TIME[networkId],
-  //     )
-
-  //     const data =
-  //       (await fetchAdvancedPairPrices(wrappedAddress(activeToken), networkId, dayjs(from * 1000 - 1), timeInterval)) ??
-  //       []
-  //     console.log({
-  //       loadMoreData: data,
-  //     })
-  //     const newData = [...data, ...data]
-  //     setLoadMoreData([...newData])
-  //     setScrolling(false)
-  //   }
-  // }, [loadMoreData, activeToken, networkId, timeInterval])
-
-  // useEffect(() => {
-  //   if (isScrolling) {
-  //     handleLoadmoreData()
-  //   }
-  // }, [isScrolling, handleLoadmoreData])
-
-  // ---------------------------------------------OK
-
   const resetData = () => {
-    // console.log('resetData', { asset0 })
     setAllData([])
     setLoadMoreData([])
   }
