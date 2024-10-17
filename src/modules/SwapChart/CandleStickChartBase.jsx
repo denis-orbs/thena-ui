@@ -58,6 +58,9 @@ export function CandleStickChartBase({
         },
         borderVisible: false,
       },
+      timeScale: {
+        tickMarkFormatter: time => dayjs.unix(time).utc().format('HH:mm'),
+      },
     })
 
     const candlestickChartSeries = chart.addCandlestickSeries({
