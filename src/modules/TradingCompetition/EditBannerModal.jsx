@@ -53,9 +53,14 @@ export function EditBannerModal({ competition, open, onClose }) {
 
   const previewCanvasRef = useRef(null)
   const imgRef = useRef(null)
-  const parentRef = useRef(null)
-  const childRef = useRef(null)
-  useFixViewport(parentRef, childRef, { stateChecked, open })
+  const parentRef1 = useRef(null)
+  const childRef1 = useRef(null)
+  const parentRef2 = useRef(null)
+  const childRef2 = useRef(null)
+  useFixViewport(parentRef1, childRef1, { stateChecked, open })
+  useFixViewport(parentRef2, childRef2, { stateChecked, open })
+
+  const [optionSelect, setOptionSelect] = useState(1)
 
   const { exportImage } = useExportHtmlToImage()
 
@@ -129,7 +134,7 @@ export function EditBannerModal({ competition, open, onClose }) {
         }
       }
     },
-    [competition?.id, createPresignedUrl, handleUpdateTCBanner, stateChecked, userInfo.id],
+    [competition?.id, createPresignedUrl, handleUpdateTCBanner, stateChecked, userInfo?.id],
   )
 
   const exportCropToNewImage = useCallback(
@@ -174,7 +179,8 @@ export function EditBannerModal({ competition, open, onClose }) {
           callbackFn(file)
         }, selectedImage.type)
       } else {
-        const fileName = `${competition.id}.jpg`
+        const timeStamp = dayjs().unix()
+        const fileName = `${competition.id}-${timeStamp}.jpg`
 
         const file = await exportImage({ elementId: 'banner-default', fileName })
         callbackFn(file)
@@ -238,8 +244,27 @@ export function EditBannerModal({ competition, open, onClose }) {
         </div>
         {stateChecked === 'default' && (
           <>
-            <BannerPreview childRef={childRef} parentRef={parentRef} competition={competition} option={1} />
-            <BannerPreview competition={competition} idCanvas='banner-default' isView={false} option={1} />
+            <div className='relative flex flex-col space-y-5'>
+              <div className='cursor-pointer' onClick={() => setOptionSelect(1)}>
+                <BannerPreview
+                  childRef={childRef1}
+                  parentRef={parentRef1}
+                  competition={competition}
+                  option={1}
+                  isActive={optionSelect === 1}
+                />
+              </div>
+              <div className='cursor-pointer' onClick={() => setOptionSelect(2)}>
+                <BannerPreview
+                  childRef={childRef2}
+                  parentRef={parentRef2}
+                  competition={competition}
+                  option={2}
+                  isActive={optionSelect === 2}
+                />
+              </div>
+            </div>
+            <BannerPreview competition={competition} idCanvas='banner-default' isView={false} option={optionSelect} />
           </>
         )}
 
