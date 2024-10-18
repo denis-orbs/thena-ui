@@ -15,7 +15,10 @@ const currentTime = dayjs().unix()
 
 const formatChartData = arr =>
   arr
-    .filter((item, index, self) => index === self.findIndex(t => t?.time === item?.time))
+    .filter(
+      (item, index, self) =>
+        index === self.findIndex(t => t?.time === item?.time && t.tokenAddress === item.tokenAddress),
+    )
     .sort((a, b) => a.time - b.time)
 // const logData = (name, data) => {
 //   console.log(
