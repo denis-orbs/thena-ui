@@ -36,6 +36,12 @@ const grantLogos = [{ url: '/images/home/ecosystem/grants/bnbchain.svg' }]
 
 function Ecosystem() {
   const [ecosystem, setEcoSystem] = useState(data[0])
+  const isSafari = useMemo(() => {
+    const { userAgent } = navigator
+    const check = /^((?!chrome|android).)*safari/i.test(userAgent)
+    return check
+  }, [])
+
   const t = useTranslations()
   const logos = useMemo(() => {
     let arr = []
@@ -60,7 +66,7 @@ function Ecosystem() {
     <div className='relative w-full pb-20 lg:pb-36'>
       <div className='relative'>
         <Grid />
-        <GridLinesAnimation />
+        {!isSafari && <GridLinesAnimation />}
       </div>
       <div className='relative z-10 flex flex-col items-center justify-center px-11 py-16 lg:pb-[204px] lg:pt-[217px] xl:px-0'>
         <div className='mx-auto w-full  max-w-[700px]'>

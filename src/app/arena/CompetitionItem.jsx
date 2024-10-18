@@ -77,7 +77,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
   const { targetEventTime, titleForTargetTime, percentCountDown } = useTCStatus(competition?.timestamp)
 
   return !timeDistance || !entryFee || !eventType ? (
-    <Skeleton className='h-[320px] w-full' />
+    <Skeleton className='border-gradient-secondary mt-6 h-[500px] w-full rounded-xl p-px lg:h-[520px]' />
   ) : (
     <div className='border-gradient-secondary mt-6 rounded-xl p-px'>
       <Box className='flex w-full flex-col gap-3 p-4 lg:p-3 xl:gap-4 xl:p-6'>
