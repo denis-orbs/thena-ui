@@ -864,6 +864,7 @@
   "Minimum Deposit to Join": "加入所需最低存款",
   "Fixed": "固定",
   "%PNL": "%PnL 收益",
+  "Projected PNL": "Projected PNL",
   "Deposit Type Free tooltip": "接受任意存款金额。",
   "Deposit Type Fixed tooltip": "只允许固定存款金额。",
   "Win Type PNL tooltip": "参与者将根据达到的最高 %PnL 收益进行排名。与任意存款金额类型最佳搭配。",
@@ -1149,5 +1150,7 @@
   "Competitions Won": "Competitions Won",
   "Total PnL (USD)": "Total PnL (USD)",
   "Total ROI": "Total ROI",
-  "Pools per page": "Pools per page:"
+  "Pools per page": "Pools per page:",
+  "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition.",
+  "Registration Successful": "Registration Successful"
 }

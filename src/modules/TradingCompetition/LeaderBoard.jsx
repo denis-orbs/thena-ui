@@ -1,7 +1,7 @@
 import { compact, isNil } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { UserProfileCard } from '@/components/image/UserProfileCard'
 import Table from '@/components/table'
@@ -34,7 +34,14 @@ function RankElement({ rank }) {
   }
 }
 
-export function LeaderBoard({ competition, searchText = '', setSearchText, competitionAccount = undefined }) {
+export function LeaderBoard({
+  competition,
+  searchText = '',
+  setSearchText,
+  competitionAccount = undefined,
+  sort,
+  setSort,
+}) {
   const { eventType } = useEventType(competition?.timestamp)
   const [currentPage, setCurrentPage] = useState(1)
   const { account } = useWallet()
@@ -42,21 +49,18 @@ export function LeaderBoard({ competition, searchText = '', setSearchText, compe
   const { push } = useRouter()
   const t = useTranslations()
 
-  const handleParticipants = useMemo(
-    () => data => {
-      if (Array.isArray(data?.participants)) {
-        let arr = [...(data?.participants || [])]
-        arr = arr.map(item => ({
-          ...item,
-          winAmount: item.winAmounts?.length ? item.winAmounts : new Array(data?.prizeUpdate?.token?.length).fill('0'),
-          winAmounts: undefined,
-        }))
-        return arr
-      }
-      return []
-    },
-    [],
-  )
+  const handleParticipants = useCallback(data => {
+    if (Array.isArray(data?.participants)) {
+      let arr = [...(data?.participants || [])]
+      arr = arr.map(item => ({
+        ...item,
+        winAmount: item.winAmounts?.length ? item.winAmounts : new Array(data?.prizeUpdate?.token?.length).fill('0'),
+        winAmounts: undefined,
+      }))
+      return arr
+    }
+    return []
+  }, [])
 
   const participants = useMemo(() => handleParticipants(competition), [competition, handleParticipants])
 
@@ -65,8 +69,8 @@ export function LeaderBoard({ competition, searchText = '', setSearchText, compe
     [competitionAccount, handleParticipants],
   )
 
-  const handleRenderFinalData = useMemo(
-    () => data => {
+  const handleRenderFinalData = useCallback(
+    data => {
       const result = data.map(leader => {
         const pnl = fromWei(leader.pnl, leader.competitionRules?.winningTokenDecimal)
 
@@ -89,6 +93,16 @@ export function LeaderBoard({ competition, searchText = '', setSearchText, compe
             >
               {`${formatAmount(pnl, false, 5, false)}
             ${competition?.competitionRules?.winningToken?.symbol || ''}`}
+            </Paragraph>
+          ),
+          projectedPnl: (
+            <Paragraph
+              className={`${
+                leader.projectedPnl < 0 ? 'text-red-500' : leader.projectedPnl > 0 ? 'text-green-500' : ''
+              }`}
+              title={`${formatNumberDecimals(leader.projectedPnl * 100, 12)}%`}
+            >
+              {`${formatNumberDecimals(leader.projectedPnl * 100, 4)}%`}
             </Paragraph>
           ),
           reward: (
@@ -164,11 +178,17 @@ export function LeaderBoard({ competition, searchText = '', setSearchText, compe
           isDesc: true,
           disabled: true,
         },
+        competition?.market === TC_MARKET_TYPES.SPOT &&
+          eventType === EVENT_TYPES.LIVE && {
+            label: 'Projected PNL',
+            value: 'projectedPnl',
+            width: 'w-[30%]',
+            isDesc: true,
+            disabled: false,
+          },
       ]),
     [competition?.market, competition?.prizeUpdate?.winType, eventType],
   )
-
-  const [sort, setSort] = useState(sortOptions[0])
 
   const dataParticipants = useMemo(
     () =>

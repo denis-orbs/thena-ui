@@ -22,8 +22,6 @@ function EditTCTagModal({ competition, onClose }) {
     })
   }
 
-  console.log({ competition })
-
   if (isLoadingTcTags) {
     return <Loading />
   }

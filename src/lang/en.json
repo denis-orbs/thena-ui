@@ -866,6 +866,7 @@
   "Minimum Deposit to Join": "Minimum Deposit to Join",
   "Fixed": "Fixed",
   "%PNL": "%PNL",
+  "Projected PNL": "Projected PNL",
   "Deposit Type Free tooltip": "Any deposit amount is acceptable.",
   "Deposit Type Fixed tooltip": "Only a fixed amount of deposit will be allowed.",
   "Win Type PNL tooltip": "Participants will be ranked based on the highest %PnL achieved. Paired best with Free Deposit Type.",
@@ -1150,5 +1151,6 @@
   "Total PnL (USD)": "Total PnL (USD)",
   "Total ROI": "Total ROI",
   "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition.",
-  "Pools per page": "Pools per page:"
+  "Pools per page": "Pools per page:",
+  "Registration Successful": "Registration Successful"
 }

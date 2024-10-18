@@ -382,13 +382,6 @@ function Header() {
         isHighlight: true,
       },
       {
-        label: 'T2E',
-        active: pathname.includes('/trade-to-earn'),
-        onClickHandler: () => {
-          push('/trade-to-earn')
-        },
-      },
-      {
         label: 'More',
         active: pathname.includes('/analytics') || pathname.includes('/protocols'),
         sub:
@@ -421,6 +414,12 @@ function Header() {
                   subheading: t('Vote for governance proposals'),
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
                 },
+                {
+                  heading: 'T2E',
+                  onClickHandler: () => {
+                    push('/trade-to-earn')
+                  },
+                },
               ]
             : [
                 {
@@ -444,6 +443,12 @@ function Header() {
                   heading: t('Governance'),
                   subheading: t('Vote for governance proposals'),
                   onClickHandler: () => window.open('https://governance.thena.fi/', '_blank'),
+                },
+                {
+                  heading: 'T2E',
+                  onClickHandler: () => {
+                    push('/trade-to-earn')
+                  },
                 },
               ],
       },

@@ -258,7 +258,7 @@ function TopUser() {
   const offset = useMemo(() => (currentPage - 1) * pageSize, [currentPage, pageSize])
 
   const { data: topUsers, isLoading } = useSWR(
-    ['top users api', userFilter, sort, offset, pageSize, activeTab.period],
+    ['top users api', userFilter, sort, offset, pageSize, activeTab.period, account],
     () => fetchUsers(account?.toLowerCase() || '', sort, userFilter, period, offset, pageSize),
   )
 

@@ -1,5 +1,7 @@
 import dayjs from 'dayjs'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
+import Banner from 'public/images/arena/tc_cover_image.png'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop'
@@ -13,9 +15,13 @@ import Spinner from '@/components/spinner'
 import { TextSubHeading } from '@/components/typography'
 import { useUserInfo } from '@/context/userInfoContext'
 import useDebounce from '@/hooks/useDebounce'
+import { useExportHtmlToImage } from '@/hooks/useExportHtmlToImage'
+import { useFixViewport } from '@/hooks/useFixViewPort'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import { errorToast, successToast } from '@/lib/notify'
+import { cn } from '@/lib/utils'
 
+import BannerPreview from './BannerPreview'
 import { canvasPreview } from './canvasPreview'
 import { resizeFile, useUpdateTCBanner } from '../Arena/hooks/competitions'
 
@@ -50,6 +56,16 @@ export function EditBannerModal({ competition, open, onClose }) {
 
   const previewCanvasRef = useRef(null)
   const imgRef = useRef(null)
+  const parentRef1 = useRef(null)
+  const childRef1 = useRef(null)
+  const parentRef2 = useRef(null)
+  const childRef2 = useRef(null)
+  useFixViewport(parentRef1, childRef1, { stateChecked, open })
+  useFixViewport(parentRef2, childRef2, { stateChecked, open })
+
+  const [optionSelect, setOptionSelect] = useState(3)
+
+  const { exportImage } = useExportHtmlToImage()
 
   const debounceCompleteCrop = useDebounce(completedCrop, 100)
 
@@ -83,8 +99,9 @@ export function EditBannerModal({ competition, open, onClose }) {
     async file => {
       if (userInfo?.id && competition?.id) {
         setLoading(true)
-        if (stateChecked === 'default') {
+        if (stateChecked === 'default' && !file) {
           await handleUpdateTCBanner(null)
+          mutate('competition detail api')
         } else {
           // Resize before upload
           let resizedFile = ''
@@ -113,6 +130,7 @@ export function EditBannerModal({ competition, open, onClose }) {
                 setLoading(false)
               },
             )
+            mutate('competition detail api')
           } else {
             errorToast('Error')
             setLoading(false)
@@ -120,51 +138,61 @@ export function EditBannerModal({ competition, open, onClose }) {
         }
       }
     },
-    [competition?.id, createPresignedUrl, handleUpdateTCBanner, stateChecked, userInfo.id],
+    [competition?.id, createPresignedUrl, handleUpdateTCBanner, stateChecked, userInfo?.id],
   )
 
   const exportCropToNewImage = useCallback(
     async callbackFn => {
-      const image = imgRef.current
-      const previewCanvas = previewCanvasRef.current
-      if (!image || !previewCanvas || !completedCrop) {
-        errorToast('Crop canvas does not exist', null, null, false)
-      }
+      if (stateChecked === 'custom') {
+        const image = imgRef.current
+        const previewCanvas = previewCanvasRef.current
+        if (!image || !previewCanvas || !completedCrop) {
+          errorToast('Crop canvas does not exist', null, null, false)
+        }
 
-      const scaleX = image.naturalWidth / image.width
-      const scaleY = image.naturalHeight / image.height
+        const scaleX = image.naturalWidth / image.width
+        const scaleY = image.naturalHeight / image.height
 
-      const offscreen = document.createElement('canvas')
-      offscreen.width = completedCrop.width * scaleX
-      offscreen.height = completedCrop.height * scaleY
+        const offscreen = document.createElement('canvas')
+        offscreen.width = completedCrop.width * scaleX
+        offscreen.height = completedCrop.height * scaleY
 
-      const ctx = offscreen.getContext('2d')
-      if (!ctx) {
-        errorToast('No 2d context', null, null, false)
-      }
+        const ctx = offscreen.getContext('2d')
+        if (!ctx) {
+          errorToast('No 2d context', null, null, false)
+        }
 
-      ctx.drawImage(
-        previewCanvas,
-        0,
-        0,
-        previewCanvas.width,
-        previewCanvas.height,
-        0,
-        0,
-        offscreen.width,
-        offscreen.height,
-      )
+        ctx.drawImage(
+          previewCanvas,
+          0,
+          0,
+          previewCanvas.width,
+          previewCanvas.height,
+          0,
+          0,
+          offscreen.width,
+          offscreen.height,
+        )
 
-      offscreen.toBlob(blob => {
-        const [originName, extension] = selectedImage.name.split('.')
+        offscreen.toBlob(blob => {
+          const [originName, extension] = selectedImage.name.split('.')
+          const timeStamp = dayjs().unix()
+          const newName = `${originName}-${timeStamp}.${extension}`
+
+          const file = new File([blob], newName, { type: selectedImage.type })
+          callbackFn(file)
+        }, selectedImage?.type)
+      } else if (optionSelect !== 3) {
         const timeStamp = dayjs().unix()
-        const newName = `${originName}-${timeStamp}.${extension}`
+        const fileName = `${competition.id}-${timeStamp}.jpg`
 
-        const file = new File([blob], newName, { type: selectedImage.type })
+        const file = await exportImage({ elementId: 'banner-default', fileName })
         callbackFn(file)
-      }, selectedImage.type)
+      } else {
+        callbackFn(null)
+      }
     },
-    [completedCrop, selectedImage],
+    [competition?.id, completedCrop, exportImage, optionSelect, selectedImage?.name, selectedImage?.type, stateChecked],
   )
 
   const handleSave = useCallback(() => {
@@ -220,6 +248,49 @@ export function EditBannerModal({ competition, open, onClose }) {
             <TextSubHeading>{t('Use Custom Banner')}</TextSubHeading>
           </div>
         </div>
+        {stateChecked === 'default' && (
+          <>
+            <div className='relative flex flex-col space-y-5'>
+              <div className='cursor-pointer' onClick={() => setOptionSelect(3)}>
+                <Image
+                  alt='background'
+                  src={Banner.src}
+                  fill
+                  objectFit='fill'
+                  className={cn(
+                    '-z-1 !relative bottom-0 left-0 right-0 top-0 aspect-video rounded-xl',
+                    optionSelect === 3 ? 'box-sha box-border rounded-xl border-[5px] border-white shadow-2xl' : '',
+                  )}
+                />
+              </div>
+              {competition?.competitionRules?.tradingTokens.length > 0 && (
+                <>
+                  <div className='cursor-pointer' onClick={() => setOptionSelect(1)}>
+                    <BannerPreview
+                      childRef={childRef1}
+                      parentRef={parentRef1}
+                      competition={competition}
+                      option={1}
+                      isActive={optionSelect === 1}
+                    />
+                  </div>
+                  <div className='cursor-pointer' onClick={() => setOptionSelect(2)}>
+                    <BannerPreview
+                      childRef={childRef2}
+                      parentRef={parentRef2}
+                      competition={competition}
+                      option={2}
+                      isActive={optionSelect === 2}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+            {optionSelect !== 3 && (
+              <BannerPreview competition={competition} idCanvas='banner-default' isView={false} option={optionSelect} />
+            )}
+          </>
+        )}
 
         {stateChecked === 'custom' && (
           <>
