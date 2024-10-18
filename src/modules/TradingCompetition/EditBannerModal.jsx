@@ -13,9 +13,12 @@ import Spinner from '@/components/spinner'
 import { TextSubHeading } from '@/components/typography'
 import { useUserInfo } from '@/context/userInfoContext'
 import useDebounce from '@/hooks/useDebounce'
+import { useExportHtmlToImage } from '@/hooks/useExportHtmlToImage'
+import { useFixViewport } from '@/hooks/useFixViewPort'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import { errorToast, successToast } from '@/lib/notify'
 
+import BannerPreview from './BannerPreview'
 import { canvasPreview } from './canvasPreview'
 import { resizeFile, useUpdateTCBanner } from '../Arena/hooks/competitions'
 
@@ -50,6 +53,11 @@ export function EditBannerModal({ competition, open, onClose }) {
 
   const previewCanvasRef = useRef(null)
   const imgRef = useRef(null)
+  const parentRef = useRef(null)
+  const childRef = useRef(null)
+  useFixViewport(parentRef, childRef, { stateChecked, open })
+
+  const { exportImage } = useExportHtmlToImage()
 
   const debounceCompleteCrop = useDebounce(completedCrop, 100)
 
@@ -83,7 +91,7 @@ export function EditBannerModal({ competition, open, onClose }) {
     async file => {
       if (userInfo?.id && competition?.id) {
         setLoading(true)
-        if (stateChecked === 'default') {
+        if (stateChecked === 'default' && !file) {
           await handleUpdateTCBanner(null)
         } else {
           // Resize before upload
@@ -113,6 +121,7 @@ export function EditBannerModal({ competition, open, onClose }) {
                 setLoading(false)
               },
             )
+            mutate('competition detail api')
           } else {
             errorToast('Error')
             setLoading(false)
@@ -125,46 +134,53 @@ export function EditBannerModal({ competition, open, onClose }) {
 
   const exportCropToNewImage = useCallback(
     async callbackFn => {
-      const image = imgRef.current
-      const previewCanvas = previewCanvasRef.current
-      if (!image || !previewCanvas || !completedCrop) {
-        errorToast('Crop canvas does not exist', null, null, false)
-      }
+      if (stateChecked === 'custom') {
+        const image = imgRef.current
+        const previewCanvas = previewCanvasRef.current
+        if (!image || !previewCanvas || !completedCrop) {
+          errorToast('Crop canvas does not exist', null, null, false)
+        }
 
-      const scaleX = image.naturalWidth / image.width
-      const scaleY = image.naturalHeight / image.height
+        const scaleX = image.naturalWidth / image.width
+        const scaleY = image.naturalHeight / image.height
 
-      const offscreen = document.createElement('canvas')
-      offscreen.width = completedCrop.width * scaleX
-      offscreen.height = completedCrop.height * scaleY
+        const offscreen = document.createElement('canvas')
+        offscreen.width = completedCrop.width * scaleX
+        offscreen.height = completedCrop.height * scaleY
 
-      const ctx = offscreen.getContext('2d')
-      if (!ctx) {
-        errorToast('No 2d context', null, null, false)
-      }
+        const ctx = offscreen.getContext('2d')
+        if (!ctx) {
+          errorToast('No 2d context', null, null, false)
+        }
 
-      ctx.drawImage(
-        previewCanvas,
-        0,
-        0,
-        previewCanvas.width,
-        previewCanvas.height,
-        0,
-        0,
-        offscreen.width,
-        offscreen.height,
-      )
+        ctx.drawImage(
+          previewCanvas,
+          0,
+          0,
+          previewCanvas.width,
+          previewCanvas.height,
+          0,
+          0,
+          offscreen.width,
+          offscreen.height,
+        )
 
-      offscreen.toBlob(blob => {
-        const [originName, extension] = selectedImage.name.split('.')
-        const timeStamp = dayjs().unix()
-        const newName = `${originName}-${timeStamp}.${extension}`
+        offscreen.toBlob(blob => {
+          const [originName, extension] = selectedImage.name.split('.')
+          const timeStamp = dayjs().unix()
+          const newName = `${originName}-${timeStamp}.${extension}`
 
-        const file = new File([blob], newName, { type: selectedImage.type })
+          const file = new File([blob], newName, { type: selectedImage.type })
+          callbackFn(file)
+        }, selectedImage.type)
+      } else {
+        const fileName = `${competition.id}.jpg`
+
+        const file = await exportImage({ elementId: 'banner-default', fileName })
         callbackFn(file)
-      }, selectedImage.type)
+      }
     },
-    [completedCrop, selectedImage],
+    [competition.id, completedCrop, exportImage, selectedImage, stateChecked],
   )
 
   const handleSave = useCallback(() => {
@@ -220,6 +236,12 @@ export function EditBannerModal({ competition, open, onClose }) {
             <TextSubHeading>{t('Use Custom Banner')}</TextSubHeading>
           </div>
         </div>
+        {stateChecked === 'default' && (
+          <>
+            <BannerPreview childRef={childRef} parentRef={parentRef} competition={competition} option={1} />
+            <BannerPreview competition={competition} idCanvas='banner-default' isView={false} option={1} />
+          </>
+        )}
 
         {stateChecked === 'custom' && (
           <>
