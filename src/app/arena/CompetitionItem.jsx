@@ -77,10 +77,12 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
   const { targetEventTime, titleForTargetTime, percentCountDown } = useTCStatus(competition?.timestamp)
 
   return !timeDistance || !entryFee || !eventType ? (
-    <Skeleton className='border-gradient-secondary mt-6 h-[500px] w-full rounded-xl p-px lg:h-[520px]' />
+    <div className='border-gradient-secondary mt-6 rounded-xl p-px'>
+      <Skeleton className='h-full min-h-[500px] w-full rounded-xl p-px lg:min-h-[520px]' />
+    </div>
   ) : (
     <div className='border-gradient-secondary mt-6 rounded-xl p-px'>
-      <Box className='flex w-full flex-col gap-3 p-4 lg:p-3 xl:gap-4 xl:p-6'>
+      <Box className='flex h-full w-full flex-col gap-3 p-4 lg:p-3 xl:gap-4 xl:p-6'>
         <div>
           <div className='relative'>
             <CompetitionCardHeader
@@ -158,7 +160,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
         </div>
 
         <div className='flex flex-1 flex-col'>
-          <h3 title={competition.name} className='mb-3'>
+          <h3 title={competition.name} className='mb-3 line-clamp-2'>
             {competition.name}
           </h3>
           <div className='mb-3 flex w-full flex-1 items-start justify-start gap-6'>

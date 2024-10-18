@@ -12,7 +12,7 @@ export function LoadingIndicator({ color = 'primary', className, ...props }) {
 
   return (
     <svg className={cn('h-5 w-5 animate-spin', className)} viewBox='0 0 100 100' {...props}>
-      <foreignObject className='origin-center animate-spin' clipPath='url(#clip)' x='0' y='0' width='100' height='100'>
+      <foreignObject className='origin-center' clipPath='url(#clip)' x='0' y='0' width='100' height='100'>
         <div className={cn('h-full w-full rounded-full', currentColor)} xmlns='http://www.w3.org/1999/xhtml' />
       </foreignObject>
       {/* Clipping the conic gradient to a circle */}
