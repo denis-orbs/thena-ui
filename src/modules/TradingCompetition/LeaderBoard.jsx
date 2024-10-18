@@ -164,14 +164,6 @@ export function LeaderBoard({
               disabled: true,
             }
           : undefined,
-        competition?.market === TC_MARKET_TYPES.SPOT &&
-          eventType === EVENT_TYPES.ENDED && {
-            label: 'Projected PNL',
-            value: 'projectedPnl',
-            width: 'w-[30%]',
-            isDesc: true,
-            disabled: false,
-          },
         {
           label: 'Profit & Loss',
           value: 'pnl',
@@ -186,6 +178,14 @@ export function LeaderBoard({
           isDesc: true,
           disabled: true,
         },
+        competition?.market === TC_MARKET_TYPES.SPOT &&
+          eventType === EVENT_TYPES.LIVE && {
+            label: 'Projected PNL',
+            value: 'projectedPnl',
+            width: 'w-[30%]',
+            isDesc: true,
+            disabled: false,
+          },
       ]),
     [competition?.market, competition?.prizeUpdate?.winType, eventType],
   )

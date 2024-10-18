@@ -85,7 +85,7 @@ const HIDDEN_POOLS = [
 
 export default function VotePage() {
   const [searchText, setSearchText] = useState('')
-  const [numberOfPage, setNumberOfPage] = useState(10)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
   const [isVoted, setIsVoted] = useState(false)
   const [veTHEId, setVeTHEId] = useState(null)
   const [sort, setSort] = useState(sortOptions[3])
@@ -501,8 +501,11 @@ export default function VotePage() {
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             showNumberOfPage
-            pageSize={numberOfPage}
-            setNumberOfPage={setNumberOfPage}
+            pageSize={itemsPerPage}
+            setNumberOfPage={item => {
+              setItemsPerPage(item)
+              setCurrentPage(1)
+            }}
           />
         </div>
         {account && (
