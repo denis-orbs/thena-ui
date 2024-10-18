@@ -86,6 +86,7 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
           </div>
         </div>
       )}
+      <div className='hidden grid-cols-4' />
       {option === 2 && (
         <div ref={parentRef}>
           <div
