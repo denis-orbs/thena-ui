@@ -866,6 +866,7 @@
   "Minimum Deposit to Join": "Minimum Deposit to Join",
   "Fixed": "Fixed",
   "%PNL": "%PNL",
+  "Projected PNL": "Projected PNL",
   "Deposit Type Free tooltip": "Any deposit amount is acceptable.",
   "Deposit Type Fixed tooltip": "Only a fixed amount of deposit will be allowed.",
   "Win Type PNL tooltip": "Participants will be ranked based on the highest %PnL achieved. Paired best with Free Deposit Type.",

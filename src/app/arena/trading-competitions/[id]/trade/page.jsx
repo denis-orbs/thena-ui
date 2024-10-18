@@ -19,12 +19,19 @@ import { TradeHistory } from '@/modules/TradingCompetition/TradeHistory'
 function TradePage({ params }) {
   const { id } = useParams()
   const { account } = useWallet()
+  const [sort, setSort] = useState({
+    label: <span>#</span>,
+    value: 'rank',
+    width: 'w-[10%]',
+    isDesc: false,
+    disabled: true,
+  })
 
   const [selectedTab, setSelectedTab] = useState('leaderboard')
 
   const [searchText, setSearchText] = useState('')
 
-  const { competition, isLoading } = useTradingCompetitionLeaderBoard(params.id, searchText?.toLowerCase())
+  const { competition, isLoading } = useTradingCompetitionLeaderBoard(params.id, searchText?.toLowerCase(), sort)
   const { competitionAccount, isLoading: isLoadingAccount } = useTradingCompetitionByAccount(id, account?.toLowerCase())
 
   const { eventType } = useEventType(competition?.timestamp)
@@ -65,6 +72,8 @@ function TradePage({ params }) {
             setSearchText={setSearchText}
             searchText={searchText}
             competitionAccount={competitionAccount}
+            sort={sort}
+            setSort={setSort}
           />
         )}
       </TabPanel>

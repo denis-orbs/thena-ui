@@ -187,11 +187,8 @@ function CompetitionDetailLayout({ children, params }) {
   )
 
   const enableEditBanner = useMemo(
-    () =>
-      (userInfo?.id === competition?.owner?.id && competition?.owner?.isVerified) ||
-      userInfo?.isAdmin ||
-      userInfo?.isSuperAdmin,
-    [userInfo?.isAdmin, userInfo?.isSuperAdmin, competition?.owner?.isVerified, competition?.owner?.id, userInfo?.id],
+    () => userInfo?.id === competition?.owner?.id || userInfo?.isAdmin || userInfo?.isSuperAdmin,
+    [userInfo?.isAdmin, userInfo?.isSuperAdmin, competition?.owner?.id, userInfo?.id],
   )
 
   const enableEditTag = useMemo(

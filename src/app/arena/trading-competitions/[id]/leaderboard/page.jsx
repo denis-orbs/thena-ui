@@ -14,10 +14,17 @@ import { LeaderBoard } from '@/modules/TradingCompetition/LeaderBoard'
 function LeaderBoardPage() {
   const { id } = useParams()
   const { account } = useWallet()
+  const [sort, setSort] = useState({
+    label: <span>#</span>,
+    value: 'rank',
+    width: 'w-[10%]',
+    isDesc: false,
+    disabled: true,
+  })
 
   const [searchText, setSearchText] = useState('')
 
-  const { competition, isLoading: isLoading1 } = useTradingCompetitionLeaderBoard(id, searchText?.toLowerCase())
+  const { competition, isLoading: isLoading1 } = useTradingCompetitionLeaderBoard(id, searchText?.toLowerCase(), sort)
 
   const { competitionAccount, isLoading: isLoading2 } = useTradingCompetitionByAccount(id, account?.toLowerCase())
 
@@ -32,6 +39,8 @@ function LeaderBoardPage() {
         competition={competition}
         searchText={searchText}
         setSearchText={setSearchText}
+        sort={sort}
+        setSort={setSort}
       />
     </>
   )
