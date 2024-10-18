@@ -1,5 +1,7 @@
 import dayjs from 'dayjs'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
+import Banner from 'public/images/arena/tc_cover_image.png'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop'
@@ -17,6 +19,7 @@ import { useExportHtmlToImage } from '@/hooks/useExportHtmlToImage'
 import { useFixViewport } from '@/hooks/useFixViewPort'
 import { useCreatePresignedUrl } from '@/hooks/useUploadFile'
 import { errorToast, successToast } from '@/lib/notify'
+import { cn } from '@/lib/utils'
 
 import BannerPreview from './BannerPreview'
 import { canvasPreview } from './canvasPreview'
@@ -60,7 +63,7 @@ export function EditBannerModal({ competition, open, onClose }) {
   useFixViewport(parentRef1, childRef1, { stateChecked, open })
   useFixViewport(parentRef2, childRef2, { stateChecked, open })
 
-  const [optionSelect, setOptionSelect] = useState(1)
+  const [optionSelect, setOptionSelect] = useState(3)
 
   const { exportImage } = useExportHtmlToImage()
 
@@ -98,6 +101,7 @@ export function EditBannerModal({ competition, open, onClose }) {
         setLoading(true)
         if (stateChecked === 'default' && !file) {
           await handleUpdateTCBanner(null)
+          mutate('competition detail api')
         } else {
           // Resize before upload
           let resizedFile = ''
@@ -177,16 +181,18 @@ export function EditBannerModal({ competition, open, onClose }) {
 
           const file = new File([blob], newName, { type: selectedImage.type })
           callbackFn(file)
-        }, selectedImage.type)
-      } else {
+        }, selectedImage?.type)
+      } else if (optionSelect !== 3) {
         const timeStamp = dayjs().unix()
         const fileName = `${competition.id}-${timeStamp}.jpg`
 
         const file = await exportImage({ elementId: 'banner-default', fileName })
         callbackFn(file)
+      } else {
+        callbackFn(null)
       }
     },
-    [competition.id, completedCrop, exportImage, selectedImage, stateChecked],
+    [competition?.id, completedCrop, exportImage, optionSelect, selectedImage?.name, selectedImage?.type, stateChecked],
   )
 
   const handleSave = useCallback(() => {
@@ -245,26 +251,44 @@ export function EditBannerModal({ competition, open, onClose }) {
         {stateChecked === 'default' && (
           <>
             <div className='relative flex flex-col space-y-5'>
-              <div className='cursor-pointer' onClick={() => setOptionSelect(1)}>
-                <BannerPreview
-                  childRef={childRef1}
-                  parentRef={parentRef1}
-                  competition={competition}
-                  option={1}
-                  isActive={optionSelect === 1}
+              <div className='cursor-pointer' onClick={() => setOptionSelect(3)}>
+                <Image
+                  alt='background'
+                  src={Banner.src}
+                  fill
+                  objectFit='fill'
+                  className={cn(
+                    '-z-1 !relative bottom-0 left-0 right-0 top-0 aspect-video rounded-xl',
+                    optionSelect === 3 ? 'box-sha box-border rounded-xl border-[5px] border-white shadow-2xl' : '',
+                  )}
                 />
               </div>
-              <div className='cursor-pointer' onClick={() => setOptionSelect(2)}>
-                <BannerPreview
-                  childRef={childRef2}
-                  parentRef={parentRef2}
-                  competition={competition}
-                  option={2}
-                  isActive={optionSelect === 2}
-                />
-              </div>
+              {competition?.competitionRules?.tradingTokens.length > 0 && (
+                <>
+                  <div className='cursor-pointer' onClick={() => setOptionSelect(1)}>
+                    <BannerPreview
+                      childRef={childRef1}
+                      parentRef={parentRef1}
+                      competition={competition}
+                      option={1}
+                      isActive={optionSelect === 1}
+                    />
+                  </div>
+                  <div className='cursor-pointer' onClick={() => setOptionSelect(2)}>
+                    <BannerPreview
+                      childRef={childRef2}
+                      parentRef={parentRef2}
+                      competition={competition}
+                      option={2}
+                      isActive={optionSelect === 2}
+                    />
+                  </div>
+                </>
+              )}
             </div>
-            <BannerPreview competition={competition} idCanvas='banner-default' isView={false} option={optionSelect} />
+            {optionSelect !== 3 && (
+              <BannerPreview competition={competition} idCanvas='banner-default' isView={false} option={optionSelect} />
+            )}
           </>
         )}
 
