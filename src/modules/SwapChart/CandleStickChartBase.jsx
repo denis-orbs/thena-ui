@@ -272,7 +272,7 @@ export function CandleStickChartBase({
         <Tabs data={periods} />
       </div>
 
-      <div className='relative mt-2 flex h-[222px] items-center justify-center'>
+      <div className='relative mt-2 flex h-[284px] items-center justify-center'>
         {data.error && <Paragraph>Failed to load price chart for this pair</Paragraph>}
         {!isReady && <Skeleton className='absolute' />}
         <div className='flex h-full w-full flex-1'>
