@@ -458,7 +458,7 @@ export const useWithdrawToTCPerp = () => {
   return { loading, withdrawTCPerp }
 }
 
-export const MUON_BSC_URLS = ['https://crypto-v3-shield.deus.finance/v1/', 'https://crypto-v3-shield2.deus.finance/v1/']
+export const MUON_BSC_URLS = ['/crypto-v3-shield-deus-finance/v1/', '/crypto-v3-shield2-deus-finance/v1/']
 
 export const APP_NAME = 'symmio'
 
@@ -502,7 +502,15 @@ export const useDeallocateTCPerp = () => {
 
       if (requestParams instanceof Error) throw new Error(requestParams.message)
 
-      for (const url of MUON_BSC_URLS) {
+      let fullUrls = []
+      if (typeof window !== 'undefined') {
+        const baseUrl = window.location.origin
+        fullUrls = MUON_BSC_URLS.map(path => new URL(path, baseUrl).href)
+      }
+
+      let checkError = null
+
+      for (const url of fullUrls) {
         try {
           const MuonURL = new URL(url)
           MuonURL.searchParams.set('app', 'symmio')
@@ -512,15 +520,18 @@ export const useDeallocateTCPerp = () => {
           })
 
           let response = await fetch(MuonURL)
-          if (response.ok) {
-            response = await response.json()
-          } else {
-            throw new Error(response.statusText)
-          }
-          result = response.result
-          success = response.success
 
-          break // Exit the loop if successful
+          if (response.ok) {
+            checkError = null
+            response = await response.json()
+            result = response.result
+            success = response.success
+            if (success) {
+              break // Exit the loop if successful
+            }
+          } else {
+            checkError = response.statusText
+          }
         } catch (error) {
           console.log('Retrying with the next URL...')
           toast.update(toastId, {
@@ -533,8 +544,12 @@ export const useDeallocateTCPerp = () => {
         }
       }
 
+      if (checkError) {
+        throw new Error(checkError)
+      }
+
       if (!success) {
-        throw new Error('')
+        throw new Error('Error')
       }
 
       toast.update(toastId, {
