@@ -1,3 +1,5 @@
+'use client'
+
 import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
@@ -458,7 +460,7 @@ export const useWithdrawToTCPerp = () => {
   return { loading, withdrawTCPerp }
 }
 
-export const MUON_BSC_URLS = ['/crypto-v3-shield-deus-finance/v1/', '/crypto-v3-shield2-deus-finance/v1/']
+export const MUON_BSC_URLS = ['https://crypto-v3-shield2.deus.finance/v1/', 'https://crypto-v3-shield.deus.finance/v1/']
 
 export const APP_NAME = 'symmio'
 
@@ -502,15 +504,9 @@ export const useDeallocateTCPerp = () => {
 
       if (requestParams instanceof Error) throw new Error(requestParams.message)
 
-      let fullUrls = []
-      if (typeof window !== 'undefined') {
-        const baseUrl = window.location.origin
-        fullUrls = MUON_BSC_URLS.map(path => new URL(path, baseUrl).href)
-      }
-
       let checkError = null
 
-      for (const url of fullUrls) {
+      for (const url of MUON_BSC_URLS) {
         try {
           const MuonURL = new URL(url)
           MuonURL.searchParams.set('app', 'symmio')
@@ -518,8 +514,11 @@ export const useDeallocateTCPerp = () => {
           requestParams.forEach(param => {
             MuonURL.searchParams.append(`params[${param[0]}]`, param[1])
           })
+          MuonURL.searchParams.append('t', Date.now())
 
-          let response = await fetch(MuonURL)
+          let response = await fetch(MuonURL, {
+            signal: AbortSignal.timeout(20000),
+          })
 
           if (response.ok) {
             checkError = null
@@ -533,18 +532,19 @@ export const useDeallocateTCPerp = () => {
             checkError = response.statusText
           }
         } catch (error) {
-          console.log('Retrying with the next URL...')
-          toast.update(toastId, {
-            autoClose: 5000,
-            closeButton: true,
-            render: 'request failed',
-            isLoading: false,
-            type: 'error',
-          })
+          checkError = error.message
+          console.log('Retrying with the next URL...', url)
         }
       }
 
       if (checkError) {
+        toast.update(toastId, {
+          autoClose: 5000,
+          closeButton: true,
+          render: 'request failed',
+          isLoading: false,
+          type: 'error',
+        })
         throw new Error(checkError)
       }
 
