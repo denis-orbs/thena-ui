@@ -111,14 +111,6 @@ const nextConfig = {
         source: '/logo-token/:path*',
         destination: 'https://cdn.thena.fi/:path*',
       },
-      {
-        source: '/crypto-v3-shield-deus-finance/:path*',
-        destination: 'https://crypto-v3-shield.deus.finance/:path*',
-      },
-      {
-        source: '/crypto-v3-shield2-deus-finance/:path*',
-        destination: 'https://crypto-v3-shield2.deus.finance/:path*',
-      },
     ]
   },
 }
