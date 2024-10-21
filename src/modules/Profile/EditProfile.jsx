@@ -12,6 +12,7 @@ import './style.css'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Input from '@/components/input'
+import Spinner from '@/components/spinner'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
@@ -34,6 +35,7 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
 
   const [showCustomColor, setShowCustomColor] = useState(false)
   const [openCheckMarkIcon, setOpenCheckMarkIcon] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const [dataUpdate, setDataUpdate] = useState({
     biography: userInfo?.biography ?? null,
@@ -57,17 +59,23 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
         return errorToast('Error', 'Invalid Website URL')
       }
     }
-    await updateArenaProfile({ ...dataUpdate }, data => {
-      if (data !== false) {
-        if (isAdmin && userInfo.id === account.toLowerCase()) {
-          mutate(['fetchUserInfo', account])
+    setLoading(true)
+    await updateArenaProfile(
+      { ...dataUpdate },
+      data => {
+        setLoading(false)
+        if (data !== false) {
+          if (isAdmin && userInfo.id === account.toLowerCase()) {
+            mutate(['fetchUserInfo', account])
+          }
+          mutateUserInfo({
+            ...userInfo,
+            ...data,
+          })
         }
-        mutateUserInfo({
-          ...userInfo,
-          ...data,
-        })
-      }
-    })
+      },
+      () => setLoading(false),
+    )
   }, [account, dataUpdate, isAdmin, mutateUserInfo, updateArenaProfile, userInfo])
 
   useEffect(() => {
@@ -274,7 +282,10 @@ export function EditProfile({ userInfo, mutateUserInfo, isAdmin = false }) {
         <div className='flex flex-col lg:flex-row'>
           <div className='flex flex-1 flex-col gap-3' />
           <div className='flex-2'>
-            <PrimaryButton onClick={handleSave}>{t('Save Changes')}</PrimaryButton>
+            <PrimaryButton onClick={handleSave} disabled={loading}>
+              {loading && <Spinner />}
+              {t('Save Changes')}
+            </PrimaryButton>
           </div>
         </div>
       </Box>
