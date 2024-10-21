@@ -1,10 +1,17 @@
 import Image from 'next/image'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
+import { useAssets } from '@/context/assetsContext'
 import { cn } from '@/lib/utils'
+
+const MARKET_TYPE = {
+  SPOT: 'SPOT',
+  PERPETUALS: 'PERPETUALS',
+}
 
 export default function BannerPreview({ parentRef, childRef, competition, isView = true, idCanvas, option, isActive }) {
   const [backgroundColors, setBackgroundColors] = useState({})
+  const assets = useAssets()
   const renderBackgroundColor = useCallback(elementId => {
     const element = document.getElementById(elementId)
     if (!element) return 'transparent'
@@ -24,6 +31,24 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
     return rgbColor
   }, [])
 
+  const tokens = useMemo(() => {
+    if (competition?.market === MARKET_TYPE.SPOT) {
+      return competition?.competitionRules?.tradingTokens || []
+    }
+    const pairIds = (competition?.competitionRules?.pairIds || []).map(
+      item => item?.symbol?.replace(/USDT$/, '') || item?.symbol,
+    )
+
+    return (
+      assets.filter(ele => (pairIds || []).map(sub => sub?.toLowerCase()).includes(ele?.symbol.toLowerCase())) || []
+    )
+  }, [
+    assets,
+    competition?.competitionRules?.pairIds,
+    competition?.competitionRules?.tradingTokens,
+    competition?.market,
+  ])
+
   const handleImageLoad = useCallback(
     item => {
       const color = renderBackgroundColor(`option2_${item?.address}`)
@@ -31,6 +56,10 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
     },
     [renderBackgroundColor],
   )
+
+  if (tokens?.length < 1) {
+    return <></>
+  }
 
   return (
     <>
@@ -47,38 +76,34 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
           >
             <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl'>
               <div className='flex justify-center -space-x-10 rtl:space-x-reverse'>
-                {(competition?.competitionRules?.tradingTokens || []).slice(0, 4).map(item => (
+                {(tokens || []).slice(0, 4).map(item => (
                   <Image
                     key={item?.address}
                     id={`option1_${item?.address}`}
                     alt={item?.name}
                     className={cn(
                       'aspect-square rounded-[50%] border-[10px] border-neutral-600',
-                      competition?.competitionRules?.tradingTokens.length <= 3
-                        ? '!h-[240px] !w-[240px]'
-                        : '!h-[192px] !w-[192px]',
+                      tokens.length <= 3 ? '!h-[240px] !w-[240px]' : '!h-[192px] !w-[192px]',
                     )}
                     style={{
                       backgroundColor: backgroundColors[item?.address] || 'transparent',
                     }}
                     src={`/logo-token/${item?.logoURI.replace('https://cdn.thena.fi/', '')}`}
-                    width={competition?.competitionRules?.tradingTokens.length <= 3 ? 240 : 192}
-                    height={competition?.competitionRules?.tradingTokens.length <= 3 ? 240 : 192}
+                    width={tokens.length <= 3 ? 240 : 192}
+                    height={tokens.length <= 3 ? 240 : 192}
                     onLoadingComplete={() => handleImageLoad(item)}
                   />
                 ))}
-                {competition?.competitionRules?.tradingTokens.length > 4 && (
+                {tokens.length > 4 && (
                   <div
                     className={cn(
                       'flex items-center justify-center rounded-[50%] border-[10px] border-neutral-600',
                       'gradient-bg text-7xl font-bold',
-                      competition?.competitionRules?.tradingTokens.length <= 3
-                        ? '!h-[240px] !w-[240px]'
-                        : '!h-[192px] !w-[192px]',
+                      tokens.length <= 3 ? '!h-[240px] !w-[240px]' : '!h-[192px] !w-[192px]',
                       isView ? '' : 'pb-8',
                     )}
                   >
-                    {(competition?.competitionRules?.tradingTokens.length || 0) - 4}+
+                    {(tokens.length || 0) - 4}+
                   </div>
                 )}
               </div>
@@ -102,19 +127,15 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
               <div
                 className={cn(
                   'grid h-full w-full items-center justify-center',
-                  competition?.competitionRules?.tradingTokens.length <= 4
-                    ? `grid-cols-${competition?.competitionRules?.tradingTokens.length}`
-                    : 'grid-cols-5',
+                  tokens.length <= 4 ? `grid-cols-${tokens.length}` : 'grid-cols-5',
                 )}
               >
-                {(competition?.competitionRules?.tradingTokens || []).slice(0, 4).map(item => (
+                {(tokens || []).slice(0, 4).map(item => (
                   <div
                     key={`option2_${item?.address}`}
                     className={cn(
                       'relative flex h-full items-center justify-center px-1',
-                      competition?.competitionRules?.tradingTokens.length <= 4
-                        ? `!w-[${1024 / (competition?.competitionRules?.tradingTokens.length ?? 1)}px]`
-                        : `!w-[${1024 / 5}px]`,
+                      tokens.length <= 4 ? `!w-[${1024 / (tokens.length ?? 1)}px]` : `!w-[${1024 / 5}px]`,
                     )}
                     style={{ backgroundColor: backgroundColors[item?.address] || 'transparent' }}
                   >
@@ -133,7 +154,7 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                     />
                   </div>
                 ))}
-                {competition?.competitionRules?.tradingTokens.length > 4 && (
+                {tokens.length > 4 && (
                   <div
                     className={cn(
                       'flex h-full items-center justify-center',
@@ -142,7 +163,7 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                       isView ? '' : 'pb-8',
                     )}
                   >
-                    {(competition?.competitionRules?.tradingTokens.length || 0) - 4}+
+                    {(tokens.length || 0) - 4}+
                   </div>
                 )}
               </div>
