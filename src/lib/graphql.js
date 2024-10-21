@@ -2,23 +2,22 @@ import { GraphQLClient } from 'graphql-request'
 import { ChainId } from 'thena-sdk-core/dist'
 
 export const v1GraphUrl = {
-  [ChainId.BSC]: 'https://api.studio.thegraph.com/query/53404/thena-bsc-v1/version/latest',
+  // eslint-disable-next-line max-len
+  [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PRIVATE_V1_API_KEY}/subgraphs/id/FKEt2N5VmSdEYcz7fYLPvvnyEUkReQ7rvmXzs6tiKCz1`,
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-v1',
 }
 
 export const fusionGraphUrl = {
   // eslint-disable-next-line max-len
-  // [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt`,
-  // eslint-disable-next-line max-len
-  [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/deployments/id/QmXJF8ptng63aan78aoARrgAv6XEHPVVWKqNzg7im19NaM`,
-  // [ChainId.BSC]: 'https://api.studio.thegraph.com/query/53404/thena-bsc-fusion/version/latest',
+  [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PRIVATE_FUSION_API_KEY}/deployments/id/QmXJF8ptng63aan78aoARrgAv6XEHPVVWKqNzg7im19NaM`,
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion',
 }
 
 export const blockGraphUrl = {
-  [ChainId.BSC]: 'https://api.studio.thegraph.com/query/53404/thena-bsc-blocks/version/latest',
+  // eslint-disable-next-line max-len
+  [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PRIVATE_BLOCKS_API_KEY}/deployments/id/9SVVDE76Z3sN4qprVruoHUB5sxxzpaLshppV5WvUjdz`,
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/opbnb-blocks',
 }
