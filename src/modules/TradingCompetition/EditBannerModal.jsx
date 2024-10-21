@@ -263,28 +263,24 @@ export function EditBannerModal({ competition, open, onClose }) {
                   )}
                 />
               </div>
-              {competition?.competitionRules?.tradingTokens.length > 0 && (
-                <>
-                  <div className='cursor-pointer' onClick={() => setOptionSelect(1)}>
-                    <BannerPreview
-                      childRef={childRef1}
-                      parentRef={parentRef1}
-                      competition={competition}
-                      option={1}
-                      isActive={optionSelect === 1}
-                    />
-                  </div>
-                  <div className='cursor-pointer' onClick={() => setOptionSelect(2)}>
-                    <BannerPreview
-                      childRef={childRef2}
-                      parentRef={parentRef2}
-                      competition={competition}
-                      option={2}
-                      isActive={optionSelect === 2}
-                    />
-                  </div>
-                </>
-              )}
+              <div className='cursor-pointer' onClick={() => setOptionSelect(1)}>
+                <BannerPreview
+                  childRef={childRef1}
+                  parentRef={parentRef1}
+                  competition={competition}
+                  option={1}
+                  isActive={optionSelect === 1}
+                />
+              </div>
+              <div className='cursor-pointer' onClick={() => setOptionSelect(2)}>
+                <BannerPreview
+                  childRef={childRef2}
+                  parentRef={parentRef2}
+                  competition={competition}
+                  option={2}
+                  isActive={optionSelect === 2}
+                />
+              </div>
             </div>
             {optionSelect !== 3 && (
               <BannerPreview competition={competition} idCanvas='banner-default' isView={false} option={optionSelect} />

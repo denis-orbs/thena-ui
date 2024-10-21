@@ -1,3 +1,5 @@
+'use client'
+
 import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
@@ -458,7 +460,7 @@ export const useWithdrawToTCPerp = () => {
   return { loading, withdrawTCPerp }
 }
 
-export const MUON_BSC_URLS = ['https://crypto-v3-shield.deus.finance/v1/', 'https://crypto-v3-shield2.deus.finance/v1/']
+export const MUON_BSC_URLS = ['https://crypto-v3-shield2.deus.finance/v1/', 'https://crypto-v3-shield.deus.finance/v1/']
 
 export const APP_NAME = 'symmio'
 
@@ -502,6 +504,8 @@ export const useDeallocateTCPerp = () => {
 
       if (requestParams instanceof Error) throw new Error(requestParams.message)
 
+      let checkError = null
+
       for (const url of MUON_BSC_URLS) {
         try {
           const MuonURL = new URL(url)
@@ -510,31 +514,42 @@ export const useDeallocateTCPerp = () => {
           requestParams.forEach(param => {
             MuonURL.searchParams.append(`params[${param[0]}]`, param[1])
           })
+          MuonURL.searchParams.append('t', Date.now())
 
-          let response = await fetch(MuonURL)
-          if (response.ok) {
-            response = await response.json()
-          } else {
-            throw new Error(response.statusText)
-          }
-          result = response.result
-          success = response.success
-
-          break // Exit the loop if successful
-        } catch (error) {
-          console.log('Retrying with the next URL...')
-          toast.update(toastId, {
-            autoClose: 5000,
-            closeButton: true,
-            render: 'request failed',
-            isLoading: false,
-            type: 'error',
+          let response = await fetch(MuonURL, {
+            signal: AbortSignal.timeout(20000),
           })
+
+          if (response.ok) {
+            checkError = null
+            response = await response.json()
+            result = response.result
+            success = response.success
+            if (success) {
+              break // Exit the loop if successful
+            }
+          } else {
+            checkError = response.statusText
+          }
+        } catch (error) {
+          checkError = error.message
+          console.log('Retrying with the next URL...', url)
         }
       }
 
+      if (checkError) {
+        toast.update(toastId, {
+          autoClose: 5000,
+          closeButton: true,
+          render: 'request failed',
+          isLoading: false,
+          type: 'error',
+        })
+        throw new Error(checkError)
+      }
+
       if (!success) {
-        throw new Error('')
+        throw new Error('Error')
       }
 
       toast.update(toastId, {

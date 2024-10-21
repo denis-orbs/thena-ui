@@ -890,8 +890,10 @@
   "You can add more Deposit until the competition ends": "You can add more Deposit until the competition ends.",
   "Check my Trades": "Check my Trades",
   "This Deposit Is Not Enough To Trade": "This deposit is not enough to trade during the competition and the minimum amount to be deposited should be {min} USDT.",
-  "You MUST close all your positions": "Your final PnL is calculated as your Total Profit or Loss divided by your Total Deposit. You MUST close all your positions before the competition ends for your final PnL to be calculated correctly. Open/Pending positions do not count towards your PnL. When you close any position during the competition and/or add more deposit into your account, your PnL will be updated accordingly. You can still manage your positions after the competition ends even if you do not close them during the competition.",
-  "Also note that this is a cross-margin account": "Also note that this is a cross-margin account which means that if at least one of your positions gets liquidated, the rest of your positions will get liquidated as well. Stop Loss/Take Profit feature will be implemented at a later stage.",
+  "You MUST close all your positions highlight": "Your final Profit and Loss (PnL) will be determined by dividing your total profit or loss by your total deposit.",
+  "You MUST close all your positions detail": "It is imperative that you close all open positions before the competition concludes to ensure an accurate calculation of your final PnL. Unclosed or pending positions will not be factored into your PnL. Closing a position during the competition or increasing your deposit will result in a corresponding update to your PnL. Please note that you retain the ability to manage your positions after the competition ends, even if they remain open.",
+  "Also note that this is a cross-margin account highlight": "Important:",
+  "Also note that this is a cross-margin account detail": "This account operates on a cross-margin basis. If one or more of your positions is liquidated, all remaining positions will also be liquidated.",
   "Done": "Done",
   "Next": "Next",
   "00": "00",
@@ -1152,5 +1154,6 @@
   "Total ROI": "Total ROI",
   "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition.",
   "Pools per page": "Pools per page:",
-  "Registration Successful": "Registration Successful"
+  "Registration Successful": "Registration Successful",
+  "Trade2Earn (Ended)": "Trade2Earn (Ended)"
 }
