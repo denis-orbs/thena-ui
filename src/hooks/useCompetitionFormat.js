@@ -6,7 +6,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useTC } from '@/context/tcContext'
 
 export const useCompetitionFormat = (competition, isPreview = false) => {
-  const _assets = useAssets()
+  const assets = useAssets()
   const { pairLists } = useTC()
 
   const dataListPairs = useMemo(() => {
@@ -19,18 +19,6 @@ export const useCompetitionFormat = (competition, isPreview = false) => {
     }
     return []
   }, [pairLists])
-
-  const assets = useMemo(() => {
-    const clone = cloneDeep(_assets)
-    clone.push({
-      name: 'MockUSD',
-      symbol: 'MUSD',
-      decimals: 18,
-      address: '0xced4ac14bb1077b995b954c48a87b25ebb4828e5',
-    })
-
-    return clone
-  }, [_assets])
 
   return useMemo(() => {
     if (!competition) {

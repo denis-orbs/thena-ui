@@ -187,11 +187,8 @@ function CompetitionDetailLayout({ children, params }) {
   )
 
   const enableEditBanner = useMemo(
-    () =>
-      (userInfo?.id === competition?.owner?.id && competition?.owner?.isVerified) ||
-      userInfo?.isAdmin ||
-      userInfo?.isSuperAdmin,
-    [userInfo?.isAdmin, userInfo?.isSuperAdmin, competition?.owner?.isVerified, competition?.owner?.id, userInfo?.id],
+    () => userInfo?.id === competition?.owner?.id || userInfo?.isAdmin || userInfo?.isSuperAdmin,
+    [userInfo?.isAdmin, userInfo?.isSuperAdmin, competition?.owner?.id, userInfo?.id],
   )
 
   const enableEditTag = useMemo(
@@ -275,9 +272,13 @@ function CompetitionDetailLayout({ children, params }) {
                   onMouseLeave={() => setShowIconCloseBanner(false)}
                   className='relative mt-10 flex flex-col space-y-2 border border-primary-800 bg-primary-950'
                 >
-                  <TextHeading className='text-base font-normal'>{t('You MUST close all your positions')}</TextHeading>
                   <TextHeading className='text-base font-normal'>
-                    {t('Also note that this is a cross-margin account')}
+                    <strong>{t('You MUST close all your positions highlight')}</strong> &nbsp;
+                    <span>{t('You MUST close all your positions detail')}</span>
+                  </TextHeading>
+                  <TextHeading className='text-base font-normal'>
+                    <strong>{t('Also note that this is a cross-margin account highlight')}</strong>
+                    &nbsp;<span>{t('Also note that this is a cross-margin account detail')}</span>
                   </TextHeading>
                   {showIconCloseBanner && (
                     <EmphasisIconButton

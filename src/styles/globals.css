@@ -261,6 +261,10 @@ input[type='radio']:checked:after {
   -webkit-text-fill-color: transparent;
 }
 
+.gradient-bg {
+  background: linear-gradient(90deg, #b386ff 0%, #ff86fa 100%);
+}
+
 .bg-landing-page-gradient {
   border: 1px solid rgba(220, 0, 212, 0.08);
   background: linear-gradient(0deg, rgba(26, 13, 31, 0.45) 0%, rgba(26, 13, 31, 0.45) 100%), #070408;

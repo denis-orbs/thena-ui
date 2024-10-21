@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { gql } from 'graphql-request'
-import { cloneDeep, compact } from 'lodash'
+import { compact } from 'lodash'
 import React from 'react'
 
 import { siteConfig } from '@/constant/config'
@@ -33,16 +33,8 @@ export async function generateMetadata({ params }) {
 
   const { tradingCompetitionById: competition } = await v4Client.request(V4_COMPETITION_DATA, { id })
 
-  const cloneAssets = cloneDeep(assets.data)
-  cloneAssets.push({
-    name: 'MockUSD',
-    symbol: 'MUSD',
-    decimals: 18,
-    address: '0xced4ac14bb1077b995b954c48a87b25ebb4828e5',
-  })
-
   const findAssets = (competition?.prizeUpdate?.token || []).map(token => {
-    const asset = cloneAssets.find(ele => ele.address.toLowerCase() === token.toLowerCase())
+    const asset = assets?.data.find(ele => ele.address.toLowerCase() === token.toLowerCase())
     return asset
   })
 

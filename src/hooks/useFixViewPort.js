@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 
-const useFixViewport = (parentRef, childRef) => {
+const useFixViewport = (parentRef, childRef, resize) => {
   useEffect(() => {
     const fixViewport = () => {
       if (parentRef && childRef) {
@@ -32,6 +32,6 @@ const useFixViewport = (parentRef, childRef) => {
         fixViewport()
       })
     }
-  }, [childRef, parentRef])
+  }, [childRef, parentRef, resize])
 }
 export { useFixViewport }

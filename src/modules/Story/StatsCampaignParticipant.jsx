@@ -109,7 +109,7 @@ function StatsCampaignParticipant({ statsCampaignParticipant, isLoadingInfo, isL
       statsCampaignParticipant ? (
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>
           {metricChapter.map(item => (
-            <StatsItem key={keyId} title={`${t('Chapter')} ${item?.chapter}`} value={item.activeParticipants} />
+            <StatsItem key={keyId} title={`${t('Chapter')} ${item?.chapter}`} value={item.completedParticipants} />
           ))}
         </div>
       ) : (

@@ -36,6 +36,14 @@ const grantLogos = [{ url: '/images/home/ecosystem/grants/bnbchain.svg' }]
 
 function Ecosystem() {
   const [ecosystem, setEcoSystem] = useState(data[0])
+  const isSafari = useMemo(() => {
+    if (typeof navigator !== 'undefined') {
+      const { userAgent } = navigator
+      const check = /^((?!chrome|android).)*safari/i.test(userAgent)
+      return check
+    }
+  }, [])
+
   const t = useTranslations()
   const logos = useMemo(() => {
     let arr = []
@@ -60,7 +68,7 @@ function Ecosystem() {
     <div className='relative w-full pb-20 lg:pb-36'>
       <div className='relative'>
         <Grid />
-        <GridLinesAnimation />
+        {!isSafari && <GridLinesAnimation />}
       </div>
       <div className='relative z-10 flex flex-col items-center justify-center px-11 py-16 lg:pb-[204px] lg:pt-[217px] xl:px-0'>
         <div className='mx-auto w-full  max-w-[700px]'>
@@ -86,9 +94,12 @@ function Ecosystem() {
           <div className='flex w-full flex-wrap items-center justify-center gap-6 lg:max-w-[1000px] lg:gap-14'>
             {logos.map((logo, index) => (
               <HomeImage
-                className={`max-h-[47px] min-h-[26px] w-fit object-contain ${
-                  logo?.icon === 'hacken' ? '!max-h-4 !min-h-4' : logo?.icon === 'etherfi' ? '!max-h-14 !min-h-14' : ''
-                }`}
+                className={cn(
+                  'max-h-[47px] min-h-[26px] w-fit object-contain',
+                  logo?.icon === 'hacken' ? '!max-h-4 !min-h-4' : logo?.icon === 'etherfi' ? '!max-h-14 !min-h-14' : '',
+                  logo.url.endsWith('Algebra.png') ? 'h-[47px] w-[188px]' : '',
+                  logo.url.endsWith('EtherFi.png') ? 'h-[56px] w-[114px]' : '',
+                )}
                 src={logo.url}
                 alt={`Logo ${index + 1}`}
                 key={`first-${index}`}

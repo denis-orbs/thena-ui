@@ -18,6 +18,7 @@ const TC_WITH_LEADERBOARD = gql`
       ) {
         pnl
         percentagePnl
+        projectedPnl
         rank
         winAmounts
         winTokenDecimal
@@ -62,7 +63,7 @@ const fetchCompetitionLeaderboard = async (id, searchText, orderBy) => {
   }
 }
 
-export const useTradingCompetitionLeaderBoard = (id, searchText) => {
+export const useTradingCompetitionLeaderBoard = (id, searchText, orderOption) => {
   const { data: competitionData } = useSWR('competition detail api')
   let orderBy = ['rank_ASC', 'winTokenDecimal_DESC', 'id_ASC']
   if (competitionData.prizeUpdate.winType) {
@@ -70,8 +71,17 @@ export const useTradingCompetitionLeaderBoard = (id, searchText) => {
   } else {
     orderBy = ['rank_ASC', 'winTokenDecimal_DESC', 'pnl_DESC', 'id_ASC']
   }
+
+  if (orderOption?.value === 'projectedPnl') {
+    if (orderOption?.isDesc) {
+      orderBy = ['projectedPnl_DESC']
+    } else {
+      orderBy = ['projectedPnl_ASC']
+    }
+  }
+
   const { data, isLoading } = useSWR(
-    ['competition leader board api', id, searchText],
+    ['competition leader board api', id, searchText, orderOption],
     () => fetchCompetitionLeaderboard(id, searchText, orderBy),
     {
       refreshInterval: 15000,

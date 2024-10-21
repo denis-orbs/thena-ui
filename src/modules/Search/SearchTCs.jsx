@@ -40,9 +40,8 @@ export function SearchTCItem({ competition, setIsPopoverOpen }) {
           <Image
             alt='tc-banner'
             src={competition?.bannerUrl ?? competition?.defaultBannerUrl}
-            width={100}
-            height={100}
-            className='size-9 h-9 w-9 rounded-md'
+            layout='fill'
+            className='!relative !h-auto !w-9 rounded-md'
           />
         ) : (
           <div className='h-9 w-9 rounded-md bg-primary-600' />
