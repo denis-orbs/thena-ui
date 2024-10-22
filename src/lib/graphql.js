@@ -10,14 +10,14 @@ export const v1GraphUrl = {
 
 export const fusionGraphUrl = {
   // eslint-disable-next-line max-len
-  [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/deployments/id/QmXJF8ptng63aan78aoARrgAv6XEHPVVWKqNzg7im19NaM`,
+  [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt`,
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion',
 }
 
 export const blockGraphUrl = {
   // eslint-disable-next-line max-len
-  [ChainId.BSC]: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.NEXT_PUBLIC_BLOCKS_API_KEY}/subgraphs/id/9SVVDE76Z3sN4qprVruoHUB5sxxzpaLshppV5WvUjdz`,
+  [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_BLOCKS_API_KEY}/subgraphs/id/9SVVDE76Z3sN4qprVruoHUB5sxxzpaLshppV5WvUjdz`,
   [ChainId.OPBNB]:
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/opbnb-blocks',
 }
