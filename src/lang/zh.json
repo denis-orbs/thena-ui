@@ -1077,7 +1077,7 @@
   "How to Claim Rewards?": "如何领取我的奖励？",
   "How to Claim Rewards Description": "如果您获胜了，奖励将在账户的“奖励”部分显示。按照提供的指示领取奖励，奖励类型可能多种多样。请确保在奖励到期前领取。",
   "How Are Winners Selected?": "如何决定获胜者？",
-  "How Are Winners Selected Description": "前两章的获胜者将通过抽奖选出。从第三章开始，排行榜前100名的参赛者将赢取奖励。请密切关注您的排名，确保您在获奖名单中。",
+  "How Are Winners Selected Description": "Chapter rewards will be determined through a raffle among users who successfully complete all tasks within that specific chapter. The grand finale rewards at the conclusion of THE Story will be awarded to the top 300 participants on the Leaderboard.",
   "How Many Rewards Will Be In Total?": "奖励总价值是多少？",
   "How Many Rewards Will Be In Total Description": "THE Story 的奖励总价值超过 30,000 美元，将在整个活动期间分发给多位获胜者。请定期查看更新，以了解每章的新竞赛及奖励内容。",
   "T2E": "T2E",
@@ -1157,6 +1157,6 @@
   "Registration Successful": "Registration Successful",
   "Trade2Earn (Ended)": "Trade2Earn (Ended)",
   "MemeCoin Perps": "MemeCoin Perps",
-  "Post a tweet with a hashtag and meme": "Participants create and post a meme about THENA or our partner memecoins on X. They must use the campaign-specific hashtag #MemeDreams to track their entry",
-  "Retweet and Like the tweet for Chapter 4": "Retweet and Like our announcement post to help spread the word about the Trading Competition"
+  "Post a tweet with a hashtag and meme": "Create and post a meme about THENA or partner memecoins on X with the hashtag #MemeDreams.",
+  "Retweet and Like the tweet for Chapter 4": "Retweet and Like the Memecoin Trading Competition announcement."
 }

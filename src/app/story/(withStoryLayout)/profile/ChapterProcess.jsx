@@ -68,7 +68,8 @@ export function ChapterProcess({
       if (
         !campaignParticipantInfo.xProfileUsername &&
         task.type === TaskType.Main &&
-        [TaskTwitterAction, TaskTwitterMemeAction, TaskTwitterRetweet].includes(task.actionHandle)
+        ([TaskTwitterAction, TaskTwitterMemeAction, TaskTwitterRetweet].includes(task.actionHandle) ||
+          task.actionHandle?.startsWith('https://x.com/'))
       ) {
         errorToast('You have to add your X account to Your Profile first', '', null, false, {
           style: {
