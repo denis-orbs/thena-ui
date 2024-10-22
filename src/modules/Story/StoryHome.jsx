@@ -8,6 +8,7 @@ import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { useTHEStory } from '@/context/THEStoryContext'
 import useWallet from '@/hooks/useWallet'
+import { isoDateToTimeStampSeconds } from '@/lib/utils'
 import { ChevronRightIcon, LogoTextIcon, LogoWithTextIcon } from '@/svgs'
 
 import { useFetchChaptersAndTasks } from '.'
@@ -27,6 +28,33 @@ function StoryHome({ isUpcoming, isRegistered }) {
   const { campaignChapters: chapters, isLoading: isLoadingChapterTasks } = useFetchChaptersAndTasks(
     account?.toLowerCase(),
   )
+
+  const currentActiveChapter = useMemo(() => {
+    const currentTime = new Date()
+    return chapters.find(chapter => {
+      const startTime = new Date(chapter?.startTimestamp ?? 0)
+      const endTime = new Date(chapter?.endTimestamp ?? 0)
+
+      return currentTime >= startTime && currentTime <= endTime
+    })
+  }, [chapters])
+
+  const countDownTimeStamp = useMemo(() => {
+    if (currentActiveChapter) {
+      return isoDateToTimeStampSeconds(currentActiveChapter.endTimestamp)
+    }
+
+    const nextChapter = chapters.find(chapter => !chapter.available)
+
+    if (nextChapter) {
+      try {
+        return isoDateToTimeStampSeconds(nextChapter.startTimestamp)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    return 0
+  }, [chapters, currentActiveChapter])
 
   const [isMuted, setIsMuted] = useState(true)
 
@@ -109,6 +137,17 @@ function StoryHome({ isUpcoming, isRegistered }) {
           {isRegistered && (
             <div className='mx-auto max-w-[850px]'>
               <Chapters chapters={chapters} isLoading={isLoadingChapterTasks} />
+              {Boolean(countDownTimeStamp) && (
+                <>
+                  <div className='mt-4 rounded-lg bg-transparent px-6 py-6'>
+                    <h2 className='mb-6 text-center font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
+                      {currentActiveChapter && t('Current Chapter Ends in')}
+                      {!currentActiveChapter && countDownTimeStamp && t('Next Chapter Available in')}
+                    </h2>
+                    {countDownTimeStamp && <Countdown timestamp={countDownTimeStamp} />}
+                  </div>
+                </>
+              )}
               {isViewBNBChainButton && (
                 <div className='mt-6 flex w-full justify-center'>
                   <Link
