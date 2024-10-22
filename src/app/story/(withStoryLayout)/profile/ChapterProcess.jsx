@@ -17,6 +17,7 @@ import {
   TaskDepositGamma,
   TaskDepositIchi,
   TaskTwitterAction,
+  TaskTwitterMemeAction,
   TaskTwitterRetweet,
   TaskType,
 } from '../../constant'
@@ -28,6 +29,8 @@ First tasks completed, NFT fragment collected, and I’m on the path to over $30
 Who’s with me? #StoryofTHENA
 
 https://thena.fi/story`
+
+const TweetMemeContent = '#MemeDreams'
 
 export function ChapterProcess({
   chapter,
@@ -47,12 +50,25 @@ export function ChapterProcess({
     return 0
   }, [numberAvailableChapters, numberCompletedChapters])
 
+  const openWindowWriteSocialPost = ({ network, content }) => {
+    const url = getShareSocialNetworkUrl({
+      network,
+      content,
+    })
+    const width = window.screen.width / 2
+    const height = window.screen.height / 2
+    const left = window.screen.width / 2 - width / 2
+    const top = window.screen.height / 2 - height / 2
+
+    window.open(url, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
+  }
+
   const handleTask = useCallback(
     task => {
       if (
         !campaignParticipantInfo.xProfileUsername &&
-        ((task.type === TaskType.Main && task.actionHandle === TaskTwitterAction) ||
-          task.actionHandle === TaskTwitterRetweet)
+        task.type === TaskType.Main &&
+        [TaskTwitterAction, TaskTwitterMemeAction, TaskTwitterRetweet].includes(task.actionHandle)
       ) {
         errorToast('You have to add your X account to Your Profile first', '', null, false, {
           style: {
@@ -63,23 +79,26 @@ export function ChapterProcess({
         })
         return
       }
+
       if (task.type === TaskType.Main && task.actionHandle === TaskTwitterAction) {
-        const url = getShareSocialNetworkUrl({
+        openWindowWriteSocialPost({
           network: SocialNetwork.Twitter,
           content: campaignParticipantInfo?.referralCode
             ? `${TweetContent}?ref=${campaignParticipantInfo.referralCode}`
             : TweetContent,
         })
-        const width = window.screen.width / 2
-        const height = window.screen.height / 2
-        const left = window.screen.width / 2 - width / 2
-        const top = window.screen.height / 2 - height / 2
-
-        window.open(url, '_blank', `noopener,noreferrer,width=${width},height=${height},left=${left},top=${top}`)
         return
       }
-      if (task.actionHandle === TaskTwitterRetweet) {
-        window.open('https://x.com/ThenaFi_/status/1839273788736708771', '_blank')
+
+      if (task.type === TaskType.Main && task.actionHandle === TaskTwitterMemeAction) {
+        openWindowWriteSocialPost({
+          network: SocialNetwork.Twitter,
+          content: TweetMemeContent,
+        })
+        return
+      }
+      if (task.actionHandle?.startsWith('https://')) {
+        window.open(task.actionHandle, '_blank')
       } else {
         window.location.href = `/${task.actionHandle}`
       }
