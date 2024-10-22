@@ -473,7 +473,7 @@ export const useFetchChaptersAndTasks = account => {
           }
         })
 
-      const available = currentTime >= startTime
+      const available = chapter.startTimestamp && currentTime >= startTime
 
       const chapterIsCompleted =
         tasks.length > 0 ? tasks.filter(task => task.type === TaskType.Main).every(task => task.isCompleted) : false

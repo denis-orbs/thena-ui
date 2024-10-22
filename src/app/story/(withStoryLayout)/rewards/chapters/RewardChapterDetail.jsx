@@ -22,7 +22,7 @@ function RewardChapterDetail({ rewards }) {
           'grid grid-cols-2',
           rewards?.items?.length && rewards.items.length >= 3
             ? 'lg:grid-cols-3'
-            : `lg:grid-cols-${rewards.items.length}`,
+            : `lg:grid-cols-${rewards?.items?.length ?? 2}`,
         )}
       >
         {rewards?.items?.map((reward, index) => (

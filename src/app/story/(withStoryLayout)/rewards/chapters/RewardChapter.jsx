@@ -62,6 +62,13 @@ const rewards = [
       ],
     },
   },
+  {
+    id: 4,
+    index: 4,
+    reward: {
+      items: [],
+    },
+  },
 ]
 
 export function RewardChapter({ chapters }) {
