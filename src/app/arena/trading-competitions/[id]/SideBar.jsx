@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 
 import Box from '@/components/box'
-import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { OutlinedButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
@@ -27,7 +27,7 @@ import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { Countdown } from '@/modules/Countdown'
 import DeallocateModal from '@/modules/TradingCompetition/DeallocateModal'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
-import { CheckIcon, PublicIcon } from '@/svgs'
+import { CheckIcon, InfoCirCleDisableIcon, PublicIcon } from '@/svgs'
 
 import IncreasePrizeModal from './IncreasePrizeModal'
 import DepositModal from './trade/DepositModal'
@@ -722,20 +722,30 @@ function Sidebar({ competition, eventType }) {
         {buttonByStatus}
         {account && mounted && eventType !== EVENT_TYPES.ENDED && (
           <>
-            <PrimaryButton
+            <OutlinedButton
               data-tooltip-id='showTooltip'
               disabled={isNotStartRegistration}
               onClick={() => setShowIncreasePrize(true)}
+              className='!text-neutral-400'
             >
               {t('Increase Prize Pool')}
-            </PrimaryButton>
-            {isNotStartRegistration && (
+              {eventType === EVENT_TYPES.UPCOMING && <InfoCirCleDisableIcon className='h-4 w-4 !text-neutral-400' />}
+            </OutlinedButton>
+            {isNotStartRegistration ? (
               <CustomTooltip
                 className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
                 id='showTooltip'
                 place='bottom'
               >
                 {t('You Can Only Increase The Prize After Registration Starts')}
+              </CustomTooltip>
+            ) : (
+              <CustomTooltip
+                className='z-50 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                id='showTooltip'
+                place='bottom'
+              >
+                {t('Increase Prize Pool warning')}
               </CustomTooltip>
             )}
           </>

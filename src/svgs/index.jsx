@@ -54,6 +54,7 @@ import GiftIcon from '~/svgs/gift.svg'
 import GiftArenaIcon from '~/svgs/gift-arena.svg'
 import HamburgerIcon from '~/svgs/hamburger.svg'
 import InfoIcon from '~/svgs/info-circle.svg'
+import InfoCirCleDisableIcon from '~/svgs/info-circle-disable.svg'
 import InfoCircleGradient from '~/svgs/info-circle-gradient.svg'
 import InfoCirclePrimary from '~/svgs/info-circle-primary.svg'
 import InfoCircleWhite from '~/svgs/info-circle-white.svg'
@@ -169,6 +170,7 @@ export {
   GiftArenaIcon,
   GiftIcon,
   HamburgerIcon,
+  InfoCirCleDisableIcon,
   InfoCircleGradient,
   InfoCirclePrimary,
   InfoCircleWhite,

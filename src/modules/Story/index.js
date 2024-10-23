@@ -374,6 +374,7 @@ const V4_CAMPAIGN_CHAPTERS_TASKS_AND_COMPLETED = gql`
       startTimestamp
       endTimestamp
       rewardsTimestamp
+      totalRewardUSD
     }
     campaignTasks(where: { isHidden_eq: false, type_in: [Main, Side] }, orderBy: [type_ASC, index_ASC]) {
       actionHandle
@@ -473,7 +474,7 @@ export const useFetchChaptersAndTasks = account => {
           }
         })
 
-      const available = currentTime >= startTime
+      const available = chapter.startTimestamp && currentTime >= startTime
 
       const chapterIsCompleted =
         tasks.length > 0 ? tasks.filter(task => task.type === TaskType.Main).every(task => task.isCompleted) : false
@@ -628,6 +629,34 @@ export const fetchStatsCampaignParticipant = async () => {
     return null
   } catch (error) {
     console.trace(error)
+    return null
+  }
+}
+
+const V4_CAMPAIGN_CHAPTER_REWARDS = gql`
+  query V4_CAMPAIGN_CHAPTER_REWARDS($chapter_eq: String!) {
+    campaignChapterRewards(where: { chapter_eq: $chapter_eq }, orderBy: id_ASC) {
+      chapter
+      description
+      icon
+      id
+      name
+    }
+  }
+`
+export const fetchCampaignChapterRewards = async chapter_eq => {
+  try {
+    const { campaignChapterRewards } = await v4Client.request(V4_CAMPAIGN_CHAPTER_REWARDS, {
+      chapter_eq,
+    })
+
+    if (campaignChapterRewards) {
+      return campaignChapterRewards
+    }
+
+    return null
+  } catch (error) {
+    console.log(error)
     return null
   }
 }

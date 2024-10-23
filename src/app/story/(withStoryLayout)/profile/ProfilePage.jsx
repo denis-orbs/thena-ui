@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import Loading from '@/app/loading'
@@ -19,14 +19,35 @@ export function ProfilePage({ address }) {
   } = useFetchChaptersAndTasks(address)
   const [selectedChapterIndex, setSelectedChapterIndex] = useState(1)
 
+  const chapterHasEnded = useCallback(chapter => {
+    const currentTime = new Date()
+    const endTime = new Date(chapter?.endTimestamp)
+
+    return endTime <= currentTime
+  }, [])
+
+  const allChaptersCompleted = useCallback(
+    (data, lastIdx) => data.slice(0, lastIdx).every(item => item?.isCompleted === true),
+    [],
+  )
   useEffect(() => {
     if (chapters) {
       const lastCompletedChapters =
         [...chapters].sort((a, b) => b.index - a.index).find(item => item.isCompleted)?.index || 1
       const index = chapters.find(item => !item.isCompleted && item.available)?.index || lastCompletedChapters
-      setSelectedChapterIndex(index)
+      const lastChapterAvailable = [...chapters].reverse().find(item => item.available)
+      if (!chapterHasEnded(lastChapterAvailable) && !lastChapterAvailable?.isCompleted) {
+        setSelectedChapterIndex(lastChapterAvailable?.index)
+      } else {
+        const isAllChaptersCompleted = allChaptersCompleted(chapters, lastChapterAvailable?.index)
+        if (isAllChaptersCompleted && chapterHasEnded(lastChapterAvailable)) {
+          setSelectedChapterIndex(1)
+        } else {
+          setSelectedChapterIndex(index)
+        }
+      }
     }
-  }, [chapters])
+  }, [allChaptersCompleted, chapterHasEnded, chapters])
 
   const { campaignParticipantInfo: userInfo } = useTHEStory()
   const { data: userReferral, isLoading: isLoadingReferral } = useSWR(

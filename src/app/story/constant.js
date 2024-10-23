@@ -13,7 +13,9 @@ export const TaskType = {
 export const TaskDailyName = 'Daily Swap-in'
 export const TaskReferralName = 'Refer your friends'
 export const TaskRegisterBNBChainTC = 'Register for a BSC TC'
-export const TaskTwitterAction = 'tweet'
 export const TaskTwitterRetweet = 'retweet'
 export const TaskDepositIchi = 'Deposit ICHI Vault'
 export const TaskDepositGamma = 'Deposit Gamma Narrow'
+// create a new tweet
+export const TaskTwitterAction = 'tweet'
+export const TaskTwitterMemeAction = 'post_tweet'

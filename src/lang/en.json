@@ -1077,7 +1077,7 @@
   "How to Claim Rewards?": "How to Claim Rewards?",
   "How to Claim Rewards Description": "If you’ve won, your rewards will be available in the 'Rewards' section of your account. Follow the provided instructions to claim them, which may include a variety of different rewards. Be sure to claim your rewards before they expire.",
   "How Are Winners Selected?": "How Are Winners Selected?",
-  "How Are Winners Selected Description": "Winners for the first two chapters are chosen through a raffle. From chapter three onward, the top 100 participants on the leaderboard will win rewards. Keep an eye on your rank to ensure you’re in the running.",
+  "How Are Winners Selected Description": "Chapter rewards will be determined through a raffle among users who successfully complete all tasks within that specific chapter. The grand finale rewards at the conclusion of THE Story will be awarded to the top 300 participants on the Leaderboard.",
   "How Many Rewards Will Be In Total?": "How Many Rewards Will Be In Total?",
   "How Many Rewards Will Be In Total Description": "THE Story offers over $30,000 in rewards, distributed across multiple winners throughout the campaign. Check back regularly for updates on available rewards as each chapter unfolds.",
   "T2E": "T2E",
@@ -1152,8 +1152,11 @@
   "Competitions Won": "Competitions Won",
   "Total PnL (USD)": "Total PnL (USD)",
   "Total ROI": "Total ROI",
-  "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition.",
   "Pools per page": "Pools per page:",
   "Registration Successful": "Registration Successful",
-  "Trade2Earn (Ended)": "Trade2Earn (Ended)"
+  "Trade2Earn (Ended)": "Trade2Earn (Ended)",
+  "MemeCoin Perps": "MemeCoin Perps",
+  "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition.",
+  "Post a tweet with a hashtag and meme": "Create and post a meme about THENA or partner memecoins on X with the hashtag #MemeDreams.",
+  "Retweet and Like the tweet for Chapter 4": "Retweet and Like the Memecoin Trading Competition announcement."
 }
