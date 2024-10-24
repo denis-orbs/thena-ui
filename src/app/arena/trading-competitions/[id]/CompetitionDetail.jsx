@@ -90,6 +90,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
       ticker: item?.symbol,
       dataNumber: fromWei(prizeUpdate.totalPrize[index], item?.decimals),
     }))
+    const dataAllCurrentPrizePool = [...dataCurrentPrizePool]
     if (dataCurrentPrizePool.some(item => !isInvalidAmount(item.data))) {
       dataCurrentPrizePool = dataCurrentPrizePool.filter(item => !isInvalidAmount(item.data))
     }
@@ -106,6 +107,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
       ),
       ticker: item?.symbol,
     }))
+    const dataAllMaxPrizePool = [...dataMaxPrizePool]
     if (dataMaxPrizePool.some(item => item.data !== '0')) {
       dataMaxPrizePool = dataMaxPrizePool.filter(item => item.data !== '0')
     }
@@ -124,14 +126,6 @@ function CompetitionDetail({ competition, isPreview = false }) {
                 ticker: prizeUpdate.token?.[index]?.symbol,
               }))
               .filter(entry => !isInvalidAmount(entry.data)),
-        // dataUSD: entryFeeUpdate.reduce((acc, cur, index) => {
-        //   const tokenAsset = assets.find(item => item.address === prizeUpdate.token?.[index]?.address)
-        //   if (tokenAsset) {
-        //     const value = formatAmount(fromWei(cur, prizeUpdate.token?.[index]?.decimals))
-        //     return acc + value * tokenAsset.price
-        //   }
-        //   return acc
-        // }, 0),
       },
       {
         key: 'Competition Type',
@@ -140,12 +134,12 @@ function CompetitionDetail({ competition, isPreview = false }) {
       {
         key: 'Current Prize Pool',
         dataUpdate: dataCurrentPrizePool,
-        dataUSD: parseToUSD(dataCurrentPrizePool),
+        dataUSD: parseToUSD(dataAllCurrentPrizePool),
       },
       {
         key: 'Max Prize Pool',
         dataUpdate: dataMaxPrizePool,
-        dataUSD: parseToUSD(dataMaxPrizePool),
+        dataUSD: parseToUSD(dataAllMaxPrizePool),
       },
       {
         key: 'Deposit Token',
