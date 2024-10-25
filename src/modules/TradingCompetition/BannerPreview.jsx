@@ -57,6 +57,13 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
     [renderBackgroundColor],
   )
 
+  const renderMore = useCallback((tokensData, pairs) => {
+    if (tokensData.length < pairs.length) {
+      return pairs.length - tokensData.length
+    }
+    return tokensData.length - 4
+  }, [])
+
   if (tokens?.length < 1) {
     return <></>
   }
@@ -83,27 +90,31 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                     alt={item?.name}
                     className={cn(
                       'aspect-square rounded-[50%] border-[10px] border-neutral-600',
-                      tokens.length <= 3 ? '!h-[240px] !w-[240px]' : '!h-[192px] !w-[192px]',
+                      tokens.length <= 3 && competition?.competitionRules?.pairIds.length <= 3
+                        ? '!h-[240px] !w-[240px]'
+                        : '!h-[192px] !w-[192px]',
                     )}
                     style={{
                       backgroundColor: backgroundColors[item?.address] || 'transparent',
                     }}
                     src={`/logo-token/${item?.logoURI.replace('https://cdn.thena.fi/', '')}`}
-                    width={tokens.length <= 3 ? 240 : 192}
-                    height={tokens.length <= 3 ? 240 : 192}
+                    width={tokens.length <= 3 && competition?.competitionRules?.pairIds.length <= 3 ? 240 : 192}
+                    height={tokens.length <= 3 && competition?.competitionRules?.pairIds.length <= 3 ? 240 : 192}
                     onLoadingComplete={() => handleImageLoad(item)}
                   />
                 ))}
-                {tokens.length > 4 && (
+                {(tokens.length > 4 || competition?.competitionRules?.pairIds.length > tokens.length) && (
                   <div
                     className={cn(
                       'flex items-center justify-center rounded-[50%] border-[10px] border-neutral-600',
                       'gradient-bg text-7xl font-bold',
-                      tokens.length <= 3 ? '!h-[240px] !w-[240px]' : '!h-[192px] !w-[192px]',
+                      tokens.length <= 3 && competition?.competitionRules?.pairIds.length <= 3
+                        ? '!h-[240px] !w-[240px]'
+                        : '!h-[192px] !w-[192px]',
                       isView ? '' : 'pb-8',
                     )}
                   >
-                    {(tokens.length || 0) - 4}+
+                    {renderMore(tokens, competition?.competitionRules?.pairIds)}+
                   </div>
                 )}
               </div>
@@ -112,6 +123,10 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
         </div>
       )}
       <div className='hidden grid-cols-4' />
+      <div className='hidden w-[512px]' />
+      {/* 1024/3 */}
+      <div className='hidden !w-[341.3333333333333px]' />
+      <div className='hidden w-[256px]' />
       {option === 2 && (
         <div ref={parentRef}>
           <div
@@ -128,6 +143,9 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                 className={cn(
                   'grid h-full w-full items-center justify-center',
                   tokens.length <= 4 ? `grid-cols-${tokens.length}` : 'grid-cols-5',
+                  tokens.length <= 4 && competition?.competitionRules?.pairIds.length > tokens.length
+                    ? `grid-cols-${tokens.length + 1}`
+                    : '',
                 )}
               >
                 {(tokens || []).slice(0, 4).map(item => (
@@ -136,6 +154,9 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                     className={cn(
                       'relative flex h-full items-center justify-center px-1',
                       tokens.length <= 4 ? `!w-[${1024 / (tokens.length ?? 1)}px]` : `!w-[${1024 / 5}px]`,
+                      tokens.length <= 4 && competition?.competitionRules?.pairIds.length > tokens.length
+                        ? `!w-[${1024 / (tokens.length + 1)}px]`
+                        : '',
                     )}
                     style={{ backgroundColor: backgroundColors[item?.address] || 'transparent' }}
                   >
@@ -154,16 +175,19 @@ export default function BannerPreview({ parentRef, childRef, competition, isView
                     />
                   </div>
                 ))}
-                {tokens.length > 4 && (
+                {(tokens.length > 4 || competition?.competitionRules?.pairIds.length > tokens.length) && (
                   <div
                     className={cn(
                       'flex h-full items-center justify-center',
                       'gradient-bg text-7xl font-bold',
                       `!w-[${1024 / 5}px]`,
+                      tokens.length <= 4 && competition?.competitionRules?.pairIds.length > tokens.length
+                        ? `!w-[${1024 / (tokens.length + 1)}px]`
+                        : '',
                       isView ? '' : 'pb-8',
                     )}
                   >
-                    {(tokens.length || 0) - 4}+
+                    {renderMore(tokens, competition?.competitionRules?.pairIds)}+
                   </div>
                 )}
               </div>

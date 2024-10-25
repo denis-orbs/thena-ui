@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { memo, useEffect, useMemo, useState } from 'react'
 
@@ -25,8 +25,10 @@ function CompetitionDetail({ competition, isPreview = false }) {
     spread: 100,
     angle: 90,
   })
-  const searchParams = useSearchParams()
 
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
   const assets = useAssets()
 
   const _competition = useCompetitionFormat(competition, isPreview)
@@ -42,6 +44,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
     if (firstJoinValue === 'true') {
       setOpenSuccessModal(TruncateContent)
       triggerConfetti()
+      router.replace(pathname)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
@@ -98,11 +101,11 @@ function CompetitionDetail({ competition, isPreview = false }) {
     let dataMaxPrizePool = []
     dataMaxPrizePool = prizeUpdate.token.map((item, index) => ({
       data: formatAmount(
-        fromWei(prizeUpdate.totalPrize[index]).plus(
+        fromWei(prizeUpdate.totalPrize[index], item?.decimals).plus(
           fromWei(entryFeeUpdate[index] || 0).multipliedBy(maxParticipants - participantCount),
         ),
       ),
-      dataNumber: fromWei(prizeUpdate.totalPrize[index]).plus(
+      dataNumber: fromWei(prizeUpdate.totalPrize[index], item?.decimals).plus(
         fromWei(entryFeeUpdate[index] || 0).multipliedBy(maxParticipants - participantCount),
       ),
       ticker: item?.symbol,
