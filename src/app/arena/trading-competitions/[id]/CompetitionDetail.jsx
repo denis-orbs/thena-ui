@@ -101,11 +101,11 @@ function CompetitionDetail({ competition, isPreview = false }) {
     let dataMaxPrizePool = []
     dataMaxPrizePool = prizeUpdate.token.map((item, index) => ({
       data: formatAmount(
-        fromWei(prizeUpdate.totalPrize[index]).plus(
+        fromWei(prizeUpdate.totalPrize[index], item?.decimals).plus(
           fromWei(entryFeeUpdate[index] || 0).multipliedBy(maxParticipants - participantCount),
         ),
       ),
-      dataNumber: fromWei(prizeUpdate.totalPrize[index]).plus(
+      dataNumber: fromWei(prizeUpdate.totalPrize[index], item?.decimals).plus(
         fromWei(entryFeeUpdate[index] || 0).multipliedBy(maxParticipants - participantCount),
       ),
       ticker: item?.symbol,
