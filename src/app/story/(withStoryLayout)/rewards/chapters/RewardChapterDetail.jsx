@@ -4,7 +4,7 @@ import React from 'react'
 
 import Loading from '@/app/loading'
 import { TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { fetchCampaignChapterRewards } from '@/modules/Story'
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
 
@@ -23,7 +23,9 @@ function RewardChapterDetail({ chapter }) {
       <div className='mb-4 mt-4 lg:mb-[60px] lg:mt-11'>
         <TextHeading className='font-archia text-3xl font-semibold'>
           <span>{t('Rewards in USD')}: </span>
-          <span className='text-primary-600'>{chapter?.totalRewardUSD ? `$${chapter?.totalRewardUSD}` : 'TBA'}</span>
+          <span className='text-primary-600'>
+            {chapter?.totalRewardUSD ? `$${formatAmount(chapter?.totalRewardUSD)}` : 'TBA'}
+          </span>
         </TextHeading>
       </div>
 
