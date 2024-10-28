@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -234,6 +234,45 @@ function CompetitionDetail({ competition, isPreview = false }) {
     [_competition.description],
   )
 
+  const renderDetailHostPrizeDistribution = useCallback(
+    data => {
+      if (parseToUSD2(_competition.prizeUpdate?.token) > 0) {
+        return data.map((token, index) => {
+          const value = fromWei(_competition.prizeUpdate?.totalPrize?.[index], token?.decimals).times(
+            _competition.prizeUpdate.ownerFee / 1000,
+          )
+          const result = !value.eq(0) ? (
+            <p key={`${token?.symbol}_${index}`}>{`${formatAmount(value)} ${token?.symbol ?? ''}`}</p>
+          ) : (
+            <></>
+          )
+          return result
+        })
+      }
+      return data.map((token, index) => {
+        const value = fromWei(_competition.prizeUpdate?.totalPrize?.[index], token?.decimals).times(
+          _competition.prizeUpdate.ownerFee / 1000,
+        )
+        return <p key={`${token?.symbol}_${index}`}>{`${formatAmount(value)} ${token?.symbol ?? ''}`}</p>
+      })
+    },
+    [
+      _competition.prizeUpdate.ownerFee,
+      _competition.prizeUpdate?.token,
+      _competition.prizeUpdate?.totalPrize,
+      parseToUSD2,
+    ],
+  )
+
+  const renderDetailPlacePrizeDistribution = useCallback(data => {
+    if (data.valueUSD > 0) {
+      return data.data.map(({ value, symbol }, idx) =>
+        value !== '0' ? <p key={`${symbol}_${idx}`}>{`${value} ${symbol}`}</p> : <></>,
+      )
+    }
+    return data.data.map(({ value, symbol }, idx) => <p key={`${symbol}_${idx}`}>{`${value} ${symbol}`}</p>)
+  }, [])
+
   return (
     <>
       <Box>
@@ -301,7 +340,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
             </EmphasisButton>
           )}
         </div>
-        <div className='mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3'>
+        <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3'>
           <div className='flex flex-col gap-2'>
             <TextHeading className='text-lg' data-tooltip-id='host-token-tooltip'>
               {t('Host', { percent: (Number(_competition.prizeUpdate?.ownerFee) / 1000) * 100 })}
@@ -310,15 +349,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
               ${formatAmount(parseToUSD2(_competition.prizeUpdate?.token))}
               <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id='host-info' />
               <CustomTooltip id='host-info' className='max-w-[320px]'>
-                {_competition.prizeUpdate?.token?.map((token, index) => (
-                  <p key={`${token?.symbol}_${index}`}>
-                    {`${formatAmount(
-                      fromWei(_competition.prizeUpdate?.totalPrize?.[index], token?.decimals).times(
-                        _competition.prizeUpdate.ownerFee / 1000,
-                      ),
-                    )} ${token?.symbol ?? ''}`}
-                  </p>
-                ))}
+                {renderDetailHostPrizeDistribution(_competition.prizeUpdate?.token)}
               </CustomTooltip>
             </div>
           </div>
@@ -334,9 +365,7 @@ function CompetitionDetail({ competition, isPreview = false }) {
                   data-tooltip-id={`place-token-tooltip-${index}`}
                 />
                 <CustomTooltip id={`place-token-tooltip-${index}`} className='max-w-[320px]'>
-                  {item.data.map(({ value, symbol }, idx) => (
-                    <p key={`${symbol}_${idx}`}>{`${value} ${symbol}`}</p>
-                  ))}
+                  {renderDetailPlacePrizeDistribution(item)}
                 </CustomTooltip>
               </div>
             </div>
