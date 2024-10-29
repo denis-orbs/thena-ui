@@ -1,5 +1,6 @@
 'use client'
 
+import { iqr } from '@basementuniverse/stats'
 import dayjs from 'dayjs'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -20,17 +21,39 @@ const formatChartData = arr =>
         index === self.findIndex(t => t?.time === item?.time && t.tokenAddress === item.tokenAddress),
     )
     .sort((a, b) => a.time - b.time)
-// const logData = (name, data) => {
-//   console.log(
-//     { name },
-//     {
-//       from: data?.[0]?.time ? dayjs(data[0].time * 1000).format('YYYY-MM-DD HH:mm') : null,
-//       to: data?.[data.length - 1]?.time ? dayjs(data[data.length - 1].time * 1000).format('YYYY-MM-DD HH:mm') : null,
-//       length: data.length,
-//       interval: data?.[1]?.time - data?.[0]?.time,
-//     },
-//   )
-// }
+
+const filterChartDataWithIQR = arr => {
+  const { range } = iqr(arr.map(e => Math.abs(e.open - e.close)))
+
+  let fixHigh = 0
+  let fixLow = 0
+  const result = arr.map(item => {
+    // eslint-disable-next-line prefer-const
+    let { high, low, open, close } = item
+
+    if (Math.min(Math.abs(high - open), Math.abs(high - close)) > range * 5) {
+      high = Math.max(open, close)
+      fixHigh++
+    }
+    if (Math.min(Math.abs(open - low), Math.abs(close - low)) > range * 5) {
+      low = Math.min(open, close)
+      fixLow++
+    }
+
+    return {
+      ...item,
+      high,
+      low,
+    }
+  })
+
+  console.log({
+    fixHigh,
+    fixLow,
+  })
+
+  return result
+}
 
 function CandleStickChart({ asset0, asset1, isResetChart, setResetChart }) {
   const { networkId } = useChainSettings()
@@ -107,7 +130,9 @@ function CandleStickChart({ asset0, asset1, isResetChart, setResetChart }) {
   useEffect(() => {
     if (Array.isArray(loadMoreData) && loadMoreData.length) {
       setAllData(allPreData =>
-        formatChartData([...loadMoreData, ...allPreData]).filter(data => data.tokenAddress === activeToken.address),
+        filterChartDataWithIQR(
+          formatChartData([...loadMoreData, ...allPreData]).filter(data => data.tokenAddress === activeToken.address),
+        ),
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
