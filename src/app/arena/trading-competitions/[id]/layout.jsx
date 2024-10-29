@@ -38,19 +38,15 @@ export async function generateMetadata({ params }) {
     return asset
   })
 
-  const prizeData = findAssets
-    .map((asset, index) => {
-      const token = asset.symbol
-      const prize = formatAmount(fromWei(competition?.prizeUpdate?.totalPrize[index], asset.decimals))
-
-      return `${prize} ${token}`
-    })
-    .join(', ')
+  const prizeData = findAssets.reduce(
+    (sum, asset, index) => sum + fromWei(competition?.prizeUpdate?.totalPrize[index], asset.decimals) * asset.price,
+    0,
+  )
 
   const metadata = {
     name: competition?.name ?? 'competition',
     image: compact([competition?.bannerUrl, competition?.defaultBannerUrl, siteConfig.tcBanner])[0],
-    prizeData,
+    prizeData: `$${formatAmount(prizeData)}`,
   }
 
   return {
