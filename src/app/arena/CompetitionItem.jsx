@@ -25,7 +25,6 @@ import PriceTooltip from './PriceTooltip'
 
 function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidden = () => {} }) {
   const t = useTranslations()
-  console.log({ competition })
   const assets = useAssets()
   const parseToUSD = useMemo(() => {
     let dataCurrentPrizePool = []
