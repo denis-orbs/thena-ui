@@ -3,8 +3,8 @@ import useSWR from 'swr'
 
 import { useChainSettings } from '@/state/settings/hooks'
 
-import { fetchDerivedPriceData, getTokenBestTvlProtocol } from './fetch'
-import { normalizeDerivedChartData, normalizeDerivedPairDataByActiveToken } from './normalizers'
+import { fetchAdvancedDerivedPriceData, fetchSimpleDerivedPriceData, getTokenBestTvlProtocol } from './fetch'
+import { normalizeSimpleDerivedChartData, normalizeSimpleDerivedPairDataByActiveToken } from './normalizers'
 
 export const useFetchPairPrices = ({ token0Address, token1Address, timeWindow, currentSwapPrice }) => {
   const { networkId } = useChainSettings()
@@ -29,12 +29,12 @@ export const useFetchPairPrices = ({ token0Address, token1Address, timeWindow, c
     isLoading,
   } = useSWR(
     Boolean(protocol0 && protocol1 && token0Address && networkId && token1Address) && [
-      'derivedPrice',
+      'simple derivedPrice',
       { token0Address, token1Address, networkId, protocol0, protocol1, timeWindow },
     ],
     async () => {
       if (!networkId) return undefined
-      const data = await fetchDerivedPriceData(
+      const data = await fetchSimpleDerivedPriceData(
         token0Address,
         token1Address,
         timeWindow,
@@ -42,9 +42,9 @@ export const useFetchPairPrices = ({ token0Address, token1Address, timeWindow, c
         protocol1 ?? 'fusion',
         networkId,
       )
-      return normalizeDerivedPairDataByActiveToken({
-        activeToken: token0Address,
-        pairData: normalizeDerivedChartData(data),
+      return normalizeSimpleDerivedPairDataByActiveToken({
+        activeToken: token1Address,
+        pairData: normalizeSimpleDerivedChartData(data),
       })
     },
   )
@@ -62,5 +62,43 @@ export const useFetchPairPrices = ({ token0Address, token1Address, timeWindow, c
     data: normalizedDerivedPairDataWithCurrentSwapPrice,
     error,
     isLoading,
+  }
+}
+
+export const useFetchBestTvlProtocol = ({ tokenAddress }) => {
+  const { networkId } = useChainSettings()
+  const {
+    data: protocol,
+    error,
+    isLoading,
+  } = useSWR(Boolean(tokenAddress && networkId) && ['protocol', tokenAddress, networkId], async () => {
+    if (!networkId) return undefined
+    return getTokenBestTvlProtocol(tokenAddress, networkId)
+  })
+  return {
+    protocol,
+    error,
+    isLoading,
+  }
+}
+
+export const useFetchPairTvlProtocol = ({ token0Address, token1Address }) => {
+  const { protocol: protocol0, error: error0, isLoading: isLoading0 } = useFetchBestTvlProtocol(token0Address)
+  const { protocol: protocol1, error: error1, isLoading: isLoading1 } = useFetchBestTvlProtocol(token1Address)
+  return {
+    protocol0,
+    protocol1,
+    error: error0 || error1,
+    isLoading: isLoading0 || isLoading1,
+  }
+}
+
+export const fetchAdvancedPairPrices = async (tokenAddress, networkId, toTimeStamp, timeInterval) => {
+  if (!tokenAddress || !networkId || !timeInterval) return []
+  try {
+    return await fetchAdvancedDerivedPriceData(tokenAddress, networkId, toTimeStamp, timeInterval)
+  } catch (e) {
+    console.log({ error: e })
+    return { error: e }
   }
 }
