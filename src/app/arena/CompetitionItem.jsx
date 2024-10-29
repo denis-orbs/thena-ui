@@ -10,6 +10,7 @@ import Skeleton from '@/components/skeleton'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextSubHeading } from '@/components/typography'
+import { useAssets } from '@/context/assetsContext'
 import { useCountdown } from '@/hooks/useCountdown'
 import { useEventType } from '@/hooks/useEventType'
 import { useTCStatus } from '@/hooks/useTCStatus'
@@ -24,7 +25,28 @@ import PriceTooltip from './PriceTooltip'
 
 function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidden = () => {} }) {
   const t = useTranslations()
-
+  const assets = useAssets()
+  const parseToUSD = useMemo(() => {
+    let dataCurrentPrizePool = []
+    dataCurrentPrizePool = competition?.prizeUpdate?.token.map((item, index) => ({
+      data: formatAmount(fromWei(competition?.prizeUpdate?.totalPrize[index], item?.decimals)),
+      ticker: item?.symbol,
+      dataNumber: fromWei(competition?.prizeUpdate?.totalPrize[index], item?.decimals),
+    }))
+    const dataAllCurrentPrizePool = [...dataCurrentPrizePool]
+    if (dataCurrentPrizePool.some(item => !isInvalidAmount(item.data))) {
+      dataCurrentPrizePool = dataCurrentPrizePool.filter(item => !isInvalidAmount(item.data))
+    }
+    const result = dataAllCurrentPrizePool.reduce((acc, cur, index) => {
+      const tokenAsset = assets.find(item => item.address === competition?.prizeUpdate?.token?.[index]?.address)
+      if (tokenAsset) {
+        const value = cur.dataNumber
+        return acc + value * tokenAsset.price
+      }
+      return acc
+    }, 0)
+    return result
+  }, [competition?.prizeUpdate?.token, competition?.prizeUpdate?.totalPrize, assets])
   const { eventType } = useEventType(competition?.timestamp)
 
   const totalPrizeByToken = useMemo(() => {
@@ -166,7 +188,7 @@ function CompetitionItem({ competition, showCheckedHidden = false, updateIsHidde
           <div className='mb-3 flex w-full flex-1 items-start justify-start gap-6'>
             <Paragraph className='flex items-center text-nowrap'>
               <PriceCup className='mr-2 h-5 w-5' />
-              <span className='mr-1'>${formatAmount(competition.totalPrizeUSD)}</span>
+              <span className='mr-1'>${formatAmount(parseToUSD)}</span>
 
               <PriceTooltip id={`price-tool-tips-${competition.id}`} tooltip={totalPrizeByToken} />
             </Paragraph>

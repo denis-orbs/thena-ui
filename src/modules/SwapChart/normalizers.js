@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import fromPairs from 'lodash/fromPairs'
 
-export const normalizeDerivedChartData = data => {
+export const normalizeSimpleDerivedChartData = data => {
   if (!data?.token0DerivedUSD || data?.token0DerivedUSD.length === 0) {
     return []
   }
@@ -23,11 +23,15 @@ export const normalizeDerivedChartData = data => {
   }, [])
 }
 
-export const normalizeDerivedPairDataByActiveToken = ({ pairData, activeToken }) =>
+export const normalizeSimpleDerivedPairDataByActiveToken = ({ pairData, activeToken }) =>
   pairData?.map(pairPrice => ({
     time: dayjs.unix(pairPrice.time).toDate(),
     value:
       activeToken === pairPrice?.token0Id
-        ? pairPrice.token0DerivedUSD / pairPrice.token1DerivedUSD
-        : pairPrice.token1DerivedUSD / pairPrice.token0DerivedUSD,
+        ? pairPrice.token1DerivedUSD
+          ? pairPrice.token0DerivedUSD / pairPrice.token1DerivedUSD
+          : 0
+        : pairPrice.token0DerivedUSD
+          ? pairPrice.token1DerivedUSD / pairPrice.token0DerivedUSD
+          : 0,
   }))

@@ -34,7 +34,7 @@ import useWallet from '@/hooks/useWallet'
 import { tryParseAmount } from '@/lib/fusion'
 import { computeRealizedLPFeePercent } from '@/lib/fusion/computeRealizedLPFeePercent'
 import { formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
-import SwapChart from '@/modules/SwapChart'
+import CandleStickChart from '@/modules/SwapChart/CandleStickChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
 
@@ -67,6 +67,7 @@ export function TCTradeSideBar({
   const [ooeData, setOoeData] = useState('')
   const [oneInchData, setOneInchData] = useState('')
   const [service, setService] = useState(serviceList[3])
+  const [isResetChart, setResetChart] = useState(false)
 
   const { handleReloadFetch } = useTradingCompetition()
 
@@ -346,7 +347,12 @@ export function TCTradeSideBar({
       <div className='grid grid-cols-12 gap-4 lg:gap-12'>
         <div className='col-span-12 lg:col-span-7'>
           <div className='flex w-full max-w-[920px] flex-col gap-4'>
-            <SwapChart asset0={toAsset} asset1={fromAsset} />
+            <CandleStickChart
+              asset0={toAsset}
+              asset1={fromAsset}
+              isResetChart={isResetChart}
+              setResetChart={setResetChart}
+            />
             <Box className='flex flex-col gap-4'>
               <div className='flex justify-between'>
                 <TextHeading className='text-xl'>{t('Order Routing')}</TextHeading>
@@ -420,6 +426,7 @@ export function TCTradeSideBar({
                 <CustomTokenInput
                   asset={fromAsset}
                   setAsset={asset => {
+                    setResetChart(true)
                     if (asset?.address === toAsset?.address) {
                       setToAsset(fromAsset)
                     }
@@ -434,6 +441,7 @@ export function TCTradeSideBar({
                 <CustomTokenInput
                   asset={toAsset}
                   setAsset={asset => {
+                    setResetChart(true)
                     if (asset.address === fromAsset?.address) {
                       setFromAsset(toAsset)
                     }
@@ -448,6 +456,7 @@ export function TCTradeSideBar({
                   className='z-1 absolute bottom-0 left-0 right-0 top-0 m-auto'
                   Icon={SwitchVerticalIcon}
                   onClick={() => {
+                    setResetChart(true)
                     setFromAsset(toAsset)
                     setToAsset(fromAsset)
                   }}
