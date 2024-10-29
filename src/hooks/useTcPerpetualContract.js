@@ -460,7 +460,12 @@ export const useWithdrawToTCPerp = () => {
   return { loading, withdrawTCPerp }
 }
 
-export const MUON_BSC_URLS = ['https://crypto-v3-shield2.deus.finance/v1/', 'https://crypto-v3-shield.deus.finance/v1/']
+export const MUON_BSC_URLS = [
+  'https://muon-oracle2.rasa.capital/v1/',
+  'https://muon-oracle3.rasa.capital/v1/',
+  'https://muon-oracle4.rasa.capital/v1/',
+  'https://muon-oracle1.rasa.capital/v1/',
+]
 
 export const APP_NAME = 'symmio'
 
