@@ -16,9 +16,11 @@ import NextImage from '@/components/image/NextImage'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
+import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { formatAmount, goScan } from '@/lib/utils'
 import Position from '@/modules/Position'
+import ManualPosition from '@/modules/Position/ManualPosition'
 import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/svgs'
 
@@ -29,11 +31,20 @@ export default function SpecificPoolPage({ params }) {
   const t = useTranslations()
   const { address } = params
   const { push } = useRouter()
+  const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
   const assets = useAssets()
   const { networkId } = useChainSettings()
   const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [pairs, address])
   const userPools = pool ? pool.subpools.filter(ele => ele.account.totalLp.gt(0)) : []
+  const userManuals = pool
+    ? manuals.filter(
+        ele =>
+          [pool.token0.address, pool.token1.address].includes(ele.token0Address.toLowerCase()) &&
+          [pool.token0.address, pool.token1.address].includes(ele.token1Address.toLowerCase()),
+      )
+    : []
+  const userPositions = [...userPools, ...userManuals]
   const [tvlUSD, setTvlUSD] = useState(0)
 
   useEffect(() => {
@@ -198,11 +209,15 @@ export default function SpecificPoolPage({ params }) {
         </div>
         <div className='flex flex-col gap-4'>
           <h2>{t('My Positions')}</h2>
-          {userPools && userPools.length > 0 ? (
+          {userPositions && userPositions.length > 0 ? (
             <div className='grid grid-cols-1 gap-4'>
-              {userPools.map(sub => (
-                <Position pool={sub} key={sub?.address} />
-              ))}
+              {userPositions.map((ele, idx) =>
+                ele.type === 'Manual' ? (
+                  <ManualPosition pool={ele} key={`pool-${idx}`} />
+                ) : (
+                  <Position pool={ele} key={ele?.address} />
+                ),
+              )}
             </div>
           ) : (
             <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-10'>
