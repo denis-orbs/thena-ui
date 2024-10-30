@@ -142,6 +142,30 @@ export default function VotePage() {
         .filter(pair => !HIDDEN_POOLS.includes(pair.address))
         .filter(pair => pair.gauge.address !== zeroAddress && pair.gauge.isAlive)
         .map(pair => {
+          // TODO: Hard-coded for BNB/XVS Narrow
+          if (pair.address === '0xbdbeb09a06dbd397157cedc306920c20d05aee7d') {
+            console.log({ gauge: pair.gauge })
+            pair.gauge.bribeUsd = new BigNumber('2367.7511746927')
+            if (pair.gauge.bribes) {
+              pair.gauge.bribes = {
+                ...pair.gauge.bribes,
+                fee: [
+                  {
+                    address: '0xcF6BB5389c92Bdda8a3747Ddb454cB7a64626C63',
+                    decimals: 18,
+                    amount: 169.79444915,
+                    symbol: 'XVS',
+                  },
+                  {
+                    address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+                    decimals: 18,
+                    amount: 1.92064285,
+                    symbol: 'WBNB',
+                  },
+                ],
+              }
+            }
+          }
           const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
           let votes = {
             weight: new BigNumber(0),
