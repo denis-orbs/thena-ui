@@ -144,8 +144,8 @@ export default function VotePage() {
         .map(pair => {
           // TODO: Hard-coded for BNB/XVS Narrow
           if (pair.address === '0xbdbeb09a06dbd397157cedc306920c20d05aee7d') {
-            console.log({ gauge: pair.gauge })
             pair.gauge.bribeUsd = new BigNumber('2367.7511746927')
+            pair.gauge.voteApr = pair.gauge.bribeUsd.times(52).div(pair.gauge.weight.times(0.245)).times(100)
             if (pair.gauge.bribes) {
               pair.gauge.bribes = {
                 ...pair.gauge.bribes,
