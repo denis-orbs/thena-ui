@@ -78,10 +78,10 @@ const sortOptions = [
   },
 ]
 
-const HIDDEN_POOLS = [
-  '0x5f28dccd24d1fcb6805e6d71ec15fa93cb0cf360', // SolvBTC/BTCB - DefiEdge
-  '0x7ddb9392376359a36847b351db5c3562499fa373', // SolvBTC/BNB - DefiEdge
-]
+// const HIDDEN_POOLS = [
+//   '0x5f28dccd24d1fcb6805e6d71ec15fa93cb0cf360', // SolvBTC/BTCB - DefiEdge
+//   '0x7ddb9392376359a36847b351db5c3562499fa373', // SolvBTC/BNB - DefiEdge
+// ]
 
 export default function VotePage() {
   const [searchText, setSearchText] = useState('')
@@ -139,7 +139,8 @@ export default function VotePage() {
   const userPools = useMemo(
     () =>
       pools
-        .filter(pair => !HIDDEN_POOLS.includes(pair.address))
+        // .filter(pair => !HIDDEN_POOLS.includes(pair.address))
+        .filter(pair => pair.title !== 'DefiEdge') // hide all DeFi Edge
         .filter(pair => pair.gauge.address !== zeroAddress && pair.gauge.isAlive)
         .map(pair => {
           // TODO: Hard-coded for BNB/XVS Narrow
@@ -294,15 +295,15 @@ export default function VotePage() {
             <Paragraph>
               $
               {formatAmount(
-                pool.title === 'DefiEdge' ||
-                  pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
+                // pool.title === 'DefiEdge' ||
+                pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
                   pool.address === '0xac7042fed4e724107fd5778f4a9cad894a5e18ab'
                   ? 0
                   : pool.gauge.bribeUsd,
               )}
             </Paragraph>
             {pool.gauge.bribeUsd.gt(0) &&
-              pool.title !== 'DefiEdge' &&
+              // pool.title !== 'DefiEdge' &&
               pool.address !== '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' &&
               pool.address !== '0xac7042fed4e724107fd5778f4a9cad894a5e18ab' && (
                 <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`projected-${pool.gauge.address}`} />
@@ -342,8 +343,8 @@ export default function VotePage() {
             <Paragraph>
               $
               {formatAmount(
-                pool.title === 'DefiEdge' ||
-                  pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
+                // pool.title === 'DefiEdge' ||
+                pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
                   pool.address === '0xac7042fed4e724107fd5778f4a9cad894a5e18ab'
                   ? 0
                   : pool.votes.perRewards,
