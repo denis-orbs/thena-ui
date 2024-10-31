@@ -1197,5 +1197,7 @@
   "Pool fee message": "Thena governance will always have ability to manage the fees of this pool if needed.",
   "Total": "Total",
   "Set Initial Liquidity": "Set Initial Liquidity",
-  "Retry": "Retry"
+  "Retry": "Retry",
+  "Pairing": "Pairing",
+  "Create Weight Pool": "Create Weight Pool"
 }

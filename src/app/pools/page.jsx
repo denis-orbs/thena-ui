@@ -8,7 +8,7 @@ import { ChainId } from 'thena-sdk-core'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
@@ -24,8 +24,9 @@ import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { formatAmount } from '@/lib/utils'
+import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
+import { ArrowRightIcon, InfoIcon } from '@/svgs'
 
 import AddLiquidityModal from './addLiquidityModal'
 
@@ -40,7 +41,7 @@ export const listPoolAddressSpecial = [
 
 const sortOptions = [
   {
-    label: 'Pair',
+    label: 'Pairing',
     value: 'pair',
     width: 'lg:w-[25%]',
     isDesc: true,
@@ -197,18 +198,24 @@ export default function PoolsPage() {
       return data.map(pool => ({
         pair: (
           <div className='flex items-center gap-3'>
-            <IconGroup
-              className='-space-x-2'
-              classNames={{
-                image: 'outline-2 w-7 h-7',
-              }}
-              logo1={pool.token0.logoURI}
-              logo2={pool.token1.logoURI}
-            />
-            <div className='flex flex-col'>
-              <TextHeading>{pool.symbol}</TextHeading>
-              <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
-            </div>
+            {pool.type === PAIR_TYPES.LSD ? (
+              <>
+                <IconGroup
+                  className='-space-x-2'
+                  classNames={{
+                    image: 'outline-2 w-7 h-7',
+                  }}
+                  logo1={pool.token0.logoURI}
+                  logo2={pool.token1.logoURI}
+                />
+                <div className='flex flex-col'>
+                  <TextHeading>{pool.symbol}</TextHeading>
+                  <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
+                </div>
+              </>
+            ) : (
+              <ListTokenPercantage listToken={[pool.token0, pool.token1]} />
+            )}
             {pool.address === weETHPoolAddress && (
               <div className='flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id='etherBadgeIcon'>
@@ -287,7 +294,7 @@ export default function PoolsPage() {
         apr: (
           <div className='flex items-center gap-1'>
             <Paragraph>{pool.apr}</Paragraph>
-            {pool.subpools.length > 0 && (
+            {/* {pool.subpools.length > 0 && (
               <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`pair-${pool.address}`} />
             )}
             <CustomTooltip className='min-w-[130px]' id={`pair-${pool.address}`}>
@@ -308,26 +315,26 @@ export default function PoolsPage() {
                   ))}
                 </div>
               </div>
-            </CustomTooltip>
+            </CustomTooltip> */}
           </div>
         ),
         tvl: (
           <div className='flex w-full items-center gap-1'>
             <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(pool.tvlUSD)}</Paragraph>
-            <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
+            {/* <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
             <CustomTooltip id={`tvl-${pool.address}`}>
               <div className='flex flex-col gap-1'>
                 <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
                 <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
               </div>
-            </CustomTooltip>
+            </CustomTooltip> */}
           </div>
         ),
         volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,
         fee: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayFees)}</Paragraph>,
         action: (
-          <EmphasisButton className='w-full lg:w-fit' onClick={() => push(`/pools/${pool.address}`)}>
-            {t('Manage')}
+          <EmphasisButton className='w-full p-3  lg:w-fit' onClick={() => push(`/pools/${pool.address}`)}>
+            <ArrowRightIcon className='h-5 w-5' />
           </EmphasisButton>
         ),
       }))
@@ -380,7 +387,7 @@ export default function PoolsPage() {
                         <TextHeading className='text-lg'>{trending.symbol}</TextHeading>
                         <NeutralBadge className='text-nowrap'>ICHI</NeutralBadge>
                       </div>
-                      <Paragraph className='text-sm'>{t(PAIR_TYPES.LSD)}</Paragraph>
+                      {/* <Paragraph className='text-sm'>{t(PAIR_TYPES.LSD)}</Paragraph> */}
                     </div>
                   </div>
                 </div>
@@ -489,9 +496,15 @@ export default function PoolsPage() {
               />
             </div>
           </div>
-          <PrimaryButton className='w-full lg:w-auto' onClick={() => setIsOpen(true)}>
-            {t('Add Liquidity')}
-          </PrimaryButton>
+          <div>
+            <Link href='/pools/weighted-pool'>
+              <TertiaryButton className='w-full lg:w-auto'>{t('Create Weight Pool')}</TertiaryButton>
+            </Link>
+
+            <PrimaryButton className='ml-4 w-full lg:w-auto' onClick={() => setIsOpen(true)}>
+              {t('Add Liquidity')}
+            </PrimaryButton>
+          </div>
         </div>
         <Table
           sortOptions={sortOptions}
