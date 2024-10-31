@@ -2,7 +2,6 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import dynamic from 'next/dynamic'
-import Script from 'next/script'
 import React, { Suspense } from 'react'
 
 import '@/styles/globals.css'
@@ -81,15 +80,6 @@ export default function RootLayout({ children }) {
         <Analytics />
         <div id='widget-dom-id' />
         <div id='metacrm-tracking' />
-        <Script
-          id='widget-dom-id'
-          src='https://widget.metacrm.inc/static/js/widget.js'
-          onLoad={() => {
-            window.MetaCRMWidget.init({
-              apiKey: 'mqrsxk7605j',
-            })
-          }}
-        />
       </body>
       <GoogleAnalytics gaId={analyticsId} />
     </html>
