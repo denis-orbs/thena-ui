@@ -5,7 +5,6 @@ import { useConnect as useParticleConnect } from '@particle-network/auth-core-mo
 import { compact } from 'lodash'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import Script from 'next/script'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
@@ -897,15 +896,6 @@ function Header() {
           </div>
         </div>
       )}
-      <Script
-        id='widget-dom-id'
-        src='https://widget.metacrm.inc/static/js/widget.js'
-        onLoad={() => {
-          window.MetaCRMWidget.init({
-            apiKey: 'mqrsxk7605j',
-          })
-        }}
-      />
     </div>
   )
 }
