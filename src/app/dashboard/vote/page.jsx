@@ -78,10 +78,10 @@ const sortOptions = [
   },
 ]
 
-const HIDDEN_POOLS = [
-  '0x5f28dccd24d1fcb6805e6d71ec15fa93cb0cf360', // SolvBTC/BTCB - DefiEdge
-  '0x7ddb9392376359a36847b351db5c3562499fa373', // SolvBTC/BNB - DefiEdge
-]
+// const HIDDEN_POOLS = [
+//   '0x5f28dccd24d1fcb6805e6d71ec15fa93cb0cf360', // SolvBTC/BTCB - DefiEdge
+//   '0x7ddb9392376359a36847b351db5c3562499fa373', // SolvBTC/BNB - DefiEdge
+// ]
 
 export default function VotePage() {
   const [searchText, setSearchText] = useState('')
@@ -139,33 +139,10 @@ export default function VotePage() {
   const userPools = useMemo(
     () =>
       pools
-        .filter(pair => !HIDDEN_POOLS.includes(pair.address))
+        // .filter(pair => !HIDDEN_POOLS.includes(pair.address))
+        .filter(pair => pair.title !== 'DefiEdge') // hide all DeFi Edge
         .filter(pair => pair.gauge.address !== zeroAddress && pair.gauge.isAlive)
         .map(pair => {
-          // TODO: Hard-coded for BNB/XVS Narrow
-          if (pair.address === '0xbdbeb09a06dbd397157cedc306920c20d05aee7d') {
-            pair.gauge.bribeUsd = new BigNumber('2367.7511746927')
-            pair.gauge.voteApr = pair.gauge.bribeUsd.times(52).div(pair.gauge.weight.times(0.245)).times(100)
-            if (pair.gauge.bribes) {
-              pair.gauge.bribes = {
-                ...pair.gauge.bribes,
-                fee: [
-                  {
-                    address: '0xcF6BB5389c92Bdda8a3747Ddb454cB7a64626C63',
-                    decimals: 18,
-                    amount: 169.79444915,
-                    symbol: 'XVS',
-                  },
-                  {
-                    address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-                    decimals: 18,
-                    amount: 1.92064285,
-                    symbol: 'WBNB',
-                  },
-                ],
-              }
-            }
-          }
           const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
           let votes = {
             weight: new BigNumber(0),
@@ -294,15 +271,15 @@ export default function VotePage() {
             <Paragraph>
               $
               {formatAmount(
-                pool.title === 'DefiEdge' ||
-                  pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
+                // pool.title === 'DefiEdge' ||
+                pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
                   pool.address === '0xac7042fed4e724107fd5778f4a9cad894a5e18ab'
                   ? 0
                   : pool.gauge.bribeUsd,
               )}
             </Paragraph>
             {pool.gauge.bribeUsd.gt(0) &&
-              pool.title !== 'DefiEdge' &&
+              // pool.title !== 'DefiEdge' &&
               pool.address !== '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' &&
               pool.address !== '0xac7042fed4e724107fd5778f4a9cad894a5e18ab' && (
                 <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`projected-${pool.gauge.address}`} />
@@ -342,8 +319,8 @@ export default function VotePage() {
             <Paragraph>
               $
               {formatAmount(
-                pool.title === 'DefiEdge' ||
-                  pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
+                // pool.title === 'DefiEdge' ||
+                pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
                   pool.address === '0xac7042fed4e724107fd5778f4a9cad894a5e18ab'
                   ? 0
                   : pool.votes.perRewards,
