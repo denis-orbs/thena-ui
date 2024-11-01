@@ -39,7 +39,7 @@ const fetchTCTags = async () => {
     const { tcTags } = await v4Client.request(V4_TC_TAGS)
     return tcTags
   } catch (error) {
-    return {}
+    return []
   }
 }
 
@@ -47,7 +47,9 @@ function FilterDropDown({ filter, setFilter, hasFilter }) {
   const t = useTranslations()
 
   const { data: tcTags, isLoading } = useSWR(['tcTags'], () => fetchTCTags(), {
-    refreshInterval: 1000,
+    errorRetryCount: 3,
+    errorRetryInterval: 1000,
+    revalidateOnFocus: false,
   })
 
   const allTcTags = useMemo(() => [DEFAULT_TAG_ALL_TC, ...(tcTags ?? []).map(tag => tag.name)], [tcTags])
