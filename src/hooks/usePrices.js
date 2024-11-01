@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
@@ -49,6 +49,18 @@ export const useTokenPrice = address => {
   }, [assets, address])
 
   return price
+}
+
+export const useTokenUSDValue = () => {
+  const assets = useAssets()
+  const getValueTokenAmountToUSD = useCallback(
+    (address, amount) => {
+      const token = assets.find(item => item.address.toLowerCase() === address.toLowerCase())
+      return (token?.price || 0) * amount
+    },
+    [assets],
+  )
+  return { getValueTokenAmountToUSD }
 }
 
 export default usePrices

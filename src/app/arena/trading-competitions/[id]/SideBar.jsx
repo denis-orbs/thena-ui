@@ -17,6 +17,7 @@ import { TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useUserInfo } from '@/context/userInfoContext'
 import { fetchUserRankAndPnLInTC } from '@/hooks/trade/useTradingCompetitionLeaderboard'
+import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
@@ -27,7 +28,7 @@ import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { Countdown } from '@/modules/Countdown'
 import DeallocateModal from '@/modules/TradingCompetition/DeallocateModal'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
-import { CheckIcon, InfoCirCleDisableIcon, PublicIcon } from '@/svgs'
+import { CheckIcon, InfoCirCleDisableIcon, InfoNeutralIcon, PublicIcon } from '@/svgs'
 
 import IncreasePrizeModal from './IncreasePrizeModal'
 import DepositModal from './trade/DepositModal'
@@ -71,6 +72,8 @@ function Sidebar({ competition, eventType }) {
   const [showModalDeallocate, setShowModalDeallocate] = useState(false)
   const [enabledWithdraw, setEnabledWithdraw] = useState(undefined)
   const [remainingTime, setRemainingTime] = useState(undefined)
+
+  const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   const intervalId = useRef(undefined)
 
@@ -141,6 +144,31 @@ function Sidebar({ competition, eventType }) {
     enabled: Boolean(competition.id && account && isBNBSS3TC),
   })
 
+  const totalPrizeByToken = useMemo(() => {
+    const formatData = (competition?.prizeUpdate?.token || []).map((prize, index) => {
+      const amount = fromWei(competition?.prizeUpdate?.totalPrize?.[index], prize?.decimals)
+      const symbol = prize?.symbol
+      return {
+        amount,
+        symbol,
+      }
+    })
+
+    const filterData = formatData.filter(({ amount }) => !isInvalidAmount(amount))
+
+    const finalData = filterData.length > 0 ? filterData : formatData
+    return finalData.map(({ amount, symbol }) => `${formatAmount(amount, false, 5, false)} ${symbol}`)
+  }, [competition.prizeUpdate?.token, competition?.prizeUpdate?.totalPrize])
+
+  const totalPrizeUsd = useMemo(
+    () =>
+      (competition?.prizeUpdate?.token || []).reduce((sum, prize, index) => {
+        const amount = fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.decimals)
+        return sum + getValueTokenAmountToUSD(prize?.address, amount)
+      }, 0),
+    [competition?.prizeUpdate?.token, competition?.prizeUpdate?.totalPrize, getValueTokenAmountToUSD],
+  )
+
   const headingAndText = useMemo(() => {
     if (!eventType) {
       return {
@@ -173,56 +201,36 @@ function Sidebar({ competition, eventType }) {
     }
     if (eventType === EVENT_TYPES.LIVE) {
       let subText = null
+      let endOfSubText = null
       switch (competition.participantCount) {
         case 0:
-          subText = t('No Thenians Are Competing', {
-            totalPrize: competition.prizeUpdate.token
-              .map(
-                (prize, index) =>
-                  `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
-                    prize?.symbol
-                  }`,
-              )
-              .join(', '),
-          })
+          subText = t('No Thenians Are Competing')
+          endOfSubText = '!'
           break
         case 1:
           subText = t('Thenian Is Competing', {
-            totalPrize: competition.prizeUpdate.token
-              .map(
-                (prize, index) =>
-                  `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
-                    prize?.symbol
-                  }`,
-              )
-              .join(', '),
-
             participantCount: competition.participantCount,
           })
+          endOfSubText = t('Will they beat themselves')
           break
         default:
           subText = t('Thenians Are Competing', {
-            totalPrize: (competition?.prizeUpdate?.token || [])
-              .map(
-                (prize, index) =>
-                  `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
-                    prize?.symbol
-                  }`,
-              )
-              .join(', '),
             participantCount: competition.participantCount,
           })
+          endOfSubText = '!'
           break
       }
       return {
         heading: t('Live'),
         text: t('Competition Has Started'),
         subText,
+        endOfSubText,
       }
     }
     if (eventType === EVENT_TYPES.ENDED) {
       let subText = null
       let text = null
+      let endOfSubText = null
 
       if (isBNBSS3TC && !isInvalidAmount(competitionUser?.participants?.[0]?.winAmountUSD)) {
         return {
@@ -238,42 +246,20 @@ function Sidebar({ competition, eventType }) {
       } else {
         switch (competition.participantCount) {
           case 0:
-            subText = t('No Thenians Have Competed', {
-              totalPrize: competition.prizeUpdate.token
-                .map(
-                  (prize, index) =>
-                    `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
-                      prize?.symbol
-                    }`,
-                )
-                .join(', '),
-            })
+            subText = t('No Thenians Have Competed')
+            endOfSubText = '!'
             break
           case 1:
             subText = t('Thenian Has Competed', {
-              totalPrize: competition.prizeUpdate.token
-                .map(
-                  (prize, index) =>
-                    `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
-                      prize?.symbol
-                    }`,
-                )
-                .join(', '),
               participantCount: competition.participantCount,
             })
+            endOfSubText = '!'
             break
           default:
             subText = t('Thenians Have Competed', {
-              totalPrize: competition.prizeUpdate.token
-                .map(
-                  (prize, index) =>
-                    `${formatAmount(fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.token?.decimals))} ${
-                      prize?.symbol
-                    }`,
-                )
-                .join(', '),
               participantCount: competition.participantCount,
             })
+            endOfSubText = '!'
             break
         }
       }
@@ -282,6 +268,7 @@ function Sidebar({ competition, eventType }) {
         heading: t('Ended'),
         text,
         subText,
+        endOfSubText,
       }
     }
 
@@ -297,8 +284,6 @@ function Sidebar({ competition, eventType }) {
     t,
     isTCJoined,
     competition.participantCount,
-    competition.prizeUpdate?.token,
-    competition.prizeUpdate?.totalPrize,
     isBNBSS3TC,
     competitionUser?.participants,
     isJoined,
@@ -667,7 +652,23 @@ function Sidebar({ competition, eventType }) {
         {(headingAndText.subText || headingAndText.text) && (
           <Box className='flex flex-col space-y-2 border border-primary-800 bg-primary-950'>
             {headingAndText.text && <TextHeading className='text-xl'>{headingAndText.text}</TextHeading>}
-            {headingAndText.subText && <TextHeading className='text-base'>{headingAndText.subText}</TextHeading>}
+            {headingAndText.subText && (
+              <TextHeading className='flex text-base'>
+                {headingAndText.subText}&nbsp;
+                {totalPrizeUsd !== null && (
+                  <span className='mr-1 flex flex-row gap-1'>
+                    ${formatAmount(totalPrizeUsd)}
+                    <InfoNeutralIcon className='h4 w-4' data-tooltip-id={`price-tool-tips-${competition.id}`} />
+                    <CustomTooltip id={`price-tool-tips-${competition.id}`} className='max-w-[320px]' place='bottom'>
+                      {totalPrizeByToken.map(item => (
+                        <p key={item}>{item}</p>
+                      ))}
+                    </CustomTooltip>
+                  </span>
+                )}
+                {headingAndText.endOfSubText}
+              </TextHeading>
+            )}
             {!isInvalidAmount(deposit) ? (
               <>
                 <TextHeading className='text-base'>
