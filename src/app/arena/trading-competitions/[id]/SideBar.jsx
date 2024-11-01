@@ -28,7 +28,7 @@ import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { Countdown } from '@/modules/Countdown'
 import DeallocateModal from '@/modules/TradingCompetition/DeallocateModal'
 import { JoinModal } from '@/modules/TradingCompetition/JoinModal'
-import { CheckIcon, InfoCirCleDisableIcon, PublicIcon } from '@/svgs'
+import { CheckIcon, InfoCirCleDisableIcon, InfoNeutralIcon, PublicIcon } from '@/svgs'
 
 import IncreasePrizeModal from './IncreasePrizeModal'
 import DepositModal from './trade/DepositModal'
@@ -146,10 +146,10 @@ function Sidebar({ competition, eventType }) {
 
   const totalPrizeByToken = useMemo(() => {
     const formatData = (competition?.prizeUpdate?.token || []).map((prize, index) => {
-      const amount = fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.decimals)
+      const amount = fromWei(competition?.prizeUpdate?.totalPrize?.[index], prize?.decimals)
       const symbol = prize?.symbol
       return {
-        amount: formatAmount(amount, false, 5, false),
+        amount,
         symbol,
       }
     })
@@ -157,16 +157,16 @@ function Sidebar({ competition, eventType }) {
     const filterData = formatData.filter(({ amount }) => !isInvalidAmount(amount))
 
     const finalData = filterData.length > 0 ? filterData : formatData
-    return finalData.map(({ amount, symbol }) => `${amount} ${symbol}`)
-  }, [competition.prizeUpdate?.token, competition.prizeUpdate?.totalPrize])
+    return finalData.map(({ amount, symbol }) => `${formatAmount(amount, false, 5, false)} ${symbol}`)
+  }, [competition.prizeUpdate?.token, competition?.prizeUpdate?.totalPrize])
 
   const totalPrizeUsd = useMemo(
     () =>
       (competition?.prizeUpdate?.token || []).reduce((sum, prize, index) => {
         const amount = fromWei(competition.prizeUpdate?.totalPrize?.[index], prize?.decimals)
-        return sum + getValueTokenAmountToUSD(prize.address, amount)
+        return sum + getValueTokenAmountToUSD(prize?.address, amount)
       }, 0),
-    [competition.prizeUpdate?.token, competition.prizeUpdate?.totalPrize, getValueTokenAmountToUSD],
+    [competition?.prizeUpdate?.token, competition?.prizeUpdate?.totalPrize, getValueTokenAmountToUSD],
   )
 
   const headingAndText = useMemo(() => {
@@ -656,8 +656,9 @@ function Sidebar({ competition, eventType }) {
               <TextHeading className='flex text-base'>
                 {headingAndText.subText}&nbsp;
                 {totalPrizeUsd !== null && (
-                  <span className='mr-1 flex flex-row' data-tooltip-id={`price-tool-tips-${competition.id}`}>
+                  <span className='mr-1 flex flex-row gap-1'>
                     ${formatAmount(totalPrizeUsd)}
+                    <InfoNeutralIcon className='h4 w-4' data-tooltip-id={`price-tool-tips-${competition.id}`} />
                     <CustomTooltip id={`price-tool-tips-${competition.id}`} className='max-w-[320px]' place='bottom'>
                       {totalPrizeByToken.map(item => (
                         <p key={item}>{item}</p>

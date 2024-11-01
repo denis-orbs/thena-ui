@@ -79,15 +79,15 @@ export function LeaderBoard({
         const amount = fromWei(item, token?.decimals)
         const symbol = token?.symbol
         return {
-          amount: formatAmount(amount, false, 5, false),
+          amount,
           symbol,
         }
       })
 
       const filterData = formatData.filter(({ amount }) => !isInvalidAmount(amount))
 
-      const finalData = filterData.length > 0 ? filterData : formatData
-      return finalData.map(({ amount, symbol }) => `${amount} ${symbol}`)
+      const finalData = filterData?.length > 0 ? filterData : formatData
+      return finalData.map(({ amount, symbol }) => `${formatAmount(amount, false, 5, false)} ${symbol}`)
     },
     [competition?.prizeUpdate?.token],
   )
@@ -97,7 +97,7 @@ export function LeaderBoard({
       winAmount.reduce((sum, item, index) => {
         const token = competition?.prizeUpdate?.token[index]
         const amount = fromWei(item, token?.decimals)
-        return sum + getValueTokenAmountToUSD(token.address, amount)
+        return sum + getValueTokenAmountToUSD(token?.address, amount)
       }, 0),
     [competition?.prizeUpdate?.token, getValueTokenAmountToUSD],
   )
@@ -142,8 +142,9 @@ export function LeaderBoard({
             <Paragraph className='w-full'>
               <div className='flex flex-col items-start'>
                 {/* {leader.winAmount.map((item, index) => ( */}
-                <span data-tooltip-id={`price-tool-tips-${leader?.participant.id}`}>
+                <span className='flex flex-row gap-1'>
                   ${formatAmount(getRewardUsd(leader.winAmount))}
+                  <InfoNeutralIcon className='h4 w-4' data-tooltip-id={`price-tool-tips-${leader?.participant.id}`} />
                 </span>
                 <CustomTooltip
                   id={`price-tool-tips-${leader?.participant.id}`}
