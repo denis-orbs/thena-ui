@@ -1,7 +1,7 @@
+import { useQuery } from '@tanstack/react-query'
 import { gql } from 'graphql-request'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
-import useSWR from 'swr'
 
 import { PrimaryBadge } from '@/components/badges/Badge'
 import { EmphasisButton } from '@/components/buttons/Button'
@@ -46,10 +46,14 @@ const fetchTCTags = async () => {
 function FilterDropDown({ filter, setFilter, hasFilter }) {
   const t = useTranslations()
 
-  const { data: tcTags, isLoading } = useSWR(['tcTags'], () => fetchTCTags(), {
-    errorRetryCount: 3,
-    errorRetryInterval: 1000,
-    revalidateOnFocus: false,
+  const { data: tcTags, isLoading } = useQuery({
+    queryKey: ['tcTags'],
+    queryFn: () => fetchTCTags(),
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    enabled: true,
+    retry: 3,
+    retryDelay: 1000,
   })
 
   const allTcTags = useMemo(() => [DEFAULT_TAG_ALL_TC, ...(tcTags ?? []).map(tag => tag.name)], [tcTags])
