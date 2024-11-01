@@ -9,9 +9,10 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { TC_MARKET_TYPES } from '@/constant'
 import { useEventType } from '@/hooks/useEventType'
+import { useTokenUSDValue } from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, formatNumberDecimals, fromWei } from '@/lib/utils'
+import { formatAmount, formatNumberDecimals, fromWei, isInvalidAmount } from '@/lib/utils'
 import { FirstPrizeIcon, InfoNeutralIcon, SecondPrizeIcon, ThirdPrizeIcon } from '@/svgs'
 
 import SearchWithDebounce from './SearchWithDebounce'
@@ -46,6 +47,8 @@ export function LeaderBoard({
   const [currentPage, setCurrentPage] = useState(1)
   const { account } = useWallet()
 
+  const { getValueTokenAmountToUSD } = useTokenUSDValue()
+
   const { push } = useRouter()
   const t = useTranslations()
 
@@ -67,6 +70,36 @@ export function LeaderBoard({
   const participantsAccount = useMemo(
     () => handleParticipants(competitionAccount),
     [competitionAccount, handleParticipants],
+  )
+
+  const getRewardByToken = useCallback(
+    winAmount => {
+      const formatData = winAmount.map((item, index) => {
+        const token = competition?.prizeUpdate?.token[index]
+        const amount = fromWei(item, token?.decimals)
+        const symbol = token?.symbol
+        return {
+          amount: formatAmount(amount, false, 5, false),
+          symbol,
+        }
+      })
+
+      const filterData = formatData.filter(({ amount }) => !isInvalidAmount(amount))
+
+      const finalData = filterData.length > 0 ? filterData : formatData
+      return finalData.map(({ amount, symbol }) => `${amount} ${symbol}`)
+    },
+    [competition?.prizeUpdate?.token],
+  )
+
+  const getRewardUsd = useCallback(
+    winAmount =>
+      winAmount.reduce((sum, item, index) => {
+        const token = competition?.prizeUpdate?.token[index]
+        const amount = fromWei(item, token?.decimals)
+        return sum + getValueTokenAmountToUSD(token.address, amount)
+      }, 0),
+    [competition?.prizeUpdate?.token, getValueTokenAmountToUSD],
   )
 
   const handleRenderFinalData = useCallback(
@@ -108,16 +141,20 @@ export function LeaderBoard({
           reward: (
             <Paragraph className='w-full'>
               <div className='flex flex-col items-start'>
-                {leader.winAmount.map((item, index) => (
-                  <Paragraph key={index}>
-                    {`${formatAmount(
-                      fromWei(item, competition?.prizeUpdate?.token[index]?.decimals),
-                      false,
-                      5,
-                      false,
-                    )} ${competition?.prizeUpdate?.token?.[index]?.symbol || ''}`}
-                  </Paragraph>
-                ))}
+                {/* {leader.winAmount.map((item, index) => ( */}
+                <span data-tooltip-id={`price-tool-tips-${leader?.participant.id}`}>
+                  ${formatAmount(getRewardUsd(leader.winAmount))}
+                </span>
+                <CustomTooltip
+                  id={`price-tool-tips-${leader?.participant.id}`}
+                  className='max-w-[320px]'
+                  place='bottom'
+                >
+                  {(getRewardByToken(leader.winAmount) || []).map(item => (
+                    <p key={item}>{item}</p>
+                  ))}
+                </CustomTooltip>
+                {/* ))} */}
               </div>
             </Paragraph>
           ),
@@ -125,7 +162,7 @@ export function LeaderBoard({
       })
       return result
     },
-    [competition?.competitionRules?.winningToken?.symbol, competition?.prizeUpdate?.token],
+    [competition?.competitionRules?.winningToken?.symbol, getRewardByToken, getRewardUsd],
   )
 
   const rowDefault = useMemo(() => {
