@@ -90,7 +90,7 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
                   logo2='https://cdn.thena.fi/assets/BNB.png'
                 />
               ) : (
-                <CircleImage alt='thena' className='h-6 w-6' src={asset.logoURI} />
+                <CircleImage alt='thena' className='h-6 w-6' src={asset.logoURI ?? ''} />
               )}
               <span className='text-nowrap'>{maxBalance ? 'BNB + WBNB' : asset.symbol}</span>
             </div>

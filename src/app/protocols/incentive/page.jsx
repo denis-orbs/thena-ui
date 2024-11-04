@@ -11,7 +11,6 @@ import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import IconGroup from '@/components/icongroup'
-import CircleImage from '@/components/image/CircleImage'
 import BalanceInput from '@/components/input/BalanceInput'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useMutateAssets } from '@/context/assetsContext'
@@ -32,6 +31,7 @@ export default function IncentivePage() {
   const { account } = useWallet()
   const [pair, setPair] = useState(null)
   const [asset, setAsset] = useState(null)
+  console.log({ pair, asset })
   const mutateAssets = useMutateAssets()
   const pools = usePools()
   const poolsWithGauge = useMemo(() => pools.filter(pool => pool && pool.gauge.address !== zeroAddress), [pools])
@@ -106,14 +106,14 @@ export default function IncentivePage() {
               >
                 {pair ? (
                   <div className='flex items-center gap-3'>
-                    <IconGroup
+                    {/* <IconGroup
                       className='-space-x-1'
                       classNames={{
                         image: 'outline-2 w-5 h-5',
                       }}
                       logo1={pair.token0.logoURI}
                       logo2={pair.token1.logoURI}
-                    />
+                    /> */}
                     <div className='flex items-end gap-2'>
                       <TextHeading>{pair.symbol}</TextHeading>
                       <Paragraph className='text-sm'>{t(pair.title)}</Paragraph>
@@ -138,7 +138,7 @@ export default function IncentivePage() {
               >
                 {asset ? (
                   <div className='flex items-center gap-3'>
-                    <CircleImage className='h-5 w-5' src={asset.logoURI} alt='' />
+                    {/* <CircleImage className='h-5 w-5' src={asset.logoURI} alt='' /> */}
                     <TextHeading>{asset.symbol}</TextHeading>
                   </div>
                 ) : (

@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
@@ -99,7 +98,7 @@ function TokenModal({
                 setPopup(false)
               }}
             >
-              <CircleImage src={item.logoURI} className='h-8 w-8' alt='thena token' />
+              {/* <CircleImage src={item.logoURI} className='h-8 w-8' alt='thena token' /> */}
               <div>
                 <TextHeading className='text-sm'>{item.symbol}</TextHeading>
                 {/* <TextSubHeading>{formatAmount(item.balance)}</TextSubHeading> */}
@@ -129,7 +128,7 @@ function TokenModal({
               key={item.address}
             >
               <div className='flex items-center gap-2 rounded-lg'>
-                <CircleImage src={item.logoURI} width={32} height={32} alt='thena token' />
+                {/* <CircleImage src={item.logoURI} width={32} height={32} alt='thena token' /> */}
                 <div className='flex flex-col'>
                   <div className='flex items-center space-x-1'>
                     <TextHeading>{item.symbol}</TextHeading>
