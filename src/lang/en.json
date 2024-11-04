@@ -1167,5 +1167,19 @@
   "4h": "4h",
   "12h": "12h",
   "tBNB": "tBNB",
-  "Voting history": "Voting history"
+  "Voting history": "Voting history",
+  "Migrate Your Conc Liquidity Positions": "Migrate Your Conc. Liquidity Positions",
+  "Migrate Your Conc Liquidity Positions description": "We are upgrading our CL gauges. We advise you to migrate all your positions as soon as possible. Don’t worry, during the migration all rewards will be claimed and current deposits will be withdrawn and deposited to a new V3 gauges. Staked positions will be unstaked and staked to a new gauge.",
+  "Your Conc Liquidity Positions": "Your Conc. Liquidity Positions",
+  "Migration": "Migration",
+  "Migration description": "This will safely migrate your old V3 gauge to a new one. The process is completely trustless thanks to a new",
+  "KyberSwap migration contract": "KyberSwap migration contract",
+  "Your Current Gauge": "Your Current Gauge",
+  "Your New V3 Gauge": "Your New V3 Gauge",
+  "During the migration all rewards will be": "During the migration all rewards will be claimed and current deposit will be withdrawn and deposited to a new gauge.",
+  "Migrate Now": "Migrate Now",
+  "WBNB Deposit": "WBNB Deposit",
+  "THE Deposit": "THE Deposit",
+  "Adjust New Position": "Adjust New Position",
+  "Full range": "Full range"
 }

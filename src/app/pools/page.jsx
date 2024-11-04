@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -17,7 +18,7 @@ import Selection from '@/components/selection'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
@@ -416,6 +417,37 @@ export default function PoolsPage() {
           </div>
         </>
       )}
+      <Box className='mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950'>
+        <InfoIcon className='h-16 w-16 stroke-primary-600' />
+        <div className='flex flex-col'>
+          <TextHeading className='text-xl text-neutral-100'>{t('Migrate Your Conc Liquidity Positions')}</TextHeading>
+          <TextSubHeading className='text-base text-primary-100'>
+            {t('Migrate Your Conc Liquidity Positions description')}
+            &nbsp;
+            <span>
+              <Link className='text-primary-600' href='/'>
+                {t('Learn more')}
+              </Link>
+            </span>
+          </TextSubHeading>
+        </div>
+      </Box>
+
+      <div className='mt-6 flex flex-col gap-4'>
+        <div className='flex items-center justify-between'>
+          <TextHeading className='text-xl'>{t('Your Conc Liquidity Positions')}</TextHeading>
+        </div>
+        {/* TODO: fix data */}
+        <Table
+          sortOptions={sortOptions}
+          data={finalPools}
+          sort={sort}
+          setSort={setSort}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
+
       <div className='mt-6 flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
           <TextHeading className='text-xl'>{isInactive ? t('Inactive Pools') : t('Active Pools')}</TextHeading>

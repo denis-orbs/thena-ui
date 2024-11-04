@@ -21,6 +21,7 @@ import multiCallAbi from './multiCall.json'
 import muonAbi from './muon.json'
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
+import pairAPITestnetAbi from './pairAPITestmet.json'
 import rewardEarnedAbi from './rewardEarned.json'
 import rewardsAPIAbi from './rewardsAPI.json'
 import routerAbi from './router.json'
@@ -60,6 +61,7 @@ export {
   numeralAbi,
   pairAbi,
   pairAPIAbi,
+  pairAPITestnetAbi,
   rewardEarnedAbi,
   rewardsAPIAbi,
   routerAbi,

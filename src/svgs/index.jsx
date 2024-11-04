@@ -7,6 +7,7 @@ import ArrowBackwardIcon from '~/svgs/arrow-backward-small.svg'
 import ArrowDownIcon from '~/svgs/arrow-down.svg'
 import ArrowForwardSmallIcon from '~/svgs/arrow-forward-small.svg'
 import ArrowLeftIcon from '~/svgs/arrow-left.svg'
+import ArrowNarrowUpRightIcon from '~/svgs/arrow-narrow-up-right.svg'
 import ArrowRightIcon from '~/svgs/arrow-right.svg'
 import ArrowsDownIcon from '~/svgs/arrows-down.svg'
 import AwardIcon from '~/svgs/award.svg'
@@ -125,6 +126,7 @@ export {
   ArrowDownIcon,
   ArrowForwardSmallIcon,
   ArrowLeftIcon,
+  ArrowNarrowUpRightIcon,
   ArrowRightIcon,
   ArrowsDownIcon,
   AwardIcon,
