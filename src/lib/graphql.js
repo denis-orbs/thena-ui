@@ -30,7 +30,7 @@ export const v4GraphWsUrl = 'wss://stg-thena-squid.zinza.com.vn/graphql'
 
 export const v4SubGraphT2EUrl = 'https://api.studio.thegraph.com/query/70764/thena-subgraph/version/latest'
 export const codexGraphUrl = 'https://graph.codex.io/graphql'
-export const v3SubGraphUrl = 'https://api.studio.thegraph.com/query/70764/thena-v3-subgraph/version/latest'
+export const v3SubGraphUrl = 'https://api.studio.thegraph.com/query/70764/thena-v3-voters/version/latest'
 
 export const v1Client = {
   [ChainId.BSC]: new GraphQLClient(v1GraphUrl[ChainId.BSC]),

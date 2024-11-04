@@ -52,7 +52,7 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
 }
 
 export const fetchPools = params =>
-  fetch(`${backendApi}/${params[1] === ChainId.BSC ? 'fusions' : 'opfusions'}`)
+  fetch(`${backendApi}/${params[1] === ChainId.BSC || params[1] === 97 ? 'fusions' : 'opfusions'}`)
     .then(r => r.json())
     .then(r => r.data)
 

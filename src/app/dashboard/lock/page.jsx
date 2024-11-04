@@ -76,7 +76,6 @@ export default function LockPage() {
     () => assets.find(asset => asset.address === Contracts.THE[networkId].toLowerCase()),
     [assets, networkId],
   )
-  console.log({ networkId, assets, theAsset })
   const selected = useMemo(() => veTHEs.find(veTHE => veTHE.id === selectedId), [veTHEs, selectedId])
   const { onWithdrawLock, pending } = useWithdrawLock()
   const t = useTranslations()

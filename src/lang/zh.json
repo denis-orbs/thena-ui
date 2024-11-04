@@ -1197,5 +1197,6 @@
   "Set Pool Fees description": "0.30% is best for most weighted pools with established tokens. Go higher for more exotic tokens.",
   "Pool fee message": "Thena governance will always have ability to manage the fees of this pool if needed.",
   "Total": "Total",
-  "Set Initial Liquidity": "Set Initial Liquidity"
+  "Set Initial Liquidity": "Set Initial Liquidity",
+  "Retry": "Retry"
 }

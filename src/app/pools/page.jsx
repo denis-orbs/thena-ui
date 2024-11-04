@@ -108,7 +108,6 @@ export default function PoolsPage() {
     } else {
       final = pairs.filter(ele => ele.highApr > 0)
     }
-    console.log({ pairs, isInactive })
     final = filter === PAIR_TYPES.All ? final : final.filter(item => item.type === filter)
     // TODO: hard-coded for USDT/arcUSD
     final = final.map(pool => {

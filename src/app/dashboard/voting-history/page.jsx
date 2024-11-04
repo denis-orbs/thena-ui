@@ -11,13 +11,14 @@ import Loading from '@/app/loading'
 import Table from '@/components/table'
 import { TextHeading } from '@/components/typography'
 import { LOCALES } from '@/constant'
+import useWallet from '@/hooks/useWallet'
 import { v3ClientSubGraph } from '@/lib/graphql'
 import { formatAddress } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
 
 const V3_VOTES = gql`
-  query V3_VOTES {
-    votes {
+  query V3_VOTES($voter: String!) {
+    votes(where: { voter: $voter }) {
       blockNumber
       blockTimestamp
       id
@@ -29,9 +30,9 @@ const V3_VOTES = gql`
   }
 `
 
-const fetVotingHistory = async () => {
+const fetVotingHistory = async account => {
   try {
-    const { votes } = await v3ClientSubGraph.request(V3_VOTES)
+    const { votes } = await v3ClientSubGraph.request(V3_VOTES, { voter: account.toLowerCase() })
     if (votes) {
       return votes
     }
@@ -82,13 +83,15 @@ export default function VotingHistoryPage() {
   const { locale } = useLocaleSettings()
   const [sort, setSort] = useState(sortOptions[0])
   const [currentPage, setCurrentPage] = useState(1)
+  const { account } = useWallet()
 
   const format = useMemo(() => (locale === LOCALES.en ? 'MMM DD, YYYY hh:mm A' : 'YYYY年MM月DD号 HH点mm分'), [locale])
 
   const { data: votes, isLoading } = useQuery({
-    queryKey: ['voting history'],
-    queryFn: () => fetVotingHistory(),
+    queryKey: ['voting history', account],
+    queryFn: () => fetVotingHistory(account),
     refetchInterval: 30000,
+    enabled: Boolean(account),
     gcTime: 0,
   })
 
@@ -96,7 +99,7 @@ export default function VotingHistoryPage() {
     () =>
       (votes || []).map(vote => ({
         voter: <UserElement username={formatAddress(vote.voter)} />,
-        tokenId: <span>{`veTHE/${vote.tokenId}`}</span>,
+        tokenId: <span>{`veTHE#${vote.tokenId}`}</span>,
         blockNumber: vote.blockNumber,
         timestamp: dayjs.unix(vote.timestamp).format(format),
       })),

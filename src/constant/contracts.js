@@ -29,6 +29,7 @@ const Contracts = {
   },
   veTHE: {
     [ChainId.BSC]: '0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D',
+    97: '0xD9f2a8b8361121d1b2C3f705c99477e9F9526380',
   },
   veDist: {
     [ChainId.BSC]: '0xA6e0e731Cb1E99AedE0f9C9128d04F948E18727D',
