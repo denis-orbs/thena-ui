@@ -40,6 +40,7 @@ import { HeaderSearch } from '../../modules/Search/HeaderSearch'
 const chains = [
   { img: '/images/bsc.png', chainId: ChainId.BSC, label: 'BNB Chain' },
   { img: '/images/opbnb.png', chainId: ChainId.OPBNB, label: 'opBNB' },
+  { img: '/images/bsc_test_net.png', chainId: 97, label: 'tBNB' },
   { img: '/images/bridge.png', label: 'Bridge', url: 'https://thena.zkbridge.com/' },
 ]
 
@@ -53,7 +54,10 @@ function ChainSelect({ t }) {
   const wrapperRef = useRef(null)
   const { networkId, updateNetwork } = useChainSettings()
 
-  const selected = useMemo(() => chains[networkId === ChainId.BSC ? 0 : 1], [networkId])
+  const selected = useMemo(
+    () => chains[networkId === ChainId.BSC ? 0 : networkId === ChainId.OPBNB ? 1 : 2],
+    [networkId],
+  )
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -74,7 +78,7 @@ function ChainSelect({ t }) {
           'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
           'rounded-md p-3 text-neutral-300 transition-all duration-150 ease-out hover:bg-neutral-700 hover:text-neutral-50',
         )}
-        key={`dropdown-${idx}`}
+        key={`dropdown-${idx}-${item.chainId}`}
         onClick={async () => {
           if (item.chainId && networkId !== item.chainId) {
             updateNetwork(item.chainId)
@@ -131,7 +135,10 @@ function ChainMobileSelect({ t }) {
   const wrapperRef = useRef(null)
   const { networkId, updateNetwork } = useChainSettings()
 
-  const selected = useMemo(() => chains[networkId === ChainId.BSC ? 0 : 1], [networkId])
+  const selected = useMemo(
+    () => chains[networkId === ChainId.BSC ? 0 : networkId === ChainId.OPBNB ? 1 : 2],
+    [networkId],
+  )
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -297,7 +304,7 @@ function Header() {
   }, [account, signWallet])
 
   useEffect(() => {
-    if ([ChainId.BSC, ChainId.OPBNB].includes(chainId) && chainId !== networkId) {
+    if ([ChainId.BSC, ChainId.OPBNB, 97].includes(chainId) && chainId !== networkId) {
       updateNetwork(chainId)
     }
   }, [account, chainId, networkId, updateNetwork])

@@ -8,6 +8,7 @@ export const initialState = {
   data: {
     [ChainId.BSC]: [],
     [ChainId.OPBNB]: [],
+    97: [],
   },
 }
 

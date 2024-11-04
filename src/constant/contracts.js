@@ -11,10 +11,12 @@ const Contracts = {
   THE: {
     [ChainId.BSC]: '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11',
     [ChainId.OPBNB]: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
+    97: '',
   },
   WBNB: {
     [ChainId.BSC]: WBNB[ChainId.BSC].address,
     [ChainId.OPBNB]: WBNB[ChainId.OPBNB].address,
+    97: '',
   },
   theNFT: '0x2Af749593978CB79Ed11B9959cD82FD128BA4f8d',
   multiCall: {

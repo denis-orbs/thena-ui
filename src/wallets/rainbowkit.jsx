@@ -14,7 +14,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import merge from 'lodash/merge'
 import { ChainId } from 'thena-sdk-core'
 import { createConfig, http, WagmiProvider } from 'wagmi'
-import { bsc, opBNB } from 'wagmi/chains'
+import { bsc, bscTestnet, opBNB } from 'wagmi/chains'
 
 import { getRpcUrl } from '@/lib/utils'
 
@@ -47,10 +47,11 @@ const connectors = connectorsForWallets(
 
 export const wagmiConfig = createConfig({
   connectors,
-  chains: [bsc, opBNB],
+  chains: [bsc, opBNB, bscTestnet],
   transports: {
     [bsc.id]: http(getRpcUrl(ChainId.BSC)),
     [opBNB.id]: http(getRpcUrl(ChainId.OPBNB)),
+    [bscTestnet.id]: http(getRpcUrl(97)),
   },
   ssr: true,
 })

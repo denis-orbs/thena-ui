@@ -20,6 +20,10 @@ const initialState = {
     data: [],
     isLoading: false,
   },
+  97: {
+    data: [],
+    isLoading: false,
+  },
 }
 
 const PairsContext = createContext(initialState)
@@ -47,6 +51,7 @@ function PairsContextProvider({ children }) {
     () => ({
       [ChainId.BSC]: { data: bscPairs || [], isLoading: bscLoading },
       [ChainId.OPBNB]: { data: opPairs || [], isLoading: opLoading },
+      97: { data: [], isLoading: false },
     }),
     [bscPairs, bscLoading, opPairs, opLoading],
   )

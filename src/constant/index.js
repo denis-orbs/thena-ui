@@ -22,6 +22,7 @@ export const RPC_PROVIDERS = {
   // [ChainId.BSC]: ['https://rpc.ankr.com/bsc/c524849c12e5d6a1f7c0a4def3ae2b387b9f9a7902adc16822bc6825aff6d5b6'],
   [ChainId.BSC]: ['https://bsc-rpc.publicnode.com'],
   [ChainId.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
+  97: ['https://api.zan.top/bsc-testnet'],
 }
 
 export const LOCALES = {
@@ -195,6 +196,7 @@ export const DoubleRewarders = {
     },
   ],
   [ChainId.OPBNB]: [],
+  97: [],
 }
 
 export const PERIOD_LEVELS = [
