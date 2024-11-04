@@ -6,7 +6,7 @@ import { maxUint256 } from 'viem'
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getBribeContract, getERC20Contract, getVoterContract } from '@/lib/contracts'
+import { getBribeContract, getERC20Contract, getGlobalFactoryContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -23,12 +23,14 @@ export const useGaugeAdd = () => {
         warnToast('Select Pair')
         return
       }
-      const voterContract = getVoterContract(chainId)
+      const globalFactoryContract = getGlobalFactoryContract(chainId)
+
       const res = await Promise.all([
-        readCall(voterContract, 'isWhitelisted', [pool.token0.address], chainId),
-        readCall(voterContract, 'isWhitelisted', [pool.token1.address], chainId),
+        readCall(globalFactoryContract, 'isToken', [pool.token0.address], chainId),
+        readCall(globalFactoryContract, 'isToken', [pool.token1.address], chainId),
       ])
-      if (!res[0] || !res[1]) {
+
+      if (chainId === 97 && (!res[0] || !res[1])) {
         warnToast('Tokens are not whitelisted')
         return
       }
@@ -47,9 +49,9 @@ export const useGaugeAdd = () => {
       })
 
       setPending(true)
-
       const params = [pool.address, pool.type === PAIR_TYPES.LSD ? 1 : 0]
-      if (!(await writeTxn(key, adduuid, voterContract, 'createGauge', params))) {
+
+      if (!(await writeTxn(key, adduuid, globalFactoryContract, 'create', params))) {
         setPending(false)
         return
       }
@@ -80,7 +82,7 @@ export const useBribeAdd = () => {
       const bribeuuid = uuidv4()
       const bribeAddress = pool.gauge.bribe
       const tokenContract = getERC20Contract(asset.address, chainId)
-      const allowance = await readCall(tokenContract, 'allowance', [account, bribeAddress])
+      const allowance = await readCall(tokenContract, 'allowance', [account, bribeAddress], chainId)
       const isApproved = fromWei(allowance).gte(amount)
       setPending(true)
       startTxn({

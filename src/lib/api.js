@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { ChainId } from 'thena-sdk-core/dist'
+import { ChainId } from 'thena-sdk-core'
 
 import Contracts from '@/constant/contracts'
 import { liquidityHub } from '@/modules/LiquidityHub'

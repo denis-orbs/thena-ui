@@ -8,6 +8,7 @@ import {
   dibsRewarderAbi,
   ERC20Abi,
   gaugeAbi,
+  globalFactoryAbi,
   minterAbi,
   minterTestnetAbi,
   mockERC20Abi,
@@ -66,7 +67,8 @@ export const getContract = (abi, addressOrAddressMap, chainId) => {
                                             Common
   ************************************************************************************************** */
 
-export const getERC20Contract = (address, chainId) => getContract(ERC20Abi, address, chainId)
+export const getERC20Contract = (address, chainId) =>
+  getContract(chainId !== 97 ? ERC20Abi : mockERC20Abi, address, chainId)
 
 export const getTheContract = chainId => getContract(chainId !== 97 ? ERC20Abi : mockERC20Abi, Contracts.THE, chainId)
 
@@ -97,6 +99,8 @@ export const getGaugeContract = (address, chainId) => getContract(gaugeAbi, addr
 export const getBribeContract = (address, chainId) => getContract(bribeAbi, address, chainId)
 
 export const getPairContract = (address, chainId) => getContract(pairAbi, address, chainId)
+
+export const getGlobalFactoryContract = chainId => getContract(globalFactoryAbi, Contracts.globalFactory, chainId)
 
 /** **************************************************************************************************
                                             API contracts
