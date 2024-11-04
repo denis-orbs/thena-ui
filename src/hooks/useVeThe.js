@@ -28,7 +28,7 @@ export const useCreateLock = () => {
       const theContract = getTheContract(chainId)
       const veTHEaddress = Contracts.veTHE[chainId]
       setPending(true)
-      const allowance = await readCall(theContract, 'allowance', [account, veTHEaddress])
+      const allowance = await readCall(theContract, 'allowance', [account, veTHEaddress], chainId)
       const isApproved = fromWei(allowance).gte(amount)
       startTxn({
         key,

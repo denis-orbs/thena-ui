@@ -18,7 +18,7 @@ const Contracts = {
     [ChainId.OPBNB]: WBNB[ChainId.OPBNB].address,
     97: '0xeC7Ef2340cA18D268C3F564af2F24587F7D399Ba',
   },
-  theNFT: '0x0C6e178271558571F54077cd32E97a1579119aC4',
+  theNFT: '0x2Af749593978CB79Ed11B9959cD82FD128BA4f8d',
   multiCall: {
     [ChainId.BSC]: '0xfF6FD90A470Aaa0c1B8A54681746b07AcdFedc9B',
     [ChainId.OPBNB]: '0xD6f6e27e96535749587Ac77bfc83607A743e765f',
@@ -44,7 +44,6 @@ const Contracts = {
   pairAPI: {
     [ChainId.BSC]: '0x53a67b6b57907aa1926e95b004578a9bacb72e15',
     [ChainId.OPBNB]: '0xCB78f8d9DFb78CD43Bd2dC9Ffe75E39fBE7F2820',
-    97: '0x999b56e95feE66Afb14f535D0cB55fb6bDde3FE3',
   },
   veTHEAPI: {
     [ChainId.BSC]: '0xf13b61c40F7B2eEB43bFBb05c2a5c6867D99C84d',

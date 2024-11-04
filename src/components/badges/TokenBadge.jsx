@@ -7,7 +7,14 @@ import { ChevronDownIcon } from '@/svgs'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 
-export default function TokenBadge({ className, asset, variant = CompTypes.Emphasis, ...rest }) {
+export default function TokenBadge({
+  className,
+  asset,
+  variant = CompTypes.Emphasis,
+  showChevronDownIcon = true,
+  prefix,
+  ...rest
+}) {
   return (
     <div
       className={cn(
@@ -38,7 +45,8 @@ export default function TokenBadge({ className, asset, variant = CompTypes.Empha
       ) : (
         <Skeleton className='h-6 w-6 rounded-full' />
       )}
-      <ChevronDownIcon className='h-4 w-4' />
+      {showChevronDownIcon && <ChevronDownIcon className='h-4 w-4' />}
+      {prefix && <span>{prefix}</span>}
     </div>
   )
 }

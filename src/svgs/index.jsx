@@ -106,7 +106,9 @@ import TelegramIcon from '~/svgs/telegram.svg'
 import THETokenIcon from '~/svgs/THE-token.svg'
 import RoundedTHETokenIcon from '~/svgs/THE-token-rounded.svg'
 import ThirdPrizeIcon from '~/svgs/third-prize.svg'
+import TrashIcon from '~/svgs/trash.svg'
 import TwitterIcon from '~/svgs/twiiter.svg'
+import UnlockIcon from '~/svgs/unlock.svg'
 import UpRank from '~/svgs/up-rank.svg'
 import UploadIcon from '~/svgs/upload.svg'
 import User from '~/svgs/user.svg'
@@ -226,7 +228,9 @@ export {
   THETokenIcon,
   ThirdPrizeIcon,
   TransferIcon,
+  TrashIcon,
   TwitterIcon,
+  UnlockIcon,
   UploadIcon,
   UpRank,
   User,

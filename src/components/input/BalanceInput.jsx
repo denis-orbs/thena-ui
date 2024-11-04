@@ -20,7 +20,7 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
 
   const max = useMemo(() => (!maxBalance ? asset?.balance : maxBalance), [asset, maxBalance])
   const data = useMemo(
-    () => assets.filter(item => item.address === 'BNB' || item.address === WBNB[item.chainId].address.toLowerCase()),
+    () => assets.filter(item => item.address === 'BNB' || item.address === WBNB[item.chainId]?.address?.toLowerCase()),
     [assets],
   )
   // const errorMsg = useMemo(() => {

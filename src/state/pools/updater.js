@@ -6,7 +6,7 @@ import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { pairAPIAbi, pairAPITestnetAbi } from '@/constant/abi'
+import { pairAPIAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
@@ -24,7 +24,7 @@ const fetchUserFusions = async (url, account, pools, chainId) => {
   const pairInfos = await callMulti(
     pools.map(pool => ({
       address: Contracts.pairAPI[chainId],
-      abi: chainId === 97 ? pairAPITestnetAbi : pairAPIAbi,
+      abi: pairAPIAbi,
       functionName: chainId === ChainId.BSC ? 'getPairAccount' : 'getPairSimpleAccount',
       args: [pool.address, account],
       chainId,

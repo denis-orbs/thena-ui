@@ -72,7 +72,11 @@ export default function LockPage() {
   const [selectedId, setSelectedId] = useState(null)
   const assets = useAssets()
   const { networkId } = useChainSettings()
-  const theAsset = useMemo(() => assets.find(asset => asset.address === Contracts.THE[networkId]), [assets, networkId])
+  const theAsset = useMemo(
+    () => assets.find(asset => asset.address === Contracts.THE[networkId].toLowerCase()),
+    [assets, networkId],
+  )
+  console.log({ networkId, assets, theAsset })
   const selected = useMemo(() => veTHEs.find(veTHE => veTHE.id === selectedId), [veTHEs, selectedId])
   const { onWithdrawLock, pending } = useWithdrawLock()
   const t = useTranslations()
