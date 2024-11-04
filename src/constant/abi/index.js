@@ -1,3 +1,4 @@
+import algebraFactoryAbi from './algebraFactoryAbi.json'
 import bribeAbi from './bribe.json'
 import claimerAbi from './claimer.json'
 import dibsAbi from './dibs.json'
@@ -38,6 +39,7 @@ import votingEscrowAttachAbi from './votingEscrowAttach.json'
 import wbnbAbi from './wbnb.json'
 
 export {
+  algebraFactoryAbi,
   arabicAbi,
   bribeAbi,
   characterSetAbi,

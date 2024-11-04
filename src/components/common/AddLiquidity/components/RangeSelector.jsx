@@ -130,12 +130,12 @@ export function RangeSelector({
   return (
     <div className='grid grid-cols-2 gap-3'>
       <RangePart
-        value={mintInfo.ticksAtLimit[Bound.LOWER] ? '0' : leftPrice?.toSignificant(5) ?? ''}
+        value={mintInfo?.ticksAtLimit[Bound.LOWER] ? '0' : leftPrice?.toSignificant(5) ?? ''}
         onUserInput={onLeftRangeInput}
         decrement={isSorted ? getDecrementLower : getIncrementUpper}
         increment={isSorted ? getIncrementLower : getDecrementUpper}
-        decrementDisabled={mintInfo.ticksAtLimit[Bound.LOWER]}
-        incrementDisabled={mintInfo.ticksAtLimit[Bound.LOWER]}
+        decrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
+        incrementDisabled={mintInfo?.ticksAtLimit[Bound.LOWER]}
         label={leftPrice ? `${currencyB?.symbol}` : '-'}
         tokenA={currencyA}
         tokenB={currencyB}
@@ -143,16 +143,16 @@ export function RangeSelector({
         title='Min Price'
       />
       <RangePart
-        value={mintInfo.ticksAtLimit[Bound.UPPER] ? '∞' : rightPrice?.toSignificant(5) ?? ''}
+        value={mintInfo?.ticksAtLimit[Bound.UPPER] ? '∞' : rightPrice?.toSignificant(5) ?? ''}
         onUserInput={onRightRangeInput}
         decrement={isSorted ? getDecrementUpper : getIncrementLower}
         increment={isSorted ? getIncrementUpper : getDecrementLower}
-        incrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
-        decrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
+        incrementDisabled={mintInfo?.ticksAtLimit[Bound.UPPER]}
+        decrementDisabled={mintInfo?.ticksAtLimit[Bound.UPPER]}
         label={rightPrice ? `${currencyB?.symbol}` : '-'}
         tokenA={currencyA ?? undefined}
         tokenB={currencyB ?? undefined}
-        initialPrice={mintInfo.price}
+        initialPrice={mintInfo?.price}
         disabled={disabled}
         title='Max Price'
       />
