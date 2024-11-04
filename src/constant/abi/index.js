@@ -1,4 +1,9 @@
+import algebraCommunityVaultAbi from './algebraCommunityVaultTestnet.json'
+import algebraEternalFarmingAbi from './algebraEternalFarmingTestnet.json'
 import algebraFactoryAbi from './algebraFactoryAbi.json'
+import algebraInterfaceMultiCallAbi from './algebraInterfaceMultiCall.json'
+import algebraPoolDeployerAbi from './algebraPoolDeployerTestnet.json'
+import algebraVaultFactoryStubAbi from './algebraVaultFactoryStubTestnet.json'
 import bribeAbi from './bribe.json'
 import claimerAbi from './claimer.json'
 import dibsAbi from './dibs.json'
@@ -7,6 +12,7 @@ import dibsRewarderAbi from './dibsRewarder.json'
 import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import factoryAbi from './factory.json'
+import farmingCenterAbi from './farmingCenterTestnet.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
 import arabicAbi from './mint/arabicNumeral.json'
@@ -21,14 +27,20 @@ import mockERC20Abi from './mockERC20.json'
 import mockERC20BNBAbi from './mockERC20WBNB.json'
 import multiCallAbi from './multiCall.json'
 import muonAbi from './muon.json'
+import nonfungiblePositionManagerAbi from './nonfungiblePositionManager.json'
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
+import pluginFactoryAbi from './pluginFactoryTestnet.json'
+import quoterAbi from './quoter.json'
+import quoterV2Abi from './quoterV2.json'
 import rewardEarnedAbi from './rewardEarned.json'
 import rewardsAPIAbi from './rewardsAPI.json'
 import routerAbi from './router.json'
 import royaltyAbi from './royalty.json'
 import stakingAbi from './staking.json'
+import swapRouterAbi from './swapRouterTestnet.json'
 import ThenianAbi from './thenian.json'
+import tickLensAbi from './tickLensTestnet.json'
 import veDistAbi from './veDist.json'
 import veTHEAbi from './veTHE.json'
 import veTHEApiAbi from './veTHEAPI.json'
@@ -39,7 +51,12 @@ import votingEscrowAttachAbi from './votingEscrowAttach.json'
 import wbnbAbi from './wbnb.json'
 
 export {
+  algebraCommunityVaultAbi,
+  algebraEternalFarmingAbi,
   algebraFactoryAbi,
+  algebraInterfaceMultiCallAbi,
+  algebraPoolDeployerAbi,
+  algebraVaultFactoryStubAbi,
   arabicAbi,
   bribeAbi,
   characterSetAbi,
@@ -52,6 +69,7 @@ export {
   ERC20Abi,
   extraRewarderAbi,
   factoryAbi,
+  farmingCenterAbi,
   gaugeAbi,
   globalFactoryAbi,
   hindiNumeralAbi,
@@ -61,15 +79,21 @@ export {
   mockERC20BNBAbi,
   multiCallAbi,
   muonAbi,
+  nonfungiblePositionManagerAbi,
   numeralAbi,
   pairAbi,
   pairAPIAbi,
+  pluginFactoryAbi,
+  quoterAbi,
+  quoterV2Abi,
   rewardEarnedAbi,
   rewardsAPIAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,
+  swapRouterAbi,
   ThenianAbi,
+  tickLensAbi,
   veDistAbi,
   veTHEAbi,
   veTHEApiAbi,

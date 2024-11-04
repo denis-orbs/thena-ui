@@ -1,12 +1,19 @@
 import { ChainId } from 'thena-sdk-core'
 
 import {
+  algebraCommunityVaultAbi,
+  algebraEternalFarmingAbi,
+  algebraFactoryAbi,
+  algebraInterfaceMultiCallAbi,
+  algebraPoolDeployerAbi,
+  algebraVaultFactoryStubAbi,
   bribeAbi,
   claimerAbi,
   dibsAbi,
   dibsLotteryAbi,
   dibsRewarderAbi,
   ERC20Abi,
+  farmingCenterAbi,
   gaugeAbi,
   globalFactoryAbi,
   minterAbi,
@@ -15,12 +22,18 @@ import {
   mockERC20BNBAbi,
   multiCallAbi,
   muonAbi,
+  nonfungiblePositionManagerAbi,
   pairAbi,
+  pluginFactoryAbi,
+  quoterAbi,
+  quoterV2Abi,
   rewardsAPIAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,
+  swapRouterAbi,
   ThenianAbi,
+  tickLensAbi,
   veDistAbi,
   veTHEAbi,
   veTHEApiAbi,
@@ -211,3 +224,74 @@ export const getClaimerContract = () => getContract(claimerAbi, Contracts.claime
                                           Minter
 ******************************************************************************************************* */
 export const getMinterTestnetContract = () => getContract(minterTestnetAbi, Contracts.minter, 97)
+
+/** ******************************************************************************************************
+                                          ALGEBRA_POOL_DEPLOYER_TESTNET
+******************************************************************************************************* */
+export const getAlgebraPoolDeployerContract = () =>
+  getContract(algebraPoolDeployerAbi, Contracts.ALGEBRA_POOL_DEPLOYER_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          ALGEBRA_FACTORY_TESTNET
+******************************************************************************************************* */
+export const getAlgebraFactoryContract = () => getContract(algebraFactoryAbi, Contracts.ALGEBRA_FACTORY_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          ALGEBRA_COMMUNITY_VAULT_TESTNET
+******************************************************************************************************* */
+export const getAlgebraCommunityVaultContract = () =>
+  getContract(algebraCommunityVaultAbi, Contracts.ALGEBRA_COMMUNITY_VAULT_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          ALGEBRA_VAULT_FACTORY_STUB_TESTNET
+******************************************************************************************************* */
+export const getAlgebraVaultFactoryStubContract = () =>
+  getContract(algebraVaultFactoryStubAbi, Contracts.ALGEBRA_VAULT_FACTORY_STUB_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          PLUGIN_FACTORY_TESTNET
+******************************************************************************************************* */
+export const getPluginFactoryContract = () => getContract(pluginFactoryAbi, Contracts.PLUGIN_FACTORY_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          TICK_LENS_TESTNET
+******************************************************************************************************* */
+export const getTickLensContract = () => getContract(tickLensAbi, Contracts.TICK_LENS_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          QUOTER_TESTNET
+******************************************************************************************************* */
+export const getQuoterContract = () => getContract(quoterAbi, Contracts.QUOTER_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          QUOTER_V2_TESTNET
+******************************************************************************************************* */
+export const getQuoterV2Contract = () => getContract(quoterV2Abi, Contracts.QUOTER_V2_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          QUOTER_V2_TESTNET
+******************************************************************************************************* */
+export const getSwapRouterContract = () => getContract(swapRouterAbi, Contracts.SWAP_ROUTER_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          NONFUNGIBLE_POSITION_MANAGER_TESTNET
+******************************************************************************************************* */
+export const getNonfungiblePositionManagerContract = () =>
+  getContract(nonfungiblePositionManagerAbi, Contracts.NONFUNGIBLE_POSITION_MANAGER_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          ALGEBRA_INTERFACE_MULTICALL_TESTNET
+******************************************************************************************************* */
+export const getAlgebraInterfaceMultiCallContract = () =>
+  getContract(algebraInterfaceMultiCallAbi, Contracts.ALGEBRA_INTERFACE_MULTICALL_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          ALGEBRA_ETERNAL_FARMING_TESTNET
+******************************************************************************************************* */
+export const getAlgebraEternalFarmingContract = () =>
+  getContract(algebraEternalFarmingAbi, Contracts.ALGEBRA_ETERNAL_FARMING_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          FARMING_CENTER_TESTNET
+******************************************************************************************************* */
+export const getFarmingCenterContract = () => getContract(farmingCenterAbi, Contracts.FARMING_CENTER_TESTNET, 97)
