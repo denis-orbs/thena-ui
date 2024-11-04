@@ -46,6 +46,7 @@ const STABLE_TOKENS = {
     USDT: '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3',
     FDUSD: '0x50c5725949a6f0c72e6c4a641f24049a917db0cb',
   },
+  97: {},
 }
 
 export const useStableTokens = () => {

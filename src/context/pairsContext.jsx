@@ -4,7 +4,7 @@ import { ChainId } from 'thena-sdk-core'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import { fetchBscPairs, fetchOpPairs } from '@/lib/api'
+import { fetchBscPairs, fetchBscTestnetPairs, fetchOpPairs } from '@/lib/api'
 import { formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -37,6 +37,15 @@ function PairsContextProvider({ children }) {
       refreshInterval: 60000,
     },
   )
+
+  const { data: bscTestnetPairs, isLoading: bscTestnetLoading } = useSWR(
+    networkId === 97 ? 'bscTestnet pairs api' : null,
+    { fetcher: fetchBscTestnetPairs },
+    {
+      refreshInterval: 60000,
+    },
+  )
+
   const { data: opPairs, isLoading: opLoading } = useSWR(
     networkId === ChainId.OPBNB ? 'opbnb pairs api' : null,
     {
@@ -51,9 +60,9 @@ function PairsContextProvider({ children }) {
     () => ({
       [ChainId.BSC]: { data: bscPairs || [], isLoading: bscLoading },
       [ChainId.OPBNB]: { data: opPairs || [], isLoading: opLoading },
-      97: { data: [], isLoading: false },
+      97: { data: bscTestnetPairs, isLoading: bscTestnetLoading },
     }),
-    [bscPairs, bscLoading, opPairs, opLoading],
+    [bscPairs, bscLoading, opPairs, opLoading, bscTestnetPairs, bscTestnetLoading],
   )
 
   return <PairsContext.Provider value={pairs}>{children}</PairsContext.Provider>
@@ -74,6 +83,7 @@ const usePairs = () => {
         isLoading,
       }
     }
+    console.log({ data })
     const result = data
       .map(ele => {
         const asset0 = assets.find(asset => asset.address.toLowerCase() === ele.token0)

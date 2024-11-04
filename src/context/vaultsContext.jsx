@@ -32,22 +32,22 @@ export function VaultsContextProvider({ children }) {
       const asset0 = assets.find(asset => asset.address.toLowerCase() === vault.token0Address.toLowerCase())
       const asset1 = assets.find(asset => asset.address.toLowerCase() === vault.token1Address.toLowerCase())
       const asset2 = assets.find(asset => asset.address.toLowerCase() === vault.rewardAddress.toLowerCase())
-      const reserve0 = fromWei(vault.reserve0, asset0.decimals)
-      const reserve1 = fromWei(vault.reserve1, asset1.decimals)
-      const tvl = reserve0.times(asset0.price).plus(reserve1.times(asset1.price))
+      const reserve0 = fromWei(vault.reserve0, asset0?.decimals)
+      const reserve1 = fromWei(vault.reserve1, asset1?.decimals)
+      const tvl = reserve0.times(asset0.price).plus(reserve1.times(asset1?.price))
       const lpPrice = vault.totalSupply.isZero() ? ZERO_VALUE : tvl.div(vault.totalSupply)
       const gaugeTvl = vault.gaugeSupply.times(lpPrice)
-      const reward0PerYearInUsd = fromWei(vault.rewardRate0, asset0.decimals)
+      const reward0PerYearInUsd = fromWei(vault.rewardRate0, asset0?.decimals)
         .times(asset0.price)
         .times(86400 * 365)
-      const reward1PerYearInUsd = fromWei(vault.rewardRate1, asset1.decimals)
-        .times(asset1.price)
+      const reward1PerYearInUsd = fromWei(vault.rewardRate1, asset1?.decimals)
+        .times(asset1?.price)
         .times(86400 * 365)
-      const reward2PerYearInUsd = fromWei(vault.rewardRate2, asset2.decimals)
-        .times(asset2.price)
+      const reward2PerYearInUsd = fromWei(vault.rewardRate2, asset2?.decimals)
+        .times(asset2?.price)
         .times(86400 * 365)
-      const isTwoRewards = [asset0.address.toLowerCase(), asset1.address.toLowerCase()].includes(
-        asset2.address.toLowerCase(),
+      const isTwoRewards = [asset0.address.toLowerCase(), asset1?.address.toLowerCase()].includes(
+        asset2?.address.toLowerCase(),
       )
       const totalRewards = reward0PerYearInUsd.plus(reward1PerYearInUsd).plus(isTwoRewards ? 0 : reward2PerYearInUsd)
       const apr = gaugeTvl.isZero() ? ZERO_VALUE : totalRewards.div(gaugeTvl).times(100)
@@ -61,13 +61,13 @@ export function VaultsContextProvider({ children }) {
       })
 
       apr_list.push({
-        symbol: asset1.symbol,
+        symbol: asset1?.symbol,
         apr: secondApr,
       })
 
       if (thirdApr) {
         apr_list.push({
-          symbol: asset2.symbol,
+          symbol: asset2?.symbol,
           apr: thirdApr,
         })
       }
@@ -89,9 +89,9 @@ export function VaultsContextProvider({ children }) {
         totalUsd: ZERO_VALUE,
       }
       if (found) {
-        const earned0 = fromWei(found.earned0, asset0.decimals)
-        const earned1 = fromWei(found.earned1, asset1.decimals)
-        const earned2 = fromWei(found.earned2, asset2.decimals)
+        const earned0 = fromWei(found.earned0, asset0?.decimals)
+        const earned1 = fromWei(found.earned1, asset1?.decimals)
+        const earned2 = fromWei(found.earned2, asset2?.decimals)
 
         user = {
           ...found,
@@ -106,8 +106,8 @@ export function VaultsContextProvider({ children }) {
           earned2: isTwoRewards ? null : earned2,
           earnedUsd: earned0
             .times(asset0.price)
-            .plus(earned1.times(asset1.price))
-            .plus(isTwoRewards ? 0 : earned2.times(asset2.price)),
+            .plus(earned1.times(asset1?.price))
+            .plus(isTwoRewards ? 0 : earned2.times(asset2?.price)),
         }
       }
 

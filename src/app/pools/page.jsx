@@ -99,6 +99,8 @@ export default function PoolsPage() {
   const t = useTranslations()
   const assets = useAssets()
 
+  console.log({ assets })
+
   const filteredPools = useMemo(() => {
     let final
     if (isInactive) {
@@ -106,6 +108,7 @@ export default function PoolsPage() {
     } else {
       final = pairs.filter(ele => ele.highApr > 0)
     }
+    console.log({ pairs, isInactive })
     final = filter === PAIR_TYPES.All ? final : final.filter(item => item.type === filter)
     // TODO: hard-coded for USDT/arcUSD
     final = final.map(pool => {
@@ -433,11 +436,10 @@ export default function PoolsPage() {
         </div>
       </Box>
 
-      <div className='mt-6 flex flex-col gap-4'>
+      {/* <div className='mt-6 flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
           <TextHeading className='text-xl'>{t('Your Conc Liquidity Positions')}</TextHeading>
         </div>
-        {/* TODO: fix data */}
         <Table
           sortOptions={sortOptions}
           data={finalPools}
@@ -446,7 +448,7 @@ export default function PoolsPage() {
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
         />
-      </div>
+      </div> */}
 
       <div className='mt-6 flex flex-col gap-4'>
         <div className='flex items-center justify-between'>

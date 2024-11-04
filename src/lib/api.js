@@ -6,7 +6,8 @@ import { liquidityHub } from '@/modules/LiquidityHub'
 
 import { ZERO_VALUE } from './utils'
 
-const backendApi = 'https://api.thena.fi/api/v1'
+// const backendApi = 'https://api.thena.fi/api/v1'
+const backendApi = 'https://testnet-thena-backend.zinza.com.vn/api/v1'
 
 export const fetchAssets = async (networkId, liquidityHubEnabled) => {
   try {
@@ -62,6 +63,11 @@ export const fetchStats = () =>
 
 export const fetchBscPairs = () =>
   fetch(`${backendApi}/topPairs/56`)
+    .then(r => r.json())
+    .then(r => r.data)
+
+export const fetchBscTestnetPairs = () =>
+  fetch(`${backendApi}/topPairs/97`)
     .then(r => r.json())
     .then(r => r.data)
 

@@ -40,8 +40,8 @@ export function maxAmountSpend(currencyAmount) {
 }
 
 export function unwrappedToken(currency) {
-  if (currency.isNative) return currency
-  if (currency.equals(WBNB[currency.chainId])) return BNB.onChain(currency.chainId)
+  if (currency?.isNative) return currency
+  if (currency?.equals(WBNB[currency.chainId])) return BNB.onChain(currency.chainId)
   return currency
 }
 

@@ -47,7 +47,7 @@ function FusionsContextProvider({ children }) {
   const pairs = useContext(PairsContext)
   const fusionPairs = useMemo(() => {
     const { data } = pairs[networkId]
-    if (!data.length) return []
+    if (!data?.length) return []
     return data.filter(ele => ele.isFusion)
   }, [pairs, networkId])
   const { data } = useSWR(
