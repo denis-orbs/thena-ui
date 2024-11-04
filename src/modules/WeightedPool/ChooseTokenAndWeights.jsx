@@ -1,11 +1,11 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useId, useState } from 'react'
+import React, { useCallback, useEffect, useId, useMemo, useState } from 'react'
 
 import TokenBadge from '@/components/badges/TokenBadge'
 import Box from '@/components/box'
-import { OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import { OutlineIconButton } from '@/components/buttons/IconButton'
 import Input from '@/components/input'
 import { TextHeading } from '@/components/typography'
@@ -53,29 +53,35 @@ const updateAllocate = tokens => {
   })
 }
 
-function SelectTokenButton({ token, setTokenSelected }) {
+function SelectTokenButton({ token, setTokenSelected, tokenSelected }) {
   const t = useTranslations()
   const [tokenPopup, setTokenPopup] = useState(false)
+  const hiddenTokens = useMemo(() => tokenSelected.map(item => item?.token?.address.toLowerCase()), [tokenSelected])
   return (
     <>
       {token.token ? (
         <TokenBadge asset={token.token} onClick={() => setTokenPopup(true)} />
       ) : (
-        <PrimaryButton className='h-10 w-[130px] p-1 font-semibold' onClick={() => setTokenPopup(true)}>
-          {t('Select token')} <ChevronDownIcon className='h-4 w-4 !stroke-neutral-200 text-neutral-200' />
-        </PrimaryButton>
+        <EmphasisButton
+          className='h-10 w-[130px] rounded-full p-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
+          onClick={() => setTokenPopup(true)}
+        >
+          {t('Select Token')} <ChevronDownIcon className='h-4 w-4 !stroke-neutral-200 text-neutral-200' />
+        </EmphasisButton>
       )}
       <TokenModal
         popup={tokenPopup}
         setPopup={setTokenPopup}
         selectedAsset={token}
         setSelectedAsset={setTokenSelected}
+        hiddenTokens={[...hiddenTokens]}
+        showTrendingToken={false}
       />
     </>
   )
 }
 
-function TokenItem({ token, index, setTokenSelected }) {
+function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
   const handleSelectedToken = useCallback(
     data => {
       setTokenSelected(prev => {
@@ -128,7 +134,7 @@ function TokenItem({ token, index, setTokenSelected }) {
 
   return (
     <div className='fex-row flex items-center justify-between px-4 py-[14px]'>
-      <SelectTokenButton token={token} setTokenSelected={handleSelectedToken} />
+      <SelectTokenButton token={token} setTokenSelected={handleSelectedToken} tokenSelected={tokenSelected} />
       <div className='flex flex-row items-center'>
         <div className='mr-3'>
           <Input
@@ -159,13 +165,13 @@ export function ErrorMessage({ message, type = 'error', className }) {
   return (
     <Box
       className={cn(
-        'flex flex-row gap-3 border border-primary-800 bg-primary-950',
+        'flex flex-row items-center gap-3 border border-primary-800 bg-primary-950',
         type === 'warn' ? 'bg-warn-950' : '',
         className,
       )}
     >
       <InfoIcon className={cn('h-5 w-5 !stroke-primary-600', type === 'warn' ? '!stroke-warn-600' : '')} />
-      <span>{message}</span>
+      <div>{message}</div>
     </Box>
   )
 }
@@ -189,15 +195,23 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
     setTokenSelected(prev => [...prev, initialToken])
   }, [setTokenSelected])
 
-  const renderMessage = () => {
-    const checkAllWeightingHigherThanZero = tokensAndWeights.every(item => item.allocate > 0)
+  const checkAllWeightingHigherThanZero = useMemo(
+    () => tokensAndWeights.every(item => item.allocate > 0),
+    [tokensAndWeights],
+  )
+  const renderMessage = useCallback(() => {
     if (tokensAndWeights.length === 1 && tokenSelected.length === 1) {
       return <ErrorMessage message={t('You must add two tokens at least to create a weighted pool')} />
     }
     if (!checkAllWeightingHigherThanZero) {
       return <ErrorMessage message={t('All tokens in a pool must have a weighting higher than zero')} />
     }
-  }
+  }, [checkAllWeightingHigherThanZero, t, tokenSelected.length, tokensAndWeights.length])
+
+  const isDisable = useMemo(
+    () => !checkAllWeightingHigherThanZero || (tokensAndWeights.length === 1 && tokenSelected.length === 1),
+    [checkAllWeightingHigherThanZero, tokenSelected.length, tokensAndWeights.length],
+  )
 
   return (
     <Box className='flex flex-col gap-3'>
@@ -241,11 +255,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
         </div>
       </div>
       {renderMessage()}
-      <PrimaryButton
-        disabled={totalAllocated !== 100}
-        className='w-full'
-        onClick={() => setCurrentStep(prev => prev + 1)}
-      >
+      <PrimaryButton disabled={isDisable} className='w-full' onClick={() => setCurrentStep(prev => prev + 1)}>
         {t('Next')}
       </PrimaryButton>
     </Box>

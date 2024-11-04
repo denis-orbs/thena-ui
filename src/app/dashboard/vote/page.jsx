@@ -93,7 +93,6 @@ export default function VotePage() {
   const { account } = useWallet()
   const { veTHEs, updateVeTHEs } = useVeTHEsContext()
   const pools = usePools()
-  console.log({ pools })
   const prices = usePrices()
   const { voteEmssions } = useVoteEmissions()
   const { days, hours, mins, epoch } = useEpochTimer()

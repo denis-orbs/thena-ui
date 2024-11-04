@@ -2,11 +2,11 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import Box from '@/components/box'
+import { TextHeading } from '@/components/typography'
 import { formatAmount } from '@/lib/utils'
 
 export default function MaxInitialLiquidity({ tokensAndWeights }) {
   const t = useTranslations()
-  console.log({ tokensAndWeights })
   const data = useMemo(
     () =>
       tokensAndWeights.map(item => ({
@@ -20,6 +20,7 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
   const totalPool = data.reduce((sum, curr) => sum + curr.pool, 0)
   return (
     <Box>
+      <TextHeading className='font-archia text-2xl font-semibold'>{t('Your Max Initial Liquidity')}</TextHeading>
       <table className='min-w-full rounded-lg'>
         <thead>
           <tr>

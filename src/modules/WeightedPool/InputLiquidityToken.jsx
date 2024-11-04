@@ -4,11 +4,12 @@ import React from 'react'
 import TokenBadge from '@/components/badges/TokenBadge'
 import Skeleton from '@/components/skeleton'
 import { TextSubHeading } from '@/components/typography'
+import { useTokenUSDValue } from '@/hooks/usePrices'
 import { formatAmount } from '@/lib/utils'
 
 export default function InputLiquidityToken({ asset, allocate, amount, setTokenAndWeights }) {
   const t = useTranslations()
-
+  const { getValueTokenAmountToUSD } = useTokenUSDValue()
   const setAmount = value => {
     setTokenAndWeights(prev => {
       const updatedTokens = [...prev]
@@ -42,7 +43,7 @@ export default function InputLiquidityToken({ asset, allocate, amount, setTokenA
         <TextSubHeading>
           {t('Balance')}: {formatAmount(asset?.balance)}
         </TextSubHeading>
-        <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
+        <TextSubHeading>${formatAmount(getValueTokenAmountToUSD(asset.address, amount))}</TextSubHeading>
       </div>
     </div>
   )

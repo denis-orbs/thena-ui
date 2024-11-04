@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { UNKNOWN_LOGO } from '@/constant'
 import { CompTypes } from '@/constant/type'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
@@ -39,7 +40,7 @@ export default function TokenBadge({
     >
       {asset ? (
         <>
-          <CircleImage src={asset.logoURI} alt='token logo' width={24} height={24} />
+          <CircleImage src={asset.logoURI || UNKNOWN_LOGO} alt='token logo' width={24} height={24} />
           {asset.symbol}
         </>
       ) : (

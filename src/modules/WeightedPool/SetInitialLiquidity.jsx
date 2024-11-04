@@ -1,10 +1,11 @@
 import { useTranslations } from 'next-intl'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
 import { TextHeading } from '@/components/typography'
+import { useTokenUSDValue } from '@/hooks/usePrices'
 import { formatAmount } from '@/lib/utils'
 import { ArrowLeftIcon, InfoCirCleDisableIcon } from '@/svgs'
 
@@ -13,8 +14,15 @@ import InputLiquidityToken from './InputLiquidityToken'
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
   const t = useTranslations()
   const [isAutoOptimize, setIsAutoOptimize] = useState(false)
-  const total = 40000
+  // TODO: replace mock data
   const available = 42000
+
+  const { getValueTokenAmountToUSD } = useTokenUSDValue()
+  const total = useMemo(
+    () => tokensAndWeights.reduce((sum, curr) => sum + getValueTokenAmountToUSD(curr.token.address, curr.amount), 0),
+    [getValueTokenAmountToUSD, tokensAndWeights],
+  )
+
   return (
     <Box className='flex flex-col gap-3'>
       <div className='flex h-11 flex-row'>

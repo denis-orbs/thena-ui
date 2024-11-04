@@ -34,13 +34,26 @@ function TokenModal({
   setSelectedAsset,
   otherAsset,
   setOtherAsset,
+  hiddenTokens = undefined,
+  showTrendingToken = true,
   onAssetSelect = () => {},
 }) {
   const [searchText, setSearchText] = useState('')
   const { account } = useWallet()
-  const baseAssets = useAssets()
+  const assets = useAssets()
   const { networkId } = useChainSettings()
   const t = useTranslations()
+
+  const baseAssets = useMemo(
+    () =>
+      hiddenTokens && Array.isArray(hiddenTokens)
+        ? assets.filter(
+            asset =>
+              !hiddenTokens.filter(Boolean).some(token => asset.address.toLowerCase().includes(token.toLowerCase())),
+          )
+        : assets,
+    [assets, hiddenTokens],
+  )
 
   const filteredAssets = useMemo(
     () =>
@@ -80,31 +93,32 @@ function TokenModal({
           placeholder='Search by Name, Symbol or Address'
           autoFocus
         />
-        <Paragraph>{t('Trending Assets')}</Paragraph>
+        {showTrendingToken && <Paragraph>{t('Trending Assets')}</Paragraph>}
         <div className='flex flex-wrap gap-2'>
-          {trendingAssets.map((item, idx) => (
-            <div
-              key={idx}
-              className='flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-800 p-3'
-              onClick={() => {
-                if (otherAsset && otherAsset.address === item.address) {
-                  const temp = selectedAsset
-                  setSelectedAsset(otherAsset)
-                  setOtherAsset(temp)
-                } else {
-                  setSelectedAsset(item)
-                }
-                onAssetSelect()
-                setPopup(false)
-              }}
-            >
-              {/* <CircleImage src={item.logoURI} className='h-8 w-8' alt='thena token' /> */}
-              <div>
-                <TextHeading className='text-sm'>{item.symbol}</TextHeading>
-                {/* <TextSubHeading>{formatAmount(item.balance)}</TextSubHeading> */}
+          {showTrendingToken &&
+            trendingAssets.map((item, idx) => (
+              <div
+                key={idx}
+                className='flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-800 p-3'
+                onClick={() => {
+                  if (otherAsset && otherAsset.address === item.address) {
+                    const temp = selectedAsset
+                    setSelectedAsset(otherAsset)
+                    setOtherAsset(temp)
+                  } else {
+                    setSelectedAsset(item)
+                  }
+                  onAssetSelect()
+                  setPopup(false)
+                }}
+              >
+                {/* <CircleImage src={item.logoURI} className='h-8 w-8' alt='thena token' /> */}
+                <div>
+                  <TextHeading className='text-sm'>{item.symbol}</TextHeading>
+                  {/* <TextSubHeading>{formatAmount(item.balance)}</TextSubHeading> */}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
       <div className='h-px w-full border border-neutral-700' />
