@@ -22,14 +22,15 @@ export const blockGraphUrl = {
     'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/opbnb-blocks',
 }
 
-// export const v4GraphUrl = 'https://stg-thena-squid.zinza.com.vn/graphql'
-// export const v4GraphWsUrl = 'wss://stg-thena-squid.zinza.com.vn/graphql'
+export const v4GraphUrl = 'https://stg-thena-squid.zinza.com.vn/graphql'
+export const v4GraphWsUrl = 'wss://stg-thena-squid.zinza.com.vn/graphql'
 
-export const v4GraphUrl = 'https://squid.subsquid.io/thena-squid/v/v4/graphql'
-export const v4GraphWsUrl = 'wss://squid.subsquid.io/thena-squid/v/v4/graphql'
+// export const v4GraphUrl = 'https://squid.subsquid.io/thena-squid/v/v4/graphql'
+// export const v4GraphWsUrl = 'wss://squid.subsquid.io/thena-squid/v/v4/graphql'
 
 export const v4SubGraphT2EUrl = 'https://api.studio.thegraph.com/query/70764/thena-subgraph/version/latest'
 export const codexGraphUrl = 'https://graph.codex.io/graphql'
+export const v3SubGraphUrl = 'https://api.studio.thegraph.com/query/70764/thena-v3-subgraph/version/latest'
 
 export const v1Client = {
   [ChainId.BSC]: new GraphQLClient(v1GraphUrl[ChainId.BSC]),
@@ -49,3 +50,4 @@ export const blockClient = {
 export const v4Client = new GraphQLClient(v4GraphUrl)
 export const v4ClientSubGraphT2E = new GraphQLClient(v4SubGraphT2EUrl)
 export const codexClient = new GraphQLClient(codexGraphUrl)
+export const v3ClientSubGraph = new GraphQLClient(v3SubGraphUrl)

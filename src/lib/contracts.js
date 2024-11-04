@@ -2,12 +2,16 @@ import { ChainId } from 'thena-sdk-core'
 
 import {
   bribeAbi,
+  claimerAbi,
   dibsAbi,
   dibsLotteryAbi,
   dibsRewarderAbi,
   ERC20Abi,
   gaugeAbi,
   minterAbi,
+  minterTestnetAbi,
+  mockERC20Abi,
+  mockERC20BNBAbi,
   multiCallAbi,
   muonAbi,
   pairAbi,
@@ -20,6 +24,9 @@ import {
   veTHEAbi,
   veTHEApiAbi,
   voterAbi,
+  voterTestNetAbi,
+  votingEscrowAbi,
+  votingEscrowAttachAbi,
   wbnbAbi,
 } from '@/constant/abi'
 import {
@@ -61,9 +68,10 @@ export const getContract = (abi, addressOrAddressMap, chainId) => {
 
 export const getERC20Contract = (address, chainId) => getContract(ERC20Abi, address, chainId)
 
-export const getTheContract = chainId => getContract(ERC20Abi, Contracts.THE, chainId)
+export const getTheContract = chainId => getContract(chainId !== 97 ? ERC20Abi : mockERC20Abi, Contracts.THE, chainId)
 
-export const getWBNBContract = chainId => getContract(wbnbAbi, Contracts.WBNB, chainId)
+export const getWBNBContract = chainId =>
+  getContract(chainId !== 97 ? wbnbAbi : mockERC20BNBAbi, Contracts.WBNB, chainId)
 
 export const getMulticallContract = chainId => getContract(multiCallAbi, Contracts.multiCall, chainId)
 
@@ -81,7 +89,8 @@ export const getVeDistContract = chainId => getContract(veDistAbi, Contracts.veD
 
 export const getMinterContract = () => getContract(minterAbi, Contracts.minter, ChainId.BSC)
 
-export const getVoterContract = chainId => getContract(voterAbi, Contracts.voter, chainId)
+export const getVoterContract = chainId =>
+  getContract(chainId !== 97 ? voterAbi : voterTestNetAbi, Contracts.voter, chainId)
 
 export const getGaugeContract = (address, chainId) => getContract(gaugeAbi, address, chainId)
 
@@ -178,3 +187,23 @@ export const getDibsRewarderContract = chainId => getContract(dibsRewarderAbi, C
 export const getMultiAccountContract = () => getContract(multiAccountAbi, Contracts.multiAccount, ChainId.BSC)
 
 export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Contracts.tcPerpRewarder, ChainId.BSC)
+
+/** ******************************************************************************************************
+                                          VotingEscrow
+******************************************************************************************************* */
+export const getVotingEScrowContract = () => getContract(votingEscrowAbi, Contracts.votingEscrow, 97)
+
+/** ******************************************************************************************************
+                                          VotingEscrowAttach
+******************************************************************************************************* */
+export const getVotingEScrowAttachContract = () => getContract(votingEscrowAttachAbi, Contracts.votingEscrowAttach, 97)
+
+/** ******************************************************************************************************
+                                          Claimer
+******************************************************************************************************* */
+export const getClaimerContract = () => getContract(claimerAbi, Contracts.claimer, 97)
+
+/** ******************************************************************************************************
+                                          Minter
+******************************************************************************************************* */
+export const getMinterTestnetContract = () => getContract(minterTestnetAbi, Contracts.minter, 97)
