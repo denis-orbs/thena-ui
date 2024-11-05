@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { isNil, sample } from 'lodash'
 import { twMerge } from 'tailwind-merge'
-import { WBNB } from 'thena-sdk-core'
 
 import { RPC_PROVIDERS, SCAN_URLS } from '@/constant'
+import Contracts from '@/constant/contracts'
 
 BigNumber.config({
   EXPONENTIAL_AT: 1000,
@@ -130,8 +130,15 @@ export const goScan = (chainId, address, isTxn) => {
 
 export const isInvalidAmount = amount => !amount || Number(amount) === Number.isNaN || Number(amount) <= 0
 
-export const wrappedAddress = asset =>
-  !asset ? null : asset.address === 'BNB' ? WBNB[asset.chainId].address.toLowerCase() : asset.address
+export const wrappedAddress = asset => {
+  if (!asset) return null
+
+  if (asset.address === 'BNB') {
+    return Contracts.WBNB[97].toLowerCase()
+  }
+
+  return asset.address
+}
 
 export const unwrappedSymbol = asset => (!asset ? null : asset.symbol === 'WBNB' ? 'BNB' : asset.symbol)
 

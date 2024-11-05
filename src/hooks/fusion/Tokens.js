@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { BNB, ChainId, Token } from 'thena-sdk-core'
 
+import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -8,18 +9,26 @@ import { useChainSettings } from '@/state/settings/hooks'
 // otherwise returns the token
 export function useToken(tokenAddress) {
   const assets = useAssets()
+  const { networkId } = useChainSettings()
 
   return useMemo(() => {
     if (!tokenAddress) return undefined
     const asset = assets.find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
+
     if (!asset) return undefined
-    return new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
-  }, [assets, tokenAddress])
+    return new Token(
+      asset.chainId,
+      tokenAddress?.toUpperCase() === 'BNB' && networkId === 97 ? Contracts.WBNB[97] : asset.address,
+      asset.decimals,
+      asset.symbol,
+      asset.name,
+    )
+  }, [assets, tokenAddress, networkId])
 }
 
 export const useCurrency = currencyId => {
   const { networkId } = useChainSettings()
-  const isBNB = currencyId?.toUpperCase() === 'BNB'
+  const isBNB = currencyId?.toUpperCase() === 'BNB' && networkId !== 97
   const token = useToken(isBNB ? undefined : currencyId)
   return isBNB ? BNB.onChain(networkId) : token
 }

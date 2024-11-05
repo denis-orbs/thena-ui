@@ -32,6 +32,8 @@ export function useFusions(poolKeys) {
     () =>
       transformed.map(value => {
         if (!value) return undefined
+        // FIXME remove hard code for testnet
+        if (value[0].chainId === 97) return '0xca656EE464AAC96B69E7A377Fecd7579071c620D'
         return computePoolAddress({
           tokenA: value[0],
           tokenB: value[1],
