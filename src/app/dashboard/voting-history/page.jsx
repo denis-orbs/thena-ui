@@ -20,9 +20,8 @@ const V3_VOTES = gql`
   query V3_VOTES($voter: String!) {
     votes(where: { voter: $voter }) {
       blockNumber
-      blockTimestamp
+      timestamp: blockTimestamp
       id
-      timestamp
       tokenId
       transactionHash
       voter
