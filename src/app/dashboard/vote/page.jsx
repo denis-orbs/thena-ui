@@ -236,7 +236,6 @@ export default function VotePage() {
       }),
     [filteredPools, sort],
   )
-
   const finalPools = useMemo(
     () =>
       sortedPools.map(pool => ({

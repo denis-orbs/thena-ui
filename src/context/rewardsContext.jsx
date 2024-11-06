@@ -168,6 +168,8 @@ function RewardsContextProvider({ children }) {
           rewards: Object.values(result),
           isFeeExist,
           isBribeExist,
+          votingIncentives: userPoolRewards?.[0]?.votingIncentives,
+          tokenId: userPoolRewards?.[0]?.tokenId,
         }
       })
       .filter(pool => pool.rewards.length > 0)

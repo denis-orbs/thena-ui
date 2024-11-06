@@ -4,11 +4,16 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TXN_STATUS } from '@/constant'
-import { rewardEarnedAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
-import { callMulti, readCall } from '@/lib/contractActions'
-import { getTheContract, getVeDistContract, getVeTHEContract, getVoterContract } from '@/lib/contracts'
+import { readCall } from '@/lib/contractActions'
+import {
+  getClaimerContract,
+  getTheContract,
+  getVeDistContract,
+  getVeTHEContract,
+  getVoterContract,
+} from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -603,89 +608,117 @@ export const usePoke = () => {
 
 export const useClaimBribes = () => {
   const [pending, setPending] = useState(false)
-  const { account, chainId } = useWallet()
+  // const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
   const t = useTranslations()
 
   const handleClaimBribes = useCallback(
     async (pool, callback) => {
+      setPending(true)
       const key = uuidv4()
-
-      const rewardEarnedContract = '0x1ec88f8c3d95a6ba0560c1aa6c184e334b2c1692'
-      // fees claim
-      const callsFees = pool.rewards.map(reward => ({
-        address: rewardEarnedContract,
-        abi: rewardEarnedAbi,
-        functionName: 'earned',
-        args: [pool.gauge.fee, reward.address, account],
-        chainId,
-      }))
-      const callsBribes = pool.rewards.map(reward => ({
-        address: rewardEarnedContract,
-        abi: rewardEarnedAbi,
-        functionName: 'earned',
-        args: [pool.gauge.bribe, reward.address, account],
-        chainId,
-      }))
-      const [resFees, resBribes] = await Promise.all([callMulti(callsFees), callMulti(callsBribes)])
-      const feeTokens = []
-      resFees.forEach((item, index) => {
-        const rewardTokenAddress = pool.rewards[index].address.toLowerCase()
-        if (Number(item) > 0) feeTokens.push(rewardTokenAddress)
-      })
-      const bribeTokens = []
-      resBribes.forEach((item, index) => {
-        const rewardTokenAddress = pool.rewards[index].address.toLowerCase()
-        if (Number(item) > 0) bribeTokens.push(rewardTokenAddress)
-      })
-      const result = {}
+      const claimContract = getClaimerContract()
       const bribesuuid = uuidv4()
-      const feeuuid = uuidv4()
-      if (bribeTokens.length > 0) {
-        result[bribesuuid] = {
-          desc: t('Claim Incentives'),
-          status: TXN_STATUS.START,
-          hash: null,
-        }
-      }
-      if (feeTokens.length > 0) {
-        result[feeuuid] = {
-          desc: t('Claim Fees'),
-          status: TXN_STATUS.START,
-          hash: null,
-        }
-      }
+      const params = [[pool?.votingIncentives], [(pool?.rewards || []).map(item => item.address)], pool.tokenId]
       startTxn({
         key,
         title: t('Claim Incentives + Fees'),
-        transactions: result,
+        transactions: {
+          [bribesuuid]: {
+            desc: t('Claim'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
       })
-      setPending(true)
-      const voterContract = getVoterContract(chainId)
-      if (bribeTokens.length > 0) {
-        const params = [[pool.gauge.bribe], [bribeTokens]]
-        const isSuccess = await writeTxn(key, bribesuuid, voterContract, 'claimBribes', params)
-        if (!isSuccess) {
-          setPending(false)
-          return
-        }
+      const isSuccess = await writeTxn(key, bribesuuid, claimContract, 'claimVotingIncetivesTokenId', params)
+      if (!isSuccess) {
+        setPending(false)
+        return
       }
-      if (feeTokens.length > 0) {
-        const params = [[pool.gauge.fee], [feeTokens]]
-        const isSuccess = await writeTxn(key, feeuuid, voterContract, 'claimFees', params)
-        if (!isSuccess) {
-          setPending(false)
-          return
-        }
-      }
+
       endTxn({
         key,
         final: 'Claim Successful',
       })
+
       setPending(false)
       callback()
+
+      // const rewardEarnedContract = '0x1ec88f8c3d95a6ba0560c1aa6c184e334b2c1692'
+      // // fees claim
+      // const callsFees = pool.rewards.map(reward => ({
+      //   address: rewardEarnedContract,
+      //   abi: rewardEarnedAbi,
+      //   functionName: 'earned',
+      //   args: [pool.gauge.fee, reward.address, account],
+      //   chainId,
+      // }))
+      // const callsBribes = pool.rewards.map(reward => ({
+      //   address: rewardEarnedContract,
+      //   abi: rewardEarnedAbi,
+      //   functionName: 'earned',
+      //   args: [pool.gauge.bribe, reward.address, account],
+      //   chainId,
+      // }))
+      // const [resFees, resBribes] = await Promise.all([callMulti(callsFees), callMulti(callsBribes)])
+      // const feeTokens = []
+      // resFees.forEach((item, index) => {
+      //   const rewardTokenAddress = pool.rewards[index].address.toLowerCase()
+      //   if (Number(item) > 0) feeTokens.push(rewardTokenAddress)
+      // })
+      // const bribeTokens = []
+      // resBribes.forEach((item, index) => {
+      //   const rewardTokenAddress = pool.rewards[index].address.toLowerCase()
+      //   if (Number(item) > 0) bribeTokens.push(rewardTokenAddress)
+      // })
+      // const result = {}
+      // const bribesuuid = uuidv4()
+      // const feeuuid = uuidv4()
+      // if (bribeTokens.length > 0) {
+      //   result[bribesuuid] = {
+      //     desc: t('Claim Incentives'),
+      //     status: TXN_STATUS.START,
+      //     hash: null,
+      //   }
+      // }
+      // if (feeTokens.length > 0) {
+      //   result[feeuuid] = {
+      //     desc: t('Claim Fees'),
+      //     status: TXN_STATUS.START,
+      //     hash: null,
+      //   }
+      // }
+      // startTxn({
+      //   key,
+      //   title: t('Claim Incentives + Fees'),
+      //   transactions: result,
+      // })
+      // setPending(true)
+      // const voterContract = getVoterContract(chainId)
+      // if (bribeTokens.length > 0) {
+      //   const params = [[pool.gauge.bribe], [bribeTokens]]
+      //   const isSuccess = await writeTxn(key, bribesuuid, voterContract, 'claimBribes', params)
+      //   if (!isSuccess) {
+      //     setPending(false)
+      //     return
+      //   }
+      // }
+      // if (feeTokens.length > 0) {
+      //   const params = [[pool.gauge.fee], [feeTokens]]
+      //   const isSuccess = await writeTxn(key, feeuuid, voterContract, 'claimFees', params)
+      //   if (!isSuccess) {
+      //     setPending(false)
+      //     return
+      //   }
+      // }
+      // endTxn({
+      //   key,
+      //   final: 'Claim Successful',
+      // })
+      // setPending(false)
+      // callback()
     },
-    [account, startTxn, endTxn, writeTxn, chainId, t],
+    [startTxn, endTxn, writeTxn, t],
   )
 
   return { onClaimBribes: handleClaimBribes, pending }
