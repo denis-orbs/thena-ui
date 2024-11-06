@@ -1,15 +1,17 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
+import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Selection from '@/components/selection'
 import Selector from '@/components/selector'
+import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType, GAMMA_TYPES } from '@/constant'
@@ -19,9 +21,12 @@ import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
+import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
+import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
+import PoolChart from '@/modules/SwapChart/PoolChart'
 import { Bound, setInitialTokenPrice, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
-import { useChainSettings } from '@/state/settings/hooks'
+import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite, InfoIcon } from '@/svgs'
 
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
@@ -91,9 +96,14 @@ export default function ChooseStrategy({
   setIsReverse,
   isModal,
 }) {
+  const dispatch = useDispatch()
+  const { networkId } = useChainSettings()
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
   const t = useTranslations()
+
+  const { locale } = useLocaleSettings()
+  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
 
   const pair = useMemo(() => {
     const found = (pairs ?? []).find(
@@ -110,8 +120,6 @@ export default function ChooseStrategy({
     }
   }, [pairs, fusionPairs, firstAsset, secondAsset, pairType])
 
-  const dispatch = useDispatch()
-  const { networkId } = useChainSettings()
   const { data: preset } = useSWR(
     strategy && pair && ['strategy/info', strategy.address],
     () => fetchStrategyInfo(networkId, strategy, pair.currentTick),
@@ -128,6 +136,13 @@ export default function ChooseStrategy({
     baseCurrency ?? undefined,
     undefined,
   )
+
+  const { data: pairPrices = [], error } = useFetchPairPrices({
+    token0Address: wrappedAddress(pair?.token0),
+    token1Address: wrappedAddress(pair?.token1),
+    timeWindow,
+  })
+
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onStartPriceInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
 
@@ -151,6 +166,7 @@ export default function ChooseStrategy({
   }, [mintInfo.price, mintInfo.invertPrice])
 
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
+  const isSorted = baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped)
 
   useEffect(() => {
     if (!price) return
@@ -264,6 +280,47 @@ export default function ChooseStrategy({
     ],
   )
 
+  const periods = useMemo(
+    () => [
+      // {
+      //   label: '1H',
+      //   active: timeWindow === PairDataTimeWindow.HOUR,
+      //   onClickHandler: () => {
+      //     setTimeWindow(PairDataTimeWindow.HOUR)
+      //   },
+      // },
+      {
+        label: '24H',
+        active: timeWindow === PairDataTimeWindow.DAY,
+        onClickHandler: () => {
+          setTimeWindow(PairDataTimeWindow.DAY)
+        },
+      },
+      {
+        label: '1W',
+        active: timeWindow === PairDataTimeWindow.WEEK,
+        onClickHandler: () => {
+          setTimeWindow(PairDataTimeWindow.WEEK)
+        },
+      },
+      {
+        label: '1M',
+        active: timeWindow === PairDataTimeWindow.MONTH,
+        onClickHandler: () => {
+          setTimeWindow(PairDataTimeWindow.MONTH)
+        },
+      },
+      {
+        label: '1Y',
+        active: timeWindow === PairDataTimeWindow.YEAR,
+        onClickHandler: () => {
+          setTimeWindow(PairDataTimeWindow.YEAR)
+        },
+      },
+    ],
+    [timeWindow],
+  )
+
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
@@ -275,6 +332,7 @@ export default function ChooseStrategy({
             </div>
             <Selection data={autoSelections} isFull />
           </div>
+
           {isAutomatic ? (
             <div className='flex flex-col gap-5'>
               <div className='flex flex-col gap-3'>
@@ -292,6 +350,7 @@ export default function ChooseStrategy({
                   </div>
                 )}
               </div>
+
               {!mintInfo.noLiquidity && strategyData && (
                 <>
                   <div className='-mb-2 flex items-center justify-center'>
@@ -318,6 +377,36 @@ export default function ChooseStrategy({
                   />
                 </>
               )}
+
+              <Box className={cn('hidden', priceLower && priceUpper && 'block')}>
+                <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
+                  <h6 className='font-bold'>Historical price</h6>
+                  <Tabs data={periods} />
+                </div>
+
+                <div className='mt-2 flex h-[250px] items-center justify-center'>
+                  {error ? (
+                    <Paragraph>Failed to load price chart for this pair</Paragraph>
+                  ) : (
+                    <PoolChart
+                      data={pairPrices}
+                      timeWindow={timeWindow}
+                      locale={locale}
+                      upper={
+                        isSorted
+                          ? Number(priceLower?.invert()?.toSignificant(6))
+                          : Number(priceUpper?.invert()?.toSignificant(6))
+                      }
+                      current={Number(currentPrice)}
+                      lower={
+                        isSorted
+                          ? Number(priceUpper?.invert()?.toSignificant(6))
+                          : Number(priceLower?.invert()?.toSignificant(6))
+                      }
+                    />
+                  )}
+                </div>
+              </Box>
             </div>
           ) : (
             <ManualStrategy
@@ -329,6 +418,7 @@ export default function ChooseStrategy({
           )}
         </div>
       </div>
+
       {isAutomatic && (
         <div className={cn('mt-auto inline-flex w-full flex-col pt-5', isModal && 'px-3 pt-3 lg:px-6')}>
           <EmphasisButton
@@ -341,6 +431,7 @@ export default function ChooseStrategy({
           </EmphasisButton>
         </div>
       )}
+
       <CustomTooltip id='management-tooltip' className='max-w-[320px]'>
         <div className='flex flex-col gap-2'>
           <TextHeading className='text-sm'>{t('How to Choose a Strategy')}</TextHeading>

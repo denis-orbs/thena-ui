@@ -3,15 +3,20 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { Info, Warning } from '@/components/alert'
+import Box from '@/components/box'
 import Input from '@/components/input'
 import Selection from '@/components/selection'
 import Spinner from '@/components/spinner'
+import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
-import { TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { PoolState } from '@/hooks/fusion/useFusions'
-import { unwrappedSymbol } from '@/lib/utils'
+import { cn, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
+import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
+import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
+import PoolChart from '@/modules/SwapChart/PoolChart'
 import { Bound, setInitialTokenPrice, updateSelectedPreset } from '@/state/fusion/actions'
 import {
   useActivePreset,
@@ -21,6 +26,7 @@ import {
   useV3MintState,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
+import { useLocaleSettings } from '@/state/settings/hooks'
 
 import { EnterAmounts } from './containers/EnterAmounts'
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
@@ -31,9 +37,13 @@ import { RangeSelector } from '../components/RangeSelector'
 const feeAmount = 3000
 
 function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
+  const { locale } = useLocaleSettings()
+  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
+
   const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
   const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)
+
   const stableAssets = useStableTokens()
   const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
   const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
@@ -79,6 +89,12 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       tickUpper,
       mintInfo.pool,
     )
+
+  const { data: pairPrices = [], error } = useFetchPairPrices({
+    token0Address: wrappedAddress(quoteCurrency),
+    token1Address: wrappedAddress(baseCurrency),
+    timeWindow,
+  })
 
   const leftPrice = useMemo(
     () => (baseCurrency.wrapped.sortsBefore(quoteCurrency.wrapped) ? priceLower : priceUpper?.invert()),
@@ -241,6 +257,40 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const periods = useMemo(
+    () => [
+      {
+        label: '24H',
+        active: timeWindow === PairDataTimeWindow.DAY,
+        onClickHandler: () => {
+          setTimeWindow(PairDataTimeWindow.DAY)
+        },
+      },
+      {
+        label: '1W',
+        active: timeWindow === PairDataTimeWindow.WEEK,
+        onClickHandler: () => {
+          setTimeWindow(PairDataTimeWindow.WEEK)
+        },
+      },
+      {
+        label: '1M',
+        active: timeWindow === PairDataTimeWindow.MONTH,
+        onClickHandler: () => {
+          setTimeWindow(PairDataTimeWindow.MONTH)
+        },
+      },
+      {
+        label: '1Y',
+        active: timeWindow === PairDataTimeWindow.YEAR,
+        onClickHandler: () => {
+          setTimeWindow(PairDataTimeWindow.YEAR)
+        },
+      },
+    ],
+    [timeWindow],
+  )
+
   return (
     <div className='flex flex-col gap-4'>
       <PresetRanges
@@ -365,6 +415,29 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
           </div>
         </div>
       </div>
+
+      <Box className={cn('hidden', priceLower && priceUpper && 'block')}>
+        <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
+          <h6 className='font-bold'>Historical price</h6>
+          <Tabs data={periods} />
+        </div>
+
+        <div className='mt-2 flex h-[250px] items-center justify-center'>
+          {error ? (
+            <Paragraph>Failed to load price chart for this pair</Paragraph>
+          ) : (
+            <PoolChart
+              data={pairPrices}
+              timeWindow={timeWindow}
+              locale={locale}
+              current={Number(currentPrice)}
+              upper={Number(rightPrice?.toSignificant(6))}
+              lower={Number(leftPrice?.toSignificant(6))}
+            />
+          )}
+        </div>
+      </Box>
+
       <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
       <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} />
       <CustomTooltip id='price-tooltip' className='max-w-[320px]'>

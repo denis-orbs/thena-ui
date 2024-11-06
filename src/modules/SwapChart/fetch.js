@@ -22,6 +22,7 @@ const SWAP_INFO_BY_CHAIN = {
 }
 
 export const PairDataTimeWindow = {
+  HOUR: 'HOUR',
   DAY: 'DAY',
   WEEK: 'WEEK',
   MONTH: 'MONTH',
