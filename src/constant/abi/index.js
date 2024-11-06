@@ -35,6 +35,7 @@ import quoterAbi from './quoter.json'
 import quoterV2Abi from './quoterV2.json'
 import rewardEarnedAbi from './rewardEarned.json'
 import rewardsAPIAbi from './rewardsAPI.json'
+import rewardsDistributorAbi from './rewardsDistrubutor.json'
 import routerAbi from './router.json'
 import royaltyAbi from './royalty.json'
 import stakingAbi from './staking.json'
@@ -88,6 +89,7 @@ export {
   quoterV2Abi,
   rewardEarnedAbi,
   rewardsAPIAbi,
+  rewardsDistributorAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,

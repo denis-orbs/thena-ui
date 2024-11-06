@@ -1,13 +1,15 @@
 import BigNumber from 'bignumber.js'
+import { gql } from 'graphql-request'
 import React, { useMemo } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 
-import { rewardsAPIAbi, veTHEApiAbi } from '@/constant/abi'
+import { rewardsAPIAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
+import { v3ClientSubGraph } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 import { usePoolsWithGauge } from '@/state/pools/hooks'
 
@@ -22,19 +24,46 @@ const rewardsContext = React.createContext({
   },
 })
 
-const fetchCurrentRewards = async (_, account, chainId, pools) => {
-  console.log('--------------current start---------------')
-  const res = await callMulti(
-    pools.map(pool => ({
-      address: Contracts.veTHEAPI[chainId],
-      abi: veTHEApiAbi,
-      functionName: 'singlePairRewardAddress',
-      args: [account, pool],
-      chainId,
-    })),
-  )
-  console.log('-------------current end--------')
-  return res
+// const fetchCurrentRewards = async (_, account, chainId, pools) => {
+//   console.log('--------------current start---------------')
+//   const res = await callMulti(
+//     pools.map(pool => ({
+//       address: Contracts.veTHEAPI[chainId],
+//       abi: veTHEApiAbi,
+//       functionName: 'singlePairRewardAddress',
+//       args: [account, pool],
+//       chainId,
+//     })),
+//   )
+//   console.log('-------------current end--------')
+//   return res
+// }
+
+const V3_GET_USER_REWARDS = gql`
+  query V3_GET_USER_REWARDS($user: Bytes = "") {
+    userRewards(where: { user: $user }) {
+      id
+      lastUpdate
+      pool
+      rewardAmount
+      rewardToken
+      tokenId
+      user
+      votingIncentives
+    }
+  }
+`
+
+const fetchUserRewards = async userId => {
+  try {
+    const { userRewards } = await v3ClientSubGraph.request(V3_GET_USER_REWARDS, {
+      user: userId,
+    })
+    return userRewards
+  } catch (e) {
+    console.error(e)
+    return []
+  }
 }
 
 const fetchNextRewards = async (_, account, chainId, pools) => {
@@ -59,17 +88,17 @@ function RewardsContextProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(pools.map(pool => pool.address))],
   )
-  const {
-    data: current,
-    error: currentError,
-    mutate: currentMutate,
-  } = useSWRImmutable(
-    account && gaugeAddresses.length > 0 && chainId === ChainId.BSC ? ['current rewards api', account] : null,
-    ([url, acc]) => fetchCurrentRewards(url, acc, chainId, gaugeAddresses),
-    {
-      refreshInterval: 60000,
-    },
-  )
+  // const {
+  //   data: current,
+  //   error: currentError,
+  //   mutate: currentMutate,
+  // } = useSWRImmutable(
+  //   account && gaugeAddresses.length > 0 && chainId === ChainId.BSC ? ['current rewards api', account] : null,
+  //   ([url, acc]) => fetchCurrentRewards(url, acc, chainId, gaugeAddresses),
+  //   {
+  //     refreshInterval: 60000,
+  //   },
+  // )
 
   const {
     data: next,
@@ -83,6 +112,15 @@ function RewardsContextProvider({ children }) {
     },
   )
 
+  const {
+    data: current,
+    error: currentError,
+    mutate: currentMutate,
+  } = useSWRImmutable(
+    account && gaugeAddresses.length > 0 && chainId === 97 ? ['current rewards api', account] : null,
+    () => fetchUserRewards(account.toLowerCase()),
+  )
+
   const currentRewards = useMemo(() => {
     if (!current || !current.length) return []
     if (currentError) {
@@ -91,28 +129,40 @@ function RewardsContextProvider({ children }) {
     }
 
     return pools
-      .map((pool, index) => {
+      .map(pool => {
         const result = {}
-        let isFeeExist = false
-        let isBribeExist = false
-        if (current[index]) {
-          current[index].forEach((reward, idx) => {
-            const { amount, decimals, token } = reward
-            if (idx < 2) {
-              isFeeExist = isFeeExist || amount > 0
-            } else {
-              isBribeExist = isBribeExist || amount > 0
-            }
-            if (Number(amount) > 0) {
-              result[token] = {
-                address: token,
-                amount: !result[token]
-                  ? fromWei(amount, decimals)
-                  : result[token].amount.plus(fromWei(amount, decimals)),
-              }
+        const isFeeExist = false
+        const isBribeExist = false
+        const userPoolRewards = current.filter(reward => reward.pool === pool.address)
+        if (userPoolRewards && userPoolRewards.length) {
+          userPoolRewards.forEach(userPoolReward => {
+            const { rewardAmount, rewardToken } = userPoolReward
+            result[rewardToken] = {
+              address: rewardToken,
+              amount: !result[rewardToken]
+                ? fromWei(rewardAmount)
+                : result[rewardToken].amount.plus(fromWei(rewardAmount)),
             }
           })
         }
+        // if (current[index]) {
+        //   current[index].forEach((reward, idx) => {
+        //     const { amount, decimals, token } = reward
+        //     if (idx < 2) {
+        //       isFeeExist = isFeeExist || amount > 0
+        //     } else {
+        //       isBribeExist = isBribeExist || amount > 0
+        //     }
+        //     if (Number(amount) > 0) {
+        //       result[token] = {
+        //         address: token,
+        //         amount: !result[token]
+        //           ? fromWei(amount, decimals)
+        //           : result[token].amount.plus(fromWei(amount, decimals)),
+        //       }
+        //     }
+        //   })
+        // }
         return {
           ...pool,
           rewards: Object.values(result),
@@ -140,7 +190,7 @@ function RewardsContextProvider({ children }) {
           totalUsd,
         }
       })
-  }, [current, currentError, assets, pools])
+  }, [current, currentError, pools, assets])
 
   const nextRewards = useMemo(() => {
     if (!next || !next.length) return []

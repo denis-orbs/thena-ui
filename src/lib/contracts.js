@@ -28,6 +28,7 @@ import {
   quoterAbi,
   quoterV2Abi,
   rewardsAPIAbi,
+  rewardsDistributorAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,
@@ -122,6 +123,8 @@ export const getGlobalFactoryContract = chainId => getContract(globalFactoryAbi,
 export const getVeTHEAPIContract = chainId => getContract(veTHEApiAbi, Contracts.veTHEAPI, chainId)
 
 export const getRewardsAPIContract = chainId => getContract(rewardsAPIAbi, Contracts.rewardsAPI, chainId)
+
+export const getRewardsDistributorContract = () => getContract(rewardsDistributorAbi, Contracts.rewardsDistributor, 97)
 
 /** **************************************************************************************************
                                           theNFT (THENIANs)
