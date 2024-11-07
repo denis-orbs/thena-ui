@@ -64,7 +64,10 @@ export default function HoldingsPage() {
   const { onGaugeAllHarvest, pending } = useGuageAllHarvset()
   const t = useTranslations()
 
-  const theAsset = useMemo(() => assets.find(asset => asset.address === Contracts.THE[networkId]), [assets, networkId])
+  const theAsset = useMemo(
+    () => assets.find(asset => asset.address.toLowerCase() === Contracts.THE[networkId].toLowerCase()),
+    [assets, networkId],
+  )
 
   const veTHEholdings = useMemo(
     () => veTHEs.reduce((sum, curr) => sum.plus(curr.voting_amount), new BigNumber(0)),
