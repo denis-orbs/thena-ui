@@ -34,11 +34,12 @@ export function FollowedProfileItem({ user }) {
   )
 
   const hightLight = useMemo(
-    () => searchParams.get('user')?.toLowerCase() === user.user?.id?.toLowerCase(),
-    [searchParams, user.user.id],
+    () => searchParams.get('user')?.toLowerCase() === user?.user?.id?.toLowerCase(),
+    [searchParams, user?.user?.id],
   )
 
-  const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt, isVerified } = user.user
+  const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt, isVerified } =
+    user.user ?? {}
 
   return (
     <Box
@@ -49,7 +50,7 @@ export function FollowedProfileItem({ user }) {
     >
       <Link
         className={cn('flex w-2/3 cursor-pointer items-center justify-start gap-1 md:gap-2')}
-        href={`/arena/profile/${username ? encodeURIComponent(username.toLowerCase()) : id.toLowerCase()}`}
+        href={`/arena/profile/${username ? encodeURIComponent(username?.toLowerCase()) : id?.toLowerCase()}`}
       >
         <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className='size-8' />
 

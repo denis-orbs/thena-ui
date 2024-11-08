@@ -24,7 +24,7 @@ export function UserProfileCard({
   avatarSize = 'size-8',
   disablePopover = false,
 }) {
-  const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt } = user
+  const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt } = user ?? {}
   const t = useTranslations()
   const { userInfo } = useUserInfo()
   const { account } = useWallet()
