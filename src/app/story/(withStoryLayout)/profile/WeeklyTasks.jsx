@@ -104,7 +104,7 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
           )}
         </div>
         <div className='col-span-12 lg:col-span-5'>
-          {Boolean(countDownTimeStamp) && (
+          {countDownTimeStamp ? (
             <>
               <div className='rounded-lg bg-neutral-900 px-6 py-6'>
                 <h2 className='mb-6 font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
@@ -128,6 +128,12 @@ export function WeeklyTasks({ chapters, selectedChapterIndex, setSelectedChapter
                 </Link>
               )}
             </>
+          ) : (
+            <div className='rounded-lg bg-neutral-900 p-6'>
+              <h2>
+                {t('Next Chapter Available in')}: <span className='text-primary-600'>TBA</span>
+              </h2>
+            </div>
           )}
         </div>
       </div>

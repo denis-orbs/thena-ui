@@ -137,7 +137,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
           {isRegistered && (
             <div className='mx-auto max-w-[850px]'>
               <Chapters chapters={chapters} isLoading={isLoadingChapterTasks} />
-              {Boolean(countDownTimeStamp) && (
+              {countDownTimeStamp ? (
                 <>
                   <div className='mt-4 rounded-lg bg-transparent px-6 py-6'>
                     <h2 className='mb-6 text-center font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
@@ -147,6 +147,12 @@ function StoryHome({ isUpcoming, isRegistered }) {
                     {countDownTimeStamp && <Countdown timestamp={countDownTimeStamp} />}
                   </div>
                 </>
+              ) : (
+                <div className='mt-4 rounded-lg bg-transparent px-6 py-6'>
+                  <h2 className='mb-6 text-center font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
+                    {t('Current Chapter Ends in')}: <span className='text-primary-600'>TBA</span>
+                  </h2>
+                </div>
               )}
               {isViewBNBChainButton && (
                 <div className='mt-6 flex w-full justify-center'>

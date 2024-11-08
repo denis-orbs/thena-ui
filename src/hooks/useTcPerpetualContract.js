@@ -742,6 +742,7 @@ export const useClaimRewardTCPerp = () => {
 
       const muonRes = await getMuonToClaimReward(account, tcId)
       if (!muonRes?.success) {
+        setPending(false)
         toast.update(toastId, {
           autoClose: 5000,
           closeButton: true,

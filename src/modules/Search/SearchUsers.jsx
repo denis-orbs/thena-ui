@@ -20,13 +20,13 @@ import { VerifyPopover } from '../Profile/VerifyPopover'
 function SearchUserItem({ user, setIsPopoverOpen }) {
   const t = useTranslations()
 
-  const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt, isVerified } = user
+  const { avatar, username, id, nameColor, checkMarkIcon, isAdmin, isSuperAdmin, verifiedAt, isVerified } = user ?? {}
 
   return (
     <div className='my-1 flex items-center gap-1'>
       <Link
         className='flex cursor-pointer items-center justify-center gap-2'
-        href={`/arena/profile/${username ? encodeURIComponent(username.toLowerCase()) : id.toLowerCase()}`}
+        href={`/arena/profile/${username ? encodeURIComponent(username?.toLowerCase()) : id?.toLowerCase()}`}
         onClick={() => setIsPopoverOpen(false)}
       >
         <CircleImage src={avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar} alt='avatar' className='size-8' />
