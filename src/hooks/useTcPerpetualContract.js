@@ -52,7 +52,8 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL,
   const [isRegistered, setIsRegistered] = useState(false)
   const [isWinner, setIsWinner] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
-  const [balance, setBalance] = useState(0)
+  const [deallocatableBalance, setDeallocatableBalance] = useState(new BigNumber(0))
+  const [withdrawableBalance, setWithdrawableBalance] = useState(new BigNumber(0))
   const [isWithdrawable, setIsWithdrawable] = useState(false)
   const [tradingCompetition, setTradingCompetition] = useState(undefined)
   const [withdrawCooldown, setWithdrawCooldown] = useState(0)
@@ -104,25 +105,26 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL,
       if (tradingCompetition) {
         const isTcEnded = Number(tradingCompetition.timestamp.endTimestamp) < dayjs().unix()
         if (isTcEnded) {
-          let bal = 0
+          let dealloBal = 0
+          let withdrawBal = 0
           try {
             const tcPerpetualContract = getTcPerpetualContract(tcAddress)
             const multiAccountContract = getMultiAccountContract()
             const symmioAccount = await readCall(tcPerpetualContract, 'getAccountOf', [account])
 
-            // get balance to withdraw
-            bal = await readCall(multiAccountContract, 'balanceOf', [symmioAccount])
+            // Get deallocatable balance
+            dealloBal = await readCall(multiAccountContract, 'allocatedBalanceOfPartyA', [symmioAccount])
 
-            // if balance to withdraw = 0, get balance to deallocate
-            if (!bal) {
-              bal = await readCall(multiAccountContract, 'allocatedBalanceOfPartyA', [symmioAccount])
-            }
-            setBalance(new BigNumber(bal))
-          } catch (error) {
-            setBalance(0)
+            // get withdrawable balance
+            withdrawBal = await readCall(multiAccountContract, 'balanceOf', [symmioAccount])
+          } catch (e) {
+            /* empty */
           }
 
-          if (new BigNumber(bal).toNumber() > 0) {
+          setDeallocatableBalance(new BigNumber(dealloBal))
+          setWithdrawableBalance(new BigNumber(withdrawBal))
+
+          if (!isInvalidAmount(dealloBal) || !isInvalidAmount(withdrawBal)) {
             setIsWithdrawable(true)
           } else {
             setIsWithdrawable(false)
@@ -215,7 +217,8 @@ export const useTCPerpetualInfor = (tcAddress, type = TC_MARKET_TYPES.PERPETUAL,
     isWinner,
     isOwner,
     refetch: getUserData,
-    balance,
+    deallocatableBalance,
+    withdrawableBalance,
     isWithdrawable,
     checkWithdrawableTCPerp,
     withdrawCooldown,
@@ -406,7 +409,7 @@ export const useDepositToTCPerp = () => {
   return { pending, deposit }
 }
 
-export const useWithdrawToTCPerp = () => {
+export const useWithdrawTCPerps = () => {
   const { startTxn, endTxn, writeTxn, closeTxn, closeTxnModal } = useTxn()
   const t = useTranslations()
   const [loading, setLoading] = useState(false)
@@ -746,7 +749,7 @@ export const useClaimRewardTCPerp = () => {
         toast.update(toastId, {
           autoClose: 5000,
           closeButton: true,
-          render: 'request failed',
+          render: 'MUON request failed',
           isLoading: false,
           type: 'error',
         })

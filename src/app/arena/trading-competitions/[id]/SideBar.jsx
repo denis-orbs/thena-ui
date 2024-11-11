@@ -18,7 +18,7 @@ import { alphaThenaTradeTcLink } from '@/constant/env'
 import { useUserInfo } from '@/context/userInfoContext'
 import { fetchUserRankAndPnLInTC } from '@/hooks/trade/useTradingCompetitionLeaderboard'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
+import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawTCPerps } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
 import { v4Client } from '@/lib/graphql'
@@ -80,7 +80,7 @@ function Sidebar({ competition, eventType }) {
   const { openConnectModal } = useConnectModal()
   const { account } = useWallet()
   const { withdrawDeposit } = useWithdrawDepositTC()
-  const { withdrawTCPerp } = useWithdrawToTCPerp()
+  const { withdrawTCPerp } = useWithdrawTCPerps()
 
   const isFull = useMemo(
     () => competition.participantCount === Number(competition.maxParticipants),
@@ -113,7 +113,8 @@ function Sidebar({ competition, eventType }) {
     refetch: refecthPerp,
     isWithdrawable: canWithdrawPerp,
     checkWithdrawableTCPerp,
-    balance,
+    deallocatableBalance,
+    withdrawableBalance,
     withdrawCooldown,
     getWithdrawCooldown,
     isClaimable: isClaimablePerp,
@@ -349,14 +350,17 @@ function Sidebar({ competition, eventType }) {
         })
         if (isSuccess) await checkWithdrawable(true)
       } else {
-        if (withdrawCooldown === 0 || !enabledWithdraw) {
+        // Withdraw or deallocate
+        if (withdrawCooldown === 0 || !isInvalidAmount(deallocatableBalance) || !enabledWithdraw) {
+          // Deallocate
           setShowModalDeallocate(true)
           return
         }
+        // Withdraw
         setShowModalDeallocate(false)
         const isSuccess = await withdrawTCPerp({
           tcAddress: competition.tcAddress,
-          amount: balance,
+          amount: withdrawableBalance,
         })
         if (isSuccess) await checkWithdrawableTCPerp()
       }
@@ -369,9 +373,10 @@ function Sidebar({ competition, eventType }) {
     withdrawDeposit,
     checkWithdrawable,
     withdrawCooldown,
+    deallocatableBalance,
     enabledWithdraw,
     withdrawTCPerp,
-    balance,
+    withdrawableBalance,
     checkWithdrawableTCPerp,
   ])
 
@@ -397,18 +402,19 @@ function Sidebar({ competition, eventType }) {
       setShowModalDeallocate(false)
       const isSuccess = await withdrawTCPerp({
         tcAddress: competition?.tcAddress,
-        amount: balance,
+        amount: withdrawableBalance,
       })
       if (isSuccess) await checkWithdrawableTCPerp()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balance, competition?.tcAddress, enabledWithdraw, showModalDeallocate])
+  }, [withdrawableBalance, competition?.tcAddress, enabledWithdraw, showModalDeallocate])
 
   useEffect(() => {
     function intervalCallback() {
       if (competition.market !== TC_MARKET_TYPES.PERPETUAL) return
 
-      if (withdrawCooldown === 0) {
+      // If can deallocate, dont withdraw
+      if (withdrawCooldown === 0 || !isInvalidAmount(deallocatableBalance)) {
         setEnabledWithdraw(undefined)
         setRemainingTime(undefined)
         clearInterval(intervalId.current)
@@ -432,7 +438,7 @@ function Sidebar({ competition, eventType }) {
     intervalId.current = setInterval(intervalCallback, 1000)
 
     return () => clearInterval(intervalId.current)
-  }, [competition.market, withdrawCooldown])
+  }, [competition.market, deallocatableBalance, withdrawCooldown])
 
   const buttonByStatus = useMemo(() => {
     // Ended -> Claim rewards/fee
@@ -788,9 +794,11 @@ function Sidebar({ competition, eventType }) {
         <DeallocateModal
           open={showModalDeallocate}
           remainingTime={remainingTime}
-          balance={balance}
+          balance={deallocatableBalance}
           onClose={() => {
             setShowModalDeallocate(false)
+            checkWithdrawableTCPerp()
+            getWithdrawCooldown()
           }}
           tcAddress={competition.tcAddress}
           getWithdrawCooldown={getWithdrawCooldown}
