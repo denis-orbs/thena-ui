@@ -184,7 +184,7 @@ export function ChapterProcess({
             text={`${t(
               task.name,
               // eslint-disable-next-line max-len
-            )}: BNB/XVS (Gamma Narrow), USDT/TAROT (Classic), BKN/USDT (Gamma Narrow), USDT/LISTA (Gamma Narrow), USDT/XCAD (Classic)`}
+            )}: BNB/XVS (Gamma Narrow), USDT/TAROT (Classic), BKN/USDT (Gamma Narrow), USDT/LISTA (Gamma Narrow), USDT/XCAD (Classic), ABOND/BNB (ICHI - wBNB Deposit)`}
             className='text-lg font-medium'
             translate
             hyperLinks={[
@@ -207,6 +207,10 @@ export function ChapterProcess({
               {
                 text: 'USDT/XCAD',
                 link: 'https://thena.fi/pools/0x1a839f1887a76cfc113a494df08d3b4343afce19',
+              },
+              {
+                text: 'ABOND/BNB',
+                link: 'https://thena.fi/pools/0x44aa475ed44dda30f4fb81a0eec7c44aed01c7c0',
               },
             ]}
           />
