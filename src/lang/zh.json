@@ -985,7 +985,7 @@
   "Registration Description": "让朋友使用您的推荐码进行注册。",
   "1 Weekly Task": "1 项每周任务",
   "1 Weekly Task Description": "好友在注册后必须完成 1 项每周任务。",
-  "Receive [point] Points": "获得 {point} 积分",
+  "Receive 10 Points": "获得 10 积分",
   "Receive 10 Points Description": "好友在完成 1 项每周任务后，您会获得 10 积分。",
   "NFT": "NFT",
   "fragments required": "所需碎片数",
@@ -1163,5 +1163,9 @@
   "30m": "30m",
   "1h": "1h",
   "4h": "4h",
-  "12h": "12h"
+  "12h": "12h",
+  "THE MemeCoin Renaissance": "THE MemeCoin Renaissance",
+  "THE Vision: DeFi": "THE Vision: DeFi",
+  "Provide liquidity and stake in THE/BNB pool": "于 THE/BNB 池（任一 ALM 管理池）中提供流动性并质押",
+  "Provide liquidity and stake in any of these 6 pools": "于以下 6 池中的任何一池中提供流动性并质押"
 }
