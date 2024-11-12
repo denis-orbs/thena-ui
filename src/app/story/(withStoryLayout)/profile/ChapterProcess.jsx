@@ -13,6 +13,8 @@ import { ArrowBackwardIcon, ArrowForwardSmallIcon, ChevronRightIcon } from '@/sv
 
 import { RewardIconTooltip } from './RewardIconTooltip'
 import {
+  Task1PoolsChapter5,
+  Task2PoolsChapter5,
   TaskDailyName,
   TaskDepositGamma,
   TaskDepositIchi,
@@ -154,6 +156,57 @@ export function ChapterProcess({
               {
                 text: 'USDT-BNB',
                 link: 'https://thena.fi/pools/0xd405b976ac01023c9064024880999fc450a8668b',
+              },
+            ]}
+          />
+        )
+      }
+
+      if (task.name === Task1PoolsChapter5) {
+        return (
+          <TranslationWithFormatLink
+            text={t(task.name)}
+            className='text-lg font-medium'
+            translate
+            hyperLinks={[
+              {
+                text: 'THE/BNB',
+                link: 'https://thena.fi/pools/0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8',
+              },
+            ]}
+          />
+        )
+      }
+
+      if (task.name === Task2PoolsChapter5) {
+        return (
+          <TranslationWithFormatLink
+            text={`${t(
+              task.name,
+              // eslint-disable-next-line max-len
+            )}: BNB/XVS (Gamma Narrow), USDT/TAROT (Classic), BKN/USDT (Gamma Narrow), USDT/LISTA (Gamma Narrow), USDT/XCAD (Classic)`}
+            className='text-lg font-medium'
+            translate
+            hyperLinks={[
+              {
+                text: 'BNB/XVS',
+                link: 'https://thena.fi/pools/0x06dc242b1987b46c1e8dd44d1cb203139cf09edf',
+              },
+              {
+                text: 'USDT/TAROT',
+                link: 'https://thena.fi/pools/0x2c4166641d5293551190c9f01ac50d0b6abd7086',
+              },
+              {
+                text: 'BKN/USDT',
+                link: 'https://thena.fi/pools/0xb7ed8551546bff15f7103318d465ef81d79bc67e',
+              },
+              {
+                text: 'USDT/LISTA',
+                link: 'https://thena.fi/pools/0x755a52d29b24d6871899a84f476339183e9dc95d',
+              },
+              {
+                text: 'USDT/XCAD',
+                link: 'https://thena.fi/pools/0x1a839f1887a76cfc113a494df08d3b4343afce19',
               },
             ]}
           />
