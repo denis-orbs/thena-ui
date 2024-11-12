@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { TranslationWithFormatLink } from '@/components/common/TranslationWithFormatLink'
+import { HyperLink, TranslationWithFormatLink } from '@/components/common/TranslationWithFormatLink'
 import { useTHEStory } from '@/context/THEStoryContext'
 import { errorToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
@@ -180,40 +180,38 @@ export function ChapterProcess({
 
       if (task.name === Task2PoolsChapter5) {
         return (
-          <TranslationWithFormatLink
-            text={`${t(
-              task.name,
-              // eslint-disable-next-line max-len
-            )}: BNB/XVS (Gamma Narrow), USDT/TAROT (Classic), BKN/USDT (Gamma Narrow), USDT/LISTA (Gamma Narrow), USDT/XCAD (Classic), ABOND/BNB (ICHI - wBNB Deposit)`}
-            className='text-lg font-medium'
-            translate
-            hyperLinks={[
-              {
-                text: 'BNB/XVS',
-                link: 'https://thena.fi/pools/0x06dc242b1987b46c1e8dd44d1cb203139cf09edf',
-              },
-              {
-                text: 'USDT/TAROT',
-                link: 'https://thena.fi/pools/0x2c4166641d5293551190c9f01ac50d0b6abd7086',
-              },
-              {
-                text: 'BKN/USDT',
-                link: 'https://thena.fi/pools/0xb7ed8551546bff15f7103318d465ef81d79bc67e',
-              },
-              {
-                text: 'USDT/LISTA',
-                link: 'https://thena.fi/pools/0x755a52d29b24d6871899a84f476339183e9dc95d',
-              },
-              {
-                text: 'USDT/XCAD',
-                link: 'https://thena.fi/pools/0x1a839f1887a76cfc113a494df08d3b4343afce19',
-              },
-              {
-                text: 'ABOND/BNB',
-                link: 'https://thena.fi/pools/0x44aa475ed44dda30f4fb81a0eec7c44aed01c7c0',
-              },
-            ]}
-          />
+          <div className='text-lg font-medium'>
+            {t(task.name)}:
+            <ul className='ml-5 list-disc'>
+              <li>
+                <HyperLink text='BNB/XVS' link='https://thena.fi/pools/0x06dc242b1987b46c1e8dd44d1cb203139cf09edf' />{' '}
+                (Gamma Narrow)
+              </li>
+              <li>
+                <HyperLink text='USDT/TAROT' link='https://thena.fi/pools/0x2c4166641d5293551190c9f01ac50d0b6abd7086' />{' '}
+                (Classic)
+              </li>
+              <li>
+                <HyperLink text='BKN/USDT' link='https://thena.fi/pools/0xb7ed8551546bff15f7103318d465ef81d79bc67e' />{' '}
+                (Gamma Narrow)
+              </li>
+              <li>
+                <HyperLink
+                  text='lisUSD/USDT'
+                  link='https://thena.fi/pools/0x5b0baf66718caabda49a4af32eb455c3b99b5821'
+                />{' '}
+                (Gamma Stable)
+              </li>
+              <li>
+                <HyperLink text='USDT/XCAD' link='https://thena.fi/pools/0x1a839f1887a76cfc113a494df08d3b4343afce19' />{' '}
+                (Classic)
+              </li>
+              <li>
+                <HyperLink text='ABOND/BNB' link='https://thena.fi/pools/0x44aa475ed44dda30f4fb81a0eec7c44aed01c7c0' />{' '}
+                (ICHI - wBNB Deposit)
+              </li>
+            </ul>
+          </div>
         )
       }
 

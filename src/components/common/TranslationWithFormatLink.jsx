@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import React, { useMemo } from 'react'
 
-function HyperLink({ link, text, target }) {
+export function HyperLink({ link, text, target = '' }) {
   return (
     <Link target={target} className='text-primary-600 underline' href={link}>
       {text}
