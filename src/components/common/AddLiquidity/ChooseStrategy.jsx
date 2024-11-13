@@ -36,71 +36,6 @@ import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const feeAmount = 3000
 
-const mockSubPool = [
-  {
-    address: '0xca656ee464aac96b69e7a377fecd7579071c620d',
-    symbol: 'ETH/BNB',
-    totalSupply: 0,
-    lpPrice: 0,
-    type: 'Classic',
-    gauge: {
-      apr: '0',
-      projectedApr: '0',
-      voteApr: '0',
-      totalSupply: 0,
-      address: '0x958c38d08ab319fc416943ec5ba66734994bd808',
-      fee: '0xbe9c8531d4b02d22a12c0689c98b8a5e00a7d751',
-      bribe: '0xbe9c8531d4b02d22a12c0689c98b8a5e00a7d751',
-      weight: '0',
-      bribes: {
-        fee: null,
-        bribe: null,
-      },
-      isAlive: true,
-      tvl: '0',
-      weightPercent: '0',
-      bribeUsd: '0',
-      pooled0: '0',
-      pooled1: '0',
-    },
-    token0: {
-      address: '0x8fe83aff545f583e0968ce3edd05cd8e1f83b14e',
-      symbol: 'ETH',
-      decimals: 18,
-      logoURI: 'https://cdn.thena.fi/assets/ETH.png',
-      price: 0,
-      reserve: '0',
-    },
-    token1: {
-      address: '0xec7ef2340ca18d268c3f564af2f24587f7d399ba',
-      symbol: 'WBNB',
-      decimals: 18,
-      logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
-      price: 0,
-      reserve: '0',
-    },
-    allowed: {},
-    stable: false,
-    title: 'Volatile',
-    tvl: '0',
-    account: {
-      walletBalance: '0',
-      gaugeBalance: '0',
-      gaugeEarned: '0',
-      totalLp: '0',
-      token0claimable: '0',
-      token1claimable: '0',
-      staked0: '0',
-      staked1: '0',
-      stakedUsd: '0',
-      earnedUsd: '0',
-      total0: '0',
-      total1: '0',
-      totalUsd: '0',
-    },
-  },
-]
-
 const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
     {
@@ -262,10 +197,8 @@ export default function ChooseStrategy({
   ])
 
   const strategyData = useMemo(() => {
-    // if (!pair || !pair.subpools.length) return null
-    // return pair.subpools.map(sub => ({
-    console.log('mock')
-    return mockSubPool.map(sub => ({
+    if (!pair || !pair.subpools.length) return null
+    return pair.subpools.map(sub => ({
       content: (
         <div className='flex flex-1 items-center justify-between'>
           <div>
@@ -304,7 +237,7 @@ export default function ChooseStrategy({
         setStrategy(sub)
       },
     }))
-  }, [strategy, setStrategy, t])
+  }, [pair, t, strategy?.address, setStrategy])
 
   const autoSelections = useMemo(
     () => [

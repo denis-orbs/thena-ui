@@ -167,11 +167,12 @@ export default function Step1({ nextStep, setPoolSelected }) {
         pool?.token0?.address?.toLowerCase() === firstAddress?.toLowerCase() &&
         pool?.token1?.address?.toLowerCase() === secondAddress?.toLowerCase(),
     )
+    mockWeightedPool.token0 = firstAsset
+    mockWeightedPool.token1 = secondAsset
     pools.push(mockWeightedPool)
     console.log({ pools })
     return pools
-  }, [firstAddress, pairs, secondAddress])
-
+  }, [firstAddress, firstAsset, pairs, secondAddress, secondAsset])
   const onDeposit = useCallback(
     pool => {
       setPoolSelected(pool)

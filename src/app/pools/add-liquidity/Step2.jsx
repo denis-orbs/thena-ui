@@ -187,6 +187,7 @@ export default function Step2({ pool, setCurrentStep, isAutomatic, setIsAutomati
   const assets = useAssets()
   const [firstAmount, setFirstAmount] = useState()
   const [secondAmount, setSecondAmount] = useState()
+  const [isReverse, setIsReverse] = useState(true)
   return (
     <div className='mt-10 flex flex-col gap-6 lg:flex-row lg:gap-8'>
       <Box className='flex w-full flex-col lg:w-[540px]'>
@@ -212,8 +213,8 @@ export default function Step2({ pool, setCurrentStep, isAutomatic, setIsAutomati
             setCurrentStep={setCurrentStep}
             isAutomatic={isAutomatic}
             setIsAutomatic={setIsAutomatic}
-            // isReverse={isReverse}
-            // setIsReverse={setIsReverse}
+            isReverse={isReverse}
+            setIsReverse={setIsReverse}
             // isModal={isModal}
           />
         )}

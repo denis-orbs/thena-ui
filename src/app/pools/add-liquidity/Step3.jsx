@@ -14,6 +14,7 @@ import { UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
+import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
 import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
 
@@ -28,7 +29,6 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep }) {
     ],
     [assets, pool],
   )
-
   const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
   const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)
 
@@ -41,6 +41,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep }) {
     baseCurrency ?? undefined,
     undefined,
   )
+  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   return (
     <div className='mt-10 flex flex-col gap-6 lg:flex-row lg:gap-8'>
       <Box className='flex w-full flex-col lg:w-[540px]'>
@@ -115,7 +116,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep }) {
               <CheckCircleIcon className='h-5 w-5 stroke-success-600' />
               <div className='flex flex-col'>
                 <div className='flex flex-row gap-1'>
-                  <span>{t('Pool price tick at', { value: 12345 })}</span>
+                  <span>{t('Pool price tick at', { value: Number(pool?.globalState?.tick || 0) })}</span>
                 </div>
               </div>
             </div>
@@ -123,7 +124,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep }) {
               <RightOutIcon className='h-5 w-5 stroke-success-600' />
               <div className='flex flex-col'>
                 <div className='flex flex-row gap-1'>
-                  <span>{t('Low tick at', { value: 12345 })}</span>
+                  <span>{t('Low tick at', { value: tickLower })}</span>
                 </div>
               </div>
             </div>
@@ -131,7 +132,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep }) {
               <RightInIcon className='h-5 w-5 stroke-success-600' />
               <div className='flex flex-col'>
                 <div className='flex flex-row gap-1'>
-                  <span>{t('High tick at', { value: 12345 })}</span>
+                  <span>{t('High tick at', { value: tickUpper })}</span>
                 </div>
               </div>
             </div>
