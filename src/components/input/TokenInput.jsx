@@ -2,8 +2,11 @@ import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
 import { formatAmount } from '@/lib/utils'
+import SelectTokenFromList from '@/modules/SelectTokenModal/SelectTokenFromList'
+import { ChevronDownIcon } from '@/svgs'
 
 import TokenBadge from '../badges/TokenBadge'
+import { EmphasisButton } from '../buttons/Button'
 import Skeleton from '../skeleton'
 import { TextSubHeading } from '../typography'
 import TokenModal from '../../modules/TokenModal'
@@ -17,6 +20,8 @@ function TokenInput({
   setAmount,
   autoFocus = false,
   disabled = false,
+  assetData,
+  assetNull,
 }) {
   const [tokenPopup, setTokenPopup] = useState(false)
   const t = useTranslations()
@@ -26,7 +31,7 @@ function TokenInput({
       <div className='flex items-center justify-between gap-2'>
         <input
           type='number'
-          className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+          className='w-[70%] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
           placeholder='0.0'
           value={amount}
           onChange={e => setAmount(e.target.value)}
@@ -36,6 +41,13 @@ function TokenInput({
         />
         {asset ? (
           <TokenBadge asset={asset} onClick={() => setTokenPopup(true)} />
+        ) : assetNull ? (
+          <EmphasisButton
+            className='h-9 !w-[130px] rounded-full p-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
+            onClick={() => setTokenPopup(true)}
+          >
+            {t('Select Token')} <ChevronDownIcon className='h-4 w-4 !stroke-neutral-200 text-neutral-200' />
+          </EmphasisButton>
         ) : (
           <Skeleton className='h-[36px] w-[100px]' />
         )}
@@ -46,14 +58,24 @@ function TokenInput({
           {t('Balance')}: {formatAmount(asset?.balance)}
         </TextSubHeading>
       </div>
-      <TokenModal
-        popup={tokenPopup}
-        setPopup={setTokenPopup}
-        selectedAsset={asset}
-        setSelectedAsset={setAsset}
-        otherAsset={otherAsset}
-        setOtherAsset={setOtherAsset}
-      />
+      {!assetData ? (
+        <TokenModal
+          popup={tokenPopup}
+          setPopup={setTokenPopup}
+          selectedAsset={asset}
+          setSelectedAsset={setAsset}
+          otherAsset={otherAsset}
+          setOtherAsset={setOtherAsset}
+        />
+      ) : (
+        <SelectTokenFromList
+          setIsOpen={setTokenPopup}
+          isOpen={tokenPopup}
+          selectedAsset={asset}
+          tokens={assetData}
+          setToken={setAsset}
+        />
+      )}
     </div>
   )
 }

@@ -6,13 +6,13 @@ import { liquidityHub } from '@/modules/LiquidityHub'
 
 import { ZERO_VALUE } from './utils'
 
-// const backendApi = 'https://api.thena.fi/api/v1'
-const backendApi = 'https://testnet-thena-backend.zinza.com.vn/api/v1'
+const backendApi = 'https://api.thena.fi/api/v1'
+const backendApiTestNet = 'https://testnet-thena-backend.zinza.com.vn/api/v1'
 
 export const fetchAssets = async (networkId, liquidityHubEnabled) => {
   try {
     const getTokens = async () => {
-      const response = await fetch(`${backendApi}/assets`, {
+      const response = await fetch(`${networkId === 97 ? backendApiTestNet : backendApi}/assets`, {
         method: 'get',
       })
       return response.json()
@@ -52,7 +52,11 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
 }
 
 export const fetchPools = params =>
-  fetch(`${backendApi}/${params[1] === ChainId.BSC || params[1] === 97 ? 'fusions' : 'opfusions'}`)
+  fetch(
+    `${params[1] === 97 ? backendApiTestNet : backendApi}/${
+      params[1] === ChainId.BSC || params[1] === 97 ? 'fusions' : 'opfusions'
+    }`,
+  )
     .then(r => r.json())
     .then(r => r.data)
 
@@ -67,7 +71,7 @@ export const fetchBscPairs = () =>
     .then(r => r.data)
 
 export const fetchBscTestnetPairs = () =>
-  fetch(`${backendApi}/topPairs/97`)
+  fetch(`${backendApiTestNet}/topPairs/97`)
     .then(r => r.json())
     .then(r => r.data)
 

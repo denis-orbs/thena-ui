@@ -40,6 +40,7 @@ import DiamondIcon from '~/svgs/diamond.svg'
 import DiscordIcon from '~/svgs/discord.svg'
 import DownRank from '~/svgs/down-rank.svg'
 import DownloadIcon from '~/svgs/download.svg'
+import DownloadSuccessIcon from '~/svgs/download-success.svg'
 import EditIcon from '~/svgs/edit.svg'
 import EigenBadgeIcon from '~/svgs/eigen_badge.svg'
 import EmailIcon from '~/svgs/email.svg'
@@ -71,6 +72,7 @@ import LogoWithTextIcon from '~/svgs/logo-with-text.svg'
 import MediumIcon from '~/svgs/medium.svg'
 import MergeIcon from '~/svgs/merge.svg'
 import MinusIcon from '~/svgs/minus.svg'
+import PercentIcon from '~/svgs/percent.svg'
 import PiggyIcon from '~/svgs/piggy-bank.svg'
 import PiggySecondIcon from '~/svgs/piggy-second.svg'
 import PlusIcon from '~/svgs/plus.svg'
@@ -81,6 +83,8 @@ import RandomDice from '~/svgs/random-dice.svg'
 import RedditIcon from '~/svgs/reddit.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
 import RegisterIcon from '~/svgs/register.svg'
+import RightInIcon from '~/svgs/right-in.svg'
+import RightOutIcon from '~/svgs/right-out.svg'
 import SearchIcon from '~/svgs/search.svg'
 import SecondPrizeIcon from '~/svgs/second-prize.svg'
 import SendIcon from '~/svgs/send.svg'
@@ -159,6 +163,7 @@ export {
   DiamondIcon,
   DiscordIcon,
   DownloadIcon,
+  DownloadSuccessIcon,
   DownRank,
   EditIcon,
   EigenBadgeIcon,
@@ -192,6 +197,7 @@ export {
   MediumIcon,
   MergeIcon,
   MinusIcon,
+  PercentIcon,
   PiggyIcon,
   PiggySecondIcon,
   PlusCircleIcon,
@@ -203,6 +209,8 @@ export {
   RedditIcon,
   RefreshIcon,
   RegisterIcon,
+  RightInIcon,
+  RightOutIcon,
   RoundedTHETokenIcon,
   SearchIcon,
   SecondPrizeIcon,

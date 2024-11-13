@@ -223,6 +223,7 @@ export const PAIR_TYPES = {
   LSD: 'Conc Liquidity',
   STABLE: 'Stable',
   CLASSIC: 'Classic',
+  WEIGHTED: 'Weighted',
 }
 
 export const FusionRangeType = {

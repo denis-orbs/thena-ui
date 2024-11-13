@@ -95,6 +95,7 @@ const getV1OverviewChartData = async (chainId, skip) => {
       startTime: V1_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })
+    console.log({ dayDatas })
     const data = dayDatas.map(ele => ({
       date: ele.date,
       volumeUSD: parseFloat(ele.dailyVolumeUSD),
@@ -113,6 +114,7 @@ const getFusionOverviewChartData = async (chainId, skip) => {
       startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })
+    console.log({ res })
     const result = res.fusionDayDatas
     const data = result.map(ele => ({
       date: ele.date,

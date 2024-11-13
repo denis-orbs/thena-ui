@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { Info, Warning } from '@/components/alert'
-import Box from '@/components/box'
 import Input from '@/components/input'
 import Selection from '@/components/selection'
 import Spinner from '@/components/spinner'
@@ -13,7 +12,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { PoolState } from '@/hooks/fusion/useFusions'
-import { cn, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
+import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
@@ -28,9 +27,9 @@ import {
 import { Presets } from '@/state/fusion/reducer'
 import { useLocaleSettings } from '@/state/settings/hooks'
 
-import { EnterAmounts } from './containers/EnterAmounts'
+// import { EnterAmounts } from './containers/EnterAmounts'
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
-import ManualAdd from './ManualAdd'
+// import ManualAdd from './ManualAdd'
 import { PresetRanges } from '../components/PresetRange'
 import { RangeSelector } from '../components/RangeSelector'
 
@@ -416,7 +415,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
         </div>
       </div>
 
-      <Box className={cn('hidden', priceLower && priceUpper && 'block')}>
+      <div className={cn('hidden', priceLower && priceUpper && 'block')}>
         <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
           <h6 className='font-bold'>Historical price</h6>
           <Tabs data={periods} />
@@ -436,10 +435,35 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
             />
           )}
         </div>
-      </Box>
+      </div>
 
-      <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-      <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} />
+      {!error && (
+        <div className='flex flex-col gap-4'>
+          <div className='flex flex-row gap-4'>
+            <div className='flex w-1/2 flex-row justify-between rounded-[4px] bg-neutral-800 px-3 py-[6px]'>
+              <TextHeading>{t('Min')}</TextHeading>
+              <Paragraph>{formatAmount(Number(leftPrice?.toSignificant(6)))}</Paragraph>
+            </div>
+            <div className='flex w-1/2 flex-row justify-between rounded-[4px] bg-neutral-800 px-3 py-[6px]'>
+              <TextHeading>{t('Max')}</TextHeading>
+              <Paragraph>{formatAmount(Number(rightPrice?.toSignificant(6)))}</Paragraph>
+            </div>
+          </div>
+          <div className='flex flex-row gap-4'>
+            <div className='flex w-1/2 flex-row justify-between rounded-[4px] bg-neutral-800 px-3 py-[6px]'>
+              <TextHeading>{t('Avg')}</TextHeading>
+              {/* TODO: remove fixed value */}
+              <Paragraph>fixed value</Paragraph>
+            </div>
+            <div className='flex w-1/2 flex-row justify-between rounded-[4px] bg-neutral-800 px-3 py-[6px]'>
+              <TextHeading>{t('Current')}</TextHeading>
+              <Paragraph>{formatAmount(currentPrice)}</Paragraph>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
+      <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} /> */}
       <CustomTooltip id='price-tooltip' className='max-w-[320px]'>
         <TextHeading className='text-sm'>{t('Price Range Info')}</TextHeading>
       </CustomTooltip>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
@@ -27,6 +27,8 @@ export default function V1Add({
   setFirstAddress,
   secondAsset,
   setSecondAddress,
+  setFirstAmountValue,
+  setSecondAmountValue,
 }) {
   const [isZapper, setIsZapper] = useState(false)
   const [firstAmount, setFirstAmount] = useState('')
@@ -102,6 +104,16 @@ export default function V1Add({
     },
     [strategy, secondAsset],
   )
+
+  useEffect(() => {
+    if (typeof setFirstAmountValue === 'function') {
+      setFirstAmountValue(firstAmount)
+    }
+
+    if (typeof setSecondAmountValue === 'function') {
+      setSecondAmountValue(secondAmount)
+    }
+  }, [firstAmount, secondAmount, setFirstAmountValue, setSecondAmountValue])
 
   const onSecondChange = useCallback(
     val => {

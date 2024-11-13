@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -30,7 +31,7 @@ import { getVeTHEContract } from '@/lib/contracts'
 import { cn, formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoIcon } from '@/svgs'
+import { ArrowRightIcon, InfoIcon } from '@/svgs'
 
 const sortOptions = [
   {
@@ -448,7 +449,7 @@ export default function VotePage() {
           </Box>
         </div>
         <div className='flex flex-col gap-4'>
-          <div className='flex flex-col items-center justify-between gap-4 lg:flex-row'>
+          <div className='flex flex-col justify-between gap-4'>
             <div className='flex w-full items-center justify-between lg:w-fit'>
               <TextHeading className='text-xl'>{t('Votes')}</TextHeading>
               <Toggle
@@ -459,37 +460,45 @@ export default function VotePage() {
                 label='Voted Only'
               />
             </div>
-            <div className='flex w-full flex-col-reverse gap-4 lg:w-auto lg:flex-row lg:gap-2'>
-              <div className='flex items-center justify-between gap-2 lg:hidden'>
-                <Paragraph>Sort By</Paragraph>
-                <Dropdown
-                  data={sortOptions.slice(0, sortOptions.length - 1)}
-                  selected={sort ? `${sort.label}` : ''}
-                  setSelected={ele => setSort(ele)}
+            <div className='flex w-full flex-col-reverse justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
+              <div className='flex flex-row gap-4 lg:gap-2'>
+                <div className='flex items-center justify-between gap-2 lg:hidden'>
+                  <Paragraph>Sort By</Paragraph>
+                  <Dropdown
+                    data={sortOptions.slice(0, sortOptions.length - 1)}
+                    selected={sort ? `${sort.label}` : ''}
+                    setSelected={ele => setSort(ele)}
+                  />
+                </div>
+                <VeTheDropdown
+                  className='w-full lg:w-[220px]'
+                  data={veTHEs.map(item => ({
+                    ...item,
+                    label: `veTHE #${item.id}`,
+                  }))}
+                  selected={veTHE ? `veTHE #${veTHE.id}` : ''}
+                  setSelected={ele => setVeTHEId(ele.id)}
+                  placeHolder={t('Select veTHE')}
+                  isLocale={false}
+                  isApproved={isApproved}
+                  approvedId={approvedId}
+                  setApprovedId={setApprovedId}
+                />
+                <SearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
+                <Toggle
+                  className='hidden lg:flex'
+                  checked={isVoted}
+                  onChange={() => setIsVoted(!isVoted)}
+                  toggleId='active'
+                  label='Voted Only'
                 />
               </div>
-              <Toggle
-                className='hidden lg:flex'
-                checked={isVoted}
-                onChange={() => setIsVoted(!isVoted)}
-                toggleId='active'
-                label='Voted Only'
-              />
-              <VeTheDropdown
-                className='w-full lg:w-[220px]'
-                data={veTHEs.map(item => ({
-                  ...item,
-                  label: `veTHE #${item.id}`,
-                }))}
-                selected={veTHE ? `veTHE #${veTHE.id}` : ''}
-                setSelected={ele => setVeTHEId(ele.id)}
-                placeHolder={t('Select veTHE')}
-                isLocale={false}
-                isApproved={isApproved}
-                approvedId={approvedId}
-                setApprovedId={setApprovedId}
-              />
-              <SearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
+              <Link href='/dashboard/vote/voting-history'>
+                <EmphasisButton>
+                  {t('Voting History')}
+                  <ArrowRightIcon className='mx-auto h-5 w-5' />
+                </EmphasisButton>
+              </Link>
             </div>
           </div>
           <Table
