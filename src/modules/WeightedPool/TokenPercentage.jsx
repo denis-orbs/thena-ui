@@ -18,7 +18,7 @@ export function TokenPercentage({ token }) {
 export function ListTokenPercantage({ listToken }) {
   return (
     <div className='flex items-center gap-[14px]'>
-      {listToken?.length && listToken.map(token => <TokenPercentage token={token} />)}
+      {listToken?.length && listToken.map((token, index) => <TokenPercentage token={token} key={index} />)}
     </div>
   )
 }

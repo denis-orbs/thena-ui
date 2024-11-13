@@ -3,7 +3,7 @@ import React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function SelectionItem({ className, item, isFull, isSmall }) {
+function SelectionItem({ className, item, isFull, isSmall, isTranslation = true }) {
   const t = useTranslations()
 
   return (
@@ -23,16 +23,22 @@ function SelectionItem({ className, item, isFull, isSmall }) {
       )}
       onClick={item.onClickHandler}
     >
-      {typeof item.label === 'number' ? `${item.label}%` : t(item.label)}
+      {typeof item.label === 'number' ? `${item.label}%` : isTranslation ? t(item.label) : item.label}
     </button>
   )
 }
 
-function Selection({ className, data, isFull = false, isSmall = false }) {
+function Selection({ className, data, isFull = false, isSmall = false, isTranslation = true }) {
   return (
     <div className={cn('inline-flex items-center justify-center gap-0.5 rounded-lg bg-neutral-800 p-1', className)}>
       {data.map((item, idx) => (
-        <SelectionItem item={item} key={`selection-${idx}`} isFull={isFull} isSmall={isSmall} />
+        <SelectionItem
+          item={item}
+          key={`selection-${idx}`}
+          isFull={isFull}
+          isSmall={isSmall}
+          isTranslation={isTranslation}
+        />
       ))}
     </div>
   )

@@ -1229,5 +1229,22 @@
   "You can also choose to stake your liquidity": "You can also choose to stake your liquidity.",
   "You have no voting history to show": "You have no voting history to show.",
   "No voting history": "No voting history",
-  "Voting History": "Voting History"
+  "Voting History": "Voting History",
+  "Liquidity Fees": "Liquidity & Fees",
+  "Token and Weight": "Token and Weight",
+  "Current Liquidity": "Current Liquidity",
+  "Unclaimed Fees": "Unclaimed Fees",
+  "Claimed Fees": "Claimed Fees",
+  "Pool Attributes": "Pool Attributes",
+  "Symbol": "Symbol",
+  "Type": "Type",
+  "Swap fees": "Swap fees",
+  "Protocol version": "Protocol version",
+  "Pool Owner": "Pool Owner",
+  "Attribute immutability": "Attribute immutability",
+  "Creation date": "Creation date",
+  "LP token price": "LP token price",
+  "editable by governance": "editable by governance",
+  "Immutable except for swap fees editable by governance": "Immutable except for swap fees editable by governance",
+  "Weighted": "Weighted"
 }

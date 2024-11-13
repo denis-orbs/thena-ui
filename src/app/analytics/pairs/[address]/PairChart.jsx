@@ -45,7 +45,7 @@ const FUSION_DAY_DATAS = gql`
   }
 `
 
-const getV1ChartData = async (chainId, address, fee, skip) => {
+export const getV1ChartData = async (chainId, address, fee, skip) => {
   try {
     const { pairDayDatas } = await v1Client[chainId].request(V1_DAY_DATAS, {
       address,
@@ -65,7 +65,7 @@ const getV1ChartData = async (chainId, address, fee, skip) => {
   }
 }
 
-const getFusionChartData = async (chainId, address, skip) => {
+export const getFusionChartData = async (chainId, address, skip) => {
   try {
     const { poolDayDatas } = await fusionClient[chainId].request(FUSION_DAY_DATAS, {
       address,
@@ -85,7 +85,7 @@ const getFusionChartData = async (chainId, address, skip) => {
   }
 }
 
-const fetchPairChartData = async (chainId, pair) => {
+export const fetchPairChartData = async (chainId, pair) => {
   console.log('fetch pair chart data ======================')
   if (pair.isFusion) {
     const { data: fusiondata } = await fetchChartData(getFusionChartData, [chainId, pair.address], false)
