@@ -193,11 +193,11 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
                 <div className='flex flex-col gap-3'>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                    <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
+                    <Paragraph>{formatAmount(strategy.account?.totalLp)} LP</Paragraph>
                   </div>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                    <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
+                    <Paragraph>{formatAmount(strategy.account?.gaugeBalance)} LP</Paragraph>
                   </div>
                 </div>
               </div>
@@ -220,7 +220,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
               >
                 {t('Add Liquidity')}
               </SecondaryButton>
-              {strategy && strategy.gauge.address !== zeroAddress && (
+              {strategy && strategy.gauge?.address !== zeroAddress && (
                 <PrimaryButton
                   disabled={pendingStake}
                   onClick={() => {

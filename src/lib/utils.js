@@ -252,3 +252,12 @@ export const sortAchievements = (a, b) => {
 }
 
 export const rewriteS3Host = host => (host ? host.split('amazonaws.com/')[1] : null)
+
+export const getPoolType = type =>
+  type === 'Conc Liquidity'
+    ? 'Conc. Liquidity'
+    : type === 'Classic'
+      ? 'Classic'
+      : type === 'Stable'
+        ? 'Stable'
+        : 'Weighted'

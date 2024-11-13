@@ -4,17 +4,22 @@ import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
+import { TextButton } from '@/components/buttons/Button'
+import Highlight from '@/components/highlight'
 import Table from '@/components/table'
-import { TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
 import { LOCALES } from '@/constant'
 import useWallet from '@/hooks/useWallet'
 import { v3ClientSubGraph } from '@/lib/graphql'
 import { formatAddress } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
+import { ArrowLeftIcon, InfoCircleWhite } from '@/svgs'
 
 const V3_VOTES = gql`
   query V3_VOTES($voter: String!) {
@@ -79,6 +84,8 @@ function UserElement({ username }) {
 }
 
 export default function VotingHistoryPage() {
+  const { push } = useRouter()
+  const t = useTranslations()
   const { locale } = useLocaleSettings()
   const [sort, setSort] = useState(sortOptions[0])
   const [currentPage, setCurrentPage] = useState(1)
@@ -107,21 +114,34 @@ export default function VotingHistoryPage() {
 
   if (isLoading) return <Loading />
 
-  console.log({ votes })
-
   return (
     <div>
+      <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/dashboard/vote')}>
+        {t('Back')}
+      </TextButton>
       <TextHeading className='block font-archia text-3xl font-semibold'>Voting history</TextHeading>
-      <Table
-        sortOptions={sortOptions}
-        data={finalData}
-        sort={sort}
-        setSort={setSort}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        pageSize={10}
-        tableBasic
-      />
+      {finalData.length > 0 ? (
+        <Table
+          sortOptions={sortOptions}
+          data={finalData}
+          sort={sort}
+          setSort={setSort}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          pageSize={10}
+          tableBasic
+        />
+      ) : (
+        <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
+          <Highlight>
+            <InfoCircleWhite className='h-4 w-4' />
+          </Highlight>
+          <div className='flex flex-col items-center gap-3'>
+            <h2>{t('No voting history')}</h2>
+            <Paragraph className='mt-3 text-center'>{t('You have no voting history to show.')}</Paragraph>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

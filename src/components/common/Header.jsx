@@ -486,16 +486,6 @@ function Header() {
         active: pathname === '/dashboard/vote',
         href: '/dashboard/vote',
         isLink: true,
-        isSub: true,
-        classNameSub: 'min-w-[190px]',
-        sub: [
-          {
-            label: 'Voting history',
-            active: pathname === '/dashboard/voting-history',
-            isLink: true,
-            href: '/dashboard/voting-history',
-          },
-        ],
       },
       {
         label: 'Rewards',

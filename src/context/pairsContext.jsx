@@ -83,7 +83,7 @@ const usePairs = () => {
         isLoading,
       }
     }
-    console.log({ data })
+
     const result = data
       .map(ele => {
         const asset0 = assets.find(asset => asset.address.toLowerCase() === ele.token0)

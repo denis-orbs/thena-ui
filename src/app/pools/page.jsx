@@ -100,8 +100,6 @@ export default function PoolsPage() {
   const t = useTranslations()
   const assets = useAssets()
 
-  console.log({ assets })
-
   const filteredPools = useMemo(() => {
     let final
     if (isInactive) {
@@ -497,13 +495,12 @@ export default function PoolsPage() {
             </div>
           </div>
           <div>
-            <Link href='/pools/weighted-pool'>
+            <Link href='/pools/weighted-pool/create'>
               <TertiaryButton className='w-full lg:w-auto'>{t('Create Weight Pool')}</TertiaryButton>
             </Link>
-
-            <PrimaryButton className='ml-4 w-full lg:w-auto' onClick={() => setIsOpen(true)}>
-              {t('Add Liquidity')}
-            </PrimaryButton>
+            <Link href='/pools/add-liquidity'>
+              <PrimaryButton className='ml-4 w-full lg:w-auto'>{t('Add Liquidity')}</PrimaryButton>
+            </Link>
           </div>
         </div>
         <Table
