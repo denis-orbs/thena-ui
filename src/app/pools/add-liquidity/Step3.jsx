@@ -19,7 +19,7 @@ import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
 import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
 
 const feeAmount = 3000
-export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep }) {
+export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strategy }) {
   const t = useTranslations()
   const assets = useAssets()
   const [firstAsset, secondAsset] = useMemo(
@@ -69,7 +69,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep }) {
           <NeutralBadge>{getPoolType(pool.type)}</NeutralBadge>
         </div>
         {isAutomatic ? (
-          <FusionAdd strategy={isAdd ? pool : pool} isAdd={isAdd} />
+          <FusionAdd strategy={isAdd ? pool : strategy} isAdd={isAdd} />
         ) : (
           <div className='space-y-6'>
             <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />

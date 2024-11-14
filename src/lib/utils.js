@@ -134,7 +134,7 @@ export const wrappedAddress = asset => {
   if (!asset) return null
 
   if (asset.address === 'BNB') {
-    return Contracts.WBNB[97].toLowerCase()
+    return Contracts.WBNB[asset.chainId].toLowerCase()
   }
 
   return asset.address

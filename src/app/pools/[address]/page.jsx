@@ -188,10 +188,7 @@ export default function SpecificPoolPage({ params }) {
               <CustomTooltip id='analytics-tooltip' className='rounded-md !py-2' place='top'>
                 <TextHeading className='text-xs'>{t('Analytics')}</TextHeading>
               </CustomTooltip>
-              <Link
-                className='flex-auto'
-                href={`/pools/add-liquidity?firstAddress=${pool?.token0.address}&secondAddress=${pool?.token1.address}`}
-              >
+              <Link className='flex-auto' href={`/pools/add-liquidity?pool=${pool?.address}&step=1`}>
                 <PrimaryButton className='h-11 w-max'>{t('Add Liquidity')}</PrimaryButton>
               </Link>
             </div>

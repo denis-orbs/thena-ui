@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
@@ -69,15 +70,32 @@ function PoolWithStep({
     }
 
     default:
-      return <></>
+      return (
+        <ChooseTokenAndWeights
+          setCurrentStep={setCurrentStep}
+          tokensAndWeights={tokensAndWeights}
+          setTokenAndWeights={setTokenAndWeights}
+        />
+      )
   }
 }
 
 export default function CreateWeightedPoolPage() {
+  const searchParams = useSearchParams()
+  const { push } = useRouter()
   const t = useTranslations()
   const assets = useAssets()
   const [fees, setFees] = useState(null)
-  const [tokensAndWeights, setTokenAndWeights] = useState([])
+  const [tokensAndWeights, setTokenAndWeights] = useState(() => {
+    const firstAddress = searchParams.get('firstAddress')
+    const secondAddress = searchParams.get('secondAddress')
+    const firstToken = assets.find(asset => asset.address === firstAddress)
+    const secondAsset = assets.find(asset => asset.address === secondAddress)
+    return [
+      { token: firstToken || null, lock: false, allocate: 50 },
+      { token: secondAsset || null, lock: false, allocate: 50 },
+    ]
+  })
   const [currentStep, setCurrentStep] = useState(1)
   const initialPoolSymbol = useMemo(() => {
     const result = tokensAndWeights.reduce(
@@ -90,7 +108,9 @@ export default function CreateWeightedPoolPage() {
   return (
     <div className='flex flex-col'>
       <div className='h-11 w-[98px]'>
-        <TextButton LeadingIcon={ArrowLeftIcon}>{t('Back')}</TextButton>
+        <TextButton onClick={() => push('/pools')} LeadingIcon={ArrowLeftIcon}>
+          {t('Back')}
+        </TextButton>
       </div>
       <div className='flex flex-col'>
         <TextHeading className='mb-10 font-archia text-[40px] font-semibold'>{t('THENA Weighted Pool')}</TextHeading>

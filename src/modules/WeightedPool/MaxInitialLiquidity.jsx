@@ -10,9 +10,9 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
   const data = useMemo(
     () =>
       tokensAndWeights.map(item => ({
-        symbol: item.token.symbol,
-        price: item.token.price,
-        pool: item.allocate,
+        symbol: item?.token?.symbol,
+        price: item?.token?.price,
+        pool: item?.allocate,
       })),
     [tokensAndWeights],
   )

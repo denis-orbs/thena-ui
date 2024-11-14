@@ -124,7 +124,7 @@ export function PoolChart({ address }) {
     <div className='flex w-full flex-col gap-4'>
       <div className='w-full items-center justify-between lg:flex'>
         <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>{t('Analytics')}</TextHeading>
-        <Selection isFull data={chartTypeSelection} className='mt-3 w-full lg:mt-0 lg:w-auto' />
+        <Selection isFull data={chartTypeSelection} className='mt-3 w-full lg:mt-0 lg:w-auto' isTranslation={false} />
       </div>
       <div className='rounded-lg bg-neutral-900 px-6 py-4'>{renderChart}</div>
     </div>

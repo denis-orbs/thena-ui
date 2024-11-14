@@ -330,7 +330,7 @@ export default function ChooseStrategy({
               <TextHeading>{t('Management')}</TextHeading>
               <InfoIcon className='h-4 w-4 cursor-pointer stroke-neutral-400' data-tooltip-id='management-tooltip' />
             </div>
-            <Selection data={autoSelections} isFull />
+            <Selection data={autoSelections} isFull isTranslation={false} />
           </div>
 
           {isAutomatic ? (

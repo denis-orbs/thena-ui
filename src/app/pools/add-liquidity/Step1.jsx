@@ -1,4 +1,4 @@
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -8,10 +8,10 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { UNKNOWN_LOGO } from '@/constant'
+import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
-import { cn, formatAmount, getPoolType } from '@/lib/utils'
+import { cn, formatAmount, getPoolType, wrappedAddress } from '@/lib/utils'
 import TokenModal from '@/modules/TokenModal'
 import { ChevronDownIcon } from '@/svgs'
 
@@ -51,7 +51,7 @@ const mockWeightedPool = {
   subpools: [],
 }
 
-function PoolItem({ pool, onDeposit }) {
+function PoolItem({ pool, onDeposit, isAdd = false }) {
   const t = useTranslations()
   return (
     <div className='flex flex-row items-center justify-between rounded-lg bg-neutral-900 p-3 lg:p-4'>
@@ -108,29 +108,35 @@ function PoolItem({ pool, onDeposit }) {
           </div>
         </div>
       </div>
-      <OutlinedButton
-        className='h-11 border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'
-        onClick={() => onDeposit(pool)}
-      >
-        {t('Deposit')}
-      </OutlinedButton>
+      {isAdd && pool.type === PAIR_TYPES.WEIGHTED ? (
+        <Link
+          className='flex-auto'
+          // eslint-disable-next-line max-len
+          href={`/pools/weighted-pool/create?firstAddress=${pool?.token0?.address}&secondAddress=${pool?.token1?.address}`}
+        >
+          <OutlinedButton className='h-11 border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'>
+            {t('Deposit')}
+          </OutlinedButton>
+        </Link>
+      ) : (
+        <OutlinedButton
+          className='h-11 border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'
+          onClick={() => onDeposit(pool, isAdd)}
+        >
+          {t('Deposit')}
+        </OutlinedButton>
+      )}
     </div>
   )
 }
 
-export default function Step1({ nextStep, setPoolSelected }) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const address1 = searchParams.get('firstAddress')
-  const address2 = searchParams.get('secondAddress')
-
+export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAdd }) {
   const { pairs } = usePairs()
   const t = useTranslations()
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
-  const [firstAddress, setFirstAddress] = useState(address1 || null)
-  const [secondAddress, setSecondAddress] = useState(address2 || null)
+  const [firstAddress, setFirstAddress] = useState(poolSelected?.token0?.address || null)
+  const [secondAddress, setSecondAddress] = useState(poolSelected?.token1?.address || null)
   const assets = useAssets()
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false)
   const [isFirstSelected, setIsFirstSelected] = useState(false)
@@ -144,41 +150,45 @@ export default function Step1({ nextStep, setPoolSelected }) {
   useEffect(() => {
     setFirstAsset(assets.find(ele => ele.address === firstAddress))
     setSecondAsset(assets.find(ele => ele.address === secondAddress))
-    const query = new URLSearchParams(searchParams.toString())
-    if (firstAddress) {
-      query.set('firstAddress', firstAddress)
-    } else {
-      query.delete('firstAddress', undefined)
-    }
-
-    if (secondAddress) {
-      query.set('secondAddress', secondAddress)
-    } else {
-      query.delete('secondAddress', undefined)
-    }
-
-    router.replace(`${pathname}?${query.toString()}`)
-  }, [assets, firstAddress, pathname, router, searchParams, secondAddress])
+  }, [assets, firstAddress, secondAddress])
 
   const availablePools = useMemo(() => {
     if (!firstAddress || !secondAddress) return []
     const pools = pairs.filter(
       pool =>
-        pool?.token0?.address?.toLowerCase() === firstAddress?.toLowerCase() &&
-        pool?.token1?.address?.toLowerCase() === secondAddress?.toLowerCase(),
+        [pool.token0.address, pool.token1.address].includes(wrappedAddress(firstAsset)) &&
+        [pool.token0.address, pool.token1.address].includes(wrappedAddress(secondAsset)),
     )
     mockWeightedPool.token0 = firstAsset
     mockWeightedPool.token1 = secondAsset
-    pools.push(mockWeightedPool)
-    console.log({ pools })
     return pools
   }, [firstAddress, firstAsset, pairs, secondAddress, secondAsset])
+
+  const createNewPools = useMemo(() => {
+    const result = [{ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.WEIGHTED }]
+    if (!firstAddress || !secondAddress) return []
+    const checkClassic = Boolean(availablePools.find(item => item.type === PAIR_TYPES.CLASSIC))
+    if (!checkClassic) {
+      result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.CLASSIC })
+    }
+    const checkLSD = Boolean(availablePools.find(item => item.type === PAIR_TYPES.LSD))
+    if (!checkLSD) {
+      result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.LSD })
+    }
+    const checkStable = Boolean(availablePools.find(item => item.type === PAIR_TYPES.STABLE))
+    if (!checkStable) {
+      result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.STABLE })
+    }
+    return result
+  }, [availablePools, firstAddress, firstAsset, secondAddress, secondAsset])
+
   const onDeposit = useCallback(
-    pool => {
+    (pool, isAdd = false) => {
       setPoolSelected(pool)
       nextStep(1)
+      setIsAdd(isAdd)
     },
-    [nextStep, setPoolSelected],
+    [nextStep, setIsAdd, setPoolSelected],
   )
 
   return (
@@ -250,110 +260,16 @@ export default function Step1({ nextStep, setPoolSelected }) {
         </div>
       )}
       {/* TODO: just mock data */}
-      <div className='flex flex-col gap-2'>
-        <TextHeading>{t('Create New Pool')}</TextHeading>
-        <div className='grid grid-cols-1 items-center gap-3'>
-          <div className='flex flex-row items-center justify-between rounded-lg bg-neutral-900 p-3 lg:p-4'>
-            <div className='flex flex-col justify-between gap-3 lg:flex-row'>
-              <div className='flex flex-col gap-4 lg:flex-row'>
-                <div className='flex flex-row gap-2 lg:min-w-[496px]'>
-                  <IconGroup
-                    className='-space-x-3'
-                    classNames={{
-                      image: 'outline-[2.6px] w-6 h-6',
-                    }}
-                    logo1='https://cdn.thena.fi/assets/ETH.png'
-                    logo2='https://cdn.thena.fi/assets/wstETH.png'
-                  />
-                  <div className='flex flex-col'>
-                    <TextHeading className='text-sm lg:text-[16px]'>ETH/wstETH</TextHeading>
-                    <Paragraph className='text-nowrap text-sm lg:text-[16px]'>Conc. Liquidity</Paragraph>
-                  </div>
-                </div>
-                <div className='grid grid-cols-2'>
-                  <div className='flex flex-col lg:min-w-[200px]'>
-                    <TextHeading className='text-xs lg:text-sm'>APR</TextHeading>
-                    <Paragraph className='text-sm lg:text-[16px]'>47.01%</Paragraph>
-                  </div>
-                  <div className='flex flex-col lg:min-w-[200px]'>
-                    <TextHeading className='text-xs lg:text-sm'>TVL</TextHeading>
-                    <Paragraph className='text-sm lg:text-[16px]'>${formatAmount(4590628)}</Paragraph>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <OutlinedButton className='h-11 border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'>
-              {t('Deposit')}
-            </OutlinedButton>
-          </div>
-          <div className='flex flex-row items-center justify-between rounded-lg bg-neutral-900 p-3 lg:p-4'>
-            <div className='flex flex-col justify-between gap-3 lg:flex-row'>
-              <div className='flex flex-col gap-4 lg:flex-row'>
-                <div className='flex flex-row gap-2 lg:min-w-[496px]'>
-                  <IconGroup
-                    className='-space-x-3'
-                    classNames={{
-                      image: 'outline-[2.6px] w-6 h-6',
-                    }}
-                    logo1='https://cdn.thena.fi/assets/slisBNB.png'
-                    logo2='https://cdn.thena.fi/assets/WBNB.png'
-                  />
-                  <div className='flex flex-col'>
-                    <TextHeading className='text-sm lg:text-[16px]'>slisBNB/BNB</TextHeading>
-                    <Paragraph className='text-nowrap text-sm lg:text-[16px]'>Classic</Paragraph>
-                  </div>
-                </div>
-                <div className='grid grid-cols-2'>
-                  <div className='flex flex-col lg:min-w-[200px]'>
-                    <TextHeading className='text-xs lg:text-sm'>APR</TextHeading>
-                    <Paragraph className='text-sm lg:text-[16px]'>47.01%</Paragraph>
-                  </div>
-                  <div className='flex flex-col lg:min-w-[200px]'>
-                    <TextHeading className='text-xs lg:text-sm'>TVL</TextHeading>
-                    <Paragraph className='text-sm lg:text-[16px]'>${formatAmount(4590628)}</Paragraph>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <OutlinedButton className='h-11 border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'>
-              {t('Deposit')}
-            </OutlinedButton>
-          </div>
-          <div className='flex flex-row items-center justify-between rounded-lg bg-neutral-900 p-3 lg:p-4'>
-            <div className='flex flex-col justify-between gap-3 lg:flex-row'>
-              <div className='flex flex-col gap-4 lg:flex-row'>
-                <div className='flex flex-row gap-2 lg:min-w-[496px]'>
-                  <IconGroup
-                    className='-space-x-3'
-                    classNames={{
-                      image: 'outline-[2.6px] w-6 h-6',
-                    }}
-                    logo1='https://cdn.thena.fi/assets/BTCB.png'
-                    logo2='https://cdn.thena.fi/assets/WBNB.png'
-                  />
-                  <div className='flex flex-col'>
-                    <TextHeading className='text-sm lg:text-[16px]'>BTC/BNB</TextHeading>
-                    <Paragraph className='text-nowrap text-sm lg:text-[16px]'>Stable</Paragraph>
-                  </div>
-                </div>
-                <div className='grid grid-cols-2'>
-                  <div className='flex flex-col lg:min-w-[200px]'>
-                    <TextHeading className='text-xs lg:text-sm'>APR</TextHeading>
-                    <Paragraph className='text-sm lg:text-[16px]'>47.01%</Paragraph>
-                  </div>
-                  <div className='flex flex-col lg:min-w-[200px]'>
-                    <TextHeading className='text-xs lg:text-sm'>TVL</TextHeading>
-                    <Paragraph className='text-sm lg:text-[16px]'>${formatAmount(4590628)}</Paragraph>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <OutlinedButton className='h-11 border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'>
-              {t('Deposit')}
-            </OutlinedButton>
+      {firstAsset && secondAsset && (
+        <div className='flex flex-col gap-2'>
+          <TextHeading>{t('Create New Pool')}</TextHeading>
+          <div className='grid grid-cols-1 items-center gap-3'>
+            {createNewPools.map((item, index) => (
+              <PoolItem key={`${item.type}_${index}`} pool={item} isAdd onDeposit={onDeposit} />
+            ))}
           </div>
         </div>
-      </div>
+      )}
       <TokenModal
         popup={isTokenModalOpen}
         setPopup={setIsTokenModalOpen}

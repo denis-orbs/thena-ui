@@ -32,6 +32,7 @@ export const useV1Add = () => {
       const firstContract = firstAsset.address !== 'BNB' ? getERC20Contract(firstAsset.address, chainId) : null
       const secondContract = secondAsset.address !== 'BNB' ? getERC20Contract(secondAsset.address, chainId) : null
       if (firstAsset.address !== 'BNB') {
+        console.log({ firstContract })
         const allowance = await readCall(firstContract, 'allowance', [account, routerAddress], chainId)
         isFirstApproved = fromWei(allowance, firstAsset.decimals).gte(firstAmount)
       }

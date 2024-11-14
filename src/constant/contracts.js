@@ -92,7 +92,8 @@ const Contracts = {
   fusionQuoter: FUSION_QUOTER_ADDRESSES,
   nonfungiblePositionManager: {
     ...NONFUNGIBLE_POSITION_MANAGER_ADDRESSES,
-    [chainId.TEST_BSC]: '0xF1E919e24159b14aC32790dD4828B671E2158982',
+    [chainId.TEST_BSC]: '0xF1E919e24159b14aC32790dD4828B671E2158982', // v2
+    // [chainId.TEST_BSC]: '0x723E22B19528B86a94C3933b7d6096B145a85Df2', // v3
   },
   gammaUniProxy: {
     [chainId.BSC]: '0xF75c017E3b023a593505e281b565ED35Cc120efa',

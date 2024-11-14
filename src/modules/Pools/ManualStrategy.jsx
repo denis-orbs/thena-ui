@@ -322,7 +322,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       )}
       <div className='flex items-center justify-between'>
         <TextHeading>{t('Price Range')}</TextHeading>
-        <Selection data={assetSelections} isSmall />
+        <Selection data={assetSelections} isSmall isTranslation={false} />
       </div>
       <RangeSelector
         priceLower={priceLower}

@@ -1,8 +1,9 @@
 import { ADDRESS_ZERO, Position, toHex } from 'thena-fusion-sdk'
 import { CurrencyAmount, JSBI, validateAndParseAddress } from 'thena-sdk-core'
 import invariant from 'tiny-invariant'
-import { encodeFunctionData } from 'viem'
+import { encodeFunctionData, zeroAddress } from 'viem'
 
+import { ZERO_ADDRESS } from '@/constant'
 import { algebraAbi } from '@/constant/abi/fusion'
 
 import { SelfPermit } from './selfPermit'
@@ -77,6 +78,7 @@ export class NonfungiblePositionManager extends SelfPermit {
           {
             token0: position.pool.token0.address,
             token1: position.pool.token1.address,
+            deployer: zeroAddress,
             tickLower: position.tickLower,
             tickUpper: position.tickUpper,
             amount0Desired: toHex(amount0Desired),
@@ -233,7 +235,9 @@ export class NonfungiblePositionManager extends SelfPermit {
     return NonfungiblePositionManager.getCalldata('createAndInitializePoolIfNecessary', [
       pool.token0.address,
       pool.token1.address,
+      ZERO_ADDRESS,
       toHex(pool.sqrtRatioX96),
+      '',
     ])
   }
 

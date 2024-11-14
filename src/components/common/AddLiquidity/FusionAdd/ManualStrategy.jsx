@@ -321,7 +321,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       )}
       <div className='flex items-center justify-between'>
         <TextHeading>{t('Price Range')}</TextHeading>
-        <Selection data={assetSelections} isSmall />
+        <Selection data={assetSelections} isSmall isTranslation={false} />
       </div>
       <RangeSelector
         priceLower={priceLower}
@@ -452,8 +452,9 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
           <div className='flex flex-row gap-4'>
             <div className='flex w-1/2 flex-row justify-between rounded-[4px] bg-neutral-800 px-3 py-[6px]'>
               <TextHeading>{t('Avg')}</TextHeading>
-              {/* TODO: remove fixed value */}
-              <Paragraph>fixed value</Paragraph>
+              <Paragraph>
+                {formatAmount((Number(leftPrice?.toSignificant(6)) + Number(rightPrice?.toSignificant(6))) / 2)}
+              </Paragraph>
             </div>
             <div className='flex w-1/2 flex-row justify-between rounded-[4px] bg-neutral-800 px-3 py-[6px]'>
               <TextHeading>{t('Current')}</TextHeading>

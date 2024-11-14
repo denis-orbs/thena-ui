@@ -180,10 +180,9 @@ function AddLiquidityWeightedPool({ pool, setAmount, amount }) {
   )
 }
 
-export default function Step2({ pool, setCurrentStep, isAutomatic, setIsAutomatic }) {
+export default function Step2({ pool, setCurrentStep, isAutomatic, setIsAutomatic, strategy, setStrategy, isAdd }) {
   const t = useTranslations()
   const [amount, setAmount] = useState()
-  const [strategy, setStrategy] = useState()
   const assets = useAssets()
   const [firstAmount, setFirstAmount] = useState()
   const [secondAmount, setSecondAmount] = useState()
@@ -228,7 +227,7 @@ export default function Step2({ pool, setCurrentStep, isAutomatic, setIsAutomati
             setSecondAmountValue={setSecondAmount}
             // setFirstAddress={setFirstAddress}
             // setSecondAddress={setSecondAddress}
-            // isAdd={isAdd}
+            isAdd={isAdd}
           />
         )}
       </Box>
@@ -240,7 +239,7 @@ export default function Step2({ pool, setCurrentStep, isAutomatic, setIsAutomati
               {!amount ? (
                 <div className='flex flex-col gap-6'>
                   <p>{t('New Deposit description')}</p>
-                  {pool?.type === PAIR_TYPES.CLASSIC && <p>{t('You can also choose to stake your liquidity')}</p>}
+                  {isAdd && <p>{t('You can also choose to stake your liquidity')}</p>}
                 </div>
               ) : (
                 <>
@@ -270,6 +269,7 @@ export default function Step2({ pool, setCurrentStep, isAutomatic, setIsAutomati
               )}
             </>
           )}
+
           {(pool.type === PAIR_TYPES.CLASSIC || pool.type === PAIR_TYPES.STABLE) && (
             <>
               {!firstAmount && !secondAmount ? (
@@ -308,19 +308,27 @@ export default function Step2({ pool, setCurrentStep, isAutomatic, setIsAutomati
 
           {pool?.type === PAIR_TYPES.LSD && (
             <>
-              {!strategy ? (
+              {isAdd ? (
                 <div className='flex flex-col gap-6'>
-                  <p>{t('This pool requires maintenance')}</p>
-                  <p>
-                    <strong>{t('Automatic Strategy title')}: </strong>
-                    <span>{t('Automatic Strategy description')}</span>
-                  </p>
-                  <p>
-                    <strong>{t('Manual Strategy title')}: </strong>
-                    <span>{t('Manual Strategy description')}</span>
-                  </p>
+                  <p>{t('New Deposit description')}</p>
+                  {isAdd && <p>{t('You can also choose to stake your liquidity')}</p>}
                 </div>
               ) : (
+                <>
+                  <div className='flex flex-col gap-6'>
+                    <p>{t('This pool requires maintenance')}</p>
+                    <p>
+                      <strong>{t('Automatic Strategy title')}: </strong>
+                      <span>{t('Automatic Strategy description')}</span>
+                    </p>
+                    <p>
+                      <strong>{t('Manual Strategy title')}: </strong>
+                      <span>{t('Manual Strategy description')}</span>
+                    </p>
+                  </div>
+                </>
+              )}
+              {strategy && (
                 <div className='flex flex-col gap-6'>
                   <div className='flex flex-row items-center gap-2'>
                     <CheckCircleIcon className='h-5 w-5 stroke-success-600' />

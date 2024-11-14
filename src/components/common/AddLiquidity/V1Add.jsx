@@ -154,6 +154,14 @@ export default function V1Add({
       warnToast(errorMsg, 'warn')
       return
     }
+    // console.log({
+    //   firstAsset,
+    //   secondAsset,
+    //   firstAmount,
+    //   secondAmount,
+    //   slippage,
+    //   deadline,
+    // })
     onV1Add(
       firstAsset,
       secondAsset,
@@ -205,7 +213,7 @@ export default function V1Add({
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
-        <Selection data={addSelections} isFull />
+        <Selection data={addSelections} isFull isTranslation={false} />
         {isZapper ? (
           <div className='flex flex-col gap-5'>{t('Coming Soon')}</div>
         ) : (
