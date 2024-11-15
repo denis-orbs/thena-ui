@@ -44,7 +44,7 @@ export const useAlgebraAdd = () => {
       }
       startTxn({
         key,
-        title: t('Add Liquidity'),
+        title: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {
@@ -61,7 +61,7 @@ export const useAlgebraAdd = () => {
             },
           }),
           [adduuid]: {
-            desc: t('Add Liquidity'),
+            desc: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
             status: TXN_STATUS.START,
             hash: null,
           },

@@ -1246,5 +1246,6 @@
   "LP token price": "LP token price",
   "editable by governance": "editable by governance",
   "Immutable except for swap fees editable by governance": "Immutable except for swap fees editable by governance",
-  "Weighted": "Weighted"
+  "Weighted": "Weighted",
+  "Create pool and add liquidity": "Create pool and add liquidity"
 }

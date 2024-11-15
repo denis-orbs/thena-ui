@@ -10,7 +10,7 @@ import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
-import { TextButton } from '@/components/buttons/Button'
+import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -49,28 +49,44 @@ const fetVotingHistory = async account => {
 
 const sortOptions = [
   {
-    label: 'Voter',
-    value: 'voter',
+    label: 'Epoch',
+    value: 'epoch',
+    width: 'lg:w-[5%]',
+    isDesc: true,
+  },
+  {
+    label: 'Pair',
+    value: 'pairId',
     width: 'lg:w-[20%]',
+  },
+  {
+    label: 'Total votes',
+    value: 'totalVotes',
+    width: 'lg:w-[10%]',
     isDesc: true,
   },
   {
-    label: 'Token Id',
-    value: 'tokenId',
-    width: 'lg:w-[14%]',
-    isDesc: true,
-  },
-  {
-    label: 'Block Number',
-    value: 'blockNumber',
+    label: 'Rewards',
+    value: 'rewards',
     width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
-    label: 'Timestamp',
-    value: 'timestamp',
-    width: 'lg:w-[14%]',
+    label: 'Your vote',
+    value: 'yourVote',
+    width: 'lg:w-[15%]',
     isDesc: true,
+  },
+  {
+    label: 'Date',
+    value: 'date',
+    width: 'lg:w-[20%]',
+    isDesc: true,
+  },
+  {
+    label: '',
+    value: 'action',
+    width: 'lg:w-[20%]',
   },
 ]
 
@@ -107,7 +123,8 @@ export default function VotingHistoryPage() {
         voter: <UserElement username={formatAddress(vote.voter)} />,
         tokenId: <span>{`veTHE#${vote.tokenId}`}</span>,
         blockNumber: vote.blockNumber,
-        timestamp: dayjs.unix(vote.timestamp).format(format),
+        date: dayjs.unix(vote.timestamp).format(format),
+        action: <PrimaryButton>Claim</PrimaryButton>,
       })),
     [format, votes],
   )
@@ -116,10 +133,10 @@ export default function VotingHistoryPage() {
 
   return (
     <div>
-      <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/dashboard/vote')}>
+      <TextButton className='justify-start' LeadingIcon={ArrowLeftIcon} onClick={() => push('/dashboard/vote')}>
         {t('Back')}
       </TextButton>
-      <TextHeading className='block font-archia text-3xl font-semibold'>Voting history</TextHeading>
+      <TextHeading className='mb-6 mt-4 block font-archia text-3xl font-semibold'>Voting history</TextHeading>
       {finalData.length > 0 ? (
         <Table
           sortOptions={sortOptions}

@@ -452,26 +452,35 @@ export default function VotePage() {
           <div className='flex flex-col justify-between gap-4'>
             <div className='flex w-full items-center justify-between lg:w-fit'>
               <TextHeading className='text-xl'>{t('Votes')}</TextHeading>
-              <Toggle
-                className='lg:hidden'
-                checked={isVoted}
-                onChange={() => setIsVoted(!isVoted)}
-                toggleId='voted'
-                label='Voted Only'
-              />
+              <div className='flex gap-6'>
+                <Toggle
+                  className='lg:hidden'
+                  checked={isVoted}
+                  onChange={() => setIsVoted(!isVoted)}
+                  toggleId='voted'
+                  label='Voted Only'
+                />
+                <Link className='lg:hidden' href='/dashboard/vote/voting-history'>
+                  <EmphasisButton>
+                    {t('Voting History')}
+                    <ArrowRightIcon className='mx-auto h-5 w-5' />
+                  </EmphasisButton>
+                </Link>
+              </div>
             </div>
             <div className='flex w-full flex-col-reverse justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
-              <div className='flex flex-row gap-4 lg:gap-2'>
+              <div className='flex flex-col gap-4 md:flex-row lg:gap-2'>
                 <div className='flex items-center justify-between gap-2 lg:hidden'>
                   <Paragraph>Sort By</Paragraph>
                   <Dropdown
+                    className='min-w-[200px]'
                     data={sortOptions.slice(0, sortOptions.length - 1)}
                     selected={sort ? `${sort.label}` : ''}
                     setSelected={ele => setSort(ele)}
                   />
                 </div>
                 <VeTheDropdown
-                  className='w-full lg:w-[220px]'
+                  className='w-full md:w-[200px]'
                   data={veTHEs.map(item => ({
                     ...item,
                     label: `veTHE #${item.id}`,
@@ -484,7 +493,7 @@ export default function VotePage() {
                   approvedId={approvedId}
                   setApprovedId={setApprovedId}
                 />
-                <SearchInput className='w-full lg:w-auto' val={searchText} setVal={setSearchText} />
+                <SearchInput className='w-full md:w-auto' val={searchText} setVal={setSearchText} />
                 <Toggle
                   className='hidden lg:flex'
                   checked={isVoted}
@@ -493,7 +502,7 @@ export default function VotePage() {
                   label='Voted Only'
                 />
               </div>
-              <Link href='/dashboard/vote/voting-history'>
+              <Link className='hidden lg:flex' href='/dashboard/vote/voting-history'>
                 <EmphasisButton>
                   {t('Voting History')}
                   <ArrowRightIcon className='mx-auto h-5 w-5' />

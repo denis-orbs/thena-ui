@@ -494,12 +494,12 @@ export default function PoolsPage() {
               />
             </div>
           </div>
-          <div>
+          <div className='ml-auto flex gap-4 lg:flex-row'>
             <Link href='/pools/weighted-pool/create'>
               <TertiaryButton className='w-full lg:w-auto'>{t('Create Weight Pool')}</TertiaryButton>
             </Link>
             <Link href='/pools/add-liquidity'>
-              <PrimaryButton className='ml-4 w-full lg:w-auto'>{t('Add Liquidity')}</PrimaryButton>
+              <PrimaryButton className='w-full lg:w-auto'>{t('Add Liquidity')}</PrimaryButton>
             </Link>
           </div>
         </div>

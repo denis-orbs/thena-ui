@@ -109,7 +109,6 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
       </div>
       {isAdd && pool.type === PAIR_TYPES.WEIGHTED ? (
         <Link
-          className='flex-auto'
           // eslint-disable-next-line max-len
           href={`/pools/weighted-pool/create?firstAddress=${pool?.token0?.address}&secondAddress=${pool?.token1?.address}`}
         >
@@ -169,20 +168,44 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
 
     const checkLSD = Boolean(availablePools.find(item => item.type === PAIR_TYPES.LSD))
     if (!checkLSD) {
-      result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.LSD })
+      result.push({
+        ...mockWeightedPool,
+        symbol: `${firstAsset.symbol}/${secondAsset.symbol}`,
+        token0: firstAsset,
+        token1: secondAsset,
+        type: PAIR_TYPES.LSD,
+      })
     }
 
     const checkClassic = Boolean(availablePools.find(item => item.type === PAIR_TYPES.CLASSIC))
     if (!checkClassic) {
-      result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.CLASSIC })
+      result.push({
+        ...mockWeightedPool,
+        symbol: `${firstAsset.symbol}/${secondAsset.symbol}`,
+        token0: firstAsset,
+        token1: secondAsset,
+        type: PAIR_TYPES.CLASSIC,
+      })
     }
 
     const checkStable = Boolean(availablePools.find(item => item.type === PAIR_TYPES.STABLE))
     if (!checkStable) {
-      result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.STABLE })
+      result.push({
+        ...mockWeightedPool,
+        symbol: `${firstAsset.symbol}/${secondAsset.symbol}`,
+        token0: firstAsset,
+        token1: secondAsset,
+        type: PAIR_TYPES.STABLE,
+      })
     }
 
-    result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.WEIGHTED })
+    result.push({
+      ...mockWeightedPool,
+      symbol: `${firstAsset.symbol}/${secondAsset.symbol}`,
+      token0: firstAsset,
+      token1: secondAsset,
+      type: PAIR_TYPES.WEIGHTED,
+    })
 
     return result
   }, [availablePools, firstAddress, firstAsset, secondAddress, secondAsset])
@@ -268,7 +291,7 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
       {firstAsset && secondAsset && (
         <div className='flex flex-col gap-2'>
           <TextHeading>{t('Create New Pool')}</TextHeading>
-          <div className='grid grid-cols-1 items-center gap-3'>
+          <div className='grid grid-cols-1 gap-3'>
             {createNewPools.map((item, index) => (
               <PoolItem key={`${item.type}_${index}`} pool={item} isAdd onDeposit={onDeposit} />
             ))}
