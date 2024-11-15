@@ -18,7 +18,6 @@ import { ChevronDownIcon } from '@/svgs'
 import Navigation from './Navigation'
 
 const mockWeightedPool = {
-  address: '0xa0cb9040b79eb58520d035b2ad6cac90160d0d15',
   isFusion: true,
   fee: 0.01,
   tvlUSD: 2,
@@ -165,20 +164,26 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
   }, [firstAddress, firstAsset, pairs, secondAddress, secondAsset])
 
   const createNewPools = useMemo(() => {
-    const result = [{ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.WEIGHTED }]
+    const result = []
     if (!firstAddress || !secondAddress) return []
-    const checkClassic = Boolean(availablePools.find(item => item.type === PAIR_TYPES.CLASSIC))
-    if (!checkClassic) {
-      result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.CLASSIC })
-    }
+
     const checkLSD = Boolean(availablePools.find(item => item.type === PAIR_TYPES.LSD))
     if (!checkLSD) {
       result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.LSD })
     }
+
+    const checkClassic = Boolean(availablePools.find(item => item.type === PAIR_TYPES.CLASSIC))
+    if (!checkClassic) {
+      result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.CLASSIC })
+    }
+
     const checkStable = Boolean(availablePools.find(item => item.type === PAIR_TYPES.STABLE))
     if (!checkStable) {
       result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.STABLE })
     }
+
+    result.push({ ...mockWeightedPool, token0: firstAsset, token1: secondAsset, type: PAIR_TYPES.WEIGHTED })
+
     return result
   }, [availablePools, firstAddress, firstAsset, secondAddress, secondAsset])
 
@@ -259,7 +264,7 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
           </div>
         </div>
       )}
-      {/* TODO: just mock data */}
+
       {firstAsset && secondAsset && (
         <div className='flex flex-col gap-2'>
           <TextHeading>{t('Create New Pool')}</TextHeading>

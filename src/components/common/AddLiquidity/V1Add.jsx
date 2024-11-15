@@ -154,14 +154,7 @@ export default function V1Add({
       warnToast(errorMsg, 'warn')
       return
     }
-    // console.log({
-    //   firstAsset,
-    //   secondAsset,
-    //   firstAmount,
-    //   secondAmount,
-    //   slippage,
-    //   deadline,
-    // })
+
     onV1Add(
       firstAsset,
       secondAsset,

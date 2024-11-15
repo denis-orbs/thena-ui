@@ -33,6 +33,7 @@ export const LOCALES = {
 export const SCAN_URLS = {
   [ChainId.BSC]: 'https://bscscan.com',
   [ChainId.OPBNB]: 'https://opbnb.bscscan.com',
+  97: 'https://testnet.bscscan.com',
 }
 
 export const TXN_STATUS = {

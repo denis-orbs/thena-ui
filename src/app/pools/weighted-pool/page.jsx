@@ -1,7 +1,6 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
@@ -11,8 +10,9 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import { OutlineIconButton } from '@/components/buttons/IconButton'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn, formatAmount, goScan } from '@/lib/utils'
 import { TokenAndInitialSeedItem } from '@/modules/WeightedPool/Preview'
+import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCirCleDisableIcon } from '@/svgs'
 
 function TokenAndWeight({ token, allocate, size = 'medium' }) {
@@ -166,6 +166,7 @@ function PositionNotStaked({ data }) {
 
 export default function WeightedPoolPage() {
   const { pairs } = weightedPool
+  const { networkId } = useChainSettings()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
   const total = useMemo(
     () => pairs.reduce((sum, curr) => sum + getValueTokenAmountToUSD(curr.token.address, curr.amount), 0),
@@ -281,9 +282,10 @@ export default function WeightedPoolPage() {
                       <td className='pr-4'>{t('Pool Owner')}:</td>
                       <td className='flex items-center'>
                         <span>0x89c5...cdfb</span>
-                        <Link href='https://bscscan.com/address/' target='_blank'>
-                          <TextButton LeadingIcon={ExternalIcon} />
-                        </Link>
+                        <TextButton
+                          LeadingIcon={ExternalIcon}
+                          onClick={() => goScan(networkId, '0x8d4fDb401F059E114a6E84453cE89745A061900A')}
+                        />
                       </td>
                     </tr>
                     <tr>
@@ -302,9 +304,7 @@ export default function WeightedPoolPage() {
                       <td className='pr-4'>{t('Pool address')}:</td>
                       <td className='flex items-center'>
                         <span>0x89c5...cdfb</span>
-                        <Link href='https://bscscan.com/address/' target='_blank'>
-                          <TextButton LeadingIcon={ExternalIcon} />
-                        </Link>
+                        <TextButton LeadingIcon={ExternalIcon} onClick={() => goScan(networkId, pairs?.address)} />
                       </td>
                     </tr>
                   </tbody>
