@@ -491,7 +491,7 @@
   "Host Contribution": "建立者贡献",
   "Prize Distribution": "奖励金额分配",
   "Host": "建立者({percent}%)",
-  "Place": "第 1 名 ({percent}%), 第 2 名 ({percent}%), 第 3 名 ({percent}%), 第 4 名 ({percent}%),...",
+  "Place": "第 {value} 名 ({percent}%)",
   "Tradable Tokens": "可交易代币种类 ({value})",
   "Description": "竞赛说明",
   "Link Has Been Copied": "连结已复制！",

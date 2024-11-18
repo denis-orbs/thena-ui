@@ -42,7 +42,7 @@ const fetchTotalInfo = async (url, theNftContract, nftStakingContract) => {
   return {
     totalStaked: Number(res0),
     rewardPerSecond: fromWei(res1),
-    floorPrice: res2?.usdFloorPrice ?? 1700,
+    floorPrice: res2?.usdFloorPrice ?? 2500,
   }
 }
 
@@ -65,6 +65,7 @@ export const useTheNftInfo = () => {
             .div(totalStaked * floorPrice)
             .times(100)
         : new BigNumber(0)
+
     const lastEarnings = rewardPerSecond.times(prices.THE).times(604800)
     return {
       apr,
