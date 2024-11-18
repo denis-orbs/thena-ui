@@ -113,7 +113,9 @@ export default function CreateWeightedPoolPage() {
         </TextButton>
       </div>
       <div className='flex flex-col'>
-        <TextHeading className='mb-10 font-archia text-[40px] font-semibold'>{t('THENA Weighted Pool')}</TextHeading>
+        <TextHeading className='mb-10 font-archia text-3xl font-semibold lg:text-[40px]'>
+          {t('THENA Weighted Pool')}
+        </TextHeading>
         <div className='flex flex-col justify-between gap-8 lg:flex-row'>
           <div className='lg:w-[380px]'>
             <StepCreate currentStep={currentStep} />

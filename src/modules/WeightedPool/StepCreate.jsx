@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 export default function StepCreate({ currentStep }) {
   const t = useTranslations()
   return (
-    <Box className='flex flex-col gap-6'>
+    <Box className='flex min-w-[235px] flex-col gap-6'>
       <div className='flex flex-row items-center gap-1'>
         <div
           className={cn(
@@ -21,7 +21,7 @@ export default function StepCreate({ currentStep }) {
           1
         </div>
 
-        <TextHeading>{t('Tokens and Weights')}</TextHeading>
+        <TextHeading className='text-sm xl:text-[16px]'>{t('Tokens and Weights')}</TextHeading>
       </div>
       <div className='flex flex-row items-center gap-1'>
         <div
@@ -32,7 +32,7 @@ export default function StepCreate({ currentStep }) {
         >
           2
         </div>
-        <TextHeading>{t('Pool Fees')}</TextHeading>
+        <TextHeading className='text-sm xl:text-[16px]'>{t('Pool Fees')}</TextHeading>
       </div>
       <div className='flex flex-row items-center gap-1'>
         <div
@@ -43,7 +43,7 @@ export default function StepCreate({ currentStep }) {
         >
           3
         </div>
-        <TextHeading>{t('Initial Liquidity')}</TextHeading>
+        <TextHeading className='text-sm xl:text-[16px]'>{t('Initial Liquidity')}</TextHeading>
       </div>
       <div className='flex flex-row items-center gap-1'>
         <div
@@ -54,7 +54,7 @@ export default function StepCreate({ currentStep }) {
         >
           4
         </div>
-        <TextHeading>{t('Confirm')}</TextHeading>
+        <TextHeading className='text-sm xl:text-[16px]'>{t('Confirm')}</TextHeading>
       </div>
     </Box>
   )

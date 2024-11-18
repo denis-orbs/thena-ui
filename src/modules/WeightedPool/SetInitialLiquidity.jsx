@@ -23,11 +23,13 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     [getValueTokenAmountToUSD, tokensAndWeights],
   )
 
+  const isDisable = useMemo(() => !tokensAndWeights.every(item => item.amount > 0 && item.amount), [tokensAndWeights])
+
   return (
     <Box className='flex flex-col gap-3'>
-      <div className='flex h-11 flex-row'>
+      <div className='flex h-11 flex-row items-center'>
         <TextButton onClick={() => setCurrentStep(prev => prev - 1)} LeadingIcon={ArrowLeftIcon} />
-        <TextHeading className='font-archia text-3xl'>{t('Set Initial Liquidity')}</TextHeading>
+        <TextHeading className='font-archia text-xl xl:text-3xl'>{t('Set Initial Liquidity')}</TextHeading>
       </div>
       <div className='flex flex-col gap-3'>
         {(tokensAndWeights || []).map(item => (
@@ -41,7 +43,8 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
       </div>
       <div className='flex flex-row items-center gap-2'>
         <Toggle checked={isAutoOptimize} onChange={() => setIsAutoOptimize(prev => !prev)} />
-        <label>{t('Auto optimize liquidity')}</label> <InfoCirCleDisableIcon className='h-4 w-4' />
+        <label className='text-sm lg:text-[16px]'>{t('Auto optimize liquidity')}</label>{' '}
+        <InfoCirCleDisableIcon className='h-4 w-4' />
       </div>
       <div className='flex flex-col gap-2 rounded-xl bg-neutral-800 p-4'>
         <div className='flex flex-row justify-between'>
@@ -55,7 +58,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
           <span className='text-primary-400'>{t('Optimize')}</span>
         </div>
       </div>
-      <PrimaryButton onClick={() => setCurrentStep(prev => prev + 1)} className='w-full'>
+      <PrimaryButton disabled={isDisable} onClick={() => setCurrentStep(prev => prev + 1)} className='w-full'>
         {t('Preview')}
       </PrimaryButton>
     </Box>

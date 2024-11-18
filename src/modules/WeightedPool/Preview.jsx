@@ -9,7 +9,8 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import Selection from '@/components/selection'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
-import { cn, formatAmount } from '@/lib/utils'
+import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
+import { cn, formatAmount, toWei } from '@/lib/utils'
 import { ArrowLeftIcon, EditIcon } from '@/svgs'
 
 export function TokenAndInitialSeedItem({ item }) {
@@ -35,9 +36,19 @@ export function TokenAndInitialSeedItem({ item }) {
   )
 }
 
-function PoolDetails({ poolSymbol, setPoolSymbol, poolName, setPoolName, poolFee, setPoolFee, openModal, isOpen }) {
+function PoolDetails({
+  poolSymbol,
+  setPoolSymbol,
+  poolName,
+  setPoolName,
+  poolFee,
+  setPoolFee,
+  tokensAndWeights,
+  openModal,
+  isOpen,
+}) {
   const t = useTranslations()
-
+  const { onCreateWeightedPool } = useWeightedPool()
   const [fee, setFee] = useState(poolFee)
   const [symbol, setSymbol] = useState(poolSymbol)
   const [name, setName] = useState(poolName)
@@ -68,7 +79,18 @@ function PoolDetails({ poolSymbol, setPoolSymbol, poolName, setPoolName, poolFee
     setPoolSymbol(symbol)
     setPoolFee(fee)
     setPoolName(name)
-  }, [fee, name, setPoolFee, setPoolName, setPoolSymbol, symbol])
+    const sortedAddresses = tokensAndWeights.sort((a, b) =>
+      a.token.address.toLowerCase().localeCompare(b.token.address.toLowerCase()),
+    )
+    const tokens = sortedAddresses.map(item => item.token)
+    const weights = sortedAddresses.map(item => {
+      const allocate = Math.round((item.allocate / 100) * 10000) / 10000
+      return toWei(allocate.toString())
+    })
+    console.log({ sortedAddresses })
+    const amounts = sortedAddresses.map(item => toWei(item.amount))
+    onCreateWeightedPool(name, symbol, tokens, weights, amounts, fee)
+  }, [fee, name, onCreateWeightedPool, setPoolFee, setPoolName, setPoolSymbol, symbol, tokensAndWeights])
 
   return (
     <Modal isOpen={isOpen} closeModal={() => openModal(false)} showIconX width={508} title={t('Pool Details')}>
@@ -134,9 +156,11 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
   }
   return (
     <Box className='flex flex-col gap-3'>
-      <div className='flex h-11 flex-row'>
+      <div className='flex h-11 flex-row items-center'>
         <TextButton onClick={() => setCurrentStep(prev => prev - 1)} LeadingIcon={ArrowLeftIcon} />
-        <TextHeading className='font-archia text-3xl font-semibold'>{t('Preview New Weighted Pool')}</TextHeading>
+        <TextHeading className='font-archia text-xl font-semibold xl:text-3xl'>
+          {t('Preview New Weighted Pool')}
+        </TextHeading>
       </div>
       <TextHeading>{t('Tokens and Initial Seed Liquidity')}</TextHeading>
       <div className='flex flex-col divide-y divide-neutral-700'>
@@ -241,6 +265,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
         setPoolName={setPoolName}
         isOpen={showPreview}
         openModal={() => setShowPreview(false)}
+        tokensAndWeights={tokensAndWeights}
       />
     </Box>
   )

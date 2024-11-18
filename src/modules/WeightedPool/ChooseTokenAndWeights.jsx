@@ -215,7 +215,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
 
   return (
     <Box className='flex flex-col gap-3'>
-      <TextHeading className='font-archia text-3xl'>{t('Choose Tokens and Weights')}</TextHeading>
+      <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens and Weights')}</TextHeading>
       <div className='divide-y divide-neutral-700 rounded-xl border border-neutral-700'>
         {tokenSelected.map((token, index) => (
           <TokenItem

@@ -33,8 +33,11 @@ import {
   royaltyAbi,
   stakingAbi,
   swapRouterAbi,
+  thenaRouterAbi,
+  thenaWeightedPoolFactoryAbi,
   ThenianAbi,
   tickLensAbi,
+  vaultAbi,
   veDistAbi,
   veTHEAbi,
   veTHEApiAbi,
@@ -43,6 +46,7 @@ import {
   votingEscrowAbi,
   votingEscrowAttachAbi,
   wbnbAbi,
+  weightedPoolAbi,
 } from '@/constant/abi'
 import {
   multiAccountAbi,
@@ -298,3 +302,24 @@ export const getAlgebraEternalFarmingContract = () =>
                                           FARMING_CENTER_TESTNET
 ******************************************************************************************************* */
 export const getFarmingCenterContract = () => getContract(farmingCenterAbi, Contracts.FARMING_CENTER_TESTNET, 97)
+
+/** ******************************************************************************************************
+                                          ThenaWeightedPoolFactory
+******************************************************************************************************* */
+export const getThenaWeightedPoolFactoryContract = chainId =>
+  getContract(thenaWeightedPoolFactoryAbi, Contracts.WeightedPoolFactory, chainId)
+
+/** ******************************************************************************************************
+                                          ThenaWeightedPoolFactory
+******************************************************************************************************* */
+export const getWeightedPoolContract = (address, chainId) => getContract(weightedPoolAbi, address, chainId)
+
+/** ******************************************************************************************************
+                                          Vault
+******************************************************************************************************* */
+export const getVaultContract = chainId => getContract(vaultAbi, Contracts.Vault, chainId)
+
+/** ******************************************************************************************************
+                                          ThenaRouter
+******************************************************************************************************* */
+export const getThenaRouterContract = chainId => getContract(thenaRouterAbi, Contracts.ThenaRouter, chainId)

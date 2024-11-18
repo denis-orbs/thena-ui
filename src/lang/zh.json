@@ -1247,5 +1247,18 @@
   "editable by governance": "editable by governance",
   "Immutable except for swap fees editable by governance": "Immutable except for swap fees editable by governance",
   "Weighted": "Weighted",
-  "Create pool and add liquidity": "Create pool and add liquidity"
+  "Create pool and add liquidity": "Create pool and add liquidity",
+  "Pool Name": "Pool Name",
+  "Pool Fee": "Pool Fee",
+  "Preview New Weighted Pool": "Preview New Weighted Pool",
+  "Pool Symbol": "Pool Symbol",
+  "Summary": "Summary",
+  "Tokens and Initial Seed Liquidity": "Tokens and Initial Seed Liquidity",
+  "Create Weighted Pool": "Create Weighted Pool",
+  "Pool": "Pool",
+  "USD Value": "USD Value",
+  "Your Max Initial Liquidity": "Your Max Initial Liquidity",
+  "Select Token": "Select Token",
+  "Optimize": "Optimize",
+  "Pool Detail": "Pool Detail"
 }

@@ -60,10 +60,10 @@ function CustomTokenModal({ popup, setPopup, setSelectedAsset, assets }) {
               key={item.address}
             >
               <div className='flex items-center gap-2 rounded-lg'>
-                <CircleImage src={item.logoURI} width={32} height={32} alt='thena token' />
+                <CircleImage src={item?.logoURI} width={32} height={32} alt='thena token' />
                 <div className='flex flex-col'>
                   <div className='flex items-center space-x-1'>
-                    <TextHeading>{item.symbol}</TextHeading>
+                    <TextHeading>{item?.symbol}</TextHeading>
                     {item.address !== 'BNB' && (
                       <div className='flex items-center gap-1'>
                         <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md !py-2'>

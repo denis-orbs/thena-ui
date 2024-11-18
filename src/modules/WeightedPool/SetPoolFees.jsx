@@ -38,11 +38,11 @@ export default function SetPoolFees({ setCurrentStep, fees, setFees }) {
 
   return (
     <Box>
-      <div className='flex h-11 flex-row'>
+      <div className='flex h-11 flex-row items-center'>
         <TextButton onClick={() => setCurrentStep(prev => prev - 1)} LeadingIcon={ArrowLeftIcon} />
-        <TextHeading className='font-archia text-3xl'>{t('Set Pool Fees')}</TextHeading>
+        <TextHeading className='font-archia text-xl xl:text-3xl'>{t('Set Pool Fees')}</TextHeading>
       </div>
-      <Paragraph>{t('Set Pool Fees description')}</Paragraph>
+      <Paragraph className='text-sm xl:text-[16px]'>{t('Set Pool Fees description')}</Paragraph>
       <div className='mt-4 flex flex-row justify-between'>
         <Selection className='!h-11' data={poolRange} />
         <Input
