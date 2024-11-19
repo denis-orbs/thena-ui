@@ -1,50 +1,17 @@
 import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
-import { gql } from 'graphql-request'
 import React, { useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
 import useWallet from '@/hooks/useWallet'
+import { fetVeTHETokens } from '@/lib/api'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEAPIContract } from '@/lib/contracts'
-import { v3ClientSubGraph } from '@/lib/graphql'
 import { fromWei } from '@/lib/utils'
 
 const veTHEsContext = React.createContext({
   veTHEs: [],
 })
-
-const V3_VETHE_TOKEN = gql`
-  query V3_VETHE_TOKEN($account: String!) {
-    veTokens(where: { account: $account }) {
-      id
-      tokenId
-      lockedAt
-      lockedEnd
-      decimals
-      attachments
-      amount
-      account
-      rebaseAmount
-      token
-      voted
-      votingAmount
-    }
-  }
-`
-
-const fetVeTHEToken = async account => {
-  try {
-    const { veTokens } = await v3ClientSubGraph.request(V3_VETHE_TOKEN, { account })
-    if (veTokens) {
-      return veTokens
-    }
-    return null
-  } catch (error) {
-    console.trace(error)
-    return null
-  }
-}
 
 // async function fetchVeTHEsFromAddress([_, account, chainId]) {
 //   console.log('------------------ vethes from address --------------------------')
@@ -107,9 +74,10 @@ export async function fetchVeTHEFromId(veTHEId, chainId) {
 }
 
 function VeTHEsContextProvider({ children }) {
-  const { account } = useWallet()
+  const { account, chainId } = useWallet()
+
   const { data, isLoading, error, mutate } = useSWR(account ? ['vethes api', account] : null, () =>
-    fetVeTHEToken(account),
+    fetVeTHETokens(chainId, account),
   )
 
   const result = useMemo(() => {
@@ -119,7 +87,7 @@ function VeTHEsContextProvider({ children }) {
 
     const finalData = (data || []).map(veTHE => {
       const {
-        votes = [],
+        votes,
         lockedAt: vote_ts,
         voted,
         tokenId,

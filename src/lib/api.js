@@ -85,6 +85,11 @@ export const fetchTopTokens = params =>
     .then(r => r.json())
     .then(r => r.data)
 
+export const fetVeTHETokens = (chainId, account) =>
+  fetch(`${backendApiTestNet}/vethes/${chainId}/${account}`)
+    .then(r => r.json())
+    .then(r => r.data)
+
 export const fetchNfts = nftId =>
   fetch(`https://ipfs.io/ipfs/QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn/${nftId}`).then(r => r.json())
 
