@@ -67,8 +67,8 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
                 logo2={pool?.token1?.logoURI || UNKNOWN_LOGO}
               />
               <div className='flex flex-col'>
-                <TextHeading className='text-sm lg:text-[16px]'>{pool.symbol}</TextHeading>
-                <Paragraph className='text-nowrap text-sm lg:text-[16px]'>{getPoolType(pool?.type)}</Paragraph>
+                <TextHeading className='text-sm lg:text-base'>{pool.symbol}</TextHeading>
+                <Paragraph className='text-nowrap text-sm lg:text-base'>{getPoolType(pool?.type)}</Paragraph>
               </div>
             </div>
           ) : (
@@ -98,11 +98,11 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
           <div className='grid grid-cols-2'>
             <div className='flex flex-col lg:min-w-[200px]'>
               <TextHeading className='text-xs lg:text-sm'>APR</TextHeading>
-              <Paragraph className='text-sm lg:text-[16px]'>{pool?.apr || '0%'}</Paragraph>
+              <Paragraph className='text-sm lg:text-base'>{pool?.apr || '0%'}</Paragraph>
             </div>
             <div className='flex flex-col lg:min-w-[200px]'>
               <TextHeading className='text-xs lg:text-sm'>TVL</TextHeading>
-              <Paragraph className='text-sm lg:text-[16px]'>${formatAmount(pool?.tlvUSD || 0)}</Paragraph>
+              <Paragraph className='text-sm lg:text-base'>${formatAmount(pool?.tlvUSD || 0)}</Paragraph>
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
     if (!checkLSD) {
       result.push({
         ...mockWeightedPool,
-        symbol: `${firstAsset.symbol}/${secondAsset.symbol}`,
+        symbol: `${firstAsset?.symbol}/${secondAsset?.symbol}`,
         token0: firstAsset,
         token1: secondAsset,
         type: PAIR_TYPES.LSD,
@@ -181,7 +181,7 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
     if (!checkClassic) {
       result.push({
         ...mockWeightedPool,
-        symbol: `${firstAsset.symbol}/${secondAsset.symbol}`,
+        symbol: `${firstAsset?.symbol}/${secondAsset?.symbol}`,
         token0: firstAsset,
         token1: secondAsset,
         type: PAIR_TYPES.CLASSIC,
@@ -192,7 +192,7 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
     if (!checkStable) {
       result.push({
         ...mockWeightedPool,
-        symbol: `${firstAsset.symbol}/${secondAsset.symbol}`,
+        symbol: `${firstAsset?.symbol}/${secondAsset?.symbol}`,
         token0: firstAsset,
         token1: secondAsset,
         type: PAIR_TYPES.STABLE,
@@ -201,7 +201,7 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
 
     result.push({
       ...mockWeightedPool,
-      symbol: `${firstAsset.symbol}/${secondAsset.symbol}`,
+      symbol: `${firstAsset?.symbol}/${secondAsset?.symbol}`,
       token0: firstAsset,
       token1: secondAsset,
       type: PAIR_TYPES.WEIGHTED,
@@ -226,9 +226,9 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
       )}
       <div className='flex flex-col gap-3'>
         <div>
-          <TextSubHeading className='text-sm lg:text-[16px]'>{t('Add liquidity sub')}</TextSubHeading>
+          <TextSubHeading className='text-sm lg:text-base'>{t('Add liquidity sub')}</TextSubHeading>
           <span>
-            <TextButton onClick={toggleDrawer} className='text-sm text-primary-600 hover:bg-transparent lg:text-[16px]'>
+            <TextButton onClick={toggleDrawer} className='text-sm text-primary-600 hover:bg-transparent lg:text-base'>
               {t('Learn more')}
             </TextButton>
           </span>

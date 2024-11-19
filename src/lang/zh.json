@@ -1260,5 +1260,11 @@
   "Your Max Initial Liquidity": "Your Max Initial Liquidity",
   "Select Token": "Select Token",
   "Optimize": "Optimize",
-  "Pool Detail": "Pool Detail"
+  "Pool Detail": "Pool Detail",
+  "Exceeds wallet balance": "Exceeds wallet balance",
+  "Must be greater than 0": "Must be greater than 0",
+  "Optimized amounts have been pre-filled": "Optimized amounts have been pre-filled",
+  "We recommend you to provide new pools [symbol]": "We recommend you to provide new pools with at least $20,000 in initial funds. Based on your wallet balances for these tokens, the maximum amount you can fund this pool is ${yourBalance}.",
+  "To ensure a smooth transaction": "To ensure a smooth transaction, at least 0.05 BNB must be left in your wallet to pay for gas fees.",
+  "You have successfully created [symbol] weighted pool": "You have successfully created {poolSymbol} weighted pool"
 }

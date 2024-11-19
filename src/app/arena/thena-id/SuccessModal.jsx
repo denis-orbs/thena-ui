@@ -7,7 +7,7 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph } from '@/components/typography'
 import { CheckGradientIcon } from '@/svgs'
 
-function SuccessModal({ isOpen, onClose, heading, message, ref }) {
+function SuccessModal({ isOpen, onClose, heading, message, ref, buttonAction }) {
   const t = useTranslations()
   return (
     <Modal
@@ -30,9 +30,11 @@ function SuccessModal({ isOpen, onClose, heading, message, ref }) {
       </ModalBody>
       <ModalFooter className='items-center justify-center'>
         <div ref={ref}>
-          <EmphasisButton className='w-full' onClick={() => onClose()}>
-            {t('Close')}
-          </EmphasisButton>
+          {buttonAction || (
+            <EmphasisButton className='w-full' onClick={() => onClose()}>
+              {t('Close')}
+            </EmphasisButton>
+          )}
         </div>
       </ModalFooter>
     </Modal>

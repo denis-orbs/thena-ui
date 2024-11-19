@@ -42,7 +42,7 @@ export default function SetPoolFees({ setCurrentStep, fees, setFees }) {
         <TextButton onClick={() => setCurrentStep(prev => prev - 1)} LeadingIcon={ArrowLeftIcon} />
         <TextHeading className='font-archia text-xl xl:text-3xl'>{t('Set Pool Fees')}</TextHeading>
       </div>
-      <Paragraph className='text-sm xl:text-[16px]'>{t('Set Pool Fees description')}</Paragraph>
+      <Paragraph className='text-sm xl:text-base'>{t('Set Pool Fees description')}</Paragraph>
       <div className='mt-4 flex flex-row justify-between'>
         <Selection className='!h-11' data={poolRange} />
         <Input

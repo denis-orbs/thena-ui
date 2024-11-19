@@ -26,9 +26,9 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
       <table className='min-w-full rounded-lg'>
         <thead>
           <tr>
-            <th className='px-6 py-3 text-left text-sm text-neutral-400 xl:text-[16px]'>{t('Token')}</th>
-            <th className='px-6 py-3 text-right text-sm text-neutral-400 xl:text-[16px]'>{t('USD Value')}</th>
-            <th className='px-6 py-3 text-right text-sm text-neutral-400 xl:text-[16px]'>{t('Pool')} %</th>
+            <th className='px-6 py-3 text-left text-sm text-neutral-400 xl:text-base'>{t('Token')}</th>
+            <th className='px-6 py-3 text-right text-sm text-neutral-400 xl:text-base'>{t('USD Value')}</th>
+            <th className='px-6 py-3 text-right text-sm text-neutral-400 xl:text-base'>{t('Pool')} %</th>
           </tr>
         </thead>
         <tbody className='text-gray-700'>
@@ -40,9 +40,9 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
             </tr>
           ))}
           <tr className='border-t border-t-neutral-700 font-semibold'>
-            <td className='whitespace-nowrap px-6 py-4 text-sm text-neutral-200 xl:text-[16px]'>{t('Total')}</td>
-            <td className='whitespace-nowrap px-6 py-4 text-neutral-200'>{formatAmount(totalPrice)}</td>
-            <td className='whitespace-nowrap px-6 py-4 text-neutral-200'>{totalPool}</td>
+            <td className='whitespace-nowrap px-6 py-4 text-sm text-neutral-200 xl:text-base'>{t('Total')}</td>
+            <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>{formatAmount(totalPrice)}</td>
+            <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>{totalPool}</td>
           </tr>
         </tbody>
       </table>

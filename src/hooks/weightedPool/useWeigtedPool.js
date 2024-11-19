@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256, parseEventLogs, toHex } from 'viem'
+import { encodePacked, maxUint256, parseEventLogs, toHex } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import { thenaWeightedPoolFactoryAbi } from '@/constant/abi'
@@ -13,7 +13,7 @@ import {
   getThenaWeightedPoolFactoryContract,
   getWeightedPoolContract,
 } from '@/lib/contracts'
-import { fromWei } from '@/lib/utils'
+import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -41,8 +41,20 @@ export const useWeightedPool = () => {
 
     return ''
   }, [])
+
+  function toBytes32(hexString) {
+    const rawBytes = Uint8Array.from(Buffer.from(hexString.slice(2), 'hex'))
+
+    if (rawBytes.length > 32) {
+      return rawBytes.slice(0, 32)
+    }
+    const finalBytes = new Uint8Array(32)
+    finalBytes.set(rawBytes)
+    return finalBytes
+  }
+
   const onCreateWeightedPool = useCallback(
-    async (name, symbol, tokens, allocates, amounts) => {
+    async (name, symbol, tokens, allocates, amounts, fee, onSuccess) => {
       const key = uuidv4()
       const createuuid = uuidv4()
       const initialLiquidityuuid = uuidv4()
@@ -84,14 +96,11 @@ export const useWeightedPool = () => {
         hash: null,
       }
 
-      setPending(true)
-
       startTxn({
         key,
         title: t('Create Weighted Pool'),
         transactions,
       })
-      console.log({ transactions })
 
       for (let i = 0; i < Object.keys(tokens).length; i++) {
         const address = Object.keys(tokens)[i]
@@ -110,22 +119,9 @@ export const useWeightedPool = () => {
         }
       }
 
-      // Encode the string into raw bytes
-      const rawBytes = new TextEncoder().encode(name)
-
-      let finalBytes
-
-      if (rawBytes.length > 32) {
-        // Truncate the array to the first 32 bytes
-        finalBytes = rawBytes.slice(0, 32)
-      } else {
-        // Right-pad with zeros to make it 32 bytes
-        finalBytes = new Uint8Array(32)
-        finalBytes.set(rawBytes) // Copy rawBytes into the padded array
-      }
-
       // Convert to hex
-      const salt = toHex(finalBytes)
+      const encodeName = encodePacked(['string'], [name])
+      const salt = toHex(toBytes32(encodeName))
 
       const tokenIds = tokens.map(token => token.address)
 
@@ -143,12 +139,10 @@ export const useWeightedPool = () => {
         return false
       }
 
-      // console.log({ isSuccess })
-
       const poolId = await handleGetPoolId(txHash)
       const weightedPoolContract = getWeightedPoolContract(poolId, chainId)
       const poolId32 = await readCall(weightedPoolContract, 'getPoolId', [], chainId)
-      // await writeTxn(key, initialLiquidityuuid, thenaRouterContract, 'registerPool', [poolId32, toWei(fee * 100)])
+      await writeTxn(key, initialLiquidityuuid, thenaRouterContract, 'registerPool', [poolId32, toWei(fee)])
       const result = await writeTxn(key, initialLiquidityuuid, thenaRouterContract, 'joinPoolInit', [
         poolId32,
         tokenIds,
@@ -165,6 +159,9 @@ export const useWeightedPool = () => {
         final: 'Create Weighted Pool Successful',
       })
       setPending(false)
+      if (onSuccess) {
+        onSuccess(poolId)
+      }
     },
     [account, chainId, endTxn, handleGetPoolId, startTxn, t, writeTxn],
   )

@@ -9,7 +9,8 @@ import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/butt
 import { OutlineIconButton } from '@/components/buttons/IconButton'
 import Input from '@/components/input'
 import { TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import { useTokenUSDValue } from '@/hooks/usePrices'
+import { cn, formatAmount, wrappedAddress } from '@/lib/utils'
 import { ChevronDownIcon, InfoIcon, LockIcon, PlusIcon, TrashIcon, UnlockIcon } from '@/svgs'
 
 import TokenModal from '../TokenModal'
@@ -56,7 +57,7 @@ const updateAllocate = tokens => {
 function SelectTokenButton({ token, setTokenSelected, tokenSelected }) {
   const t = useTranslations()
   const [tokenPopup, setTokenPopup] = useState(false)
-  const hiddenTokens = useMemo(() => tokenSelected.map(item => item?.token?.address.toLowerCase()), [tokenSelected])
+  const hiddenTokens = useMemo(() => tokenSelected.map(item => item?.token?.address?.toLowerCase()), [tokenSelected])
   return (
     <>
       {token.token ? (
@@ -88,7 +89,10 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
         const updatedTokens = [...prev]
         updatedTokens[index] = {
           ...updatedTokens[index],
-          token: data,
+          token: {
+            ...data,
+            address: wrappedAddress(data),
+          },
         }
         return updateAllocate(updatedTokens)
       })
@@ -166,7 +170,7 @@ export function ErrorMessage({ message, type = 'error', className }) {
     <Box
       className={cn(
         'flex flex-row items-center gap-3 border border-primary-800 bg-primary-950',
-        type === 'warn' ? 'bg-warn-950' : '',
+        type === 'warn' ? 'border-warn-950 bg-warn-950' : '',
         className,
       )}
     >
@@ -184,6 +188,23 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   const idDefault = useId()
   const [totalAllocated, setTotalAllocated] = useState(0)
 
+  const { getValueTokenAmountToUSD } = useTokenUSDValue()
+
+  const totalBalance = useMemo(
+    () =>
+      tokensAndWeights.reduce((sum, curr) => {
+        const { token } = curr
+        if (token) {
+          const { balance } = token
+          const amountToWei = balance.toNumber()
+          const usdValue = getValueTokenAmountToUSD(token.address, amountToWei)
+          return sum + usdValue
+        }
+        return sum
+      }, 0),
+    [getValueTokenAmountToUSD, tokensAndWeights],
+  )
+
   useEffect(() => {
     const tokens = tokenSelected.filter(item => item.token !== null)
     setTotalAllocated(tokens.reduce((sum, curr) => sum + curr.allocate, 0))
@@ -199,18 +220,23 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
     () => tokensAndWeights.every(item => item.allocate > 0),
     [tokensAndWeights],
   )
-  const renderMessage = useCallback(() => {
-    if (tokensAndWeights.length === 1 && tokenSelected.length === 1) {
-      return <ErrorMessage message={t('You must add two tokens at least to create a weighted pool')} />
+  const renderMessages = useCallback(() => {
+    const errorMessages = []
+
+    if (tokensAndWeights.length <= 1 && tokenSelected.length <= 1) {
+      errorMessages.push(t('You must add two tokens at least to create a weighted pool'))
     }
+
     if (!checkAllWeightingHigherThanZero) {
-      return <ErrorMessage message={t('All tokens in a pool must have a weighting higher than zero')} />
+      errorMessages.push(t('All tokens in a pool must have a weighting higher than zero'))
     }
-  }, [checkAllWeightingHigherThanZero, t, tokenSelected.length, tokensAndWeights.length])
+
+    return errorMessages.map((message, index) => <ErrorMessage key={index} message={message} />)
+  }, [checkAllWeightingHigherThanZero, t, tokenSelected, tokensAndWeights])
 
   const isDisable = useMemo(
-    () => !checkAllWeightingHigherThanZero || (tokensAndWeights.length === 1 && tokenSelected.length === 1),
-    [checkAllWeightingHigherThanZero, tokenSelected.length, tokensAndWeights.length],
+    () => !checkAllWeightingHigherThanZero || tokensAndWeights.length <= 1 || tokenSelected.length <= 1,
+    [checkAllWeightingHigherThanZero, tokenSelected, tokensAndWeights],
   )
 
   return (
@@ -254,7 +280,15 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
           />
         </div>
       </div>
-      {renderMessage()}
+      {tokensAndWeights.length > 0 ? (
+        <ErrorMessage
+          type='warn'
+          message={t('We recommend you to provide new pools [symbol]', { yourBalance: formatAmount(totalBalance) })}
+        />
+      ) : (
+        <></>
+      )}
+      {renderMessages()}
       <PrimaryButton disabled={isDisable} className='w-full' onClick={() => setCurrentStep(prev => prev + 1)}>
         {t('Next')}
       </PrimaryButton>

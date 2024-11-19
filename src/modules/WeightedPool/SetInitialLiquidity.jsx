@@ -1,10 +1,10 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
-import { TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { formatAmount } from '@/lib/utils'
 import { ArrowLeftIcon, InfoCirCleDisableIcon } from '@/svgs'
@@ -23,7 +23,25 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     [getValueTokenAmountToUSD, tokensAndWeights],
   )
 
-  const isDisable = useMemo(() => !tokensAndWeights.every(item => item.amount > 0 && item.amount), [tokensAndWeights])
+  // const [isDisable, setIsDisable] = useState(true)
+
+  const isDisable = useMemo(
+    () =>
+      (tokensAndWeights || []).some(item => {
+        console.log({ item })
+        return item.isError || !item?.amount
+      }),
+    [tokensAndWeights],
+  )
+
+  const onClearAmount = useCallback(() => {
+    setTokenAndWeights(prev =>
+      prev.map(item => ({
+        ...item,
+        amount: null,
+      })),
+    )
+  }, [setTokenAndWeights])
 
   return (
     <Box className='flex flex-col gap-3'>
@@ -32,18 +50,34 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
         <TextHeading className='font-archia text-xl xl:text-3xl'>{t('Set Initial Liquidity')}</TextHeading>
       </div>
       <div className='flex flex-col gap-3'>
-        {(tokensAndWeights || []).map(item => (
-          <InputLiquidityToken
-            asset={item.token}
-            allocate={`(${item.allocate}%)`}
-            setTokenAndWeights={setTokenAndWeights}
-            amount={item.amount}
-          />
-        ))}
+        <>
+          {!isDisable && (
+            <div>
+              <Paragraph className='text-base'>{t('Optimized amounts have been pre-filled')}</Paragraph>
+              <span>
+                <TextButton
+                  onClick={onClearAmount}
+                  className='border-none px-1 text-primary-600 hover:bg-transparent hover:text-primary-600'
+                >
+                  {t('Clear all')}
+                </TextButton>
+              </span>
+            </div>
+          )}
+          {(tokensAndWeights || []).map(item => (
+            <InputLiquidityToken
+              asset={item.token}
+              allocate={`(${item.allocate}%)`}
+              setTokenAndWeights={setTokenAndWeights}
+              amount={item.amount}
+            />
+          ))}
+          <Paragraph className='text-sm text-warn-600'>{t('To ensure a smooth transaction')}</Paragraph>
+        </>
       </div>
       <div className='flex flex-row items-center gap-2'>
         <Toggle checked={isAutoOptimize} onChange={() => setIsAutoOptimize(prev => !prev)} />
-        <label className='text-sm lg:text-[16px]'>{t('Auto optimize liquidity')}</label>{' '}
+        <label className='text-sm lg:text-base'>{t('Auto optimize liquidity')}</label>{' '}
         <InfoCirCleDisableIcon className='h-4 w-4' />
       </div>
       <div className='flex flex-col gap-2 rounded-xl bg-neutral-800 p-4'>

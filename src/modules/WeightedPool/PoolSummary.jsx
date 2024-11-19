@@ -110,7 +110,7 @@ export default function PoolSummary({ tokensAndWeights }) {
         <div className='relative h-[230px] w-[230px] overflow-visible'>
           <Doughnut height={200} width={200} data={finalData} options={options} className='z-20' />
           <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'>
-            {centerLogo && <Image src={centerLogo} width={100} height={100} alt='logo' />}
+            {centerLogo && <Image src={centerLogo} width={60} height={60} alt='logo' />}
           </div>
         </div>
       </div>

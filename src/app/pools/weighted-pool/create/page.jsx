@@ -85,7 +85,7 @@ export default function CreateWeightedPoolPage() {
   const { push } = useRouter()
   const t = useTranslations()
   const assets = useAssets()
-  const [fees, setFees] = useState(null)
+  const [fees, setFees] = useState(0.3)
   const [tokensAndWeights, setTokenAndWeights] = useState(() => {
     const firstAddress = searchParams.get('firstAddress')
     const secondAddress = searchParams.get('secondAddress')
@@ -117,7 +117,7 @@ export default function CreateWeightedPoolPage() {
           {t('THENA Weighted Pool')}
         </TextHeading>
         <div className='flex flex-col justify-between gap-8 lg:flex-row'>
-          <div className='lg:w-[380px]'>
+          <div className='hidden lg:block lg:w-[380px]'>
             <StepCreate currentStep={currentStep} />
           </div>
           <div className='lg:w-[616px]'>

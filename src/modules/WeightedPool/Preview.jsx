@@ -1,7 +1,9 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
+import SuccessModal from '@/app/arena/thena-id/SuccessModal'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Input from '@/components/input'
@@ -46,12 +48,14 @@ function PoolDetails({
   tokensAndWeights,
   openModal,
   isOpen,
+  setCurrentStep,
 }) {
   const t = useTranslations()
   const { onCreateWeightedPool } = useWeightedPool()
   const [fee, setFee] = useState(poolFee)
   const [symbol, setSymbol] = useState(poolSymbol)
   const [name, setName] = useState(poolName)
+  const [newPoolId, setNewPoolId] = useState(null)
 
   const isCustomFee = useMemo(() => poolFee !== null && poolFee !== 0.1 && poolFee !== 0.3 && poolFee !== 1, [poolFee])
   const poolRange = useMemo(
@@ -74,65 +78,87 @@ function PoolDetails({
     ],
     [fee],
   )
-
-  const handleSave = useCallback(() => {
+  useEffect(() => {
     setPoolSymbol(symbol)
     setPoolFee(fee)
     setPoolName(name)
-    const sortedAddresses = tokensAndWeights.sort((a, b) =>
-      a.token.address.toLowerCase().localeCompare(b.token.address.toLowerCase()),
-    )
+  }, [symbol, fee, name, setPoolSymbol, setPoolFee, setPoolName])
+
+  const handleSave = useCallback(async () => {
+    const sortedAddresses = tokensAndWeights
+      .slice()
+      .sort((a, b) => a.token.address.toLowerCase().localeCompare(b.token.address.toLowerCase()))
     const tokens = sortedAddresses.map(item => item.token)
     const weights = sortedAddresses.map(item => {
       const allocate = Math.round((item.allocate / 100) * 10000) / 10000
       return toWei(allocate.toString())
     })
-    console.log({ sortedAddresses })
+
     const amounts = sortedAddresses.map(item => toWei(item.amount))
-    onCreateWeightedPool(name, symbol, tokens, weights, amounts, fee)
-  }, [fee, name, onCreateWeightedPool, setPoolFee, setPoolName, setPoolSymbol, symbol, tokensAndWeights])
+    await onCreateWeightedPool(name, symbol, tokens, weights, amounts, fee, poolId => {
+      if (poolId) {
+        setNewPoolId(poolId)
+        openModal(false)
+      }
+    })
+  }, [fee, name, onCreateWeightedPool, openModal, symbol, tokensAndWeights])
 
   return (
-    <Modal isOpen={isOpen} closeModal={() => openModal(false)} showIconX width={508} title={t('Pool Details')}>
-      <ModalBody>
-        <div>
-          <div className='flex  flex-col gap-6'>
-            <div className='flex flex-col gap-3'>
-              <label>{t('Pool Symbol')}</label>
-              <Input type='text' val={symbol} onChange={e => setSymbol(e.target.value)} />
-            </div>
-            <div className='flex flex-col gap-3'>
-              <label>{t('Pool Name')}</label>
-              <Input type='text' val={name} onChange={e => setName(e.target.value)} />
-            </div>
-            <div className='flex flex-col'>
-              <TextHeading>{t('Pool Fee')}</TextHeading>
-              <Paragraph>{t('Set Pool Fees description')}</Paragraph>
-              <div className='mt-4 flex flex-row justify-between'>
-                <Selection className='!h-11' data={poolRange} />
-                <Input
-                  type='number'
-                  val={fee}
-                  onChange={e => {
-                    setFee(e.target.value)
-                  }}
-                  className={cn('h-11 w-[112px]', isCustomFee ? 'bg-neutral-700 font-medium text-neutral-200' : '')}
-                  placeholder='Custom'
-                  suffix='%'
-                  classNames={{ input: 'pr-7' }}
-                />
+    <>
+      <Modal isOpen={isOpen} closeModal={() => openModal(false)} showIconX width={508} title={t('Pool Details')}>
+        <ModalBody>
+          <div>
+            <div className='flex  flex-col gap-6'>
+              <div className='flex flex-col gap-3'>
+                <label>{t('Pool Symbol')}</label>
+                <Input type='text' val={symbol} onChange={e => setSymbol(e.target.value)} />
+              </div>
+              <div className='flex flex-col gap-3'>
+                <label>{t('Pool Name')}</label>
+                <Input type='text' val={name} onChange={e => setName(e.target.value)} />
+              </div>
+              <div className='flex flex-col'>
+                <TextHeading>{t('Pool Fee')}</TextHeading>
+                <Paragraph>{t('Set Pool Fees description')}</Paragraph>
+                <div className='mt-4 flex flex-row justify-between'>
+                  <Selection className='!h-11' data={poolRange} />
+                  <Input
+                    type='number'
+                    val={fee}
+                    onChange={e => {
+                      setFee(e.target.value)
+                    }}
+                    className={cn('h-11 w-[112px]', isCustomFee ? 'bg-neutral-700 font-medium text-neutral-200' : '')}
+                    placeholder='Custom'
+                    suffix='%'
+                    classNames={{ input: 'pr-7' }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <div className='grid w-full grid-cols-2 justify-between gap-4'>
-          <EmphasisButton onClick={() => openModal(false)}>{t('Cancel')}</EmphasisButton>
-          <PrimaryButton onClick={handleSave}>{t('Save changes')}</PrimaryButton>
-        </div>
-      </ModalFooter>
-    </Modal>
+        </ModalBody>
+        <ModalFooter>
+          <div className='grid w-full grid-cols-2 justify-between gap-4'>
+            <EmphasisButton onClick={() => openModal(false)}>{t('Cancel')}</EmphasisButton>
+            <PrimaryButton onClick={handleSave}>{t('Save changes')}</PrimaryButton>
+          </div>
+        </ModalFooter>
+      </Modal>
+      <SuccessModal
+        isOpen={Boolean(newPoolId)}
+        heading={t('Success!')}
+        message={t('You have successfully created [symbol] weighted pool', { poolSymbol })}
+        onClose={() => {
+          setCurrentStep(0)
+        }}
+        buttonAction={
+          <Link href='/pools/weighted-pool'>
+            <EmphasisButton className='w-full'>{t('View Pool')}</EmphasisButton>
+          </Link>
+        }
+      />
+    </>
   )
 }
 
@@ -266,6 +292,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
         isOpen={showPreview}
         openModal={() => setShowPreview(false)}
         tokensAndWeights={tokensAndWeights}
+        setCurrentStep={setCurrentStep}
       />
     </Box>
   )
