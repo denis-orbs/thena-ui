@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useContext, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -8,7 +9,7 @@ import { maxUint128 } from 'viem'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -30,7 +31,7 @@ import AddManualModal from './AddManualModal'
 import ClaimModal from './ClaimModal'
 import RemoveManualModal from './RemoveManualModal'
 
-const fetchManualInfo = async (account, tokenId, chainId) => {
+export const fetchManualInfo = async (account, tokenId, chainId) => {
   const algebraContract = getAlgebraNPMContract(chainId)
   const balance = await simulateCall(
     algebraContract,
@@ -54,7 +55,7 @@ export default function ManualPosition({ pool }) {
   const [removePopup, setRemovePopup] = useState(false)
   const { mutateManual } = useContext(ManualsContext)
   const { account, chainId } = useWallet()
-  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId } = pool
+  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = pool
   const { data: fees, mutate } = useSWR(
     account && tokenId ? ['manuals/fee', tokenId, account, chainId] : null,
     () => fetchManualInfo(account, tokenId, chainId),
@@ -66,7 +67,7 @@ export default function ManualPosition({ pool }) {
   const { pending, onAlgebraBurn } = useAlgebraBurn()
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
-  const [fusionState, fusion] = useFusion(currency0, currency1)
+  const [fusionState, fusion] = useFusion(currency0, currency1, version)
   const tickAtLimit = useMemo(
     () => ({
       [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
@@ -96,9 +97,8 @@ export default function ManualPosition({ pool }) {
 
   const amount0 = useMemo(() => (position ? position.amount0.toExact() : 0), [position])
   const amount1 = useMemo(() => (position ? position.amount1.toExact() : 0), [position])
-
-  const amount0InUsd = useMemo(() => amount0 * asset0.price, [amount0, asset0])
-  const amount1InUsd = useMemo(() => amount1 * asset1.price, [amount1, asset1])
+  const amount0InUsd = useMemo(() => BigNumber(amount0) * asset0.price, [amount0, asset0])
+  const amount1InUsd = useMemo(() => BigNumber(amount1) * asset1.price, [amount1, asset1])
 
   const token0 = useToken(asset0.address)
   const token1 = useToken(asset1.address)
@@ -129,6 +129,8 @@ export default function ManualPosition({ pool }) {
   const [reversePrice, setReversePrice] = useState(false)
 
   const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
+
+  // const { onAlgebraMigrate, pending } = useAlgebraMigration
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -251,9 +253,12 @@ export default function ManualPosition({ pool }) {
         </div>
       </div>
       <div className='flex w-full gap-3'>
-        <TextButton className='w-full' disabled={!fees || feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
-          {t('Claim')}
-        </TextButton>
+        {version !== 2 && (
+          <TextButton className='w-full' disabled={!fees || feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
+            {t('Claim')}
+          </TextButton>
+        )}
+
         {Number(liquidity) > 0 ? (
           <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
             {t('Remove')}
@@ -267,9 +272,18 @@ export default function ManualPosition({ pool }) {
             {t('Burn')}
           </OutlinedButton>
         )}
-        <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
-          {t('Add')}
-        </EmphasisButton>
+
+        {version !== 2 && (
+          <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
+            {t('Add')}
+          </EmphasisButton>
+        )}
+
+        {version === 2 && Number(liquidity) > 0 && (
+          <Link href={`/pools/migration?tokenId=${pool.tokenId}`} className='w-full'>
+            <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+          </Link>
+        )}
       </div>
       <ClaimModal
         popup={claimPopup}

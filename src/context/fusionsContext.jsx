@@ -3,6 +3,9 @@ import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { poolAbi } from '@/constant/abi/fusion'
+import { CHAIN_ID } from '@/constant/contracts'
+import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
+import { poolTestNetV3Abi } from '@/constant/v3-abi'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -10,26 +13,28 @@ import { PairsContext } from './pairsContext'
 
 const initialState = []
 
-const fetchFusionInfo = async (fusionPairs, chainId) => {
+const fetchFusionInfo = async (fusionPairs, _chainId) => {
   const liquidities = await callMulti(
     fusionPairs.map(pool => ({
       address: pool.address,
-      abi: poolAbi,
+      abi: _chainId === CHAIN_ID.TEST_BSC ? (pool.version === 2 ? poolTestNetV2Abi : poolTestNetV3Abi) : poolAbi,
       functionName: 'liquidity',
       args: [],
-      chainId,
+      chainId: _chainId,
     })),
   )
   const globalStates = await callMulti(
     fusionPairs.map(pool => ({
       address: pool.address,
-      abi: poolAbi,
+      abi: _chainId === CHAIN_ID.TEST_BSC ? (pool.version === 2 ? poolTestNetV2Abi : poolTestNetV3Abi) : poolAbi,
       functionName: 'globalState',
       args: [],
-      chainId,
+      chainId: _chainId,
     })),
   )
+
   return fusionPairs.map((ele, idx) => ({
+    version: ele.version,
     address: ele.address,
     liquidity: new BigNumber(liquidities[idx]).toString(10),
     globalState: {

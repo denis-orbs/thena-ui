@@ -4,7 +4,7 @@ import { ChainId } from 'thena-sdk-core'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import { fetchBscPairs, fetchBscTestnetPairs, fetchOpPairs } from '@/lib/api'
+import { fetchBscPairs, fetchBscTestnetPairsV3, fetchOpPairs } from '@/lib/api'
 import { formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -38,9 +38,9 @@ function PairsContextProvider({ children }) {
     },
   )
 
-  const { data: bscTestnetPairs, isLoading: bscTestnetLoading } = useSWR(
-    networkId === 97 ? 'bscTestnet pairs api' : null,
-    { fetcher: fetchBscTestnetPairs },
+  const { data: bscTestnetPairsV3 = [], isLoading: bscTestnetV3Loading } = useSWR(
+    networkId === 97 ? 'bscTestnet pairs api version 3' : null,
+    { fetcher: fetchBscTestnetPairsV3 },
     {
       refreshInterval: 60000,
     },
@@ -60,9 +60,9 @@ function PairsContextProvider({ children }) {
     () => ({
       [ChainId.BSC]: { data: bscPairs || [], isLoading: bscLoading },
       [ChainId.OPBNB]: { data: opPairs || [], isLoading: opLoading },
-      97: { data: bscTestnetPairs, isLoading: bscTestnetLoading },
+      97: { data: bscTestnetPairsV3 || [], isLoading: bscTestnetV3Loading },
     }),
-    [bscPairs, bscLoading, opPairs, opLoading, bscTestnetPairs, bscTestnetLoading],
+    [bscPairs, bscLoading, opPairs, opLoading, bscTestnetPairsV3, bscTestnetV3Loading],
   )
 
   return <PairsContext.Provider value={pairs}>{children}</PairsContext.Provider>
@@ -134,6 +134,7 @@ const usePairs = () => {
           subpools,
         }
       })
+
     return {
       pairs: result,
       isLoading,

@@ -47,7 +47,7 @@ const secondAsset = {
 
 const feeAmount = 3000
 
-export default function AdjustNewPositionModal({ isOpen, onClose }) {
+export function AdjustNewPositionModal({ isOpen, onClose }) {
   const [isReverse, setIsReverse] = useState(false)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
   const t = useTranslations()

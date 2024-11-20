@@ -100,6 +100,8 @@ export default function PoolsPage() {
   const t = useTranslations()
   const assets = useAssets()
 
+  // console.log({ pairs })
+
   const filteredPools = useMemo(() => {
     let final
     if (isInactive) {
@@ -196,7 +198,7 @@ export default function PoolsPage() {
       return data.map(pool => ({
         pair: (
           <div className='flex items-center gap-3'>
-            {pool.type === PAIR_TYPES.LSD ? (
+            {pool.type !== PAIR_TYPES.WEIGHTED ? (
               <>
                 <IconGroup
                   className='-space-x-2'
