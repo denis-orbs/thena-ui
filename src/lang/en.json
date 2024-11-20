@@ -1055,7 +1055,7 @@
   "Mint Your NFT": "Mint Your NFT",
   "Fragments Required": "Fragments Required",
   "You Minted a New NFT": "You Minted a New NFT",
-  "You Won an NFT!": "You Won an NFT!",
+  "You Won an NFT": "You Won an NFT",
   "Mint an NFT": "Mint an NFT",
   "Mint now": "Mint now",
   "Minted": "Minted",
@@ -1160,8 +1160,6 @@
   "Registration Successful trading competition": "You have successfully registered for a “{name}” trading competition.",
   "Post a tweet with a hashtag and meme": "Create and post a meme about THENA or partner memecoins on X with the hashtag #MemeDreams.",
   "Retweet and Like the tweet for Chapter 4": "Retweet and Like THE Story Chapter 4 announcement.",
-  "5m": "5m",
-  "1m": "1m",
   "30m": "30m",
   "1h": "1h",
   "4h": "4h",
@@ -1274,5 +1272,9 @@
   "Optimized amounts have been pre-filled": "Optimized amounts have been pre-filled",
   "We recommend you to provide new pools [symbol]": "We recommend you to provide new pools with at least $20,000 in initial funds. Based on your wallet balances for these tokens, the maximum amount you can fund this pool is ${yourBalance}.",
   "To ensure a smooth transaction": "To ensure a smooth transaction, at least 0.05 BNB must be left in your wallet to pay for gas fees.",
-  "You have successfully created [symbol] weighted pool": "You have successfully created {poolSymbol} weighted pool"
+  "You have successfully created [symbol] weighted pool": "You have successfully created {poolSymbol} weighted pool",
+  "THE MemeCoin Renaissance": "THE MemeCoin Renaissance",
+  "THE Vision: DeFi": "THE Vision: DeFi",
+  "Provide liquidity and stake in THE/BNB pool": "Provide liquidity and stake in THE/BNB pool",
+  "Provide liquidity and stake in any of these 6 pools": "Provide liquidity and stake in any of these 6 pools"
 }

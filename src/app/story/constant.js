@@ -16,6 +16,8 @@ export const TaskRegisterBNBChainTC = 'Register for a BSC TC'
 export const TaskTwitterRetweet = 'retweet'
 export const TaskDepositIchi = 'Deposit ICHI Vault'
 export const TaskDepositGamma = 'Deposit Gamma Narrow'
+export const Task1PoolsChapter5 = 'Provide liquidity and stake in THE/BNB pool'
+export const Task2PoolsChapter5 = 'Provide liquidity and stake in any of these 6 pools'
 // create a new tweet
 export const TaskTwitterAction = 'tweet'
 export const TaskTwitterMemeAction = 'post_tweet'

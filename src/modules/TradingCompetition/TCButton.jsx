@@ -7,7 +7,7 @@ import DepositModal from '@/app/arena/trading-competitions/[id]/trade/DepositMod
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TC_MARKET_TYPES } from '@/constant'
 import { alphaThenaTradeTcLink } from '@/constant/env'
-import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawToTCPerp } from '@/hooks/useTcPerpetualContract'
+import { useClaimRewardTCPerp, useTCPerpetualInfor, useWithdrawTCPerps } from '@/hooks/useTcPerpetualContract'
 import { useClaimTC, useTCContractInfor, useWithdrawDepositTC } from '@/hooks/useTcSpotContract'
 import useWallet from '@/hooks/useWallet'
 import dayjs from '@/lib/arenaDayjs'
@@ -29,7 +29,7 @@ export function TCButton({ eventType, competition, timestamp }) {
   const { claimReward: claimRewardPerp, pending: pendingClaimPerp } = useClaimRewardTCPerp()
 
   const { withdrawDeposit } = useWithdrawDepositTC()
-  const { withdrawTCPerp } = useWithdrawToTCPerp()
+  const { withdrawTCPerp } = useWithdrawTCPerps()
   const [showModalDeposit, setShowModalDeposit] = useState(false)
   const [showModalDeallocate, setShowModalDeallocate] = useState(false)
   const [enabledWithdraw, setEnabledWithdraw] = useState(undefined)
@@ -52,7 +52,8 @@ export function TCButton({ eventType, competition, timestamp }) {
     isRegistered: isJoinedPerp,
     isWithdrawable: canWithdrawPerp,
     checkWithdrawableTCPerp,
-    balance,
+    deallocatableBalance,
+    withdrawableBalance,
     withdrawCooldown,
     getWithdrawCooldown,
     isClaimable: isClaimablePerp,
@@ -98,14 +99,17 @@ export function TCButton({ eventType, competition, timestamp }) {
         })
         if (isSuccess) await checkWithdrawable(true)
       } else {
-        if (withdrawCooldown === 0 || !enabledWithdraw) {
+        // Withdraw or deallocate
+        if (withdrawCooldown === 0 || !isInvalidAmount(deallocatableBalance) || !enabledWithdraw) {
+          // Deallocate
           setShowModalDeallocate(true)
           return
         }
+        // Withdraw
         setShowModalDeallocate(false)
         const isSuccess = await withdrawTCPerp({
           tcAddress: competition.tcAddress,
-          amount: balance,
+          amount: withdrawableBalance,
         })
         if (isSuccess) await checkWithdrawableTCPerp()
       }
@@ -119,8 +123,9 @@ export function TCButton({ eventType, competition, timestamp }) {
     checkWithdrawable,
     withdrawCooldown,
     enabledWithdraw,
+    deallocatableBalance,
     withdrawTCPerp,
-    balance,
+    withdrawableBalance,
     checkWithdrawableTCPerp,
   ])
 
@@ -129,18 +134,19 @@ export function TCButton({ eventType, competition, timestamp }) {
       setShowModalDeallocate(false)
       const isSuccess = await withdrawTCPerp({
         tcAddress: competition?.tcAddress,
-        amount: balance,
+        amount: withdrawableBalance,
       })
       if (isSuccess) await checkWithdrawableTCPerp()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balance, competition?.tcAddress, enabledWithdraw, showModalDeallocate])
+  }, [withdrawableBalance, competition?.tcAddress, enabledWithdraw, showModalDeallocate])
 
   useEffect(() => {
     function intervalCallback() {
       if (competition.market !== TC_MARKET_TYPES.PERPETUAL) return
 
-      if (withdrawCooldown === 0) {
+      // If can deallocate, dont withdraw
+      if (withdrawCooldown === 0 || !isInvalidAmount(deallocatableBalance)) {
         setEnabledWithdraw(undefined)
         setRemainingTime(undefined)
         clearInterval(intervalId.current)
@@ -164,7 +170,7 @@ export function TCButton({ eventType, competition, timestamp }) {
     intervalId.current = setInterval(intervalCallback, 1000)
 
     return () => clearInterval(intervalId.current)
-  }, [competition.market, withdrawCooldown])
+  }, [competition.market, deallocatableBalance, withdrawCooldown])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -297,9 +303,11 @@ export function TCButton({ eventType, competition, timestamp }) {
         <DeallocateModal
           open={showModalDeallocate}
           remainingTime={remainingTime}
-          balance={balance}
+          balance={deallocatableBalance}
           onClose={() => {
             setShowModalDeallocate(false)
+            checkWithdrawableTCPerp()
+            getWithdrawCooldown()
           }}
           tcAddress={competition.tcAddress}
           getWithdrawCooldown={getWithdrawCooldown}

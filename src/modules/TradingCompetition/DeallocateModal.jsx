@@ -31,7 +31,7 @@ function DeallocateModal({ remainingTime, open, onClose, balance, tcAddress, get
   }, [balance, deallocate, getWithdrawCooldown, onClose, tcAddress])
 
   return (
-    <Modal isOpen={open} closeModal={onClose} width={540} title={t('Withdraw')}>
+    <Modal isOpen={open} closeModal={onClose} width={540} title={t('Deallocate')}>
       <ModalBody>
         {enabledWithdraw === undefined ? (
           <div className='flex flex-row items-center justify-between'>
@@ -39,7 +39,7 @@ function DeallocateModal({ remainingTime, open, onClose, balance, tcAddress, get
             <div className='flex flex-row items-center gap-3'>
               <TextHeading>{formatAmount(fromWei(balance))}</TextHeading>
               <div className='flex flex-row items-center gap-1'>
-                <CircleImage src={USDT?.logoURI} width={20} height={20} alt='thena token' />
+                <CircleImage src={USDT?.logoURI} width={20} height={20} alt='USDT' />
                 <TextHeading>{USDT?.symbol}</TextHeading>
               </div>
             </div>

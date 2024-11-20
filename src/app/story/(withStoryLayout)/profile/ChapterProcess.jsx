@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { TranslationWithFormatLink } from '@/components/common/TranslationWithFormatLink'
+import { HyperLink, TranslationWithFormatLink } from '@/components/common/TranslationWithFormatLink'
 import { useTHEStory } from '@/context/THEStoryContext'
 import { errorToast } from '@/lib/notify'
 import { getShareSocialNetworkUrl, SocialNetwork } from '@/lib/share-social'
@@ -13,6 +13,8 @@ import { ArrowBackwardIcon, ArrowForwardSmallIcon, ChevronRightIcon } from '@/sv
 
 import { RewardIconTooltip } from './RewardIconTooltip'
 import {
+  Task1PoolsChapter5,
+  Task2PoolsChapter5,
   TaskDailyName,
   TaskDepositGamma,
   TaskDepositIchi,
@@ -157,6 +159,59 @@ export function ChapterProcess({
               },
             ]}
           />
+        )
+      }
+
+      if (task.name === Task1PoolsChapter5) {
+        return (
+          <TranslationWithFormatLink
+            text={t(task.name)}
+            className='text-lg font-medium'
+            translate
+            hyperLinks={[
+              {
+                text: 'THE/BNB',
+                link: 'https://thena.fi/pools/0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8',
+              },
+            ]}
+          />
+        )
+      }
+
+      if (task.name === Task2PoolsChapter5) {
+        return (
+          <div className='text-lg font-medium'>
+            {t(task.name)}:
+            <ul className='ml-5 list-disc'>
+              <li>
+                <HyperLink text='BNB/XVS' link='https://thena.fi/pools/0x06dc242b1987b46c1e8dd44d1cb203139cf09edf' />{' '}
+                (Gamma Narrow)
+              </li>
+              <li>
+                <HyperLink text='USDT/TAROT' link='https://thena.fi/pools/0x2c4166641d5293551190c9f01ac50d0b6abd7086' />{' '}
+                (Classic)
+              </li>
+              <li>
+                <HyperLink text='BKN/USDT' link='https://thena.fi/pools/0xb7ed8551546bff15f7103318d465ef81d79bc67e' />{' '}
+                (Gamma Narrow)
+              </li>
+              <li>
+                <HyperLink
+                  text='lisUSD/USDT'
+                  link='https://thena.fi/pools/0x5b0baf66718caabda49a4af32eb455c3b99b5821'
+                />{' '}
+                (Gamma Stable)
+              </li>
+              <li>
+                <HyperLink text='USDT/XCAD' link='https://thena.fi/pools/0x1a839f1887a76cfc113a494df08d3b4343afce19' />{' '}
+                (Classic)
+              </li>
+              <li>
+                <HyperLink text='ABOND/BNB' link='https://thena.fi/pools/0x44aa475ed44dda30f4fb81a0eec7c44aed01c7c0' />{' '}
+                (ICHI - wBNB Deposit)
+              </li>
+            </ul>
+          </div>
         )
       }
 
