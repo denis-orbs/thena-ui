@@ -261,3 +261,12 @@ export const getPoolType = type =>
       : type === 'Stable'
         ? 'Stable'
         : 'Weighted'
+
+export const roundIfMoreThan18Decimals = number => {
+  const parts = number.toString().split('.')
+  console.log({ parts })
+  if (parts[1] && parts[1].length > 18) {
+    return Math.floor(number * 1e18) / 1e18
+  }
+  return number
+}

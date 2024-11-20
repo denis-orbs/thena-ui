@@ -57,7 +57,7 @@ const updateAllocate = tokens => {
 function SelectTokenButton({ token, setTokenSelected, tokenSelected }) {
   const t = useTranslations()
   const [tokenPopup, setTokenPopup] = useState(false)
-  const hiddenTokens = useMemo(() => tokenSelected.map(item => item?.token?.address?.toLowerCase()), [tokenSelected])
+  const hiddenTokens = useMemo(() => tokenSelected.map(item => item?.token?.address), [tokenSelected])
   return (
     <>
       {token.token ? (
@@ -124,13 +124,13 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
   }, [index, setTokenSelected])
 
   const handleUpdateAllocateToken = e => {
-    const newVal = isNaN(Number(e.target.value)) || Number(e.target.value) < 0 ? 0 : Math.floor(Number(e.target.value))
+    // const newVal = isNaN(Number(e.target.value)) || Number(e.target.value) < 0 ? 0 : Math.floor(Number(e.target.value))
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
       updatedTokens[index] = {
         ...updatedTokens[index],
         lock: !!updatedTokens[index].token,
-        allocate: newVal,
+        allocate: Number(e.target.value),
       }
       return updateAllocate(updatedTokens)
     })
@@ -144,6 +144,7 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
           <Input
             className='h-11 w-[70px] border-none bg-transparent'
             classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7' }}
+            type='number'
             min={0}
             step={1}
             val={token.allocate || ''}

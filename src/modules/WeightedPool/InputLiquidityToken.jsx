@@ -5,29 +5,45 @@ import TokenBadge from '@/components/badges/TokenBadge'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { cn, formatAmount, fromWei, toWei } from '@/lib/utils'
+import { cn, formatAmount, fromWei, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
 
-export default function InputLiquidityToken({ asset, allocate, amount, setTokenAndWeights }) {
+export default function InputLiquidityToken({ asset, allocate, amount, setTokenAndWeights, setLastIndexChange }) {
   const t = useTranslations()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
   const [isError, setIsError] = useState(false)
-  const setAmount = value => {
-    setTokenAndWeights(prev => {
-      const updatedTokens = [...prev]
-      const index = updatedTokens.findIndex(item => item.token.address === asset.address)
-      updatedTokens[index] = {
-        ...updatedTokens[index],
-        amount: value,
-      }
-      return updatedTokens
-    })
-  }
+  const setAmount = useCallback(
+    value => {
+      setTokenAndWeights(prev => {
+        const updatedTokens = [...prev]
+        const index = updatedTokens.findIndex(item => item.token.address === asset.address)
+
+        updatedTokens[index] = {
+          ...updatedTokens[index],
+          amount: roundIfMoreThan18Decimals(value),
+        }
+
+        setLastIndexChange(index)
+
+        return updatedTokens
+      })
+    },
+    [asset.address, setLastIndexChange, setTokenAndWeights],
+  )
+
+  console.log({ check: asset?.balance.toString(), amount })
 
   const isInsufficientBalance = useMemo(() => {
     const amountToWei = toWei(amount, asset?.decimals)
     if (fromWei(amountToWei, asset?.decimals).gt(asset?.balance)) {
       return true
     }
+
+    // if (
+    //   asset?.address.toLowerCase() === Contracts.mockERC20Token.WBNB.toLowerCase() &&
+    //   fromWei(amountToWei, asset?.decimals).gt(asset?.balance.minus(0.05))
+    // ) {
+    //   return true
+    // }
     return false
   }, [amount, asset])
 
@@ -89,10 +105,17 @@ export default function InputLiquidityToken({ asset, allocate, amount, setTokenA
         />
       </div>
       <div className='flex items-center justify-between gap-2'>
-        <TextSubHeading>${formatAmount(getValueTokenAmountToUSD(asset.address, amount))}</TextSubHeading>
         <TextSubHeading>
-          {t('Balance')}: {formatAmount(asset?.balance)}
+          {t('Balance')}: {formatAmount(asset?.balance)}{' '}
+          {amount?.toString() === asset?.balance.toString() ? (
+            <span className='cursor-pointer'>{t('Maxed')}</span>
+          ) : (
+            <span onClick={() => setAmount(asset?.balance.toString())} className='cursor-pointer text-primary-500'>
+              {t('Max')}
+            </span>
+          )}
         </TextSubHeading>
+        <TextSubHeading>${formatAmount(getValueTokenAmountToUSD(asset.address, amount))}</TextSubHeading>
       </div>
       {renderMessages()}
     </div>

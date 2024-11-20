@@ -35,8 +35,8 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
           {data.map((row, index) => (
             <tr key={index}>
               <td className='whitespace-nowrap px-6 py-4 text-neutral-200'>{row.symbol}</td>
-              <td className='whitespace-nowrap px-6 py-4 text-neutral-200'>{formatAmount(row.price)}</td>
-              <td className='whitespace-nowrap px-6 py-4 text-neutral-200'>{row.pool}</td>
+              <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>{formatAmount(row.price)}</td>
+              <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>{row.pool}</td>
             </tr>
           ))}
           <tr className='border-t border-t-neutral-700 font-semibold'>

@@ -1,36 +1,62 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount, roundIfMoreThan18Decimals } from '@/lib/utils'
 import { ArrowLeftIcon, InfoCirCleDisableIcon } from '@/svgs'
 
 import InputLiquidityToken from './InputLiquidityToken'
 
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
   const t = useTranslations()
+  const [lastIndexChange, setLastIndexChange] = useState(0)
   const [isAutoOptimize, setIsAutoOptimize] = useState(false)
-  // TODO: replace mock data
-  const available = 42000
+
+  const [totalWhenOptimize, setTotalWhenOptimize] = useState(null)
 
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
+
+  const available = useMemo(
+    () =>
+      tokensAndWeights.reduce(
+        (sum, item) => (getValueTokenAmountToUSD(item?.token?.address, item?.token?.balance) || 0) + sum,
+        0,
+      ),
+    [getValueTokenAmountToUSD, tokensAndWeights],
+  )
+
   const total = useMemo(
     () => tokensAndWeights.reduce((sum, curr) => sum + getValueTokenAmountToUSD(curr.token.address, curr.amount), 0),
     [getValueTokenAmountToUSD, tokensAndWeights],
   )
 
-  // const [isDisable, setIsDisable] = useState(true)
+  useEffect(() => {
+    setTokenAndWeights(prev => {
+      const updatedTokens = [...prev]
+      const lastChange = updatedTokens[lastIndexChange]
+
+      if (isAutoOptimize) {
+        const currentTokenUSDValue = getValueTokenAmountToUSD(lastChange?.token?.address, lastChange?.amount)
+
+        updatedTokens.forEach((token, idx) => {
+          if (idx !== lastIndexChange) {
+            const otherTokenUSDValue =
+              (currentTokenUSDValue / (updatedTokens[lastIndexChange].allocate / 100)) * (token.allocate / 100)
+            token.amount = roundIfMoreThan18Decimals(otherTokenUSDValue / token.token.price).toString()
+          }
+        })
+      }
+
+      return updatedTokens
+    })
+  }, [lastIndexChange, isAutoOptimize, setTokenAndWeights, getValueTokenAmountToUSD])
 
   const isDisable = useMemo(
-    () =>
-      (tokensAndWeights || []).some(item => {
-        console.log({ item })
-        return item.isError || !item?.amount
-      }),
+    () => (tokensAndWeights || []).some(item => item.isError || !item?.amount),
     [tokensAndWeights],
   )
 
@@ -43,6 +69,69 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     )
   }, [setTokenAndWeights])
 
+  const handleMaxTotal = useCallback(() => {
+    setIsAutoOptimize(false)
+    setTokenAndWeights(prev => {
+      const updatedTokens = [...prev]
+
+      updatedTokens.forEach(token => {
+        token.amount = token?.token?.balance || 0
+      })
+
+      return updatedTokens
+    })
+  }, [setTokenAndWeights])
+
+  const handleOptimizeTotal = useCallback(() => {
+    const results = []
+    tokensAndWeights.forEach(token => {
+      const currentToken = token.token
+      const currentBalance = token?.token?.balance
+      const currentTokenUSDValue = getValueTokenAmountToUSD(currentToken?.address, currentBalance)
+      const cpTokenAndWeight = [...tokensAndWeights]
+      let result = []
+      for (let i = 0; i < cpTokenAndWeight.length; i++) {
+        const otherToken = cpTokenAndWeight[i]
+        if (otherToken?.token?.address?.toLowerCase() !== currentToken.address.toLowerCase()) {
+          const otherTokenUSDValue = (currentTokenUSDValue / (token.allocate / 100)) * (otherToken.allocate / 100)
+          const newAmount = otherTokenUSDValue / (otherToken.token.price || 1)
+
+          if (newAmount > otherToken?.token?.balance) {
+            result = null
+            break
+          }
+
+          result.push({
+            ...otherToken,
+            amount: roundIfMoreThan18Decimals(newAmount).toString(),
+            usdValue: otherTokenUSDValue,
+          })
+        } else {
+          result.push({
+            ...otherToken,
+            amount: roundIfMoreThan18Decimals(currentBalance).toString(),
+            usdValue: currentTokenUSDValue,
+          })
+        }
+      }
+
+      if (result !== null) results.push(result)
+    })
+
+    const maxUsdValueResult = results
+      .filter(item => item !== null)
+      .reduce((maxResult, currentResult) => {
+        const currentUsdValueSum = currentResult.reduce((sum, token) => sum + (token?.usdValue || 0), 0)
+        const maxUsdValueSum = maxResult.reduce((sum, token) => sum + (token?.usdValue || 0), 0)
+
+        return currentUsdValueSum > maxUsdValueSum ? currentResult : maxResult
+      }, results[0])
+
+    setTotalWhenOptimize(maxUsdValueResult.reduce((sum, token) => sum + (token?.usdValue || 0), 0))
+
+    setTokenAndWeights(maxUsdValueResult)
+  }, [getValueTokenAmountToUSD, setTokenAndWeights, tokensAndWeights])
+
   return (
     <Box className='flex flex-col gap-3'>
       <div className='flex h-11 flex-row items-center'>
@@ -53,14 +142,9 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
         <>
           {!isDisable && (
             <div>
-              <Paragraph className='text-base'>{t('Optimized amounts have been pre-filled')}</Paragraph>
-              <span>
-                <TextButton
-                  onClick={onClearAmount}
-                  className='border-none px-1 text-primary-600 hover:bg-transparent hover:text-primary-600'
-                >
-                  {t('Clear all')}
-                </TextButton>
+              <Paragraph className='text-base'>{t('Optimized amounts have been pre-filled')}</Paragraph>{' '}
+              <span className='cursor-pointer text-primary-600' onClick={onClearAmount}>
+                {t('Clear all')}
               </span>
             </div>
           )}
@@ -70,9 +154,9 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
               allocate={`(${item.allocate}%)`}
               setTokenAndWeights={setTokenAndWeights}
               amount={item.amount}
+              setLastIndexChange={setLastIndexChange}
             />
           ))}
-          <Paragraph className='text-sm text-warn-600'>{t('To ensure a smooth transaction')}</Paragraph>
         </>
       </div>
       <div className='flex flex-row items-center gap-2'>
@@ -87,12 +171,29 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
         </div>
         <div className='flex flex-row justify-between'>
           <span>
-            {t('Available')}: ${formatAmount(available)} <span className='text-primary-400'>{t('Max')}</span>
+            {t('Available')}: ${formatAmount(available)}{' '}
+            {available === total ? (
+              <span onClick={handleMaxTotal}>{t('Maxed')}</span>
+            ) : (
+              <span className='cursor-pointer text-primary-400' onClick={handleMaxTotal}>
+                {t('Max')}
+              </span>
+            )}
           </span>
-          <span className='text-primary-400'>{t('Optimize')}</span>
+          {totalWhenOptimize !== total && (
+            <span className='cursor-pointer text-primary-400' onClick={handleOptimizeTotal}>
+              {t('Optimize')}
+            </span>
+          )}
         </div>
       </div>
-      <PrimaryButton disabled={isDisable} onClick={() => setCurrentStep(prev => prev + 1)} className='w-full'>
+      <PrimaryButton
+        disabled={isDisable}
+        onClick={() => {
+          setCurrentStep(prev => prev + 1)
+        }}
+        className='w-full'
+      >
         {t('Preview')}
       </PrimaryButton>
     </Box>

@@ -7,7 +7,7 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
-import { addToken, formatAmount, goScan } from '@/lib/utils'
+import { addToken, formatAmount, goScan, wrappedAddress } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { ExternalIcon, PlusCircleIcon } from '@/svgs'
 
@@ -49,7 +49,10 @@ function TokenModal({
       hiddenTokens && Array.isArray(hiddenTokens)
         ? assets.filter(
             asset =>
-              !hiddenTokens.filter(Boolean).some(token => asset.address.toLowerCase().includes(token.toLowerCase())),
+              !hiddenTokens.filter(Boolean).some(token => {
+                const wrapped = wrappedAddress(asset)
+                return wrapped.includes(token.toLowerCase())
+              }),
           )
         : assets,
     [assets, hiddenTokens],

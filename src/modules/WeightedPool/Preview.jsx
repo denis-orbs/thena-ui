@@ -94,7 +94,7 @@ function PoolDetails({
       return toWei(allocate.toString())
     })
 
-    const amounts = sortedAddresses.map(item => toWei(item.amount))
+    const amounts = sortedAddresses.map(item => toWei(item.amount, item?.token?.decimals))
     await onCreateWeightedPool(name, symbol, tokens, weights, amounts, fee, poolId => {
       if (poolId) {
         setNewPoolId(poolId)
