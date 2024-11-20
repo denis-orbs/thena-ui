@@ -1250,6 +1250,7 @@
   "editable by governance": "editable by governance",
   "Immutable except for swap fees editable by governance": "Immutable except for swap fees editable by governance",
   "Weighted": "Weighted",
+  "Migrate": "Migrate",
   "Current": "Current",
   "Avg": "Avg",
   "Min": "Min",

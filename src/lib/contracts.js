@@ -59,7 +59,7 @@ import {
   thenaIdAbi,
 } from '@/constant/abi/core'
 import {
-  algebraAbi,
+  algebraAbiV2,
   defiedgeStrategyAbi,
   fusionQuoterAbi,
   fusionRouterAbi,
@@ -71,6 +71,8 @@ import {
   vaultDepositGaurdAbi,
 } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
+import { algebraFactoryTestNetV2Abi } from '@/constant/v2-testnet-abi'
+import { algebraFactoryV3Abi, nonfungiblePositionManagerV3Abi } from '@/constant/v3-abi'
 
 export const getContract = (abi, addressOrAddressMap, chainId) => {
   if (!addressOrAddressMap || !abi || !chainId) return null
@@ -152,7 +154,8 @@ export const getMuonContract = () => getContract(muonAbi, Contracts.muon, ChainI
                                           FUSION (Algebra)
  ************************************************************************************************** */
 
-export const getAlgebraNPMContract = chainId => getContract(algebraAbi, Contracts.nonfungiblePositionManagerV2, chainId)
+export const getAlgebraNPMContract = chainId =>
+  getContract(algebraAbiV2, Contracts.nonfungiblePositionManagerV2, chainId)
 
 export const getFusionRouterContract = chainId => getContract(fusionRouterAbi, Contracts.fusionRouter, chainId)
 
@@ -241,7 +244,11 @@ export const getAlgebraPoolDeployerContract = () =>
 /** ******************************************************************************************************
                                           ALGEBRA_FACTORY_TESTNET
 ******************************************************************************************************* */
-export const getAlgebraFactoryContract = () => getContract(algebraFactoryAbi, Contracts.ALGEBRA_FACTORY_TESTNET, 97)
+export const getAlgebraFactoryContractV3 = chainId =>
+  getContract(algebraFactoryV3Abi, Contracts.algebraFactoryV3, chainId)
+
+export const getAlgebraFactoryContractV2 = chainId =>
+  getContract(chainId === 97 ? algebraFactoryTestNetV2Abi : algebraFactoryAbi, Contracts.algebraFactoryV2, chainId)
 
 /** ******************************************************************************************************
                                           ALGEBRA_COMMUNITY_VAULT_TESTNET
@@ -283,8 +290,12 @@ export const getSwapRouterContract = () => getContract(swapRouterAbi, Contracts.
 /** ******************************************************************************************************
                                           NONFUNGIBLE_POSITION_MANAGER_TESTNET
 ******************************************************************************************************* */
-export const getNonfungiblePositionManagerContract = () =>
-  getContract(nonfungiblePositionManagerAbi, Contracts.NONFUNGIBLE_POSITION_MANAGER_TESTNET, 97)
+export const getNonfungiblePositionManagerContractV2 = chainId =>
+  getContract(nonfungiblePositionManagerAbi, Contracts.nonfungiblePositionManagerV2, chainId)
+
+export const getNonfungiblePositionManagerContractV3 = chainId => {
+  getContract(nonfungiblePositionManagerV3Abi, Contracts.nonfungiblePositionManagerV3, chainId)
+}
 
 /** ******************************************************************************************************
                                           ALGEBRA_INTERFACE_MULTICALL_TESTNET

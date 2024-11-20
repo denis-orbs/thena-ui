@@ -1,4 +1,5 @@
-import algebraAbi from './algebra.json'
+import algebraAbiV2 from './algebraV2.json'
+import algebraAbiV3 from './algebraV3.json'
 import defiedgeStrategyAbi from './defiedgeStrategy.json'
 import algebraFactoryAbi from './factory.json'
 import fusionQuoterAbi from './fusionQuoter.json'
@@ -15,7 +16,8 @@ import poolAbi from './pool.json'
 import vaultDepositGaurdAbi from './vaultDepositGaurd.json'
 
 export {
-  algebraAbi,
+  algebraAbiV2,
+  algebraAbiV3,
   algebraFactoryAbi,
   defiedgeStrategyAbi,
   fusionQuoterAbi,

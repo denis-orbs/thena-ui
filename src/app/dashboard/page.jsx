@@ -34,7 +34,7 @@ import { InfoCircleWhite } from '@/svgs'
 
 import NotConnected from './NotConnected'
 
-export const FILTERS = {
+const FILTERS = {
   All: 'All Positions',
   ICHI: 'ICHI',
   Gamma: 'Gamma',

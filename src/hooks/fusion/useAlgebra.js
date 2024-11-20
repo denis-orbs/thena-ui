@@ -11,9 +11,10 @@ import { readCall } from '@/lib/contractActions'
 import { getERC20Contract } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { fromWei } from '@/lib/utils'
+import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useAlgebraAdd = () => {
+export const useAlgebraAdd = (version = 2) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, writeTxn, endTxn, sendTxn } = useTxn()
@@ -25,7 +26,12 @@ export const useAlgebraAdd = () => {
       const approve1uuid = uuidv4()
       const approve2uuid = uuidv4()
       const adduuid = uuidv4()
-      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
+
+      const algebraAddress =
+        version === 2
+          ? Contracts.nonfungiblePositionManagerV2[chainId]
+          : Contracts.nonfungiblePositionManagerV3[chainId]
+
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const { position, depositADisabled, depositBDisabled, noLiquidity } = mintInfo
       const baseCurrencyAddress = baseCurrency.wrapped?.address.toLowerCase()
@@ -102,13 +108,13 @@ export const useAlgebraAdd = () => {
       })
       setPending(false)
     },
-    [account, startTxn, endTxn, writeTxn, sendTxn, chainId, t],
+    [version, chainId, startTxn, t, account, sendTxn, endTxn, writeTxn],
   )
 
   return { onAlgebraAdd, pending }
 }
 
-export const useAlgebraClaim = () => {
+export const useAlgebraClaim = (version = 2) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
@@ -130,7 +136,11 @@ export const useAlgebraClaim = () => {
         },
       })
       setPending(true)
-      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
+      const algebraAddress =
+        version === 2
+          ? Contracts.nonfungiblePositionManagerV2[chainId]
+          : Contracts.nonfungiblePositionManagerV3[chainId]
+
       const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
         tokenId,
         expectedCurrencyOwed0: feeValue0,
@@ -149,13 +159,13 @@ export const useAlgebraClaim = () => {
       setPending(false)
       callback()
     },
-    [account, startTxn, endTxn, sendTxn, chainId, t],
+    [account, startTxn, endTxn, sendTxn, chainId, t, version],
   )
 
   return { onAlgebraClaim, pending }
 }
 
-export const useAlgebraRemove = () => {
+export const useAlgebraRemove = (version = 2) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
@@ -177,7 +187,11 @@ export const useAlgebraRemove = () => {
         },
       })
       setPending(true)
-      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
+      const algebraAddress =
+        version === 2
+          ? Contracts.nonfungiblePositionManagerV2[chainId]
+          : Contracts.nonfungiblePositionManagerV3[chainId]
+
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const { calldata, value } = NonfungiblePositionManager.removeCallParameters(position, {
@@ -196,20 +210,18 @@ export const useAlgebraRemove = () => {
         setPending(false)
         return
       }
-      endTxn({
-        key,
-        final: 'Removed position',
-      })
+
+      endTxn({ key, final: 'Removed position' })
       setPending(false)
       callback()
     },
-    [account, startTxn, endTxn, sendTxn, chainId, t],
+    [account, startTxn, endTxn, sendTxn, chainId, t, version],
   )
 
   return { onAlgebraRemove, pending }
 }
 
-export const useAlgebraBurn = () => {
+export const useAlgebraBurn = (version = 2) => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
@@ -231,7 +243,11 @@ export const useAlgebraBurn = () => {
         },
       })
       setPending(true)
-      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
+      const algebraAddress =
+        version === 2
+          ? Contracts.nonfungiblePositionManagerV2[chainId]
+          : Contracts.nonfungiblePositionManagerV3[chainId]
+
       const { calldata, value } = NonfungiblePositionManager.burnCallParameters(tokenId)
 
       if (!(await sendTxn(key, burnuuid, algebraAddress, calldata, value))) {
@@ -245,13 +261,13 @@ export const useAlgebraBurn = () => {
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, sendTxn, chainId, t],
+    [startTxn, endTxn, sendTxn, chainId, t, version],
   )
 
   return { onAlgebraBurn, pending }
 }
 
-export const useAlgebraIncrease = () => {
+export const useAlgebraIncrease = (version = 2) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()
@@ -259,7 +275,11 @@ export const useAlgebraIncrease = () => {
 
   const onAlgebraIncrease = useCallback(
     async (amountA, amountB, position, depositADisabled, depositBDisabled, slippage, deadline, tokenId, callback) => {
-      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
+      const algebraAddress =
+        version === 2
+          ? Contracts.nonfungiblePositionManagerV2[chainId]
+          : Contracts.nonfungiblePositionManagerV3[chainId]
+
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const baseCurrency = amountA.currency
       const quoteCurrency = amountB.currency

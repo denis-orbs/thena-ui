@@ -86,7 +86,6 @@ export const getFusionChartData = async (chainId, address, skip) => {
 }
 
 export const fetchPairChartData = async (chainId, pair) => {
-  console.log('fetch pair chart data ======================')
   if (pair.isFusion) {
     const { data: fusiondata } = await fetchChartData(getFusionChartData, [chainId, pair.address], false)
     return fusiondata
