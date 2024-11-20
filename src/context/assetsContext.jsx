@@ -18,7 +18,6 @@ const initialState = {
 }
 
 const fetchAssetsBalances = async (assets, account, networkId) => {
-  console.log('----------------- user assets ------------------')
   const res = await callMulti(
     assets.map(asset => ({
       address: asset.address,

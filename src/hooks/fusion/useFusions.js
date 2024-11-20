@@ -1,7 +1,12 @@
 import { useMemo } from 'react'
+import useSWR from 'swr'
 import { computePoolAddress, Pool } from 'thena-fusion-sdk'
 
+import { algebraFactoryAbi } from '@/constant/abi'
+import Contracts, { CHAIN_ID } from '@/constant/contracts'
+import { algebraFactoryV3Abi } from '@/constant/v3-abi'
 import { useFusionPairs } from '@/context/fusionsContext'
+import { callMulti } from '@/lib/contractActions'
 
 import { useToken } from './Tokens'
 
@@ -12,65 +17,86 @@ export const PoolState = {
   INVALID: 'INVALID',
 }
 
-export function useFusions(poolKeys) {
+const fetchPoolAddress = async (transformed, version) => {
+  const _networkId = transformed?.[0]?.[0].chainId
+  if (_networkId !== CHAIN_ID.TEST_BSC) {
+    return transformed.map(value =>
+      computePoolAddress({
+        tokenA: value[0],
+        tokenB: value[1],
+      }),
+    )
+  }
+  return await callMulti(
+    transformed
+      .filter(value => !!value)
+      .map(value => ({
+        address: version === 2 ? Contracts.algebraFactoryV2[_networkId] : Contracts.algebraFactoryV3[_networkId],
+        abi: version === 2 ? algebraFactoryAbi : algebraFactoryV3Abi,
+        functionName: 'computePoolAddress',
+        args: [value[0]?.address, value[1]?.address],
+        _networkId,
+      })),
+  )
+}
+
+export function useFusions(poolKeys, version) {
   const fusionPairs = useFusionPairs()
+
   const transformed = useMemo(
     () =>
-      poolKeys.map(([currencyA, currencyB]) => {
-        if (!currencyA || !currencyB) return null
+      poolKeys
+        .map(([currencyA, currencyB]) => {
+          if (!currencyA || !currencyB) return null
 
-        const tokenA = currencyA?.wrapped
-        const tokenB = currencyB?.wrapped
-        if (!tokenA || !tokenB || tokenA.equals(tokenB)) return null
-        const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]
-        return [token0, token1]
-      }),
+          const tokenA = currencyA?.wrapped
+          const tokenB = currencyB?.wrapped
+          if (!tokenA || !tokenB || tokenA.equals(tokenB)) return null
+          const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]
+          return [token0, token1]
+        })
+        .filter(poolKey => !!poolKey),
     [poolKeys],
   )
 
-  const poolAddresses = useMemo(
-    () =>
-      transformed.map(value => {
-        if (!value) return undefined
-        // FIXME remove hard code for testnet
-        if (value[0].chainId === 97) return '0xca656EE464AAC96B69E7A377Fecd7579071c620D'
-        return computePoolAddress({
-          tokenA: value[0],
-          tokenB: value[1],
-        })
-      }),
-    [transformed],
+  const { data: poolAddresses = [] } = useSWR(
+    transformed.length > 0
+      ? transformed.map(value => [value[0].address, value[1].address, value[1].chainId, 'fetchPoolAddress', version])
+      : null,
+    () => fetchPoolAddress(transformed, version),
   )
 
   return useMemo(
     () =>
-      poolAddresses.map((poolAddress, index) => {
-        const [token0, token1] = transformed[index] ?? []
-        if (!token0 || !token1) return [PoolState.INVALID, null]
+      poolAddresses
+        .filter(poolAddress => !!poolAddress)
+        .map((poolAddress, index) => {
+          const [token0, token1] = transformed[index] ?? []
+          if (!token0 || !token1) return [PoolState.INVALID, null]
 
-        const found = fusionPairs && fusionPairs.find(ele => ele.address.toLowerCase() === poolAddress.toLowerCase())
-        if (!found) return [PoolState.NOT_EXISTS, null]
-        const { globalState, liquidity } = found
-        if (!globalState || !liquidity) return [PoolState.NOT_EXISTS, null]
-        if (!globalState.price || Number(globalState.price) === 0) return [PoolState.NOT_EXISTS, null]
-        try {
-          return [
-            PoolState.EXISTS,
-            new Pool(token0, token1, globalState.fee, globalState.price, liquidity, globalState.tick),
-          ]
-        } catch (error) {
-          console.log('error :>> ', error)
-          return [PoolState.NOT_EXISTS, null]
-        }
-      }),
+          const found = fusionPairs && fusionPairs.find(ele => ele.address.toLowerCase() === poolAddress.toLowerCase())
+          if (!found) return [PoolState.NOT_EXISTS, null]
+          const { globalState, liquidity } = found
+          if (!globalState || !liquidity) return [PoolState.NOT_EXISTS, null]
+          if (!globalState.price || Number(globalState.price) === 0) return [PoolState.NOT_EXISTS, null]
+          try {
+            return [
+              PoolState.EXISTS,
+              new Pool(token0, token1, globalState.fee, globalState.price, liquidity, globalState.tick),
+            ]
+          } catch (error) {
+            console.log('error :>> ', error)
+            return [PoolState.NOT_EXISTS, null]
+          }
+        }),
     [poolAddresses, transformed, fusionPairs],
   )
 }
 
-export function useFusion(currencyA, currencyB) {
+export function useFusion(currencyA, currencyB, version = 2) {
   const poolKeys = useMemo(() => [[currencyA, currencyB]], [currencyA, currencyB])
 
-  return useFusions(poolKeys)[0]
+  return useFusions(poolKeys, version)[0] ?? []
 }
 
 export function useTokensSymbols(token0, token1) {

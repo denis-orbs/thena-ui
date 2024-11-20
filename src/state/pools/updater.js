@@ -81,7 +81,8 @@ function Updater() {
   const prices = usePrices()
   const extraRewardsInfo = useExtraRewardsInfo()
   const { networkId } = useChainSettings()
-  const { data: pools } = useSWR(['pools api', networkId], { fetcher: fetchPools })
+  const { data: pools = [] } = useSWR(['pools api', networkId], { fetcher: fetchPools })
+
   const { data: userInfos } = useSWRImmutable(account && pools ? ['pools user api', account, networkId] : null, url =>
     fetchUserFusions(url, account, pools, networkId),
   )
@@ -99,7 +100,7 @@ function Updater() {
       const theUsdtWide = '0xb420adb29afd0a4e771739f0a29a4e077eff1acb' // the/usdt wide
       const ankrBnbTheNarrow = '0xd2f1045b4e5ba91ee725e8bf50740617a92e4a5f' // ankrbnb/the wide
 
-      const totalWeight = poolsWithAllowed.reduce((sum, current) => sum + current.gauge.weight, 0)
+      const totalWeight = poolsWithAllowed.reduce((sum, current) => sum + (current?.gauge?.weight ?? 0), 0)
 
       userInfo = poolsWithAllowed
         .map(fusion => {
@@ -110,7 +111,7 @@ function Updater() {
           } else {
             kind = fusion.type === 'Stable' ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC
           }
-          const asset0 = assets.find(ele => ele.address.toLowerCase() === fusion.token0.address.toLowerCase())
+          const asset0 = assets.find(ele => ele.address.toLowerCase() === fusion?.token0.address.toLowerCase())
           const asset1 = assets.find(ele => ele.address.toLowerCase() === fusion.token1.address.toLowerCase())
           const allowed = assets.find(ele => ele.address.toLowerCase() === fusion.allowed?.address.toLowerCase())
           const token0 = {

@@ -361,8 +361,189 @@ export const useAlgebraIncrease = (version = 2) => {
       setPending(false)
       callback()
     },
-    [startTxn, endTxn, writeTxn, sendTxn, account, chainId, t],
+    [version, chainId, startTxn, t, sendTxn, endTxn, account, writeTxn],
   )
 
   return { onAlgebraIncrease, pending }
+}
+
+export const useAlgebraMigration = () => {
+  const [pending, setPending] = useState(false)
+  const { account, chainId } = useWallet()
+  const { startTxn, writeTxn, endTxn, sendTxn } = useTxn()
+  const { slippage, deadline } = useSettings()
+
+  const t = useTranslations()
+
+  const onAlgebraMigrate = useCallback(
+    async ({
+      currencyA,
+      amountA,
+      currencyB,
+      amountB,
+      mintInfo,
+      feeValue0,
+      feeValue1,
+      positionV2,
+      isClaimable,
+      callback,
+    }) => {
+      const key = uuidv4()
+
+      const claimId = uuidv4()
+      const removeId = uuidv4()
+      const burnId = uuidv4()
+      const approveId1 = uuidv4()
+      const approveId2 = uuidv4()
+      const addId = uuidv4()
+
+      const algebraAddress = Contracts.nonfungiblePositionManagerV3[chainId]
+      const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
+
+      const { tokenId } = positionV2
+      const { position: positionV3, depositADisabled, depositBDisabled, noLiquidity } = mintInfo
+
+      const baseCurrencyAddress = currencyA.wrapped?.address.toLowerCase()
+      const quoteCurrencyAddress = currencyB.wrapped?.address.toLowerCase()
+      let isFirstApproved = true
+      let isSecondApproved = true
+      const firstContract = !currencyA.isNative ? getERC20Contract(baseCurrencyAddress, chainId) : null
+      const secondContract = !currencyB.isNative ? getERC20Contract(quoteCurrencyAddress, chainId) : null
+
+      if (!currencyA.isNative && !depositADisabled) {
+        const allowance = await readCall(firstContract, 'allowance', [account, algebraAddress], chainId)
+        isFirstApproved = fromWei(allowance, currencyA.decimals).gte(amountA.toExact())
+      }
+
+      if (!currencyB.isNative && !depositBDisabled) {
+        const allowance = await readCall(secondContract, 'allowance', [account, algebraAddress], chainId)
+        isSecondApproved = fromWei(allowance, currencyB.decimals).gte(amountB.toExact())
+      }
+
+      startTxn({
+        key,
+        title: `${t('Migrate')} NFT #${tokenId}`,
+        transactions: {
+          ...(isClaimable && {
+            [claimId]: {
+              desc: t('Claim Fees'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [removeId]: {
+            desc: t('Remove Liquidity'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [burnId]: {
+            desc: `${t('Burn')} NFT #${tokenId}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          ...(!isFirstApproved && {
+            [approveId1]: {
+              desc: `${t('Approve')} ${currencyA.symbol}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          ...(!isSecondApproved && {
+            [approveId2]: {
+              desc: `${t('Approve')} ${currencyB.symbol}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [addId]: {
+            desc: t('Add Liquidity'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+
+      // claim
+      if (isClaimable) {
+        const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
+          tokenId,
+          expectedCurrencyOwed0: feeValue0,
+          expectedCurrencyOwed1: feeValue1,
+          recipient: account,
+        })
+
+        if (!(await sendTxn(key, claimId, algebraAddress, calldata, value))) {
+          setPending(false)
+          return
+        }
+      }
+
+      // remove
+      const liquidityPercentage = new Percent(100, 100) // 100%
+      const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
+      const { calldata: removeCallData, value: removeValue } = NonfungiblePositionManager.removeCallParameters(
+        positionV2,
+        {
+          tokenId,
+          liquidityPercentage,
+          slippageTolerance: allowedSlippage,
+          deadline: timestamp.toString(),
+          collectOptions: {
+            expectedCurrencyOwed0: feeValue0,
+            expectedCurrencyOwed1: feeValue1,
+            recipient: account,
+          },
+        },
+      )
+
+      if (!(await sendTxn(key, removeId, algebraAddress, removeCallData, removeValue))) {
+        setPending(false)
+        return
+      }
+
+      // burn
+      const { calldata: burnCalldata, value: burnValue } = NonfungiblePositionManager.burnCallParameters(tokenId)
+      if (!(await sendTxn(key, burnId, algebraAddress, burnCalldata, burnValue))) {
+        setPending(false)
+        return
+      }
+
+      // migrate
+      if (!isFirstApproved) {
+        if (!(await writeTxn(key, approveId1, firstContract, 'approve', [algebraAddress, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      if (!isSecondApproved) {
+        if (!(await writeTxn(key, approveId2, secondContract, 'approve', [algebraAddress, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      }
+      const useNative = currencyA.isNative ? currencyA : currencyB.isNative ? currencyB : undefined
+      const { calldata: addCallData, value: addValue } = NonfungiblePositionManager.addCallParameters(positionV3, {
+        slippageTolerance: allowedSlippage, // ok
+        recipient: account, // ok
+        deadline: timestamp.toString(), // ok
+        useNative, // ok
+        createPool: noLiquidity, // need check
+      })
+
+      if (!(await sendTxn(key, addId, algebraAddress, addCallData, addValue))) {
+        setPending(false)
+        return
+      }
+
+      endTxn({ key, final: 'Migrate Successful' })
+      setPending(false)
+      callback()
+    },
+    [chainId, slippage, startTxn, t, deadline, account, sendTxn, endTxn, writeTxn],
+  )
+
+  return { onAlgebraMigrate, pending }
 }
