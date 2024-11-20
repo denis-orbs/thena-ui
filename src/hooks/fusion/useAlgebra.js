@@ -25,7 +25,7 @@ export const useAlgebraAdd = () => {
       const approve1uuid = uuidv4()
       const approve2uuid = uuidv4()
       const adduuid = uuidv4()
-      const algebraAddress = Contracts.nonfungiblePositionManager[chainId]
+      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const { position, depositADisabled, depositBDisabled, noLiquidity } = mintInfo
       const baseCurrencyAddress = baseCurrency.wrapped?.address.toLowerCase()
@@ -130,7 +130,7 @@ export const useAlgebraClaim = () => {
         },
       })
       setPending(true)
-      const algebraAddress = Contracts.nonfungiblePositionManager[chainId]
+      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
       const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
         tokenId,
         expectedCurrencyOwed0: feeValue0,
@@ -177,7 +177,7 @@ export const useAlgebraRemove = () => {
         },
       })
       setPending(true)
-      const algebraAddress = Contracts.nonfungiblePositionManager[chainId]
+      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const { calldata, value } = NonfungiblePositionManager.removeCallParameters(position, {
@@ -231,7 +231,7 @@ export const useAlgebraBurn = () => {
         },
       })
       setPending(true)
-      const algebraAddress = Contracts.nonfungiblePositionManager[chainId]
+      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
       const { calldata, value } = NonfungiblePositionManager.burnCallParameters(tokenId)
 
       if (!(await sendTxn(key, burnuuid, algebraAddress, calldata, value))) {
@@ -259,7 +259,7 @@ export const useAlgebraIncrease = () => {
 
   const onAlgebraIncrease = useCallback(
     async (amountA, amountB, position, depositADisabled, depositBDisabled, slippage, deadline, tokenId, callback) => {
-      const algebraAddress = Contracts.nonfungiblePositionManager[chainId]
+      const algebraAddress = Contracts.nonfungiblePositionManagerV2[chainId]
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const baseCurrency = amountA.currency
       const quoteCurrency = amountB.currency

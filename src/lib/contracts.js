@@ -152,7 +152,7 @@ export const getMuonContract = () => getContract(muonAbi, Contracts.muon, ChainI
                                           FUSION (Algebra)
  ************************************************************************************************** */
 
-export const getAlgebraNPMContract = chainId => getContract(algebraAbi, Contracts.nonfungiblePositionManager, chainId)
+export const getAlgebraNPMContract = chainId => getContract(algebraAbi, Contracts.nonfungiblePositionManagerV2, chainId)
 
 export const getFusionRouterContract = chainId => getContract(fusionRouterAbi, Contracts.fusionRouter, chainId)
 

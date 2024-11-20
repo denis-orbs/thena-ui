@@ -21,7 +21,7 @@ const fetchManualInfo = async (account, chainId) => {
   }
   const tokenIds = await callMulti(
     tokenRequests.map(id => ({
-      address: Contracts.nonfungiblePositionManager[chainId],
+      address: Contracts.nonfungiblePositionManagerV2[chainId],
       abi: algebraAbi,
       functionName: 'tokenOfOwnerByIndex',
       args: [account, id],
@@ -30,7 +30,7 @@ const fetchManualInfo = async (account, chainId) => {
   )
   const positions = await callMulti(
     tokenIds.map(id => ({
-      address: Contracts.nonfungiblePositionManager[chainId],
+      address: Contracts.nonfungiblePositionManagerV2[chainId],
       abi: algebraAbi,
       functionName: 'positions',
       args: [id],
