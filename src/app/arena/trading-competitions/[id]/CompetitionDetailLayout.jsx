@@ -137,6 +137,9 @@ function CompetitionDetailLayout({ children, params }) {
   const { userInfo } = useUserInfo()
 
   const t = useTranslations()
+  const pathName = usePathname()
+
+  const isTableTab = useMemo(() => pathName.includes('leaderboard') || pathName.includes('participants'), [pathName])
 
   const pathname = usePathname()
 
@@ -313,10 +316,15 @@ function CompetitionDetailLayout({ children, params }) {
                       itemClassName='text-sm'
                       className='justify-start overflow-x-auto'
                     />
-                    {children}
                   </div>
                 </div>
                 <Sidebar competition={_competition} eventType={eventType} />
+              </div>
+
+              <div className='grid grid-cols-12 gap-4 lg:gap-12'>
+                <div className={cn('col-span-12', isTableTab ? ' lg:col-span-12' : ' lg:col-span-7')}>
+                  <div className='mt-4 flex w-full flex-col gap-4'>{children}</div>
+                </div>
               </div>
             </>
           )}

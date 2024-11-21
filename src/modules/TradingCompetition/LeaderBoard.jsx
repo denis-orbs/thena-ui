@@ -181,14 +181,14 @@ export function LeaderBoard({
         {
           label: <span>#</span>,
           value: 'rank',
-          width: 'w-[10%]',
+          width: 'w-[8%]',
           isDesc: false,
           disabled: true,
         },
         {
           label: 'User',
           value: 'user',
-          width: 'w-[35%]',
+          width: 'w-[32%]',
           isDesc: true,
           minWidth: 'min-w-40',
           disabled: true,
@@ -197,7 +197,8 @@ export function LeaderBoard({
           ? {
               label: '%PNL',
               value: 'percentagePnl',
-              width: 'w-[30%]',
+              width:
+                competition?.market === TC_MARKET_TYPES.SPOT && eventType === EVENT_TYPES.LIVE ? 'w-[20%]' : 'w-[30%]',
               isDesc: true,
               disabled: true,
             }
@@ -205,14 +206,15 @@ export function LeaderBoard({
         {
           label: 'Profit & Loss',
           value: 'pnl',
-          width: 'w-[30%]',
+
+          width: competition?.market === TC_MARKET_TYPES.SPOT && eventType === EVENT_TYPES.LIVE ? 'w-[20%]' : 'w-[30%]',
           isDesc: true,
           disabled: true,
         },
         {
           label: eventType === EVENT_TYPES.LIVE ? 'Potential Reward' : 'Reward',
           value: 'reward',
-          width: 'w-[30%]',
+          width: competition?.market === TC_MARKET_TYPES.SPOT && eventType === EVENT_TYPES.LIVE ? 'w-[20%]' : 'w-[30%]',
           isDesc: true,
           disabled: true,
         },
@@ -220,7 +222,7 @@ export function LeaderBoard({
           eventType === EVENT_TYPES.LIVE && {
             label: 'Projected PNL',
             value: 'projectedPnl',
-            width: 'w-[30%]',
+            width: 'w-[20%]',
             isDesc: true,
             disabled: false,
           },

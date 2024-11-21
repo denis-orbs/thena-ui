@@ -129,6 +129,7 @@ const V4_COMPETITION_BY_ACCOUNT = gql`
       participants(where: { participant: { id_eq: $account } }) {
         pnl
         percentagePnl
+        projectedPnl
         participant {
           id
           username

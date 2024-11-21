@@ -1128,7 +1128,7 @@
   "Don't show this again": "不再显示",
   "Close": "关闭",
   "Learn more": "了解更多",
-  "Leaderboard is updated every 30-60s": "排行榜每 30-60 秒更新",
+  "Leaderboard is updated every 30-60s": "Leaderboard is updated every 30-60s. If multiple participants tie for a specific prize position, the prize money for that position and the subsequent positions will be pooled and divided equally among the tied participants. For example, if three people tie for second place, they will share the combined prize money for second, third, and fourth place equally.",
   "Liquidity providers in this pool are eligible for YieldNest’s 4X Seeds Boost": "此池中的流动性提供者享有YieldNest 的 4X 种子增益",
   "Liquidity providers in this pool are eligible for Turtle Club 10% emission boost": "此池中的流动性提供者享有Turtle Club 10% 排放增益",
   "Label": "标签",
