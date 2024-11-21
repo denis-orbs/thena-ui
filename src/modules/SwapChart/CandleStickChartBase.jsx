@@ -39,6 +39,7 @@ export function CandleStickChartBase({
 
   useEffect(() => {
     const chart = createChart(chartContainerRef.current, {
+      autoSize: true,
       layout: { textColor: 'white', background: { type: 'solid', color: 'rgba(0,0,0,0)' } },
       localization: {
         timeFormatter: time => dayjs.unix(time).utc().format('MMM DD, YYYY, HH:mm UTC'),
