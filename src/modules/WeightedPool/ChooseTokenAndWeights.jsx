@@ -175,7 +175,9 @@ export function ErrorMessage({ message, type = 'error', className }) {
         className,
       )}
     >
-      <InfoIcon className={cn('h-5 w-5 !stroke-primary-600', type === 'warn' ? '!stroke-warn-600' : '')} />
+      <div className='flex h-10 w-10 items-center'>
+        <InfoIcon className={cn('h-5 w-5 !stroke-primary-600', type === 'warn' ? '!stroke-warn-600' : '')} />
+      </div>
       <div>{message}</div>
     </Box>
   )
