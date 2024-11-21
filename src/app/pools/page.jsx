@@ -43,13 +43,13 @@ const sortOptions = [
   {
     label: 'Pairing',
     value: 'pair',
-    width: 'lg:w-[25%]',
+    width: 'lg:w-[35%]',
     isDesc: true,
   },
   {
     label: 'APR',
     value: 'apr',
-    width: 'lg:w-[20%]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
@@ -67,13 +67,13 @@ const sortOptions = [
   {
     label: 'Fees (24h)',
     value: 'fee',
-    width: 'lg:w-[calc(25%-135px)]',
+    width: 'lg:w-[calc(20%-100px)]',
     isDesc: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'lg:w-[135px]',
+    width: 'lg:w-[100px]',
     disabled: true,
   },
 ]
@@ -136,10 +136,11 @@ export default function PoolsPage() {
       ? res
       : res &&
           res.filter(item => {
-            const withSpace = item.symbol.replace('/', ' ')
-            const withComma = item.symbol.replace('/', ',')
+            console.log({ res })
+            const withSpace = item?.symbol?.replace('/', ' ') || ''
+            const withComma = item?.symbol?.replace('/', ',') || ''
             return (
-              item.symbol.toLowerCase().includes(searchText.toLowerCase()) ||
+              item?.symbol?.toLowerCase().includes(searchText.toLowerCase()) ||
               withSpace.toLowerCase().includes(searchText.toLowerCase()) ||
               withComma.toLowerCase().includes(searchText.toLowerCase())
             )
@@ -214,7 +215,7 @@ export default function PoolsPage() {
                 </div>
               </>
             ) : (
-              <ListTokenPercantage listToken={[pool.token0, pool.token1]} />
+              <ListTokenPercantage listToken={pool.tokens} />
             )}
             {pool.address === weETHPoolAddress && (
               <div className='flex items-center gap-2'>
@@ -294,7 +295,7 @@ export default function PoolsPage() {
         apr: (
           <div className='flex items-center gap-1'>
             <Paragraph>{pool.apr}</Paragraph>
-            {/* {pool.subpools.length > 0 && (
+            {pool.subpools.length > 0 && (
               <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`pair-${pool.address}`} />
             )}
             <CustomTooltip className='min-w-[130px]' id={`pair-${pool.address}`}>
@@ -315,19 +316,30 @@ export default function PoolsPage() {
                   ))}
                 </div>
               </div>
-            </CustomTooltip> */}
+            </CustomTooltip>
           </div>
         ),
         tvl: (
-          <div className='flex w-full items-center gap-1'>
+          <div className='flex items-center gap-1'>
             <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(pool.tvlUSD)}</Paragraph>
-            {/* <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
-            <CustomTooltip id={`tvl-${pool.address}`}>
-              <div className='flex flex-col gap-1'>
-                <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
-                <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
-              </div>
-            </CustomTooltip> */}
+            <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
+            {/* TODO: Check for weighted pools */}
+            {pool.type === PAIR_TYPES.WEIGHTED ? (
+              <CustomTooltip id={`tvl-${pool.address}`}>
+                <div className='flex flex-col gap-1'>
+                  {(pool.tokens || []).map(token => (
+                    <p>{`${formatAmount(token.reserve)} ${token.symbol}`}</p>
+                  ))}
+                </div>
+              </CustomTooltip>
+            ) : (
+              <CustomTooltip id={`tvl-${pool.address}`}>
+                <div className='flex flex-col gap-1'>
+                  <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
+                  <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
+                </div>
+              </CustomTooltip>
+            )}
           </div>
         ),
         volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,

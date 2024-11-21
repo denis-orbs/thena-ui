@@ -126,12 +126,17 @@ export const fetchBscPairs = () =>
 export const fetchCLpoolV2 = chainId =>
   fetch(`${backendApiTestNet}/topPairs/${chainId}?type=CL`)
     .then(r => r.json())
-    .then(r => r.data)
+    .then(r => (Array.isArray(r.data) ? r.data : []))
 
 export const fetchBscTestnetPairsV3 = () =>
   fetch(`${backendApiTestNet}/topPairsV3/97`)
     .then(r => r.json())
     .then(r => r.data)
+
+export const fetchWeightedPools = () =>
+  fetch(`${backendApiTestNet}/weightedpools`)
+    .then(r => r.json())
+    .then(r => (Array.isArray(r.data) ? r.data : []))
 
 export const fetchOpPairs = () =>
   fetch(`${backendApi}/topPairs/204`)

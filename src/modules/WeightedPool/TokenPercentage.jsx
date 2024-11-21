@@ -7,17 +7,17 @@ export function TokenPercentage({ token }) {
       <CircleImage
         className='h-6 w-6 outline outline-4 outline-[#1C2027]'
         src={token?.logoURI ?? ''}
-        alt={`${token.symbol} Logo`}
+        alt={`${token?.symbol} Logo`}
       />
-      <TextHeading>{token.symbol}</TextHeading>
-      <Paragraph>50%</Paragraph>
+      <TextHeading>{token?.symbol}</TextHeading>
+      <Paragraph>{token?.weight}%</Paragraph>
     </div>
   )
 }
 
 export function ListTokenPercantage({ listToken }) {
   return (
-    <div className='flex items-center gap-[14px]'>
+    <div className='flex flex-wrap items-center gap-[14px]'>
       {listToken?.length && listToken.map((token, index) => <TokenPercentage token={token} key={index} />)}
     </div>
   )

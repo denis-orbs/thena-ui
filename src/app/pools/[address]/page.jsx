@@ -77,7 +77,8 @@ export default function SpecificPoolPage({ params }) {
   const assets = useAssets()
   const { networkId } = useChainSettings()
   const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [pairs, address])
-  const userPools = pool ? pool?.subpools.filter(ele => ele.account.totalLp.gt(0)) : []
+  console.log({ pool })
+  const userPools = pool ? (pool?.subpools || []).filter(ele => ele.account.totalLp.gt(0)) : []
   const userManuals = pool
     ? manuals.filter(
         ele =>
