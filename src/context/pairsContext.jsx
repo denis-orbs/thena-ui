@@ -5,7 +5,7 @@ import { ChainId } from 'thena-sdk-core'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { fetchBscPairs, fetchBscTestnetPairsV3, fetchOpPairs, fetchWeightedPools } from '@/lib/api'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount, isoDateToFormatDate } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -110,8 +110,9 @@ const usePairs = () => {
 
           return {
             ...ele,
-            type: PAIR_TYPES.WEIGHTED,
             tokens,
+            type: PAIR_TYPES.WEIGHTED,
+            createdAt: isoDateToFormatDate(ele?.createdAt),
             subpools: [],
           }
         }

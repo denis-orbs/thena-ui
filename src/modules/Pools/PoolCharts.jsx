@@ -126,7 +126,7 @@ export function PoolChart({ address }) {
         <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>{t('Analytics')}</TextHeading>
         <Selection isFull data={chartTypeSelection} className='mt-3 w-full lg:mt-0 lg:w-auto' isTranslation={false} />
       </div>
-      <div className='rounded-lg bg-neutral-900 px-6 py-4'>{renderChart}</div>
+      <div className='rounded-lg bg-neutral-900 lg:px-6 lg:py-4'>{renderChart}</div>
     </div>
   )
 }

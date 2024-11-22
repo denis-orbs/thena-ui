@@ -7,7 +7,7 @@ import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { cn, formatAmount, fromWei, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
 
-export default function InputLiquidityToken({ asset, allocate, amount, setTokenAndWeights, setLastIndexChange }) {
+export default function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights, setLastIndexChange }) {
   const t = useTranslations()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
   const [isError, setIsError] = useState(false)
@@ -29,8 +29,6 @@ export default function InputLiquidityToken({ asset, allocate, amount, setTokenA
     },
     [asset.address, setLastIndexChange, setTokenAndWeights],
   )
-
-  console.log({ check: asset?.balance.toString(), amount })
 
   const isInsufficientBalance = useMemo(() => {
     const amountToWei = toWei(amount, asset?.decimals)
@@ -91,7 +89,7 @@ export default function InputLiquidityToken({ asset, allocate, amount, setTokenA
     >
       <div className='flex flex-row items-center justify-between gap-2'>
         {asset ? (
-          <TokenBadge showChevronDownIcon={false} asset={asset} prefix={allocate} />
+          <TokenBadge showChevronDownIcon={false} asset={asset} prefix={weight} />
         ) : (
           <Skeleton className='h-[36px] w-[100px]' />
         )}

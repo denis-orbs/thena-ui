@@ -19,14 +19,16 @@ export function ThreeIconGroup({ logo1, logo2, extendNumber, className, classNam
         src={logo2}
         alt='THENA Second Logo'
       />
-      <div
-        className={cn(
-          'logo z-2 flex items-center justify-center rounded-full bg-neutral-200 outline outline-4 outline-[#1C2027]',
-          classNames?.image,
-        )}
-      >
-        <span>+{extendNumber}</span>
-      </div>
+      {extendNumber > 0 && (
+        <div
+          className={cn(
+            'logo z-2 flex items-center justify-center rounded-full bg-neutral-200 outline outline-4 outline-[#1C2027]',
+            classNames?.image,
+          )}
+        >
+          <span>+{extendNumber}</span>
+        </div>
+      )}
     </div>
   )
 }

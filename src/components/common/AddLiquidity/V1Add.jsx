@@ -45,8 +45,8 @@ export default function V1Add({
     () =>
       (pairs ?? []).find(
         ele =>
-          [ele.token0.address, ele.token1.address].includes(wrappedAddress(firstAsset)) &&
-          [ele.token0.address, ele.token1.address].includes(wrappedAddress(secondAsset)) &&
+          [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(firstAsset)) &&
+          [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(secondAsset)) &&
           pairType === ele.type,
       ),
     [pairs, firstAsset, secondAsset, pairType],

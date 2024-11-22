@@ -12,7 +12,7 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
       tokensAndWeights.map(item => ({
         symbol: item?.token?.symbol,
         price: item?.token?.price,
-        pool: item?.allocate,
+        pool: item?.weight,
       })),
     [tokensAndWeights],
   )

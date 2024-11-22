@@ -23,15 +23,15 @@ export function TokenAndInitialSeedItem({ item }) {
         <Image width={28} height={28} className='rounded-full' src={item.token.logoURI || UNKNOWN_LOGO} />
         <div className='flex flex-col gap-1'>
           <span>
-            {item.token.symbol} <span className='text-neutral-400'>({item.allocate}%)</span>
+            {item.token.symbol} <span className='text-neutral-400'>({item.weight}%)</span>
           </span>
           <Paragraph>
-            {t('Initial weight')}: {item.allocate}%
+            {t('Initial weight')}: {item.weight}%
           </Paragraph>
         </div>
       </div>
       <div className='flex flex-col'>
-        <TextHeading>{item.amount}</TextHeading>
+        <TextHeading className='text-right'>{formatAmount(item.amount)}</TextHeading>
         <TextSubHeading>${formatAmount(item.amount * (item.token?.price || 0))}</TextSubHeading>
       </div>
     </div>
@@ -90,8 +90,8 @@ function PoolDetails({
       .sort((a, b) => a.token.address.toLowerCase().localeCompare(b.token.address.toLowerCase()))
     const tokens = sortedAddresses.map(item => item.token)
     const weights = sortedAddresses.map(item => {
-      const allocate = Math.round((item.allocate / 100) * 10000) / 10000
-      return toWei(allocate.toString())
+      const weight = Math.round((item.weight / 100) * 10000) / 10000
+      return toWei(weight.toString())
     })
 
     const amounts = sortedAddresses.map(item => toWei(item.amount, item?.token?.decimals))
@@ -191,7 +191,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
       <TextHeading>{t('Tokens and Initial Seed Liquidity')}</TextHeading>
       <div className='flex flex-col divide-y divide-neutral-700'>
         {tokensAndWeights.map(item => (
-          <TokenAndInitialSeedItem item={item} />
+          <TokenAndInitialSeedItem item={item} key={item.token} />
         ))}
         <div className='flex flex-row justify-between pt-4'>
           <TextHeading>{t('Total')}</TextHeading>
@@ -208,17 +208,17 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
               <Input
                 type='text'
                 val={poolSymbol}
-                classNames={{ input: 'bg-transparent border-none' }}
+                classNames={{ input: 'bg-transparent border-none !h-7' }}
                 onChange={e => {
                   setPoolSymbol(e.target.value)
                 }}
                 onBlur={() => toggleEdit('editSymbol')}
-                className={cn('border-none bg-transparent', editStates.editSymbol ? '' : 'hidden')}
+                className={cn('!h-7 border-none bg-transparent', editStates.editSymbol ? '' : 'hidden')}
                 autoFocus
               />
             )}
             <TextButton
-              className={editStates.editSymbol ? 'hidden' : ''}
+              className={cn(editStates.editSymbol ? 'hidden' : '', 'p-1')}
               LeadingIcon={EditIcon}
               onClick={() => toggleEdit('editSymbol')}
             />
@@ -232,17 +232,17 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
               <Input
                 type='text'
                 val={poolName}
-                classNames={{ input: 'bg-transparent border-none' }}
+                classNames={{ input: 'bg-transparent border-none !h-7' }}
                 onChange={e => {
                   setPoolName(e.target.value)
                 }}
                 onBlur={() => toggleEdit('editName')}
-                className={cn('border-none bg-transparent', editStates.editName ? '' : 'hidden')}
+                className={cn('!h-7 border-none bg-transparent', editStates.editName ? '' : 'hidden')}
                 autoFocus
               />
             )}
             <TextButton
-              className={editStates.editName ? 'hidden' : ''}
+              className={cn(editStates.editName ? 'hidden' : '', 'p-1')}
               LeadingIcon={EditIcon}
               onClick={() => toggleEdit('editName')}
             />
@@ -257,22 +257,23 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
           <div className='flex flex-row items-center gap-2'>
             {/* <Paragraph>{fees}%</Paragraph>
             <TextButton LeadingIcon={EditIcon} onClick={() => toggleEdit('editFee')} /> */}
-            <span className={editStates.editFee ? 'hidden' : ''}>{fees}</span>
+            <span className={editStates.editFee ? 'hidden' : ''}>{fees}%</span>
             {editStates.editFee && (
               <Input
                 type='number'
                 val={fees}
-                classNames={{ input: 'border-none' }}
+                classNames={{ input: 'border-none h-7' }}
                 onChange={e => {
                   setFees(e.target.value)
                 }}
                 onBlur={() => toggleEdit('editFee')}
-                className={cn('border-none', editStates.editFee ? '' : 'hidden')}
+                className={cn('h-7 border-none', editStates.editFee ? '' : 'hidden')}
                 autoFocus
+                suffix='%'
               />
             )}
             <TextButton
-              className={editStates.editFee ? 'hidden' : ''}
+              className={cn(editStates.editFee ? 'hidden' : '', 'p-1')}
               LeadingIcon={EditIcon}
               onClick={() => toggleEdit('editFee')}
             />

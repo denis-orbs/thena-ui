@@ -45,7 +45,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
         updatedTokens.forEach((token, idx) => {
           if (idx !== lastIndexChange) {
             const otherTokenUSDValue =
-              (currentTokenUSDValue / (updatedTokens[lastIndexChange].allocate / 100)) * (token.allocate / 100)
+              (currentTokenUSDValue / (updatedTokens[lastIndexChange].weight / 100)) * (token.weight / 100)
             token.amount = roundIfMoreThan18Decimals(otherTokenUSDValue / token.token.price).toString()
           }
         })
@@ -93,7 +93,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
       for (let i = 0; i < cpTokenAndWeight.length; i++) {
         const otherToken = cpTokenAndWeight[i]
         if (otherToken?.token?.address?.toLowerCase() !== currentToken.address.toLowerCase()) {
-          const otherTokenUSDValue = (currentTokenUSDValue / (token.allocate / 100)) * (otherToken.allocate / 100)
+          const otherTokenUSDValue = (currentTokenUSDValue / (token.weight / 100)) * (otherToken.weight / 100)
           const newAmount = otherTokenUSDValue / (otherToken.token.price || 1)
 
           if (newAmount > otherToken?.token?.balance) {
@@ -151,7 +151,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
           {(tokensAndWeights || []).map(item => (
             <InputLiquidityToken
               asset={item.token}
-              allocate={`(${item.allocate}%)`}
+              weight={`(${item.weight}%)`}
               setTokenAndWeights={setTokenAndWeights}
               amount={item.amount}
               setLastIndexChange={setLastIndexChange}

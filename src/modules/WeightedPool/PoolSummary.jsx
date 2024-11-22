@@ -31,7 +31,7 @@ export default function PoolSummary({ tokensAndWeights }) {
       tokensAndWeights.length > 0
         ? tokensAndWeights.map((item, index) => ({
             data: item.token,
-            value: item.allocate,
+            value: item.weight,
             color: colors[index % colors.length],
             cutout: '50%',
           }))

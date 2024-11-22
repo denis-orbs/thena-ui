@@ -15,32 +15,32 @@ import { ChevronDownIcon, InfoIcon, LockIcon, PlusIcon, TrashIcon, UnlockIcon } 
 
 import TokenModal from '../TokenModal'
 
-const updateAllocate = tokens => {
-  const allocateLocked = tokens.filter(item => item.lock).reduce((sum, cur) => sum + cur.allocate, 0)
+const updateWeight = tokens => {
+  const weightLocked = tokens.filter(item => item.lock).reduce((sum, cur) => sum + cur.weight, 0)
   const tokenUnlock = tokens.filter(item => !item.lock && item.token != null)
   if (tokenUnlock.length === 0) return tokens
 
-  let newAllocate = (100 - allocateLocked) / tokenUnlock.length
-  newAllocate = Math.round(newAllocate * 100) / 100
+  let newWeight = (100 - weightLocked) / tokenUnlock.length
+  newWeight = Math.round(newWeight * 100) / 100
 
-  let totalAllocated = 0
+  let totalWeight = 0
   const newData = tokenUnlock.map(i => {
-    const roundedAllocate = Math.round(newAllocate * 100) / 100
-    totalAllocated += roundedAllocate
+    const roundedWeight = Math.round(newWeight * 100) / 100
+    totalWeight += roundedWeight
     return {
       ...i,
-      allocate: roundedAllocate,
+      weight: roundedWeight,
     }
   })
 
-  let difference = Math.round((100 - allocateLocked - totalAllocated) * 100) / 100
+  let difference = Math.round((100 - weightLocked - totalWeight) * 100) / 100
 
   if (difference !== 0) {
     newData.forEach((item, index) => {
       if (difference === 0) return
 
       const adjustment = difference > 0 ? 0.01 : -0.01
-      newData[index].allocate = Math.round((item.allocate + adjustment) * 100) / 100
+      newData[index].weight = Math.round((item.weight + adjustment) * 100) / 100
       difference -= adjustment
       difference = Math.round(difference * 100) / 100
     })
@@ -94,7 +94,7 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
             address: wrappedAddress(data),
           },
         }
-        return updateAllocate(updatedTokens)
+        return updateWeight(updatedTokens)
       })
     },
     [index, setTokenSelected],
@@ -107,7 +107,7 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
         updatedTokens.splice(index, 1)
       }
 
-      return updateAllocate(updatedTokens)
+      return updateWeight(updatedTokens)
     })
   }, [index, setTokenSelected])
 
@@ -119,20 +119,20 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
         ...updatedTokens[index],
         lock: !updatedTokens[index].lock,
       }
-      return updateAllocate(updatedTokens)
+      return updateWeight(updatedTokens)
     })
   }, [index, setTokenSelected])
 
-  const handleUpdateAllocateToken = e => {
+  const handleUpdateWeightToken = e => {
     // const newVal = isNaN(Number(e.target.value)) || Number(e.target.value) < 0 ? 0 : Math.floor(Number(e.target.value))
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
       updatedTokens[index] = {
         ...updatedTokens[index],
         lock: !!updatedTokens[index].token,
-        allocate: Number(e.target.value),
+        weight: Number(e.target.value),
       }
-      return updateAllocate(updatedTokens)
+      return updateWeight(updatedTokens)
     })
   }
 
@@ -147,8 +147,8 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
             type='number'
             min={0}
             step={1}
-            val={token.allocate || ''}
-            onChange={handleUpdateAllocateToken}
+            val={token.weight || ''}
+            onChange={handleUpdateWeightToken}
             placeholder=''
             suffix='%'
           />
@@ -163,7 +163,7 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
 const initialToken = {
   token: null,
   lock: false,
-  allocate: 0,
+  weight: 0,
 }
 
 export function ErrorMessage({ message, type = 'error', className }) {
@@ -189,7 +189,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
     tokensAndWeights.length > 0 ? tokensAndWeights : [initialToken, initialToken],
   )
   const idDefault = useId()
-  const [totalAllocated, setTotalAllocated] = useState(0)
+  const [totalWeight, setTotalWeight] = useState(0)
 
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
@@ -210,7 +210,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
 
   useEffect(() => {
     const tokens = tokenSelected.filter(item => item.token !== null)
-    setTotalAllocated(tokens.reduce((sum, curr) => sum + curr.allocate, 0))
+    setTotalWeight(tokens.reduce((sum, curr) => sum + curr.weight, 0))
     setTokenAndWeights(tokens)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTokenAndWeights, JSON.stringify(tokenSelected)])
@@ -220,7 +220,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   }, [setTokenSelected])
 
   const checkAllWeightingHigherThanZero = useMemo(
-    () => tokensAndWeights.every(item => item.allocate > 0),
+    () => tokensAndWeights.every(item => item.weight > 0),
     [tokensAndWeights],
   )
   const renderMessages = useCallback(() => {
@@ -271,13 +271,13 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
       </OutlinedButton>
       <div className='flex flex-col'>
         <div className='flex flex-row justify-between'>
-          <TextHeading>{t('Total Allocated')}</TextHeading>
-          <span>{totalAllocated}%</span>
+          <TextHeading>{t('Total Weight')}</TextHeading>
+          <span>{totalWeight}%</span>
         </div>
         <div className='mt-3 inline-block h-3 w-full rounded-md bg-neutral-500'>
           <div
             style={{
-              width: `${totalAllocated > 100 ? 100 : totalAllocated}%`,
+              width: `${totalWeight > 100 ? 100 : totalWeight}%`,
             }}
             className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
           />

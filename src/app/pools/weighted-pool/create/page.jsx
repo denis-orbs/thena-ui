@@ -92,8 +92,8 @@ export default function CreateWeightedPoolPage() {
     const firstToken = assets.find(asset => asset.address === firstAddress)
     const secondAsset = assets.find(asset => asset.address === secondAddress)
     return [
-      { token: firstToken || null, lock: false, allocate: 50 },
-      { token: secondAsset || null, lock: false, allocate: 50 },
+      { token: firstToken || null, lock: false, weight: 50 },
+      { token: secondAsset || null, lock: false, weight: 50 },
     ]
   })
   const [currentStep, setCurrentStep] = useState(1)

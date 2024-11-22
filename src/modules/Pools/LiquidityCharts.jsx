@@ -92,8 +92,8 @@ export default function LiquidityCharts({
   const pair = useMemo(() => {
     const found = (pairs ?? []).find(
       ele =>
-        [ele.token0.address, ele.token1.address].includes(wrappedAddress(firstAsset)) &&
-        [ele.token0.address, ele.token1.address].includes(wrappedAddress(secondAsset)) &&
+        [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(firstAsset)) &&
+        [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(secondAsset)) &&
         pairType === ele.type,
     )
     if (!found) return

@@ -16,9 +16,11 @@ import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import NextImage from '@/components/image/NextImage'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
+import useWallet from '@/hooks/useWallet'
 import { formatAddress, formatAmount, goScan } from '@/lib/utils'
 import { InitialLiquidityTable } from '@/modules/Pools/InitialLiquidityTable'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
@@ -31,64 +33,34 @@ import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite, LinkExtern
 
 import { listPoolAddressSpecial } from '../page'
 
-const mockAddress = '0x8d4fDb401F059E114a6E84453cE89745A061900A'
-// export const mockIsWeighted = true
-export const mockTokens = [
-  {
-    symbol: 'USDT',
-    logoURI: 'https://cdn.thena.fi/assets/USDT.png',
-  },
-  {
-    symbol: 'THE',
-    logoURI: 'https://cdn.thena.fi/assets/THE.png',
-  },
-  {
-    symbol: 'BNB',
-    logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
-  },
-  {
-    symbol: 'ETH',
-    logoURI: 'https://cdn.thena.fi/assets/ETH.png',
-  },
-  {
-    symbol: 'USDT',
-    logoURI: 'https://cdn.thena.fi/assets/USDT.png',
-  },
-  {
-    symbol: 'THE',
-    logoURI: 'https://cdn.thena.fi/assets/THE.png',
-  },
-  {
-    symbol: 'BNB',
-    logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
-  },
-  {
-    symbol: 'ETH',
-    logoURI: 'https://cdn.thena.fi/assets/ETH.png',
-  },
-]
-
 export default function SpecificPoolPage({ params }) {
   const t = useTranslations()
   const { address } = params
+  const { account } = useWallet()
   const { push } = useRouter()
   const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
   const assets = useAssets()
   const { networkId } = useChainSettings()
   const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [pairs, address])
-  console.log({ pool })
-  const userPools = pool ? (pool?.subpools || []).filter(ele => ele.account.totalLp.gt(0)) : []
-  const userManuals = pool
-    ? manuals.filter(
-        ele =>
-          [pool?.token0.address, pool?.token1.address].includes(ele.token0Address.toLowerCase()) &&
-          [pool?.token0.address, pool?.token1.address].includes(ele.token1Address.toLowerCase()),
-      )
-    : []
-  const userPositions = [...userPools, ...userManuals]
+  const userPools = useMemo(() => (pool ? (pool?.subpools || []).filter(ele => ele.account.totalLp.gt(0)) : []), [pool])
+  const userManuals = useMemo(
+    () =>
+      pool && pool.type !== PAIR_TYPES.WEIGHTED
+        ? manuals.filter(
+            ele =>
+              [pool?.token0.address, pool?.token1.address].includes(ele.token0Address.toLowerCase()) &&
+              [pool?.token0.address, pool?.token1.address].includes(ele.token1Address.toLowerCase()),
+          )
+        : [],
+    [manuals, pool],
+  )
+
+  const userPositions = useMemo(
+    () => [...userPools, ...userManuals].filter(position => position.version === 3),
+    [userManuals, userPools],
+  )
   const [tvlUSD, setTvlUSD] = useState(0)
-  const mockIsWeighted = address === 'new'
 
   useEffect(() => {
     if (pool) {
@@ -108,8 +80,7 @@ export default function SpecificPoolPage({ params }) {
       }
     }
   }, [pool, assets])
-
-  if (!mockIsWeighted && (isLoading || !pool)) {
+  if (isLoading || !pool) {
     return <Loading />
   }
 
@@ -120,9 +91,9 @@ export default function SpecificPoolPage({ params }) {
           <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/pools')}>
             {t('Pools')}
           </TextButton>
-          <div className='mt-4 items-start justify-between lg:flex'>
+          <div className='mb-6 mt-4 items-start justify-between lg:flex'>
             <div>
-              {!mockIsWeighted ? (
+              {pool.type !== PAIR_TYPES.WEIGHTED ? (
                 <div className='flex space-x-4'>
                   <IconGroup
                     classNames={{
@@ -143,16 +114,16 @@ export default function SpecificPoolPage({ params }) {
                     classNames={{
                       image: 'w-[36px] lg:w-[56px] h-[36px] lg:h-[56px] text-xl font-medium leading-5 text-[#1C2027]',
                     }}
-                    logo1={pool?.token0?.logoURI ?? mockTokens[0].logoURI}
-                    logo2={pool?.token1?.logoURI ?? mockTokens[1].logoURI}
-                    extendNumber={6}
+                    logo1={pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
+                    logo2={pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
+                    extendNumber={(pool?.tokens?.length || 2) - 2}
                   />
-                  <div className='flex items-center gap-2 lg:max-w-[75%]'>
+                  <div className='flex items-center gap-2'>
                     <div className='flex w-full flex-wrap items-center gap-1 lg:gap-3'>
-                      {mockTokens.map((token, index) => (
-                        <div className='flex items-center gap-1' key={index}>
-                          <span className='text-xl font-semibold leading-10 lg:text-4xl'>{token.symbol}</span>
-                          <span className='text-sm leading-10 text-neutral-300 lg:text-[26px]'>12.5%</span>
+                      {(pool?.tokens || []).map(token => (
+                        <div className='flex items-center gap-1' key={token?.address}>
+                          <span className='text-xl font-semibold leading-10 lg:text-4xl'>{token?.symbol}</span>
+                          <span className='text-sm leading-10 text-neutral-300 lg:text-[26px]'>{token?.weight}%</span>
                         </div>
                       ))}
                     </div>
@@ -189,10 +160,30 @@ export default function SpecificPoolPage({ params }) {
               <CustomTooltip id='analytics-tooltip' className='rounded-md !py-2' place='top'>
                 <TextHeading className='text-xs'>{t('Analytics')}</TextHeading>
               </CustomTooltip>
-              <Link className='flex-auto' href={`/pools/add-liquidity?pool=${pool?.address}&step=1`}>
-                <PrimaryButton className='h-11 w-max'>{t('Add Liquidity')}</PrimaryButton>
+              <Link className='flex-1' href={`/pools/add-liquidity?pool=${pool?.address}&step=1`}>
+                <PrimaryButton className='h-11 w-full'>{t('Add Liquidity')}</PrimaryButton>
               </Link>
             </div>
+          </div>
+          <div className='flex w-full flex-col gap-6 lg:hidden'>
+            <Box className='grid grid-cols-2 gap-5 lg:grid-cols-4'>
+              <div className='flex w-full flex-col gap-2'>
+                <TextHeading>{pool?.apr ?? '24%'}</TextHeading>
+                <Paragraph>{t('APR')}</Paragraph>
+              </div>
+              <div className='flex w-full flex-col gap-2'>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(tvlUSD)}</TextHeading>
+                <Paragraph>{t('TVL')}</Paragraph>
+              </div>
+              <div className='flex w-full flex-col gap-2'>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.dayVolume)}</TextHeading>
+                <Paragraph>{t('Volume (24h)')}</Paragraph>
+              </div>
+              <div className='flex w-full flex-col gap-2'>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.dayFees)}</TextHeading>
+                <Paragraph>{t('Fees (24h)')}</Paragraph>
+              </div>
+            </Box>
           </div>
           {pool?.address === '0xc0e1c9fec0d8888039095da014382d027f27069d' && (
             <div className='ml-4 mt-5 flex items-center gap-2'>
@@ -267,9 +258,9 @@ export default function SpecificPoolPage({ params }) {
           )}
         </div>
       </div>
-      <div className='-col flex w-full flex-col-reverse gap-10 lg:flex-row'>
-        <div className='flex w-full flex-col gap-8'>
-          <div className='flex w-full flex-col gap-6'>
+      <div className='flex w-full flex-col-reverse sm:gap-2 lg:flex-row lg:gap-5 xl:gap-10 2xl:gap-12'>
+        <div className='w-full flex-[6] flex-col gap-8'>
+          <div className='mb-6 hidden w-full flex-col gap-6 lg:flex'>
             <Box className='grid grid-cols-2 gap-5 lg:grid-cols-4'>
               <div className='flex w-full flex-col gap-2'>
                 <TextHeading>{pool?.apr ?? '24%'}</TextHeading>
@@ -290,15 +281,15 @@ export default function SpecificPoolPage({ params }) {
             </Box>
           </div>
 
-          <div>
+          <div className='mb-6'>
             <PoolChart address={address} />
           </div>
 
-          <div className='flex flex-col gap-4'>
+          <div className='mb-6 flex flex-col gap-4'>
             <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
               {t('Liquidity Fees')}
             </TextHeading>
-            <LiquidityFeesTable pool={pool} mockIsWeighted={mockIsWeighted} />
+            <LiquidityFeesTable pool={pool} isWeighted={pool.type === PAIR_TYPES.WEIGHTED} />
           </div>
 
           <div className='flex flex-col gap-4'>
@@ -328,46 +319,60 @@ export default function SpecificPoolPage({ params }) {
                 <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
                 <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
               </div>
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
-                <div className='col-span-5 text-neutral-50'>
-                  <Link href={`/arena/profile/${mockAddress}`} className='item-center flex cursor-pointer'>
-                    <span>{formatAddress(mockAddress)}</span>
-                    <LinkExternalIcon className='inline-block h-4 w-4' />
-                  </Link>
+              {pool?.owner ? (
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
+                  <div className='col-span-5 text-neutral-50'>
+                    <div
+                      onClick={() => goScan(networkId, pool?.owner)}
+                      className='item-center flex cursor-pointer gap-1'
+                    >
+                      <span>{formatAddress(pool?.owner)}</span>
+                      <LinkExternalIcon className='inline-block h-4 w-4' />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <></>
+              )}
               <div className='grid grid-cols-7'>
                 <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
                 <div className='col-span-5 text-neutral-50'>
                   {t('Immutable except for swap fees editable by governance')}
                 </div>
               </div>
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
-                <div className='col-span-5 text-neutral-50'>Oct 31, 2024, 3 PM UTC</div>
-              </div>
+              {pool?.createdAt ? (
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
+                  <div className='col-span-5 text-neutral-50'>{pool?.createdAt}</div>
+                </div>
+              ) : (
+                <></>
+              )}
               <div className='grid grid-cols-7'>
                 <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
-                <div className='col-span-5 text-neutral-50'>$225.50</div>
+                <div className='col-span-5 text-neutral-50'>$0</div>
               </div>
               <div className='grid grid-cols-7'>
                 <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
                 <div className='col-span-5 text-neutral-50'>
-                  <Link href='/' className='item-center flex cursor-pointer'>
-                    <span>{formatAddress(mockAddress)}</span>
+                  <div
+                    onClick={() => goScan(networkId, pool?.address)}
+                    className='item-center flex cursor-pointer gap-1'
+                  >
+                    <span>{formatAddress(pool?.address)}</span>
                     <LinkExternalIcon className='inline-block h-4 w-4' />
-                  </Link>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        {!mockIsWeighted && (
-          <div className='flex  flex-col gap-4 lg:min-w-[564px] lg:max-w-[564px]'>
-            <h2>{t('My Positions')}</h2>
+        {pool.type !== PAIR_TYPES.WEIGHTED && (
+          <div className='flex-[4] flex-col gap-4'>
+            <h2 className='mb-4'>{t('My Positions')}</h2>
             {userPositions && userPositions.length > 0 ? (
-              <div className='grid grid-cols-1 gap-4'>
+              <div className='grid max-h-[600px] grid-cols-1 gap-4 overflow-y-scroll lg:max-h-[1440px]'>
                 {userPositions.map((ele, idx) =>
                   ele.type === 'Manual' ? (
                     <ManualPosition pool={ele} key={`pool-${idx}`} />
@@ -388,16 +393,18 @@ export default function SpecificPoolPage({ params }) {
             )}
           </div>
         )}
-        {mockIsWeighted && (
-          <div>
-            <div className='flex  flex-col gap-4 lg:min-w-[564px] lg:max-w-[564px]'>
+        {pool.type === PAIR_TYPES.WEIGHTED && (
+          <div className='flex-[4]'>
+            <div className='flex flex-col gap-4'>
               <h2>{t('My Positions')}</h2>
               <WeightedPoolPosition pool={pool} />
             </div>
-            <div className='mt-8  flex flex-col gap-4 lg:min-w-[564px] lg:max-w-[564px]'>
-              <h2>{t('My Initial Liquidity')}</h2>
-              <InitialLiquidityTable pool={pool} />
-            </div>
+            {account?.toLowerCase() === pool.owner?.toLowerCase() && (
+              <div className='mt-8  flex flex-col gap-4'>
+                <h2>{t('My Initial Liquidity')}</h2>
+                <InitialLiquidityTable pool={pool} />
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -154,8 +154,8 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
     if (!firstAddress || !secondAddress) return []
     const pools = pairs.filter(
       pool =>
-        [pool.token0.address, pool.token1.address].includes(wrappedAddress(firstAsset)) &&
-        [pool.token0.address, pool.token1.address].includes(wrappedAddress(secondAsset)),
+        [pool?.token0?.address, pool?.token1?.address].includes(wrappedAddress(firstAsset)) &&
+        [pool?.token0?.address, pool?.token1?.address].includes(wrappedAddress(secondAsset)),
     )
     mockWeightedPool.token0 = firstAsset
     mockWeightedPool.token1 = secondAsset

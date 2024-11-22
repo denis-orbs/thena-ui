@@ -264,9 +264,25 @@ export const getPoolType = type =>
 
 export const roundIfMoreThan18Decimals = number => {
   const parts = number.toString().split('.')
-  console.log({ parts })
   if (parts[1] && parts[1].length > 18) {
     return Math.floor(number * 1e18) / 1e18
   }
   return number
+}
+
+export const isoDateToFormatDate = (
+  isoString,
+  options = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    timeZone: 'UTC',
+    timeZoneName: 'short',
+  },
+) => {
+  const date = new Date(isoString)
+  const formattedDate = date.toLocaleString('en-US', options)
+  return formattedDate
 }
