@@ -38,7 +38,6 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     setTokenAndWeights(prev => {
       const updatedTokens = [...prev]
       const lastChange = updatedTokens[lastIndexChange]
-
       if (isAutoOptimize) {
         const currentTokenUSDValue = getValueTokenAmountToUSD(lastChange?.token?.address, lastChange?.amount)
 
@@ -53,7 +52,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
 
       return updatedTokens
     })
-  }, [lastIndexChange, isAutoOptimize, setTokenAndWeights, getValueTokenAmountToUSD])
+  }, [lastIndexChange, isAutoOptimize, setTokenAndWeights, getValueTokenAmountToUSD, tokensAndWeights])
 
   const isDisable = useMemo(
     () => (tokensAndWeights || []).some(item => item.isError || !item?.amount),
@@ -150,6 +149,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
           )}
           {(tokensAndWeights || []).map(item => (
             <InputLiquidityToken
+              key={item?.token?.address}
               asset={item.token}
               weight={`(${item.weight}%)`}
               setTokenAndWeights={setTokenAndWeights}

@@ -53,10 +53,10 @@ const mockWeightedPool = {
 function PoolItem({ pool, onDeposit, isAdd = false }) {
   const t = useTranslations()
   return (
-    <div className='flex flex-row items-center justify-between rounded-lg bg-neutral-900 p-3 lg:p-4'>
-      <div className='flex flex-col justify-between gap-3 lg:flex-row'>
+    <div className='flex flex-col justify-between rounded-lg bg-neutral-900 p-3 lg:flex-row lg:items-center lg:p-4'>
+      <div className='mb-[10px] flex flex-col justify-between gap-3 lg:mb-0 lg:flex-row'>
         <div className='flex flex-col gap-4 lg:flex-row'>
-          {pool.type !== 'Weighted' ? (
+          {pool.type !== PAIR_TYPES.WEIGHTED ? (
             <div className='flex flex-row gap-2 lg:min-w-[496px]'>
               <IconGroup
                 className='-space-x-3'
@@ -95,24 +95,28 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
               </div>
             </div>
           )}
-          <div className='grid grid-cols-2'>
-            <div className='flex flex-col lg:min-w-[200px]'>
-              <TextHeading className='text-xs lg:text-sm'>APR</TextHeading>
-              <Paragraph className='text-sm lg:text-base'>{pool?.apr || '0%'}</Paragraph>
+          <hr className='mb-[10px] border border-neutral-700 lg:hidden' />
+          {!isAdd && (
+            <div className='grid grid-cols-2'>
+              <div className='flex flex-col lg:min-w-[200px]'>
+                <TextHeading className='text-xs lg:text-sm'>APR</TextHeading>
+                <Paragraph className='text-sm lg:text-base'>{pool?.apr || '0%'}</Paragraph>
+              </div>
+              <div className='flex flex-col lg:min-w-[200px]'>
+                <TextHeading className='text-xs lg:text-sm'>TVL</TextHeading>
+                <Paragraph className='text-sm lg:text-base'>${formatAmount(pool?.tlvUSD || 0)}</Paragraph>
+              </div>
             </div>
-            <div className='flex flex-col lg:min-w-[200px]'>
-              <TextHeading className='text-xs lg:text-sm'>TVL</TextHeading>
-              <Paragraph className='text-sm lg:text-base'>${formatAmount(pool?.tlvUSD || 0)}</Paragraph>
-            </div>
-          </div>
+          )}
         </div>
       </div>
       {isAdd && pool.type === PAIR_TYPES.WEIGHTED ? (
         <Link
+          className='w-full lg:w-fit'
           // eslint-disable-next-line max-len
           href={`/pools/weighted-pool/create?firstAddress=${pool?.token0?.address}&secondAddress=${pool?.token1?.address}`}
         >
-          <OutlinedButton className='h-11 border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'>
+          <OutlinedButton className='h-11 w-full border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'>
             {t('Deposit')}
           </OutlinedButton>
         </Link>

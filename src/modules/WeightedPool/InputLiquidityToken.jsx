@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 
 import TokenBadge from '@/components/badges/TokenBadge'
 import Skeleton from '@/components/skeleton'
@@ -7,7 +7,7 @@ import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { cn, formatAmount, fromWei, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
 
-export default function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights, setLastIndexChange }) {
+function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights, setLastIndexChange }) {
   const t = useTranslations()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
   const [isError, setIsError] = useState(false)
@@ -119,3 +119,5 @@ export default function InputLiquidityToken({ asset, weight, amount, setTokenAnd
     </div>
   )
 }
+
+export default memo(InputLiquidityToken)

@@ -92,8 +92,6 @@ const usePairs = () => {
       }
     }
 
-    // console.log({ pools, vaults })
-
     const result = data
       .map(ele => {
         // Weighted pools

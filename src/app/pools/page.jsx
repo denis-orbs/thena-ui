@@ -100,8 +100,6 @@ export default function PoolsPage() {
   const t = useTranslations()
   const assets = useAssets()
 
-  // console.log({ pairs })
-
   const filteredPools = useMemo(() => {
     let final
     if (isInactive) {

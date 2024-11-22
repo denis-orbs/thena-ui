@@ -20,7 +20,7 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
   const totalPool = data.reduce((sum, curr) => sum + curr.pool, 0)
   return (
     <Box>
-      <TextHeading className='font-archia text-xl font-semibold xl:text-3xl'>
+      <TextHeading className='font-archia text-xl font-semibold xl:text-2xl'>
         {t('Your Max Initial Liquidity')}
       </TextHeading>
       <table className='min-w-full rounded-lg'>
