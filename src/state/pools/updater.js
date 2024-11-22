@@ -2,36 +2,23 @@ import { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import useSWRImmutable from 'swr/immutable'
-import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { pairAPIAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
-import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useExtraRewardsInfo } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
-import { fetchPools } from '@/lib/api'
+import { fetchPairInfos, fetchPools } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import { fromWei } from '@/lib/utils'
 
 import { updatePools } from './actions'
 import { useChainSettings } from '../settings/hooks'
 
-const fetchUserFusions = async (url, account, pools, chainId) => {
-  const pairInfos = await callMulti(
-    pools.map(pool => ({
-      address: Contracts.pairAPI[chainId],
-      abi: pairAPIAbi,
-      functionName: chainId === ChainId.BSC ? 'getPairAccount' : 'getPairSimpleAccount',
-      args: [pool.address, account],
-      chainId,
-    })),
-    true,
-  )
-
+const fetchUserFusions = async (url, account, pools) => {
+  const pairInfos = await fetchPairInfos(pools, account)
   return pairInfos.map(pool => {
     const { pair_address, claimable0, claimable1, account_lp_balance, account_gauge_earned, account_gauge_balance } =
       pool

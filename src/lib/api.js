@@ -136,3 +136,11 @@ export const fetchNfts = nftId =>
   fetch(`https://ipfs.io/ipfs/QmYG7JJcLxxewgCD9Az2zcnS7CCCZKa6s2738ZC2547eTn/${nftId}`).then(r => r.json())
 
 export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
+
+export const fetchPairInfos = (pairs, account) => {
+  const pairParams = (pairs || []).reduce((str, pair) => `${str}&pairs[]=${pair.address}`, '')
+  const res = fetch(`${backendApiTestNet}/getpairaccount?account=${account?.toLowerCase()}${pairParams}`)
+    .then(r => r.json())
+    .then(r => r.data)
+  return res
+}
