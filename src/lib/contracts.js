@@ -293,9 +293,11 @@ export const getSwapRouterContract = () => getContract(swapRouterAbi, Contracts.
 export const getNonfungiblePositionManagerContractV2 = chainId =>
   getContract(nonfungiblePositionManagerAbi, Contracts.nonfungiblePositionManagerV2, chainId)
 
-export const getNonfungiblePositionManagerContractV3 = chainId => {
-  getContract(nonfungiblePositionManagerV3Abi, Contracts.nonfungiblePositionManagerV3, chainId)
-}
+export const getNonfungiblePositionManagerContractV3 = chainId => ({
+  // getContract(nonfungiblePositionManagerV3Abi, Contracts.nonfungiblePositionManagerV3, chainId)
+  abi: nonfungiblePositionManagerV3Abi,
+  address: Contracts.nonfungiblePositionManagerV3[chainId],
+})
 
 /** ******************************************************************************************************
                                           ALGEBRA_INTERFACE_MULTICALL_TESTNET
