@@ -93,7 +93,13 @@ export default function PairDetailPage({ params }) {
               >
                 {t('Add Liquidity')}
               </SecondaryButton>
-              <PrimaryButton>{t('Swap')}</PrimaryButton>
+              <PrimaryButton
+                onClick={() => {
+                  push(`/swap?inputCurrency=${pair.token0.address}&outputCurrency=${pair.token1.address}&swapType=1`)
+                }}
+              >
+                {t('Swap')}
+              </PrimaryButton>
             </div>
           </div>
         </div>
