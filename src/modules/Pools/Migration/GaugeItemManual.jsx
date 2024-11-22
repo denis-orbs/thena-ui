@@ -1,21 +1,17 @@
 'use client'
 
-import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
-import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
+import { nearestUsableTick, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { maxUint128 } from 'viem'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useCurrency } from '@/hooks/fusion/Tokens'
-import { useFusion } from '@/hooks/fusion/useFusions'
-import usePrevious from '@/hooks/usePrevious'
 import { simulateCall } from '@/lib/contractActions'
 import { getAlgebraNPMContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
-import { formatAmount, formatAmountLP, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, formatAmountLP, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import { RefreshIcon } from '@/svgs'
 
@@ -37,14 +33,11 @@ export const fetchManualInfo = async (account, tokenId, chainId) => {
   return balance
 }
 
-export function GaugeItemManual({ positionV2, version = 2 }) {
+export function GaugeItemManual({ pool, position, version = 2 }) {
   const t = useTranslations()
+  const [reversePrice, setReversePrice] = useState(false)
+  const { asset0, asset1, liquidity, tickLower, tickUpper } = pool
 
-  const { asset0, asset1, liquidity, tickLower, tickUpper } = positionV2
-  const currency0 = useCurrency(asset0.address)
-  const currency1 = useCurrency(asset1.address)
-
-  const [fusionState, fusion] = useFusion(currency0, currency1, version)
   const tickAtLimit = useMemo(
     () => ({
       [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
@@ -52,29 +45,9 @@ export function GaugeItemManual({ positionV2, version = 2 }) {
     }),
     [tickLower, tickUpper],
   )
-  const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
-  const [, _fusion] = useMemo(() => {
-    if (!fusion && prevFusion && prevFusionState) {
-      return [prevFusionState, prevFusion]
-    }
-    return [fusionState, fusion]
-  }, [fusion, fusionState, prevFusion, prevFusionState])
-
-  const position = useMemo(() => {
-    if (_fusion) {
-      return new Position({
-        pool: _fusion,
-        liquidity: new BigNumber(liquidity).toString(10),
-        tickLower,
-        tickUpper,
-      })
-    }
-    return undefined
-  }, [liquidity, _fusion, tickLower, tickUpper])
-
-  const amount0 = useMemo(() => (position ? position.amount0.toExact() : 0), [position])
-  const amount1 = useMemo(() => (position ? position.amount1.toExact() : 0), [position])
+  const amount0 = useMemo(() => position?.amount0?.toExact() ?? 0, [position])
+  const amount1 = useMemo(() => position?.amount1?.toExact() ?? 0, [position])
 
   const amount0InUsd = useMemo(() => amount0 * asset0.price, [amount0, asset0])
   const amount1InUsd = useMemo(() => amount1 * asset1.price, [amount1, asset1])
@@ -86,9 +59,27 @@ export function GaugeItemManual({ positionV2, version = 2 }) {
     [amount0InUsd, amount1InUsd],
   )
 
-  const [reversePrice, setReversePrice] = useState(false)
+  const tickCurrent = position?.pool?.tickCurrent
+  const fee = position?.pool?.fee
 
-  const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
+  const token0Price = asset0?.price ?? 1
+  const token1Price = asset1?.price ?? 1
+
+  const priceRatio = formatAmountLP(reversePrice ? token0Price / token1Price : token1Price / token0Price)
+
+  const outOfRange = tickCurrent < tickLower && tickCurrent >= tickUpper
+
+  const minPrice = formatAmountLP(
+    reversePrice
+      ? 1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)
+      : formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER),
+  )
+
+  const maxPrice = formatAmountLP(
+    reversePrice
+      ? 1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
+      : formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
+  )
 
   return (
     <section className='flex h-full flex-col justify-start gap-3 rounded-xl border border-neutral-600 p-4 lg:p-6'>
@@ -106,18 +97,20 @@ export function GaugeItemManual({ positionV2, version = 2 }) {
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </TextHeading>
             <Paragraph className='text-xs'>
-              #{positionV2.tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
+              #{pool.tokenId} / {fee / 10000}% {t('Fee')}
             </Paragraph>
           </div>
         </article>
 
-        {!Number(liquidity) ? (
-          <YellowBadge>{t('Closed')}</YellowBadge>
-        ) : outOfRange ? (
-          <PrimaryBadge>{t('Out of Range')}</PrimaryBadge>
-        ) : (
-          <GreenBadge>{t('In Range')}</GreenBadge>
-        )}
+        <span className={cn(version === 3 && 'hidden')}>
+          {!Number(liquidity) ? (
+            <YellowBadge>{t('Closed')}</YellowBadge>
+          ) : outOfRange ? (
+            <PrimaryBadge>{t('Out of Range')}</PrimaryBadge>
+          ) : (
+            <GreenBadge>{t('In Range')}</GreenBadge>
+          )}
+        </span>
       </div>
 
       <div className='flex flex-col gap-3'>
@@ -133,7 +126,7 @@ export function GaugeItemManual({ positionV2, version = 2 }) {
 
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(amount0)}`}</TextHeading>
-            {Number(liquidity) > 0 && <TextSubHeading>{`(${formatAmount(firstPercent)}%)`}</TextSubHeading>}
+            {Number(pool) > 0 && <TextSubHeading>{`(${formatAmount(firstPercent)}%)`}</TextSubHeading>}
           </div>
         </div>
 
@@ -143,7 +136,7 @@ export function GaugeItemManual({ positionV2, version = 2 }) {
           </Paragraph>
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(amount1)}`}</TextHeading>
-            {Number(liquidity) > 0 && <TextSubHeading>({formatAmount(100 - firstPercent)}%)</TextSubHeading>}
+            {Number(pool) > 0 && <TextSubHeading>({formatAmount(100 - firstPercent)}%)</TextSubHeading>}
           </div>
         </div>
 
@@ -161,13 +154,8 @@ export function GaugeItemManual({ positionV2, version = 2 }) {
           <div className='flex flex-row justify-between'>
             <Paragraph>{t('Min Price')}</Paragraph>
             <div className='flex flex-row justify-between gap-1'>
-              <TextHeading>
-                {formatAmountLP(
-                  reversePrice
-                    ? 1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)
-                    : formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER),
-                )}
-              </TextHeading>
+              <TextHeading>{minPrice}</TextHeading>
+
               <Paragraph className='text-sm'>
                 {t('[symbolA] per [symbolB]', {
                   symbolA: unwrappedSymbol(reversePrice ? asset0 : asset1),
@@ -179,13 +167,7 @@ export function GaugeItemManual({ positionV2, version = 2 }) {
           <div className='flex flex-row justify-between'>
             <Paragraph>{t('Max Price')}</Paragraph>
             <div className='flex flex-row justify-between gap-1'>
-              <TextHeading>
-                {formatAmountLP(
-                  reversePrice
-                    ? 1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
-                    : formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
-                )}
-              </TextHeading>
+              <TextHeading>{maxPrice}</TextHeading>
               <Paragraph className='text-sm'>
                 {t('[symbolA] per [symbolB]', {
                   symbolA: unwrappedSymbol(reversePrice ? asset0 : asset1),
@@ -197,13 +179,7 @@ export function GaugeItemManual({ positionV2, version = 2 }) {
           <div className='flex flex-row justify-between'>
             <Paragraph>{t('Current Price')}</Paragraph>
             <div className='flex flex-row justify-between gap-1'>
-              <TextHeading>
-                {formatAmountLP(
-                  reversePrice
-                    ? 1 / (_fusion?.token0Price.toSignificant(6) || 0)
-                    : _fusion?.token0Price.toSignificant(6),
-                )}
-              </TextHeading>
+              <TextHeading>{priceRatio}</TextHeading>
               <Paragraph className='text-sm'>
                 {t('[symbolA] per [symbolB]', {
                   symbolA: unwrappedSymbol(reversePrice ? asset0 : asset1),

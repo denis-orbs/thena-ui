@@ -26,16 +26,16 @@ export function NeutralBadge({ className, children, isFixed = false }) {
   )
 }
 
-export function GreenBadge({ children }) {
-  return <Badge className='bg-success-600 text-success-100'>{children}</Badge>
+export function GreenBadge({ children, className }) {
+  return <Badge className={cn('bg-success-600 text-success-100', className)}>{children}</Badge>
 }
 
-export function YellowBadge({ children }) {
-  return <Badge className='bg-warn-600 text-warn-100'>{children}</Badge>
+export function YellowBadge({ children, className }) {
+  return <Badge className={cn('bg-warn-600 text-warn-100', className)}>{children}</Badge>
 }
 
-export function RedBadge({ children }) {
-  return <Badge className='bg-error-600 text-rose'>{children}</Badge>
+export function RedBadge({ children, className }) {
+  return <Badge className={cn('bg-error-600 text-rose', className)}>{children}</Badge>
 }
 
 export function PrimaryBadge({ children, className, childrenClassName }) {

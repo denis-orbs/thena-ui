@@ -39,13 +39,13 @@ export function ManualMigrationPage({ tokenId }) {
   const { push } = useRouter()
   const { onAlgebraMigrate } = useAlgebraMigration()
 
-  const oldPosition = useMemo(() => {
+  const oldPool = useMemo(() => {
     if (tokenId) {
       return positions.find(ele => ele.tokenId === +tokenId && ele.version === 2)
     }
   }, [tokenId, positions])
 
-  const { asset0, asset1, liquidity: posLiquidity, tickLower, tickUpper } = oldPosition
+  const { asset0, asset1, liquidity: posLiquidity, tickLower, tickUpper } = oldPool
 
   const [firstAsset, secondAsset] = useMemo(
     () => [
@@ -164,7 +164,7 @@ export function ManualMigrationPage({ tokenId }) {
   const isClaimable = useMemo(() => Number(fees?.[1]) + Number(fees?.[0]) > 0, [fees])
 
   const onMigrate = () => {
-    if (!oldPosition?.tokenId) {
+    if (!oldPool?.tokenId) {
       warnToast('you not own this position')
     }
 
@@ -179,7 +179,7 @@ export function ManualMigrationPage({ tokenId }) {
       },
       feeValue0,
       feeValue1,
-      tokenId: oldPosition?.tokenId,
+      tokenId: oldPool?.tokenId,
       isClaimable,
       callback: () => {
         // mutateFetchManualFee()
@@ -188,14 +188,14 @@ export function ManualMigrationPage({ tokenId }) {
     })
   }
 
-  if (!oldPosition) {
+  if (!oldPool) {
     return <Loading />
   }
 
   return (
     <div className='mx-auto flex flex-col justify-center lg:flex-row'>
       <div className='h-11 w-[98px]'>
-        <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/pools')}>
+        <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/dashboard')}>
           {t('Back')}
         </TextButton>
       </div>
@@ -215,7 +215,7 @@ export function ManualMigrationPage({ tokenId }) {
         <div className='mt-4 grid items-stretch gap-4 lg:grid-cols-[48%_2%_48%]'>
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your Current Gauge')}</TextHeading>
-            <GaugeItemManual positionV2={oldPosition} />
+            <GaugeItemManual pool={oldPool} position={positionV2} />
           </div>
 
           <div className='flex items-center justify-center'>
@@ -224,7 +224,7 @@ export function ManualMigrationPage({ tokenId }) {
 
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your New V3 Gauge')}</TextHeading>
-            <GaugeItemManual showAdjustButton positionV2={oldPosition} />
+            <GaugeItemManual pool={oldPool} position={positionV2} version={3} />
           </div>
         </div>
 
