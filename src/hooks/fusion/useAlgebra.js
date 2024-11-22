@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { JSBI, Percent } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256 } from 'viem'
+import { maxUint256, parseUnits } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
@@ -395,7 +395,7 @@ export const useAlgebraMigration = () => {
       mintInfo,
       feeValue0,
       feeValue1,
-      positionV2,
+      tokenId,
       isClaimable,
       callback,
     }) => {
@@ -408,11 +408,12 @@ export const useAlgebraMigration = () => {
       const approveId2 = uuidv4()
       const addId = uuidv4()
 
-      const algebraAddress = Contracts.nonfungiblePositionManagerV3[chainId]
+      const nftPositionV3 = Contracts.nonfungiblePositionManagerV3[chainId]
+      const nftPositionV2 = Contracts.nonfungiblePositionManagerV2[chainId]
+
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
 
-      const { tokenId } = positionV2
-      const { position: positionV3, depositADisabled, depositBDisabled, noLiquidity } = mintInfo
+      const { position, idPoolExist } = mintInfo
 
       const baseCurrencyAddress = currencyA.wrapped?.address.toLowerCase()
       const quoteCurrencyAddress = currencyB.wrapped?.address.toLowerCase()
@@ -421,23 +422,23 @@ export const useAlgebraMigration = () => {
       const firstContract = !currencyA.isNative ? getERC20Contract(baseCurrencyAddress, chainId) : null
       const secondContract = !currencyB.isNative ? getERC20Contract(quoteCurrencyAddress, chainId) : null
 
-      if (!currencyA.isNative && !depositADisabled) {
-        const allowance = await readCall(firstContract, 'allowance', [account, algebraAddress], chainId)
-        isFirstApproved = fromWei(allowance, currencyA.decimals).gte(amountA.toExact())
+      if (!currencyA.isNative) {
+        const allowance = await readCall(firstContract, 'allowance', [account, nftPositionV3], chainId)
+        isFirstApproved = allowance >= parseUnits(amountA, currencyA.decimals)
       }
 
-      if (!currencyB.isNative && !depositBDisabled) {
-        const allowance = await readCall(secondContract, 'allowance', [account, algebraAddress], chainId)
-        isSecondApproved = fromWei(allowance, currencyB.decimals).gte(amountB.toExact())
+      if (!currencyB.isNative) {
+        const allowance = await readCall(secondContract, 'allowance', [account, nftPositionV3], chainId)
+        isSecondApproved = allowance >= parseUnits(amountB, currencyB.decimals)
       }
 
       startTxn({
         key,
-        title: `${t('Migrate')} NFT #${tokenId}`,
+        title: `${t('Migrate')}`,
         transactions: {
           ...(isClaimable && {
             [claimId]: {
-              desc: t('Claim Fees'),
+              desc: t('Claim Rewards'),
               status: TXN_STATUS.START,
               hash: null,
             },
@@ -476,7 +477,7 @@ export const useAlgebraMigration = () => {
 
       setPending(true)
 
-      // claim
+      // CLAIM ON V2
       if (isClaimable) {
         const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
           tokenId,
@@ -485,20 +486,19 @@ export const useAlgebraMigration = () => {
           recipient: account,
         })
 
-        if (!(await sendTxn(key, claimId, algebraAddress, calldata, value))) {
+        if (!(await sendTxn(key, claimId, nftPositionV2, calldata, value))) {
           setPending(false)
           return
         }
       }
 
-      // remove
-      const liquidityPercentage = new Percent(100, 100) // 100%
+      // REMOVE FROM V2
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const { calldata: removeCallData, value: removeValue } = NonfungiblePositionManager.removeCallParameters(
-        positionV2,
+        position,
         {
           tokenId,
-          liquidityPercentage,
+          liquidityPercentage: new Percent(100, 100),
           slippageTolerance: allowedSlippage,
           deadline: timestamp.toString(),
           collectOptions: {
@@ -509,42 +509,45 @@ export const useAlgebraMigration = () => {
         },
       )
 
-      if (!(await sendTxn(key, removeId, algebraAddress, removeCallData, removeValue))) {
+      if (!(await sendTxn(key, removeId, nftPositionV2, removeCallData, removeValue))) {
         setPending(false)
         return
       }
 
       // burn
       const { calldata: burnCalldata, value: burnValue } = NonfungiblePositionManager.burnCallParameters(tokenId)
-      if (!(await sendTxn(key, burnId, algebraAddress, burnCalldata, burnValue))) {
+      if (!(await sendTxn(key, burnId, nftPositionV2, burnCalldata, burnValue))) {
         setPending(false)
         return
       }
 
-      // migrate
+      // APPROVE TOKEN TO V3
       if (!isFirstApproved) {
-        if (!(await writeTxn(key, approveId1, firstContract, 'approve', [algebraAddress, maxUint256]))) {
+        if (!(await writeTxn(key, approveId1, firstContract, 'approve', [nftPositionV3, maxUint256]))) {
           setPending(false)
           return
         }
       }
 
       if (!isSecondApproved) {
-        if (!(await writeTxn(key, approveId2, secondContract, 'approve', [algebraAddress, maxUint256]))) {
+        if (!(await writeTxn(key, approveId2, secondContract, 'approve', [nftPositionV3, maxUint256]))) {
           setPending(false)
           return
         }
       }
+
+      // ADD liquidity to v3
       const useNative = currencyA.isNative ? currencyA : currencyB.isNative ? currencyB : undefined
-      const { calldata: addCallData, value: addValue } = NonfungiblePositionManager.addCallParameters(positionV3, {
-        slippageTolerance: allowedSlippage, // ok
-        recipient: account, // ok
-        deadline: timestamp.toString(), // ok
-        useNative, // ok
-        createPool: noLiquidity, // need check
+      const { calldata: addCallData, value: addValue } = NonfungiblePositionManager.addCallParameters(position, {
+        slippageTolerance: allowedSlippage,
+        recipient: account,
+        deadline: timestamp.toString(),
+        useNative,
+        createPool: !idPoolExist,
+        version: 3,
       })
 
-      if (!(await sendTxn(key, addId, algebraAddress, addCallData, addValue))) {
+      if (!(await sendTxn(key, addId, nftPositionV3, addCallData, addValue))) {
         setPending(false)
         return
       }

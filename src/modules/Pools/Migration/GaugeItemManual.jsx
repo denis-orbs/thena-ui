@@ -2,12 +2,11 @@
 
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { maxUint128 } from 'viem'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
-import { EmphasisButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useCurrency } from '@/hooks/fusion/Tokens'
@@ -19,8 +18,6 @@ import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { formatAmount, formatAmountLP, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import { RefreshIcon } from '@/svgs'
-
-import { AdjustNewPositionModal } from './AdjustNewPositionModal'
 
 export const fetchManualInfo = async (account, tokenId, chainId) => {
   const algebraContract = getAlgebraNPMContract(chainId)
@@ -40,22 +37,12 @@ export const fetchManualInfo = async (account, tokenId, chainId) => {
   return balance
 }
 
-export function GaugeItemManual({ showAdjustButton = false, positionV2, version = 2 }) {
+export function GaugeItemManual({ positionV2, version = 2 }) {
   const t = useTranslations()
-  const [isOpenAdjust, setIsOpenAdjust] = useState(false)
 
   const { asset0, asset1, liquidity, tickLower, tickUpper } = positionV2
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
-
-  // const { account, chainId } = useWallet()
-  // const { data: fees } = useSWR(
-  //   account && tokenId ? ['manuals/fee', tokenId, account, chainId] : null,
-  //   () => fetchManualInfo(account, tokenId, chainId),
-  //   {
-  //     refreshInterval: 60000,
-  //   },
-  // )
 
   const [fusionState, fusion] = useFusion(currency0, currency1, version)
   const tickAtLimit = useMemo(
@@ -74,15 +61,6 @@ export function GaugeItemManual({ showAdjustButton = false, positionV2, version 
     return [fusionState, fusion]
   }, [fusion, fusionState, prevFusion, prevFusionState])
 
-  /**
-   * @typedef {Object} Position
-   * @property {Object} pool - The pool object associated with the position.
-   * @property {BigNumber} liquidity - The liquidity of the position.
-   * @property {number} tickLower - The lower tick of the position.
-   * @property {number} tickUpper - The upper tick of the position.
-   * @property {Object} amount0 - The amount of token 0 in the position.
-   * @property {Object} amount1 - The amount of token 1 in the position.
-   */
   const position = useMemo(() => {
     if (_fusion) {
       return new Position({
@@ -100,25 +78,6 @@ export function GaugeItemManual({ showAdjustButton = false, positionV2, version 
 
   const amount0InUsd = useMemo(() => amount0 * asset0.price, [amount0, asset0])
   const amount1InUsd = useMemo(() => amount1 * asset1.price, [amount1, asset1])
-
-  // const token0 = useToken(asset0.address)
-  // const token1 = useToken(asset1.address)
-  // const feeValue0 = useMemo(
-  //   () => CurrencyAmount.fromRawAmount(unwrappedToken(token0), new BigNumber(fees ? fees[0] : 0).toString(10)),
-  //   [token0, fees],
-  // )
-  // const feeValue1 = useMemo(
-  //   () => CurrencyAmount.fromRawAmount(unwrappedToken(token1), new BigNumber(fees ? fees[1] : 0).toString(10)),
-  //   [token1, fees],
-  // )
-
-  // const feesInUsd = useMemo(
-  //   () =>
-  //     fromWei(fees ? fees[0] : 0, asset0.decimals)
-  //       .times(asset0.price)
-  //       .plus(fromWei(fees ? fees[1] : 0, asset1.decimals).times(asset1.price)),
-  //   [fees, asset0, asset1],
-  // )
 
   const fiatValueOfLiquidity = useMemo(() => amount0InUsd + amount1InUsd, [amount0InUsd, amount1InUsd])
 
@@ -188,18 +147,6 @@ export function GaugeItemManual({ showAdjustButton = false, positionV2, version 
           </div>
         </div>
 
-        {/* <div className='flex items-center justify-between'> */}
-        {/*   <Paragraph className='text-sm'>{t('Claimable Fees')}</Paragraph> */}
-        {/*   <div className='flex items-center gap-1'> */}
-        {/*     <TextHeading>${formatAmount(feesInUsd)}</TextHeading> */}
-        {/*     {feesInUsd.gt(0) && <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />} */}
-        {/*     <CustomTooltip id={`net-${tokenId}`}> */}
-        {/*       {fees && <p>{`${formatAmount(fromWei(fees[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>} */}
-        {/*       {fees && <p>{`${formatAmount(fromWei(fees[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>} */}
-        {/*     </CustomTooltip> */}
-        {/*   </div> */}
-        {/* </div> */}
-
         <div className='gap-3 border-t border-t-neutral-600 py-3'>
           <div className='flex items-center gap-1'>
             <Paragraph className='text-sm'>{t('Price Range')}</Paragraph>
@@ -265,15 +212,6 @@ export function GaugeItemManual({ showAdjustButton = false, positionV2, version 
               </Paragraph>
             </div>
           </div>
-
-          {showAdjustButton && (
-            <>
-              <EmphasisButton onClick={() => setIsOpenAdjust(true)} className='mt-3 w-full'>
-                {t('Adjust New Position')}
-              </EmphasisButton>
-              <AdjustNewPositionModal isOpen={isOpenAdjust} onClose={() => setIsOpenAdjust(false)} />
-            </>
-          )}
         </div>
       </div>
     </section>

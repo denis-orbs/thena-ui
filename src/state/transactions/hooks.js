@@ -136,8 +136,8 @@ export const useTxn = () => {
         console.log('txnReceipt :>> ', txnReceipt)
         return true
       } catch (error) {
-        console.log(error)
-        console.log(error?.shortMessage)
+        console.debug({ error, to, data })
+
         if (error && error.name === 'TransactionReceiptNotFoundError') {
           // Fix case if RPC error -> still shows tx
           updateTxn({

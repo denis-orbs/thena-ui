@@ -23,7 +23,7 @@ import { simulateCall } from '@/lib/contractActions'
 import { getAlgebraNPMContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
-import { formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import { InfoIcon, RefreshIcon } from '@/svgs'
 
@@ -76,10 +76,12 @@ export default function ManualPosition({ pool }) {
     [tickLower, tickUpper],
   )
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
+
   const [, _fusion] = useMemo(() => {
     if (!fusion && prevFusion && prevFusionState) {
       return [prevFusionState, prevFusion]
     }
+
     return [fusionState, fusion]
   }, [fusion, fusionState, prevFusion, prevFusionState])
 
@@ -128,9 +130,26 @@ export default function ManualPosition({ pool }) {
 
   const [reversePrice, setReversePrice] = useState(false)
 
-  const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
+  // const minPrice = formatAmountLP(
+  //   reversePrice
+  //     ? 1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
+  //     : formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
+  // )
 
-  // const { onAlgebraMigrate, pending } = useAlgebraMigration
+  // const maxPrice = formatAmountLP(
+  //   reversePrice
+  //     ? 1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)
+  //     : formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER),
+  // )
+
+  // if (version === 2) {
+  //   console.log({
+  //     maxPrice,
+  //     minPrice,
+  //   })
+  // }
+
+  const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -159,6 +178,7 @@ export default function ManualPosition({ pool }) {
           <GreenBadge>{t('In Range')}</GreenBadge>
         )}
       </div>
+
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
@@ -173,6 +193,7 @@ export default function ManualPosition({ pool }) {
             {Number(liquidity) > 0 && <TextSubHeading>{`(${formatAmount(firstPercent)}%)`}</TextSubHeading>}
           </div>
         </div>
+
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>
             {unwrappedSymbol(asset1)} {t('Deposit')}
@@ -182,6 +203,7 @@ export default function ManualPosition({ pool }) {
             {Number(liquidity) > 0 && <TextSubHeading>({formatAmount(100 - firstPercent)}%)</TextSubHeading>}
           </div>
         </div>
+
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Claimable Fees')}</Paragraph>
           <div className='flex items-center gap-1'>
@@ -194,7 +216,7 @@ export default function ManualPosition({ pool }) {
           </div>
         </div>
 
-        <div className='flex items-center gap-1'>
+        <div className={cn('flex items-center gap-1', version === 3 && 'hidden')}>
           <Paragraph className='text-sm'>{t('Price Range')}</Paragraph>
           <RefreshIcon
             className='size-4 cursor-pointer stroke-neutral-50'
@@ -203,7 +225,8 @@ export default function ManualPosition({ pool }) {
             }}
           />
         </div>
-        <div className='grid grid-cols-2 gap-4'>
+
+        <div className={cn('grid grid-cols-2 gap-4', version === 3 && 'hidden')}>
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
             <TextSubHeading className='text-xs'>{t('Min Price')}</TextSubHeading>
             <TextHeading>
@@ -237,7 +260,13 @@ export default function ManualPosition({ pool }) {
             </Paragraph>
           </div>
         </div>
-        <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
+
+        <div
+          className={cn(
+            'flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2',
+            version === 3 && 'hidden',
+          )}
+        >
           <TextSubHeading className='text-xs'>{t('Current Price')}</TextSubHeading>
           <TextHeading>
             {formatAmountLP(
@@ -252,8 +281,9 @@ export default function ManualPosition({ pool }) {
           </Paragraph>
         </div>
       </div>
-      <div className='flex w-full gap-3'>
-        {version !== 2 && (
+
+      <div id='BUTTONS_GROUP' className='flex w-full gap-3'>
+        {version === 3 && (
           <TextButton className='w-full' disabled={!fees || feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
             {t('Claim')}
           </TextButton>
@@ -273,7 +303,7 @@ export default function ManualPosition({ pool }) {
           </OutlinedButton>
         )}
 
-        {version !== 2 && (
+        {version === 3 && (
           <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
             {t('Add')}
           </EmphasisButton>
@@ -285,6 +315,7 @@ export default function ManualPosition({ pool }) {
           </Link>
         )}
       </div>
+
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}
