@@ -42,32 +42,11 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
       price: wbnbPrice,
     }
     assets.unshift(nativeBNB)
-    return assets.map(item => {
-      // TODO: Hard-coded price
-      if (networkId === 97) {
-        if (item.symbol.includes('BNB')) {
-          item.price = 600
-        }
-
-        if (item.symbol === 'THE') {
-          item.price = 0.2
-        }
-
-        if (item.symbol.includes('ETH')) {
-          item.price = 3000
-        }
-
-        if (item.symbol.includes('BTC')) {
-          item.price = 90000
-        }
-      }
-
-      return {
-        ...item,
-        chainId: networkId,
-        balance: ZERO_VALUE,
-      }
-    })
+    return assets.map(item => ({
+      ...item,
+      chainId: networkId,
+      balance: ZERO_VALUE,
+    }))
   } catch (ex) {
     console.error('get assets had error', ex)
     return null
