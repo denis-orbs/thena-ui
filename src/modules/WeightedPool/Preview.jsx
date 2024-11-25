@@ -153,7 +153,7 @@ function PoolDetails({
           setCurrentStep(0)
         }}
         buttonAction={
-          <Link href='/pools/weighted-pool'>
+          <Link href={`/pools/${newPoolId?.toLowerCase()}`}>
             <EmphasisButton className='w-full'>{t('View Pool')}</EmphasisButton>
           </Link>
         }

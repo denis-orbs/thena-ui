@@ -66,8 +66,8 @@ export const fetchGammaInfo = async (chainId, strategy) => {
 
 export default function GammaAdd({ strategy, isModal, isAdd }) {
   const [isZapper, setIsZapper] = useState(false)
-  const baseCurrency = useCurrency(strategy.token0.address)
-  const quoteCurrency = useCurrency(strategy.token1.address)
+  const baseCurrency = useCurrency(strategy?.token0?.address)
+  const quoteCurrency = useCurrency(strategy?.token1?.address)
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
@@ -176,15 +176,15 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
                 <div className='flex flex-col gap-3'>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>
-                      {unwrappedSymbol(strategy.token0)} {t('Amount')}
+                      {unwrappedSymbol(strategy?.token0)} {t('Amount')}
                     </Paragraph>
-                    <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
+                    <Paragraph>{formatAmount(strategy?.token0?.reserve)}</Paragraph>
                   </div>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>
-                      {unwrappedSymbol(strategy.token1)} {t('Amount')}
+                      {unwrappedSymbol(strategy?.token1)} {t('Amount')}
                     </Paragraph>
-                    <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
+                    <Paragraph>{formatAmount(strategy?.token1?.reserve)}</Paragraph>
                   </div>
                 </div>
               </div>
@@ -193,11 +193,11 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
                 <div className='flex flex-col gap-3'>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                    <Paragraph>{formatAmount(strategy.account?.totalLp)} LP</Paragraph>
+                    <Paragraph>{formatAmount(strategy?.account?.totalLp)} LP</Paragraph>
                   </div>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                    <Paragraph>{formatAmount(strategy.account?.gaugeBalance)} LP</Paragraph>
+                    <Paragraph>{formatAmount(strategy?.account?.gaugeBalance)} LP</Paragraph>
                   </div>
                 </div>
               </div>

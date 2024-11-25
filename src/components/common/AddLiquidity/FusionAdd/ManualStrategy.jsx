@@ -10,6 +10,7 @@ import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
+import { CHAIN_ID } from '@/constant/contracts'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { PoolState } from '@/hooks/fusion/useFusions'
 import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
@@ -25,10 +26,10 @@ import {
   useV3MintState,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { useLocaleSettings } from '@/state/settings/hooks'
+import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 
-// import { EnterAmounts } from './containers/EnterAmounts'
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
+// import { EnterAmounts } from './containers/EnterAmounts'
 // import ManualAdd from './ManualAdd'
 import { PresetRanges } from '../components/PresetRange'
 import { RangeSelector } from '../components/RangeSelector'
@@ -37,6 +38,7 @@ const feeAmount = 3000
 
 function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
   const { locale } = useLocaleSettings()
+  const { networkId } = useChainSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
@@ -353,7 +355,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
           </TextHeading>
         </div>
       )}
-      {!mintInfo.noLiquidity && (
+      {!mintInfo.noLiquidity && networkId !== CHAIN_ID.TEST_BSC && (
         <div className='mt-0'>
           <LiquidityChartRangeInput
             currencyA={baseCurrency ?? undefined}

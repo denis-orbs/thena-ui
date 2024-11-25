@@ -9,9 +9,9 @@ import IchiAdd from './IchiAdd'
 export default function FusionAdd({ strategy, isModal, isAdd }) {
   return (
     <>
-      {strategy.title === 'ICHI' ? (
+      {strategy?.title === 'ICHI' ? (
         <IchiAdd strategy={strategy} isModal={isModal} isAdd={isAdd} />
-      ) : strategy.title === 'DefiEdge' ? (
+      ) : strategy?.title === 'DefiEdge' ? (
         <DefiedgeAdd strategy={strategy} isModal={isModal} isAdd={isAdd} />
       ) : (
         <GammaAdd strategy={strategy} isModal={isModal} isAdd={isAdd} />

@@ -13,7 +13,7 @@ import {
   getThenaWeightedPoolFactoryContract,
   getWeightedPoolContract,
 } from '@/lib/contracts'
-import { fromWei, toWei } from '@/lib/utils'
+import { fromWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -60,6 +60,7 @@ export const useWeightedPool = () => {
       const initialLiquidityuuid = uuidv4()
       const weightedPoolFactoryContract = getThenaWeightedPoolFactoryContract(chainId)
       const thenaRouterContract = getThenaRouterContract(chainId)
+      const registerPooluuid = uuidv4()
 
       const transactions = {}
 
@@ -87,6 +88,11 @@ export const useWeightedPool = () => {
       }
       transactions[createuuid] = {
         desc: t('Create New Weighted Pool'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+      transactions[registerPooluuid] = {
+        desc: t('Register Pool'),
         status: TXN_STATUS.START,
         hash: null,
       }
@@ -142,7 +148,7 @@ export const useWeightedPool = () => {
       const poolId = await handleGetPoolId(txHash)
       const weightedPoolContract = getWeightedPoolContract(poolId, chainId)
       const poolId32 = await readCall(weightedPoolContract, 'getPoolId', [], chainId)
-      await writeTxn(key, initialLiquidityuuid, thenaRouterContract, 'registerPool', [poolId32, toWei(fee)])
+      await writeTxn(key, registerPooluuid, thenaRouterContract, 'registerPool', [poolId32, fee * 100])
       const result = await writeTxn(key, initialLiquidityuuid, thenaRouterContract, 'joinPoolInit', [
         poolId32,
         tokenIds,

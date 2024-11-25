@@ -22,91 +22,102 @@ export const useAlgebraAdd = (version = 2) => {
 
   const onAlgebraAdd = useCallback(
     async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline) => {
-      const key = uuidv4()
-      const approve1uuid = uuidv4()
-      const approve2uuid = uuidv4()
-      const adduuid = uuidv4()
+      try {
+        const key = uuidv4()
+        const approve1uuid = uuidv4()
+        const approve2uuid = uuidv4()
+        const adduuid = uuidv4()
 
-      const algebraAddress =
-        version === 2
-          ? Contracts.nonfungiblePositionManagerV2[chainId]
-          : Contracts.nonfungiblePositionManagerV3[chainId]
+        const algebraAddress =
+          version === 2
+            ? Contracts.nonfungiblePositionManagerV2[chainId]
+            : Contracts.nonfungiblePositionManagerV3[chainId]
 
-      const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
-      const { position, depositADisabled, depositBDisabled, noLiquidity } = mintInfo
-      const baseCurrencyAddress = baseCurrency.wrapped?.address.toLowerCase()
-      const quoteCurrencyAddress = quoteCurrency.wrapped?.address.toLowerCase()
-      let isFirstApproved = true
-      let isSecondApproved = true
-      const firstContract = !baseCurrency.isNative ? getERC20Contract(baseCurrencyAddress, chainId) : null
-      const secondContract = !quoteCurrency.isNative ? getERC20Contract(quoteCurrencyAddress, chainId) : null
-      if (!baseCurrency.isNative && !depositADisabled) {
-        const allowance = await readCall(firstContract, 'allowance', [account, algebraAddress], chainId)
-        isFirstApproved = fromWei(allowance, baseCurrency.decimals).gte(amountA.toExact())
-      }
-      if (!quoteCurrency.isNative && !depositBDisabled) {
-        const allowance = await readCall(secondContract, 'allowance', [account, algebraAddress], chainId)
-        isSecondApproved = fromWei(allowance, quoteCurrency.decimals).gte(amountB.toExact())
-      }
-      startTxn({
-        key,
-        title: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
-        transactions: {
-          ...(!isFirstApproved && {
-            [approve1uuid]: {
-              desc: `${t('Approve')} ${baseCurrency.symbol}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          ...(!isSecondApproved && {
-            [approve2uuid]: {
-              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          [adduuid]: {
-            desc: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
+        const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
+        const { position, depositADisabled, depositBDisabled, noLiquidity } = mintInfo
+        const baseCurrencyAddress = baseCurrency.wrapped?.address.toLowerCase()
+        const quoteCurrencyAddress = quoteCurrency.wrapped?.address.toLowerCase()
+        let isFirstApproved = true
+        let isSecondApproved = true
+        const firstContract = !baseCurrency.isNative ? getERC20Contract(baseCurrencyAddress, chainId) : null
+        const secondContract = !quoteCurrency.isNative ? getERC20Contract(quoteCurrencyAddress, chainId) : null
+        if (!baseCurrency.isNative && !depositADisabled) {
+          const allowance = await readCall(firstContract, 'allowance', [account, algebraAddress], chainId)
+          isFirstApproved = fromWei(allowance, baseCurrency.decimals).gte(amountA.toExact(), baseCurrency.decimals)
+        }
+        if (!quoteCurrency.isNative && !depositBDisabled) {
+          const allowance = await readCall(secondContract, 'allowance', [account, algebraAddress], chainId)
+          isSecondApproved = fromWei(allowance, quoteCurrency.decimals).gte(amountB.toExact(), quoteCurrency.decimals)
+        }
+
+        const transactions = {}
+
+        if (!isFirstApproved) {
+          transactions[approve1uuid] = {
+            desc: `${t('Approve')} ${baseCurrency.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
-          },
-        },
-      })
+          }
+        }
 
-      setPending(true)
-      if (!isFirstApproved) {
-        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [algebraAddress, maxUint256]))) {
+        if (!isSecondApproved) {
+          transactions[approve2uuid] = {
+            desc: `${t('Approve')} ${quoteCurrency.symbol}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
+        transactions[adduuid] = {
+          desc: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+
+        startTxn({
+          key,
+          title: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
+          transactions,
+        })
+
+        setPending(true)
+        if (!isFirstApproved) {
+          if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [algebraAddress, maxUint256]))) {
+            setPending(false)
+            return
+          }
+        }
+
+        if (!isSecondApproved) {
+          if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [algebraAddress, maxUint256]))) {
+            setPending(false)
+            return
+          }
+        }
+
+        const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
+        const useNative = baseCurrency.isNative ? baseCurrency : quoteCurrency.isNative ? quoteCurrency : undefined
+        const { calldata, value } = NonfungiblePositionManager.addCallParameters(position, {
+          slippageTolerance: allowedSlippage,
+          recipient: account,
+          deadline: timestamp.toString(),
+          useNative,
+          createPool: noLiquidity,
+        })
+        if (!(await sendTxn(key, adduuid, algebraAddress, calldata, value))) {
           setPending(false)
           return
         }
-      }
 
-      if (!isSecondApproved) {
-        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [algebraAddress, maxUint256]))) {
-          setPending(false)
-          return
-        }
-      }
-      const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
-      const useNative = baseCurrency.isNative ? baseCurrency : quoteCurrency.isNative ? quoteCurrency : undefined
-      const { calldata, value } = NonfungiblePositionManager.addCallParameters(position, {
-        slippageTolerance: allowedSlippage,
-        recipient: account,
-        deadline: timestamp.toString(),
-        useNative,
-        createPool: noLiquidity,
-      })
-      if (!(await sendTxn(key, adduuid, algebraAddress, calldata, value))) {
+        endTxn({
+          key,
+          final: 'Liquidity Add Successful',
+        })
         setPending(false)
-        return
+      } catch (e) {
+        setPending(false)
+        throw e
       }
-
-      endTxn({
-        key,
-        final: 'Liquidity Add Successful',
-      })
-      setPending(false)
     },
     [version, chainId, startTxn, t, account, sendTxn, endTxn, writeTxn],
   )

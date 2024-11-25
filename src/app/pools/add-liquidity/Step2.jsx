@@ -16,15 +16,7 @@ import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  CheckCircleIcon,
-  DownloadSuccessIcon,
-  PercentIcon,
-  RightInIcon,
-  RightOutIcon,
-} from '@/svgs'
+import { ArrowLeftIcon, ArrowRightIcon, DownloadSuccessIcon, PercentIcon } from '@/svgs'
 
 const DEPOSIT_TYPE = {
   SINGLE: 'single',
@@ -327,34 +319,6 @@ export default function Step2({ pool, setCurrentStep, isAutomatic, setIsAutomati
                     </p>
                   </div>
                 </>
-              )}
-              {strategy && (
-                <div className='flex flex-col gap-6'>
-                  <div className='flex flex-row items-center gap-2'>
-                    <CheckCircleIcon className='h-5 w-5 stroke-success-600' />
-                    <div className='flex flex-col'>
-                      <div className='flex flex-row gap-1'>
-                        <span>{t('Pool price tick at', { value: 12345 })}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex flex-row items-center gap-2'>
-                    <RightOutIcon className='h-5 w-5 stroke-success-600' />
-                    <div className='flex flex-col'>
-                      <div className='flex flex-row gap-1'>
-                        <span>{t('Low tick at', { value: 12345 })}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex flex-row items-center gap-2'>
-                    <RightInIcon className='h-5 w-5 stroke-success-600' />
-                    <div className='flex flex-col'>
-                      <div className='flex flex-row gap-1'>
-                        <span>{t('High tick at', { value: 12345 })}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               )}
             </>
           )}

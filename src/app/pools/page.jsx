@@ -8,7 +8,7 @@ import { ChainId } from 'thena-sdk-core'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, TertiaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
@@ -507,9 +507,6 @@ export default function PoolsPage() {
             </div>
           </div>
           <div className='ml-auto flex gap-4 lg:flex-row'>
-            <Link href='/pools/weighted-pool/create'>
-              <TertiaryButton className='w-full lg:w-auto'>{t('Create Weight Pool')}</TertiaryButton>
-            </Link>
             <Link href='/pools/add-liquidity'>
               <PrimaryButton className='w-full lg:w-auto'>{t('Add Liquidity')}</PrimaryButton>
             </Link>

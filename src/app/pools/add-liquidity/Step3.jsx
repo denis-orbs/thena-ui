@@ -12,6 +12,7 @@ import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
+import { useFusionPairs } from '@/context/fusionsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
@@ -22,6 +23,7 @@ const feeAmount = 3000
 export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strategy }) {
   const t = useTranslations()
   const assets = useAssets()
+  const fusionPairs = useFusionPairs()
   const [firstAsset, secondAsset] = useMemo(
     () => [
       assets.find(item => item.address.toLowerCase() === pool?.token0?.address.toLowerCase()),
@@ -41,6 +43,28 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
     baseCurrency ?? undefined,
     undefined,
   )
+
+  const currentPrice = useMemo(() => {
+    if (!mintInfo.price) return
+
+    const _price = mintInfo.invertPrice
+      ? parseFloat(mintInfo.price.invert().toSignificant(5))
+      : parseFloat(mintInfo.price.toSignificant(5))
+
+    if (Number(_price) <= 0.0001) {
+      return '< 0.0001'
+    }
+    return _price
+  }, [mintInfo.price, mintInfo.invertPrice])
+
+  const pair = useMemo(() => {
+    if (!pool) return
+    const result = (fusionPairs ?? []).find(ele => pool?.address?.toLowerCase() === ele?.address)
+    return {
+      ...pool,
+      currentTick: Number(result?.globalState.tick || 0),
+    }
+  }, [pool, fusionPairs])
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   return (
     <div className='mt-10 flex flex-col gap-6 lg:flex-row lg:gap-8'>
@@ -61,48 +85,54 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
               classNames={{
                 image: 'outline-[2.6px] w-7 h-7',
               }}
-              logo1={pool?.token0?.logoURI || UNKNOWN_LOGO}
-              logo2={pool?.token1?.logoURI || UNKNOWN_LOGO}
+              logo1={pair?.token0?.logoURI || UNKNOWN_LOGO}
+              logo2={pair?.token1?.logoURI || UNKNOWN_LOGO}
             />
-            {pool.type !== 'weighted' ? <TextHeading>{pool.symbol}</TextHeading> : <></>}
+            {pair.type !== 'weighted' ? <TextHeading>{pair.symbol}</TextHeading> : <></>}
           </div>
-          <NeutralBadge>{getPoolType(pool.type)}</NeutralBadge>
+          <NeutralBadge>{getPoolType(pair.type)}</NeutralBadge>
         </div>
         {isAutomatic ? (
-          <FusionAdd strategy={isAdd ? pool : strategy} isAdd={isAdd} />
+          <FusionAdd strategy={isAdd ? pair : strategy} isAdd={isAdd} />
         ) : (
           <div className='space-y-6'>
             <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-            <div className='flex flex-col gap-4'>
-              <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-              <div className='flex flex-col gap-3'>
-                <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>
-                    {unwrappedSymbol(currencyA)} {t('Amount')}
-                  </Paragraph>
-                  <Paragraph>{formatAmount(currencyA.reserve)}</Paragraph>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>
-                    {unwrappedSymbol(currencyB)} {t('Amount')}
-                  </Paragraph>
-                  <Paragraph>{formatAmount(currencyB.reserve)}</Paragraph>
-                </div>
-              </div>
-            </div>
-            <div className='flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-              <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-              <div className='flex flex-col gap-3'>
-                <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                  <Paragraph>{formatAmount(pool?.account?.totalLp)} LP</Paragraph>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                  <Paragraph>{formatAmount(pool?.account?.gaugeBalance)} LP</Paragraph>
-                </div>
-              </div>
-            </div>
+            <>
+              {Boolean(!mintInfo.noLiquidity) && (
+                <>
+                  <div className='flex flex-col gap-4'>
+                    <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
+                    <div className='flex flex-col gap-3'>
+                      <div className='flex items-center justify-between'>
+                        <Paragraph className='font-medium'>
+                          {unwrappedSymbol(currencyA)} {t('Amount')}
+                        </Paragraph>
+                        <Paragraph>{formatAmount(currencyA.reserve)}</Paragraph>
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <Paragraph className='font-medium'>
+                          {unwrappedSymbol(currencyB)} {t('Amount')}
+                        </Paragraph>
+                        <Paragraph>{formatAmount(currencyB.reserve)}</Paragraph>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+                    <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
+                    <div className='flex flex-col gap-3'>
+                      <div className='flex items-center justify-between'>
+                        <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+                        <Paragraph>{formatAmount(pair?.account?.totalLp)} LP</Paragraph>
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
+                        <Paragraph>{formatAmount(pair?.account?.gaugeBalance)} LP</Paragraph>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
             <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} />
           </div>
         )}
@@ -116,7 +146,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
               <CheckCircleIcon className='h-5 w-5 stroke-success-600' />
               <div className='flex flex-col'>
                 <div className='flex flex-row gap-1'>
-                  <span>{t('Pool price tick at', { value: Number(pool?.globalState?.tick || 0) })}</span>
+                  <span>{t('Pool price tick at', { value: currentPrice })}</span>
                 </div>
               </div>
             </div>

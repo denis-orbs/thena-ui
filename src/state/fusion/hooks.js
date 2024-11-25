@@ -16,7 +16,7 @@ import { formatUnits, parseUnits } from 'viem'
 
 import { FusionRangeType } from '@/constant'
 import { gammaUniProxyAbi } from '@/constant/abi/fusion'
-import Contracts from '@/constant/contracts'
+import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance, useCurrencyBalances } from '@/hooks/fusion/useCurrencyBalances'
 import { PoolState, useFusion } from '@/hooks/fusion/useFusions'
@@ -229,8 +229,12 @@ export const useV3DerivedMintInfo = (
   }
 
   // pool
-  // TODO
-  const [poolState, pool] = useFusion(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B])
+  // TODO: change to version 3
+  const [poolState, pool] = useFusion(
+    currencies[Field.CURRENCY_A],
+    currencies[Field.CURRENCY_B],
+    chainId !== CHAIN_ID.TEST_BSC ? 2 : 3,
+  )
   const noLiquidity = poolState === PoolState.NOT_EXISTS
 
   const dynamicFee = pool ? pool.fee : 3000

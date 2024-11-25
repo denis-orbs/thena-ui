@@ -47,8 +47,8 @@ function PairsContextProvider({ children }) {
   )
 
   const { data: weightedPools = [], isLoading: weightedLoading } = useSWR(
-    networkId === 97 ? ['weighted pool api'] : null,
-    { fetcher: fetchWeightedPools },
+    networkId === 97 && ['weighted pool api'],
+    () => fetchWeightedPools(networkId),
     {
       refreshInterval: 60000,
     },
