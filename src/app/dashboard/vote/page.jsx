@@ -28,6 +28,7 @@ import { usePoke, useReset, useVote } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
+import { warnToast } from '@/lib/notify'
 import { cn, formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -392,18 +393,18 @@ export default function VotePage() {
     return new BigNumber(0)
   }, [userPools, prices])
 
-  // const errorMsg = useMemo(() => {
-  //   if (!veTHE) {
-  //     return 'Select veTHE'
-  //   }
-  //   if (veTHE.voting_amount.isZero()) {
-  //     return 'Voting power is zero'
-  //   }
-  //   if (totalPercent !== 100) {
-  //     return 'Total should be 100%'
-  //   }
-  //   return null
-  // }, [totalPercent, veTHE])
+  const errorMsg = useMemo(() => {
+    if (!veTHE) {
+      return 'Select veTHE'
+    }
+    if (veTHE.voting_amount.isZero()) {
+      return 'Voting power is zero'
+    }
+    if (totalPercent !== 100) {
+      return 'Total should be 100%'
+    }
+    return null
+  }, [totalPercent, veTHE])
 
   useEffect(() => {
     if (!veTHEId && !!veTHEs.length) {
@@ -540,14 +541,11 @@ export default function VotePage() {
                 className='px-2.5 py-2'
                 disabled={votePending}
                 onClick={() => {
-                  // if (errorMsg) {
-                  //   warnToast(errorMsg)
-                  //   return
-                  // }
-                  // onVote(veTHE.id, percent, () => {
-                  //   updateVeTHEs()
-                  // })
-                  onVote(3, percent, () => {
+                  if (errorMsg) {
+                    warnToast(errorMsg)
+                    return
+                  }
+                  onVote(veTHE.id, percent, () => {
                     updateVeTHEs()
                   })
                 }}

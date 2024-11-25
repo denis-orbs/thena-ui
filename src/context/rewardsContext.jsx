@@ -133,7 +133,7 @@ function RewardsContextProvider({ children }) {
         const result = {}
         const isFeeExist = false
         const isBribeExist = false
-        const userPoolRewards = current.filter(reward => reward.pool === pool.address)
+        const userPoolRewards = current.filter(reward => reward?.pool === pool?.address)
         if (userPoolRewards && userPoolRewards.length) {
           userPoolRewards.forEach(userPoolReward => {
             const { rewardAmount, rewardToken } = userPoolReward
