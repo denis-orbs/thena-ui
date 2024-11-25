@@ -16,7 +16,7 @@ import { formatUnits, parseUnits } from 'viem'
 
 import { FusionRangeType } from '@/constant'
 import { gammaUniProxyAbi } from '@/constant/abi/fusion'
-import Contracts, { CHAIN_ID } from '@/constant/contracts'
+import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance, useCurrencyBalances } from '@/hooks/fusion/useCurrencyBalances'
 import { PoolState, useFusion } from '@/hooks/fusion/useFusions'
@@ -148,8 +148,8 @@ export const useV3DerivedMintInfo = (
   currencyB,
   feeAmount,
   baseCurrency,
-  // override for existing position
-  existingPosition,
+  existingPosition, // override for existing position
+  version = 3,
 ) => {
   const { networkId: chainId } = useChainSettings()
   const {
@@ -161,6 +161,7 @@ export const useV3DerivedMintInfo = (
     liquidityRangeType,
     presetRange,
   } = useV3MintState()
+
   const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : []
   const { data: gammaData } = useSWR(
     presetRange && presetRange.address && gammaCurrencies.length > 0
@@ -229,12 +230,8 @@ export const useV3DerivedMintInfo = (
   }
 
   // pool
-  // TODO: change to version 3
-  const [poolState, pool] = useFusion(
-    currencies[Field.CURRENCY_A],
-    currencies[Field.CURRENCY_B],
-    chainId !== CHAIN_ID.TEST_BSC ? 2 : 3,
-  )
+  // TODO
+  const [poolState, pool] = useFusion(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B], version)
   const noLiquidity = poolState === PoolState.NOT_EXISTS
 
   const dynamicFee = pool ? pool.fee : 3000

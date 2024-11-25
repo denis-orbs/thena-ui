@@ -6,6 +6,7 @@ import { poolAbi } from '@/constant/abi/fusion'
 import { CHAIN_ID } from '@/constant/contracts'
 import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { poolTestNetV3Abi } from '@/constant/v3-abi'
+import { fetchCLpoolV2 } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -49,12 +50,15 @@ const FusionsContext = createContext(initialState)
 
 function FusionsContextProvider({ children }) {
   const { networkId } = useChainSettings()
+
   const pairs = useContext(PairsContext)
+
   const fusionPairs = useMemo(() => {
     const { data } = pairs[networkId]
     if (!data?.length) return []
     return data.filter(ele => ele.isFusion)
   }, [pairs, networkId])
+
   const { data } = useSWR(
     fusionPairs.length > 0 ? ['fusion/pairs', networkId] : null,
     () => fetchFusionInfo(fusionPairs, networkId),
@@ -66,9 +70,34 @@ function FusionsContextProvider({ children }) {
   return <FusionsContext.Provider value={data}>{children}</FusionsContext.Provider>
 }
 
-const useFusionPairs = () => {
-  const fusionPairs = useContext(FusionsContext)
-  return fusionPairs
+const useFusionPairsV2 = () => {
+  const { networkId } = useChainSettings()
+
+  const { data: pairs = [] } = useSWR(
+    networkId === 97 ? 'pairs api version 2' : null,
+    { fetcher: () => fetchCLpoolV2(networkId) },
+    { refreshInterval: 60_000 },
+  )
+
+  const fusionPairs = useMemo(() => pairs.filter(ele => ele.isFusion), [pairs])
+  // const fusionPairs = pairs
+
+  const { data } = useSWR(
+    fusionPairs.length > 0 ? ['fusion/pairs', networkId] : null,
+    () => fetchFusionInfo(fusionPairs, networkId),
+    {
+      refreshInterval: 60_000,
+    },
+  )
+
+  return data?.map(ele => ({ ...ele, version: 2 }))
 }
 
-export { FusionsContextProvider, useFusionPairs }
+const useFusionPairs = (version = 3) => {
+  const fusionPairsV3 = useContext(FusionsContext)
+  const fusionPairsV2 = useFusionPairsV2()
+
+  return version === 2 ? fusionPairsV2 : fusionPairsV3
+}
+
+export { FusionsContextProvider, useFusionPairs, useFusionPairsV2 }

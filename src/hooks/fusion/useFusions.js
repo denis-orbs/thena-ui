@@ -17,7 +17,7 @@ export const PoolState = {
   INVALID: 'INVALID',
 }
 
-const fetchPoolAddress = async (transformed, version) => {
+const fetchPoolAddress = async (transformed, version = 3) => {
   const _networkId = transformed?.[0]?.[0].chainId
   if (_networkId !== CHAIN_ID.TEST_BSC) {
     return transformed.map(value =>
@@ -27,7 +27,8 @@ const fetchPoolAddress = async (transformed, version) => {
       }),
     )
   }
-  return await callMulti(
+
+  return callMulti(
     transformed
       .filter(value => !!value)
       .map(value => ({
@@ -41,7 +42,7 @@ const fetchPoolAddress = async (transformed, version) => {
 }
 
 export function useFusions(poolKeys, version) {
-  const fusionPairs = useFusionPairs()
+  const fusionPairs = useFusionPairs(version)
 
   const transformed = useMemo(
     () =>
@@ -66,7 +67,7 @@ export function useFusions(poolKeys, version) {
     () => fetchPoolAddress(transformed, version),
   )
 
-  return useMemo(
+  const data = useMemo(
     () =>
       poolAddresses
         .filter(poolAddress => !!poolAddress)
@@ -74,11 +75,14 @@ export function useFusions(poolKeys, version) {
           const [token0, token1] = transformed[index] ?? []
           if (!token0 || !token1) return [PoolState.INVALID, null]
 
-          const found = fusionPairs && fusionPairs.find(ele => ele.address.toLowerCase() === poolAddress.toLowerCase())
+          const found = fusionPairs?.find(ele => ele.address.toLowerCase() === poolAddress.toLowerCase())
           if (!found) return [PoolState.NOT_EXISTS, null]
+
           const { globalState, liquidity } = found
           if (!globalState || !liquidity) return [PoolState.NOT_EXISTS, null]
+
           if (!globalState.price || Number(globalState.price) === 0) return [PoolState.NOT_EXISTS, null]
+
           try {
             return [
               PoolState.EXISTS,
@@ -91,9 +95,11 @@ export function useFusions(poolKeys, version) {
         }),
     [poolAddresses, transformed, fusionPairs],
   )
+
+  return data
 }
 
-export function useFusion(currencyA, currencyB, version = 2) {
+export function useFusion(currencyA, currencyB, version = 3) {
   const poolKeys = useMemo(() => [[currencyA, currencyB]], [currencyA, currencyB])
 
   return useFusions(poolKeys, version)[0] ?? []

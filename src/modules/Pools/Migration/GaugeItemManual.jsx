@@ -33,10 +33,10 @@ export const fetchManualInfo = async (account, tokenId, chainId) => {
   return balance
 }
 
-export function GaugeItemManual({ pool, position, version = 2 }) {
+export function GaugeItemManual({ existingPosition, position, version = 2 }) {
   const t = useTranslations()
   const [reversePrice, setReversePrice] = useState(false)
-  const { asset0, asset1, liquidity, tickLower, tickUpper } = pool
+  const { asset0, asset1, liquidity, tickLower, tickUpper } = existingPosition
 
   const tickAtLimit = useMemo(
     () => ({
@@ -97,7 +97,7 @@ export function GaugeItemManual({ pool, position, version = 2 }) {
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </TextHeading>
             <Paragraph className='text-xs'>
-              #{pool.tokenId} / {fee / 10000}% {t('Fee')}
+              #{existingPosition.tokenId} / {fee / 10000}% {t('Fee')}
             </Paragraph>
           </div>
         </article>
@@ -126,7 +126,7 @@ export function GaugeItemManual({ pool, position, version = 2 }) {
 
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(amount0)}`}</TextHeading>
-            {Number(pool) > 0 && <TextSubHeading>{`(${formatAmount(firstPercent)}%)`}</TextSubHeading>}
+            {Number(existingPosition) > 0 && <TextSubHeading>{`(${formatAmount(firstPercent)}%)`}</TextSubHeading>}
           </div>
         </div>
 
@@ -136,7 +136,7 @@ export function GaugeItemManual({ pool, position, version = 2 }) {
           </Paragraph>
           <div className='flex gap-1'>
             <TextHeading>{`${formatAmount(amount1)}`}</TextHeading>
-            {Number(pool) > 0 && <TextSubHeading>({formatAmount(100 - firstPercent)}%)</TextSubHeading>}
+            {Number(existingPosition) > 0 && <TextSubHeading>({formatAmount(100 - firstPercent)}%)</TextSubHeading>}
           </div>
         </div>
 

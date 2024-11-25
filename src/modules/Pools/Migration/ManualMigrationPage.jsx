@@ -3,7 +3,7 @@
 import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useContext, useMemo } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { Pool, Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { maxUint128 } from 'viem'
@@ -24,11 +24,12 @@ import useWallet from '@/hooks/useWallet'
 import { getAlgebraNPMContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { warnToast } from '@/lib/notify'
-import { GaugeItemManual } from '@/modules/Pools/Migration'
+import { AdjustNewPositionModal, GaugeItemManual } from '@/modules/Pools/Migration'
 import { ArrowLeftIcon, ArrowNarrowUpRightIcon, ArrowRightIcon } from '@/svgs'
 
 export function ManualMigrationPage({ tokenId }) {
   const t = useTranslations()
+  const [isOpenAdjust, setIsOpenAdjust] = useState(false)
 
   // CALL APIs
   const assets = useAssets()
@@ -39,13 +40,17 @@ export function ManualMigrationPage({ tokenId }) {
   const { push } = useRouter()
   const { onAlgebraMigrate } = useAlgebraMigration()
 
-  const oldPool = useMemo(() => {
+  const existingPosition = useMemo(() => {
     if (tokenId) {
       return positions.find(ele => ele.tokenId === +tokenId && ele.version === 2)
     }
   }, [tokenId, positions])
 
-  const { asset0, asset1, liquidity: posLiquidity, tickLower, tickUpper } = oldPool
+  console.log({
+    existingPosition,
+  })
+
+  const { asset0, asset1, liquidity: posLiquidity, tickLower, tickUpper } = existingPosition
 
   const [firstAsset, secondAsset] = useMemo(
     () => [
@@ -104,13 +109,13 @@ export function ManualMigrationPage({ tokenId }) {
     },
   })
 
-  const positionV2 = useMemo(() => {
-    const poolLiquidity = new BigNumber(poolInfoV2?.[0]?.result).toString(10)
-    const globalStates = poolInfoV2?.[1]?.result
-    const price = new BigNumber(globalStates?.[0]).toString(10)
-    const tick = Number(globalStates?.[1])
-    const fee = Number(globalStates?.[2])
+  const poolLiquidity = new BigNumber(poolInfoV2?.[0]?.result).toString(10)
+  const globalStates = poolInfoV2?.[1]?.result
+  const price = new BigNumber(globalStates?.[0]).toString(10)
+  const tick = Number(globalStates?.[1])
+  const fee = Number(globalStates?.[2])
 
+  const positionV2 = useMemo(() => {
     if (asset0 && asset1 && fee && price && poolLiquidity && tick) {
       const pool = new Pool(currencyA, currencyB, fee, price, poolLiquidity, tick)
 
@@ -121,7 +126,7 @@ export function ManualMigrationPage({ tokenId }) {
         tickUpper,
       })
     }
-  }, [asset0, asset1, currencyA, currencyB, poolInfoV2, posLiquidity, tickLower, tickUpper])
+  }, [asset0, asset1, currencyA, currencyB, fee, poolLiquidity, posLiquidity, price, tick, tickLower, tickUpper])
 
   const amountA = useMemo(() => positionV2?.amount0?.toExact() ?? 0, [positionV2])
   const amountB = useMemo(() => positionV2?.amount1?.toExact() ?? 0, [positionV2])
@@ -153,6 +158,9 @@ export function ManualMigrationPage({ tokenId }) {
     [token1, fees],
   )
 
+  const tickCurrent = positionV2?.pool?.tickCurrent
+  const outOfRange = tickCurrent < tickLower || tickCurrent >= tickUpper
+
   // const feesInUsd = useMemo(
   //   () =>
   //     fromWei(fees ? fees[0] : 0, asset0.decimals)
@@ -163,23 +171,19 @@ export function ManualMigrationPage({ tokenId }) {
 
   const isClaimable = useMemo(() => Number(fees?.[1]) + Number(fees?.[0]) > 0, [fees])
 
-  const onMigrate = () => {
-    if (!oldPool?.tokenId) {
-      warnToast('you not own this position')
-    }
-
+  const onMigrate = (position = positionV2) => {
     onAlgebraMigrate({
       currencyA,
       amountA,
       currencyB,
       amountB,
       mintInfo: {
-        position: positionV2,
+        position,
         idPoolExist: Boolean(poolInfoV3),
       },
       feeValue0,
       feeValue1,
-      tokenId: oldPool?.tokenId,
+      tokenId: existingPosition?.tokenId,
       isClaimable,
       callback: () => {
         // mutateFetchManualFee()
@@ -188,7 +192,20 @@ export function ManualMigrationPage({ tokenId }) {
     })
   }
 
-  if (!oldPool) {
+  const onSubmit = () => {
+    if (!existingPosition?.tokenId) {
+      warnToast('you not own this position')
+    }
+
+    if (outOfRange) {
+      setIsOpenAdjust(true)
+    } else {
+      setIsOpenAdjust(true)
+      // onMigrate()
+    }
+  }
+
+  if (!existingPosition) {
     return <Loading />
   }
 
@@ -215,7 +232,7 @@ export function ManualMigrationPage({ tokenId }) {
         <div className='mt-4 grid items-stretch gap-4 lg:grid-cols-[48%_2%_48%]'>
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your Current Gauge')}</TextHeading>
-            <GaugeItemManual pool={oldPool} position={positionV2} />
+            <GaugeItemManual existingPosition={existingPosition} position={positionV2} />
           </div>
 
           <div className='flex items-center justify-center'>
@@ -224,7 +241,7 @@ export function ManualMigrationPage({ tokenId }) {
 
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your New V3 Gauge')}</TextHeading>
-            <GaugeItemManual pool={oldPool} position={positionV2} version={3} />
+            <GaugeItemManual existingPosition={existingPosition} position={positionV2} version={3} />
           </div>
         </div>
 
@@ -234,11 +251,34 @@ export function ManualMigrationPage({ tokenId }) {
 
         <div className='mt-6 flex flex-col justify-between gap-3 lg:flex-row'>
           <EmphasisButton className='w-full lg:w-[50%]'>{t('Cancel')}</EmphasisButton>
-          <PrimaryButton className='w-full lg:w-[50%]' onClick={onMigrate}>
+          <PrimaryButton className='w-full lg:w-[50%]' onClick={onSubmit}>
             {t('Migrate Now')}
           </PrimaryButton>
         </div>
       </Box>
+
+      <AdjustNewPositionModal
+        firstAddress={asset0?.address}
+        secondAddress={asset1?.address}
+        existingPosition={existingPosition}
+        feeAmount={fee}
+        isOpen={isOpenAdjust}
+        onClose={() => setIsOpenAdjust(false)}
+        onAdjustRange={(lower, upper) => {
+          console.log({ lower, upper, tickLower, tickUpper })
+
+          if (asset0 && asset1 && fee && price && poolLiquidity && tick) {
+            const position = new Position({
+              pool: new Pool(currencyA, currencyB, fee, price, poolLiquidity, tick),
+              liquidity: new BigNumber(posLiquidity).toString(10),
+              tickLower: lower,
+              tickUpper: upper,
+            })
+
+            onMigrate(position)
+          }
+        }}
+      />
     </div>
   )
 }

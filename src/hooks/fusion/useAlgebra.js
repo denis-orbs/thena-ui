@@ -14,7 +14,7 @@ import { fromWei } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useAlgebraAdd = (version = 2) => {
+export const useAlgebraAdd = (version = 3) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, writeTxn, endTxn, sendTxn } = useTxn()
@@ -125,7 +125,7 @@ export const useAlgebraAdd = (version = 2) => {
   return { onAlgebraAdd, pending }
 }
 
-export const useAlgebraClaim = (version = 2) => {
+export const useAlgebraClaim = (version = 3) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
@@ -176,7 +176,7 @@ export const useAlgebraClaim = (version = 2) => {
   return { onAlgebraClaim, pending }
 }
 
-export const useAlgebraRemove = (version = 2) => {
+export const useAlgebraRemove = (version = 3) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
@@ -232,7 +232,7 @@ export const useAlgebraRemove = (version = 2) => {
   return { onAlgebraRemove, pending }
 }
 
-export const useAlgebraBurn = (version = 2) => {
+export const useAlgebraBurn = (version = 3) => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, sendTxn } = useTxn()
@@ -278,7 +278,7 @@ export const useAlgebraBurn = (version = 2) => {
   return { onAlgebraBurn, pending }
 }
 
-export const useAlgebraIncrease = (version = 2) => {
+export const useAlgebraIncrease = (version = 3) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn, sendTxn } = useTxn()

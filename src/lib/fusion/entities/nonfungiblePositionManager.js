@@ -74,11 +74,9 @@ export class NonfungiblePositionManager extends SelfPermit {
     if (isMint(options)) {
       const recipient = validateAndParseAddress(options.recipient)
 
-      console.log(`mint on version ${version}`)
-      console.log({
+      const baseParams = {
         token0: position.pool.token0.address,
         token1: position.pool.token1.address,
-        deployer: zeroAddress,
         tickLower: position.tickLower,
         tickUpper: position.tickUpper,
         amount0Desired: toHex(amount0Desired),
@@ -87,42 +85,28 @@ export class NonfungiblePositionManager extends SelfPermit {
         amount1Min,
         recipient,
         deadline,
-      })
+      }
 
+      const paramMin = version === 2 ? baseParams : { ...baseParams, deployer: zeroAddress }
+
+      calldatas.push(NonfungiblePositionManager.getCalldata('mint', [paramMin], version))
+    } else {
+      // increase
       calldatas.push(
         NonfungiblePositionManager.getCalldata(
-          'mint',
+          'increaseLiquidity',
           [
             {
-              token0: position.pool.token0.address,
-              token1: position.pool.token1.address,
-              deployer: zeroAddress,
-              tickLower: position.tickLower,
-              tickUpper: position.tickUpper,
+              tokenId: toHex(options.tokenId),
               amount0Desired: toHex(amount0Desired),
               amount1Desired: toHex(amount1Desired),
               amount0Min,
               amount1Min,
-              recipient,
               deadline,
             },
           ],
           version,
         ),
-      )
-    } else {
-      // increase
-      calldatas.push(
-        NonfungiblePositionManager.getCalldata('increaseLiquidity', [
-          {
-            tokenId: toHex(options.tokenId),
-            amount0Desired: toHex(amount0Desired),
-            amount1Desired: toHex(amount1Desired),
-            amount0Min,
-            amount1Min,
-            deadline,
-          },
-        ]),
       )
     }
 
@@ -252,11 +236,12 @@ export class NonfungiblePositionManager extends SelfPermit {
   }
 
   static encodeCreate(pool, version = 2) {
-    return NonfungiblePositionManager.getCalldata(
-      'createAndInitializePoolIfNecessary',
-      [pool.token0.address, pool.token1.address, ZERO_ADDRESS, toHex(pool.sqrtRatioX96), ''],
-      version,
-    )
+    const param =
+      version === 2
+        ? [pool.token0.address, pool.token1.address, toHex(pool.sqrtRatioX96)]
+        : [pool.token0.address, pool.token1.address, ZERO_ADDRESS, toHex(pool.sqrtRatioX96), '']
+
+    return NonfungiblePositionManager.getCalldata('createAndInitializePoolIfNecessary', param, version)
   }
 
   static encodeCollect(options) {
