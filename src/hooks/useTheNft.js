@@ -42,7 +42,7 @@ const fetchTotalInfo = async (url, theNftContract, nftStakingContract) => {
   return {
     totalStaked: Number(res0),
     rewardPerSecond: fromWei(res1),
-    floorPrice: res2?.usdFloorPrice ?? 2500,
+    floorPrice: res2?.usdFloorPrice ?? 5800,
   }
 }
 
