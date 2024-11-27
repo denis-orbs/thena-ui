@@ -33,7 +33,7 @@ export default function V1Add({
   const [secondAmount, setSecondAmount] = useState('')
   const { account } = useWallet()
   const { networkId } = useChainSettings()
-  const { slippage, deadline } = useSettings()
+  const { deadline } = useSettings()
   const { onV1Add, pending } = useV1Add()
   const { onV1AddAndStake, pending: stakePending } = useV1AddAndStake()
   const { pairs } = usePairs()
@@ -137,25 +137,16 @@ export default function V1Add({
     return null
   }, [firstAmount, secondAmount, firstAsset, secondAsset])
 
-  const onAddLqiduity = useCallback(() => {
+  const onAddLiquidity = useCallback(() => {
     if (errorMsg) {
       warnToast(errorMsg, 'warn')
       return
     }
-    onV1Add(
-      firstAsset,
-      secondAsset,
-      firstAmount,
-      secondAmount,
-      pairType === PAIR_TYPES.STABLE,
-      slippage,
-      deadline,
-      () => {
-        setFirstAmount('')
-        setSecondAmount('')
-      },
-    )
-  }, [onV1Add, firstAsset, secondAsset, firstAmount, secondAmount, pairType, slippage, deadline, errorMsg])
+    onV1Add(firstAsset, secondAsset, firstAmount, secondAmount, pairType === PAIR_TYPES.STABLE, deadline, () => {
+      setFirstAmount('')
+      setSecondAmount('')
+    })
+  }, [onV1Add, firstAsset, secondAsset, firstAmount, secondAmount, pairType, deadline, errorMsg])
 
   const onAddAndStake = useCallback(() => {
     if (errorMsg) {
@@ -169,25 +160,13 @@ export default function V1Add({
       firstAmount,
       secondAmount,
       pairType === PAIR_TYPES.STABLE,
-      slippage,
       deadline,
       () => {
         setFirstAmount('')
         setSecondAmount('')
       },
     )
-  }, [
-    onV1AddAndStake,
-    strategy,
-    firstAsset,
-    secondAsset,
-    firstAmount,
-    secondAmount,
-    pairType,
-    slippage,
-    deadline,
-    errorMsg,
-  ])
+  }, [onV1AddAndStake, strategy, firstAsset, secondAsset, firstAmount, secondAmount, pairType, deadline, errorMsg])
 
   return (
     <>
@@ -288,7 +267,7 @@ export default function V1Add({
               <SecondaryButton
                 disabled={pending}
                 onClick={() => {
-                  onAddLqiduity()
+                  onAddLiquidity()
                 }}
                 className='w-full'
               >
