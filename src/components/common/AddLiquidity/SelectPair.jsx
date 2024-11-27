@@ -21,7 +21,7 @@ export default function SelectPair({
   setToAddress,
   pairType,
   setPairType,
-  setCurrentStep,
+  handleContinue,
   isModal,
 }) {
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false)
@@ -40,6 +40,18 @@ export default function SelectPair({
         active: pairType === PAIR_TYPES.LSD,
         onClickHandler: () => {
           setPairType(PAIR_TYPES.LSD)
+        },
+      },
+      {
+        content: (
+          <div className='flex flex-1 flex-col gap-1'>
+            <TextHeading>{t('Weighted')}</TextHeading>
+            <Paragraph className='text-sm'>{t('Weighted Desc')}</Paragraph>
+          </div>
+        ),
+        active: pairType === PAIR_TYPES.WEIGHTED,
+        onClickHandler: () => {
+          setPairType(PAIR_TYPES.WEIGHTED)
         },
       },
       {
@@ -124,7 +136,7 @@ export default function SelectPair({
               warnToast('Select Asset')
               return
             }
-            setCurrentStep(1)
+            handleContinue()
           }}
         >
           {t('Continue')}

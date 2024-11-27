@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
+import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
 import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import { UNKNOWN_LOGO } from '@/constant'
@@ -9,6 +10,9 @@ import { formatAmount } from '@/lib/utils'
 
 export function WeightedPoolPosition({ pool }) {
   const t = useTranslations()
+
+  const [isOpenRemove, setIsOpenRemove] = useState(false)
+
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   const depositValueInUsd = useMemo(
@@ -70,10 +74,13 @@ export function WeightedPoolPosition({ pool }) {
         <TextButton className='w-full' disabled>
           {t('Claim')}
         </TextButton>
-        <OutlinedButton className='w-full'>{t('Remove')}</OutlinedButton>
+        <OutlinedButton onClick={() => setIsOpenRemove(true)} className='w-full'>
+          {t('Remove')}
+        </OutlinedButton>
 
         <EmphasisButton className='w-full'>{t('Add')}</EmphasisButton>
       </div>
+      <RemoveWeightedModal isOpen={isOpenRemove} pool={pool} setIsOpen={setIsOpenRemove} />
     </div>
   )
 }

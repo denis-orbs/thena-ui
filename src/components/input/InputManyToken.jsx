@@ -33,7 +33,7 @@ function InputManyToken({ pair, balance, amount, onAmountChange, title, autoFocu
   )
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex w-full flex-col gap-2'>
       <div className='flex items-center justify-between'>
         <p className='font-medium text-white'>{t(title)}</p>
         {!readOnly && <Tabs data={percents} />}
@@ -42,7 +42,7 @@ function InputManyToken({ pair, balance, amount, onAmountChange, title, autoFocu
         <div className='flex items-center justify-between gap-2'>
           <input
             type='number'
-            className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+            className='w-full flex-[4] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
             placeholder='0.0'
             value={amount}
             onChange={e => {
@@ -57,7 +57,7 @@ function InputManyToken({ pair, balance, amount, onAmountChange, title, autoFocu
               className={cn(
                 'inline-flex items-center justify-center gap-2',
                 'rounded-full bg-neutral-600 text-sm text-neutral-200',
-                'py-1.5 pl-1.5 pr-2',
+                'max-w-[60%] py-1.5 pl-1.5 pr-2',
               )}
             >
               <ThreeIconGroup
@@ -67,7 +67,7 @@ function InputManyToken({ pair, balance, amount, onAmountChange, title, autoFocu
                 classNames={{ image: 'w-6 h-6' }}
                 className='-space-x-1'
               />
-              <span className='text-nowrap'>{pair?.symbol}</span>
+              <span className='text-wrap'>{pair?.symbol}</span>
             </div>
           ) : (
             <Skeleton className='h-6 w-10' />

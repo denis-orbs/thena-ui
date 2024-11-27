@@ -68,7 +68,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   return (
     <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>
-      <Box className={cn('flex w-full flex-col lg:w-[540px]', !showSidebar ? 'w-full' : '')}>
+      <Box className={cn('w-full flex-[6] flex-col', !showSidebar ? 'w-full' : '')}>
         <div className='mb-3 inline-flex h-11 w-fit items-center'>
           <TextIconButton
             className='font-archia text-3xl text-neutral-50'
@@ -137,7 +137,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
         )}
       </Box>
       {showSidebar && (
-        <div className='lg:w-[496px]'>
+        <div className='flex-[4]'>
           <Box className='flex flex-col gap-4'>
             <TextHeading className='font-archia text-2xl font-semibold'>{t('New Deposit')}</TextHeading>
             <p>{t('New Deposit description')}</p>

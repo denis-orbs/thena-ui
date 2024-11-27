@@ -508,9 +508,11 @@ export default function PoolsPage() {
             </div>
           </div>
           <div className='ml-auto flex gap-4 lg:flex-row'>
-            <Link href='/pools/add-liquidity'>
-              <PrimaryButton className='w-full lg:w-auto'>{t('Add Liquidity')}</PrimaryButton>
-            </Link>
+            {/* <Link href='/pools/add-liquidity'> */}
+            <PrimaryButton onClick={() => setIsOpen(true)} className='w-full lg:w-auto'>
+              {t('Add Liquidity')}
+            </PrimaryButton>
+            {/* </Link> */}
           </div>
         </div>
         <Table

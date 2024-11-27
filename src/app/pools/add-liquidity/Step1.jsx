@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -74,24 +75,17 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
           ) : (
             <div className='grid grid-cols-1 gap-4 lg:min-w-[496px] lg:grid-cols-2'>
               <div className='grid grid-cols-2 gap-3'>
-                <div className='flex flex-row items-center gap-[6px]'>
-                  <CircleImage
-                    className='z-1 h-6 w-6 rounded-full'
-                    src={pool?.token0?.logoURI || UNKNOWN_LOGO}
-                    alt='THENA First Logo'
-                  />
-                  <span>{pool?.token0?.symbol}</span>
-                  <Paragraph>50%</Paragraph>
-                </div>
-                <div className='flex flex-row items-center gap-[6px]'>
-                  <CircleImage
-                    className='z-1 h-6 w-6 rounded-full'
-                    src={pool?.token1?.logoURI || UNKNOWN_LOGO}
-                    alt='THENA Second Logo'
-                  />
-                  <span>{pool?.token1?.symbol}</span>
-                  <Paragraph>50%</Paragraph>
-                </div>
+                {(pool.tokens || []).map(token => (
+                  <div className='flex flex-row items-center gap-[6px]' key={token?.address}>
+                    <CircleImage
+                      className='z-1 h-6 w-6 rounded-full'
+                      src={token?.logoURI || UNKNOWN_LOGO}
+                      alt='THENA First Logo'
+                    />
+                    <span>{token?.symbol}</span>
+                    <Paragraph>{token.weight}%</Paragraph>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -132,13 +126,17 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
   )
 }
 
-export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAdd }) {
+export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   const { pairs } = usePairs()
   const t = useTranslations()
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
-  const [firstAddress, setFirstAddress] = useState(poolSelected?.token0?.address || null)
-  const [secondAddress, setSecondAddress] = useState(poolSelected?.token1?.address || null)
+
+  const searchParams = useSearchParams()
+  const pairType = searchParams.get('pairType')
+  const [firstAddress, setFirstAddress] = useState(searchParams.get('firstAddress') || null)
+  const [secondAddress, setSecondAddress] = useState(searchParams.get('secondAddress') || null)
+
   const assets = useAssets()
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false)
   const [isFirstSelected, setIsFirstSelected] = useState(false)
@@ -156,21 +154,31 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
 
   const availablePools = useMemo(() => {
     if (!firstAddress || !secondAddress) return []
-    const pools = pairs.filter(
-      pool =>
-        [pool?.token0?.address, pool?.token1?.address].includes(wrappedAddress(firstAsset)) &&
-        [pool?.token0?.address, pool?.token1?.address].includes(wrappedAddress(secondAsset)),
-    )
+    const pools = pairs.filter(pool => {
+      if (pool.type !== PAIR_TYPES.WEIGHTED) {
+        return (
+          [pool?.token0?.address, pool?.token1?.address].includes(wrappedAddress(firstAsset)) &&
+          [pool?.token0?.address, pool?.token1?.address].includes(wrappedAddress(secondAsset)) &&
+          (pairType ? pairType === pool.type : true)
+        )
+      }
+      return (
+        pool.tokens.map(token => token.address).includes(wrappedAddress(firstAsset)) &&
+        pool.tokens.map(token => token.address).includes(wrappedAddress(secondAsset)) &&
+        (pairType ? pairType === pool.type : true)
+      )
+    })
     mockWeightedPool.token0 = firstAsset
     mockWeightedPool.token1 = secondAsset
     return pools
-  }, [firstAddress, firstAsset, pairs, secondAddress, secondAsset])
+  }, [firstAddress, firstAsset, pairType, pairs, secondAddress, secondAsset])
 
   const createNewPools = useMemo(() => {
     const result = []
     if (!firstAddress || !secondAddress) return []
 
-    const checkLSD = Boolean(availablePools.find(item => item.type === PAIR_TYPES.LSD))
+    let checkLSD = Boolean(availablePools.find(item => item.type === PAIR_TYPES.LSD))
+    if (pairType && pairType !== PAIR_TYPES.LSD) checkLSD = true
     if (!checkLSD) {
       result.push({
         ...mockWeightedPool,
@@ -181,7 +189,8 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
       })
     }
 
-    const checkClassic = Boolean(availablePools.find(item => item.type === PAIR_TYPES.CLASSIC))
+    let checkClassic = Boolean(availablePools.find(item => item.type === PAIR_TYPES.CLASSIC))
+    if (pairType && pairType !== PAIR_TYPES.CLASSIC) checkClassic = true
     if (!checkClassic) {
       result.push({
         ...mockWeightedPool,
@@ -192,7 +201,8 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
       })
     }
 
-    const checkStable = Boolean(availablePools.find(item => item.type === PAIR_TYPES.STABLE))
+    let checkStable = Boolean(availablePools.find(item => item.type === PAIR_TYPES.STABLE))
+    if (pairType && pairType !== PAIR_TYPES.STABLE) checkStable = true
     if (!checkStable) {
       result.push({
         ...mockWeightedPool,
@@ -203,16 +213,19 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
       })
     }
 
+    if (pairType && pairType !== PAIR_TYPES.WEIGHTED) return result
     result.push({
       ...mockWeightedPool,
       symbol: `${firstAsset?.symbol}/${secondAsset?.symbol}`,
-      token0: firstAsset,
-      token1: secondAsset,
+      tokens: [
+        { ...firstAsset, weight: 50 },
+        { ...secondAsset, weight: 50 },
+      ],
       type: PAIR_TYPES.WEIGHTED,
     })
 
     return result
-  }, [availablePools, firstAddress, firstAsset, secondAddress, secondAsset])
+  }, [availablePools, firstAddress, firstAsset, pairType, secondAddress, secondAsset])
 
   const onDeposit = useCallback(
     (pool, isAdd = false) => {
@@ -292,7 +305,7 @@ export default function Step1({ nextStep, setPoolSelected, poolSelected, setIsAd
         </div>
       )}
 
-      {firstAsset && secondAsset && (
+      {createNewPools.length > 0 && (
         <div className='flex flex-col gap-2'>
           <TextHeading>{t('Create New Pool')}</TextHeading>
           <div className='grid grid-cols-1 gap-3'>

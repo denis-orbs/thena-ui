@@ -22,6 +22,7 @@ function TokenInput({
   disabled = false,
   assetData,
   assetNull,
+  readOnly = false,
 }) {
   const [tokenPopup, setTokenPopup] = useState(false)
   const t = useTranslations()
@@ -38,6 +39,7 @@ function TokenInput({
           min={0}
           autoFocus={autoFocus}
           disabled={disabled}
+          readOnly={readOnly}
         />
         {asset ? (
           <TokenBadge asset={asset} onClick={() => setTokenPopup(true)} />

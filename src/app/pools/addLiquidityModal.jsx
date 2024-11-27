@@ -1,14 +1,35 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import React, { useEffect, useState } from 'react'
 
-import AddLiquidity from '@/components/common/AddLiquidity'
+import SelectPair from '@/components/common/AddLiquidity/SelectPair'
 import Modal from '@/components/modal'
-
-const STEPS = ['Select Pair', 'Choose Strategy', 'Add Liquidity']
+import { useAssets } from '@/context/assetsContext'
 
 export default function AddLiquidityModal({ popup, setPopup }) {
+  const t = useTranslations()
   const [currentStep, setCurrentStep] = useState(0)
+  const [firstAsset, setFirstAsset] = useState()
+  const [secondAsset, setSecondAsset] = useState()
+  const [pairType, setPairType] = useState()
+
+  const [firstAddress, setFirstAddress] = useState()
+  const [secondAddress, setSecondAddress] = useState()
+
+  const { push } = useRouter()
+
+  const assets = useAssets()
+
+  useEffect(() => {
+    setFirstAsset(assets.find(ele => ele.address === firstAddress))
+    setSecondAsset(assets.find(ele => ele.address === secondAddress))
+  }, [assets, firstAddress, secondAddress])
+
+  const goToLiquidityPage = () => {
+    push(`/pools/add-liquidity?firstAddress=${firstAddress}&secondAddress=${secondAddress}&pairType=${pairType}`)
+  }
 
   return (
     <Modal
@@ -16,7 +37,7 @@ export default function AddLiquidityModal({ popup, setPopup }) {
       closeModal={() => {
         setPopup(false)
       }}
-      title={STEPS[currentStep]}
+      title={t('Select Pair')}
       isBack={currentStep > 0}
       onClickHandler={() => {
         if (currentStep > 0) {
@@ -25,7 +46,16 @@ export default function AddLiquidityModal({ popup, setPopup }) {
       }}
       onAfterClose={() => setCurrentStep(0)}
     >
-      <AddLiquidity currentStep={currentStep} setCurrentStep={setCurrentStep} isModal />
+      <SelectPair
+        fromAsset={firstAsset}
+        toAsset={secondAsset}
+        setFromAddress={setFirstAddress}
+        setToAddress={setSecondAddress}
+        isModal
+        pairType={pairType}
+        setPairType={setPairType}
+        handleContinue={goToLiquidityPage}
+      />
     </Modal>
   )
 }

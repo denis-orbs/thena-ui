@@ -25,7 +25,7 @@ const DEPOSIT_TYPE = {
   ALL: 'all',
 }
 
-function AddLiquidityWeightedPool({ pool, setAmount, amount, isFullContent }) {
+function AddLiquidityWeightedPool({ pool, setAmount, amount, isFullContent = true }) {
   const t = useTranslations()
   const [depositType, setDepositType] = useState(DEPOSIT_TYPE.SINGLE)
   const [tokenDeposit, setTokenDeposit] = useState(null)
@@ -61,7 +61,7 @@ function AddLiquidityWeightedPool({ pool, setAmount, amount, isFullContent }) {
         onClick: () => setDepositType(DEPOSIT_TYPE.SINGLE),
       },
       {
-        title: t('Available THENA IDs'),
+        title: t('Deposit All Token'),
         isActive: depositType === DEPOSIT_TYPE.ALL,
         isLink: false,
         onClick: () => setDepositType(DEPOSIT_TYPE.ALL),
@@ -186,7 +186,7 @@ export default function Step2({
   const [isReverse, setIsReverse] = useState(true)
   return (
     <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>
-      <Box className={cn('flex w-full flex-col py-3 lg:py-6', !showSidebar ? 'w-full' : '')}>
+      <Box className={cn('w-full flex-[6] flex-col py-3 lg:py-6', !showSidebar ? 'w-full' : '')}>
         <div className='mb-4 h-11 w-fit'>
           {showSidebar ? (
             <TextHeading className='font-archia text-3xl text-neutral-50'>
@@ -232,7 +232,7 @@ export default function Step2({
         )}
       </Box>
       {showSidebar && (
-        <div className='lg:w-[496px]'>
+        <div className='flex-[4]'>
           <Box className='flex flex-col gap-4'>
             <TextHeading className='font-archia text-2xl font-semibold'>{t('New Deposit')}</TextHeading>
             {pool.type === PAIR_TYPES.WEIGHTED && (
