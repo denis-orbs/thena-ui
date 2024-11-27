@@ -6,6 +6,7 @@ import {
   dibsLotteryAbi,
   dibsRewarderAbi,
   ERC20Abi,
+  feeAbi,
   gaugeAbi,
   minterAbi,
   multiCallAbi,
@@ -86,6 +87,8 @@ export const getVoterContract = chainId => getContract(voterAbi, Contracts.voter
 export const getGaugeContract = (address, chainId) => getContract(gaugeAbi, address, chainId)
 
 export const getBribeContract = (address, chainId) => getContract(bribeAbi, address, chainId)
+
+export const getFeeContract = (address, chainId) => getContract(feeAbi, address, chainId)
 
 export const getPairContract = (address, chainId) => getContract(pairAbi, address, chainId)
 

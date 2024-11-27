@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import React, { Suspense, useState } from 'react'
 
-import { useDibsRewarder } from '@/context/dibsRewarderContext'
+import { DibsRewarderContextProvider, useDibsRewarder } from '@/context/dibsRewarderContext'
 import useWallet from '@/hooks/useWallet'
 import { fetchDataDailyVolume, fetchDataTotalVolume } from '@/modules/TradeToEarn'
 
@@ -50,30 +50,32 @@ export default function TradeToEarnPage() {
   })
 
   return (
-    <section className='relative'>
-      {pending && (
-        <div className='absolute z-40 flex h-full w-full flex-col items-center justify-start gap-6 bg-[rgba(0,0,0,0.1)] pt-10 backdrop-blur-lg'>
-          <Loading />
-        </div>
-      )}
-      <div className='fixed left-0 right-0 mx-auto' />
-      <div className='layout'>
-        <Suspense fallback={<Loading />}>
-          <div className='relative'>
-            <Hero />
-            <div className='relative z-30'>
-              <TopBar />
-              <Information
-                userDailyVolume={userDailyVolume}
-                totalDailyVolume={totalDailyVolume}
-                userTotalVolume={userTotalVolume}
-              />
-              <YourEarning setPending={setPending} />
-              <Work />
-            </div>
+    <DibsRewarderContextProvider>
+      <section className='relative'>
+        {pending && (
+          <div className='absolute z-40 flex h-full w-full flex-col items-center justify-start gap-6 bg-[rgba(0,0,0,0.1)] pt-10 backdrop-blur-lg'>
+            <Loading />
           </div>
-        </Suspense>
-      </div>
-    </section>
+        )}
+        <div className='fixed left-0 right-0 mx-auto' />
+        <div className='layout'>
+          <Suspense fallback={<Loading />}>
+            <div className='relative'>
+              <Hero />
+              <div className='relative z-30'>
+                <TopBar />
+                <Information
+                  userDailyVolume={userDailyVolume}
+                  totalDailyVolume={totalDailyVolume}
+                  userTotalVolume={userTotalVolume}
+                />
+                <YourEarning setPending={setPending} />
+                <Work />
+              </div>
+            </div>
+          </Suspense>
+        </div>
+      </section>
+    </DibsRewarderContextProvider>
   )
 }
