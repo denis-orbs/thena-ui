@@ -5,6 +5,7 @@ import dibsRewarderAbi from './dibsRewarder.json'
 import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import factoryAbi from './factory.json'
+import feeAbi from './fee.json'
 import gaugeAbi from './gauge.json'
 import arabicAbi from './mint/arabicNumeral.json'
 import characterSetAbi from './mint/characterSet.json'
@@ -41,6 +42,7 @@ export {
   ERC20Abi,
   extraRewarderAbi,
   factoryAbi,
+  feeAbi,
   gaugeAbi,
   hindiNumeralAbi,
   minterAbi,
