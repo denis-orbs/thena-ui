@@ -134,7 +134,6 @@ export default function PoolsPage() {
       ? res
       : res &&
           res.filter(item => {
-            console.log({ res })
             const withSpace = item?.symbol?.replace('/', ' ') || ''
             const withComma = item?.symbol?.replace('/', ',') || ''
             return (
@@ -437,7 +436,9 @@ export default function PoolsPage() {
         </>
       )}
       <Box className='mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950'>
-        <InfoIcon className='h-16 w-16 stroke-primary-600' />
+        <div className='h-8 w-8'>
+          <InfoIcon className='h-8 w-8 stroke-primary-600' />
+        </div>
         <div className='flex flex-col'>
           <TextHeading className='text-xl text-neutral-100'>{t('Migrate Your Conc Liquidity Positions')}</TextHeading>
           <TextSubHeading className='text-base text-primary-100'>

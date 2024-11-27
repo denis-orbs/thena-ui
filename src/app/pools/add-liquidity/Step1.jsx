@@ -117,7 +117,7 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
           href={`/pools/weighted-pool/create?firstAddress=${pool?.token0?.address}&secondAddress=${pool?.token1?.address}`}
         >
           <OutlinedButton className='h-11 w-full border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'>
-            {t('Deposit')}
+            {t(isAdd ? 'Create' : 'Deposit')}
           </OutlinedButton>
         </Link>
       ) : (
@@ -125,7 +125,7 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
           className='h-11 border border-primary-600 text-primary-600 hover:border-primary-600 hover:text-primary-600'
           onClick={() => onDeposit(pool, isAdd)}
         >
-          {t('Deposit')}
+          {t(isAdd ? 'Create' : 'Deposit')}
         </OutlinedButton>
       )}
     </div>

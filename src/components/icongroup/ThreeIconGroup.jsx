@@ -26,7 +26,7 @@ export function ThreeIconGroup({ logo1, logo2, extendNumber, className, classNam
             classNames?.image,
           )}
         >
-          <span>+{extendNumber}</span>
+          <span className='text-[#1C2027]'>+{extendNumber}</span>
         </div>
       )}
     </div>

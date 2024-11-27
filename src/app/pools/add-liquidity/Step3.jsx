@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { TextButton } from '@/components/buttons/Button'
+import { TextIconButton } from '@/components/buttons/IconButton'
 import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
 import { EnterAmounts } from '@/components/common/AddLiquidity/FusionAdd/containers/EnterAmounts'
 import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
@@ -14,13 +14,13 @@ import { UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
-import { formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
 import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
 
 const feeAmount = 3000
-export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strategy }) {
+export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strategy, showSidebar = true }) {
   const t = useTranslations()
   const assets = useAssets()
   const fusionPairs = useFusionPairs()
@@ -67,16 +67,15 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
   }, [pool, fusionPairs])
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   return (
-    <div className='mt-10 flex flex-col gap-6 lg:flex-row lg:gap-8'>
-      <Box className='flex w-full flex-col lg:w-[540px]'>
-        <div className='mb-4 h-11 w-fit'>
-          <TextButton
+    <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>
+      <Box className={cn('flex w-full flex-col lg:w-[540px]', !showSidebar ? 'w-full' : '')}>
+        <div className='mb-3 inline-flex h-11 w-fit items-center'>
+          <TextIconButton
             className='font-archia text-3xl text-neutral-50'
-            LeadingIcon={ArrowLeftIcon}
+            Icon={ArrowLeftIcon}
             onClick={() => setCurrentStep(1)}
-          >
-            {t('Add Liquidity')}
-          </TextButton>
+          />
+          <h3>{t(showSidebar ? 'Add Liquidity' : 'New Deposit')}</h3>
         </div>
         <div className='mb-6 flex flex-row justify-between rounded-lg bg-neutral-800 p-4'>
           <div className='flex items-center gap-2'>
@@ -98,7 +97,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
           <div className='space-y-6'>
             <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
             <>
-              {Boolean(!mintInfo.noLiquidity) && (
+              {Boolean(!mintInfo.noLiquidity) && isAutomatic && (
                 <>
                   <div className='flex flex-col gap-4'>
                     <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
@@ -137,54 +136,56 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
           </div>
         )}
       </Box>
-      <div className='lg:w-[496px]'>
-        <Box className='flex flex-col gap-4'>
-          <TextHeading className='font-archia text-2xl font-semibold'>{t('New Deposit')}</TextHeading>
-          <p>{t('New Deposit description')}</p>
-          <div className='flex flex-col gap-6'>
-            <div className='flex flex-row items-center gap-2'>
-              <CheckCircleIcon className='h-5 w-5 stroke-success-600' />
-              <div className='flex flex-col'>
+      {showSidebar && (
+        <div className='lg:w-[496px]'>
+          <Box className='flex flex-col gap-4'>
+            <TextHeading className='font-archia text-2xl font-semibold'>{t('New Deposit')}</TextHeading>
+            <p>{t('New Deposit description')}</p>
+            <div className='flex flex-col gap-6'>
+              <div className='flex flex-row items-center gap-2'>
+                <CheckCircleIcon className='h-5 w-5 stroke-success-600' />
+                <div className='flex flex-col'>
+                  <div className='flex flex-row gap-1'>
+                    <span>{t('Pool price tick at', { value: currentPrice })}</span>
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-row items-center gap-2'>
+                <RightOutIcon className='h-5 w-5 stroke-success-600' />
+                <div className='flex flex-col'>
+                  <div className='flex flex-row gap-1'>
+                    <span>{t('Low tick at', { value: tickLower })}</span>
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-row items-center gap-2'>
+                <RightInIcon className='h-5 w-5 stroke-success-600' />
+                <div className='flex flex-col'>
+                  <div className='flex flex-row gap-1'>
+                    <span>{t('High tick at', { value: tickUpper })}</span>
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-row items-center gap-2'>
+                <DownloadSuccessIcon className='h-5 w-5 stroke-success-600' />
+                <div className='flex flex-col'>
+                  <div className='flex flex-row gap-1'>
+                    <span>{t('Quote for deposit received')}</span>
+                    <Link href='/'>{t('Refresh')}</Link>
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-row items-center gap-2'>
+                <PercentIcon className='h-5 w-5 stroke-success-600' />
                 <div className='flex flex-row gap-1'>
-                  <span>{t('Pool price tick at', { value: currentPrice })}</span>
+                  <span>{t('slippage applied', { percent: '1.0' })}</span>
+                  <Link href='/'>{t('Adjust')}</Link>
                 </div>
               </div>
             </div>
-            <div className='flex flex-row items-center gap-2'>
-              <RightOutIcon className='h-5 w-5 stroke-success-600' />
-              <div className='flex flex-col'>
-                <div className='flex flex-row gap-1'>
-                  <span>{t('Low tick at', { value: tickLower })}</span>
-                </div>
-              </div>
-            </div>
-            <div className='flex flex-row items-center gap-2'>
-              <RightInIcon className='h-5 w-5 stroke-success-600' />
-              <div className='flex flex-col'>
-                <div className='flex flex-row gap-1'>
-                  <span>{t('High tick at', { value: tickUpper })}</span>
-                </div>
-              </div>
-            </div>
-            <div className='flex flex-row items-center gap-2'>
-              <DownloadSuccessIcon className='h-5 w-5 stroke-success-600' />
-              <div className='flex flex-col'>
-                <div className='flex flex-row gap-1'>
-                  <span>{t('Quote for deposit received')}</span>
-                  <Link href='/'>{t('Refresh')}</Link>
-                </div>
-              </div>
-            </div>
-            <div className='flex flex-row items-center gap-2'>
-              <PercentIcon className='h-5 w-5 stroke-success-600' />
-              <div className='flex flex-row gap-1'>
-                <span>{t('slippage applied', { percent: '1.0' })}</span>
-                <Link href='/'>{t('Adjust')}</Link>
-              </div>
-            </div>
-          </div>
-        </Box>
-      </div>
+          </Box>
+        </div>
+      )}
     </div>
   )
 }

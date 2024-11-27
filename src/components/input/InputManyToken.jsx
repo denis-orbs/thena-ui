@@ -3,12 +3,12 @@ import React, { useMemo } from 'react'
 
 import { cn, formatAmount } from '@/lib/utils'
 
-import IconGroup from '../icongroup'
+import { ThreeIconGroup } from '../icongroup/ThreeIconGroup'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
 import { TextSubHeading } from '../typography'
 
-function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus = false }) {
+function InputManyToken({ pair, balance, amount, onAmountChange, title, autoFocus = false, readOnly = false }) {
   const t = useTranslations()
   const percents = useMemo(
     () => [
@@ -36,7 +36,7 @@ function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus =
     <div className='flex flex-col gap-2'>
       <div className='flex items-center justify-between'>
         <p className='font-medium text-white'>{t(title)}</p>
-        <Tabs data={percents} />
+        {!readOnly && <Tabs data={percents} />}
       </div>
       <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
         <div className='flex items-center justify-between gap-2'>
@@ -50,6 +50,7 @@ function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus =
             }}
             min={0}
             autoFocus={autoFocus}
+            readOnly={readOnly}
           />
           {pair ? (
             <div
@@ -59,13 +60,12 @@ function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus =
                 'py-1.5 pl-1.5 pr-2',
               )}
             >
-              <IconGroup
-                className='-space-x-2'
-                classNames={{
-                  image: 'outline-2 w-6 h-6',
-                }}
-                logo1={pair?.token0?.logoURI}
-                logo2={pair?.token1?.logoURI}
+              <ThreeIconGroup
+                logo1={pair?.tokens?.[0]?.logoURI}
+                logo2={pair?.tokens?.[1]?.logoURI}
+                extendNumber={(pair?.tokens?.length || 2) - 2}
+                classNames={{ image: 'w-6 h-6' }}
+                className='-space-x-1'
               />
               <span className='text-nowrap'>{pair?.symbol}</span>
             </div>
@@ -90,4 +90,4 @@ function DoubleInput({ pair, balance, amount, onAmountChange, title, autoFocus =
   )
 }
 
-export default DoubleInput
+export default InputManyToken

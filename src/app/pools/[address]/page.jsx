@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -14,6 +13,7 @@ import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import NextImage from '@/components/image/NextImage'
+import Modal, { ModalBody } from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
@@ -31,6 +31,7 @@ import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
 import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite, LinkExternalIcon } from '@/svgs'
 
+import Liquidity from './Liquidity'
 import { listPoolAddressSpecial } from '../page'
 
 export default function SpecificPoolPage({ params }) {
@@ -42,6 +43,9 @@ export default function SpecificPoolPage({ params }) {
   const { pairs, isLoading } = usePairs()
   const assets = useAssets()
   const { networkId } = useChainSettings()
+
+  const [showModalAdd, setShowModalAdd] = useState(false)
+
   const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [pairs, address])
   const userPools = useMemo(() => (pool ? (pool?.subpools || []).filter(ele => ele.account.totalLp.gt(0)) : []), [pool])
   const userManuals = useMemo(
@@ -80,18 +84,19 @@ export default function SpecificPoolPage({ params }) {
       }
     }
   }, [pool, assets])
+
   if (isLoading || !pool) {
     return <Loading />
   }
 
   return (
-    <div className='flex w-full flex-col items-start gap-6 lg:flex-col'>
-      <div className='flex w-full flex-col gap-10'>
+    <div className='flex w-full flex-col items-start gap-6 lg:flex-col lg:gap-2'>
+      <div className='flex w-full flex-col'>
         <div>
           <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/pools')}>
             {t('Pools')}
           </TextButton>
-          <div className='mb-6 mt-4 items-start justify-between lg:flex'>
+          <div className='mb-6 mt-4 items-start justify-between lg:mb-0 lg:flex'>
             <div>
               {pool.type !== PAIR_TYPES.WEIGHTED ? (
                 <div className='flex space-x-4'>
@@ -130,39 +135,39 @@ export default function SpecificPoolPage({ params }) {
                   </div>
                 </div>
               )}
-
-              <div className='my-4 flex gap-3 lg:mb-0 lg:mt-6'>
-                <NeutralBadge className='inline text-[14px] font-normal leading-5 text-neutral-50'>
-                  {t(pool?.type ?? 'Weighted')}
-                </NeutralBadge>
-                <NeutralBadge className='inline text-[14px] font-normal leading-5'>
-                  <span className='text-neutral-300 '>{t('Fee')}: </span>
-                  <span className='text-neutral-50'>{pool?.fee}%</span>
-                </NeutralBadge>
-              </div>
             </div>
-            <div className='flex w-full gap-3 lg:w-auto'>
-              <TextIconButton
-                className='h-11 w-11 border-[1px] border-neutral-600'
-                Icon={ExternalIcon}
-                onClick={() => goScan(networkId, pool?.address)}
-                data-tooltip-id='contract-tooltip'
-              />
-              <CustomTooltip id='contract-tooltip' className='rounded-md !py-2' place='top'>
-                <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
-              </CustomTooltip>
-              <TextIconButton
-                className='h-11 w-11 border-[1px] border-neutral-600'
-                Icon={AnalyticsIcon}
-                onClick={() => push(`/analytics/pairs/${pool?.address}`)}
-                data-tooltip-id='analytics-tooltip'
-              />
-              <CustomTooltip id='analytics-tooltip' className='rounded-md !py-2' place='top'>
-                <TextHeading className='text-xs'>{t('Analytics')}</TextHeading>
-              </CustomTooltip>
-              <Link className='flex-1' href={`/pools/add-liquidity?pool=${pool?.address}&step=1`}>
-                <PrimaryButton className='h-11 w-full'>{t('Add Liquidity')}</PrimaryButton>
-              </Link>
+          </div>
+          <div className='mb-6 mt-3 flex w-full items-center justify-between gap-3 lg:mb-3 lg:w-[58%]'>
+            <div className='flex gap-3'>
+              <NeutralBadge className='inline text-[14px] font-normal leading-5 text-neutral-50'>
+                {t(pool?.type ?? 'Weighted')}
+              </NeutralBadge>
+              <NeutralBadge className='inline text-[14px] font-normal leading-5'>
+                <span className='text-neutral-300 '>{t('Fee')}: </span>
+                <span className='text-neutral-50'>{pool?.fee}%</span>
+              </NeutralBadge>
+            </div>
+            <div>
+              <div className='flex w-full gap-3 lg:w-auto'>
+                <TextIconButton
+                  className='h-11 w-11 border-[1px] border-neutral-600'
+                  Icon={ExternalIcon}
+                  onClick={() => goScan(networkId, pool?.address)}
+                  data-tooltip-id='contract-tooltip'
+                />
+                <CustomTooltip id='contract-tooltip' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
+                </CustomTooltip>
+                <TextIconButton
+                  className='h-11 w-11 border-[1px] border-neutral-600'
+                  Icon={AnalyticsIcon}
+                  onClick={() => push(`/analytics/pairs/${pool?.address}`)}
+                  data-tooltip-id='analytics-tooltip'
+                />
+                <CustomTooltip id='analytics-tooltip' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Analytics')}</TextHeading>
+                </CustomTooltip>
+              </div>
             </div>
           </div>
           <div className='flex w-full flex-col gap-6 lg:hidden'>
@@ -368,45 +373,61 @@ export default function SpecificPoolPage({ params }) {
             </div>
           </div>
         </div>
-        {pool.type !== PAIR_TYPES.WEIGHTED && (
-          <div className='flex-[4] flex-col gap-4'>
-            <h2 className='mb-4'>{t('My Positions')}</h2>
-            {userPositions && userPositions.length > 0 ? (
-              <div className='grid max-h-[600px] grid-cols-1 gap-4 overflow-y-scroll lg:max-h-[1440px]'>
-                {userPositions.map((ele, idx) =>
-                  ele.type === 'Manual' ? (
-                    <ManualPosition pool={ele} key={`pool-${idx}`} />
-                  ) : (
-                    <Position pool={ele} key={ele?.address} />
-                  ),
-                )}
-              </div>
-            ) : (
-              <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-10'>
-                <Highlight>
-                  <InfoCircleWhite className='h-4 w-4' />
-                </Highlight>
-                <div className='flex flex-col items-center gap-3'>
-                  <h2>{t('No Position Found')}</h2>
+        <div className='flex-[4] flex-col gap-4'>
+          <div className='mb-6 mt-[-52px] max-lg:hidden'>
+            <Liquidity pool={pool} />
+          </div>
+          {pool.type !== PAIR_TYPES.WEIGHTED && (
+            <div>
+              <h2 className='mb-4'>{t('My Positions')}</h2>
+              {userPositions && userPositions.length > 0 ? (
+                <div className='grid max-h-[600px] grid-cols-1 gap-4 overflow-y-scroll lg:max-h-[1440px]'>
+                  {userPositions.map((ele, idx) =>
+                    ele.type === 'Manual' ? (
+                      <ManualPosition pool={ele} key={`pool-${idx}`} />
+                    ) : (
+                      <Position pool={ele} key={ele?.address} />
+                    ),
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-        {pool.type === PAIR_TYPES.WEIGHTED && (
-          <div className='flex-[4]'>
-            <div className='flex flex-col gap-4'>
-              <h2>{t('My Positions')}</h2>
-              <WeightedPoolPosition pool={pool} />
+              ) : (
+                <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-10'>
+                  <Highlight>
+                    <InfoCircleWhite className='h-4 w-4' />
+                  </Highlight>
+                  <div className='flex flex-col items-center gap-3'>
+                    <h2>{t('No Position Found')}</h2>
+                  </div>
+                </div>
+              )}
             </div>
-            {account?.toLowerCase() === pool.owner?.toLowerCase() && (
-              <div className='mt-8  flex flex-col gap-4'>
-                <h2>{t('My Initial Liquidity')}</h2>
-                <InitialLiquidityTable pool={pool} />
+          )}
+
+          {pool.type === PAIR_TYPES.WEIGHTED && (
+            <>
+              <div className='flex flex-col gap-4'>
+                <h2>{t('My Positions')}</h2>
+                <WeightedPoolPosition pool={pool} />
               </div>
-            )}
-          </div>
-        )}
+              {account?.toLowerCase() === pool.owner?.toLowerCase() && (
+                <div className='mt-8  flex flex-col gap-4'>
+                  <h2>{t('My Initial Liquidity')}</h2>
+                  <InitialLiquidityTable pool={pool} />
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+      <div className='fixed bottom-0 left-0 z-50 w-full justify-center bg-neutral-800 !p-4 lg:hidden'>
+        <PrimaryButton onClick={() => setShowModalAdd(true)} className='mx-auto w-full'>
+          {t('Add liquidity')}
+        </PrimaryButton>
+        <Modal title='New Deposit' isOpen={showModalAdd} width={400} closeModal={() => setShowModalAdd(false)}>
+          <ModalBody className='p-0'>
+            <Liquidity pool={pool} />
+          </ModalBody>
+        </Modal>
       </div>
     </div>
   )

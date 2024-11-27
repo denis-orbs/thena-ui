@@ -64,7 +64,7 @@ function SelectTokenButton({ token, setTokenSelected, tokenSelected }) {
         <TokenBadge asset={token.token} onClick={() => setTokenPopup(true)} />
       ) : (
         <EmphasisButton
-          className='h-10 w-[130px] rounded-full p-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
+          className='h-10 w-[130px] !gap-1 rounded-full pl-[6px] pr-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
           onClick={() => setTokenPopup(true)}
         >
           {t('Select Token')} <ChevronDownIcon className='h-4 w-4 !stroke-neutral-200 text-neutral-200' />
@@ -114,7 +114,6 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
   const handleLockToken = useCallback(() => {
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
-      console.log({ updatedTokens })
       updatedTokens[index] = {
         ...updatedTokens[index],
         lock: !updatedTokens[index].lock,
@@ -283,7 +282,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
           />
         </div>
       </div>
-      {tokensAndWeights.length > 0 ? (
+      {tokensAndWeights.length > 0 && totalBalance < 20000 ? (
         <ErrorMessage
           type='warn'
           message={t('We recommend you to provide new pools [symbol]', { yourBalance: formatAmount(totalBalance) })}
