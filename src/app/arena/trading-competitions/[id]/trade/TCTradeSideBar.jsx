@@ -409,7 +409,6 @@ export function TCTradeSideBar({
               )}
             </Box>
           </div>
-          <div>{children}</div>
         </div>
 
         <div className='col-span-12 lg:top-56 lg:col-span-5 lg:max-h-[550px]'>
@@ -546,6 +545,7 @@ export function TCTradeSideBar({
 
         <WarningModal popup={isWarning} setPopup={setIsWarning} priceImpact={priceImpact} handleSwap={handleSwap} />
       </div>
+      <div>{children}</div>
     </>
   )
 }

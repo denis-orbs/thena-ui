@@ -18,8 +18,8 @@ function LeaderBoardPage() {
     label: <span>#</span>,
     value: 'rank',
     width: 'w-[10%]',
-    isDesc: false,
-    disabled: true,
+    isDesc: true,
+    disabled: false,
   })
 
   const [searchText, setSearchText] = useState('')

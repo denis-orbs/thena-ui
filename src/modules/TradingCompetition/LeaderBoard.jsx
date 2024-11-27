@@ -102,6 +102,42 @@ export function LeaderBoard({
     [competition?.prizeUpdate?.token, getValueTokenAmountToUSD],
   )
 
+  const sortedData = useMemo(
+    () =>
+      !participants
+        ? []
+        : participants.sort((a, b) => {
+            let res
+            switch (sort.value) {
+              case 'rank':
+                if (a.rank === null && b.rank === null) {
+                  res = 0
+                } else if (a.rank === null) {
+                  res = sort.isDesc ? 1 : -1
+                } else if (b.rank === null) {
+                  res = sort.isDesc ? -1 : 1
+                } else {
+                  res = (a.rank - b.rank) * (sort.isDesc ? 1 : -1)
+                }
+                break
+              case 'percentagePnl':
+                res = (a.percentagePnl - b.percentagePnl) * (sort.isDesc ? -1 : 1)
+                break
+              case 'pnl':
+                res = (a.pnl - b.pnl) * (sort.isDesc ? -1 : 1)
+                break
+              case 'projectedPnl':
+                res = (a.liquidity - b.liquidity) * (sort.isDesc ? -1 : 1)
+                break
+
+              default:
+                break
+            }
+            return res
+          }),
+    [participants, sort.isDesc, sort.value],
+  )
+
   const handleRenderFinalData = useCallback(
     data => {
       const result = data.map(leader => {
@@ -141,7 +177,6 @@ export function LeaderBoard({
           reward: (
             <Paragraph className='w-full'>
               <div className='flex flex-col items-start'>
-                {/* {leader.winAmount.map((item, index) => ( */}
                 <span className='flex flex-row gap-1'>
                   ${formatAmount(getRewardUsd(leader.winAmount))}
                   <InfoNeutralIcon className='h4 w-4' data-tooltip-id={`price-tool-tips-${leader?.participant.id}`} />
@@ -155,7 +190,6 @@ export function LeaderBoard({
                     <p key={item}>{item}</p>
                   ))}
                 </CustomTooltip>
-                {/* ))} */}
               </div>
             </Paragraph>
           ),
@@ -179,16 +213,16 @@ export function LeaderBoard({
     () =>
       compact([
         {
-          label: <span>#</span>,
+          label: '#',
           value: 'rank',
-          width: 'w-[10%]',
+          width: 'w-[8%]',
           isDesc: false,
-          disabled: true,
+          disabled: false,
         },
         {
           label: 'User',
           value: 'user',
-          width: 'w-[35%]',
+          width: 'w-[32%]',
           isDesc: true,
           minWidth: 'min-w-40',
           disabled: true,
@@ -197,22 +231,24 @@ export function LeaderBoard({
           ? {
               label: '%PNL',
               value: 'percentagePnl',
-              width: 'w-[30%]',
+              width:
+                competition?.market === TC_MARKET_TYPES.SPOT && eventType === EVENT_TYPES.LIVE ? 'w-[20%]' : 'w-[30%]',
               isDesc: true,
-              disabled: true,
+              disabled: false,
             }
           : undefined,
         {
           label: 'Profit & Loss',
           value: 'pnl',
-          width: 'w-[30%]',
+
+          width: competition?.market === TC_MARKET_TYPES.SPOT && eventType === EVENT_TYPES.LIVE ? 'w-[20%]' : 'w-[30%]',
           isDesc: true,
-          disabled: true,
+          disabled: false,
         },
         {
           label: eventType === EVENT_TYPES.LIVE ? 'Potential Reward' : 'Reward',
           value: 'reward',
-          width: 'w-[30%]',
+          width: competition?.market === TC_MARKET_TYPES.SPOT && eventType === EVENT_TYPES.LIVE ? 'w-[20%]' : 'w-[30%]',
           isDesc: true,
           disabled: true,
         },
@@ -220,7 +256,7 @@ export function LeaderBoard({
           eventType === EVENT_TYPES.LIVE && {
             label: 'Projected PNL',
             value: 'projectedPnl',
-            width: 'w-[30%]',
+            width: 'w-[20%]',
             isDesc: true,
             disabled: false,
           },
@@ -230,11 +266,11 @@ export function LeaderBoard({
 
   const dataParticipants = useMemo(
     () =>
-      participants.map(item => ({
+      sortedData.map(item => ({
         ...item,
         rank: isNil(item.rank) ? item.rank : item.rank + 1,
       })) ?? [],
-    [participants],
+    [sortedData],
   )
 
   const finalLeaderBoards = useMemo(

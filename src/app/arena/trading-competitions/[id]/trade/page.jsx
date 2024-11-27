@@ -23,7 +23,7 @@ function TradePage({ params }) {
     label: <span>#</span>,
     value: 'rank',
     width: 'w-[10%]',
-    isDesc: false,
+    isDesc: true,
     disabled: true,
   })
 
