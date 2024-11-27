@@ -49,17 +49,19 @@ export default function SwapPage() {
       setFromAddress('BNB')
       setToAddress(Contracts.THE[networkId])
     }
-  }, [assets, searchParams, fromAddress, toAddress, networkId])
 
-  useEffect(() => {
-    if (!fromAddress || !toAddress) {
-      if (swapType) {
-        push(`/swap?swapType=${swapType}`)
-      }
-      return
-    }
     push(`/swap?inputCurrency=${fromAddress}&outputCurrency=${toAddress}&swapType=${swapType}`)
-  }, [push, fromAddress, toAddress, swapType])
+  }, [assets, searchParams, fromAddress, toAddress, networkId, push, swapType])
+
+  // useEffect(() => {
+  // if (!fromAddress || !toAddress) {
+  //   if (swapType) {
+  //     push(`/swap?swapType=${swapType}`)
+  //   }
+  //   return
+  // }
+  //   push(`/swap?inputCurrency=${fromAddress}&outputCurrency=${toAddress}&swapType=${swapType}`)
+  // }, [push, fromAddress, toAddress, swapType])
 
   const isWrap = useMemo(() => {
     if (

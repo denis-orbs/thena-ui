@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -42,10 +43,22 @@ export const useFetchPairPrices = ({ token0Address, token1Address, timeWindow, c
         protocol1 ?? 'fusion',
         networkId,
       )
-      return normalizeSimpleDerivedPairDataByActiveToken({
+
+      const historyData = normalizeSimpleDerivedPairDataByActiveToken({
         activeToken: token1Address,
         pairData: normalizeSimpleDerivedChartData(data),
       })
+
+      const token0 = data.currentPrices?.[0]
+      const token1 = data.currentPrices?.[1]
+      if (token0 && token1) {
+        historyData.push({
+          time: dayjs.unix(token0.timestamp).toDate(),
+          value: Number(token1.priceUsd ?? 0) / Number(token0.priceUsd ?? 1),
+        })
+      }
+
+      return historyData
     },
   )
 

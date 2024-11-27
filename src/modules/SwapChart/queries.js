@@ -47,6 +47,20 @@ export const getSimpleChartDataCodexQuery = (
   `
 }
 
+export const getCurrentPriceCodexQuery = (tokenA, tokenB, networkId) => gql`
+  query {
+    getTokenPrices(
+      inputs: [
+        { address: "${tokenA}", networkId: ${networkId} }
+        { address: "${tokenB}", networkId: ${networkId} }
+      ]
+    ) {
+      address
+      priceUsd
+      timestamp
+    }
+  }
+`
 export const getAdvanceChartDataCodexQuery = (
   tokenAddress,
   networkId,
