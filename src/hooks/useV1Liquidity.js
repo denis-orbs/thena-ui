@@ -14,7 +14,7 @@ import { getERC20Contract, getGaugeContract, getPairContract, getRouterContract 
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
-const overrideSlippage = 2.5
+const overrideSlippage = 1
 
 export const useV1Add = () => {
   const [pending, setPending] = useState(false)
@@ -91,13 +91,18 @@ export const useV1Add = () => {
       let sendAmount0Min = toWei(sendSlippage.times(firstAmount), firstAsset.decimals).toFixed(0)
       let sendAmount1Min = toWei(sendSlippage.times(secondAmount), secondAsset.decimals).toFixed(0)
 
-      const quoteRes = await readCall(routerContract, 'quoteAddLiquidity', [
-        firstAsset.address,
-        secondAsset.address,
-        isStable,
-        sendAmount0,
-        sendAmount1,
-      ])
+      const quoteRes = await readCall(
+        routerContract,
+        'quoteAddLiquidity',
+        [
+          firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address,
+          secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address,
+          isStable,
+          sendAmount0,
+          sendAmount1,
+        ],
+        chainId,
+      )
 
       if (quoteRes && Array.isArray(quoteRes) && quoteRes.length) {
         sendAmount0Min = sendSlippage.times(quoteRes[0]).toFixed(0)
@@ -234,13 +239,18 @@ export const useV1AddAndStake = () => {
       let sendAmount0Min = toWei(sendSlippage.times(firstAmount), firstAsset.decimals).toFixed(0)
       let sendAmount1Min = toWei(sendSlippage.times(secondAmount), secondAsset.decimals).toFixed(0)
 
-      const quoteRes = await readCall(routerContract, 'quoteAddLiquidity', [
-        firstAsset.address,
-        secondAsset.address,
-        isStable,
-        sendAmount0,
-        sendAmount1,
-      ])
+      const quoteRes = await readCall(
+        routerContract,
+        'quoteAddLiquidity',
+        [
+          firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address,
+          secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address,
+          isStable,
+          sendAmount0,
+          sendAmount1,
+        ],
+        chainId,
+      )
 
       if (quoteRes && Array.isArray(quoteRes) && quoteRes.length) {
         sendAmount0Min = sendSlippage.times(quoteRes[0]).toFixed(0)
@@ -416,12 +426,17 @@ export const useV1Remove = () => {
         .add(Number(deadline) * 60, 'second')
         .unix()}`
 
-      const quoteRes = await readCall(routerContract, 'quoteRemoveLiquidity', [
-        pair.token0.address,
-        pair.token1.address,
-        pair.stable,
-        sendAmount,
-      ])
+      const quoteRes = await readCall(
+        routerContract,
+        'quoteRemoveLiquidity',
+        [
+          pair.token0.address === 'BNB' ? WBNB[chainId].address : pair.token0.address,
+          pair.token1.address === 'BNB' ? WBNB[chainId].address : pair.token1.address,
+          pair.stable,
+          sendAmount,
+        ],
+        chainId,
+      )
 
       if (quoteRes && Array.isArray(quoteRes) && quoteRes.length) {
         sendAmount0Min = sendSlippage.times(quoteRes[0]).toFixed(0)
