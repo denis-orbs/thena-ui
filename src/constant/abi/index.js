@@ -54,6 +54,7 @@ import votingEscrowAbi from './votingEscrow.json'
 import votingEscrowAttachAbi from './votingEscrowAttach.json'
 import wbnbAbi from './wbnb.json'
 import weightedPoolAbi from './weightedPool.json'
+import weightedPoolAbiFees from './weightedPoolFees.json'
 
 export {
   algebraCommunityVaultAbi,
@@ -112,4 +113,5 @@ export {
   votingEscrowAttachAbi,
   wbnbAbi,
   weightedPoolAbi,
+  weightedPoolAbiFees,
 }

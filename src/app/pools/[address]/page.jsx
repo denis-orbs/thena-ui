@@ -21,7 +21,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import useWallet from '@/hooks/useWallet'
-import { formatAddress, formatAmount, goScan } from '@/lib/utils'
+import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
 import { InitialLiquidityTable } from '@/modules/Pools/InitialLiquidityTable'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
@@ -290,11 +290,11 @@ export default function SpecificPoolPage({ params }) {
             <PoolChart address={address} />
           </div>
 
-          <div className='mb-6 flex flex-col gap-4'>
+          <div className={cn('mb-6 flex flex-col gap-4', pool.type !== PAIR_TYPES.WEIGHTED && 'hidden')}>
             <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
               {t('Liquidity Fees')}
             </TextHeading>
-            <LiquidityFeesTable pool={pool} isWeighted={pool.type === PAIR_TYPES.WEIGHTED} />
+            <LiquidityFeesTable pool={pool} />
           </div>
 
           <div className='flex flex-col gap-4'>
