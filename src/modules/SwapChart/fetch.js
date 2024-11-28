@@ -5,7 +5,12 @@ import { ChainId } from 'thena-sdk-core'
 import { FUSION_MULTI_CHAIN_START_TIME } from '@/constant'
 import { codexClient, fusionGraphUrl, v1GraphUrl } from '@/lib/graphql'
 
-import { getAdvanceChartDataCodexQuery, getSimpleChartDataCodexQuery, getTVL } from './queries'
+import {
+  getAdvanceChartDataCodexQuery,
+  getCurrentPriceCodexQuery,
+  getSimpleChartDataCodexQuery,
+  getTVL,
+} from './queries'
 import { NUMBER_CHART_DATA } from './utils'
 
 const PROTOCOL = ['v1', 'fusion']
@@ -101,13 +106,31 @@ const getSimpleTokenDerivedUSDCPrices = async (
         tokenAddress,
       }))
 
-      bars.pop()
+      // bars.pop()
       return bars
     }
     return []
   } catch (error) {
     console.log({ error })
     return {}
+  }
+}
+
+export const getCurrentprice = async (tokenA, tokenB, networkId) => {
+  try {
+    const { getTokenPrices = [] } = await codexClient.request(
+      getCurrentPriceCodexQuery(tokenA, tokenB, networkId),
+      null,
+      {
+        'Content-Type': 'application/json',
+        Authorization: process.env.NEXT_PUBLIC_CODEX_API_KEY,
+      },
+    )
+
+    return getTokenPrices
+  } catch (error) {
+    console.log({ error })
+    return []
   }
 }
 
@@ -177,16 +200,19 @@ export const fetchSimpleDerivedPriceData = async (
 ) => {
   const endTimestamp = dayjs()
   const endTimestampUnix = endTimestamp.unix()
+
   const startTimestampUnix = Math.max(
     endTimestamp.subtract(getSkipDaysToStart(timeWindow), 'days').startOf('hour').unix(),
     FUSION_MULTI_CHAIN_START_TIME[chainId],
   )
 
-  const [token0DerivedUSD, token1DerivedUSD] = await Promise.all([
+  const [token0DerivedUSD, token1DerivedUSD, currentPrices] = await Promise.all([
     getSimpleTokenDerivedUSDCPrices(token0Address, chainId, timeWindow, startTimestampUnix, endTimestampUnix),
     getSimpleTokenDerivedUSDCPrices(token1Address, chainId, timeWindow, startTimestampUnix, endTimestampUnix),
+    getCurrentprice(token0Address, token1Address, chainId),
   ])
-  return { token0DerivedUSD, token1DerivedUSD }
+
+  return { token0DerivedUSD, token1DerivedUSD, currentPrices }
 }
 
 export const fetchAdvancedDerivedPriceData = async (token0Address, chainId, toTimeStamp, timeInterval) => {

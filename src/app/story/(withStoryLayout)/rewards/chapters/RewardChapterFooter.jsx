@@ -47,8 +47,15 @@ function RewardChapterFooter({ startTime, endTime, currentTabIndex }) {
 
     if (checkWinnerData?.isWinner) {
       return (
-        <div className='flex flex-row items-center justify-center font-archia text-2xl font-semibold'>
-          <span>{t('You Won')}</span> &nbsp; <span className='text-primary-600'>{checkWinnerData?.reward}</span>
+        <div className='flex flex-col justify-start'>
+          <div className='font-archia text-2xl font-semibold'>
+            <span>{t('You Won')}</span> &nbsp; <span className='text-primary-600'>{checkWinnerData?.reward}</span>
+          </div>
+          {checkWinnerData?.reward === '5+ characters THENA ID' && (
+            <TextHeading>
+              {t('Please open a Support ticket under THE Story category to receive your prize')}
+            </TextHeading>
+          )}
         </div>
       )
     }

@@ -13,6 +13,7 @@ import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import factoryAbi from './factory.json'
 import farmingCenterAbi from './farmingCenterTestnet.json'
+import feeAbi from './fee.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
 import arabicAbi from './mint/arabicNumeral.json'
@@ -75,6 +76,7 @@ export {
   extraRewarderAbi,
   factoryAbi,
   farmingCenterAbi,
+  feeAbi,
   gaugeAbi,
   globalFactoryAbi,
   hindiNumeralAbi,

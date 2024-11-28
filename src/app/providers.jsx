@@ -10,7 +10,6 @@ import { SWRConfig } from 'swr'
 
 import { LOCALES } from '@/constant'
 import { AssetsContextProvider } from '@/context/assetsContext'
-import { DibsRewarderContextProvider } from '@/context/dibsRewarderContext'
 import { FusionsContextProvider } from '@/context/fusionsContext'
 import { ManualsContextProvider } from '@/context/manualsContext'
 import { PairsContextProvider } from '@/context/pairsContext'
@@ -38,13 +37,11 @@ function ContextProviders({ children }) {
               <TokensContextProvider>
                 <VeTHEsContextProvider>
                   <RewardsContextProvider>
-                    <DibsRewarderContextProvider>
-                      <TitleNotiContextProvider>
-                        <TCContextProvider>
-                          <THEStoryContextProvider>{children}</THEStoryContextProvider>
-                        </TCContextProvider>
-                      </TitleNotiContextProvider>
-                    </DibsRewarderContextProvider>
+                    <TitleNotiContextProvider>
+                      <TCContextProvider>
+                        <THEStoryContextProvider>{children}</THEStoryContextProvider>
+                      </TCContextProvider>
+                    </TitleNotiContextProvider>
                   </RewardsContextProvider>
                 </VeTHEsContextProvider>
               </TokensContextProvider>

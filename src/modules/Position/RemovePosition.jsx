@@ -21,7 +21,7 @@ import PoolTitle from '../PoolTitle'
 
 export default function RemovePosition({ setPopup, strategy, isManage = false }) {
   const [amount, setAmount] = useState('')
-  const { slippage, deadline } = useSettings()
+  const { deadline } = useSettings()
   const { onV1Remove, pending: v1Pending } = useV1Remove()
   const { onGammaRemove, pending: gammaPending } = useGammaRemove()
   const { onIchiRemove, pending: ichiPending } = useIchiRemove()
@@ -60,7 +60,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
       return
     }
     if (['Stable', 'Volatile'].includes(strategy.title)) {
-      onV1Remove(strategy, amount, slippage, deadline, firstAmount, secondAmount, callback)
+      onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
       onGammaRemove(strategy, amount, callback)
     } else if (strategy.title === 'ICHI') {
@@ -71,7 +71,6 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
   }, [
     strategy,
     amount,
-    slippage,
     deadline,
     firstAmount,
     secondAmount,
