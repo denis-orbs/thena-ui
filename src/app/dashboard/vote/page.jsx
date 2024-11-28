@@ -2,7 +2,7 @@
 
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
@@ -19,7 +19,6 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useAssets } from '@/context/assetsContext'
 import { fetchVeTHEFromId, useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useEpochTimer, useVoteEmissions } from '@/hooks/useGeneral'
@@ -27,9 +26,9 @@ import usePrices from '@/hooks/usePrices'
 import { usePoke, useReset, useVote } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getFeeContract, getVeTHEContract } from '@/lib/contracts'
+import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, fromWei } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
@@ -137,81 +136,6 @@ export default function VotePage() {
     [JSON.stringify(percent), percent],
   )
 
-  const [updatedFeesPools, setUpdatedFeePools] = useState([])
-  const ref = useRef(0)
-  const assets = useAssets()
-
-  useEffect(() => {
-    if (pools && Array.isArray(pools) && pools.length && !updatedFeesPools.length && !ref.current && assets) {
-      // eslint-disable-next-line no-inner-declarations
-      async function getUpdatedFeesPools() {
-        const results = []
-        for (const pair of pools) {
-          // TODO: Check for THE pools
-          if (pair.title !== 'DefiEdge' && pair.gauge.address !== zeroAddress && pair.gauge.isAlive) {
-            if (
-              pair?.token0?.address === '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11' ||
-              pair?.token1?.address === '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11'
-            ) {
-              const feeContract = getFeeContract(pair?.gauge?.fee, networkId)
-
-              if (feeContract) {
-                const nextEpochTime = await readCall(feeContract, 'getNextEpochStart', [])
-                const [fee0, fee1] = await Promise.all([
-                  readCall(feeContract, 'rewardData', [pair.token0.address, nextEpochTime]),
-                  readCall(feeContract, 'rewardData', [pair.token1.address, nextEpochTime]),
-                ])
-
-                if ((fee0 && fee1 && Array.isArray(fee0) && fee0?.[1]) || (Array.isArray(fee1) && fee1?.[1])) {
-                  const fee = [
-                    {
-                      address: pair.token0.address,
-                      decimals: pair.token0.decimals,
-                      amount: fromWei(fee0[1], pair.token0.decimals) || 0,
-                      symbol: pair.token0.symbol,
-                    },
-                    {
-                      address: pair.token1.address,
-                      decimals: pair.token1.decimals,
-                      amount: fromWei(fee1[1], pair.token1.decimals) || 0,
-                      symbol: pair.token1.symbol,
-                    },
-                  ]
-
-                  const token0Asset = assets.find(item => item.address === pair.token0.address)
-                  const token1Asset = assets.find(item => item.address === pair.token1.address)
-
-                  let bribeUsd = fee[0].amount * (token0Asset.price || 0) + fee[1].amount * (token1Asset.price || 0)
-                  if (pair.gauge.bribes.bribe) {
-                    const gaugeAsset = assets.find(item => item.address === pair.gauge.bribes.bribe[0].address)
-                    bribeUsd += pair.gauge.bribes.bribe[0].amount * (gaugeAsset || 0)
-                  }
-
-                  results.push({
-                    ...pair,
-                    gauge: {
-                      ...pair.gauge,
-                      bribes: {
-                        ...pair.gauge.bribes,
-                        fee,
-                      },
-                      bribeUsd,
-                    },
-                  })
-                }
-              }
-            }
-          }
-        }
-
-        setUpdatedFeePools(results)
-      }
-
-      getUpdatedFeesPools()
-      ref.current = 1
-    }
-  }, [assets, networkId, pools, updatedFeesPools.length])
-
   const userPools = useMemo(
     () =>
       pools
@@ -219,17 +143,6 @@ export default function VotePage() {
         .filter(pair => pair.title !== 'DefiEdge') // hide all DeFi Edge
         .filter(pair => pair.gauge.address !== zeroAddress && pair.gauge.isAlive)
         .map(pair => {
-          // TODO: Hard-coded for THE pools
-          if (updatedFeesPools.length) {
-            const foundPair = updatedFeesPools.find(item => item.address === pair.address)
-            if (foundPair && pair.gauge.bribes) {
-              pair.gauge.bribeUsd = new BigNumber(foundPair.gauge.bribeUsd)
-              pair.gauge.bribes = {
-                ...pair.gauge.bribes,
-                fee: foundPair.gauge.bribes.fee,
-              }
-            }
-          }
           const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
           let votes = {
             weight: new BigNumber(0),
@@ -256,7 +169,7 @@ export default function VotePage() {
             votes,
           }
         }),
-    [pools, veTHE, updatedFeesPools],
+    [pools, veTHE],
   )
 
   const filteredPools = useMemo(() => {
