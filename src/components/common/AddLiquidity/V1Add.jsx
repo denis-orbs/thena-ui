@@ -29,6 +29,7 @@ export default function V1Add({
   setSecondAddress,
   setFirstAmountValue,
   setSecondAmountValue,
+  slippageCustom,
 }) {
   const [isZapper, setIsZapper] = useState(false)
   const [firstAmount, setFirstAmount] = useState('')
@@ -161,14 +162,25 @@ export default function V1Add({
       firstAmount,
       secondAmount,
       pairType === PAIR_TYPES.STABLE,
-      slippage,
+      slippageCustom ?? slippage,
       deadline,
       () => {
         setFirstAmount('')
         setSecondAmount('')
       },
     )
-  }, [onV1Add, firstAsset, secondAsset, firstAmount, secondAmount, pairType, slippage, deadline, errorMsg])
+  }, [
+    errorMsg,
+    onV1Add,
+    firstAsset,
+    secondAsset,
+    firstAmount,
+    secondAmount,
+    pairType,
+    slippageCustom,
+    slippage,
+    deadline,
+  ])
 
   const onAddAndStake = useCallback(() => {
     if (errorMsg) {

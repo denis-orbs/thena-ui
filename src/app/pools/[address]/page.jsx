@@ -421,7 +421,7 @@ export default function SpecificPoolPage({ params }) {
       </div>
       <div className='fixed bottom-0 left-0 z-50 w-full justify-center bg-neutral-800 !p-4 lg:hidden'>
         <PrimaryButton onClick={() => setShowModalAdd(true)} className='mx-auto w-full'>
-          {t('Add liquidity')}
+          {t('Add Liquidity')}
         </PrimaryButton>
         <Modal title='New Deposit' isOpen={showModalAdd} width={400} closeModal={() => setShowModalAdd(false)}>
           <ModalBody className='p-0'>

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -17,11 +17,19 @@ import { useCurrency } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
+import { useSettings } from '@/state/settings/hooks'
 import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
+
+import TransactionSettingModal from './TransactionSettingModal'
 
 const feeAmount = 3000
 export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strategy, showSidebar = true }) {
   const t = useTranslations()
+
+  const { slippage } = useSettings()
+  const [slippageTolerance, setSlippageTolerance] = useState(slippage)
+  const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
+
   const assets = useAssets()
   const fusionPairs = useFusionPairs()
   const [firstAsset, secondAsset] = useMemo(
@@ -132,7 +140,12 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
                 </>
               )}
             </>
-            <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} />
+            <ManualAdd
+              baseCurrency={baseCurrency}
+              quoteCurrency={quoteCurrency}
+              mintInfo={mintInfo}
+              slippageCustom={slippageTolerance}
+            />
           </div>
         )}
       </Box>
@@ -178,14 +191,22 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
               <div className='flex flex-row items-center gap-2'>
                 <PercentIcon className='h-5 w-5 stroke-success-600' />
                 <div className='flex flex-row gap-1'>
-                  <span>{t('slippage applied', { percent: '1.0' })}</span>
-                  <Link href='/'>{t('Adjust')}</Link>
+                  <span>{t('slippage applied', { percent: slippageTolerance })}</span>
+                  <span className='!cursor-pointer underline' onClick={() => setOpenTransactionSetting(true)}>
+                    {t('Adjust')}
+                  </span>
                 </div>
               </div>
             </div>
           </Box>
         </div>
       )}
+      <TransactionSettingModal
+        isOpen={openTransactionSetting}
+        setIsOpen={setOpenTransactionSetting}
+        setSlippageTolerance={setSlippageTolerance}
+        slippageTolerance={slippageTolerance}
+      />
     </div>
   )
 }

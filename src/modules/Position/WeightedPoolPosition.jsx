@@ -59,7 +59,7 @@ export function WeightedPoolPosition({ pool }) {
             </span>
             <span>
               <span>{formatAmount(token?.reserve)}</span>
-              <span className='text-neutral-300'>({pool?.weight}%)</span>
+              <span className='text-neutral-300'>({token?.weight}%)</span>
             </span>
           </div>
         ))}

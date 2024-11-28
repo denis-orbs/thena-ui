@@ -11,6 +11,7 @@ import {
   getERC20Contract,
   getThenaRouterContract,
   getThenaWeightedPoolFactoryContract,
+  getVaultContract,
   getWeightedPoolContract,
 } from '@/lib/contracts'
 import { fromWei } from '@/lib/utils'
@@ -31,7 +32,7 @@ export const useWeightedPool = () => {
       eventName: 'PoolCreated',
       logs: txnReceipt.logs,
     })
-    console.log({ eventLogs })
+
     if (eventLogs && eventLogs.length > 0) {
       const parsed = eventLogs[0]
       if (parsed.args) {
@@ -172,5 +173,187 @@ export const useWeightedPool = () => {
     [account, chainId, endTxn, handleGetPoolId, startTxn, t, writeTxn],
   )
 
-  return { onCreateWeightedPool, pending }
+  const onAddLiquiditySingleToken = useCallback(
+    async (poolId32, token, amountDeposit, onSuccess) => {
+      setPending(true)
+      const tokenContract = getERC20Contract(token.address, chainId)
+      const thenaRouterContract = getThenaRouterContract(chainId)
+
+      const key = uuidv4()
+      const approveFeeuuid = uuidv4()
+      const joinPooluuid = uuidv4()
+
+      const allowance = await readCall(tokenContract, 'allowance', [account, Contracts.ThenaRouter[chainId]], chainId)
+
+      const isApprovedFee = fromWei(allowance, token.decimals).gte(amountDeposit, token.decimals)
+
+      startTxn({
+        key,
+        title: t('Add Liquidity'),
+        transactions: {
+          ...(isApprovedFee
+            ? {}
+            : {
+                [approveFeeuuid]: {
+                  desc: `${t('Approve')} ${token.symbol}`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+              }),
+          [joinPooluuid]: {
+            desc: t('Add Liquidity'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      if (!isApprovedFee) {
+        const isSuccess = await writeTxn(key, approveFeeuuid, tokenContract, 'approve', [
+          Contracts.ThenaRouter[chainId],
+          maxUint256,
+        ])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      }
+
+      const vaultContract = getVaultContract(chainId)
+      const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
+      const tokensToLowerCase = tokens.map(item => item.toLowerCase())
+      const idx = tokensToLowerCase?.indexOf(token?.address?.toLowerCase())
+
+      const result = await writeTxn(key, joinPooluuid, thenaRouterContract, 'joinPool', [
+        poolId32,
+        idx,
+        amountDeposit,
+        1 /* TODO: remove fixed value for minBPTAmountOut */,
+      ])
+
+      if (!result) {
+        setPending(false)
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Add Liquidity Weighted Pool Successful',
+      })
+
+      setPending(false)
+
+      if (typeof onSuccess === 'function') {
+        onSuccess()
+      }
+
+      return result
+    },
+    [account, chainId, endTxn, startTxn, t, writeTxn],
+  )
+
+  const onAddLiquidityAllToken = useCallback(
+    async (poolId32, assets, onSuccess) => {
+      const key = uuidv4()
+      const addLiquidityuuid = uuidv4()
+      const thenaRouterContract = getThenaRouterContract(chainId)
+
+      const transactions = {}
+      setPending(true)
+
+      for (let i = 0; i < Object.keys(assets).length; i++) {
+        const address = Object.keys(assets)[i]
+        const tokenContract = getERC20Contract(assets[address].address, chainId)
+        const approveFeeuuid = uuidv4()
+        const allowance = await readCall(tokenContract, 'allowance', [account, Contracts.ThenaRouter[chainId]], chainId)
+
+        const isApprovedFee = fromWei(allowance, assets[address].decimals).gte(
+          assets[address].amountDeposit,
+          assets[address].decimals,
+        )
+
+        if (!isApprovedFee) {
+          assets[address].id = approveFeeuuid
+          transactions[approveFeeuuid] = {
+            desc: `${t('Approve')} ${assets[address].symbol}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+      }
+
+      transactions[addLiquidityuuid] = {
+        desc: t('Add Liquidity'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      startTxn({
+        key,
+        title: t('Add Liquidity'),
+        transactions,
+      })
+
+      for (let i = 0; i < Object.keys(assets).length; i++) {
+        const address = Object.keys(assets)[i]
+        if (assets[address].id) {
+          const tokenContract = getERC20Contract(assets[address].address, chainId)
+          const isSuccess = await writeTxn(key, assets[address].id, tokenContract, 'approve', [
+            Contracts.ThenaRouter[chainId],
+            maxUint256,
+          ])
+
+          if (!isSuccess) {
+            setPending(false)
+            return false
+          }
+        }
+      }
+
+      const vaultContract = getVaultContract(chainId)
+      const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
+      const tokensToLowerCase = tokens.map(item => item.toLowerCase())
+
+      const sortedAsset = assets.sort((a, b) => {
+        const indexA = tokensToLowerCase.indexOf(a.address)
+        const indexB = tokensToLowerCase.indexOf(b.address)
+
+        if (indexA === -1) return 1
+        if (indexB === -1) return -1
+
+        return indexA - indexB
+      })
+
+      const assetsAddress = assets.map(asset => asset.address)
+      const maxAmountsIn = sortedAsset.map(asset => asset.amountDeposit)
+
+      const result = await writeTxn(key, addLiquidityuuid, thenaRouterContract, 'joinPoolAllTokens', [
+        poolId32,
+        assetsAddress,
+        maxAmountsIn,
+        1 /* TODO: remove fixed value for minBPTAmountOut */,
+      ])
+
+      if (!result) {
+        setPending(false)
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Add Liquidity Weighted Pool Successful',
+      })
+
+      setPending(false)
+
+      if (typeof onSuccess === 'function') {
+        onSuccess()
+      }
+
+      return result
+    },
+    [account, chainId, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { onCreateWeightedPool, onAddLiquiditySingleToken, onAddLiquidityAllToken, pending }
 }

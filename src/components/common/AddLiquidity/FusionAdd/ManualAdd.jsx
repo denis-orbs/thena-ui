@@ -11,7 +11,7 @@ import { warnToast } from '@/lib/notify'
 import { Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
 
-export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo }) {
+export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slippageCustom }) {
   const { account } = useWallet()
   const { errorMessage } = mintInfo
   const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
@@ -26,8 +26,19 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo }) {
       return
     }
 
-    onAlgebraAdd(amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline)
-  }, [errorMessage, baseCurrency, quoteCurrency, amountA, amountB, mintInfo, slippage, deadline, onAlgebraAdd])
+    onAlgebraAdd(amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippageCustom ?? slippage, deadline)
+  }, [
+    errorMessage,
+    onAlgebraAdd,
+    amountA,
+    amountB,
+    baseCurrency,
+    quoteCurrency,
+    mintInfo,
+    slippageCustom,
+    slippage,
+    deadline,
+  ])
 
   if (!account) {
     return <ConnectButton className='w-full' />

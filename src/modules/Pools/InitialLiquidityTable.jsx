@@ -31,7 +31,7 @@ function InitialLiquidityRow({ token }) {
         <span className='float-end text-[18px] font-medium'>{formatAmount(token?.reserve)}</span>
         <br />
         <span className='text-[16px] font-normal text-neutral-500'>
-          ${getValueTokenAmountToUSD(token?.address, token?.reserve)}
+          ${formatAmount(getValueTokenAmountToUSD(token?.address, token?.reserve))}
         </span>
       </div>
     </div>

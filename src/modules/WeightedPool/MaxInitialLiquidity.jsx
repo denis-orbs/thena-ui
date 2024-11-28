@@ -3,6 +3,7 @@ import React, { useMemo } from 'react'
 
 import Box from '@/components/box'
 import { TextHeading } from '@/components/typography'
+import { useTokenUSDValue } from '@/hooks/usePrices'
 import { formatAmount } from '@/lib/utils'
 
 export default function MaxInitialLiquidity({ tokensAndWeights }) {
@@ -10,13 +11,27 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
   const data = useMemo(
     () =>
       tokensAndWeights.map(item => ({
+        address: item?.token?.address,
         symbol: item?.token?.symbol,
         price: item?.token?.price,
         pool: item?.weight,
+        balance: item?.token?.balance || 0,
       })),
     [tokensAndWeights],
   )
-  const totalPrice = data.reduce((sum, curr) => sum + curr.price, 0)
+
+  const { getValueTokenAmountToUSD } = useTokenUSDValue()
+
+  const totalPrice = useMemo(
+    () =>
+      tokensAndWeights.reduce(
+        (sum, item) => (getValueTokenAmountToUSD(item?.token?.address, item?.token?.balance) || 0) + sum,
+        0,
+      ),
+    [getValueTokenAmountToUSD, tokensAndWeights],
+  )
+
+  // const totalPrice = data.reduce((sum, curr) => sum + curr.price, 0)
   const totalPool = data.reduce((sum, curr) => sum + curr.pool, 0)
   return (
     <Box>
@@ -35,7 +50,9 @@ export default function MaxInitialLiquidity({ tokensAndWeights }) {
           {data.map((row, index) => (
             <tr key={index}>
               <td className='whitespace-nowrap px-6 py-4 text-neutral-200'>{row.symbol}</td>
-              <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>{formatAmount(row.price)}</td>
+              <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>
+                {formatAmount(getValueTokenAmountToUSD(row?.address, row?.balance))}
+              </td>
               <td className='whitespace-nowrap px-6 py-4 text-right text-neutral-200'>{row.pool}</td>
             </tr>
           ))}
