@@ -326,7 +326,7 @@ export default function PoolsPage() {
               <CustomTooltip id={`tvl-${pool.address}`}>
                 <div className='flex flex-col gap-1'>
                   {(pool.tokens || []).map(token => (
-                    <p>{`${formatAmount(token.reserve)} ${token.symbol}`}</p>
+                    <p key={token.address}>{`${formatAmount(token.reserve)} ${token.symbol}`}</p>
                   ))}
                 </div>
               </CustomTooltip>

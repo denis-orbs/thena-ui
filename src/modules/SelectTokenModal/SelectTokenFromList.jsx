@@ -25,13 +25,13 @@ export default function SelectTokenFromList({ isOpen, setIsOpen, tokens, setToke
       width={540}
       title='Select Token'
     >
-      <div className='mb-3 inline-flex w-full flex-col gap-4 px-6 py-3'>
-        <Paragraph>{t('Tokens')}</Paragraph>
+      <div className='mb-3 inline-flex w-full flex-col gap-4 px-2 py-3'>
+        <Paragraph className='px-2'>{t('Tokens')}</Paragraph>
         <div className='flex flex-col gap-1'>
           {tokens.map(token => (
             <div
               onClick={() => handleSelect(token)}
-              className='flex cursor-pointer flex-row items-center justify-between rounded-lg px-6 py-3 hover:bg-neutral-600'
+              className='flex cursor-pointer flex-row items-center justify-between rounded-lg px-4 py-3 hover:bg-neutral-600'
             >
               <div className='flex flex-row items-center gap-2'>
                 <CircleImage className='h-8 w-8' alt={token?.address} src={token?.logoURI || UNKNOWN_LOGO} />
@@ -40,8 +40,8 @@ export default function SelectTokenFromList({ isOpen, setIsOpen, tokens, setToke
                   <Paragraph>{token?.name}</Paragraph>
                 </div>
               </div>
-              <div className='flex flex-col'>
-                <TextHeading>{formatAmount(token.price)}</TextHeading>
+              <div className='flex flex-col items-end'>
+                <TextHeading>{formatAmount(token.balance)}</TextHeading>
                 <Paragraph>${formatAmount(token.price)}</Paragraph>
               </div>
             </div>

@@ -1,35 +1,43 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useId, useMemo } from 'react'
 
-import { cn, formatAmount } from '@/lib/utils'
+import { useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
+import { cn, formatAddress, formatAmount } from '@/lib/utils'
 
 import { ThreeIconGroup } from '../icongroup/ThreeIconGroup'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
+import CustomTooltip from '../tooltip'
 import { TextSubHeading } from '../typography'
 
-function InputManyToken({ pair, balance, amount, onAmountChange, title, autoFocus = false, readOnly = false }) {
+function InputManyToken({ pair, amount, onAmountChange, title, autoFocus = false, readOnly = false }) {
+  const toolTipId = useId()
+
+  const { balance, decimals, pending } = useWeightPoolData(pair.address)
+
   const t = useTranslations()
   const percents = useMemo(
     () => [
       {
         label: '10%',
-        onClickHandler: () => onAmountChange(balance.times(0.1).dp(18).toString(10)),
+        onClickHandler: () => {
+          onAmountChange(balance.times(0.1).dp(decimals).toString(10))
+        },
       },
       {
         label: '25%',
-        onClickHandler: () => onAmountChange(balance.times(0.25).dp(18).toString(10)),
+        onClickHandler: () => onAmountChange(balance.times(0.25).dp(decimals).toString(10)),
       },
       {
         label: '50%',
-        onClickHandler: () => onAmountChange(balance.times(0.5).dp(18).toString(10)),
+        onClickHandler: () => onAmountChange(balance.times(0.5).dp(decimals).toString(10)),
       },
       {
         label: 'Max',
-        onClickHandler: () => onAmountChange(balance.dp(18).toString(10)),
+        onClickHandler: () => onAmountChange(balance.dp(decimals).toString(10)),
       },
     ],
-    [balance, onAmountChange],
+    [balance, decimals, onAmountChange],
   )
 
   return (
@@ -67,7 +75,14 @@ function InputManyToken({ pair, balance, amount, onAmountChange, title, autoFocu
                 classNames={{ image: 'w-6 h-6' }}
                 className='-space-x-1'
               />
-              <span className='text-wrap'>{pair?.symbol}</span>
+              <span className='text-wrap' data-tooltip-id={toolTipId}>
+                {pair?.symbol?.length > 10 ? formatAddress(pair?.symbol) : pair?.symbol}
+              </span>
+              {pair?.symbol?.length > 10 && (
+                <CustomTooltip id={toolTipId} className='max-w-[500px]'>
+                  {pair?.symbol}
+                </CustomTooltip>
+              )}
             </div>
           ) : (
             <Skeleton className='h-6 w-10' />
@@ -75,17 +90,11 @@ function InputManyToken({ pair, balance, amount, onAmountChange, title, autoFocu
         </div>
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(pair.lpPrice * amount)}</TextSubHeading>
-          <TextSubHeading>
-            {t('Balance')}: {formatAmount(balance)}
+          <TextSubHeading className='flex items-center'>
+            {t('Balance')}: {!pending ? <>{formatAmount(balance)}</> : <Skeleton className='h-6 w-10' />}
           </TextSubHeading>
         </div>
       </div>
-      {/* {errorMsg && (
-        <Alert>
-          <InfoIcon className='h-4 w-4 stroke-error-600' />
-          <p>{errorMsg}</p>
-        </Alert>
-      )} */}
     </div>
   )
 }

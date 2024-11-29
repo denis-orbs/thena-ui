@@ -43,7 +43,11 @@ export default function SpecificPoolPage({ params }) {
 
   const [showModalAdd, setShowModalAdd] = useState(false)
 
-  const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [pairs, address])
+  const pool = useMemo(
+    () => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(pairs), address],
+  )
   const userPools = useMemo(() => (pool ? (pool?.subpools || []).filter(ele => ele.account.totalLp.gt(0)) : []), [pool])
   const userManuals = useMemo(
     () =>

@@ -1,11 +1,14 @@
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
+import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
 import { encodePacked, maxUint256, parseEventLogs, toHex } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import { thenaWeightedPoolFactoryAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
+import { useMutateAssets } from '@/context/assetsContext'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
@@ -19,11 +22,48 @@ import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
 
+export const useWeightPoolData = poolAddress => {
+  const { account, chainId } = useWallet()
+
+  const getBalanceAndDecimals = useCallback(async () => {
+    try {
+      const weightedPoolContract = getWeightedPoolContract(poolAddress, chainId)
+
+      const balance = await readCall(weightedPoolContract, 'balanceOf', [account], chainId)
+      const decimals = await readCall(weightedPoolContract, 'decimals', [], chainId)
+
+      return { balance: fromWei(balance), decimals }
+    } catch (error) {
+      console.error('Failed to fetch balance or decimals:', error)
+    }
+  }, [account, chainId, poolAddress])
+
+  const {
+    data,
+    mutate: mutatePoolBalance,
+    isLoading,
+  } = useSWR(
+    poolAddress && account && chainId && ['get balance pool', account?.toLowerCase()],
+    () => getBalanceAndDecimals(),
+    {
+      refreshInterval: 0,
+    },
+  )
+
+  return {
+    balance: data?.balance ?? new BigNumber(0),
+    decimals: data?.decimals ?? new BigNumber(18),
+    pending: isLoading,
+    mutatePoolBalance,
+  }
+}
+
 export const useWeightedPool = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
   const t = useTranslations()
+  const mutateAssets = useMutateAssets()
 
   const handleGetPoolId = useCallback(async txHash => {
     const txnReceipt = await waitCall(txHash)
@@ -43,7 +83,7 @@ export const useWeightedPool = () => {
     return ''
   }, [])
 
-  function toBytes32(hexString) {
+  const toBytes32 = hexString => {
     const rawBytes = Uint8Array.from(Buffer.from(hexString.slice(2), 'hex'))
 
     if (rawBytes.length > 32) {
@@ -166,11 +206,12 @@ export const useWeightedPool = () => {
         final: 'Create Weighted Pool Successful',
       })
       setPending(false)
+      mutateAssets()
       if (onSuccess) {
         onSuccess(poolId)
       }
     },
-    [account, chainId, endTxn, handleGetPoolId, startTxn, t, writeTxn],
+    [account, chainId, endTxn, handleGetPoolId, startTxn, mutateAssets, t, writeTxn],
   )
 
   const onAddLiquiditySingleToken = useCallback(
@@ -246,10 +287,10 @@ export const useWeightedPool = () => {
       if (typeof onSuccess === 'function') {
         onSuccess()
       }
-
+      mutateAssets()
       return result
     },
-    [account, chainId, endTxn, startTxn, t, writeTxn],
+    [account, chainId, endTxn, mutateAssets, startTxn, t, writeTxn],
   )
 
   const onAddLiquidityAllToken = useCallback(
@@ -349,11 +390,192 @@ export const useWeightedPool = () => {
       if (typeof onSuccess === 'function') {
         onSuccess()
       }
-
+      mutateAssets()
       return result
     },
-    [account, chainId, endTxn, startTxn, t, writeTxn],
+    [account, chainId, endTxn, mutateAssets, startTxn, t, writeTxn],
   )
 
-  return { onCreateWeightedPool, onAddLiquiditySingleToken, onAddLiquidityAllToken, pending }
+  const onRemoveLiquiditySingleToken = useCallback(
+    async (pool, tokenSelect, amount, onSuccess) => {
+      const key = uuidv4()
+      const approveFeeuuid = uuidv4()
+      const removeLiquidityuuid = uuidv4()
+
+      const { poolId: poolId32, address: poolAddress } = pool
+
+      const thenaRouterContract = getThenaRouterContract(chainId)
+      const weightedPoolContract = getWeightedPoolContract(poolAddress, chainId)
+
+      const decimals = await readCall(weightedPoolContract, 'decimals', [], chainId)
+      const vaultContract = getVaultContract(chainId)
+      const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
+      const tokensToLowerCase = tokens.map(item => item.toLowerCase())
+      const outputTokenIndex = tokensToLowerCase?.indexOf(tokenSelect?.address?.toLowerCase())
+
+      const lpTokenContract = getERC20Contract(poolAddress, chainId)
+
+      const allowance = await readCall(lpTokenContract, 'allowance', [account, Contracts.ThenaRouter[chainId]], chainId)
+
+      const isApprovedFee = fromWei(allowance, decimals).gte(amount, decimals)
+
+      startTxn({
+        key,
+        title: t('Remove Liquidity'),
+        transactions: {
+          ...(isApprovedFee
+            ? {}
+            : {
+                [approveFeeuuid]: {
+                  desc: `${t('Approve')} ${pool.symbol}`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+              }),
+          [removeLiquidityuuid]: {
+            desc: t('Remove Liquidity'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      if (!isApprovedFee) {
+        const isSuccess = await writeTxn(key, approveFeeuuid, lpTokenContract, 'approve', [
+          Contracts.ThenaRouter[chainId],
+          maxUint256,
+        ])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      }
+
+      const result = await writeTxn(key, removeLiquidityuuid, thenaRouterContract, 'exitPool', [
+        poolId32,
+        amount,
+        outputTokenIndex,
+        1,
+      ])
+
+      if (!result) {
+        setPending(false)
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Remove Liquidity Weighted Pool Successful',
+      })
+
+      setPending(false)
+
+      if (typeof onSuccess === 'function') {
+        onSuccess()
+      }
+      mutateAssets()
+      return result
+    },
+    [account, chainId, endTxn, mutateAssets, startTxn, t, writeTxn],
+  )
+
+  const onRemoveLiquidityAllToken = useCallback(
+    async (pool, amount, onSuccess) => {
+      const key = uuidv4()
+      const approveFeeuuid = uuidv4()
+      const removeLiquidityuuid = uuidv4()
+
+      const { poolId: poolId32, address: poolAddress } = pool
+
+      const thenaRouterContract = getThenaRouterContract(chainId)
+      const weightedPoolContract = getWeightedPoolContract(poolAddress, chainId)
+      const decimals = await readCall(weightedPoolContract, 'decimals', [], chainId)
+      const vaultContract = getVaultContract(chainId)
+      const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
+      const tokensToLowerCase = tokens.map(item => item.toLowerCase())
+      const sortedAsset = (pool.tokens || []).sort((a, b) => {
+        const indexA = tokensToLowerCase.indexOf(a.address)
+        const indexB = tokensToLowerCase.indexOf(b.address)
+
+        if (indexA === -1) return 1
+        if (indexB === -1) return -1
+
+        return indexA - indexB
+      })
+
+      const lpTokenContract = getERC20Contract(poolAddress, chainId)
+
+      const allowance = await readCall(lpTokenContract, 'allowance', [account, Contracts.ThenaRouter[chainId]], chainId)
+
+      const isApprovedFee = fromWei(allowance, decimals).gte(amount, decimals)
+
+      startTxn({
+        key,
+        title: t('Remove Liquidity'),
+        transactions: {
+          ...(isApprovedFee
+            ? {}
+            : {
+                [approveFeeuuid]: {
+                  desc: `${t('Approve')} ${pool.symbol}`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+              }),
+          [removeLiquidityuuid]: {
+            desc: t('Remove Liquidity'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      if (!isApprovedFee) {
+        const isSuccess = await writeTxn(key, approveFeeuuid, lpTokenContract, 'approve', [
+          Contracts.ThenaRouter[chainId],
+          maxUint256,
+        ])
+        if (!isSuccess) {
+          setPending(false)
+          return false
+        }
+      }
+
+      const minAmountsOut = sortedAsset.map(() => 1)
+
+      const result = await writeTxn(key, removeLiquidityuuid, thenaRouterContract, 'exitPoolAllTokens', [
+        poolId32,
+        amount,
+        minAmountsOut,
+      ])
+
+      if (!result) {
+        setPending(false)
+        return false
+      }
+
+      endTxn({
+        key,
+        final: 'Remove Liquidity Weighted Pool Successful',
+      })
+
+      setPending(false)
+
+      if (typeof onSuccess === 'function') {
+        onSuccess()
+      }
+      mutateAssets()
+      return result
+    },
+    [account, chainId, endTxn, mutateAssets, startTxn, t, writeTxn],
+  )
+
+  return {
+    onCreateWeightedPool,
+    onAddLiquiditySingleToken,
+    onAddLiquidityAllToken,
+    onRemoveLiquiditySingleToken,
+    onRemoveLiquidityAllToken,
+    pending,
+  }
 }

@@ -15,7 +15,8 @@ import TokenInput from '@/components/input/TokenInput'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
+import { useAssets } from '@/context/assetsContext'
+import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, formatAmount, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
 import { ArrowLeftIcon, ArrowRightIcon, DownloadSuccessIcon, PercentIcon } from '@/svgs'
 
@@ -29,7 +30,7 @@ const DEPOSIT_TYPE = {
 function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = true, setCurrentStep }) {
   const t = useTranslations()
   const [depositType, setDepositType] = useState(DEPOSIT_TYPE.SINGLE)
-  const [tokenDeposit, setTokenDeposit] = useState(null)
+  const [tokenDeposit, setTokenDeposit] = useState(pool?.tokens?.[0])
   const [isSuccess, setIsSuccess] = useState(false)
 
   const [amountDeposit, setAmountDeposit] = useState()
@@ -37,14 +38,25 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
   const [slippageTolerance, setSlippageTolerance] = useState()
   const [openTransactionSetting, setOpenTransactionSetting] = useState()
 
-  const { onAddLiquiditySingleToken, onAddLiquidityAllToken, pending } = useWeightedPool()
+  const assets = useAssets()
 
-  const [tokensData, setTokensData] = useState(
-    (pool.tokens || []).map(item => ({
-      ...item,
-      amountDeposit: null,
-    })),
+  const { onAddLiquiditySingleToken, onAddLiquidityAllToken, pending } = useWeightedPool()
+  const { mutatePoolBalance } = useWeightPoolData(pool.address)
+
+  const tokensAsset = useMemo(
+    () =>
+      (pool.tokens || []).map(item => {
+        const asset = assets.find(token => token?.address?.toLowerCase() === item?.address?.toLowerCase())
+        return {
+          ...item,
+          ...asset,
+          amountDeposit: null,
+        }
+      }),
+    [assets, pool.tokens],
   )
+
+  const [tokensData, setTokensData] = useState(tokensAsset)
 
   const handleAmountChange = useCallback(
     (address, value) => {
@@ -122,6 +134,7 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
     if (depositType === DEPOSIT_TYPE.SINGLE) {
       await onAddLiquiditySingleToken(pool.poolId, tokenDeposit, toWei(amountDeposit), () => {
         setIsSuccess(true)
+        mutatePoolBalance()
       })
     } else {
       const assetsToken = tokensData.map(token => ({
@@ -130,11 +143,13 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
       }))
       await onAddLiquidityAllToken(pool.poolId, assetsToken, () => {
         setIsSuccess(true)
+        mutatePoolBalance()
       })
     }
   }, [
     amountDeposit,
     depositType,
+    mutatePoolBalance,
     onAddLiquidityAllToken,
     onAddLiquiditySingleToken,
     pool.poolId,
@@ -213,14 +228,14 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
                     amount={amountDeposit}
                     setAmount={setAmountDeposit}
                     autoFocus
-                    assetData={tokensData}
+                    assetData={tokensAsset}
                     assetNull
                   />
                 </div>
               </>
             )}
             {depositType === DEPOSIT_TYPE.ALL &&
-              (tokensData || []).map((token, idx) => (
+              (tokensAsset || []).map((token, idx) => (
                 <BalanceInput
                   type='number'
                   key={token?.address}
