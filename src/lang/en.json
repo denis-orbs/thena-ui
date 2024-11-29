@@ -1235,7 +1235,7 @@
   "Liquidity Fees": "Liquidity & Fees",
   "Token and Weight": "Token and Weight",
   "Current Liquidity": "Current Liquidity",
-  "Unclaimed Fees": "Unclaimed Fees",
+  "Unclaimed Fees": "Generated Cumulative Fees",
   "Claimed Fees": "Claimed Fees",
   "Pool Attributes": "Pool Attributes",
   "Symbol": "Symbol",
