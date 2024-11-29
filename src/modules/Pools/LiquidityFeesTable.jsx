@@ -16,8 +16,8 @@ function LiquidityFeeRow({ token }) {
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   return (
-    <div className='grid grid-cols-2 gap-y-4 rounded-lg bg-neutral-800  px-5 py-4 lg:grid-cols-5 '>
-      <div className='flex flex-col items-start lg:col-span-2 lg:flex-row lg:items-center'>
+    <div className='grid grid-cols-2 gap-y-4 rounded-lg bg-neutral-800  px-5 py-4 lg:grid-cols-3'>
+      <div className='flex flex-col items-start lg:col-span-1 lg:flex-row lg:items-center'>
         <div className='mb-1 text-[13px] font-normal leading-5 lg:hidden'>{t('Token and Weight')}</div>
         <div className='flex items-center gap-2 lg:gap-3'>
           <CircleImage className='h-7 w-7 lg:h-8 lg:w-8' src={token?.logoURI || UNKNOWN_LOGO} alt='thena logo' />
@@ -90,11 +90,10 @@ export function LiquidityFeesTable({ pool }) {
 
   return (
     <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6'>
-      <div className='hidden grid-cols-5 px-5 text-[14px] font-normal leading-5 lg:grid'>
-        <div className='col-span-2'>{t('Token and Weight')}</div>
+      <div className='hidden grid-cols-3 px-5 text-[14px] font-normal leading-5 lg:grid'>
+        <div className='col-span-1'>{t('Token and Weight')}</div>
         <div>{t('Current Liquidity')}</div>
         <div>{t('Unclaimed Fees')}</div>
-        <div>{t('Claimed Fees')}</div>
       </div>
 
       <div>
