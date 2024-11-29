@@ -220,7 +220,9 @@ export function AdjustNewPositionModal({
       ? tryParseTick(baseCurrency, quoteCurrency, feeAmount, rightRangeTypedValue.toString())
       : tryParseTick(quoteCurrency, baseCurrency, feeAmount, rightRangeTypedValue.toString())
 
-    onAdjustRange(upper, lower)
+    if (upper && lower) {
+      onAdjustRange(upper, lower)
+    }
   }
 
   return (
@@ -345,7 +347,11 @@ export function AdjustNewPositionModal({
       </ModalBody>
 
       <ModalFooter>
-        <EmphasisButton onClick={handleConfirm} className='w-full'>
+        <EmphasisButton
+          disabled={!rightRangeTypedValue && !leftRangeTypedValue}
+          onClick={handleConfirm}
+          className='w-full'
+        >
           {t('Confirm')}
         </EmphasisButton>
       </ModalFooter>

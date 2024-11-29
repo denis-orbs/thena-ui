@@ -16,7 +16,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
-import { useFusion } from '@/hooks/fusion/useFusions'
+import { useFusionState } from '@/hooks/fusion/useFusions'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import { simulateCall } from '@/lib/contractActions'
@@ -67,7 +67,7 @@ export default function ManualPosition({ pool }) {
   const { pending, onAlgebraBurn } = useAlgebraBurn()
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
-  const [fusionState, fusion] = useFusion(currency0, currency1, version)
+  const [fusionState, fusion] = useFusionState(currency0, currency1, 2)
   const tickAtLimit = useMemo(
     () => ({
       [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
@@ -216,7 +216,7 @@ export default function ManualPosition({ pool }) {
           </div>
         </div>
 
-        <div className={cn('flex items-center gap-1', version === 3 && 'hidden')}>
+        <div className={cn('flex items-center gap-1')}>
           <Paragraph className='text-sm'>{t('Price Range')}</Paragraph>
           <RefreshIcon
             className='size-4 cursor-pointer stroke-neutral-50'
@@ -226,7 +226,7 @@ export default function ManualPosition({ pool }) {
           />
         </div>
 
-        <div className={cn('grid grid-cols-2 gap-4', version === 3 && 'hidden')}>
+        <div className={cn('grid grid-cols-2 gap-4')}>
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
             <TextSubHeading className='text-xs'>{t('Min Price')}</TextSubHeading>
             <TextHeading>
@@ -261,12 +261,7 @@ export default function ManualPosition({ pool }) {
           </div>
         </div>
 
-        <div
-          className={cn(
-            'flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2',
-            version === 3 && 'hidden',
-          )}
-        >
+        <div className={cn('flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2')}>
           <TextSubHeading className='text-xs'>{t('Current Price')}</TextSubHeading>
           <TextHeading>
             {formatAmountLP(

@@ -46,10 +46,6 @@ export function ManualMigrationPage({ tokenId }) {
     }
   }, [tokenId, positions])
 
-  console.log({
-    existingPosition,
-  })
-
   const { asset0, asset1, liquidity: posLiquidity, tickLower, tickUpper } = existingPosition
 
   const [firstAsset, secondAsset] = useMemo(
@@ -171,7 +167,7 @@ export function ManualMigrationPage({ tokenId }) {
 
   const isClaimable = useMemo(() => Number(fees?.[1]) + Number(fees?.[0]) > 0, [fees])
 
-  const onMigrate = (position = positionV2) => {
+  const handleMigrate = (position = positionV2) => {
     onAlgebraMigrate({
       currencyA,
       amountA,
@@ -188,6 +184,7 @@ export function ManualMigrationPage({ tokenId }) {
       callback: () => {
         // mutateFetchManualFee()
         mutateManual()
+        push('/dashboard')
       },
     })
   }
@@ -200,8 +197,8 @@ export function ManualMigrationPage({ tokenId }) {
     if (outOfRange) {
       setIsOpenAdjust(true)
     } else {
-      setIsOpenAdjust(true)
-      // onMigrate()
+      // setIsOpenAdjust(true)
+      handleMigrate()
     }
   }
 
@@ -275,7 +272,7 @@ export function ManualMigrationPage({ tokenId }) {
               tickUpper: upper,
             })
 
-            onMigrate(position)
+            handleMigrate(position)
           }
         }}
       />

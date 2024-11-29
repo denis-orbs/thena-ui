@@ -65,7 +65,7 @@ export function GaugeItemManual({ existingPosition, position, version = 2 }) {
   const token0Price = asset0?.price ?? 1
   const token1Price = asset1?.price ?? 1
 
-  const priceRatio = formatAmountLP(reversePrice ? token0Price / token1Price : token1Price / token0Price)
+  const priceRatio = formatAmountLP(reversePrice ? token1Price / token0Price : token0Price / token1Price)
 
   const outOfRange = tickCurrent < tickLower && tickCurrent >= tickUpper
 
