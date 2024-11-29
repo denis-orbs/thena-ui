@@ -1,9 +1,12 @@
+import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
 import useSWR from 'swr'
 import { computePoolAddress, Pool } from 'thena-fusion-sdk'
+import { useReadContract, useReadContracts } from 'wagmi'
 
 import { algebraFactoryAbi } from '@/constant/abi'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
+import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { algebraFactoryV3Abi } from '@/constant/v3-abi'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { callMulti } from '@/lib/contractActions'
@@ -17,7 +20,7 @@ export const PoolState = {
   INVALID: 'INVALID',
 }
 
-const fetchPoolAddress = async (transformed, version) => {
+const fetchPoolAddress = async (transformed, version = 3) => {
   const _networkId = transformed?.[0]?.[0].chainId
   if (_networkId !== CHAIN_ID.TEST_BSC) {
     return transformed.map(value =>
@@ -27,7 +30,8 @@ const fetchPoolAddress = async (transformed, version) => {
       }),
     )
   }
-  return await callMulti(
+
+  return callMulti(
     transformed
       .filter(value => !!value)
       .map(value => ({
@@ -41,7 +45,7 @@ const fetchPoolAddress = async (transformed, version) => {
 }
 
 export function useFusions(poolKeys, version) {
-  const fusionPairs = useFusionPairs()
+  const fusionPairs = useFusionPairs(version)
 
   const transformed = useMemo(
     () =>
@@ -66,7 +70,7 @@ export function useFusions(poolKeys, version) {
     () => fetchPoolAddress(transformed, version),
   )
 
-  return useMemo(
+  const data = useMemo(
     () =>
       poolAddresses
         .filter(poolAddress => !!poolAddress)
@@ -74,11 +78,14 @@ export function useFusions(poolKeys, version) {
           const [token0, token1] = transformed[index] ?? []
           if (!token0 || !token1) return [PoolState.INVALID, null]
 
-          const found = fusionPairs && fusionPairs.find(ele => ele.address.toLowerCase() === poolAddress.toLowerCase())
+          const found = fusionPairs?.find(ele => ele.address.toLowerCase() === poolAddress.toLowerCase())
           if (!found) return [PoolState.NOT_EXISTS, null]
+
           const { globalState, liquidity } = found
           if (!globalState || !liquidity) return [PoolState.NOT_EXISTS, null]
+
           if (!globalState.price || Number(globalState.price) === 0) return [PoolState.NOT_EXISTS, null]
+
           try {
             return [
               PoolState.EXISTS,
@@ -91,9 +98,46 @@ export function useFusions(poolKeys, version) {
         }),
     [poolAddresses, transformed, fusionPairs],
   )
+
+  return data
 }
 
-export function useFusion(currencyA, currencyB, version = 2) {
+export function useFusionState(currencyA, currencyB, version = 3) {
+  const [token0, token1] = currencyA.sortsBefore(currencyB) ? [currencyA, currencyB] : [currencyB, currencyA]
+  const { chainId } = token0
+
+  const { data: poolAddress } = useReadContract({
+    address: version === 2 ? Contracts.algebraFactoryV2?.[chainId] : Contracts.algebraFactoryV3?.[chainId],
+    abi: version === 2 ? algebraFactoryAbi : algebraFactoryV3Abi,
+    functionName: 'computePoolAddress',
+    args: [currencyA?.address, currencyB?.address],
+    query: {
+      enabled: !!currencyA && !!currencyB && !!chainId,
+    },
+  })
+
+  const contract = { address: poolAddress, abi: poolTestNetV2Abi }
+  const { data: poolInfo } = useReadContracts({
+    contracts: [
+      { ...contract, functionName: 'liquidity' },
+      { ...contract, functionName: 'globalState' },
+    ],
+    query: {
+      enabled: !!poolAddress,
+    },
+  })
+
+  const liquidity = new BigNumber(poolInfo?.[0]?.result).toString(10)
+  const globalStates = poolInfo?.[1]?.result
+  const price = new BigNumber(globalStates?.[0]).toString(10)
+  const tick = Number(globalStates?.[1])
+  const fee = Number(globalStates?.[2])
+
+  if (!token0 || !token1 || !fee || !price || !liquidity || !tick) return [PoolState.NOT_EXISTS, null]
+  return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick)]
+}
+
+export function useFusion(currencyA, currencyB, version = 3) {
   const poolKeys = useMemo(() => [[currencyA, currencyB]], [currencyA, currencyB])
 
   return useFusions(poolKeys, version)[0] ?? []

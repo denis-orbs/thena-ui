@@ -4,7 +4,7 @@ import invariant from 'tiny-invariant'
 import { encodeFunctionData, zeroAddress } from 'viem'
 
 import { ZERO_ADDRESS } from '@/constant'
-import { algebraAbiV2 } from '@/constant/abi/fusion'
+import { algebraAbiV2, algebraAbiV3 } from '@/constant/abi/fusion'
 
 import { SelfPermit } from './selfPermit'
 
@@ -26,9 +26,9 @@ export class NonfungiblePositionManager extends SelfPermit {
     }
   }
 
-  static getCalldata(func, args) {
+  static getCalldata(func, args, version = 2) {
     return encodeFunctionData({
-      abi: algebraAbiV2,
+      abi: version === 2 ? algebraAbiV2 : algebraAbiV3,
       functionName: func,
       args,
     })
@@ -45,6 +45,7 @@ export class NonfungiblePositionManager extends SelfPermit {
     invariant(JSBI.greaterThan(position.liquidity, ZERO), 'ZERO_LIQUIDITY')
 
     const calldatas = []
+    const { version } = options
 
     // get amounts
     const { amount0: amount0Desired, amount1: amount1Desired } = position.mintAmounts
@@ -58,7 +59,7 @@ export class NonfungiblePositionManager extends SelfPermit {
 
     // create pool if needed
     if (isMint(options) && options.createPool) {
-      calldatas.push(this.encodeCreate(position.pool))
+      calldatas.push(this.encodeCreate(position.pool, version))
     }
 
     // permits if necessary
@@ -69,40 +70,43 @@ export class NonfungiblePositionManager extends SelfPermit {
       calldatas.push(NonfungiblePositionManager.encodePermit(position.pool.token1, options.token1Permit))
     }
 
-    // mint
+    // MARK: CREATE NEW POSITION OR INCREASE OLD POSITION
     if (isMint(options)) {
       const recipient = validateAndParseAddress(options.recipient)
 
-      calldatas.push(
-        NonfungiblePositionManager.getCalldata('mint', [
-          {
-            token0: position.pool.token0.address,
-            token1: position.pool.token1.address,
-            deployer: zeroAddress,
-            tickLower: position.tickLower,
-            tickUpper: position.tickUpper,
-            amount0Desired: toHex(amount0Desired),
-            amount1Desired: toHex(amount1Desired),
-            amount0Min,
-            amount1Min,
-            recipient,
-            deadline,
-          },
-        ]),
-      )
+      const baseParams = {
+        token0: position.pool.token0.address,
+        token1: position.pool.token1.address,
+        tickLower: position.tickLower,
+        tickUpper: position.tickUpper,
+        amount0Desired: toHex(amount0Desired),
+        amount1Desired: toHex(amount1Desired),
+        amount0Min,
+        amount1Min,
+        recipient,
+        deadline,
+      }
+
+      const paramMin = version === 2 ? baseParams : { ...baseParams, deployer: zeroAddress }
+
+      calldatas.push(NonfungiblePositionManager.getCalldata('mint', [paramMin], version))
     } else {
       // increase
       calldatas.push(
-        NonfungiblePositionManager.getCalldata('increaseLiquidity', [
-          {
-            tokenId: toHex(options.tokenId),
-            amount0Desired: toHex(amount0Desired),
-            amount1Desired: toHex(amount1Desired),
-            amount0Min,
-            amount1Min,
-            deadline,
-          },
-        ]),
+        NonfungiblePositionManager.getCalldata(
+          'increaseLiquidity',
+          [
+            {
+              tokenId: toHex(options.tokenId),
+              amount0Desired: toHex(amount0Desired),
+              amount1Desired: toHex(amount1Desired),
+              amount0Min,
+              amount1Min,
+              deadline,
+            },
+          ],
+          version,
+        ),
       )
     }
 
@@ -231,14 +235,13 @@ export class NonfungiblePositionManager extends SelfPermit {
     }
   }
 
-  static encodeCreate(pool) {
-    return NonfungiblePositionManager.getCalldata('createAndInitializePoolIfNecessary', [
-      pool.token0.address,
-      pool.token1.address,
-      ZERO_ADDRESS,
-      toHex(pool.sqrtRatioX96),
-      '',
-    ])
+  static encodeCreate(pool, version = 2) {
+    const param =
+      version === 2
+        ? [pool.token0.address, pool.token1.address, toHex(pool.sqrtRatioX96)]
+        : [pool.token0.address, pool.token1.address, ZERO_ADDRESS, toHex(pool.sqrtRatioX96), '']
+
+    return NonfungiblePositionManager.getCalldata('createAndInitializePoolIfNecessary', param, version)
   }
 
   static encodeCollect(options) {

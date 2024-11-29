@@ -41,16 +41,22 @@ const fetchTicksData = async (chainId, address, skip = 0) => {
 
 function useTicksFromSubgraph(currencyA, currencyB, feeAmount, skip = 0) {
   const { networkId } = useChainSettings()
-  const poolAddress =
-    currencyA && currencyB && feeAmount
-      ? Pool.getAddress(
-          currencyA?.wrapped,
-          currencyB?.wrapped,
-          feeAmount,
-          undefined,
-          networkId ? FUSION_FACTORY_ADDRESSES[networkId] : undefined,
-        )
-      : undefined
+  let poolAddress
+  try {
+    poolAddress =
+      currencyA && currencyB && feeAmount
+        ? Pool.getAddress(
+            currencyA?.wrapped,
+            currencyB?.wrapped,
+            feeAmount,
+            undefined,
+            networkId ? FUSION_FACTORY_ADDRESSES[networkId] : undefined,
+          )
+        : undefined
+  } catch (error) {
+    console.debug(error)
+  }
+
   return useSWR(poolAddress && ['fusion/ticks', poolAddress], () =>
     fetchTicksData(networkId, poolAddress?.toLowerCase(), skip),
   )
@@ -80,7 +86,7 @@ function useAllV3Ticks(currencyA, currencyB, feeAmount) {
 }
 
 export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
-  const pool = useFusion(currencyA, currencyB, feeAmount)
+  const pool = useFusion(currencyA, currencyB)
 
   // Find nearest valid tick for pool in case tick is not initialized.
   const activeTick = useMemo(() => getActiveTick(pool[1]?.tickCurrent, feeAmount), [pool, feeAmount])

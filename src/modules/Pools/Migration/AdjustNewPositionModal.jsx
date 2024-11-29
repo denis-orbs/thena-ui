@@ -9,87 +9,59 @@ import LiquidityChartRangeInput from '@/components/common/AddLiquidity/FusionAdd
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import Selection from '@/components/selection'
 import Spinner from '@/components/spinner'
-import Tabs from '@/components/tabs'
-import { TextHeading, TextSubHeading } from '@/components/typography'
+import { TextHeading } from '@/components/typography'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { PoolState } from '@/hooks/fusion/useFusions'
-import { formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import {
   useActivePreset,
   useRangeHopCallbacks,
   useV3DerivedMintInfo,
   useV3MintActionHandlers,
+  useV3MintState,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
+import { tryParseTick } from '@/state/fusion/utils'
 
-const firstAsset = {
-  name: 'THENA',
-  symbol: 'THE',
-  price: 0.2346,
-  decimals: 18,
-  chainId: 56,
-  address: '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11',
-  logoURI: 'https://cdn.thena.fi/assets/THE.png',
-  balance: '125.756684206505201267',
-}
-
-const secondAsset = {
-  address: 'BNB',
-  name: 'Binance Coin',
-  symbol: 'BNB',
-  decimals: 18,
-  logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
-  price: 594.76,
-  chainId: 56,
-  balance: '0.035541523775499454',
-}
-
-const feeAmount = 3000
-
-export function AdjustNewPositionModal({ isOpen, onClose }) {
-  const [isReverse, setIsReverse] = useState(false)
-  const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
+export function AdjustNewPositionModal({
+  isOpen,
+  onClose,
+  firstAddress,
+  secondAddress,
+  feeAmount,
+  existingPosition,
+  onAdjustRange,
+}) {
   const t = useTranslations()
 
-  // TODO: mock data
-  const balanceString = '10'
+  const [isReverse, setIsReverse] = useState(false)
+  const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
-  const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
-  const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)
+  const currencyA = useCurrency(firstAddress)
+  const currencyB = useCurrency(secondAddress)
+
   const stableAssets = useStableTokens()
   const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [currencyA, currencyB, isReverse])
   const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [currencyA, currencyB, isReverse])
 
-  const mintInfo = useV3DerivedMintInfo(
-    baseCurrency ?? undefined,
-    quoteCurrency ?? undefined,
-    feeAmount,
-    baseCurrency ?? undefined,
-    undefined,
-  )
+  const { leftRangeTypedValue, rightRangeTypedValue } = useV3MintState()
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, existingPosition, 2)
 
-  const { ticksAtLimit, invertPrice } = mintInfo
+  const { ticksAtLimit, invertPrice, dynamicFee, pool } = mintInfo
 
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
-
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
 
   const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper, getSetFullRange } =
-    useRangeHopCallbacks(
-      baseCurrency ?? undefined,
-      quoteCurrency ?? undefined,
-      mintInfo.dynamicFee,
-      tickLower,
-      tickUpper,
-      mintInfo.pool,
-    )
+    useRangeHopCallbacks(baseCurrency ?? undefined, quoteCurrency ?? undefined, dynamicFee, tickLower, tickUpper, pool)
 
   const { onFieldAInput, onFieldBInput, onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(
     mintInfo.noLiquidity,
   )
 
   const activePreset = useActivePreset()
+
   const isStablecoinPair = useMemo(() => {
     const stablecoins = stableAssets.map(token => token.address)
     return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
@@ -179,16 +151,10 @@ export function AdjustNewPositionModal({ isOpen, onClose }) {
     return res
   }, [risk])
 
-  const [tokenAmount, setTokenAmount] = useState()
-
-  const handleInput = useCallback(value => {
-    setTokenAmount(value)
-  }, [])
-
-  const PriceRangData = useMemo(
+  const priceRangData = useMemo(
     () => [
       {
-        label: unwrappedSymbol(firstAsset),
+        label: unwrappedSymbol(currencyA),
         active: !isReverse,
         onClickHandler: () => {
           setIsReverse(false)
@@ -201,7 +167,7 @@ export function AdjustNewPositionModal({ isOpen, onClose }) {
         },
       },
       {
-        label: unwrappedSymbol(secondAsset),
+        label: unwrappedSymbol(currencyB),
         active: isReverse,
         onClickHandler: () => {
           setIsReverse(true)
@@ -215,38 +181,18 @@ export function AdjustNewPositionModal({ isOpen, onClose }) {
       },
     ],
     [
+      currencyA,
+      currencyB,
       invertPrice,
       isReverse,
+      priceLower,
+      priceUpper,
+      ticksAtLimit,
       onFieldAInput,
       onFieldBInput,
       onLeftRangeInput,
       onRightRangeInput,
-      priceLower,
-      priceUpper,
-      ticksAtLimit,
     ],
-  )
-
-  const percents = useMemo(
-    () => [
-      {
-        label: '10%',
-        onClickHandler: () => {},
-      },
-      {
-        label: '25%',
-        onClickHandler: () => {},
-      },
-      {
-        label: '50%',
-        onClickHandler: () => {},
-      },
-      {
-        label: 'Max',
-        onClickHandler: () => {},
-      },
-    ],
-    [],
   )
 
   const handlePresetRangeSelection = useCallback(
@@ -265,9 +211,24 @@ export function AdjustNewPositionModal({ isOpen, onClose }) {
     [getSetFullRange, onLeftRangeInput, onRightRangeInput, price],
   )
 
+  const handleConfirm = () => {
+    const lower = isReverse
+      ? tryParseTick(baseCurrency, quoteCurrency, feeAmount, leftRangeTypedValue.toString())
+      : tryParseTick(quoteCurrency, baseCurrency, feeAmount, leftRangeTypedValue.toString())
+
+    const upper = isReverse
+      ? tryParseTick(baseCurrency, quoteCurrency, feeAmount, rightRangeTypedValue.toString())
+      : tryParseTick(quoteCurrency, baseCurrency, feeAmount, rightRangeTypedValue.toString())
+
+    if (upper && lower) {
+      onAdjustRange(upper, lower)
+    }
+  }
+
   return (
     <Modal width={540} isOpen={isOpen} closeModal={onClose} title={t('Adjust New Position')}>
       <ModalBody className='flex flex-col gap-5'>
+        {/* RANGE TYPE */}
         <div className='flex flex-col gap-3'>
           <PresetRanges
             mintInfo={mintInfo}
@@ -276,11 +237,14 @@ export function AdjustNewPositionModal({ isOpen, onClose }) {
             handlePresetRangeSelection={handlePresetRangeSelection}
           />
         </div>
+
+        {/* PRICE RANGE */}
         <div className='flex flex-col gap-3'>
           <div className='flex flex-row items-center justify-between'>
             <TextHeading>{t('Price Range')}</TextHeading>
-            <Selection data={PriceRangData} isSmall />
+            <Selection data={priceRangData} isSmall />
           </div>
+
           <RangeSelector
             priceLower={priceLower}
             priceUpper={priceUpper}
@@ -295,23 +259,29 @@ export function AdjustNewPositionModal({ isOpen, onClose }) {
             mintInfo={null}
             disabled={false}
           />
+
+          {mintInfo.outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
+          {mintInfo.invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
           {activePreset === Presets.FULL && fullRangeWarningShown && (
             <Warning className='text-sm'>{t('Full range position')}</Warning>
           )}
-          {mintInfo.outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
-          {mintInfo.invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
-          {!mintInfo.noLiquidity && (
-            <div className='-mb-2 flex items-center justify-center'>
-              <TextHeading className='text-sm'>
-                {t('Current Price: [price] [symbolA] [symbolB]', {
-                  price: currentPrice,
-                  symbolA: unwrappedSymbol(quoteCurrency),
-                  symbolB: unwrappedSymbol(baseCurrency),
-                })}
-              </TextHeading>
-            </div>
-          )}
+
+          <div
+            className={cn('-mb-2 flex items-center justify-center', {
+              hidden: mintInfo.noLiquidity,
+            })}
+          >
+            <TextHeading className='text-sm'>
+              {t('Current Price: [price] [symbolA] [symbolB]', {
+                price: currentPrice,
+                symbolA: unwrappedSymbol(quoteCurrency),
+                symbolB: unwrappedSymbol(baseCurrency),
+              })}
+            </TextHeading>
+          </div>
         </div>
+
+        {/* CHART */}
         <LiquidityChartRangeInput
           currencyA={baseCurrency}
           currencyB={quoteCurrency}
@@ -323,15 +293,19 @@ export function AdjustNewPositionModal({ isOpen, onClose }) {
           onLeftRangeInput={onLeftRangeInput}
           onRightRangeInput={onRightRangeInput}
         />
+
+        {/* FEE - RISK - PROFIT */}
         <div className='grid grid-cols-2 gap-4'>
           <div className='flex flex-col justify-center gap-1.5 rounded-md bg-neutral-800 px-4 py-3'>
             <TextHeading className='text-sm'>{t(mintInfo.noLiquidity ? 'New pool' : 'Current Pool')}</TextHeading>
+
             <div className='w-fit rounded-md bg-neutral-700 p-2'>
               <TextHeading className='text-sm'>
                 {feeString} {t('Fee')}
               </TextHeading>
             </div>
           </div>
+
           <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'>
               <TextHeading className='text-sm'>{t('Risk')}</TextHeading>
@@ -349,6 +323,7 @@ export function AdjustNewPositionModal({ isOpen, onClose }) {
                 </div>
               )}
             </div>
+
             <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'>
               <div className='mt-1 flex items-center justify-between'>
                 <TextHeading className='text-sm'>{t('Profit')}</TextHeading>
@@ -369,37 +344,16 @@ export function AdjustNewPositionModal({ isOpen, onClose }) {
             </div>
           </div>
         </div>
-        <div className='flex flex-col gap-2'>
-          <div className='flex items-center justify-between'>
-            <p className='font-medium text-white'>{t('Asset')}</p>
-            <Tabs data={percents} />
-          </div>
-          <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
-            <div className='flex items-center justify-between gap-2'>
-              <input
-                type='number'
-                className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
-                placeholder='0.0'
-                value={tokenAmount}
-                disabled={false}
-                onChange={e => {
-                  handleInput(Number(e.target.value) < 0 ? '' : e.target.value)
-                }}
-                min={0}
-                lang='en'
-              />
-            </div>
-            <div className='flex items-center justify-between gap-2'>
-              <TextSubHeading>${formatAmount(tokenAmount * price)}</TextSubHeading>
-              <TextSubHeading>
-                {t('Balance')}: {balanceString}
-              </TextSubHeading>
-            </div>
-          </div>
-        </div>
       </ModalBody>
+
       <ModalFooter>
-        <EmphasisButton className='w-full'>{t('Confirm')}</EmphasisButton>
+        <EmphasisButton
+          disabled={!rightRangeTypedValue && !leftRangeTypedValue}
+          onClick={handleConfirm}
+          className='w-full'
+        >
+          {t('Confirm')}
+        </EmphasisButton>
       </ModalFooter>
     </Modal>
   )
