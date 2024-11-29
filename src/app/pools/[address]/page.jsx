@@ -20,9 +20,7 @@ import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
-import useWallet from '@/hooks/useWallet'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
-import { InitialLiquidityTable } from '@/modules/Pools/InitialLiquidityTable'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
 import Position from '@/modules/Position'
@@ -37,7 +35,6 @@ import { listPoolAddressSpecial } from '../page'
 export default function SpecificPoolPage({ params }) {
   const t = useTranslations()
   const { address } = params
-  const { account } = useWallet()
   const { push } = useRouter()
   const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
@@ -377,6 +374,7 @@ export default function SpecificPoolPage({ params }) {
           <div className='mb-6 mt-[-52px] max-lg:hidden'>
             <Liquidity pool={pool} />
           </div>
+
           {pool.type !== PAIR_TYPES.WEIGHTED && (
             <div>
               <h2 className='mb-4'>{t('My Positions')}</h2>
@@ -409,12 +407,13 @@ export default function SpecificPoolPage({ params }) {
                 <h2>{t('My Positions')}</h2>
                 <WeightedPoolPosition pool={pool} />
               </div>
-              {account?.toLowerCase() === pool.owner?.toLowerCase() && (
-                <div className='mt-8  flex flex-col gap-4'>
-                  <h2>{t('My Initial Liquidity')}</h2>
-                  <InitialLiquidityTable pool={pool} />
-                </div>
-              )}
+
+              {/* {account?.toLowerCase() === pool.owner?.toLowerCase() && ( */}
+              {/*   <div className='mt-8  flex flex-col gap-4'> */}
+              {/*     <h2>{t('My Initial Liquidity')}</h2> */}
+              {/*     <InitialLiquidityTable pool={pool} /> */}
+              {/*   </div> */}
+              {/* )} */}
             </>
           )}
         </div>
