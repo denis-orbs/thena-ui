@@ -1286,5 +1286,6 @@
   "You Will Receive": "You Will Receive",
   "You have successfully deposit to [symbol]": "You have successfully deposit to {poolSymbol}",
   "Deposit Successful": "Deposit Successful!",
-  "Please open a Support ticket under THE Story category to receive your prize": "Please open a Support ticket under THE Story category to receive your prize"
+  "Please open a Support ticket under THE Story category to receive your prize": "Please open a Support ticket under THE Story category to receive your prize",
+  "Discover pools analytics description": "Due to a current subgraph issue, the majority of data displayed in the Pools section and Analytics has not been updated for the past few days. Our team is actively working to resolve this issue. Please note that the APRs displayed for pools remain accurate. We apologize for any inconvenience this may cause and appreciate your patience."
 }

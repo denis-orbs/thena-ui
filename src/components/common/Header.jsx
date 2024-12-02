@@ -12,10 +12,11 @@ import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 import { useConnect, useDisconnect } from 'wagmi'
 
+import DiscoverModal from '@/app/arena/DiscoverModal'
 import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
-import { LOCALES, ThenaAuthToken } from '@/constant'
+import { LOCALES, NotShowDiscoverArenaModal, NotShowDiscoverPoolsAnalyticsModal, ThenaAuthToken } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
@@ -902,6 +903,43 @@ function Header() {
             )}
           </div>
         </div>
+      )}
+      {pathname.startsWith('/arena') && (
+        <DiscoverModal
+          keyOpen={NotShowDiscoverArenaModal}
+          text={
+            <>
+              <TextHeading className='font-archia text-3xl text-neutral-50 lg:text-5xl'>
+                {t('Discover ARENA heading')}
+              </TextHeading>
+              <TextSubHeading className='text-[16px] text-neutral-300 lg:text-[18px]'>
+                {t('Discover ARENA sub heading')}
+              </TextSubHeading>
+            </>
+          }
+          showLearnMore
+        />
+      )}
+
+      {(pathname.startsWith('/pools') || pathname.startsWith('/analytics')) && (
+        <DiscoverModal
+          keyOpen={NotShowDiscoverPoolsAnalyticsModal}
+          text={
+            <>
+              <div className='inline-flex w-full items-center justify-between px-4 pb-3 pt-6 lg:px-6'>
+                <div className='flex w-full'>
+                  <div className='mx-auto text-center  font-archia text-xl font-semibold text-neutral-50 lg:text-3xl'>
+                    {t('Warning')}
+                  </div>
+                </div>
+              </div>
+              <TextSubHeading className='text-[16px] text-neutral-300 lg:text-[18px]'>
+                {t('Discover pools analytics description')}
+              </TextSubHeading>
+            </>
+          }
+          showLearnMore={false}
+        />
       )}
       <Script
         id='widget-dom-id'

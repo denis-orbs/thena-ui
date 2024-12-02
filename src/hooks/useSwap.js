@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import useSWR from 'swr'
-import { ChainId } from 'thena-sdk-core'
+import { ChainId, WBNB } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
 import { decodeFunctionData, encodePacked, getAddress, maxUint256, zeroAddress } from 'viem'
 
@@ -12,7 +12,7 @@ import Contracts from '@/constant/contracts'
 import { oneInchApiKey } from '@/constant/env'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
+import { getERC20Contract, getRouterContract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { errorToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -171,6 +171,110 @@ export const useOdosSwap = (autoClose = false) => {
   )
 
   return { onOdosSwap, pending }
+}
+
+export const useThenaSwap = (autoClose = false) => {
+  const [pending, setPending] = useState(false)
+  const { account, chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
+  const t = useTranslations()
+
+  const handleThenaSwap = useCallback(
+    async (fromAsset, toAsset, fromAmount, slippage, deadline, callback) => {
+      const key = uuidv4()
+      const approveuuid = uuidv4()
+      const swapuuid = uuidv4()
+      const thenaRouter = getRouterContract(chainId)
+      const routerAddress = thenaRouter?.address
+      let isApproved = true
+      let tokenContract
+
+      if (fromAsset.address !== 'BNB') {
+        tokenContract = getERC20Contract(fromAsset.address, chainId)
+        const allowance = await readCall(tokenContract, 'allowance', [account, routerAddress])
+        isApproved = fromWei(allowance, fromAsset.decimals).gte(fromAmount)
+      }
+
+      startTxn({
+        key,
+        title: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+        transactions: {
+          ...(!isApproved && {
+            [approveuuid]: {
+              desc: `${t('Approve')} ${fromAsset.symbol}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [swapuuid]: {
+            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      if (!isApproved) {
+        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [routerAddress, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      const token0Address = fromAsset.address === 'BNB' ? WBNB[chainId].address : fromAsset.address
+      const token1Address = toAsset.address === 'BNB' ? WBNB[chainId].address : toAsset.address
+
+      const currentTimestamp = parseInt(new Date().getTime() / 1000, 10)
+      const amountIn = toWei(fromAmount, fromAsset.decimals)
+      let [minAmountOut = 0n] = await readCall(thenaRouter, 'getAmountOut', [amountIn, token0Address, token1Address])
+
+      minAmountOut = Math.floor(Number(minAmountOut) * ((100 - slippage) / 100))
+
+      if (fromAsset.address === 'BNB') {
+        await writeTxn(
+          key,
+          swapuuid,
+          thenaRouter,
+          'swapExactETHForTokensSupportingFeeOnTransferTokens',
+          [
+            minAmountOut,
+            [[token0Address, token1Address, false]],
+            getAddress(account),
+            currentTimestamp + deadline * 60,
+          ],
+          amountIn,
+        )
+      } else if (toAsset.address === 'BNB') {
+        await writeTxn(key, swapuuid, thenaRouter, 'swapExactTokensForETHSupportingFeeOnTransferTokens', [
+          amountIn,
+          minAmountOut,
+          [[token0Address, token1Address, false]],
+          getAddress(account),
+          currentTimestamp + deadline * 60,
+        ])
+      } else {
+        await writeTxn(key, swapuuid, thenaRouter, 'swapExactTokensForTokensSupportingFeeOnTransferTokens', [
+          amountIn,
+          minAmountOut,
+          [[token0Address, token1Address, false]],
+          getAddress(account),
+          currentTimestamp + deadline * 60,
+        ])
+      }
+
+      endTxn({ key, final: 'Swap Successful' })
+
+      setPending(false)
+      callback()
+      if (autoClose) {
+        closeTxnModal()
+      }
+    },
+    [chainId, startTxn, t, account, endTxn, autoClose, writeTxn, closeTxnModal],
+  )
+
+  return { handleThenaSwap, pending }
 }
 
 export const useBestQuoteSwap = (fromAddress, toAddress, fromAmount, slippage, networkId) =>

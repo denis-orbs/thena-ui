@@ -17,7 +17,7 @@ import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useMutateAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { useOdosQuoteSwap, useOdosSwap } from '@/hooks/useSwap'
+import { useOdosQuoteSwap, useOdosSwap, useThenaSwap } from '@/hooks/useSwap'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/hooks/useWallet'
 import { liquidityHub } from '@/modules/LiquidityHub'
@@ -63,7 +63,7 @@ export default function SwapBest({
   const [fromAmount, setFromAmount] = useState('')
   const [isWarning, setIsWarning] = useState(false)
   const { account } = useWallet()
-  const { slippage } = useSettings()
+  const { slippage, deadline } = useSettings()
   const { networkId } = useChainSettings()
   const debouncedAmount = useDebounce(fromAmount)
   const {
@@ -74,6 +74,7 @@ export default function SwapBest({
 
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
+  const { handleThenaSwap, pending: thenaSwapPending } = useThenaSwap()
   const { mutate: onLHSwap, isLoading: LHSwapPending } = liquidityHub.useSwap()
   const {
     data: lhQuote,
@@ -153,6 +154,17 @@ export default function SwapBest({
       dexOutAmount,
       isDexTrade,
     })
+
+    if (
+      (fromAsset.symbol === 'fBOMB' && ['WBNB', 'BNB'].includes(toAsset.symbol)) ||
+      (toAsset.symbol === 'fBOMB' && ['WBNB', 'BNB'].includes(fromAsset.symbol))
+    ) {
+      return handleThenaSwap(fromAsset, toAsset, fromAmount, slippage, deadline, () => {
+        setFromAmount('')
+        mutateAssets()
+      })
+    }
+
     if (isDexTrade) {
       onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => {
         setFromAmount('')
@@ -173,19 +185,21 @@ export default function SwapBest({
       })
     }
   }, [
+    bestTrade,
     fromAsset,
     toAsset,
     fromAmount,
     toAmount,
-    bestTrade,
+    slippage,
+    lhQuote,
+    isDexTrade,
+    handleThenaSwap,
+    deadline,
+    mutateAssets,
     onOdosSwap,
     onLHSwap,
-    outAmount,
     setFromAddress,
-    isDexTrade,
-    slippage,
-    mutateAssets,
-    lhQuote,
+    outAmount,
   ])
 
   const btnMsg = useMemo(() => {
@@ -353,7 +367,13 @@ export default function SwapBest({
                 <EmphasisButton
                   className='mt-3 w-full'
                   disabled={
-                    !fromAmount || quotePending || swapPending || LHSwapPending || wrapPending || btnMsg.isError
+                    !fromAmount ||
+                    quotePending ||
+                    swapPending ||
+                    thenaSwapPending ||
+                    LHSwapPending ||
+                    wrapPending ||
+                    btnMsg.isError
                   }
                   onClick={() => {
                     if (priceImpact > 5) {
