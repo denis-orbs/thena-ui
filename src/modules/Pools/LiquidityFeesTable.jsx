@@ -96,7 +96,7 @@ export function LiquidityFeesTable({ pool }) {
         <div>{t('Unclaimed Fees')}</div>
       </div>
 
-      <div>
+      <div className='flex flex-col gap-3'>
         {tokensList.map(token => (
           <LiquidityFeeRow key={token?.address} token={token} />
         ))}

@@ -8,7 +8,9 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
 import { EnterAmounts } from '@/components/common/AddLiquidity/FusionAdd/containers/EnterAmounts'
 import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
+import ZapperInput from '@/components/common/AddLiquidity/FusionAdd/ZapperInput'
 import IconGroup from '@/components/icongroup'
+import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
@@ -42,6 +44,16 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
   const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
   const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)
 
+  const assetA = useMemo(
+    () => assets.find(item => item.address?.toLowerCase() === firstAsset.address?.toLowerCase()),
+    [firstAsset.address, assets],
+  )
+
+  const assetB = useMemo(
+    () => assets.find(item => item.address?.toLowerCase() === secondAsset.address?.toLowerCase()),
+    [secondAsset.address, assets],
+  )
+
   const baseCurrency = currencyA
   const quoteCurrency = currencyB
   const mintInfo = useV3DerivedMintInfo(
@@ -74,6 +86,28 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
     }
   }, [pool, fusionPairs])
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
+
+  const [isZapper, setIsZapper] = useState(false)
+  const addSelections = useMemo(
+    () => [
+      {
+        label: 'Default',
+        active: !isZapper,
+        onClickHandler: () => {
+          setIsZapper(false)
+        },
+      },
+      {
+        label: 'Zapper',
+        active: isZapper,
+        onClickHandler: () => {
+          setIsZapper(true)
+        },
+      },
+    ],
+    [isZapper],
+  )
+
   return (
     <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>
       <Box className={cn('w-full flex-[6] flex-col', !showSidebar ? 'w-full' : '')}>
@@ -103,7 +137,12 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
           <FusionAdd strategy={isAdd ? pair : strategy} isAdd={isAdd} />
         ) : (
           <div className='space-y-6'>
-            <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
+            <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
+            {isZapper ? (
+              <ZapperInput asset1={assetA} asset2={assetB} />
+            ) : (
+              <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
+            )}
             <>
               {Boolean(!mintInfo.noLiquidity) && isAutomatic && (
                 <>

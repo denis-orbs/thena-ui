@@ -73,7 +73,7 @@ export function WeightedPoolPosition({ pool }) {
   }, [pool.tokens, tokenAddresses])
 
   const depositValue = useMemo(() => {
-    if (tokenAmounts.length === 0 || !balance) {
+    if (!tokenAmounts || tokenAmounts.length === 0 || !balance) {
       return {
         tokens: [],
         depositUsd: 0,

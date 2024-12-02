@@ -192,6 +192,7 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
               <div className='flex flex-row justify-between rounded-lg bg-neutral-800 p-4'>
                 <div className='flex items-center gap-2'>
                   <ThreeIconGroup
+                    className='-space-x-1'
                     classNames={{
                       image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                     }}

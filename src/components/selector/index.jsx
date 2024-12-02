@@ -2,7 +2,7 @@ import React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function Selector({ className, data }) {
+function Selector({ className, data, classNames }) {
   return (
     <div className={cn('rounded-xl border border-neutral-700 bg-transparent', className)}>
       {data.map((ele, idx) => (
@@ -10,6 +10,7 @@ function Selector({ className, data }) {
           className={cn(
             'flex cursor-pointer items-center gap-4 border-b border-neutral-700 p-6 first:rounded-t-xl last:rounded-b-xl last:border-0',
             ele.active && 'bg-primary-950 bg-opacity-50',
+            classNames?.item ?? '',
           )}
           key={`selector-${idx}`}
           onClick={() => ele.onClickHandler()}
