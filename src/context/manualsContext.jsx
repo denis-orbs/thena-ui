@@ -7,14 +7,13 @@ import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
-import { getNonfungiblePositionManagerContractV2, getNonfungiblePositionManagerContractV3 } from '@/lib/contracts'
-import { getTokenInfo } from '@/lib/helper'
+import { getPositionManagerContract } from '@/lib/contracts'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const initialState = []
 
 const fetchManualV2Info = async (account, chainId) => {
-  const npmContract = getNonfungiblePositionManagerContractV2(chainId)
+  const npmContract = getPositionManagerContract(chainId, 2)
   const balance = await readCall(npmContract, 'balanceOf', [account], chainId)
   const address = Contracts.nonfungiblePositionManagerV2[chainId]
 
@@ -55,7 +54,7 @@ const fetchManualV2Info = async (account, chainId) => {
 
 const fetchManualV3Info = async (account, chainId) => {
   const address = Contracts.nonfungiblePositionManagerV3[chainId]
-  const npmContract = getNonfungiblePositionManagerContractV3(chainId)
+  const npmContract = getPositionManagerContract(chainId, 3)
   const balance = await readCall(npmContract, 'balanceOf', [account], chainId)
 
   if (!balance) return []

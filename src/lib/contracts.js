@@ -1,22 +1,24 @@
 import { ChainId } from 'thena-sdk-core'
 
 import {
+  algebraFactoryAbi,
   bribeAbi,
   claimerAbi,
   dibsAbi,
   dibsLotteryAbi,
   dibsRewarderAbi,
   ERC20Abi,
+  farmCenterAbi,
   feeAbi,
   gaugeAbi,
   globalFactoryAbi,
+  incentiveMakerAbi,
   minterAbi,
   minterTestnetAbi,
   mockERC20Abi,
   mockERC20BNBAbi,
   multiCallAbi,
   muonAbi,
-  nonfungiblePositionManagerAbi,
   pairAbi,
   rewardsAPIAbi,
   routerAbi,
@@ -58,7 +60,8 @@ import {
   vaultDepositGaurdAbi,
 } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
-import { nonfungiblePositionManagerV3Abi } from '@/constant/v3-abi'
+import { algebraFactoryTestNetV2Abi } from '@/constant/v2-testnet-abi'
+import { algebraFactoryV3Abi, nonfungiblePositionManagerV3Abi } from '@/constant/v3-abi'
 
 export const getContract = (abi, addressOrAddressMap, chainId) => {
   if (!addressOrAddressMap || !abi || !chainId) return null
@@ -118,6 +121,7 @@ export const getVeTHEAPIContract = chainId => getContract(veTHEApiAbi, Contracts
 
 export const getRewardsAPIContract = chainId => getContract(rewardsAPIAbi, Contracts.rewardsAPI, chainId)
 
+// export const getRewardsDistributorContract = () => getContract(rewardsDistributorAbi, Contracts.rewardsDistributor, 97)
 // export const getRewardsDistributorContract = () => getContract(rewardsDistributorAbi, Contracts.rewardsDistributor, 97)
 
 /** **************************************************************************************************
@@ -207,10 +211,12 @@ export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Co
                                           VotingEscrow
 ******************************************************************************************************* */
 // export const getVotingEScrowContract = () => getContract(votingEscrowAbi, Contracts.votingEscrow, 97)
+// export const getVotingEScrowContract = () => getContract(votingEscrowAbi, Contracts.votingEscrow, 97)
 
 /** ******************************************************************************************************
                                           VotingEscrowAttach
 ******************************************************************************************************* */
+// export const getVotingEScrowAttachContract = () => getContract(votingEscrowAttachAbi, Contracts.votingEscrowAttach, 97)
 // export const getVotingEScrowAttachContract = () => getContract(votingEscrowAttachAbi, Contracts.votingEscrowAttach, 97)
 
 /** ******************************************************************************************************
@@ -228,19 +234,29 @@ export const getMinterTestnetContract = () => getContract(minterTestnetAbi, Cont
 ******************************************************************************************************* */
 // export const getAlgebraPoolDeployerContract = () =>
 //   getContract(algebraPoolDeployerAbi, Contracts.ALGEBRA_POOL_DEPLOYER_TESTNET, 97)
+// export const getAlgebraPoolDeployerContract = () =>
+//   getContract(algebraPoolDeployerAbi, Contracts.ALGEBRA_POOL_DEPLOYER_TESTNET, 97)
 
 /** ******************************************************************************************************
                                           ALGEBRA_FACTORY_TESTNET
 ******************************************************************************************************* */
-// export const getAlgebraFactoryContractV3 = chainId =>
-//   getContract(algebraFactoryV3Abi, Contracts.algebraFactoryV3, chainId)
+export const getAlgebraFactoryContract = (chainId = 56, version = 3) => {
+  if (version === 3) {
+    return getContract(algebraFactoryV3Abi, Contracts.algebraFactoryV3, chainId)
+  }
 
-// export const getAlgebraFactoryContractV2 = chainId =>
-//   getContract(chainId === 97 ? algebraFactoryTestNetV2Abi : algebraFactoryAbi, Contracts.algebraFactoryV2, chainId)
+  return getContract(
+    chainId === 97 ? algebraFactoryTestNetV2Abi : algebraFactoryAbi,
+    Contracts.algebraFactoryV2,
+    chainId,
+  )
+}
 
 /** ******************************************************************************************************
                                           ALGEBRA_COMMUNITY_VAULT_TESTNET
 ******************************************************************************************************* */
+// export const getAlgebraCommunityVaultContract = () =>
+//   getContract(algebraCommunityVaultAbi, Contracts.ALGEBRA_COMMUNITY_VAULT_TESTNET, 97)
 // export const getAlgebraCommunityVaultContract = () =>
 //   getContract(algebraCommunityVaultAbi, Contracts.ALGEBRA_COMMUNITY_VAULT_TESTNET, 97)
 
@@ -249,47 +265,75 @@ export const getMinterTestnetContract = () => getContract(minterTestnetAbi, Cont
 ******************************************************************************************************* */
 // export const getAlgebraVaultFactoryStubContract = () =>
 //   getContract(algebraVaultFactoryStubAbi, Contracts.ALGEBRA_VAULT_FACTORY_STUB_TESTNET, 97)
+// export const getAlgebraVaultFactoryStubContract = () =>
+//   getContract(algebraVaultFactoryStubAbi, Contracts.ALGEBRA_VAULT_FACTORY_STUB_TESTNET, 97)
 
 /** ******************************************************************************************************
                                           PLUGIN_FACTORY_TESTNET
 ******************************************************************************************************* */
+// export const getPluginFactoryContract = () => getContract(pluginFactoryAbi, Contracts.PLUGIN_FACTORY_TESTNET, 97)
 // export const getPluginFactoryContract = () => getContract(pluginFactoryAbi, Contracts.PLUGIN_FACTORY_TESTNET, 97)
 
 /** ******************************************************************************************************
                                           TICK_LENS_TESTNET
 ******************************************************************************************************* */
 // export const getTickLensContract = () => getContract(tickLensAbi, Contracts.TICK_LENS_TESTNET, 97)
+// export const getTickLensContract = () => getContract(tickLensAbi, Contracts.TICK_LENS_TESTNET, 97)
 
 /** ******************************************************************************************************
                                           QUOTER_TESTNET
 ******************************************************************************************************* */
+// export const getQuoterContract = () => getContract(quoterAbi, Contracts.QUOTER_TESTNET, 97)
 // export const getQuoterContract = () => getContract(quoterAbi, Contracts.QUOTER_TESTNET, 97)
 
 /** ******************************************************************************************************
                                           QUOTER_V2_TESTNET
 ******************************************************************************************************* */
 // export const getQuoterV2Contract = () => getContract(quoterV2Abi, Contracts.QUOTER_V2_TESTNET, 97)
+// export const getQuoterV2Contract = () => getContract(quoterV2Abi, Contracts.QUOTER_V2_TESTNET, 97)
 
 /** ******************************************************************************************************
                                           QUOTER_V2_TESTNET
 ******************************************************************************************************* */
 // export const getSwapRouterContract = () => getContract(swapRouterAbi, Contracts.SWAP_ROUTER_TESTNET, 97)
+// export const getSwapRouterContract = () => getContract(swapRouterAbi, Contracts.SWAP_ROUTER_TESTNET, 97)
 
 /** ******************************************************************************************************
                                           NONFUNGIBLE_POSITION_MANAGER_TESTNET
 ******************************************************************************************************* */
-export const getNonfungiblePositionManagerContractV2 = chainId =>
-  getContract(nonfungiblePositionManagerAbi, Contracts.nonfungiblePositionManagerV2, chainId)
 
-export const getNonfungiblePositionManagerContractV3 = chainId => ({
-  // getContract(nonfungiblePositionManagerV3Abi, Contracts.nonfungiblePositionManagerV3, chainId)
-  abi: nonfungiblePositionManagerV3Abi,
-  address: Contracts.nonfungiblePositionManagerV3[chainId],
+export const getPositionManagerContract = (chainId = 56, version = 3) => {
+  const addressMap = version === 3 ? Contracts.nonfungiblePositionManagerV3 : Contracts.nonfungiblePositionManagerV2
+
+  return {
+    abi: nonfungiblePositionManagerV3Abi,
+    address: addressMap[chainId],
+  }
+}
+
+export const getFarmingCenterContract = chainId => ({
+  abi: farmCenterAbi,
+  address: Contracts.farmingCenter[chainId],
 })
+
+export const getInsentiveContract = chainId => ({
+  abi: incentiveMakerAbi,
+  address: Contracts.incentiveMaker[chainId],
+})
+
+// export const getNonfungiblePositionManagerContractV2 = chainId =>
+//   getContract(nonfungiblePositionManagerAbi, Contracts.nonfungiblePositionManagerV2, chainId)
+// export const getNonfungiblePositionManagerContractV3 = chainId => ({
+//   // getContract(nonfungiblePositionManagerV3Abi, Contracts.nonfungiblePositionManagerV3, chainId)
+//   abi: nonfungiblePositionManagerV3Abi,
+//   address: Contracts.nonfungiblePositionManagerV3[chainId],
+// })
 
 /** ******************************************************************************************************
                                           ALGEBRA_INTERFACE_MULTICALL_TESTNET
 ******************************************************************************************************* */
+// export const getAlgebraInterfaceMultiCallContract = () =>
+//   getContract(algebraInterfaceMultiCallAbi, Contracts.ALGEBRA_INTERFACE_MULTICALL_TESTNET, 97)
 // export const getAlgebraInterfaceMultiCallContract = () =>
 //   getContract(algebraInterfaceMultiCallAbi, Contracts.ALGEBRA_INTERFACE_MULTICALL_TESTNET, 97)
 
@@ -298,10 +342,13 @@ export const getNonfungiblePositionManagerContractV3 = chainId => ({
 ******************************************************************************************************* */
 // export const getAlgebraEternalFarmingContract = () =>
 //   getContract(algebraEternalFarmingAbi, Contracts.ALGEBRA_ETERNAL_FARMING_TESTNET, 97)
+// export const getAlgebraEternalFarmingContract = () =>
+//   getContract(algebraEternalFarmingAbi, Contracts.ALGEBRA_ETERNAL_FARMING_TESTNET, 97)
 
 /** ******************************************************************************************************
                                           FARMING_CENTER_TESTNET
 ******************************************************************************************************* */
+// export const getFarmingCenterContract = () => getContract(farmingCenterAbi, Contracts.FARMING_CENTER_TESTNET, 97)
 // export const getFarmingCenterContract = () => getContract(farmingCenterAbi, Contracts.FARMING_CENTER_TESTNET, 97)
 
 /** ******************************************************************************************************

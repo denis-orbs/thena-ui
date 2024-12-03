@@ -12,10 +12,12 @@ import dibsRewarderAbi from './dibsRewarder.json'
 import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import factoryAbi from './factory.json'
+import farmCenterAbi from './farmCenter.json'
 import farmingCenterAbi from './farmingCenterTestnet.json'
 import feeAbi from './fee.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
+import incentiveMakerAbi from './incentiveMaker.json'
 import arabicAbi from './mint/arabicNumeral.json'
 import characterSetAbi from './mint/characterSet.json'
 import emojiClubAbi from './mint/emojiClub.json'
@@ -77,11 +79,13 @@ export {
   ERC20Abi,
   extraRewarderAbi,
   factoryAbi,
+  farmCenterAbi,
   farmingCenterAbi,
   feeAbi,
   gaugeAbi,
   globalFactoryAbi,
   hindiNumeralAbi,
+  incentiveMakerAbi,
   minterAbi,
   minterTestnetAbi,
   mockERC20Abi,
