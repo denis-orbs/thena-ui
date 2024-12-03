@@ -42,6 +42,7 @@ import royaltyAbi from './royalty.json'
 import stakingAbi from './staking.json'
 import swapRouterAbi from './swapRouterTestnet.json'
 import thenaRouterAbi from './thenaRouter.json'
+import thenaRouterSimulatorAbi from './thenaRouterSimulator.json'
 import thenaWeightedPoolFactoryAbi from './thenaWeightedPoolFactory.json'
 import ThenianAbi from './thenian.json'
 import tickLensAbi from './tickLensTestnet.json'
@@ -102,6 +103,7 @@ export {
   stakingAbi,
   swapRouterAbi,
   thenaRouterAbi,
+  thenaRouterSimulatorAbi,
   thenaWeightedPoolFactoryAbi,
   ThenianAbi,
   tickLensAbi,

@@ -23,6 +23,7 @@ import {
   royaltyAbi,
   stakingAbi,
   thenaRouterAbi,
+  thenaRouterSimulatorAbi,
   thenaWeightedPoolFactoryAbi,
   ThenianAbi,
   vaultAbi,
@@ -323,3 +324,5 @@ export const getVaultContract = chainId => getContract(vaultAbi, Contracts.Vault
                                           ThenaRouter
 ******************************************************************************************************* */
 export const getThenaRouterContract = chainId => getContract(thenaRouterAbi, Contracts.ThenaRouter, chainId)
+export const getThenaRouterSimulatorContract = chainId =>
+  getContract(thenaRouterSimulatorAbi, Contracts.ThenaRouterSimulator, chainId)

@@ -133,7 +133,10 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0xb6c15845dc57f041ef7ad38ec50e8f99ea3bb547',
   },
   ThenaRouter: {
-    [CHAIN_ID.TEST_BSC]: '0x2fdcb34722aba34292f5941533e2c6775bd4e7c7',
+    [CHAIN_ID.TEST_BSC]: '0x00837794D018d5c3cE7763cEAeFbe2fC0B145110',
+  },
+  ThenaRouterSimulator: {
+    [CHAIN_ID.TEST_BSC]: '0x216e64ac3d286794b3725477dd524836621456c7',
   },
   algebraFactoryV2: {
     [CHAIN_ID.TEST_BSC]: '0xFBFB64eD1C70bb8d4c8bFCc338C10a5120809538',

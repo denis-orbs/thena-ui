@@ -13,11 +13,12 @@ import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getThenaRouterContract,
+  getThenaRouterSimulatorContract,
   getThenaWeightedPoolFactoryContract,
   getVaultContract,
   getWeightedPoolContract,
 } from '@/lib/contracts'
-import { fromWei } from '@/lib/utils'
+import { fromWei, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -58,6 +59,17 @@ export const useWeightPoolData = poolAddress => {
   }
 }
 
+const toBytes32 = hexString => {
+  const rawBytes = Uint8Array.from(Buffer.from(hexString.slice(2), 'hex'))
+
+  if (rawBytes.length > 32) {
+    return rawBytes.slice(0, 32)
+  }
+  const finalBytes = new Uint8Array(32)
+  finalBytes.set(rawBytes)
+  return finalBytes
+}
+
 export const useWeightedPool = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
@@ -82,17 +94,6 @@ export const useWeightedPool = () => {
 
     return ''
   }, [])
-
-  const toBytes32 = hexString => {
-    const rawBytes = Uint8Array.from(Buffer.from(hexString.slice(2), 'hex'))
-
-    if (rawBytes.length > 32) {
-      return rawBytes.slice(0, 32)
-    }
-    const finalBytes = new Uint8Array(32)
-    finalBytes.set(rawBytes)
-    return finalBytes
-  }
 
   const onCreateWeightedPool = useCallback(
     async (name, symbol, tokens, allocates, amounts, fee, onSuccess) => {
@@ -215,7 +216,7 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquiditySingleToken = useCallback(
-    async (poolId32, token, amountDeposit, onSuccess) => {
+    async (poolId32, token, amountDeposit, minBPTAmountOut, onSuccess) => {
       setPending(true)
       const tokenContract = getERC20Contract(token.address, chainId)
       const thenaRouterContract = getThenaRouterContract(chainId)
@@ -226,7 +227,7 @@ export const useWeightedPool = () => {
 
       const allowance = await readCall(tokenContract, 'allowance', [account, Contracts.ThenaRouter[chainId]], chainId)
 
-      const isApprovedFee = fromWei(allowance, token.decimals).gte(amountDeposit, token.decimals)
+      const isApprovedFee = fromWei(allowance, token.decimals).gte(toWei(amountDeposit), token.decimals)
 
       startTxn({
         key,
@@ -268,8 +269,8 @@ export const useWeightedPool = () => {
       const result = await writeTxn(key, joinPooluuid, thenaRouterContract, 'joinPool', [
         poolId32,
         idx,
-        amountDeposit,
-        1 /* TODO: remove fixed value for minBPTAmountOut */,
+        toWei(amountDeposit),
+        toWei(minBPTAmountOut),
       ])
 
       if (!result) {
@@ -294,7 +295,7 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquidityAllToken = useCallback(
-    async (poolId32, assets, onSuccess) => {
+    async (poolId32, assets, minBPTAmountOut, onSuccess) => {
       const key = uuidv4()
       const addLiquidityuuid = uuidv4()
       const thenaRouterContract = getThenaRouterContract(chainId)
@@ -372,7 +373,7 @@ export const useWeightedPool = () => {
         poolId32,
         assetsAddress,
         maxAmountsIn,
-        1 /* TODO: remove fixed value for minBPTAmountOut */,
+        toWei(minBPTAmountOut),
       ])
 
       if (!result) {
@@ -570,12 +571,80 @@ export const useWeightedPool = () => {
     [account, chainId, endTxn, mutateAssets, startTxn, t, writeTxn],
   )
 
+  const calcMinBPTAmountOutSingleToken = useCallback(
+    async (poolId32, tokenDeposit, amountDeposit) => {
+      setPending(true)
+      const thenaRouterSimulatorContract = getThenaRouterSimulatorContract(chainId)
+      const vaultContract = getVaultContract(chainId)
+      const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
+      const tokensToLowerCase = tokens.map(item => item.toLowerCase())
+      const tokenIndex = tokensToLowerCase?.indexOf(tokenDeposit?.address?.toLowerCase())
+
+      try {
+        const minBPTAmountOut = await readCall(
+          thenaRouterSimulatorContract,
+          'joinPool',
+          [poolId32, tokenIndex, toWei(amountDeposit, tokenDeposit.decimals)],
+          chainId,
+        )
+        return roundIfMoreThan18Decimals(minBPTAmountOut)
+      } catch (error) {
+        console.log(error)
+        return 0
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId],
+  )
+
+  const calcMinBPTAmountOutAllToken = useCallback(
+    async (poolId32, tokensDeposit) => {
+      setPending(true)
+      const thenaRouterSimulatorContract = getThenaRouterSimulatorContract(chainId)
+
+      const vaultContract = getVaultContract(chainId)
+      const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
+      const tokensToLowerCase = tokens.map(item => item.toLowerCase())
+
+      const sortedToken = tokensDeposit.sort((a, b) => {
+        const indexA = tokensToLowerCase.indexOf(a.address)
+        const indexB = tokensToLowerCase.indexOf(b.address)
+
+        if (indexA === -1) return 1
+        if (indexB === -1) return -1
+
+        return indexA - indexB
+      })
+
+      const amountIns = sortedToken.map(token => toWei(token.amountDeposit))
+
+      try {
+        const minBPTAmountOut = await readCall(
+          thenaRouterSimulatorContract,
+          'joinPoolAllTokens',
+          [poolId32, amountIns],
+          chainId,
+        )
+        return roundIfMoreThan18Decimals(minBPTAmountOut)
+      } catch (error) {
+        console.log(error)
+        return 0
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId],
+  )
+
   return {
     onCreateWeightedPool,
     onAddLiquiditySingleToken,
     onAddLiquidityAllToken,
     onRemoveLiquiditySingleToken,
     onRemoveLiquidityAllToken,
+    calcMinBPTAmountOutSingleToken,
+    calcMinBPTAmountOutAllToken,
     pending,
   }
 }

@@ -23,6 +23,7 @@
     "type": "error"
   },
   { "inputs": [], "name": "RouterNotInitialized", "type": "error" },
+  { "inputs": [], "name": "RouterPaused", "type": "error" },
   { "inputs": [], "name": "UnsupportedSwapKind", "type": "error" },
   {
     "anonymous": false,
@@ -63,6 +64,16 @@
       { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "bool", "name": "swapsPaused", "type": "bool" },
+      { "indexed": false, "internalType": "bool", "name": "joinsPaused", "type": "bool" },
+      { "indexed": false, "internalType": "bool", "name": "exitsPaused", "type": "bool" }
+    ],
+    "name": "PauseStatusUpdated",
     "type": "event"
   },
   {
@@ -251,6 +262,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "exitsPaused",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "name": "isEnabled",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
@@ -290,6 +308,13 @@
     "name": "joinPoolInit",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "joinsPaused",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -360,6 +385,17 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "bool", "name": "_swapsPaused", "type": "bool" },
+      { "internalType": "bool", "name": "_joinsPaused", "type": "bool" },
+      { "internalType": "bool", "name": "_exitsPaused", "type": "bool" }
+    ],
+    "name": "setPauseStatus",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [{ "internalType": "address", "name": "_protocolFeeHandler", "type": "address" }],
     "name": "setProtocolFeehandler",
     "outputs": [],
@@ -418,6 +454,13 @@
       { "internalType": "uint256", "name": "amountOut", "type": "uint256" }
     ],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "swapsPaused",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {

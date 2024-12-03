@@ -44,7 +44,7 @@ export default function SetPoolFees({ setCurrentStep, fees, setFees }) {
       </div>
       <Paragraph className='text-sm xl:text-base'>{t('Set Pool Fees description')}</Paragraph>
       <div className='mt-4 flex flex-row justify-between'>
-        <Selection className='!h-11' data={poolRange} />
+        <Selection className='!h-11' data={poolRange} isTranslation={false} />
         <Input
           onChange={e => {
             setFees(e.target.value)

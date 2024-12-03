@@ -1,7 +1,6 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 
 import SelectPair from '@/components/common/AddLiquidity/SelectPair'
@@ -9,7 +8,6 @@ import Modal from '@/components/modal'
 import { useAssets } from '@/context/assetsContext'
 
 export default function AddLiquidityModal({ popup, setPopup }) {
-  const t = useTranslations()
   const [currentStep, setCurrentStep] = useState(0)
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
@@ -37,7 +35,7 @@ export default function AddLiquidityModal({ popup, setPopup }) {
       closeModal={() => {
         setPopup(false)
       }}
-      title={t('Select Pair')}
+      title='Select Pair'
       isBack={currentStep > 0}
       onClickHandler={() => {
         if (currentStep > 0) {
