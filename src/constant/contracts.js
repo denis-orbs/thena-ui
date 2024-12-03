@@ -42,7 +42,7 @@ const Contracts = {
     [ChainId.OPBNB]: '0xCB78f8d9DFb78CD43Bd2dC9Ffe75E39fBE7F2820',
   },
   veTHEAPI: {
-    [ChainId.BSC]: '0xf13b61c40F7B2eEB43bFBb05c2a5c6867D99C84d',
+    [ChainId.BSC]: '0xEF71d840A1b2b563863D48b90B06230DBbbF6f09',
   },
   rewardsAPI: {
     [ChainId.BSC]: '0xDb65C1C922632B8B62134d49785316818ade413c',
