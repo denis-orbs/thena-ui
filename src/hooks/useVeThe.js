@@ -608,7 +608,7 @@ export const usePoke = () => {
 
 export const useClaimBribes = () => {
   const [pending, setPending] = useState(false)
-  // const { account, chainId } = useWallet()
+  const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
   const t = useTranslations()
 
@@ -616,7 +616,7 @@ export const useClaimBribes = () => {
     async (pool, callback) => {
       setPending(true)
       const key = uuidv4()
-      const claimContract = getClaimerContract()
+      const claimContract = getClaimerContract(chainId)
       const bribesuuid = uuidv4()
       const params = [[pool?.votingIncentives], [(pool?.rewards || []).map(item => item.address)], pool.tokenId]
       startTxn({
@@ -718,7 +718,7 @@ export const useClaimBribes = () => {
       // setPending(false)
       // callback()
     },
-    [startTxn, endTxn, writeTxn, t],
+    [chainId, startTxn, t, writeTxn, endTxn],
   )
 
   return { onClaimBribes: handleClaimBribes, pending }
