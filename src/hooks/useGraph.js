@@ -81,7 +81,13 @@ const V1_DAY_DATAS = gql`
 
 const FUSION_DAY_DATAS = gql`
   query overviewCharts($startTime: Int!, $skip: Int!) {
-    fusionDayDatas(first: 1000, skip: $skip, where: { date_gte: $startTime }, orderBy: date, orderDirection: asc) {
+    fusionDayDatas: algebraDayDatas(
+      first: 1000
+      skip: $skip
+      where: { date_gte: $startTime }
+      orderBy: date
+      orderDirection: asc
+    ) {
       date
       volumeUSD
       tvlUSD
