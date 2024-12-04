@@ -2,9 +2,10 @@ import dayjs from 'dayjs'
 import { gql } from 'graphql-request'
 import { fromPairs } from 'lodash'
 import useSWR from 'swr'
+import { ChainId } from 'thena-sdk-core'
 
 import { FUSION_MULTI_CHAIN_START_TIME, ONE_DAY_UNIX, V1_MULTI_CHAIN_START_TIME } from '@/constant'
-import { fusionClient, v1Client } from '@/lib/graphql'
+import { fixedFusionClient, fusionClient, v1Client } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 export const fetchChartData = async (getEntityDayDatas, params = [], isFusion = false) => {
@@ -95,6 +96,16 @@ const FUSION_DAY_DATAS = gql`
   }
 `
 
+const FUSION_DAY_DATA = gql`
+  query overviewCharts($startTime: Int!, $skip: Int!) {
+    fusionDayData(limit: 1000, offset: $skip, where: { date_gte: $startTime }, orderBy: date_ASC) {
+      date
+      volumeUSD
+      tvlUSD
+    }
+  }
+`
+
 const getV1OverviewChartData = async (chainId, skip) => {
   try {
     const { dayDatas } = await v1Client[chainId].request(V1_DAY_DATAS, {
@@ -115,6 +126,20 @@ const getV1OverviewChartData = async (chainId, skip) => {
 
 const getFusionOverviewChartData = async (chainId, skip) => {
   try {
+    if (chainId === ChainId.BSC) {
+      const res = await fixedFusionClient.request(FUSION_DAY_DATA, {
+        startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
+        skip,
+      })
+      const result = res.fusionDayData
+      const data = result.map(ele => ({
+        date: ele.date,
+        volumeUSD: parseFloat(ele.volumeUSD),
+        tvlUSD: parseFloat(ele.tvlUSD),
+      }))
+      return { data, error: false }
+    }
+
     const res = await fusionClient[chainId].request(FUSION_DAY_DATAS, {
       startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
       skip,

@@ -41,6 +41,8 @@ export const fusionClient = {
   [ChainId.OPBNB]: new GraphQLClient(fusionGraphUrl[ChainId.OPBNB]),
 }
 
+export const fixedFusionClient = new GraphQLClient('https://squid.subsquid.io/thena-squid/v/v4/graphql')
+
 export const blockClient = {
   [ChainId.BSC]: new GraphQLClient(blockGraphUrl[ChainId.BSC]),
   [ChainId.OPBNB]: new GraphQLClient(blockGraphUrl[ChainId.OPBNB]),
