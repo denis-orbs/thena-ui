@@ -103,6 +103,10 @@ export const formatAmountLP = (amount = null, fixed = 13) => {
       return bigAmount.dp(2).toFormat()
     }
 
+    if (bigAmount.gt(BigNumber(1e15))) {
+      return 'NaN'
+    }
+
     return bigAmount.dp(1).toFormat()
   }
 

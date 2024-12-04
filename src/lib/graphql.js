@@ -1,25 +1,23 @@
+/* eslint-disable max-len */
 import { GraphQLClient } from 'graphql-request'
 import { ChainId } from 'thena-sdk-core/dist'
 
 export const v1GraphUrl = {
   // eslint-disable-next-line max-len
   [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_V1_API_KEY}/subgraphs/id/FKEt2N5VmSdEYcz7fYLPvvnyEUkReQ7rvmXzs6tiKCz1`,
-  [ChainId.OPBNB]:
-    'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-v1',
+  [ChainId.OPBNB]: `https://open-platform-ap.nodereal.io/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-v1`,
 }
 
 export const fusionGraphUrl = {
   // eslint-disable-next-line max-len
-  [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt`,
-  [ChainId.OPBNB]:
-    'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion',
+  [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/wN4QJb8MQXLwYwsEAVBAZpd112fYRkJPfetjS329ghh`,
+  [ChainId.OPBNB]: `https://open-platform-ap.nodereal.io/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion`,
 }
 
 export const blockGraphUrl = {
   // eslint-disable-next-line max-len
   [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_BLOCKS_API_KEY}/subgraphs/id/9SVVDE76Z3sN4qprVruoHUB5sxxzpaLshppV5WvUjdz`,
-  [ChainId.OPBNB]:
-    'https://open-platform-ap.nodereal.io/05d844a21964497bbbcaae823c36871b/opbnb-mainnet-graph-query/subgraphs/name/thena/opbnb-blocks',
+  [ChainId.OPBNB]: `https://open-platform-ap.nodereal.io/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}/opbnb-mainnet-graph-query/subgraphs/name/thena/opbnb-blocks`,
 }
 
 // export const v4GraphUrl = 'https://stg-thena-squid.zinza.com.vn/graphql'
@@ -40,6 +38,8 @@ export const fusionClient = {
   [ChainId.BSC]: new GraphQLClient(fusionGraphUrl[ChainId.BSC]),
   [ChainId.OPBNB]: new GraphQLClient(fusionGraphUrl[ChainId.OPBNB]),
 }
+
+export const fixedFusionClient = new GraphQLClient('https://squid.subsquid.io/thena-squid/v/v4/graphql')
 
 export const blockClient = {
   [ChainId.BSC]: new GraphQLClient(blockGraphUrl[ChainId.BSC]),
