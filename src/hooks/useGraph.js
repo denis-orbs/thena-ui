@@ -80,15 +80,9 @@ const V1_DAY_DATAS = gql`
   }
 `
 
-const FUSION_DAY_DATAS = gql`
+const OPBNB_FUSION_DAY_DATAS = gql`
   query overviewCharts($startTime: Int!, $skip: Int!) {
-    fusionDayDatas: algebraDayDatas(
-      first: 1000
-      skip: $skip
-      where: { date_gte: $startTime }
-      orderBy: date
-      orderDirection: asc
-    ) {
+    fusionDayDatas(first: 1000, skip: $skip, where: { date_gte: $startTime }, orderBy: date, orderDirection: asc) {
       date
       volumeUSD
       tvlUSD
@@ -140,7 +134,7 @@ const getFusionOverviewChartData = async (chainId, skip) => {
       return { data, error: false }
     }
 
-    const res = await fusionClient[chainId].request(FUSION_DAY_DATAS, {
+    const res = await fusionClient[chainId].request(OPBNB_FUSION_DAY_DATAS, {
       startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })
