@@ -56,40 +56,46 @@ function AssetsContextProvider({ children }) {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const { liquidityHubEnabled } = liquidityHub.useLiquidtyHubSettings()
-  const { data: assets } = useSWRImmutable(['assets/total', networkId, liquidityHubEnabled], async () => {
-    const data = await fetchAssets(networkId, liquidityHubEnabled)
-    return data
-  })
+
+  const { data: assets = [] } = useSWRImmutable(
+    ['assets/total', networkId, liquidityHubEnabled],
+    async () => {
+      const data = await fetchAssets(networkId, liquidityHubEnabled)
+      return data
+    },
+    {
+      revalidateOnFocus: false,
+    },
+  )
+
   const { data: userAssets, mutate: mutateAssets } = useSWRImmutable(
-    assets && assets.length > 0 && account && ['assets/user', account, networkId],
+    assets.length > 0 && account && ['assets/user', account, networkId],
     async () => {
       const data = await fetchUserAssetsData(assets, account, networkId)
       return data
         .map(ele => ({
           ...ele,
           balance: new BigNumber(ele.balance),
+          totalValue: new BigNumber(ele.balance).times(ele.price),
         }))
-        .sort((a, b) => {
-          if (a.balance.times(a.price).lt(b.balance.times(b.price))) return 1
-          if (a.balance.times(a.price).gt(b.balance.times(b.price))) return -1
-          return 0
-        })
+        .sort((a, b) => b.totalValue.minus(a.totalValue).toNumber())
     },
     {
       refreshInterval: 10000,
+      revalidateOnFocus: false,
     },
   )
   const final = useMemo(() => {
     if (!account) {
       return {
         mutateAssets: () => {},
-        assets: assets || [],
+        assets,
       }
     }
     if (!userAssets || !userAssets.length) {
       return {
         mutateAssets,
-        assets: assets || [],
+        assets,
       }
     }
     return {

@@ -1,13 +1,13 @@
 'use client'
 
-/* eslint-disable simple-import-sort/imports */
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
 
-import Contracts from '@/constant/contracts'
 import { SWAP_TYPES } from '@/constant'
+import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
+import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '@/hooks/useLocalStorage'
 import { useWrap } from '@/hooks/useSwap'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -25,17 +25,24 @@ export default function SwapPage() {
   const { push } = useRouter()
   const assets = useAssets()
   const { onWrap, onUnwrap, pending: wrapPending } = useWrap()
+  const { getWithExpiry } = useLocalStorage()
 
   useEffect(() => {
     if (!assets || !assets.length) return
+    const temp = getWithExpiry(LOCAL_STORAGE_TOKENS) ?? []
+    const assetList = assets.concat(temp.map(tk => ({ ...tk, price: 0, balance: 0 })))
+
     const inputCurrency = searchParams.get('inputCurrency')
     const outputCurrency = searchParams.get('outputCurrency')
+
     const from = inputCurrency
-      ? assets.find(asset => asset.address.toLowerCase() === inputCurrency.toLowerCase())
+      ? assetList.find(asset => asset.address.toLowerCase() === inputCurrency.toLowerCase())
       : null
+
     const to = outputCurrency
-      ? assets.find(asset => asset.address.toLowerCase() === outputCurrency.toLowerCase())
+      ? assetList.find(asset => asset.address.toLowerCase() === outputCurrency.toLowerCase())
       : null
+
     if (from && to) {
       setFromAsset(from)
       setToAsset(to)
@@ -51,6 +58,7 @@ export default function SwapPage() {
     }
 
     push(`/swap?inputCurrency=${fromAddress}&outputCurrency=${toAddress}&swapType=${swapType}`)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assets, searchParams, fromAddress, toAddress, networkId, push, swapType])
 
   // useEffect(() => {
