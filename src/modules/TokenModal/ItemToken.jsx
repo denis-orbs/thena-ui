@@ -26,7 +26,7 @@ export function ItemToken({
   onAssetSelect = () => {},
 }) {
   const t = useTranslations()
-  const { account, networkId } = useWallet()
+  const { account, chainId } = useWallet()
   const { setWithExpiry, getWithExpiry } = useLocalStorage()
   const [popupAdd, setPopupAdd] = useState(false)
 
@@ -100,7 +100,7 @@ export function ItemToken({
                     onClick={e => {
                       e.stopPropagation()
                       e.preventDefault()
-                      goScan(networkId, item.address)
+                      goScan(chainId, item.address)
                     }}
                     data-tooltip-id={`contract-tooltip-${item.address}`}
                   />

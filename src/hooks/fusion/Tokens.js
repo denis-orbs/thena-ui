@@ -4,23 +4,29 @@ import { BNB, ChainId, Token } from 'thena-sdk-core'
 import { useAssets } from '@/context/assetsContext'
 import { useChainSettings } from '@/state/settings/hooks'
 
+import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '../useLocalStorage'
+
 // undefined if invalid or does not exist
 // otherwise returns the token
 export function useToken(tokenAddress) {
   const assets = useAssets()
+  const { getWithExpiry } = useLocalStorage()
 
   return useMemo(() => {
     if (!tokenAddress) return undefined
-    const asset = assets.find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
+
+    const temp = getWithExpiry(LOCAL_STORAGE_TOKENS) ?? []
+    const asset = temp.concat(assets).find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
+
     if (!asset) return undefined
     return new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
-  }, [assets, tokenAddress])
+  }, [assets, getWithExpiry, tokenAddress])
 }
 
-export const useCurrency = currencyId => {
+export const useCurrency = address => {
   const { networkId } = useChainSettings()
-  const isBNB = currencyId?.toUpperCase() === 'BNB'
-  const token = useToken(isBNB ? undefined : currencyId)
+  const isBNB = address?.toUpperCase() === 'BNB'
+  const token = useToken(isBNB ? undefined : address)
   return isBNB ? BNB.onChain(networkId) : token
 }
 

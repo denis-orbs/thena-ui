@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 
+import { UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 
 export const useCurrencyLogo = currency => {
@@ -9,8 +10,8 @@ export const useCurrencyLogo = currency => {
       currency && assets
         ? assets.find(
             asset => asset.address.toLowerCase() === (currency.address ? currency.address.toLowerCase() : 'bnb'),
-          ).logoURI
-        : null,
+          )?.logoURI
+        : UNKNOWN_LOGO,
     [assets, currency],
   )
 }
@@ -22,8 +23,8 @@ export const useCurrencyPrice = currency => {
       currency && assets
         ? assets.find(
             asset => asset.address.toLowerCase() === (currency.address ? currency.address.toLowerCase() : 'bnb'),
-          ).price
-        : null,
+          )?.price
+        : 0,
     [assets, currency],
   )
 }
@@ -31,9 +32,7 @@ export const useCurrencyPrice = currency => {
 export const useLogoFromAddress = address => {
   const assets = useAssets()
   return useMemo(
-    () =>
-      assets.find(asset => asset.address.toLowerCase() === address?.toLowerCase())?.logoURI ||
-      'https://cdn.thena.fi/assets/UKNOWN.png',
+    () => assets.find(asset => asset.address.toLowerCase() === address?.toLowerCase())?.logoURI || UNKNOWN_LOGO,
     [assets, address],
   )
 }
