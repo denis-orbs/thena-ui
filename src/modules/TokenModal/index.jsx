@@ -94,7 +94,7 @@ function TokenModal({
   onAssetSelect = () => {},
 }) {
   const t = useTranslations()
-  const { account } = useWallet()
+  const { account, chainId } = useWallet()
 
   const baseAssets = useAssets()
   const [customToken, setCustomToken] = useState()
@@ -147,7 +147,7 @@ function TokenModal({
       },
     ],
     query: {
-      enable: isAddress(search) && filteredAssets.length === 0,
+      enable: isAddress(search) && filteredAssets.length === 0 && chainId,
     },
   })
 
@@ -164,9 +164,10 @@ function TokenModal({
         decimals: Number(decimals?.result ?? 18),
         balance: formatUnits(balanceOf?.result ?? 0, decimals?.result ?? 18),
         isCustom: true,
+        chainId: chainId ?? 56,
       })
     }
-  }, [isSuccess, newToken, search, customToken?.address])
+  }, [isSuccess, newToken, search, customToken?.address, chainId])
 
   return (
     <Modal

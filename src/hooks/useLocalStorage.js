@@ -5,7 +5,7 @@ import { useCallback } from 'react'
 export const LOCAL_STORAGE_TOKENS = 'LOCAL_STORAGE_TOKENS'
 
 export const useLocalStorage = () => {
-  const getWithExpiry = key => {
+  const getWithExpiry = useCallback(key => {
     if (typeof window !== 'undefined') {
       const itemStr = localStorage.getItem(key)
 
@@ -23,7 +23,7 @@ export const useLocalStorage = () => {
 
       return item.value
     }
-  }
+  }, [])
 
   const setWithExpiry = useCallback((key, value, ttl) => {
     if (typeof window !== 'undefined') {
