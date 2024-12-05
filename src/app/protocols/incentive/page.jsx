@@ -56,7 +56,7 @@ export default function IncentivePage() {
     if (isInvalidAmount(amount)) {
       return 'Invalid Amount'
     }
-    if (asset.balance.lt(amount)) {
+    if (asset?.balance?.lt(amount)) {
       return 'Insufficient Balance'
     }
     return null
