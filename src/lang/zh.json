@@ -1169,5 +1169,6 @@
   "Provide liquidity and stake in THE/BNB pool": "于 THE/BNB 池（任一 ALM 管理池）中提供流动性并质押",
   "Provide liquidity and stake in any of these 6 pools": "于以下 6 池中的任何一池中提供流动性并质押",
   "Please open a Support ticket under THE Story category to receive your prize": "请在 THE Story 类别下打开支持票以领取奖品",
-  "Discover pools analytics description": "由于当前子图出现问题，「流动性池」页面和「 分析」 模块的大部分数据显示已在过去两天未更新。开发团队正在积极修复此问题。而目前池子的 APRs 显示仍然准确。对此为您带来的不便，我们深表歉意，感谢您的耐心等待！"
+  "Discover pools analytics description": "由于当前子图出现问题，「流动性池」页面和「 分析」 模块的大部分数据显示已在过去两天未更新。开发团队正在积极修复此问题。而目前池子的 APRs 显示仍然准确。对此为您带来的不便，我们深表歉意，感谢您的耐心等待！",
+  "New Listings": "新建流动性池"
 }

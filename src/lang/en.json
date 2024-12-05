@@ -1169,5 +1169,6 @@
   "Provide liquidity and stake in THE/BNB pool": "Provide liquidity and stake in THE/BNB pool",
   "Provide liquidity and stake in any of these 6 pools": "Provide liquidity and stake in any of these 6 pools",
   "Please open a Support ticket under THE Story category to receive your prize": "Please open a Support ticket under THE Story category to receive your prize",
-  "Discover pools analytics description": "Due to a current subgraph issue, the majority of data displayed in the Pools section and Analytics has not been updated for the past few days. Our team is actively working to resolve this issue. Please note that the APRs displayed for pools remain accurate. We apologize for any inconvenience this may cause and appreciate your patience."
+  "Discover pools analytics description": "Due to a current subgraph issue, the majority of data displayed in the Pools section and Analytics has not been updated for the past few days. Our team is actively working to resolve this issue. Please note that the APRs displayed for pools remain accurate. We apologize for any inconvenience this may cause and appreciate your patience.",
+  "New Listings": "New Listings"
 }

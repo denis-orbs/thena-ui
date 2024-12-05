@@ -27,6 +27,7 @@ import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
 import AddLiquidityModal from './addLiquidityModal'
+import NewListings from './NewListings'
 
 export const listPoolAddressSpecial = [
   '0x755a52d29b24d6871899a84f476339183e9dc95d',
@@ -142,6 +143,22 @@ export default function PoolsPage() {
           })
   }, [isInactive, filter, strategy, searchText, pairs, assets])
 
+  // TODO: If new pools, update here
+  const newListPoolIds = [
+    '0x5bc828a5035aac2fa3aab46f7a25d08165d19a08', // mPendle/Pendle
+    '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79', // BTCB/mBTC
+    '0x7569ae71a1832fa5f403471a01289222b1daacb5', // mCAKE/CAKE
+    '0x716fe318602a603959c3af4676aed74b22c615da', // BNB/MGP
+    '0x52b137a651413a0eb3609b44d032f00e1c8daf33', // sUSDa/USDa
+    '0x987c794c0786ee5cd6b34b7e32aa21098cd6b806', // ZRO/BNB
+    '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7', // uniBTC/FBTC
+    '0x00a04fe69ab69ab0cbbe61671405677f5d003a2f', // BNB/VINU
+    '0x4e2ae126c67128f0cfe35e43e0c9459992658d44', // mwBETH/wBETH
+    '0xb3f3312252cade3a15eba318f6caaacb5e8097f4', // BNB/RWA
+  ]
+
+  const newListingsPool = filteredPools.filter(item => newListPoolIds.includes(item.address))
+
   const sortedData = useMemo(
     () =>
       filteredPools.sort((a, b) => {
@@ -174,23 +191,10 @@ export default function PoolsPage() {
 
   const finalPools = useMemo(
     () => {
-      let data = []
-
-      const pinnedPools = []
-      if (Array.isArray(sortedData) && sortedData.length) {
-        if (pinnedPools.length) {
-          data = sortedData
-            .filter(item => pinnedPools.includes(item.address))
-            .concat(sortedData.filter(item => !pinnedPools.includes(item.address)))
-        } else {
-          data = [...sortedData]
-        }
-      }
-
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
       const ynBNBPoolAddress = '0xcfac0990700ed9b67fefbd4b26a79e426468a419'
 
-      return data.map(pool => ({
+      return sortedData.map(pool => ({
         pair: (
           <div className='flex items-center gap-3'>
             <IconGroup
@@ -308,7 +312,7 @@ export default function PoolsPage() {
           </div>
         ),
         tvl: (
-          <div className='flex w-full items-center gap-1'>
+          <div className='flex items-center gap-1'>
             <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(pool.tvlUSD)}</Paragraph>
             <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
             <CustomTooltip id={`tvl-${pool.address}`}>
@@ -459,6 +463,13 @@ export default function PoolsPage() {
             {t('Add Liquidity')}
           </PrimaryButton>
         </div>
+        {newListingsPool.length > 0 && (
+          <NewListings
+            pools={newListingsPool}
+            sortOptions={sortOptions}
+            listPoolAddressSpecial={listPoolAddressSpecial}
+          />
+        )}
         <Table
           sortOptions={sortOptions}
           data={finalPools}
