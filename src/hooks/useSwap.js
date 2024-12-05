@@ -226,7 +226,12 @@ export const useThenaSwap = (autoClose = false) => {
       const token1Address = toAsset.address === 'BNB' ? WBNB[chainId].address : toAsset.address
 
       const currentTimestamp = parseInt(new Date().getTime() / 1000, 10)
-      const amountIn = toWei(fromAmount, fromAsset.decimals)
+      // Truncates fromAmount to the required number of decimals without rounding up.
+      const amountIn = toWei(
+        new BigNumber(fromAmount).decimalPlaces(fromAsset.decimals, BigNumber.ROUND_DOWN).toString(),
+        fromAsset.decimals,
+      )
+
       let [minAmountOut = 0n] = await readCall(thenaRouter, 'getAmountOut', [amountIn, token0Address, token1Address])
 
       minAmountOut = Math.floor(Number(minAmountOut) * ((100 - slippage) / 100))
