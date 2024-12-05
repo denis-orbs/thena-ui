@@ -20,9 +20,10 @@ import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
-import TokenModal from '@/modules/TokenModal'
 import { usePools } from '@/state/pools/hooks'
 import { ArrowLeftIcon, ChevronDownIcon } from '@/svgs'
+
+import { TokenModal } from './TokenModal'
 
 export default function IncentivePage() {
   const [pairOpen, setPairOpen] = useState(false)
@@ -94,6 +95,7 @@ export default function IncentivePage() {
           ))}
         </div>
       </div>
+
       <div className='flex flex-col gap-4'>
         <TextHeading className='text-xl'>{t('Add Incentive')}</TextHeading>
         <div className='grid grid-cols-1 gap-8 lg:grid-cols-2'>
@@ -130,7 +132,8 @@ export default function IncentivePage() {
                 />
               </div>
             </div>
-            <div className='flex flex-col gap-2'>
+
+            <div className={cn('flex flex-col gap-2', !account && 'hidden')}>
               <TextHeading>{t('Reward Asset')}</TextHeading>
               <div
                 className='flex cursor-pointer items-center justify-between rounded-lg bg-neutral-700 px-4 py-3'
@@ -152,6 +155,7 @@ export default function IncentivePage() {
                 />
               </div>
             </div>
+
             {asset && <BalanceInput title={t('Asset')} asset={asset} amount={amount} onAmountChange={setAmount} />}
 
             {account ? (
@@ -182,8 +186,16 @@ export default function IncentivePage() {
           </Neutral>
         </div>
       </div>
+
       <PairModal popup={pairOpen} setPopup={setPairOpen} setSelected={setPair} pools={poolsWithGauge} />
-      <TokenModal popup={tokenOpen} setPopup={setTokenOpen} selectedAsset={asset} setSelectedAsset={setAsset} />
+
+      <TokenModal
+        popup={tokenOpen}
+        pair={pair}
+        setPopup={setTokenOpen}
+        selectedAsset={asset}
+        setSelectedAsset={setAsset}
+      />
     </div>
   )
 }
