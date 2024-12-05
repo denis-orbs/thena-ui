@@ -1104,8 +1104,8 @@
   "Eligible For Raffle": "Eligible For Raffle",
   "Completed Tasks": "Completed Tasks",
   "Increase Prize Pool warning": "此操作会增加所有参与者的奖池。你不能在此处增加存款。請只有在你确定知道自己在做什么的情况下再继续。",
-  "Complete Tasks and Stack Points": "完成任务，轻松赚取积分",
-  "Complete Tasks and Stack Points Description": "每个章节都设有精彩有趣的任务等待你来挑战！透过日常兑换代币、推荐好友、完成各种互 动任务累积额外积分，攀登排行榜，赢取专属奖励！",
+  "Complete Tasks and Stack Points": "完成任务，轻松赚取积���",
+  "Complete Tasks and Stack Points Description": "每个章节都设有精彩有趣的任务等待你来挑战！透过日常兑换代币、推荐好友、完成各种互 动任务累积额外�����分�����攀登排行榜，赢取专属奖励！",
   "Score Rewards with Every Chapter": "解锁任务，赢取独家好礼",
   "Score Rewards with Every Chapter Description": "完成每个章节的所有任务，即有机会赢得独家奖品。每个章节都设有专属抽奖活动，不要错过每一个争取奖励的好时机！",
   "Story Leaderboard Description": "赢取积分并在总章节的排行榜上成为前 300 名的 Thenian。若您完成其一章节的所有任务即可获得该章节的奖励抽奖资格。",
@@ -1170,5 +1170,8 @@
   "Provide liquidity and stake in any of these 6 pools": "于以下 6 池中的任何一池中提供流动性并质押",
   "Please open a Support ticket under THE Story category to receive your prize": "请在 THE Story 类别下打开支持票以领取奖品",
   "Discover pools analytics description": "由于当前子图出现问题，「流动性池」页面和「 分析」 模块的大部分数据显示已在过去两天未更新。开发团队正在积极修复此问题。而目前池子的 APRs 显示仍然准确。对此为您带来的不便，我们深表歉意，感谢您的耐心等待！",
-  "New Listings": "新建流动性池"
+  "New Listings": "新建流动性池",
+  "BeCareful": "当心",
+  "BeCarefulDescription": "任何人都可以创建代币，包括假代币，因此需要谨慎。某些代币可能与 Thena 协议不兼容。通过导入此自定义代币，您接受风险。",
+  "Import Anyway": "仍然导入"
 }

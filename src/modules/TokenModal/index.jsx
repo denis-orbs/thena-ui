@@ -1,31 +1,87 @@
+'use client'
+
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { formatUnits, getAddress, isAddress } from 'viem'
+import { useReadContracts } from 'wagmi'
 
 import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
-import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
+import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
+import useDebounce from '@/hooks/useDebounce'
+import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '@/hooks/useLocalStorage'
 import useWallet from '@/hooks/useWallet'
-import { addToken, formatAmount, goScan } from '@/lib/utils'
-import { useChainSettings } from '@/state/settings/hooks'
-import { ExternalIcon, PlusCircleIcon } from '@/svgs'
 
-const TrendingTokens = [
-  '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // usdc
-  '0x55d398326f99059fF775485246999027B3197955', // usdt
-  '0x2170Ed0880ac9A755fd29B2688956BD959F933F8', // eth
-  '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c', // btc
-  '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // busd
-  '0x90c97f71e18723b0cf0dfa30ee176ab653e89f40', // frax
-  '0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11', // the
-  '0x4200000000000000000000000000000000000006',
-  '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3',
-  '0xe7798f023fc62146e8aa1b36da45fb70855a77ea',
-  '0x7c6b91d9be155a6db01f749217d76ff02a7227f2',
-  '0x9d94A7fF461e83F161c8c040E78557e31d8Cba72',
-  '0x50c5725949a6f0c72e6c4a641f24049a917db0cb',
+import { ItemToken } from './ItemToken'
+
+const TRENDING_TOKENS = [
+  {
+    address: 'BNB',
+    name: 'Binance Coin',
+    symbol: 'BNB',
+    decimals: 18,
+    logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
+    chainId: 56,
+  },
+  {
+    name: 'BTCB Token',
+    symbol: 'BTCB',
+    decimals: 18,
+    chainId: 56,
+    address: '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c',
+    logoURI: 'https://cdn.thena.fi/assets/BTCB.png',
+  },
+  {
+    name: 'BUSD Token',
+    symbol: 'BUSD',
+    decimals: 18,
+    chainId: 56,
+    address: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+    logoURI: 'https://cdn.thena.fi/assets/BUSD.png',
+  },
+  {
+    name: 'Ethereum Token',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 56,
+    address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+    logoURI: 'https://cdn.thena.fi/assets/ETH.png',
+  },
+  {
+    name: 'Frax',
+    symbol: 'FRAX',
+    decimals: 18,
+    chainId: 56,
+    address: '0x90c97f71e18723b0cf0dfa30ee176ab653e89f40',
+    logoURI: 'https://cdn.thena.fi/assets/FRAX.png',
+  },
+  {
+    name: 'THENA',
+    symbol: 'THE',
+    decimals: 18,
+    chainId: 56,
+    address: '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11',
+    logoURI: 'https://cdn.thena.fi/assets/THE.png',
+  },
+  {
+    name: 'USD Coin',
+    symbol: 'USDC',
+    decimals: 18,
+    chainId: 56,
+    address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+    logoURI: 'https://cdn.thena.fi/assets/USDC.png',
+  },
+  {
+    name: 'Tether USD',
+    symbol: 'USDT',
+    decimals: 18,
+    chainId: 56,
+    address: '0x55d398326f99059ff775485246999027b3197955',
+    logoURI: 'https://cdn.thena.fi/assets/USDT.png',
+  },
 ]
 
 function TokenModal({
@@ -37,32 +93,81 @@ function TokenModal({
   setOtherAsset,
   onAssetSelect = () => {},
 }) {
-  const [searchText, setSearchText] = useState('')
-  const { account } = useWallet()
-  const baseAssets = useAssets()
-  const { networkId } = useChainSettings()
   const t = useTranslations()
+  const { account, chainId } = useWallet()
 
-  const filteredAssets = useMemo(
-    () =>
-      searchText
-        ? baseAssets.filter(
-            asset =>
-              asset.symbol.toLowerCase().includes(searchText.toLowerCase()) ||
-              asset.address.toLowerCase().includes(searchText.toLowerCase()),
-          )
-        : baseAssets,
-    [baseAssets, searchText],
-  )
+  const baseAssets = useAssets()
+  const [customToken, setCustomToken] = useState()
+  const [searchText, setSearchText] = useState('')
 
-  const trendingAssets = useMemo(
-    () =>
-      baseAssets.filter(
-        asset =>
-          asset.address === 'BNB' || TrendingTokens.some(ele => ele.toLowerCase() === asset.address.toLowerCase()),
-      ),
-    [baseAssets],
-  )
+  const search = useDebounce(searchText)
+  const { getWithExpiry } = useLocalStorage()
+
+  const filteredAssets = useMemo(() => {
+    const temp = getWithExpiry(LOCAL_STORAGE_TOKENS) ?? []
+    const tokenList = temp.concat(baseAssets)
+
+    const result = search
+      ? tokenList.filter(
+          asset =>
+            asset.symbol.toLowerCase().includes(search.toLowerCase()) ||
+            asset.address.toLowerCase().includes(search.toLowerCase()),
+        )
+      : tokenList
+
+    if (result.length === 0 && customToken) {
+      result.push(customToken)
+    }
+
+    return result
+  }, [baseAssets, customToken, getWithExpiry, search])
+
+  const { data: newToken, isSuccess } = useReadContracts({
+    contracts: [
+      {
+        abi: ERC20Abi,
+        functionName: 'name',
+        address: search,
+      },
+      {
+        abi: ERC20Abi,
+        functionName: 'symbol',
+        address: search,
+      },
+      {
+        abi: ERC20Abi,
+        functionName: 'decimals',
+        address: search,
+      },
+      {
+        abi: ERC20Abi,
+        functionName: 'balanceOf',
+        address: search,
+        args: [account],
+      },
+    ],
+    query: {
+      enable: isAddress(search) && filteredAssets.length === 0 && chainId,
+    },
+  })
+
+  useEffect(() => {
+    if (isSuccess && newToken) {
+      const [name, symbol, decimals, balanceOf] = newToken
+      if (name.status !== 'success') return
+
+      if (customToken?.address === getAddress(search)) return
+      setCustomToken({
+        address: search,
+        name: name.result,
+        symbol: symbol?.result,
+        decimals: Number(decimals?.result ?? 18),
+        balance: formatUnits(balanceOf?.result ?? 0, decimals?.result ?? 18),
+        isCustom: true,
+        chainId: chainId ?? 56,
+      })
+    }
+  }, [isSuccess, newToken, search, customToken?.address, chainId])
 
   return (
     <Modal
@@ -83,7 +188,7 @@ function TokenModal({
         />
         <Paragraph>{t('Trending Assets')}</Paragraph>
         <div className='flex flex-wrap gap-2'>
-          {trendingAssets.map((item, idx) => (
+          {TRENDING_TOKENS.map((item, idx) => (
             <div
               key={idx}
               className='flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-800 p-3'
@@ -108,72 +213,24 @@ function TokenModal({
           ))}
         </div>
       </div>
+
       <div className='h-px w-full border border-neutral-700' />
+
       <div className='flex flex-col gap-2 p-3'>
         <Paragraph className='px-3'>{t('Assets')}</Paragraph>
-        <div className='max-h-[340px] overflow-auto'>
-          {filteredAssets.map((item, idx) => (
-            <div
-              className='flex cursor-pointer items-center justify-between rounded-lg px-6 py-3 hover:bg-neutral-800'
-              onClick={() => {
-                if (otherAsset && otherAsset.address === item.address) {
-                  const temp = selectedAsset
-                  setSelectedAsset(otherAsset)
-                  setOtherAsset(temp)
-                } else {
-                  setSelectedAsset(item)
-                }
-                onAssetSelect()
-                setPopup(false)
-              }}
+
+        <div className='max-h-[340px] overflow-auto' id='scrollableDiv'>
+          {filteredAssets.map(item => (
+            <ItemToken
               key={item.address}
-            >
-              <div className='flex items-center gap-2 rounded-lg'>
-                <CircleImage src={item.logoURI} width={32} height={32} alt='thena token' />
-                <div className='flex flex-col'>
-                  <div className='flex items-center space-x-1'>
-                    <TextHeading>{item.symbol}</TextHeading>
-                    {item.address !== 'BNB' && (
-                      <div className='flex items-center gap-1'>
-                        {account && (
-                          <PlusCircleIcon
-                            className='h-3 w-3 stroke-neutral-400 hover:stroke-neutral-50'
-                            onClick={e => {
-                              e.stopPropagation()
-                              e.preventDefault()
-                              addToken(item)
-                            }}
-                            data-tooltip-id={`add-tooltip-${idx}`}
-                          />
-                        )}
-                        <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md !py-2'>
-                          <TextHeading className='text-xs'>{t('Add to Wallet')}</TextHeading>
-                        </CustomTooltip>
-                        <ExternalIcon
-                          className='h-3 w-3 stroke-neutral-400 hover:stroke-neutral-50'
-                          onClick={e => {
-                            e.stopPropagation()
-                            e.preventDefault()
-                            goScan(networkId, item.address)
-                          }}
-                          data-tooltip-id={`contract-tooltip-${idx}`}
-                        />
-                        <CustomTooltip id={`contract-tooltip-${idx}`} className='rounded-md !py-2' place='top'>
-                          <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
-                        </CustomTooltip>
-                      </div>
-                    )}
-                  </div>
-                  <TextSubHeading>{item.name}</TextSubHeading>
-                </div>
-              </div>
-              {account && (
-                <div className='flex flex-col items-end'>
-                  <TextHeading>{formatAmount(item.balance) || ''}</TextHeading>
-                  <TextSubHeading>${formatAmount(item.balance.times(item.price))}</TextSubHeading>
-                </div>
-              )}
-            </div>
+              item={item}
+              setPopup={setPopup}
+              selectedAsset={selectedAsset}
+              setSelectedAsset={setSelectedAsset}
+              otherAsset={otherAsset}
+              setOtherAsset={setOtherAsset}
+              onAssetSelect={onAssetSelect}
+            />
           ))}
         </div>
       </div>
