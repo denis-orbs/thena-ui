@@ -16,7 +16,7 @@ import DiscoverModal from '@/app/arena/DiscoverModal'
 import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
-import { LOCALES, NotShowDiscoverArenaModal, NotShowDiscoverPoolsAnalyticsModal, ThenaAuthToken } from '@/constant'
+import { LOCALES, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
@@ -921,7 +921,7 @@ function Header() {
         />
       )}
 
-      {(pathname.startsWith('/pools') || pathname.startsWith('/analytics')) && (
+      {/* {(pathname.startsWith('/pools') || pathname.startsWith('/analytics')) && (
         <DiscoverModal
           keyOpen={NotShowDiscoverPoolsAnalyticsModal}
           text={
@@ -940,7 +940,7 @@ function Header() {
           }
           showLearnMore={false}
         />
-      )}
+      )} */}
       <Script
         id='widget-dom-id'
         src='https://widget.metacrm.inc/static/js/widget.js'
