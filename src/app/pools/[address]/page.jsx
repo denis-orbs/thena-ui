@@ -26,6 +26,7 @@ import { PoolChart } from '@/modules/Pools/PoolCharts'
 import Position from '@/modules/Position'
 import ManualPosition from '@/modules/Position/ManualPosition'
 import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
+import { useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite, LinkExternalIcon } from '@/svgs'
 
@@ -41,6 +42,8 @@ export default function SpecificPoolPage({ params }) {
   const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
+
+  const { strategy } = useV3MintState()
 
   const [showModalAdd, setShowModalAdd] = useState(false)
 
@@ -295,8 +298,7 @@ export default function SpecificPoolPage({ params }) {
             <PoolChart address={address} />
           </div>
 
-          {/* Liquidity Fees table */}
-          <div className={cn('mb-6 flex flex-col gap-4', pool.type !== PAIR_TYPES.WEIGHTED && 'hidden')}>
+          <div className={cn('mb-6 flex flex-col gap-4')}>
             <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
               {t('Liquidity Fees')}
             </TextHeading>
@@ -308,68 +310,90 @@ export default function SpecificPoolPage({ params }) {
             <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
               {t('Pool Attributes')}
             </TextHeading>
-            <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
-                <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
-              </div>
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
-                <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
-              </div>
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('Type')}:</div>
-                <div className='col-span-5 text-neutral-50'>{pool?.type}</div>
-              </div>
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
-                <div className='col-span-5 text-neutral-50'>
-                  {pool?.fee}% ({t('editable by governance')})
-                </div>
-              </div>
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
-                <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
-              </div>
-              {pool?.owner ? (
+            {strategy ? (
+              <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
                 <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
+                  <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
+                  <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
+                  <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Type')}:</div>
+                  <div className='col-span-5 text-neutral-50'>{pool?.type}</div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
+                  <div className='col-span-5 text-neutral-50'>
+                    {pool?.fee}% ({t('editable by governance')})
+                  </div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
+                  <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
+                </div>
+                {pool?.owner ? (
+                  <div className='grid grid-cols-7'>
+                    <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
+                    <div className='col-span-5 text-neutral-50'>
+                      <div
+                        onClick={() => goScan(networkId, pool?.owner)}
+                        className='item-center flex cursor-pointer gap-1'
+                      >
+                        <span>{formatAddress(pool?.owner)}</span>
+                        <LinkExternalIcon className='inline-block h-4 w-4' />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
+                  <div className='col-span-5 text-neutral-50'>
+                    {t('Immutable except for swap fees editable by governance')}
+                  </div>
+                </div>
+                {pool?.createdAt ? (
+                  <div className='grid grid-cols-7'>
+                    <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
+                    <div className='col-span-5 text-neutral-50'>{pool?.createdAt}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
+                  <div className='col-span-5 text-neutral-50'>$0</div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
                   <div className='col-span-5 text-neutral-50'>
                     <div
-                      onClick={() => goScan(networkId, pool?.owner)}
+                      onClick={() => goScan(networkId, pool?.address)}
                       className='item-center flex cursor-pointer gap-1'
                     >
-                      <span>{formatAddress(pool?.owner)}</span>
+                      <span>{formatAddress(pool?.address)}</span>
                       <LinkExternalIcon className='inline-block h-4 w-4' />
                     </div>
                   </div>
                 </div>
-              ) : (
-                <></>
-              )}
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
-                <div className='col-span-5 text-neutral-50'>
-                  {t('Immutable except for swap fees editable by governance')}
+              </div>
+            ) : (
+              <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-[120px]'>
+                <Highlight>
+                  <InfoCircleWhite className='h-4 w-4' />
+                </Highlight>
+                <div className='flex flex-col items-center gap-3'>
+                  <h2>{t('Select Pool Strategy')}</h2>
+                  <Paragraph className='mt-3 text-center'>
+                    {t("You have to select the pool strategy first to see it's [symbol]", { text: 'attributes' })}
+                  </Paragraph>
                 </div>
               </div>
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
-                <div className='col-span-5 text-neutral-50'>$TODO (API)</div>
-              </div>
-              <div className='grid grid-cols-7'>
-                <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
-                <div className='col-span-5 text-neutral-50'>
-                  <div
-                    onClick={() => goScan(networkId, pool?.address)}
-                    className='item-center flex cursor-pointer gap-1'
-                  >
-                    <span>{formatAddress(pool?.address)}</span>
-                    <LinkExternalIcon className='inline-block h-4 w-4' />
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 

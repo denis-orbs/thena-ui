@@ -160,6 +160,7 @@ export const useV3DerivedMintInfo = (
     startPriceTypedValue,
     liquidityRangeType,
     presetRange,
+    strategy,
   } = useV3MintState()
 
   const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : []
@@ -603,6 +604,7 @@ export const useV3DerivedMintInfo = (
     upperPrice,
     liquidityRangeType,
     presetRange,
+    strategy,
   }
 }
 
