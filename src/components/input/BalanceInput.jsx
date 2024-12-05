@@ -33,8 +33,8 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
   })
 
   const max = useMemo(
-    () => (!maxBalance ? fromWei(balanceOf ?? 0n, asset.decimals) : maxBalance),
-    [asset.decimals, balanceOf, maxBalance],
+    () => (!maxBalance ? fromWei(balanceOf ?? 0n, asset?.decimals) : maxBalance),
+    [asset?.decimals, balanceOf, maxBalance],
   )
 
   const data = useMemo(

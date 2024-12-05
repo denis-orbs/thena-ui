@@ -16,7 +16,7 @@ export function useCurrencyBalances(currencies) {
   const { data: balancesOf } = useReadContracts({
     contracts: currencies.map(c => ({
       abi: ERC20Abi,
-      address: c.address,
+      address: c?.address,
       functionName: 'balanceOf',
       args: [account],
     })),
