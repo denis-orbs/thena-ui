@@ -155,6 +155,7 @@ export default function PoolsPage() {
     '0x00a04fe69ab69ab0cbbe61671405677f5d003a2f', // BNB/VINU
     '0x4e2ae126c67128f0cfe35e43e0c9459992658d44', // mwBETH/wBETH
     '0xb3f3312252cade3a15eba318f6caaacb5e8097f4', // BNB/RWA
+    '0x7b879963ae083732f4514d564f4e4613e24e1f67', // USDT/FDUSD
   ]
 
   const newListingsPool = filteredPools.filter(item => newListPoolIds.includes(item.address))
