@@ -1,7 +1,8 @@
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
-import { formatUnits, getAddress } from 'viem'
-import { useAccount, useReadContract, useReadContracts } from 'wagmi'
+import { getAddress } from 'viem'
+import { useReadContract, useReadContracts } from 'wagmi'
 
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
 import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
@@ -9,13 +10,14 @@ import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import CustomTooltip from '@/components/tooltip'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { weightedPoolAbiFees } from '@/constant/abi'
+import useWallet from '@/hooks/useWallet'
 import { getVaultContract, getWeightedPoolContract } from '@/lib/contracts'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount, fromWei } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 export function WeightedPoolPosition({ pool }) {
   const t = useTranslations()
-  const { address: userAddress, chainId } = useAccount()
+  const { account: userAddress, chainId } = useWallet()
   const [isOpenRemove, setIsOpenRemove] = useState(false)
 
   // MARK: Get claimable token for WEIGHTED
@@ -47,25 +49,29 @@ export function WeightedPoolPosition({ pool }) {
     },
   })
 
-  const feeContract = data?.[0]?.result
-  const totalSupply = Number(data?.[1]?.result ?? 0)
-  const balance = Number(data?.[2]?.result ?? 0)
-  const tokenAddresses = data?.[3]?.result?.[0]
-  const tokenAmounts = data?.[3]?.result?.[1]
+  const [poolFeeContract, lpTokenTotalSupply, lpTokenBalance, tokenAddresses, tokenAmounts] = useMemo(() => {
+    const poolFeeContractVal = data?.[0]?.result
+    const lpTokenTotalSupplyVal = Number(data?.[1]?.result ?? 0)
+    const lpTokenBalanceVal = Number(data?.[2]?.result ?? 0)
+    const tokenAddressesVal = data?.[3]?.result?.[0] || []
+    const tokenAmountsVal = data?.[3]?.result?.[1] || []
+
+    return [poolFeeContractVal, lpTokenTotalSupplyVal, lpTokenBalanceVal, tokenAddressesVal, tokenAmountsVal]
+  }, [data])
 
   const { data: expectedFees = [] } = useReadContract({
-    address: feeContract,
+    address: poolFeeContract,
     abi: weightedPoolAbiFees,
     functionName: 'expectedFees',
     args: [userAddress],
     query: {
-      enabled: Boolean(feeContract) && pool.type === PAIR_TYPES.WEIGHTED,
+      enabled: Boolean(poolFeeContract) && pool.type === PAIR_TYPES.WEIGHTED,
     },
   })
 
   const mappedToken = useMemo(() => {
     const map = {}
-    tokenAddresses?.forEach(address => {
+    tokenAddresses.forEach(address => {
       const token = pool.tokens.find(item => getAddress(item.address) === getAddress(address))
       map[address] = token
     })
@@ -73,39 +79,27 @@ export function WeightedPoolPosition({ pool }) {
   }, [pool.tokens, tokenAddresses])
 
   const depositValue = useMemo(() => {
-    if (!tokenAmounts || tokenAmounts.length === 0 || !balance) {
-      return {
-        tokens: [],
-        depositUsd: 0,
-      }
-    }
+    // TODO: Get from API
+    const lpTokenPrice = new BigNumber(0)
 
-    const poolValueUsd = tokenAmounts.reduce((sum, amount, index) => {
-      const token = mappedToken?.[tokenAddresses?.[index]]
-      return sum + Number(token?.price) * Number(formatUnits(amount, token.decimals))
-    }, 0)
-
-    const ratio = balance / totalSupply
-
+    const userAmountRatio = new BigNumber(lpTokenBalance / lpTokenTotalSupply)
     return {
-      tokens: tokenAddresses?.map((address, index) => {
+      tokens: tokenAddresses.map((address, index) => {
         const token = mappedToken[address]
         return {
           ...token,
-          amount: ratio * formatUnits(Number(tokenAmounts[index]), token.decimals),
+          amount: userAmountRatio.times(fromWei(tokenAmounts[index]), token.decimals),
         }
       }, []),
-      depositUsd: ratio * poolValueUsd,
+      depositUsd: lpTokenPrice.times(lpTokenBalance),
     }
-  }, [balance, mappedToken, tokenAddresses, tokenAmounts, totalSupply])
+  }, [lpTokenBalance, mappedToken, tokenAddresses, tokenAmounts, lpTokenTotalSupply])
 
-  const claimable = useMemo(() => {
-    if (expectedFees.length === 0) return 0
-
+  const claimableFee = useMemo(() => {
     let total = 0
-    const tokenList = tokenAddresses?.map((address, index) => {
-      const fee = Number(formatUnits(expectedFees[index], mappedToken[address].decimals))
-      total += fee * mappedToken[address].price
+    const tokenList = tokenAddresses.map((address, index) => {
+      const fee = new BigNumber(fromWei(expectedFees[index], mappedToken[address].decimals))
+      total += fee.times(mappedToken[address].price)
 
       return {
         address,
@@ -147,15 +141,16 @@ export function WeightedPoolPosition({ pool }) {
         <div className='flex justify-between'>
           <span className='text-neutral-300'>{t('APR')}</span>
           {/* TODO: mock value */}
-          <span>0%</span>
+          <span>TODO</span>
         </div>
 
         <div className='flex justify-between'>
           <span className='text-neutral-300'>{t('Deposit Value in USD')}</span>
-          <span>${formatAmount(depositValue.depositUsd)}</span>
+          {/* <span>${formatAmount(depositValue.depositUsd)}</span> */}
+          <span>TODO(API)</span>
         </div>
 
-        {depositValue?.tokens.map((token, index) => (
+        {(depositValue.tokens || []).map((token, index) => (
           <div className='flex justify-between' key={index}>
             <span className='text-neutral-300'>
               {token.symbol} {t('Deposit')}
@@ -170,11 +165,11 @@ export function WeightedPoolPosition({ pool }) {
         <div className='flex justify-between'>
           <span className='text-neutral-300'>{t('Claimable Fees')}</span>
           <p className='flex items-center gap-2'>
-            <span>${claimable.total}</span>
+            <span>${formatAmount(claimableFee.total)}</span>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool?.address}`} />
             <CustomTooltip id={`net-${pool?.address}`}>
-              {claimable?.tokenList?.map((token, index) => (
-                <p key={index}>{`${token.fee} ${token.name}`}</p>
+              {claimableFee.tokenList.map(token => (
+                <p key={token.symbol}>{`${formatAmount(token.fee)} ${token.symbol}`}</p>
               ))}
             </CustomTooltip>
           </p>
@@ -190,7 +185,7 @@ export function WeightedPoolPosition({ pool }) {
           {t('Remove')}
         </OutlinedButton>
 
-        <EmphasisButton className='w-full'>{t('Add')}</EmphasisButton>
+        <EmphasisButton className='w-full'>{t('Add')} (TODO)</EmphasisButton>
       </div>
       <RemoveWeightedModal isOpen={isOpenRemove} pool={pool} setIsOpen={setIsOpenRemove} />
     </div>

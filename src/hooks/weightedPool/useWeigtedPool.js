@@ -23,6 +23,17 @@ import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
 
+const toBytes32 = hexString => {
+  const rawBytes = Uint8Array.from(Buffer.from(hexString.slice(2), 'hex'))
+
+  if (rawBytes.length > 32) {
+    return rawBytes.slice(0, 32)
+  }
+  const finalBytes = new Uint8Array(32)
+  finalBytes.set(rawBytes)
+  return finalBytes
+}
+
 export const useWeightPoolData = poolAddress => {
   const { account, chainId } = useWallet()
 
@@ -51,23 +62,21 @@ export const useWeightPoolData = poolAddress => {
     },
   )
 
+  if (!poolAddress) {
+    return {
+      balance: new BigNumber(0),
+      decimals: new BigNumber(18),
+      pending: false,
+      mutatePoolBalance,
+    }
+  }
+
   return {
     balance: data?.balance ?? new BigNumber(0),
     decimals: data?.decimals ?? new BigNumber(18),
     pending: isLoading,
     mutatePoolBalance,
   }
-}
-
-const toBytes32 = hexString => {
-  const rawBytes = Uint8Array.from(Buffer.from(hexString.slice(2), 'hex'))
-
-  if (rawBytes.length > 32) {
-    return rawBytes.slice(0, 32)
-  }
-  const finalBytes = new Uint8Array(32)
-  finalBytes.set(rawBytes)
-  return finalBytes
 }
 
 export const useWeightedPool = () => {

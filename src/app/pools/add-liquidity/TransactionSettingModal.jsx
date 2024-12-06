@@ -37,9 +37,9 @@ function TransactionSettingModal({ isOpen, setIsOpen, slippageTolerance, setSlip
     [slippageTolerance],
   )
   return (
-    <Modal isOpen={isOpen} closeModal={() => setIsOpen(false)} title={t('Transaction settings')}>
+    <Modal isOpen={isOpen} closeModal={() => setIsOpen(false)} title={t('Transaction Settings')}>
       <ModalBody>
-        <TextHeading>{t('Slippage tolerance')}</TextHeading>
+        <TextHeading>{t('Slippage Tolerance')}</TextHeading>
         <div className='mt-4 flex flex-row justify-between'>
           <Selection className='!h-11' data={range} />
           <Input

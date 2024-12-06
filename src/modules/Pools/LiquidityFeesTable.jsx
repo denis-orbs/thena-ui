@@ -1,19 +1,14 @@
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
-import { formatUnits } from 'viem'
-import { useAccount, useReadContract } from 'wagmi'
 
 import CircleImage from '@/components/image/CircleImage'
 import { TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { weightedPoolAbiFees } from '@/constant/abi'
-import { useTokenUSDValue } from '@/hooks/usePrices'
-import { getWeightedPoolContract } from '@/lib/contracts'
-import { cn, formatAmount } from '@/lib/utils'
+import { UNKNOWN_LOGO } from '@/constant'
+import { cn } from '@/lib/utils'
 
 function LiquidityFeeRow({ token }) {
   const t = useTranslations()
-  const { getValueTokenAmountToUSD } = useTokenUSDValue()
+  // const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   return (
     <div className='grid grid-cols-2 gap-y-4 rounded-lg bg-neutral-800  px-5 py-4 lg:grid-cols-3'>
@@ -34,15 +29,19 @@ function LiquidityFeeRow({ token }) {
       </div>
       <div className='flex flex-col items-start'>
         <div className='mb-1 text-[13px] font-normal leading-5 lg:hidden'>{t('Current Liquidity')}</div>
-        <p className='text-[18px] font-medium leading-[26px]'>{formatAmount(token?.amount)}</p>
+        <p className='text-[18px] font-medium leading-[26px]'>TODO (API)</p>
+        <p className='text-[14px] font-normal leading-[26px] text-neutral-200'>$TODO</p>
+        {/* <p className='text-[18px] font-medium leading-[26px]'>{formatAmount(token?.liquidity)}</p>
         <p className='text-[14px] font-normal leading-[26px] text-neutral-200'>
-          ${formatAmount(getValueTokenAmountToUSD(token.address, token.amount))}
-        </p>
+          ${formatAmount(getValueTokenAmountToUSD(token.address, token.liquidity))}
+        </p> */}
       </div>
       <div className='flex flex-col items-start'>
-        <div className='mb-1 text-[13px] font-normal leading-5 lg:hidden'>{t('Unclaimed Fees')}</div>
-        <p className='text-[18px] font-medium leading-[26px]'>{formatAmount(token?.claimable)}</p>
-        <p className='text-[14px] font-normal leading-[26px] text-neutral-200'>$ {formatAmount(token?.claimableUsd)}</p>
+        <div className='mb-1 text-[13px] font-normal leading-5 lg:hidden'>{t('Generated Cumulative Fees')}</div>
+        <p className='text-[18px] font-medium leading-[26px]'>TODO (API)</p>
+        <p className='text-[14px] font-normal leading-[26px] text-neutral-200'>$TODO</p>
+        {/* <p className='text-[18px] font-medium leading-[26px]'>{formatAmount(token?.claimable)}</p>
+<p className='text-[14px] font-normal leading-[26px] text-neutral-200'>${formatAmount(token?.claimableUsd)}</p> */}
       </div>
     </div>
   )
@@ -50,50 +49,26 @@ function LiquidityFeeRow({ token }) {
 
 export function LiquidityFeesTable({ pool }) {
   const t = useTranslations()
-  const { address: userAddress, chainId } = useAccount()
-
-  // MARK: Get claimable token for WEIGHTED
-  const weightedContract = getWeightedPoolContract(pool?.address, chainId)
-  const { data: feeContractAddress } = useReadContract({
-    ...weightedContract,
-    functionName: 'feesContract',
-    query: {
-      enabled: Boolean(pool?.address) && pool.type === PAIR_TYPES.WEIGHTED,
-    },
-  })
-
-  const { data: expectedFees = [] } = useReadContract({
-    address: feeContractAddress,
-    abi: weightedPoolAbiFees,
-    functionName: 'expectedFees',
-    args: [userAddress],
-    query: {
-      enabled: Boolean(feeContractAddress) && pool.type === PAIR_TYPES.WEIGHTED,
-    },
-  })
 
   const tokensList = useMemo(() => {
     if (!pool?.tokens) return []
 
-    return pool.tokens.map((token, index) => {
-      const amount = Number(token?.balance?.toNumber() ?? 0)
-      const claimable = formatUnits(expectedFees[index] ?? 0n, token.decimals)
+    return pool.tokens.map(token => {
+      const liquidity = Number(token?.balance?.toNumber() ?? 0)
 
       return {
         ...token,
-        amount,
-        claimable,
-        claimableUsd: claimable * Number(token?.price ?? 0),
+        liquidity,
       }
     })
-  }, [expectedFees, pool.tokens])
+  }, [pool.tokens])
 
   return (
     <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6'>
       <div className='hidden grid-cols-3 px-5 text-[14px] font-normal leading-5 lg:grid'>
         <div className='col-span-1'>{t('Token and Weight')}</div>
         <div>{t('Current Liquidity')}</div>
-        <div>{t('Unclaimed Fees')}</div>
+        <div>{t('Generated Cumulative Fees')}</div>
       </div>
 
       <div className='flex flex-col gap-3'>
