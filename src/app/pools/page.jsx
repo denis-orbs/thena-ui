@@ -261,9 +261,7 @@ export default function PoolsPage() {
                     />
                   </div>
                   <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
-                    <TextHeading className='text-xs'>
-                      {t('Liquidity providers in this pool are eligible for YieldNest’s 4X Seeds Boost')}
-                    </TextHeading>
+                    <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
                   </CustomTooltip>
                 </div>
                 <div className='flex items-center gap-2'>
