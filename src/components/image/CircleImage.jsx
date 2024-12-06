@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import React, { useState } from 'react'
 
+import { UNKNOWN_LOGO } from '@/constant'
 import { cn } from '@/lib/utils'
 
 /**
@@ -13,7 +14,7 @@ export default function CircleImage({ src, alt, className, ...rest }) {
   return (
     <Image
       className={cn('rounded-full', status === 'loading' && 'animate-pulse bg-neutral-600', className)}
-      src={src}
+      src={src ?? UNKNOWN_LOGO}
       alt={alt}
       width={100}
       height={100}

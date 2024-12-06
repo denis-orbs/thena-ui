@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { JSBI, Percent, TradeType } from 'thena-sdk-core'
 
 import { Alert } from '@/components/alert'
@@ -33,13 +33,12 @@ import WarningModal from './WarningModal'
 export default function SwapFusion({
   fromAsset,
   toAsset,
-  setFromAddress,
-  setToAddress,
   isWrap,
   isUnwrap,
   onWrap,
   onUnwrap,
   wrapPending,
+  updateSearchParams,
 }) {
   const [independentField, setIndependentField] = useState(Field.CURRENCY_A)
   const [isWarning, setIsWarning] = useState(false)
@@ -51,6 +50,9 @@ export default function SwapFusion({
   const assets = useAssets()
   const mutateAssets = useMutateAssets()
   const t = useTranslations()
+
+  const setFromAddress = useCallback(address => updateSearchParams({ inputCurrency: address }), [updateSearchParams])
+  const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
 
   const showWrap = useMemo(() => isWrap || isUnwrap, [isWrap, isUnwrap])
 
@@ -222,8 +224,10 @@ export default function SwapFusion({
               className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
               Icon={SwitchVerticalIcon}
               onClick={() => {
-                setFromAddress(toAsset.address)
-                setToAddress(fromAsset.address)
+                updateSearchParams({
+                  inputCurrency: toAsset.address,
+                  outputCurrency: fromAsset.address,
+                })
               }}
             />
           </div>

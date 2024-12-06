@@ -1287,5 +1287,9 @@
   "Pool Details": "Pool Details",
   "Transaction settings": "Transaction settings",
   "Slippage tolerance": "Slippage tolerance",
-  "Deposit All Token": "Deposit All Token"
+  "Deposit All Token": "Deposit All Token",
+  "New Listings": "新建流动性池",
+  "BeCareful": "当心",
+  "BeCarefulDescription": "任何人都可以创建代币，包括假代币，因此需要谨慎。某些代币可能与 Thena 协议不兼容。通过导入此自定义代币，您接受风险。",
+  "Import Anyway": "仍然导入"
 }

@@ -1294,5 +1294,9 @@
   "Pool Details": "Pool Details",
   "Transaction settings": "Transaction settings",
   "Slippage tolerance": "Slippage tolerance",
-  "Deposit All Token": "Deposit All Token"
+  "Deposit All Token": "Deposit All Token",
+  "New Listings": "New Listings",
+  "BeCareful": "Be Careful",
+  "BeCarefulDescription": "Anyone can create tokens, including fake ones, so caution is needed. Some tokens may not be compatible with Thena protocols. By importing this custom token, you accept the risks.",
+  "Import Anyway": "Import Anyway"
 }

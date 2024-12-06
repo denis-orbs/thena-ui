@@ -1,9 +1,12 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { WBNB } from 'thena-sdk-core'
+import { useReadContract } from 'wagmi'
 
+import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
-import { cn, formatAmount } from '@/lib/utils'
+import useWallet from '@/hooks/useWallet'
+import { cn, formatAmount, fromWei } from '@/lib/utils'
 
 import AssetDropdown from '../dropdown/AssetDropdown'
 import IconGroup from '../icongroup'
@@ -17,12 +20,28 @@ import { TextSubHeading } from '../typography'
 function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChange, title, autoFocus = false }) {
   const assets = useAssets()
   const t = useTranslations()
+  const { account } = useWallet()
 
-  const max = useMemo(() => (!maxBalance ? asset?.balance : maxBalance), [asset, maxBalance])
+  const { data: balanceOf } = useReadContract({
+    abi: ERC20Abi,
+    address: asset?.address,
+    functionName: 'balanceOf',
+    args: [account],
+    query: {
+      enabled: !!asset && Boolean(account),
+    },
+  })
+
+  const max = useMemo(
+    () => (!maxBalance ? fromWei(balanceOf ?? 0n, asset?.decimals) : maxBalance),
+    [asset?.decimals, balanceOf, maxBalance],
+  )
+
   const data = useMemo(
     () => assets.filter(item => item.address === 'BNB' || item.address === WBNB[item.chainId]?.address?.toLowerCase()),
     [assets],
   )
+
   // const errorMsg = useMemo(() => {
   //   if (!asset || maxBalance.lt(amount)) {
   //     return 'Insufficient Balance'

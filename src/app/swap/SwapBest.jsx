@@ -49,8 +49,6 @@ const SWAP_TYPES_ITEMS = [
 export default function SwapBest({
   fromAsset,
   toAsset,
-  setFromAddress,
-  setToAddress,
   isWrap,
   isUnwrap,
   onWrap,
@@ -58,6 +56,7 @@ export default function SwapBest({
   wrapPending,
   setSwapType,
   swapType,
+  updateSearchParams,
 }) {
   const t = useTranslations()
   const [fromAmount, setFromAmount] = useState('')
@@ -66,6 +65,10 @@ export default function SwapBest({
   const { slippage, deadline } = useSettings()
   const { networkId } = useChainSettings()
   const debouncedAmount = useDebounce(fromAmount)
+
+  const setFromAddress = useCallback(address => updateSearchParams({ inputCurrency: address }), [updateSearchParams])
+  const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
+
   const {
     data: bestTrade,
     isLoading: bestTradePending,
@@ -330,8 +333,10 @@ export default function SwapBest({
                     className='absolute bottom-0 left-0 right-0 top-0 z-10 m-auto'
                     Icon={SwitchVerticalIcon}
                     onClick={() => {
-                      setFromAddress(toAsset.address)
-                      setToAddress(fromAsset.address)
+                      updateSearchParams({
+                        inputCurrency: toAsset.address,
+                        outputCurrency: fromAsset.address,
+                      })
                     }}
                   />
                 </div>
