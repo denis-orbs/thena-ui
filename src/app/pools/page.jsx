@@ -19,7 +19,6 @@ import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { formatAmount } from '@/lib/utils'
@@ -97,7 +96,6 @@ export default function PoolsPage() {
   const vaults = useVaults()
   const { networkId } = useChainSettings()
   const t = useTranslations()
-  const assets = useAssets()
 
   const filteredPools = useMemo(() => {
     let final
@@ -107,18 +105,6 @@ export default function PoolsPage() {
       final = pairs.filter(ele => ele.highApr > 0)
     }
     final = filter === PAIR_TYPES.All ? final : final.filter(item => item.type === filter)
-    // TODO: hard-coded for USDT/arcUSD
-    final = final.map(pool => {
-      if (['0xfd60a2b164c86751df65c8cf895f7b07e5a48c35'].includes(pool.address)) {
-        const token0 = assets.find(item => item.address === pool.token0.address)
-        const token1 = assets.find(item => item.address === pool.token1.address)
-
-        if (token0 && token1) {
-          return { ...pool, tvlUSD: pool.reserve0 * token0.price + pool.reserve1 * token1.price }
-        }
-      }
-      return pool
-    })
 
     const res =
       filter !== PAIR_TYPES.LSD || strategy === STRATEGIES.All
@@ -141,7 +127,7 @@ export default function PoolsPage() {
               withComma.toLowerCase().includes(searchText.toLowerCase())
             )
           })
-  }, [isInactive, filter, strategy, searchText, pairs, assets])
+  }, [isInactive, filter, strategy, searchText, pairs])
 
   // TODO: If new pools, update here
   const newListPoolIds = [
