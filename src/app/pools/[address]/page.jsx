@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -15,7 +15,6 @@ import IconGroup from '@/components/icongroup'
 import NextImage from '@/components/image/NextImage'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { formatAmount, goScan } from '@/lib/utils'
@@ -33,7 +32,6 @@ export default function SpecificPoolPage({ params }) {
   const { push } = useRouter()
   const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
-  const assets = useAssets()
   const { networkId } = useChainSettings()
   const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [pairs, address])
   const userPools = pool ? pool.subpools.filter(ele => ele.account.totalLp.gt(0)) : []
@@ -45,25 +43,6 @@ export default function SpecificPoolPage({ params }) {
       )
     : []
   const userPositions = [...userPools, ...userManuals]
-  const [tvlUSD, setTvlUSD] = useState(0)
-
-  useEffect(() => {
-    if (pool) {
-      // TODO: hard-coded for USDT/arcUSD
-      if (['0xfd60a2b164c86751df65c8cf895f7b07e5a48c35'].includes(pool.address)) {
-        const token0 = assets.find(item => item.address === pool.token0.address)
-        const token1 = assets.find(item => item.address === pool.token1.address)
-
-        if (token0 && token1) {
-          setTvlUSD(pool.reserve0 * token0.price + pool.reserve1 * token1.price)
-        } else {
-          setTvlUSD(pool.tvlUSD)
-        }
-      } else {
-        setTvlUSD(pool.tvlUSD)
-      }
-    }
-  }, [pool, assets])
 
   if (isLoading || !pool) {
     return <Loading />
@@ -192,7 +171,7 @@ export default function SpecificPoolPage({ params }) {
               <Paragraph>{t('APR')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>
-              <TextHeading className='w-full min-w-0 truncate'>${formatAmount(tvlUSD)}</TextHeading>
+              <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool.tvlUSD)}</TextHeading>
               <Paragraph>{t('TVL')}</Paragraph>
             </div>
             <div className='flex w-full flex-col gap-2'>

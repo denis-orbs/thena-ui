@@ -10,7 +10,7 @@ export const v1GraphUrl = {
 
 export const fusionGraphUrl = {
   // eslint-disable-next-line max-len
-  [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/wN4QJb8MQXLwYwsEAVBAZpd112fYRkJPfetjS329ghh`,
+  [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt`,
   [ChainId.OPBNB]: `https://open-platform-ap.nodereal.io/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion`,
 }
 
@@ -38,8 +38,6 @@ export const fusionClient = {
   [ChainId.BSC]: new GraphQLClient(fusionGraphUrl[ChainId.BSC]),
   [ChainId.OPBNB]: new GraphQLClient(fusionGraphUrl[ChainId.OPBNB]),
 }
-
-export const fixedFusionClient = new GraphQLClient('https://squid.subsquid.io/thena-squid/v/v4/graphql')
 
 export const blockClient = {
   [ChainId.BSC]: new GraphQLClient(blockGraphUrl[ChainId.BSC]),
