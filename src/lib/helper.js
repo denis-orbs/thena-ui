@@ -56,7 +56,6 @@ const fetchTokenDataFromSC = async ({ address, account, chainId }) => {
       isWarning: true,
     }
   } catch (error) {
-    console.error(error)
     return undefined
   }
 }

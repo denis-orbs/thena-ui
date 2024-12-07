@@ -190,7 +190,7 @@ export default function SpecificPoolPage({ params }) {
             <div className='grid grid-cols-1 gap-4'>
               {userPositions.map((ele, idx) =>
                 ele.type === 'Manual' ? (
-                  <ManualPosition pool={ele} key={`pool-${idx}`} />
+                  <ManualPosition position={ele} key={`pool-${idx}`} />
                 ) : (
                   <Position pool={ele} key={ele?.address} />
                 ),

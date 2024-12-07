@@ -1,26 +1,39 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { BNB, ChainId, Token } from 'thena-sdk-core'
 
 import { useAssets } from '@/context/assetsContext'
+import { getTokenInfo } from '@/lib/helper'
 import { useChainSettings } from '@/state/settings/hooks'
 
-import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '../useLocalStorage'
+import useWallet from '../useWallet'
 
 // undefined if invalid or does not exist
 // otherwise returns the token
 export function useToken(tokenAddress) {
   const assets = useAssets()
-  const { getWithExpiry } = useLocalStorage()
+  const { networkId } = useChainSettings()
+  const { account } = useWallet()
+
+  const [token, setToken] = useState()
+
+  useEffect(() => {
+    const handleGetToken = async () => {
+      const asset = await getTokenInfo({ address: tokenAddress, assets, account, networkId })
+      setToken(asset)
+    }
+    handleGetToken()
+  }, [account, assets, networkId, tokenAddress])
 
   return useMemo(() => {
     if (!tokenAddress) return undefined
-
-    const temp = getWithExpiry(LOCAL_STORAGE_TOKENS) ?? []
-    const asset = temp.concat(assets).find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
-
-    if (!asset) return undefined
-    return new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
-  }, [assets, getWithExpiry, tokenAddress])
+    return new Token(
+      token?.chainId ?? networkId,
+      tokenAddress,
+      token?.decimals ?? 18,
+      token?.symbol ?? 'UNKNOWN',
+      token?.name ?? 'UNKNOWN',
+    )
+  }, [tokenAddress, token?.chainId, token?.decimals, token?.symbol, token?.name, networkId])
 }
 
 export const useCurrency = address => {
