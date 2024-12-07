@@ -18,6 +18,15 @@ export const callMulti = async contracts => {
   return res.map(ele => (ele.status === 'success' ? ele.result : null))
 }
 
+export const callMultiWithLog = async contracts => {
+  const res = await multicall(wagmiConfig, {
+    contracts,
+  })
+
+  console.log({ res })
+  return res.map(ele => (ele.status === 'success' ? ele.result : null))
+}
+
 export const readCall = async (contract, functionName, args = [], chainId = ChainId.BSC) =>
   await readContract(wagmiConfig, {
     ...contract,

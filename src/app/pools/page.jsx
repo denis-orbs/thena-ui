@@ -236,7 +236,6 @@ export default function PoolsPage() {
                 </CustomTooltip>
               </div>
             )}
-
             {pool.address === ynBNBPoolAddress && (
               <>
                 <div className='flex items-center gap-2'>
@@ -265,6 +264,16 @@ export default function PoolsPage() {
                     </TextHeading>
                   </CustomTooltip>
                 </div>
+              </>
+            )}
+            {(pool.token0.isWarning || pool.token1.isWarning) && (
+              <>
+                <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
+                  <InfoIcon className='size-4 stroke-warn-700' />
+                </div>
+                <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Careful Custom Token')}</TextHeading>
+                </CustomTooltip>
               </>
             )}
           </div>
