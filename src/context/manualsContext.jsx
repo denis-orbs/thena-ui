@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import { algebraAbi } from '@/constant/abi/fusion'
@@ -7,6 +7,7 @@ import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getAlgebraNPMContract } from '@/lib/contracts'
+import { getTokenInfo } from '@/lib/helper'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const initialState = []
@@ -60,29 +61,42 @@ function ManualsContextProvider({ children }) {
       refreshInterval: 60000,
     },
   )
-  const final = useMemo(() => {
-    if (!assets || !assets.length || !data) {
-      return {
-        mutateManual: mutate,
-        positions: [],
+
+  const [manualData, setManualData] = useState([])
+
+  useEffect(() => {
+    const processPositions = async () => {
+      if (!assets || !assets.length || !data) {
+        setManualData([])
+        return
       }
+
+      const positions = await Promise.all(
+        data.map(async ele => {
+          const asset0 = await getTokenInfo({ address: ele.token0Address, assets, account, networkId })
+          const asset1 = await getTokenInfo({ address: ele.token1Address, assets, account, networkId })
+          return {
+            ...ele,
+            type: 'Manual',
+            symbol: `${asset0?.symbol || 'UNKNOWN'}/${asset1?.symbol || 'UNKNOWN'}`,
+            asset0,
+            asset1,
+          }
+        }),
+      )
+
+      setManualData(positions)
     }
-    const positions = data.map(ele => {
-      const asset0 = assets.find(asset => asset.address.toLowerCase() === ele.token0Address.toLowerCase())
-      const asset1 = assets.find(asset => asset.address.toLowerCase() === ele.token1Address.toLowerCase())
-      return {
-        ...ele,
-        type: 'Manual',
-        symbol: `${asset0?.symbol}/${asset1?.symbol}`,
-        asset0,
-        asset1,
-      }
-    })
-    return {
+    processPositions()
+  }, [account, assets, data, networkId])
+
+  const final = useMemo(
+    () => ({
       mutateManual: mutate,
-      positions,
-    }
-  }, [assets, data, mutate])
+      positions: manualData,
+    }),
+    [manualData, mutate],
+  )
 
   return <ManualsContext.Provider value={final}>{children}</ManualsContext.Provider>
 }

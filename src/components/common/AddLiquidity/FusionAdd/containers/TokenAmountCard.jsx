@@ -125,7 +125,7 @@ export function TokenAmountCard({
                 ) : (
                   <CircleImage alt='' className='h-6 w-6' src={logoURI} />
                 )}
-                <span className='text-nowrap'>{isDouble ? 'BNB + WBNB' : currency.symbol}</span>
+                <span className='text-nowrap'>{isDouble ? 'BNB + WBNB' : currency?.symbol}</span>
               </div>
             </div>
             <div className='flex items-center justify-between gap-2'>

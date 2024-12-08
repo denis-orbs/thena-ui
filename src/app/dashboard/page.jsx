@@ -227,7 +227,7 @@ export default function HoldingsPage() {
               <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
                 {filteredPools.map((pool, idx) =>
                   pool.type === 'Manual' ? (
-                    <ManualPosition pool={pool} key={`pool-${idx}`} />
+                    <ManualPosition position={pool} key={`pool-${idx}`} />
                   ) : (
                     <React.Fragment key={`pool-${idx}`}>
                       {pool.account.gaugeBalance.gt(0) && <Staked pool={pool} />}
