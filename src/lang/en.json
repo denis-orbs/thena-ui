@@ -1129,7 +1129,7 @@
   "Close": "Close",
   "Learn more": "Learn more",
   "Leaderboard is updated every 30-60s": "Leaderboard is updated every 30-60s. If multiple participants tie for a specific prize position, the prize money for that position and the subsequent positions will be pooled and divided equally among the tied participants. For example, if three people tie for second place, they will share the combined prize money for second, third, and fourth place equally.",
-  "Liquidity providers in this pool are eligible for YieldNest’s 4X Seeds Boost": "Liquidity providers in this pool are eligible for YieldNest’s 4X Seeds Boost",
+  "Seeds Boost": "Liquidity providers in this pool are eligible for YieldNest’s 2.5X Seeds Boost",
   "Liquidity providers in this pool are eligible for Turtle Club 10% emission boost": "Liquidity providers in this pool are eligible for Turtle Club 10% emission boost",
   "Label": "Label",
   "Delete Label": "Delete Label",
@@ -1292,7 +1292,8 @@
   "Pool Details": "Pool Details",
   "Deposit All Token": "Deposit All Token",
   "New Listings": "New Listings",
-  "BeCareful": "Be Careful",
-  "BeCarefulDescription": "Anyone can create tokens, including fake ones, so caution is needed. Some tokens may not be compatible with Thena protocols. By importing this custom token, you accept the risks.",
-  "Import Anyway": "Import Anyway"
+  "BeCareful": "ATTENTION!",
+  "BeCarefulDescription": "Users are advised to exercise caution when importing custom tokens. It is important to note that anyone can create tokens, including those that may be fraudulent or incompatible with THENA. By importing a custom token, the user acknowledges and accepts the potential risks involved.",
+  "Import Anyway": "Import Anyway",
+  "Careful Custom Token": "ATTENTION! Custom token is used here"
 }

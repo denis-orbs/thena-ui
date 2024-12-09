@@ -49,13 +49,13 @@ export const fetchManualInfo = async (account, tokenId, chainId) => {
   return balance
 }
 
-export default function ManualPosition({ pool }) {
+export default function ManualPosition({ position: manualPosition }) {
   const [claimPopup, setClaimPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const { mutateManual } = useContext(ManualsContext)
   const { account, chainId } = useWallet()
-  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = pool
+  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = manualPosition
   const { data: fees, mutate } = useSWR(
     account && tokenId ? ['manuals/fee', tokenId, account, chainId] : null,
     () => fetchManualInfo(account, tokenId, chainId),
@@ -166,7 +166,7 @@ export default function ManualPosition({ pool }) {
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </TextHeading>
             <Paragraph className='text-xs'>
-              #{pool.tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
+              #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
             </Paragraph>
           </div>
         </div>
@@ -305,7 +305,7 @@ export default function ManualPosition({ pool }) {
         )}
 
         {version === 2 && Number(liquidity) > 0 && (
-          <Link href={`/pools/migration?tokenId=${pool.tokenId}`} className='w-full'>
+          <Link href={`/pools/migration?tokenId=${tokenId}`} className='w-full'>
             <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
           </Link>
         )}
@@ -314,7 +314,7 @@ export default function ManualPosition({ pool }) {
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}
-        pool={pool}
+        pool={manualPosition}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
         mutate={mutate}
@@ -324,7 +324,7 @@ export default function ManualPosition({ pool }) {
       <RemoveManualModal
         popup={removePopup}
         setPopup={setRemovePopup}
-        pool={pool}
+        pool={manualPosition}
         position={position}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
@@ -335,7 +335,7 @@ export default function ManualPosition({ pool }) {
       <AddManualModal
         popup={addPopup}
         setPopup={setAddPopup}
-        pool={pool}
+        pool={manualPosition}
         position={position}
         mutateManual={mutateManual}
         outOfRange={outOfRange}

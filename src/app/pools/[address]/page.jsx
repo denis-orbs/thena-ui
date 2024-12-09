@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -17,7 +17,6 @@ import Modal, { ModalBody } from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
@@ -39,16 +38,11 @@ export default function SpecificPoolPage({ params }) {
   const { push } = useRouter()
   const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
-  const assets = useAssets()
   const { networkId } = useChainSettings()
 
   const [showModalAdd, setShowModalAdd] = useState(false)
 
-  const pool = useMemo(
-    () => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(pairs), address],
-  )
+  const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [address, pairs])
 
   const { balance: weightedPoolBalance } = useWeightPoolData(pool?.type === PAIR_TYPES.WEIGHTED ? pool.address : null)
 
@@ -69,26 +63,6 @@ export default function SpecificPoolPage({ params }) {
     () => [...userPools, ...userManuals].filter(position => position.version === 3),
     [userManuals, userPools],
   )
-  const [tvlUSD, setTvlUSD] = useState(0)
-
-  useEffect(() => {
-    if (pool) {
-      // TODO: hard-coded for USDT/arcUSD
-      if (['0xfd60a2b164c86751df65c8cf895f7b07e5a48c35'].includes(pool?.address)) {
-        const token0 = assets.find(item => item.address === pool?.token0.address)
-        const token1 = assets.find(item => item.address === pool?.token1.address)
-
-        if (token0 && token1) {
-          // eslint-disable-next-line no-unsafe-optional-chaining
-          setTvlUSD(pool?.reserve0 * token0.price + pool?.reserve1 * token1.price)
-        } else {
-          setTvlUSD(pool?.tvlUSD)
-        }
-      } else {
-        setTvlUSD(pool?.tvlUSD)
-      }
-    }
-  }, [pool, assets])
 
   if (isLoading || !pool) {
     return <Loading />
@@ -154,7 +128,7 @@ export default function SpecificPoolPage({ params }) {
               <NeutralBadge className='inline text-[14px] font-normal leading-5 text-neutral-50'>
                 {t(pool?.type ?? 'Weighted')}
               </NeutralBadge>
-              <NeutralBadge className='inline text-[14px] font-normal leading-5'>
+              <NeutralBadge className='inline whitespace-nowrap text-[14px] font-normal leading-5'>
                 <span className='text-neutral-300 '>{t('Fee')}: </span>
                 <span className='text-neutral-50'>{pool?.fee}%</span>
               </NeutralBadge>
@@ -232,10 +206,8 @@ export default function SpecificPoolPage({ params }) {
                       src='/images/yieldnest_seed_3d__1__360.png'
                     />
                   </div>
-                  <CustomTooltip id={`pool-special-${pool?.address}-tooltip1`} className='rounded-md !py-2' place='top'>
-                    <TextHeading className='text-xs'>
-                      {t('Liquidity providers in this pool are eligible for YieldNest’s 4X Seeds Boost')}
-                    </TextHeading>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
                   </CustomTooltip>
                 </div>
                 <div className='flex items-center gap-2'>
@@ -264,7 +236,7 @@ export default function SpecificPoolPage({ params }) {
                 <Paragraph>{t('APR')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(tvlUSD)}</TextHeading>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.tvlUSD)}</TextHeading>
                 <Paragraph>{t('TVL')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
@@ -286,7 +258,7 @@ export default function SpecificPoolPage({ params }) {
                 <Paragraph>{t('APR')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(tvlUSD)}</TextHeading>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.tvlUSD)}</TextHeading>
                 <Paragraph>{t('TVL')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
@@ -399,7 +371,7 @@ export default function SpecificPoolPage({ params }) {
                 ) : (
                   userPositions.map((ele, idx) =>
                     ele.type === 'Manual' ? (
-                      <ManualPosition pool={ele} key={`pos-${idx}`} />
+                      <ManualPosition position={ele} key={`pos-${idx}`} />
                     ) : (
                       <Position pool={ele} key={ele?.address} />
                     ),

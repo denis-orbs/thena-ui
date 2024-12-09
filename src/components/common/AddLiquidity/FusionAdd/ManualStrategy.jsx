@@ -74,7 +74,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
 
   const isStablecoinPair = useMemo(() => {
     const stablecoins = stableAssets.map(token => token.address)
-    return stablecoins.includes(baseCurrency.wrapped.address) && stablecoins.includes(quoteCurrency.wrapped.address)
+    return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
   }, [baseCurrency, quoteCurrency, stableAssets])
 
   // get value and prices at ticks
@@ -99,12 +99,12 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
   })
 
   const leftPrice = useMemo(
-    () => (baseCurrency.wrapped.sortsBefore(quoteCurrency.wrapped) ? priceLower : priceUpper?.invert()),
+    () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceLower : priceUpper?.invert()),
     [baseCurrency, quoteCurrency, priceLower, priceUpper],
   )
 
   const rightPrice = useMemo(
-    () => (baseCurrency.wrapped.sortsBefore(quoteCurrency.wrapped) ? priceUpper : priceLower?.invert()),
+    () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceUpper : priceLower?.invert()),
     [baseCurrency, quoteCurrency, priceLower, priceUpper],
   )
 

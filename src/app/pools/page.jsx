@@ -20,7 +20,6 @@ import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { formatAmount } from '@/lib/utils'
@@ -99,7 +98,6 @@ export default function PoolsPage() {
   const vaults = useVaults()
   const { networkId } = useChainSettings()
   const t = useTranslations()
-  const assets = useAssets()
 
   // console.log({ pairs })
 
@@ -111,18 +109,6 @@ export default function PoolsPage() {
       final = pairs.filter(ele => ele.highApr > 0)
     }
     final = filter === PAIR_TYPES.All ? final : final.filter(item => item.type === filter)
-    // TODO: hard-coded for USDT/arcUSD
-    final = final.map(pool => {
-      if (['0xfd60a2b164c86751df65c8cf895f7b07e5a48c35'].includes(pool.address)) {
-        const token0 = assets.find(item => item.address === pool.token0.address)
-        const token1 = assets.find(item => item.address === pool.token1.address)
-
-        if (token0 && token1) {
-          return { ...pool, tvlUSD: pool.reserve0 * token0.price + pool.reserve1 * token1.price }
-        }
-      }
-      return pool
-    })
 
     const res =
       filter !== PAIR_TYPES.LSD || strategy === STRATEGIES.All
@@ -145,7 +131,7 @@ export default function PoolsPage() {
               withComma.toLowerCase().includes(searchText.toLowerCase())
             )
           })
-  }, [isInactive, filter, strategy, searchText, pairs, assets])
+  }, [isInactive, filter, strategy, searchText, pairs])
 
   // TODO: If new pools, update here
   const newListPoolIds = [
@@ -159,6 +145,7 @@ export default function PoolsPage() {
     '0x00a04fe69ab69ab0cbbe61671405677f5d003a2f', // BNB/VINU
     '0x4e2ae126c67128f0cfe35e43e0c9459992658d44', // mwBETH/wBETH
     '0xb3f3312252cade3a15eba318f6caaacb5e8097f4', // BNB/RWA
+    '0x7b879963ae083732f4514d564f4e4613e24e1f67', // USDT/FDUSD
   ]
 
   const newListingsPool = filteredPools.filter(item => newListPoolIds.includes(item.address))
@@ -259,7 +246,6 @@ export default function PoolsPage() {
                 </CustomTooltip>
               </div>
             )}
-
             {pool.address === ynBNBPoolAddress && (
               <>
                 <div className='flex items-center gap-2'>
@@ -271,9 +257,7 @@ export default function PoolsPage() {
                     />
                   </div>
                   <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
-                    <TextHeading className='text-xs'>
-                      {t('Liquidity providers in this pool are eligible for YieldNest’s 4X Seeds Boost')}
-                    </TextHeading>
+                    <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
                   </CustomTooltip>
                 </div>
                 <div className='flex items-center gap-2'>
@@ -290,6 +274,16 @@ export default function PoolsPage() {
                     </TextHeading>
                   </CustomTooltip>
                 </div>
+              </>
+            )}
+            {(pool.token0?.isWarning || pool.token1?.isWarning) && (
+              <>
+                <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
+                  <InfoIcon className='size-4 stroke-warn-700' />
+                </div>
+                <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Careful Custom Token')}</TextHeading>
+                </CustomTooltip>
               </>
             )}
           </div>

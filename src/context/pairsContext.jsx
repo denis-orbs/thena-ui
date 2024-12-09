@@ -1,11 +1,13 @@
-import React, { createContext, useContext, useMemo } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
+import useWallet from '@/hooks/useWallet'
 import { fetchBscPairs, fetchBscTestnetPairsV3, fetchOpPairs, fetchWeightedPools } from '@/lib/api'
-import { formatAmount, isoDateToFormatDate } from '@/lib/utils'
+import { getTokenInfo } from '@/lib/helper'
+import { formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -78,66 +80,73 @@ function PairsContextProvider({ children }) {
 
 const usePairs = () => {
   const { networkId } = useChainSettings()
+  const { account } = useWallet()
   const pairs = useContext(PairsContext)
   const assets = useAssets()
   const pools = usePools()
   const vaults = useVaults()
 
-  return useMemo(() => {
-    const { data, isLoading } = pairs[networkId]
-    if (!assets.length || !pools.length || !data) {
-      return {
-        pairs: [],
-        isLoading,
-      }
-    }
+  const [data, setData] = useState({ pairs: [], isLoading: true })
+  const { data: pairsData = [], isLoading = true } = pairs[networkId]
 
-    const result = data
-      .map(ele => {
-        // Weighted pools
-        if (ele.tokens && Array.isArray(ele.tokens)) {
-          const tokens = ele.tokens.map(token => {
-            const tokenDetail = assets.find(asset => asset?.address?.toLowerCase() === token?.address?.toLowerCase())
-            tokenDetail.symbol = tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN'
+  useEffect(() => {
+    const processPairs = async () => {
+      if (!assets.length || !pools.length || !pairsData.length) {
+        setData({ pairs: [], isLoading })
+        return
+      }
+
+      const enrichedPairs = await Promise.all(
+        pairsData.map(async ele => {
+          // Weighted pools
+          if (ele.tokens && Array.isArray(ele.tokens)) {
+            const tokens = await Promise.all(
+              ele.tokens.map(async token => {
+                const tokenDetail = await getTokenInfo({ address: token.address, assets, account, networkId })
+                tokenDetail.symbol = tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN'
+
+                return {
+                  ...token,
+                  ...tokenDetail,
+                }
+              }),
+            )
 
             return {
-              ...token,
-              ...tokenDetail,
+              ...ele,
+              tokens,
+              type: PAIR_TYPES.WEIGHTED,
+              subpools: [],
             }
-          })
+          }
+          const asset0 = await getTokenInfo({ address: ele.token0, assets, account, networkId })
+          const asset1 = await getTokenInfo({ address: ele.token1, assets, account, networkId })
+          const symbol0 = asset0?.symbol === 'WBNB' ? 'BNB' : asset0?.symbol || 'UNKNOWN'
+          const symbol1 = asset1?.symbol === 'WBNB' ? 'BNB' : asset1?.symbol || 'UNKNOWN'
 
           return {
             ...ele,
-            tokens,
-            type: PAIR_TYPES.WEIGHTED,
-            createdAt: isoDateToFormatDate(ele?.createdAt),
-            subpools: [],
+            type: ele.isFusion ? PAIR_TYPES.LSD : ele.isStable ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC,
+            symbol: `${symbol0}/${symbol1}`,
+            token0: {
+              address: ele.token0,
+              symbol: symbol0,
+              derived: ele.token0Derived,
+              logoURI: asset0?.logoURI || UNKNOWN_LOGO,
+              isWarning: Boolean(asset0?.isWarning),
+            },
+            token1: {
+              address: ele.token1,
+              symbol: symbol1,
+              derived: ele.token1Derived,
+              logoURI: asset1?.logoURI || UNKNOWN_LOGO,
+              isWarning: Boolean(asset1?.isWarning),
+            },
           }
-        }
-        const asset0 = assets.find(asset => asset.address.toLowerCase() === ele.token0)
-        const asset1 = assets.find(asset => asset.address.toLowerCase() === ele.token1)
-        const symbol0 = asset0?.symbol === 'WBNB' ? 'BNB' : asset0?.symbol || 'UNKNOWN'
-        const symbol1 = asset1?.symbol === 'WBNB' ? 'BNB' : asset1?.symbol || 'UNKNOWN'
+        }),
+      )
 
-        return {
-          ...ele,
-          type: ele.isFusion ? PAIR_TYPES.LSD : ele.isStable ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC,
-          symbol: `${symbol0}/${symbol1}`,
-          token0: {
-            address: ele.token0,
-            symbol: symbol0,
-            derived: ele.token0Derived,
-            logoURI: asset0?.logoURI || UNKNOWN_LOGO,
-          },
-          token1: {
-            address: ele.token1,
-            symbol: symbol1,
-            derived: ele.token1Derived,
-            logoURI: asset1?.logoURI || UNKNOWN_LOGO,
-          },
-        }
-      })
-      .map(pair => {
+      const finalPairs = enrichedPairs.map(pair => {
         if (pair.type === PAIR_TYPES.WEIGHTED) {
           return pair // TODO: don't have subpools for Pair type `weighted`
         }
@@ -167,11 +176,13 @@ const usePairs = () => {
         }
       })
 
-    return {
-      pairs: result,
-      isLoading,
+      setData({ pairs: finalPairs, isLoading })
     }
-  }, [pairs, assets, pools, vaults, networkId])
+
+    processPairs()
+  }, [account, assets, isLoading, networkId, pairsData, pools, vaults])
+
+  return data
 }
 
 export { PairsContext, PairsContextProvider, usePairs }
