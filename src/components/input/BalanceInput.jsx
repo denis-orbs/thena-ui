@@ -28,7 +28,7 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
     functionName: 'balanceOf',
     args: [account],
     query: {
-      enabled: !!asset && Boolean(account) && asset.address !== 'BNB',
+      enabled: !!asset && Boolean(account) && asset?.address !== 'BNB',
     },
   })
 
@@ -41,8 +41,10 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
       return maxBalance
     }
 
-    return asset.address === 'BNB' ? fromWei(nativeBalance?.value || 0, 18) : fromWei(balanceOf || 0, asset?.decimals)
-  }, [asset.address, asset?.decimals, balanceOf, maxBalance, nativeBalance])
+    return asset?.address === 'BNB'
+      ? fromWei(nativeBalance?.value || 0n, 18)
+      : fromWei(balanceOf || 0n, asset?.decimals)
+  }, [asset?.address, asset?.decimals, balanceOf, maxBalance, nativeBalance])
 
   const data = useMemo(
     () => assets.filter(item => item.address === 'BNB' || item.address === WBNB[item.chainId].address.toLowerCase()),
