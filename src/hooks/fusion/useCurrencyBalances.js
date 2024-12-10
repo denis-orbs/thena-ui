@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { BNB, CurrencyAmount, JSBI } from 'thena-sdk-core'
 import { useReadContracts } from 'wagmi'
 
+import { ZERO_ADDRESS } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import { toWei } from '@/lib/utils'
@@ -16,7 +17,7 @@ export function useCurrencyBalances(currencies) {
   const { data: balancesOf } = useReadContracts({
     contracts: currencies.map(c => ({
       abi: ERC20Abi,
-      address: c?.address,
+      address: c?.address ?? ZERO_ADDRESS,
       functionName: 'balanceOf',
       args: [account],
     })),
@@ -33,9 +34,6 @@ export function useCurrencyBalances(currencies) {
         if (currency.isToken) {
           const { address } = currency
           if (!address) return undefined
-          // const found = assets.find(asset => asset.address.toLowerCase() === address.toLowerCase())
-          // const amount = found?.balance ? JSBI.BigInt(toWei(found.balance, found.decimals).toString(10)) : undefined
-
           const amountBN = JSBI.BigInt(new BigNumber(balancesOf?.[index]?.result || 0n))
           return CurrencyAmount.fromRawAmount(currency, amountBN)
         }
