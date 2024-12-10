@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import { WBNB } from 'thena-sdk-core'
-import { useReadContract } from 'wagmi'
+import { useBalance, useReadContract } from 'wagmi'
 
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
@@ -28,14 +28,21 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
     functionName: 'balanceOf',
     args: [account],
     query: {
-      enabled: !!asset && Boolean(account),
+      enabled: !!asset && Boolean(account) && asset.address !== 'BNB',
     },
   })
 
-  const max = useMemo(
-    () => (!maxBalance ? fromWei(balanceOf ?? 0n, asset?.decimals) : maxBalance),
-    [asset?.decimals, balanceOf, maxBalance],
-  )
+  const { data: nativeBalance } = useBalance({
+    address: account,
+  })
+
+  const max = useMemo(() => {
+    if (maxBalance) {
+      return maxBalance
+    }
+
+    return asset.address === 'BNB' ? fromWei(nativeBalance?.value || 0, 18) : fromWei(balanceOf || 0, asset?.decimals)
+  }, [asset.address, asset?.decimals, balanceOf, maxBalance, nativeBalance])
 
   const data = useMemo(
     () => assets.filter(item => item.address === 'BNB' || item.address === WBNB[item.chainId].address.toLowerCase()),
