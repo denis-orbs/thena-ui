@@ -128,7 +128,7 @@ export default function SpecificPoolPage({ params }) {
                   <div className='size-6' data-tooltip-id='BNBLpBNBPoolAdress'>
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
-                      alt='EtherFi'
+                      alt='Quaaloop'
                       src='/images/quaaloop.svg'
                     />
                   </div>

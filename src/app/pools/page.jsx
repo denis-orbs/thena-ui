@@ -273,7 +273,7 @@ export default function PoolsPage() {
                   <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
-                      alt='EtherFi'
+                      alt='Quaaloop'
                       src='/images/quaaloop.svg'
                     />
                   </div>
