@@ -3500,6 +3500,11 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.9.6.tgz#2a880a24eb19b4f8b25adc2a5095f2aa27f39677"
   integrity sha512-xSmezSupL+y9VkHZJGDoCBpmnB2ogM13ccaYDWqJTfS3dbuHkgjuwDFUmaFauBCboQMGB/S5UqUl2y54X99BmA==
 
+"@orbs-network/liquidity-hub-sdk@^1.0.47":
+  version "1.0.47"
+  resolved "https://registry.yarnpkg.com/@orbs-network/liquidity-hub-sdk/-/liquidity-hub-sdk-1.0.47.tgz#b9f3cb8793d23a73f276771ee1d08ae15cdd53ac"
+  integrity sha512-EPdH2O9KpJA/ZwSL9W/0b90nFr8xg184PllIkXtVcHZ6E0F85cLDCkrkBeoyEzEKsWNVBzCK2PLBWZ3ZWa3e+g==
+
 "@orbs-network/twap-ui-thena@^0.10.26":
   version "0.10.26"
   resolved "https://registry.yarnpkg.com/@orbs-network/twap-ui-thena/-/twap-ui-thena-0.10.26.tgz#f49b5666053ec7af479eef6c84345852734b9157"

@@ -3,11 +3,13 @@
 import { useTranslations } from 'next-intl'
 
 import NextImage from '@/components/image/NextImage'
+import Modal, { ModalBody } from '@/components/modal'
+import Spinner from '@/components/spinner'
 import Toggle from '@/components/toggle'
 import { LOCALES } from '@/constant'
 import { useLocaleSettings } from '@/state/settings/hooks'
 
-import { usePersistedStore } from '.'
+import { usePersistedStore, useStore } from '.'
 
 export function LiquidityHubRouting() {
   return (
@@ -85,5 +87,25 @@ export function LiquidityHubSettings() {
         </p>
       </div>
     </div>
+  )
+}
+
+export function LiquidityHubSeekingBetterPriceModal() {
+  const seekingBetterPrice = useStore(state => state.seekingBetterPrice)
+
+  return (
+    <Modal
+      isOpen={seekingBetterPrice}
+      width={480}
+      zIndex={70}
+      shouldCloseOnOverlayClick={false}
+      title='Seeking better price'
+    >
+      <ModalBody className='pb-0'>
+        <div className='flex gap-4'>
+          <Spinner />
+        </div>
+      </ModalBody>
+    </Modal>
   )
 }
