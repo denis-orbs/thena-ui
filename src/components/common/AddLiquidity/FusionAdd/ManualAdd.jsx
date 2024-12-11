@@ -11,7 +11,7 @@ import { warnToast } from '@/lib/notify'
 import { Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
 
-export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slippageCustom }) {
+export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slippageCustom, strategy }) {
   const { account } = useWallet()
   const { errorMessage } = mintInfo
   const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
@@ -26,9 +26,12 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
       return
     }
 
-    onAlgebraAdd(amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippageCustom ?? slippage, deadline)
+    // TODO: CHECK strategy.address
+    const type = strategy?.address === 'manual-swap-fees' ? 'FEE' : 'THE'
+    onAlgebraAdd(amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippageCustom ?? slippage, deadline, type)
   }, [
     errorMessage,
+    strategy,
     onAlgebraAdd,
     amountA,
     amountB,

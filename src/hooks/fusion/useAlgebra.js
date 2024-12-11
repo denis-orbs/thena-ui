@@ -8,7 +8,12 @@ import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract } from '@/lib/contracts'
+import {
+  getERC20Contract,
+  getFarmingCenterContract,
+  getInsentiveContract,
+  getPositionManagerContract,
+} from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { fromWei } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
@@ -20,18 +25,24 @@ export const useAlgebraAdd = (version = 3) => {
   const { startTxn, writeTxn, endTxn, sendTxn } = useTxn()
   const t = useTranslations()
 
+  /**
+   * Params type: "THE" | "FEE"
+   * - if "THE" will farming THE emission
+   * - if "FEE" will earn from transactions fee
+   */
   const onAlgebraAdd = useCallback(
-    async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline) => {
+    async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline, type = 'THE') => {
       try {
         const key = uuidv4()
         const approve1uuid = uuidv4()
         const approve2uuid = uuidv4()
-        const adduuid = uuidv4()
+        const addLiquidityId = uuidv4()
+        const approveNft = uuidv4()
+        const stakeId = uuidv4()
 
-        const algebraAddress =
-          version === 2
-            ? Contracts.nonfungiblePositionManagerV2[chainId]
-            : Contracts.nonfungiblePositionManagerV3[chainId]
+        const farmingCenter = getFarmingCenterContract(chainId)
+        const incentiveMaker = getInsentiveContract(chainId)
+        const positionManger = getPositionManagerContract(chainId, version)
 
         const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
         const { position, depositADisabled, depositBDisabled, noLiquidity } = mintInfo
@@ -42,11 +53,11 @@ export const useAlgebraAdd = (version = 3) => {
         const firstContract = !baseCurrency.isNative ? getERC20Contract(baseCurrencyAddress, chainId) : null
         const secondContract = !quoteCurrency.isNative ? getERC20Contract(quoteCurrencyAddress, chainId) : null
         if (!baseCurrency.isNative && !depositADisabled) {
-          const allowance = await readCall(firstContract, 'allowance', [account, algebraAddress], chainId)
+          const allowance = await readCall(firstContract, 'allowance', [account, positionManger.address], chainId)
           isFirstApproved = fromWei(allowance, baseCurrency.decimals).gte(amountA.toExact(), baseCurrency.decimals)
         }
         if (!quoteCurrency.isNative && !depositBDisabled) {
-          const allowance = await readCall(secondContract, 'allowance', [account, algebraAddress], chainId)
+          const allowance = await readCall(secondContract, 'allowance', [account, positionManger.address], chainId)
           isSecondApproved = fromWei(allowance, quoteCurrency.decimals).gte(amountB.toExact(), quoteCurrency.decimals)
         }
 
@@ -68,51 +79,93 @@ export const useAlgebraAdd = (version = 3) => {
           }
         }
 
-        transactions[adduuid] = {
+        transactions[addLiquidityId] = {
           desc: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
           status: TXN_STATUS.START,
           hash: null,
         }
 
+        if (type === 'THE') {
+          transactions[approveNft] = {
+            desc: `${t('Approve')} LP`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+
+          transactions[stakeId] = {
+            desc: `${t('Stake')} LP`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
         startTxn({
           key,
-          title: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
           transactions,
+          title: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
         })
-
         setPending(true)
+
+        // MARK: APPROVE TOKENS
         if (!isFirstApproved) {
-          if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [algebraAddress, maxUint256]))) {
+          if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [positionManger.address, maxUint256]))) {
             setPending(false)
             return
           }
         }
 
         if (!isSecondApproved) {
-          if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [algebraAddress, maxUint256]))) {
+          if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [positionManger.address, maxUint256]))) {
             setPending(false)
             return
           }
         }
 
+        // MARK: ADD LIQUIDITY TO POOL => MINT NFT
         const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
         const useNative = baseCurrency.isNative ? baseCurrency : quoteCurrency.isNative ? quoteCurrency : undefined
+
         const { calldata, value } = NonfungiblePositionManager.addCallParameters(position, {
           slippageTolerance: allowedSlippage,
           recipient: account,
           deadline: timestamp.toString(),
           useNative,
           createPool: noLiquidity,
+          version: 3,
         })
-        if (!(await sendTxn(key, adduuid, algebraAddress, calldata, value))) {
+        const addTxRecieve = await sendTxn(key, addLiquidityId, positionManger.address, calldata, value)
+
+        if (!addTxRecieve) {
           setPending(false)
           return
         }
 
-        endTxn({
-          key,
-          final: 'Liquidity Add Successful',
-        })
+        if (type === 'THE') {
+          // MARK: APPROVE LP TOKEN FOR FAIMING
+          const decodeData = NonfungiblePositionManager.getMintedPosition(addTxRecieve, chainId)
+          const nftId = decodeData.args?.tokenId
+          const poolAddress = decodeData.args?.pool
+
+          if (
+            !(await writeTxn(key, approveNft, positionManger, 'approveForFarming', [
+              nftId,
+              true,
+              farmingCenter.address,
+            ]))
+          ) {
+            setPending(false)
+            return
+          }
+
+          // MARK: STAKE LP TOKEN FOR FAIMING
+          const poolKey = await readCall(incentiveMaker, 'poolToKey', [poolAddress], chainId)
+          if (!(await writeTxn(key, stakeId, farmingCenter, 'enterFarming', [poolKey, nftId]))) {
+            setPending(false)
+            return
+          }
+        }
+
+        endTxn({ key, final: 'Liquidity Add Successful' })
         setPending(false)
       } catch (e) {
         setPending(false)

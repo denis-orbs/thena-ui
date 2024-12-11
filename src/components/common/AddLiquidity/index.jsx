@@ -89,7 +89,13 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
         (isAutomatic ? (
           <FusionAdd strategy={isAdd ? pool : strategy} isModal={isModal} isAdd={isAdd} />
         ) : (
-          <ManualAdd firstAsset={firstAsset} secondAsset={secondAsset} isReverse={isReverse} isModal={isModal} />
+          <ManualAdd
+            firstAsset={firstAsset}
+            secondAsset={secondAsset}
+            isReverse={isReverse}
+            isModal={isModal}
+            strategy={strategy}
+          />
         ))}
     </>
   )

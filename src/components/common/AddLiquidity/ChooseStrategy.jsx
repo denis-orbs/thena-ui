@@ -254,11 +254,12 @@ export default function ChooseStrategy({
       },
     }))
 
-    const manualStrategy = strategiesManual.map((item, index) => ({
+    // TODO: add manual strategy
+    const manualStrategy = strategiesManual.map(item => ({
       content: (
         <div className='flex flex-1 items-center justify-between'>
           <div>
-            <TextHeading>Manual {index === 1 ? '(Swap Fees)' : '($THE Emissions)'}</TextHeading>
+            <TextHeading>Manual ({item?.title})</TextHeading>
             <div className='mt-1 flex gap-2'>
               <div className='flex items-center gap-1'>
                 <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
