@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { algebraAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getAlgebraNPMContract } from '@/lib/contracts'
@@ -53,6 +54,7 @@ const ManualsContext = createContext(initialState)
 function ManualsContextProvider({ children }) {
   const { networkId } = useChainSettings()
   const assets = useAssets()
+  const customAssets = useCustomAssets()
   const { account } = useWallet()
   const { data, mutate } = useSWR(
     account && networkId ? ['manuals/info', networkId, account] : null,
@@ -62,41 +64,32 @@ function ManualsContextProvider({ children }) {
     },
   )
 
-  const [manualData, setManualData] = useState([])
-
-  useEffect(() => {
-    const processPositions = async () => {
-      if (!assets || !assets.length || !data) {
-        setManualData([])
-        return
+  const final = useMemo(() => {
+    if (!assets || !assets.length || !data) {
+      return {
+        mutateManual: mutate,
+        positions: [],
       }
-
-      const positions = await Promise.all(
-        data.map(async ele => {
-          const asset0 = await getTokenInfo({ address: ele.token0Address, assets, account, networkId })
-          const asset1 = await getTokenInfo({ address: ele.token1Address, assets, account, networkId })
-          return {
-            ...ele,
-            type: 'Manual',
-            symbol: `${asset0?.symbol || 'UNKNOWN'}/${asset1?.symbol || 'UNKNOWN'}`,
-            asset0,
-            asset1,
-          }
-        }),
-      )
-
-      setManualData(positions)
     }
-    processPositions()
-  }, [account, assets, data, networkId])
 
-  const final = useMemo(
-    () => ({
+    const positions = data.map(ele => {
+      const asset0 = getTokenInfo({ tokenAddress: ele.token0Address, assets, customAssets })
+      const asset1 = getTokenInfo({ tokenAddress: ele.token1Address, assets, customAssets })
+
+      return {
+        ...ele,
+        type: 'Manual',
+        symbol: `${asset0?.symbol}/${asset1?.symbol}`,
+        asset0,
+        asset1,
+      }
+    })
+
+    return {
       mutateManual: mutate,
-      positions: manualData,
-    }),
-    [manualData, mutate],
-  )
+      positions,
+    }
+  }, [assets, customAssets, data, mutate])
 
   return <ManualsContext.Provider value={final}>{children}</ManualsContext.Provider>
 }

@@ -1,16 +1,16 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import useWallet from '@/hooks/useWallet'
 import { fetchBscPairs, fetchOpPairs } from '@/lib/api'
 import { getTokenInfo } from '@/lib/helper'
 import { formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
+import { useCustomAssets } from './customAssetsContext'
 import { useVaults } from './vaultsContext'
 
 const initialState = {
@@ -58,52 +58,48 @@ function PairsContextProvider({ children }) {
 
 const usePairs = () => {
   const { networkId } = useChainSettings()
-  const { account } = useWallet()
   const pairs = useContext(PairsContext)
   const assets = useAssets()
+  const customAssets = useCustomAssets()
   const pools = usePools()
   const vaults = useVaults()
 
-  const [data, setData] = useState({ pairs: [], isLoading: true })
-  const { data: pairsData = [], isLoading = true } = pairs[networkId]
-
-  useEffect(() => {
-    const processPairs = async () => {
-      if (!assets.length || !pools.length || !pairsData) {
-        setData({ pairs: [], isLoading })
-        return
+  return useMemo(() => {
+    const { data, isLoading } = pairs[networkId]
+    if (!assets.length || !pools.length || !data) {
+      return {
+        pairs: [],
+        isLoading,
       }
+    }
 
-      const enrichedPairs = await Promise.all(
-        pairsData.map(async ele => {
-          const asset0 = await getTokenInfo({ address: ele.token0, assets, account, networkId })
-          const asset1 = await getTokenInfo({ address: ele.token1, assets, account, networkId })
-          const symbol0 = asset0?.symbol === 'WBNB' ? 'BNB' : asset0?.symbol || 'UNKNOWN'
-          const symbol1 = asset1?.symbol === 'WBNB' ? 'BNB' : asset1?.symbol || 'UNKNOWN'
-
-          return {
-            ...ele,
-            type: ele.isFusion ? PAIR_TYPES.LSD : ele.isStable ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC,
-            symbol: `${symbol0}/${symbol1}`,
-            token0: {
-              address: ele.token0,
-              symbol: symbol0,
-              derived: ele.token0Derived,
-              logoURI: asset0?.logoURI || UNKNOWN_LOGO,
-              isWarning: Boolean(asset0?.isWarning),
-            },
-            token1: {
-              address: ele.token1,
-              symbol: symbol1,
-              derived: ele.token1Derived,
-              logoURI: asset1?.logoURI || UNKNOWN_LOGO,
-              isWarning: Boolean(asset1?.isWarning),
-            },
-          }
-        }),
-      )
-
-      const finalPairs = enrichedPairs.map(pair => {
+    const result = data
+      .map(ele => {
+        const asset0 = getTokenInfo({ tokenAddress: ele.token0, assets, customAssets })
+        const asset1 = getTokenInfo({ tokenAddress: ele.token1, assets, customAssets })
+        const symbol0 = asset0?.symbol === 'WBNB' ? 'BNB' : asset0?.symbol || 'UNKNOWN'
+        const symbol1 = asset1?.symbol === 'WBNB' ? 'BNB' : asset1?.symbol || 'UNKNOWN'
+        return {
+          ...ele,
+          type: ele.isFusion ? PAIR_TYPES.LSD : ele.isStable ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC,
+          symbol: `${symbol0}/${symbol1}`,
+          token0: {
+            address: ele.token0,
+            symbol: symbol0,
+            derived: ele.token0Derived,
+            logoURI: asset0?.logoURI || UNKNOWN_LOGO,
+            isWarning: Boolean(asset0?.isWarning),
+          },
+          token1: {
+            address: ele.token1,
+            symbol: symbol1,
+            derived: ele.token1Derived,
+            logoURI: asset1?.logoURI || UNKNOWN_LOGO,
+            isWarning: Boolean(asset1?.isWarning),
+          },
+        }
+      })
+      .map(pair => {
         const subpools = [...pools, ...vaults]
           .filter(
             ele =>
@@ -129,14 +125,11 @@ const usePairs = () => {
           subpools,
         }
       })
-
-      setData({ pairs: finalPairs, isLoading })
+    return {
+      pairs: result,
+      isLoading,
     }
-
-    processPairs()
-  }, [account, assets, isLoading, networkId, pairsData, pools, vaults])
-
-  return data
+  }, [pairs, networkId, assets, pools, customAssets, vaults])
 }
 
 export { PairsContext, PairsContextProvider, usePairs }
