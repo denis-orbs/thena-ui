@@ -1295,5 +1295,6 @@
   "BeCareful": "ATTENTION!",
   "BeCarefulDescription": "Users are advised to exercise caution when importing custom tokens. It is important to note that anyone can create tokens, including those that may be fraudulent or incompatible with THENA. By importing a custom token, the user acknowledges and accepts the potential risks involved.",
   "Import Anyway": "Import Anyway",
-  "Careful Custom Token": "ATTENTION! Custom token is used here"
+  "Careful Custom Token": "ATTENTION! Custom token is used here",
+  "Quaaloops Boost": "Liquidity providers in this pool are eligible for LoopFi's 10x Quaaloops Boost"
 }

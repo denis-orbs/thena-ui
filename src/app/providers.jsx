@@ -10,6 +10,7 @@ import { SWRConfig } from 'swr'
 
 import { LOCALES } from '@/constant'
 import { AssetsContextProvider } from '@/context/assetsContext'
+import { CustomAssetsContextProvider } from '@/context/customAssetsContext'
 import { FusionsContextProvider } from '@/context/fusionsContext'
 import { ManualsContextProvider } from '@/context/manualsContext'
 import { PairsContextProvider } from '@/context/pairsContext'
@@ -30,25 +31,27 @@ import { ParticleProvider } from '@/wallets/rainbowkit'
 function ContextProviders({ children }) {
   return (
     <AssetsContextProvider>
-      <VaultsContextProvider>
-        <PairsContextProvider>
-          <FusionsContextProvider>
-            <ManualsContextProvider>
-              <TokensContextProvider>
-                <VeTHEsContextProvider>
-                  <RewardsContextProvider>
-                    <TitleNotiContextProvider>
-                      <TCContextProvider>
-                        <THEStoryContextProvider>{children}</THEStoryContextProvider>
-                      </TCContextProvider>
-                    </TitleNotiContextProvider>
-                  </RewardsContextProvider>
-                </VeTHEsContextProvider>
-              </TokensContextProvider>
-            </ManualsContextProvider>
-          </FusionsContextProvider>
-        </PairsContextProvider>
-      </VaultsContextProvider>
+      <CustomAssetsContextProvider>
+        <VaultsContextProvider>
+          <PairsContextProvider>
+            <FusionsContextProvider>
+              <ManualsContextProvider>
+                <TokensContextProvider>
+                  <VeTHEsContextProvider>
+                    <RewardsContextProvider>
+                      <TitleNotiContextProvider>
+                        <TCContextProvider>
+                          <THEStoryContextProvider>{children}</THEStoryContextProvider>
+                        </TCContextProvider>
+                      </TitleNotiContextProvider>
+                    </RewardsContextProvider>
+                  </VeTHEsContextProvider>
+                </TokensContextProvider>
+              </ManualsContextProvider>
+            </FusionsContextProvider>
+          </PairsContextProvider>
+        </VaultsContextProvider>
+      </CustomAssetsContextProvider>
     </AssetsContextProvider>
   )
 }

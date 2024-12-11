@@ -83,6 +83,33 @@ export const fetchPoolV3 = async () => {
   }
 }
 
+export const fetchCustomAssets = async networkId => {
+  try {
+    const getCustomTokens = async () => {
+      const response = await fetch(`${backendApi}/customAssets`, {
+        method: 'get',
+      })
+      return response.json()
+    }
+
+    const customAssetsData = (await getCustomTokens()).data
+
+    const customAssets = _.filter(
+      _.uniqBy(customAssetsData, it => it.address.toLowerCase()),
+      it => it.chainId === networkId,
+    )
+
+    return customAssets.map(item => ({
+      ...item,
+      chainId: networkId,
+      balance: ZERO_VALUE,
+    }))
+  } catch (ex) {
+    console.error('get custom assets had error', ex)
+    return null
+  }
+}
+
 export const fetchPools = params =>
   fetch(
     `${params[1] === 97 ? backendApiTestNet : backendApi}/${

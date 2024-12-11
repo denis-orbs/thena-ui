@@ -32,6 +32,8 @@ import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite, LinkExtern
 import Liquidity from './Liquidity'
 import { listPoolAddressSpecial } from '../page'
 
+const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
+
 export default function SpecificPoolPage({ params }) {
   const t = useTranslations()
   const { address } = params
@@ -182,7 +184,23 @@ export default function SpecificPoolPage({ params }) {
                 </CustomTooltip>
               </div>
             )}
-            {listPoolAddressSpecial.includes(pool?.address) && (
+            {pool.address === BNBLpBNBPoolAdress && (
+              <>
+                <div className='ml-4 mt-5 flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id='BNBLpBNBPoolAdress'>
+                    <NextImage
+                      className='h-full w-full rounded-full object-cover'
+                      alt='Quaaloop'
+                      src='/images/quaaloop.svg'
+                    />
+                  </div>
+                  <CustomTooltip id='BNBLpBNBPoolAdress' className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
+                  </CustomTooltip>
+                </div>
+              </>
+            )}
+            {listPoolAddressSpecial.includes(pool.address) && (
               <div className='ml-4 mt-5 flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id={`pool-${pool?.address}`}>
                   <NextImage

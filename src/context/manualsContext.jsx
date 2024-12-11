@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { algebraAbiV2, algebraAbiV3 } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getNonfungiblePositionManagerContractV2, getNonfungiblePositionManagerContractV3 } from '@/lib/contracts'
@@ -113,6 +114,7 @@ function ManualsContextProvider({ children }) {
   const assets = useAssets()
 
   const { networkId } = useChainSettings()
+  const customAssets = useCustomAssets()
   const { account } = useWallet()
 
   const { data: positionV2 = [], mutate: mutateV2 } = useSWR(
@@ -131,52 +133,38 @@ function ManualsContextProvider({ children }) {
     },
   )
 
-  // const final = useMemo(() => {
-  //   if (!assets || !assets.length) {
-  //     return {
-  //       mutateManual: () => {
-  //         mutateV3()
-  //         mutateV2()
-  //       },
-  //       positions: [],
-  const [manualData, setManualData] = useState([])
-
-  useEffect(() => {
-    const processPositions = async () => {
-      if (!assets || !assets.length) {
-        setManualData([])
-        return
+  const final = useMemo(() => {
+    if (!assets || !assets.length) {
+      return {
+        mutateManual: () => {
+          mutateV3()
+          mutateV2()
+        },
+        positions: [],
       }
-
-      const positions = await Promise.all(
-        [...positionV2, ...positionV3].map(async ele => {
-          const asset0 = await getTokenInfo({ address: ele.token0Address, assets, account, networkId })
-          const asset1 = await getTokenInfo({ address: ele.token1Address, assets, account, networkId })
-          return {
-            ...ele,
-            type: 'Manual',
-            symbol: `${asset0?.symbol || 'UNKNOWN'}/${asset1?.symbol || 'UNKNOWN'}`,
-            asset0,
-            asset1,
-          }
-        }),
-      )
-
-      setManualData(positions)
     }
-    processPositions()
-  }, [account, assets, networkId, positionV2, positionV3])
 
-  const final = useMemo(
-    () => ({
+    const positions = [...positionV2, ...positionV3].map(ele => {
+      const asset0 = getTokenInfo({ tokenAddress: ele.token0Address, assets, customAssets })
+      const asset1 = getTokenInfo({ tokenAddress: ele.token1Address, assets, customAssets })
+
+      return {
+        ...ele,
+        type: 'Manual',
+        symbol: `${asset0?.symbol || 'UNKNOWN'}/${asset1?.symbol || 'UNKNOWN'}`,
+        asset0,
+        asset1,
+      }
+    })
+
+    return {
       mutateManual: () => {
         mutateV3()
         mutateV2()
       },
-      positions: manualData,
-    }),
-    [manualData, mutateV2, mutateV3],
-  )
+      positions,
+    }
+  }, [assets, customAssets, mutateV2, mutateV3, positionV2, positionV3])
 
   return <ManualsContext.Provider value={final}>{children}</ManualsContext.Provider>
 }

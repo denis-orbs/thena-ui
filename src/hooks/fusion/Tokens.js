@@ -1,45 +1,29 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { BNB, ChainId, Token } from 'thena-sdk-core'
 
 import { useAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
 import { getTokenInfo } from '@/lib/helper'
 import { useChainSettings } from '@/state/settings/hooks'
-
-import useWallet from '../useWallet'
 
 // undefined if invalid or does not exist
 // otherwise returns the token
 export function useToken(tokenAddress) {
   const assets = useAssets()
-  const { networkId } = useChainSettings()
-  const { account } = useWallet()
-
-  const [token, setToken] = useState()
-
-  useEffect(() => {
-    const handleGetToken = async () => {
-      const asset = await getTokenInfo({ address: tokenAddress, assets, account, networkId })
-      setToken(asset)
-    }
-    handleGetToken()
-  }, [account, assets, networkId, tokenAddress])
+  const customAssets = useCustomAssets()
 
   return useMemo(() => {
     if (!tokenAddress) return undefined
-    return new Token(
-      token?.chainId ?? networkId,
-      tokenAddress,
-      token?.decimals ?? 18,
-      token?.symbol ?? 'UNKNOWN',
-      token?.name ?? 'UNKNOWN',
-    )
-  }, [tokenAddress, token?.chainId, token?.decimals, token?.symbol, token?.name, networkId])
+    const asset = getTokenInfo({ tokenAddress, assets, customAssets })
+    if (!asset) return undefined
+    return new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
+  }, [assets, customAssets, tokenAddress])
 }
 
-export const useCurrency = address => {
+export const useCurrency = tokenAddress => {
   const { networkId } = useChainSettings()
-  const isBNB = address?.toUpperCase() === 'BNB'
-  const token = useToken(isBNB ? undefined : address)
+  const isBNB = tokenAddress?.toUpperCase() === 'BNB'
+  const token = useToken(isBNB ? undefined : tokenAddress)
   return isBNB ? BNB.onChain(networkId) : token
 }
 
