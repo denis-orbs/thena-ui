@@ -23,6 +23,7 @@ import usePrices from '@/hooks/usePrices'
 import { useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
+import { LiquidityHubSeekingBetterPriceModal } from '@/modules/LiquidityHub/components'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon } from '@/svgs'
@@ -858,6 +859,7 @@ function Header() {
           )}
         </Modal>
         <TxnModal />
+        <LiquidityHubSeekingBetterPriceModal />
       </header>
       {pathname.startsWith('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>

@@ -88,6 +88,29 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
   return res
 }
 
+export async function simulateOdosSwap(account, quotePathId, onError) {
+  const assembleRequestBody = {
+    userAddr: getAddress(account), // the checksummed address used to generate the quote
+    pathId: quotePathId, // Replace with the pathId from quote response in step 1
+    simulate: true, // this can be set to true if the user isn't doing their own estimate gas call for the transaction
+  }
+  const assembleUrl = 'https://api.odos.xyz/sor/assemble'
+  const response = await fetch(assembleUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(assembleRequestBody),
+  })
+  if (response.status !== 200) {
+    console.error('Error in Transaction Assembly:', response)
+    onError(false)
+    return
+  }
+  const assembledTransaction = await response.json()
+  const { to, data, value } = assembledTransaction.transaction
+
+  return { to, data, value }
+}
+
 export const useOdosSwap = (autoClose = false) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
@@ -134,24 +157,10 @@ export const useOdosSwap = (autoClose = false) => {
         }
       }
 
-      const assembleRequestBody = {
-        userAddr: getAddress(account), // the checksummed address used to generate the quote
-        pathId: quote.pathId, // Replace with the pathId from quote response in step 1
-        simulate: true, // this can be set to true if the user isn't doing their own estimate gas call for the transaction
-      }
-      const assembleUrl = 'https://api.odos.xyz/sor/assemble'
-      const response = await fetch(assembleUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(assembleRequestBody),
-      })
-      if (response.status !== 200) {
-        console.error('Error in Transaction Assembly:', response)
+      const { to, data, value } = await simulateOdosSwap(account, quote.pathId, () => {
         setPending(false)
-        return
-      }
-      const assembledTransaction = await response.json()
-      const { to, data, value } = assembledTransaction.transaction
+      })
+
       if (!(await sendTxn(key, swapuuid, to, data, value))) {
         setPending(false)
         return
