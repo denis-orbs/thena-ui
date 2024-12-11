@@ -120,7 +120,7 @@ export function ItemToken({
             {item?.price && balance ? (
               <TextSubHeading>${formatAmount(balance.times(item.price))}</TextSubHeading>
             ) : (
-              <TextSubHeading>Added by user</TextSubHeading>
+              <TextSubHeading>{item?.isFromStorage || item?.isCustom ? 'Added by user' : '$0'}</TextSubHeading>
             )}
           </div>
 
