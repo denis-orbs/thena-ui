@@ -25,6 +25,8 @@ import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/s
 
 import { listPoolAddressSpecial } from '../page'
 
+const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
+
 export default function SpecificPoolPage({ params }) {
   const [currentStep, setCurrentStep] = useState(1)
   const t = useTranslations()
@@ -119,6 +121,22 @@ export default function SpecificPoolPage({ params }) {
                   <TextHeading className='text-xs'>{t('Eigen tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
+            )}
+            {pool.address === BNBLpBNBPoolAdress && (
+              <>
+                <div className='ml-4 mt-5 flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id='BNBLpBNBPoolAdress'>
+                    <NextImage
+                      className='h-full w-full rounded-full object-cover'
+                      alt='EtherFi'
+                      src='/images/quaaloop.svg'
+                    />
+                  </div>
+                  <CustomTooltip id='BNBLpBNBPoolAdress' className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
+                  </CustomTooltip>
+                </div>
+              </>
             )}
             {listPoolAddressSpecial.includes(pool.address) && (
               <div className='ml-4 mt-5 flex items-center gap-2'>

@@ -180,6 +180,7 @@ export default function PoolsPage() {
     () => {
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
       const ynBNBPoolAddress = '0xcfac0990700ed9b67fefbd4b26a79e426468a419'
+      const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
 
       return sortedData.map(pool => ({
         pair: (
@@ -262,6 +263,22 @@ export default function PoolsPage() {
                     <TextHeading className='text-xs'>
                       {t('Liquidity providers in this pool are eligible for Turtle Club 10% emission boost')}
                     </TextHeading>
+                  </CustomTooltip>
+                </div>
+              </>
+            )}
+            {pool.address === BNBLpBNBPoolAdress && (
+              <>
+                <div className='flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
+                    <NextImage
+                      className='h-full w-full rounded-full object-cover'
+                      alt='EtherFi'
+                      src='/images/quaaloop.svg'
+                    />
+                  </div>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
                   </CustomTooltip>
                 </div>
               </>
