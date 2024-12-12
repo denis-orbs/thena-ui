@@ -118,6 +118,7 @@ function Table({
   defaultHead = undefined,
   showNumberOfPage = false,
   setNumberOfPage,
+  classNames,
 }) {
   const t = useTranslations()
   const pathname = usePathname()
@@ -215,7 +216,7 @@ function Table({
 
   return (
     <div className={cn('relative flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
-      <div className='overflow-x-auto'>
+      <div className={cn('overflow-x-auto', classNames?.tableContainer ?? '')}>
         {tableBasic ? (
           <table className={`w-full ${loading ? 'min-h-[500px]' : ''}`}>
             <thead>
@@ -378,6 +379,7 @@ function Table({
                     className={cn(
                       'flex w-full flex-wrap items-start rounded-lg border-b border-neutral-700 hover:bg-neutral-800 lg:flex-nowrap lg:items-center lg:border-0',
                       ele.onRowClick && 'cursor-pointer',
+                      ele.className ?? '',
                     )}
                     onClick={() => ele.onRowClick && ele.onRowClick()}
                     key={`table-row-${eleIdx}`}

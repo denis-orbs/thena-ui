@@ -3,21 +3,28 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useContext, useMemo, useState } from 'react'
+import useSWR from 'swr'
+import { ChainId } from 'thena-sdk-core'
 
 import { Info } from '@/components/alert'
 import { TertiaryButton } from '@/components/buttons/Button'
+import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
 import Selection from '@/components/selection'
 import { Paragraph } from '@/components/typography'
 import { rewardsContext } from '@/context/rewardsContext'
-import { useVeTHEsContext } from '@/context/veTHEsContext'
+import { fetchVeTHEFromId, useVeTHEsContext } from '@/context/veTHEsContext'
+import useDebounce from '@/hooks/useDebounce'
 import usePrices from '@/hooks/usePrices'
 import { useClaimAll } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
+import { readCall } from '@/lib/contractActions'
+import { getVeTHEContract } from '@/lib/contracts'
 import { formatAmount } from '@/lib/utils'
+import { useChainSettings } from '@/state/settings/hooks'
 import { CoinsStackedIcon } from '@/svgs'
 
 import CurrentRewards from './currentRewards'
-import NextRewards from './nextRewards'
+import VotingHistory from './votingHistory'
 import NotConnected from '../NotConnected'
 
 export default function RewardsPage() {
@@ -31,14 +38,38 @@ export default function RewardsPage() {
   const { onClaimAll, pending: allPending } = useClaimAll()
   const t = useTranslations()
 
+  const [approvedId, setApprovedId] = useState('All')
+  const { networkId } = useChainSettings()
+  const debouncedId = useDebounce(approvedId)
+
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
+
+  const [veTHEId, setVeTHEId] = useState('All')
+  const { data: isApproved } = useSWR(
+    debouncedId && account && networkId === ChainId.BSC && ['vethe/approved', debouncedId, account],
+    async () => {
+      const veTHEContract = getVeTHEContract(networkId)
+      return await readCall(veTHEContract, 'isApprovedOrOwner', [account, debouncedId], networkId)
+    },
+    {
+      refreshInterval: 0,
+    },
+  )
+  const { data: approvedInfo } = useSWR(
+    account && isApproved && networkId === ChainId.BSC ? ['vethes/approved api', debouncedId, networkId] : null,
+    () => fetchVeTHEFromId(debouncedId, networkId),
+  )
+  const veTHE = useMemo(() => {
+    const list = [...veTHEs, approvedInfo]
+    return veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
+  }, [veTHEs, veTHEId, approvedInfo])
 
   const currentRewards = useMemo(() => [...filteredVeTHEs, ...veRewards], [filteredVeTHEs, veRewards])
 
   const totalUsd = useMemo(() => {
     let total = [...veRewards].reduce((sum, curr) => sum.plus(curr.totalUsd), new BigNumber(0))
     filteredVeTHEs.forEach(ele => {
-      total = total.plus(ele.rebase_amount.times(prices.THE))
+      total = total?.plus(ele?.rebase_amount?.times(prices.THE))
     })
     return total
   }, [veRewards, filteredVeTHEs, prices])
@@ -58,7 +89,7 @@ export default function RewardsPage() {
         },
       },
       {
-        label: 'Next Epoch',
+        label: 'Voting History',
         active: isExpected,
         onClickHandler: () => {
           setIsExpected(true)
@@ -70,7 +101,7 @@ export default function RewardsPage() {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex flex-col items-center justify-between gap-4 lg:flex-row'>
+      <div className='flex flex-col justify-between gap-4 lg:flex-row'>
         <div className='flex flex-col gap-2'>
           <h2>{t('Rewards')}</h2>
           <Paragraph>{t('Rewards Description')}</Paragraph>
@@ -100,12 +131,24 @@ export default function RewardsPage() {
       {!account && <NotConnected />}
       {account && (
         <>
-          <Selection className='w-fit' data={typeSelections} />
-          {isExpected ? (
-            <NextRewards rewards={expectedRewards} />
-          ) : (
-            <CurrentRewards rewards={currentRewards} currentMutate={currentMutate} />
-          )}
+          <div className='flex flex-col justify-between gap-4 lg:flex-row'>
+            <Selection className='h-11 w-fit' data={typeSelections} />
+            <VeTheDropdown
+              className='w-full md:w-[200px]'
+              data={[{ id: 'All' }, ...veTHEs].map(item => ({
+                ...item,
+                label: item.id === 'All' ? 'All' : `veTHE #${item.id}`,
+              }))}
+              selected={veTHE ? `veTHE #${veTHE.id}` : ''}
+              setSelected={ele => setVeTHEId(ele.id)}
+              placeHolder={t('Select veTHE')}
+              isLocale={false}
+              isApproved={isApproved}
+              approvedId={approvedId}
+              setApprovedId={setApprovedId}
+            />
+          </div>
+          {isExpected ? <VotingHistory /> : <CurrentRewards rewards={currentRewards} currentMutate={currentMutate} />}
         </>
       )}
     </div>

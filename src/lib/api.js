@@ -171,3 +171,8 @@ export const fetchPairInfos = (pairs, account) => {
     .then(r => r.data)
   return res
 }
+
+export const fetVotingHistory = (account, skip = 0, limit = 10) =>
+  fetch(`${backendApiTestNet}/vote/history?address=${account}&skip=${skip}&limit=${limit}`)
+    .then(r => r.json())
+    .then(r => r.data)
