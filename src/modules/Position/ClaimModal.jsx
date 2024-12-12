@@ -12,8 +12,9 @@ import { useAlgebraClaim } from '@/hooks/fusion/useAlgebra'
 import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 
 export default function ClaimModal({ popup, setPopup, pool, feeValue0, feeValue1, mutate, fee, outOfRange }) {
-  const { tokenId, asset0, asset1 } = pool
+  const { tokenId, asset0, asset1, isFarming, key } = pool
   const { pending, onAlgebraClaim } = useAlgebraClaim()
+
   return (
     <Modal
       isOpen={popup}
@@ -67,7 +68,7 @@ export default function ClaimModal({ popup, setPopup, pool, feeValue0, feeValue1
           className='w-full'
           disabled={pending}
           onClick={() => {
-            onAlgebraClaim(tokenId, feeValue0, feeValue1, () => {
+            onAlgebraClaim({ tokenId, feeValue0, feeValue1, isFarming, poolkey: key }, () => {
               setPopup(false)
               mutate()
             })

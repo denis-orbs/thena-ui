@@ -65,7 +65,6 @@ export default function MigrationPage() {
         <div className='mt-4 grid items-stretch gap-4 lg:grid-cols-[48%_2%_48%]'>
           <article className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2 text-lg'>{t('Your Current Gauge')}</TextHeading>
-
             {positionV2.account.walletBalance.gt(0) && <GaugeItemNotStaked pool={positionV2} />}
             {positionV2.account.gaugeBalance.gt(0) && <GaugeItemStaked pool={positionV2} />}
           </article>

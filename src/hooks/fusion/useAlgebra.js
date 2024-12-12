@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
-import { JSBI, Percent } from 'thena-sdk-core'
+import { JSBI, MaxUint256, Percent } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256, parseUnits } from 'viem'
 
@@ -15,6 +15,7 @@ import {
   getPositionManagerContract,
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
+import { errorToast } from '@/lib/notify'
 import { fromWei } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
@@ -181,13 +182,15 @@ export const useAlgebraAdd = (version = 3) => {
 export const useAlgebraClaim = (version = 3) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
-  const { startTxn, endTxn, sendTxn } = useTxn()
+  const { startTxn, endTxn, sendTxn, writeTxn } = useTxn()
   const t = useTranslations()
 
   const onAlgebraClaim = useCallback(
-    async (tokenId, feeValue0, feeValue1, callback) => {
+    async ({ tokenId, feeValue0, feeValue1, isFarming, poolkey }, callback) => {
       const key = uuidv4()
       const claimuuid = uuidv4()
+
+      setPending(true)
       startTxn({
         key,
         title: t('Claim Fees'),
@@ -199,31 +202,42 @@ export const useAlgebraClaim = (version = 3) => {
           },
         },
       })
-      setPending(true)
-      const algebraAddress =
-        version === 2
-          ? Contracts.nonfungiblePositionManagerV2[chainId]
-          : Contracts.nonfungiblePositionManagerV3[chainId]
 
-      const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
-        tokenId,
-        expectedCurrencyOwed0: feeValue0,
-        expectedCurrencyOwed1: feeValue1,
-        recipient: account,
-      })
+      if (isFarming) {
+        if (!poolkey) {
+          errorToast('Error', 'Missing pool key')
+          return
+        }
 
-      if (!(await sendTxn(key, claimuuid, algebraAddress, calldata, value))) {
-        setPending(false)
-        return
+        const THE_ADDRESS = Contracts.THE[chainId]
+        const farmingCenter = getFarmingCenterContract(chainId)
+        await writeTxn(key, claimuuid, farmingCenter, 'collectAndClaimRewards', [
+          THE_ADDRESS,
+          account,
+          MaxUint256,
+          poolkey,
+          tokenId,
+        ])
+      } else {
+        const positionManger = getPositionManagerContract(chainId, version)
+        const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
+          tokenId,
+          expectedCurrencyOwed0: feeValue0,
+          expectedCurrencyOwed1: feeValue1,
+          recipient: account,
+        })
+
+        if (!(await sendTxn(key, claimuuid, positionManger.address, calldata, value))) {
+          setPending(false)
+          return
+        }
       }
-      endTxn({
-        key,
-        final: 'Claimed fees',
-      })
+
+      endTxn({ key, final: 'Claimed fees' })
       setPending(false)
       callback()
     },
-    [account, startTxn, endTxn, sendTxn, chainId, t, version],
+    [startTxn, t, endTxn, chainId, writeTxn, version, account, sendTxn],
   )
 
   return { onAlgebraClaim, pending }

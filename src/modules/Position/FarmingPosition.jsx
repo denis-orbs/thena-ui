@@ -1,15 +1,13 @@
 import BigNumber from 'bignumber.js'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useContext, useMemo, useState } from 'react'
-import useSWR from 'swr'
+import { useContext, useMemo, useState } from 'react'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { maxUint128 } from 'viem'
+import { useReadContract, useSimulateContract } from 'wagmi'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -19,8 +17,7 @@ import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
 import { useFusionState } from '@/hooks/fusion/useFusions'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
-import { simulateCall } from '@/lib/contractActions'
-import { getAlgebraNPMContract } from '@/lib/contracts'
+import { getAlgebraFactoryContract, getFarmingCenterContract, getInsentiveContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
@@ -31,43 +28,59 @@ import AddManualModal from './AddManualModal'
 import ClaimModal from './ClaimModal'
 import RemoveManualModal from './RemoveManualModal'
 
-export const fetchManualInfo = async (account, tokenId, chainId) => {
-  const algebraContract = getAlgebraNPMContract(chainId)
-  const balance = await simulateCall(
-    algebraContract,
-    'collect',
-    [
-      {
-        tokenId,
-        recipient: account, // some tokens might fail if transferred to address(0)
-        amount0Max: maxUint128,
-        amount1Max: maxUint128,
-      },
-    ],
-    chainId,
-  )
-  return balance
-}
+export function FarmingPosition({ pool }) {
+  const t = useTranslations()
+  const { chainId } = useWallet()
+  const { mutateManual } = useContext(ManualsContext)
+  const incentiveMaker = getInsentiveContract(chainId)
+  const farmingCenter = getFarmingCenterContract(chainId)
+  const algebraFactory = getAlgebraFactoryContract(chainId)
 
-export default function ManualPosition({ position: manualPosition }) {
   const [claimPopup, setClaimPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
-  const { mutateManual } = useContext(ManualsContext)
-  const { account, chainId } = useWallet()
-  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = manualPosition
-  const { data: fees, mutate } = useSWR(
-    account && tokenId ? ['manuals/fee', tokenId, account, chainId] : null,
-    () => fetchManualInfo(account, tokenId, chainId),
-    {
-      refreshInterval: 60000,
-    },
-  )
-  const t = useTranslations()
-  const { pending, onAlgebraBurn } = useAlgebraBurn()
+
+  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId } = pool
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
-  const [fusionState, fusion] = useFusionState(currency0, currency1, version)
+
+  // if (pool.version === 3 && pool.isFarming) {
+  //   console.debug(pool)
+  // }
+
+  // CALL APIs & SMART CONTRACTS
+  const { pending, onAlgebraBurn } = useAlgebraBurn()
+
+  const { data: poolAddress } = useReadContract({
+    ...algebraFactory,
+    functionName: 'computePoolAddress',
+    args: [asset0?.address, asset1?.address],
+    query: {
+      enabled: !!asset0 && !!asset1,
+      staleTime: Infinity,
+    },
+  })
+
+  const { data: key } = useReadContract({
+    ...incentiveMaker,
+    functionName: 'poolToKey',
+    args: [poolAddress],
+    query: {
+      enabled: !!poolAddress,
+      staleTime: Infinity,
+    },
+  })
+
+  const { data: rewards } = useSimulateContract({
+    ...farmingCenter,
+    functionName: 'collectRewards',
+    args: [key, pool?.tokenId],
+    query: {
+      enabled: !!key && !!pool?.tokenId,
+    },
+  })
+  const fees = rewards?.result
+
   const tickAtLimit = useMemo(
     () => ({
       [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
@@ -75,6 +88,7 @@ export default function ManualPosition({ position: manualPosition }) {
     }),
     [tickLower, tickUpper],
   )
+  const [fusionState, fusion] = useFusionState(currency0, currency1)
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
   const [, _fusion] = useMemo(() => {
@@ -130,25 +144,6 @@ export default function ManualPosition({ position: manualPosition }) {
 
   const [reversePrice, setReversePrice] = useState(false)
 
-  // const minPrice = formatAmountLP(
-  //   reversePrice
-  //     ? 1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
-  //     : formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
-  // )
-
-  // const maxPrice = formatAmountLP(
-  //   reversePrice
-  //     ? 1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)
-  //     : formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER),
-  // )
-
-  // if (version === 2) {
-  //   console.log({
-  //     maxPrice,
-  //     minPrice,
-  //   })
-  // }
-
   const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
 
   return (
@@ -166,10 +161,13 @@ export default function ManualPosition({ position: manualPosition }) {
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </TextHeading>
             <Paragraph className='text-xs'>
-              #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
+              #{pool.tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
             </Paragraph>
           </div>
         </div>
+
+        <GreenBadge>Farming</GreenBadge>
+
         {!Number(liquidity) ? (
           <YellowBadge>{t('Closed')}</YellowBadge>
         ) : outOfRange ? (
@@ -208,7 +206,7 @@ export default function ManualPosition({ position: manualPosition }) {
           <Paragraph className='text-sm'>{t('Claimable Fees')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-            {feesInUsd.gt(0) && <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />}
+            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />
             <CustomTooltip id={`net-${tokenId}`}>
               {fees && <p>{`${formatAmount(fromWei(fees[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>}
               {fees && <p>{`${formatAmount(fromWei(fees[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>}
@@ -278,11 +276,9 @@ export default function ManualPosition({ position: manualPosition }) {
       </div>
 
       <div id='BUTTONS_GROUP' className='flex w-full gap-3'>
-        {version === 3 && (
-          <TextButton className='w-full' disabled={!fees || feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
-            {t('Claim')}
-          </TextButton>
-        )}
+        <TextButton className='w-full' disabled={!fees || feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
+          {t('Claim')}
+        </TextButton>
 
         {Number(liquidity) > 0 ? (
           <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
@@ -298,33 +294,25 @@ export default function ManualPosition({ position: manualPosition }) {
           </OutlinedButton>
         )}
 
-        {version === 3 && (
-          <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
-            {t('Add')}
-          </EmphasisButton>
-        )}
-
-        {version === 2 && Number(liquidity) > 0 && (
-          <Link href={`/pools/migration?tokenId=${tokenId}`} className='w-full'>
-            <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
-          </Link>
-        )}
+        <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
+          {t('Add')}
+        </EmphasisButton>
       </div>
 
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}
-        pool={manualPosition}
+        pool={{ ...pool, key }}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
-        mutate={mutate}
+        mutate={() => {}}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
       />
       <RemoveManualModal
         popup={removePopup}
         setPopup={setRemovePopup}
-        pool={manualPosition}
+        pool={pool}
         position={position}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
@@ -335,7 +323,7 @@ export default function ManualPosition({ position: manualPosition }) {
       <AddManualModal
         popup={addPopup}
         setPopup={setAddPopup}
-        pool={manualPosition}
+        pool={pool}
         position={position}
         mutateManual={mutateManual}
         outOfRange={outOfRange}

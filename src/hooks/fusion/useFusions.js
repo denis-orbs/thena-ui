@@ -130,10 +130,10 @@ export function useFusionState(currencyA, currencyB, version = 3) {
   const liquidity = new BigNumber(poolInfo?.[0]?.result).toString(10)
   const globalStates = poolInfo?.[1]?.result
   const price = new BigNumber(globalStates?.[0]).toString(10)
-  const tick = Number(globalStates?.[1])
+  const tick = Number(globalStates?.[1]) ?? 0
   const fee = Number(globalStates?.[2])
 
-  if (!token0 || !token1 || !fee || !price || !liquidity || !tick) return [PoolState.NOT_EXISTS, null]
+  if (!token0 || !token1 || !fee || !price || !liquidity) return [PoolState.NOT_EXISTS, null]
   return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick)]
 }
 
