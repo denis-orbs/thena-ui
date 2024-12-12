@@ -73,11 +73,10 @@ export default function SwapBest({
   const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
 
   const isThenaQuoteAndSwap = useMemo(() => {
-    // TODO: Change THE to MONKY
-    if (['WBNB', 'BNB'].includes(fromAsset?.symbol) && toAsset?.symbol === 'THE') {
+    if (['WBNB', 'BNB'].includes(fromAsset?.symbol) && toAsset?.symbol === 'MONKY') {
       return true
     }
-    if (['WBNB', 'BNB'].includes(toAsset?.symbol) && fromAsset?.symbol === 'THE') {
+    if (['WBNB', 'BNB'].includes(toAsset?.symbol) && fromAsset?.symbol === 'MONKY') {
       return true
     }
 
