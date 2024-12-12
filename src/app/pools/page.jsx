@@ -177,6 +177,7 @@ export default function PoolsPage() {
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
       const ynBNBPoolAddress = '0xcfac0990700ed9b67fefbd4b26a79e426468a419'
       const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
+      const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
 
       return sortedData.map(pool => ({
         pair: (
@@ -279,6 +280,31 @@ export default function PoolsPage() {
                 </div>
               </>
             )}
+
+            {pool.address === BTCBmBTCAddress && (
+              <>
+                <div className='flex items-center gap-2'>
+                  <div
+                    className='flex size-8 items-center rounded-full bg-white'
+                    data-tooltip-id={`pool-special-${pool.address}-BTCBmBTCAddress`}
+                  >
+                    <NextImage
+                      className='w-full rounded-full object-cover'
+                      alt='Quaaloop'
+                      src='/images/babbypieBirdLogo.png'
+                    />
+                  </div>
+                  <CustomTooltip
+                    id={`pool-special-${pool.address}-BTCBmBTCAddress`}
+                    className='rounded-md !py-2'
+                    place='top'
+                  >
+                    <TextHeading className='text-xs'>{t("Babypie's Liquidity RUSH campaign")}</TextHeading>
+                  </CustomTooltip>
+                </div>
+              </>
+            )}
+
             {(pool.token0.isWarning || pool.token1.isWarning) && (
               <>
                 <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
