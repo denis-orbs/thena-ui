@@ -13,7 +13,7 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
-import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
+import { useAlgebraBurn, useAlgebraExitFarming } from '@/hooks/fusion/useAlgebra'
 import { useFusionState } from '@/hooks/fusion/useFusions'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
@@ -44,12 +44,9 @@ export function FarmingPosition({ pool }) {
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
 
-  // if (pool.version === 3 && pool.isFarming) {
-  //   console.debug(pool)
-  // }
-
   // CALL APIs & SMART CONTRACTS
-  const { pending, onAlgebraBurn } = useAlgebraBurn()
+  const { onAlgebraBurn, pending } = useAlgebraBurn()
+  const { onExitFarming, pending: isRemoveFarmLoading } = useAlgebraExitFarming()
 
   const { data: poolAddress } = useReadContract({
     ...algebraFactory,
@@ -280,19 +277,34 @@ export function FarmingPosition({ pool }) {
           {t('Claim')}
         </TextButton>
 
-        {Number(liquidity) > 0 ? (
-          <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
-            {t('Remove')}
-          </OutlinedButton>
-        ) : (
-          <OutlinedButton
-            className='w-full'
-            onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
-            disabled={pending}
-          >
-            {t('Burn')}
-          </OutlinedButton>
-        )}
+        <TextButton
+          className={cn('w-full', {
+            hidden: !pool?.isFarming,
+          })}
+          disabled={!pool?.isFarming || isRemoveFarmLoading}
+          onClick={() => onExitFarming({ poolkey: key, tokenId }, () => mutateManual())}
+        >
+          {t('Unstake')}
+        </TextButton>
+
+        <OutlinedButton
+          className={cn('block w-full', {
+            hidden: pool?.isFarming || Number(liquidity) <= 0,
+          })}
+          onClick={() => setRemovePopup(true)}
+        >
+          {t('Remove')}
+        </OutlinedButton>
+
+        <OutlinedButton
+          className={cn('block w-full', {
+            hidden: pool?.isFarming || Number(liquidity) > 0,
+          })}
+          onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
+          disabled={pending}
+        >
+          {t('Burn')}
+        </OutlinedButton>
 
         <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
           {t('Add')}

@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
+import { zeroAddress } from 'viem'
+import { useReadContract } from 'wagmi'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -14,11 +16,14 @@ import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType, GAMMA_TYPES } from '@/constant'
+import { algebraPoolV3, thenaBasePluginAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
+import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
+import { getAlgebraFactoryContract } from '@/lib/contracts'
 import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
@@ -43,6 +48,9 @@ const strategiesManual = [
     min: 100,
     max: 150,
   },
+]
+
+const incentiveActive = [
   {
     type: 'manual',
     title: '$THE Emissions',
@@ -114,6 +122,7 @@ export default function ChooseStrategy({
 }) {
   const dispatch = useDispatch()
   const { networkId } = useChainSettings()
+  const { chainId } = useWallet()
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
   const t = useTranslations()
@@ -157,6 +166,37 @@ export default function ChooseStrategy({
     token0Address: wrappedAddress(pair?.token0),
     token1Address: wrappedAddress(pair?.token1),
     timeWindow,
+  })
+
+  const algebraFactory = getAlgebraFactoryContract(chainId)
+  const { data: poolAddress } = useReadContract({
+    ...algebraFactory,
+    functionName: 'computePoolAddress',
+    args: [firstAsset.address, secondAsset.address],
+    query: {
+      enabled: !!firstAsset && !!secondAsset,
+      staleTime: Infinity,
+    },
+  })
+
+  const { data: pluginAddress } = useReadContract({
+    address: poolAddress,
+    abi: algebraPoolV3,
+    functionName: 'plugin',
+    query: {
+      enabled: !!poolAddress,
+      staleTime: Infinity,
+    },
+  })
+
+  const { data: incentiveAddress } = useReadContract({
+    address: pluginAddress,
+    abi: thenaBasePluginAbi,
+    functionName: 'incentive',
+    query: {
+      enabled: !!pluginAddress,
+      staleTime: Infinity,
+    },
   })
 
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onStartPriceInput, onChangeLiquidityRangeType } =
@@ -255,31 +295,33 @@ export default function ChooseStrategy({
     }))
 
     // TODO: add manual strategy
-    const manualStrategy = strategiesManual.map(item => ({
-      content: (
-        <div className='flex flex-1 items-center justify-between'>
-          <div>
-            <TextHeading>Manual ({item?.title})</TextHeading>
-            <div className='mt-1 flex gap-2'>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                <Paragraph className='text-sm'>TODO%</Paragraph>
-              </div>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                <Paragraph className='text-sm'>$TODO</Paragraph>
+    const manualStrategy = strategiesManual
+      .concat(incentiveAddress !== zeroAddress ? incentiveActive : [])
+      .map(item => ({
+        content: (
+          <div className='flex flex-1 items-center justify-between'>
+            <div>
+              <TextHeading>Manual ({item?.title})</TextHeading>
+              <div className='mt-1 flex gap-2'>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
+                  <Paragraph className='text-sm'>TODO%</Paragraph>
+                </div>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
+                  <Paragraph className='text-sm'>$TODO</Paragraph>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ),
-      active: strategy?.address === item.address,
-      onClickHandler: () => {
-        setStrategy(item)
-      },
-    }))
+        ),
+        active: strategy?.address === item.address,
+        onClickHandler: () => {
+          setStrategy(item)
+        },
+      }))
     return [...autoStrategy, ...manualStrategy]
-  }, [pair, t, strategy?.address, setStrategy])
+  }, [pair.subpools, incentiveAddress, t, strategy?.address, setStrategy])
 
   // const autoSelections = useMemo(
   //   () => [

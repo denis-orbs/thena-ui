@@ -9,6 +9,7 @@ import { useCustomAssets } from '@/context/customAssetsContext'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
 import { getPositionManagerContract } from '@/lib/contracts'
+import { getTokenInfo } from '@/lib/helper'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const initialState = []
@@ -114,6 +115,7 @@ const fetchManualV3Info = async (account, chainId) => {
     tickLower: Number(ele[5]),
     tickUpper: Number(ele[6]),
     liquidity: ele[7],
+    deployer: ele[4],
   }))
 }
 

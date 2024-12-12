@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { JSBI, MaxUint256, Percent } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256, parseUnits } from 'viem'
+import { maxUint256, parseUnits, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
@@ -243,6 +243,119 @@ export const useAlgebraClaim = (version = 3) => {
   return { onAlgebraClaim, pending }
 }
 
+export const useAlgebraEnterFarming = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onEnterFarming = useCallback(
+    async ({ tokenId, poolAddress }, callback) => {
+      if (!tokenId || !poolAddress) {
+        errorToast('Error', 'Missing token addresses')
+        return
+      }
+
+      const key = uuidv4()
+      const approveId = uuidv4()
+      const stakeId = uuidv4()
+
+      const incentiveMaker = getInsentiveContract(chainId)
+      const farmingCenter = getFarmingCenterContract(chainId)
+      const positionManger = getPositionManagerContract(chainId, 3)
+
+      const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
+      const isNotAppproved = farmingApprovals === zeroAddress
+
+      const transactions = {}
+      if (isNotAppproved) {
+        transactions[approveId] = {
+          desc: `${t('Approve')} LP`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[stakeId] = {
+        desc: `${t('Stake')} LP`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+      startTxn({ key, title: t('Stake'), transactions })
+      setPending(true)
+
+      if (isNotAppproved) {
+        // MARK: APPROVE LP TOKEN FOR FAIMING
+        const approveRecive = await writeTxn(key, approveId, positionManger, 'approveForFarming', [
+          tokenId,
+          true,
+          farmingCenter.address,
+        ])
+        if (!approveRecive) {
+          setPending(false)
+          return
+        }
+      }
+
+      // MARK: STAKE LP TOKEN FOR FAIMING
+      const poolKey = await readCall(incentiveMaker, 'poolToKey', [poolAddress], chainId)
+      const stakeRecive = await writeTxn(key, stakeId, farmingCenter, 'enterFarming', [poolKey, tokenId])
+      if (!stakeRecive) {
+        setPending(false)
+        return
+      }
+
+      endTxn({ key, final: 'Exit Farming Successful' })
+      setPending(false)
+      callback()
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { onEnterFarming, pending }
+}
+
+export const useAlgebraExitFarming = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onExitFarming = useCallback(
+    async ({ poolkey, tokenId }, callback) => {
+      const key = uuidv4()
+      const exitId = uuidv4()
+
+      setPending(true)
+      startTxn({
+        key,
+        title: t('Unstake'),
+        transactions: {
+          [exitId]: {
+            desc: t('Unstake'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      const farmingCenter = getFarmingCenterContract(chainId)
+      const receive = await writeTxn(key, exitId, farmingCenter, 'exitFarming', [poolkey, tokenId])
+      if (!receive) {
+        setPending(false)
+        return
+      }
+
+      endTxn({ key, final: 'Exit Farming Successful' })
+      setPending(false)
+      callback()
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { onExitFarming, pending }
+}
+
 export const useAlgebraRemove = (version = 3) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
@@ -265,10 +378,7 @@ export const useAlgebraRemove = (version = 3) => {
         },
       })
       setPending(true)
-      const algebraAddress =
-        version === 2
-          ? Contracts.nonfungiblePositionManagerV2[chainId]
-          : Contracts.nonfungiblePositionManagerV3[chainId]
+      const positionManger = getPositionManagerContract(chainId, version)
 
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
@@ -284,7 +394,7 @@ export const useAlgebraRemove = (version = 3) => {
         },
       })
 
-      if (!(await sendTxn(key, removeuuid, algebraAddress, calldata, value))) {
+      if (!(await sendTxn(key, removeuuid, positionManger.address, calldata, value))) {
         setPending(false)
         return
       }
@@ -321,14 +431,11 @@ export const useAlgebraBurn = (version = 3) => {
         },
       })
       setPending(true)
-      const algebraAddress =
-        version === 2
-          ? Contracts.nonfungiblePositionManagerV2[chainId]
-          : Contracts.nonfungiblePositionManagerV3[chainId]
+      const positionManger = getPositionManagerContract(chainId, version)
 
       const { calldata, value } = NonfungiblePositionManager.burnCallParameters(tokenId)
 
-      if (!(await sendTxn(key, burnuuid, algebraAddress, calldata, value))) {
+      if (!(await sendTxn(key, burnuuid, positionManger.address, calldata, value))) {
         setPending(false)
         return
       }
@@ -353,10 +460,8 @@ export const useAlgebraIncrease = (version = 3) => {
 
   const onAlgebraIncrease = useCallback(
     async (amountA, amountB, position, depositADisabled, depositBDisabled, slippage, deadline, tokenId, callback) => {
-      const algebraAddress =
-        version === 2
-          ? Contracts.nonfungiblePositionManagerV2[chainId]
-          : Contracts.nonfungiblePositionManagerV3[chainId]
+      const positionManger = getPositionManagerContract(chainId, version)
+      const algebraAddress = positionManger.address
 
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const baseCurrency = amountA.currency

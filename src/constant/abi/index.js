@@ -15,6 +15,7 @@ import factoryAbi from './factory.json'
 import farmCenterAbi from './farmCenter.json'
 import farmingCenterAbi from './farmingCenterTestnet.json'
 import feeAbi from './fee.json'
+import algebraPoolV3 from './fusion/AlgebraPoolV3.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
 import incentiveMakerAbi from './incentiveMaker.json'
@@ -33,7 +34,6 @@ import muonAbi from './muon.json'
 import nonfungiblePositionManagerAbi from './nonfungiblePositionManager.json'
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
-import pluginFactoryAbi from './pluginFactoryTestnet.json'
 import quoterAbi from './quoter.json'
 import quoterV2Abi from './quoterV2.json'
 import rewardEarnedAbi from './rewardEarned.json'
@@ -43,6 +43,7 @@ import routerAbi from './router.json'
 import royaltyAbi from './royalty.json'
 import stakingAbi from './staking.json'
 import swapRouterAbi from './swapRouterTestnet.json'
+import thenaBasePluginAbi from './ThenaBasePluginAbi.json'
 import thenaRouterAbi from './thenaRouter.json'
 import thenaRouterSimulatorAbi from './thenaRouterSimulator.json'
 import thenaWeightedPoolFactoryAbi from './thenaWeightedPoolFactory.json'
@@ -66,6 +67,7 @@ export {
   algebraFactoryAbi,
   algebraInterfaceMultiCallAbi,
   algebraPoolDeployerAbi,
+  algebraPoolV3,
   algebraVaultFactoryStubAbi,
   arabicAbi,
   bribeAbi,
@@ -96,7 +98,6 @@ export {
   numeralAbi,
   pairAbi,
   pairAPIAbi,
-  pluginFactoryAbi,
   quoterAbi,
   quoterV2Abi,
   rewardEarnedAbi,
@@ -106,6 +107,7 @@ export {
   royaltyAbi,
   stakingAbi,
   swapRouterAbi,
+  thenaBasePluginAbi,
   thenaRouterAbi,
   thenaRouterSimulatorAbi,
   thenaWeightedPoolFactoryAbi,

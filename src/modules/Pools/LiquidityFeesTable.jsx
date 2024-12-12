@@ -9,7 +9,7 @@ import { cn, formatAmount } from '@/lib/utils'
 
 function LiquidityFeeRow({ token, pairType }) {
   const t = useTranslations()
-  // const { getValueTokenAmountToUSD } = useTokenUSDValue()
+  const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   return (
     <div className='grid grid-cols-2 gap-y-4 rounded-lg bg-neutral-800  px-5 py-4 lg:grid-cols-3'>

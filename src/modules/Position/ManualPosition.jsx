@@ -5,7 +5,8 @@ import React, { useContext, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { maxUint128 } from 'viem'
+import { maxUint128, zeroAddress } from 'viem'
+import { useReadContract } from 'wagmi'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -13,14 +14,15 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { algebraPoolV3, thenaBasePluginAbi } from '@/constant/abi'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
-import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
+import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
 import { useFusionState } from '@/hooks/fusion/useFusions'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import { simulateCall } from '@/lib/contractActions'
-import { getAlgebraNPMContract } from '@/lib/contracts'
+import { getAlgebraFactoryContract, getAlgebraNPMContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
@@ -49,13 +51,18 @@ export const fetchManualInfo = async (account, tokenId, chainId) => {
   return balance
 }
 
-export default function ManualPosition({ position: manualPosition }) {
+export default function ManualPosition({ pool }) {
+  const t = useTranslations()
+  const { mutateManual } = useContext(ManualsContext)
+  const { account, chainId } = useWallet()
+  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = pool
+
   const [claimPopup, setClaimPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
-  const { mutateManual } = useContext(ManualsContext)
-  const { account, chainId } = useWallet()
-  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = manualPosition
+  const [reversePrice, setReversePrice] = useState(false)
+
+  // MARK: fetch data from ABI and CONTRACT
   const { data: fees, mutate } = useSWR(
     account && tokenId ? ['manuals/fee', tokenId, account, chainId] : null,
     () => fetchManualInfo(account, tokenId, chainId),
@@ -63,8 +70,41 @@ export default function ManualPosition({ position: manualPosition }) {
       refreshInterval: 60000,
     },
   )
-  const t = useTranslations()
+
+  const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
   const { pending, onAlgebraBurn } = useAlgebraBurn()
+
+  const algebraFactory = getAlgebraFactoryContract(chainId)
+  const { data: poolAddress } = useReadContract({
+    ...algebraFactory,
+    functionName: 'computePoolAddress',
+    args: [asset0?.address, asset1?.address],
+    query: {
+      enabled: !!asset0 && !!asset1,
+      staleTime: Infinity,
+    },
+  })
+
+  const { data: pluginAddress } = useReadContract({
+    address: poolAddress,
+    abi: algebraPoolV3,
+    functionName: 'plugin',
+    query: {
+      enabled: !!poolAddress,
+      staleTime: Infinity,
+    },
+  })
+
+  const { data: incentiveAddress } = useReadContract({
+    address: pluginAddress,
+    abi: thenaBasePluginAbi,
+    functionName: 'incentive',
+    query: {
+      enabled: !!pluginAddress,
+      staleTime: Infinity,
+    },
+  })
+
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
   const [fusionState, fusion] = useFusionState(currency0, currency1, version)
@@ -127,27 +167,6 @@ export default function ManualPosition({ position: manualPosition }) {
     () => ((amount0InUsd / (amount0InUsd + amount1InUsd)) * 100).toFixed(2),
     [amount0InUsd, amount1InUsd],
   )
-
-  const [reversePrice, setReversePrice] = useState(false)
-
-  // const minPrice = formatAmountLP(
-  //   reversePrice
-  //     ? 1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
-  //     : formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
-  // )
-
-  // const maxPrice = formatAmountLP(
-  //   reversePrice
-  //     ? 1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)
-  //     : formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER),
-  // )
-
-  // if (version === 2) {
-  //   console.log({
-  //     maxPrice,
-  //     minPrice,
-  //   })
-  // }
 
   const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
 
@@ -284,6 +303,16 @@ export default function ManualPosition({ position: manualPosition }) {
           </TextButton>
         )}
 
+        <EmphasisButton
+          className={cn('w-full', {
+            hidden: pool?.isFarming || incentiveAddress === zeroAddress || pool?.deployer !== zeroAddress,
+          })}
+          disabled={pool?.isFarming || isEnterFarmLoading}
+          onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
+        >
+          {t('Stake')}
+        </EmphasisButton>
+
         {Number(liquidity) > 0 ? (
           <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
             {t('Remove')}
@@ -314,7 +343,7 @@ export default function ManualPosition({ position: manualPosition }) {
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}
-        pool={manualPosition}
+        pool={pool}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
         mutate={mutate}
@@ -324,7 +353,7 @@ export default function ManualPosition({ position: manualPosition }) {
       <RemoveManualModal
         popup={removePopup}
         setPopup={setRemovePopup}
-        pool={manualPosition}
+        pool={pool}
         position={position}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
@@ -335,7 +364,7 @@ export default function ManualPosition({ position: manualPosition }) {
       <AddManualModal
         popup={addPopup}
         setPopup={setAddPopup}
-        pool={manualPosition}
+        pool={pool}
         position={position}
         mutateManual={mutateManual}
         outOfRange={outOfRange}

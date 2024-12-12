@@ -269,12 +269,6 @@ export const getAlgebraFactoryContract = (chainId = 56, version = 3) => {
 //   getContract(algebraVaultFactoryStubAbi, Contracts.ALGEBRA_VAULT_FACTORY_STUB_TESTNET, 97)
 
 /** ******************************************************************************************************
-                                          PLUGIN_FACTORY_TESTNET
-******************************************************************************************************* */
-// export const getPluginFactoryContract = () => getContract(pluginFactoryAbi, Contracts.PLUGIN_FACTORY_TESTNET, 97)
-// export const getPluginFactoryContract = () => getContract(pluginFactoryAbi, Contracts.PLUGIN_FACTORY_TESTNET, 97)
-
-/** ******************************************************************************************************
                                           TICK_LENS_TESTNET
 ******************************************************************************************************* */
 // export const getTickLensContract = () => getContract(tickLensAbi, Contracts.TICK_LENS_TESTNET, 97)

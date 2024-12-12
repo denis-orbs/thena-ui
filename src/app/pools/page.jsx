@@ -30,7 +30,7 @@ import { ArrowRightIcon, InfoIcon } from '@/svgs'
 import AddLiquidityModal from './addLiquidityModal'
 import NewListings from './NewListings'
 
-const listPoolAddressSpecial = [
+export const listPoolAddressSpecial = [
   '0x755a52d29b24d6871899a84f476339183e9dc95d',
   '0xa07bbf09b48e8d219774ac9b92622f5260a9c9f4',
   '0x04d6115703b0127888323f142b8046c7c13f857d',
@@ -78,7 +78,7 @@ const sortOptions = [
   },
 ]
 
-const STRATEGIES = {
+export const STRATEGIES = {
   All: 'All',
   ICHI: 'ICHI',
   Gamma: 'Gamma',
