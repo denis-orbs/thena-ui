@@ -13,12 +13,13 @@ import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import NextImage from '@/components/image/NextImage'
-import Modal, { ModalBody } from '@/components/modal'
+import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAddress, formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
@@ -41,6 +42,8 @@ export default function SpecificPoolPage({ params }) {
   const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
+
+  const windowSize = useWindowSize()
 
   const [showModalAdd, setShowModalAdd] = useState(false)
 
@@ -294,7 +297,7 @@ export default function SpecificPoolPage({ params }) {
           </div>
 
           {/* Pool charts */}
-          <div className='mb-6'>
+          <div className='mb-6 mt-6'>
             <PoolChart address={address} />
           </div>
 
@@ -358,7 +361,7 @@ export default function SpecificPoolPage({ params }) {
               </div>
               <div className='grid grid-cols-7'>
                 <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
-                <div className='col-span-5 text-neutral-50'>$TODO (API)</div>
+                <div className='col-span-5 text-neutral-50'>$0</div>
               </div>
               <div className='grid grid-cols-7'>
                 <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
@@ -382,8 +385,10 @@ export default function SpecificPoolPage({ params }) {
           </div>
 
           {/* User positions */}
-          <div>
-            <h2 className='mb-4'>{t('My Positions')}</h2>
+          <div className='mt-6'>
+            <TextHeading className='mb-4 font-archia text-[30px] font-semibold leading-[34px]'>
+              {t('My Positions')}
+            </TextHeading>
             {pool.type === PAIR_TYPES.WEIGHTED && !isInvalidAmount(weightedPoolBalance) ? (
               <div className='grid grid-cols-1 gap-4'>
                 {pool.type === PAIR_TYPES.WEIGHTED ? (
@@ -417,10 +422,13 @@ export default function SpecificPoolPage({ params }) {
         <PrimaryButton onClick={() => setShowModalAdd(true)} className='mx-auto w-full'>
           {t('Add Liquidity')}
         </PrimaryButton>
-        <Modal title='New Deposit' isOpen={showModalAdd} width={400} closeModal={() => setShowModalAdd(false)}>
-          <ModalBody className='p-0'>
-            <Liquidity pool={pool} />
-          </ModalBody>
+        <Modal
+          title='New Deposit'
+          isOpen={showModalAdd}
+          width={windowSize.width > 1024 ? 570 : windowSize.width * 0.9}
+          closeModal={() => setShowModalAdd(false)}
+        >
+          <Liquidity pool={pool} isModal />
         </Modal>
       </div>
     </div>

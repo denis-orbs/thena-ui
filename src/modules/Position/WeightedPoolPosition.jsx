@@ -116,8 +116,6 @@ export function WeightedPoolPosition({ pool }) {
     }
   }, [expectedFees, mappedToken, tokenAddresses])
 
-  console.log({ claimableFee })
-
   return (
     <div className='rounded-xl bg-neutral-900 p-4'>
       <div className='flex space-x-4'>

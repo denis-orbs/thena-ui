@@ -12,7 +12,7 @@ import { ModalBody } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
+import { formatAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 
 const REMOVE_TYPE = {
   SINGLE: 'single',
@@ -49,7 +49,7 @@ function RemoveWeighted({ pool, onCancel }) {
 
   const handleAmountChange = useCallback(
     value => {
-      setAmount(roundIfMoreThan18Decimals(value))
+      setAmount(roundIfMoreThanDecimals(value))
     },
     [setAmount],
   )

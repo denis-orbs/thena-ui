@@ -17,7 +17,7 @@ import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { cn, formatAmount, fromWei, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
+import { cn, formatAmount, fromWei, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 import { ArrowLeftIcon, ArrowRightIcon, DownloadSuccessIcon, PercentIcon } from '@/svgs'
 
 import InputTokenMemo from './InputTokenMemo'
@@ -90,13 +90,13 @@ function AddLiquidityWeightedPool({
     }
     setMinBPTAmountOut(fromWei(minBPT))
   }, [
+    pool,
+    depositType,
+    calcMinBPTAmountOutSingleToken,
+    tokenDeposit,
     amountDeposit,
     calcMinBPTAmountOutAllToken,
-    calcMinBPTAmountOutSingleToken,
-    depositType,
-    pool.poolId,
     tokensData,
-    tokenDeposit,
   ])
 
   useEffect(() => {
@@ -113,13 +113,16 @@ function AddLiquidityWeightedPool({
         const updatedTokens = [...prev]
         const changedToken = updatedTokens.find(token => token.address?.toLowerCase() === address?.toLowerCase())
         if (changedToken) {
-          changedToken.amountDeposit = roundIfMoreThan18Decimals(value)
+          changedToken.amountDeposit = roundIfMoreThanDecimals(value, changedToken?.decimals)
           const currentTokenUSDValue = getValueTokenAmountToUSD(changedToken?.address, changedToken.amountDeposit)
 
           updatedTokens.forEach(token => {
             if (token.address?.toLowerCase() !== address?.toLowerCase()) {
               const otherTokenUSDValue = (currentTokenUSDValue / (changedToken.weight / 100)) * (token.weight / 100)
-              token.amountDeposit = roundIfMoreThan18Decimals(otherTokenUSDValue / token.price).toString()
+              token.amountDeposit = roundIfMoreThanDecimals(
+                otherTokenUSDValue / token.price,
+                token?.decimals,
+              ).toString()
             }
           })
         }
@@ -243,6 +246,19 @@ function AddLiquidityWeightedPool({
     return false
   }, [amountDeposit, depositType, tokenDeposit, tokensData])
 
+  const totalDeposit = useMemo(() => {
+    if (depositType === DEPOSIT_TYPE.SINGLE) {
+      return amountDeposit * (tokenDeposit?.price || 0)
+    }
+
+    if (depositType === DEPOSIT_TYPE.ALL) {
+      return tokensData.reduce((sum, token) => {
+        const value = (token?.amountDeposit || 0) * (token?.price || 0)
+        return sum + value
+      }, 0)
+    }
+  }, [amountDeposit, depositType, tokenDeposit?.price, tokensData])
+
   return (
     <>
       <Box className={cn('w-full flex-[6] flex-col py-3 lg:py-6', !showSidebar ? 'w-full' : '')}>
@@ -328,7 +344,7 @@ function AddLiquidityWeightedPool({
           </div>
           <div className='flex flex-row justify-between'>
             <TextHeading>{t('Total Deposit')}</TextHeading>
-            <Paragraph>${formatAmount(0)}</Paragraph>
+            <Paragraph>${formatAmount(totalDeposit)}</Paragraph>
           </div>
           <PrimaryButton disabled={isDisable} onClick={onAddLiquidity} className='w-full'>
             {t('Add Liquidity')}

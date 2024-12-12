@@ -18,7 +18,7 @@ import {
   getVaultContract,
   getWeightedPoolContract,
 } from '@/lib/contracts'
-import { fromWei, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
+import { fromWei, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -598,7 +598,7 @@ export const useWeightedPool = () => {
           [poolId32, tokenIndex, toWei(amountDeposit || 0, tokenDeposit.decimals)],
           chainId,
         )
-        return roundIfMoreThan18Decimals(minBPTAmountOut)
+        return roundIfMoreThanDecimals(minBPTAmountOut)
       } catch (error) {
         console.log(error)
         return 0
@@ -637,7 +637,7 @@ export const useWeightedPool = () => {
           [poolId32, amountIns],
           chainId,
         )
-        return roundIfMoreThan18Decimals(minBPTAmountOut)
+        return roundIfMoreThanDecimals(minBPTAmountOut)
       } catch (error) {
         console.log(error)
         return 0

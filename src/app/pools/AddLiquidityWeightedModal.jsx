@@ -2,17 +2,20 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 
 import Modal from '@/components/modal'
+import { useWindowSize } from '@/hooks/useWindowSize'
 
 import AddLiquidityWeightedPool from './add-liquidity/AddLiquidityWeightedPool'
 
 function AddLiquidityWeightedModal({ pool, isOpen, setIsOpen }) {
   const t = useTranslations()
+  const windowSize = useWindowSize()
   return (
     <Modal isOpen={isOpen} closeModal={() => setIsOpen(false)} title={t('Add Liquidity')}>
       <AddLiquidityWeightedPool
         pool={pool}
         showSidebar={false}
         setCurrentStep={() => {}}
+        width={windowSize.width >= 1024 ? '570px' : windowSize.width * 0.9}
         isModal
         setIsOpen={setIsOpen}
       />

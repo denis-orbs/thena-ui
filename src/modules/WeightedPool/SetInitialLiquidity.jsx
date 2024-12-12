@@ -6,7 +6,7 @@ import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { formatAmount, roundIfMoreThan18Decimals } from '@/lib/utils'
+import { formatAmount, roundIfMoreThanDecimals } from '@/lib/utils'
 import { ArrowLeftIcon, InfoCirCleDisableIcon } from '@/svgs'
 
 import InputLiquidityToken from './InputLiquidityToken'
@@ -45,7 +45,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
           if (idx !== lastIndexChange) {
             const otherTokenUSDValue =
               (currentTokenUSDValue / (updatedTokens[lastIndexChange].weight / 100)) * (token.weight / 100)
-            token.amount = roundIfMoreThan18Decimals(otherTokenUSDValue / token.token.price).toString()
+            token.amount = roundIfMoreThanDecimals(otherTokenUSDValue / token.token.price, token?.decimals).toString()
           }
         })
       }
@@ -102,13 +102,13 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
 
           result.push({
             ...otherToken,
-            amount: roundIfMoreThan18Decimals(newAmount).toString(),
+            amount: roundIfMoreThanDecimals(newAmount, otherToken?.decimals).toString(),
             usdValue: otherTokenUSDValue,
           })
         } else {
           result.push({
             ...otherToken,
-            amount: roundIfMoreThan18Decimals(currentBalance).toString(),
+            amount: roundIfMoreThanDecimals(currentBalance, otherToken?.decimals).toString(),
             usdValue: currentTokenUSDValue,
           })
         }

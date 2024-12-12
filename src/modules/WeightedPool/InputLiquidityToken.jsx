@@ -5,7 +5,7 @@ import TokenBadge from '@/components/badges/TokenBadge'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { cn, formatAmount, fromWei, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
+import { cn, formatAmount, fromWei, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 
 function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights, setLastIndexChange }) {
   const t = useTranslations()
@@ -19,7 +19,7 @@ function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights, setLas
 
         updatedTokens[index] = {
           ...updatedTokens[index],
-          amount: roundIfMoreThan18Decimals(value),
+          amount: roundIfMoreThanDecimals(value, updatedTokens?.[index]?.decimals),
         }
 
         setLastIndexChange(index)

@@ -121,7 +121,7 @@ function PoolDetails({
                 <TextHeading>{t('Pool Fee')}</TextHeading>
                 <Paragraph>{t('Set Pool Fees description')}</Paragraph>
                 <div className='mt-4 flex flex-row justify-between'>
-                  <Selection className='!h-11' data={poolRange} />
+                  <Selection className='!h-11' data={poolRange} isTranslation={false} />
                   <Input
                     type='number'
                     val={fee}
@@ -147,7 +147,7 @@ function PoolDetails({
       </Modal>
       <SuccessModal
         isOpen={Boolean(newPoolId)}
-        heading={t('Success!')}
+        heading={t('Success')}
         message={t('You have successfully created [symbol] weighted pool', { poolSymbol })}
         onClose={() => {
           setCurrentStep(0)

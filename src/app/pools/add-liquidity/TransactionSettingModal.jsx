@@ -41,7 +41,7 @@ function TransactionSettingModal({ isOpen, setIsOpen, slippageTolerance, setSlip
       <ModalBody>
         <TextHeading>{t('Slippage Tolerance')}</TextHeading>
         <div className='mt-4 flex flex-row justify-between'>
-          <Selection className='!h-11' data={range} />
+          <Selection className='!h-11' data={range} isTranslation={false} />
           <Input
             onChange={e => {
               setSlippageTolerance(e.target.value)
