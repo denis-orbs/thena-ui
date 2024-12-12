@@ -1,13 +1,14 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
-import CircleImage from '@/components/image/CircleImage'
+import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
-import { Paragraph, TextHeading } from '@/components/typography'
-import { UNKNOWN_LOGO } from '@/constant'
-import { formatAmount } from '@/lib/utils'
+import { Paragraph } from '@/components/typography'
+import useDebounce from '@/hooks/useDebounce'
 
-export default function SelectTokenFromList({ isOpen, setIsOpen, tokens, setToken }) {
+import { ItemToken } from '../TokenModal/ItemToken'
+
+export default function SelectTokenFromList({ isOpen, setIsOpen, tokens, setToken, selectedAsset }) {
   const t = useTranslations()
   const handleSelect = useCallback(
     token => {
@@ -16,35 +17,54 @@ export default function SelectTokenFromList({ isOpen, setIsOpen, tokens, setToke
     },
     [setIsOpen, setToken],
   )
+
+  const [searchText, setSearchText] = useState('')
+  const search = useDebounce(searchText)
+
+  const filteredAssets = useMemo(() => {
+    if (search) {
+      return (tokens || []).filter(
+        asset =>
+          asset.symbol.toLowerCase().includes(search.toLowerCase()) ||
+          asset.address.toLowerCase().includes(search.toLowerCase()),
+      )
+    }
+    return tokens
+  }, [search, tokens])
+
   return (
     <Modal
       isOpen={isOpen}
       closeModal={() => {
         setIsOpen(false)
       }}
-      width={540}
-      title='Select Token'
+      width={480}
+      title='Select Asset'
     >
-      <div className='mb-3 inline-flex w-full flex-col gap-4 px-2 py-3'>
-        <Paragraph className='px-2'>{t('Tokens')}</Paragraph>
-        <div className='flex flex-col gap-1'>
-          {tokens.map(token => (
-            <div
-              onClick={() => handleSelect(token)}
-              className='flex cursor-pointer flex-row items-center justify-between rounded-lg px-4 py-3 hover:bg-neutral-600'
-            >
-              <div className='flex flex-row items-center gap-2'>
-                <CircleImage className='h-8 w-8' alt={token?.address} src={token?.logoURI || UNKNOWN_LOGO} />
-                <div className='flex flex-col'>
-                  <TextHeading>{token?.symbol}</TextHeading>
-                  <Paragraph>{token?.name}</Paragraph>
-                </div>
-              </div>
-              <div className='flex flex-col items-end'>
-                <TextHeading>{formatAmount(token.balance)}</TextHeading>
-                <Paragraph>${formatAmount(token.price)}</Paragraph>
-              </div>
-            </div>
+      <div className='mb-3 inline-flex w-full flex-col gap-4 px-6 py-3'>
+        <SearchInput
+          className='w-full'
+          val={searchText}
+          setVal={setSearchText}
+          placeholder='Search by Name, Symbol or Address'
+          autoFocus
+        />
+      </div>
+
+      <div className='h-px w-full border border-neutral-700' />
+
+      <div className='flex flex-col gap-2 p-3'>
+        <Paragraph className='px-3'>{t('Assets')}</Paragraph>
+
+        <div className='max-h-[340px] overflow-auto' id='scrollableDiv'>
+          {filteredAssets.map(item => (
+            <ItemToken
+              key={item.address}
+              item={item}
+              setPopup={setIsOpen}
+              selectedAsset={selectedAsset}
+              setSelectedAsset={handleSelect}
+            />
           ))}
         </div>
       </div>

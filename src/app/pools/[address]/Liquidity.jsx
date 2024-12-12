@@ -13,7 +13,7 @@ function Liquidity({ pool }) {
     <div className='w-full'>
       <div className='mb-4 flex items-center gap-2'>
         {currentStep >= 2 && <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(1)} />}
-        <h2>{t('Add Liquidity')}</h2>
+        <h2 className='px-4 text-4xl'>{t('Add Liquidity')}</h2>
       </div>
       <AddLiquidity pool={pool} step={currentStep} setCurrentStep={setCurrentStep} showSidebar={false} />
     </div>

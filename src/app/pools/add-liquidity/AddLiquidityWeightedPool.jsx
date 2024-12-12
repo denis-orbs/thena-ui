@@ -28,7 +28,14 @@ const DEPOSIT_TYPE = {
   ALL: 'all',
 }
 
-function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = true, setCurrentStep }) {
+function AddLiquidityWeightedPool({
+  pool,
+  // isFullContent = true,
+  showSidebar = true,
+  setCurrentStep,
+  isModal = false,
+  setIsOpen = () => {},
+}) {
   const t = useTranslations()
   const [depositType, setDepositType] = useState(DEPOSIT_TYPE.SINGLE)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -72,12 +79,12 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
     setTokenDeposit(tokensAsset?.[0])
   }, [tokensAsset])
 
-  const [minBPTAmountOut, setMinBPTAmountOut] = useState()
+  const [minBPTAmountOut, setMinBPTAmountOut] = useState(0)
 
   const calcMinBPT = useCallback(async () => {
     let minBPT = 0
     if (depositType === DEPOSIT_TYPE.SINGLE) {
-      minBPT = await calcMinBPTAmountOutSingleToken(pool.poolId, tokenDeposit, amountDeposit)
+      minBPT = await calcMinBPTAmountOutSingleToken(pool.poolId, tokenDeposit, amountDeposit || 0)
     } else {
       minBPT = await calcMinBPTAmountOutAllToken(pool.poolId, tokensData)
     }
@@ -143,22 +150,22 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
     () => [
       {
         label: '10%',
-        onClickHandler: () => setAmountDeposit(pool?.token0?.balance.times(0.1).toString(10)),
+        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.times(0.1).toString(10)),
       },
       {
         label: '25%',
-        onClickHandler: () => setAmountDeposit(pool?.token0?.balance.times(0.25).toString(10)),
+        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.times(0.25).toString(10)),
       },
       {
         label: '50%',
-        onClickHandler: () => setAmountDeposit(pool?.token0?.balance.times(0.5).toString(10)),
+        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.times(0.5).toString(10)),
       },
       {
         label: 'Max',
-        onClickHandler: () => setAmountDeposit(pool?.token0?.balance.toString(10)),
+        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.toString(10)),
       },
     ],
-    [pool?.token0?.balance, setAmountDeposit],
+    [tokenDeposit?.balance, setAmountDeposit],
   )
 
   const isDisable = useMemo(() => {
@@ -184,11 +191,14 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
         setIsSuccess(true)
         setAmountDeposit(null)
         mutatePoolBalance()
+        if (isModal) {
+          setIsOpen(false)
+        }
       })
     } else {
       const assetsToken = tokensData.map(token => ({
         ...token,
-        amountDeposit: toWei(token.amountDeposit),
+        amountDeposit: toWei(token.amountDeposit, token.decimal),
       }))
       await onAddLiquidityAllToken(pool.poolId, assetsToken, minBPTAmountOut, () => {
         setIsSuccess(true)
@@ -201,16 +211,21 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
         )
 
         mutatePoolBalance()
+        if (isModal) {
+          setIsOpen(false)
+        }
       })
     }
   }, [
     amountDeposit,
     depositType,
+    isModal,
     minBPTAmountOut,
     mutatePoolBalance,
     onAddLiquidityAllToken,
     onAddLiquiditySingleToken,
     pool.poolId,
+    setIsOpen,
     tokenDeposit,
     tokensData,
   ])
@@ -231,20 +246,22 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
   return (
     <>
       <Box className={cn('w-full flex-[6] flex-col py-3 lg:py-6', !showSidebar ? 'w-full' : '')}>
-        <div className='mb-4 h-11 w-fit'>
-          {showSidebar ? (
-            <TextHeading className='font-archia text-3xl text-neutral-50'>
-              <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(0)} />
-              {t(pool?.type === PAIR_TYPES.LSD ? 'Choose Strategy' : 'Add Liquidity')}
-            </TextHeading>
-          ) : (
-            <TextHeading className='font-archia text-3xl text-neutral-50'>
-              {t(pool?.type === PAIR_TYPES.LSD ? 'Choose Strategy' : 'New Deposit')}
-            </TextHeading>
-          )}
-        </div>
+        {!isModal && (
+          <div className='mb-4 h-11 w-fit'>
+            {showSidebar ? (
+              <TextHeading className='font-archia text-3xl text-neutral-50'>
+                <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(0)} />
+                {t(pool?.type === PAIR_TYPES.LSD ? 'Choose Strategy' : 'Add Liquidity')}
+              </TextHeading>
+            ) : (
+              <TextHeading className='font-archia text-3xl text-neutral-50'>
+                {t(pool?.type === PAIR_TYPES.LSD ? 'Choose Strategy' : 'New Deposit')}
+              </TextHeading>
+            )}
+          </div>
+        )}
         <div className='flex flex-col gap-6'>
-          {isFullContent && (
+          {showSidebar && (
             <div className='flex flex-col gap-3'>
               <TextHeading>{pool?.symbol}</TextHeading>
               <div className='flex flex-row justify-between rounded-lg bg-neutral-800 p-4'>

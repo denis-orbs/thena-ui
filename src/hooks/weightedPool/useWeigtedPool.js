@@ -278,7 +278,7 @@ export const useWeightedPool = () => {
       const result = await writeTxn(key, joinPooluuid, thenaRouterContract, 'joinPool', [
         poolId32,
         idx,
-        toWei(amountDeposit),
+        toWei(amountDeposit, token?.decimals),
         toWei(minBPTAmountOut),
       ])
 
@@ -589,11 +589,13 @@ export const useWeightedPool = () => {
       const tokensToLowerCase = tokens.map(item => item.toLowerCase())
       const tokenIndex = tokensToLowerCase?.indexOf(tokenDeposit?.address?.toLowerCase())
 
+      if (!amountDeposit) return 0
+
       try {
         const minBPTAmountOut = await readCall(
           thenaRouterSimulatorContract,
           'joinPool',
-          [poolId32, tokenIndex, toWei(amountDeposit, tokenDeposit.decimals)],
+          [poolId32, tokenIndex, toWei(amountDeposit || 0, tokenDeposit.decimals)],
           chainId,
         )
         return roundIfMoreThan18Decimals(minBPTAmountOut)
@@ -626,7 +628,7 @@ export const useWeightedPool = () => {
         return indexA - indexB
       })
 
-      const amountIns = sortedToken.map(token => toWei(token.amountDeposit))
+      const amountIns = sortedToken.map(token => toWei(token.amountDeposit || 0, token.decimals))
 
       try {
         const minBPTAmountOut = await readCall(

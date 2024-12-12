@@ -26,7 +26,7 @@ function RemoveWeighted({ pool, onCancel }) {
   const { mutatePoolBalance } = useWeightPoolData()
 
   const [removeType, setRemoveType] = useState(REMOVE_TYPE.SINGLE)
-  const [amount, setAmount] = useState()
+  const [amount, setAmount] = useState(0)
   const [tokenReceive, setTokenReceive] = useState(pool?.tokens?.[0])
 
   const toggleRemoveType = useMemo(

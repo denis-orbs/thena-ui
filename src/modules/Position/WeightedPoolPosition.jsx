@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { getAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
+import AddLiquidityWeightedModal from '@/app/pools/AddLiquidityWeightedModal'
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
 import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
@@ -19,6 +20,7 @@ export function WeightedPoolPosition({ pool }) {
   const t = useTranslations()
   const { account: userAddress, chainId } = useWallet()
   const [isOpenRemove, setIsOpenRemove] = useState(false)
+  const [isOpenAdd, setIsOpenAdd] = useState(false)
 
   // MARK: Get claimable token for WEIGHTED
   const poolContract = getWeightedPoolContract(pool?.address, chainId)
@@ -99,7 +101,7 @@ export function WeightedPoolPosition({ pool }) {
     let total = 0
     const tokenList = tokenAddresses.map((address, index) => {
       const fee = new BigNumber(fromWei(expectedFees[index], mappedToken[address].decimals))
-      total += fee.times(mappedToken[address].price)
+      total += +fee.times(mappedToken[address].price)
 
       return {
         address,
@@ -113,6 +115,8 @@ export function WeightedPoolPosition({ pool }) {
       tokenList,
     }
   }, [expectedFees, mappedToken, tokenAddresses])
+
+  console.log({ claimableFee })
 
   return (
     <div className='rounded-xl bg-neutral-900 p-4'>
@@ -150,7 +154,7 @@ export function WeightedPoolPosition({ pool }) {
           <span>TODO(API)</span>
         </div>
 
-        {(depositValue.tokens || []).map((token, index) => (
+        {(depositValue?.tokens || []).map((token, index) => (
           <div className='flex justify-between' key={index}>
             <span className='text-neutral-300'>
               {token.symbol} {t('Deposit')}
@@ -185,9 +189,12 @@ export function WeightedPoolPosition({ pool }) {
           {t('Remove')}
         </OutlinedButton>
 
-        <EmphasisButton className='w-full'>{t('Add')} (TODO)</EmphasisButton>
+        <EmphasisButton className='w-full' onClick={() => setIsOpenAdd(true)}>
+          {t('Add')}
+        </EmphasisButton>
       </div>
       <RemoveWeightedModal isOpen={isOpenRemove} pool={pool} setIsOpen={setIsOpenRemove} />
+      <AddLiquidityWeightedModal isOpen={isOpenAdd} pool={pool} setIsOpen={setIsOpenAdd} />
     </div>
   )
 }
