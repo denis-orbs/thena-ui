@@ -53,8 +53,8 @@ export function WeightedPoolPosition({ pool }) {
 
   const [poolFeeContract, lpTokenTotalSupply, lpTokenBalance, tokenAddresses, tokenAmounts] = useMemo(() => {
     const poolFeeContractVal = data?.[0]?.result
-    const lpTokenTotalSupplyVal = Number(data?.[1]?.result ?? 0)
-    const lpTokenBalanceVal = Number(data?.[2]?.result ?? 0)
+    const lpTokenTotalSupplyVal = new BigNumber(data?.[1]?.result ?? 0)
+    const lpTokenBalanceVal = new BigNumber(data?.[2]?.result ?? 0)
     const tokenAddressesVal = data?.[3]?.result?.[0] || []
     const tokenAmountsVal = data?.[3]?.result?.[1] || []
 
@@ -81,21 +81,20 @@ export function WeightedPoolPosition({ pool }) {
   }, [pool.tokens, tokenAddresses])
 
   const depositValue = useMemo(() => {
-    // TODO: Get from API
-    const lpTokenPrice = new BigNumber(0)
+    const lpTokenPrice = new BigNumber(pool?.lpPrice || 0)
 
-    const userAmountRatio = new BigNumber(lpTokenBalance / lpTokenTotalSupply)
+    const userAmountRatio = lpTokenBalance.div(lpTokenTotalSupply)
     return {
       tokens: tokenAddresses.map((address, index) => {
         const token = mappedToken[address]
         return {
           ...token,
-          amount: userAmountRatio.times(fromWei(tokenAmounts[index]), token.decimals),
+          amount: userAmountRatio.times(fromWei(tokenAmounts[index], token.decimals)),
         }
       }, []),
-      depositUsd: lpTokenPrice.times(lpTokenBalance),
+      depositUsd: lpTokenPrice.times(fromWei(lpTokenBalance)),
     }
-  }, [lpTokenBalance, mappedToken, tokenAddresses, tokenAmounts, lpTokenTotalSupply])
+  }, [pool?.lpPrice, lpTokenBalance, lpTokenTotalSupply, tokenAddresses, mappedToken, tokenAmounts])
 
   const claimableFee = useMemo(() => {
     let total = 0
@@ -132,7 +131,7 @@ export function WeightedPoolPosition({ pool }) {
             {(pool?.tokens || []).map(token => (
               <div className='flex items-center gap-1' key={token?.address}>
                 <span className='text-[16px] font-medium leading-5'>{token?.symbol}</span>
-                <span className='text-sm font-medium leading-5 text-neutral-300 '>{token?.weight}%</span>
+                <span className='text-sm font-medium leading-5 text-neutral-300 '>{formatAmount(token?.weight)}%</span>
               </div>
             ))}
           </div>
@@ -148,8 +147,7 @@ export function WeightedPoolPosition({ pool }) {
 
         <div className='flex justify-between'>
           <span className='text-neutral-300'>{t('Deposit Value in USD')}</span>
-          {/* <span>${formatAmount(depositValue.depositUsd)}</span> */}
-          <span>TODO(API)</span>
+          <span>${formatAmount(depositValue.depositUsd)}</span>
         </div>
 
         {(depositValue?.tokens || []).map((token, index) => (
@@ -159,7 +157,7 @@ export function WeightedPoolPosition({ pool }) {
             </span>
             <span>
               <span>{formatAmount(token?.amount)}</span>
-              <span className='text-neutral-300'>({token?.weight}%)</span>
+              <span className='text-neutral-300'>({formatAmount(token?.weight)}%)</span>
             </span>
           </div>
         ))}

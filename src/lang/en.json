@@ -1299,12 +1299,14 @@
   "Quaaloops Boost": "Liquidity providers in this pool are eligible for LoopFi's 10x Quaaloops Boost",
   "Transaction settings": "Transaction settings",
   "Slippage tolerance": "Slippage tolerance",
-  "Total Rewards": "Total Rewards",
-  "My Votes": "My Votes",
   "Time Period": "Time Period",
   "My Rewards": "My Rewards",
   "Vote Time": "Vote Time",
   "Pool Info": "Pool Info",
   "Select Pool Strategy": "Select Pool Strategy",
-  "You have to select the pool strategy first to see it's [symbol]": "You have to select the pool strategy first to see it's {text}"
+  "You have to select the pool strategy first to see it's [symbol]": "You have to select the pool strategy first to see it's {text}",
+  "Total Rewards": "Total Rewards",
+  "My Votes": "My Votes",
+  "No Voting History Found": "No Voting History Found",
+  "No Voting History to display": "No Voting History to display"
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -32,7 +31,7 @@ import { warnToast } from '@/lib/notify'
 import { cn, formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, InfoIcon } from '@/svgs'
+import { InfoIcon } from '@/svgs'
 
 const sortOptions = [
   {
@@ -461,12 +460,6 @@ export default function VotePage() {
                   toggleId='voted'
                   label='Voted Only'
                 />
-                <Link className='lg:hidden' href='/dashboard/vote/voting-history'>
-                  <EmphasisButton>
-                    {t('Voting History')}
-                    <ArrowRightIcon className='mx-auto h-5 w-5' />
-                  </EmphasisButton>
-                </Link>
               </div>
             </div>
             <div className='flex w-full flex-col-reverse justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
@@ -482,10 +475,12 @@ export default function VotePage() {
                 </div>
                 <VeTheDropdown
                   className='w-full md:w-[200px]'
-                  data={veTHEs.map(item => ({
-                    ...item,
-                    label: `veTHE #${item.id}`,
-                  }))}
+                  data={veTHEs
+                    .filter(ve => ve.voting_amount.gt(0))
+                    .map(item => ({
+                      ...item,
+                      label: `veTHE #${item.id}`,
+                    }))}
                   selected={veTHE ? `veTHE #${veTHE.id}` : ''}
                   setSelected={ele => setVeTHEId(ele.id)}
                   placeHolder={t('Select veTHE')}
@@ -503,12 +498,6 @@ export default function VotePage() {
                   label='Voted Only'
                 />
               </div>
-              <Link className='hidden lg:flex' href='/dashboard/vote/voting-history'>
-                <EmphasisButton>
-                  {t('Voting History')}
-                  <ArrowRightIcon className='mx-auto h-5 w-5' />
-                </EmphasisButton>
-              </Link>
             </div>
           </div>
           <Table

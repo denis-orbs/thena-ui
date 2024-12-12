@@ -385,8 +385,8 @@ export default function SpecificPoolPage({ params }) {
           </div>
 
           {/* User positions */}
-          <div className='mt-6'>
-            <TextHeading className='mb-4 font-archia text-[30px] font-semibold leading-[34px]'>
+          <div className='mt-6 space-y-4'>
+            <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
               {t('My Positions')}
             </TextHeading>
             {pool.type === PAIR_TYPES.WEIGHTED && !isInvalidAmount(weightedPoolBalance) ? (

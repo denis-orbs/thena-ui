@@ -1,20 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { useTranslations } from 'use-intl'
 
-import Loading from '@/app/loading'
 import { TertiaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import { Collapse } from '@/components/collapse'
+import Highlight from '@/components/highlight'
 import Input from '@/components/input'
+import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { LOCALES } from '@/constant'
 import useWallet from '@/hooks/useWallet'
-import { fetVotingHistory } from '@/lib/api'
+import { fetchVotingHistory } from '@/lib/api'
 import { cn, formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
-import { ArrowLeftIcon, ChevronDownIcon, InfoIcon, XIcon } from '@/svgs'
+import { ArrowLeftIcon, ChevronDownIcon, InfoCircleWhite, InfoIcon, XIcon } from '@/svgs'
 
 import VotingHistoryTable from './VotingHistoryTable'
 
@@ -104,17 +105,20 @@ function Paging({
   pageSize = 10,
   totalItems = undefined,
   limitPage = undefined,
-  dataLength,
+  totalRecord,
   showPopoverPagination = false,
 }) {
   const [inputPage, setInputPage] = useState(undefined)
   const [showPopover, setShowPopover] = useState(false)
 
   const pageCount = useMemo(() => {
-    const count = Math.ceil((totalItems || dataLength) / pageSize)
+    const count = Math.ceil((totalItems || totalRecord) / pageSize)
 
     return limitPage && limitPage < count ? limitPage : count
-  }, [dataLength, limitPage, pageSize, totalItems])
+  }, [totalRecord, limitPage, pageSize, totalItems])
+
+  if (pageSize >= totalRecord) return <></>
+
   return (
     <div className='flex justify-center sm:justify-end'>
       <ul className='relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
@@ -263,9 +267,18 @@ function TitleEpoch({ epoch, open }) {
     return Math.floor((+epoch.epochStartTimestamp - epoch5) / 604800) + 5
   }, [epoch.epochStartTimestamp])
 
+  const totalRewardUsd = useMemo(
+    () =>
+      (epoch?.userVotes?.userRewards || []).reduce(
+        (sum, reward) => sum + (reward?.rewardAmount || 0) * (reward?.rewardToken?.price || 0),
+        0,
+      ),
+    [epoch?.userVotes?.userRewards],
+  )
+
   return (
     <div className='flex w-full flex-col justify-between gap-4 px-4 py-5 lg:flex-row lg:px-6'>
-      <div className='flex flex-[10] flex-row justify-between lg:flex-[3]'>
+      <div className='flex flex-[10] flex-row justify-between lg:flex-[2.5]'>
         <div className='flex flex-row gap-1'>
           <TextHeading className='text-xl'>{t('Epoch')}</TextHeading>
           <Paragraph className='text-xl'>{formatAmount(epochNumber)}</Paragraph>
@@ -274,28 +287,30 @@ function TitleEpoch({ epoch, open }) {
           <ChevronDownIcon />
         </div>
       </div>
-      <div className='grid w-full grid-cols-2 gap-y-4 lg:flex-[7] lg:grid-cols-4'>
+      <div className='grid w-full grid-cols-2 gap-y-4 lg:flex-[7.5] lg:grid-cols-4'>
         <div className='flex flex-col'>
           <TextHeading>{t('Time Period')}</TextHeading>
           <Paragraph className='hidden sm:block'>{`${timePeriod[0]} - ${timePeriod[1]}`}</Paragraph>
           <Paragraph className='hidden max-sm:block'>{timePeriod[0]}</Paragraph>
           <Paragraph className='hidden max-sm:block'>- {timePeriod[1]}</Paragraph>
         </div>
-        <div className='flex flex-col'>
+        <div className='flex flex-col lg:items-end'>
           <TextHeading>{t('My Votes')}</TextHeading>
           <Paragraph>{formatAmount(epoch?.totalVetheBalance)}</Paragraph>
         </div>
-        <div className='flex flex-col'>
+        <div className='flex flex-col lg:items-end'>
           <TextHeading>{t('Total Votes')}</TextHeading>
-          <Paragraph>{formatAmount(epoch?.totalVote)}</Paragraph>
+          <Paragraph>{formatAmount(epoch?.totalVotesEpoch)}</Paragraph>
         </div>
-        <div className='flex flex-col'>
+        <div className='flex flex-col lg:items-end'>
           <TextHeading>{t('Total Rewards')}</TextHeading>
           <div className='flex flex-row items-center gap-1'>
-            <Paragraph>TODO API</Paragraph>
+            <Paragraph>{totalRewardUsd}</Paragraph>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`vethe-${epoch?.epoch}`} />
             <CustomTooltip className='min-w-[136px]' id={`vethe-${epoch?.epoch}`}>
-              1234 THE
+              {(epoch?.userVotes?.userRewards || []).map(reward => (
+                <TextHeading>{`${reward?.rewardAmount} ${reward?.rewardToken?.symbol || 'UNKNOWN'}`}</TextHeading>
+              ))}
             </CustomTooltip>
           </div>
         </div>
@@ -304,48 +319,38 @@ function TitleEpoch({ epoch, open }) {
   )
 }
 
-const fetVotingHistoryData = async (account, limit = 10, skip = 0) => {
-  try {
-    const data = await fetVotingHistory(account?.toLowerCase(), skip, limit)
-    if (data) {
-      const groupedData = Object.values(
-        data.reduce((acc, item) => {
-          const { epochStartTimestamp, vetheBalance, userVotes } = item
-          const userVotesWithVetheBalance = (userVotes || []).map(vote => ({
-            ...vote,
-            vetheBalance,
-          }))
-          if (!acc[epochStartTimestamp]) {
-            acc[epochStartTimestamp] = {
-              ...item,
-              totalVetheBalance: parseFloat(vetheBalance),
-              userVotes: userVotesWithVetheBalance,
-            }
-          } else {
-            acc[epochStartTimestamp].totalVetheBalance += parseFloat(vetheBalance) // Sum vetheBalance
-            acc[epochStartTimestamp].userVotes.push(...userVotesWithVetheBalance)
-          }
-
-          return acc
-        }, {}),
-      )
-
-      return groupedData
-    }
-    return null
-  } catch (error) {
-    console.trace(error)
-    return null
-  }
-}
-
 function VotingHistory() {
   const { account } = useWallet()
-  const [currentPage, setCurrentPage] = useState(0)
+  // const assets = useAssets()
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const t = useTranslations()
+
+  const fetchVotingHistoryData = useCallback(
+    async (limit = 10, skip = 0) => {
+      try {
+        const data = await fetchVotingHistory(account?.toLowerCase(), skip, limit)
+        if (data?.data) {
+          const result = data.data.map(item => ({
+            ...item,
+            totalVetheBalance: (item.votes || []).reduce((sum, vote) => sum + parseFloat(vote?.vetheBalance || 0), 0),
+            totalVotesEpoch: (item.votes || []).reduce((sum, vote) => sum + parseFloat(vote?.totalVote || 0), 0),
+          }))
+
+          return { ...data, data: result }
+        }
+        return null
+      } catch (error) {
+        console.trace(error)
+        return null
+      }
+    },
+    [account],
+  )
 
   const { data: epochVotingHistory, isLoading } = useSWR(
-    account && ['epochVotingHistory', account],
-    () => fetVotingHistoryData(account, 10, 0),
+    account && ['epochVotingHistory', account, currentPage],
+    () => fetchVotingHistoryData(10, (currentPage - 1) * 10),
     {
       refreshInterval: 0,
     },
@@ -353,22 +358,55 @@ function VotingHistory() {
   const [isOpenArray, setIsOpenArray] = useState([])
 
   useEffect(() => {
-    if (epochVotingHistory?.length) {
-      setIsOpenArray(Array(epochVotingHistory.length).fill(false))
+    if (epochVotingHistory?.data?.length) {
+      setIsOpenArray(Array(epochVotingHistory.data.length).fill(false))
     }
-  }, [epochVotingHistory])
+  }, [epochVotingHistory?.data])
 
   const toggleCollapse = index => {
     setIsOpenArray(prevState => prevState.map((isOpen, i) => (i === index ? !isOpen : false)))
   }
 
   if (isLoading) {
-    return <Loading />
+    return (
+      <div className='flex flex-col divide-y divide-neutral-700 rounded-xl border border-neutral-700 bg-neutral-900'>
+        {[1, 2, 3].map((_, index) => (
+          <div key={index} className='flex w-full flex-col justify-between gap-4 px-4 py-5 lg:flex-row lg:px-6'>
+            <div className='flex flex-[10] flex-row justify-between lg:flex-[2.5]'>
+              <div className='flex w-full flex-row gap-1'>
+                <Skeleton className='h-6 w-[40%]' />
+              </div>
+              <div className='h-4 w-5 lg:hidden'>
+                <ChevronDownIcon />
+              </div>
+            </div>
+            <div className='grid w-full grid-cols-2 gap-y-4 lg:flex-[7.5] lg:grid-cols-4'>
+              <div className='flex flex-col gap-2'>
+                <Skeleton className='h-6 w-[20%]' />
+                <Skeleton className='h-6 w-[40%]' />
+              </div>
+              <div className='flex flex-col gap-2'>
+                <Skeleton className='h-6 w-[20%]' />
+                <Skeleton className='h-6 w-[40%]' />
+              </div>
+              <div className='flex flex-col gap-2'>
+                <Skeleton className='h-6 w-[20%]' />
+                <Skeleton className='h-6 w-[40%]' />
+              </div>
+              <div className='flex flex-col gap-2'>
+                <Skeleton className='h-6 w-[20%]' />
+                <Skeleton className='h-6 w-[40%]' />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
   }
 
-  return (
+  return epochVotingHistory?.data?.length > 0 ? (
     <div className='flex flex-col divide-y divide-neutral-700 rounded-xl border border-neutral-700 bg-neutral-900'>
-      {(epochVotingHistory || []).map((epoch, index) => (
+      {(epochVotingHistory?.data || []).map((epoch, index) => (
         <Collapse
           key={index}
           onToggle={() => toggleCollapse(index)}
@@ -383,7 +421,17 @@ function VotingHistory() {
           </div>
         </Collapse>
       ))}
-      <Paging currentPage={currentPage} setCurrentPage={setCurrentPage} dataLength={epochVotingHistory.length} />
+      <Paging currentPage={currentPage} setCurrentPage={setCurrentPage} totalRecord={epochVotingHistory.total} />
+    </div>
+  ) : (
+    <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
+      <Highlight>
+        <InfoCircleWhite className='h-4 w-4' />
+      </Highlight>
+      <div className='flex flex-col items-center gap-3'>
+        <h2>{t('No Voting History Found')}</h2>
+        <Paragraph className='mt-3 text-center'>{t('No Voting History to display')}</Paragraph>
+      </div>
     </div>
   )
 }

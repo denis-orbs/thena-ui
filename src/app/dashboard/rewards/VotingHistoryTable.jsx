@@ -64,10 +64,25 @@ export default function VotingHistoryTable({ userVotes }) {
   const [sort, setSort] = useState(sortOptions[0])
   const [currentPage, setCurrentPage] = useState(1)
   const { pairs } = usePairs()
+
+  const groupedVotes = useMemo(
+    () =>
+      userVotes.votes.flatMap(vote =>
+        vote.poolVotes.map(poolVote => ({
+          tokenId: vote.tokenId,
+          epochStartTimestamp: vote.epochStartTimestamp,
+          vetheBalance: vote.vetheBalance,
+          totalWeight: poolVote.totalWeight,
+          weight: poolVote.weight,
+          lastUpdate: poolVote.lastUpdate,
+          pool: poolVote.pool,
+        })),
+      ),
+    [userVotes.votes],
+  )
   const data = useMemo(
-    () => ({
-      ...userVotes,
-      userVotes: (userVotes.userVotes || []).map(vote => {
+    () =>
+      (groupedVotes || []).map(vote => {
         const pairId = vote?.pool?.id
         const pairData = (pairs || []).find(pair => pair?.address?.toLowerCase() === pairId?.toLowerCase())
         return {
@@ -75,8 +90,7 @@ export default function VotingHistoryTable({ userVotes }) {
           pool: pairData,
         }
       }),
-    }),
-    [pairs, userVotes],
+    [groupedVotes, pairs],
   )
 
   const voteTime = useCallback(
@@ -94,8 +108,8 @@ export default function VotingHistoryTable({ userVotes }) {
 
   const finalData = useMemo(
     () =>
-      (data.userVotes || []).map(vote => ({
-        veTHEId: <span>{`${data.tokenId}`}</span>,
+      (data || []).map(vote => ({
+        veTHEId: <span>{`${vote.tokenId}`}</span>,
         pair: (
           <div className='flex flex-row items-center gap-1'>
             {vote?.pool?.type === PAIR_TYPES.WEIGHTED ? (
@@ -152,11 +166,12 @@ export default function VotingHistoryTable({ userVotes }) {
             </div>
           </div>
         ),
-        apr: <Paragraph>{formatAmount(123.45)}%</Paragraph>,
+        // apr: <Paragraph>{formatAmount(123.45)}%</Paragraph>,
+        apr: <Paragraph>TODO API</Paragraph>,
 
         vote: (
           <div className='flex flex-col'>
-            <TextHeading>{formatAmount((vote.vetheBalance / 100) * vote.weight)}</TextHeading>
+            <TextHeading>{formatAmount((parseFloat(vote.vetheBalance) / 100) * vote.weight)}</TextHeading>
             <Paragraph>{formatAmount(vote.weight)}%</Paragraph>
           </div>
         ),
@@ -180,7 +195,7 @@ export default function VotingHistoryTable({ userVotes }) {
         ),
         className: 'bg-neutral-900',
       })),
-    [data.tokenId, data.userVotes, voteTime],
+    [data, voteTime],
   )
 
   return (
