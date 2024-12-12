@@ -131,17 +131,13 @@ export default function PoolsPage() {
 
   // TODO: If new pools, update here
   const newListPoolIds = [
-    '0x5bc828a5035aac2fa3aab46f7a25d08165d19a08', // mPendle/Pendle
-    '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79', // BTCB/mBTC
-    '0x7569ae71a1832fa5f403471a01289222b1daacb5', // mCAKE/CAKE
-    '0x716fe318602a603959c3af4676aed74b22c615da', // BNB/MGP
-    '0x52b137a651413a0eb3609b44d032f00e1c8daf33', // sUSDa/USDa
     '0x987c794c0786ee5cd6b34b7e32aa21098cd6b806', // ZRO/BNB
-    '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7', // uniBTC/FBTC
-    '0x00a04fe69ab69ab0cbbe61671405677f5d003a2f', // BNB/VINU
-    '0x4e2ae126c67128f0cfe35e43e0c9459992658d44', // mwBETH/wBETH
     '0xb3f3312252cade3a15eba318f6caaacb5e8097f4', // BNB/RWA
-    '0x7b879963ae083732f4514d564f4e4613e24e1f67', // USDT/FDUSD
+    '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7', // uniBTC/FBTC
+    '0x716fe318602a603959c3af4676aed74b22c615da', // BNB/MGP
+    '0x11f3c9ca27ed4931efd0fbe0fd5dfc75157a1ea9', // BNB/KOMA
+    '0x47600bc3ae9b5b97ef92a55e550066944fe17670', // BNB/lpBNB
+    '0x58cad2ea28853bbe1501188787c10469b2f0c4f1', // BNB/COCO
   ]
 
   const newListingsPool = filteredPools.filter(item => newListPoolIds.includes(item.address))
