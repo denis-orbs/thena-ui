@@ -109,6 +109,62 @@ export const useTxn = () => {
     [updateTxn, networkId, askUserToRetry],
   )
 
+  const writeTxn2 = useCallback(
+    async (key, uuid, contract, method, params = [], msgValue = '0') => {
+      let hash
+      updateTxn({
+        key,
+        uuid,
+        status: TXN_STATUS.WAITING,
+      })
+      try {
+        hash = await writeCall(contract, method, params, msgValue, networkId)
+        updateTxn({
+          key,
+          uuid,
+          status: TXN_STATUS.PENDING,
+          hash,
+        })
+        const txnReceipt = await waitCall(hash)
+        updateTxn({
+          key,
+          uuid,
+          status: TXN_STATUS.SUCCESS,
+          hash,
+        })
+        successToast('Transaction confirmed', hash, networkId)
+        return txnReceipt
+      } catch (error) {
+        console.error(error)
+        console.error(error?.shortMessage)
+        if (error && error.name === 'TransactionReceiptNotFoundError') {
+          // Fix case if RPC error -> still shows tx
+          updateTxn({
+            key,
+            uuid,
+            status: TXN_STATUS.SUCCESS,
+            hash,
+          })
+          successToast('Transaction confirmed', hash, networkId)
+          return true
+        }
+        updateTxn({
+          key,
+          uuid,
+          status: TXN_STATUS.FAILED,
+          hash,
+        })
+        errorToast('Error', error.shortMessage)
+        const userWantsToRetry = await askUserToRetry({ key, uuid, contract, method, params, msgValue })
+        if (userWantsToRetry) {
+          return writeTxn(key, uuid, contract, method, params, msgValue) // retry
+        }
+        return false
+      }
+    },
+    [updateTxn, networkId, askUserToRetry, writeTxn],
+  )
+
   const sendTxn = useCallback(
     async (key, uuid, to, data, value = '0') => {
       let hash
@@ -166,5 +222,5 @@ export const useTxn = () => {
     dispatch(closeTransactionPopup())
   }, [dispatch])
 
-  return { startTxn, updateTxn, endTxn, closeTxn, writeTxn, sendTxn, closeTxnModal }
+  return { startTxn, updateTxn, endTxn, closeTxn, writeTxn, writeTxn2, sendTxn, closeTxnModal }
 }

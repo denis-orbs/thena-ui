@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId, WBNB } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeFunctionData, encodePacked, getAddress, maxUint256, zeroAddress } from 'viem'
+import { decodeEventLog, decodeFunctionData, encodePacked, erc20Abi, getAddress, maxUint256, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
@@ -300,7 +300,7 @@ export const useTaxTokenSwap = (autoClose = false) => {
 export const useThenaFusionSwap = (autoClose = false) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
-  const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
+  const { startTxn, endTxn, writeTxn2, closeTxnModal } = useTxn()
   const t = useTranslations()
 
   const handleThenaFusionSwap = useCallback(
@@ -308,6 +308,7 @@ export const useThenaFusionSwap = (autoClose = false) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const swapuuid = uuidv4()
+      const unwrapId = uuidv4()
       const fusionRouter = getFusionRouterContract(chainId)
       const routerAddress = fusionRouter?.address
       let isApproved = true
@@ -320,27 +321,40 @@ export const useThenaFusionSwap = (autoClose = false) => {
       }
 
       setPending(true)
+      const transactions = {}
+      if (!isApproved) {
+        transactions[approveuuid] = {
+          desc: `${t('Approve')} ${fromAsset.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[swapuuid] = {
+        desc: t('Swap [symbolA] for [symbolB]', {
+          symbolA: fromAsset.symbol,
+          symbolB: toAsset.symbol === 'BNB' ? 'WBNB' : toAsset.symbol,
+        }),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      if (toAsset.address === 'BNB') {
+        transactions[unwrapId] = {
+          desc: t('Unwrap'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
       startTxn({
         key,
         title: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
-        transactions: {
-          ...(!isApproved && {
-            [approveuuid]: {
-              desc: `${t('Approve')} ${fromAsset.symbol}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          [swapuuid]: {
-            desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        },
+        transactions,
       })
 
       if (!isApproved) {
-        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [routerAddress, maxUint256]))) {
+        if (!(await writeTxn2(key, approveuuid, tokenContract, 'approve', [routerAddress, maxUint256]))) {
           setPending(false)
           return
         }
@@ -358,7 +372,7 @@ export const useThenaFusionSwap = (autoClose = false) => {
 
       // from BNB  set from token is WBNB and send value = amount in
       // from WBNB set from token is WBNB and send value = 0n
-      await writeTxn(
+      const txnReceipt = await writeTxn2(
         key,
         swapuuid,
         fusionRouter,
@@ -366,6 +380,31 @@ export const useThenaFusionSwap = (autoClose = false) => {
         [[token0Address, token1Address, account, currentTimestamp + deadline * 60, amountIn, minAmountOut, 0n]],
         fromAsset.address === 'BNB' ? amountIn : 0n,
       )
+      if (!txnReceipt) {
+        setPending(false)
+        return
+      }
+
+      if (toAsset.address === 'BNB') {
+        const transferHash = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+        const events = txnReceipt.logs
+        const transferEvent = events.find(
+          e => getAddress(e.address) === getAddress(WBNB[chainId].address) && e.topics[0] === transferHash,
+        )
+
+        const decodeData = decodeEventLog({
+          abi: erc20Abi,
+          data: transferEvent.data,
+          topics: transferEvent.topics,
+        })
+
+        const amount = decodeData?.args?.value ?? 0
+        const wbnbContract = getWBNBContract(chainId)
+        if (!(await writeTxn2(key, unwrapId, wbnbContract, 'withdraw', [amount]))) {
+          setPending(false)
+          return
+        }
+      }
 
       endTxn({ key, final: 'Swap Successful' })
 
@@ -375,7 +414,7 @@ export const useThenaFusionSwap = (autoClose = false) => {
         closeTxnModal()
       }
     },
-    [chainId, startTxn, t, account, endTxn, autoClose, writeTxn, closeTxnModal],
+    [chainId, startTxn, t, account, endTxn, autoClose, writeTxn2, closeTxnModal],
   )
 
   return { handleThenaFusionSwap, pending }
