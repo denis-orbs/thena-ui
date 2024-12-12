@@ -5,14 +5,20 @@ import { useCallback, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId, WBNB } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeFunctionData, encodePacked, getAddress, maxUint256, zeroAddress } from 'viem'
+import { decodeEventLog, decodeFunctionData, encodePacked, erc20Abi, getAddress, maxUint256, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { oneInchApiKey } from '@/constant/env'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import { getERC20Contract, getRouterContract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
+import {
+  getERC20Contract,
+  getFusionRouterContract,
+  getRouterContract,
+  getTcSpotContract,
+  getWBNBContract,
+} from '@/lib/contracts'
 import { errorToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -182,13 +188,13 @@ export const useOdosSwap = (autoClose = false) => {
   return { onOdosSwap, pending }
 }
 
-export const useThenaSwap = (autoClose = false) => {
+export const useTaxTokenSwap = (autoClose = false) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, endTxn, writeTxn, closeTxnModal } = useTxn()
   const t = useTranslations()
 
-  const handleThenaSwap = useCallback(
+  const handleTaxTokenSwap = useCallback(
     async (fromAsset, toAsset, fromAmount, slippage, deadline, callback) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
@@ -288,7 +294,130 @@ export const useThenaSwap = (autoClose = false) => {
     [chainId, startTxn, t, account, endTxn, autoClose, writeTxn, closeTxnModal],
   )
 
-  return { handleThenaSwap, pending }
+  return { handleTaxTokenSwap, pending }
+}
+
+export const useThenaFusionSwap = (autoClose = false) => {
+  const [pending, setPending] = useState(false)
+  const { account, chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn2, closeTxnModal } = useTxn()
+  const t = useTranslations()
+
+  const handleThenaFusionSwap = useCallback(
+    async (fromAsset, toAsset, fromAmount, outAmount, slippage, deadline, callback) => {
+      const key = uuidv4()
+      const approveuuid = uuidv4()
+      const swapuuid = uuidv4()
+      const unwrapId = uuidv4()
+      const fusionRouter = getFusionRouterContract(chainId)
+      const routerAddress = fusionRouter?.address
+      let isApproved = true
+      let tokenContract
+
+      if (fromAsset.address !== 'BNB') {
+        tokenContract = getERC20Contract(fromAsset.address, chainId)
+        const allowance = await readCall(tokenContract, 'allowance', [account, routerAddress])
+        isApproved = fromWei(allowance, fromAsset.decimals).gte(fromAmount)
+      }
+
+      setPending(true)
+      const transactions = {}
+      if (!isApproved) {
+        transactions[approveuuid] = {
+          desc: `${t('Approve')} ${fromAsset.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[swapuuid] = {
+        desc: t('Swap [symbolA] for [symbolB]', {
+          symbolA: fromAsset.symbol,
+          symbolB: toAsset.symbol === 'BNB' ? 'WBNB' : toAsset.symbol,
+        }),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      if (toAsset.address === 'BNB') {
+        transactions[unwrapId] = {
+          desc: t('Unwrap'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      startTxn({
+        key,
+        title: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+        transactions,
+      })
+
+      if (!isApproved) {
+        if (!(await writeTxn2(key, approveuuid, tokenContract, 'approve', [routerAddress, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      const token0Address = fromAsset.address === 'BNB' ? WBNB[chainId].address : fromAsset.address
+      const token1Address = toAsset.address === 'BNB' ? WBNB[chainId].address : toAsset.address
+
+      const currentTimestamp = parseInt(new Date().getTime() / 1000, 10)
+      const amountIn = toWei(
+        new BigNumber(fromAmount).decimalPlaces(fromAsset.decimals, BigNumber.ROUND_DOWN).toString(),
+        fromAsset.decimals,
+      )
+      const minAmountOut = Math.floor(Number(outAmount) * ((100 - slippage) / 100))
+
+      // from BNB  set from token is WBNB and send value = amount in
+      // from WBNB set from token is WBNB and send value = 0n
+      const txnReceipt = await writeTxn2(
+        key,
+        swapuuid,
+        fusionRouter,
+        'exactInputSingle',
+        [[token0Address, token1Address, account, currentTimestamp + deadline * 60, amountIn, minAmountOut, 0n]],
+        fromAsset.address === 'BNB' ? amountIn : 0n,
+      )
+      if (!txnReceipt) {
+        setPending(false)
+        return
+      }
+
+      if (toAsset.address === 'BNB') {
+        const transferHash = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+        const events = txnReceipt.logs
+        const transferEvent = events.find(
+          e => getAddress(e.address) === getAddress(WBNB[chainId].address) && e.topics[0] === transferHash,
+        )
+
+        const decodeData = decodeEventLog({
+          abi: erc20Abi,
+          data: transferEvent.data,
+          topics: transferEvent.topics,
+        })
+
+        const amount = decodeData?.args?.value ?? 0
+        const wbnbContract = getWBNBContract(chainId)
+        if (!(await writeTxn2(key, unwrapId, wbnbContract, 'withdraw', [amount]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      endTxn({ key, final: 'Swap Successful' })
+
+      setPending(false)
+      callback()
+      if (autoClose) {
+        closeTxnModal()
+      }
+    },
+    [chainId, startTxn, t, account, endTxn, autoClose, writeTxn2, closeTxnModal],
+  )
+
+  return { handleThenaFusionSwap, pending }
 }
 
 export const useBestQuoteSwap = (fromAddress, toAddress, fromAmount, slippage, networkId) =>
