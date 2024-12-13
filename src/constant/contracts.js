@@ -126,16 +126,16 @@ const Contracts = {
   globalFactory: {
     [CHAIN_ID.TEST_BSC]: '0xa4b9FD00b47F34385F52AfFc5d79822063F0334b',
   },
-  WeightedPoolFactory: {
+  weightedPoolFactory: {
     [CHAIN_ID.TEST_BSC]: '0xb5fa74122fc89b7e9f1b3cf45798c8215f89f0dd',
   },
-  Vault: {
+  weightedPoolVault: {
     [CHAIN_ID.TEST_BSC]: '0xb6c15845dc57f041ef7ad38ec50e8f99ea3bb547',
   },
-  ThenaRouter: {
+  weightedPoolRouter: {
     [CHAIN_ID.TEST_BSC]: '0x00837794D018d5c3cE7763cEAeFbe2fC0B145110',
   },
-  ThenaRouterSimulator: {
+  weightedPoolRouterSimulator: {
     [CHAIN_ID.TEST_BSC]: '0x216e64ac3d286794b3725477dd524836621456c7',
   },
   algebraFactoryV2: {

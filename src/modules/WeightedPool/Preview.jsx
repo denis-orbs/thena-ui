@@ -195,6 +195,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
         ))}
         <div className='flex flex-row justify-between pt-4'>
           <TextHeading>{t('Total')}</TextHeading>
+          {/* TODO: Wrong total */}
           <TextHeading>${formatAmount(total)}</TextHeading>
         </div>
       </div>

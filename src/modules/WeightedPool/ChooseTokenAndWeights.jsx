@@ -15,6 +15,8 @@ import { ChevronDownIcon, InfoIcon, LockIcon, PlusIcon, TrashIcon, UnlockIcon } 
 
 import TokenModal from '../TokenModal'
 
+// TODO: Same key warning
+
 const updateWeight = tokens => {
   const weightLocked = tokens.filter(item => item.lock).reduce((sum, cur) => sum + cur.weight, 0)
   const tokenUnlock = tokens.filter(item => !item.lock && item.token != null)
