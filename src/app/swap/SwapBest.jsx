@@ -72,16 +72,7 @@ export default function SwapBest({
   const setFromAddress = useCallback(address => updateSearchParams({ inputCurrency: address }), [updateSearchParams])
   const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
 
-  const isThenaQuoteAndSwap = useMemo(() => {
-    if (['WBNB', 'BNB'].includes(fromAsset?.symbol) && toAsset?.symbol === 'MONKY') {
-      return true
-    }
-    if (['WBNB', 'BNB'].includes(toAsset?.symbol) && fromAsset?.symbol === 'MONKY') {
-      return true
-    }
-
-    return false
-  }, [fromAsset?.symbol, toAsset?.symbol])
+  const isThenaQuoteAndSwap = useMemo(() => false, [])
 
   const {
     data: bestTrade,

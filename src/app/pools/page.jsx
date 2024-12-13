@@ -104,7 +104,16 @@ export default function PoolsPage() {
     } else {
       final = pairs.filter(ele => ele.highApr > 0)
     }
-    final = filter === PAIR_TYPES.All ? final : final.filter(item => item.type === filter)
+    final =
+      filter === PAIR_TYPES.All
+        ? final
+        : final.filter(item => {
+            if (filter !== PAIR_TYPES.STABLE) {
+              return item.type === filter
+            }
+            const checkSubStatble = (item.subpools || []).some(sub => sub.title === 'CL_Stable')
+            return checkSubStatble || item.type === filter
+          })
 
     const res =
       filter !== PAIR_TYPES.LSD || strategy === STRATEGIES.All
@@ -139,6 +148,8 @@ export default function PoolsPage() {
     '0x47600bc3ae9b5b97ef92a55e550066944fe17670', // BNB/lpBNB
     '0x58cad2ea28853bbe1501188787c10469b2f0c4f1', // BNB/COCO
   ]
+
+  console.log({ filteredPools })
 
   const newListingsPool = filteredPools.filter(item => newListPoolIds.includes(item.address))
 

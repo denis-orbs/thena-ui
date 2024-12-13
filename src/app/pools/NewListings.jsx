@@ -16,7 +16,7 @@ import { InfoIcon } from '@/svgs'
 function Title({ length }) {
   const t = useTranslations()
   return (
-    <div className='z-40 flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
+    <div className='flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
       🔥 {t('New Listings')} ({length})
     </div>
   )
@@ -214,7 +214,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial }) {
   return (
     <Collapse
       className='min-h-[76px] rounded-xl bg-neutral-900'
-      classNames={{ chevron: 'mr-6 z-40', content: '-mt-7' }}
+      classNames={{ chevron: 'mr-6', content: '-mt-7' }}
       defaultShow={false}
       title={<Title length={pools.length} />}
     >
