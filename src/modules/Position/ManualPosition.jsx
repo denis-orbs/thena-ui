@@ -6,7 +6,6 @@ import useSWR from 'swr'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { maxUint128, zeroAddress } from 'viem'
-import { useReadContract } from 'wagmi'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -14,15 +13,15 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { algebraPoolV3, thenaBasePluginAbi } from '@/constant/abi'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
 import { useFusionState } from '@/hooks/fusion/useFusions'
+import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import { simulateCall } from '@/lib/contractActions'
-import { getAlgebraFactoryContract, getAlgebraNPMContract } from '@/lib/contracts'
+import { getAlgebraNPMContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
@@ -74,36 +73,7 @@ export default function ManualPosition({ pool }) {
   const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
   const { pending, onAlgebraBurn } = useAlgebraBurn()
 
-  const algebraFactory = getAlgebraFactoryContract(chainId)
-  const { data: poolAddress } = useReadContract({
-    ...algebraFactory,
-    functionName: 'computePoolAddress',
-    args: [asset0?.address, asset1?.address],
-    query: {
-      enabled: !!asset0 && !!asset1,
-      staleTime: Infinity,
-    },
-  })
-
-  const { data: pluginAddress } = useReadContract({
-    address: poolAddress,
-    abi: algebraPoolV3,
-    functionName: 'plugin',
-    query: {
-      enabled: !!poolAddress,
-      staleTime: Infinity,
-    },
-  })
-
-  const { data: incentiveAddress } = useReadContract({
-    address: pluginAddress,
-    abi: thenaBasePluginAbi,
-    functionName: 'incentive',
-    query: {
-      enabled: !!pluginAddress,
-      staleTime: Infinity,
-    },
-  })
+  const { poolAddress, incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
 
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)

@@ -5,7 +5,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
-import { useReadContract } from 'wagmi'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -16,14 +15,12 @@ import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType, GAMMA_TYPES } from '@/constant'
-import { algebraPoolV3, thenaBasePluginAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
-import useWallet from '@/hooks/useWallet'
+import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { callMulti } from '@/lib/contractActions'
-import { getAlgebraFactoryContract } from '@/lib/contracts'
 import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
@@ -40,7 +37,7 @@ import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const feeAmount = 3000
 
-const strategiesManual = [
+export const strategiesManual = [
   {
     type: 'manual',
     title: 'Swap Fees',
@@ -50,11 +47,11 @@ const strategiesManual = [
   },
 ]
 
-const incentiveActive = [
+export const incentiveActive = [
   {
     type: 'manual',
     title: '$THE Emissions',
-    address: 'manual-the-emission',
+    address: zeroAddress,
     min: 100,
     max: 150,
   },
@@ -122,7 +119,6 @@ export default function ChooseStrategy({
 }) {
   const dispatch = useDispatch()
   const { networkId } = useChainSettings()
-  const { chainId } = useWallet()
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
   const t = useTranslations()
@@ -162,40 +158,7 @@ export default function ChooseStrategy({
     timeWindow,
   })
 
-  const [currency0, currency1] = baseCurrency.sortsBefore(quoteCurrency)
-    ? [baseCurrency, quoteCurrency]
-    : [quoteCurrency, baseCurrency]
-
-  const algebraFactory = getAlgebraFactoryContract(chainId)
-  const { data: poolAddress } = useReadContract({
-    ...algebraFactory,
-    functionName: 'computePoolAddress',
-    args: [currency0?.address, currency1?.address],
-    query: {
-      enabled: !!currency0 && !!currency1,
-      staleTime: Infinity,
-    },
-  })
-
-  const { data: pluginAddress } = useReadContract({
-    address: poolAddress,
-    abi: algebraPoolV3,
-    functionName: 'plugin',
-    query: {
-      enabled: !!poolAddress,
-      staleTime: Infinity,
-    },
-  })
-
-  const { data: incentiveAddress } = useReadContract({
-    address: pluginAddress,
-    abi: thenaBasePluginAbi,
-    functionName: 'incentive',
-    query: {
-      enabled: !!pluginAddress,
-      staleTime: Infinity,
-    },
-  })
+  const { incentiveAddress } = usePoolAlgebraInfo(firstAsset?.address, secondAsset?.address)
 
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onStartPriceInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import React, { useCallback } from 'react'
+import { zeroAddress } from 'viem'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
@@ -27,8 +28,17 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
     }
 
     // TODO: CHECK strategy.address
-    const type = strategy?.address === 'manual-swap-fees' ? 'FEE' : 'THE'
-    onAlgebraAdd(amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippageCustom ?? slippage, deadline, type)
+    const isFarming = strategy?.address === zeroAddress
+    onAlgebraAdd(
+      amountA,
+      amountB,
+      baseCurrency,
+      quoteCurrency,
+      mintInfo,
+      slippageCustom ?? slippage,
+      deadline,
+      isFarming,
+    )
   }, [
     errorMessage,
     strategy,

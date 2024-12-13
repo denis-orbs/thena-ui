@@ -27,12 +27,12 @@ export const useAlgebraAdd = (version = 3) => {
   const t = useTranslations()
 
   /**
-   * Params type: "THE" | "FEE"
-   * - if "THE" will farming THE emission
-   * - if "FEE" will earn from transactions fee
+   * Params boolean isFarming
+   * - true:  will farming THE emission
+   * - false: will earn from transactions fee
    */
   const onAlgebraAdd = useCallback(
-    async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline, type = 'THE') => {
+    async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline, isFarming = false) => {
       try {
         const key = uuidv4()
         const approve1uuid = uuidv4()
@@ -86,7 +86,7 @@ export const useAlgebraAdd = (version = 3) => {
           hash: null,
         }
 
-        if (type === 'THE') {
+        if (isFarming) {
           transactions[approveNft] = {
             desc: `${t('Approve')} LP`,
             status: TXN_STATUS.START,
@@ -141,7 +141,7 @@ export const useAlgebraAdd = (version = 3) => {
           return
         }
 
-        if (type === 'THE') {
+        if (isFarming) {
           // MARK: APPROVE LP TOKEN FOR FAIMING
           const decodeData = NonfungiblePositionManager.getMintedPosition(addTxRecieve, chainId)
           const nftId = decodeData.args?.tokenId
@@ -568,20 +568,24 @@ export const useAlgebraMigration = () => {
       feeValue0,
       feeValue1,
       tokenId,
-      isClaimable,
+      isFarming = false,
       callback,
     }) => {
       const key = uuidv4()
 
-      const claimId = uuidv4()
       const removeId = uuidv4()
       const burnId = uuidv4()
       const approveId1 = uuidv4()
       const approveId2 = uuidv4()
       const addId = uuidv4()
+      const approveNft = uuidv4()
+      const stakeId = uuidv4()
 
       const nftPositionV3 = Contracts.nonfungiblePositionManagerV3[chainId]
       const nftPositionV2 = Contracts.nonfungiblePositionManagerV2[chainId]
+      const farmingCenter = getFarmingCenterContract(chainId)
+      const incentiveMaker = getInsentiveContract(chainId)
+      const positionManger = getPositionManagerContract(chainId, 3)
 
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
 
@@ -604,67 +608,54 @@ export const useAlgebraMigration = () => {
         isSecondApproved = allowance >= parseUnits(amountB, currencyB.decimals)
       }
 
-      startTxn({
-        key,
-        title: `${t('Migrate')}`,
-        transactions: {
-          ...(isClaimable && {
-            [claimId]: {
-              desc: t('Claim Rewards'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          [removeId]: {
-            desc: t('Remove Liquidity'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-          [burnId]: {
-            desc: `${t('Burn')} NFT #${tokenId}`,
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-          ...(!isFirstApproved && {
-            [approveId1]: {
-              desc: `${t('Approve')} ${currencyA.symbol}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          ...(!isSecondApproved && {
-            [approveId2]: {
-              desc: `${t('Approve')} ${currencyB.symbol}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          [addId]: {
-            desc: t('Add Liquidity'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        },
-      })
+      const transactions = {}
+      transactions[removeId] = {
+        desc: t('Remove Liquidity'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+      transactions[burnId] = {
+        desc: `${t('Burn')} NFT #${tokenId}`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+      if (!isFirstApproved) {
+        transactions[approveId1] = {
+          desc: `${t('Approve')} ${currencyA.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+      if (!isSecondApproved) {
+        transactions[approveId2] = {
+          desc: `${t('Approve')} ${currencyB.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+      transactions[addId] = {
+        desc: t('Add Liquidity'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+      if (isFarming) {
+        transactions[approveNft] = {
+          desc: `${t('Approve')} LP`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
 
-      setPending(true)
-
-      // CLAIM ON V2
-      if (isClaimable) {
-        const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
-          tokenId,
-          expectedCurrencyOwed0: feeValue0,
-          expectedCurrencyOwed1: feeValue1,
-          recipient: account,
-        })
-
-        if (!(await sendTxn(key, claimId, nftPositionV2, calldata, value))) {
-          setPending(false)
-          return
+        transactions[stakeId] = {
+          desc: `${t('Stake')} LP`,
+          status: TXN_STATUS.START,
+          hash: null,
         }
       }
 
-      // REMOVE FROM V2
+      startTxn({ key, title: `${t('Migrate')}`, transactions })
+      setPending(true)
+
+      // MARK: REMOVE FROM V2 (INCLUDE CLAIM REWARD)
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const { calldata: removeCallData, value: removeValue } = NonfungiblePositionManager.removeCallParameters(
         position,
@@ -708,7 +699,7 @@ export const useAlgebraMigration = () => {
         }
       }
 
-      // ADD liquidity to v3
+      // MARK: ADD LIQUIDITY TO V3
       const useNative = currencyA.isNative ? currencyA : currencyB.isNative ? currencyB : undefined
       const { calldata: addCallData, value: addValue } = NonfungiblePositionManager.addCallParameters(position, {
         slippageTolerance: allowedSlippage,
@@ -719,9 +710,31 @@ export const useAlgebraMigration = () => {
         version: 3,
       })
 
-      if (!(await sendTxn(key, addId, nftPositionV3, addCallData, addValue))) {
+      const addTxRecieve = await sendTxn(key, addId, nftPositionV3, addCallData, addValue)
+      if (!addTxRecieve) {
         setPending(false)
         return
+      }
+
+      if (isFarming) {
+        // MARK: APPROVE LP TOKEN FOR FAIMING
+        const decodeData = NonfungiblePositionManager.getMintedPosition(addTxRecieve, chainId)
+        const nftId = decodeData.args?.tokenId
+        const poolAddress = decodeData.args?.pool
+
+        if (
+          !(await writeTxn(key, approveNft, positionManger, 'approveForFarming', [nftId, true, farmingCenter.address]))
+        ) {
+          setPending(false)
+          return
+        }
+
+        // MARK: STAKE LP TOKEN FOR FAIMING
+        const poolKey = await readCall(incentiveMaker, 'poolToKey', [poolAddress], chainId)
+        if (!(await writeTxn(key, stakeId, farmingCenter, 'enterFarming', [poolKey, nftId]))) {
+          setPending(false)
+          return
+        }
       }
 
       endTxn({ key, final: 'Migrate Successful' })
