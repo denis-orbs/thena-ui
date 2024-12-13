@@ -5,43 +5,48 @@ import TokenBadge from '@/components/badges/TokenBadge'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextSubHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { cn, formatAmount, fromWei, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
+import { cn, formatAmount, fromWei, toWei } from '@/lib/utils'
 
-function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights, setLastIndexChange }) {
+function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights }) {
   const t = useTranslations()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
   const [isError, setIsError] = useState(false)
-  const setAmount = useCallback(
-    value => {
-      setTokenAndWeights(prev => {
-        const updatedTokens = [...prev]
-        const index = updatedTokens.findIndex(item => item.token.address === asset.address)
+  // const setAmount = useCallback(
+  //   value => {
+  //     setTokenAndWeights(prev => {
+  //       const updatedTokens = [...prev]
+  //       const changedToken = updatedTokens.find(
+  //         token => token.token.address?.toLowerCase() === asset?.address?.toLowerCase(),
+  //       )
 
-        updatedTokens[index] = {
-          ...updatedTokens[index],
-          amount: roundIfMoreThanDecimals(value, updatedTokens?.[index]?.decimals),
-        }
+  //       if (changedToken) {
+  //         changedToken.amount = roundIfMoreThanDecimals(value, changedToken.token?.decimals)
+  //         if (isAutoOptimize) {
+  //           const currentTokenUSDValue = getValueTokenAmountToUSD(changedToken.token?.address, changedToken?.amount)
 
-        setLastIndexChange(index)
+  //           updatedTokens.forEach(item => {
+  //             if (item.token?.address?.toLowerCase() !== asset?.address?.toLowerCase()) {
+  //               const otherTokenUSDValue = (currentTokenUSDValue / (changedToken.weight / 100)) * (item.weight / 100)
+  //               item.amount = roundIfMoreThanDecimals(
+  //                 otherTokenUSDValue / item.token.price,
+  //                 item.token?.decimals,
+  //               ).toString()
+  //             }
+  //           })
+  //         }
+  //       }
 
-        return updatedTokens
-      })
-    },
-    [asset.address, setLastIndexChange, setTokenAndWeights],
-  )
+  //       return updatedTokens
+  //     })
+  //   },
+  //   [asset, getValueTokenAmountToUSD, isAutoOptimize, setTokenAndWeights],
+  // )
 
   const isInsufficientBalance = useMemo(() => {
     const amountToWei = toWei(amount, asset?.decimals)
     if (fromWei(amountToWei, asset?.decimals).gt(asset?.balance)) {
       return true
     }
-
-    // if (
-    //   asset?.address.toLowerCase() === Contracts.mockERC20Token.WBNB.toLowerCase() &&
-    //   fromWei(amountToWei, asset?.decimals).gt(asset?.balance.minus(0.05))
-    // ) {
-    //   return true
-    // }
     return false
   }, [amount, asset])
 
@@ -68,18 +73,6 @@ function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights, setLas
     setIsError(hasErrors)
   }, [isInsufficientBalance, amount])
 
-  useEffect(() => {
-    setTokenAndWeights(prev => {
-      const updatedTokens = [...prev]
-      const index = updatedTokens.findIndex(item => item?.token?.address === asset?.address)
-      updatedTokens[index] = {
-        ...updatedTokens[index],
-        isError,
-      }
-      return updatedTokens
-    })
-  }, [asset, isError, setTokenAndWeights])
-
   return (
     <div
       className={cn(
@@ -98,7 +91,7 @@ function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights, setLas
           className='w-full border-0 bg-transparent p-0 text-right text-xl text-neutral-50 placeholder-neutral-400'
           placeholder='0.0'
           value={amount || ''}
-          onChange={e => setAmount(e.target.value)}
+          onChange={e => setTokenAndWeights(e.target.value)}
           min={0}
         />
       </div>
@@ -108,7 +101,10 @@ function InputLiquidityToken({ asset, weight, amount, setTokenAndWeights, setLas
           {amount?.toString() === asset?.balance.toString() ? (
             <span className='cursor-pointer'>{t('Maxed')}</span>
           ) : (
-            <span onClick={() => setAmount(asset?.balance.toString())} className='cursor-pointer text-primary-500'>
+            <span
+              onClick={() => setTokenAndWeights(asset?.balance.toString())}
+              className='cursor-pointer text-primary-500'
+            >
               {t('Max')}
             </span>
           )}

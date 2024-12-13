@@ -267,6 +267,7 @@ export const getPoolType = type =>
         : 'Weighted'
 
 export const roundIfMoreThanDecimals = (number, decimals = 18) => {
+  if (!number) return number
   const parts = number.toString().split('.')
   if (parts[1] && parts[1].length > decimals) {
     return Math.floor(number * 10 ** decimals) / 10 ** decimals

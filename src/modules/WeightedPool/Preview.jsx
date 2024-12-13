@@ -38,18 +38,7 @@ export function TokenAndInitialSeedItem({ item }) {
   )
 }
 
-function PoolDetails({
-  poolSymbol,
-  setPoolSymbol,
-  poolName,
-  setPoolName,
-  poolFee,
-  setPoolFee,
-  tokensAndWeights,
-  openModal,
-  isOpen,
-  setCurrentStep,
-}) {
+function PoolDetails({ poolSymbol, poolName, poolFee, tokensAndWeights, openModal, isOpen, setCurrentStep }) {
   const t = useTranslations()
   const { onCreateWeightedPool } = useWeightedPool()
   const [fee, setFee] = useState(poolFee)
@@ -58,6 +47,12 @@ function PoolDetails({
   const [newPoolId, setNewPoolId] = useState(null)
 
   const isCustomFee = useMemo(() => poolFee !== null && poolFee !== 0.1 && poolFee !== 0.3 && poolFee !== 1, [poolFee])
+  useEffect(() => {
+    setFee(poolFee)
+    setName(poolName)
+    setSymbol(poolSymbol)
+  }, [poolFee, poolName, poolSymbol])
+
   const poolRange = useMemo(
     () => [
       {
@@ -78,11 +73,6 @@ function PoolDetails({
     ],
     [fee],
   )
-  useEffect(() => {
-    setPoolSymbol(symbol)
-    setPoolFee(fee)
-    setPoolName(name)
-  }, [symbol, fee, name, setPoolSymbol, setPoolFee, setPoolName])
 
   const handleSave = useCallback(async () => {
     const sortedAddresses = tokensAndWeights
