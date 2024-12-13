@@ -59,22 +59,20 @@ export function ManualMigrationPage({ tokenId }) {
   const currencyA = useCurrency(firstAsset?.address)
   const currencyB = useCurrency(secondAsset?.address)
 
-  const token0 = useToken(asset0.address)
-  const token1 = useToken(asset1.address)
-
+  const [currency0, currency1] = currencyA.sortsBefore(currencyB) ? [currencyA, currencyB] : [currencyB, currencyA]
   const { data: poolAddresses } = useReadContracts({
     contracts: [
       {
         address: Contracts.algebraFactoryV2[chainId],
         abi: algebraFactoryAbi,
         functionName: 'computePoolAddress',
-        args: [currencyA?.address, currencyB?.address],
+        args: [currency0?.address, currency1?.address],
       },
       {
         address: Contracts.algebraFactoryV3[chainId],
         abi: algebraFactoryAbi,
         functionName: 'computePoolAddress',
-        args: [currencyA?.address, currencyB?.address],
+        args: [currency0?.address, currency1?.address],
       },
     ],
     query: {
@@ -145,6 +143,8 @@ export function ManualMigrationPage({ tokenId }) {
     },
   })
 
+  const token0 = useToken(asset0.address)
+  const token1 = useToken(asset1.address)
   const feeValue0 = useMemo(
     () => CurrencyAmount.fromRawAmount(unwrappedToken(token0), new BigNumber(fees?.result?.[0] ?? 0).toString(10)),
     [token0, fees],

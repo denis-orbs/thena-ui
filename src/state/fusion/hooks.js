@@ -19,7 +19,7 @@ import { gammaUniProxyAbi } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance, useCurrencyBalances } from '@/hooks/fusion/useCurrencyBalances'
-import { PoolState, useFusion } from '@/hooks/fusion/useFusions'
+import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { callMulti } from '@/lib/contractActions'
 import { getTickToPrice, maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { toWei } from '@/lib/utils'
@@ -232,7 +232,7 @@ export const useV3DerivedMintInfo = (
 
   // pool
   // TODO
-  const [poolState, pool] = useFusion(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B], version)
+  const [poolState, pool] = useFusionState(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B], version)
   const noLiquidity = poolState === PoolState.NOT_EXISTS
 
   const dynamicFee = pool ? pool.fee : 3000

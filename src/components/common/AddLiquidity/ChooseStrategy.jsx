@@ -152,15 +152,9 @@ export default function ChooseStrategy({
       refreshInterval: 0,
     },
   )
-  const baseCurrency = useCurrency(firstAsset ? firstAsset.address : undefined)
-  const quoteCurrency = useCurrency(secondAsset ? secondAsset.address : undefined)
-  const mintInfo = useV3DerivedMintInfo(
-    baseCurrency ?? undefined,
-    quoteCurrency ?? undefined,
-    feeAmount,
-    baseCurrency ?? undefined,
-    undefined,
-  )
+  const baseCurrency = useCurrency(firstAsset?.address)
+  const quoteCurrency = useCurrency(secondAsset?.address)
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined, 3)
 
   const { data: pairPrices = [], error } = useFetchPairPrices({
     token0Address: wrappedAddress(pair?.token0),
@@ -168,13 +162,17 @@ export default function ChooseStrategy({
     timeWindow,
   })
 
+  const [currency0, currency1] = baseCurrency.sortsBefore(quoteCurrency)
+    ? [baseCurrency, quoteCurrency]
+    : [quoteCurrency, baseCurrency]
+
   const algebraFactory = getAlgebraFactoryContract(chainId)
   const { data: poolAddress } = useReadContract({
     ...algebraFactory,
     functionName: 'computePoolAddress',
-    args: [firstAsset.address, secondAsset.address],
+    args: [currency0?.address, currency1?.address],
     query: {
-      enabled: !!firstAsset && !!secondAsset,
+      enabled: !!currency0 && !!currency1,
       staleTime: Infinity,
     },
   })

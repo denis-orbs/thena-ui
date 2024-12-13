@@ -10,6 +10,7 @@ import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { algebraFactoryV3Abi } from '@/constant/v3-abi'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { callMulti } from '@/lib/contractActions'
+import { getAlgebraFactoryContract } from '@/lib/contracts'
 
 import { useToken } from './Tokens'
 
@@ -106,21 +107,21 @@ export function useFusionState(currencyA, currencyB, version = 3) {
   const [token0, token1] = currencyA.sortsBefore(currencyB) ? [currencyA, currencyB] : [currencyB, currencyA]
   const { chainId } = token0
 
+  const algebra = getAlgebraFactoryContract(chainId, version)
   const { data: poolAddress } = useReadContract({
-    address: version === 2 ? Contracts.algebraFactoryV2?.[chainId] : Contracts.algebraFactoryV3?.[chainId],
-    abi: version === 2 ? algebraFactoryAbi : algebraFactoryV3Abi,
+    ...algebra,
     functionName: 'computePoolAddress',
-    args: [currencyA?.address, currencyB?.address],
+    args: [token0?.address, token1?.address],
     query: {
-      enabled: !!currencyA && !!currencyB && !!chainId,
+      enabled: !!token0?.address && !!token1?.address && !!chainId,
     },
   })
 
-  const contract = { address: poolAddress, abi: poolTestNetV2Abi }
+  const poolContract = { address: poolAddress, abi: poolTestNetV2Abi }
   const { data: poolInfo } = useReadContracts({
     contracts: [
-      { ...contract, functionName: 'liquidity' },
-      { ...contract, functionName: 'globalState' },
+      { ...poolContract, functionName: 'liquidity' },
+      { ...poolContract, functionName: 'globalState' },
     ],
     query: {
       enabled: !!poolAddress,
