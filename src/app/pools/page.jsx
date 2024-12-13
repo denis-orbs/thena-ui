@@ -147,6 +147,7 @@ export default function PoolsPage() {
     '0x11f3c9ca27ed4931efd0fbe0fd5dfc75157a1ea9', // BNB/KOMA
     '0x47600bc3ae9b5b97ef92a55e550066944fe17670', // BNB/lpBNB
     '0x58cad2ea28853bbe1501188787c10469b2f0c4f1', // BNB/COCO
+    '0xc57061da1894ae58fb834f6db33e9a45cc4e7807', // MONKY/BNB
   ]
 
   console.log({ filteredPools })
