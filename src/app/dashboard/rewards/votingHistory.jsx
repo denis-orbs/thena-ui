@@ -11,6 +11,7 @@ import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { LOCALES } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { fetchVotingHistory } from '@/lib/api'
 import { cn, formatAmount } from '@/lib/utils'
@@ -251,6 +252,7 @@ function Paging({
 
 function TitleEpoch({ epoch, open }) {
   const { locale } = useLocaleSettings()
+  const assets = useAssets()
   const t = useTranslations()
 
   const timePeriod = useMemo(() => {
@@ -267,14 +269,38 @@ function TitleEpoch({ epoch, open }) {
     return Math.floor((+epoch.epochStartTimestamp - epoch5) / 604800) + 5
   }, [epoch.epochStartTimestamp])
 
-  const totalRewardUsd = useMemo(
-    () =>
-      (epoch?.userVotes?.userRewards || []).reduce(
-        (sum, reward) => sum + (reward?.rewardAmount || 0) * (reward?.rewardToken?.price || 0),
-        0,
-      ),
-    [epoch?.userVotes?.userRewards],
-  )
+  const finalData = useMemo(() => {
+    const { votes } = epoch
+
+    const tokenRewards = {}
+
+    votes.forEach(vote => {
+      vote.poolVotes.forEach(poolVote => {
+        poolVote.rewards.forEach(reward => {
+          const { token, amount } = reward
+
+          const asset = assets.find(item => item.address.toLowerCase() === token.toLowerCase())
+
+          if (!tokenRewards[token]) {
+            tokenRewards[token] = {
+              ...asset,
+              amount: 0,
+            }
+          }
+
+          tokenRewards[token].amount += parseFloat(amount)
+        })
+      })
+    })
+
+    const rewardUsd = (Object.values(tokenRewards) || []).reduce((sum, token) => sum + token.amount * token.price, 0)
+
+    return {
+      ...epoch,
+      totalRewards: Object.values(tokenRewards),
+      rewardUsd,
+    }
+  }, [epoch, assets])
 
   return (
     <div className='flex w-full flex-col justify-between gap-4 px-4 py-5 lg:flex-row lg:px-6'>
@@ -305,12 +331,32 @@ function TitleEpoch({ epoch, open }) {
         <div className='flex flex-col lg:items-end'>
           <TextHeading>{t('Total Rewards')}</TextHeading>
           <div className='flex flex-row items-center gap-1'>
-            <Paragraph>{totalRewardUsd}</Paragraph>
-            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`vethe-${epoch?.epoch}`} />
-            <CustomTooltip className='min-w-[136px]' id={`vethe-${epoch?.epoch}`}>
-              {(epoch?.userVotes?.userRewards || []).map(reward => (
-                <TextHeading>{`${reward?.rewardAmount} ${reward?.rewardToken?.symbol || 'UNKNOWN'}`}</TextHeading>
-              ))}
+            <Paragraph>${formatAmount(finalData.rewardUsd)}</Paragraph>
+            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`vethe-${epoch?.epochStartTimestamp}`} />
+            <CustomTooltip className='min-w-[136px]' id={`vethe-${epoch?.epochStartTimestamp}`}>
+              {finalData?.totalRewards.every(item => item?.amount === 0) ? (
+                <>
+                  {(finalData?.totalRewards || []).map((reward, index) => (
+                    <p key={`${reward.address}-total-${index}`}>
+                      {`${formatAmount(reward?.amount)} ${reward?.symbol || 'UNKNOWN'}`}
+                    </p>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {(finalData?.totalRewards || []).map((reward, index) => (
+                    <p key={`${reward.address}-total-${index}`}>
+                      {reward?.amount > 0 ? (
+                        <>
+                          ${formatAmount(reward?.amount)} ${reward?.symbol || 'UNKNOWN'}
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </p>
+                  ))}
+                </>
+              )}
             </CustomTooltip>
           </div>
         </div>
@@ -321,7 +367,6 @@ function TitleEpoch({ epoch, open }) {
 
 function VotingHistory() {
   const { account } = useWallet()
-  // const assets = useAssets()
   const [currentPage, setCurrentPage] = useState(1)
 
   const t = useTranslations()
@@ -352,7 +397,7 @@ function VotingHistory() {
     account && ['epochVotingHistory', account, currentPage],
     () => fetchVotingHistoryData(10, (currentPage - 1) * 10),
     {
-      refreshInterval: 0,
+      refreshInterval: 60000,
     },
   )
   const [isOpenArray, setIsOpenArray] = useState([])

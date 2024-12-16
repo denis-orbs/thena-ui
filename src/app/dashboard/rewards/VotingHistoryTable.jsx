@@ -10,6 +10,7 @@ import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { LOCALES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { formatAmount } from '@/lib/utils'
 import { useLocaleSettings } from '@/state/settings/hooks'
@@ -64,33 +65,35 @@ export default function VotingHistoryTable({ userVotes }) {
   const [sort, setSort] = useState(sortOptions[0])
   const [currentPage, setCurrentPage] = useState(1)
   const { pairs } = usePairs()
+  const assets = useAssets()
 
   const groupedVotes = useMemo(
     () =>
       userVotes.votes.flatMap(vote =>
-        vote.poolVotes.map(poolVote => ({
-          tokenId: vote.tokenId,
-          epochStartTimestamp: vote.epochStartTimestamp,
-          vetheBalance: vote.vetheBalance,
-          totalWeight: poolVote.totalWeight,
-          weight: poolVote.weight,
-          lastUpdate: poolVote.lastUpdate,
-          pool: poolVote.pool,
-        })),
+        vote.poolVotes.map(poolVote => {
+          const rewards = (poolVote.rewards || []).map(reward => {
+            const asset = assets.find(item => item?.address?.toLowerCase() === reward?.token?.toLowerCase())
+            return {
+              ...asset,
+              amount: +reward.amount || 0,
+            }
+          })
+          const pairData = (pairs || []).find(
+            pair => pair?.address?.toLowerCase() === poolVote?.pool?.id?.toLowerCase(),
+          )
+          return {
+            tokenId: vote.tokenId,
+            epochStartTimestamp: vote.epochStartTimestamp,
+            vetheBalance: vote.vetheBalance,
+            totalWeight: poolVote.totalWeight,
+            weight: poolVote.weight,
+            lastUpdate: poolVote.lastUpdate,
+            pool: pairData,
+            rewards,
+          }
+        }),
       ),
-    [userVotes.votes],
-  )
-  const data = useMemo(
-    () =>
-      (groupedVotes || []).map(vote => {
-        const pairId = vote?.pool?.id
-        const pairData = (pairs || []).find(pair => pair?.address?.toLowerCase() === pairId?.toLowerCase())
-        return {
-          ...vote,
-          pool: pairData,
-        }
-      }),
-    [groupedVotes, pairs],
+    [assets, pairs, userVotes.votes],
   )
 
   const voteTime = useCallback(
@@ -106,9 +109,16 @@ export default function VotingHistoryTable({ userVotes }) {
     [locale],
   )
 
+  const calRewardUsd = useCallback(
+    rewards => (rewards || []).reduce((sum, reward) => sum + reward.price * reward.amount, 0),
+    [],
+  )
+
+  console.log({ groupedVotes })
+
   const finalData = useMemo(
     () =>
-      (data || []).map(vote => ({
+      (groupedVotes || []).map(vote => ({
         veTHEId: <span>{`${vote.tokenId}`}</span>,
         pair: (
           <div className='flex flex-row items-center gap-1'>
@@ -183,19 +193,42 @@ export default function VotingHistoryTable({ userVotes }) {
         ),
         rewards: (
           <div className='flex items-center gap-1'>
-            <Paragraph className='min-w-0 flex-1 truncate'>TODO API</Paragraph>
-            <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${vote.id}`} />
-            <CustomTooltip id={`tvl-${vote.id}`}>
-              <div className='flex flex-col gap-1'>
-                <p>{`${formatAmount(0)} BNB`}</p>
-                <p>{`${formatAmount(0)} THE`}</p>
-              </div>
-            </CustomTooltip>
+            <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(calRewardUsd(vote.rewards))}</Paragraph>
+            {vote.rewards?.length > 0 && (
+              <>
+                <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`my-reward-${vote?.pool?.address}`} />
+                <CustomTooltip id={`my-reward-${vote?.pool?.address}`}>
+                  {(vote.rewards || []).every(item => +item.amount === 0) ? (
+                    <>
+                      {(vote.rewards || []).map((reward, index) => (
+                        <p key={`${reward.address}-${index}-my-reward`}>
+                          {`${formatAmount(reward?.amount)} ${reward?.symbol || 'UNKNOWN'}`}
+                        </p>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      {(vote.rewards || []).map((reward, index) => (
+                        <p key={`${reward.address}-${index}-my-reward`}>
+                          {reward?.amount > 0 ? (
+                            <>
+                              ${formatAmount(reward?.amount)} ${reward?.symbol || 'UNKNOWN'}
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                        </p>
+                      ))}
+                    </>
+                  )}
+                </CustomTooltip>
+              </>
+            )}
           </div>
         ),
         className: 'bg-neutral-900',
       })),
-    [data, voteTime],
+    [calRewardUsd, groupedVotes, voteTime],
   )
 
   return (
