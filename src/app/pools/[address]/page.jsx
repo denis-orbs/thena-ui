@@ -47,7 +47,11 @@ export default function SpecificPoolPage({ params }) {
 
   const [showModalAdd, setShowModalAdd] = useState(false)
 
-  const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [address, pairs])
+  const pool = useMemo(
+    () => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [address, JSON.stringify(pairs)],
+  )
 
   const { balance: weightedPoolBalance } = useWeightPoolData(pool?.type === PAIR_TYPES.WEIGHTED ? pool.address : null)
 

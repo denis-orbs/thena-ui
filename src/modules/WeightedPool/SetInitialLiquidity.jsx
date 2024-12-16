@@ -11,8 +11,6 @@ import { ArrowLeftIcon, InfoCirCleDisableIcon } from '@/svgs'
 
 import InputLiquidityToken from './InputLiquidityToken'
 
-// TODO: Re-render
-
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
   const t = useTranslations()
   // const [lastIndexChange, setLastIndexChange] = useState(0)

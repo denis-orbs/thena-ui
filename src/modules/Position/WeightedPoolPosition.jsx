@@ -119,6 +119,7 @@ export function WeightedPoolPosition({ pool }) {
     <div className='rounded-xl bg-neutral-900 p-4'>
       <div className='flex space-x-4'>
         <ThreeIconGroup
+          className='-space-x-2'
           classNames={{
             image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
           }}

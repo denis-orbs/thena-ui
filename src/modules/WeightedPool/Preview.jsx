@@ -157,7 +157,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
   const [showPreview, setShowPreview] = useState(false)
   const [poolSymbol, setPoolSymbol] = useState(initialPoolSymbol)
   const [poolName, setPoolName] = useState(initialPoolSymbol)
-  const total = tokensAndWeights.reduce((sum, curr) => sum + curr.token.price, 0)
+  const total = tokensAndWeights.reduce((sum, curr) => sum + curr.token.price * curr.amount, 0)
   const [editStates, setEditStates] = useState({
     editSymbol: false,
     editName: false,
@@ -185,7 +185,6 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
         ))}
         <div className='flex flex-row justify-between pt-4'>
           <TextHeading>{t('Total')}</TextHeading>
-          {/* TODO: Wrong total */}
           <TextHeading>${formatAmount(total)}</TextHeading>
         </div>
       </div>

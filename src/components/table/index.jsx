@@ -37,7 +37,7 @@ function PaginateCell({ children, className, active, onClick, disabled }) {
 
 function TableCell({ children, className, ...rest }) {
   return (
-    <div className={cn('flex items-start gap-3 self-stretch p-3 lg:items-center lg:p-5', className)} {...rest}>
+    <div className={cn('flex items-start gap-3 p-3 lg:items-center lg:p-5', className)} {...rest}>
       {children}
     </div>
   )
