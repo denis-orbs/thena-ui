@@ -12,6 +12,7 @@ import CustomTooltip from '@/components/tooltip'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { weightedPoolFeesAbi } from '@/constant/abi'
 import useWallet from '@/hooks/useWallet'
+import useClaimableFees from '@/hooks/weightedPool/useClaimableFees'
 import { getWeightedPoolContract, getWeightedPoolVaultContract } from '@/lib/contracts'
 import { formatAmount, fromWei } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
@@ -21,6 +22,8 @@ export function WeightedPoolPosition({ pool }) {
   const { account: userAddress, chainId } = useWallet()
   const [isOpenRemove, setIsOpenRemove] = useState(false)
   const [isOpenAdd, setIsOpenAdd] = useState(false)
+
+  const { onClaimableFees, pending: pendingClaimableFees } = useClaimableFees()
 
   // MARK: Get claimable token for WEIGHTED
   const poolContract = getWeightedPoolContract(pool?.address, chainId)
@@ -179,7 +182,7 @@ export function WeightedPoolPosition({ pool }) {
       </CustomTooltip>
 
       <div className='mt-4 flex w-full gap-3'>
-        <TextButton className='w-full' disabled>
+        <TextButton className='w-full' disabled={pendingClaimableFees} onClick={() => onClaimableFees(pool)}>
           {t('Claim')}
         </TextButton>
 
