@@ -17,7 +17,7 @@ import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useMutateAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap, useThenaFusionSwap } from '@/hooks/useSwap'
+import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap } from '@/hooks/useSwap'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/hooks/useWallet'
 import { liquidityHub } from '@/modules/LiquidityHub'
@@ -28,7 +28,6 @@ import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
 import { SWAP_TYPES } from '@/constant'
 import Selection from '@/components/selection'
-import { useThenaQuote } from '@/hooks/fusion/useThenaQuote'
 import WarningModal from './WarningModal'
 
 const Twap = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Twap), {
@@ -72,7 +71,7 @@ export default function SwapBest({
   const setFromAddress = useCallback(address => updateSearchParams({ inputCurrency: address }), [updateSearchParams])
   const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
 
-  const isThenaQuoteAndSwap = useMemo(() => false, [])
+  // const isThenaQuoteAndSwap = useMemo(() => false, [])
 
   const {
     data: bestTrade,
@@ -86,7 +85,7 @@ export default function SwapBest({
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { handleTaxTokenSwap, pending: taxTokenSwapPending } = useTaxTokenSwap()
-  const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
+  // const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
   const { mutate: onLHSwap, isLoading: LHSwapPending } = liquidityHub.useSwap()
   const {
     data: lhQuote,
@@ -96,22 +95,24 @@ export default function SwapBest({
   } = liquidityHub.useQuoteQuery({ fromAsset, toAsset, fromAmount, bestTrade })
   const getBetterPrice = liquidityHub.useGetBetterPrice(refetchLHQuote)
   const quotePending = isLHToken ? bestTradePending || lhQuotePending : bestTradePending
-  const { data: thenaQuoteData, isLoading: isLoadingThenaQuote } = useThenaQuote(
-    fromAsset,
-    toAsset,
-    fromAmount,
-    networkId,
-    isThenaQuoteAndSwap,
+  // const { data: thenaQuoteData, isLoading: isLoadingThenaQuote } = useThenaQuote(
+  //   fromAsset,
+  //   toAsset,
+  //   fromAmount,
+  //   networkId,
+  //   isThenaQuoteAndSwap,
+  // )
+
+  const outAmount = useMemo(
+    () =>
+      // if (isThenaQuoteAndSwap) {
+      //   const outAmountThenaQuote = thenaQuoteData ? Number(thenaQuoteData?.result[0]) : ''
+      //   return outAmountThenaQuote
+      // }
+
+      showLhAmounts ? lhQuote?.outAmount : bestTrade?.outAmounts[0] || '',
+    [bestTrade?.outAmounts, lhQuote?.outAmount, showLhAmounts],
   )
-
-  const outAmount = useMemo(() => {
-    if (isThenaQuoteAndSwap) {
-      const outAmountThenaQuote = thenaQuoteData ? Number(thenaQuoteData?.result[0]) : ''
-      return outAmountThenaQuote
-    }
-
-    return showLhAmounts ? lhQuote?.outAmount : bestTrade?.outAmounts[0] || ''
-  }, [isThenaQuoteAndSwap, showLhAmounts, lhQuote?.outAmount, bestTrade?.outAmounts, thenaQuoteData])
 
   const toAmount = useMemo(() => {
     if (outAmount && Number(outAmount) > 0 && toAsset) {
@@ -177,12 +178,12 @@ export default function SwapBest({
       })
     }
 
-    if (isThenaQuoteAndSwap) {
-      return handleThenaFusionSwap(fromAsset, toAsset, fromAmount, outAmount, slippage, deadline, () => {
-        setFromAmount('')
-        mutateAssets()
-      })
-    }
+    // if (isThenaQuoteAndSwap) {
+    //   return handleThenaFusionSwap(fromAsset, toAsset, fromAmount, outAmount, slippage, deadline, () => {
+    //     setFromAmount('')
+    //     mutateAssets()
+    //   })
+    // }
 
     // if liquidity hub failes to swap and its not extended tokens, we skip this check and go directly via dex swap
     const quote = await getBetterPrice(bestTrade?.outAmounts[0], skipLiquidityHub)
@@ -211,24 +212,21 @@ export default function SwapBest({
       })
     }
   }, [
-    fromAsset,
-    toAsset,
-    isThenaQuoteAndSwap,
-    getBetterPrice,
     bestTrade,
-    skipLiquidityHub,
-    handleTaxTokenSwap,
-    fromAmount,
-    slippage,
     deadline,
-    mutateAssets,
-    handleThenaFusionSwap,
-    outAmount,
-    onLHSwap,
+    fromAmount,
+    fromAsset,
+    getBetterPrice,
     getLatestLhQuote,
+    handleTaxTokenSwap,
     isLHToken,
+    mutateAssets,
+    onLHSwap,
     onOdosSwap,
+    skipLiquidityHub,
+    slippage,
     toAmount,
+    toAsset,
   ])
 
   const btnMsg = useMemo(() => {
@@ -403,9 +401,9 @@ export default function SwapBest({
                     swapPending ||
                     taxTokenSwapPending ||
                     LHSwapPending ||
-                    thenaSwapPending ||
                     wrapPending ||
-                    isLoadingThenaQuote ||
+                    // thenaSwapPending ||
+                    // isLoadingThenaQuote ||
                     btnMsg.isError
                   }
                   onClick={() => {

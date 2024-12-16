@@ -44,16 +44,20 @@ export const useFetchPairPrices = ({ token0Address, token1Address, timeWindow, c
         networkId,
       )
 
+      const pairData = normalizeSimpleDerivedChartData(data)
       const historyData = normalizeSimpleDerivedPairDataByActiveToken({
         activeToken: token1Address,
-        pairData: normalizeSimpleDerivedChartData(data),
+        pairData,
       })
 
       const token0 = data.currentPrices?.[0]
       const token1 = data.currentPrices?.[1]
-      if (token0 && token1) {
+      const currentTime = dayjs.unix(token0?.timestamp ?? 0)
+      const isCurrentTimeAfterLastElementTime = currentTime.isAfter(dayjs.unix(pairData?.at(-1)?.time ?? 0))
+
+      if (token0 && token1 && isCurrentTimeAfterLastElementTime) {
         historyData.push({
-          time: dayjs.unix(token0.timestamp).toDate(),
+          time: currentTime.toDate(),
           value: Number(token1.priceUsd ?? 0) / Number(token0.priceUsd ?? 1),
         })
       }

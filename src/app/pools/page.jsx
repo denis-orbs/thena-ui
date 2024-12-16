@@ -150,8 +150,6 @@ export default function PoolsPage() {
     '0xc57061da1894ae58fb834f6db33e9a45cc4e7807', // MONKY/BNB
   ]
 
-  console.log({ filteredPools })
-
   const newListingsPool = filteredPools.filter(item => newListPoolIds.includes(item.address))
 
   const sortedData = useMemo(
