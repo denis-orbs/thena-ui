@@ -10,9 +10,9 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import CustomTooltip from '@/components/tooltip'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { weightedPoolAbiFees } from '@/constant/abi'
+import { weightedPoolFeesAbi } from '@/constant/abi'
 import useWallet from '@/hooks/useWallet'
-import { getVaultContract, getWeightedPoolContract } from '@/lib/contracts'
+import { getWeightedPoolContract, getWeightedPoolVaultContract } from '@/lib/contracts'
 import { formatAmount, fromWei } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
@@ -24,7 +24,7 @@ export function WeightedPoolPosition({ pool }) {
 
   // MARK: Get claimable token for WEIGHTED
   const poolContract = getWeightedPoolContract(pool?.address, chainId)
-  const vaultContract = getVaultContract(chainId)
+  const vaultContract = getWeightedPoolVaultContract(chainId)
   const { data } = useReadContracts({
     contracts: [
       {
@@ -63,7 +63,7 @@ export function WeightedPoolPosition({ pool }) {
 
   const { data: expectedFees = [] } = useReadContract({
     address: poolFeeContract,
-    abi: weightedPoolAbiFees,
+    abi: weightedPoolFeesAbi,
     functionName: 'expectedFees',
     args: [userAddress],
     query: {
@@ -167,14 +167,15 @@ export function WeightedPoolPosition({ pool }) {
           <p className='flex items-center gap-2'>
             <span>${formatAmount(claimableFee.total)}</span>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool?.address}`} />
-            <CustomTooltip id={`net-${pool?.address}`}>
-              {claimableFee.tokenList.map(token => (
-                <p key={token.symbol}>{`${formatAmount(token.fee)} ${token.symbol}`}</p>
-              ))}
-            </CustomTooltip>
           </p>
         </div>
       </div>
+
+      <CustomTooltip id={`net-${pool?.address}`}>
+        {claimableFee.tokenList.map(token => (
+          <p key={token.symbol}>{`${formatAmount(token.fee)} ${token.symbol}`}</p>
+        ))}
+      </CustomTooltip>
 
       <div className='mt-4 flex w-full gap-3'>
         <TextButton className='w-full' disabled>

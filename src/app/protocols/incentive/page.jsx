@@ -32,7 +32,6 @@ export default function IncentivePage() {
   const { account } = useWallet()
   const [pair, setPair] = useState(null)
   const [asset, setAsset] = useState(null)
-  console.log({ pair, asset })
   const mutateAssets = useMutateAssets()
   const pools = usePools()
   const poolsWithGauge = useMemo(() => pools.filter(pool => pool && pool.gauge.address !== zeroAddress), [pools])

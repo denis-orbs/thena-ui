@@ -262,8 +262,6 @@ export function ManualMigrationPage({ tokenId }) {
         isOpen={isOpenAdjust}
         onClose={() => setIsOpenAdjust(false)}
         onAdjustRange={(lower, upper) => {
-          console.log({ lower, upper, tickLower, tickUpper })
-
           if (asset0 && asset1 && fee && price && poolLiquidity && tick) {
             const position = new Position({
               pool: new Pool(currencyA, currencyB, fee, price, poolLiquidity, tick),

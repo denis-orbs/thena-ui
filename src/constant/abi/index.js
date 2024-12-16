@@ -41,12 +41,8 @@ import routerAbi from './router.json'
 import royaltyAbi from './royalty.json'
 import stakingAbi from './staking.json'
 import swapRouterAbi from './swapRouterTestnet.json'
-import thenaRouterAbi from './thenaRouter.json'
-import thenaRouterSimulatorAbi from './thenaRouterSimulator.json'
-import thenaWeightedPoolFactoryAbi from './thenaWeightedPoolFactory.json'
 import ThenianAbi from './thenian.json'
 import tickLensAbi from './tickLensTestnet.json'
-import vaultAbi from './vault.json'
 import veDistAbi from './veDist.json'
 import veTHEAbi from './veTHE.json'
 import veTHEApiAbi from './veTHEAPI.json'
@@ -55,8 +51,12 @@ import voterTestNetAbi from './voterTestNet.json'
 import votingEscrowAbi from './votingEscrow.json'
 import votingEscrowAttachAbi from './votingEscrowAttach.json'
 import wbnbAbi from './wbnb.json'
-import weightedPoolAbi from './weightedPool.json'
-import weightedPoolAbiFees from './weightedPoolFees.json'
+import weightedPoolRouterAbi from './weighted-pool/router.json'
+import weightedPoolRouterSimulatorAbi from './weighted-pool/routerSimulator.json'
+import weightedPoolVaultAbi from './weighted-pool/vault.json'
+import weightedPoolAbi from './weighted-pool/weightedPool.json'
+import weightedPoolFactoryAbi from './weighted-pool/weightedPoolFactory.json'
+import weightedPoolFeesAbi from './weighted-pool/weightedPoolFees.json'
 
 export {
   algebraCommunityVaultAbi,
@@ -102,12 +102,8 @@ export {
   royaltyAbi,
   stakingAbi,
   swapRouterAbi,
-  thenaRouterAbi,
-  thenaRouterSimulatorAbi,
-  thenaWeightedPoolFactoryAbi,
   ThenianAbi,
   tickLensAbi,
-  vaultAbi,
   veDistAbi,
   veTHEAbi,
   veTHEApiAbi,
@@ -117,5 +113,9 @@ export {
   votingEscrowAttachAbi,
   wbnbAbi,
   weightedPoolAbi,
-  weightedPoolAbiFees,
+  weightedPoolFactoryAbi,
+  weightedPoolFeesAbi,
+  weightedPoolRouterAbi,
+  weightedPoolRouterSimulatorAbi,
+  weightedPoolVaultAbi,
 }

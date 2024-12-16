@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import MenuTab from '@/app/arena/MenuTab'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -11,8 +11,9 @@ import TokenInput from '@/components/input/TokenInput'
 import { ModalBody } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
+import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
+import { formatAmount, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 
 const REMOVE_TYPE = {
   SINGLE: 'single',
@@ -22,12 +23,31 @@ const REMOVE_TYPE = {
 function RemoveWeighted({ pool, onCancel }) {
   const t = useTranslations()
 
-  const { onRemoveLiquiditySingleToken, onRemoveLiquidityAllToken, pending } = useWeightedPool()
-  const { mutatePoolBalance } = useWeightPoolData()
+  const {
+    onRemoveLiquiditySingleToken,
+    onRemoveLiquidityAllToken,
+    calcMinAmountOutRemoveSingle,
+    calcMinAmountOutRemoveAll,
+    pending,
+  } = useWeightedPool()
+
+  // TODO: re-render
+  // TODO: Warning: Each child in a list should have a unique "key" prop.
+
+  const { mutatePoolBalance } = useWeightPoolData(pool.address)
+  const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   const [removeType, setRemoveType] = useState(REMOVE_TYPE.SINGLE)
   const [amount, setAmount] = useState(0)
   const [tokenReceive, setTokenReceive] = useState(pool?.tokens?.[0])
+  const [totalWithdrawal, setTotalWithdrawal] = useState(0)
+
+  const [minAmountsOut, setMinAmountsOut] = useState([])
+  const [minAmountOut, setMinAmountOut] = useState('')
+
+  const tokensData = useMemo(() => pool?.tokens || [], [pool?.tokens])
+
+  const debounceTimeout = useRef(null)
 
   const toggleRemoveType = useMemo(
     () => [
@@ -54,29 +74,54 @@ function RemoveWeighted({ pool, onCancel }) {
     [setAmount],
   )
 
-  const tokensData = useMemo(
-    () =>
-      (pool.tokens || []).map(item => ({
-        ...item,
-      })),
-    [pool],
-  )
+  const calcMinAmountsOut = useCallback(async () => {
+    if (removeType === REMOVE_TYPE.SINGLE) {
+      let amountOut = ''
+      if (!isInvalidAmount(amount) && tokenReceive) {
+        amountOut = await calcMinAmountOutRemoveSingle(pool, tokenReceive, amount)
+      }
+      setMinAmountOut(amountOut)
+    } else {
+      const result = await calcMinAmountOutRemoveAll(pool, amount, tokensData)
+      setMinAmountsOut(result)
+    }
+  }, [amount, calcMinAmountOutRemoveAll, calcMinAmountOutRemoveSingle, pool, removeType, tokenReceive, tokensData])
+
+  useEffect(() => {
+    clearTimeout(debounceTimeout.current)
+    debounceTimeout.current = setTimeout(() => {
+      calcMinAmountsOut()
+    }, 300)
+  }, [amount, calcMinAmountsOut])
+
+  useEffect(() => {
+    if (minAmountsOut.length > 0) {
+      const total = (pool.tokens || []).reduce(
+        (sum, token, index) => sum + getValueTokenAmountToUSD(token.address, minAmountsOut[index]),
+        0,
+      )
+      setTotalWithdrawal(total)
+    }
+  }, [getValueTokenAmountToUSD, minAmountsOut, pool.tokens])
 
   const onRemove = useCallback(async () => {
     const amountToWei = toWei(amount)
     if (removeType === REMOVE_TYPE.SINGLE) {
-      await onRemoveLiquiditySingleToken(pool, tokenReceive, amountToWei, () => mutatePoolBalance())
+      await onRemoveLiquiditySingleToken(pool, tokenReceive, amountToWei, minAmountOut, () => mutatePoolBalance())
     } else {
-      await onRemoveLiquidityAllToken(pool, amountToWei, () => mutatePoolBalance())
+      await onRemoveLiquidityAllToken(pool, amountToWei, minAmountsOut, tokensData, () => mutatePoolBalance())
     }
   }, [
     amount,
-    onRemoveLiquidityAllToken,
-    onRemoveLiquiditySingleToken,
-    mutatePoolBalance,
-    pool,
     removeType,
+    onRemoveLiquiditySingleToken,
+    pool,
     tokenReceive,
+    minAmountOut,
+    mutatePoolBalance,
+    onRemoveLiquidityAllToken,
+    minAmountsOut,
+    tokensData,
   ])
 
   const isDisabled = useMemo(() => {
@@ -128,8 +173,7 @@ function RemoveWeighted({ pool, onCancel }) {
                 title={t('You Will Receive')}
                 asset={tokenReceive}
                 setAsset={setTokenReceive}
-                amount={amount}
-                setAmount={setAmount}
+                amount={minAmountOut}
                 autoFocus
                 assetData={tokensData}
                 assetNull
@@ -140,19 +184,19 @@ function RemoveWeighted({ pool, onCancel }) {
               <div className='flex flex-col'>
                 <TextHeading className='mb-4'>{t('You Will Receive')}</TextHeading>
                 <div className='mb-4 flex flex-col gap-3'>
-                  {(pool.tokens || []).map(token => (
+                  {(pool.tokens || []).map((token, index) => (
                     <div className='flex flex-row justify-between'>
                       <div className='flex gap-1'>
                         <CircleImage alt={token.symbol} src={token?.logoURI || UNKNOWN_LOGO} className='h-5 w-5' />
                         <Paragraph>{token.symbol}</Paragraph>
                       </div>
-                      <Paragraph>0</Paragraph>
+                      <Paragraph>{formatAmount(minAmountsOut?.[index] || 0)}</Paragraph>
                     </div>
                   ))}
                 </div>
                 <div className='flex flex-row justify-between'>
                   <TextHeading>{t('Total Withdrawal')}</TextHeading>
-                  <Paragraph>${formatAmount(0)}</Paragraph>
+                  <Paragraph>${formatAmount(totalWithdrawal)}</Paragraph>
                 </div>
               </div>
             )}

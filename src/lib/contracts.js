@@ -22,11 +22,7 @@ import {
   routerAbi,
   royaltyAbi,
   stakingAbi,
-  thenaRouterAbi,
-  thenaRouterSimulatorAbi,
-  thenaWeightedPoolFactoryAbi,
   ThenianAbi,
-  vaultAbi,
   veDistAbi,
   veTHEAbi,
   veTHEApiAbi,
@@ -34,6 +30,10 @@ import {
   voterTestNetAbi,
   wbnbAbi,
   weightedPoolAbi,
+  weightedPoolFactoryAbi,
+  weightedPoolRouterAbi,
+  weightedPoolRouterSimulatorAbi,
+  weightedPoolVaultAbi,
 } from '@/constant/abi'
 import {
   multiAccountAbi,
@@ -305,24 +305,17 @@ export const getNonfungiblePositionManagerContractV3 = chainId => ({
 // export const getFarmingCenterContract = () => getContract(farmingCenterAbi, Contracts.FARMING_CENTER_TESTNET, 97)
 
 /** ******************************************************************************************************
-                                          ThenaWeightedPoolFactory
+                                          Weighted Pool
 ******************************************************************************************************* */
-export const getThenaWeightedPoolFactoryContract = chainId =>
-  getContract(thenaWeightedPoolFactoryAbi, Contracts.WeightedPoolFactory, chainId)
+export const getWeightedPoolFactoryContract = chainId =>
+  getContract(weightedPoolFactoryAbi, Contracts.weightedPoolFactory, chainId)
 
-/** ******************************************************************************************************
-                                          ThenaWeightedPoolFactory
-******************************************************************************************************* */
 export const getWeightedPoolContract = (address, chainId) => getContract(weightedPoolAbi, address, chainId)
 
-/** ******************************************************************************************************
-                                          Vault
-******************************************************************************************************* */
-export const getVaultContract = chainId => getContract(vaultAbi, Contracts.Vault, chainId)
+export const getWeightedPoolVaultContract = chainId =>
+  getContract(weightedPoolVaultAbi, Contracts.weightedPoolVault, chainId)
 
-/** ******************************************************************************************************
-                                          ThenaRouter
-******************************************************************************************************* */
-export const getThenaRouterContract = chainId => getContract(thenaRouterAbi, Contracts.ThenaRouter, chainId)
-export const getThenaRouterSimulatorContract = chainId =>
-  getContract(thenaRouterSimulatorAbi, Contracts.ThenaRouterSimulator, chainId)
+export const getWeightedPoolRouterContract = chainId =>
+  getContract(weightedPoolRouterAbi, Contracts.weightedPoolRouter, chainId)
+export const getWeightedPoolRouterSimulatorContract = chainId =>
+  getContract(weightedPoolRouterSimulatorAbi, Contracts.weightedPoolRouterSimulator, chainId)
