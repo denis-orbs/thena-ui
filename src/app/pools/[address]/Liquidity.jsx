@@ -6,16 +6,24 @@ import { ArrowLeftIcon } from '@/svgs'
 
 import AddLiquidity from '../add-liquidity/AddLiquidity'
 
-function Liquidity({ pool }) {
+function Liquidity({ pool, isModal = false }) {
   const [currentStep, setCurrentStep] = useState(1)
   const t = useTranslations()
   return (
     <div className='w-full'>
-      <div className='mb-4 flex items-center gap-2'>
-        {currentStep >= 2 && <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(1)} />}
-        <h2>{t('Add Liquidity')}</h2>
-      </div>
-      <AddLiquidity pool={pool} step={currentStep} setCurrentStep={setCurrentStep} showSidebar={false} />
+      {!isModal && (
+        <div className='mb-4 flex items-center gap-2'>
+          {currentStep >= 2 && <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(1)} />}
+          <h2 className='font-archia text-4xl font-semibold leading-[34px]'>{t('Add Liquidity')}</h2>
+        </div>
+      )}
+      <AddLiquidity
+        isModal={isModal}
+        pool={pool}
+        step={currentStep}
+        setCurrentStep={setCurrentStep}
+        showSidebar={false}
+      />
     </div>
   )
 }

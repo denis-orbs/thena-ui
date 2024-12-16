@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { getAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
+import AddLiquidityWeightedModal from '@/app/pools/AddLiquidityWeightedModal'
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
 import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
@@ -11,6 +12,7 @@ import CustomTooltip from '@/components/tooltip'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { weightedPoolFeesAbi } from '@/constant/abi'
 import useWallet from '@/hooks/useWallet'
+import useClaimableFees from '@/hooks/weightedPool/useClaimableFees'
 import { getWeightedPoolContract, getWeightedPoolVaultContract } from '@/lib/contracts'
 import { formatAmount, fromWei } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
@@ -19,6 +21,9 @@ export function WeightedPoolPosition({ pool }) {
   const t = useTranslations()
   const { account: userAddress, chainId } = useWallet()
   const [isOpenRemove, setIsOpenRemove] = useState(false)
+  const [isOpenAdd, setIsOpenAdd] = useState(false)
+
+  const { onClaimableFees, pending: pendingClaimableFees } = useClaimableFees()
 
   // MARK: Get claimable token for WEIGHTED
   const poolContract = getWeightedPoolContract(pool?.address, chainId)
@@ -51,8 +56,8 @@ export function WeightedPoolPosition({ pool }) {
 
   const [poolFeeContract, lpTokenTotalSupply, lpTokenBalance, tokenAddresses, tokenAmounts] = useMemo(() => {
     const poolFeeContractVal = data?.[0]?.result
-    const lpTokenTotalSupplyVal = Number(data?.[1]?.result ?? 0)
-    const lpTokenBalanceVal = Number(data?.[2]?.result ?? 0)
+    const lpTokenTotalSupplyVal = new BigNumber(data?.[1]?.result ?? 0)
+    const lpTokenBalanceVal = new BigNumber(data?.[2]?.result ?? 0)
     const tokenAddressesVal = data?.[3]?.result?.[0] || []
     const tokenAmountsVal = data?.[3]?.result?.[1] || []
 
@@ -79,27 +84,26 @@ export function WeightedPoolPosition({ pool }) {
   }, [pool.tokens, tokenAddresses])
 
   const depositValue = useMemo(() => {
-    // TODO: Get from API
-    const lpTokenPrice = new BigNumber(0)
+    const lpTokenPrice = new BigNumber(pool?.lpPrice || 0)
 
-    const userAmountRatio = new BigNumber(lpTokenBalance / lpTokenTotalSupply)
+    const userAmountRatio = lpTokenBalance.div(lpTokenTotalSupply)
     return {
       tokens: tokenAddresses.map((address, index) => {
         const token = mappedToken[address]
         return {
           ...token,
-          amount: userAmountRatio.times(fromWei(tokenAmounts[index]), token.decimals),
+          amount: userAmountRatio.times(fromWei(tokenAmounts[index], token.decimals)),
         }
       }, []),
-      depositUsd: lpTokenPrice.times(lpTokenBalance),
+      depositUsd: lpTokenPrice.times(fromWei(lpTokenBalance)),
     }
-  }, [lpTokenBalance, mappedToken, tokenAddresses, tokenAmounts, lpTokenTotalSupply])
+  }, [pool?.lpPrice, lpTokenBalance, lpTokenTotalSupply, tokenAddresses, mappedToken, tokenAmounts])
 
   const claimableFee = useMemo(() => {
     let total = 0
     const tokenList = tokenAddresses.map((address, index) => {
       const fee = new BigNumber(fromWei(expectedFees[index], mappedToken[address].decimals))
-      total += fee.times(mappedToken[address].price)
+      total += +fee.times(mappedToken[address].price)
 
       return {
         address,
@@ -118,6 +122,7 @@ export function WeightedPoolPosition({ pool }) {
     <div className='rounded-xl bg-neutral-900 p-4'>
       <div className='flex space-x-4'>
         <ThreeIconGroup
+          className='-space-x-2'
           classNames={{
             image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
           }}
@@ -130,7 +135,7 @@ export function WeightedPoolPosition({ pool }) {
             {(pool?.tokens || []).map(token => (
               <div className='flex items-center gap-1' key={token?.address}>
                 <span className='text-[16px] font-medium leading-5'>{token?.symbol}</span>
-                <span className='text-sm font-medium leading-5 text-neutral-300 '>{token?.weight}%</span>
+                <span className='text-sm font-medium leading-5 text-neutral-300 '>{formatAmount(token?.weight)}%</span>
               </div>
             ))}
           </div>
@@ -146,18 +151,17 @@ export function WeightedPoolPosition({ pool }) {
 
         <div className='flex justify-between'>
           <span className='text-neutral-300'>{t('Deposit Value in USD')}</span>
-          {/* <span>${formatAmount(depositValue.depositUsd)}</span> */}
-          <span>TODO(API)</span>
+          <span>${formatAmount(depositValue.depositUsd)}</span>
         </div>
 
-        {(depositValue.tokens || []).map((token, index) => (
+        {(depositValue?.tokens || []).map((token, index) => (
           <div className='flex justify-between' key={index}>
             <span className='text-neutral-300'>
               {token.symbol} {t('Deposit')}
             </span>
             <span>
               <span>{formatAmount(token?.amount)}</span>
-              <span className='text-neutral-300'>({token?.weight}%)</span>
+              <span className='text-neutral-300'>({formatAmount(token?.weight)}%)</span>
             </span>
           </div>
         ))}
@@ -178,7 +182,7 @@ export function WeightedPoolPosition({ pool }) {
       </CustomTooltip>
 
       <div className='mt-4 flex w-full gap-3'>
-        <TextButton className='w-full' disabled>
+        <TextButton className='w-full' disabled={pendingClaimableFees} onClick={() => onClaimableFees(pool)}>
           {t('Claim')}
         </TextButton>
 
@@ -186,9 +190,12 @@ export function WeightedPoolPosition({ pool }) {
           {t('Remove')}
         </OutlinedButton>
 
-        <EmphasisButton className='w-full'>{t('Add')} (TODO)</EmphasisButton>
+        <EmphasisButton className='w-full' onClick={() => setIsOpenAdd(true)}>
+          {t('Add')}
+        </EmphasisButton>
       </div>
       <RemoveWeightedModal isOpen={isOpenRemove} pool={pool} setIsOpen={setIsOpenRemove} />
+      <AddLiquidityWeightedModal isOpen={isOpenAdd} pool={pool} setIsOpen={setIsOpenAdd} />
     </div>
   )
 }

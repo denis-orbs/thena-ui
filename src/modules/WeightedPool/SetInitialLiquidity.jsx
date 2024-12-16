@@ -6,21 +6,27 @@ import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { formatAmount, roundIfMoreThan18Decimals } from '@/lib/utils'
+import { formatAmount, fromWei, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 import { ArrowLeftIcon, InfoCirCleDisableIcon } from '@/svgs'
 
 import InputLiquidityToken from './InputLiquidityToken'
 
-// TODO: Re-render
-
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
   const t = useTranslations()
-  const [lastIndexChange, setLastIndexChange] = useState(0)
+  // const [lastIndexChange, setLastIndexChange] = useState(0)
   const [isAutoOptimize, setIsAutoOptimize] = useState(false)
 
   const [totalWhenOptimize, setTotalWhenOptimize] = useState(null)
 
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
+
+  const isInsufficientBalance = useCallback((amount, asset) => {
+    const amountToWei = toWei(amount, asset?.decimals)
+    if (fromWei(amountToWei, asset?.decimals).gt(asset?.balance)) {
+      return true
+    }
+    return false
+  }, [])
 
   const available = useMemo(
     () =>
@@ -34,31 +40,6 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
   const total = useMemo(
     () => tokensAndWeights.reduce((sum, curr) => sum + getValueTokenAmountToUSD(curr.token.address, curr.amount), 0),
     [getValueTokenAmountToUSD, tokensAndWeights],
-  )
-
-  useEffect(() => {
-    setTokenAndWeights(prev => {
-      const updatedTokens = [...prev]
-      const lastChange = updatedTokens[lastIndexChange]
-      if (isAutoOptimize) {
-        const currentTokenUSDValue = getValueTokenAmountToUSD(lastChange?.token?.address, lastChange?.amount)
-
-        updatedTokens.forEach((token, idx) => {
-          if (idx !== lastIndexChange) {
-            const otherTokenUSDValue =
-              (currentTokenUSDValue / (updatedTokens[lastIndexChange].weight / 100)) * (token.weight / 100)
-            token.amount = roundIfMoreThan18Decimals(otherTokenUSDValue / token.token.price).toString()
-          }
-        })
-      }
-
-      return updatedTokens
-    })
-  }, [lastIndexChange, isAutoOptimize, setTokenAndWeights, getValueTokenAmountToUSD, tokensAndWeights])
-
-  const isDisable = useMemo(
-    () => (tokensAndWeights || []).some(item => item.isError || !item?.amount),
-    [tokensAndWeights],
   )
 
   const onClearAmount = useCallback(() => {
@@ -104,14 +85,16 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
 
           result.push({
             ...otherToken,
-            amount: roundIfMoreThan18Decimals(newAmount).toString(),
+            amount: roundIfMoreThanDecimals(newAmount, otherToken?.decimals).toString(),
             usdValue: otherTokenUSDValue,
+            isError: isInsufficientBalance(newAmount, otherToken.token),
           })
         } else {
           result.push({
             ...otherToken,
-            amount: roundIfMoreThan18Decimals(currentBalance).toString(),
+            amount: roundIfMoreThanDecimals(currentBalance, otherToken?.decimals).toString(),
             usdValue: currentTokenUSDValue,
+            isError: isInsufficientBalance(currentBalance, otherToken.token),
           })
         }
       }
@@ -131,7 +114,50 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     setTotalWhenOptimize(maxUsdValueResult.reduce((sum, token) => sum + (token?.usdValue || 0), 0))
 
     setTokenAndWeights(maxUsdValueResult)
-  }, [getValueTokenAmountToUSD, setTokenAndWeights, tokensAndWeights])
+  }, [getValueTokenAmountToUSD, isInsufficientBalance, setTokenAndWeights, tokensAndWeights])
+
+  const handleAmountChange = useCallback(
+    (value, asset) => {
+      setTokenAndWeights(prev => {
+        const updatedTokens = [...prev]
+        const changedToken = updatedTokens.find(
+          token => token.token.address?.toLowerCase() === asset?.address?.toLowerCase(),
+        )
+
+        if (changedToken) {
+          changedToken.amount = roundIfMoreThanDecimals(value, changedToken.token?.decimals)
+          changedToken.isError = isInsufficientBalance(value, asset)
+          if (isAutoOptimize) {
+            const currentTokenUSDValue = getValueTokenAmountToUSD(changedToken.token?.address, changedToken?.amount)
+
+            updatedTokens.forEach(item => {
+              if (item.token?.address?.toLowerCase() !== asset?.address?.toLowerCase()) {
+                const otherTokenUSDValue = (currentTokenUSDValue / (changedToken.weight / 100)) * (item.weight / 100)
+                item.amount = roundIfMoreThanDecimals(
+                  otherTokenUSDValue / item.token.price,
+                  item.token?.decimals,
+                ).toString()
+                item.isError = isInsufficientBalance(item?.amount, item?.token)
+              }
+            })
+          }
+        }
+
+        return updatedTokens
+      })
+    },
+    [getValueTokenAmountToUSD, isAutoOptimize, isInsufficientBalance, setTokenAndWeights],
+  )
+
+  useEffect(() => {
+    handleAmountChange(tokensAndWeights[0]?.amount, tokensAndWeights?.[0]?.token)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAutoOptimize])
+
+  const isDisable = useMemo(
+    () => (tokensAndWeights || []).some(item => item.isError || !item?.amount),
+    [tokensAndWeights],
+  )
 
   return (
     <Box className='flex flex-col gap-3'>
@@ -145,7 +171,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
             <div>
               <Paragraph className='text-base'>{t('Optimized amounts have been pre-filled')}</Paragraph>{' '}
               <span className='cursor-pointer text-primary-600' onClick={onClearAmount}>
-                {t('Clear all')}
+                {t('Clear All')}
               </span>
             </div>
           )}
@@ -154,9 +180,8 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
               key={item?.token?.address}
               asset={item.token}
               weight={`(${item.weight}%)`}
-              setTokenAndWeights={setTokenAndWeights}
+              setTokenAndWeights={value => handleAmountChange(value, item.token)}
               amount={item.amount}
-              setLastIndexChange={setLastIndexChange}
             />
           ))}
         </>

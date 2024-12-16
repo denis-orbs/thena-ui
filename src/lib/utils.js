@@ -266,27 +266,11 @@ export const getPoolType = type =>
         ? 'Stable'
         : 'Weighted'
 
-export const roundIfMoreThan18Decimals = number => {
+export const roundIfMoreThanDecimals = (number, decimals = 18) => {
+  if (!number) return number
   const parts = number.toString().split('.')
-  if (parts[1] && parts[1].length > 18) {
-    return Math.floor(number * 1e18) / 1e18
+  if (parts[1] && parts[1].length > decimals) {
+    return Math.floor(number * 10 ** decimals) / 10 ** decimals
   }
   return number
-}
-
-export const isoDateToFormatDate = (
-  isoString,
-  options = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    timeZone: 'UTC',
-    timeZoneName: 'short',
-  },
-) => {
-  const date = new Date(isoString)
-  const formattedDate = date.toLocaleString('en-US', options)
-  return formattedDate
 }

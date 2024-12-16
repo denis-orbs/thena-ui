@@ -31,6 +31,7 @@ import {
   wbnbAbi,
   weightedPoolAbi,
   weightedPoolFactoryAbi,
+  weightedPoolFeesAbi,
   weightedPoolRouterAbi,
   weightedPoolRouterSimulatorAbi,
   weightedPoolVaultAbi,
@@ -319,3 +320,5 @@ export const getWeightedPoolRouterContract = chainId =>
   getContract(weightedPoolRouterAbi, Contracts.weightedPoolRouter, chainId)
 export const getWeightedPoolRouterSimulatorContract = chainId =>
   getContract(weightedPoolRouterSimulatorAbi, Contracts.weightedPoolRouterSimulator, chainId)
+
+export const getFeesContractWeightedPool = (address, chainId) => getContract(weightedPoolFeesAbi, address, chainId)

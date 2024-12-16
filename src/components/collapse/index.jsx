@@ -27,6 +27,11 @@ export function Collapse({ children, title, defaultShow = true, onToggle, isOpen
     }
   }, [show, children])
 
+  useEffect(() => {
+    if (typeof isOpen !== 'undefined') {
+      setShow(isOpen)
+    }
+  }, [isOpen])
   return (
     <div {...props}>
       {/* Title Section */}

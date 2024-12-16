@@ -20,7 +20,8 @@ import { useCustomAssets } from '@/context/customAssetsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { getTokenInfo } from '@/lib/helper'
-import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThan18Decimals } from '@/lib/utils'
+import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals } from '@/lib/utils'
+import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { ArrowLeftIcon, ArrowRightIcon, DownloadSuccessIcon, PercentIcon } from '@/svgs'
 
 import InputTokenMemo from './InputTokenMemo'
@@ -31,7 +32,14 @@ const DEPOSIT_TYPE = {
   ALL: 'all',
 }
 
-function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = true, setCurrentStep }) {
+function AddLiquidityWeightedPool({
+  pool,
+  // isFullContent = true,
+  showSidebar = true,
+  setCurrentStep,
+  isModal = false,
+  setIsOpen = () => {},
+}) {
   const t = useTranslations()
   const assets = useAssets()
   const customAssets = useCustomAssets()
@@ -42,7 +50,7 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
 
   const [amountDeposit, setAmountDeposit] = useState('')
 
-  const [slippageTolerance, setSlippageTolerance] = useState()
+  const [slippage, setSlippage] = useState(0.5)
   const [openTransactionSetting, setOpenTransactionSetting] = useState()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
@@ -54,7 +62,6 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
     calcMinBPTAmountOutAllToken,
   } = useWeightedPool()
   const { mutatePoolBalance } = useWeightPoolData(pool.address)
-  const [totalDeposit, setTotalDeposit] = useState(0)
 
   const tokensAsset = useMemo(
     () =>
@@ -66,7 +73,8 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
           amountDeposit: '',
         }
       }),
-    [assets, customAssets, pool.tokens],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(assets), customAssets, pool.tokens],
   )
 
   const [tokensData, setTokensData] = useState(tokensAsset)
@@ -98,13 +106,13 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
     }
     setMinBPTAmountOut(isInvalidAmount(minBPT) ? '' : fromWei(minBPT))
   }, [
+    pool,
+    depositType,
+    calcMinBPTAmountOutSingleToken,
+    tokenDeposit,
     amountDeposit,
     calcMinBPTAmountOutAllToken,
-    calcMinBPTAmountOutSingleToken,
-    depositType,
-    pool.poolId,
     tokensData,
-    tokenDeposit,
   ])
 
   useEffect(() => {
@@ -112,7 +120,7 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
     debounceTimeout.current = setTimeout(() => {
       calcMinBPT()
     }, 300)
-  }, [amountDeposit, tokensData, depositType, calcMinBPT])
+  }, [calcMinBPT])
 
   const handleAmountChange = useCallback(
     (address, value) => {
@@ -120,7 +128,7 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
         const updatedTokens = [...prev]
         const changedToken = updatedTokens.find(token => token.address?.toLowerCase() === address?.toLowerCase())
         if (changedToken) {
-          changedToken.amountDeposit = roundIfMoreThan18Decimals(value)
+          changedToken.amountDeposit = roundIfMoreThanDecimals(value, changedToken?.decimals)
           const currentTokenUSDValue = getValueTokenAmountToUSD(changedToken?.address, changedToken.amountDeposit)
 
           updatedTokens.forEach(token => {
@@ -162,22 +170,22 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
     () => [
       {
         label: '10%',
-        onClickHandler: () => setAmountDeposit(pool?.token0?.balance.times(0.1).toString(10)),
+        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.times(0.1).toString(10)),
       },
       {
         label: '25%',
-        onClickHandler: () => setAmountDeposit(pool?.token0?.balance.times(0.25).toString(10)),
+        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.times(0.25).toString(10)),
       },
       {
         label: '50%',
-        onClickHandler: () => setAmountDeposit(pool?.token0?.balance.times(0.5).toString(10)),
+        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.times(0.5).toString(10)),
       },
       {
         label: 'Max',
-        onClickHandler: () => setAmountDeposit(pool?.token0?.balance.toString(10)),
+        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.toString(10)),
       },
     ],
-    [pool?.token0?.balance, setAmountDeposit],
+    [tokenDeposit?.balance, setAmountDeposit],
   )
 
   const isDisable = useMemo(() => {
@@ -197,28 +205,18 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
     return false
   }, [amountDeposit, depositType, pending, tokenDeposit, tokensData])
 
-  useEffect(() => {
-    if (depositType === DEPOSIT_TYPE.SINGLE) {
-      const usdValue = getValueTokenAmountToUSD(tokenDeposit?.address, amountDeposit || 0)
-      setTotalDeposit(usdValue)
-    } else {
-      const usdValue = tokensData.reduce(
-        (sum, token) => sum + getValueTokenAmountToUSD(token?.address, token?.amountDeposit || 0),
-        0,
-      )
-      setTotalDeposit(usdValue)
-    }
-  }, [amountDeposit, depositType, getValueTokenAmountToUSD, tokenDeposit, tokensData])
-
   const onAddLiquidity = useCallback(async () => {
     if (depositType === DEPOSIT_TYPE.SINGLE) {
-      await onAddLiquiditySingleToken(pool.poolId, tokenDeposit, amountDeposit, minBPTAmountOut, () => {
+      await onAddLiquiditySingleToken(pool.poolId, tokenDeposit, amountDeposit, minBPTAmountOut, slippage, () => {
         setIsSuccess(true)
         setAmountDeposit('')
         mutatePoolBalance()
+        if (isModal) {
+          setIsOpen(false)
+        }
       })
     } else {
-      await onAddLiquidityAllToken(pool.poolId, tokensData, minBPTAmountOut, () => {
+      await onAddLiquidityAllToken(pool.poolId, tokensData, minBPTAmountOut, slippage, () => {
         setIsSuccess(true)
 
         setTokensData(prev =>
@@ -229,16 +227,22 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
         )
 
         mutatePoolBalance()
+        if (isModal) {
+          setIsOpen(false)
+        }
       })
     }
   }, [
     amountDeposit,
     depositType,
+    isModal,
     minBPTAmountOut,
     mutatePoolBalance,
     onAddLiquidityAllToken,
     onAddLiquiditySingleToken,
     pool.poolId,
+    setIsOpen,
+    slippage,
     tokenDeposit,
     tokensData,
   ])
@@ -256,21 +260,36 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
     return false
   }, [amountDeposit, depositType, tokenDeposit, tokensData])
 
+  const totalDeposit = useMemo(() => {
+    if (depositType === DEPOSIT_TYPE.SINGLE) {
+      return amountDeposit * (tokenDeposit?.price || 0)
+    }
+
+    if (depositType === DEPOSIT_TYPE.ALL) {
+      return tokensData.reduce((sum, token) => {
+        const value = (token?.amountDeposit || 0) * (token?.price || 0)
+        return sum + value
+      }, 0)
+    }
+  }, [amountDeposit, depositType, tokenDeposit?.price, tokensData])
+
   return (
     <>
       <Box className={cn('w-full flex-[6] flex-col py-3 lg:py-6', !showSidebar ? 'w-full' : '')}>
-        <div className='mb-4 h-11 w-fit'>
-          {showSidebar ? (
-            <TextHeading className='font-archia text-3xl text-neutral-50'>
-              <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(0)} />
-              {t('Add Liquidity')}
-            </TextHeading>
-          ) : (
-            <TextHeading className='font-archia text-3xl text-neutral-50'>{t('New Deposit')}</TextHeading>
-          )}
-        </div>
+        {!isModal && (
+          <div className='mb-4 h-11 w-fit'>
+            {showSidebar ? (
+              <TextHeading className='font-archia text-3xl text-neutral-50'>
+                <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(0)} />
+                {t('Add Liquidity')}
+              </TextHeading>
+            ) : (
+              <TextHeading className='font-archia text-3xl text-neutral-50'>{t('New Deposit')}</TextHeading>
+            )}
+          </div>
+        )}
         <div className='flex flex-col gap-6'>
-          {isFullContent && (
+          {showSidebar && (
             <div className='flex flex-col gap-3'>
               <TextHeading>{pool?.symbol}</TextHeading>
               <div className='flex flex-row justify-between rounded-lg bg-neutral-800 p-4'>
@@ -302,6 +321,9 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
           <MenuTab className='grid w-full grid-cols-2' menuData={toggleDepositType} />
           {/* TODO: Check BNB/WBNB */}
           <div className='flex flex-col'>
+            <div className='flex justify-end'>
+              <SettingSlippageModal updateSlippage={setSlippage} slippage={slippage} />
+            </div>
             {depositType === DEPOSIT_TYPE.SINGLE && (
               <>
                 <div className='flex flex-row justify-between'>
@@ -402,8 +424,8 @@ function AddLiquidityWeightedPool({ pool, isFullContent = true, showSidebar = tr
       <TransactionSettingModal
         isOpen={openTransactionSetting}
         setIsOpen={setOpenTransactionSetting}
-        setSlippageTolerance={setSlippageTolerance}
-        slippageTolerance={slippageTolerance}
+        updateSlippage={setSlippage}
+        slippage={slippage}
       />
     </>
   )

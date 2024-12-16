@@ -156,7 +156,7 @@ export default function PoolsPage() {
         let res
         switch (sort.value) {
           case 'pair':
-            res = a.symbol.localeCompare(b.symbol) * (sort.isDesc ? -1 : 1)
+            res = (a.symbol?.localeCompare(b.symbol) || 0) * (sort.isDesc ? -1 : 1)
             break
           case 'apr':
             res = (a.highApr - b.highApr) * (sort.isDesc ? -1 : 1)

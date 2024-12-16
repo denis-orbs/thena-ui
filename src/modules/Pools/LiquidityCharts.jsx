@@ -7,7 +7,7 @@ import useSWR from 'swr'
 
 import { fetchDefiedgeInfo } from '@/components/common/AddLiquidity/FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from '@/components/common/AddLiquidity/FusionAdd/GammaAdd'
-import StrategiesDropdown from '@/components/dropdown/StrategiesDropdown'
+import Highlight from '@/components/highlight'
 import Selection from '@/components/selection'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -21,6 +21,7 @@ import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { Bound, setInitialTokenPrice, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import { InfoCircleWhite } from '@/svgs'
 
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
 
@@ -199,35 +200,35 @@ export default function LiquidityCharts({
     }))
   }, [pair, strategy, setStrategy, t, dispatch, onLeftRangeInput, onRightRangeInput, onStartPriceInput])
 
-  const strategiesSelections = useMemo(
-    () => [
-      {
-        label: 'Manual Strategy',
-        title: 'Manual Strategy',
-        active: strategy === null,
-        onClickHandler: () => {
-          setStrategy(null)
-          dispatch(updateSelectedPreset({ preset: null }))
-          dispatch(setInitialTokenPrice({ typedValue: '' }))
-          onStartPriceInput('')
-          onLeftRangeInput('')
-          onRightRangeInput('')
-          onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
-        },
-      },
-      ...automaticStrategiesData,
-    ],
-    [
-      dispatch,
-      onLeftRangeInput,
-      onRightRangeInput,
-      onStartPriceInput,
-      onChangeLiquidityRangeType,
-      strategy,
-      setStrategy,
-      automaticStrategiesData,
-    ],
-  )
+  // const strategiesSelections = useMemo(
+  //   () => [
+  //     {
+  //       label: 'Manual Strategy',
+  //       title: 'Manual Strategy',
+  //       active: strategy === null,
+  //       onClickHandler: () => {
+  //         setStrategy(null)
+  //         dispatch(updateSelectedPreset({ preset: null }))
+  //         dispatch(setInitialTokenPrice({ typedValue: '' }))
+  //         onStartPriceInput('')
+  //         onLeftRangeInput('')
+  //         onRightRangeInput('')
+  //         onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
+  //       },
+  //     },
+  //     ...automaticStrategiesData,
+  //   ],
+  //   [
+  //     dispatch,
+  //     onLeftRangeInput,
+  //     onRightRangeInput,
+  //     onStartPriceInput,
+  //     onChangeLiquidityRangeType,
+  //     strategy,
+  //     setStrategy,
+  //     automaticStrategiesData,
+  //   ],
+  // )
 
   const tokenSelection = useMemo(
     () => [
@@ -249,19 +250,19 @@ export default function LiquidityCharts({
     [firstAsset, secondAsset, isReverse, setIsReverse],
   )
 
-  return (
+  return mintInfo.strategy ? (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         <div className='flex flex-col gap-5'>
           <div className='flex flex-row items-center justify-between gap-3'>
-            <StrategiesDropdown
+            {/* <StrategiesDropdown
               className='w-[220px]'
               data={strategiesSelections}
               selected={strategiesSelections.find(e => e.active)?.title}
               isLocale={false}
               setSelected={() => {}}
               placeHolder='Choose Category'
-            />
+            /> */}
             <Selection isTranslation={false} isSmall isFull={false} data={tokenSelection} className='block h-fit' />
           </div>
 
@@ -304,5 +305,17 @@ export default function LiquidityCharts({
         </div>
       </CustomTooltip>
     </>
+  ) : (
+    <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[120px]'>
+      <Highlight>
+        <InfoCircleWhite className='h-4 w-4' />
+      </Highlight>
+      <div className='flex flex-col items-center gap-3'>
+        <h2>{t('Select Pool Strategy')}</h2>
+        <Paragraph className='mt-3 text-center'>
+          {t("You have to select the pool strategy first to see it's [symbol]", { text: 'liquidity' })}
+        </Paragraph>
+      </div>
+    </div>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useId, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import TokenBadge from '@/components/badges/TokenBadge'
 import Box from '@/components/box'
@@ -14,8 +14,6 @@ import { cn, formatAmount, wrappedAddress } from '@/lib/utils'
 import { ChevronDownIcon, InfoIcon, LockIcon, PlusIcon, TrashIcon, UnlockIcon } from '@/svgs'
 
 import TokenModal from '../TokenModal'
-
-// TODO: Same key warning
 
 const updateWeight = tokens => {
   const weightLocked = tokens.filter(item => item.lock).reduce((sum, cur) => sum + cur.weight, 0)
@@ -189,7 +187,6 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   const [tokenSelected, setTokenSelected] = useState(
     tokensAndWeights.length > 0 ? tokensAndWeights : [initialToken, initialToken],
   )
-  const idDefault = useId()
   const [totalWeight, setTotalWeight] = useState(0)
 
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
@@ -249,7 +246,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
       <div className='divide-y divide-neutral-700 rounded-xl border border-neutral-700'>
         {tokenSelected.map((token, index) => (
           <TokenItem
-            key={idDefault}
+            key={`${token?.token?.address}_${index}`}
             index={index}
             setTokenSelected={setTokenSelected}
             token={token}

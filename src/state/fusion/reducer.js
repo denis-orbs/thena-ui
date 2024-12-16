@@ -17,6 +17,7 @@ import {
   updateLiquidityRangeType,
   updatePresetRange,
   updateSelectedPreset,
+  updateStrategy,
 } from './actions'
 
 export const Presets = {
@@ -130,5 +131,9 @@ export default createReducer(initialState, builder =>
     .addCase(updatePresetRange, (state, { payload: { presetRange } }) => ({
       ...state,
       presetRange,
+    }))
+    .addCase(updateStrategy, (state, { payload: { strategy } }) => ({
+      ...state,
+      strategy,
     })),
 )

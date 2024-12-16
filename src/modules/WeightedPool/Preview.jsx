@@ -38,18 +38,7 @@ export function TokenAndInitialSeedItem({ item }) {
   )
 }
 
-function PoolDetails({
-  poolSymbol,
-  setPoolSymbol,
-  poolName,
-  setPoolName,
-  poolFee,
-  setPoolFee,
-  tokensAndWeights,
-  openModal,
-  isOpen,
-  setCurrentStep,
-}) {
+function PoolDetails({ poolSymbol, poolName, poolFee, tokensAndWeights, openModal, isOpen, setCurrentStep }) {
   const t = useTranslations()
   const { onCreateWeightedPool } = useWeightedPool()
   const [fee, setFee] = useState(poolFee)
@@ -58,6 +47,12 @@ function PoolDetails({
   const [newPoolId, setNewPoolId] = useState(null)
 
   const isCustomFee = useMemo(() => poolFee !== null && poolFee !== 0.1 && poolFee !== 0.3 && poolFee !== 1, [poolFee])
+  useEffect(() => {
+    setFee(poolFee)
+    setName(poolName)
+    setSymbol(poolSymbol)
+  }, [poolFee, poolName, poolSymbol])
+
   const poolRange = useMemo(
     () => [
       {
@@ -78,11 +73,6 @@ function PoolDetails({
     ],
     [fee],
   )
-  useEffect(() => {
-    setPoolSymbol(symbol)
-    setPoolFee(fee)
-    setPoolName(name)
-  }, [symbol, fee, name, setPoolSymbol, setPoolFee, setPoolName])
 
   const handleSave = useCallback(async () => {
     const sortedAddresses = tokensAndWeights
@@ -121,7 +111,7 @@ function PoolDetails({
                 <TextHeading>{t('Pool Fee')}</TextHeading>
                 <Paragraph>{t('Set Pool Fees description')}</Paragraph>
                 <div className='mt-4 flex flex-row justify-between'>
-                  <Selection className='!h-11' data={poolRange} />
+                  <Selection className='!h-11' data={poolRange} isTranslation={false} />
                   <Input
                     type='number'
                     val={fee}
@@ -147,7 +137,7 @@ function PoolDetails({
       </Modal>
       <SuccessModal
         isOpen={Boolean(newPoolId)}
-        heading={t('Success!')}
+        heading={t('Success')}
         message={t('You have successfully created [symbol] weighted pool', { poolSymbol })}
         onClose={() => {
           setCurrentStep(0)
@@ -167,7 +157,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
   const [showPreview, setShowPreview] = useState(false)
   const [poolSymbol, setPoolSymbol] = useState(initialPoolSymbol)
   const [poolName, setPoolName] = useState(initialPoolSymbol)
-  const total = tokensAndWeights.reduce((sum, curr) => sum + curr.token.price, 0)
+  const total = tokensAndWeights.reduce((sum, curr) => sum + curr.token.price * curr.amount, 0)
   const [editStates, setEditStates] = useState({
     editSymbol: false,
     editName: false,
@@ -195,7 +185,6 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
         ))}
         <div className='flex flex-row justify-between pt-4'>
           <TextHeading>{t('Total')}</TextHeading>
-          {/* TODO: Wrong total */}
           <TextHeading>${formatAmount(total)}</TextHeading>
         </div>
       </div>

@@ -94,8 +94,8 @@ export default function CurrentRewards({ rewards, currentMutate }) {
                 classNames={{
                   image: 'outline-2 w-7 h-7',
                 }}
-                logo1={pool.token0.logoURI}
-                logo2={pool.token1.logoURI}
+                logo1={pool.token0?.logoURI}
+                logo2={pool.token1?.logoURI}
               />
               <div className='flex flex-col'>
                 <TextHeading>{pool.symbol}</TextHeading>

@@ -124,8 +124,8 @@ export default function PoolSummary({ tokensAndWeights }) {
       <div className='hidden bg-[#E333DD]' />
       <div className='hidden bg-[#F199EE]' />
       <div className='grid grid-cols-4 justify-between'>
-        {data.map(item => (
-          <div className='flex flex-row items-center gap-[6px]'>
+        {data.map((item, idx) => (
+          <div key={`${item?.data?.address}_${idx}`} className='flex flex-row items-center gap-[6px]'>
             <div className={cn('h-3 w-3 rounded-full', `bg-[${item?.color}]`)} />
             <TextHeading>{item?.data?.symbol}</TextHeading>
           </div>

@@ -13,14 +13,15 @@ import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import NextImage from '@/components/image/NextImage'
-import Modal, { ModalBody } from '@/components/modal'
+import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { cn, formatAddress, formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
+import { formatAddress, formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
 import Position from '@/modules/Position'
@@ -42,9 +43,15 @@ export default function SpecificPoolPage({ params }) {
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
 
+  const windowSize = useWindowSize()
+
   const [showModalAdd, setShowModalAdd] = useState(false)
 
-  const pool = useMemo(() => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()), [address, pairs])
+  const pool = useMemo(
+    () => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [address, JSON.stringify(pairs)],
+  )
 
   const { balance: weightedPoolBalance } = useWeightPoolData(pool?.type === PAIR_TYPES.WEIGHTED ? pool.address : null)
 
@@ -96,7 +103,7 @@ export default function SpecificPoolPage({ params }) {
                 </div>
               </div>
             ) : (
-              <div className='flex space-x-4'>
+              <div className='flex'>
                 <ThreeIconGroup
                   classNames={{
                     image: 'w-[36px] lg:w-[56px] h-[36px] lg:h-[56px] text-xl font-medium leading-5 text-[#1C2027]',
@@ -110,7 +117,9 @@ export default function SpecificPoolPage({ params }) {
                     {(pool?.tokens || []).map(token => (
                       <div className='flex items-center gap-1' key={token?.address}>
                         <span className='text-xl font-semibold leading-10 lg:text-4xl'>{token?.symbol}</span>
-                        <span className='text-sm leading-10 text-neutral-300 lg:text-[26px]'>{token?.weight}%</span>
+                        <span className='text-sm leading-10 text-neutral-300 lg:text-[26px]'>
+                          {formatAmount(token?.weight)}%
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -123,9 +132,9 @@ export default function SpecificPoolPage({ params }) {
 
       {/* Content */}
       <div className='flex w-full flex-col sm:gap-2 lg:flex-row lg:gap-5 xl:gap-10 2xl:gap-12'>
-        <div className='flex-col gap-8'>
+        <div className='flex-[6] flex-col gap-8'>
           {/* Pool Overview */}
-          <div className='mb-6 mt-3 flex items-center justify-between gap-3 lg:mb-3'>
+          <div className='mb-6 flex items-center justify-between gap-3 lg:mb-7'>
             <div className='flex gap-3'>
               <NeutralBadge className='inline text-[14px] font-normal leading-5 text-neutral-50'>
                 {t(pool?.type ?? 'Weighted')}
@@ -250,7 +259,7 @@ export default function SpecificPoolPage({ params }) {
           <div className='flex w-full flex-col gap-6 lg:hidden'>
             <Box className='grid grid-cols-2 gap-5 lg:grid-cols-4'>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading>{pool?.apr || 0}%</TextHeading>
+                <TextHeading>{pool?.apr || '0%'}</TextHeading>
                 <Paragraph>{t('APR')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
@@ -270,9 +279,10 @@ export default function SpecificPoolPage({ params }) {
 
           {/* Desktop pool stats */}
           <div className='mb-6 hidden w-full flex-col gap-6 lg:flex'>
+            <TextHeading className='font-archia text-4xl font-semibold leading-[34px]'>{t('Pool Info')}</TextHeading>
             <Box className='grid grid-cols-2 gap-5 lg:grid-cols-4'>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading>{pool?.apr ?? 0}%</TextHeading>
+                <TextHeading>{pool?.apr ?? '0%'}</TextHeading>
                 <Paragraph>{t('APR')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
@@ -291,12 +301,12 @@ export default function SpecificPoolPage({ params }) {
           </div>
 
           {/* Pool charts */}
-          <div className='mb-6'>
+          <div className='mb-6 mt-6'>
             <PoolChart address={address} />
           </div>
 
           {/* Liquidity Fees table */}
-          <div className={cn('mb-6 flex flex-col gap-4', pool.type !== PAIR_TYPES.WEIGHTED && 'hidden')}>
+          <div className='mb-6 flex flex-col gap-4'>
             <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
               {t('Liquidity Fees')}
             </TextHeading>
@@ -355,7 +365,7 @@ export default function SpecificPoolPage({ params }) {
               </div>
               <div className='grid grid-cols-7'>
                 <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
-                <div className='col-span-5 text-neutral-50'>$TODO (API)</div>
+                <div className='col-span-5 text-neutral-50'>$0</div>
               </div>
               <div className='grid grid-cols-7'>
                 <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
@@ -373,16 +383,17 @@ export default function SpecificPoolPage({ params }) {
           </div>
         </div>
 
-        <div className='flex flex-col gap-12'>
-          <div className='mt-[-52px] max-lg:hidden'>
+        <div className='flex-[4] flex-col gap-12'>
+          <div className='mt-[72px] max-lg:hidden'>
             <Liquidity pool={pool} />
           </div>
 
           {/* User positions */}
-          <div>
-            <h2 className='mb-4'>{t('My Positions')}</h2>
-            {(pool.type === PAIR_TYPES.WEIGHTED && !isInvalidAmount(weightedPoolBalance)) ||
-            (userPositions && userPositions.length > 0) ? (
+          <div className='mt-6 space-y-4'>
+            <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
+              {t('My Positions')}
+            </TextHeading>
+            {pool.type === PAIR_TYPES.WEIGHTED && !isInvalidAmount(weightedPoolBalance) ? (
               <div className='grid grid-cols-1 gap-4'>
                 {pool.type === PAIR_TYPES.WEIGHTED ? (
                   <WeightedPoolPosition pool={pool} />
@@ -415,10 +426,13 @@ export default function SpecificPoolPage({ params }) {
         <PrimaryButton onClick={() => setShowModalAdd(true)} className='mx-auto w-full'>
           {t('Add Liquidity')}
         </PrimaryButton>
-        <Modal title='New Deposit' isOpen={showModalAdd} width={400} closeModal={() => setShowModalAdd(false)}>
-          <ModalBody className='p-0'>
-            <Liquidity pool={pool} />
-          </ModalBody>
+        <Modal
+          title='New Deposit'
+          isOpen={showModalAdd}
+          width={windowSize.width > 1024 ? 570 : windowSize.width * 0.9}
+          closeModal={() => setShowModalAdd(false)}
+        >
+          <Liquidity pool={pool} isModal />
         </Modal>
       </div>
     </div>

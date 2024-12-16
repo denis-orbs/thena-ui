@@ -18,7 +18,7 @@ import {
   getWeightedPoolRouterSimulatorContract,
   getWeightedPoolVaultContract,
 } from '@/lib/contracts'
-import { fromWei, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
+import { fromWei, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -238,7 +238,7 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquiditySingleToken = useCallback(
-    async (poolId32, token, amountDeposit, minBPTAmountOut, onSuccess) => {
+    async (poolId32, token, amountDeposit, minBPTAmountOut, slippage, onSuccess) => {
       setPending(true)
       const tokenContract = getERC20Contract(token.address, chainId)
 
@@ -291,7 +291,6 @@ export const useWeightedPool = () => {
       const tokensToLowerCase = tokens.map(item => item.toLowerCase())
       const idx = tokensToLowerCase?.indexOf(token?.address?.toLowerCase())
       const amountIn = Math.floor(toWei(amountDeposit, token.decimals))
-      const slippage = 0.5 // TODO: Get slippage from UI
       const minAmountOut = Math.floor(
         toWei(minBPTAmountOut)
           .times((100 - slippage) / 100)
@@ -327,7 +326,7 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquidityAllToken = useCallback(
-    async (poolId32, tokensData, minBPTAmountOut, onSuccess) => {
+    async (poolId32, tokensData, minBPTAmountOut, slippage, onSuccess) => {
       const key = uuidv4()
       const addLiquidityuuid = uuidv4()
 
@@ -398,7 +397,6 @@ export const useWeightedPool = () => {
 
       const assetsAddress = tokensData.map(asset => asset.address)
       const maxAmountsIn = sortedAsset.map(asset => toWei(asset.amountDeposit, asset.decimals))
-      const slippage = 0.5 // TODO: Get slippage from UI
       const minAmountOut = Math.floor(
         toWei(minBPTAmountOut)
           .times((100 - slippage) / 100)
@@ -434,7 +432,7 @@ export const useWeightedPool = () => {
   )
 
   const onRemoveLiquiditySingleToken = useCallback(
-    async (pool, outToken, amount, minAmountOut, onSuccess) => {
+    async (pool, outToken, amount, minAmountOut, slippage, onSuccess) => {
       const key = uuidv4()
       const approveFeeuuid = uuidv4()
       const removeLiquidityuuid = uuidv4()
@@ -489,7 +487,6 @@ export const useWeightedPool = () => {
         }
       }
 
-      const slippage = 0.5 // TODO: Slippage get from UI
       const minAmountOutWithSlippage = Math.floor(
         toWei(minAmountOut, outToken?.decimals || 18)
           .times((100 - slippage) / 100)
@@ -525,7 +522,7 @@ export const useWeightedPool = () => {
   )
 
   const onRemoveLiquidityAllToken = useCallback(
-    async (pool, amount, minAmountsOut, tokensData, onSuccess) => {
+    async (pool, amount, minAmountsOut, tokensData, slippage, onSuccess) => {
       const key = uuidv4()
       const approveFeeuuid = uuidv4()
       const removeLiquidityuuid = uuidv4()
@@ -578,7 +575,6 @@ export const useWeightedPool = () => {
 
       const minAmountsOutToWei = minAmountsOut.map((value, idx) => {
         const outTokenDecimal = tokensData[idx]?.decimals || 18
-        const slippage = 0.5 // TODO: Get from UI
         return Math.floor(toWei(value, outTokenDecimal).times((100 - slippage) / 100))
       })
       const result = await writeTxn(key, removeLiquidityuuid, routerContract, 'exitPoolAllTokens', [
@@ -615,6 +611,8 @@ export const useWeightedPool = () => {
       const [tokens] = await readCall(vaultContract, 'getPoolTokens', [poolId32], chainId)
       const tokenIndex = tokens.map(item => item.toLowerCase()).indexOf(tokenDeposit.address?.toLowerCase())
 
+      if (!amountDeposit) return 0
+
       try {
         const minBPTAmountOut = await readCall(
           routerSimulatorContract,
@@ -623,7 +621,7 @@ export const useWeightedPool = () => {
           chainId,
         )
 
-        return roundIfMoreThan18Decimals(minBPTAmountOut)
+        return roundIfMoreThanDecimals(minBPTAmountOut)
       } catch (error) {
         console.log(error)
         return null
@@ -651,7 +649,7 @@ export const useWeightedPool = () => {
         return indexA - indexB
       })
 
-      const amountIns = sortedToken.map(token => toWei(token.amountDeposit || 0))
+      const amountIns = sortedToken.map(token => toWei(token.amountDeposit || 0, token.decimals))
 
       try {
         const minBPTAmountOut = await readCall(
@@ -660,7 +658,7 @@ export const useWeightedPool = () => {
           [poolId32, amountIns],
           chainId,
         )
-        return roundIfMoreThan18Decimals(minBPTAmountOut)
+        return roundIfMoreThanDecimals(minBPTAmountOut)
       } catch (error) {
         console.log(error)
         return ''

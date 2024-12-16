@@ -9,7 +9,6 @@ import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
-import Selection from '@/components/selection'
 import Selector from '@/components/selector'
 import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
@@ -24,10 +23,10 @@ import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
-import { Bound, setInitialTokenPrice, updateSelectedPreset } from '@/state/fusion/actions'
+import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite, InfoIcon } from '@/svgs'
+import { InfoCircleWhite } from '@/svgs'
 
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from './FusionAdd/GammaAdd'
@@ -35,6 +34,23 @@ import LiquidityChartRangeInput from './FusionAdd/LiquidityChartRangeInput'
 import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const feeAmount = 3000
+
+const strategiesManual = [
+  {
+    type: 'manual',
+    title: 'Swap Fees',
+    address: 'manual-swap-fees',
+    min: 100,
+    max: 150,
+  },
+  {
+    type: 'manual',
+    title: '$THE Emissions',
+    address: 'manual-the-emission',
+    min: 100,
+    max: 150,
+  },
+]
 
 const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
@@ -197,8 +213,8 @@ export default function ChooseStrategy({
   ])
 
   const strategyData = useMemo(() => {
-    if (!pair || !pair.subpools.length) return null
-    return pair.subpools.map(sub => ({
+    // if (!pair || !pair.subpools.length) return null
+    const autoStrategy = (pair?.subpools || []).map(sub => ({
       content: (
         <div className='flex flex-1 items-center justify-between'>
           <div>
@@ -237,48 +253,73 @@ export default function ChooseStrategy({
         setStrategy(sub)
       },
     }))
+
+    const manualStrategy = strategiesManual.map((item, index) => ({
+      content: (
+        <div className='flex flex-1 items-center justify-between'>
+          <div>
+            <TextHeading>Manual {index === 1 ? '(Swap Fees)' : '($THE Emissions)'}</TextHeading>
+            <div className='mt-1 flex gap-2'>
+              <div className='flex items-center gap-1'>
+                <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
+                <Paragraph className='text-sm'>TODO%</Paragraph>
+              </div>
+              <div className='flex items-center gap-1'>
+                <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
+                <Paragraph className='text-sm'>$TODO</Paragraph>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      active: strategy?.address === item.address,
+      onClickHandler: () => {
+        setStrategy(item)
+      },
+    }))
+    return [...autoStrategy, ...manualStrategy]
   }, [pair, t, strategy?.address, setStrategy])
 
-  const autoSelections = useMemo(
-    () => [
-      {
-        label: 'Automatic',
-        active: isAutomatic,
-        onClickHandler: () => {
-          setIsAutomatic(true)
-          setStrategy(null)
-          dispatch(updateSelectedPreset({ preset: null }))
-          dispatch(setInitialTokenPrice({ typedValue: '' }))
-          onStartPriceInput('')
-          onLeftRangeInput('')
-          onRightRangeInput('')
-        },
-      },
-      {
-        label: 'Manual',
-        active: !isAutomatic,
-        onClickHandler: () => {
-          setIsAutomatic(false)
-          dispatch(updateSelectedPreset({ preset: null }))
-          dispatch(setInitialTokenPrice({ typedValue: '' }))
-          onStartPriceInput('')
-          onLeftRangeInput('')
-          onRightRangeInput('')
-          onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
-        },
-      },
-    ],
-    [
-      isAutomatic,
-      setIsAutomatic,
-      dispatch,
-      onLeftRangeInput,
-      onRightRangeInput,
-      onStartPriceInput,
-      onChangeLiquidityRangeType,
-      setStrategy,
-    ],
-  )
+  // const autoSelections = useMemo(
+  //   () => [
+  //     {
+  //       label: 'Automatic',
+  //       active: isAutomatic,
+  //       onClickHandler: () => {
+  //         setIsAutomatic(true)
+  //         setStrategy(null)
+  //         dispatch(updateSelectedPreset({ preset: null }))
+  //         dispatch(setInitialTokenPrice({ typedValue: '' }))
+  //         onStartPriceInput('')
+  //         onLeftRangeInput('')
+  //         onRightRangeInput('')
+  //       },
+  //     },
+  //     {
+  //       label: 'Manual',
+  //       active: !isAutomatic,
+  //       onClickHandler: () => {
+  //         setIsAutomatic(false)
+  //         dispatch(updateSelectedPreset({ preset: null }))
+  //         dispatch(setInitialTokenPrice({ typedValue: '' }))
+  //         onStartPriceInput('')
+  //         onLeftRangeInput('')
+  //         onRightRangeInput('')
+  //         onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
+  //       },
+  //     },
+  //   ],
+  //   [
+  //     isAutomatic,
+  //     setIsAutomatic,
+  //     dispatch,
+  //     onLeftRangeInput,
+  //     onRightRangeInput,
+  //     onStartPriceInput,
+  //     onChangeLiquidityRangeType,
+  //     setStrategy,
+  //   ],
+  // )
 
   const periods = useMemo(
     () => [
@@ -321,19 +362,49 @@ export default function ChooseStrategy({
     [timeWindow],
   )
 
+  useEffect(() => {
+    if (strategy?.address === 'manual-swap-fees' || strategy?.address === 'manual-the-emission') {
+      setIsAutomatic(false)
+      dispatch(updateStrategy({ strategy }))
+      // dispatch(updateSelectedPreset({ preset: null }))
+      // dispatch(setInitialTokenPrice({ typedValue: '' }))
+      // onStartPriceInput('')
+      // onLeftRangeInput('')
+      // onRightRangeInput('')
+      // onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
+    } else {
+      setIsAutomatic(true)
+      dispatch(updateStrategy({ strategy }))
+      // dispatch(updateSelectedPreset({ preset: null }))
+      // dispatch(setInitialTokenPrice({ typedValue: '' }))
+      // onStartPriceInput('')
+      // onLeftRangeInput('')
+      // onRightRangeInput('')
+    }
+  }, [
+    strategy,
+    setIsAutomatic,
+    dispatch,
+    onStartPriceInput,
+    onLeftRangeInput,
+    onRightRangeInput,
+    onChangeLiquidityRangeType,
+    setStrategy,
+  ])
+
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         <div className='flex flex-col gap-5'>
-          <div className='flex flex-col gap-3'>
+          {/* <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between'>
               <TextHeading>{t('Management')}</TextHeading>
               <InfoIcon className='h-4 w-4 cursor-pointer stroke-neutral-400' data-tooltip-id='management-tooltip' />
             </div>
             <Selection data={autoSelections} isFull isTranslation={false} />
-          </div>
+          </div> */}
 
-          {isAutomatic ? (
+          {/* {isAutomatic ? (
             <div className='flex flex-col gap-5'>
               <div className='flex flex-col gap-3'>
                 <TextHeading>{t('Strategy')}</TextHeading>
@@ -409,6 +480,90 @@ export default function ChooseStrategy({
               </Box>
             </div>
           ) : (
+            <ManualStrategy
+              firstAsset={firstAsset}
+              secondAsset={secondAsset}
+              isReverse={isReverse}
+              setIsReverse={setIsReverse}
+            />
+          )} */}
+          <div className='flex flex-col gap-5'>
+            <div className='flex flex-col gap-3'>
+              {strategyData ? (
+                <Selector data={strategyData} selected={strategy} setSelected={setStrategy} />
+              ) : (
+                <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[60px]'>
+                  <Highlight>
+                    <InfoCircleWhite className='h-4 w-4' />
+                  </Highlight>
+                  <div className='flex flex-col items-center gap-3'>
+                    <h2>{t('No strategy found')}</h2>
+                  </div>
+                </div>
+              )}
+            </div>
+            {isAutomatic && (
+              <>
+                {!mintInfo.noLiquidity && strategyData && (
+                  <>
+                    <div className='-mb-2 flex items-center justify-center'>
+                      <TextHeading className='text-sm'>
+                        {t('Current Price: [price] [symbolA] [symbolB]', {
+                          price: currentPrice,
+                          symbolA: unwrappedSymbol(quoteCurrency),
+                          symbolB: unwrappedSymbol(baseCurrency),
+                        })}
+                      </TextHeading>
+                    </div>
+                    <LiquidityChartRangeInput
+                      currencyA={baseCurrency ?? undefined}
+                      currencyB={quoteCurrency ?? undefined}
+                      feeAmount={mintInfo.dynamicFee}
+                      ticksAtLimit={mintInfo.ticksAtLimit}
+                      price={price ? parseFloat(price) : undefined}
+                      priceLower={priceLower}
+                      priceUpper={priceUpper}
+                      onLeftRangeInput={onLeftRangeInput}
+                      onRightRangeInput={onRightRangeInput}
+                      interactive={false}
+                      handleShow={!!strategy}
+                    />
+                  </>
+                )}
+
+                <Box className={cn('hidden', priceLower && priceUpper && 'block')}>
+                  <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
+                    <h6 className='font-bold'>Historical price</h6>
+                    <Tabs data={periods} />
+                  </div>
+
+                  <div className='mt-2 flex h-[250px] items-center justify-center'>
+                    {error ? (
+                      <Paragraph>Failed to load price chart for this pair</Paragraph>
+                    ) : (
+                      <PoolChart
+                        data={pairPrices}
+                        timeWindow={timeWindow}
+                        locale={locale}
+                        upper={
+                          isSorted
+                            ? Number(priceLower?.invert()?.toSignificant(6))
+                            : Number(priceUpper?.invert()?.toSignificant(6))
+                        }
+                        current={Number(currentPrice)}
+                        lower={
+                          isSorted
+                            ? Number(priceUpper?.invert()?.toSignificant(6))
+                            : Number(priceLower?.invert()?.toSignificant(6))
+                        }
+                      />
+                    )}
+                  </div>
+                </Box>
+              </>
+            )}
+          </div>
+          {!isAutomatic && (
             <ManualStrategy
               firstAsset={firstAsset}
               secondAsset={secondAsset}

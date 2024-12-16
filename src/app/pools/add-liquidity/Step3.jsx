@@ -243,8 +243,8 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
       <TransactionSettingModal
         isOpen={openTransactionSetting}
         setIsOpen={setOpenTransactionSetting}
-        setSlippageTolerance={setSlippageTolerance}
-        slippageTolerance={slippageTolerance}
+        updateSlippage={setSlippageTolerance}
+        slippage={slippageTolerance}
       />
     </div>
   )

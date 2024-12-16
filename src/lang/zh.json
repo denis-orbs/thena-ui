@@ -1289,5 +1289,15 @@
   "BeCarefulDescription": "建议用户在导入自定义代币时谨慎行事。需要注意的是，任何人都可以创建代币，包括可能具有欺诈性或与 THENA 不兼容的代币。通过导入自定义代币，用户承认并接受所涉及的潜在风险。",
   "Import Anyway": "仍然导入",
   "Careful Custom Token": "ATTENTION! Custom token is used here",
-  "Quaaloops Boost": "Liquidity providers in this pool are eligible for LoopFi's 10x Quaaloops Boost"
+  "Quaaloops Boost": "Liquidity providers in this pool are eligible for LoopFi's 10x Quaaloops Boost",
+  "Transaction settings": "Transaction settings",
+  "Slippage tolerance": "Slippage tolerance",
+  "Total Rewards": "Total Rewards",
+  "My Votes": "My Votes",
+  "Time Period": "Time Period",
+  "My Rewards": "My Rewards",
+  "Vote Time": "Vote Time",
+  "Pool Info": "Pool Info",
+  "Total Weight": "Total Weight",
+  "Maxed": "Maxed"
 }

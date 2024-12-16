@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux'
 import { Info, Warning } from '@/components/alert'
 import Input from '@/components/input'
 import Selection from '@/components/selection'
-import Selector from '@/components/selector'
 import Spinner from '@/components/spinner'
 import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
@@ -14,7 +13,7 @@ import { FusionRangeType } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { PoolState } from '@/hooks/fusion/useFusions'
-import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
+import { cn, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
@@ -293,60 +292,6 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
     [timeWindow],
   )
 
-  const [rewardsAllocation, setRewardsAllocation] = useState('swapFees')
-
-  const swapFeesData = useMemo(
-    () => [
-      {
-        content: (
-          <div className='flex flex-1 items-center justify-between'>
-            <div>
-              <TextHeading>{t('Swap Fees')}</TextHeading>
-              <div className='mt-1 flex gap-2'>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('Estimated APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{formatAmount(30.39)}%</Paragraph>
-                </div>
-              </div>
-            </div>
-          </div>
-        ),
-        active: rewardsAllocation === 'swapFees',
-        onClickHandler: () => {
-          setRewardsAllocation('swapFees')
-        },
-      },
-    ],
-    [rewardsAllocation, t],
-  )
-
-  const tokenEmissionsData = useMemo(
-    () => [
-      {
-        content: (
-          <div className='flex flex-1 items-center justify-between'>
-            <div>
-              <TextHeading>
-                {isReverse ? currencyB.symbol : currencyA.symbol} {t('Swap Fees')}
-              </TextHeading>
-              <div className='mt-1 flex gap-2'>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('Estimated APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{formatAmount(30.39)}%</Paragraph>
-                </div>
-              </div>
-            </div>
-          </div>
-        ),
-        active: rewardsAllocation === 'emissions',
-        onClickHandler: () => {
-          setRewardsAllocation('emissions')
-        },
-      },
-    ],
-    [currencyA.symbol, currencyB.symbol, isReverse, rewardsAllocation, t],
-  )
-
   return (
     <div className='flex flex-col gap-4'>
       <PresetRanges
@@ -493,23 +438,6 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
           )}
         </div>
       </div>
-
-      {!error && (
-        <div className='flex flex-col gap-4'>
-          <div className='grid grid-cols-2 divide-x divide-neutral-700 rounded-xl border border-neutral-700'>
-            <Selector
-              data={swapFeesData}
-              className='rounded-none !rounded-r-none rounded-l-xl'
-              classNames={{ item: 'rounded-none rounded-l-xl !rounded-r-none' }}
-            />
-            <Selector
-              className='rounded-none !rounded-l-none rounded-r-xl'
-              classNames={{ item: 'rounded-none !rounded-l-none rounded-r-xl' }}
-              data={tokenEmissionsData}
-            />
-          </div>
-        </div>
-      )}
       {/* <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
       <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} /> */}
       <CustomTooltip id='price-tooltip' className='max-w-[320px]'>

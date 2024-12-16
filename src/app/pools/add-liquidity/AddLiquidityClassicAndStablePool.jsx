@@ -95,8 +95,8 @@ function AddLiquidityClassicAndStablePool({ pool, setCurrentStep, isAdd, showSid
       <TransactionSettingModal
         isOpen={openTransactionSetting}
         setIsOpen={setOpenTransactionSetting}
-        setSlippageTolerance={setSlippageTolerance}
-        slippageTolerance={slippageTolerance}
+        updateSlippage={setSlippageTolerance}
+        slippage={slippageTolerance}
       />
     </>
   )

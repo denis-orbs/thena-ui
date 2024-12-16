@@ -4,54 +4,46 @@ import React, { useMemo } from 'react'
 import Input from '@/components/input'
 import Modal, { ModalBody } from '@/components/modal'
 import Selection from '@/components/selection'
-import { TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
 
-function TransactionSettingModal({ isOpen, setIsOpen, slippageTolerance, setSlippageTolerance }) {
+const slippageTolerance = [0.1, 0.5, 1]
+function TransactionSettingModal({ isOpen, setIsOpen, slippage, updateSlippage }) {
   const t = useTranslations()
 
-  const range = useMemo(
-    () => [
-      {
-        label: '0,1%',
-        active: slippageTolerance === 0.1,
-        onClickHandler: () => setSlippageTolerance(0.1),
-      },
-      {
-        label: '0,5%',
-        active: slippageTolerance === 0.5,
-        onClickHandler: () => setSlippageTolerance(0.5),
-      },
-      {
-        label: '1,0%',
-        active: slippageTolerance === 1.0,
-        onClickHandler: () => setSlippageTolerance(1.0),
-      },
-    ],
-    [setSlippageTolerance, slippageTolerance],
+  const selections = useMemo(
+    () =>
+      slippageTolerance.map(ele => ({
+        label: ele,
+        active: slippage === Number(ele),
+        onClickHandler: () => {
+          updateSlippage(Number(ele))
+        },
+      })),
+    [slippage, updateSlippage],
   )
 
-  const isCustom = useMemo(
-    () =>
-      slippageTolerance !== null && slippageTolerance !== 0.1 && slippageTolerance !== 0.5 && slippageTolerance !== 1,
-    [slippageTolerance],
-  )
   return (
-    <Modal isOpen={isOpen} closeModal={() => setIsOpen(false)} title={t('Transaction Settings')}>
+    <Modal
+      isOpen={isOpen}
+      closeModal={() => {
+        setIsOpen(false)
+      }}
+      width={480}
+      title='Transaction Settings'
+    >
       <ModalBody>
-        <TextHeading>{t('Slippage Tolerance')}</TextHeading>
-        <div className='mt-4 flex flex-row justify-between'>
-          <Selection className='!h-11' data={range} />
-          <Input
-            onChange={e => {
-              setSlippageTolerance(e.target.value)
-            }}
-            className={cn('h-11 w-[112px]', isCustom ? 'bg-neutral-700 font-medium text-neutral-200' : '')}
-            placeholder='Custom'
-            suffix='%'
-            classNames={{ input: 'pr-7' }}
-            type='number'
-          />
+        <div className='flex w-full flex-col items-start justify-start gap-3'>
+          <p className='text-lg font-medium'>{t('Slippage Tolerance')}</p>
+          <div className='inline-flex w-full justify-between'>
+            <Selection data={selections} />
+            <Input
+              classNames={{
+                input: 'w-[110px]',
+              }}
+              val={slippage}
+              onChange={e => updateSlippage(Number(e.target.value) || 0)}
+              suffix='%'
+            />
+          </div>
         </div>
       </ModalBody>
     </Modal>

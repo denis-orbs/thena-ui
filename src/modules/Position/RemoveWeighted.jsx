@@ -13,7 +13,9 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, isInvalidAmount, roundIfMoreThan18Decimals, toWei } from '@/lib/utils'
+import { formatAmount, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
+
+import SettingSlippageModal from './SettingSlippageModal'
 
 const REMOVE_TYPE = {
   SINGLE: 'single',
@@ -31,16 +33,15 @@ function RemoveWeighted({ pool, onCancel }) {
     pending,
   } = useWeightedPool()
 
-  // TODO: re-render
-  // TODO: Warning: Each child in a list should have a unique "key" prop.
-
   const { mutatePoolBalance } = useWeightPoolData(pool.address)
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   const [removeType, setRemoveType] = useState(REMOVE_TYPE.SINGLE)
-  const [amount, setAmount] = useState()
+  const [amount, setAmount] = useState(0)
   const [tokenReceive, setTokenReceive] = useState(pool?.tokens?.[0])
   const [totalWithdrawal, setTotalWithdrawal] = useState(0)
+
+  const [slippagge, setSlippage] = useState(0.5) // default = 0.5
 
   const [minAmountsOut, setMinAmountsOut] = useState([])
   const [minAmountOut, setMinAmountOut] = useState('')
@@ -69,7 +70,7 @@ function RemoveWeighted({ pool, onCancel }) {
 
   const handleAmountChange = useCallback(
     value => {
-      setAmount(roundIfMoreThan18Decimals(value))
+      setAmount(roundIfMoreThanDecimals(value))
     },
     [setAmount],
   )
@@ -107,9 +108,13 @@ function RemoveWeighted({ pool, onCancel }) {
   const onRemove = useCallback(async () => {
     const amountToWei = toWei(amount)
     if (removeType === REMOVE_TYPE.SINGLE) {
-      await onRemoveLiquiditySingleToken(pool, tokenReceive, amountToWei, minAmountOut, () => mutatePoolBalance())
+      await onRemoveLiquiditySingleToken(pool, tokenReceive, amountToWei, minAmountOut, slippagge, () =>
+        mutatePoolBalance(),
+      )
     } else {
-      await onRemoveLiquidityAllToken(pool, amountToWei, minAmountsOut, tokensData, () => mutatePoolBalance())
+      await onRemoveLiquidityAllToken(pool, amountToWei, minAmountsOut, tokensData, slippagge, () =>
+        mutatePoolBalance(),
+      )
     }
   }, [
     amount,
@@ -118,6 +123,7 @@ function RemoveWeighted({ pool, onCancel }) {
     pool,
     tokenReceive,
     minAmountOut,
+    slippagge,
     mutatePoolBalance,
     onRemoveLiquidityAllToken,
     minAmountsOut,
@@ -164,6 +170,9 @@ function RemoveWeighted({ pool, onCancel }) {
         </div>
         <MenuTab className='grid w-full grid-cols-2' menuData={toggleRemoveType} />
         <div className='flex flex-col'>
+          <div className='flex justify-end'>
+            <SettingSlippageModal slippage={slippagge} updateSlippage={setSlippage} />
+          </div>
           <InputManyToken pair={pool} amount={amount} onAmountChange={handleAmountChange} title={t('Amount')} />
         </div>
         <div className='relative flex w-full gap-2'>
