@@ -17,6 +17,7 @@ import { OutlinedButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Modal, { ModalFooter } from '@/components/modal'
 import { LOCALES, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
+import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
 import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
@@ -393,7 +394,7 @@ function Header() {
         label: 'More',
         active: pathname.includes('/analytics') || pathname.includes('/protocols'),
         sub:
-          networkId === ChainId.BSC
+          networkId === ChainId.BSC || networkId === CHAIN_ID.TEST_BSC
             ? [
                 {
                   heading: t('Analytics'),

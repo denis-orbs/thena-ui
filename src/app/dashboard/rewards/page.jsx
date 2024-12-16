@@ -12,7 +12,7 @@ import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
 import Selection from '@/components/selection'
 import { Paragraph } from '@/components/typography'
 import { rewardsContext } from '@/context/rewardsContext'
-import { fetchVeTHEFromId, useVeTHEsContext } from '@/context/veTHEsContext'
+import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import usePrices from '@/hooks/usePrices'
 import { useClaimAll } from '@/hooks/useVeThe'
@@ -55,14 +55,10 @@ export default function RewardsPage() {
       refreshInterval: 0,
     },
   )
-  const { data: approvedInfo } = useSWR(
-    account && isApproved && networkId === ChainId.BSC ? ['vethes/approved api', debouncedId, networkId] : null,
-    () => fetchVeTHEFromId(debouncedId, networkId),
-  )
   const veTHE = useMemo(() => {
-    const list = [...veTHEs, approvedInfo]
+    const list = [...veTHEs]
     return veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
-  }, [veTHEs, veTHEId, approvedInfo])
+  }, [veTHEs, veTHEId])
 
   const currentRewards = useMemo(() => [...filteredVeTHEs, ...veRewards], [filteredVeTHEs, veRewards])
 

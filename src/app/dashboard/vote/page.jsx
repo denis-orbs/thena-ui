@@ -19,7 +19,7 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { fetchVeTHEFromId, useVeTHEsContext } from '@/context/veTHEsContext'
+import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useEpochTimer, useVoteEmissions } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
@@ -114,10 +114,6 @@ export default function VotePage() {
       refreshInterval: 0,
     },
   )
-  const { data: approvedInfo } = useSWR(
-    account && isApproved && networkId === ChainId.BSC ? ['vethes/approved api', debouncedId, networkId] : null,
-    () => fetchVeTHEFromId(debouncedId, networkId),
-  )
 
   useEffect(() => {
     if (isApproved) {
@@ -126,9 +122,9 @@ export default function VotePage() {
   }, [isApproved, approvedId])
 
   const veTHE = useMemo(() => {
-    const list = [...veTHEs, approvedInfo]
+    const list = [...veTHEs]
     return veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
-  }, [veTHEs, veTHEId, approvedInfo])
+  }, [veTHEs, veTHEId])
 
   const totalPercent = useMemo(
     () => Object.values(percent).reduce((sum, current) => sum + (!current || current === '' ? 0 : Number(current)), 0),
