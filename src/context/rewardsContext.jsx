@@ -44,12 +44,17 @@ const V3_GET_USER_REWARDS = gql`
     userRewards(where: { user: $user }) {
       id
       lastUpdate
-      pool
+      pool {
+        votingIncentive
+        createdAt
+        gauge
+        id
+        isActive
+      }
       rewardAmount
       rewardToken
       tokenId
       user
-      votingIncentives
     }
   }
 `
@@ -59,7 +64,18 @@ const fetchUserRewards = async userId => {
     const { userRewards } = await v3ClientSubGraph.request(V3_GET_USER_REWARDS, {
       user: userId,
     })
-    return userRewards
+
+    const flattenedRewards = (userRewards || []).map(reward => ({
+      id: reward.id,
+      lastUpdate: reward.lastUpdate,
+      pool: reward.pool,
+      rewardAmount: reward.rewardAmount,
+      rewardToken: reward.rewardToken,
+      tokenId: reward.tokenId,
+      user: reward.user,
+      votingIncentives: reward.pool?.votingIncentives || null,
+    }))
+    return flattenedRewards
   } catch (e) {
     console.error(e)
     return []

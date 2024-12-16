@@ -387,7 +387,7 @@ export default function VotePage() {
       const totalBribe = userPools.reduce((sum, cur) => sum.plus(cur.gauge.bribeUsd), new BigNumber(0))
       const totalWeight = userPools.reduce((sum, cur) => sum.plus(cur.gauge.weight), new BigNumber(0))
       const totalVoteUsd = totalWeight.times(prices.THE)
-      return totalVoteUsd.isZero() ? 0 : totalBribe.times(52).div(totalVoteUsd).times(100)
+      return totalVoteUsd.isZero() || totalVoteUsd.isNaN() ? 0 : totalBribe.times(52).div(totalVoteUsd).times(100)
     }
     return new BigNumber(0)
   }, [userPools, prices])
