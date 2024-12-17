@@ -204,6 +204,8 @@ export default function PoolsPage() {
               <TextHeading>{pool.symbol}</TextHeading>
               <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
             </div>
+
+            {/* BEGIN Special pools */}
             {pool.address === weETHPoolAddress && (
               <div className='flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id='etherBadgeIcon'>
@@ -290,7 +292,6 @@ export default function PoolsPage() {
                 </div>
               </>
             )}
-
             {pool.address === BTCBmBTCAddress && (
               <>
                 <div className='flex items-center gap-2'>
@@ -314,7 +315,9 @@ export default function PoolsPage() {
                 </div>
               </>
             )}
+            {/* END Special pools */}
 
+            {/* Warning pools */}
             {(pool.token0.isWarning || pool.token1.isWarning) && (
               <>
                 <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
