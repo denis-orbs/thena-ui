@@ -91,7 +91,6 @@ export default function SwapBest({
     data: lhQuote,
     isLoading: lhQuotePending,
     refetch: refetchLHQuote,
-    getLatestQuote: getLatestLhQuote,
   } = liquidityHub.useQuoteQuery({ fromAsset, toAsset, fromAmount, bestTrade })
   const getBetterPrice = liquidityHub.useGetBetterPrice(refetchLHQuote)
   const quotePending = isLHToken ? bestTradePending || lhQuotePending : bestTradePending
@@ -190,11 +189,12 @@ export default function SwapBest({
     setIsLhTrade(!!quote)
     if (quote) {
       onLHSwap({
-        bestTrade,
+        getBestTrade: () => bestTrade,
         fromAsset,
         toAsset,
+        quote,
         fromAmount,
-        getLatestLhQuote,
+        refetchLHQuote,
         onFailure: () => {
           if (!isLHToken) {
             setSkipLiquidityHub(true)
@@ -217,7 +217,6 @@ export default function SwapBest({
     fromAmount,
     fromAsset,
     getBetterPrice,
-    getLatestLhQuote,
     handleTaxTokenSwap,
     isLHToken,
     mutateAssets,
@@ -227,6 +226,7 @@ export default function SwapBest({
     slippage,
     toAmount,
     toAsset,
+    refetchLHQuote,
   ])
 
   const btnMsg = useMemo(() => {
