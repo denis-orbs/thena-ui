@@ -281,7 +281,7 @@ export default function PoolsPage() {
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
                       alt='Quaaloop'
-                      src='/images/quaaloop.svg'
+                      src='/images/quaaloop.png'
                     />
                   </div>
                   <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
