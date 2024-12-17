@@ -7,7 +7,7 @@ import { maxUint256, parseUnits, zeroAddress } from 'viem'
 import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
-import { readCall } from '@/lib/contractActions'
+import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getFarmingCenterContract,
@@ -134,8 +134,9 @@ export const useAlgebraAdd = (version = 3) => {
           createPool: noLiquidity,
           version: 3,
         })
-        const addTxRecieve = await sendTxn(key, addLiquidityId, positionManger.address, calldata, value)
 
+        const txHash = await sendTxn(key, addLiquidityId, positionManger.address, calldata, value)
+        const addTxRecieve = await waitCall(txHash)
         if (!addTxRecieve) {
           setPending(false)
           return
@@ -286,12 +287,12 @@ export const useAlgebraEnterFarming = () => {
 
       if (isNotAppproved) {
         // MARK: APPROVE LP TOKEN FOR FAIMING
-        const approveRecive = await writeTxn(key, approveId, positionManger, 'approveForFarming', [
+        const txHash = await writeTxn(key, approveId, positionManger, 'approveForFarming', [
           tokenId,
           true,
           farmingCenter.address,
         ])
-        if (!approveRecive) {
+        if (!txHash) {
           setPending(false)
           return
         }
@@ -299,8 +300,8 @@ export const useAlgebraEnterFarming = () => {
 
       // MARK: STAKE LP TOKEN FOR FAIMING
       const poolKey = await readCall(incentiveMaker, 'poolToKey', [poolAddress], chainId)
-      const stakeRecive = await writeTxn(key, stakeId, farmingCenter, 'enterFarming', [poolKey, tokenId])
-      if (!stakeRecive) {
+      const txHash = await writeTxn(key, stakeId, farmingCenter, 'enterFarming', [poolKey, tokenId])
+      if (!txHash) {
         setPending(false)
         return
       }
@@ -340,8 +341,8 @@ export const useAlgebraExitFarming = () => {
       })
 
       const farmingCenter = getFarmingCenterContract(chainId)
-      const receive = await writeTxn(key, exitId, farmingCenter, 'exitFarming', [poolkey, tokenId])
-      if (!receive) {
+      const txHash = await writeTxn(key, exitId, farmingCenter, 'exitFarming', [poolkey, tokenId])
+      if (!txHash) {
         setPending(false)
         return
       }
@@ -710,7 +711,8 @@ export const useAlgebraMigration = () => {
         version: 3,
       })
 
-      const addTxRecieve = await sendTxn(key, addId, nftPositionV3, addCallData, addValue)
+      const txHash = await sendTxn(key, addId, nftPositionV3, addCallData, addValue)
+      const addTxRecieve = await waitCall(txHash)
       if (!addTxRecieve) {
         setPending(false)
         return

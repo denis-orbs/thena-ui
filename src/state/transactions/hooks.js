@@ -55,26 +55,49 @@ export const useTxn = () => {
   const writeTxn = useCallback(
     async (key, uuid, contract, method, params = [], msgValue = '0') => {
       let hash
-      updateTxn({ key, uuid, status: TXN_STATUS.WAITING })
-
+      updateTxn({
+        key,
+        uuid,
+        status: TXN_STATUS.WAITING,
+      })
       try {
         hash = await writeCall(contract, method, params, msgValue, networkId)
-        updateTxn({ key, uuid, hash, status: TXN_STATUS.PENDING })
+        updateTxn({
+          key,
+          uuid,
+          status: TXN_STATUS.PENDING,
+          hash,
+        })
         const txnReceipt = await waitCall(hash)
-        updateTxn({ key, uuid, status: TXN_STATUS.SUCCESS, hash })
+        updateTxn({
+          key,
+          uuid,
+          status: TXN_STATUS.SUCCESS,
+          hash,
+        })
         successToast('Transaction confirmed', hash, networkId)
-
-        return txnReceipt
+        console.log('txnReceipt :>> ', txnReceipt)
+        return hash
       } catch (error) {
         console.log(error)
         console.log(error?.shortMessage)
         if (error && error.name === 'TransactionReceiptNotFoundError') {
           // Fix case if RPC error -> still shows tx
-          updateTxn({ key, uuid, status: TXN_STATUS.SUCCESS, hash })
+          updateTxn({
+            key,
+            uuid,
+            status: TXN_STATUS.SUCCESS,
+            hash,
+          })
           successToast('Transaction confirmed', hash, networkId)
           return true
         }
-        updateTxn({ key, uuid, hash, status: TXN_STATUS.FAILED })
+        updateTxn({
+          key,
+          uuid,
+          status: TXN_STATUS.FAILED,
+          hash,
+        })
         errorToast('Error', error.shortMessage)
         const userWantsToRetry = await askUserToRetry({ key, uuid, contract, method, params, msgValue })
         if (userWantsToRetry) {
@@ -89,26 +112,49 @@ export const useTxn = () => {
   const sendTxn = useCallback(
     async (key, uuid, to, data, value = '0') => {
       let hash
-      updateTxn({ key, uuid, status: TXN_STATUS.WAITING })
-
+      updateTxn({
+        key,
+        uuid,
+        status: TXN_STATUS.WAITING,
+      })
       try {
         hash = await sendCall(to, data, value, networkId)
-        updateTxn({ key, uuid, status: TXN_STATUS.PENDING, hash })
+        updateTxn({
+          key,
+          uuid,
+          status: TXN_STATUS.PENDING,
+          hash,
+        })
         const txnReceipt = await waitCall(hash)
-        updateTxn({ key, uuid, status: TXN_STATUS.SUCCESS, hash })
-
+        updateTxn({
+          key,
+          uuid,
+          status: TXN_STATUS.SUCCESS,
+          hash,
+        })
         successToast('Transaction confirmed', hash, networkId)
-        return txnReceipt
+        console.log('txnReceipt :>> ', txnReceipt)
+        return hash
       } catch (error) {
         console.debug({ error, to, data })
 
         if (error && error.name === 'TransactionReceiptNotFoundError') {
           // Fix case if RPC error -> still shows tx
-          updateTxn({ key, uuid, status: TXN_STATUS.SUCCESS, hash })
+          updateTxn({
+            key,
+            uuid,
+            status: TXN_STATUS.SUCCESS,
+            hash,
+          })
           successToast('Transaction confirmed', hash, networkId)
-          return true
+          return hash
         }
-        updateTxn({ key, uuid, status: TXN_STATUS.FAILED, hash })
+        updateTxn({
+          key,
+          uuid,
+          status: TXN_STATUS.FAILED,
+          hash,
+        })
         errorToast('Error', error.shortMessage)
         return false
       }
