@@ -1,10 +1,11 @@
 import { ADDRESS_ZERO, Position, toHex } from 'thena-fusion-sdk'
 import { CurrencyAmount, JSBI, validateAndParseAddress } from 'thena-sdk-core'
 import invariant from 'tiny-invariant'
-import { encodeFunctionData, zeroAddress } from 'viem'
+import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress } from 'viem'
 
 import { ZERO_ADDRESS } from '@/constant'
 import { algebraAbiV2, algebraAbiV3 } from '@/constant/abi/fusion'
+import { getPositionManagerContract } from '@/lib/contracts'
 
 import { SelfPermit } from './selfPermit'
 
@@ -41,11 +42,27 @@ export class NonfungiblePositionManager extends SelfPermit {
     }
   }
 
+  static getMintedPosition(addTxRecieve, chainId) {
+    const PM_CONTRACT = getPositionManagerContract(chainId, 3)
+    const functionSignature = 'IncreaseLiquidity(uint256,uint128,uint128,uint256,uint256,address)'
+    const targetTopic = keccak256(new TextEncoder().encode(functionSignature))
+
+    const mintedEvent = addTxRecieve.logs?.find(
+      e => getAddress(e.address) === getAddress(PM_CONTRACT.address) && e.topics[0] === targetTopic,
+    )
+
+    return decodeEventLog({
+      abi: PM_CONTRACT.abi,
+      data: mintedEvent.data,
+      topics: mintedEvent.topics,
+    })
+  }
+
   static addCallParameters(position, options) {
     invariant(JSBI.greaterThan(position.liquidity, ZERO), 'ZERO_LIQUIDITY')
 
     const calldatas = []
-    const { version } = options
+    const { version = 3 } = options
 
     // get amounts
     const { amount0: amount0Desired, amount1: amount1Desired } = position.mintAmounts

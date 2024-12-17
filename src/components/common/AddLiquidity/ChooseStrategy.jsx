@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
+import { zeroAddress } from 'viem'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -18,6 +19,7 @@ import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
+import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
@@ -35,7 +37,7 @@ import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const feeAmount = 3000
 
-const strategiesManual = [
+export const strategiesManual = [
   {
     type: 'manual',
     title: 'Swap Fees',
@@ -43,10 +45,13 @@ const strategiesManual = [
     min: 100,
     max: 150,
   },
+]
+
+export const incentiveActive = [
   {
     type: 'manual',
     title: '$THE Emissions',
-    address: 'manual-the-emission',
+    address: zeroAddress,
     min: 100,
     max: 150,
   },
@@ -143,21 +148,17 @@ export default function ChooseStrategy({
       refreshInterval: 0,
     },
   )
-  const baseCurrency = useCurrency(firstAsset ? firstAsset.address : undefined)
-  const quoteCurrency = useCurrency(secondAsset ? secondAsset.address : undefined)
-  const mintInfo = useV3DerivedMintInfo(
-    baseCurrency ?? undefined,
-    quoteCurrency ?? undefined,
-    feeAmount,
-    baseCurrency ?? undefined,
-    undefined,
-  )
+  const baseCurrency = useCurrency(firstAsset?.address)
+  const quoteCurrency = useCurrency(secondAsset?.address)
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined, 3)
 
   const { data: pairPrices = [], error } = useFetchPairPrices({
     token0Address: wrappedAddress(pair?.token0),
     token1Address: wrappedAddress(pair?.token1),
     timeWindow,
   })
+
+  const { incentiveAddress } = usePoolAlgebraInfo(firstAsset?.address, secondAsset?.address)
 
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onStartPriceInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
@@ -254,31 +255,34 @@ export default function ChooseStrategy({
       },
     }))
 
-    const manualStrategy = strategiesManual.map((item, index) => ({
-      content: (
-        <div className='flex flex-1 items-center justify-between'>
-          <div>
-            <TextHeading>Manual {index === 1 ? '(Swap Fees)' : '($THE Emissions)'}</TextHeading>
-            <div className='mt-1 flex gap-2'>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                <Paragraph className='text-sm'>TODO%</Paragraph>
-              </div>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                <Paragraph className='text-sm'>$TODO</Paragraph>
+    // TODO: add manual strategy
+    const manualStrategy = strategiesManual
+      .concat(incentiveAddress !== zeroAddress ? incentiveActive : [])
+      .map(item => ({
+        content: (
+          <div className='flex flex-1 items-center justify-between'>
+            <div>
+              <TextHeading>Manual ({item?.title})</TextHeading>
+              <div className='mt-1 flex gap-2'>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
+                  <Paragraph className='text-sm'>TODO%</Paragraph>
+                </div>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
+                  <Paragraph className='text-sm'>$TODO</Paragraph>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ),
-      active: strategy?.address === item.address,
-      onClickHandler: () => {
-        setStrategy(item)
-      },
-    }))
+        ),
+        active: strategy?.address === item.address,
+        onClickHandler: () => {
+          setStrategy(item)
+        },
+      }))
     return [...autoStrategy, ...manualStrategy]
-  }, [pair, t, strategy?.address, setStrategy])
+  }, [pair.subpools, incentiveAddress, t, strategy?.address, setStrategy])
 
   // const autoSelections = useMemo(
   //   () => [
@@ -363,7 +367,7 @@ export default function ChooseStrategy({
   )
 
   useEffect(() => {
-    if (strategy?.address === 'manual-swap-fees' || strategy?.address === 'manual-the-emission') {
+    if (strategy?.address === strategiesManual[0].address || strategy?.address === incentiveActive[0].address) {
       setIsAutomatic(false)
       dispatch(updateStrategy({ strategy }))
       // dispatch(updateSelectedPreset({ preset: null }))
@@ -502,6 +506,7 @@ export default function ChooseStrategy({
                 </div>
               )}
             </div>
+
             {isAutomatic && (
               <>
                 {!mintInfo.noLiquidity && strategyData && (
@@ -563,6 +568,7 @@ export default function ChooseStrategy({
               </>
             )}
           </div>
+
           {!isAutomatic && (
             <ManualStrategy
               firstAsset={firstAsset}

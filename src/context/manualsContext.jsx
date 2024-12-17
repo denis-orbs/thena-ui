@@ -1,20 +1,21 @@
 import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
+import { zeroAddress } from 'viem'
 
-import { algebraAbiV2, algebraAbiV3 } from '@/constant/abi/fusion'
+import { algebraAbiV2 } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import useWallet from '@/hooks/useWallet'
 import { callMulti, readCall } from '@/lib/contractActions'
-import { getNonfungiblePositionManagerContractV2, getNonfungiblePositionManagerContractV3 } from '@/lib/contracts'
+import { getPositionManagerContract } from '@/lib/contracts'
 import { getTokenInfo } from '@/lib/helper'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const initialState = []
 
 const fetchManualV2Info = async (account, chainId) => {
-  const npmContract = getNonfungiblePositionManagerContractV2(chainId)
+  const npmContract = getPositionManagerContract(chainId, 2)
   const balance = await readCall(npmContract, 'balanceOf', [account], chainId)
   const address = Contracts.nonfungiblePositionManagerV2[chainId]
 
@@ -54,11 +55,11 @@ const fetchManualV2Info = async (account, chainId) => {
 }
 
 const fetchManualV3Info = async (account, chainId) => {
-  const address = Contracts.nonfungiblePositionManagerV3[chainId]
-  const npmContract = getNonfungiblePositionManagerContractV3(chainId)
-  const balance = await readCall(npmContract, 'balanceOf', [account], chainId)
+  const positionManagerContract = getPositionManagerContract(chainId, 3)
 
+  const balance = await readCall(positionManagerContract, 'balanceOf', [account], chainId)
   if (!balance) return []
+
   const tokenRequests = []
   for (let i = 0; i < balance; i++) {
     tokenRequests.push(i)
@@ -66,17 +67,25 @@ const fetchManualV3Info = async (account, chainId) => {
 
   const tokenIds = await callMulti(
     tokenRequests.map(id => ({
-      address,
-      abi: algebraAbiV3,
+      ...positionManagerContract,
       functionName: 'tokenOfOwnerByIndex',
       args: [account, id],
       chainId,
     })),
   )
+
+  const farmingAddresses = await callMulti(
+    tokenIds.map(id => ({
+      ...positionManagerContract,
+      functionName: 'tokenFarmedIn',
+      args: [id],
+      chainId,
+    })),
+  )
+
   const positions = await callMulti(
     tokenIds.map(id => ({
-      address,
-      abi: algebraAbiV3,
+      ...positionManagerContract,
       functionName: 'positions',
       args: [id],
       chainId,
@@ -100,11 +109,13 @@ const fetchManualV3Info = async (account, chainId) => {
   return positions.map((ele, idx) => ({
     version: 3,
     tokenId: Number(tokenIds[idx]),
+    isFarming: farmingAddresses[idx] !== zeroAddress,
     token0Address: ele[2],
     token1Address: ele[3],
     tickLower: Number(ele[5]),
     tickUpper: Number(ele[6]),
     liquidity: ele[7],
+    deployer: ele[4],
   }))
 }
 

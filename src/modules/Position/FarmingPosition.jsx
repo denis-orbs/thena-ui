@@ -1,27 +1,23 @@
 import BigNumber from 'bignumber.js'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useContext, useMemo, useState } from 'react'
-import useSWR from 'swr'
+import { useContext, useMemo, useState } from 'react'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { maxUint128, zeroAddress } from 'viem'
+import { useReadContract, useSimulateContract } from 'wagmi'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
-import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
+import { useAlgebraBurn, useAlgebraExitFarming } from '@/hooks/fusion/useAlgebra'
 import { useFusionState } from '@/hooks/fusion/useFusions'
-import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
-import { simulateCall } from '@/lib/contractActions'
-import { getAlgebraNPMContract } from '@/lib/contracts'
+import { getAlgebraFactoryContract, getFarmingCenterContract, getInsentiveContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
@@ -32,52 +28,56 @@ import AddManualModal from './AddManualModal'
 import ClaimModal from './ClaimModal'
 import RemoveManualModal from './RemoveManualModal'
 
-export const fetchManualInfo = async (account, tokenId, chainId) => {
-  const algebraContract = getAlgebraNPMContract(chainId)
-  const balance = await simulateCall(
-    algebraContract,
-    'collect',
-    [
-      {
-        tokenId,
-        recipient: account, // some tokens might fail if transferred to address(0)
-        amount0Max: maxUint128,
-        amount1Max: maxUint128,
-      },
-    ],
-    chainId,
-  )
-  return balance
-}
-
-export default function ManualPosition({ pool }) {
+export function FarmingPosition({ pool }) {
   const t = useTranslations()
+  const { chainId } = useWallet()
   const { mutateManual } = useContext(ManualsContext)
-  const { account, chainId } = useWallet()
-  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = pool
+  const incentiveMaker = getInsentiveContract(chainId)
+  const farmingCenter = getFarmingCenterContract(chainId)
+  const algebraFactory = getAlgebraFactoryContract(chainId)
 
   const [claimPopup, setClaimPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
-  const [reversePrice, setReversePrice] = useState(false)
 
-  // MARK: fetch data from ABI and CONTRACT
-  const { data: fees, mutate } = useSWR(
-    account && tokenId ? ['manuals/fee', tokenId, account, chainId] : null,
-    () => fetchManualInfo(account, tokenId, chainId),
-    {
-      refreshInterval: 60000,
-    },
-  )
-
-  const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
-  const { pending, onAlgebraBurn } = useAlgebraBurn()
-
-  const { poolAddress, incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
-
+  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId } = pool
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
-  const [fusionState, fusion] = useFusionState(currency0, currency1, version)
+
+  // CALL APIs & SMART CONTRACTS
+  const { onAlgebraBurn, pending } = useAlgebraBurn()
+  const { onExitFarming, pending: isRemoveFarmLoading } = useAlgebraExitFarming()
+
+  const { data: poolAddress } = useReadContract({
+    ...algebraFactory,
+    functionName: 'computePoolAddress',
+    args: [asset0?.address, asset1?.address],
+    query: {
+      enabled: !!asset0 && !!asset1,
+      staleTime: Infinity,
+    },
+  })
+
+  const { data: key } = useReadContract({
+    ...incentiveMaker,
+    functionName: 'poolToKey',
+    args: [poolAddress],
+    query: {
+      enabled: !!poolAddress,
+      staleTime: Infinity,
+    },
+  })
+
+  const { data: rewards } = useSimulateContract({
+    ...farmingCenter,
+    functionName: 'collectRewards',
+    args: [key, pool?.tokenId],
+    query: {
+      enabled: !!key && !!pool?.tokenId,
+    },
+  })
+  const fees = rewards?.result
+
   const tickAtLimit = useMemo(
     () => ({
       [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
@@ -85,6 +85,7 @@ export default function ManualPosition({ pool }) {
     }),
     [tickLower, tickUpper],
   )
+  const [fusionState, fusion] = useFusionState(currency0, currency1)
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
   const [, _fusion] = useMemo(() => {
@@ -138,6 +139,8 @@ export default function ManualPosition({ pool }) {
     [amount0InUsd, amount1InUsd],
   )
 
+  const [reversePrice, setReversePrice] = useState(false)
+
   const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
 
   return (
@@ -155,10 +158,13 @@ export default function ManualPosition({ pool }) {
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </TextHeading>
             <Paragraph className='text-xs'>
-              #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
+              #{pool.tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
             </Paragraph>
           </div>
         </div>
+
+        <GreenBadge>Farming</GreenBadge>
+
         {!Number(liquidity) ? (
           <YellowBadge>{t('Closed')}</YellowBadge>
         ) : outOfRange ? (
@@ -197,7 +203,7 @@ export default function ManualPosition({ pool }) {
           <Paragraph className='text-sm'>{t('Claimable Fees')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
-            {feesInUsd.gt(0) && <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />}
+            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />
             <CustomTooltip id={`net-${tokenId}`}>
               {fees && <p>{`${formatAmount(fromWei(fees[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>}
               {fees && <p>{`${formatAmount(fromWei(fees[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>}
@@ -267,56 +273,51 @@ export default function ManualPosition({ pool }) {
       </div>
 
       <div id='BUTTONS_GROUP' className='flex w-full gap-3'>
-        {version === 3 && (
-          <TextButton className='w-full' disabled={!fees || feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
-            {t('Claim')}
-          </TextButton>
-        )}
+        <TextButton className='w-full' disabled={!fees || feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
+          {t('Claim')}
+        </TextButton>
 
-        <EmphasisButton
+        <TextButton
           className={cn('w-full', {
-            hidden: pool?.isFarming || incentiveAddress === zeroAddress || pool?.deployer !== zeroAddress,
+            hidden: !pool?.isFarming,
           })}
-          disabled={pool?.isFarming || isEnterFarmLoading}
-          onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
+          disabled={!pool?.isFarming || isRemoveFarmLoading}
+          onClick={() => onExitFarming({ poolkey: key, tokenId }, () => mutateManual())}
         >
-          {t('Stake')}
+          {t('Unstake')}
+        </TextButton>
+
+        <OutlinedButton
+          className={cn('block w-full', {
+            hidden: pool?.isFarming || Number(liquidity) <= 0,
+          })}
+          onClick={() => setRemovePopup(true)}
+        >
+          {t('Remove')}
+        </OutlinedButton>
+
+        <OutlinedButton
+          className={cn('block w-full', {
+            hidden: pool?.isFarming || Number(liquidity) > 0,
+          })}
+          onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
+          disabled={pending}
+        >
+          {t('Burn')}
+        </OutlinedButton>
+
+        <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
+          {t('Add')}
         </EmphasisButton>
-
-        {Number(liquidity) > 0 ? (
-          <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
-            {t('Remove')}
-          </OutlinedButton>
-        ) : (
-          <OutlinedButton
-            className='w-full'
-            onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
-            disabled={pending}
-          >
-            {t('Burn')}
-          </OutlinedButton>
-        )}
-
-        {version === 3 && (
-          <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
-            {t('Add')}
-          </EmphasisButton>
-        )}
-
-        {version === 2 && Number(liquidity) > 0 && (
-          <Link href={`/pools/migration?tokenId=${tokenId}`} className='w-full'>
-            <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
-          </Link>
-        )}
       </div>
 
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}
-        pool={pool}
+        pool={{ ...pool, key }}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
-        mutate={mutate}
+        mutate={() => {}}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
       />

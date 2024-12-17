@@ -13,9 +13,11 @@ export function getFromSessionStorage(key) {
 }
 
 export const getTokenInfo = ({ tokenAddress, assets, customAssets }) => {
-  let token = assets.find(item => item.address.toLowerCase() === tokenAddress?.toLowerCase())
+  if (!tokenAddress) return undefined
+
+  let token = assets.find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
   if (!token) {
-    token = customAssets.find(item => item.address.toLowerCase() === tokenAddress?.toLowerCase())
+    token = customAssets.find(item => item.address.toLowerCase() === tokenAddress.toLowerCase())
     if (token) {
       token.isWarning = true
     }

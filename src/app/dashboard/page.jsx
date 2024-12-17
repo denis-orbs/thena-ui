@@ -25,6 +25,7 @@ import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useGuageAllHarvset } from '@/hooks/useGauge'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount } from '@/lib/utils'
+import { FarmingPosition } from '@/modules/Position/FarmingPosition'
 import ManualPosition from '@/modules/Position/ManualPosition'
 import NotStaked from '@/modules/Position/NotStaked'
 import Staked from '@/modules/Position/Staked'
@@ -220,11 +221,18 @@ export default function HoldingsPage() {
                 />
               </div>
             </div>
+
             {userPools.length > 0 || userManuals.length > 0 ? (
               <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
                 {filteredPools.map((pool, idx) =>
                   pool.type === 'Manual' ? (
-                    <ManualPosition position={pool} key={`pool-${idx}`} />
+                    <React.Fragment key={`pool-${idx}`}>
+                      {pool.isFarming ? (
+                        <FarmingPosition pool={pool} key={`pool-${idx}`} />
+                      ) : (
+                        <ManualPosition pool={pool} key={`pool-${idx}`} />
+                      )}
+                    </React.Fragment>
                   ) : (
                     <React.Fragment key={`pool-${idx}`}>
                       {pool.account.gaugeBalance.gt(0) && <Staked pool={pool} />}
