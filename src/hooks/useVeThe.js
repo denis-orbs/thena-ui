@@ -415,51 +415,58 @@ export const useWithdrawLock = () => {
 
   const onWithdrawLock = useCallback(
     async (veThe, callback) => {
-      const key = uuidv4()
-      const resetuuid = uuidv4()
-      const withdrawuuid = uuidv4()
-      startTxn({
-        key,
-        title: t('Withdraw veTHE [id]', { id: veThe.id }),
-        transactions: {
-          ...(veThe.voted && {
-            [resetuuid]: {
-              desc: t('Reset Votes'),
+      try {
+        const key = uuidv4()
+        const resetuuid = uuidv4()
+        const withdrawuuid = uuidv4()
+        startTxn({
+          key,
+          title: t('Withdraw veTHE [id]', { id: veThe.id }),
+          transactions: {
+            ...(veThe.voted && {
+              [resetuuid]: {
+                desc: t('Reset Votes'),
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
+            [withdrawuuid]: {
+              desc: t('Withdraw veTHE [id]', { id: veThe.id }),
               status: TXN_STATUS.START,
               hash: null,
             },
-          }),
-          [withdrawuuid]: {
-            desc: t('Withdraw veTHE [id]', { id: veThe.id }),
-            status: TXN_STATUS.START,
-            hash: null,
           },
-        },
-      })
+        })
 
-      setPending(true)
+        setPending(true)
 
-      const params = [veThe.id]
-      if (veThe.voted) {
-        const voterContract = getVoterContract(chainId)
-        if (!(await writeTxn(key, resetuuid, voterContract, 'reset', params))) {
+        const params = [veThe.id]
+        if (veThe.voted) {
+          const voterContract = getVoterContract(chainId)
+          if (!(await writeTxn(key, resetuuid, voterContract, 'reset', params))) {
+            setPending(false)
+            return
+          }
+        }
+
+        const veTHEContract = getVeTHEContract(chainId)
+        if (!(await writeTxn(key, withdrawuuid, veTHEContract, 'withdraw', params))) {
           setPending(false)
           return
         }
-      }
 
-      const veTHEContract = getVeTHEContract(chainId)
-      if (!(await writeTxn(key, withdrawuuid, veTHEContract, 'withdraw', params))) {
+        endTxn({
+          key,
+          final: 'Withdraw Successful',
+        })
         setPending(false)
+        callback()
+      } catch (error) {
+        console.error(error)
         return
+      } finally {
+        setPending(false)
       }
-
-      endTxn({
-        key,
-        final: 'Withdraw Successful',
-      })
-      setPending(false)
-      callback()
     },
     [startTxn, endTxn, writeTxn, chainId, t],
   )
