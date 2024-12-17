@@ -275,10 +275,7 @@ export const useJoinTC = () => {
         const approveFeeuuid = uuidv4()
         const allowance = await readCall(tokens[address].contract, 'allowance', [account, data.tcAddress])
 
-        const isApprovedFee = fromWei(allowance, tokens[address].decimals).gte(
-          tokens[address].amount,
-          tokens[address].decimals,
-        )
+        const isApprovedFee = fromWei(allowance, tokens[address].decimals).gte(tokens[address].amount)
 
         if (!isApprovedFee) {
           tokens[address].id = approveFeeuuid

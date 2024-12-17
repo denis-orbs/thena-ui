@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react'
+import React, { createContext, useContext, useMemo, useRef } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
 
@@ -63,12 +63,13 @@ const usePairs = () => {
   const customAssets = useCustomAssets()
   const pools = usePools()
   const vaults = useVaults()
+  const prevPair = useRef([])
 
   return useMemo(() => {
     const { data, isLoading } = pairs[networkId]
     if (!assets.length || !pools.length || !data) {
       return {
-        pairs: [],
+        pairs: prevPair.current,
         isLoading,
       }
     }
@@ -125,6 +126,9 @@ const usePairs = () => {
           subpools,
         }
       })
+
+    prevPair.current = result
+
     return {
       pairs: result,
       isLoading,
