@@ -348,7 +348,7 @@ function TitleEpoch({ epoch, open }) {
                     <p key={`${reward.address}-total-${index}`}>
                       {reward?.amount > 0 ? (
                         <>
-                          ${formatAmount(reward?.amount)} ${reward?.symbol || 'UNKNOWN'}
+                          {formatAmount(reward?.amount)} {reward?.symbol || 'UNKNOWN'}
                         </>
                       ) : (
                         <></>
@@ -408,9 +408,9 @@ function VotingHistory() {
     }
   }, [epochVotingHistory?.data])
 
-  const toggleCollapse = index => {
+  const toggleCollapse = useCallback(index => {
     setIsOpenArray(prevState => prevState.map((isOpen, i) => (i === index ? !isOpen : false)))
-  }
+  }, [])
 
   if (isLoading) {
     return (
@@ -462,7 +462,7 @@ function VotingHistory() {
           classNames={{ chevron: 'mr-6 max-lg:hidden' }}
         >
           <div className='border-t border-t-neutral-700 bg-neutral-950 p-3 lg:p-6'>
-            <VotingHistoryTable userVotes={epoch} />
+            {isOpenArray[index] && <VotingHistoryTable userVotes={epoch} />}
           </div>
         </Collapse>
       ))}

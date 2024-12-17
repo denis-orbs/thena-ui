@@ -21,17 +21,20 @@ const sortOptions = [
     label: 'Pair',
     value: 'pairMobile',
     width: 'lg:w-[30%] lg:hidden',
+    disabled: true,
   },
   {
     label: 'veTHE ID',
     value: 'veTHEId',
     width: 'lg:w-[8%]',
     isDesc: true,
+    disabled: true,
   },
   {
     label: 'Pair',
     value: 'pair',
     width: 'lg:w-[27%] max-lg:hidden',
+    disabled: true,
   },
   {
     label: 'APR',
@@ -44,6 +47,7 @@ const sortOptions = [
     value: 'vote',
     width: 'lg:w-[15%]',
     isDesc: true,
+    disabled: true,
   },
   {
     label: 'Vote Time',
@@ -62,7 +66,7 @@ const sortOptions = [
 export default function VotingHistoryTable({ userVotes }) {
   const t = useTranslations()
   const { locale } = useLocaleSettings()
-  const [sort, setSort] = useState(sortOptions[0])
+  const [sort, setSort] = useState(sortOptions[5])
   const [currentPage, setCurrentPage] = useState(1)
   const { pairs } = usePairs()
   const assets = useAssets()
@@ -90,10 +94,45 @@ export default function VotingHistoryTable({ userVotes }) {
             lastUpdate: poolVote.lastUpdate,
             pool: pairData,
             rewards,
+            apr: poolVote.apr,
           }
         }),
       ),
-    [assets, pairs, userVotes.votes],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [assets, JSON.stringify(pairs), userVotes.votes],
+  )
+
+  const calRewardUsd = useCallback(
+    rewards => (rewards || []).reduce((sum, reward) => sum + reward.price * reward.amount, 0),
+    [],
+  )
+
+  const sortedData = useMemo(
+    () =>
+      !groupedVotes
+        ? []
+        : groupedVotes.sort((a, b) => {
+            let res
+            switch (sort.value) {
+              case 'apr':
+                res = (a.apr - b.apr) * (sort.isDesc ? -1 : 1)
+                break
+              case 'voteTime':
+                res = (a.lastUpdate - b.lastUpdate) * (sort.isDesc ? -1 : 1)
+                break
+              case 'rewards':
+                res = (calRewardUsd(a.rewards) - calRewardUsd(b.rewards)) * (sort.isDesc ? -1 : 1)
+                break
+              // case 'projectedPnl':
+              //   res = (a.liquidity - b.liquidity) * (sort.isDesc ? -1 : 1)
+              //   break
+
+              default:
+                break
+            }
+            return res
+          }),
+    [calRewardUsd, groupedVotes, sort.isDesc, sort.value],
   )
 
   const voteTime = useCallback(
@@ -103,22 +142,14 @@ export default function VotingHistoryTable({ userVotes }) {
       const month = date.toLocaleString(locale === LOCALES.zh ? 'zh-CN' : 'en-US', { month: 'short', timeZone: 'UTC' })
       const day = date.getUTCDate()
       const timeUTC = `${date.toISOString().split('T')[1].split('.')[0]} UTC`
-
       return [`${month} ${day}, ${year}`, timeUTC]
     },
     [locale],
   )
 
-  const calRewardUsd = useCallback(
-    rewards => (rewards || []).reduce((sum, reward) => sum + reward.price * reward.amount, 0),
-    [],
-  )
-
-  console.log({ groupedVotes })
-
   const finalData = useMemo(
     () =>
-      (groupedVotes || []).map(vote => ({
+      (sortedData || []).map(vote => ({
         veTHEId: <span>{`${vote.tokenId}`}</span>,
         pair: (
           <div className='flex flex-row items-center gap-1'>
@@ -177,7 +208,7 @@ export default function VotingHistoryTable({ userVotes }) {
           </div>
         ),
         // apr: <Paragraph>{formatAmount(123.45)}%</Paragraph>,
-        apr: <Paragraph>TODO API</Paragraph>,
+        apr: <Paragraph>{formatAmount(vote.apr)}%</Paragraph>,
 
         vote: (
           <div className='flex flex-col'>
@@ -212,7 +243,7 @@ export default function VotingHistoryTable({ userVotes }) {
                         <p key={`${reward.address}-${index}-my-reward`}>
                           {reward?.amount > 0 ? (
                             <>
-                              ${formatAmount(reward?.amount)} ${reward?.symbol || 'UNKNOWN'}
+                              {formatAmount(reward?.amount)} {reward?.symbol || 'UNKNOWN'}
                             </>
                           ) : (
                             <></>
@@ -228,7 +259,7 @@ export default function VotingHistoryTable({ userVotes }) {
         ),
         className: 'bg-neutral-900',
       })),
-    [calRewardUsd, groupedVotes, voteTime],
+    [calRewardUsd, sortedData, voteTime],
   )
 
   return (

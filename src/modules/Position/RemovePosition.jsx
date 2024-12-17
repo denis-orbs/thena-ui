@@ -17,11 +17,13 @@ import { warnToast } from '@/lib/notify'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
+import SettingSlippageModal from './SettingSlippageModal'
 import PoolTitle from '../PoolTitle'
 
 export default function RemovePosition({ setPopup, strategy, isManage = false }) {
   const [amount, setAmount] = useState('')
   const { deadline } = useSettings()
+  const [slippage, setSlippage] = useState(0.5)
   const { onV1Remove, pending: v1Pending } = useV1Remove()
   const { onGammaRemove, pending: gammaPending } = useGammaRemove()
   const { onIchiRemove, pending: ichiPending } = useIchiRemove()
@@ -60,7 +62,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
       return
     }
     if (['Stable', 'Volatile'].includes(strategy.title)) {
-      onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, callback)
+      onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
       onGammaRemove(strategy, amount, callback)
     } else if (strategy.title === 'ICHI') {
@@ -69,14 +71,15 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
       onDefiedgeRemove(strategy, amount, callback)
     }
   }, [
+    errorMsg,
     strategy,
+    onV1Remove,
     amount,
     deadline,
     firstAmount,
     secondAmount,
-    errorMsg,
+    slippage,
     callback,
-    onV1Remove,
     onGammaRemove,
     onIchiRemove,
     onDefiedgeRemove,
@@ -86,6 +89,9 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
     <>
       <ModalBody>
         {!isManage && <PoolTitle strategy={strategy} />}
+        <div className='flex justify-end'>
+          <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
+        </div>
         <DoubleInput
           title='Amount'
           pair={strategy}

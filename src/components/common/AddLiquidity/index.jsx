@@ -26,6 +26,8 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
   const { getWithExpiry } = useLocalStorage()
   const assets = useAssets()
 
+  const [slippage, setSlippage] = useState(0.5)
+
   useEffect(() => {
     if (!init && pool) {
       init = true
@@ -83,6 +85,8 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
             setSecondAddress={setSecondAddress}
             isModal={isModal}
             isAdd={isAdd}
+            slippage={slippage}
+            setSlippage={setSlippage}
           />
         ))}
       {currentStep === 2 &&
@@ -93,8 +97,8 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
             firstAsset={firstAsset}
             secondAsset={secondAsset}
             isReverse={isReverse}
+            slippage={slippage}
             isModal={isModal}
-            strategy={strategy}
           />
         ))}
     </>

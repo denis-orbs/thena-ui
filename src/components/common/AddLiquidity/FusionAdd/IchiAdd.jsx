@@ -14,14 +14,14 @@ import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
-import { useSettings } from '@/state/settings/hooks'
+import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 
 export default function IchiAdd({ strategy, isAdd, isModal }) {
   const [amount, setAmount] = useState('')
   const { onIchiAddAndStake, pending } = useIchiManage()
   const { account } = useWallet()
   const assets = useAssets()
-  const { slippage } = useSettings()
+  const [slippage, setSlippage] = useState(0.5)
   const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
   const depositToken = assets.find(ele => ele.address.toLowerCase() === strategy.allowed.address)
   const t = useTranslations()
@@ -65,6 +65,9 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
+        <div className='flex justify-end'>
+          <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
+        </div>
         <div className='flex flex-col gap-4'>
           <BalanceInput
             title={t('Asset')}

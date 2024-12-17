@@ -4,6 +4,7 @@ import React, { useMemo } from 'react'
 import Input from '@/components/input'
 import Modal, { ModalBody } from '@/components/modal'
 import Selection from '@/components/selection'
+import { useWindowSize } from '@/hooks/useWindowSize'
 
 const slippageTolerance = [0.1, 0.5, 1]
 function TransactionSettingModal({ isOpen, setIsOpen, slippage, updateSlippage }) {
@@ -21,13 +22,15 @@ function TransactionSettingModal({ isOpen, setIsOpen, slippage, updateSlippage }
     [slippage, updateSlippage],
   )
 
+  const windowSize = useWindowSize()
+
   return (
     <Modal
       isOpen={isOpen}
       closeModal={() => {
         setIsOpen(false)
       }}
-      width={480}
+      width={windowSize.width > 600 ? 480 : windowSize.width * 0.9}
       title='Transaction Settings'
     >
       <ModalBody>

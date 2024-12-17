@@ -17,9 +17,9 @@ import { useAssets } from '@/context/assetsContext'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
+import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
-import { useSettings } from '@/state/settings/hooks'
 import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
 
 import TransactionSettingModal from './TransactionSettingModal'
@@ -28,8 +28,7 @@ const feeAmount = 3000
 export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strategy, showSidebar = true }) {
   const t = useTranslations()
 
-  const { slippage } = useSettings()
-  const [slippageTolerance, setSlippageTolerance] = useState(slippage)
+  const [slippage, setSlippage] = useState(0.5)
   const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
 
   const assets = useAssets()
@@ -136,57 +135,61 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
         {isAutomatic ? (
           <FusionAdd strategy={isAdd ? pair : strategy} isAdd={isAdd} />
         ) : (
-          <div className='space-y-6'>
-            <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
-            {isZapper ? (
-              <ZapperInput asset1={assetA} asset2={assetB} />
-            ) : (
-              <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-            )}
-            <>
-              {Boolean(!mintInfo.noLiquidity) && isAutomatic && (
-                <>
-                  <div className='flex flex-col gap-4'>
-                    <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-                    <div className='flex flex-col gap-3'>
-                      <div className='flex items-center justify-between'>
-                        <Paragraph className='font-medium'>
-                          {unwrappedSymbol(currencyA)} {t('Amount')}
-                        </Paragraph>
-                        <Paragraph>{formatAmount(currencyA.reserve)}</Paragraph>
-                      </div>
-                      <div className='flex items-center justify-between'>
-                        <Paragraph className='font-medium'>
-                          {unwrappedSymbol(currencyB)} {t('Amount')}
-                        </Paragraph>
-                        <Paragraph>{formatAmount(currencyB.reserve)}</Paragraph>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-                    <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-                    <div className='flex flex-col gap-3'>
-                      <div className='flex items-center justify-between'>
-                        <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                        <Paragraph>{formatAmount(pair?.account?.totalLp)} LP</Paragraph>
-                      </div>
-                      <div className='flex items-center justify-between'>
-                        <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                        <Paragraph>{formatAmount(pair?.account?.gaugeBalance)} LP</Paragraph>
-                      </div>
-                    </div>
-                  </div>
-                </>
+          <>
+            <div className='flex justify-end'>
+              <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
+            </div>
+            <div className='space-y-6'>
+              <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
+              {isZapper ? (
+                <ZapperInput asset1={assetA} asset2={assetB} />
+              ) : (
+                <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
               )}
-            </>
-            <ManualAdd
-              baseCurrency={baseCurrency}
-              quoteCurrency={quoteCurrency}
-              mintInfo={mintInfo}
-              slippageCustom={slippageTolerance}
-              strategy={strategy}
-            />
-          </div>
+              <>
+                {Boolean(!mintInfo.noLiquidity) && isAutomatic && (
+                  <>
+                    <div className='flex flex-col gap-4'>
+                      <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
+                      <div className='flex flex-col gap-3'>
+                        <div className='flex items-center justify-between'>
+                          <Paragraph className='font-medium'>
+                            {unwrappedSymbol(currencyA)} {t('Amount')}
+                          </Paragraph>
+                          <Paragraph>{formatAmount(currencyA.reserve)}</Paragraph>
+                        </div>
+                        <div className='flex items-center justify-between'>
+                          <Paragraph className='font-medium'>
+                            {unwrappedSymbol(currencyB)} {t('Amount')}
+                          </Paragraph>
+                          <Paragraph>{formatAmount(currencyB.reserve)}</Paragraph>
+                        </div>
+                      </div>
+                    </div>
+                    <div className='flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+                      <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
+                      <div className='flex flex-col gap-3'>
+                        <div className='flex items-center justify-between'>
+                          <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+                          <Paragraph>{formatAmount(pair?.account?.totalLp)} LP</Paragraph>
+                        </div>
+                        <div className='flex items-center justify-between'>
+                          <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
+                          <Paragraph>{formatAmount(pair?.account?.gaugeBalance)} LP</Paragraph>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </>
+              <ManualAdd
+                baseCurrency={baseCurrency}
+                quoteCurrency={quoteCurrency}
+                mintInfo={mintInfo}
+                slippage={slippage}
+              />
+            </div>
+          </>
         )}
       </Box>
       {showSidebar && (
@@ -231,7 +234,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
               <div className='flex flex-row items-center gap-2'>
                 <PercentIcon className='h-5 w-5 stroke-success-600' />
                 <div className='flex flex-row gap-1'>
-                  <span>{t('slippage applied', { percent: slippageTolerance })}</span>
+                  <span>{t('slippage applied', { percent: slippage })}</span>
                   <span className='!cursor-pointer underline' onClick={() => setOpenTransactionSetting(true)}>
                     {t('Adjust')}
                   </span>
@@ -244,8 +247,8 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
       <TransactionSettingModal
         isOpen={openTransactionSetting}
         setIsOpen={setOpenTransactionSetting}
-        updateSlippage={setSlippageTolerance}
-        slippage={slippageTolerance}
+        updateSlippage={setSlippage}
+        slippage={slippage}
       />
     </div>
   )

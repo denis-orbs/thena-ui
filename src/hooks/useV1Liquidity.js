@@ -14,8 +14,6 @@ import { getERC20Contract, getGaugeContract, getPairContract, getRouterContract 
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
-const overrideSlippage = 1
-
 export const useV1Add = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
@@ -23,7 +21,7 @@ export const useV1Add = () => {
   const t = useTranslations()
 
   const onV1Add = useCallback(
-    async (firstAsset, secondAsset, firstAmount, secondAmount, isStable, deadline, callback) => {
+    async (firstAsset, secondAsset, firstAmount, secondAmount, isStable, deadline, slippage, callback) => {
       const key = uuidv4()
       const approve1uuid = uuidv4()
       const approve2uuid = uuidv4()
@@ -82,7 +80,7 @@ export const useV1Add = () => {
         }
       }
       const routerContract = getRouterContract(chainId)
-      const sendSlippage = new BigNumber(100).minus(overrideSlippage).div(100)
+      const sendSlippage = new BigNumber(100).minus(slippage).div(100)
       const sendAmount0 = toWei(firstAmount, firstAsset.decimals).toFixed(0)
       const sendAmount1 = toWei(secondAmount, secondAsset.decimals).toFixed(0)
       const deadlineVal = `${dayjs()
@@ -159,7 +157,7 @@ export const useV1AddAndStake = () => {
   const t = useTranslations()
 
   const onV1AddAndStake = useCallback(
-    async (pair, firstAsset, secondAsset, firstAmount, secondAmount, isStable, deadline, callback) => {
+    async (pair, firstAsset, secondAsset, firstAmount, secondAmount, isStable, deadline, slippage, callback) => {
       const key = uuidv4()
       const approve1uuid = uuidv4()
       const approve2uuid = uuidv4()
@@ -230,7 +228,7 @@ export const useV1AddAndStake = () => {
         }
       }
       const routerContract = getRouterContract(chainId)
-      const sendSlippage = new BigNumber(100).minus(overrideSlippage).div(100)
+      const sendSlippage = new BigNumber(100).minus(slippage).div(100)
       const sendAmount0 = toWei(firstAmount, firstAsset.decimals).toFixed(0)
       const sendAmount1 = toWei(secondAmount, secondAsset.decimals).toFixed(0)
       const deadlineVal = `${dayjs()
@@ -371,7 +369,7 @@ export const useV1Remove = () => {
   const t = useTranslations()
 
   const onV1Remove = useCallback(
-    async (pair, withdrawAmount, deadline, firstAmount, secondAmount, callback) => {
+    async (pair, withdrawAmount, deadline, firstAmount, secondAmount, slippage, callback) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const removeuuid = uuidv4()
@@ -418,7 +416,7 @@ export const useV1Remove = () => {
       }
 
       const routerContract = getRouterContract(chainId)
-      const sendSlippage = new BigNumber(100).minus(overrideSlippage).div(100)
+      const sendSlippage = new BigNumber(100).minus(slippage).div(100)
       const sendAmount = toWei(withdrawAmount, pair.decimals).toFixed(0)
       let sendAmount0Min = toWei(firstAmount, pair.token0.decimals).times(sendSlippage).toFixed(0)
       let sendAmount1Min = toWei(secondAmount, pair.token1.decimals).times(sendSlippage).toFixed(0)

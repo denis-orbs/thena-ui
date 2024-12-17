@@ -63,7 +63,7 @@ const sortOptions = [
 ]
 
 export default function LockPage() {
-  const [sort, setSort] = useState({})
+  const [sort, setSort] = useState(sortOptions[0])
   const [currentPage, setCurrentPage] = useState(1)
   const { account } = useWallet()
   const { veTHEs, isLoading, updateVeTHEs } = useVeTHEsContext()
