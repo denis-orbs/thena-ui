@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import React, { createContext, useContext, useMemo } from 'react'
+import React, { createContext, useContext, useMemo, useRef } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { formatUnits } from 'viem'
 
@@ -90,6 +90,14 @@ function CustomAssetsContextProvider({ children }) {
 
 const useCustomAssets = () => {
   const { customAssets } = useContext(CustomAssetsContext)
+
+  const prevAssetsRef = useRef(customAssets)
+
+  if (customAssets.length === 0) {
+    return prevAssetsRef.current
+  }
+
+  prevAssetsRef.current = customAssets
   return customAssets
 }
 

@@ -1,6 +1,6 @@
 import { getBalance } from '@wagmi/core'
 import BigNumber from 'bignumber.js'
-import React, { createContext, useContext, useMemo } from 'react'
+import React, { createContext, useContext, useMemo, useRef } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { formatEther, formatUnits } from 'viem'
 
@@ -85,6 +85,7 @@ function AssetsContextProvider({ children }) {
       revalidateOnFocus: false,
     },
   )
+
   const final = useMemo(() => {
     if (!account) {
       return {
@@ -109,6 +110,14 @@ function AssetsContextProvider({ children }) {
 
 const useAssets = () => {
   const { assets } = useContext(AssetsContext)
+
+  const prevAssetsRef = useRef(assets)
+
+  if (assets.length === 0) {
+    return prevAssetsRef.current
+  }
+
+  prevAssetsRef.current = assets
   return assets
 }
 
