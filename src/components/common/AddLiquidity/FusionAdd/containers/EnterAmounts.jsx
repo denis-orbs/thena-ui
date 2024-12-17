@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import { maxAmountSpend } from '@/lib/fusion'
 import { Field } from '@/state/fusion/actions'
@@ -13,18 +13,25 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo }) {
   const t = useTranslations()
 
   // get formatted amounts
-  const formattedAmounts = {
-    [independentField]: typedValue,
-    [mintInfo.dependentField]: mintInfo.parsedAmounts[mintInfo.dependentField]?.toExact() ?? '',
-  }
+  const formattedAmounts = useMemo(
+    () => ({
+      [independentField]: typedValue,
+      [mintInfo.dependentField]: mintInfo.parsedAmounts[mintInfo.dependentField]?.toExact() ?? '',
+    }),
+    [independentField, mintInfo.dependentField, mintInfo.parsedAmounts, typedValue],
+  )
 
   // get the max amounts user can add
-  const maxAmounts = [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
-    (accumulator, field) => ({
-      ...accumulator,
-      [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
-    }),
-    {},
+  const maxAmounts = useMemo(
+    () =>
+      [Field.CURRENCY_A, Field.CURRENCY_B].reduce(
+        (accumulator, field) => ({
+          ...accumulator,
+          [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
+        }),
+        {},
+      ),
+    [mintInfo],
   )
 
   return (

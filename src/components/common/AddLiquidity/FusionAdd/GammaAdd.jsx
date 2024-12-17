@@ -70,12 +70,15 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   const quoteCurrency = useCurrency(strategy?.token1?.address)
   const { account } = useWallet()
   const { networkId } = useChainSettings()
+
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
   const { errorMessage } = mintInfo
+
   const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
   const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
+
   const wbnbBalance = useCurrencyBalance(WBNB[networkId])
   const { onGammaAdd, pending } = useGammaAdd()
   const { onGammaAddAndStake, pendingStake } = useGammaAddAndStake()

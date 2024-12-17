@@ -17,6 +17,7 @@ import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
+import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 
 export default function V1Add({
@@ -29,7 +30,8 @@ export default function V1Add({
   setSecondAddress,
   setFirstAmountValue,
   setSecondAmountValue,
-  slippageCustom,
+  slippage,
+  setSlippage,
 }) {
   const [isZapper, setIsZapper] = useState(false)
   const [firstAmount, setFirstAmount] = useState('')
@@ -41,8 +43,6 @@ export default function V1Add({
   const { onV1AddAndStake, pending: stakePending } = useV1AddAndStake()
   const { pairs } = usePairs()
   const t = useTranslations()
-
-  console.log({ slippageCustom })
 
   const pair = useMemo(
     () =>
@@ -157,11 +157,20 @@ export default function V1Add({
       warnToast(errorMsg, 'warn')
       return
     }
-    onV1Add(firstAsset, secondAsset, firstAmount, secondAmount, pairType === PAIR_TYPES.STABLE, deadline, () => {
-      setFirstAmount('')
-      setSecondAmount('')
-    })
-  }, [onV1Add, firstAsset, secondAsset, firstAmount, secondAmount, pairType, deadline, errorMsg])
+    onV1Add(
+      firstAsset,
+      secondAsset,
+      firstAmount,
+      secondAmount,
+      pairType === PAIR_TYPES.STABLE,
+      deadline,
+      slippage,
+      () => {
+        setFirstAmount('')
+        setSecondAmount('')
+      },
+    )
+  }, [errorMsg, onV1Add, firstAsset, secondAsset, firstAmount, secondAmount, pairType, deadline, slippage])
 
   const onAddAndStake = useCallback(() => {
     if (errorMsg) {
@@ -176,102 +185,119 @@ export default function V1Add({
       secondAmount,
       pairType === PAIR_TYPES.STABLE,
       deadline,
+      slippage,
       () => {
         setFirstAmount('')
         setSecondAmount('')
       },
     )
-  }, [onV1AddAndStake, strategy, firstAsset, secondAsset, firstAmount, secondAmount, pairType, deadline, errorMsg])
+  }, [
+    errorMsg,
+    onV1AddAndStake,
+    strategy,
+    firstAsset,
+    secondAsset,
+    firstAmount,
+    secondAmount,
+    pairType,
+    deadline,
+    slippage,
+  ])
 
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
         <Selection data={addSelections} isFull isTranslation={false} />
-        {isZapper ? (
-          <div className='flex flex-col gap-5'>{t('Coming Soon')}</div>
-        ) : (
-          <div className='flex flex-col'>
-            <div className='mb-5 flex flex-col gap-2'>
-              <BalanceInput
-                title={`${t('Asset')} 1`}
-                asset={firstAsset}
-                setAsset={isFromBNB ? setFirstAddress : null}
-                amount={firstAmount}
-                onAmountChange={onFirstChange}
-              />
-              <BalanceInput
-                title={`${t('Asset')} 2`}
-                asset={secondAsset}
-                setAsset={isToBNB ? setSecondAddress : null}
-                amount={secondAmount}
-                onAmountChange={onSecondChange}
-              />
-            </div>
-            {strategy ? (
-              <>
-                <div className='flex flex-col gap-4'>
-                  <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-                  <div className='flex flex-col gap-3'>
-                    <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>
-                        {unwrappedSymbol(strategy.token0)} {t('Amount')}
-                      </Paragraph>
-                      <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>
-                        {unwrappedSymbol(strategy.token1)} {t('Amount')}
-                      </Paragraph>
-                      <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
-                    </div>
-                  </div>
-                </div>
-                <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-                  <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-                  <div className='flex flex-col gap-3'>
-                    <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                      <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                      <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className='flex flex-col gap-4'>
-                <TextHeading className='text-lg'>{t('Starting Liquidity Info')}</TextHeading>
-                <div className='flex flex-col gap-3'>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>
-                      {t('[symbolA] per [symbolB]', {
-                        symbolA: firstAsset?.symbol,
-                        symbolB: secondAsset?.symbol,
-                      })}
-                    </Paragraph>
-                    <Paragraph>
-                      {firstAmount && secondAmount ? formatAmount(firstAmount / secondAmount) : '-'}
-                    </Paragraph>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>
-                      {t('[symbolA] per [symbolB]', {
-                        symbolA: secondAsset?.symbol,
-                        symbolB: firstAsset?.symbol,
-                      })}
-                    </Paragraph>
-                    <Paragraph>
-                      {firstAmount && secondAmount ? formatAmount(secondAmount / firstAmount) : '-'}
-                    </Paragraph>
-                  </div>
-                </div>
-              </div>
-            )}
+        <>
+          <div className='flex justify-end'>
+            <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
           </div>
-        )}
+          {isZapper ? (
+            <div className='flex flex-col gap-5'>{t('Coming Soon')}</div>
+          ) : (
+            <div className='flex flex-col'>
+              <div className='mb-5 flex flex-col gap-2'>
+                <BalanceInput
+                  title={`${t('Asset')} 1`}
+                  asset={firstAsset}
+                  setAsset={isFromBNB ? setFirstAddress : null}
+                  amount={firstAmount}
+                  onAmountChange={onFirstChange}
+                />
+                <BalanceInput
+                  title={`${t('Asset')} 2`}
+                  asset={secondAsset}
+                  setAsset={isToBNB ? setSecondAddress : null}
+                  amount={secondAmount}
+                  onAmountChange={onSecondChange}
+                />
+              </div>
+              {strategy ? (
+                <>
+                  <div className='flex flex-col gap-4'>
+                    <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
+                    <div className='flex flex-col gap-3'>
+                      <div className='flex items-center justify-between'>
+                        <Paragraph className='font-medium'>
+                          {unwrappedSymbol(strategy.token0)} {t('Amount')}
+                        </Paragraph>
+                        <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <Paragraph className='font-medium'>
+                          {unwrappedSymbol(strategy.token1)} {t('Amount')}
+                        </Paragraph>
+                        <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+                    <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
+                    <div className='flex flex-col gap-3'>
+                      <div className='flex items-center justify-between'>
+                        <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+                        <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
+                        <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className='flex flex-col gap-4'>
+                  <TextHeading className='text-lg'>{t('Starting Liquidity Info')}</TextHeading>
+                  <div className='flex flex-col gap-3'>
+                    <div className='flex items-center justify-between'>
+                      <Paragraph className='font-medium'>
+                        {t('[symbolA] per [symbolB]', {
+                          symbolA: firstAsset?.symbol,
+                          symbolB: secondAsset?.symbol,
+                        })}
+                      </Paragraph>
+                      <Paragraph>
+                        {firstAmount && secondAmount ? formatAmount(firstAmount / secondAmount) : '-'}
+                      </Paragraph>
+                    </div>
+                    <div className='flex items-center justify-between'>
+                      <Paragraph className='font-medium'>
+                        {t('[symbolA] per [symbolB]', {
+                          symbolA: secondAsset?.symbol,
+                          symbolB: firstAsset?.symbol,
+                        })}
+                      </Paragraph>
+                      <Paragraph>
+                        {firstAmount && secondAmount ? formatAmount(secondAmount / firstAmount) : '-'}
+                      </Paragraph>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </>
       </div>
       {!isZapper && (
         <div

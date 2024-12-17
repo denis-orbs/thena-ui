@@ -16,6 +16,8 @@ import { warnToast } from '@/lib/notify'
 import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
+import SettingSlippageModal from './SettingSlippageModal'
+
 export default function RemoveManualModal({
   popup,
   setPopup,
@@ -29,7 +31,8 @@ export default function RemoveManualModal({
 }) {
   const [percent, setPercent] = useState(0)
   const debouncedPercent = useDebounce(percent)
-  const { slippage, deadline } = useSettings()
+  const { deadline } = useSettings()
+  const [slippage, setSlippage] = useState(0.5)
   const liquidityPercentage = useMemo(() => new Percent(percent, 100), [percent])
   const { pending, onAlgebraRemove } = useAlgebraRemove()
 
@@ -88,6 +91,9 @@ export default function RemoveManualModal({
             </div>
           </div>
           {outOfRange ? <PrimaryBadge>Out of Range</PrimaryBadge> : <GreenBadge>In Range</GreenBadge>}
+        </div>
+        <div className='flex justify-end'>
+          <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
         </div>
         <div className='flex flex-col gap-4'>
           <CustomSlider percent={percent} onPercentChange={setPercent} />

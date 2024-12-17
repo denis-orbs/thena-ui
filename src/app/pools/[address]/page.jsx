@@ -233,7 +233,7 @@ export default function SpecificPoolPage({ params }) {
             )}
 
             {listPoolAddressSpecial.includes(pool.address) && (
-              <div className='ml-4 mt-5 flex items-center gap-2'>
+              <div className='mb-5 ml-4 mt-4 flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id={`pool-${pool?.address}`}>
                   <NextImage
                     className='h-full w-full rounded-full object-cover'
@@ -428,45 +428,44 @@ export default function SpecificPoolPage({ params }) {
               )}
             </div>
           </div>
-
-          <div className='flex-[4] flex-col gap-12'>
-            <div className='mt-[72px] max-lg:hidden'>
-              <Liquidity pool={pool} />
-            </div>
-
-            {/* User positions */}
-            <div className='mt-6 space-y-4'>
-              <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
-                {t('My Positions')}
-              </TextHeading>
-              {pool.type === PAIR_TYPES.WEIGHTED && !isInvalidAmount(weightedPoolBalance) ? (
-                <div className='grid grid-cols-1 gap-4'>
-                  {pool.type === PAIR_TYPES.WEIGHTED ? (
-                    <WeightedPoolPosition pool={pool} />
-                  ) : (
-                    userPositions.map((ele, idx) =>
-                      ele.type === 'Manual' ? (
-                        <ManualPosition position={ele} key={`pos-${idx}`} />
-                      ) : (
-                        <Position pool={ele} key={ele?.address} />
-                      ),
-                    )
-                  )}
-                </div>
-              ) : (
-                <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-10'>
-                  <Highlight>
-                    <InfoCircleWhite className='h-4 w-4' />
-                  </Highlight>
-                  <div className='flex flex-col items-center gap-3'>
-                    <h2>{t('No Position Found')}</h2>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
+        <div className='flex-[4] flex-col gap-12'>
+          <div className='mt-[72px] max-lg:hidden'>
+            <Liquidity pool={pool} />
+          </div>
+
+          {/* User positions */}
+          <div className='mt-6 space-y-4'>
+            <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
+              {t('My Positions')}
+            </TextHeading>
+            {pool.type === PAIR_TYPES.WEIGHTED && !isInvalidAmount(weightedPoolBalance) ? (
+              <div className='grid grid-cols-1 gap-4'>
+                {pool.type === PAIR_TYPES.WEIGHTED ? (
+                  <WeightedPoolPosition pool={pool} />
+                ) : (
+                  userPositions.map((ele, idx) =>
+                    ele.type === 'Manual' ? (
+                      <ManualPosition position={ele} key={`pos-${idx}`} />
+                    ) : (
+                      <Position pool={ele} key={ele?.address} />
+                    ),
+                  )
+                )}
+              </div>
+            ) : (
+              <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-10'>
+                <Highlight>
+                  <InfoCircleWhite className='h-4 w-4' />
+                </Highlight>
+                <div className='flex flex-col items-center gap-3'>
+                  <h2>{t('No Position Found')}</h2>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
         {/* Add liquidity (On mobile) */}
         <div className='fixed bottom-0 left-0 z-50 w-full justify-center bg-neutral-800 !p-4 lg:hidden'>
           <PrimaryButton onClick={() => setShowModalAdd(true)} className='mx-auto w-full'>

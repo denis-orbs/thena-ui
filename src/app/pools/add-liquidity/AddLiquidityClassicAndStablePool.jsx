@@ -9,7 +9,6 @@ import { TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { cn, formatAmount } from '@/lib/utils'
-import { useSettings } from '@/state/settings/hooks'
 import { ArrowLeftIcon, DownloadSuccessIcon, PercentIcon } from '@/svgs'
 
 import TransactionSettingModal from './TransactionSettingModal'
@@ -19,8 +18,7 @@ function AddLiquidityClassicAndStablePool({ pool, setCurrentStep, isAdd, showSid
   const assets = useAssets()
   const [firstAmount, setFirstAmount] = useState()
   const [secondAmount, setSecondAmount] = useState()
-  const { slippage } = useSettings()
-  const [slippageTolerance, setSlippageTolerance] = useState(slippage)
+  const [slippage, setSlippage] = useState(0.5)
   const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
   return (
     <>
@@ -45,7 +43,8 @@ function AddLiquidityClassicAndStablePool({ pool, setCurrentStep, isAdd, showSid
           // setFirstAddress={setFirstAddress}
           // setSecondAddress={setSecondAddress}
           isAdd={isAdd}
-          slippageCustom={slippageTolerance}
+          slippage={slippage}
+          setSlippage={setSlippage}
         />
       </Box>
       {showSidebar && (
@@ -78,7 +77,7 @@ function AddLiquidityClassicAndStablePool({ pool, setCurrentStep, isAdd, showSid
                       <div className='flex flex-row items-center gap-2'>
                         <PercentIcon className='h-5 w-5 stroke-success-600' />
                         <div className='flex flex-row gap-1'>
-                          <span>{t('slippage applied', { percent: slippageTolerance })}</span>
+                          <span>{t('slippage applied', { percent: slippage })}</span>
                           <span className='!cursor-pointer underline' onClick={() => setOpenTransactionSetting(true)}>
                             {t('Adjust')}
                           </span>
@@ -95,8 +94,8 @@ function AddLiquidityClassicAndStablePool({ pool, setCurrentStep, isAdd, showSid
       <TransactionSettingModal
         isOpen={openTransactionSetting}
         setIsOpen={setOpenTransactionSetting}
-        updateSlippage={setSlippageTolerance}
-        slippage={slippageTolerance}
+        slippage={slippage}
+        updateSlippage={setSlippage}
       />
     </>
   )
