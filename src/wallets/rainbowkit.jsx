@@ -2,6 +2,7 @@
 
 import { connectorsForWallets, darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import {
+  binanceWallet,
   coinbaseWallet,
   injectedWallet,
   metaMaskWallet,
@@ -29,6 +30,7 @@ const connectors = connectorsForWallets(
     {
       groupName: 'Wallets',
       wallets: [
+        binanceWallet,
         rabbyWallet,
         metaMaskWallet,
         walletConnectWallet,
