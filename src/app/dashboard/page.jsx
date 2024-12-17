@@ -55,9 +55,9 @@ export default function HoldingsPage() {
   const vaults = useVaults()
   const { veTHEs } = useVeTHEsContext()
   const userManuals = useManuals()
-  const { current, next } = useContext(rewardsContext)
+  const { current } = useContext(rewardsContext)
   const { rewards: veRewards } = current
-  const { rewards: expectedRewards } = next
+  // const { rewards: expectedRewards } = next
   const { networkId } = useChainSettings()
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
   const farmedPools = pools.filter(item => item.account.gaugeEarned.gt(0))
@@ -84,10 +84,10 @@ export default function HoldingsPage() {
     [veRewards],
   )
 
-  const totalExpectedUsd = useMemo(
-    () => expectedRewards.reduce((sum, curr) => sum.plus(curr.totalUsd), new BigNumber(0)),
-    [expectedRewards],
-  )
+  // const totalExpectedUsd = useMemo(
+  //   () => expectedRewards.reduce((sum, curr) => sum.plus(curr.totalUsd), new BigNumber(0)),
+  //   [expectedRewards],
+  // )
 
   const filteredPools = useMemo(() => {
     let result = []
@@ -186,12 +186,6 @@ export default function HoldingsPage() {
                 <TextHeading className='text-2xl'>${formatAmount(totalCurrentUsd)}</TextHeading>
               </div>
               <Paragraph className='text-sm'>{t('Voting Rewards')}</Paragraph>
-            </Box>
-            <Box className='flex w-full flex-col gap-2'>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-2xl'>${formatAmount(totalExpectedUsd)}</TextHeading>
-              </div>
-              <Paragraph className='text-sm'>{t('Next Epoch Rewards')}</Paragraph>
             </Box>
           </div>
           <div className='flex flex-col gap-4'>

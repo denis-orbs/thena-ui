@@ -32,9 +32,9 @@ export default function RewardsPage() {
   const { account } = useWallet()
   const prices = usePrices()
   const { veTHEs } = useVeTHEsContext()
-  const { current, next } = useContext(rewardsContext)
+  const { current } = useContext(rewardsContext)
   const { rewards: veRewards, currentMutate } = current
-  const { rewards: expectedRewards } = next
+  // const { rewards: expectedRewards } = next
   const { onClaimAll, pending: allPending } = useClaimAll()
   const t = useTranslations()
 
@@ -70,10 +70,10 @@ export default function RewardsPage() {
     return total
   }, [veRewards, filteredVeTHEs, prices])
 
-  const totalExpectedUsd = useMemo(
-    () => expectedRewards.reduce((sum, curr) => sum.plus(curr.totalUsd), new BigNumber(0)),
-    [expectedRewards],
-  )
+  // const totalExpectedUsd = useMemo(
+  //   () => expectedRewards.reduce((sum, curr) => sum.plus(curr.totalUsd), new BigNumber(0)),
+  //   [expectedRewards],
+  // )
 
   const typeSelections = useMemo(
     () => [
@@ -107,7 +107,7 @@ export default function RewardsPage() {
             <div className='flex items-center gap-4'>
               <CoinsStackedIcon className='h-4 w-4 min-w-4 stroke-primary-600 lg:h-8 lg:w-8 lg:min-w-8' />
               <p className='text-base leading-tight lg:text-xl'>
-                {t('Total Rewards:')} ${formatAmount(isExpected ? totalExpectedUsd : totalUsd)}
+                {t('Total Rewards:')} ${formatAmount(totalUsd)}
               </p>
             </div>
             {!isExpected && (
