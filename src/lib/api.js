@@ -49,7 +49,7 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
     }))
   } catch (ex) {
     console.error('get assets had error', ex)
-    return null
+    return []
   }
 }
 
@@ -106,7 +106,7 @@ export const fetchCustomAssets = async networkId => {
     }))
   } catch (ex) {
     console.error('get custom assets had error', ex)
-    return null
+    return []
   }
 }
 

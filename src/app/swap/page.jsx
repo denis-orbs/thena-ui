@@ -38,7 +38,7 @@ export default function SwapPage() {
     address: account,
     chainId,
     query: {
-      enabled: Boolean(fromAsset && account),
+      enabled: Boolean(fromAsset?.isFromStorage && account),
     },
   })
 
@@ -47,7 +47,7 @@ export default function SwapPage() {
     chainId,
     address: account,
     query: {
-      enabled: Boolean(toAsset && account),
+      enabled: Boolean(toAsset?.isFromStorage && account),
     },
   })
 
@@ -95,7 +95,7 @@ export default function SwapPage() {
     if (from) {
       setFromAsset({
         ...from,
-        balance: fromBalance ? fromWei(fromBalance) : from.balance,
+        balance: fromBalance ? fromWei(fromBalance, from.decimals) : from.balance,
       })
     }
   }, [from, tokenFromBalance?.value])
@@ -106,7 +106,7 @@ export default function SwapPage() {
     if (to) {
       setToAsset({
         ...to,
-        balance: toBalance ? fromWei(toBalance) : to.balance,
+        balance: toBalance ? fromWei(toBalance, to.decimals) : to.balance,
       })
     }
   }, [to, tokenToBalance?.value])

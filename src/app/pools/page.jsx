@@ -108,7 +108,16 @@ export default function PoolsPage() {
     } else {
       final = pairs.filter(ele => ele.highApr > 0)
     }
-    final = filter === PAIR_TYPES.All ? final : final.filter(item => item.type === filter)
+    final =
+      filter === PAIR_TYPES.All
+        ? final
+        : final.filter(item => {
+            if (filter !== PAIR_TYPES.STABLE) {
+              return item.type === filter
+            }
+            const checkSubStatble = (item.subpools || []).some(sub => sub.title === 'CL_Stable')
+            return checkSubStatble || item.type === filter
+          })
 
     const res =
       filter !== PAIR_TYPES.LSD || strategy === STRATEGIES.All
@@ -135,17 +144,14 @@ export default function PoolsPage() {
 
   // TODO: If new pools, update here
   const newListPoolIds = [
-    '0x5bc828a5035aac2fa3aab46f7a25d08165d19a08', // mPendle/Pendle
-    '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79', // BTCB/mBTC
-    '0x7569ae71a1832fa5f403471a01289222b1daacb5', // mCAKE/CAKE
-    '0x716fe318602a603959c3af4676aed74b22c615da', // BNB/MGP
-    '0x52b137a651413a0eb3609b44d032f00e1c8daf33', // sUSDa/USDa
     '0x987c794c0786ee5cd6b34b7e32aa21098cd6b806', // ZRO/BNB
-    '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7', // uniBTC/FBTC
-    '0x00a04fe69ab69ab0cbbe61671405677f5d003a2f', // BNB/VINU
-    '0x4e2ae126c67128f0cfe35e43e0c9459992658d44', // mwBETH/wBETH
     '0xb3f3312252cade3a15eba318f6caaacb5e8097f4', // BNB/RWA
-    '0x7b879963ae083732f4514d564f4e4613e24e1f67', // USDT/FDUSD
+    '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7', // uniBTC/FBTC
+    '0x716fe318602a603959c3af4676aed74b22c615da', // BNB/MGP
+    '0x11f3c9ca27ed4931efd0fbe0fd5dfc75157a1ea9', // BNB/KOMA
+    '0x47600bc3ae9b5b97ef92a55e550066944fe17670', // BNB/lpBNB
+    '0x58cad2ea28853bbe1501188787c10469b2f0c4f1', // BNB/COCO
+    '0xc57061da1894ae58fb834f6db33e9a45cc4e7807', // MONKY/BNB
   ]
 
   const newListingsPool = filteredPools.filter(item => newListPoolIds.includes(item.address))
@@ -185,6 +191,7 @@ export default function PoolsPage() {
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
       const ynBNBPoolAddress = '0xcfac0990700ed9b67fefbd4b26a79e426468a419'
       const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
+      const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
 
       return sortedData.map(pool => ({
         pair: (
@@ -208,7 +215,7 @@ export default function PoolsPage() {
               <ListTokenPercantage listToken={pool.tokens} />
             )}
 
-            {/* Special pools */}
+            {/* BEGIN Special pools */}
             {pool.address === weETHPoolAddress && (
               <div className='flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id='etherBadgeIcon'>
@@ -286,7 +293,7 @@ export default function PoolsPage() {
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
                       alt='Quaaloop'
-                      src='/images/quaaloop.svg'
+                      src='/images/quaaloop.png'
                     />
                   </div>
                   <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
@@ -295,6 +302,32 @@ export default function PoolsPage() {
                 </div>
               </>
             )}
+            {pool.address === BTCBmBTCAddress && (
+              <>
+                <div className='flex items-center gap-2'>
+                  <div
+                    className='flex size-8 items-center rounded-full bg-white'
+                    data-tooltip-id={`pool-special-${pool.address}-BTCBmBTCAddress`}
+                  >
+                    <NextImage
+                      className='w-full rounded-full object-cover'
+                      alt='Quaaloop'
+                      src='/images/babbypieBirdLogo.png'
+                    />
+                  </div>
+                  <CustomTooltip
+                    id={`pool-special-${pool.address}-BTCBmBTCAddress`}
+                    className='rounded-md !py-2'
+                    place='top'
+                  >
+                    <TextHeading className='text-xs'>{t("Babypie's Liquidity RUSH campaign")}</TextHeading>
+                  </CustomTooltip>
+                </div>
+              </>
+            )}
+            {/* END Special pools */}
+
+            {/* Warning pools */}
             {(pool.token0?.isWarning || pool.token1?.isWarning) && (
               <>
                 <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>

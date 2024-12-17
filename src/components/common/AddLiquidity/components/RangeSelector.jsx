@@ -6,7 +6,8 @@ import { OutlineIconButton } from '@/components/buttons/IconButton'
 import { Paragraph, TextSubHeading } from '@/components/typography'
 import { unwrappedSymbol } from '@/lib/utils'
 import { Bound, updateSelectedPreset } from '@/state/fusion/actions'
-import { useInitialTokenPrice } from '@/state/fusion/hooks'
+import { useActivePreset, useInitialTokenPrice } from '@/state/fusion/hooks'
+import { Presets } from '@/state/fusion/reducer'
 import { MinusIcon, PlusIcon } from '@/svgs'
 
 const inputRegex = /^\d*(?:\\[.])?\d*$/ // match escaped "." characters via in a non-capturing group
@@ -53,20 +54,29 @@ function RangePart({
     onUserInput(increment())
   }, [increment, onUserInput])
 
+  const activePreset = useActivePreset()
+  // console.log({ activePreset })
+
   useEffect(() => {
     if (value) {
       setLocalTokenValue(value)
     } else if (value === '') {
       setLocalTokenValue('')
     }
-  }, [initialTokenPrice, value])
+  }, [value, initialTokenPrice])
+
+  useEffect(() => {
+    if (activePreset === Presets.FULL) {
+      setLocalTokenValue(title === 'Min Price' ? 0 : Infinity)
+    }
+  }, [activePreset, title, value])
 
   return (
     <div className='flex items-center justify-between rounded-xl border border-neutral-700 px-4 py-3'>
       <div className='flex flex-col gap-1.5'>
         <TextSubHeading className='text-xs'>{t(title)}</TextSubHeading>
         <input
-          type='number'
+          type={activePreset === Presets.FULL ? 'text' : 'number'}
           className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
           placeholder='0.0'
           value={localTokenValue}

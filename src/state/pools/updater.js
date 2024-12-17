@@ -78,7 +78,7 @@ function Updater() {
   )
 
   const fetchInfo = useCallback(async () => {
-    if (!poolsWithAllowed) return
+    if (!poolsWithAllowed || poolsWithAllowed.length === 0) return
     let userInfo = []
     if (poolsWithAllowed.length > 0 && assets.length > 0) {
       const bnbTheNarrow = '0xed044cd5654ad208b1bc594fd108c132224e3f3c'
@@ -255,6 +255,7 @@ function Updater() {
         .sort((x, y) => (x.address === bnbTheWide.toLowerCase() ? -1 : y.address === bnbTheWide ? 1 : 0))
         .sort((x, y) => (x.address === bnbTheNarrow.toLowerCase() ? -1 : y.address === bnbTheNarrow ? 1 : 0))
     }
+
     dispatch(
       updatePools({
         pools: userInfo,

@@ -16,7 +16,7 @@ import { InfoIcon } from '@/svgs'
 function Title({ length }) {
   const t = useTranslations()
   return (
-    <div className='z-40 flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
+    <div className='flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
       🔥 {t('New Listings')} ({length})
     </div>
   )
@@ -74,6 +74,8 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial }) {
 
     const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
     const ynBNBPoolAddress = '0xcfac0990700ed9b67fefbd4b26a79e426468a419'
+    const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
+    const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
 
     return data.map(pool => ({
       pair: (
@@ -90,6 +92,8 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial }) {
             <TextHeading>{pool.symbol}</TextHeading>
             <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
           </div>
+
+          {/* BEGIN Special pools */}
           {pool.address === weETHPoolAddress && (
             <div className='flex items-center gap-2'>
               <div className='size-6' data-tooltip-id='etherBadgeIcon'>
@@ -130,7 +134,6 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial }) {
               </CustomTooltip>
             </div>
           )}
-
           {pool.address === ynBNBPoolAddress && (
             <>
               <div className='flex items-center gap-2'>
@@ -159,6 +162,58 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial }) {
                   </TextHeading>
                 </CustomTooltip>
               </div>
+            </>
+          )}
+          {pool.address === BNBLpBNBPoolAdress && (
+            <>
+              <div className='flex items-center gap-2'>
+                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1-1`}>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='Quaaloop'
+                    src='/images/quaaloop.png'
+                  />
+                </div>
+                <CustomTooltip id={`pool-special-${pool.address}-tooltip1-1`} className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
+                </CustomTooltip>
+              </div>
+            </>
+          )}
+          {pool.address === BTCBmBTCAddress && (
+            <>
+              <div className='flex items-center gap-2'>
+                <div
+                  className='flex size-8 items-center rounded-full bg-white'
+                  data-tooltip-id={`pool-special-${pool.address}-BTCBmBTCAddress-1`}
+                >
+                  <NextImage
+                    className='w-full rounded-full object-cover'
+                    alt='Quaaloop'
+                    src='/images/babbypieBirdLogo.png'
+                  />
+                </div>
+                <CustomTooltip
+                  id={`pool-special-${pool.address}-BTCBmBTCAddress-1`}
+                  className='rounded-md !py-2'
+                  place='top'
+                >
+                  <TextHeading className='text-xs'>{t("Babypie's Liquidity RUSH campaign")}</TextHeading>
+                </CustomTooltip>
+              </div>
+            </>
+          )}
+          {/* END Special pools */}
+
+          {/* Warning pools */}
+          {(pool.token0?.isWarning || pool.token1?.isWarning) && (
+            <>
+              <div className='size-4' data-tooltip-id={`pool-warning-${pool.address}`}>
+                <InfoIcon className='size-4 stroke-warn-700' />
+              </div>
+              <CustomTooltip id={`pool-warning-${pool.address}`} className='rounded-md !py-2' place='top'>
+                <TextHeading className='text-xs'>{t('Careful Custom Token')}</TextHeading>
+              </CustomTooltip>
             </>
           )}
         </div>
@@ -214,7 +269,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial }) {
   return (
     <Collapse
       className='min-h-[76px] rounded-xl bg-neutral-900'
-      classNames={{ chevron: 'mr-6 z-40', content: '-mt-7' }}
+      classNames={{ chevron: 'mr-6', content: '-mt-7' }}
       defaultShow={false}
       title={<Title length={pools.length} />}
     >

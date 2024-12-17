@@ -35,6 +35,7 @@ import Liquidity from './Liquidity'
 import { listPoolAddressSpecial } from '../page'
 
 const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
+const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
 
 export default function SpecificPoolPage({ params }) {
   const t = useTranslations()
@@ -196,6 +197,7 @@ export default function SpecificPoolPage({ params }) {
                 </CustomTooltip>
               </div>
             )}
+
             {pool.address === BNBLpBNBPoolAdress && (
               <>
                 <div className='ml-4 mt-5 flex items-center gap-2'>
@@ -203,7 +205,7 @@ export default function SpecificPoolPage({ params }) {
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
                       alt='Quaaloop'
-                      src='/images/quaaloop.svg'
+                      src='/images/quaaloop.png'
                     />
                   </div>
                   <CustomTooltip id='BNBLpBNBPoolAdress' className='rounded-md !py-2' place='top'>
@@ -212,6 +214,24 @@ export default function SpecificPoolPage({ params }) {
                 </div>
               </>
             )}
+
+            {pool.address === BTCBmBTCAddress && (
+              <>
+                <div className='ml-4 mt-5 flex items-center gap-2'>
+                  <div className='flex size-8 items-center rounded-full bg-white' data-tooltip-id='BTCBmBTCAddress'>
+                    <NextImage
+                      className='w-full rounded-full object-cover'
+                      alt='Quaaloop'
+                      src='/images/babbypieBirdLogo.png'
+                    />
+                  </div>
+                  <CustomTooltip id='BTCBmBTCAddress' className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>{t("Babypie's Liquidity RUSH campaign")}</TextHeading>
+                  </CustomTooltip>
+                </div>
+              </>
+            )}
+
             {listPoolAddressSpecial.includes(pool.address) && (
               <div className='ml-4 mt-5 flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id={`pool-${pool?.address}`}>

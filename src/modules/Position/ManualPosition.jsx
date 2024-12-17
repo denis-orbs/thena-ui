@@ -126,8 +126,8 @@ export default function ManualPosition({ pool }) {
   const feesInUsd = useMemo(
     () =>
       fromWei(fees ? fees[0] : 0, asset0.decimals)
-        .times(asset0.price)
-        .plus(fromWei(fees ? fees[1] : 0, asset1.decimals).times(asset1.price)),
+        .times(asset0?.price ?? 0)
+        .plus(fromWei(fees ? fees[1] : 0, asset1.decimals).times(asset1?.price ?? 0)),
     [fees, asset0, asset1],
   )
 
