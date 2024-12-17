@@ -94,6 +94,7 @@ export default function VotingHistoryTable({ userVotes }) {
             lastUpdate: poolVote.lastUpdate,
             pool: pairData,
             rewards,
+            apr: poolVote.apr,
           }
         }),
       ),
@@ -207,7 +208,7 @@ export default function VotingHistoryTable({ userVotes }) {
           </div>
         ),
         // apr: <Paragraph>{formatAmount(123.45)}%</Paragraph>,
-        apr: <Paragraph>TODO API</Paragraph>,
+        apr: <Paragraph>{formatAmount(vote.apr)}%</Paragraph>,
 
         vote: (
           <div className='flex flex-col'>
@@ -242,7 +243,7 @@ export default function VotingHistoryTable({ userVotes }) {
                         <p key={`${reward.address}-${index}-my-reward`}>
                           {reward?.amount > 0 ? (
                             <>
-                              ${formatAmount(reward?.amount)} ${reward?.symbol || 'UNKNOWN'}
+                              {formatAmount(reward?.amount)} {reward?.symbol || 'UNKNOWN'}
                             </>
                           ) : (
                             <></>

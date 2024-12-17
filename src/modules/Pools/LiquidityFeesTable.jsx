@@ -39,7 +39,7 @@ function LiquidityFeeRow({ token, pairType }) {
       </div>
       <div className='flex flex-col items-start'>
         <div className='mb-1 text-[13px] font-normal leading-5 lg:hidden'>{t('Generated Cumulative Fees')}</div>
-        <p className='text-[18px] font-medium leading-[26px]'>{token?.totalFees}</p>
+        <p className='text-[18px] font-medium leading-[26px]'>{formatAmount(token?.totalFees)}</p>
         <p className='text-[14px] font-normal leading-[26px] text-neutral-200'>
           ${formatAmount(getValueTokenAmountToUSD(token.address, token?.totalFees))}
         </p>
@@ -50,27 +50,6 @@ function LiquidityFeeRow({ token, pairType }) {
 
 export function LiquidityFeesTable({ pool }) {
   const t = useTranslations()
-  // const { address: userAddress, chainId } = useAccount()
-
-  // MARK: Get claimable token for WEIGHTED
-  // const weightedContract = getWeightedPoolContract(pool?.address, chainId)
-  // const { data: feeContractAddress } = useReadContract({
-  //   ...weightedContract,
-  //   functionName: 'feesContract',
-  //   query: {
-  //     enabled: Boolean(pool?.address) && pool.type === PAIR_TYPES.WEIGHTED,
-  //   },
-  // })
-
-  // const { data: expectedFees = [] } = useReadContract({
-  //   address: feeContractAddress,
-  //   abi: weightedPoolAbiFees,
-  //   functionName: 'expectedFees',
-  //   args: [userAddress],
-  //   query: {
-  //     enabled: Boolean(feeContractAddress) && pool.type === PAIR_TYPES.WEIGHTED,
-  //   },
-  // })
 
   const tokensList = useMemo(() => {
     if (pool.type !== PAIR_TYPES.WEIGHTED) {

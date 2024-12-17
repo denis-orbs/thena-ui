@@ -348,7 +348,7 @@ function TitleEpoch({ epoch, open }) {
                     <p key={`${reward.address}-total-${index}`}>
                       {reward?.amount > 0 ? (
                         <>
-                          ${formatAmount(reward?.amount)} ${reward?.symbol || 'UNKNOWN'}
+                          {formatAmount(reward?.amount)} {reward?.symbol || 'UNKNOWN'}
                         </>
                       ) : (
                         <></>
