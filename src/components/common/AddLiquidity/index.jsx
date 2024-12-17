@@ -62,6 +62,7 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
       {currentStep === 1 &&
         (pairType === PAIR_TYPES.LSD ? (
           <ChooseStrategy
+            pool={pool}
             pairType={pairType}
             firstAsset={firstAsset}
             secondAsset={secondAsset}

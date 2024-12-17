@@ -275,7 +275,11 @@ export default function ManualPosition({ pool }) {
 
         <EmphasisButton
           className={cn('w-full', {
-            hidden: pool?.isFarming || incentiveAddress === zeroAddress || pool?.deployer !== zeroAddress,
+            hidden:
+              pool?.isFarming ||
+              !incentiveAddress ||
+              incentiveAddress === zeroAddress ||
+              pool?.deployer !== zeroAddress,
           })}
           disabled={pool?.isFarming || isEnterFarmLoading}
           onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
