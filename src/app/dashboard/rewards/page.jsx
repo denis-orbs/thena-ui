@@ -3,24 +3,17 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useContext, useMemo, useState } from 'react'
-import useSWR from 'swr'
-import { ChainId } from 'thena-sdk-core'
 
 import { Info } from '@/components/alert'
 import { TertiaryButton } from '@/components/buttons/Button'
-import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
 import Selection from '@/components/selection'
 import { Paragraph } from '@/components/typography'
 import { rewardsContext } from '@/context/rewardsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
-import useDebounce from '@/hooks/useDebounce'
 import usePrices from '@/hooks/usePrices'
 import { useClaimAll } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
-import { readCall } from '@/lib/contractActions'
-import { getVeTHEContract } from '@/lib/contracts'
 import { formatAmount } from '@/lib/utils'
-import { useChainSettings } from '@/state/settings/hooks'
 import { CoinsStackedIcon } from '@/svgs'
 
 import CurrentRewards from './currentRewards'
@@ -38,27 +31,27 @@ export default function RewardsPage() {
   const { onClaimAll, pending: allPending } = useClaimAll()
   const t = useTranslations()
 
-  const [approvedId, setApprovedId] = useState('All')
-  const { networkId } = useChainSettings()
-  const debouncedId = useDebounce(approvedId)
+  // const [approvedId, setApprovedId] = useState('All')
+  // const { networkId } = useChainSettings()
+  // const debouncedId = useDebounce(approvedId)
 
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
 
-  const [veTHEId, setVeTHEId] = useState('All')
-  const { data: isApproved } = useSWR(
-    debouncedId && account && networkId === ChainId.BSC && ['vethe/approved', debouncedId, account],
-    async () => {
-      const veTHEContract = getVeTHEContract(networkId)
-      return await readCall(veTHEContract, 'isApprovedOrOwner', [account, debouncedId], networkId)
-    },
-    {
-      refreshInterval: 0,
-    },
-  )
-  const veTHE = useMemo(() => {
-    const list = [...veTHEs]
-    return veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
-  }, [veTHEs, veTHEId])
+  // const [veTHEId, setVeTHEId] = useState('All')
+  // const { data: isApproved } = useSWR(
+  //   debouncedId && account && networkId === ChainId.BSC && ['vethe/approved', debouncedId, account],
+  //   async () => {
+  //     const veTHEContract = getVeTHEContract(networkId)
+  //     return await readCall(veTHEContract, 'isApprovedOrOwner', [account, debouncedId], networkId)
+  //   },
+  //   {
+  //     refreshInterval: 0,
+  //   },
+  // )
+  // const veTHE = useMemo(() => {
+  //   const list = [...veTHEs]
+  //   return veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
+  // }, [veTHEs, veTHEId])
 
   const currentRewards = useMemo(() => [...filteredVeTHEs, ...veRewards], [filteredVeTHEs, veRewards])
 
@@ -129,7 +122,7 @@ export default function RewardsPage() {
         <>
           <div className='flex flex-col justify-between gap-4 lg:flex-row'>
             <Selection className='h-11 w-fit' data={typeSelections} />
-            <VeTheDropdown
+            {/* <VeTheDropdown
               className='w-full md:w-[200px]'
               data={[{ id: 'All' }, ...veTHEs].map(item => ({
                 ...item,
@@ -142,7 +135,7 @@ export default function RewardsPage() {
               isApproved={isApproved}
               approvedId={approvedId}
               setApprovedId={setApprovedId}
-            />
+            /> */}
           </div>
           {isExpected ? <VotingHistory /> : <CurrentRewards rewards={currentRewards} currentMutate={currentMutate} />}
         </>

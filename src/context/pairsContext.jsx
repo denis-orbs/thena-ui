@@ -112,6 +112,7 @@ const usePairs = () => {
 
           return {
             ...ele,
+            apr: `${ele.apr || 0}%`,
             tokens,
             type: PAIR_TYPES.WEIGHTED,
             subpools: [],
