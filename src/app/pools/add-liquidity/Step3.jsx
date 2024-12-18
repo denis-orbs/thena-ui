@@ -187,6 +187,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
                 quoteCurrency={quoteCurrency}
                 mintInfo={mintInfo}
                 slippage={slippage}
+                strategy={strategy}
               />
             </div>
           </>

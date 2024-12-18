@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import React, { useCallback } from 'react'
+import { zeroAddress } from 'viem'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
@@ -11,7 +12,7 @@ import { warnToast } from '@/lib/notify'
 import { Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
 
-export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slippage }) {
+export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slippage, strategy }) {
   const { account } = useWallet()
   const { errorMessage } = mintInfo
   const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
@@ -26,8 +27,21 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
       return
     }
 
-    onAlgebraAdd(amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline)
-  }, [errorMessage, onAlgebraAdd, amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline])
+    // TODO: CHECK strategy.address
+    const isFarming = strategy?.address === zeroAddress
+    onAlgebraAdd(amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline, isFarming)
+  }, [
+    errorMessage,
+    strategy,
+    onAlgebraAdd,
+    amountA,
+    amountB,
+    baseCurrency,
+    quoteCurrency,
+    mintInfo,
+    slippage,
+    deadline,
+  ])
 
   if (!account) {
     return <ConnectButton className='w-full' />

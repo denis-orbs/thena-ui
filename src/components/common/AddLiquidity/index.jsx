@@ -100,6 +100,7 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
             isReverse={isReverse}
             slippage={slippage}
             isModal={isModal}
+            strategy={strategy}
           />
         ))}
     </>
