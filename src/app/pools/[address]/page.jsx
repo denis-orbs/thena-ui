@@ -27,7 +27,6 @@ import { PoolChart } from '@/modules/Pools/PoolCharts'
 import Position from '@/modules/Position'
 import ManualPosition from '@/modules/Position/ManualPosition'
 import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
-import { useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite, LinkExternalIcon } from '@/svgs'
 
@@ -36,6 +35,20 @@ import { listPoolAddressSpecial } from '../page'
 
 const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
 const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
+
+function NoPosition() {
+  const t = useTranslations()
+  return (
+    <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-10'>
+      <Highlight>
+        <InfoCircleWhite className='h-4 w-4' />
+      </Highlight>
+      <div className='flex flex-col items-center gap-3'>
+        <h2>{t('No Position Found')}</h2>
+      </div>
+    </div>
+  )
+}
 
 export default function SpecificPoolPage({ params }) {
   const t = useTranslations()
@@ -46,8 +59,6 @@ export default function SpecificPoolPage({ params }) {
   const { networkId } = useChainSettings()
 
   const windowSize = useWindowSize()
-
-  const { strategy } = useV3MintState()
 
   const [showModalAdd, setShowModalAdd] = useState(false)
 
@@ -72,10 +83,14 @@ export default function SpecificPoolPage({ params }) {
     [manuals, pool],
   )
 
+  console.log({ userManuals, userPools })
+
   const userPositions = useMemo(
-    () => [...userPools, ...userManuals].filter(position => position.version === 3),
+    () => [...userPools, ...userManuals].filter(position => position.version === 3).filter(item => Boolean(item)),
     [userManuals, userPools],
   )
+
+  console.log({ userPositions })
 
   if (isLoading || !pool) {
     return <Loading />
@@ -342,90 +357,76 @@ export default function SpecificPoolPage({ params }) {
               <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
                 {t('Pool Attributes')}
               </TextHeading>
-              {strategy ? (
-                <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
-                  <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
-                    <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
+              <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
+                  <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
+                  <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Type')}:</div>
+                  <div className='col-span-5 text-neutral-50'>{pool?.type}</div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
+                  <div className='col-span-5 text-neutral-50'>
+                    {pool?.fee}% ({t('editable by governance')})
                   </div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
+                  <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
+                </div>
+                {pool?.owner ? (
                   <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
-                    <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
-                  </div>
-                  <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('Type')}:</div>
-                    <div className='col-span-5 text-neutral-50'>{pool?.type}</div>
-                  </div>
-                  <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
-                    <div className='col-span-5 text-neutral-50'>
-                      {pool?.fee}% ({t('editable by governance')})
-                    </div>
-                  </div>
-                  <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
-                    <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
-                  </div>
-                  {pool?.owner ? (
-                    <div className='grid grid-cols-7'>
-                      <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
-                      <div className='col-span-5 text-neutral-50'>
-                        <div
-                          onClick={() => goScan(networkId, pool?.owner)}
-                          className='item-center flex cursor-pointer gap-1'
-                        >
-                          <span>{formatAddress(pool?.owner)}</span>
-                          <LinkExternalIcon className='inline-block h-4 w-4' />
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                  <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
-                    <div className='col-span-5 text-neutral-50'>
-                      {t('Immutable except for swap fees editable by governance')}
-                    </div>
-                  </div>
-                  {pool?.createdAt ? (
-                    <div className='grid grid-cols-7'>
-                      <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
-                      <div className='col-span-5 text-neutral-50'>{pool?.createdAt}</div>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                  <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
-                    <div className='col-span-5 text-neutral-50'>$0</div>
-                  </div>
-                  <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
+                    <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
                     <div className='col-span-5 text-neutral-50'>
                       <div
-                        onClick={() => goScan(networkId, pool?.address)}
+                        onClick={() => goScan(networkId, pool?.owner)}
                         className='item-center flex cursor-pointer gap-1'
                       >
-                        <span>{formatAddress(pool?.address)}</span>
+                        <span>{formatAddress(pool?.owner)}</span>
                         <LinkExternalIcon className='inline-block h-4 w-4' />
                       </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-[120px]'>
-                  <Highlight>
-                    <InfoCircleWhite className='h-4 w-4' />
-                  </Highlight>
-                  <div className='flex flex-col items-center gap-3'>
-                    <h2>{t('Select Pool Strategy')}</h2>
-                    <Paragraph className='mt-3 text-center'>
-                      {t("You have to select the pool strategy first to see it's [symbol]", { text: 'attributes' })}
-                    </Paragraph>
+                ) : (
+                  <></>
+                )}
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
+                  <div className='col-span-5 text-neutral-50'>
+                    {t('Immutable except for swap fees editable by governance')}
                   </div>
                 </div>
-              )}
+                {pool?.createdAt ? (
+                  <div className='grid grid-cols-7'>
+                    <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
+                    <div className='col-span-5 text-neutral-50'>{pool?.createdAt}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
+                  <div className='col-span-5 text-neutral-50'>${formatAmount(pool?.lpPrice || 0)}</div>
+                </div>
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
+                  <div className='col-span-5 text-neutral-50'>
+                    <div
+                      onClick={() => goScan(networkId, pool?.address)}
+                      className='item-center flex cursor-pointer gap-1'
+                    >
+                      <span>{formatAddress(pool?.address)}</span>
+                      <LinkExternalIcon className='inline-block h-4 w-4' />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -440,30 +441,21 @@ export default function SpecificPoolPage({ params }) {
             <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
               {t('My Positions')}
             </TextHeading>
-            {pool.type === PAIR_TYPES.WEIGHTED && !isInvalidAmount(weightedPoolBalance) ? (
-              <div className='grid grid-cols-1 gap-4'>
-                {pool.type === PAIR_TYPES.WEIGHTED ? (
-                  <WeightedPoolPosition pool={pool} />
-                ) : (
-                  userPositions.map((ele, idx) =>
-                    ele.type === 'Manual' ? (
-                      <ManualPosition position={ele} key={`pos-${idx}`} />
-                    ) : (
-                      <Position pool={ele} key={ele?.address} />
-                    ),
-                  )
-                )}
-              </div>
-            ) : (
-              <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-10'>
-                <Highlight>
-                  <InfoCircleWhite className='h-4 w-4' />
-                </Highlight>
-                <div className='flex flex-col items-center gap-3'>
-                  <h2>{t('No Position Found')}</h2>
-                </div>
-              </div>
-            )}
+            <div className='grid grid-cols-1 gap-4'>
+              {pool.type === PAIR_TYPES.WEIGHTED ? (
+                <>{!isInvalidAmount(weightedPoolBalance) ? <WeightedPoolPosition pool={pool} /> : <NoPosition />}</>
+              ) : userPositions && userPositions.length > 0 ? (
+                userPositions.map((ele, idx) =>
+                  ele.type === 'Manual' ? (
+                    <ManualPosition pool={ele} key={`pos-${idx}`} />
+                  ) : (
+                    <Position pool={ele} key={ele?.address} />
+                  ),
+                )
+              ) : (
+                <NoPosition />
+              )}
+            </div>
           </div>
         </div>
         {/* Add liquidity (On mobile) */}

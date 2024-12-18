@@ -54,6 +54,7 @@ export default function ManualPosition({ pool }) {
   const t = useTranslations()
   const { mutateManual } = useContext(ManualsContext)
   const { account, chainId } = useWallet()
+  console.log({ pool })
   const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = pool
 
   const [claimPopup, setClaimPopup] = useState(false)

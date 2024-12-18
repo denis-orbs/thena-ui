@@ -17,8 +17,8 @@ import { fromWei } from '@/lib/utils'
 import { updatePools } from './actions'
 import { useChainSettings } from '../settings/hooks'
 
-const fetchUserFusions = async (url, account, pools) => {
-  const pairInfos = await fetchPairInfos(pools, account)
+const fetchUserFusions = async (_, account) => {
+  const pairInfos = await fetchPairInfos(account)
   return pairInfos.map(pool => {
     const { pair_address, claimable0, claimable1, account_lp_balance, account_gauge_earned, account_gauge_balance } =
       pool
