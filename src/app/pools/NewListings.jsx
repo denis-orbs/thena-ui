@@ -13,18 +13,17 @@ import { GAMMA_TYPES } from '@/constant'
 import { formatAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
-function Title({ length }) {
-  const t = useTranslations()
+function Title({ title, length }) {
   return (
-    <div className='flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
-      🔥 {t('New Listings')} ({length})
+    <div className='z-40 flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
+      {title} ({length})
     </div>
   )
 }
 
-function NewListings({ pools, sortOptions, listPoolAddressSpecial }) {
+function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
   const t = useTranslations()
-  const [sort, setSort] = useState(sortOptions[2])
+  const [sort, setSort] = useState(sortOptions[1])
   const newSortOptions = [...sortOptions]
   const [currentPage, setCurrentPage] = useState(1)
   const { push } = useRouter()
@@ -271,7 +270,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial }) {
       className='min-h-[76px] rounded-xl bg-neutral-900'
       classNames={{ chevron: 'mr-6', content: '-mt-7' }}
       defaultShow={false}
-      title={<Title length={pools.length} />}
+      title={<Title length={pools.length} title={title} />}
     >
       <Table
         sortOptions={newSortOptions}

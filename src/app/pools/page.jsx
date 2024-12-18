@@ -138,19 +138,9 @@ export default function PoolsPage() {
           })
   }, [isInactive, filter, strategy, searchText, pairs])
 
-  // TODO: If new pools, update here
-  const newListPoolIds = [
-    '0x987c794c0786ee5cd6b34b7e32aa21098cd6b806', // ZRO/BNB
-    '0xb3f3312252cade3a15eba318f6caaacb5e8097f4', // BNB/RWA
-    '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7', // uniBTC/FBTC
-    '0x716fe318602a603959c3af4676aed74b22c615da', // BNB/MGP
-    '0x11f3c9ca27ed4931efd0fbe0fd5dfc75157a1ea9', // BNB/KOMA
-    '0x47600bc3ae9b5b97ef92a55e550066944fe17670', // BNB/lpBNB
-    '0x58cad2ea28853bbe1501188787c10469b2f0c4f1', // BNB/COCO
-    '0xc57061da1894ae58fb834f6db33e9a45cc4e7807', // MONKY/BNB
-  ]
+  const newListingsPool = filteredPools.filter(item => item.isNewListing)
 
-  const newListingsPool = filteredPools.filter(item => newListPoolIds.includes(item.address))
+  const hotPools = filteredPools.filter(item => item.isHotPool)
 
   const sortedData = useMemo(
     () =>
@@ -509,9 +499,21 @@ export default function PoolsPage() {
             {t('Add Liquidity')}
           </PrimaryButton>
         </div>
+        {/* New Listings pool */}
         {newListingsPool.length > 0 && (
           <NewListings
+            title={<>✨ {t('New Listings')}</>}
             pools={newListingsPool}
+            sortOptions={sortOptions}
+            listPoolAddressSpecial={listPoolAddressSpecial}
+          />
+        )}
+
+        {/* Hot Pools */}
+        {hotPools.length > 0 && (
+          <NewListings
+            title={<>🔥 {t('Hot Pools')}</>}
+            pools={hotPools}
             sortOptions={sortOptions}
             listPoolAddressSpecial={listPoolAddressSpecial}
           />
