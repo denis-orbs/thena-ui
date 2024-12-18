@@ -530,7 +530,7 @@ export default function ChooseStrategy({
               )}
             </div>
 
-            {isAutomatic && (
+            {isAutomatic && strategy && (
               <>
                 {!mintInfo.noLiquidity && strategyData && (
                   <>

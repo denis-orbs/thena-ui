@@ -17,7 +17,7 @@ let init = false
 export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModal = false, isAdd = false }) {
   const [pairType, setPairType] = useState(PAIR_TYPES.LSD)
   const [strategy, setStrategy] = useState()
-  const [isAutomatic, setIsAutomatic] = useState(true)
+  const [isAutomatic, setIsAutomatic] = useState(false)
   const [isReverse, setIsReverse] = useState(true)
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
