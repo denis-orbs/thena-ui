@@ -83,14 +83,10 @@ export default function SpecificPoolPage({ params }) {
     [manuals, pool],
   )
 
-  console.log({ userManuals, userPools })
-
   const userPositions = useMemo(
     () => [...userPools, ...userManuals].filter(position => position.version === 3).filter(item => Boolean(item)),
     [userManuals, userPools],
   )
-
-  console.log({ userPositions })
 
   if (isLoading || !pool) {
     return <Loading />
