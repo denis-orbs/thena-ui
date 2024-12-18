@@ -4,6 +4,7 @@ import algebraFactoryAbi from './algebraFactoryAbi.json'
 import algebraInterfaceMultiCallAbi from './algebraInterfaceMultiCall.json'
 import algebraPoolDeployerAbi from './algebraPoolDeployerTestnet.json'
 import algebraVaultFactoryStubAbi from './algebraVaultFactoryStubTestnet.json'
+import basePluginAbi from './basePluginAbi.json'
 import bribeAbi from './bribe.json'
 import claimerAbi from './claimer.json'
 import dibsAbi from './dibs.json'
@@ -69,6 +70,7 @@ export {
   algebraPoolV3,
   algebraVaultFactoryStubAbi,
   arabicAbi,
+  basePluginAbi,
   bribeAbi,
   characterSetAbi,
   claimerAbi,

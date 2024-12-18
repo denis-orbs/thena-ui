@@ -1,6 +1,6 @@
 import { useReadContract } from 'wagmi'
 
-import { algebraPoolV3, thenaBasePluginAbi } from '@/constant/abi'
+import { algebraPoolV3, basePluginAbi } from '@/constant/abi'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { getAlgebraFactoryContract } from '@/lib/contracts'
 
@@ -48,7 +48,7 @@ export const usePoolAlgebraInfo = (token0Address, token1Address) => {
 
   const { data: incentiveAddress } = useReadContract({
     address: pluginAddress,
-    abi: thenaBasePluginAbi,
+    abi: basePluginAbi,
     functionName: 'incentive',
     query: {
       enabled: !!pluginAddress,

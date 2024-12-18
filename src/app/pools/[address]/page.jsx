@@ -1,8 +1,11 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
+import { zeroAddress } from 'viem'
+import { useReadContract } from 'wagmi'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -17,11 +20,12 @@ import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { basePluginAbi } from '@/constant/abi'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAddress, formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
+import { cn, formatAddress, formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
 import Position from '@/modules/Position'
@@ -87,6 +91,16 @@ export default function SpecificPoolPage({ params }) {
     () => [...userPools, ...userManuals].filter(position => position.version === 3).filter(item => Boolean(item)),
     [userManuals, userPools],
   )
+
+  const { data: feeType } = useReadContract({
+    address: pool?.plugInAddress,
+    abi: basePluginAbi,
+    functionName: 'feeType',
+    query: {
+      enabled: !!pool?.plugInAddress && pool.plugInAddress !== zeroAddress,
+      staleTime: Infinity,
+    },
+  })
 
   if (isLoading || !pool) {
     return <Loading />
@@ -369,7 +383,23 @@ export default function SpecificPoolPage({ params }) {
                 <div className='grid grid-cols-7'>
                   <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
                   <div className='col-span-5 text-neutral-50'>
-                    {pool?.fee}% ({t('editable by governance')})
+                    <span className='mr-1'>{pool?.fee}%</span>
+                    <span className={cn(pool.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
+
+                    <Link
+                      target='_blank'
+                      className={cn(
+                        'hidden text-primary-400',
+                        pool?.plugInAddress && pool?.plugInAddress !== zeroAddress && 'inline-block',
+                      )}
+                      href={
+                        feeType
+                          ? 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/sliding-fee'
+                          : 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/adaptive-fee'
+                      }
+                    >
+                      {feeType ? '(Sliding)' : '(Adaptive)'}
+                    </Link>
                   </div>
                 </div>
                 <div className='grid grid-cols-7'>
