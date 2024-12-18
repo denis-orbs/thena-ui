@@ -143,7 +143,7 @@ export const useAlgebraAdd = (version = 3) => {
         }
 
         if (isFarming) {
-          // MARK: APPROVE LP TOKEN FOR FAIMING
+          // MARK: APPROVE LP TOKEN FOR FARMING
           const decodeData = NonfungiblePositionManager.getMintedPosition(addTxRecieve, chainId)
           const nftId = decodeData.args?.tokenId
           const poolAddress = decodeData.args?.pool
@@ -159,7 +159,7 @@ export const useAlgebraAdd = (version = 3) => {
             return
           }
 
-          // MARK: STAKE LP TOKEN FOR FAIMING
+          // MARK: STAKE LP TOKEN FOR FARMING
           const poolKey = await readCall(incentiveMaker, 'poolToKey', [poolAddress], chainId)
           if (!(await writeTxn(key, stakeId, farmingCenter, 'enterFarming', [poolKey, nftId]))) {
             setPending(false)
@@ -286,7 +286,7 @@ export const useAlgebraEnterFarming = () => {
       setPending(true)
 
       if (isNotAppproved) {
-        // MARK: APPROVE LP TOKEN FOR FAIMING
+        // MARK: APPROVE LP TOKEN FOR FARMING
         const txHash = await writeTxn(key, approveId, positionManger, 'approveForFarming', [
           tokenId,
           true,
@@ -298,7 +298,7 @@ export const useAlgebraEnterFarming = () => {
         }
       }
 
-      // MARK: STAKE LP TOKEN FOR FAIMING
+      // MARK: STAKE LP TOKEN FOR FARMING
       const poolKey = await readCall(incentiveMaker, 'poolToKey', [poolAddress], chainId)
       const txHash = await writeTxn(key, stakeId, farmingCenter, 'enterFarming', [poolKey, tokenId])
       if (!txHash) {
@@ -719,7 +719,7 @@ export const useAlgebraMigration = () => {
       }
 
       if (isFarming) {
-        // MARK: APPROVE LP TOKEN FOR FAIMING
+        // MARK: APPROVE LP TOKEN FOR FARMING
         const decodeData = NonfungiblePositionManager.getMintedPosition(addTxRecieve, chainId)
         const nftId = decodeData.args?.tokenId
         const poolAddress = decodeData.args?.pool
@@ -731,7 +731,7 @@ export const useAlgebraMigration = () => {
           return
         }
 
-        // MARK: STAKE LP TOKEN FOR FAIMING
+        // MARK: STAKE LP TOKEN FOR FARMING
         const poolKey = await readCall(incentiveMaker, 'poolToKey', [poolAddress], chainId)
         if (!(await writeTxn(key, stakeId, farmingCenter, 'enterFarming', [poolKey, nftId]))) {
           setPending(false)

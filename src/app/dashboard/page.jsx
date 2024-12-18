@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
@@ -14,7 +15,7 @@ import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
 import Toggle from '@/components/toggle'
 // import NextImage from '@/components/common/NextImage'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
@@ -31,7 +32,7 @@ import NotStaked from '@/modules/Position/NotStaked'
 import Staked from '@/modules/Position/Staked'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite } from '@/svgs'
+import { InfoCircleWhite, InfoIcon } from '@/svgs'
 
 import NotConnected from './NotConnected'
 
@@ -140,6 +141,8 @@ export default function HoldingsPage() {
     router.prefetch('/dashboard/thenft')
   }, [router])
 
+  const isShowMigrationWarning = useMemo(() => userManuals.some(ele => ele.version === 2), [userManuals])
+
   return (
     <div className='flex flex-col gap-4'>
       <h2>{t('Assets')}</h2>
@@ -160,6 +163,7 @@ export default function HoldingsPage() {
               </div>
               <Paragraph className='text-sm'>{t('veTHE Holdings')}</Paragraph>
             </Box>
+
             <Box className='flex w-full items-center justify-between'>
               <div className='flex-col gap-2'>
                 <div className='flex items-center gap-1'>
@@ -189,6 +193,33 @@ export default function HoldingsPage() {
               <Paragraph className='text-sm'>{t('Voting Rewards')}</Paragraph>
             </Box>
           </div>
+
+          <Box
+            className={cn(
+              'mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950',
+              !isShowMigrationWarning && 'hidden',
+            )}
+          >
+            <div className='h-8 w-8'>
+              <InfoIcon className='h-8 w-8 stroke-primary-600' />
+            </div>
+
+            <div className='flex flex-col'>
+              <TextHeading className='text-xl text-neutral-100'>
+                {t('Migrate Your Conc Liquidity Positions')}
+              </TextHeading>
+              <TextSubHeading className='text-base text-primary-100'>
+                {t('Migrate Your Conc Liquidity Positions description')}
+                &nbsp;
+                <span>
+                  <Link className='text-primary-600' href='/'>
+                    {t('Learn more')}
+                  </Link>
+                </span>
+              </TextSubHeading>
+            </div>
+          </Box>
+
           <div className='flex flex-col gap-4'>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center justify-between'>

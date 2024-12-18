@@ -20,9 +20,10 @@ import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
+import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useChainSettings } from '@/state/settings/hooks'
 import { ArrowRightIcon, InfoIcon } from '@/svgs'
@@ -98,8 +99,6 @@ export default function PoolsPage() {
   const vaults = useVaults()
   const { networkId } = useChainSettings()
   const t = useTranslations()
-
-  // console.log({ pairs })
 
   const filteredPools = useMemo(() => {
     let final
@@ -418,6 +417,9 @@ export default function PoolsPage() {
     setCurrentPage(1)
   }, [filter, strategy, searchText, isInactive])
 
+  const userManuals = useManuals()
+  const isShowMigrationWarning = useMemo(() => userManuals.some(ele => ele.version === 2), [userManuals])
+
   return (
     <div>
       {vaults.length > 0 && (
@@ -486,10 +488,18 @@ export default function PoolsPage() {
           </div>
         </>
       )}
-      <Box className='mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950'>
+
+      {/* TODO: only show when CL pool V2 (ICHI/GAMMA or manual */}
+      <Box
+        className={cn(
+          'mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950',
+          !isShowMigrationWarning && 'hidden',
+        )}
+      >
         <div className='h-8 w-8'>
           <InfoIcon className='h-8 w-8 stroke-primary-600' />
         </div>
+
         <div className='flex flex-col'>
           <TextHeading className='text-xl text-neutral-100'>{t('Migrate Your Conc Liquidity Positions')}</TextHeading>
           <TextSubHeading className='text-base text-primary-100'>
@@ -502,6 +512,11 @@ export default function PoolsPage() {
             </span>
           </TextSubHeading>
         </div>
+
+        {/* <PrimaryButton className='flex min-w-fit items-center gap-1' onClick={() => push('/dashboard')}> */}
+        {/*   <span>Migrate now</span> */}
+        {/*   <ArrowRightIcon className='h-5 w-5' /> */}
+        {/* </PrimaryButton> */}
       </Box>
 
       {/* <div className='mt-6 flex flex-col gap-4'>
