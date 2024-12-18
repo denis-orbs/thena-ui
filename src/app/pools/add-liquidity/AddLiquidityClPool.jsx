@@ -40,6 +40,7 @@ function AddLiquidityClPool({
         </div>
         {pool.type === PAIR_TYPES.LSD && (
           <ChooseStrategy
+            pool={pool}
             pairType={PAIR_TYPES.LSD}
             firstAsset={assets.find(asset => asset.address.toLowerCase() === pool?.token0?.address?.toLowerCase())}
             secondAsset={assets.find(asset => asset.address.toLowerCase() === pool?.token1?.address?.toLowerCase())}

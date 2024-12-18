@@ -10,6 +10,7 @@ import { maxUint128, zeroAddress } from 'viem'
 import { useReadContract, useReadContracts, useSimulateContract } from 'wagmi'
 
 import Loading from '@/app/loading'
+import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import { incentiveActive, strategiesManual } from '@/components/common/AddLiquidity/ChooseStrategy'
@@ -21,6 +22,7 @@ import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { ManualsContext } from '@/context/manualsContext'
+import { usePairs } from '@/context/pairsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraMigration } from '@/hooks/fusion/useAlgebra'
 import { useFusionState } from '@/hooks/fusion/useFusions'
@@ -31,7 +33,7 @@ import { getAlgebraNPMContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { getTokenInfo } from '@/lib/helper'
 import { warnToast } from '@/lib/notify'
-import { cn } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { AdjustNewPositionModal, GaugeItemManual } from '@/modules/Pools/Migration'
 import { ArrowLeftIcon, ArrowNarrowUpRightIcon, ArrowRightIcon } from '@/svgs'
 
@@ -70,35 +72,71 @@ export function ManualMigrationPage({ tokenId }) {
   const currencyA = useCurrency(firstAsset?.address)
   const currencyB = useCurrency(secondAsset?.address)
   const [currency0, currency1] = currencyA.sortsBefore(currencyB) ? [currencyA, currencyB] : [currencyB, currencyA]
-  const { incentiveAddress } = usePoolAlgebraInfo(firstAsset?.address, secondAsset?.address)
+  const { incentiveAddress, poolAddress } = usePoolAlgebraInfo(firstAsset?.address, secondAsset?.address)
 
-  const strategyData = useMemo(
-    () =>
-      strategiesManual.concat(incentiveActive).map(item => ({
+  const { pairs } = usePairs()
+  const pool = useMemo(
+    () => pairs.find(ele => ele?.address.toLowerCase() === poolAddress.toLowerCase()),
+    [poolAddress, pairs],
+  )
+
+  const strategyData = useMemo(() => {
+    const manualStrategy = [
+      {
         content: (
-          <div className='flex w-1/2 items-center justify-between'>
+          <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading>Manual ({item?.title})</TextHeading>
+              <TextHeading>Manual ({strategiesManual?.title})</TextHeading>
               <div className='mt-1 flex gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>TODO%</Paragraph>
+                  <Paragraph className='text-sm'>{pool?.apr ?? 0}</Paragraph>
                 </div>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>$TODO</Paragraph>
+                  <Paragraph className='text-sm'>${formatAmount(pool?.tvlUSD)}</Paragraph>
                 </div>
               </div>
             </div>
+            <NeutralBadge>{strategiesManual.description}</NeutralBadge>
           </div>
         ),
-        active: strategy?.address === item.address,
+        active: strategy?.address === strategiesManual.address,
         onClickHandler: () => {
-          setStrategy(item)
+          setStrategy(strategiesManual)
         },
-      })),
-    [strategy?.address, t],
-  )
+      },
+    ]
+
+    if (incentiveAddress && incentiveAddress !== zeroAddress) {
+      manualStrategy.push({
+        content: (
+          <div className='flex flex-1 items-center justify-between'>
+            <div>
+              <TextHeading>Manual ({incentiveActive?.title})</TextHeading>
+              <div className='mt-1 flex gap-2'>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
+                  <Paragraph className='text-sm'>{formatAmount(pool?.aprFarming)}%</Paragraph>
+                </div>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
+                  <Paragraph className='text-sm'>${formatAmount(pool?.tvlFarming)}</Paragraph>
+                </div>
+              </div>
+            </div>
+            <NeutralBadge>{incentiveActive.description}</NeutralBadge>
+          </div>
+        ),
+        active: strategy?.address === incentiveActive.address,
+        onClickHandler: () => {
+          setStrategy(incentiveActive)
+        },
+      })
+    }
+
+    return manualStrategy
+  }, [incentiveAddress, pool?.apr, pool?.aprFarming, pool?.tvlFarming, pool?.tvlUSD, strategy?.address, t])
 
   const { data: poolAddresses } = useReadContracts({
     contracts: [

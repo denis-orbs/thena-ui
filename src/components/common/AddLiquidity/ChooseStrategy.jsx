@@ -19,7 +19,6 @@ import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
-import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
@@ -37,25 +36,23 @@ import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const feeAmount = 3000
 
-export const strategiesManual = [
-  {
-    type: 'manual',
-    title: 'Swap Fees',
-    address: 'manual-swap-fees',
-    min: 100,
-    max: 150,
-  },
-]
+export const strategiesManual = {
+  type: 'manual',
+  title: 'Swap Fees',
+  address: 'manual-swap-fees',
+  description: '80% Fees',
+  min: 100,
+  max: 150,
+}
 
-export const incentiveActive = [
-  {
-    type: 'manual',
-    title: '$THE Emissions',
-    address: zeroAddress,
-    min: 100,
-    max: 150,
-  },
-]
+export const incentiveActive = {
+  type: 'manual',
+  title: '$THE Emissions',
+  address: zeroAddress,
+  description: '$THE + 10% Fees',
+  min: 100,
+  max: 150,
+}
 
 const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
@@ -105,6 +102,7 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
 }
 
 export default function ChooseStrategy({
+  pool,
   pairType,
   firstAsset,
   secondAsset,
@@ -134,10 +132,10 @@ export default function ChooseStrategy({
         pairType === ele.type,
     )
     if (!found) return
-    const pool = (fusionPairs ?? []).find(ele => found.address.toLowerCase() === ele.address)
+    const fusionPool = (fusionPairs ?? []).find(ele => found.address.toLowerCase() === ele.address)
     return {
       ...found,
-      currentTick: Number(pool?.globalState.tick || 0),
+      currentTick: Number(fusionPool?.globalState.tick || 0),
     }
   }, [pairs, fusionPairs, firstAsset, secondAsset, pairType])
 
@@ -157,8 +155,6 @@ export default function ChooseStrategy({
     token1Address: wrappedAddress(pair?.token1),
     timeWindow,
   })
-
-  const { incentiveAddress } = usePoolAlgebraInfo(firstAsset?.address, secondAsset?.address)
 
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onStartPriceInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
@@ -255,34 +251,61 @@ export default function ChooseStrategy({
       },
     }))
 
-    // TODO: add manual strategy
-    const manualStrategy = strategiesManual
-      .concat(incentiveAddress !== zeroAddress ? incentiveActive : [])
-      .map(item => ({
+    const manualStrategy = [
+      {
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading>Manual ({item?.title})</TextHeading>
+              <TextHeading>Manual ({strategiesManual?.title})</TextHeading>
               <div className='mt-1 flex gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>TODO%</Paragraph>
+                  <Paragraph className='text-sm'>{pool?.apr ?? 0}</Paragraph>
                 </div>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>$TODO</Paragraph>
+                  <Paragraph className='text-sm'>${formatAmount(pool?.tvlUSD)}</Paragraph>
                 </div>
               </div>
             </div>
+            <NeutralBadge>{strategiesManual.description}</NeutralBadge>
           </div>
         ),
-        active: strategy?.address === item.address,
+        active: strategy?.address === strategiesManual.address,
         onClickHandler: () => {
-          setStrategy(item)
+          setStrategy(strategiesManual)
         },
-      }))
+      },
+    ]
+
+    if (Boolean(pool?.incentiveAddress) && pool.incentiveAddress !== zeroAddress) {
+      manualStrategy.push({
+        content: (
+          <div className='flex flex-1 items-center justify-between'>
+            <div>
+              <TextHeading>Manual ({incentiveActive?.title})</TextHeading>
+              <div className='mt-1 flex gap-2'>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
+                  <Paragraph className='text-sm'>{formatAmount(pool?.aprFarming)}%</Paragraph>
+                </div>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
+                  <Paragraph className='text-sm'>${formatAmount(pool?.tvlFarming)}</Paragraph>
+                </div>
+              </div>
+            </div>
+            <NeutralBadge>{incentiveActive.description}</NeutralBadge>
+          </div>
+        ),
+        active: strategy?.address === incentiveActive.address,
+        onClickHandler: () => {
+          setStrategy(incentiveActive)
+        },
+      })
+    }
     return [...autoStrategy, ...manualStrategy]
-  }, [pair.subpools, incentiveAddress, t, strategy?.address, setStrategy])
+  }, [pair?.subpools, t, pool, strategy?.address, setStrategy])
 
   // const autoSelections = useMemo(
   //   () => [
@@ -367,7 +390,7 @@ export default function ChooseStrategy({
   )
 
   useEffect(() => {
-    if (strategy?.address === strategiesManual[0].address || strategy?.address === incentiveActive[0].address) {
+    if (strategy?.address === strategiesManual.address || strategy?.address === incentiveActive.address) {
       setIsAutomatic(false)
       dispatch(updateStrategy({ strategy }))
       // dispatch(updateSelectedPreset({ preset: null }))
