@@ -22,7 +22,7 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
       liquidityHub.getTokens(liquidityHubEnabled),
     ])
     const assets = _.filter(
-      _.uniqBy([...assetsCall.data, ...liquidityHubTokens], it => it.address.toLowerCase()),
+      _.uniqBy([...liquidityHubTokens, ...assetsCall.data], it => it.address.toLowerCase()),
       it => it.chainId === networkId,
     )
 

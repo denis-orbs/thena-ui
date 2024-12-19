@@ -131,10 +131,13 @@ const useQuoteQuery = ({ fromAsset, toAsset, fromAmount = '', bestTrade }) => {
     refetchInterval: 10_000,
     enabled: enabled && !!account && !isInvalidAmount(fromAmount) && !!fromAsset && !!toAsset,
     gcTime: 0,
-    retry: 2,
+    retry: isLHToken ? 3 : 0,
   })
 
-  const refetch = useCallback(async () => (await query.refetch()).data, [query.refetch])
+  const refetch = useCallback(async () => {
+    const refetchFn = async () => (await query.refetch()).data
+    return await promiseWithTimeout(refetchFn(), 9_000)
+  }, [query])
 
   return { ...query, refetch }
 }
@@ -179,6 +182,10 @@ const useSubmitTransaction = () => {
           throw new Error('Missing txHash')
         }
         const tx = await lhSdk.getTransactionDetails(txHash, quote)
+        if (!tx) {
+          throw new Error('transaction failed')
+        }
+
         updateTxn({
           key: TX_UPDATER_KEYS.key,
           uuid: TX_UPDATER_KEYS.swapuuid,
@@ -372,7 +379,7 @@ const useGetBetterPrice = fetchLiquidityHubQuote => {
       try {
         if (!liquidityHubEnabled || skip) return
         setSeekingBestPrice(true)
-        const quote = await promiseWithTimeout(fetchLiquidityHubQuote(), 8_000)
+        const quote = await fetchLiquidityHubQuote()
         const dexMinAmountOut = subtractSlippage(slippage, dexOutAmount) || 0
         return BN(quote?.userMinOutAmountWithGas || 0).gt(dexMinAmountOut) ? quote : undefined
       } catch (error) {
