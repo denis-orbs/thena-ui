@@ -264,7 +264,9 @@ export default function ChooseStrategy({
                 </div>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>${formatAmount(pool?.tvlUSD)}</Paragraph>
+                  <Paragraph className='text-sm'>
+                    ${formatAmount(Number(pool?.tvlUSD ?? 0) - Number(pool?.tvlFarming ?? 0))}
+                  </Paragraph>
                 </div>
               </div>
             </div>

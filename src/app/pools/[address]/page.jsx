@@ -19,10 +19,11 @@ import NextImage from '@/components/image/NextImage'
 import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { PAIR_TYPES, SCAN_URLS, UNKNOWN_LOGO } from '@/constant'
 import { basePluginAbi } from '@/constant/abi'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
+import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, formatAddress, formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
@@ -102,6 +103,8 @@ export default function SpecificPoolPage({ params }) {
       staleTime: Infinity,
     },
   })
+
+  const { poolAdministrators, pluginAdministrators } = useGetAdministrator()
 
   const createdAt = useMemo(() => {
     const date = new Date(pool.createdAt)
@@ -419,6 +422,34 @@ export default function SpecificPoolPage({ params }) {
                     </Link>
                   </div>
                 </div>
+
+                <div className='grid grid-cols-7'>
+                  <div className='col-span-2 text-neutral-300'>{t('Pool Access Control Roles')}:</div>
+                  <div className='col-span-5 text-neutral-50'>
+                    <ul className='flex gap-1'>
+                      <li>Pool Administrator:</li>
+                      {poolAdministrators.map(addr => (
+                        <li key={addr} className='text-primary-400'>
+                          <Link href={`${SCAN_URLS[networkId]}/address/${addr}`} target='_blank'>
+                            {formatAddress(addr)},
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <ul className='flex gap-1'>
+                      <li>Plugin Administrator:</li>
+                      {pluginAdministrators.map(addr => (
+                        <li key={addr} className='text-primary-400'>
+                          <Link href={`${SCAN_URLS[networkId]}/address/${addr}`} target='_blank'>
+                            {formatAddress(addr)},
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
                 <div className='grid grid-cols-7'>
                   <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
                   <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
