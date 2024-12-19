@@ -1,10 +1,14 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useReadContracts } from 'wagmi'
 
 import { PAIR_TYPES } from '@/constant'
+import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '@/hooks/useLocalStorage'
+import useWallet from '@/hooks/useWallet'
+import { fromWei } from '@/lib/utils'
 
 import ChooseStrategy from './ChooseStrategy'
 import FusionAdd from './FusionAdd'
@@ -24,6 +28,7 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
   const [firstAddress, setFirstAddress] = useState()
   const [secondAddress, setSecondAddress] = useState()
   const { getWithExpiry } = useLocalStorage()
+  const { account } = useWallet()
   const assets = useAssets()
 
   useEffect(() => {
@@ -35,13 +40,32 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
     }
   }, [assets, pool, firstAsset, secondAsset, pairType])
 
+  const temp = useMemo(() => getWithExpiry(LOCAL_STORAGE_TOKENS) ?? [], [getWithExpiry])
+
+  const { data: balances } = useReadContracts({
+    contracts: temp.map(token => ({
+      abi: ERC20Abi,
+      address: token.address,
+      functionName: 'balanceOf',
+      args: [account],
+    })),
+    query: {
+      enabled: Boolean(account),
+    },
+  })
+
   useEffect(() => {
-    const temp = getWithExpiry(LOCAL_STORAGE_TOKENS) ?? []
-    const assetList = assets.concat(temp.map(tk => ({ ...tk, price: 0, balance: 0 })))
+    const assetList = assets.concat(
+      temp.map((tk, index) => ({
+        ...tk,
+        price: 0,
+        balance: fromWei(balances?.[index].result || 0n, tk.decimals),
+      })),
+    )
 
     setFirstAsset(assetList.find(ele => ele.address === firstAddress))
     setSecondAsset(assetList.find(ele => ele.address === secondAddress))
-  }, [assets, firstAddress, getWithExpiry, secondAddress])
+  }, [assets, balances, firstAddress, getWithExpiry, secondAddress, temp])
 
   useEffect(() => () => (init = false), [])
 
