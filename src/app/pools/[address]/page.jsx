@@ -31,7 +31,7 @@ import { PoolChart } from '@/modules/Pools/PoolCharts'
 import Position from '@/modules/Position'
 import ManualPosition from '@/modules/Position/ManualPosition'
 import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
-import { useChainSettings } from '@/state/settings/hooks'
+import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite, LinkExternalIcon } from '@/svgs'
 
 import Liquidity from './Liquidity'
@@ -61,6 +61,7 @@ export default function SpecificPoolPage({ params }) {
   const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
+  const { locale } = useLocaleSettings()
 
   const windowSize = useWindowSize()
 
@@ -101,6 +102,22 @@ export default function SpecificPoolPage({ params }) {
       staleTime: Infinity,
     },
   })
+
+  const createdAt = useMemo(() => {
+    const date = new Date(pool.createdAt)
+    const options = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      timeZone: 'UTC',
+      timeZoneName: 'short',
+    }
+
+    return date.toLocaleString(locale, options)
+  }, [locale, pool.createdAt])
 
   if (isLoading || !pool) {
     return <Loading />
@@ -431,7 +448,7 @@ export default function SpecificPoolPage({ params }) {
                 {pool?.createdAt ? (
                   <div className='grid grid-cols-7'>
                     <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
-                    <div className='col-span-5 text-neutral-50'>{pool?.createdAt}</div>
+                    <div className='col-span-5 text-neutral-50'>{createdAt}</div>
                   </div>
                 ) : (
                   <></>
