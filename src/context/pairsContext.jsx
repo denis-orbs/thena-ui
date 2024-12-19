@@ -156,15 +156,21 @@ const usePairs = () => {
               ele.type === pair.type,
           )
           .sort((a, b) => b.gauge.apr.minus(a.gauge.apr).toNumber())
-        const highApr = subpools.length > 0 ? subpools[0].gauge.apr.toNumber() : 0
+
         const poolsWithApr = subpools.filter(ele => ele.gauge.apr.gt(1))
-        const lowApr = poolsWithApr.length > 0 ? poolsWithApr[poolsWithApr.length - 1].gauge.apr.toNumber() : 0
-        const apr =
-          !subpools.length || !highApr
-            ? '0%'
-            : subpools.length === 1 || lowApr === highApr
-              ? `${formatAmount(highApr)}%`
-              : `${formatAmount(lowApr)} ~ ${formatAmount(highApr)}%`
+
+        const initialHighApr = subpools.length > 0 ? subpools[0].gauge.apr.toNumber() : 0
+        const highApr = Math.max(initialHighApr, pair?.aprFarming ?? 0)
+
+        const initialLowApr = poolsWithApr.length > 0 ? poolsWithApr.at(-1).gauge.apr.toNumber() : 0
+        const lowApr = Math.min(initialLowApr, pair?.aprFarming ?? 99999999)
+
+        const apr = !highApr
+          ? '0%'
+          : subpools.length === 1 || lowApr === highApr || lowApr === 0
+            ? `${formatAmount(highApr)}%`
+            : `${formatAmount(lowApr)} ~ ${formatAmount(highApr)}%`
+
         return {
           ...pair,
           apr,
