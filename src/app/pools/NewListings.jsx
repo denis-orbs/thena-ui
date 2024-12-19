@@ -15,7 +15,7 @@ import { InfoIcon } from '@/svgs'
 
 function Title({ title, length }) {
   return (
-    <div className='z-40 flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
+    <div className='flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
       {title} ({length})
     </div>
   )

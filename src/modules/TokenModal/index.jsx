@@ -1,7 +1,8 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import { formatUnits, getAddress, isAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
@@ -9,6 +10,7 @@ import CircleImage from '@/components/image/CircleImage'
 import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
+import RenderIfVisible from '@/components/virtualList'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
@@ -95,6 +97,7 @@ function TokenModal({
 }) {
   const t = useTranslations()
   const { account, chainId } = useWallet()
+  const rootRef = useRef(null)
 
   const baseAssets = useAssets()
   const [customToken, setCustomToken] = useState()
@@ -220,18 +223,35 @@ function TokenModal({
         <Paragraph className='px-3'>{t('Assets')}</Paragraph>
 
         <div className='max-h-[340px] overflow-auto' id='scrollableDiv'>
-          {filteredAssets.map(item => (
-            <ItemToken
-              key={item.address}
-              item={item}
-              setPopup={setPopup}
-              selectedAsset={selectedAsset}
-              setSelectedAsset={setSelectedAsset}
-              otherAsset={otherAsset}
-              setOtherAsset={setOtherAsset}
-              onAssetSelect={onAssetSelect}
-            />
-          ))}
+          {/* {filteredAssets.map(item => ( */}
+          {/*   <ItemToken */}
+          {/*     key={item.address} */}
+          {/*     item={item} */}
+          {/*     setPopup={setPopup} */}
+          {/*     selectedAsset={selectedAsset} */}
+          {/*     setSelectedAsset={setSelectedAsset} */}
+          {/*     otherAsset={otherAsset} */}
+          {/*     setOtherAsset={setOtherAsset} */}
+          {/*     onAssetSelect={onAssetSelect} */}
+          {/*   /> */}
+          {/* ))} */}
+
+          <InfiniteScroll dataLength={filteredAssets.length}>
+            {filteredAssets?.map(item => (
+              <RenderIfVisible root={rootRef.current}>
+                <ItemToken
+                  key={item.address}
+                  item={item}
+                  setPopup={setPopup}
+                  selectedAsset={selectedAsset}
+                  setSelectedAsset={setSelectedAsset}
+                  otherAsset={otherAsset}
+                  setOtherAsset={setOtherAsset}
+                  onAssetSelect={onAssetSelect}
+                />
+              </RenderIfVisible>
+            ))}
+          </InfiniteScroll>
         </div>
       </div>
     </Modal>
