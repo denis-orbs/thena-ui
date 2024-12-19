@@ -22,9 +22,17 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
       liquidityHub.getTokens(liquidityHubEnabled),
     ])
     const assets = _.filter(
-      _.uniqBy([...liquidityHubTokens, ...assetsCall.data], it => it.address.toLowerCase()),
+      _.uniqBy([...assetsCall.data, ...liquidityHubTokens], it => it.address.toLowerCase()),
       it => it.chainId === networkId,
     )
+    // both lists have CAKE, so we need to merge them
+    const cakeIndex = assets.findIndex(it => it.symbol === 'CAKE')
+    if (cakeIndex !== -1) {
+      assets[cakeIndex] = {
+        ...assets[cakeIndex],
+        extended: true,
+      }
+    }
 
     const wbnbPrice = assets.find(
       asset => asset.address.toLowerCase() === Contracts.WBNB[networkId].toLowerCase(),
