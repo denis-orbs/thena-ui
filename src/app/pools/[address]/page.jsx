@@ -1,11 +1,8 @@
 'use client'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
-import { zeroAddress } from 'viem'
-import { useReadContract } from 'wagmi'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -19,21 +16,21 @@ import NextImage from '@/components/image/NextImage'
 import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, SCAN_URLS, UNKNOWN_LOGO } from '@/constant'
-import { basePluginAbi } from '@/constant/abi'
+import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
-import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { cn, formatAddress, formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
+import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
 import Position from '@/modules/Position'
 import ManualPosition from '@/modules/Position/ManualPosition'
 import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
-import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite, LinkExternalIcon } from '@/svgs'
+import { useV3MintState } from '@/state/fusion/hooks'
+import { useChainSettings } from '@/state/settings/hooks'
+import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/svgs'
 
 import Liquidity from './Liquidity'
 import { listPoolAddressSpecial } from '../page'
@@ -62,11 +59,12 @@ export default function SpecificPoolPage({ params }) {
   const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
-  const { locale } = useLocaleSettings()
 
   const windowSize = useWindowSize()
 
   const [showModalAdd, setShowModalAdd] = useState(false)
+
+  const { strategy } = useV3MintState()
 
   const pool = useMemo(
     () => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()),
@@ -93,34 +91,6 @@ export default function SpecificPoolPage({ params }) {
     () => [...userPools, ...userManuals].filter(position => position.version === 3).filter(item => Boolean(item)),
     [userManuals, userPools],
   )
-
-  const { data: feeType } = useReadContract({
-    address: pool?.plugInAddress,
-    abi: basePluginAbi,
-    functionName: 'feeType',
-    query: {
-      enabled: !!pool?.plugInAddress && pool.plugInAddress !== zeroAddress,
-      staleTime: Infinity,
-    },
-  })
-
-  const { poolAdministrators, pluginAdministrators } = useGetAdministrator()
-
-  const createdAt = useMemo(() => {
-    const date = new Date(pool.createdAt)
-    const options = {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-      timeZone: 'UTC',
-      timeZoneName: 'short',
-    }
-
-    return date.toLocaleString(locale, options)
-  }, [locale, pool.createdAt])
 
   if (isLoading || !pool) {
     return <Loading />
@@ -387,120 +357,27 @@ export default function SpecificPoolPage({ params }) {
               <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
                 {t('Pool Attributes')}
               </TextHeading>
-              <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
-                <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
-                  <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
-                </div>
-                <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
-                  <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
-                </div>
-                <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('Type')}:</div>
-                  <div className='col-span-5 text-neutral-50'>{pool?.type}</div>
-                </div>
-                <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
-                  <div className='col-span-5 text-neutral-50'>
-                    <span className='mr-1'>{pool?.fee}%</span>
-                    <span className={cn(pool.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
-
-                    <Link
-                      target='_blank'
-                      className={cn(
-                        'hidden text-primary-400',
-                        pool?.plugInAddress && pool?.plugInAddress !== zeroAddress && 'inline-block',
-                      )}
-                      href={
-                        feeType
-                          ? 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/sliding-fee'
-                          : 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/adaptive-fee'
-                      }
-                    >
-                      {feeType ? '(Sliding)' : '(Adaptive)'}
-                    </Link>
-                  </div>
-                </div>
-
-                <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('Pool Access Control Roles')}:</div>
-                  <div className='col-span-5 text-neutral-50'>
-                    <ul className='flex gap-1'>
-                      <li>Pool Administrator:</li>
-                      {poolAdministrators.map(addr => (
-                        <li key={addr} className='text-primary-400'>
-                          <Link href={`${SCAN_URLS[networkId]}/address/${addr}`} target='_blank'>
-                            {formatAddress(addr)},
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <ul className='flex gap-1'>
-                      <li>Plugin Administrator:</li>
-                      {pluginAdministrators.map(addr => (
-                        <li key={addr} className='text-primary-400'>
-                          <Link href={`${SCAN_URLS[networkId]}/address/${addr}`} target='_blank'>
-                            {formatAddress(addr)},
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
-                  <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
-                </div>
-                {pool?.owner ? (
-                  <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
-                    <div className='col-span-5 text-neutral-50'>
-                      <div
-                        onClick={() => goScan(networkId, pool?.owner)}
-                        className='item-center flex cursor-pointer gap-1'
-                      >
-                        <span>{formatAddress(pool?.owner)}</span>
-                        <LinkExternalIcon className='inline-block h-4 w-4' />
+              {pool.type === PAIR_TYPES.LSD ? (
+                <>
+                  {strategy ? (
+                    <PoolAttributesCL strategy={strategy} pool={pool} />
+                  ) : (
+                    <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-[120px]'>
+                      <Highlight>
+                        <InfoCircleWhite className='h-4 w-4' />
+                      </Highlight>
+                      <div className='flex flex-col items-center gap-3'>
+                        <h2>{t('Select Pool Strategy')}</h2>
+                        <Paragraph className='mt-3 text-center'>
+                          {t("You have to select the pool strategy first to see it's [symbol]", { text: 'attributes' })}
+                        </Paragraph>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <></>
-                )}
-                <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
-                  <div className='col-span-5 text-neutral-50'>
-                    {t('Immutable except for swap fees editable by governance')}
-                  </div>
-                </div>
-                {pool?.createdAt ? (
-                  <div className='grid grid-cols-7'>
-                    <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
-                    <div className='col-span-5 text-neutral-50'>{createdAt}</div>
-                  </div>
-                ) : (
-                  <></>
-                )}
-                <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
-                  <div className='col-span-5 text-neutral-50'>${formatAmount(pool?.lpPrice || 0)}</div>
-                </div>
-                <div className='grid grid-cols-7'>
-                  <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
-                  <div className='col-span-5 text-neutral-50'>
-                    <div
-                      onClick={() => goScan(networkId, pool?.address)}
-                      className='item-center flex cursor-pointer gap-1'
-                    >
-                      <span>{formatAddress(pool?.address)}</span>
-                      <LinkExternalIcon className='inline-block h-4 w-4' />
-                    </div>
-                  </div>
-                </div>
-              </div>
+                  )}
+                </>
+              ) : (
+                <NormalPoolAttributes pool={pool} />
+              )}
             </div>
           </div>
         </div>

@@ -1312,5 +1312,10 @@
   "Total Weight": "Total Weight",
   "Maxed": "Maxed",
   "Seeking better price": "Seeking better price",
-  "Babypie's Liquidity RUSH campaign": "Liquidity providers in this pool are eligible for Babypie's Liquidity RUSH campaign"
+  "Babypie's Liquidity RUSH campaign": "Liquidity providers in this pool are eligible for Babypie's Liquidity RUSH campaign",
+  "Strategy Provider": "Strategy Provider",
+  "Type attribute CL pool": "Concentrated Liquidity - Algebra Integral v1.2",
+  "Strategy Type": "Strategy Type",
+  "Pool Access Control Roles": "Pool Access Control Roles",
+  "Pool Plugin": "Pool Plugin"
 }

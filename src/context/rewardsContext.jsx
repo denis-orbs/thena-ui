@@ -6,7 +6,7 @@ import useSWRImmutable from 'swr/immutable'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { v3ClientSubGraph } from '@/lib/graphql'
-import { fromWei } from '@/lib/utils'
+import { fromWei, isInvalidAmount } from '@/lib/utils'
 import { usePoolsWithGauge } from '@/state/pools/hooks'
 
 const rewardsContext = React.createContext({
@@ -204,7 +204,7 @@ function RewardsContextProvider({ children }) {
           totalUsd,
         }
       })
-      .filter(pool => (pool.rewards || []).every(reward => reward.amount.gt(0)))
+      .filter(pool => (pool.rewards || []).some(reward => !isInvalidAmount(reward.amount)))
   }, [current, currentError, pools, assets])
 
   // const nextRewards = useMemo(() => {

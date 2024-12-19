@@ -1,0 +1,325 @@
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import React, { useMemo } from 'react'
+import { zeroAddress } from 'viem'
+import { useReadContract } from 'wagmi'
+
+import { SCAN_URLS } from '@/constant'
+import { basePluginAbi } from '@/constant/abi'
+import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
+import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
+import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
+import { LinkExternalIcon } from '@/svgs'
+
+export function PoolAttributesCL({ strategy, pool }) {
+  const t = useTranslations()
+
+  const { networkId } = useChainSettings()
+  const { locale } = useLocaleSettings()
+
+  const { poolAdministrators, pluginAdministrators } = useGetAdministrator()
+
+  const { data: feeType } = useReadContract({
+    address: strategy?.plugInAddress,
+    abi: basePluginAbi,
+    functionName: 'feeType',
+    query: {
+      enabled: !!strategy?.plugInAddress && strategy.plugInAddress !== zeroAddress,
+      staleTime: Infinity,
+    },
+  })
+
+  const createdAt = useMemo(() => {
+    const date = new Date(strategy.createdAt ?? pool.createdAt)
+    const options = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      timeZone: 'UTC',
+      timeZoneName: 'short',
+    }
+
+    return date.toLocaleString(locale, options)
+  }, [locale, pool.createdAt, strategy.createdAt])
+
+  return (
+    <div>
+      <div className='space-y-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            {strategy.type === 'manual' ? pool.symbol : strategy?.symbol}
+          </div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            {strategy.type === 'manual' ? pool.symbol : strategy?.symbol}
+          </div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Type')}:</div>
+          <div className='col-span-5 flex items-center gap-1 text-neutral-50'>
+            <Link
+              className='flex items-center gap-1'
+              target='_blank'
+              href='https://github.com/cryptoalgebra/Algebra/tree/integral-v1.2'
+            >
+              {t('Type attribute CL pool')}
+              <div className='item-center flex cursor-pointer gap-1'>
+                <LinkExternalIcon className='inline-block h-4 w-4' />
+              </div>
+            </Link>
+          </div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Strategy Provider')}:</div>
+          <div className='col-span-5 flex items-center gap-1'>
+            <span>{strategy.title}</span>
+            <div className='item-center flex cursor-pointer gap-1'>
+              <LinkExternalIcon className='inline-block h-4 w-4' />
+            </div>
+          </div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Strategy Type')}:</div>
+          <div className='col-span-5 flex items-center gap-1'>
+            <span>{strategy.title === 'ICHI' ? 'Single deposit' : 'TODO'}</span>
+            <div className='item-center flex cursor-pointer gap-1'>
+              <LinkExternalIcon className='inline-block h-4 w-4' />
+            </div>
+          </div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Pool Access Control Roles')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            <ul className='flex gap-1'>
+              <li>Pool Administrator:</li>
+              {poolAdministrators.map((addr, index) => (
+                <div className='flex'>
+                  <li key={addr}>
+                    <Link
+                      className='flex items-center gap-1'
+                      href={`${SCAN_URLS[networkId]}/address/${addr}`}
+                      target='_blank'
+                    >
+                      {formatAddress(addr)}
+                      <LinkExternalIcon className='inline-block h-4 w-4' />
+                    </Link>
+                  </li>
+                  {index !== poolAdministrators.length - 1 && <>,</>}
+                </div>
+              ))}
+            </ul>
+
+            <ul className='flex gap-1'>
+              <li>Plugin Administrator:</li>
+              {pluginAdministrators.map((addr, index) => (
+                <div className='flex'>
+                  <li key={addr}>
+                    <Link
+                      className='flex items-center gap-1'
+                      href={`${SCAN_URLS[networkId]}/address/${addr}`}
+                      target='_blank'
+                    >
+                      {formatAddress(addr)}
+                      <LinkExternalIcon className='inline-block h-4 w-4' />
+                    </Link>
+                  </li>
+                  {index !== pluginAdministrators.length - 1 && <>,</>}
+                </div>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
+          <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Pool Deployer')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            <div onClick={() => goScan(networkId, strategy?.owner)} className='item-center flex cursor-pointer gap-1'>
+              <span>TODO</span>
+              <LinkExternalIcon className='inline-block h-4 w-4' />
+            </div>
+          </div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Pool Address')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            <div onClick={() => goScan(networkId, pool.address)} className='item-center flex cursor-pointer gap-1'>
+              <span>{pool.address}</span>
+              <LinkExternalIcon className='inline-block h-4 w-4' />
+            </div>
+          </div>
+        </div>
+        {Boolean(pool.plugInAddress) && (
+          <div className='grid grid-cols-7'>
+            <div className='col-span-2 text-neutral-300'>{t('Pool Plugin')}:</div>
+            <div className='col-span-5 text-neutral-50'>
+              <div
+                onClick={() => goScan(networkId, pool.plugInAddress)}
+                className='item-center flex cursor-pointer gap-1'
+              >
+                <span>{pool.plugInAddress}</span>
+                <LinkExternalIcon className='inline-block h-4 w-4' />
+              </div>
+            </div>
+          </div>
+        )}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Pool Type')}:</div>
+          <div className='col-span-5 text-neutral-50'>TODO</div>
+        </div>
+
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            <span className='mr-1'>{pool?.fee}%</span>
+            <span className={cn(strategy.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
+
+            <Link
+              target='_blank'
+              className={cn(
+                'hidden text-primary-400',
+                strategy?.plugInAddress && strategy?.plugInAddress !== zeroAddress && 'inline-block',
+              )}
+              href={
+                feeType
+                  ? 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/sliding-fee'
+                  : 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/adaptive-fee'
+              }
+            >
+              {feeType ? '(Sliding)' : '(Adaptive)'}
+            </Link>
+          </div>
+        </div>
+
+        {strategy?.owner ? (
+          <div className='grid grid-cols-7'>
+            <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
+            <div className='col-span-5 text-neutral-50'>
+              <div onClick={() => goScan(networkId, strategy?.owner)} className='item-center flex cursor-pointer gap-1'>
+                <span>{formatAddress(strategy?.owner)}</span>
+                <LinkExternalIcon className='inline-block h-4 w-4' />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
+          <div className='col-span-5 text-neutral-50'>{t('Immutable except for swap fees editable by governance')}</div>
+        </div>
+        {createdAt ? (
+          <div className='grid grid-cols-7'>
+            <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
+            <div className='col-span-5 text-neutral-50'>{createdAt}</div>
+          </div>
+        ) : (
+          <></>
+        )}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
+          <div className='col-span-5 text-neutral-50'>${formatAmount(strategy?.lpPrice || 0)}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function NormalPoolAttributes({ pool }) {
+  const t = useTranslations()
+
+  const { networkId } = useChainSettings()
+  const { locale } = useLocaleSettings()
+
+  const createdAt = useMemo(() => {
+    const date = new Date(pool.createdAt)
+    const options = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      timeZone: 'UTC',
+      timeZoneName: 'short',
+    }
+
+    return date.toLocaleString(locale, options)
+  }, [locale, pool.createdAt])
+
+  return (
+    <div>
+      <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
+          <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
+          <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Type')}:</div>
+          <div className='col-span-5 text-neutral-50'>{pool?.type}</div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            <span className='mr-1'>{pool?.fee}%</span>
+            <span className={cn(pool.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
+          </div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
+          <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
+        </div>
+        {pool?.owner ? (
+          <div className='grid grid-cols-7'>
+            <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
+            <div className='col-span-5 text-neutral-50'>
+              <div onClick={() => goScan(networkId, pool?.owner)} className='item-center flex cursor-pointer gap-1'>
+                <span>{formatAddress(pool?.owner)}</span>
+                <LinkExternalIcon className='inline-block h-4 w-4' />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
+          <div className='col-span-5 text-neutral-50'>{t('Immutable except for swap fees editable by governance')}</div>
+        </div>
+        {pool?.createdAt ? (
+          <div className='grid grid-cols-7'>
+            <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
+            <div className='col-span-5 text-neutral-50'>{createdAt}</div>
+          </div>
+        ) : (
+          <></>
+        )}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
+          <div className='col-span-5 text-neutral-50'>${formatAmount(pool?.lpPrice || 0)}</div>
+        </div>
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            <div onClick={() => goScan(networkId, pool?.address)} className='item-center flex cursor-pointer gap-1'>
+              <span>{formatAddress(pool?.address)}</span>
+              <LinkExternalIcon className='inline-block h-4 w-4' />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
