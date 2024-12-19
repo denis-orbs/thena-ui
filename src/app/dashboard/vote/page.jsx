@@ -19,6 +19,7 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { CHAIN_ID } from '@/constant/contracts'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import { useEpochTimer, useVoteEmissions } from '@/hooks/useGeneral'
@@ -105,7 +106,9 @@ export default function VotePage() {
   const debouncedId = useDebounce(approvedId)
   const t = useTranslations()
   const { data: isApproved } = useSWR(
-    debouncedId && account && networkId === ChainId.BSC && ['vethe/approved', debouncedId, account],
+    debouncedId &&
+      account &&
+      (networkId === ChainId.BSC || networkId === CHAIN_ID.TEST_BSC) && ['vethe/approved', debouncedId, account],
     async () => {
       const veTHEContract = getVeTHEContract(networkId)
       return await readCall(veTHEContract, 'isApprovedOrOwner', [account, debouncedId], networkId)
@@ -403,7 +406,7 @@ export default function VotePage() {
 
   useEffect(() => {
     if (!veTHEId && !!veTHEs.length) {
-      setVeTHEId(veTHEs[0].id)
+      setVeTHEId(veTHEs.filter(ve => ve.voting_amount.gt(0))?.[0]?.id)
     }
   }, [veTHEId, veTHEs])
 
