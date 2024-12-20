@@ -1,14 +1,10 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
-import { useReadContracts } from 'wagmi'
+import React, { useEffect, useState } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
-import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
-import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '@/hooks/useLocalStorage'
-import useWallet from '@/hooks/useWallet'
-import { fromWei } from '@/lib/utils'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 
 import ChooseStrategy from './ChooseStrategy'
 import FusionAdd from './FusionAdd'
@@ -27,8 +23,6 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
   const [secondAsset, setSecondAsset] = useState()
   const [firstAddress, setFirstAddress] = useState()
   const [secondAddress, setSecondAddress] = useState()
-  const { getWithExpiry } = useLocalStorage()
-  const { account } = useWallet()
   const assets = useAssets()
 
   useEffect(() => {
@@ -40,32 +34,14 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
     }
   }, [assets, pool, firstAsset, secondAsset, pairType])
 
-  const temp = useMemo(() => getWithExpiry(LOCAL_STORAGE_TOKENS) ?? [], [getWithExpiry])
-
-  const { data: balances } = useReadContracts({
-    contracts: temp.map(token => ({
-      abi: ERC20Abi,
-      address: token.address,
-      functionName: 'balanceOf',
-      args: [account],
-    })),
-    query: {
-      enabled: Boolean(account),
-    },
-  })
+  const { customTokens } = useCustomTokens()
 
   useEffect(() => {
-    const assetList = assets.concat(
-      temp.map((tk, index) => ({
-        ...tk,
-        price: 0,
-        balance: fromWei(balances?.[index].result || 0n, tk.decimals),
-      })),
-    )
+    const assetList = customTokens.concat(assets)
 
     setFirstAsset(assetList.find(ele => ele.address === firstAddress))
     setSecondAsset(assetList.find(ele => ele.address === secondAddress))
-  }, [assets, balances, firstAddress, getWithExpiry, secondAddress, temp])
+  }, [assets, customTokens, firstAddress, secondAddress])
 
   useEffect(() => () => (init = false), [])
 

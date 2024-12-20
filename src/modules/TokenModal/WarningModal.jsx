@@ -7,34 +7,27 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph } from '@/components/typography'
 import { InfoCircleWhite } from '@/svgs'
 
-function WarningModal({ popup, setPopup, onConfirm }) {
+function WarningModal({ popup, setPopup, title = '', desc = '', buttonTitle = 'Confirm', onConfirm }) {
   const t = useTranslations()
 
   return (
     <Modal
       isOpen={popup}
       closeModal={() => {
-        setPopup(false)
+        setPopup()
       }}
       width={480}
-      title=''
     >
       <ModalBody>
         <div className='flex w-full flex-col items-center justify-center gap-4 px-6'>
           <Highlight className='bg-error-500'>
             <InfoCircleWhite className='h-4 w-4' />
           </Highlight>
-          <div className='flex flex-col items-center gap-3'>
-            <h2>{t('BeCareful')}</h2>
-            <Paragraph className='mt-3 text-center'>{t('BeCarefulDescription')}</Paragraph>
-          </div>
 
-          {/* {popup && ( */}
-          {/*   <a href={goScan(networkId, item.address)} target='_blank' rel='noreferrer'> */}
-          {/*     {item.name} */}
-          {/*     <ExternalIcon className='h-3 w-3 stroke-neutral-400 hover:stroke-neutral-50' /> */}
-          {/*   </a> */}
-          {/* )} */}
+          <div className='flex flex-col items-center gap-3'>
+            <h2>{title}</h2>
+            <Paragraph className='mt-3 text-center'>{desc}</Paragraph>
+          </div>
         </div>
       </ModalBody>
 
@@ -43,12 +36,13 @@ function WarningModal({ popup, setPopup, onConfirm }) {
           className='w-full'
           onClick={() => {
             onConfirm()
-            setPopup(false)
+            setPopup()
           }}
         >
-          {t('Import Anyway')}
+          {buttonTitle}
         </TextButton>
-        <PrimaryButton className='w-full' onClick={() => setPopup(false)}>
+
+        <PrimaryButton className='w-full' onClick={() => setPopup()}>
           {t('Cancel')}
         </PrimaryButton>
       </ModalFooter>

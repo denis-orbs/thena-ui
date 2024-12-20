@@ -2,17 +2,14 @@
 
 import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
-import { formatUnits, isAddress } from 'viem'
-import { useReadContract } from 'wagmi'
 
 import CircleImage from '@/components/image/CircleImage'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
-import { ERC20Abi } from '@/constant/abi'
-import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '@/hooks/useLocalStorage'
 import useWallet from '@/hooks/useWallet'
 import { addToken, cn, formatAmount, goScan } from '@/lib/utils'
-import { ExternalIcon, PlusCircleIcon, PlusIcon } from '@/svgs'
+import { useCustomTokens } from '@/state/tokenCustom/store'
+import { ExternalIcon, MinusIcon, PlusCircleIcon, PlusIcon } from '@/svgs'
 
 import WarningModal from './WarningModal'
 
@@ -26,60 +23,47 @@ export function ItemToken({
   onAssetSelect = () => {},
 }) {
   const t = useTranslations()
+  const [token, setToken] = useState(item)
   const { account, chainId } = useWallet()
-  const { setWithExpiry, getWithExpiry } = useLocalStorage()
-  const [popupAdd, setPopupAdd] = useState(false)
+  const [isWarning, setIsWarning] = useState('')
+  const { addTokenCustom, removeTokenCustom } = useCustomTokens()
 
-  const handleAddToken = token => {
-    const temp = getWithExpiry(LOCAL_STORAGE_TOKENS) ?? []
+  const handleAddToken = tk => {
+    delete tk.isCustom
+    delete tk.balance
+    tk.isFromStorage = true
 
-    delete token.isCustom
-    delete token.balance
-
-    token.isFromStorage = true
-    const exists = temp.some(tk => tk.address === token.address)
-    if (exists) return
-    setWithExpiry(LOCAL_STORAGE_TOKENS, [...temp, token], 36 * 24 * 3600 * 1000)
+    addTokenCustom(tk)
   }
 
-  const { data: balanceOf } = useReadContract({
-    abi: ERC20Abi,
-    functionName: 'balanceOf',
-    address: item.address,
-    args: [account],
-    query: {
-      enable: isAddress(item.address) && account && !item.balance,
-    },
-  })
-
-  const balance = item.balance ?? formatUnits(balanceOf ?? 0, item.decimals)
+  const { balance } = token
 
   return (
     <>
       <div
         className='flex cursor-pointer items-center justify-between rounded-lg px-6 py-3 hover:bg-neutral-800'
-        key={item.address}
+        key={token.address}
         onClick={() => {
-          if (item.isCustom) return
+          if (token.isCustom) return
 
-          if (otherAsset && otherAsset.address === item.address) {
+          if (otherAsset && otherAsset.address === token.address) {
             const temp = selectedAsset
             setSelectedAsset(otherAsset)
             setOtherAsset(temp)
           } else {
-            setSelectedAsset(item)
+            setSelectedAsset(token)
           }
           onAssetSelect()
           setPopup(false)
         }}
       >
         <div className='flex items-center gap-2 rounded-lg'>
-          <CircleImage src={item.logoURI} width={32} height={32} alt='thena token' />
+          <CircleImage src={token.logoURI} width={32} height={32} alt='thena token' />
 
           <div className='flex flex-col'>
             <div className='flex items-center space-x-1'>
-              <TextHeading>{item.symbol}</TextHeading>
-              {item.address !== 'BNB' && (
+              <TextHeading>{token.symbol}</TextHeading>
+              {token.address !== 'BNB' && (
                 <div className='flex items-center gap-1'>
                   {account && (
                     <PlusCircleIcon
@@ -87,12 +71,12 @@ export function ItemToken({
                       onClick={e => {
                         e.stopPropagation()
                         e.preventDefault()
-                        addToken(item)
+                        addToken(token)
                       }}
-                      data-tooltip-id={`add-tooltip-${item.address}`}
+                      data-tooltip-id={`add-tooltip-${token.address}`}
                     />
                   )}
-                  <CustomTooltip id={`add-tooltip-${item.address}`} className='rounded-md !py-2'>
+                  <CustomTooltip id={`add-tooltip-${token.address}`} className='rounded-md !py-2'>
                     <TextHeading className='text-xs'>{t('Add to Wallet')}</TextHeading>
                   </CustomTooltip>
                   <ExternalIcon
@@ -100,49 +84,80 @@ export function ItemToken({
                     onClick={e => {
                       e.stopPropagation()
                       e.preventDefault()
-                      goScan(chainId, item.address)
+                      goScan(chainId, token.address)
                     }}
-                    data-tooltip-id={`contract-tooltip-${item.address}`}
+                    data-tooltip-id={`contract-tooltip-${token.address}`}
                   />
-                  <CustomTooltip id={`contract-tooltip-${item.address}`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`contract-tooltip-${token.address}`} className='rounded-md !py-2' place='top'>
                     <TextHeading className='text-xs'>{t('Contract Address')}</TextHeading>
                   </CustomTooltip>
                 </div>
               )}
             </div>
-            <TextSubHeading>{item.name}</TextSubHeading>
+            <TextSubHeading>{token.name}</TextSubHeading>
           </div>
         </div>
 
         <div className='flex items-center justify-center gap-3'>
           <div className={cn('flex flex-col items-end', !account && 'hidden')}>
             <TextHeading>{formatAmount(balance) || ''}</TextHeading>
-            {item?.price && balance ? (
-              <TextSubHeading>${formatAmount(balance.times(item.price))}</TextSubHeading>
-            ) : (
-              <TextSubHeading>{item?.isFromStorage || item?.isCustom ? 'Added by user' : '$0'}</TextSubHeading>
-            )}
+            {token?.price && balance ? (
+              <TextSubHeading>${formatAmount(balance.times(token.price))}</TextSubHeading>
+            ) : null}
+
+            {token?.isFromStorage ? (
+              <TextSubHeading>{token?.isFromStorage || token?.isCustom ? 'Added by user' : '$0'}</TextSubHeading>
+            ) : null}
           </div>
 
           <span
             onClick={() => {
-              setPopupAdd(true)
+              setIsWarning('import')
             }}
             className={cn('cursor-pointer rounded-lg bg-neutral-600 p-2', {
-              hidden: !item.isCustom,
+              hidden: !token.isCustom,
             })}
           >
-            <PlusIcon className={cn('size-5 stroke-primary-400', { hidden: !item.isCustom })} />
+            <PlusIcon className={cn('size-5 stroke-primary-400')} />
+          </span>
+
+          <span
+            onClick={e => {
+              e.stopPropagation()
+              e.preventDefault()
+              setIsWarning('remove')
+            }}
+            className={cn('cursor-pointer rounded-lg bg-neutral-600 p-2', {
+              hidden: !token.isFromStorage,
+            })}
+          >
+            <MinusIcon className={cn('size-5 stroke-primary-400')} />
           </span>
         </div>
       </div>
 
       <WarningModal
-        popup={popupAdd}
-        setPopup={setPopupAdd}
-        onConfirm={() => handleAddToken(item)}
-        // item={item}
-        // networkId={networkId}
+        popup={isWarning === 'import'}
+        setPopup={() => setIsWarning('')}
+        title={t('BeCareful')}
+        desc={t('BeCarefulDescription')}
+        buttonTitle={t('Import Anyway')}
+        onConfirm={() => handleAddToken(token)}
+      />
+
+      <WarningModal
+        popup={isWarning === 'remove'}
+        setPopup={() => setIsWarning('')}
+        title='Are you sure?'
+        buttonTitle='Remove'
+        onConfirm={() => {
+          removeTokenCustom(token.address)
+          setToken(prev => ({
+            ...prev,
+            isCustom: true,
+            isFromStorage: false,
+          }))
+        }}
       />
     </>
   )
