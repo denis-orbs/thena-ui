@@ -60,6 +60,7 @@ import weightedPoolVaultAbi from './weighted-pool/vault.json'
 import weightedPoolAbi from './weighted-pool/weightedPool.json'
 import weightedPoolFactoryAbi from './weighted-pool/weightedPoolFactory.json'
 import weightedPoolFeesAbi from './weighted-pool/weightedPoolFees.json'
+import zapperAbi from './zapperAbi.json'
 
 export {
   algebraCommunityVaultAbi,
@@ -124,4 +125,5 @@ export {
   weightedPoolRouterAbi,
   weightedPoolRouterSimulatorAbi,
   weightedPoolVaultAbi,
+  zapperAbi,
 }
