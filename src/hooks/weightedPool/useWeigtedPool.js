@@ -7,11 +7,12 @@ import { encodePacked, maxUint256, parseEventLogs, toHex } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import { weightedPoolFactoryAbi } from '@/constant/abi'
-import Contracts from '@/constant/contracts'
+import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useMutateAssets } from '@/context/assetsContext'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
+  getWBNBContract,
   getWeightedPoolContract,
   getWeightedPoolFactoryContract,
   getWeightedPoolRouterContract,
@@ -238,13 +239,14 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquiditySingleToken = useCallback(
-    async (poolId32, token, amountDeposit, minBPTAmountOut, slippage, onSuccess) => {
+    async (poolId32, token, amountDeposit, minBPTAmountOut, slippage, amountToWrap, onSuccess) => {
       setPending(true)
       const tokenContract = getERC20Contract(token.address, chainId)
 
       const key = uuidv4()
       const approveFeeuuid = uuidv4()
       const joinPooluuid = uuidv4()
+      const wrapuuid = uuidv4()
 
       const allowance = await readCall(
         tokenContract,
@@ -259,6 +261,13 @@ export const useWeightedPool = () => {
         key,
         title: t('Add Liquidity'),
         transactions: {
+          ...(amountToWrap && {
+            [wrapuuid]: {
+              desc: t('Wrap'),
+              status: TXN_STATUS.WAITING,
+              hash: null,
+            },
+          }),
           ...(isApprovedFee
             ? {}
             : {
@@ -275,6 +284,15 @@ export const useWeightedPool = () => {
           },
         },
       })
+
+      // TODO: cannot wrap in TEST_BSC
+      if (amountToWrap && chainId !== CHAIN_ID.TEST_BSC) {
+        const wbnbContract = getWBNBContract(chainId)
+        if (!(await writeTxn(key, wrapuuid, wbnbContract, 'deposit', [], toWei(amountToWrap).dp(0).toString(10)))) {
+          setPending(false)
+          return
+        }
+      }
 
       if (!isApprovedFee) {
         const isSuccess = await writeTxn(key, approveFeeuuid, tokenContract, 'approve', [
@@ -326,11 +344,20 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquidityAllToken = useCallback(
-    async (poolId32, tokensData, minBPTAmountOut, slippage, onSuccess) => {
+    async (poolId32, tokensData, minBPTAmountOut, slippage, amountToWrap, onSuccess) => {
       const key = uuidv4()
       const addLiquidityuuid = uuidv4()
+      const wrapuuid = uuidv4()
 
-      const transactions = {}
+      const transactions = {
+        ...(amountToWrap && {
+          [wrapuuid]: {
+            desc: t('Wrap'),
+            status: TXN_STATUS.WAITING,
+            hash: null,
+          },
+        }),
+      }
       setPending(true)
 
       for (const tokenItem of tokensData) {
@@ -366,6 +393,15 @@ export const useWeightedPool = () => {
         title: t('Add Liquidity'),
         transactions,
       })
+
+      // TODO: cannot wrap in TEST_BSC
+      if (amountToWrap && chainId !== CHAIN_ID.TEST_BSC) {
+        const wbnbContract = getWBNBContract(chainId)
+        if (!(await writeTxn(key, wrapuuid, wbnbContract, 'deposit', [], toWei(amountToWrap).dp(0).toString(10)))) {
+          setPending(false)
+          return
+        }
+      }
 
       for (const tokenItem of tokensData) {
         if (tokenItem.id) {

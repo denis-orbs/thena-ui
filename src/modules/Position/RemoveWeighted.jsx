@@ -238,7 +238,7 @@ function RemoveWeighted({ pool, onCancel }) {
           {impact >= 10 && !pending && (
             <Alert>
               <InfoIcon className='h-4 w-4 stroke-error-600' />
-              <p>{`${t('Price impact too high').replace('!', '')}: ${formatAmount(impact)}`}</p>
+              <p>{`${t('Price impact too high').replace('!', '')}: ${formatAmount(impact)}%`}</p>
             </Alert>
           )}
         </div>
@@ -261,7 +261,7 @@ function RemoveWeighted({ pool, onCancel }) {
           </PrimaryButton>
         </div>
       </ModalBody>
-      <Modal isOpen={showConfirm} closeModal={() => setShowConfirm(false)} title='Warning!'>
+      <Modal isOpen={showConfirm} closeModal={() => setShowConfirm(false)} title={<>{t('Warning')}!</>}>
         <ModalBody>
           <Warning>
             <InfoIcon className='h-4 w-4 stroke-warn-700' /> {t('Price impact too high')}

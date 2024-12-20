@@ -145,8 +145,7 @@ export function WeightedPoolPosition({ pool }) {
       <div className='mt-4 flex flex-col gap-y-4'>
         <div className='flex justify-between'>
           <span className='text-neutral-300'>{t('APR')}</span>
-          {/* TODO: mock value */}
-          <span>TODO</span>
+          <span>{pool.apr}</span>
         </div>
 
         <div className='flex justify-between'>

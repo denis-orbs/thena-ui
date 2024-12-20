@@ -1,13 +1,15 @@
 import { useTranslations } from 'next-intl'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 import { UNKNOWN_LOGO } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import { cn, formatAmount } from '@/lib/utils'
 import SelectTokenFromList from '@/modules/SelectTokenModal/SelectTokenFromList'
 import { ChevronDownIcon } from '@/svgs'
 
 import TokenBadge from '../badges/TokenBadge'
 import { EmphasisButton } from '../buttons/Button'
+import IconGroup from '../icongroup'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 import { TextHeading, TextSubHeading } from '../typography'
@@ -26,10 +28,23 @@ function TokenInput({
   assetNull,
   readOnly = false,
   title,
+  alowDouble = false,
   disabledSelect = false,
 }) {
+  const assets = useAssets()
   const [tokenPopup, setTokenPopup] = useState(false)
   const t = useTranslations()
+
+  const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
+
+  const isDouble = useMemo(() => asset?.name === 'Wrapped BNB', [asset?.name])
+
+  const balance = useMemo(() => {
+    if (isDouble) {
+      return asset?.balance?.plus(bnbBalance)
+    }
+    return asset?.balance
+  }, [asset, isDouble, bnbBalance])
 
   return (
     <div className='flex flex-col gap-3'>
@@ -38,7 +53,7 @@ function TokenInput({
         <div className='flex items-center justify-between gap-2'>
           <input
             type='number'
-            className='w-[70%] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+            className='w-[60%] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
             placeholder='0.0'
             value={amount}
             onChange={e => setAmount(e.target.value)}
@@ -55,13 +70,24 @@ function TokenInput({
                 'py-1.5 pl-1.5 pr-2',
               )}
             >
-              <CircleImage alt='' className='h-6 w-6' src={asset.logoURI || UNKNOWN_LOGO} />
-              <span className='text-nowrap'>{asset?.symbol}</span>
+              {isDouble && alowDouble ? (
+                <IconGroup
+                  className='-space-x-2'
+                  classNames={{
+                    image: 'outline-2 w-6 h-6',
+                  }}
+                  logo1='https://cdn.thena.fi/assets/BSC.png'
+                  logo2='https://cdn.thena.fi/assets/BNB.png'
+                />
+              ) : (
+                <CircleImage alt='' className='h-6 w-6' src={asset.logoURI || UNKNOWN_LOGO} />
+              )}
+              <span className='text-nowrap'>{isDouble ? 'BNB + WBNB' : asset?.symbol}</span>
             </div>
           ) : (
             <>
               {asset ? (
-                <TokenBadge asset={asset} onClick={() => setTokenPopup(true)} />
+                <TokenBadge asset={asset} onClick={() => setTokenPopup(true)} isDouble={isDouble && alowDouble} />
               ) : assetNull ? (
                 <EmphasisButton
                   className='h-9 !w-[130px] rounded-full p-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
@@ -78,7 +104,7 @@ function TokenInput({
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
           <TextSubHeading>
-            {t('Balance')}: {formatAmount(asset?.balance)}
+            {t('Balance')}: {formatAmount(isDouble ? balance : asset?.balance)}
           </TextSubHeading>
         </div>
         {!assetData ? (

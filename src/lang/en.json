@@ -1317,5 +1317,6 @@
   "Type attribute CL pool": "Concentrated Liquidity - Algebra Integral v1.2",
   "Strategy Type": "Strategy Type",
   "Pool Access Control Roles": "Pool Access Control Roles",
-  "Pool Plugin": "Pool Plugin"
+  "Pool Plugin": "Pool Plugin",
+  "Creation date": "Creation date"
 }

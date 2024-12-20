@@ -165,7 +165,6 @@ function AddLiquidityWeightedPool({
     [depositType, t],
   )
 
-  // TODO: Not working for Deposit single token
   const percents = useMemo(
     () => [
       {
@@ -205,18 +204,45 @@ function AddLiquidityWeightedPool({
     return false
   }, [amountDeposit, depositType, pending, tokenDeposit, tokensData])
 
+  const amountToWrap = useMemo(() => {
+    let final
+    if (depositType === DEPOSIT_TYPE.SINGLE) {
+      console.log({ tokenDeposit })
+      if (
+        tokenDeposit?.balance?.lt(amountDeposit) &&
+        (tokenDeposit?.symbol === 'BNB' || tokenDeposit?.symbol === 'WBNB')
+      ) {
+        final = new BigNumber(amountDeposit).minus(tokenDeposit.balance)
+      }
+    } else {
+      const wBNB = (tokensData || []).find(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
+      if (wBNB && wBNB.balance.lt(wBNB.amountDeposit)) {
+        final = new BigNumber(wBNB.amountDeposit).minus(wBNB.balance)
+      }
+    }
+    return final
+  }, [amountDeposit, depositType, tokenDeposit, tokensData])
+
   const onAddLiquidity = useCallback(async () => {
     if (depositType === DEPOSIT_TYPE.SINGLE) {
-      await onAddLiquiditySingleToken(pool.poolId, tokenDeposit, amountDeposit, minBPTAmountOut, slippage, () => {
-        setIsSuccess(true)
-        setAmountDeposit('')
-        mutatePoolBalance()
-        if (isModal) {
-          setIsOpen(false)
-        }
-      })
+      await onAddLiquiditySingleToken(
+        pool.poolId,
+        tokenDeposit,
+        amountDeposit,
+        minBPTAmountOut,
+        slippage,
+        amountToWrap,
+        () => {
+          setIsSuccess(true)
+          setAmountDeposit('')
+          mutatePoolBalance()
+          if (isModal) {
+            setIsOpen(false)
+          }
+        },
+      )
     } else {
-      await onAddLiquidityAllToken(pool.poolId, tokensData, minBPTAmountOut, slippage, () => {
+      await onAddLiquidityAllToken(pool.poolId, tokensData, minBPTAmountOut, slippage, amountToWrap, () => {
         setIsSuccess(true)
 
         setTokensData(prev =>
@@ -234,6 +260,7 @@ function AddLiquidityWeightedPool({
     }
   }, [
     amountDeposit,
+    amountToWrap,
     depositType,
     isModal,
     minBPTAmountOut,
@@ -338,6 +365,7 @@ function AddLiquidityWeightedPool({
                     autoFocus
                     assetData={tokensAsset}
                     assetNull
+                    alowDouble
                   />
                 </div>
               </>
@@ -351,6 +379,7 @@ function AddLiquidityWeightedPool({
                   autoFocus={idx === 0}
                   amount={token.amountDeposit}
                   onAmountChange={value => handleAmountChange(token.address, value)}
+                  alowDouble
                 />
               ))}
           </div>

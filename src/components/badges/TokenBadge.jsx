@@ -5,6 +5,7 @@ import { CompTypes } from '@/constant/type'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
+import IconGroup from '../icongroup'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 
@@ -14,6 +15,7 @@ export default function TokenBadge({
   variant = CompTypes.Emphasis,
   showChevronDownIcon = true,
   prefix,
+  isDouble,
   ...rest
 }) {
   return (
@@ -40,8 +42,19 @@ export default function TokenBadge({
     >
       {asset ? (
         <>
-          <CircleImage src={asset.logoURI || UNKNOWN_LOGO} alt='token logo' width={24} height={24} />
-          {asset.symbol}
+          {isDouble ? (
+            <IconGroup
+              className='-space-x-2'
+              classNames={{
+                image: 'outline-2 w-6 h-6',
+              }}
+              logo1='https://cdn.thena.fi/assets/BSC.png'
+              logo2='https://cdn.thena.fi/assets/BNB.png'
+            />
+          ) : (
+            <CircleImage src={asset.logoURI || UNKNOWN_LOGO} alt='token logo' width={24} height={24} />
+          )}
+          {isDouble ? 'BNB + WBNB' : asset.symbol}
         </>
       ) : (
         <Skeleton className='h-6 w-6 rounded-full' />
