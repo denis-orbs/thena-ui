@@ -45,21 +45,36 @@ export function PoolAttributesCL({ strategy, pool }) {
     return date.toLocaleString(locale, options)
   }, [locale, pool.createdAt, strategy.createdAt])
 
+  const linkDocsStrategy = useMemo(() => {
+    let resultProvider = ''
+    let resultType = ''
+    if (strategy.title === 'ICHI') {
+      resultProvider = 'https://docs.ichi.org/home/how-ichi-works'
+      resultType = 'https://docs.ichi.org/home/how-ichi-works#singletoken-deposit'
+    }
+    return [resultProvider, resultType]
+  }, [strategy.title])
+
   return (
     <div>
       <div className='space-y-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
+        {/* Pool Name */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
           <div className='col-span-5 text-neutral-50'>
             {strategy.type === 'manual' ? pool.symbol : strategy?.symbol}
           </div>
         </div>
+
+        {/* Pool Symbol */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
           <div className='col-span-5 text-neutral-50'>
             {strategy.type === 'manual' ? pool.symbol : strategy?.symbol}
           </div>
         </div>
+
+        {/* Pool Type */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Type')}:</div>
           <div className='col-span-5 flex items-center gap-1 text-neutral-50'>
@@ -75,24 +90,103 @@ export function PoolAttributesCL({ strategy, pool }) {
             </Link>
           </div>
         </div>
+        {/* Strategy Provider */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Strategy Provider')}:</div>
-          <div className='col-span-5 flex items-center gap-1'>
+          <Link target='_blank' href={linkDocsStrategy[0]} className='col-span-5 flex items-center gap-1'>
             <span>{strategy.title}</span>
             <div className='item-center flex cursor-pointer gap-1'>
               <LinkExternalIcon className='inline-block h-4 w-4' />
             </div>
-          </div>
+          </Link>
         </div>
+
+        {/* Strategy Type */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Strategy Type')}:</div>
-          <div className='col-span-5 flex items-center gap-1'>
+          <Link target='_blank' href={linkDocsStrategy[1]} className='col-span-5 flex items-center gap-1'>
             <span>{strategy.title === 'ICHI' ? 'Single deposit' : 'TODO'}</span>
             <div className='item-center flex cursor-pointer gap-1'>
               <LinkExternalIcon className='inline-block h-4 w-4' />
             </div>
+          </Link>
+        </div>
+
+        {/* Protocol version */}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
+          <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
+        </div>
+
+        {/* Pool Deployer */}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Pool Deployer')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            <div onClick={() => goScan(networkId, strategy?.owner)} className='item-center flex cursor-pointer gap-1'>
+              <span>TODO</span>
+              <LinkExternalIcon className='inline-block h-4 w-4' />
+            </div>
           </div>
         </div>
+
+        {/* Pool Address */}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Pool Address')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            <div onClick={() => goScan(networkId, pool.address)} className='item-center flex cursor-pointer gap-1'>
+              <span>{pool.address}</span>
+              <LinkExternalIcon className='inline-block h-4 w-4' />
+            </div>
+          </div>
+        </div>
+
+        {/* Pool Plugin */}
+        {Boolean(pool.plugInAddress) && (
+          <div className='grid grid-cols-7'>
+            <div className='col-span-2 text-neutral-300'>{t('Pool Plugin')}:</div>
+            <div className='col-span-5 text-neutral-50'>
+              <div
+                onClick={() => goScan(networkId, pool.plugInAddress)}
+                className='item-center flex cursor-pointer gap-1'
+              >
+                <span>{pool.plugInAddress}</span>
+                <LinkExternalIcon className='inline-block h-4 w-4' />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Pool Type */}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Pool Type')}:</div>
+          <div className='col-span-5 text-neutral-50'>TODO</div>
+        </div>
+
+        {/* Swap fees */}
+        <div className='grid grid-cols-7'>
+          <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
+          <div className='col-span-5 text-neutral-50'>
+            <span className='mr-1'>{pool?.fee}%</span>
+            <span className={cn(strategy.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
+
+            <Link
+              target='_blank'
+              className={cn(
+                'hidden text-primary-400',
+                strategy?.plugInAddress && strategy?.plugInAddress !== zeroAddress && 'inline-block',
+              )}
+              href={
+                feeType
+                  ? 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/sliding-fee'
+                  : 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/adaptive-fee'
+              }
+            >
+              {feeType ? '(Sliding)' : '(Adaptive)'}
+            </Link>
+          </div>
+        </div>
+
+        {/* Pool Access Control Roles */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Pool Access Control Roles')}:</div>
           <div className='col-span-5 text-neutral-50'>
@@ -135,87 +229,8 @@ export function PoolAttributesCL({ strategy, pool }) {
             </ul>
           </div>
         </div>
-        <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
-          <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
-        </div>
-        <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Pool Deployer')}:</div>
-          <div className='col-span-5 text-neutral-50'>
-            <div onClick={() => goScan(networkId, strategy?.owner)} className='item-center flex cursor-pointer gap-1'>
-              <span>TODO</span>
-              <LinkExternalIcon className='inline-block h-4 w-4' />
-            </div>
-          </div>
-        </div>
-        <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Pool Address')}:</div>
-          <div className='col-span-5 text-neutral-50'>
-            <div onClick={() => goScan(networkId, pool.address)} className='item-center flex cursor-pointer gap-1'>
-              <span>{pool.address}</span>
-              <LinkExternalIcon className='inline-block h-4 w-4' />
-            </div>
-          </div>
-        </div>
-        {Boolean(pool.plugInAddress) && (
-          <div className='grid grid-cols-7'>
-            <div className='col-span-2 text-neutral-300'>{t('Pool Plugin')}:</div>
-            <div className='col-span-5 text-neutral-50'>
-              <div
-                onClick={() => goScan(networkId, pool.plugInAddress)}
-                className='item-center flex cursor-pointer gap-1'
-              >
-                <span>{pool.plugInAddress}</span>
-                <LinkExternalIcon className='inline-block h-4 w-4' />
-              </div>
-            </div>
-          </div>
-        )}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Pool Type')}:</div>
-          <div className='col-span-5 text-neutral-50'>TODO</div>
-        </div>
 
-        <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
-          <div className='col-span-5 text-neutral-50'>
-            <span className='mr-1'>{pool?.fee}%</span>
-            <span className={cn(strategy.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
-
-            <Link
-              target='_blank'
-              className={cn(
-                'hidden text-primary-400',
-                strategy?.plugInAddress && strategy?.plugInAddress !== zeroAddress && 'inline-block',
-              )}
-              href={
-                feeType
-                  ? 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/sliding-fee'
-                  : 'https://docs.algebra.finance/algebra-integral-documentation/algebra-integral-technical-reference/plugins/adaptive-fee'
-              }
-            >
-              {feeType ? '(Sliding)' : '(Adaptive)'}
-            </Link>
-          </div>
-        </div>
-
-        {strategy?.owner ? (
-          <div className='grid grid-cols-7'>
-            <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
-            <div className='col-span-5 text-neutral-50'>
-              <div onClick={() => goScan(networkId, strategy?.owner)} className='item-center flex cursor-pointer gap-1'>
-                <span>{formatAddress(strategy?.owner)}</span>
-                <LinkExternalIcon className='inline-block h-4 w-4' />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
-          <div className='col-span-5 text-neutral-50'>{t('Immutable except for swap fees editable by governance')}</div>
-        </div>
+        {/* Creation date */}
         {createdAt ? (
           <div className='grid grid-cols-7'>
             <div className='col-span-2 text-neutral-300'>{t('Creation date')}:</div>
@@ -224,6 +239,8 @@ export function PoolAttributesCL({ strategy, pool }) {
         ) : (
           <></>
         )}
+
+        {/* LP token price */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
           <div className='col-span-5 text-neutral-50'>${formatAmount(strategy?.lpPrice || 0)}</div>
@@ -258,18 +275,25 @@ export function NormalPoolAttributes({ pool }) {
   return (
     <div>
       <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
+        {/* Pool name */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
           <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
         </div>
+
+        {/* Pool Symbol */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
           <div className='col-span-5 text-neutral-50'>{pool?.symbol}</div>
         </div>
+
+        {/* Pool type */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Type')}:</div>
           <div className='col-span-5 text-neutral-50'>{pool?.type}</div>
         </div>
+
+        {/* Swap fees */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
           <div className='col-span-5 text-neutral-50'>
@@ -277,10 +301,14 @@ export function NormalPoolAttributes({ pool }) {
             <span className={cn(pool.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
           </div>
         </div>
+
+        {/* Protocol version */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
           <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
         </div>
+
+        {/* Pool Owner */}
         {pool?.owner ? (
           <div className='grid grid-cols-7'>
             <div className='col-span-2 text-neutral-300'>{t('Pool Owner')}:</div>
@@ -294,6 +322,8 @@ export function NormalPoolAttributes({ pool }) {
         ) : (
           <></>
         )}
+
+        {/* Attribute immutability */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Attribute immutability')}:</div>
           <div className='col-span-5 text-neutral-50'>{t('Immutable except for swap fees editable by governance')}</div>
@@ -306,10 +336,14 @@ export function NormalPoolAttributes({ pool }) {
         ) : (
           <></>
         )}
+
+        {/* LP token price */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
           <div className='col-span-5 text-neutral-50'>${formatAmount(pool?.lpPrice || 0)}</div>
         </div>
+
+        {/* Pool address */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
           <div className='col-span-5 text-neutral-50'>

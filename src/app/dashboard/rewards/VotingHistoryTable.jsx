@@ -112,7 +112,7 @@ export default function VotingHistoryTable({ userVotes }) {
       !groupedVotes
         ? []
         : groupedVotes.sort((a, b) => {
-            let res
+            let res = 0
             switch (sort.value) {
               case 'apr':
                 res = (a.apr - b.apr) * (sort.isDesc ? -1 : 1)
@@ -123,9 +123,6 @@ export default function VotingHistoryTable({ userVotes }) {
               case 'rewards':
                 res = (calRewardUsd(a.rewards) - calRewardUsd(b.rewards)) * (sort.isDesc ? -1 : 1)
                 break
-              // case 'projectedPnl':
-              //   res = (a.liquidity - b.liquidity) * (sort.isDesc ? -1 : 1)
-              //   break
 
               default:
                 break
@@ -207,7 +204,6 @@ export default function VotingHistoryTable({ userVotes }) {
             </div>
           </div>
         ),
-        // apr: <Paragraph>{formatAmount(123.45)}%</Paragraph>,
         apr: <Paragraph>{formatAmount(vote.apr)}%</Paragraph>,
 
         vote: (
