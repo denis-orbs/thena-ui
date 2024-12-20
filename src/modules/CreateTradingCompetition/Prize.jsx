@@ -235,7 +235,6 @@ function Prize({ data, setData, isEntryFee, setIsEntryFee }) {
         setSelectedAssets={val => {
           setData({
             ...data,
-            // TODO: Calculate correct entryFee
             entryFee: new Array(val.length).fill(''),
             prize: {
               ...data.prize,

@@ -14,8 +14,8 @@ import RenderIfVisible from '@/components/virtualList'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '@/hooks/useLocalStorage'
 import useWallet from '@/hooks/useWallet'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 
 import { ItemToken } from './ItemToken'
 
@@ -104,11 +104,10 @@ function TokenModal({
   const [searchText, setSearchText] = useState('')
 
   const search = useDebounce(searchText)
-  const { getWithExpiry } = useLocalStorage()
+  const { customTokens } = useCustomTokens()
 
   const filteredAssets = useMemo(() => {
-    const temp = getWithExpiry(LOCAL_STORAGE_TOKENS) ?? []
-    const tokenList = temp.concat(baseAssets)
+    const tokenList = customTokens.concat(baseAssets)
 
     const result = search
       ? tokenList.filter(
@@ -123,7 +122,7 @@ function TokenModal({
     }
 
     return result
-  }, [baseAssets, customToken, getWithExpiry, search])
+  }, [baseAssets, customToken, customTokens, search])
 
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [

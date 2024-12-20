@@ -8,11 +8,11 @@ import { useBalance } from 'wagmi'
 import { SWAP_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
-import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '@/hooks/useLocalStorage'
 import { useWrap } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
 import { fromWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 
 import SwapBest from './SwapBest'
 import SwapFusion from './SwapFusion'
@@ -30,8 +30,8 @@ export default function SwapPage() {
   const { push, replace } = useRouter()
   const assets = useAssets()
   const { onWrap, onUnwrap, pending: wrapPending } = useWrap()
-  const { getWithExpiry } = useLocalStorage()
   const { account, chainId } = useWallet()
+  const { customTokens } = useCustomTokens()
 
   const { data: tokenFromBalance } = useBalance({
     token: fromAsset?.address ?? '',
@@ -54,8 +54,7 @@ export default function SwapPage() {
   const { from, to } = useMemo(() => {
     if (!assets || !assets.length) return { from: null, to: null }
 
-    const temp = getWithExpiry(LOCAL_STORAGE_TOKENS) ?? []
-    const assetList = assets.concat(temp.map(tk => ({ ...tk, price: 0, balance: 0 })))
+    const assetList = customTokens.concat(assets)
 
     const fromCurrency = inputCurrency
       ? assetList.find(asset => asset.address.toLowerCase() === inputCurrency.toLowerCase())
@@ -69,7 +68,7 @@ export default function SwapPage() {
       from: fromCurrency,
       to: toCurrency,
     }
-  }, [assets, getWithExpiry, inputCurrency, outputCurrency])
+  }, [assets, customTokens, inputCurrency, outputCurrency])
 
   useEffect(() => {
     let fromAddress = 'BNB'

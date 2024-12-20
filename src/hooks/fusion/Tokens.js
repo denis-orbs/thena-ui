@@ -5,19 +5,26 @@ import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { getTokenInfo } from '@/lib/helper'
 import { useChainSettings } from '@/state/settings/hooks'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 
 // undefined if invalid or does not exist
 // otherwise returns the token
 export function useToken(tokenAddress) {
   const assets = useAssets()
   const customAssets = useCustomAssets()
+  const { customTokens } = useCustomTokens()
 
   return useMemo(() => {
     if (!tokenAddress) return undefined
-    const asset = getTokenInfo({ tokenAddress, assets, customAssets })
+    let asset = getTokenInfo({ tokenAddress, assets, customAssets })
+
+    if (!asset) {
+      asset = customTokens.find(tk => tk.address.toLowerCase() === tokenAddress.toLowerCase())
+    }
+
     if (!asset) return undefined
     return new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
-  }, [assets, customAssets, tokenAddress])
+  }, [assets, customAssets, customTokens, tokenAddress])
 }
 
 export const useCurrency = tokenAddress => {
