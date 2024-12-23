@@ -14,7 +14,7 @@ import { weightedPoolFeesAbi } from '@/constant/abi'
 import useWallet from '@/hooks/useWallet'
 import useClaimableFees from '@/hooks/weightedPool/useClaimableFees'
 import { getWeightedPoolContract, getWeightedPoolVaultContract } from '@/lib/contracts'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 export function WeightedPoolPosition({ pool }) {
@@ -181,7 +181,11 @@ export function WeightedPoolPosition({ pool }) {
       </CustomTooltip>
 
       <div className='mt-4 flex w-full gap-3'>
-        <TextButton className='w-full' disabled={pendingClaimableFees} onClick={() => onClaimableFees(pool)}>
+        <TextButton
+          className='w-full'
+          disabled={pendingClaimableFees || isInvalidAmount(claimableFee.total)}
+          onClick={() => onClaimableFees(pool)}
+        >
           {t('Claim')}
         </TextButton>
 

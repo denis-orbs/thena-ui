@@ -113,10 +113,10 @@ export function PoolAttributesCL({ strategy, pool }) {
         </div>
 
         {/* Protocol version */}
-        <div className='grid grid-cols-7'>
+        {/* <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
           <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
-        </div>
+        </div> */}
 
         {/* Pool Deployer */}
         <div className='grid grid-cols-7'>
@@ -303,10 +303,10 @@ export function NormalPoolAttributes({ pool }) {
         </div>
 
         {/* Protocol version */}
-        <div className='grid grid-cols-7'>
+        {/* <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
           <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
-        </div>
+        </div> */}
 
         {/* Pool Owner */}
         {pool?.owner ? (
