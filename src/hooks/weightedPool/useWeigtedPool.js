@@ -5,10 +5,12 @@ import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
 import { encodePacked, maxUint256, parseEventLogs, toHex } from 'viem'
 
-import { TXN_STATUS } from '@/constant'
+import { PAIR_TYPES, TXN_STATUS, ZERO_ADDRESS } from '@/constant'
 import { weightedPoolFactoryAbi } from '@/constant/abi'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
-import { useMutateAssets } from '@/context/assetsContext'
+import { useAssets, useMutateAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
+import { usePairs } from '@/context/pairsContext'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
@@ -19,9 +21,12 @@ import {
   getWeightedPoolRouterSimulatorContract,
   getWeightedPoolVaultContract,
 } from '@/lib/contracts'
+import { getTokenInfo } from '@/lib/helper'
 import { fromWei, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
+import { useExtraRewardsInfo } from '../useGeneral'
+import usePrices from '../usePrices'
 import useWallet from '../useWallet'
 
 const toBytes32 = hexString => {
@@ -776,4 +781,136 @@ export const useWeightedPool = () => {
     calcMinAmountOutRemoveAll,
     pending,
   }
+}
+
+export const useWeightedPoolsWithGauge = () => {
+  const assets = useAssets()
+  const customAssets = useCustomAssets()
+  const extraRewardsInfo = useExtraRewardsInfo()
+  const { weightedPools = [] } = usePairs()
+  const prices = usePrices()
+  let userInfo = []
+  if (weightedPools.length > 0 && assets.length > 0) {
+    const totalWeight = weightedPools.reduce((sum, current) => sum + (current?.gauge?.weight ?? 0), 0)
+    userInfo = weightedPools
+      .map(weighted => {
+        const { gauge, lpPrice } = weighted
+        const gaugeTvl = lpPrice * gauge.totalSupply
+        const tokens = weighted.tokens.map(token => {
+          const tokenDetail = getTokenInfo({ tokenAddress: token.address, assets, customAssets })
+          tokenDetail.symbol = tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN'
+
+          return {
+            ...token,
+            reserve: new BigNumber(token.reserve),
+            ...tokenDetail,
+          }
+        })
+        const totalTvl = new BigNumber(weighted.tvlUSD)
+        const weightPercent = totalWeight > 0 ? (gauge.weight / totalWeight) * 100 : 0
+        let bribeUsd = 0
+        const poolBribes = gauge.bribes
+        let finalBribes = { fee: null, bribe: null }
+        if (poolBribes) {
+          if (poolBribes.bribe) {
+            finalBribes.bribe = []
+            poolBribes.bribe.forEach(ele => {
+              const found = assets.find(asset => asset.address.toLowerCase() === ele.address.toLowerCase())
+              bribeUsd += ele.amount * (found?.price || 0)
+              finalBribes = {
+                bribe: [
+                  ...finalBribes.bribe,
+                  {
+                    address: ele.address,
+                    decimals: found?.decimals || 18,
+                    amount: ele.amount,
+                    symbol: found?.symbol || 'UNKNOWN',
+                  },
+                ],
+              }
+            })
+          }
+          if (poolBribes.fee) {
+            finalBribes.fee = []
+            poolBribes.fee.forEach(ele => {
+              const found = assets.find(asset => asset.address.toLowerCase() === ele.address.toLowerCase())
+              bribeUsd += ele.amount * (found?.price || 0)
+              finalBribes = {
+                ...finalBribes,
+                fee: [
+                  ...finalBribes.fee,
+                  {
+                    address: ele.address,
+                    decimals: found?.decimals || 18,
+                    amount: ele.amount,
+                    symbol: found?.symbol || 'UNKNOWN',
+                  },
+                ],
+              }
+            })
+          }
+        }
+        // const found = (userInfos ?? []).find(item => item.address.toLowerCase() === fusion.address.toLowerCase())
+        const user = {
+          walletBalance: 0,
+          gaugeBalance: 0,
+          gaugeEarned: 0,
+          totalLp: 0,
+          tokensClaimable: [],
+          stakes: [],
+          stakedUsd: 0,
+          earnedUsd: 0,
+          totals: [],
+          totalUsd: 0,
+        }
+        let extraApr = 0
+        // const extraRewards = null
+        // let extraRewardsInUsd = 0
+        const foundExtra = (extraRewardsInfo ?? []).find(ele => ele.pairAddress === weighted.address)
+        if (foundExtra) {
+          extraApr = ((foundExtra.rewardRate * 31536000 * prices[foundExtra.doubleRewarderSymbol]) / gaugeTvl) * 100
+          // extraRewards = {
+          //   amount: foundExtra.pendingReward,
+          //   symbol: foundExtra.doubleRewarderSymbol,
+          // }
+          // extraRewardsInUsd = extraRewards.amount * prices[foundExtra.doubleRewarderSymbol]
+        }
+        // if (found) {
+        //   user = {
+        //     ...found,
+        //     token0claimable: formatUnits(found.token0claimable, token0.decimals),
+        //     token1claimable: formatUnits(found.token1claimable, token1.decimals),
+        //     walletBalance: formatEther(found.walletBalance),
+        //     gaugeBalance: formatEther(found.gaugeBalance),
+        //     totalLp: formatEther(found.totalLp),
+        //     gaugeEarned: formatEther(found.gaugeEarned),
+        //     stakedUsd: fromWei(found.gaugeBalance).times(lpPrice).toNumber(),
+        //     earnedUsd: fromWei(found.gaugeEarned).times(prices.THE).plus(extraRewardsInUsd).toNumber(),
+        //     totalUsd: fromWei(found.totalLp).times(lpPrice).toNumber(),
+        //     extraRewards,
+        //   }
+        // }
+        return {
+          ...weighted,
+          stable: 'false',
+          type: PAIR_TYPES.WEIGHTED,
+          title: weighted.type,
+          tvl: totalTvl,
+          apr: weighted.gauge.apr + extraApr,
+          tokens,
+          allowed: {},
+          gauge: {
+            ...gauge,
+            bribeUsd: new BigNumber(bribeUsd),
+            weight: new BigNumber(gauge.weight),
+            weightPercent: new BigNumber(weightPercent),
+            bribes: finalBribes,
+          },
+          account: user,
+        }
+      })
+      .filter(item => item.gauge.address !== ZERO_ADDRESS)
+      .sort((a, b) => (a.gauge.tvl - b.gauge.tvl) * -1)
+  }
+  return userInfo
 }

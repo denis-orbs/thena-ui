@@ -16,6 +16,7 @@ import { useVaults } from './vaultsContext'
 const initialState = {
   [ChainId.BSC]: {
     data: [],
+    weightedPools: [],
     isLoading: false,
   },
   [ChainId.OPBNB]: {
@@ -24,6 +25,7 @@ const initialState = {
   },
   97: {
     data: [],
+    weightedPools: [],
     isLoading: false,
   },
 }
@@ -68,9 +70,13 @@ function PairsContextProvider({ children }) {
 
   const pairs = useMemo(
     () => ({
-      [ChainId.BSC]: { data: bscPairs || [], isLoading: bscLoading },
-      [ChainId.OPBNB]: { data: opPairs || [], isLoading: opLoading },
-      97: { data: [...weightedPools, ...(bscTestnetPairsV3 || [])], isLoading: bscTestnetV3Loading || weightedLoading },
+      [ChainId.BSC]: { data: bscPairs || [], weightedPools: [], isLoading: bscLoading },
+      [ChainId.OPBNB]: { data: opPairs || [], weightedPools: [], isLoading: opLoading },
+      97: {
+        data: [...weightedPools, ...(bscTestnetPairsV3 || [])],
+        weightedPools,
+        isLoading: bscTestnetV3Loading || weightedLoading,
+      },
     }),
     [bscPairs, bscLoading, opPairs, opLoading, weightedPools, bscTestnetPairsV3, bscTestnetV3Loading, weightedLoading],
   )
@@ -88,7 +94,7 @@ const usePairs = () => {
   const prevPair = useRef([])
 
   return useMemo(() => {
-    const { data, isLoading } = pairs[networkId]
+    const { data, weightedPools, isLoading } = pairs[networkId]
     if (!assets.length || !pools.length || !data) {
       return {
         pairs: prevPair.current,
@@ -184,6 +190,7 @@ const usePairs = () => {
 
     return {
       pairs: result,
+      weightedPools,
       isLoading,
     }
   }, [pairs, networkId, assets, pools, customAssets, vaults])

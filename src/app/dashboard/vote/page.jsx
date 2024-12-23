@@ -19,6 +19,7 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
@@ -26,10 +27,12 @@ import { useEpochTimer, useVoteEmissions } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import { usePoke, useReset, useVote } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
+import { useWeightedPoolsWithGauge } from '@/hooks/weightedPool/useWeigtedPool'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount } from '@/lib/utils'
+import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
@@ -96,6 +99,8 @@ export default function VotePage() {
   const { veTHEs, updateVeTHEs } = useVeTHEsContext()
   const pools = usePools()
   const prices = usePrices()
+
+  const weightedPools = useWeightedPoolsWithGauge()
   const { voteEmssions } = useVoteEmissions()
   const { days, hours, mins, epoch } = useEpochTimer()
   const { onVote, pending: votePending } = useVote()
@@ -135,9 +140,11 @@ export default function VotePage() {
     [JSON.stringify(percent), percent],
   )
 
+  console.log({ weightedPools })
+
   const userPools = useMemo(
     () =>
-      pools
+      [...pools, ...weightedPools]
         // .filter(pair => !HIDDEN_POOLS.includes(pair.address))
         .filter(pair => pair.title !== 'DefiEdge') // hide all DeFi Edge
         .filter(pair => pair.gauge.address !== zeroAddress && pair.gauge.isAlive)
@@ -168,7 +175,7 @@ export default function VotePage() {
             votes,
           }
         }),
-    [pools, veTHE],
+    [pools, veTHE, weightedPools],
   )
 
   const filteredPools = useMemo(() => {
@@ -240,27 +247,33 @@ export default function VotePage() {
     () =>
       sortedPools.map(pool => ({
         pair: (
-          <div className='flex items-center gap-3'>
-            <IconGroup
-              className='-space-x-2'
-              classNames={{
-                image: 'outline-2 w-7 h-7',
-              }}
-              logo1={pool.token0.logoURI}
-              logo2={pool.token1.logoURI}
-            />
-            <div className='flex flex-col'>
-              <TextHeading>{pool.symbol}</TextHeading>
-              <Paragraph className='text-sm'>{pool.title}</Paragraph>
-            </div>
-          </div>
+          <>
+            {pool.type !== PAIR_TYPES.WEIGHTED ? (
+              <>
+                <IconGroup
+                  className='-space-x-2'
+                  classNames={{
+                    image: 'outline-2 w-7 h-7',
+                  }}
+                  logo1={pool.token0.logoURI}
+                  logo2={pool.token1.logoURI}
+                />
+                <div className='flex flex-col'>
+                  <TextHeading>{pool.symbol}</TextHeading>
+                  <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
+                </div>
+              </>
+            ) : (
+              <ListTokenPercantage listToken={pool.tokens} />
+            )}
+          </>
         ),
-        apr: <Paragraph>{formatAmount(pool.gauge.voteApr, true)}%</Paragraph>,
+        apr: <Paragraph>{formatAmount(pool.gauge?.voteApr, true)}%</Paragraph>,
         votes: (
           <div className='flex flex-col'>
-            <Paragraph>{formatAmount(pool.gauge.weight)}</Paragraph>
+            <Paragraph>{formatAmount(pool.gauge?.weight)}</Paragraph>
             <TextSubHeading className='text-base leading-tight'>
-              {formatAmount(Math.ceil(pool.gauge.weightPercent.toNumber()))}%
+              {formatAmount(Math.ceil(pool.gauge?.weightPercent?.toNumber()))}%
             </TextSubHeading>
           </div>
         ),
