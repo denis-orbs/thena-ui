@@ -1,7 +1,6 @@
 import { ChainId } from 'thena-sdk-core'
 
 import {
-  algebraFactoryAbi,
   bribeAbi,
   claimerAbi,
   dibsAbi,
@@ -61,6 +60,7 @@ import {
   vaultDepositGaurdAbi,
 } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
+import { algebraFactoryMainNetV2Abi } from '@/constant/v2-mainnet-abi'
 import { algebraFactoryTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { algebraFactoryV3Abi, nonfungiblePositionManagerV3Abi } from '@/constant/v3-abi'
 
@@ -247,7 +247,7 @@ export const getAlgebraFactoryContract = (chainId = 56, version = 3) => {
   }
 
   return getContract(
-    chainId === 97 ? algebraFactoryTestNetV2Abi : algebraFactoryAbi,
+    chainId === 97 ? algebraFactoryTestNetV2Abi : algebraFactoryMainNetV2Abi,
     Contracts.algebraFactoryV2,
     chainId,
   )

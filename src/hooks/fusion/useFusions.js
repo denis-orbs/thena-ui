@@ -6,6 +6,7 @@ import { useReadContract, useReadContracts } from 'wagmi'
 
 import { algebraFactoryAbi } from '@/constant/abi'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
+import { poolMainNetV2Abi } from '@/constant/v2-mainnet-abi'
 import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { algebraFactoryV3Abi } from '@/constant/v3-abi'
 import { useFusionPairs } from '@/context/fusionsContext'
@@ -110,14 +111,14 @@ export function useFusionState(currencyA, currencyB, version = 3) {
   const algebra = getAlgebraFactoryContract(chainId, version)
   const { data: poolAddress } = useReadContract({
     ...algebra,
-    functionName: 'computePoolAddress',
+    functionName: chainId === CHAIN_ID.BSC && version === 2 ? 'poolByPair' : 'computePoolAddress',
     args: [token0?.address, token1?.address],
     query: {
       enabled: !!token0?.address && !!token1?.address && !!chainId,
     },
   })
 
-  const poolContract = { address: poolAddress, abi: poolTestNetV2Abi }
+  const poolContract = { address: poolAddress, abi: chainId === CHAIN_ID.BSC ? poolMainNetV2Abi : poolTestNetV2Abi }
   const { data: poolInfo } = useReadContracts({
     contracts: [
       { ...poolContract, functionName: 'liquidity' },

@@ -141,6 +141,7 @@ const Contracts = {
   },
   algebraFactoryV2: {
     [CHAIN_ID.TEST_BSC]: '0xFBFB64eD1C70bb8d4c8bFCc338C10a5120809538',
+    [CHAIN_ID.BSC]: '0x306F06C147f064A010530292A1EB6737c3e378e4',
   },
   algebraFactoryV3: {
     [CHAIN_ID.TEST_BSC]: '0x670e7Ef4D34a0FBBAf2d4f997FE73302Ba9ce98f',
