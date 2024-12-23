@@ -94,6 +94,8 @@ export default function HoldingsPage() {
   const filteredPools = useMemo(() => {
     let result = []
     const stakedPools = userPools.filter(ele => (stakedOnly ? ele.account.gaugeBalance.gt(0) : true))
+    const farmed = userManuals.filter(ele => ele.isFarming)
+
     switch (filter) {
       case FILTERS.ICHI:
         result = stakedPools.filter(ele => ele.title === 'ICHI')
@@ -112,11 +114,11 @@ export default function HoldingsPage() {
         break
 
       case FILTERS.Manual:
-        result = userManuals
+        result = stakedOnly ? farmed : userManuals
         break
 
       default:
-        result = stakedOnly ? stakedPools : [...userPools, ...userManuals]
+        result = stakedOnly ? stakedPools.concat(farmed) : [...userPools, ...userManuals]
         break
     }
     return !searchText
