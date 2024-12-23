@@ -11,11 +11,14 @@ import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import IconGroup from '@/components/icongroup'
+import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import BalanceInput from '@/components/input/BalanceInput'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useMutateAssets } from '@/context/assetsContext'
 import { useBribeAdd } from '@/hooks/useProtocols'
 import useWallet from '@/hooks/useWallet'
+import { useWeightedPoolsWithGauge } from '@/hooks/weightedPool/useWeigtedPool'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
@@ -38,9 +41,14 @@ export default function IncentivePage() {
   const { onBribeAdd, pending } = useBribeAdd()
   const t = useTranslations()
 
+  const weightedPool = useWeightedPoolsWithGauge()
   const topPools = useMemo(
-    () => pools.sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber()).slice(0, 4),
-    [pools],
+    () =>
+      pools
+        .concat(weightedPool)
+        .sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber())
+        .slice(0, 4),
+    [pools, weightedPool],
   )
 
   const errorMsg = useMemo(() => {
@@ -76,14 +84,26 @@ export default function IncentivePage() {
           {topPools.map(pool => (
             <Box className='flex items-center justify-between' key={`incentive-${pool.address}`}>
               <div className='flex items-center gap-3'>
-                <IconGroup
-                  className='-space-x-3'
-                  classNames={{
-                    image: 'outline-4 w-10 h-10',
-                  }}
-                  logo1={pool.token0.logoURI}
-                  logo2={pool.token1.logoURI}
-                />
+                {pool.type === PAIR_TYPES.WEIGHTED ? (
+                  <ThreeIconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
+                    }}
+                    logo1={pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
+                    logo2={pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
+                    extendNumber={(pool?.tokens?.length || 2) - 2}
+                  />
+                ) : (
+                  <IconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'outline-2 w-8 h-8',
+                    }}
+                    logo1={pool.token0.logoURI}
+                    logo2={pool.token1.logoURI}
+                  />
+                )}
                 <div className='flex flex-col'>
                   <TextHeading>{pool.symbol}</TextHeading>
                   <Paragraph className='text-sm'>{pool.title}</Paragraph>
@@ -186,7 +206,12 @@ export default function IncentivePage() {
         </div>
       </div>
 
-      <PairModal popup={pairOpen} setPopup={setPairOpen} setSelected={setPair} pools={poolsWithGauge} />
+      <PairModal
+        popup={pairOpen}
+        setPopup={setPairOpen}
+        setSelected={setPair}
+        pools={poolsWithGauge.concat(weightedPool)}
+      />
 
       <TokenModal
         popup={tokenOpen}

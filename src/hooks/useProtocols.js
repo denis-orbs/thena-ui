@@ -11,6 +11,13 @@ import { warnToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
+export const POOL_TYPES = {
+  Classic: 0,
+  Stable: 0,
+  'Conc Liquidity': 1,
+  Weighted: 3,
+}
+
 export const useGaugeAdd = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
@@ -25,12 +32,20 @@ export const useGaugeAdd = () => {
       }
       const globalFactoryContract = getGlobalFactoryContract(chainId)
 
-      const res = await Promise.all([
-        readCall(globalFactoryContract, 'isToken', [pool.token0.address], chainId),
-        readCall(globalFactoryContract, 'isToken', [pool.token1.address], chainId),
-      ])
+      let res = []
+      if (pool.type === PAIR_TYPES.WEIGHTED) {
+        res = await Promise.all(
+          pool.tokens.map(token => readCall(globalFactoryContract, 'isToken', [token.address], chainId)),
+        )
+      } else {
+        res = await Promise.all([
+          readCall(globalFactoryContract, 'isToken', [pool.token0.address], chainId),
+          readCall(globalFactoryContract, 'isToken', [pool.token1.address], chainId),
+        ])
+      }
 
-      if (chainId === 97 && (!res[0] || !res[1])) {
+      const isWhitelisted = res.every(ele => ele)
+      if (!isWhitelisted) {
         warnToast('Tokens are not whitelisted')
         return
       }
@@ -49,17 +64,13 @@ export const useGaugeAdd = () => {
       })
 
       setPending(true)
-      const params = [pool.address, pool.type === PAIR_TYPES.LSD ? 1 : 0]
-
+      const params = [pool.address, POOL_TYPES[pool.type]]
       if (!(await writeTxn(key, adduuid, globalFactoryContract, 'create', params))) {
         setPending(false)
         return
       }
 
-      endTxn({
-        key,
-        final: 'Gauge Add Successful',
-      })
+      endTxn({ key, final: 'Gauge Add Successful' })
       callback()
       setPending(false)
     },
