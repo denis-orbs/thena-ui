@@ -136,6 +136,10 @@ export default function SelectPair({
               warnToast('Select Asset')
               return
             }
+            if (!pairType) {
+              warnToast('Select Pool Type')
+              return
+            }
             handleContinue()
           }}
         >
