@@ -18,7 +18,7 @@ import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
+import { usePositionData, useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { getTokenInfo } from '@/lib/helper'
 import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
@@ -49,6 +49,7 @@ function AddLiquidityWeightedPool({
   const debounceTimeout = useRef(null)
 
   const [amountDeposit, setAmountDeposit] = useState('')
+  const { mutatePosition } = usePositionData(pool)
 
   const [slippage, setSlippage] = useState(0.5)
   const [openTransactionSetting, setOpenTransactionSetting] = useState()
@@ -207,7 +208,6 @@ function AddLiquidityWeightedPool({
   const amountToWrap = useMemo(() => {
     let final
     if (depositType === DEPOSIT_TYPE.SINGLE) {
-      console.log({ tokenDeposit })
       if (
         tokenDeposit?.balance?.lt(amountDeposit) &&
         (tokenDeposit?.symbol === 'BNB' || tokenDeposit?.symbol === 'WBNB')
@@ -239,6 +239,7 @@ function AddLiquidityWeightedPool({
           if (isModal) {
             setIsOpen(false)
           }
+          mutatePosition()
         },
       )
     } else {
@@ -256,6 +257,7 @@ function AddLiquidityWeightedPool({
         if (isModal) {
           setIsOpen(false)
         }
+        mutatePosition()
       })
     }
   }, [
@@ -265,6 +267,7 @@ function AddLiquidityWeightedPool({
     isModal,
     minBPTAmountOut,
     mutatePoolBalance,
+    mutatePosition,
     onAddLiquidityAllToken,
     onAddLiquiditySingleToken,
     pool.poolId,

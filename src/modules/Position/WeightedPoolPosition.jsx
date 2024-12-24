@@ -1,122 +1,26 @@
-import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useMemo, useState } from 'react'
-import { getAddress } from 'viem'
-import { useReadContract, useReadContracts } from 'wagmi'
+import { useState } from 'react'
 
 import AddLiquidityWeightedModal from '@/app/pools/AddLiquidityWeightedModal'
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
 import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import CustomTooltip from '@/components/tooltip'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { weightedPoolFeesAbi } from '@/constant/abi'
-import useWallet from '@/hooks/useWallet'
+import { UNKNOWN_LOGO } from '@/constant'
 import useClaimableFees from '@/hooks/weightedPool/useClaimableFees'
-import { getWeightedPoolContract, getWeightedPoolVaultContract } from '@/lib/contracts'
-import { formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
+import { usePositionData } from '@/hooks/weightedPool/useWeigtedPool'
+import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 export function WeightedPoolPosition({ pool }) {
   const t = useTranslations()
-  const { account: userAddress, chainId } = useWallet()
   const [isOpenRemove, setIsOpenRemove] = useState(false)
   const [isOpenAdd, setIsOpenAdd] = useState(false)
 
   const { onClaimableFees, pending: pendingClaimableFees } = useClaimableFees()
 
   // MARK: Get claimable token for WEIGHTED
-  const poolContract = getWeightedPoolContract(pool?.address, chainId)
-  const vaultContract = getWeightedPoolVaultContract(chainId)
-  const { data } = useReadContracts({
-    contracts: [
-      {
-        ...poolContract,
-        functionName: 'feesContract',
-      },
-      {
-        ...poolContract,
-        functionName: 'totalSupply',
-      },
-      {
-        ...poolContract,
-        functionName: 'balanceOf',
-        args: [userAddress],
-      },
-      {
-        ...vaultContract,
-        functionName: 'getPoolTokens',
-        args: [pool?.poolId],
-      },
-    ],
-    query: {
-      enabled: Boolean(pool?.address) && pool.type === PAIR_TYPES.WEIGHTED,
-    },
-  })
-
-  const [poolFeeContract, lpTokenTotalSupply, lpTokenBalance, tokenAddresses, tokenAmounts] = useMemo(() => {
-    const poolFeeContractVal = data?.[0]?.result
-    const lpTokenTotalSupplyVal = new BigNumber(data?.[1]?.result ?? 0)
-    const lpTokenBalanceVal = new BigNumber(data?.[2]?.result ?? 0)
-    const tokenAddressesVal = data?.[3]?.result?.[0] || []
-    const tokenAmountsVal = data?.[3]?.result?.[1] || []
-
-    return [poolFeeContractVal, lpTokenTotalSupplyVal, lpTokenBalanceVal, tokenAddressesVal, tokenAmountsVal]
-  }, [data])
-
-  const { data: expectedFees = [] } = useReadContract({
-    address: poolFeeContract,
-    abi: weightedPoolFeesAbi,
-    functionName: 'expectedFees',
-    args: [userAddress],
-    query: {
-      enabled: Boolean(poolFeeContract) && pool.type === PAIR_TYPES.WEIGHTED,
-    },
-  })
-
-  const mappedToken = useMemo(() => {
-    const map = {}
-    tokenAddresses.forEach(address => {
-      const token = pool.tokens.find(item => getAddress(item.address) === getAddress(address))
-      map[address] = token
-    })
-    return map
-  }, [pool.tokens, tokenAddresses])
-
-  const depositValue = useMemo(() => {
-    const lpTokenPrice = new BigNumber(pool?.lpPrice || 0)
-
-    const userAmountRatio = lpTokenBalance.div(lpTokenTotalSupply)
-    return {
-      tokens: tokenAddresses.map((address, index) => {
-        const token = mappedToken[address]
-        return {
-          ...token,
-          amount: userAmountRatio.times(fromWei(tokenAmounts[index], token.decimals)),
-        }
-      }, []),
-      depositUsd: lpTokenPrice.times(fromWei(lpTokenBalance)),
-    }
-  }, [pool?.lpPrice, lpTokenBalance, lpTokenTotalSupply, tokenAddresses, mappedToken, tokenAmounts])
-
-  const claimableFee = useMemo(() => {
-    let total = 0
-    const tokenList = tokenAddresses.map((address, index) => {
-      const fee = new BigNumber(fromWei(expectedFees[index], mappedToken[address].decimals))
-      total += +fee.times(mappedToken[address].price)
-
-      return {
-        address,
-        fee,
-        ...mappedToken[address],
-      }
-    })
-
-    return {
-      total,
-      tokenList,
-    }
-  }, [expectedFees, mappedToken, tokenAddresses])
+  const { claimableFee, depositValue, mutatePosition } = usePositionData(pool)
 
   return (
     <div className='rounded-xl bg-neutral-900 p-4'>
@@ -184,7 +88,11 @@ export function WeightedPoolPosition({ pool }) {
         <TextButton
           className='w-full'
           disabled={pendingClaimableFees || isInvalidAmount(claimableFee.total)}
-          onClick={() => onClaimableFees(pool)}
+          onClick={() => {
+            onClaimableFees(pool, () => {
+              mutatePosition()
+            })
+          }}
         >
           {t('Claim')}
         </TextButton>

@@ -3,10 +3,11 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
-import { encodePacked, maxUint256, parseEventLogs, toHex } from 'viem'
+import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex } from 'viem'
+import { useReadContract, useReadContracts } from 'wagmi'
 
 import { PAIR_TYPES, TXN_STATUS, ZERO_ADDRESS } from '@/constant'
-import { weightedPoolFactoryAbi } from '@/constant/abi'
+import { weightedPoolFactoryAbi, weightedPoolFeesAbi } from '@/constant/abi'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets, useMutateAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
@@ -913,4 +914,106 @@ export const useWeightedPoolsWithGauge = () => {
       .sort((a, b) => (a.gauge.tvl - b.gauge.tvl) * -1)
   }
   return userInfo
+}
+
+export const usePositionData = pool => {
+  const { chainId, account } = useWallet()
+  const poolContract = getWeightedPoolContract(pool?.address, chainId)
+  const vaultContract = getWeightedPoolVaultContract(chainId)
+  const { data, refetch: mutateTokens } = useReadContracts({
+    contracts: [
+      {
+        ...poolContract,
+        functionName: 'feesContract',
+      },
+      {
+        ...poolContract,
+        functionName: 'totalSupply',
+      },
+      {
+        ...poolContract,
+        functionName: 'balanceOf',
+        args: [account],
+      },
+      {
+        ...vaultContract,
+        functionName: 'getPoolTokens',
+        args: [pool?.poolId],
+      },
+    ],
+    query: {
+      enabled: Boolean(pool?.address) && pool.type === PAIR_TYPES.WEIGHTED,
+    },
+  })
+
+  const [poolFeeContract, lpTokenTotalSupply, lpTokenBalance, tokenAddresses, tokenAmounts] = useMemo(() => {
+    const poolFeeContractVal = data?.[0]?.result
+    const lpTokenTotalSupplyVal = new BigNumber(data?.[1]?.result ?? 0)
+    const lpTokenBalanceVal = new BigNumber(data?.[2]?.result ?? 0)
+    const tokenAddressesVal = data?.[3]?.result?.[0] || []
+    const tokenAmountsVal = data?.[3]?.result?.[1] || []
+
+    return [poolFeeContractVal, lpTokenTotalSupplyVal, lpTokenBalanceVal, tokenAddressesVal, tokenAmountsVal]
+  }, [data])
+
+  const { data: expectedFees = [], refetch: mutateFees } = useReadContract({
+    address: poolFeeContract,
+    abi: weightedPoolFeesAbi,
+    functionName: 'expectedFees',
+    args: [account],
+    query: {
+      enabled: Boolean(poolFeeContract) && pool.type === PAIR_TYPES.WEIGHTED,
+    },
+  })
+
+  const mappedToken = useMemo(() => {
+    const map = {}
+    tokenAddresses.forEach(address => {
+      const token = pool.tokens.find(item => getAddress(item.address) === getAddress(address))
+      map[address] = token
+    })
+    return map
+  }, [pool.tokens, tokenAddresses])
+
+  const depositValue = useMemo(() => {
+    const lpTokenPrice = new BigNumber(pool?.lpPrice || 0)
+
+    const userAmountRatio = lpTokenBalance.div(lpTokenTotalSupply)
+    return {
+      tokens: tokenAddresses.map((address, index) => {
+        const token = mappedToken[address]
+        return {
+          ...token,
+          amount: userAmountRatio.times(fromWei(tokenAmounts[index], token.decimals)),
+        }
+      }, []),
+      depositUsd: lpTokenPrice.times(fromWei(lpTokenBalance)),
+    }
+  }, [pool?.lpPrice, lpTokenBalance, lpTokenTotalSupply, tokenAddresses, mappedToken, tokenAmounts])
+
+  const claimableFee = useMemo(() => {
+    let total = 0
+    const tokenList = tokenAddresses.map((address, index) => {
+      const fee = new BigNumber(fromWei(expectedFees[index], mappedToken[address].decimals))
+      total += +fee.times(mappedToken[address].price)
+
+      return {
+        address,
+        fee,
+        ...mappedToken[address],
+      }
+    })
+
+    return {
+      total,
+      tokenList,
+    }
+  }, [expectedFees, mappedToken, tokenAddresses])
+
+  const mutatePosition = useCallback(() => {
+    mutateTokens()
+    mutateFees()
+  }, [mutateFees, mutateTokens])
+
+  return { claimableFee, depositValue, mutatePosition }
 }

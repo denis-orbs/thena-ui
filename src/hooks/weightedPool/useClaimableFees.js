@@ -15,7 +15,7 @@ const useClaimableFees = () => {
   const { startTxn, endTxn, writeTxn } = useTxn()
   const [pending, setPending] = useState(false)
 
-  const onClaimableFees = async pool => {
+  const onClaimableFees = async (pool, onSuccess) => {
     try {
       const key = uuidv4()
       const claimableuuid = uuidv4()
@@ -39,6 +39,10 @@ const useClaimableFees = () => {
           key,
           final: 'Claim Fees Successful',
         })
+      }
+
+      if (typeof onSuccess === 'function') {
+        onSuccess()
       }
     } catch (error) {
       console.error(error)
