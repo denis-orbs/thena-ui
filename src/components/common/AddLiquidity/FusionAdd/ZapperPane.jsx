@@ -7,12 +7,13 @@ import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import TokenInput from '@/components/input/TokenInput'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { cn, fromWei } from '@/lib/utils'
 import { ArrowRightIcon } from '@/svgs'
 
-function ZapperPane({ asset1, asset2, slippage, poolId, tickLower, tickUpper, deadline, mintInfo }) {
+function ZapperPane({ asset1, asset2, slippage, tickLower, tickUpper, deadline, mintInfo, strategy }) {
   const t = useTranslations()
   const { account } = useWallet()
   const [tokensData] = useState([asset1, asset2])
@@ -21,10 +22,12 @@ function ZapperPane({ asset1, asset2, slippage, poolId, tickLower, tickUpper, de
 
   const [amount, setAmount] = useState(0)
 
+  const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset1.address, asset2.address)
+
   const { data, isFetching } = useGetZapInRoute({
     tickLower,
     tickUpper,
-    poolId,
+    poolId: strategy?.isFarming ? poolAddress : customPoolAddress,
     tokenIn: tokenDeposit,
     amountIn: amount,
     slippage: slippage * 100,
@@ -120,6 +123,7 @@ function ZapperPane({ asset1, asset2, slippage, poolId, tickLower, tickUpper, de
               deadline,
               amount,
               token: tokenDeposit,
+              isFarming: Boolean(strategy?.isFarming),
             })
           }}
           className='w-full'
