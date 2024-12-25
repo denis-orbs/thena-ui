@@ -23,7 +23,7 @@ import {
   getWeightedPoolVaultContract,
 } from '@/lib/contracts'
 import { getTokenInfo } from '@/lib/helper'
-import { fromWei, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
+import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import { useExtraRewardsInfo } from '../useGeneral'
@@ -1016,4 +1016,37 @@ export const usePositionData = pool => {
   }, [mutateFees, mutateTokens])
 
   return { claimableFee, depositValue, mutatePosition }
+}
+
+const getBalance = async (contract, account, chainId) => {
+  try {
+    const balance = await readCall(contract, 'balanceOf', [account], chainId)
+
+    return fromWei(balance)
+  } catch (error) {
+    console.error('Failed to fetch balance or decimals:', error)
+    return 0
+  }
+}
+
+export const useWeightedPositionList = () => {
+  const { account, chainId } = useWallet()
+  const { weightedPools = [] } = usePairs()
+
+  const getWeightedHasPositions = useCallback(async () => {
+    const results = await Promise.all(
+      weightedPools.map(async pool => {
+        const weightedPoolContract = getWeightedPoolContract(pool.address, chainId)
+        const balance = await getBalance(weightedPoolContract, account, chainId)
+        return { pool, hasPosition: !isInvalidAmount(balance) }
+      }),
+    )
+    return results.filter(result => result.hasPosition).map(result => result.pool)
+  }, [account, chainId, weightedPools])
+
+  const { data } = useSWR(['getWeightedHasPositions'], () => getWeightedHasPositions(), {
+    refreshInterval: 0,
+  })
+
+  return data || []
 }

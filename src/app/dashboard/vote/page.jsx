@@ -140,8 +140,6 @@ export default function VotePage() {
     [JSON.stringify(percent), percent],
   )
 
-  console.log({ weightedPools })
-
   const userPools = useMemo(
     () =>
       [...pools, ...weightedPools]

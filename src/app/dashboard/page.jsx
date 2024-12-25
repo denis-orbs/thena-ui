@@ -25,11 +25,13 @@ import { useVaults } from '@/context/vaultsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useGuageAllHarvset } from '@/hooks/useGauge'
 import useWallet from '@/hooks/useWallet'
+import { useWeightedPositionList } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, formatAmount } from '@/lib/utils'
 import { FarmingPosition } from '@/modules/Position/FarmingPosition'
 import ManualPosition from '@/modules/Position/ManualPosition'
 import NotStaked from '@/modules/Position/NotStaked'
 import Staked from '@/modules/Position/Staked'
+import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite, InfoIcon } from '@/svgs'
@@ -42,6 +44,7 @@ const FILTERS = {
   Gamma: 'Gamma',
   DefiEdge: 'DefiEdge',
   Manual: 'Manual',
+  WEIGHTED: 'Weighted',
   Legacy: 'V1',
 }
 
@@ -65,6 +68,7 @@ export default function HoldingsPage() {
   const farmedPools = pools.filter(item => item.account.gaugeEarned.gt(0))
   const { onGaugeAllHarvest, pending } = useGuageAllHarvset()
   const t = useTranslations()
+  const weightedPositionList = useWeightedPositionList()
 
   const theAsset = useMemo(
     () => assets.find(asset => asset.address.toLowerCase() === Contracts.THE[networkId].toLowerCase()),
@@ -117,8 +121,12 @@ export default function HoldingsPage() {
         result = stakedOnly ? farmed : userManuals
         break
 
+      case FILTERS.WEIGHTED:
+        result = weightedPositionList
+        break
+
       default:
-        result = stakedOnly ? stakedPools.concat(farmed) : [...userPools, ...userManuals]
+        result = stakedOnly ? stakedPools.concat(farmed) : [...userPools, ...userManuals, ...weightedPositionList]
         break
     }
     return !searchText
@@ -133,7 +141,7 @@ export default function HoldingsPage() {
               withComma.toLowerCase().includes(searchText.toLowerCase())
             )
           })
-  }, [userPools, userManuals, filter, searchText, stakedOnly])
+  }, [userPools, filter, searchText, stakedOnly, userManuals, weightedPositionList])
 
   useEffect(() => {
     // Prefetch the dashboard page
@@ -268,8 +276,14 @@ export default function HoldingsPage() {
                     </React.Fragment>
                   ) : (
                     <React.Fragment key={`pool-${idx}`}>
-                      {pool.account.gaugeBalance.gt(0) && <Staked pool={pool} />}
-                      {!stakedOnly && pool.account.walletBalance.gt(0) && <NotStaked pool={pool} />}
+                      {pool.tokens && Array.isArray(pool.tokens) ? (
+                        <WeightedPoolPosition pool={pool} />
+                      ) : (
+                        <>
+                          {pool.account.gaugeBalance.gt(0) && <Staked pool={pool} />}
+                          {!stakedOnly && pool.account.walletBalance.gt(0) && <NotStaked pool={pool} />}
+                        </>
+                      )}
                     </React.Fragment>
                   ),
                 )}

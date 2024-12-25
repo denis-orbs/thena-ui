@@ -94,13 +94,15 @@ const usePairs = () => {
   const prevPair = useRef([])
 
   return useMemo(() => {
-    const { data, weightedPools, isLoading } = pairs[networkId]
+    const { data, isLoading } = pairs[networkId]
     if (!assets.length || !pools.length || !data) {
       return {
         pairs: prevPair.current,
         isLoading,
       }
     }
+
+    const weightedPoolsData = []
 
     const result = data
       .map(ele => {
@@ -116,13 +118,17 @@ const usePairs = () => {
             }
           })
 
-          return {
+          const value = {
             ...ele,
             apr: `${ele.apr || 0}%`,
             tokens,
             type: PAIR_TYPES.WEIGHTED,
             subpools: [],
           }
+
+          weightedPoolsData.push(value)
+
+          return value
         }
 
         const asset0 = getTokenInfo({ tokenAddress: ele.token0, assets, customAssets })
@@ -190,7 +196,7 @@ const usePairs = () => {
 
     return {
       pairs: result,
-      weightedPools,
+      weightedPools: weightedPoolsData,
       isLoading,
     }
   }, [pairs, networkId, assets, pools, customAssets, vaults])
