@@ -8,7 +8,7 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
 import { EnterAmounts } from '@/components/common/AddLiquidity/FusionAdd/containers/EnterAmounts'
 import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
-import ZapperInput from '@/components/common/AddLiquidity/FusionAdd/ZapperInput'
+import ZapperPane from '@/components/common/AddLiquidity/FusionAdd/ZapperPane'
 import IconGroup from '@/components/icongroup'
 import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -28,6 +28,7 @@ const feeAmount = 3000
 export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strategy, showSidebar = true }) {
   const t = useTranslations()
 
+  const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
   const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
 
@@ -86,7 +87,6 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
   }, [pool, fusionPairs])
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
 
-  const [isZapper, setIsZapper] = useState(false)
   const addSelections = useMemo(
     () => [
       {
@@ -132,6 +132,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
           </div>
           <NeutralBadge>{getPoolType(pair.type)}</NeutralBadge>
         </div>
+
         {isAutomatic ? (
           <FusionAdd strategy={isAdd ? pair : strategy} isAdd={isAdd} />
         ) : (
@@ -139,10 +140,19 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
             <div className='flex justify-end'>
               <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
             </div>
+
             <div className='space-y-6'>
               <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
               {isZapper ? (
-                <ZapperInput asset1={assetA} asset2={assetB} />
+                <ZapperPane
+                  asset1={assetA}
+                  asset2={assetB}
+                  slippage={slippage}
+                  poolId={pool?.address}
+                  tickLower={tickLower}
+                  tickUpper={tickUpper}
+                  mintInfo={mintInfo}
+                />
               ) : (
                 <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
               )}
@@ -182,17 +192,21 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
                   </>
                 )}
               </>
-              <ManualAdd
-                baseCurrency={baseCurrency}
-                quoteCurrency={quoteCurrency}
-                mintInfo={mintInfo}
-                slippage={slippage}
-                strategy={strategy}
-              />
+
+              <div className={cn(isZapper && 'hidden')}>
+                <ManualAdd
+                  baseCurrency={baseCurrency}
+                  quoteCurrency={quoteCurrency}
+                  mintInfo={mintInfo}
+                  slippage={slippage}
+                  strategy={strategy}
+                />
+              </div>
             </div>
           </>
         )}
       </Box>
+
       {showSidebar && (
         <div className='flex-[4]'>
           <Box className='flex flex-col gap-4'>
@@ -245,6 +259,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
           </Box>
         </div>
       )}
+
       <TransactionSettingModal
         isOpen={openTransactionSetting}
         setIsOpen={setOpenTransactionSetting}
