@@ -18,6 +18,7 @@ import {
   getWBNBContract,
   getWeightedPoolContract,
   getWeightedPoolFactoryContract,
+  getWeightedPoolFeesContract,
   getWeightedPoolRouterContract,
   getWeightedPoolRouterSimulatorContract,
   getWeightedPoolVaultContract,
@@ -904,7 +905,7 @@ export const useWeightedPoolsWithGauge = () => {
             ...gauge,
             bribeUsd: new BigNumber(bribeUsd),
             weight: new BigNumber(gauge.weight),
-            weightPercent: new BigNumber(weighted.weightPercent || 0),
+            weightPercent: new BigNumber(weighted.gauge.weightPercent || 0),
             bribes: finalBribes,
           },
           account: user,
@@ -1049,4 +1050,49 @@ export const useWeightedPositionList = () => {
   })
 
   return data || []
+}
+
+export const useClaimWeightedPoolFees = () => {
+  const { chainId } = useWallet()
+  const t = useTranslations()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const [pending, setPending] = useState(false)
+
+  const onClaimFees = async (pool, onSuccess) => {
+    try {
+      const key = uuidv4()
+      const claimuuid = uuidv4()
+
+      const poolContract = getWeightedPoolContract(pool?.address, chainId)
+      const feesContractAddress = await readCall(poolContract, 'feesContract', [], chainId)
+      const feesContract = getWeightedPoolFeesContract(feesContractAddress, chainId)
+      setPending(true)
+      startTxn({
+        key,
+        title: t('Claim Fees'),
+        transactions: {
+          [claimuuid]: { desc: t('Claim Fees'), status: TXN_STATUS.START, hash: null },
+        },
+      })
+
+      const result = await writeTxn(key, claimuuid, feesContract, 'claimFees', [])
+
+      if (result) {
+        endTxn({
+          key,
+          final: 'Claim Successful',
+        })
+      }
+
+      if (typeof onSuccess === 'function') {
+        onSuccess()
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setPending(false)
+    }
+  }
+
+  return { onClaimFees, pending }
 }

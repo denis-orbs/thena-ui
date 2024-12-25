@@ -22,6 +22,7 @@ import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
+import { usePools } from '@/state/pools/hooks'
 import { InfoIcon, RefreshIcon } from '@/svgs'
 
 import AddManualModal from './AddManualModal'
@@ -31,6 +32,7 @@ import RemoveManualModal from './RemoveManualModal'
 export function FarmingPosition({ pool }) {
   const t = useTranslations()
   const { chainId } = useWallet()
+  const pools = usePools()
   const { mutateManual } = useContext(ManualsContext)
   const incentiveMaker = getInsentiveContract(chainId)
   const farmingCenter = getFarmingCenterContract(chainId)
@@ -67,7 +69,6 @@ export function FarmingPosition({ pool }) {
       staleTime: Infinity,
     },
   })
-
   const { data: rewards } = useSimulateContract({
     ...farmingCenter,
     functionName: 'collectRewards',
@@ -76,6 +77,13 @@ export function FarmingPosition({ pool }) {
       enabled: !!key && !!pool?.tokenId,
     },
   })
+
+  const poolFusion = useMemo(
+    () =>
+      pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_Farming'),
+    [poolAddress, pools],
+  )
+
   const fees = rewards?.result
 
   const tickAtLimit = useMemo(
@@ -175,6 +183,10 @@ export function FarmingPosition({ pool }) {
       </div>
 
       <div className='flex flex-col gap-3'>
+        <div className='flex items-center justify-between'>
+          <span className='text-sm text-neutral-300'>{t('APR')}</span>
+          <span>{formatAmount(poolFusion?.gauge?.apr || 0)}%</span>
+        </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
           <TextHeading>${formatAmount(fiatValueOfLiquidity)}</TextHeading>

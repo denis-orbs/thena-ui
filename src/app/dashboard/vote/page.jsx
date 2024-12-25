@@ -136,8 +136,7 @@ export default function VotePage() {
 
   const totalPercent = useMemo(
     () => Object.values(percent).reduce((sum, current) => sum + (!current || current === '' ? 0 : Number(current)), 0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(percent), percent],
+    [percent],
   )
 
   const userPools = useMemo(
@@ -258,7 +257,7 @@ export default function VotePage() {
                 />
                 <div className='flex flex-col'>
                   <TextHeading>{pool.symbol}</TextHeading>
-                  <Paragraph className='text-sm'>{t(pool.title)}</Paragraph>
+                  <Paragraph className='text-sm'>{pool.title}</Paragraph>
                 </div>
               </>
             ) : (
@@ -277,22 +276,10 @@ export default function VotePage() {
         ),
         rewards: (
           <div className='flex items-center gap-1'>
-            <Paragraph>
-              $
-              {formatAmount(
-                // pool.title === 'DefiEdge' ||
-                pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
-                  pool.address === '0xac7042fed4e724107fd5778f4a9cad894a5e18ab'
-                  ? 0
-                  : pool.gauge.bribeUsd,
-              )}
-            </Paragraph>
-            {pool.gauge.bribeUsd.gt(0) &&
-              // pool.title !== 'DefiEdge' &&
-              pool.address !== '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' &&
-              pool.address !== '0xac7042fed4e724107fd5778f4a9cad894a5e18ab' && (
-                <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`projected-${pool.gauge.address}`} />
-              )}
+            <Paragraph>${formatAmount(pool.gauge.bribeUsd)}</Paragraph>
+            {pool.gauge.bribeUsd.gt(0) && (
+              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`projected-${pool.gauge.address}`} />
+            )}
             <CustomTooltip className='min-w-[136px]' id={`projected-${pool.gauge.address}`}>
               <div className='flex flex-col gap-1'>
                 {pool.gauge.bribes && pool.gauge.bribes.bribe && (
@@ -325,16 +312,7 @@ export default function VotePage() {
         ),
         estimate: (
           <div className='flex flex-col'>
-            <Paragraph>
-              $
-              {formatAmount(
-                // pool.title === 'DefiEdge' ||
-                pool.address === '0xf7369b1d005f2cbb1887233b5aa0cb0b39fb9891' ||
-                  pool.address === '0xac7042fed4e724107fd5778f4a9cad894a5e18ab'
-                  ? 0
-                  : pool.votes.perRewards,
-              )}
-            </Paragraph>
+            <Paragraph>${formatAmount(pool.votes.perRewards)}</Paragraph>
             <TextSubHeading className='text-base leading-tight'>{t('Per 1000 Votes')}</TextSubHeading>
           </div>
         ),

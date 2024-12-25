@@ -7,8 +7,7 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import CustomTooltip from '@/components/tooltip'
 import { UNKNOWN_LOGO } from '@/constant'
-import useClaimableFees from '@/hooks/weightedPool/useClaimableFees'
-import { usePositionData } from '@/hooks/weightedPool/useWeigtedPool'
+import { useClaimWeightedPoolFees, usePositionData } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
@@ -17,9 +16,8 @@ export function WeightedPoolPosition({ pool }) {
   const [isOpenRemove, setIsOpenRemove] = useState(false)
   const [isOpenAdd, setIsOpenAdd] = useState(false)
 
-  const { onClaimableFees, pending: pendingClaimableFees } = useClaimableFees()
+  const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
 
-  // MARK: Get claimable token for WEIGHTED
   const { claimableFee, depositValue, mutatePosition } = usePositionData(pool)
 
   return (
@@ -51,29 +49,29 @@ export function WeightedPoolPosition({ pool }) {
 
         <div className='mt-4 flex flex-col gap-y-4'>
           <div className='flex justify-between'>
-            <span className='text-neutral-300'>{t('APR')}</span>
+            <span className='text-sm text-neutral-300'>{t('APR')}</span>
             <span>{pool.apr}</span>
           </div>
 
           <div className='flex justify-between'>
-            <span className='text-neutral-300'>{t('Deposit Value in USD')}</span>
+            <span className='text-sm text-neutral-300'>{t('Deposit Value in USD')}</span>
             <span>${formatAmount(depositValue.depositUsd)}</span>
           </div>
 
           {(depositValue?.tokens || []).map((token, index) => (
             <div className='flex justify-between' key={index}>
-              <span className='text-neutral-300'>
+              <span className='text-sm text-neutral-300'>
                 {token.symbol} {t('Deposit')}
               </span>
               <span>
                 <span>{formatAmount(token?.amount)}</span>
-                <span className='text-neutral-300'>({formatAmount(token?.weight)}%)</span>
+                <span className='text-sm text-neutral-500'>({formatAmount(token?.weight)}%)</span>
               </span>
             </div>
           ))}
 
           <div className='flex justify-between'>
-            <span className='text-neutral-300'>{t('Claimable Fees')}</span>
+            <span className='text-sm text-neutral-300'>{t('Claimable Fees')}</span>
             <p className='flex items-center gap-2'>
               <span>${formatAmount(claimableFee.total)}</span>
               <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool?.address}`} />
@@ -91,9 +89,9 @@ export function WeightedPoolPosition({ pool }) {
       <div className='mt-4 flex !max-h-[46px] w-full flex-2 gap-3'>
         <TextButton
           className='h-11 w-full'
-          disabled={pendingClaimableFees || isInvalidAmount(claimableFee.total)}
+          disabled={pendingClaimFees || isInvalidAmount(claimableFee.total)}
           onClick={() => {
-            onClaimableFees(pool, () => {
+            onClaimFees(pool, () => {
               mutatePosition()
             })
           }}

@@ -362,4 +362,4 @@ export const getWeightedPoolRouterContract = chainId =>
 export const getWeightedPoolRouterSimulatorContract = chainId =>
   getContract(weightedPoolRouterSimulatorAbi, Contracts.weightedPoolRouterSimulator, chainId)
 
-export const getFeesContractWeightedPool = (address, chainId) => getContract(weightedPoolFeesAbi, address, chainId)
+export const getWeightedPoolFeesContract = (address, chainId) => getContract(weightedPoolFeesAbi, address, chainId)
