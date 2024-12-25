@@ -87,7 +87,7 @@ function Updater() {
       const theUsdtWide = '0xb420adb29afd0a4e771739f0a29a4e077eff1acb' // the/usdt wide
       const ankrBnbTheNarrow = '0xd2f1045b4e5ba91ee725e8bf50740617a92e4a5f' // ankrbnb/the wide
 
-      const totalWeight = poolsWithAllowed.reduce((sum, current) => sum + (current?.gauge?.weight ?? 0), 0)
+      // const totalWeight = poolsWithAllowed.reduce((sum, current) => sum + (current?.gauge?.weight ?? 0), 0)
 
       userInfo = poolsWithAllowed
         .map(fusion => {
@@ -128,7 +128,7 @@ function Updater() {
             totalTvl = 0
           }
           const gaugeTvl = lpPrice * gauge.totalSupply
-          const weightPercent = totalWeight > 0 ? (gauge.weight / totalWeight) * 100 : 0
+          // const weightPercent = totalWeight > 0 ? (gauge.weight / totalWeight) * 100 : 0
           let bribeUsd = 0
           const poolBribes = gauge.bribes
           let finalBribes = { fee: null, bribe: null }
@@ -240,7 +240,7 @@ function Updater() {
               bribes: finalBribes,
               tvl: gaugeTvl,
               apr: fusion.gauge.apr + extraApr,
-              weightPercent,
+              // weightPercent,
               bribeUsd,
               pooled0: fusion.totalSupply ? (fusion.token0.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,
               pooled1: fusion.totalSupply ? (fusion.token1.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,

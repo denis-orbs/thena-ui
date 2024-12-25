@@ -258,7 +258,7 @@ export default function VotePage() {
                 />
                 <div className='flex flex-col'>
                   <TextHeading>{pool.symbol}</TextHeading>
-                  <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
+                  <Paragraph className='text-sm'>{t(pool.title)}</Paragraph>
                 </div>
               </>
             ) : (
@@ -271,7 +271,7 @@ export default function VotePage() {
           <div className='flex flex-col'>
             <Paragraph>{formatAmount(pool.gauge?.weight)}</Paragraph>
             <TextSubHeading className='text-base leading-tight'>
-              {formatAmount(Math.ceil(pool.gauge?.weightPercent?.toNumber()))}%
+              {formatAmount(pool.gauge?.weightPercent?.toNumber())}%
             </TextSubHeading>
           </div>
         ),
@@ -342,7 +342,7 @@ export default function VotePage() {
           <div className='flex flex-col'>
             <Paragraph>{formatAmount(pool.votes.weight)}</Paragraph>
             <TextSubHeading className='text-base leading-tight'>
-              {formatAmount(Math.ceil(pool.votes.weightPercent.toNumber()))}%
+              {formatAmount(pool.votes.weightPercent.toNumber())}%
             </TextSubHeading>
           </div>
         ),

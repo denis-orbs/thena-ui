@@ -792,7 +792,7 @@ export const useWeightedPoolsWithGauge = () => {
   const prices = usePrices()
   let userInfo = []
   if (weightedPools.length > 0 && assets.length > 0) {
-    const totalWeight = weightedPools.reduce((sum, current) => sum + (current?.gauge?.weight ?? 0), 0)
+    // const totalWeight = weightedPools.reduce((sum, current) => sum + (current?.gauge?.weight ?? 0), 0)
     userInfo = weightedPools
       .map(weighted => {
         const { gauge, lpPrice } = weighted
@@ -808,7 +808,7 @@ export const useWeightedPoolsWithGauge = () => {
           }
         })
         const totalTvl = new BigNumber(weighted.tvlUSD)
-        const weightPercent = totalWeight > 0 ? (gauge.weight / totalWeight) * 100 : 0
+        // const weightPercent = totalWeight > 0 ? (gauge.weight / totalWeight) * 100 : 0
         let bribeUsd = 0
         const poolBribes = gauge.bribes
         let finalBribes = { fee: null, bribe: null }
@@ -904,7 +904,7 @@ export const useWeightedPoolsWithGauge = () => {
             ...gauge,
             bribeUsd: new BigNumber(bribeUsd),
             weight: new BigNumber(gauge.weight),
-            weightPercent: new BigNumber(weightPercent),
+            weightPercent: new BigNumber(weighted.weightPercent || 0),
             bribes: finalBribes,
           },
           account: user,
