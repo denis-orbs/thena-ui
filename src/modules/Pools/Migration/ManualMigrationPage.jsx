@@ -13,7 +13,7 @@ import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
-import { incentiveActive, strategiesManual } from '@/components/common/AddLiquidity/ChooseStrategy'
+import { strategiesManual } from '@/components/common/AddLiquidity/ChooseStrategy'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { algebraFactoryAbi } from '@/constant/abi'
@@ -109,34 +109,39 @@ export function ManualMigrationPage({ tokenId }) {
     ]
 
     if (incentiveAddress && incentiveAddress !== zeroAddress) {
+      const farmingPool = pool?.subpools?.find(sub => sub.title === 'CL_Farming')
       manualStrategy.push({
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading>Manual ({incentiveActive?.title})</TextHeading>
+              <TextHeading>Manual Farming</TextHeading>
               <div className='mt-1 flex gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{formatAmount(pool?.aprFarming)}%</Paragraph>
+                  <Paragraph className='text-sm'>{formatAmount(farmingPool?.gauge?.apr)}%</Paragraph>
                 </div>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>${formatAmount(pool?.tvlFarming)}</Paragraph>
+                  <Paragraph className='text-sm'>${formatAmount(farmingPool?.gauge?.tvl)}</Paragraph>
                 </div>
               </div>
             </div>
-            <NeutralBadge>{incentiveActive.description}</NeutralBadge>
+            <NeutralBadge>$THE + 10% Fees</NeutralBadge>
           </div>
         ),
-        active: strategy?.address === incentiveActive.address,
+        active: strategy?.address === farmingPool?.address,
         onClickHandler: () => {
-          setStrategy(incentiveActive)
+          setStrategy({
+            ...farmingPool,
+            type: 'manual',
+            isFarming: true,
+          })
         },
       })
     }
 
     return manualStrategy
-  }, [incentiveAddress, pool?.apr, pool?.aprFarming, pool?.tvlFarming, pool?.tvlUSD, strategy?.address, t])
+  }, [incentiveAddress, pool?.apr, pool?.subpools, pool?.tvlUSD, strategy?.address, t])
 
   const { data: poolAddresses } = useReadContracts({
     contracts: [
@@ -326,7 +331,9 @@ export function ManualMigrationPage({ tokenId }) {
         </Box>
 
         <div className='mt-6 flex flex-col justify-between gap-3 lg:flex-row'>
-          <EmphasisButton className='w-full lg:w-[50%]'>{t('Cancel')}</EmphasisButton>
+          <EmphasisButton onClick={() => push('/dashboard')} className='w-full lg:w-[50%]'>
+            {t('Cancel')}
+          </EmphasisButton>
           <PrimaryButton className='w-full lg:w-[50%]' onClick={onSubmit}>
             {t('Migrate Now')}
           </PrimaryButton>

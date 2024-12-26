@@ -74,11 +74,12 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
         label: range.title,
         active: activePreset === range.type,
         onClickHandler: () => {
-          if (activePreset === range.type) {
-            handlePresetRangeSelection(null)
-          } else {
-            handlePresetRangeSelection(range)
-          }
+          // if (activePreset === range.type) {
+          //   handlePresetRangeSelection(null)
+          // } else {
+          //   handlePresetRangeSelection(range)
+          // }
+          handlePresetRangeSelection(range)
           onChangePresetRange(range)
         },
       })),

@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
-import { zeroAddress } from 'viem'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -41,15 +40,6 @@ export const strategiesManual = {
   title: 'Swap Fees',
   address: 'manual-swap-fees',
   description: '80% Fees',
-  min: 100,
-  max: 150,
-}
-
-export const incentiveActive = {
-  type: 'manual',
-  title: '$THE Emissions',
-  address: zeroAddress,
-  description: '$THE + 10% Fees',
   min: 100,
   max: 150,
 }
@@ -156,7 +146,7 @@ export default function ChooseStrategy({
     timeWindow,
   })
 
-  const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onStartPriceInput, onChangeLiquidityRangeType } =
+  const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const price = useMemo(() => {
@@ -210,46 +200,60 @@ export default function ChooseStrategy({
   ])
 
   const strategyData = useMemo(() => {
-    // if (!pair || !pair.subpools.length) return null
-    const autoStrategy = (pair?.subpools || []).map(sub => ({
-      content: (
-        <div className='flex flex-1 items-center justify-between'>
-          <div>
-            <TextHeading>{GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}</TextHeading>
-            <div className='mt-1 flex gap-2'>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                <Paragraph className='text-sm'>{formatAmount(sub.gauge.apr)}%</Paragraph>
-              </div>
-              <div className='flex items-center gap-1'>
-                <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                <Paragraph className='text-sm'>${formatAmount(sub.gauge.tvl)}</Paragraph>
+    const autoStrategy = (pair?.subpools || []).map(sub => {
+      let { title } = sub
+      if (title === 'CL_Farming') title = 'Manual Farming'
+      else if (GAMMA_TYPES.includes(sub.title)) title = 'Gamma'
+
+      return {
+        content: (
+          <div className='flex flex-1 items-center justify-between'>
+            <div>
+              <TextHeading>{title}</TextHeading>
+
+              <div className='mt-1 flex gap-2'>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
+                  <Paragraph className='text-sm'>{formatAmount(sub.gauge.apr)}%</Paragraph>
+                </div>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
+                  <Paragraph className='text-sm'>${formatAmount(sub.gauge.tvl)}</Paragraph>
+                </div>
               </div>
             </div>
+
+            {GAMMA_TYPES.includes(sub.title) &&
+              (strategy?.address === sub.address ? (
+                <PrimaryBadge>{sub.title}</PrimaryBadge>
+              ) : (
+                <NeutralBadge>{sub.title}</NeutralBadge>
+              ))}
+
+            {sub.title === 'ICHI' &&
+              (strategy?.address === sub.address ? (
+                <PrimaryBadge>
+                  {sub.allowed.symbol} {t('Deposit')}
+                </PrimaryBadge>
+              ) : (
+                <NeutralBadge>
+                  {sub.allowed.symbol} {t('Deposit')}
+                </NeutralBadge>
+              ))}
+
+            {sub.title === 'CL_Farming' && <NeutralBadge>$THE + 10% Fees</NeutralBadge>}
           </div>
-          {GAMMA_TYPES.includes(sub.title) &&
-            (strategy?.address === sub.address ? (
-              <PrimaryBadge>{sub.title}</PrimaryBadge>
-            ) : (
-              <NeutralBadge>{sub.title}</NeutralBadge>
-            ))}
-          {sub.title === 'ICHI' &&
-            (strategy?.address === sub.address ? (
-              <PrimaryBadge>
-                {sub.allowed.symbol} {t('Deposit')}
-              </PrimaryBadge>
-            ) : (
-              <NeutralBadge>
-                {sub.allowed.symbol} {t('Deposit')}
-              </NeutralBadge>
-            ))}
-        </div>
-      ),
-      active: strategy?.address === sub.address,
-      onClickHandler: () => {
-        setStrategy(sub)
-      },
-    }))
+        ),
+        active: strategy?.address === sub.address,
+        onClickHandler: () => {
+          setStrategy({
+            ...sub,
+            type: sub.title === 'CL_Farming' ? 'manual' : 'auto',
+            isFarming: sub.title === 'CL_Farming',
+          })
+        },
+      }
+    })
 
     const manualStrategy = [
       {
@@ -280,75 +284,8 @@ export default function ChooseStrategy({
       },
     ]
 
-    if (Boolean(pool?.incentiveAddress) && pool.incentiveAddress !== zeroAddress) {
-      manualStrategy.push({
-        content: (
-          <div className='flex flex-1 items-center justify-between'>
-            <div>
-              <TextHeading>Manual ({incentiveActive?.title})</TextHeading>
-              <div className='mt-1 flex gap-2'>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{formatAmount(pool?.aprFarming)}%</Paragraph>
-                </div>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>${formatAmount(pool?.tvlFarming)}</Paragraph>
-                </div>
-              </div>
-            </div>
-            <NeutralBadge>{incentiveActive.description}</NeutralBadge>
-          </div>
-        ),
-        active: strategy?.address === incentiveActive.address,
-        onClickHandler: () => {
-          setStrategy(incentiveActive)
-        },
-      })
-    }
     return [...autoStrategy, ...manualStrategy]
   }, [pair?.subpools, t, pool, strategy?.address, setStrategy])
-
-  // const autoSelections = useMemo(
-  //   () => [
-  //     {
-  //       label: 'Automatic',
-  //       active: isAutomatic,
-  //       onClickHandler: () => {
-  //         setIsAutomatic(true)
-  //         setStrategy(null)
-  //         dispatch(updateSelectedPreset({ preset: null }))
-  //         dispatch(setInitialTokenPrice({ typedValue: '' }))
-  //         onStartPriceInput('')
-  //         onLeftRangeInput('')
-  //         onRightRangeInput('')
-  //       },
-  //     },
-  //     {
-  //       label: 'Manual',
-  //       active: !isAutomatic,
-  //       onClickHandler: () => {
-  //         setIsAutomatic(false)
-  //         dispatch(updateSelectedPreset({ preset: null }))
-  //         dispatch(setInitialTokenPrice({ typedValue: '' }))
-  //         onStartPriceInput('')
-  //         onLeftRangeInput('')
-  //         onRightRangeInput('')
-  //         onChangeLiquidityRangeType(FusionRangeType.MANUAL_RANGE)
-  //       },
-  //     },
-  //   ],
-  //   [
-  //     isAutomatic,
-  //     setIsAutomatic,
-  //     dispatch,
-  //     onLeftRangeInput,
-  //     onRightRangeInput,
-  //     onStartPriceInput,
-  //     onChangeLiquidityRangeType,
-  //     setStrategy,
-  //   ],
-  // )
 
   const periods = useMemo(
     () => [
@@ -392,7 +329,7 @@ export default function ChooseStrategy({
   )
 
   useEffect(() => {
-    if (strategy?.address === strategiesManual.address || strategy?.address === incentiveActive.address) {
+    if (strategy?.type === 'manual') {
       setIsAutomatic(false)
       dispatch(updateStrategy({ strategy }))
       // dispatch(updateSelectedPreset({ preset: null }))
@@ -410,16 +347,7 @@ export default function ChooseStrategy({
       // onLeftRangeInput('')
       // onRightRangeInput('')
     }
-  }, [
-    strategy,
-    setIsAutomatic,
-    dispatch,
-    onStartPriceInput,
-    onLeftRangeInput,
-    onRightRangeInput,
-    onChangeLiquidityRangeType,
-    setStrategy,
-  ])
+  }, [dispatch, setIsAutomatic, strategy])
 
   return (
     <>
