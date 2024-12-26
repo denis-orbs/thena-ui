@@ -46,6 +46,15 @@ function TokenInput({
     return asset?.balance
   }, [asset, isDouble, bnbBalance])
 
+  const wrapAssetsData = useMemo(
+    () =>
+      (assetData || []).map(item => ({
+        ...item,
+        symbol: item.name === 'Wrapped BNB' ? 'WBNB' : item.symbol,
+      })),
+    [assetData],
+  )
+
   return (
     <div className='flex flex-col gap-3'>
       {typeof title === 'string' && <TextHeading>{title}</TextHeading>}
@@ -121,7 +130,7 @@ function TokenInput({
             setIsOpen={setTokenPopup}
             isOpen={tokenPopup}
             selectedAsset={asset}
-            tokens={assetData}
+            tokens={wrapAssetsData}
             setToken={setAsset}
           />
         )}

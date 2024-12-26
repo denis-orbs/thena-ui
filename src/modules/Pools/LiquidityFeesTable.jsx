@@ -19,7 +19,9 @@ function LiquidityFeeRow({ token, pairType }) {
         </div>
         <div className='flex items-center gap-2 lg:gap-3'>
           <CircleImage className='h-7 w-7 lg:h-8 lg:w-8' src={token?.logoURI || UNKNOWN_LOGO} alt='thena logo' />
-          <TextHeading className='text-base font-medium lg:text-[18px] lg:leading-[26px]'>{token?.symbol}</TextHeading>
+          <TextHeading className='text-base font-medium lg:text-[18px] lg:leading-[26px]'>
+            {token?.name === 'Wrapped BNB' ? 'WBNB' : token.symbol}
+          </TextHeading>
           <span
             className={cn(
               'text-xs font-medium text-neutral-300 lg:text-[18px] lg:leading-[26px]',

@@ -154,7 +154,7 @@ export default function VotingHistoryTable({ userVotes }) {
               <ThreeIconGroup
                 className='-space-x-1'
                 classNames={{
-                  image: 'w-7 h-7 text-xl font-medium leading-5 text-[#1C2027]',
+                  image: 'w-7 h-7 text-[13px] font-medium leading-5 text-[#1C2027]',
                 }}
                 logo1={vote.pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
                 logo2={vote.pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
@@ -182,7 +182,7 @@ export default function VotingHistoryTable({ userVotes }) {
               <ThreeIconGroup
                 className='-space-x-1'
                 classNames={{
-                  image: 'w-7 h-7 text-xl font-medium leading-5 text-[#1C2027]',
+                  image: 'w-7 h-7 text-[13px] font-medium leading-5 text-[#1C2027]',
                 }}
                 logo1={vote.pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
                 logo2={vote.pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}

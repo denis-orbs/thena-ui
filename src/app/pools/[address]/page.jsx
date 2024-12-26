@@ -26,6 +26,7 @@ import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
 import { PoolChart } from '@/modules/Pools/PoolCharts'
 import Position from '@/modules/Position'
+import { FarmingPosition } from '@/modules/Position/FarmingPosition'
 import ManualPosition from '@/modules/Position/ManualPosition'
 import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
 import { useV3MintState } from '@/state/fusion/hooks'
@@ -91,6 +92,8 @@ export default function SpecificPoolPage({ params }) {
     () => [...userPools, ...userManuals].filter(position => position.version === 3).filter(item => Boolean(item)),
     [userManuals, userPools],
   )
+
+  console.log({ userPositions })
 
   if (isLoading || !pool) {
     return <Loading />
@@ -398,7 +401,13 @@ export default function SpecificPoolPage({ params }) {
               ) : userPositions && userPositions.length > 0 ? (
                 userPositions.map((ele, idx) =>
                   ele.type === 'Manual' ? (
-                    <ManualPosition pool={ele} key={`pos-${idx}`} />
+                    <>
+                      {ele.isFarming ? (
+                        <FarmingPosition pool={ele} key={`pos-${idx}`} />
+                      ) : (
+                        <ManualPosition pool={ele} key={`pos-${idx}`} />
+                      )}
+                    </>
                   ) : (
                     <Position pool={ele} key={ele?.address} />
                   ),

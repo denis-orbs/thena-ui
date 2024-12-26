@@ -61,7 +61,7 @@ export function WeightedPoolPosition({ pool }) {
           {(depositValue?.tokens || []).map((token, index) => (
             <div className='flex justify-between' key={index}>
               <span className='text-sm text-neutral-300'>
-                {token.symbol} {t('Deposit')}
+                {token.name === 'Wrapped BNB' ? 'WBNB' : token.symbol} {t('Deposit')}
               </span>
               <span>
                 <span>{formatAmount(token?.amount)}</span>
