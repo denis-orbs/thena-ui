@@ -35,6 +35,7 @@ import muonAbi from './muon.json'
 import nonfungiblePositionManagerAbi from './nonfungiblePositionManager.json'
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
+import pluginFactoryAbi from './pluginFactoryAbi.json'
 import quoterAbi from './quoter.json'
 import quoterV2Abi from './quoterV2.json'
 import rewardEarnedAbi from './rewardEarned.json'
@@ -100,6 +101,7 @@ export {
   numeralAbi,
   pairAbi,
   pairAPIAbi,
+  pluginFactoryAbi,
   quoterAbi,
   quoterV2Abi,
   rewardEarnedAbi,

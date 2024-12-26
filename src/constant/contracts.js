@@ -156,7 +156,9 @@ const Contracts = {
   },
   incentiveMaker: {
     [CHAIN_ID.TEST_BSC]: '0xd95314Bc66EEFD266B1042DC8C2D8A70cAd52Be9',
-    [CHAIN_ID.BSC]: '',
+  },
+  pluginFactory: {
+    [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
 }
 export default Contracts

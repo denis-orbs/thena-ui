@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useContext, useMemo, useState } from 'react'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
+import { zeroAddress } from 'viem'
 import { useReadContract, useSimulateContract } from 'wagmi'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
@@ -93,7 +94,12 @@ export function FarmingPosition({ pool }) {
     }),
     [tickLower, tickUpper],
   )
-  const [fusionState, fusion] = useFusionState(currency0, currency1)
+  const [fusionState, fusion] = useFusionState({
+    currencyA: currency0,
+    currencyB: currency1,
+    isFarmingPool: pool?.deployer === zeroAddress,
+  })
+
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
   const [, _fusion] = useMemo(() => {
@@ -212,7 +218,7 @@ export function FarmingPosition({ pool }) {
         </div>
 
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>{t('Claimable Fees')}</Paragraph>
+          <Paragraph className='text-sm'>Net return</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />

@@ -1,6 +1,7 @@
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { algebraPoolV3, basePluginAbi } from '@/constant/abi'
+import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { getAlgebraFactoryContract } from '@/lib/contracts'
 
@@ -26,15 +27,27 @@ export const usePoolAlgebraInfo = (token0Address, token1Address) => {
     : [currency1, currency0]
 
   const algebraFactory = getAlgebraFactoryContract(chainId, 3)
-  const { data: poolAddress } = useReadContract({
-    ...algebraFactory,
-    functionName: 'computePoolAddress',
-    args: [baseCurrency.address, quoteCurrency.address],
+  const { data: poolAddresses } = useReadContracts({
+    contracts: [
+      {
+        ...algebraFactory,
+        functionName: 'computePoolAddress',
+        args: [baseCurrency.address, quoteCurrency.address],
+      },
+      {
+        ...algebraFactory,
+        functionName: 'computeCustomPoolAddress',
+        args: [Contracts.pluginFactory[chainId], baseCurrency.address, quoteCurrency.address],
+      },
+    ],
     query: {
       enabled: !!token0Address && !!token1Address,
       staleTime: Infinity,
     },
   })
+
+  const poolAddress = poolAddresses?.at(0).result
+  const customPoolAddress = poolAddresses?.at(1).result
 
   const { data: pluginAddress } = useReadContract({
     address: poolAddress,
@@ -56,7 +69,7 @@ export const usePoolAlgebraInfo = (token0Address, token1Address) => {
     },
   })
 
-  return { poolAddress, pluginAddress, incentiveAddress }
+  return { poolAddress, customPoolAddress, pluginAddress, incentiveAddress }
 }
 
 const POOLS_ADMINISTRATOR_ROLE = '0xb73ce166ead2f8e9add217713a7989e4edfba9625f71dfd2516204bb67ad3442'

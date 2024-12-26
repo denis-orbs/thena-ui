@@ -68,7 +68,12 @@ export default function SpecificPoolPage({ params }) {
   const { strategy } = useV3MintState()
 
   const pool = useMemo(
-    () => pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase()),
+    () =>
+      pairs.find(
+        ele =>
+          ele?.address.toLowerCase() === address.toLowerCase() ||
+          ele?.addressPoolFee?.toLowerCase() === address.toLowerCase(),
+      ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [address, JSON.stringify(pairs)],
   )

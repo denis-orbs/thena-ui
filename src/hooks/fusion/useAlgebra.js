@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { maxUint256, parseUnits, zeroAddress } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
+import { pluginFactoryAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
@@ -37,6 +38,7 @@ export const useAlgebraAdd = (version = 3) => {
         const key = uuidv4()
         const approve1uuid = uuidv4()
         const approve2uuid = uuidv4()
+        const createPoolId = uuidv4()
         const addLiquidityId = uuidv4()
         const approveNft = uuidv4()
         const stakeId = uuidv4()
@@ -75,6 +77,14 @@ export const useAlgebraAdd = (version = 3) => {
         if (!isSecondApproved) {
           transactions[approve2uuid] = {
             desc: `${t('Approve')} ${quoteCurrency.symbol}`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
+        if (!isFarming && noLiquidity) {
+          transactions[createPoolId] = {
+            desc: t('Create pool'),
             status: TXN_STATUS.START,
             hash: null,
           }
@@ -122,7 +132,22 @@ export const useAlgebraAdd = (version = 3) => {
           }
         }
 
-        // MARK: ADD LIQUIDITY TO POOL => MINT NFT
+        // MARK: CREATE NEW NORMAL POOL (earn 80% fee)
+        if (!isFarming && noLiquidity) {
+          const txHash = await writeTxn(
+            key,
+            createPoolId,
+            { abi: pluginFactoryAbi, address: Contracts.pluginFactory[chainId] },
+            'createCustomPoolAndInitialize',
+            [position.pool.sqrtRatioX96, position.pool.token0.address, position.pool.token1.address],
+          )
+          if (!txHash) {
+            setPending(false)
+            return
+          }
+        }
+
+        // MARK: ADD LIQUIDITY TO POOL
         const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
         const useNative = baseCurrency.isNative ? baseCurrency : quoteCurrency.isNative ? quoteCurrency : undefined
 
@@ -131,8 +156,10 @@ export const useAlgebraAdd = (version = 3) => {
           recipient: account,
           deadline: timestamp.toString(),
           useNative,
-          createPool: noLiquidity,
+          createPool: noLiquidity && isFarming,
           version: 3,
+          isFarming,
+          chainId,
         })
 
         const txHash = await sendTxn(key, addLiquidityId, positionManger.address, calldata, value)

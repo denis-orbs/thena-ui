@@ -152,6 +152,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
                   tickLower={tickLower}
                   tickUpper={tickUpper}
                   mintInfo={mintInfo}
+                  strategy={strategy}
                 />
               ) : (
                 <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
