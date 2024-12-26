@@ -5,6 +5,7 @@ import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress 
 
 import { ZERO_ADDRESS } from '@/constant'
 import { algebraAbiV2, algebraAbiV3 } from '@/constant/abi/fusion'
+import Contracts from '@/constant/contracts'
 import { getPositionManagerContract } from '@/lib/contracts'
 
 import { SelfPermit } from './selfPermit'
@@ -104,7 +105,14 @@ export class NonfungiblePositionManager extends SelfPermit {
         deadline,
       }
 
-      const paramMin = version === 2 ? baseParams : { ...baseParams, deployer: zeroAddress }
+      let paramMin = baseParams
+      if (version === 2) {
+        paramMin = baseParams
+      } else if (options.isFarming) {
+        paramMin = { ...baseParams, deployer: zeroAddress }
+      } else {
+        paramMin = { ...baseParams, deployer: Contracts.pluginFactory[options.chainId] }
+      }
 
       calldatas.push(NonfungiblePositionManager.getCalldata('mint', [paramMin], version))
     } else {

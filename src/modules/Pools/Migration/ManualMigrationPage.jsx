@@ -192,7 +192,12 @@ export function ManualMigrationPage({ tokenId }) {
   const tick = Number(globalStates?.[1])
   const fee = Number(globalStates?.[2])
 
-  const [fusionState, fusion] = useFusionState(currencyA, currencyB, 2)
+  const [fusionState, fusion] = useFusionState({
+    currencyA,
+    currencyB,
+    version: 2,
+  })
+
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
   const [, _fusion] = useMemo(() => {
     if (!fusion && prevFusion && prevFusionState) {

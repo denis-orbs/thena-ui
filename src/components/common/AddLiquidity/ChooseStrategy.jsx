@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
@@ -110,6 +110,7 @@ export default function ChooseStrategy({
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
   const t = useTranslations()
+  const fusion = useSelector(state => state.fusion)
 
   const { locale } = useLocaleSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
@@ -202,7 +203,7 @@ export default function ChooseStrategy({
   const strategyData = useMemo(() => {
     const autoStrategy = (pair?.subpools || []).map(sub => {
       let { title } = sub
-      if (title === 'CL_Farming') title = 'Manual Farming'
+      if (title === 'CL_Farming') title = 'Manual ($THE Emissions)'
       else if (GAMMA_TYPES.includes(sub.title)) title = 'Gamma'
 
       return {
@@ -444,6 +445,7 @@ export default function ChooseStrategy({
               setIsReverse={setIsReverse}
             />
           )} */}
+
           <div className='flex flex-col gap-5'>
             <div className='flex flex-col gap-3'>
               {strategyData ? (
@@ -535,11 +537,11 @@ export default function ChooseStrategy({
 
       <div className={cn('mt-auto inline-flex w-full flex-col pt-5', isModal && 'px-3 pt-3 lg:px-6')}>
         <EmphasisButton
-          disabled={!strategy && isAutomatic}
+          disabled={(!strategy && isAutomatic) || (!fusion.preset && !isAutomatic)}
           onClick={() => {
             setCurrentStep(2)
           }}
-          className={strategy || !isAutomatic ? 'bg-primary-600 hover:bg-primary-700' : ''}
+          className={strategy || !isAutomatic || !fusion.preset ? 'bg-primary-600 hover:bg-primary-700' : ''}
         >
           {t('Continue')}
         </EmphasisButton>

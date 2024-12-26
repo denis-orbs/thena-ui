@@ -230,9 +230,12 @@ export const useV3DerivedMintInfo = (
         : balances[1],
   }
 
-  // pool
-  // TODO
-  const [poolState, pool] = useFusionState(currencies[Field.CURRENCY_A], currencies[Field.CURRENCY_B], version)
+  const [poolState, pool] = useFusionState({
+    currencyA: currencies[Field.CURRENCY_A],
+    currencyB: currencies[Field.CURRENCY_B],
+    isFarmingPool: strategy?.isFarming,
+    version,
+  })
   const noLiquidity = poolState === PoolState.NOT_EXISTS
 
   const dynamicFee = pool ? pool.fee : 3000

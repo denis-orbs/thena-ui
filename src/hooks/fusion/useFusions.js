@@ -104,15 +104,29 @@ export function useFusions(poolKeys, version) {
   return data
 }
 
-export function useFusionState(currencyA, currencyB, version = 3) {
-  const [token0, token1] = currencyA.sortsBefore(currencyB) ? [currencyA, currencyB] : [currencyB, currencyA]
+export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPool = false }) {
+  const [token0, token1] = currencyA?.sortsBefore(currencyB) ? [currencyA, currencyB] : [currencyB, currencyA]
   const { chainId } = token0
+
+  let functionName
+  let args
+
+  if (version === 2) {
+    functionName = 'poolByPair'
+    args = [token0?.address, token1?.address]
+  } else {
+    functionName = isFarmingPool ? 'computePoolAddress' : 'computeCustomPoolAddress'
+
+    args = isFarmingPool
+      ? [token0?.address, token1?.address]
+      : [Contracts.pluginFactory[chainId], token0?.address, token1?.address]
+  }
 
   const algebra = getAlgebraFactoryContract(chainId, version)
   const { data: poolAddress } = useReadContract({
     ...algebra,
-    functionName: chainId === CHAIN_ID.BSC && version === 2 ? 'poolByPair' : 'computePoolAddress',
-    args: [token0?.address, token1?.address],
+    functionName,
+    args,
     query: {
       enabled: !!token0?.address && !!token1?.address && !!chainId,
     },

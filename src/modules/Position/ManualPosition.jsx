@@ -70,14 +70,19 @@ export default function ManualPosition({ pool }) {
     },
   )
 
+  const { poolAddress, incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
   const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
   const { pending, onAlgebraBurn } = useAlgebraBurn()
 
-  const { poolAddress, incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
-
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
-  const [fusionState, fusion] = useFusionState(currency0, currency1, version)
+  const [fusionState, fusion] = useFusionState({
+    currencyA: currency0,
+    currencyB: currency1,
+    isFarmingPool: pool?.deployer === zeroAddress,
+    version,
+  })
+
   const tickAtLimit = useMemo(
     () => ({
       [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
@@ -85,6 +90,7 @@ export default function ManualPosition({ pool }) {
     }),
     [tickLower, tickUpper],
   )
+
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
   const [, _fusion] = useMemo(() => {
