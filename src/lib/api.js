@@ -1,11 +1,9 @@
-import { gql } from 'graphql-request'
 import _ from 'lodash'
 import { ChainId } from 'thena-sdk-core'
 
 import Contracts from '@/constant/contracts'
 import { liquidityHub } from '@/modules/LiquidityHub'
 
-import { v3PoolGraphClient } from './graphql'
 import { ZERO_VALUE } from './utils'
 
 const backendApi = 'https://api.thena.fi/api/v1'
@@ -53,36 +51,6 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
   }
 }
 
-const V3_GET_V3_POOLS = gql`
-  query V3_GET_V3_POOLS {
-    pools {
-      id
-      liquidity
-      token1 {
-        symbol
-        id
-      }
-      token0 {
-        symbol
-        id
-      }
-    }
-  }
-`
-
-export const fetchPoolV3 = async () => {
-  try {
-    const { pools } = await v3PoolGraphClient.request(V3_GET_V3_POOLS)
-    return pools.map(pool => ({
-      ...pool,
-      version: 3,
-    }))
-  } catch (e) {
-    console.log(e)
-    return []
-  }
-}
-
 export const fetchCustomAssets = async networkId => {
   try {
     const getCustomTokens = async () => {
@@ -110,7 +78,7 @@ export const fetchCustomAssets = async networkId => {
   }
 }
 
-export const fetchPools = params =>
+export const fetchPoolsV3 = params =>
   fetch(
     `${params[1] === 97 ? backendApiTestNet : backendApi}/${
       params[1] === ChainId.BSC || params[1] === 97 ? 'fusions?v=3' : 'opfusions'
@@ -124,8 +92,8 @@ export const fetchStats = () =>
     .then(r => r.json())
     .then(r => r.data)
 
-export const fetchBscPairs = () =>
-  fetch(`${backendApi}/topPairs/56`)
+export const fetchBscPairsV3 = () =>
+  fetch(`${backendApi}/topPairs/56?v=3`)
     .then(r => r.json())
     .then(r => r.data)
 
@@ -135,7 +103,7 @@ export const fetchCLpoolV2 = chainId =>
     .then(r => (Array.isArray(r.data) ? r.data : []))
 
 export const fetchBscTestnetPairsV3 = () =>
-  fetch(`${backendApiTestNet}/topPairsV3/97`)
+  fetch(`${backendApiTestNet}/topPairs/97?v=3`)
     .then(r => r.json())
     .then(r => r.data)
 

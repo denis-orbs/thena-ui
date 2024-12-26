@@ -1220,7 +1220,7 @@
   "UnStake": "UnStake",
   "Withdraw Initial Liquidity": "Withdraw Initial Liquidity",
   "My Initial Liquidity": "My Initial Liquidity",
-  "Pool address": "Pool address",
+  "Pool Address": "Pool Address",
   "This pool requires maintenance": "This pool requires maintenance or automated liquidity management (ALM) to keep the deposit within the active price range.",
   "Automatic Strategy title": "Automatic Strategy",
   "Automatic Strategy description": "If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated Market Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you provide liquidity, you will begin earning emissions.",
@@ -1307,7 +1307,6 @@
   "Strategy Provider": "Strategy Provider",
   "Type attribute CL pool": "Concentrated Liquidity - Algebra Integral v1.2",
   "Strategy Type": "Strategy Type",
-  "Pool Access Control Roles": "Pool Access Control Roles",
   "Pool Plugin": "Pool Plugin",
   "Creation date": "Creation date"
 }

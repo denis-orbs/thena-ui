@@ -10,7 +10,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useExtraRewardsInfo } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
-import { fetchPairInfos, fetchPools } from '@/lib/api'
+import { fetchPairInfos, fetchPoolsV3 } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import { fromWei } from '@/lib/utils'
 
@@ -68,7 +68,7 @@ function Updater() {
   const prices = usePrices()
   const extraRewardsInfo = useExtraRewardsInfo()
   const { networkId } = useChainSettings()
-  const { data: pools = [] } = useSWR(['pools api', networkId], { fetcher: fetchPools })
+  const { data: pools = [] } = useSWR(['pools api', networkId], { fetcher: fetchPoolsV3 })
 
   const { data: userInfos } = useSWRImmutable(account && pools ? ['pools user api', account, networkId] : null, url =>
     fetchUserFusions(url, account, pools, networkId),

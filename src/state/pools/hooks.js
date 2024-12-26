@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { zeroAddress } from 'viem'
 
 import { PAIR_TYPES } from '@/constant'
+import { usePairs } from '@/context/pairsContext'
 import { ZERO_VALUE } from '@/lib/utils'
 
 import { useChainSettings } from '../settings/hooks'
@@ -88,6 +89,14 @@ export const useDefiedges = () => {
 
 export const usePoolsWithGauge = () => {
   const pools = usePools()
+  const { weightedPools } = usePairs()
 
-  return useMemo(() => (pools ? pools.filter(pool => pool.gauge.address !== zeroAddress) : []), [pools])
+  const weightedPoolsWithGauge = useMemo(
+    () => (weightedPools ? weightedPools.filter(pool => pool.gauge.address !== zeroAddress) : []),
+    [weightedPools],
+  )
+
+  const poolWithGauge = useMemo(() => (pools ? pools.filter(pool => pool.gauge.address !== zeroAddress) : []), [pools])
+
+  return [...poolWithGauge, ...weightedPoolsWithGauge]
 }

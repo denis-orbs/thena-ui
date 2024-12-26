@@ -95,11 +95,11 @@ function RewardsContextProvider({ children }) {
   const { account, chainId } = useWallet()
   const assets = useAssets()
   const pools = usePoolsWithGauge()
-  const gaugeAddresses = useMemo(
-    () => pools.map(pool => pool.address),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(pools.map(pool => pool.address))],
-  )
+  // const gaugeAddresses = useMemo(
+  //   () => pools.map(pool => pool.address),
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   [JSON.stringify(pools.map(pool => pool.address))],
+  // )
   // const {
   //   data: current,
   //   error: currentError,
@@ -128,9 +128,8 @@ function RewardsContextProvider({ children }) {
     data: current,
     error: currentError,
     mutate: currentMutate,
-  } = useSWRImmutable(
-    account && gaugeAddresses.length > 0 && chainId === 97 ? ['current rewards api', account] : null,
-    () => fetchUserRewards(account.toLowerCase()),
+  } = useSWRImmutable(account && chainId === 97 ? ['current rewards api', account] : null, () =>
+    fetchUserRewards(account.toLowerCase()),
   )
 
   const currentRewards = useMemo(() => {

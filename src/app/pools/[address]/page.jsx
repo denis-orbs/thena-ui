@@ -93,8 +93,6 @@ export default function SpecificPoolPage({ params }) {
     [userManuals, userPools],
   )
 
-  console.log({ userPositions })
-
   if (isLoading || !pool) {
     return <Loading />
   }

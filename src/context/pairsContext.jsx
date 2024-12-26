@@ -4,7 +4,7 @@ import { ChainId } from 'thena-sdk-core'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import { fetchBscPairs, fetchBscTestnetPairsV3, fetchOpPairs, fetchWeightedPools } from '@/lib/api'
+import { fetchBscPairsV3, fetchBscTestnetPairsV3, fetchOpPairs, fetchWeightedPools } from '@/lib/api'
 import { getTokenInfo } from '@/lib/helper'
 import { formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
@@ -36,7 +36,7 @@ function PairsContextProvider({ children }) {
   const { networkId } = useChainSettings()
   const { data: bscPairs, isLoading: bscLoading } = useSWR(
     networkId === ChainId.BSC ? 'bsc pairs api' : null,
-    { fetcher: fetchBscPairs },
+    { fetcher: fetchBscPairsV3 },
     {
       refreshInterval: 60000,
     },
