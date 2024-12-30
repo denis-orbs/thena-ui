@@ -181,7 +181,7 @@ export default function ManualPosition({ position: manualPosition }) {
           </div>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>{t('Claimable Fees')}</Paragraph>
+          <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
             {feesInUsd.gt(0) && <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />}
