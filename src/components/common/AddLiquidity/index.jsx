@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import { LOCAL_STORAGE_TOKENS, useLocalStorage } from '@/hooks/useLocalStorage'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 
 import ChooseStrategy from './ChooseStrategy'
 import FusionAdd from './FusionAdd'
@@ -23,7 +23,6 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
   const [secondAsset, setSecondAsset] = useState()
   const [firstAddress, setFirstAddress] = useState()
   const [secondAddress, setSecondAddress] = useState()
-  const { getWithExpiry } = useLocalStorage()
   const assets = useAssets()
 
   const [slippage, setSlippage] = useState(0.5)
@@ -37,13 +36,14 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
     }
   }, [assets, pool, firstAsset, secondAsset, pairType])
 
+  const { customTokens } = useCustomTokens()
+
   useEffect(() => {
-    const temp = getWithExpiry(LOCAL_STORAGE_TOKENS) ?? []
-    const assetList = assets.concat(temp.map(tk => ({ ...tk, price: 0, balance: 0 })))
+    const assetList = customTokens.concat(assets)
 
     setFirstAsset(assetList.find(ele => ele.address === firstAddress))
     setSecondAsset(assetList.find(ele => ele.address === secondAddress))
-  }, [assets, firstAddress, getWithExpiry, secondAddress])
+  }, [assets, customTokens, firstAddress, secondAddress])
 
   useEffect(() => () => (init = false), [])
 

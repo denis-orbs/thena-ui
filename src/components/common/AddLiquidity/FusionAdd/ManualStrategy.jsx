@@ -48,6 +48,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
   const stableAssets = useStableTokens()
   const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
   const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
+
   const mintInfo = useV3DerivedMintInfo(
     baseCurrency ?? undefined,
     quoteCurrency ?? undefined,

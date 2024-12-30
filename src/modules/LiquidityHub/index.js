@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { _TypedDataEncoder } from '@ethersproject/hash'
 import { constructSDK, permit2Address, zeroAddress } from '@orbs-network/liquidity-hub-sdk'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import BN from 'bignumber.js'
 import { useCallback, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -26,7 +26,6 @@ const NATIVE_TOKEN_SYMBOL = 'BNB'
 const PARTNER = 'Thena'
 const TOKEN_LIST = 'https://lhthena.s3.us-east-2.amazonaws.com/token-list-lh.json'
 const zero = BN(0)
-const QUOTE_REFETCH_INTERVAL = 10_000
 
 const TX_UPDATER_KEYS = {
   key: uuidv4(),
@@ -71,8 +70,6 @@ function parsebn(n, defaultValue, fmt) {
 export const useStore = create(set => ({
   seekingBetterPrice: false,
   setSeekingBetterPrice: seekingBetterPrice => set({ seekingBetterPrice }),
-  quotingEnabled: false,
-  setQuotingEnabled: quotingEnabled => set({ quotingEnabled }),
 }))
 
 export const usePersistedStore = create(
@@ -110,25 +107,17 @@ const useLiquidityHubSdk = () => {
 const useQuoteQuery = ({ fromAsset, toAsset, fromAmount = '', bestTrade }) => {
   const dexMinAmountOut = bestTrade?.outAmounts[0]
   const { chainId } = useAccount()
-  const { quotingEnabled } = useStore()
   const wbnbContract = getWBNBContract(chainId)
   const { slippage } = useSettings()
   const { account } = useWallet()
-  const queryClient = useQueryClient()
   const fromAddress = isNative(fromAsset?.address || '') && wbnbContract ? wbnbContract.address : fromAsset?.address
   const toAddress = isNative(toAsset?.address || '') ? zeroAddress : toAsset?.address
-  const isLHToken = fromAsset?.extended || toAsset?.extended
-
-  const enabled = isLHToken || quotingEnabled
-
+  const isLHToken = Boolean(fromAsset?.extended || toAsset?.extended)
+  const enabled = isLHToken
   const lhSdk = useLiquidityHubSdk()
-  const queryKey = useMemo(
-    () => ['useLHQuoteQuery', fromAddress, toAddress, fromAmount, slippage, account],
-    [fromAddress, toAddress, fromAmount, slippage, account],
-  )
 
   const query = useQuery({
-    queryKey,
+    queryKey: ['useLHQuoteQuery', fromAddress, toAddress, fromAmount, slippage, account],
     queryFn: async ({ signal }) =>
       lhSdk.getQuote({
         fromToken: fromAddress,
@@ -139,15 +128,18 @@ const useQuoteQuery = ({ fromAsset, toAsset, fromAmount = '', bestTrade }) => {
         dexMinAmountOut: subtractSlippage(slippage, dexMinAmountOut),
         signal,
       }),
-    refetchInterval: QUOTE_REFETCH_INTERVAL,
+    refetchInterval: 10_000,
     enabled: enabled && !!account && !isInvalidAmount(fromAmount) && !!fromAsset && !!toAsset,
     gcTime: 0,
-    retry: 2,
+    retry: isLHToken ? 3 : 0,
   })
 
-  const getLatestQuote = useCallback(() => queryClient.getQueryData(queryKey), [queryClient, queryKey])
+  const refetch = useCallback(async () => {
+    const refetchFn = async () => (await query.refetch()).data
+    return await promiseWithTimeout(refetchFn(), 9_000)
+  }, [query])
 
-  return { ...query, getLatestQuote }
+  return { ...query, refetch }
 }
 
 const useSimulateOdosSwap = () => {
@@ -174,13 +166,13 @@ const useSubmitTransaction = () => {
   const lhSdk = useLiquidityHubSdk()
 
   return useCallback(
-    async ({ quote, signature, bestTrade }) => {
+    async ({ quote, signature, getBestTrade }) => {
       updateTxn({
         key: TX_UPDATER_KEYS.key,
         uuid: TX_UPDATER_KEYS.swapuuid,
         status: TXN_STATUS.PENDING,
       })
-
+      const bestTrade = getBestTrade()
       const { to, data } = await simulateSwap(bestTrade)
 
       try {
@@ -190,6 +182,10 @@ const useSubmitTransaction = () => {
           throw new Error('Missing txHash')
         }
         const tx = await lhSdk.getTransactionDetails(txHash, quote)
+        if (!tx) {
+          throw new Error('transaction failed')
+        }
+
         updateTxn({
           key: TX_UPDATER_KEYS.key,
           uuid: TX_UPDATER_KEYS.swapuuid,
@@ -217,14 +213,11 @@ const useSubmitTransaction = () => {
 const useSwap = () => {
   const { account, chainId } = useWallet()
   const submitTx = useSubmitTransaction()
-  const { setQuotingEnabled } = useStore()
   const { startTxn, writeTxn, updateTxn, endTxn } = useTxn()
   const lhSdk = useLiquidityHubSdk()
 
   return useMutation({
-    mutationFn: async ({ bestTrade, fromAsset, toAsset, fromAmount, getLatestLhQuote, onSuccess }) => {
-      let quote = getLatestLhQuote()
-      setQuotingEnabled(true)
+    mutationFn: async ({ getBestTrade, fromAsset, toAsset, fromAmount, refetchLHQuote, onSuccess, quote: _quote }) => {
       const isNativeIn = isNative(fromAsset.address)
       const wbnbContract = getWBNBContract(chainId)
       const inTokenAddress = isNativeIn ? wbnbContract.address : fromAsset.address
@@ -232,6 +225,8 @@ const useSwap = () => {
       const tokenContract = getERC20Contract(inTokenAddress, chainId)
       const allowance = await readCall(tokenContract, 'allowance', [account, permit2Address])
       const isApproved = new BN(allowance).gte(inAmountBN)
+      let quote = _quote
+      const shouldRefetchQuote = isNativeIn || !isApproved
 
       startTxn({
         key: TX_UPDATER_KEYS.key,
@@ -314,9 +309,13 @@ const useSwap = () => {
         uuid: TX_UPDATER_KEYS.signuuid,
         status: TXN_STATUS.WAITING,
       })
+      if (shouldRefetchQuote) {
+        quote = await refetchLHQuote()
+      }
 
-      quote = getLatestLhQuote()
-      setQuotingEnabled(false)
+      if (!quote) {
+        throw new Error('Quote not found')
+      }
 
       try {
         const populated = await _TypedDataEncoder.resolveNames(
@@ -353,7 +352,7 @@ const useSwap = () => {
       const tx = await submitTx({
         signature,
         quote,
-        bestTrade,
+        getBestTrade,
       })
       endTxn({
         key: TX_UPDATER_KEYS.key,
@@ -366,9 +365,6 @@ const useSwap = () => {
       if (!error.message.includes('rejected')) {
         args.onFailure(error)
       }
-    },
-    onSettled: () => {
-      setQuotingEnabled(false)
     },
   })
 }
@@ -383,7 +379,7 @@ const useGetBetterPrice = fetchLiquidityHubQuote => {
       try {
         if (!liquidityHubEnabled || skip) return
         setSeekingBestPrice(true)
-        const { data: quote } = await promiseWithTimeout(fetchLiquidityHubQuote(), 8_000)
+        const quote = await fetchLiquidityHubQuote()
         const dexMinAmountOut = subtractSlippage(slippage, dexOutAmount) || 0
         return BN(quote?.userMinOutAmountWithGas || 0).gt(dexMinAmountOut) ? quote : undefined
       } catch (error) {

@@ -1308,5 +1308,6 @@
   "Type attribute CL pool": "Concentrated Liquidity - Algebra Integral v1.2",
   "Strategy Type": "Strategy Type",
   "Pool Plugin": "Pool Plugin",
-  "Creation date": "Creation date"
+  "Creation date": "Creation date",
+  "Hot Pools": "Hot Pools"
 }
