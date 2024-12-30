@@ -71,11 +71,11 @@ export default function Staked({ pool }) {
           </div>
         </div>
         <div className='flex items-center justify-between'>
-          <Paragraph className='text-sm'>{t('Net Return')}</Paragraph>
+          <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(pool.account.earnedUsd)}</TextHeading>
-            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool.address}`} />
-            <CustomTooltip id={`net-${pool.address}`}>
+            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`stake-${pool.address}`} />
+            <CustomTooltip id={`stake-${pool.address}`}>
               {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
               {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
               {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
