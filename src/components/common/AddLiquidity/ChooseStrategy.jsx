@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
@@ -42,6 +42,8 @@ export const strategiesManual = {
   description: '80% Fees',
   min: 100,
   max: 150,
+  isFarming: false,
+  version: 3,
 }
 
 const fetchIchiInfo = async (chainId, strategy) => {
@@ -110,7 +112,6 @@ export default function ChooseStrategy({
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
   const t = useTranslations()
-  const fusion = useSelector(state => state.fusion)
 
   const { locale } = useLocaleSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
@@ -139,7 +140,14 @@ export default function ChooseStrategy({
   )
   const baseCurrency = useCurrency(firstAsset?.address)
   const quoteCurrency = useCurrency(secondAsset?.address)
-  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined, 3)
+  const mintInfo = useV3DerivedMintInfo(
+    baseCurrency,
+    quoteCurrency,
+    feeAmount,
+    baseCurrency,
+    undefined,
+    strategy?.version ?? 3,
+  )
 
   const { data: pairPrices = [], error } = useFetchPairPrices({
     token0Address: wrappedAddress(pair?.token0),
@@ -251,6 +259,7 @@ export default function ChooseStrategy({
             ...sub,
             type: sub.title === 'CL_Farming' ? 'manual' : 'auto',
             isFarming: sub.title === 'CL_Farming',
+            version: 3,
           })
         },
       }
@@ -530,6 +539,7 @@ export default function ChooseStrategy({
               secondAsset={secondAsset}
               isReverse={isReverse}
               setIsReverse={setIsReverse}
+              strategy={strategy}
             />
           )}
         </div>
@@ -537,11 +547,11 @@ export default function ChooseStrategy({
 
       <div className={cn('mt-auto inline-flex w-full flex-col pt-5', isModal && 'px-3 pt-3 lg:px-6')}>
         <EmphasisButton
-          disabled={(!strategy && isAutomatic) || (!fusion.preset && !isAutomatic)}
+          disabled={!strategy && isAutomatic}
           onClick={() => {
             setCurrentStep(2)
           }}
-          className={strategy || !isAutomatic || !fusion.preset ? 'bg-primary-600 hover:bg-primary-700' : ''}
+          className={strategy || !isAutomatic ? 'bg-primary-600 hover:bg-primary-700' : ''}
         >
           {t('Continue')}
         </EmphasisButton>

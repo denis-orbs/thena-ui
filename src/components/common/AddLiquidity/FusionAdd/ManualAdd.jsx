@@ -16,7 +16,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
   const { errorMessage } = mintInfo
   const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
   const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
-  const { onAlgebraAdd, pending } = useAlgebraAdd()
+  const { onAlgebraAdd, pending } = useAlgebraAdd(strategy?.version ?? 3)
   const { deadline } = useSettings()
   const t = useTranslations()
 

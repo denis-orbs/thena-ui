@@ -13,7 +13,7 @@ import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 
 export default function ClaimModal({ popup, setPopup, pool, feeValue0, feeValue1, mutate, fee, outOfRange }) {
   const { tokenId, asset0, asset1, isFarming, key } = pool
-  const { pending, onAlgebraClaim } = useAlgebraClaim()
+  const { pending, onAlgebraClaim } = useAlgebraClaim(pool?.version ?? 3)
 
   return (
     <Modal

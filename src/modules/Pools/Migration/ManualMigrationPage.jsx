@@ -7,7 +7,7 @@ import { useContext, useMemo, useState } from 'react'
 import { Pool, Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { maxUint128, zeroAddress } from 'viem'
-import { useReadContract, useReadContracts, useSimulateContract } from 'wagmi'
+import { useReadContracts, useSimulateContract } from 'wagmi'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -16,8 +16,6 @@ import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/
 import { strategiesManual } from '@/components/common/AddLiquidity/ChooseStrategy'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { algebraFactoryAbi } from '@/constant/abi'
-import Contracts from '@/constant/contracts'
 import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
@@ -25,7 +23,7 @@ import { ManualsContext } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraMigration } from '@/hooks/fusion/useAlgebra'
-import { useFusionState } from '@/hooks/fusion/useFusions'
+import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
@@ -71,12 +69,11 @@ export function ManualMigrationPage({ tokenId }) {
 
   const currencyA = useCurrency(firstAsset?.address)
   const currencyB = useCurrency(secondAsset?.address)
-  const [currency0, currency1] = currencyA.sortsBefore(currencyB) ? [currencyA, currencyB] : [currencyB, currencyA]
   const { incentiveAddress, poolAddress } = usePoolAlgebraInfo(firstAsset?.address, secondAsset?.address)
 
   const { pairs } = usePairs()
   const pool = useMemo(
-    () => pairs.find(ele => ele?.address.toLowerCase() === poolAddress.toLowerCase()),
+    () => pairs.find(ele => ele?.address.toLowerCase() === poolAddress?.toLowerCase()),
     [poolAddress, pairs],
   )
 
@@ -143,28 +140,8 @@ export function ManualMigrationPage({ tokenId }) {
     return manualStrategy
   }, [incentiveAddress, pool?.apr, pool?.subpools, pool?.tvlUSD, strategy?.address, t])
 
-  const { data: poolAddresses } = useReadContracts({
-    contracts: [
-      {
-        address: Contracts.algebraFactoryV2[chainId],
-        abi: algebraFactoryAbi,
-        functionName: 'computePoolAddress',
-        args: [currency0?.address, currency1?.address],
-      },
-      {
-        address: Contracts.algebraFactoryV3[chainId],
-        abi: algebraFactoryAbi,
-        functionName: 'computePoolAddress',
-        args: [currency0?.address, currency1?.address],
-      },
-    ],
-    query: {
-      enabled: !!currencyA && !!currencyB,
-    },
-  })
-
-  const poolAddressV2 = poolAddresses?.[0]?.result
-  const poolAddressV3 = poolAddresses?.[1]?.result
+  const [fusionStateV2, fusionV2, poolAddressV2] = useFusionState({ currencyA, currencyB, version: 2 })
+  const [fusionStateV3, fusionV3] = useFusionState({ currencyA, currencyB, version: 3 })
 
   const contractV2 = { address: poolAddressV2, abi: poolTestNetV2Abi }
   const { data: poolInfoV2 } = useReadContracts({
@@ -177,34 +154,19 @@ export function ManualMigrationPage({ tokenId }) {
     },
   })
 
-  const { data: poolInfoV3 } = useReadContract({
-    address: poolAddressV3,
-    abi: poolTestNetV2Abi,
-    functionName: 'liquidity',
-    query: {
-      enabled: !!poolAddressV3,
-    },
-  })
-
   const poolLiquidity = new BigNumber(poolInfoV2?.[0]?.result).toString(10)
   const globalStates = poolInfoV2?.[1]?.result
   const price = new BigNumber(globalStates?.[0]).toString(10)
   const tick = Number(globalStates?.[1])
   const fee = Number(globalStates?.[2])
 
-  const [fusionState, fusion] = useFusionState({
-    currencyA,
-    currencyB,
-    version: 2,
-  })
-
-  const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
+  const [prevFusionState, prevFusion] = usePrevious([fusionStateV2, fusionV2]) || []
   const [, _fusion] = useMemo(() => {
-    if (!fusion && prevFusion && prevFusionState) {
+    if (!fusionV2 && prevFusion && prevFusionState) {
       return [prevFusionState, prevFusion]
     }
-    return [fusionState, fusion]
-  }, [fusion, fusionState, prevFusion, prevFusionState])
+    return [fusionStateV2, fusionV2]
+  }, [fusionV2, fusionStateV2, prevFusion, prevFusionState])
 
   const positionV2 = useMemo(() => {
     if (_fusion) {
@@ -261,12 +223,12 @@ export function ManualMigrationPage({ tokenId }) {
       amountB,
       mintInfo: {
         position,
-        idPoolExist: Boolean(poolInfoV3),
+        isPoolExist: Boolean(fusionStateV3 === PoolState.EXISTS),
       },
       feeValue0,
       feeValue1,
       tokenId: existingPosition?.tokenId,
-      isFarming: strategy.address === zeroAddress,
+      isFarming: strategy.isFarming,
       callback: () => {
         mutateManual()
         push('/dashboard')
@@ -314,7 +276,7 @@ export function ManualMigrationPage({ tokenId }) {
         <div className='my-4 flex flex-col gap-4 md:flex-row'>
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your Current Gauge')}</TextHeading>
-            <GaugeItemManual existingPosition={existingPosition} position={positionV2} />
+            <GaugeItemManual existingPosition={existingPosition} position={positionV2} fusion={fusionV2} />
           </div>
 
           <div className='flex items-center justify-center'>
@@ -323,7 +285,7 @@ export function ManualMigrationPage({ tokenId }) {
 
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your New V3 Gauge')}</TextHeading>
-            <GaugeItemManual existingPosition={existingPosition} position={positionV2} version={3} />
+            <GaugeItemManual existingPosition={existingPosition} position={positionV2} fusion={fusionV3} version={3} />
           </div>
         </div>
 

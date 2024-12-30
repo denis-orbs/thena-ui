@@ -36,7 +36,7 @@ import { RangeSelector } from '../components/RangeSelector'
 
 const feeAmount = 3000
 
-function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
+function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse, strategy }) {
   const { locale } = useLocaleSettings()
   const { networkId } = useChainSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
@@ -55,6 +55,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
     feeAmount,
     baseCurrency ?? undefined,
     undefined,
+    strategy?.version ?? 3,
   )
   const { ticksAtLimit, invertPrice } = mintInfo
   const t = useTranslations()

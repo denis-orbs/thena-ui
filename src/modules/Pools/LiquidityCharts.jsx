@@ -120,6 +120,7 @@ export default function LiquidityCharts({
     feeAmount,
     baseCurrency ?? undefined,
     undefined,
+    strategy?.version ?? 3,
   )
 
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onStartPriceInput, onChangeLiquidityRangeType } =

@@ -72,7 +72,7 @@ export default function ManualPosition({ pool }) {
 
   const { poolAddress, incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
   const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
-  const { pending, onAlgebraBurn } = useAlgebraBurn()
+  const { pending, onAlgebraBurn } = useAlgebraBurn(pool?.version ?? 3)
 
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)

@@ -91,7 +91,7 @@ export const useAlgebraAdd = (version = 3) => {
         }
 
         transactions[addLiquidityId] = {
-          desc: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
+          desc: t(isFarming && noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -113,7 +113,7 @@ export const useAlgebraAdd = (version = 3) => {
         startTxn({
           key,
           transactions,
-          title: t(mintInfo.noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
+          title: t(noLiquidity ? 'Create pool and add liquidity' : 'Add Liquidity'),
         })
         setPending(true)
 
@@ -157,7 +157,7 @@ export const useAlgebraAdd = (version = 3) => {
           deadline: timestamp.toString(),
           useNative,
           createPool: noLiquidity && isFarming,
-          version: 3,
+          version,
           isFarming,
           chainId,
         })
@@ -415,6 +415,7 @@ export const useAlgebraRemove = (version = 3) => {
         liquidityPercentage,
         slippageTolerance: allowedSlippage,
         deadline: timestamp.toString(),
+        burnToken: true,
         collectOptions: {
           expectedCurrencyOwed0: feeValue0,
           expectedCurrencyOwed1: feeValue1,
@@ -559,6 +560,8 @@ export const useAlgebraIncrease = (version = 3) => {
         slippageTolerance: allowedSlippage,
         deadline: timestamp.toString(),
         useNative,
+        version,
+        chainId,
       })
 
       if (!(await sendTxn(key, adduuid, algebraAddress, calldata, value))) {
@@ -601,8 +604,8 @@ export const useAlgebraMigration = () => {
     }) => {
       const key = uuidv4()
 
+      const createPoolId = uuidv4()
       const removeId = uuidv4()
-      const burnId = uuidv4()
       const approveId1 = uuidv4()
       const approveId2 = uuidv4()
       const addId = uuidv4()
@@ -617,7 +620,7 @@ export const useAlgebraMigration = () => {
 
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
 
-      const { position, idPoolExist } = mintInfo
+      const { position, isPoolExist } = mintInfo
 
       const baseCurrencyAddress = currencyA.wrapped?.address.toLowerCase()
       const quoteCurrencyAddress = currencyB.wrapped?.address.toLowerCase()
@@ -638,12 +641,7 @@ export const useAlgebraMigration = () => {
 
       const transactions = {}
       transactions[removeId] = {
-        desc: t('Remove Liquidity'),
-        status: TXN_STATUS.START,
-        hash: null,
-      }
-      transactions[burnId] = {
-        desc: `${t('Burn')} NFT #${tokenId}`,
+        desc: `${t('Remove Liquidity')} from V2`,
         status: TXN_STATUS.START,
         hash: null,
       }
@@ -661,8 +659,17 @@ export const useAlgebraMigration = () => {
           hash: null,
         }
       }
+
+      if (!isFarming && !isPoolExist) {
+        transactions[createPoolId] = {
+          desc: t('Create pool'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
       transactions[addId] = {
-        desc: t('Add Liquidity'),
+        desc: `${t('Add Liquidity')} to V3`,
         status: TXN_STATUS.START,
         hash: null,
       }
@@ -692,6 +699,7 @@ export const useAlgebraMigration = () => {
           liquidityPercentage: new Percent(100, 100),
           slippageTolerance: allowedSlippage,
           deadline: timestamp.toString(),
+          burnToken: true,
           collectOptions: {
             expectedCurrencyOwed0: feeValue0,
             expectedCurrencyOwed1: feeValue1,
@@ -701,13 +709,6 @@ export const useAlgebraMigration = () => {
       )
 
       if (!(await sendTxn(key, removeId, nftPositionV2, removeCallData, removeValue))) {
-        setPending(false)
-        return
-      }
-
-      // burn
-      const { calldata: burnCalldata, value: burnValue } = NonfungiblePositionManager.burnCallParameters(tokenId)
-      if (!(await sendTxn(key, burnId, nftPositionV2, burnCalldata, burnValue))) {
         setPending(false)
         return
       }
@@ -727,6 +728,21 @@ export const useAlgebraMigration = () => {
         }
       }
 
+      // MARK: CREATE NEW NORMAL POOL (earn 80% fee)
+      if (!isFarming && !isPoolExist) {
+        const txHash = await writeTxn(
+          key,
+          createPoolId,
+          { abi: pluginFactoryAbi, address: Contracts.pluginFactory[chainId] },
+          'createCustomPoolAndInitialize',
+          [position.pool.sqrtRatioX96, position.pool.token0.address, position.pool.token1.address],
+        )
+        if (!txHash) {
+          setPending(false)
+          return
+        }
+      }
+
       // MARK: ADD LIQUIDITY TO V3
       const useNative = currencyA.isNative ? currencyA : currencyB.isNative ? currencyB : undefined
       const { calldata: addCallData, value: addValue } = NonfungiblePositionManager.addCallParameters(position, {
@@ -734,8 +750,10 @@ export const useAlgebraMigration = () => {
         recipient: account,
         deadline: timestamp.toString(),
         useNative,
-        createPool: !idPoolExist,
+        createPool: !isPoolExist,
         version: 3,
+        isFarming,
+        chainId,
       })
 
       const txHash = await sendTxn(key, addId, nftPositionV3, addCallData, addValue)

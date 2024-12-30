@@ -144,6 +144,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x306F06C147f064A010530292A1EB6737c3e378e4',
   },
   algebraFactoryV3: {
+    [CHAIN_ID.BSC]: '0x30055F87716d3DFD0E5198C27024481099fB4A98',
     [CHAIN_ID.TEST_BSC]: '0x670e7Ef4D34a0FBBAf2d4f997FE73302Ba9ce98f',
   },
   eternalFarming: {
@@ -158,6 +159,7 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0xd95314Bc66EEFD266B1042DC8C2D8A70cAd52Be9',
   },
   pluginFactory: {
+    [CHAIN_ID.BSC]: '',
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
 }
