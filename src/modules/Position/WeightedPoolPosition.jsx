@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import AddLiquidityWeightedModal from '@/app/pools/AddLiquidityWeightedModal'
@@ -9,9 +9,10 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import CustomTooltip from '@/components/tooltip'
 import { UNKNOWN_LOGO } from '@/constant'
-import { useGaugeHarvest } from '@/hooks/useGauge'
 import {
   useClaimWeightedPoolFees,
+  useGaugeBalance,
+  useGaugeHarvestWeighted,
   useGaugeStakeWeighted,
   useGaugeUnstakeWeighted,
   usePositionData,
@@ -28,14 +29,24 @@ export function WeightedPoolPosition({ pool, isStake }) {
   const [managePopup, setManagePopup] = useState(false)
   const [isOpenAdd, setIsOpenAdd] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGaugeStakeWeighted()
-  const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstakeWeighted()
+  const { gaugeBalance } = useGaugeBalance(pool.gauge.address)
+  const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstakeWeighted(gaugeBalance)
   const [popupStake, setPopupStake] = useState(false)
 
   const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
 
   const { claimableFee, depositValue, mutatePosition } = usePositionData(pool, isStake)
 
-  const { onGaugeHarvest, pending: pendingHarvest } = useGaugeHarvest()
+  const { onGaugeHarvest, pending: pendingHarvest } = useGaugeHarvestWeighted()
+
+  const onClaim = useCallback(
+    async () =>
+      await onClaimFees(pool, () => {
+        mutatePosition()
+      }),
+    [pool, onClaimFees, mutatePosition],
+  )
+
   return (
     <div className='flex h-full flex-col justify-between rounded-xl bg-neutral-900 p-4'>
       <div className='flex-1'>
@@ -94,26 +105,46 @@ export function WeightedPoolPosition({ pool, isStake }) {
           ))}
 
           <div className='flex justify-between'>
-            <span className='text-sm text-neutral-300'>{t('Claimable Amount')}</span>
+            <span className='text-sm text-neutral-300'>{t(isStake ? 'Net Return' : 'Claimable Amount')}</span>
             <p className='flex items-center gap-2'>
-              <span>${formatAmount(claimableFee.total)}</span>
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool?.address}`} />
+              <span>${formatAmount(claimableFee?.total)}</span>
+              <InfoIcon
+                className='h-4 w-4 stroke-neutral-400'
+                data-tooltip-id={`net-${pool?.address}-${isStake ? 'stake' : 'unstake'}`}
+              />
+              <CustomTooltip id={`net-${pool?.address}-${isStake ? 'stake' : 'unstake'}`}>
+                {(claimableFee?.tokenList || []).every(item => isInvalidAmount(item?.fee)) ? (
+                  <>
+                    {(claimableFee?.tokenList || []).map((reward, index) => (
+                      <p key={`${reward.address}-${index}`}>
+                        {`${formatAmount(reward?.fee)} ${reward?.symbol || 'UNKNOWN'}`}
+                      </p>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {(claimableFee?.tokenList || []).map((reward, index) => (
+                      <p key={`${reward.address}-${index}`}>
+                        {!isInvalidAmount(reward?.fee) && `${formatAmount(reward?.fee)} ${reward?.symbol || 'UNKNOWN'}`}
+                      </p>
+                    ))}
+                  </>
+                )}
+              </CustomTooltip>
             </p>
           </div>
         </div>
-
-        <CustomTooltip id={`net-${pool?.address}`}>
-          {claimableFee.tokenList.map(token => (
-            <p key={token.symbol}>{`${formatAmount(token.fee)} ${token.symbol}`}</p>
-          ))}
-        </CustomTooltip>
       </div>
       {isStake ? (
         <div className='mt-4 flex w-full gap-3'>
           <TextButton disabled={unstakePending} className='w-full' onClick={() => setPopupStake(true)}>
             {t('Unstake')}
           </TextButton>
-          <OutlinedButton className='w-full' disabled={pendingHarvest} onClick={() => onGaugeHarvest(pool)}>
+          <OutlinedButton
+            className='w-full'
+            disabled={pendingHarvest || isInvalidAmount(claimableFee?.total)}
+            onClick={() => onGaugeHarvest(pool)}
+          >
             {t('Harvest')}
           </OutlinedButton>
           <EmphasisButton className='w-full' onClick={() => setIsOpenAdd(true)}>
@@ -132,11 +163,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
 
           <OutlinedButton
             disabled={pendingClaimFees || isInvalidAmount(claimableFee.total)}
-            onClick={() => {
-              onClaimFees(pool, () => {
-                mutatePosition()
-              })
-            }}
+            onClick={onClaim}
             className='h-11 w-full'
           >
             {t('Claim')}

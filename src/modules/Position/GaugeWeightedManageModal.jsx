@@ -55,11 +55,8 @@ function GaugeWeightedManageModal({ popup, setPopup, pool, title, onGaugeManage,
             }
             onGaugeManage(pool, amount, () => {
               setPopup(false)
-              if (isStake) {
-                mutateGaugeBalance()
-              } else {
-                mutatePoolBalance()
-              }
+              mutateGaugeBalance()
+              mutatePoolBalance()
             })
           }}
         >

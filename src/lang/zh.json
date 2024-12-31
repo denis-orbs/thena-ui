@@ -1318,5 +1318,7 @@
   "Pool price tick at": "Pool price tick at {value}",
   "Low tick at": "Low tick at {value}",
   "Pool Deployer": "Pool Deployer",
-  "Success": "Success"
+  "Success": "Success",
+  "Net Return": "Net Return",
+  "Claimable Fees": "Claimable Fees"
 }

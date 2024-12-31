@@ -133,7 +133,7 @@ export const useGaugeHarvest = () => {
 
       startTxn({
         key,
-        title: t('Harvest Rewards'),
+        title: 'Harvest Rewards',
         transactions: {
           [harvestuuid]: {
             desc: t('Harvest Rewards'),
