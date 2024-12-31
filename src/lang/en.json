@@ -1247,9 +1247,6 @@
   "Immutable except for swap fees editable by governance": "Immutable except for swap fees editable by governance",
   "Weighted": "Weighted",
   "Migrate": "Migrate",
-  "Current": "Current",
-  "Avg": "Avg",
-  "Min": "Min",
   "Create pool and add liquidity": "Create pool and add liquidity",
   "Pool Name": "Pool Name",
   "Pool Fee": "Pool Fee",
@@ -1318,5 +1315,6 @@
   "Strategy Type": "Strategy Type",
   "Pool Plugin": "Pool Plugin",
   "Creation date": "Creation date",
-  "Hot Pools": "Hot Pools"
+  "Hot Pools": "Hot Pools",
+  "Pool Deployer": "Pool Deployer"
 }

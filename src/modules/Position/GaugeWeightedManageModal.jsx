@@ -20,12 +20,11 @@ function GaugeWeightedManageModal({ popup, setPopup, pool, title, onGaugeManage,
     if (isInvalidAmount(amount)) {
       return 'Invalid Amount'
     }
-    console.log({ check: balance.lt(amount), balance: gaugeBalance.toString(), pool })
     if (!balance || balance.lt(amount)) {
       return 'Insufficient Balance'
     }
     return null
-  }, [amount, balance, gaugeBalance, pool])
+  }, [amount, balance])
 
   const onClear = useCallback(() => {
     setAmount('')

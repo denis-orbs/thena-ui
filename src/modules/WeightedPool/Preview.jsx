@@ -95,7 +95,7 @@ function PoolDetails({ poolSymbol, poolName, poolFee, tokensAndWeights, openModa
 
   return (
     <>
-      <Modal isOpen={isOpen} closeModal={() => openModal(false)} showIconX width={508} title={t('Pool Details')}>
+      <Modal isOpen={isOpen} closeModal={() => openModal(false)} showIconX width={508} title='Pool Details'>
         <ModalBody>
           <div>
             <div className='flex  flex-col gap-6'>

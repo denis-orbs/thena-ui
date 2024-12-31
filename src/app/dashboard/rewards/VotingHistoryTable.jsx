@@ -5,7 +5,6 @@ import React, { useCallback, useMemo, useState } from 'react'
 
 import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
-import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -13,6 +12,7 @@ import { LOCALES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { formatAmount } from '@/lib/utils'
+import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useLocaleSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite, InfoIcon } from '@/svgs'
 
@@ -151,57 +151,45 @@ export default function VotingHistoryTable({ userVotes }) {
         pair: (
           <div className='flex flex-row items-center gap-1'>
             {vote?.pool?.type === PAIR_TYPES.WEIGHTED ? (
-              <ThreeIconGroup
-                className='-space-x-1'
-                classNames={{
-                  image: 'w-7 h-7 text-[13px] font-medium leading-5 text-[#1C2027]',
-                }}
-                logo1={vote.pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                logo2={vote.pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                extendNumber={(vote.pool?.tokens?.length || 2) - 2}
-              />
+              <ListTokenPercantage listToken={vote?.pool?.tokens} />
             ) : (
-              <IconGroup
-                className='-space-x-1'
-                classNames={{
-                  image: 'outline-4 w-7 h-7',
-                }}
-                logo1={vote?.pool?.token0?.logoURI ?? UNKNOWN_LOGO}
-                logo2={vote?.pool?.token1?.logoURI ?? UNKNOWN_LOGO}
-              />
+              <>
+                <IconGroup
+                  className='-space-x-1'
+                  classNames={{
+                    image: 'outline-4 w-7 h-7',
+                  }}
+                  logo1={vote?.pool?.token0?.logoURI ?? UNKNOWN_LOGO}
+                  logo2={vote?.pool?.token1?.logoURI ?? UNKNOWN_LOGO}
+                />
+                <div className='flex flex-col'>
+                  <TextHeading>{vote?.pool?.symbol}</TextHeading>
+                  <Paragraph>{vote?.pool?.type}</Paragraph>
+                </div>
+              </>
             )}
-            <div className='flex flex-col'>
-              <TextHeading>{vote?.pool?.symbol}</TextHeading>
-              <Paragraph>{vote?.pool?.type}</Paragraph>
-            </div>
           </div>
         ),
         pairMobile: (
           <div className='flex flex-row items-center gap-1'>
             {vote?.pool?.type === PAIR_TYPES.WEIGHTED ? (
-              <ThreeIconGroup
-                className='-space-x-1'
-                classNames={{
-                  image: 'w-7 h-7 text-[13px] font-medium leading-5 text-[#1C2027]',
-                }}
-                logo1={vote.pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                logo2={vote.pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                extendNumber={(vote.pool?.tokens?.length || 2) - 2}
-              />
+              <ListTokenPercantage listToken={vote?.pool?.tokens} />
             ) : (
-              <IconGroup
-                className='-space-x-1'
-                classNames={{
-                  image: 'outline-4 w-7 h-7',
-                }}
-                logo1={vote?.pool?.token0?.logoURI ?? UNKNOWN_LOGO}
-                logo2={vote?.pool?.token1?.logoURI ?? UNKNOWN_LOGO}
-              />
+              <>
+                <IconGroup
+                  className='-space-x-1'
+                  classNames={{
+                    image: 'outline-4 w-7 h-7',
+                  }}
+                  logo1={vote?.pool?.token0?.logoURI ?? UNKNOWN_LOGO}
+                  logo2={vote?.pool?.token1?.logoURI ?? UNKNOWN_LOGO}
+                />
+                <div className='flex flex-col'>
+                  <TextHeading>{vote?.pool?.symbol}</TextHeading>
+                  <Paragraph>{vote?.pool?.type}</Paragraph>
+                </div>
+              </>
             )}
-            <div className='flex flex-col'>
-              <TextHeading>{vote?.pool?.symbol}</TextHeading>
-              <Paragraph>{vote?.pool?.type}</Paragraph>
-            </div>
           </div>
         ),
         apr: <Paragraph>{formatAmount(vote.apr)}%</Paragraph>,

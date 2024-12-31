@@ -197,7 +197,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
             <div className='flex justify-end'>
               <SettingSlippageModal slippage={slippagge} updateSlippage={setSlippage} />
             </div>
-            <InputManyToken pair={pool} amount={amount} onAmountChange={handleAmountChange} title={t('Amount')} />
+            <InputManyToken pair={pool} amount={amount} onAmountChange={handleAmountChange} title='Amount' />
           </div>
           <div className='relative flex w-full gap-2'>
             <div className='relative flex w-full flex-col gap-2'>

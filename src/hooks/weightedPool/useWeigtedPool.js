@@ -224,7 +224,7 @@ export const useWeightedPool = () => {
 
       startTxn({
         key,
-        title: t('Create Weighted Pool'),
+        title: 'Create Weighted Pool',
         transactions,
       })
 
@@ -333,7 +333,7 @@ export const useWeightedPool = () => {
 
       startTxn({
         key,
-        title: t('Add Liquidity'),
+        title: 'Add Liquidity',
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
@@ -492,7 +492,7 @@ export const useWeightedPool = () => {
 
       startTxn({
         key,
-        title: t('Add Liquidity'),
+        title: 'Add Liquidity',
         transactions: {
           ...transactions,
           ...(withStake
@@ -616,7 +616,7 @@ export const useWeightedPool = () => {
 
       startTxn({
         key,
-        title: t('Remove Liquidity'),
+        title: 'Remove Liquidity',
         transactions: {
           ...(isApprovedFee
             ? {}
@@ -702,7 +702,7 @@ export const useWeightedPool = () => {
 
       startTxn({
         key,
-        title: t('Remove Liquidity'),
+        title: 'Remove Liquidity',
         transactions: {
           ...(isApprovedFee
             ? {}
@@ -1192,7 +1192,7 @@ export const useClaimWeightedPoolFees = () => {
         setPending(true)
         startTxn({
           key,
-          title: t('Claim Fees'),
+          title: 'Claim Fees',
           transactions: {
             [claimuuid]: { desc: t('Claim Fees'), status: TXN_STATUS.START, hash: null },
           },
