@@ -298,8 +298,8 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
         <div className='flex flex-col gap-2'>
           <TextHeading>{t('Available Pools')}</TextHeading>
           <div className='grid grid-cols-1 items-center gap-3'>
-            {availablePools.map(item => (
-              <PoolItem key={item.address} pool={item} onDeposit={onDeposit} />
+            {availablePools.map((item, index) => (
+              <PoolItem key={`${item.address}_${index}`} pool={item} onDeposit={onDeposit} />
             ))}
           </div>
         </div>

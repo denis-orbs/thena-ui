@@ -201,8 +201,8 @@ export function PoolAttributesCL({ strategy, pool }) {
             <ul className='flex flex-wrap gap-1'>
               <li>Pool Administrator:</li>
               {poolAdministrators.map((addr, index) => (
-                <div className='flex flex-wrap'>
-                  <li key={addr}>
+                <div key={addr} className='flex flex-wrap'>
+                  <li>
                     <Link
                       className='flex items-center gap-1'
                       href={`${SCAN_URLS[networkId]}/address/${addr}`}
@@ -220,8 +220,8 @@ export function PoolAttributesCL({ strategy, pool }) {
             <ul className='flex flex-wrap gap-1'>
               <li>Plugin Administrator:</li>
               {pluginAdministrators.map((addr, index) => (
-                <div className='flex'>
-                  <li key={addr}>
+                <div key={addr} className='flex'>
+                  <li>
                     <Link
                       className='flex items-center gap-1'
                       href={`${SCAN_URLS[networkId]}/address/${addr}`}

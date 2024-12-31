@@ -171,7 +171,7 @@ export const useClaimRewardMutation = () => {
 
       startTxn({
         key,
-        title: t('Claim Earnings'),
+        title: 'Claim Earnings',
         transactions: {
           [claimuuid]: {
             desc: t('Claim Earnings'),

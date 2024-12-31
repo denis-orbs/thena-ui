@@ -263,10 +263,6 @@ export default function ChooseStrategy({
             <div>
               <TextHeading>Manual ({strategiesManual?.title})</TextHeading>
               <div className='mt-1 flex gap-2'>
-                {/* <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{pool?.apr ?? 0}</Paragraph>
-                </div> */}
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
                   <Paragraph className='text-sm'>${formatAmount(pool.tvlPoolFee || 0)}</Paragraph>
@@ -288,13 +284,6 @@ export default function ChooseStrategy({
 
   const periods = useMemo(
     () => [
-      // {
-      //   label: '1H',
-      //   active: timeWindow === PairDataTimeWindow.HOUR,
-      //   onClickHandler: () => {
-      //     setTimeWindow(PairDataTimeWindow.HOUR)
-      //   },
-      // },
       {
         label: '24H',
         active: timeWindow === PairDataTimeWindow.DAY,

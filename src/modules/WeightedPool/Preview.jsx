@@ -20,7 +20,13 @@ export function TokenAndInitialSeedItem({ item }) {
   return (
     <div className='flex flex-row justify-between p-2'>
       <div className='flex flex-row items-center gap-[10px]'>
-        <Image width={28} height={28} className='rounded-full' src={item.token.logoURI || UNKNOWN_LOGO} />
+        <Image
+          width={28}
+          height={28}
+          className='rounded-full'
+          alt='Token logo'
+          src={item.token.logoURI || UNKNOWN_LOGO}
+        />
         <div className='flex flex-col gap-1'>
           <span>
             {item.token.symbol} <span className='text-neutral-400'>({item.weight}%)</span>
@@ -180,8 +186,8 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
       </div>
       <TextHeading>{t('Tokens and Initial Seed Liquidity')}</TextHeading>
       <div className='flex flex-col divide-y divide-neutral-700'>
-        {tokensAndWeights.map(item => (
-          <TokenAndInitialSeedItem item={item} key={item.token} />
+        {tokensAndWeights.map((item, index) => (
+          <TokenAndInitialSeedItem item={item} key={`${item.token}_${index}`} />
         ))}
         <div className='flex flex-row justify-between pt-4'>
           <TextHeading>{t('Total')}</TextHeading>

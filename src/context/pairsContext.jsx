@@ -70,11 +70,11 @@ function PairsContextProvider({ children }) {
 
   const pairs = useMemo(
     () => ({
-      [ChainId.BSC]: { data: bscPairs || [], weightedPools: [], isLoading: bscLoading },
-      [ChainId.OPBNB]: { data: opPairs || [], weightedPools: [], isLoading: opLoading },
+      // TODO: Pairs V3, weighted pools
+      [ChainId.BSC]: { data: bscPairs || [], isLoading: bscLoading },
+      [ChainId.OPBNB]: { data: opPairs || [], isLoading: opLoading },
       97: {
-        data: [...weightedPools, ...(bscTestnetPairsV3 || [])],
-        weightedPools,
+        data: [...(weightedPools || []), ...(bscTestnetPairsV3 || [])],
         isLoading: bscTestnetV3Loading || weightedLoading,
       },
     }),

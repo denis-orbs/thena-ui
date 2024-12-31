@@ -1317,5 +1317,6 @@
   "No Voting History to display": "No Voting History to display",
   "Pool price tick at": "Pool price tick at {value}",
   "Low tick at": "Low tick at {value}",
-  "Pool Deployer": "Pool Deployer"
+  "Pool Deployer": "Pool Deployer",
+  "Success": "Success"
 }

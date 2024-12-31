@@ -218,7 +218,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
                   <TextHeading className='mb-4'>{t('You Will Receive')}</TextHeading>
                   <div className='mb-4 flex flex-col gap-3'>
                     {(pool.tokens || []).map((token, index) => (
-                      <div className='flex flex-row justify-between' key={pool.address}>
+                      <div className='flex flex-row justify-between' key={token.address}>
                         <div className='flex gap-1'>
                           <CircleImage alt={token.symbol} src={token?.logoURI || UNKNOWN_LOGO} className='h-5 w-5' />
                           <Paragraph>{token.symbol}</Paragraph>

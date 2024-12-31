@@ -127,8 +127,7 @@ function Updater() {
           } else {
             totalTvl = 0
           }
-          const gaugeTvl = lpPrice * gauge.totalSupply
-          // const weightPercent = totalWeight > 0 ? (gauge.weight / totalWeight) * 100 : 0
+          const gaugeTvl = fusion.tvl
           let bribeUsd = 0
           const poolBribes = gauge.bribes
           let finalBribes = { fee: null, bribe: null }
@@ -240,7 +239,6 @@ function Updater() {
               bribes: finalBribes,
               tvl: gaugeTvl,
               apr: fusion.gauge.apr + extraApr,
-              // weightPercent,
               bribeUsd,
               pooled0: fusion.totalSupply ? (fusion.token0.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,
               pooled1: fusion.totalSupply ? (fusion.token1.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,

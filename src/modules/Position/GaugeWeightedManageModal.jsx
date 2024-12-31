@@ -39,13 +39,7 @@ function GaugeWeightedManageModal({ popup, setPopup, pool, title, onGaugeManage,
       onAfterClose={onClear}
     >
       <ModalBody>
-        <InputManyToken
-          pair={pool}
-          amount={amount}
-          onAmountChange={setAmount}
-          title={t('Amount')}
-          balanceValue={balance}
-        />
+        <InputManyToken pair={pool} amount={amount} onAmountChange={setAmount} title='Amount' balanceValue={balance} />
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <TextButton className='w-full' onClick={() => setPopup(false)}>

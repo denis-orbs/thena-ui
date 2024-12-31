@@ -909,11 +909,9 @@ export const useWeightedPoolsWithGauge = () => {
   const prices = usePrices()
   let userInfo = []
   if (weightedPools.length > 0 && assets.length > 0) {
-    // const totalWeight = weightedPools.reduce((sum, current) => sum + (current?.gauge?.weight ?? 0), 0)
     userInfo = weightedPools
       .map(weighted => {
-        const { gauge, lpPrice } = weighted
-        const gaugeTvl = lpPrice * gauge.totalSupply
+        const { gauge } = weighted
         const tokens = weighted.tokens.map(token => {
           const tokenDetail = getTokenInfo({ tokenAddress: token.address, assets, customAssets })
           tokenDetail.symbol = tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN'
@@ -925,7 +923,6 @@ export const useWeightedPoolsWithGauge = () => {
           }
         })
         const totalTvl = new BigNumber(weighted.tvlUSD)
-        // const weightPercent = totalWeight > 0 ? (gauge.weight / totalWeight) * 100 : 0
         let bribeUsd = 0
         const poolBribes = gauge.bribes
         let finalBribes = { fee: null, bribe: null }
@@ -968,7 +965,6 @@ export const useWeightedPoolsWithGauge = () => {
             })
           }
         }
-        // const found = (userInfos ?? []).find(item => item.address.toLowerCase() === fusion.address.toLowerCase())
         const user = {
           walletBalance: 0,
           gaugeBalance: 0,
@@ -982,32 +978,11 @@ export const useWeightedPoolsWithGauge = () => {
           totalUsd: 0,
         }
         let extraApr = 0
-        // const extraRewards = null
-        // let extraRewardsInUsd = 0
         const foundExtra = (extraRewardsInfo ?? []).find(ele => ele.pairAddress === weighted.address)
         if (foundExtra) {
-          extraApr = ((foundExtra.rewardRate * 31536000 * prices[foundExtra.doubleRewarderSymbol]) / gaugeTvl) * 100
-          // extraRewards = {
-          //   amount: foundExtra.pendingReward,
-          //   symbol: foundExtra.doubleRewarderSymbol,
-          // }
-          // extraRewardsInUsd = extraRewards.amount * prices[foundExtra.doubleRewarderSymbol]
+          extraApr =
+            ((foundExtra.rewardRate * 31536000 * prices[foundExtra.doubleRewarderSymbol]) / weighted.tvlUSD) * 100
         }
-        // if (found) {
-        //   user = {
-        //     ...found,
-        //     token0claimable: formatUnits(found.token0claimable, token0.decimals),
-        //     token1claimable: formatUnits(found.token1claimable, token1.decimals),
-        //     walletBalance: formatEther(found.walletBalance),
-        //     gaugeBalance: formatEther(found.gaugeBalance),
-        //     totalLp: formatEther(found.totalLp),
-        //     gaugeEarned: formatEther(found.gaugeEarned),
-        //     stakedUsd: fromWei(found.gaugeBalance).times(lpPrice).toNumber(),
-        //     earnedUsd: fromWei(found.gaugeEarned).times(prices.THE).plus(extraRewardsInUsd).toNumber(),
-        //     totalUsd: fromWei(found.totalLp).times(lpPrice).toNumber(),
-        //     extraRewards,
-        //   }
-        // }
         return {
           ...weighted,
           stable: 'false',
