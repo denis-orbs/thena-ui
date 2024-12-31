@@ -10,10 +10,12 @@ import Tabs from '../tabs'
 import CustomTooltip from '../tooltip'
 import { TextSubHeading } from '../typography'
 
-function InputManyToken({ pair, amount, onAmountChange, title, autoFocus = false, readOnly = false }) {
+function InputManyToken({ pair, amount, onAmountChange, title, autoFocus = false, readOnly = false, balanceValue }) {
   const toolTipId = useId()
 
-  const { balance, decimals, pending } = useWeightPoolData(pair.address)
+  const { balance: weightedBalance, decimals, pending } = useWeightPoolData(pair.address)
+
+  const balance = useMemo(() => balanceValue ?? weightedBalance, [balanceValue, weightedBalance])
 
   const t = useTranslations()
   const percents = useMemo(
