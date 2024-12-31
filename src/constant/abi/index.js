@@ -55,6 +55,7 @@ import voterTestNetAbi from './voterTestNet.json'
 import votingEscrowAbi from './votingEscrow.json'
 import votingEscrowAttachAbi from './votingEscrowAttach.json'
 import wbnbAbi from './wbnb.json'
+import weightedGaugeAbi from './weighted-pool/gauge.json'
 import weightedPoolRouterAbi from './weighted-pool/router.json'
 import weightedPoolRouterSimulatorAbi from './weighted-pool/routerSimulator.json'
 import weightedPoolVaultAbi from './weighted-pool/vault.json'
@@ -121,6 +122,7 @@ export {
   votingEscrowAbi,
   votingEscrowAttachAbi,
   wbnbAbi,
+  weightedGaugeAbi,
   weightedPoolAbi,
   weightedPoolFactoryAbi,
   weightedPoolFeesAbi,

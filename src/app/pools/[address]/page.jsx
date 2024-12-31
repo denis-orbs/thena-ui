@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
+import { zeroAddress } from 'viem'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -20,7 +21,7 @@ import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
+import { useGaugeBalance, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
@@ -80,6 +81,10 @@ export default function SpecificPoolPage({ params }) {
 
   const { balance: weightedPoolBalance } = useWeightPoolData(pool?.type === PAIR_TYPES.WEIGHTED ? pool.address : null)
 
+  const { gaugeBalance, isLoading: loadingGaugeBalance } = useGaugeBalance(
+    pool?.type === PAIR_TYPES.WEIGHTED ? pool.gauge.address : zeroAddress,
+  )
+
   const userPools = useMemo(() => (pool ? (pool?.subpools || []).filter(ele => ele.account.totalLp.gt(0)) : []), [pool])
   const userManuals = useMemo(
     () =>
@@ -98,7 +103,7 @@ export default function SpecificPoolPage({ params }) {
     [userManuals, userPools],
   )
 
-  if (isLoading || !pool) {
+  if (isLoading || !pool || loadingGaugeBalance) {
     return <Loading />
   }
 
@@ -346,7 +351,7 @@ export default function SpecificPoolPage({ params }) {
 
           {/* Pool charts */}
           <div className='mb-6 mt-6'>
-            <PoolChart address={address} />
+            <PoolChart address={pool.address} />
           </div>
 
           {/* Liquidity Fees table */}
@@ -400,23 +405,28 @@ export default function SpecificPoolPage({ params }) {
             </TextHeading>
             <div className='grid grid-cols-1 gap-4'>
               {pool.type === PAIR_TYPES.WEIGHTED ? (
-                <>{!isInvalidAmount(weightedPoolBalance) ? <WeightedPoolPosition pool={pool} /> : <NoPosition />}</>
+                <>
+                  {!isInvalidAmount(weightedPoolBalance) || !isInvalidAmount(gaugeBalance) ? (
+                    <>
+                      {!isInvalidAmount(weightedPoolBalance) && <WeightedPoolPosition pool={pool} isStake={false} />}
+                      {!isInvalidAmount(gaugeBalance) && <WeightedPoolPosition pool={pool} isStake />}
+                    </>
+                  ) : (
+                    <NoPosition />
+                  )}
+                </>
               ) : userPositions && userPositions.length > 0 ? (
                 userPositions.map((ele, idx) =>
                   ele.type === 'Manual' ? (
-                    <>
-                      {ele.isFarming ? (
-                        <FarmingPosition pool={ele} key={`pos-${idx}`} />
-                      ) : (
-                        <ManualPosition pool={ele} key={`pos-${idx}`} />
-                      )}
-                    </>
+                    <React.Fragment key={`pos-fragment-${idx}`}>
+                      {ele.isFarming ? <FarmingPosition pool={ele} /> : <ManualPosition pool={ele} />}
+                    </React.Fragment>
                   ) : (
                     <Position pool={ele} key={ele?.address} />
                   ),
                 )
               ) : (
-                <NoPosition />
+                <NoPosition key='noPosition' />
               )}
             </div>
           </div>

@@ -30,6 +30,7 @@ import {
   voterAbi,
   voterTestNetAbi,
   wbnbAbi,
+  weightedGaugeAbi,
   weightedPoolAbi,
   weightedPoolFactoryAbi,
   weightedPoolFeesAbi,
@@ -363,3 +364,5 @@ export const getWeightedPoolRouterSimulatorContract = chainId =>
   getContract(weightedPoolRouterSimulatorAbi, Contracts.weightedPoolRouterSimulator, chainId)
 
 export const getWeightedPoolFeesContract = (address, chainId) => getContract(weightedPoolFeesAbi, address, chainId)
+
+export const getWeightedGaugeContract = (address, chainId) => getContract(weightedGaugeAbi, address, chainId)

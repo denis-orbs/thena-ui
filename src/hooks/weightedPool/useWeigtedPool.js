@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
-import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex } from 'viem'
+import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex, zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { PAIR_TYPES, TXN_STATUS, ZERO_ADDRESS } from '@/constant'
@@ -15,7 +15,9 @@ import { usePairs } from '@/context/pairsContext'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
+  getGaugeContract,
   getWBNBContract,
+  getWeightedGaugeContract,
   getWeightedPoolContract,
   getWeightedPoolFactoryContract,
   getWeightedPoolFeesContract,
@@ -40,6 +42,17 @@ const toBytes32 = hexString => {
   const finalBytes = new Uint8Array(32)
   finalBytes.set(rawBytes)
   return finalBytes
+}
+
+const getBalance = async (contract, account, chainId) => {
+  try {
+    const balance = await readCall(contract, 'balanceOf', [account], chainId)
+
+    return fromWei(balance)
+  } catch (error) {
+    console.error('Failed to fetch balance or decimals:', error)
+    return 0
+  }
 }
 
 export const useWeightPoolData = poolAddress => {
@@ -84,6 +97,27 @@ export const useWeightPoolData = poolAddress => {
     pending: isLoading,
     mutatePoolBalance,
   }
+}
+
+export const useGaugeBalance = gaugeAddress => {
+  const { account, chainId } = useWallet()
+  const getGaugeBalance = useCallback(async () => {
+    if (gaugeAddress === zeroAddress) return 0
+    try {
+      const gaugeContract = getWeightedGaugeContract(gaugeAddress, chainId)
+      const gaugeBalance = await getBalance(gaugeContract, account, chainId)
+      return gaugeBalance
+    } catch (error) {
+      console.log(error)
+      return 0
+    }
+  }, [account, chainId, gaugeAddress])
+
+  const { data, isLoading } = useSWR(['getGaugeBalance'], () => getGaugeBalance(), {
+    refreshInterval: 0,
+  })
+
+  return { gaugeBalance: data, isLoading }
 }
 
 export const useWeightedPool = () => {
@@ -917,9 +951,11 @@ export const useWeightedPoolsWithGauge = () => {
   return userInfo
 }
 
-export const usePositionData = pool => {
+export const usePositionData = (pool, isStaked) => {
   const { chainId, account } = useWallet()
   const poolContract = getWeightedPoolContract(pool?.address, chainId)
+  const gaugeContract = getGaugeContract(pool?.gauge?.address, chainId)
+  const contractGetBalance = isStaked ? gaugeContract : poolContract
   const vaultContract = getWeightedPoolVaultContract(chainId)
   const { data, refetch: mutateTokens } = useReadContracts({
     contracts: [
@@ -932,7 +968,7 @@ export const usePositionData = pool => {
         functionName: 'totalSupply',
       },
       {
-        ...poolContract,
+        ...contractGetBalance,
         functionName: 'balanceOf',
         args: [account],
       },
@@ -1019,17 +1055,6 @@ export const usePositionData = pool => {
   return { claimableFee, depositValue, mutatePosition }
 }
 
-const getBalance = async (contract, account, chainId) => {
-  try {
-    const balance = await readCall(contract, 'balanceOf', [account], chainId)
-
-    return fromWei(balance)
-  } catch (error) {
-    console.error('Failed to fetch balance or decimals:', error)
-    return 0
-  }
-}
-
 export const useWeightedPositionList = () => {
   const { account, chainId } = useWallet()
   const { weightedPools = [] } = usePairs()
@@ -1038,11 +1063,26 @@ export const useWeightedPositionList = () => {
     const results = await Promise.all(
       weightedPools.map(async pool => {
         const weightedPoolContract = getWeightedPoolContract(pool.address, chainId)
-        const balance = await getBalance(weightedPoolContract, account, chainId)
-        return { pool, hasPosition: !isInvalidAmount(balance) }
+        let gaugeBalance
+        if (pool.gauge.address !== zeroAddress) {
+          const gaugeContract = getWeightedGaugeContract(pool.gauge.address, chainId)
+          gaugeBalance = await getBalance(gaugeContract, account, chainId)
+        }
+        const poolBalance = await getBalance(weightedPoolContract, account, chainId)
+        return {
+          pool,
+          hasPositionNotStaked: !isInvalidAmount(poolBalance),
+          hasPositionStaked: !isInvalidAmount(gaugeBalance),
+        }
       }),
     )
-    return results.filter(result => result.hasPosition).map(result => result.pool)
+    return results
+      .filter(result => result.hasPositionNotStaked || result.hasPositionStaked)
+      .map(result => ({
+        ...result.pool,
+        notStaked: result.hasPositionNotStaked,
+        staked: result.hasPositionStaked,
+      }))
   }, [account, chainId, weightedPools])
 
   const { data } = useSWR(['getWeightedHasPositions'], () => getWeightedHasPositions(), {

@@ -7,7 +7,7 @@ import MenuTab from '@/app/arena/rankings/MenuTab'
 import SuccessModal from '@/app/arena/thena-id/SuccessModal'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import InputManyToken from '@/components/input/InputManyToken'
@@ -34,6 +34,7 @@ const DEPOSIT_TYPE = {
 
 function AddLiquidityWeightedPool({
   pool,
+  isStake,
   // isFullContent = true,
   showSidebar = true,
   setCurrentStep,
@@ -49,7 +50,7 @@ function AddLiquidityWeightedPool({
   const debounceTimeout = useRef(null)
 
   const [amountDeposit, setAmountDeposit] = useState('')
-  const { mutatePosition } = usePositionData(pool)
+  const { mutatePosition } = usePositionData(pool, isStake)
 
   const [slippage, setSlippage] = useState(0.5)
   const [openTransactionSetting, setOpenTransactionSetting] = useState()
@@ -394,9 +395,14 @@ function AddLiquidityWeightedPool({
             <TextHeading>{t('Total Deposit')}</TextHeading>
             <Paragraph>${formatAmount(totalDeposit)}</Paragraph>
           </div>
-          <PrimaryButton disabled={isDisable} onClick={onAddLiquidity} className='w-full'>
-            {t('Add Liquidity')}
-          </PrimaryButton>
+          <div className='flex justify-between gap-4'>
+            <SecondaryButton disabled={isDisable} onClick={onAddLiquidity} className='w-1/2'>
+              {t('Add Liquidity')}
+            </SecondaryButton>
+            <PrimaryButton disabled={isDisable} onClick={() => {}} className='w-1/2'>
+              {t('Add Liquidity & Stake')}
+            </PrimaryButton>
+          </div>
           <SuccessModal
             isOpen={isSuccess}
             heading={t('Deposit Successful')}

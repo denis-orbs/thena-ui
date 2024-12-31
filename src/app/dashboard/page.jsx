@@ -277,7 +277,10 @@ export default function HoldingsPage() {
                   ) : (
                     <React.Fragment key={`pool-${idx}`}>
                       {pool.tokens && Array.isArray(pool.tokens) ? (
-                        <WeightedPoolPosition pool={pool} />
+                        <>
+                          {pool.notStaked && <WeightedPoolPosition pool={pool} isStake={false} />}
+                          {pool.staked && <WeightedPoolPosition pool={pool} isStake />}
+                        </>
                       ) : (
                         <>
                           {pool.account.gaugeBalance.gt(0) && <Staked pool={pool} />}
