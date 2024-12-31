@@ -77,7 +77,7 @@ export function GaugeItemNotStaked({ showAdjustButton = false, pool }) {
         </div>
         {isLegacy && (
           <div className='flex items-center justify-between'>
-            <Paragraph className='text-sm'>{t('Claimable Fees')}</Paragraph>
+            <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
             <div className='flex items-center gap-1'>
               <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
               <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool.address}`} />

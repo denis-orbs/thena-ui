@@ -126,7 +126,9 @@ export default function HoldingsPage() {
         break
 
       default:
-        result = stakedOnly ? stakedPools.concat(farmed) : [...userPools, ...userManuals, ...weightedPositionList]
+        result = stakedOnly
+          ? stakedPools.concat(farmed, weightedPositionList)
+          : [...userPools, ...userManuals, ...weightedPositionList]
         break
     }
     return !searchText
@@ -277,7 +279,10 @@ export default function HoldingsPage() {
                   ) : (
                     <React.Fragment key={`pool-${idx}`}>
                       {pool.tokens && Array.isArray(pool.tokens) ? (
-                        <WeightedPoolPosition pool={pool} />
+                        <>
+                          {!stakedOnly && pool.notStaked && <WeightedPoolPosition pool={pool} isStake={false} />}
+                          {pool.staked && <WeightedPoolPosition pool={pool} isStake />}
+                        </>
                       ) : (
                         <>
                           {pool.account.gaugeBalance.gt(0) && <Staked pool={pool} />}

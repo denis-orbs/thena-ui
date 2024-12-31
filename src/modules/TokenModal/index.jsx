@@ -237,9 +237,8 @@ function TokenModal({
 
           <InfiniteScroll dataLength={filteredAssets.length}>
             {filteredAssets?.map(item => (
-              <RenderIfVisible root={rootRef.current}>
+              <RenderIfVisible key={item.address} root={rootRef.current}>
                 <ItemToken
-                  key={item.address}
                   item={item}
                   setPopup={setPopup}
                   selectedAsset={selectedAsset}

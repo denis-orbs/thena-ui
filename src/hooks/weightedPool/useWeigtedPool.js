@@ -3,19 +3,21 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
-import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex } from 'viem'
+import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex, zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { PAIR_TYPES, TXN_STATUS, ZERO_ADDRESS } from '@/constant'
-import { weightedPoolFactoryAbi, weightedPoolFeesAbi } from '@/constant/abi'
+import { weightedPoolAbi, weightedPoolFactoryAbi, weightedPoolFeesAbi } from '@/constant/abi'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets, useMutateAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { usePairs } from '@/context/pairsContext'
-import { readCall, waitCall } from '@/lib/contractActions'
+import { callMulti, readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
+  getGaugeContract,
   getWBNBContract,
+  getWeightedGaugeContract,
   getWeightedPoolContract,
   getWeightedPoolFactoryContract,
   getWeightedPoolFeesContract,
@@ -40,6 +42,17 @@ const toBytes32 = hexString => {
   const finalBytes = new Uint8Array(32)
   finalBytes.set(rawBytes)
   return finalBytes
+}
+
+const getBalance = async (contract, account, chainId) => {
+  try {
+    const balance = await readCall(contract, 'balanceOf', [account], chainId)
+
+    return fromWei(balance)
+  } catch (error) {
+    console.error('Failed to fetch balance or decimals:', error)
+    return 0
+  }
 }
 
 export const useWeightPoolData = poolAddress => {
@@ -83,6 +96,50 @@ export const useWeightPoolData = poolAddress => {
     decimals: data?.decimals ?? 18,
     pending: isLoading,
     mutatePoolBalance,
+  }
+}
+
+export const useGaugeBalance = gaugeAddress => {
+  const { account, chainId } = useWallet()
+  const getGaugeBalance = useCallback(async () => {
+    if (!gaugeAddress || gaugeAddress === zeroAddress) return 0
+    try {
+      const gaugeContract = getWeightedGaugeContract(gaugeAddress, chainId)
+      const gaugeBalance = await getBalance(gaugeContract, account, chainId)
+      return gaugeBalance
+    } catch (error) {
+      console.log(error)
+      return 0
+    }
+  }, [account, chainId, gaugeAddress])
+
+  const { data, isLoading, mutate } = useSWR(['getGaugeBalance', gaugeAddress, chainId, account], getGaugeBalance, {
+    refreshInterval: 0,
+  })
+
+  return { gaugeBalance: data, isLoading, mutateGaugeBalance: mutate }
+}
+
+const onStackLp = async (pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key) => {
+  const weightedPoolContract = {
+    address: pool.address,
+    abi: weightedPoolAbi,
+  }
+  const balance = await getBalance(weightedPoolContract, account, chainId)
+  let isApprovedLp = true
+  const allowanceLp = await readCall(lpContract, 'allowance', [account, pool.gauge.address], chainId)
+  isApprovedLp = fromWei(allowanceLp).gte(balance)
+
+  if (!isApprovedLp) {
+    if (!(await writeTxn(key, approveLpuuid, lpContract, 'approve', [pool.gauge.address, maxUint256]))) {
+      setPending(false)
+      return
+    }
+  }
+  const gaugeContract = getGaugeContract(pool.gauge.address, chainId)
+  const params = [toWei(balance, pool.decimals).toFixed(0)]
+  if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', params))) {
+    setPending(false)
   }
 }
 
@@ -167,7 +224,7 @@ export const useWeightedPool = () => {
 
       startTxn({
         key,
-        title: t('Create Weighted Pool'),
+        title: 'Create Weighted Pool',
         transactions,
       })
 
@@ -246,7 +303,8 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquiditySingleToken = useCallback(
-    async (poolId32, token, amountDeposit, minBPTAmountOut, slippage, amountToWrap, onSuccess) => {
+    async (pool, token, amountDeposit, minBPTAmountOut, slippage, amountToWrap, withStake, onSuccess) => {
+      const poolId32 = pool.poolId
       setPending(true)
       const tokenContract = getERC20Contract(token.address, chainId)
 
@@ -254,6 +312,8 @@ export const useWeightedPool = () => {
       const approveFeeuuid = uuidv4()
       const joinPooluuid = uuidv4()
       const wrapuuid = uuidv4()
+      const stakeuuid = uuidv4()
+      const approveLpuuid = uuidv4()
 
       const allowance = await readCall(
         tokenContract,
@@ -264,9 +324,16 @@ export const useWeightedPool = () => {
 
       const isApprovedFee = fromWei(allowance, token.decimals).gte(amountDeposit)
 
+      const lpContract = {
+        address: pool.address,
+        abi: weightedPoolAbi,
+      }
+
+      setPending(true)
+
       startTxn({
         key,
-        title: t('Add Liquidity'),
+        title: 'Add Liquidity',
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
@@ -289,6 +356,20 @@ export const useWeightedPool = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
+          ...(withStake
+            ? {
+                [approveLpuuid]: {
+                  desc: `${t('Approve')} LP`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+                [stakeuuid]: {
+                  desc: `${t('Stake')} ${pool.symbol} LP`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+              }
+            : {}),
         },
       })
 
@@ -334,6 +415,10 @@ export const useWeightedPool = () => {
         return false
       }
 
+      if (withStake) {
+        await onStackLp(pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key)
+      }
+
       endTxn({
         key,
         final: 'Liquidity Add Successful',
@@ -351,10 +436,20 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquidityAllToken = useCallback(
-    async (poolId32, tokensData, minBPTAmountOut, slippage, amountToWrap, onSuccess) => {
+    async (pool, tokensData, minBPTAmountOut, slippage, amountToWrap, withStake, onSuccess) => {
+      const poolId32 = pool.poolId
       const key = uuidv4()
       const addLiquidityuuid = uuidv4()
       const wrapuuid = uuidv4()
+      const stakeuuid = uuidv4()
+      const approveLpuuid = uuidv4()
+
+      const lpContract = {
+        address: pool.address,
+        abi: weightedPoolAbi,
+      }
+
+      setPending(true)
 
       const transactions = {
         ...(amountToWrap && {
@@ -397,8 +492,25 @@ export const useWeightedPool = () => {
 
       startTxn({
         key,
-        title: t('Add Liquidity'),
-        transactions,
+        title: 'Add Liquidity',
+        transactions: {
+          ...transactions,
+          ...(withStake
+            ? {
+                [approveLpuuid]: {
+                  desc: `${t('Approve')} LP`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+
+                [stakeuuid]: {
+                  desc: `${t('Stake')} ${pool.symbol} LP`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+              }
+            : {}),
+        },
       })
 
       // TODO: cannot wrap in TEST_BSC
@@ -458,6 +570,10 @@ export const useWeightedPool = () => {
         return false
       }
 
+      if (withStake) {
+        await onStackLp(pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key)
+      }
+
       endTxn({
         key,
         final: 'Liquidity Add Successful',
@@ -500,7 +616,7 @@ export const useWeightedPool = () => {
 
       startTxn({
         key,
-        title: t('Remove Liquidity'),
+        title: 'Remove Liquidity',
         transactions: {
           ...(isApprovedFee
             ? {}
@@ -586,7 +702,7 @@ export const useWeightedPool = () => {
 
       startTxn({
         key,
-        title: t('Remove Liquidity'),
+        title: 'Remove Liquidity',
         transactions: {
           ...(isApprovedFee
             ? {}
@@ -793,11 +909,9 @@ export const useWeightedPoolsWithGauge = () => {
   const prices = usePrices()
   let userInfo = []
   if (weightedPools.length > 0 && assets.length > 0) {
-    // const totalWeight = weightedPools.reduce((sum, current) => sum + (current?.gauge?.weight ?? 0), 0)
     userInfo = weightedPools
       .map(weighted => {
-        const { gauge, lpPrice } = weighted
-        const gaugeTvl = lpPrice * gauge.totalSupply
+        const { gauge } = weighted
         const tokens = weighted.tokens.map(token => {
           const tokenDetail = getTokenInfo({ tokenAddress: token.address, assets, customAssets })
           tokenDetail.symbol = tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN'
@@ -809,7 +923,6 @@ export const useWeightedPoolsWithGauge = () => {
           }
         })
         const totalTvl = new BigNumber(weighted.tvlUSD)
-        // const weightPercent = totalWeight > 0 ? (gauge.weight / totalWeight) * 100 : 0
         let bribeUsd = 0
         const poolBribes = gauge.bribes
         let finalBribes = { fee: null, bribe: null }
@@ -852,7 +965,6 @@ export const useWeightedPoolsWithGauge = () => {
             })
           }
         }
-        // const found = (userInfos ?? []).find(item => item.address.toLowerCase() === fusion.address.toLowerCase())
         const user = {
           walletBalance: 0,
           gaugeBalance: 0,
@@ -866,32 +978,11 @@ export const useWeightedPoolsWithGauge = () => {
           totalUsd: 0,
         }
         let extraApr = 0
-        // const extraRewards = null
-        // let extraRewardsInUsd = 0
         const foundExtra = (extraRewardsInfo ?? []).find(ele => ele.pairAddress === weighted.address)
         if (foundExtra) {
-          extraApr = ((foundExtra.rewardRate * 31536000 * prices[foundExtra.doubleRewarderSymbol]) / gaugeTvl) * 100
-          // extraRewards = {
-          //   amount: foundExtra.pendingReward,
-          //   symbol: foundExtra.doubleRewarderSymbol,
-          // }
-          // extraRewardsInUsd = extraRewards.amount * prices[foundExtra.doubleRewarderSymbol]
+          extraApr =
+            ((foundExtra.rewardRate * 31536000 * prices[foundExtra.doubleRewarderSymbol]) / weighted.tvlUSD) * 100
         }
-        // if (found) {
-        //   user = {
-        //     ...found,
-        //     token0claimable: formatUnits(found.token0claimable, token0.decimals),
-        //     token1claimable: formatUnits(found.token1claimable, token1.decimals),
-        //     walletBalance: formatEther(found.walletBalance),
-        //     gaugeBalance: formatEther(found.gaugeBalance),
-        //     totalLp: formatEther(found.totalLp),
-        //     gaugeEarned: formatEther(found.gaugeEarned),
-        //     stakedUsd: fromWei(found.gaugeBalance).times(lpPrice).toNumber(),
-        //     earnedUsd: fromWei(found.gaugeEarned).times(prices.THE).plus(extraRewardsInUsd).toNumber(),
-        //     totalUsd: fromWei(found.totalLp).times(lpPrice).toNumber(),
-        //     extraRewards,
-        //   }
-        // }
         return {
           ...weighted,
           stable: 'false',
@@ -917,9 +1008,56 @@ export const useWeightedPoolsWithGauge = () => {
   return userInfo
 }
 
-export const usePositionData = pool => {
+const getGaugeReward = async (gaugeContract, assets, account, chainId) => {
+  try {
+    const rewardsAmount = await readCall(gaugeContract, 'earnedAll', [account], chainId)
+    const rewardsLength = await readCall(gaugeContract, 'rewardTokensLength', [], chainId)
+    const rewardsAddress = await callMulti(
+      Array(Number(rewardsLength))
+        .fill(0)
+        .map((_, index) => ({
+          ...gaugeContract,
+          functionName: 'rewardTokens',
+          args: [index],
+          chainId,
+        })),
+    )
+
+    // const rewardAddressToLowerCase = (rewardsAddress || []).map(item => item.toLowerCase())
+
+    const rewardsAsset = rewardsAddress
+      .map(reward => assets.find(asset => asset.address === reward.toLowerCase()))
+      .filter(Boolean)
+
+    let total = new BigNumber(0)
+    const finalReward = rewardsAsset.map((reward, index) => {
+      const amount = fromWei(rewardsAmount[index], reward.decimals)
+      total = total.plus(amount.times(reward.price))
+      return {
+        ...reward,
+        fee: amount,
+      }
+    })
+
+    return {
+      total,
+      tokenList: finalReward,
+    }
+  } catch (error) {
+    console.error(error)
+    return {
+      total: new BigNumber(0),
+      tokenList: [],
+    }
+  }
+}
+
+export const usePositionData = (pool, isStaked) => {
   const { chainId, account } = useWallet()
+  const assets = useAssets()
   const poolContract = getWeightedPoolContract(pool?.address, chainId)
+  const gaugeContract = getWeightedGaugeContract(pool?.gauge?.address, chainId)
+  const contractGetBalance = isStaked ? gaugeContract : poolContract
   const vaultContract = getWeightedPoolVaultContract(chainId)
   const { data, refetch: mutateTokens } = useReadContracts({
     contracts: [
@@ -932,7 +1070,7 @@ export const usePositionData = pool => {
         functionName: 'totalSupply',
       },
       {
-        ...poolContract,
+        ...contractGetBalance,
         functionName: 'balanceOf',
         args: [account],
       },
@@ -992,11 +1130,11 @@ export const usePositionData = pool => {
     }
   }, [pool?.lpPrice, lpTokenBalance, lpTokenTotalSupply, tokenAddresses, mappedToken, tokenAmounts])
 
-  const claimableFee = useMemo(() => {
-    let total = 0
+  const claimableFeeUnStake = useMemo(() => {
+    let total = new BigNumber(0)
     const tokenList = tokenAddresses.map((address, index) => {
       const fee = new BigNumber(fromWei(expectedFees[index], mappedToken[address].decimals))
-      total += +fee.times(mappedToken[address].price)
+      total = total.plus(fee.times(mappedToken[address].price))
 
       return {
         address,
@@ -1004,30 +1142,27 @@ export const usePositionData = pool => {
         ...mappedToken[address],
       }
     })
-
     return {
       total,
       tokenList,
     }
   }, [expectedFees, mappedToken, tokenAddresses])
 
+  const { data: claimableFeeStake, mutate: mutateStake } = useSWR(
+    pool.gauge.address !== zeroAddress && ['getGaugeReward', gaugeContract, assets, account, chainId, isStaked],
+    () => getGaugeReward(gaugeContract, assets, account, chainId),
+    {
+      refreshInterval: 60000,
+    },
+  )
+
   const mutatePosition = useCallback(() => {
     mutateTokens()
     mutateFees()
-  }, [mutateFees, mutateTokens])
+    mutateStake()
+  }, [mutateFees, mutateTokens, mutateStake])
 
-  return { claimableFee, depositValue, mutatePosition }
-}
-
-const getBalance = async (contract, account, chainId) => {
-  try {
-    const balance = await readCall(contract, 'balanceOf', [account], chainId)
-
-    return fromWei(balance)
-  } catch (error) {
-    console.error('Failed to fetch balance or decimals:', error)
-    return 0
-  }
+  return { claimableFee: isStaked ? claimableFeeStake : claimableFeeUnStake, depositValue, mutatePosition }
 }
 
 export const useWeightedPositionList = () => {
@@ -1038,16 +1173,35 @@ export const useWeightedPositionList = () => {
     const results = await Promise.all(
       weightedPools.map(async pool => {
         const weightedPoolContract = getWeightedPoolContract(pool.address, chainId)
-        const balance = await getBalance(weightedPoolContract, account, chainId)
-        return { pool, hasPosition: !isInvalidAmount(balance) }
+        let gaugeBalance
+        if (pool.gauge.address !== zeroAddress) {
+          const gaugeContract = getWeightedGaugeContract(pool.gauge.address, chainId)
+          gaugeBalance = await getBalance(gaugeContract, account, chainId)
+        }
+        const poolBalance = await getBalance(weightedPoolContract, account, chainId)
+        return {
+          pool,
+          hasPositionNotStaked: !isInvalidAmount(poolBalance),
+          hasPositionStaked: !isInvalidAmount(gaugeBalance),
+        }
       }),
     )
-    return results.filter(result => result.hasPosition).map(result => result.pool)
+    return results
+      .filter(result => result.hasPositionNotStaked || result.hasPositionStaked)
+      .map(result => ({
+        ...result.pool,
+        notStaked: result.hasPositionNotStaked,
+        staked: result.hasPositionStaked,
+      }))
   }, [account, chainId, weightedPools])
 
-  const { data } = useSWR(['getWeightedHasPositions'], () => getWeightedHasPositions(), {
-    refreshInterval: 0,
-  })
+  const { data } = useSWR(
+    ['getWeightedHasPositions', weightedPools.length, account, chainId],
+    () => getWeightedHasPositions(),
+    {
+      refreshInterval: 60000,
+    },
+  )
 
   return data || []
 }
@@ -1058,41 +1212,230 @@ export const useClaimWeightedPoolFees = () => {
   const { startTxn, endTxn, writeTxn } = useTxn()
   const [pending, setPending] = useState(false)
 
-  const onClaimFees = async (pool, onSuccess) => {
-    try {
-      const key = uuidv4()
-      const claimuuid = uuidv4()
+  const onClaimFees = useCallback(
+    async (pool, onSuccess) => {
+      try {
+        const key = uuidv4()
+        const claimuuid = uuidv4()
 
-      const poolContract = getWeightedPoolContract(pool?.address, chainId)
-      const feesContractAddress = await readCall(poolContract, 'feesContract', [], chainId)
-      const feesContract = getWeightedPoolFeesContract(feesContractAddress, chainId)
-      setPending(true)
-      startTxn({
-        key,
-        title: t('Claim Fees'),
-        transactions: {
-          [claimuuid]: { desc: t('Claim Fees'), status: TXN_STATUS.START, hash: null },
-        },
-      })
-
-      const result = await writeTxn(key, claimuuid, feesContract, 'claimFees', [])
-
-      if (result) {
-        endTxn({
+        const poolContract = getWeightedPoolContract(pool?.address, chainId)
+        const feesContractAddress = await readCall(poolContract, 'feesContract', [], chainId)
+        const feesContract = getWeightedPoolFeesContract(feesContractAddress, chainId)
+        setPending(true)
+        startTxn({
           key,
-          final: 'Claim Successful',
+          title: 'Claim Fees',
+          transactions: {
+            [claimuuid]: { desc: t('Claim Fees'), status: TXN_STATUS.START, hash: null },
+          },
         })
-      }
 
-      if (typeof onSuccess === 'function') {
-        onSuccess()
+        const result = await writeTxn(key, claimuuid, feesContract, 'claimFees', [])
+
+        if (result) {
+          endTxn({
+            key,
+            final: 'Claim Successful',
+          })
+        }
+
+        if (typeof onSuccess === 'function') {
+          onSuccess()
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
       }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setPending(false)
-    }
-  }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
 
   return { onClaimFees, pending }
+}
+
+export const useGaugeStakeWeighted = () => {
+  const [pending, setPending] = useState(false)
+  const { account, chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onGaugeStake = useCallback(
+    async (pool, amount, callback) => {
+      const key = uuidv4()
+      const approveuuid = uuidv4()
+      const stakeuuid = uuidv4()
+      try {
+        const lpContract = getERC20Contract(pool.address, chainId)
+
+        setPending(true)
+
+        const allowance = await readCall(lpContract, 'allowance', [account, pool.gauge.address], chainId)
+        const isApproved = fromWei(allowance).gte(amount)
+
+        startTxn({
+          key,
+          title: 'Stake',
+          desc: `${t('Stake')} LP`,
+          transactions: {
+            ...(!isApproved && {
+              [approveuuid]: {
+                desc: `${t('Approve')} LP`,
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
+            [stakeuuid]: {
+              desc: `${t('Stake')} ${pool.symbol} LP`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+        if (!isApproved) {
+          if (!(await writeTxn(key, approveuuid, lpContract, 'approve', [pool.gauge.address, maxUint256]))) {
+            setPending(false)
+            return
+          }
+        }
+        const gaugeContract = getGaugeContract(pool.gauge.address, chainId)
+        const params = [toWei(amount, pool.decimals).toFixed(0)]
+        if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', params))) {
+          setPending(false)
+          return
+        }
+
+        endTxn({
+          key,
+          final: 'Stake Successful',
+        })
+        setPending(false)
+        callback()
+      } catch (error) {
+        console.log(error)
+        return
+      } finally {
+        setPending(false)
+      }
+    },
+    [account, chainId, startTxn, writeTxn, endTxn, t],
+  )
+
+  return { onGaugeStake, pending }
+}
+
+export const useGaugeUnstakeWeighted = balance => {
+  const [pending, setPending] = useState(false)
+  const { account, chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onGaugeUnstake = useCallback(
+    async (pool, amount, callback) => {
+      const key = uuidv4()
+      const unstakeuuid = uuidv4()
+      const approveuuid = uuidv4()
+      try {
+        const gaugeContract = getWeightedGaugeContract(pool.gauge.address, chainId)
+        const rewardsAmount = await readCall(gaugeContract, 'earnedAll', [account], chainId)
+        const shouldHarvest = (rewardsAmount || []).some(item => !isInvalidAmount(item)) && balance.gte(amount)
+
+        const lpContract = getERC20Contract(pool.address, chainId)
+        const allowance = await readCall(lpContract, 'allowance', [account, pool.gauge.address], chainId)
+        const isApproved = fromWei(allowance).gte(amount)
+
+        setPending(true)
+
+        startTxn({
+          key,
+          title: shouldHarvest ? t('Unstake and Harvest') : `${t('Unstake')} LP`,
+          transactions: {
+            ...(!isApproved && {
+              [approveuuid]: {
+                desc: `${t('Approve')} LP`,
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
+            [unstakeuuid]: {
+              desc: shouldHarvest ? t('Unstake and Harvest') : `${t('Unstake')} LP`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
+        if (!isApproved) {
+          if (!(await writeTxn(key, approveuuid, lpContract, 'approve', [pool.gauge.address, maxUint256]))) {
+            setPending(false)
+            return
+          }
+        }
+        const params = shouldHarvest ? [] : [toWei(amount, pool.decimals).toFixed(0)]
+        const func = shouldHarvest ? 'withdrawAllAndHarvest' : 'withdraw'
+
+        if (!(await writeTxn(key, unstakeuuid, gaugeContract, func, params))) {
+          setPending(false)
+          return
+        }
+
+        endTxn({
+          key,
+          final: 'Unstake Successful',
+        })
+        setPending(false)
+        callback()
+      } catch (error) {
+        console.log(error)
+        return
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId, account, balance, startTxn, t, writeTxn, endTxn],
+  )
+
+  return { onGaugeUnstake, pending }
+}
+
+export const useGaugeHarvestWeighted = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const onGaugeHarvest = useCallback(
+    async pair => {
+      const key = uuidv4()
+      const harvestuuid = uuidv4()
+
+      setPending(true)
+
+      startTxn({
+        key,
+        title: 'Harvest Rewards',
+        transactions: {
+          [harvestuuid]: {
+            desc: t('Harvest Rewards'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+      const gaugeContract = getWeightedGaugeContract(pair.gauge.address, chainId)
+      if (!(await writeTxn(key, harvestuuid, gaugeContract, 'getReward', []))) {
+        setPending(false)
+        return
+      }
+
+      endTxn({
+        key,
+        final: 'Harvest Successful',
+      })
+      setPending(false)
+    },
+    [chainId, startTxn, writeTxn, endTxn, t],
+  )
+
+  return { onGaugeHarvest, pending }
 }

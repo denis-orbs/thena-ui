@@ -14,7 +14,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
+import { cn, formatAmount, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 import SettingSlippageModal from './SettingSlippageModal'
@@ -24,7 +24,7 @@ const REMOVE_TYPE = {
   ALL: 'all',
 }
 
-function RemoveWeighted({ pool, onCancel }) {
+function RemoveWeighted({ pool, onCancel, showTitle = true }) {
   const t = useTranslations()
 
   const {
@@ -165,7 +165,7 @@ function RemoveWeighted({ pool, onCancel }) {
     <>
       <ModalBody>
         <div className='flex flex-col gap-6'>
-          <div className='flex flex-col gap-3'>
+          <div className={cn('flex flex-col gap-3', !showTitle ? 'hidden' : '')}>
             <TextHeading>{pool?.symbol}</TextHeading>
             <div className='flex flex-row justify-between rounded-lg bg-neutral-800 p-4'>
               <div className='flex items-center gap-2'>
@@ -197,7 +197,7 @@ function RemoveWeighted({ pool, onCancel }) {
             <div className='flex justify-end'>
               <SettingSlippageModal slippage={slippagge} updateSlippage={setSlippage} />
             </div>
-            <InputManyToken pair={pool} amount={amount} onAmountChange={handleAmountChange} title={t('Amount')} />
+            <InputManyToken pair={pool} amount={amount} onAmountChange={handleAmountChange} title='Amount' />
           </div>
           <div className='relative flex w-full gap-2'>
             <div className='relative flex w-full flex-col gap-2'>
@@ -218,7 +218,7 @@ function RemoveWeighted({ pool, onCancel }) {
                   <TextHeading className='mb-4'>{t('You Will Receive')}</TextHeading>
                   <div className='mb-4 flex flex-col gap-3'>
                     {(pool.tokens || []).map((token, index) => (
-                      <div className='flex flex-row justify-between'>
+                      <div className='flex flex-row justify-between' key={token.address}>
                         <div className='flex gap-1'>
                           <CircleImage alt={token.symbol} src={token?.logoURI || UNKNOWN_LOGO} className='h-5 w-5' />
                           <Paragraph>{token.symbol}</Paragraph>

@@ -175,9 +175,9 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
               </span>
             </div>
           )}
-          {(tokensAndWeights || []).map(item => (
+          {(tokensAndWeights || []).map((item, index) => (
             <InputLiquidityToken
-              key={item?.token?.address}
+              key={`${item?.token?.address}_${index}`}
               asset={item.token}
               weight={`(${item.weight}%)`}
               setTokenAndWeights={value => handleAmountChange(value, item.token)}

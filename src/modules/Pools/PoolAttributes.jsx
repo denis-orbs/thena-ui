@@ -6,6 +6,7 @@ import { useReadContract } from 'wagmi'
 
 import { SCAN_URLS } from '@/constant'
 import { basePluginAbi } from '@/constant/abi'
+import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
@@ -105,7 +106,7 @@ export function PoolAttributesCL({ strategy, pool }) {
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Strategy Type')}:</div>
           <Link target='_blank' href={linkDocsStrategy[1]} className='col-span-5 flex items-center gap-1'>
-            <span>{strategy.title === 'ICHI' ? 'Single deposit' : 'TODO'}</span>
+            <span>{strategy.title === 'ICHI' ? 'Single deposit' : 'Manual'}</span>
             <div className='item-center flex cursor-pointer gap-1'>
               <LinkExternalIcon className='inline-block h-4 w-4' />
             </div>
@@ -122,8 +123,15 @@ export function PoolAttributesCL({ strategy, pool }) {
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Pool Deployer')}:</div>
           <div className='col-span-5 text-neutral-50'>
-            <div onClick={() => goScan(networkId, strategy?.owner)} className='item-center flex cursor-pointer gap-1'>
-              <span>TODO</span>
+            <div
+              onClick={
+                () =>
+                  goScan(networkId, strategy.title === 'CL_Farming' ? zeroAddress : Contracts.pluginFactory[networkId])
+                // eslint-disable-next-line react/jsx-curly-newline
+              }
+              className='item-center flex cursor-pointer gap-1'
+            >
+              <span>{strategy.title === 'CL_Farming' ? zeroAddress : Contracts.pluginFactory[networkId]}</span>
               <LinkExternalIcon className='inline-block h-4 w-4' />
             </div>
           </div>
@@ -157,10 +165,10 @@ export function PoolAttributesCL({ strategy, pool }) {
         )}
 
         {/* Pool Type */}
-        <div className='grid grid-cols-7'>
+        {/* <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Pool Type')}:</div>
           <div className='col-span-5 text-neutral-50'>TODO</div>
-        </div>
+        </div> */}
 
         {/* Swap fees */}
         <div className='grid grid-cols-7'>
@@ -190,11 +198,11 @@ export function PoolAttributesCL({ strategy, pool }) {
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Pool Access Control Roles')}:</div>
           <div className='col-span-5 text-neutral-50'>
-            <ul className='flex gap-1'>
+            <ul className='flex flex-wrap gap-1'>
               <li>Pool Administrator:</li>
               {poolAdministrators.map((addr, index) => (
-                <div className='flex'>
-                  <li key={addr}>
+                <div key={addr} className='flex flex-wrap'>
+                  <li>
                     <Link
                       className='flex items-center gap-1'
                       href={`${SCAN_URLS[networkId]}/address/${addr}`}
@@ -209,11 +217,11 @@ export function PoolAttributesCL({ strategy, pool }) {
               ))}
             </ul>
 
-            <ul className='flex gap-1'>
+            <ul className='flex flex-wrap gap-1'>
               <li>Plugin Administrator:</li>
               {pluginAdministrators.map((addr, index) => (
-                <div className='flex'>
-                  <li key={addr}>
+                <div key={addr} className='flex'>
+                  <li>
                     <Link
                       className='flex items-center gap-1'
                       href={`${SCAN_URLS[networkId]}/address/${addr}`}
@@ -241,10 +249,10 @@ export function PoolAttributesCL({ strategy, pool }) {
         )}
 
         {/* LP token price */}
-        <div className='grid grid-cols-7'>
+        {/* <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
           <div className='col-span-5 text-neutral-50'>${formatAmount(strategy?.lpPrice || 0)}</div>
-        </div>
+        </div> */}
       </div>
     </div>
   )
@@ -345,7 +353,7 @@ export function NormalPoolAttributes({ pool }) {
 
         {/* Pool address */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
+          <div className='col-span-2 text-neutral-300'>{t('Pool Address')}:</div>
           <div className='col-span-5 text-neutral-50'>
             <div onClick={() => goScan(networkId, pool?.address)} className='item-center flex cursor-pointer gap-1'>
               <span>{formatAddress(pool?.address)}</span>

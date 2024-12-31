@@ -7,7 +7,7 @@ import useSWR from 'swr'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton } from '@/components/buttons/Button'
+import { PrimaryButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Selector from '@/components/selector'
 import Tabs from '@/components/tabs'
@@ -264,14 +264,8 @@ export default function ChooseStrategy({
               <TextHeading>Manual ({strategiesManual?.title})</TextHeading>
               <div className='mt-1 flex gap-2'>
                 <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{pool?.apr ?? 0}</Paragraph>
-                </div>
-                <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>
-                    ${formatAmount(Number(pool?.tvlUSD ?? 0) - Number(pool?.tvlFarming ?? 0))}
-                  </Paragraph>
+                  <Paragraph className='text-sm'>${formatAmount(pool.tvlPoolFee || 0)}</Paragraph>
                 </div>
               </div>
             </div>
@@ -290,13 +284,6 @@ export default function ChooseStrategy({
 
   const periods = useMemo(
     () => [
-      // {
-      //   label: '1H',
-      //   active: timeWindow === PairDataTimeWindow.HOUR,
-      //   onClickHandler: () => {
-      //     setTimeWindow(PairDataTimeWindow.HOUR)
-      //   },
-      // },
       {
         label: '24H',
         active: timeWindow === PairDataTimeWindow.DAY,
@@ -536,15 +523,14 @@ export default function ChooseStrategy({
       </div>
 
       <div className={cn('mt-auto inline-flex w-full flex-col pt-5', isModal && 'px-3 pt-3 lg:px-6')}>
-        <EmphasisButton
+        <PrimaryButton
           disabled={(!strategy && isAutomatic) || (!fusion.preset && !isAutomatic)}
           onClick={() => {
             setCurrentStep(2)
           }}
-          className={strategy || !isAutomatic || !fusion.preset ? 'bg-primary-600 hover:bg-primary-700' : ''}
         >
           {t('Continue')}
-        </EmphasisButton>
+        </PrimaryButton>
       </div>
 
       <CustomTooltip id='management-tooltip' className='max-w-[320px]'>

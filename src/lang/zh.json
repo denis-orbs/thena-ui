@@ -1297,6 +1297,7 @@
   "My Rewards": "My Rewards",
   "Vote Time": "Vote Time",
   "Pool Info": "Pool Info",
+  "Select Pool Strategy": "Select Pool Strategy",
   "Total Weight": "Total Weight",
   "Maxed": "Maxed",
   "Seeking better price": "Seeking better price",
@@ -1308,5 +1309,14 @@
   "Strategy Type": "Strategy Type",
   "Pool Plugin": "Pool Plugin",
   "Creation date": "Creation date",
-  "Hot Pools": "Hot Pools"
+  "Hot Pools": "Hot Pools",
+  "Pool address": "Pool address",
+  "Total Deposit": "Total Deposit",
+  "You have to select the pool strategy first to see it's [symbol]": "You have to select the pool strategy first to see it's {text}",
+  "No Voting History Found": "No Voting History Found",
+  "No Voting History to display": "No Voting History to display",
+  "Pool price tick at": "Pool price tick at {value}",
+  "Low tick at": "Low tick at {value}",
+  "Pool Deployer": "Pool Deployer",
+  "Success": "Success"
 }
