@@ -1029,10 +1029,10 @@ export const usePositionData = (pool, isStaked) => {
   }, [pool?.lpPrice, lpTokenBalance, lpTokenTotalSupply, tokenAddresses, mappedToken, tokenAmounts])
 
   const claimableFee = useMemo(() => {
-    let total = 0
+    const total = new BigNumber(0)
     const tokenList = tokenAddresses.map((address, index) => {
       const fee = new BigNumber(fromWei(expectedFees[index], mappedToken[address].decimals))
-      total += +fee.times(mappedToken[address].price)
+      total.plus(fee.times(mappedToken[address].price))
 
       return {
         address,
@@ -1098,41 +1098,44 @@ export const useClaimWeightedPoolFees = () => {
   const { startTxn, endTxn, writeTxn } = useTxn()
   const [pending, setPending] = useState(false)
 
-  const onClaimFees = async (pool, onSuccess) => {
-    try {
-      const key = uuidv4()
-      const claimuuid = uuidv4()
+  const onClaimFees = useCallback(
+    () => async (pool, onSuccess) => {
+      try {
+        const key = uuidv4()
+        const claimuuid = uuidv4()
 
-      const poolContract = getWeightedPoolContract(pool?.address, chainId)
-      const feesContractAddress = await readCall(poolContract, 'feesContract', [], chainId)
-      const feesContract = getWeightedPoolFeesContract(feesContractAddress, chainId)
-      setPending(true)
-      startTxn({
-        key,
-        title: t('Claim Fees'),
-        transactions: {
-          [claimuuid]: { desc: t('Claim Fees'), status: TXN_STATUS.START, hash: null },
-        },
-      })
-
-      const result = await writeTxn(key, claimuuid, feesContract, 'claimFees', [])
-
-      if (result) {
-        endTxn({
+        const poolContract = getWeightedPoolContract(pool?.address, chainId)
+        const feesContractAddress = await readCall(poolContract, 'feesContract', [], chainId)
+        const feesContract = getWeightedPoolFeesContract(feesContractAddress, chainId)
+        setPending(true)
+        startTxn({
           key,
-          final: 'Claim Successful',
+          title: t('Claim Fees'),
+          transactions: {
+            [claimuuid]: { desc: t('Claim Fees'), status: TXN_STATUS.START, hash: null },
+          },
         })
-      }
 
-      if (typeof onSuccess === 'function') {
-        onSuccess()
+        const result = await writeTxn(key, claimuuid, feesContract, 'claimFees', [])
+
+        if (result) {
+          endTxn({
+            key,
+            final: 'Claim Successful',
+          })
+        }
+
+        if (typeof onSuccess === 'function') {
+          onSuccess()
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
       }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setPending(false)
-    }
-  }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
 
   return { onClaimFees, pending }
 }

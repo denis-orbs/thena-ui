@@ -353,7 +353,7 @@ export function NormalPoolAttributes({ pool }) {
 
         {/* Pool address */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Pool address')}:</div>
+          <div className='col-span-2 text-neutral-300'>{t('Pool Address')}:</div>
           <div className='col-span-5 text-neutral-50'>
             <div onClick={() => goScan(networkId, pool?.address)} className='item-center flex cursor-pointer gap-1'>
               <span>{formatAddress(pool?.address)}</span>

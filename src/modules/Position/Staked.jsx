@@ -7,7 +7,7 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useGuageHarvset, useGuageUnstake } from '@/hooks/useGauge'
+import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { formatAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
@@ -18,7 +18,7 @@ export default function Staked({ pool }) {
   const [popup, setPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
-  const { onGaugeHarvest, pending } = useGuageHarvset()
+  const { onGaugeHarvest, pending } = useGaugeHarvest()
   const t = useTranslations()
 
   const token0Percent = useMemo(() => {

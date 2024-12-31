@@ -8,58 +8,55 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import CustomTooltip from '@/components/tooltip'
 import { UNKNOWN_LOGO } from '@/constant'
-import { useGuageHarvset, useGuageUnstake } from '@/hooks/useGauge'
-import { useClaimWeightedPoolFees, useGaugeBalance, usePositionData } from '@/hooks/weightedPool/useWeigtedPool'
+import { useGaugeHarvest } from '@/hooks/useGauge'
+import { useClaimWeightedPoolFees, usePositionData } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
-import GaugeManageModal from './GaugeManageModal'
+import ManageWeightedPositionModal from './ManageWeightedPositionModal'
 
 export function WeightedPoolPosition({ pool, isStake }) {
   const t = useTranslations()
   const [isOpenRemove, setIsOpenRemove] = useState(false)
+  const [managePopup, setManagePopup] = useState(false)
   const [isOpenAdd, setIsOpenAdd] = useState(false)
-  const [popupUnstake, setPopupUnstake] = useState(false)
-  const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
+  // const [popupUnstake, setPopupUnstake] = useState(false)
+  // const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
 
   const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
 
   const { claimableFee, depositValue, mutatePosition } = usePositionData(pool, isStake)
 
-  const { onGaugeHarvest, pending: pendingHarvset } = useGuageHarvset()
-
-  const { gaugeBalance } = useGaugeBalance(pool.gauge.address)
-
-  console.log({ pendingHarvset })
+  const { onGaugeHarvest, pending: pendingHarvest } = useGaugeHarvest()
 
   return (
     <div className='flex h-full flex-col justify-between rounded-xl bg-neutral-900 p-4'>
       <div className='flex-1'>
-        <div className='relative flex items-center space-x-4'>
-          <ThreeIconGroup
-            className='-space-x-2'
-            classNames={{
-              image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
-            }}
-            logo1={pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-            logo2={pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-            extendNumber={(pool?.tokens?.length || 2) - 2}
-          />
-          <div className='flex items-center gap-2 lg:max-w-[90%]'>
-            <div className='flex w-full flex-wrap items-center gap-1 '>
-              {(pool?.tokens || []).map(token => (
-                <div className='flex items-center gap-1' key={token?.address}>
-                  <span className='text-[16px] font-medium leading-5'>{token?.symbol}</span>
-                  <span className='text-sm font-medium leading-5 text-neutral-300 '>
-                    {formatAmount(token?.weight)}%
-                  </span>
-                </div>
-              ))}
+        <div className='flex justify-between space-x-2'>
+          <div className='flex'>
+            <ThreeIconGroup
+              className='-space-x-2'
+              classNames={{
+                image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
+              }}
+              logo1={pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
+              logo2={pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
+              extendNumber={(pool?.tokens?.length || 2) - 2}
+            />
+            <div className='flex flex-wrap items-center gap-2 lg:max-w-[90%]'>
+              <div className='tems-center flex w-full flex-wrap gap-1'>
+                {(pool?.tokens || []).map(token => (
+                  <div className='flex items-center gap-1' key={token?.address}>
+                    <span className='text-[16px] font-medium leading-5'>{token?.symbol}</span>
+                    <span className='text-sm font-medium leading-5 text-neutral-300 '>
+                      {formatAmount(token?.weight)}%
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          <div className='absolute right-1 top-1'>
-            {isStake ? <GreenBadge>{t('Staked')}</GreenBadge> : <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>}
-          </div>
+          <div>{isStake ? <GreenBadge>{t('Staked')}</GreenBadge> : <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>}</div>
         </div>
 
         <div className='mt-4 flex flex-col gap-y-4'>
@@ -105,11 +102,11 @@ export function WeightedPoolPosition({ pool, isStake }) {
         </CustomTooltip>
       </div>
       {isStake ? (
-        <div className='mt-auto flex w-full gap-3'>
-          <TextButton className='w-full' onClick={() => setPopupUnstake(true)}>
+        <div className='mt-4 flex w-full gap-3'>
+          <TextButton className='w-full' onClick={() => {}}>
             {t('Unstake')}
           </TextButton>
-          <OutlinedButton className='w-full' onClick={() => onGaugeHarvest(pool)}>
+          <OutlinedButton className='w-full' disabled={pendingHarvest} onClick={() => onGaugeHarvest(pool)}>
             {t('Harvest')}
           </OutlinedButton>
           <EmphasisButton className='w-full' onClick={() => setIsOpenAdd(true)}>
@@ -118,39 +115,28 @@ export function WeightedPoolPosition({ pool, isStake }) {
         </div>
       ) : (
         <div className='mt-4 flex !max-h-[46px] w-full flex-2 gap-3'>
-          <TextButton
-            className='h-11 w-full'
+          <TextButton className='h-11 w-full'>{t('Stake')}</TextButton>
+
+          <OutlinedButton
             disabled={pendingClaimFees || isInvalidAmount(claimableFee.total)}
             onClick={() => {
               onClaimFees(pool, () => {
                 mutatePosition()
               })
             }}
+            className='h-11 w-full'
           >
-            {t('Stake')}
-          </TextButton>
-
-          <OutlinedButton onClick={() => setIsOpenRemove(true)} className='h-11 w-full'>
             {t('Claim')}
           </OutlinedButton>
 
-          <EmphasisButton className='h-11 w-full' onClick={() => setIsOpenAdd(true)}>
+          <EmphasisButton className='h-11 w-full' onClick={() => setManagePopup(true)}>
             {t('Manage')}
           </EmphasisButton>
         </div>
       )}
       <RemoveWeightedModal isOpen={isOpenRemove} pool={pool} setIsOpen={setIsOpenRemove} />
       <AddLiquidityWeightedModal isOpen={isOpenAdd} pool={pool} setIsOpen={setIsOpenAdd} isStake={isStake} />
-      <GaugeManageModal
-        title='Unstake LP'
-        pair={pool}
-        balance={gaugeBalance}
-        label='Unstake'
-        popup={popupUnstake}
-        setPopup={setPopupUnstake}
-        onGaugeManage={onGaugeUnstake}
-        pending={unstakePending}
-      />
+      <ManageWeightedPositionModal popup={managePopup} setPopup={setManagePopup} pool={pool} />
     </div>
   )
 }

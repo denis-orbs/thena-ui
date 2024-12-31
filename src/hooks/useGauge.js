@@ -118,7 +118,7 @@ export const useGuageUnstake = () => {
   return { onGaugeUnstake, pending }
 }
 
-export const useGuageHarvset = () => {
+export const useGaugeHarvest = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
