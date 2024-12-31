@@ -224,59 +224,63 @@ function AddLiquidityWeightedPool({
     return final
   }, [amountDeposit, depositType, tokenDeposit, tokensData])
 
-  const onAddLiquidity = useCallback(async () => {
-    if (depositType === DEPOSIT_TYPE.SINGLE) {
-      await onAddLiquiditySingleToken(
-        pool.poolId,
-        tokenDeposit,
-        amountDeposit,
-        minBPTAmountOut,
-        slippage,
-        amountToWrap,
-        () => {
+  const onAddLiquidity = useCallback(
+    async withStake => {
+      if (depositType === DEPOSIT_TYPE.SINGLE) {
+        await onAddLiquiditySingleToken(
+          pool,
+          tokenDeposit,
+          amountDeposit,
+          minBPTAmountOut,
+          slippage,
+          amountToWrap,
+          withStake,
+          () => {
+            setIsSuccess(true)
+            setAmountDeposit('')
+            mutatePoolBalance()
+            if (isModal) {
+              setIsOpen(false)
+            }
+            mutatePosition()
+          },
+        )
+      } else {
+        await onAddLiquidityAllToken(pool, tokensData, minBPTAmountOut, slippage, amountToWrap, withStake, () => {
           setIsSuccess(true)
-          setAmountDeposit('')
+
+          setTokensData(prev =>
+            (prev || []).map(item => ({
+              ...item,
+              amountDeposit: '',
+            })),
+          )
+
           mutatePoolBalance()
           if (isModal) {
             setIsOpen(false)
           }
           mutatePosition()
-        },
-      )
-    } else {
-      await onAddLiquidityAllToken(pool.poolId, tokensData, minBPTAmountOut, slippage, amountToWrap, () => {
-        setIsSuccess(true)
-
-        setTokensData(prev =>
-          (prev || []).map(item => ({
-            ...item,
-            amountDeposit: '',
-          })),
-        )
-
-        mutatePoolBalance()
-        if (isModal) {
-          setIsOpen(false)
-        }
-        mutatePosition()
-      })
-    }
-  }, [
-    amountDeposit,
-    amountToWrap,
-    depositType,
-    isModal,
-    minBPTAmountOut,
-    mutatePoolBalance,
-    mutatePosition,
-    onAddLiquidityAllToken,
-    onAddLiquiditySingleToken,
-    pool.poolId,
-    setIsOpen,
-    slippage,
-    tokenDeposit,
-    tokensData,
-  ])
+        })
+      }
+    },
+    [
+      amountDeposit,
+      amountToWrap,
+      depositType,
+      isModal,
+      minBPTAmountOut,
+      mutatePoolBalance,
+      mutatePosition,
+      onAddLiquidityAllToken,
+      onAddLiquiditySingleToken,
+      pool,
+      setIsOpen,
+      slippage,
+      tokenDeposit,
+      tokensData,
+    ],
+  )
 
   const isEnteredAmount = useMemo(() => {
     if (depositType === DEPOSIT_TYPE.SINGLE) {
@@ -396,10 +400,10 @@ function AddLiquidityWeightedPool({
             <Paragraph>${formatAmount(totalDeposit)}</Paragraph>
           </div>
           <div className='flex justify-between gap-4'>
-            <SecondaryButton disabled={isDisable} onClick={onAddLiquidity} className='w-1/2'>
+            <SecondaryButton disabled={isDisable} onClick={() => onAddLiquidity(false)} className='w-1/2'>
               {t('Add Liquidity')}
             </SecondaryButton>
-            <PrimaryButton disabled={isDisable} onClick={() => {}} className='w-1/2'>
+            <PrimaryButton disabled={isDisable} onClick={() => onAddLiquidity(true)} className='w-1/2'>
               {t('Add Liquidity & Stake')}
             </PrimaryButton>
           </div>

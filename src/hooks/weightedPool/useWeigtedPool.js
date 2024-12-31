@@ -7,7 +7,7 @@ import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex, zeroAddres
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { PAIR_TYPES, TXN_STATUS, ZERO_ADDRESS } from '@/constant'
-import { weightedPoolFactoryAbi, weightedPoolFeesAbi } from '@/constant/abi'
+import { weightedPoolAbi, weightedPoolFactoryAbi, weightedPoolFeesAbi } from '@/constant/abi'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets, useMutateAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
@@ -118,6 +118,29 @@ export const useGaugeBalance = gaugeAddress => {
   })
 
   return { gaugeBalance: data, isLoading, mutateGaugeBalance: mutate }
+}
+
+const onStackLp = async (pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key) => {
+  const weightedPoolContract = {
+    address: pool.address,
+    abi: weightedPoolAbi,
+  }
+  const balance = await getBalance(weightedPoolContract, account, chainId)
+  let isApprovedLp = true
+  const allowanceLp = await readCall(lpContract, 'allowance', [account, pool.gauge.address], chainId)
+  isApprovedLp = fromWei(allowanceLp).gte(balance)
+
+  if (!isApprovedLp) {
+    if (!(await writeTxn(key, approveLpuuid, lpContract, 'approve', [pool.gauge.address, maxUint256]))) {
+      setPending(false)
+      return
+    }
+  }
+  const gaugeContract = getGaugeContract(pool.gauge.address, chainId)
+  const params = [toWei(balance, pool.decimals).toFixed(0)]
+  if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', params))) {
+    setPending(false)
+  }
 }
 
 export const useWeightedPool = () => {
@@ -280,7 +303,8 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquiditySingleToken = useCallback(
-    async (poolId32, token, amountDeposit, minBPTAmountOut, slippage, amountToWrap, onSuccess) => {
+    async (pool, token, amountDeposit, minBPTAmountOut, slippage, amountToWrap, withStake, onSuccess) => {
+      const poolId32 = pool.poolId
       setPending(true)
       const tokenContract = getERC20Contract(token.address, chainId)
 
@@ -288,6 +312,8 @@ export const useWeightedPool = () => {
       const approveFeeuuid = uuidv4()
       const joinPooluuid = uuidv4()
       const wrapuuid = uuidv4()
+      const stakeuuid = uuidv4()
+      const approveLpuuid = uuidv4()
 
       const allowance = await readCall(
         tokenContract,
@@ -297,6 +323,13 @@ export const useWeightedPool = () => {
       )
 
       const isApprovedFee = fromWei(allowance, token.decimals).gte(amountDeposit)
+
+      const lpContract = {
+        address: pool.address,
+        abi: weightedPoolAbi,
+      }
+
+      setPending(true)
 
       startTxn({
         key,
@@ -323,6 +356,20 @@ export const useWeightedPool = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
+          ...(withStake
+            ? {
+                [approveLpuuid]: {
+                  desc: `${t('Approve')} LP`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+                [stakeuuid]: {
+                  desc: `${t('Stake')} ${pool.symbol} LP`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+              }
+            : {}),
         },
       })
 
@@ -368,6 +415,10 @@ export const useWeightedPool = () => {
         return false
       }
 
+      if (withStake) {
+        await onStackLp(pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key)
+      }
+
       endTxn({
         key,
         final: 'Liquidity Add Successful',
@@ -385,10 +436,20 @@ export const useWeightedPool = () => {
   )
 
   const onAddLiquidityAllToken = useCallback(
-    async (poolId32, tokensData, minBPTAmountOut, slippage, amountToWrap, onSuccess) => {
+    async (pool, tokensData, minBPTAmountOut, slippage, amountToWrap, withStake, onSuccess) => {
+      const poolId32 = pool.poolId
       const key = uuidv4()
       const addLiquidityuuid = uuidv4()
       const wrapuuid = uuidv4()
+      const stakeuuid = uuidv4()
+      const approveLpuuid = uuidv4()
+
+      const lpContract = {
+        address: pool.address,
+        abi: weightedPoolAbi,
+      }
+
+      setPending(true)
 
       const transactions = {
         ...(amountToWrap && {
@@ -432,7 +493,24 @@ export const useWeightedPool = () => {
       startTxn({
         key,
         title: t('Add Liquidity'),
-        transactions,
+        transactions: {
+          ...transactions,
+          ...(withStake
+            ? {
+                [approveLpuuid]: {
+                  desc: `${t('Approve')} LP`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+
+                [stakeuuid]: {
+                  desc: `${t('Stake')} ${pool.symbol} LP`,
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+              }
+            : {}),
+        },
       })
 
       // TODO: cannot wrap in TEST_BSC
@@ -490,6 +568,10 @@ export const useWeightedPool = () => {
       if (!result) {
         setPending(false)
         return false
+      }
+
+      if (withStake) {
+        await onStackLp(pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key)
       }
 
       endTxn({
@@ -1161,6 +1243,7 @@ export const useGaugeStakeWeighted = () => {
 
         startTxn({
           key,
+          title: 'Stake',
           desc: `${t('Stake')} LP`,
           transactions: {
             ...(!isApproved && {
