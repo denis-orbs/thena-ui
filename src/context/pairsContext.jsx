@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useMemo, useRef } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
@@ -121,6 +122,10 @@ const usePairs = () => {
           const value = {
             ...ele,
             apr: `${ele.apr || 0}%`,
+            gauge: {
+              ...ele.gauge,
+              voteApr: new BigNumber(ele?.gauge?.voteApr || 0),
+            },
             tokens,
             type: PAIR_TYPES.WEIGHTED,
             subpools: [],

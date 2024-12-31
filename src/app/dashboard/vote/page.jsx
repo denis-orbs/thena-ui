@@ -257,7 +257,9 @@ export default function VotePage() {
                 />
                 <div className='flex flex-col'>
                   <TextHeading>{pool.symbol}</TextHeading>
-                  <Paragraph className='text-sm'>{pool.title}</Paragraph>
+                  <Paragraph className='text-sm'>
+                    {pool.title === 'CL_Farming' ? 'Conc. Liquidity' : pool.title}
+                  </Paragraph>
                 </div>
               </>
             ) : (

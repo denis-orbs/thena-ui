@@ -37,7 +37,21 @@ export default function IncentivePage() {
   const [asset, setAsset] = useState(null)
   const mutateAssets = useMutateAssets()
   const pools = usePools()
-  const poolsWithGauge = useMemo(() => pools.filter(pool => pool && pool.gauge.address !== zeroAddress), [pools])
+  const poolsWithGauge = useMemo(
+    () =>
+      pools
+        .filter(
+          pool =>
+            pool &&
+            pool.gauge.address !== zeroAddress &&
+            (pool.type === PAIR_TYPES.LSD ? pool?.title === 'CL_Farming' : true),
+        )
+        .map(item => ({
+          ...item,
+          title: item?.title === 'CL_Farming' ? 'Conc. Liquidity' : item?.title,
+        })),
+    [pools],
+  )
   const { onBribeAdd, pending } = useBribeAdd()
   const t = useTranslations()
 
@@ -45,6 +59,7 @@ export default function IncentivePage() {
   const topPools = useMemo(
     () =>
       pools
+        .filter(pool => (pool.type === PAIR_TYPES.LSD ? pool?.title === 'CL_Farming' : true))
         .concat(weightedPool)
         .sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber())
         .slice(0, 4),
@@ -106,7 +121,9 @@ export default function IncentivePage() {
                 )}
                 <div className='flex flex-col'>
                   <TextHeading>{pool.symbol}</TextHeading>
-                  <Paragraph className='text-sm'>{pool.title ?? pool.type}</Paragraph>
+                  <Paragraph className='text-sm'>
+                    {(pool.type === PAIR_TYPES.LSD ? pool.type : pool.title) ?? pool.type}
+                  </Paragraph>
                 </div>
               </div>
               <NeutralBadge isFixed>${formatAmount(pool.gauge.bribeUsd)}</NeutralBadge>

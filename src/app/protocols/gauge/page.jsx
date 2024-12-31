@@ -35,7 +35,22 @@ export default function GaugePage() {
     () => pairs.filter(p => p && p.type === PAIR_TYPES.WEIGHTED && p.gauge.address === zeroAddress),
     [pairs],
   )
-  const poolsWithoutGauge = useMemo(() => pools.filter(pair => pair && pair.gauge.address === zeroAddress), [pools])
+
+  const poolsWithoutGauge = useMemo(
+    () =>
+      pools
+        .filter(
+          pair =>
+            pair &&
+            pair.gauge.address === zeroAddress &&
+            (pair.type === PAIR_TYPES.LSD ? pair?.title === 'CL_Farming' : true),
+        )
+        .map(item => ({
+          ...item,
+          title: item?.title === 'CL_Farming' ? 'Conc. Liquidity' : item?.title,
+        })),
+    [pools],
+  )
 
   return (
     <div className='flex flex-col gap-10'>
