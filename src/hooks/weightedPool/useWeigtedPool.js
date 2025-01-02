@@ -1338,7 +1338,8 @@ export const useGaugeUnstakeWeighted = balance => {
       try {
         const gaugeContract = getWeightedGaugeContract(pool.gauge.address, chainId)
         const rewardsAmount = await readCall(gaugeContract, 'earnedAll', [account], chainId)
-        const shouldHarvest = (rewardsAmount || []).some(item => !isInvalidAmount(item)) && balance.gte(amount)
+        const shouldHarvest =
+          (rewardsAmount || []).some(item => !isInvalidAmount(item)) && new BigNumber(amount).gte(balance)
 
         const lpContract = getERC20Contract(pool.address, chainId)
         const allowance = await readCall(lpContract, 'allowance', [account, pool.gauge.address], chainId)

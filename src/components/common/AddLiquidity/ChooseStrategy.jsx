@@ -331,39 +331,42 @@ export default function ChooseStrategy({
     } else {
       setIsAutomatic(true)
     }
-    dispatch(
-      updateStrategy({
-        strategy: {
-          ...strategy,
-          tvl: strategy?.tvl?.toNumber(),
-          apr: strategy?.apr?.toNumber(),
-          gauge: {
-            ...strategy?.gauge,
-            apr: strategy?.gauge?.apr?.toNumber(),
-            projectedApr: strategy?.gauge?.projectedApr?.toNumber(),
-            voteApr: strategy?.gauge?.voteApr?.toNumber(),
-            weight: strategy?.gauge?.weight?.toNumber(),
-            weightPercent: strategy?.gauge?.weightPercent?.toNumber(),
-            tvl: strategy?.gauge?.tvl?.toNumber(),
-            bribeUsd: strategy?.gauge?.bribeUsd?.toNumber(),
-            pooled0: strategy?.gauge?.pooled0?.toNumber(),
-            pooled1: strategy?.gauge?.pooled1?.toNumber(),
+
+    if (strategy) {
+      dispatch(
+        updateStrategy({
+          strategy: {
+            ...strategy,
+            tvl: strategy?.tvl?.toNumber(),
+            apr: strategy?.apr?.toNumber(),
+            gauge: {
+              ...strategy?.gauge,
+              apr: strategy?.gauge?.apr?.toNumber(),
+              projectedApr: strategy?.gauge?.projectedApr?.toNumber(),
+              voteApr: strategy?.gauge?.voteApr?.toNumber(),
+              weight: strategy?.gauge?.weight?.toNumber(),
+              weightPercent: strategy?.gauge?.weightPercent?.toNumber(),
+              tvl: strategy?.gauge?.tvl?.toNumber(),
+              bribeUsd: strategy?.gauge?.bribeUsd?.toNumber(),
+              pooled0: strategy?.gauge?.pooled0?.toNumber(),
+              pooled1: strategy?.gauge?.pooled1?.toNumber(),
+            },
+            token0: {
+              ...strategy?.token0,
+              reserve: strategy?.token0?.reserve?.toNumber(),
+            },
+            token1: {
+              ...strategy?.token1,
+              reserve: strategy?.token1?.reserve?.toNumber(),
+            },
+            account: {
+              ...strategy?.walletBalance,
+              walletBalance: strategy?.walletBalance?.toNumber(),
+            },
           },
-          token0: {
-            ...strategy?.token0,
-            reserve: strategy?.token0?.reserve?.toNumber(),
-          },
-          token1: {
-            ...strategy?.token1,
-            reserve: strategy?.token1?.reserve?.toNumber(),
-          },
-          account: {
-            ...strategy?.walletBalance,
-            walletBalance: strategy?.walletBalance?.toNumber(),
-          },
-        },
-      }),
-    )
+        }),
+      )
+    }
   }, [dispatch, setIsAutomatic, strategy])
 
   return (

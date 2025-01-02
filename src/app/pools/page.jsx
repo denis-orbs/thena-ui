@@ -23,7 +23,7 @@ import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useChainSettings } from '@/state/settings/hooks'
 import { ArrowRightIcon, InfoIcon } from '@/svgs'
@@ -103,9 +103,19 @@ export default function PoolsPage() {
   const filteredPools = useMemo(() => {
     let final
     if (isInactive) {
-      final = pairs.filter(ele => !ele.highApr)
+      final = pairs.filter(ele => {
+        if (ele.type === PAIR_TYPES.WEIGHTED) {
+          return isInvalidAmount(ele.aprNumber)
+        }
+        return !ele.highApr
+      })
     } else {
-      final = pairs.filter(ele => ele.highApr > 0)
+      final = pairs.filter(ele => {
+        if (ele.type === PAIR_TYPES.WEIGHTED) {
+          return !isInvalidAmount(ele.aprNumber)
+        }
+        return ele.highApr > 0
+      })
     }
     final =
       filter === PAIR_TYPES.All

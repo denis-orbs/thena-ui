@@ -122,6 +122,7 @@ const usePairs = () => {
           const value = {
             ...ele,
             apr: `${formatAmount(ele.apr) || 0}%`,
+            aprNumber: ele.apr,
             gauge: {
               ...ele.gauge,
               voteApr: new BigNumber(ele?.gauge?.voteApr || 0),

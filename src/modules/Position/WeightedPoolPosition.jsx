@@ -106,7 +106,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
 
           <div className='flex justify-between'>
             <span className='text-sm text-neutral-300'>{t('Claimable Amount')}</span>
-            <p className='flex items-center gap-2'>
+            <div className='flex items-center gap-2'>
               <span>${formatAmount(claimableFee?.total)}</span>
               <InfoIcon
                 className='h-4 w-4 stroke-neutral-400'
@@ -131,7 +131,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
                   </>
                 )}
               </CustomTooltip>
-            </p>
+            </div>
           </div>
         </div>
       </div>
