@@ -34,7 +34,7 @@ export default function RemoveManualModal({
   const { deadline } = useSettings()
   const [slippage, setSlippage] = useState(0.5)
   const liquidityPercentage = useMemo(() => new Percent(percent, 100), [percent])
-  const { pending, onAlgebraRemove } = useAlgebraRemove()
+  const { pending, onAlgebraRemove } = useAlgebraRemove(pool?.version ?? 3)
 
   const liquidityValue0 = useMemo(() => ((position?.amount0.toExact() || 0) * percent) / 100, [position, percent])
   const liquidityValue1 = useMemo(() => ((position?.amount1.toExact() || 0) * percent) / 100, [position, percent])

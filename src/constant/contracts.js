@@ -101,6 +101,10 @@ const Contracts = {
   gammaUniProxy: {
     [CHAIN_ID.BSC]: '0xF75c017E3b023a593505e281b565ED35Cc120efa',
   },
+  gammaUniProxyV3: {
+    [CHAIN_ID.BSC]: null,
+    [CHAIN_ID.TEST_BSC]: '0x57C41F96d20F23d2De73421462fA9BE00e38Af85',
+  },
   vaultDepositGuard: {
     [CHAIN_ID.BSC]: '0xd9272a45BbF488816C6A5351894bCE7b04a66eE1',
     [CHAIN_ID.OPBNB]: '0x7C6389714719C68cAAc8Ae06baE6E878B3605f6D',
@@ -144,6 +148,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x306F06C147f064A010530292A1EB6737c3e378e4',
   },
   algebraFactoryV3: {
+    [CHAIN_ID.BSC]: '0x30055F87716d3DFD0E5198C27024481099fB4A98',
     [CHAIN_ID.TEST_BSC]: '0x670e7Ef4D34a0FBBAf2d4f997FE73302Ba9ce98f',
   },
   eternalFarming: {
@@ -158,6 +163,7 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0xd95314Bc66EEFD266B1042DC8C2D8A70cAd52Be9',
   },
   pluginFactory: {
+    [CHAIN_ID.BSC]: '',
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
 }

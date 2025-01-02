@@ -5,9 +5,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
-import { zeroAddress } from 'viem'
 
-import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -18,7 +17,6 @@ import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useGammaAdd, useGammaAddAndStake } from '@/hooks/fusion/useGamma'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
-import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
@@ -74,15 +72,15 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
-  const { errorMessage } = mintInfo
 
   const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
   const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
-
   const wbnbBalance = useCurrencyBalance(WBNB[networkId])
+
   const { onGammaAdd, pending } = useGammaAdd()
   const { onGammaAddAndStake, pendingStake } = useGammaAddAndStake()
   const dispatch = useDispatch()
+
   const { data: preset } = useSWR(
     strategy && ['gamma/info', strategy.address],
     () => fetchGammaInfo(networkId, strategy),
@@ -135,21 +133,17 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   }, [amountA, amountB, baseCurrency, quoteCurrency, wbnbBalance, networkId])
 
   const onAddLiquidity = useCallback(() => {
-    if (errorMessage) {
-      warnToast(errorMessage, 'warn')
-      return
-    }
+    // if (errorMessage) {
+    //   warnToast(errorMessage, 'warn')
+    //   return
+    // }
 
-    onGammaAdd(amountA, amountB, amountToWrap, strategy)
-  }, [errorMessage, strategy, amountToWrap, amountA, amountB, onGammaAdd])
-
-  const onAddLiquidityAndStake = useCallback(() => {
-    if (errorMessage) {
-      warnToast(errorMessage, 'warn')
-      return
+    if (mintInfo?.strategy?.isFarming) {
+      onGammaAddAndStake(amountA, amountB, amountToWrap, strategy)
+    } else {
+      onGammaAdd(amountA, amountB, amountToWrap, strategy)
     }
-    onGammaAddAndStake(amountA, amountB, amountToWrap, strategy)
-  }, [errorMessage, amountToWrap, onGammaAddAndStake, amountA, amountB, strategy])
+  }, [amountA, amountB, amountToWrap, mintInfo?.strategy?.isFarming, onGammaAdd, onGammaAddAndStake, strategy])
 
   useEffect(() => {
     if (!price) return
@@ -168,12 +162,15 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         <div className='flex flex-col gap-5'>
           {isAdd && strategy && <PoolTitle strategy={strategy} />}
+
           <Selection data={addSelections} isFull />
+
           {isZapper ? (
             <div className='flex flex-col gap-5'>{t('Coming Soon')}</div>
           ) : (
             <div className='flex flex-col'>
               <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
+
               <div className='mt-5 flex flex-col gap-4'>
                 <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
                 <div className='flex flex-col gap-3'>
@@ -208,32 +205,22 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
           )}
         </div>
       </div>
+
       {!isZapper && (
         <div
           className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row', isModal && 'px-3 lg:px-6')}
         >
           {account ? (
             <>
-              <SecondaryButton
-                disabled={pending}
+              <PrimaryButton
+                disabled={pending || pendingStake}
                 onClick={() => {
                   onAddLiquidity()
                 }}
                 className='w-full'
               >
                 {t('Add Liquidity')}
-              </SecondaryButton>
-              {strategy && strategy.gauge?.address !== zeroAddress && (
-                <PrimaryButton
-                  disabled={pendingStake}
-                  onClick={() => {
-                    onAddLiquidityAndStake()
-                  }}
-                  className='w-full'
-                >
-                  {t('Add Liquidity & Stake')}
-                </PrimaryButton>
-              )}
+              </PrimaryButton>
             </>
           ) : (
             <ConnectButton className='w-full' />

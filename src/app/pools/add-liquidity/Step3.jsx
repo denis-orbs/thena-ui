@@ -62,6 +62,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
     feeAmount,
     baseCurrency ?? undefined,
     undefined,
+    strategy?.version ?? 3,
   )
 
   const currentPrice = useMemo(() => {

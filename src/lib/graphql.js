@@ -2,6 +2,8 @@
 import { GraphQLClient } from 'graphql-request'
 import { ChainId } from 'thena-sdk-core/dist'
 
+import { CHAIN_ID } from '@/constant/contracts'
+
 export const v1GraphUrl = {
   // eslint-disable-next-line max-len
   [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_V1_API_KEY}/subgraphs/id/FKEt2N5VmSdEYcz7fYLPvvnyEUkReQ7rvmXzs6tiKCz1`,
@@ -10,8 +12,9 @@ export const v1GraphUrl = {
 
 export const fusionGraphUrl = {
   // eslint-disable-next-line max-len
-  [ChainId.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt`,
-  [ChainId.OPBNB]: `https://open-platform-ap.nodereal.io/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion`,
+  [CHAIN_ID.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt`,
+  [CHAIN_ID.OPBNB]: `https://open-platform-ap.nodereal.io/${process.env.NEXT_PUBLIC_NODEREAL_API_KEY}/opbnb-mainnet-graph-query/subgraphs/name/thena/exchange-fusion`,
+  [CHAIN_ID.TEST_BSC]: 'https://api.studio.thegraph.com/query/70764/thena-v3-fusions/version/latest',
 }
 
 export const blockGraphUrl = {
@@ -36,8 +39,9 @@ export const v1Client = {
 }
 
 export const fusionClient = {
-  [ChainId.BSC]: new GraphQLClient(fusionGraphUrl[ChainId.BSC]),
-  [ChainId.OPBNB]: new GraphQLClient(fusionGraphUrl[ChainId.OPBNB]),
+  [CHAIN_ID.BSC]: new GraphQLClient(fusionGraphUrl[CHAIN_ID.BSC]),
+  [CHAIN_ID.OPBNB]: new GraphQLClient(fusionGraphUrl[CHAIN_ID.OPBNB]),
+  [CHAIN_ID.TEST_BSC]: new GraphQLClient(fusionGraphUrl[CHAIN_ID.TEST_BSC]),
 }
 
 export const blockClient = {

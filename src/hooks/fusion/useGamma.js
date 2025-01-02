@@ -36,7 +36,8 @@ export const useGammaAdd = () => {
       const quoteCurrency = amountB.currency
       const baseCurrencyAddress = baseCurrency.wrapped ? baseCurrency.wrapped.address.toLowerCase() : ''
       const quoteCurrencyAddress = quoteCurrency.wrapped ? quoteCurrency.wrapped.address.toLowerCase() : ''
-      const gammaPairAddress = gammaPair ? gammaPair.address : undefined
+      const gammaPairAddress = gammaPair?.address
+
       if (!amountA || !amountB || !gammaPairAddress) return
       const gammaUNIProxyContract = getGammaUNIProxyContract(networkId)
       const clearingAddress = await readCall(gammaUNIProxyContract, 'clearance', [], networkId)
@@ -122,11 +123,7 @@ export const useGammaAdd = () => {
         }
       }
 
-      startTxn({
-        key,
-        title: t('Add Liquidity'),
-        transactions,
-      })
+      startTxn({ key, title: t('Add Liquidity'), transactions })
       setPending(true)
       if (amountToWrap) {
         const wbnbContract = getWBNBContract(networkId)
@@ -210,36 +207,43 @@ export const useGammaAddAndStake = () => {
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
   const onGammaAddAndStake = useCallback(
-    async (amountA, amountB, amountToWrap, gammaPair) => {
+    async (amountA, amountB, amountToWrap, gammaPair, version = 3) => {
       const baseCurrency = amountA.currency
       const quoteCurrency = amountB.currency
       const baseCurrencyAddress = baseCurrency.wrapped ? baseCurrency.wrapped.address.toLowerCase() : ''
       const quoteCurrencyAddress = quoteCurrency.wrapped ? quoteCurrency.wrapped.address.toLowerCase() : ''
-      const gammaPairAddress = gammaPair ? gammaPair.address : undefined
+      const gammaPairAddress = gammaPair?.address
+
       if (!amountA || !amountB || !gammaPairAddress) return
-      const gammaUNIProxyContract = getGammaUNIProxyContract(networkId)
-      const clearingAddress = await readCall(gammaUNIProxyContract, 'clearance', [], networkId)
-      const clearingContract = getGammaClearingContract(clearingAddress, networkId)
-      const { deposit0Max: deposit0MaxRes, deposit1Max: deposit1MaxRes } = await readCall(
-        clearingContract,
-        'positions',
-        [gammaPairAddress],
-        networkId,
-      )
-      const deposit0Max = fromWei(deposit0MaxRes, gammaPair.token0.decimals)
-      const deposit1Max = fromWei(deposit1MaxRes, gammaPair.token1.decimals)
-      if (
-        deposit0Max.lt((baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountA : amountB).toExact())
-      ) {
-        warnToast(`Maximum deposit amount of ${gammaPair.token0.symbol} is ${deposit0Max.toFormat(0)}.`, 'warn')
-        return
+      const gammaUNIProxyContract = getGammaUNIProxyContract(networkId, version)
+
+      if (version === 2) {
+        const clearingAddress = await readCall(gammaUNIProxyContract, 'clearance', [], networkId)
+        const clearingContract = getGammaClearingContract(clearingAddress, networkId)
+        const { deposit0Max: deposit0MaxRes, deposit1Max: deposit1MaxRes } = await readCall(
+          clearingContract,
+          'positions',
+          [gammaPairAddress],
+          networkId,
+        )
+
+        const deposit0Max = fromWei(deposit0MaxRes, gammaPair.token0.decimals)
+        const deposit1Max = fromWei(deposit1MaxRes, gammaPair.token1.decimals)
+
+        if (
+          deposit0Max.lt((baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountA : amountB).toExact())
+        ) {
+          warnToast(`Maximum deposit amount of ${gammaPair.token0.symbol} is ${deposit0Max.toFormat(0)}.`, 'warn')
+          return
+        }
+        if (
+          deposit1Max.lt((baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountB : amountA).toExact())
+        ) {
+          warnToast(`Maximum deposit amount of ${gammaPair.token1.symbol} is ${deposit1Max.toFormat(0)}.`, 'warn')
+          return
+        }
       }
-      if (
-        deposit1Max.lt((baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountB : amountA).toExact())
-      ) {
-        warnToast(`Maximum deposit amount of ${gammaPair.token1.symbol} is ${deposit1Max.toFormat(0)}.`, 'warn')
-        return
-      }
+
       const key = uuidv4()
       const wrapuuid = uuidv4()
       const approve1uuid = uuidv4()
@@ -253,48 +257,52 @@ export const useGammaAddAndStake = () => {
       const isFirstApproved = fromWei(baseAllowance, baseCurrency.decimals).gte(amountA.toExact())
       const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaPairAddress], networkId)
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
-      startTxn({
-        key,
-        title: t('Add Liquidity'),
-        transactions: {
-          ...(amountToWrap && {
-            [wrapuuid]: {
-              desc: t('Wrap'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          ...(!isFirstApproved && {
-            [approve1uuid]: {
-              desc: `${t('Approve')} ${baseCurrency.symbol}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          ...(!isSecondApproved && {
-            [approve2uuid]: {
-              desc: `${t('Approve')} ${quoteCurrency.symbol}`,
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          [supplyuuid]: {
-            desc: t('Add Liquidity'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-          [approve3uuid]: {
-            desc: `${t('Approve')} LP`,
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-          [stakeuuid]: {
-            desc: `${t('Stake')} LP`,
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        },
-      })
+
+      const transactions = {}
+      if (amountToWrap) {
+        transactions[wrapuuid] = {
+          desc: t('Wrap'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+      if (!isFirstApproved) {
+        transactions[approve1uuid] = {
+          desc: `${t('Approve')} ${baseCurrency.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+      if (!isSecondApproved) {
+        transactions[approve2uuid] = {
+          desc: `${t('Approve')} ${quoteCurrency.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[supplyuuid] = {
+        desc: t('Add Liquidity'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      if (version === 2) {
+        transactions[approve3uuid] = {
+          desc: `${t('Approve')} LP`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+
+        transactions[stakeuuid] = {
+          desc: `${t('Stake')} LP`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      startTxn({ key, title: t('Add Liquidity'), transactions })
+
       setPending(true)
       if (amountToWrap) {
         const wbnbContract = getWBNBContract(networkId)
@@ -337,28 +345,29 @@ export const useGammaAddAndStake = () => {
         return
       }
 
-      const lpContract = getERC20Contract(gammaPairAddress, networkId)
-      const allowance = await readCall(lpContract, 'allowance', [account, gammaPair.gauge.address], networkId)
-      const lpBalance = await readCall(lpContract, 'balanceOf', [account], networkId)
-      const isLpApproved = fromWei(allowance).gte(lpBalance)
-
-      if (!isLpApproved) {
-        if (!(await writeTxn(key, approve3uuid, lpContract, 'approve', [gammaPair.gauge.address, maxUint256]))) {
+      // MARK: It will be automatically farming after you deposit into that pool (Gamma farming v3)
+      if (version === 2) {
+        const lpContract = getERC20Contract(gammaPairAddress, networkId)
+        const allowance = await readCall(lpContract, 'allowance', [account, gammaPair.gauge.address], networkId)
+        const lpBalance = await readCall(lpContract, 'balanceOf', [account], networkId)
+        const isLpApproved = fromWei(allowance).gte(lpBalance)
+        if (!isLpApproved) {
+          if (!(await writeTxn(key, approve3uuid, lpContract, 'approve', [gammaPair.gauge.address, maxUint256]))) {
+            setPending(false)
+            return
+          }
+        } else {
+          updateTxn({
+            key,
+            uuid: approve3uuid,
+            status: TXN_STATUS.SUCCESS,
+          })
+        }
+        const gaugeContract = getGaugeContract(gammaPair.gauge.address, networkId)
+        if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', [lpBalance]))) {
           setPending(false)
           return
         }
-      } else {
-        updateTxn({
-          key,
-          uuid: approve3uuid,
-          status: TXN_STATUS.SUCCESS,
-        })
-      }
-
-      const gaugeContract = getGaugeContract(gammaPair.gauge.address, networkId)
-      if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', [lpBalance]))) {
-        setPending(false)
-        return
       }
 
       onFieldAInput('')
@@ -369,7 +378,7 @@ export const useGammaAddAndStake = () => {
       })
       setPending(false)
     },
-    [account, startTxn, writeTxn, updateTxn, endTxn, networkId, onFieldAInput, onFieldBInput, t],
+    [account, endTxn, networkId, onFieldAInput, onFieldBInput, startTxn, t, updateTxn, writeTxn],
   )
 
   return { onGammaAddAndStake, pending }

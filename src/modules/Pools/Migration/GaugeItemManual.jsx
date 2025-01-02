@@ -33,7 +33,7 @@ export const fetchManualInfo = async (account, tokenId, chainId) => {
   return balance
 }
 
-export function GaugeItemManual({ existingPosition, position, version = 2 }) {
+export function GaugeItemManual({ existingPosition, position, fusion, version = 2 }) {
   const t = useTranslations()
   const [reversePrice, setReversePrice] = useState(false)
   const { asset0, asset1, liquidity, tickLower, tickUpper } = existingPosition
@@ -62,12 +62,11 @@ export function GaugeItemManual({ existingPosition, position, version = 2 }) {
   const tickCurrent = position?.pool?.tickCurrent
   const fee = position?.pool?.fee
 
-  const token0Price = asset0?.price ?? 1
-  const token1Price = asset1?.price ?? 1
-
-  const priceRatio = formatAmountLP(reversePrice ? token1Price / token0Price : token0Price / token1Price)
-
   const outOfRange = tickCurrent < tickLower && tickCurrent >= tickUpper
+
+  const currentPrice = formatAmountLP(
+    reversePrice ? 1 / (fusion?.token0Price.toSignificant(6) || 0) : fusion?.token0Price.toSignificant(6),
+  )
 
   const minPrice = formatAmountLP(
     reversePrice
@@ -179,7 +178,7 @@ export function GaugeItemManual({ existingPosition, position, version = 2 }) {
           <div className='flex flex-row justify-between'>
             <Paragraph>{t('Current Price')}</Paragraph>
             <div className='flex flex-row justify-between gap-1'>
-              <TextHeading>{priceRatio}</TextHeading>
+              <TextHeading>{currentPrice}</TextHeading>
               <Paragraph className='text-sm'>
                 {t('[symbolA] per [symbolB]', {
                   symbolA: unwrappedSymbol(reversePrice ? asset0 : asset1),

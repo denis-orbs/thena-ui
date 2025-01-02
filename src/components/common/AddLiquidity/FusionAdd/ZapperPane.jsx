@@ -10,7 +10,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
-import { cn, fromWei } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { ArrowRightIcon } from '@/svgs'
 
 function ZapperPane({ asset1, asset2, slippage, tickLower, tickUpper, deadline, mintInfo, strategy }) {
@@ -81,7 +81,7 @@ function ZapperPane({ asset1, asset2, slippage, tickLower, tickUpper, deadline, 
             type='number'
             className='w-full flex-[4] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
             placeholder='0.0'
-            value={fromWei(data?.positionDetails?.addedLiquidity ?? 0).toFixed(6)}
+            value={formatAmount(data?.positionDetails?.addedAmount ?? 0)}
             readOnly
           />
           <div

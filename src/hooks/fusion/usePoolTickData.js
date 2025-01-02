@@ -1,19 +1,22 @@
 import { gql } from 'graphql-request'
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { Pool, TICK_SPACING, tickToPrice } from 'thena-fusion-sdk'
-import { FUSION_FACTORY_ADDRESSES, JSBI } from 'thena-sdk-core'
+import { TICK_SPACING, tickToPrice } from 'thena-fusion-sdk'
+import { JSBI } from 'thena-sdk-core'
 
 import computeSurroundingTicks from '@/lib/fusion/computeSurroundingTicks'
 import { fusionClient } from '@/lib/graphql'
+import { useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 
-import { PoolState, useFusion } from './useFusions'
+import { PoolState, useFusionState } from './useFusions'
 
 const PRICE_FIXED_DIGITS = 8
 
 const getActiveTick = (tickCurrent, feeAmount) =>
-  tickCurrent && feeAmount ? Math.floor(tickCurrent / TICK_SPACING) * TICK_SPACING : undefined
+  tickCurrent !== undefined && feeAmount !== undefined
+    ? Math.floor(tickCurrent / TICK_SPACING) * TICK_SPACING
+    : undefined
 
 const ALL_TICKS = gql`
   query allV3Ticks($poolAddress: String!, $skip: Int!) {
@@ -39,23 +42,8 @@ const fetchTicksData = async (chainId, address, skip = 0) => {
   }
 }
 
-function useTicksFromSubgraph(currencyA, currencyB, feeAmount, skip = 0) {
+function useTicksFromSubgraph(poolAddress, skip = 0) {
   const { networkId } = useChainSettings()
-  let poolAddress
-  try {
-    poolAddress =
-      currencyA && currencyB && feeAmount
-        ? Pool.getAddress(
-            currencyA?.wrapped,
-            currencyB?.wrapped,
-            feeAmount,
-            undefined,
-            networkId ? FUSION_FACTORY_ADDRESSES[networkId] : undefined,
-          )
-        : undefined
-  } catch (error) {
-    console.debug(error)
-  }
 
   return useSWR(poolAddress && ['fusion/ticks', poolAddress], () =>
     fetchTicksData(networkId, poolAddress?.toLowerCase(), skip),
@@ -64,10 +52,10 @@ function useTicksFromSubgraph(currencyA, currencyB, feeAmount, skip = 0) {
 
 const MAX_THE_GRAPH_TICK_FETCH_VALUE = 1000
 // Fetches all ticks for a given pool
-function useAllV3Ticks(currencyA, currencyB, feeAmount) {
+function useAllV3Ticks(poolAddress) {
   const [skipNumber, setSkipNumber] = useState(0)
   const [subgraphTickData, setSubgraphTickData] = useState([])
-  const { data, error, isLoading } = useTicksFromSubgraph(currencyA, currencyB, feeAmount, skipNumber)
+  const { data, error, isLoading } = useTicksFromSubgraph(poolAddress, skipNumber)
 
   useEffect(() => {
     if (data?.ticks?.length) {
@@ -86,25 +74,30 @@ function useAllV3Ticks(currencyA, currencyB, feeAmount) {
 }
 
 export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
-  const pool = useFusion(currencyA, currencyB)
+  const { strategy } = useV3MintState()
+  const [poolState, pool, poolAddress] = useFusionState({
+    currencyA,
+    currencyB,
+    version: strategy?.version ?? 3,
+    isFarmingPool: strategy?.isFarming ?? true,
+  })
 
   // Find nearest valid tick for pool in case tick is not initialized.
-  const activeTick = useMemo(() => getActiveTick(pool[1]?.tickCurrent, feeAmount), [pool, feeAmount])
-
-  const { isLoading, error, ticks } = useAllV3Ticks(currencyA, currencyB, feeAmount)
+  const activeTick = useMemo(() => getActiveTick(pool?.tickCurrent, feeAmount), [pool, feeAmount])
+  const { isLoading, error, ticks } = useAllV3Ticks(poolAddress)
 
   return useMemo(() => {
     if (
       !currencyA ||
       !currencyB ||
       activeTick === undefined ||
-      pool[0] !== PoolState.EXISTS ||
+      poolState !== PoolState.EXISTS ||
       !ticks ||
       ticks.length === 0 ||
       isLoading
     ) {
       return {
-        isLoading: isLoading || pool[0] === PoolState.LOADING,
+        isLoading: isLoading || poolState === PoolState.LOADING,
         error,
         activeTick,
         data: undefined,
@@ -131,7 +124,7 @@ export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
     }
 
     const activeTickProcessed = {
-      liquidityActive: JSBI.BigInt(pool[1]?.liquidity ?? 0),
+      liquidityActive: JSBI.BigInt(pool?.liquidity ?? 0),
       tickIdx: activeTick,
       liquidityNet:
         Number(ticks[pivot].tickIdx) === activeTick ? JSBI.BigInt(ticks[pivot].liquidityNet) : JSBI.BigInt(0),
@@ -139,7 +132,6 @@ export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
     }
 
     const subsequentTicks = computeSurroundingTicks(token0, token1, activeTickProcessed, ticks, pivot, true)
-
     const previousTicks = computeSurroundingTicks(token0, token1, activeTickProcessed, ticks, pivot, false)
 
     const ticksProcessed = previousTicks.concat(activeTickProcessed).concat(subsequentTicks)
@@ -150,5 +142,5 @@ export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
       activeTick,
       data: ticksProcessed,
     }
-  }, [currencyA, currencyB, activeTick, pool, ticks, isLoading, error])
+  }, [currencyA, currencyB, activeTick, poolState, ticks, isLoading, pool?.liquidity, error])
 }

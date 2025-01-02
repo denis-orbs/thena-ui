@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
@@ -42,6 +42,8 @@ export const strategiesManual = {
   description: '80% Fees',
   min: 100,
   max: 150,
+  isFarming: false,
+  version: 3,
 }
 
 const fetchIchiInfo = async (chainId, strategy) => {
@@ -110,7 +112,6 @@ export default function ChooseStrategy({
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
   const t = useTranslations()
-  const fusion = useSelector(state => state.fusion)
 
   const { locale } = useLocaleSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
@@ -139,7 +140,14 @@ export default function ChooseStrategy({
   )
   const baseCurrency = useCurrency(firstAsset?.address)
   const quoteCurrency = useCurrency(secondAsset?.address)
-  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined, 3)
+  const mintInfo = useV3DerivedMintInfo(
+    baseCurrency,
+    quoteCurrency,
+    feeAmount,
+    baseCurrency,
+    undefined,
+    strategy?.version ?? 3,
+  )
 
   const { data: pairPrices = [], error } = useFetchPairPrices({
     token0Address: wrappedAddress(pair?.token0),
@@ -250,7 +258,8 @@ export default function ChooseStrategy({
           setStrategy({
             ...sub,
             type: sub.title === 'CL_Farming' ? 'manual' : 'auto',
-            isFarming: sub.title === 'CL_Farming',
+            isFarming: true,
+            version: 3,
           })
         },
       }
@@ -361,98 +370,6 @@ export default function ChooseStrategy({
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         <div className='flex flex-col gap-5'>
-          {/* <div className='flex flex-col gap-3'>
-            <div className='flex items-center justify-between'>
-              <TextHeading>{t('Management')}</TextHeading>
-              <InfoIcon className='h-4 w-4 cursor-pointer stroke-neutral-400' data-tooltip-id='management-tooltip' />
-            </div>
-            <Selection data={autoSelections} isFull isTranslation={false} />
-          </div> */}
-
-          {/* {isAutomatic ? (
-            <div className='flex flex-col gap-5'>
-              <div className='flex flex-col gap-3'>
-                <TextHeading>{t('Strategy')}</TextHeading>
-                {strategyData ? (
-                  <Selector data={strategyData} selected={strategy} setSelected={setStrategy} />
-                ) : (
-                  <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[60px]'>
-                    <Highlight>
-                      <InfoCircleWhite className='h-4 w-4' />
-                    </Highlight>
-                    <div className='flex flex-col items-center gap-3'>
-                      <h2>{t('No strategy found')}</h2>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {!mintInfo.noLiquidity && strategyData && (
-                <>
-                  <div className='-mb-2 flex items-center justify-center'>
-                    <TextHeading className='text-sm'>
-                      {t('Current Price: [price] [symbolA] [symbolB]', {
-                        price: currentPrice,
-                        symbolA: unwrappedSymbol(quoteCurrency),
-                        symbolB: unwrappedSymbol(baseCurrency),
-                      })}
-                    </TextHeading>
-                  </div>
-                  <LiquidityChartRangeInput
-                    currencyA={baseCurrency ?? undefined}
-                    currencyB={quoteCurrency ?? undefined}
-                    feeAmount={mintInfo.dynamicFee}
-                    ticksAtLimit={mintInfo.ticksAtLimit}
-                    price={price ? parseFloat(price) : undefined}
-                    priceLower={priceLower}
-                    priceUpper={priceUpper}
-                    onLeftRangeInput={onLeftRangeInput}
-                    onRightRangeInput={onRightRangeInput}
-                    interactive={false}
-                    handleShow={!!strategy}
-                  />
-                </>
-              )}
-
-              <Box className={cn('hidden', priceLower && priceUpper && 'block')}>
-                <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
-                  <h6 className='font-bold'>Historical price</h6>
-                  <Tabs data={periods} />
-                </div>
-
-                <div className='mt-2 flex h-[250px] items-center justify-center'>
-                  {error ? (
-                    <Paragraph>Failed to load price chart for this pair</Paragraph>
-                  ) : (
-                    <PoolChart
-                      data={pairPrices}
-                      timeWindow={timeWindow}
-                      locale={locale}
-                      upper={
-                        isSorted
-                          ? Number(priceLower?.invert()?.toSignificant(6))
-                          : Number(priceUpper?.invert()?.toSignificant(6))
-                      }
-                      current={Number(currentPrice)}
-                      lower={
-                        isSorted
-                          ? Number(priceUpper?.invert()?.toSignificant(6))
-                          : Number(priceLower?.invert()?.toSignificant(6))
-                      }
-                    />
-                  )}
-                </div>
-              </Box>
-            </div>
-          ) : (
-            <ManualStrategy
-              firstAsset={firstAsset}
-              secondAsset={secondAsset}
-              isReverse={isReverse}
-              setIsReverse={setIsReverse}
-            />
-          )} */}
-
           <div className='flex flex-col gap-5'>
             <div className='flex flex-col gap-3'>
               {strategyData ? (
@@ -537,6 +454,7 @@ export default function ChooseStrategy({
               secondAsset={secondAsset}
               isReverse={isReverse}
               setIsReverse={setIsReverse}
+              strategy={strategy}
             />
           )}
         </div>
@@ -544,10 +462,11 @@ export default function ChooseStrategy({
 
       <div className={cn('mt-auto inline-flex w-full flex-col pt-5', isModal && 'px-3 pt-3 lg:px-6')}>
         <PrimaryButton
-          disabled={(!strategy && isAutomatic) || (!fusion.preset && !isAutomatic)}
+          disabled={!strategy && isAutomatic}
           onClick={() => {
             setCurrentStep(2)
           }}
+          className={strategy || !isAutomatic ? 'bg-primary-600 hover:bg-primary-700' : ''}
         >
           {t('Continue')}
         </PrimaryButton>
