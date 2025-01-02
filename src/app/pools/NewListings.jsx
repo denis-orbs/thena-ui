@@ -29,7 +29,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
   const { push } = useRouter()
   const sortedData = useMemo(
     () =>
-      pools.sort((a, b) => {
+      [...pools].sort((a, b) => {
         let res
         switch (sort.value) {
           case 'pair':

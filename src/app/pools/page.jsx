@@ -138,9 +138,9 @@ export default function PoolsPage() {
           })
   }, [isInactive, filter, strategy, searchText, pairs])
 
-  const newListingsPool = filteredPools.filter(item => item.isNewListing)
+  const newListingsPool = useMemo(() => filteredPools.filter(item => item.isNewListing), [filteredPools])
 
-  const hotPools = filteredPools.filter(item => item.isHotPool)
+  const hotPools = useMemo(() => filteredPools.filter(item => item.isHotPool), [filteredPools])
 
   const sortedData = useMemo(
     () =>
