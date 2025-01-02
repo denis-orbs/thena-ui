@@ -101,6 +101,10 @@ const Contracts = {
   gammaUniProxy: {
     [CHAIN_ID.BSC]: '0xF75c017E3b023a593505e281b565ED35Cc120efa',
   },
+  gammaUniProxyV3: {
+    [CHAIN_ID.BSC]: null,
+    [CHAIN_ID.TEST_BSC]: '0x57C41F96d20F23d2De73421462fA9BE00e38Af85',
+  },
   vaultDepositGuard: {
     [CHAIN_ID.BSC]: '0xd9272a45BbF488816C6A5351894bCE7b04a66eE1',
     [CHAIN_ID.OPBNB]: '0x7C6389714719C68cAAc8Ae06baE6E878B3605f6D',

@@ -15,12 +15,11 @@ import { CurrencyAmount, JSBI, Price, Rounding, WBNB } from 'thena-sdk-core'
 import { formatUnits, parseUnits } from 'viem'
 
 import { FusionRangeType } from '@/constant'
-import { gammaUniProxyAbi } from '@/constant/abi/fusion'
-import Contracts from '@/constant/contracts'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance, useCurrencyBalances } from '@/hooks/fusion/useCurrencyBalances'
 import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { callMulti } from '@/lib/contractActions'
+import { getGammaUNIProxyContract } from '@/lib/contracts'
 import { getTickToPrice, maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { toWei } from '@/lib/utils'
 
@@ -117,11 +116,11 @@ export const useV3MintActionHandlers = noLiquidity => {
   }
 }
 
-const fetchGammaDepositAmounts = async (address, currencies, chainId) => {
+const fetchGammaDepositAmounts = async (address, currencies, chainId, version) => {
+  const gammaUNIProxyContract = getGammaUNIProxyContract(chainId, version)
   const depositAmounts = await callMulti(
     currencies.map(currency => ({
-      address: Contracts.gammaUniProxy[chainId],
-      abi: gammaUniProxyAbi,
+      ...gammaUNIProxyContract,
       functionName: 'getDepositAmount',
       args: [address, currency?.wrapped.address, parseUnits('1', currency?.wrapped.decimals ?? 0)],
       chainId,
@@ -164,11 +163,12 @@ export const useV3DerivedMintInfo = (
   } = useV3MintState()
 
   const gammaCurrencies = currencyA && currencyB ? [currencyA, currencyB] : []
+
   const { data: gammaData } = useSWR(
     presetRange && presetRange.address && gammaCurrencies.length > 0
       ? ['gamma/depositAmounts', presetRange.address, currencyA, currencyB, chainId]
       : null,
-    () => fetchGammaDepositAmounts(presetRange.address, gammaCurrencies, chainId),
+    () => fetchGammaDepositAmounts(presetRange.address, gammaCurrencies, chainId, version),
   )
 
   const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A

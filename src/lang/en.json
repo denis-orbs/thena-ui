@@ -1318,5 +1318,6 @@
   "Strategy Type": "Strategy Type",
   "Pool Plugin": "Pool Plugin",
   "Creation date": "Creation date",
-  "Hot Pools": "Hot Pools"
+  "Hot Pools": "Hot Pools",
+  "Pool Deployer": "Pool Deployer"
 }
