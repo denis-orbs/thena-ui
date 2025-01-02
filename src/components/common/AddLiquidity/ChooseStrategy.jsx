@@ -258,7 +258,7 @@ export default function ChooseStrategy({
           setStrategy({
             ...sub,
             type: sub.title === 'CL_Farming' ? 'manual' : 'auto',
-            isFarming: sub.title === 'CL_Farming',
+            isFarming: true,
             version: 3,
           })
         },
@@ -299,13 +299,6 @@ export default function ChooseStrategy({
 
   const periods = useMemo(
     () => [
-      // {
-      //   label: '1H',
-      //   active: timeWindow === PairDataTimeWindow.HOUR,
-      //   onClickHandler: () => {
-      //     setTimeWindow(PairDataTimeWindow.HOUR)
-      //   },
-      // },
       {
         label: '24H',
         active: timeWindow === PairDataTimeWindow.DAY,
@@ -363,98 +356,6 @@ export default function ChooseStrategy({
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         <div className='flex flex-col gap-5'>
-          {/* <div className='flex flex-col gap-3'>
-            <div className='flex items-center justify-between'>
-              <TextHeading>{t('Management')}</TextHeading>
-              <InfoIcon className='h-4 w-4 cursor-pointer stroke-neutral-400' data-tooltip-id='management-tooltip' />
-            </div>
-            <Selection data={autoSelections} isFull isTranslation={false} />
-          </div> */}
-
-          {/* {isAutomatic ? (
-            <div className='flex flex-col gap-5'>
-              <div className='flex flex-col gap-3'>
-                <TextHeading>{t('Strategy')}</TextHeading>
-                {strategyData ? (
-                  <Selector data={strategyData} selected={strategy} setSelected={setStrategy} />
-                ) : (
-                  <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[60px]'>
-                    <Highlight>
-                      <InfoCircleWhite className='h-4 w-4' />
-                    </Highlight>
-                    <div className='flex flex-col items-center gap-3'>
-                      <h2>{t('No strategy found')}</h2>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {!mintInfo.noLiquidity && strategyData && (
-                <>
-                  <div className='-mb-2 flex items-center justify-center'>
-                    <TextHeading className='text-sm'>
-                      {t('Current Price: [price] [symbolA] [symbolB]', {
-                        price: currentPrice,
-                        symbolA: unwrappedSymbol(quoteCurrency),
-                        symbolB: unwrappedSymbol(baseCurrency),
-                      })}
-                    </TextHeading>
-                  </div>
-                  <LiquidityChartRangeInput
-                    currencyA={baseCurrency ?? undefined}
-                    currencyB={quoteCurrency ?? undefined}
-                    feeAmount={mintInfo.dynamicFee}
-                    ticksAtLimit={mintInfo.ticksAtLimit}
-                    price={price ? parseFloat(price) : undefined}
-                    priceLower={priceLower}
-                    priceUpper={priceUpper}
-                    onLeftRangeInput={onLeftRangeInput}
-                    onRightRangeInput={onRightRangeInput}
-                    interactive={false}
-                    handleShow={!!strategy}
-                  />
-                </>
-              )}
-
-              <Box className={cn('hidden', priceLower && priceUpper && 'block')}>
-                <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
-                  <h6 className='font-bold'>Historical price</h6>
-                  <Tabs data={periods} />
-                </div>
-
-                <div className='mt-2 flex h-[250px] items-center justify-center'>
-                  {error ? (
-                    <Paragraph>Failed to load price chart for this pair</Paragraph>
-                  ) : (
-                    <PoolChart
-                      data={pairPrices}
-                      timeWindow={timeWindow}
-                      locale={locale}
-                      upper={
-                        isSorted
-                          ? Number(priceLower?.invert()?.toSignificant(6))
-                          : Number(priceUpper?.invert()?.toSignificant(6))
-                      }
-                      current={Number(currentPrice)}
-                      lower={
-                        isSorted
-                          ? Number(priceUpper?.invert()?.toSignificant(6))
-                          : Number(priceLower?.invert()?.toSignificant(6))
-                      }
-                    />
-                  )}
-                </div>
-              </Box>
-            </div>
-          ) : (
-            <ManualStrategy
-              firstAsset={firstAsset}
-              secondAsset={secondAsset}
-              isReverse={isReverse}
-              setIsReverse={setIsReverse}
-            />
-          )} */}
-
           <div className='flex flex-col gap-5'>
             <div className='flex flex-col gap-3'>
               {strategyData ? (
