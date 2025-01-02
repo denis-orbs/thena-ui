@@ -242,6 +242,7 @@ export const FusionRangeType = {
 }
 
 export const GAMMA_TYPES = ['Narrow', 'Wide', 'Correlated', 'CL_Stable']
+export const MANUAL_TYPES = ['CL_Farming', 'CL_SwapFee']
 
 export const TAX_ASSETS = {
   [ChainId.BSC]: [
