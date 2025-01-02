@@ -93,7 +93,11 @@ function Updater() {
         .map(fusion => {
           const { lpPrice, gauge } = fusion
           let kind
-          if (['Narrow', 'Wide', 'Correlated', 'CL_Stable', 'ICHI', 'DefiEdge', 'CL_Farming'].includes(fusion.type)) {
+          if (
+            ['Narrow', 'Wide', 'Correlated', 'CL_Stable', 'ICHI', 'DefiEdge', 'CL_Farming', 'CL_SwapFee'].includes(
+              fusion.type,
+            )
+          ) {
             kind = PAIR_TYPES.LSD
           } else {
             kind = fusion.type === 'Stable' ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC

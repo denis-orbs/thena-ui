@@ -35,17 +35,6 @@ import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const feeAmount = 3000
 
-export const strategiesManual = {
-  type: 'manual',
-  title: 'Swap Fees',
-  address: 'manual-swap-fees',
-  description: '80% Fees',
-  min: 100,
-  max: 150,
-  isFarming: false,
-  version: 3,
-}
-
 const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
     {
@@ -94,7 +83,6 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
 }
 
 export default function ChooseStrategy({
-  pool,
   pairType,
   firstAsset,
   secondAsset,
@@ -211,8 +199,16 @@ export default function ChooseStrategy({
   const strategyData = useMemo(() => {
     const autoStrategy = (pair?.subpools || []).map(sub => {
       let { title } = sub
-      if (title === 'CL_Farming') title = 'Manual ($THE Emissions)'
-      else if (GAMMA_TYPES.includes(sub.title)) title = 'Gamma'
+      let isFarming = false
+
+      if (title === 'CL_SwapFee') title = 'Manual (Swap Fees)'
+      if (title === 'CL_Farming') {
+        title = 'Manual ($THE Emissions)'
+        isFarming = true
+      } else if (GAMMA_TYPES.includes(sub.title)) {
+        title = 'Gamma'
+        isFarming = true
+      }
 
       return {
         content: (
@@ -251,45 +247,23 @@ export default function ChooseStrategy({
               ))}
 
             {sub.title === 'CL_Farming' && <NeutralBadge>$THE + 10% Fees</NeutralBadge>}
+            {sub.title === 'CL_SwapFee' && <NeutralBadge>80% Fees</NeutralBadge>}
           </div>
         ),
         active: strategy?.address === sub.address,
         onClickHandler: () => {
           setStrategy({
             ...sub,
-            type: sub.title === 'CL_Farming' ? 'manual' : 'auto',
-            isFarming: true,
+            isManual: ['CL_Farming', 'CL_SwapFee'].includes(sub.title),
+            isFarming,
             version: 3,
           })
         },
       }
     })
 
-    const manualStrategy = [
-      {
-        content: (
-          <div className='flex flex-1 items-center justify-between'>
-            <div>
-              <TextHeading>Manual ({strategiesManual?.title})</TextHeading>
-              <div className='mt-1 flex gap-2'>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>${formatAmount(pool.tvlPoolFee || 0)}</Paragraph>
-                </div>
-              </div>
-            </div>
-            <NeutralBadge>{strategiesManual.description}</NeutralBadge>
-          </div>
-        ),
-        active: strategy?.address === strategiesManual.address,
-        onClickHandler: () => {
-          setStrategy(strategiesManual)
-        },
-      },
-    ]
-
-    return [...autoStrategy, ...manualStrategy]
-  }, [pair?.subpools, t, pool, strategy?.address, setStrategy])
+    return autoStrategy
+  }, [pair?.subpools, t, strategy?.address, setStrategy])
 
   const periods = useMemo(
     () => [
@@ -326,7 +300,7 @@ export default function ChooseStrategy({
   )
 
   useEffect(() => {
-    if (strategy?.type === 'manual') {
+    if (strategy?.isManual) {
       setIsAutomatic(false)
     } else {
       setIsAutomatic(true)

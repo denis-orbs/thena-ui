@@ -3,7 +3,7 @@
 import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { Pool, Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { maxUint128, zeroAddress } from 'viem'
@@ -13,9 +13,9 @@ import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
-import { strategiesManual } from '@/components/common/AddLiquidity/ChooseStrategy'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { MANUAL_TYPES } from '@/constant'
 import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
@@ -50,7 +50,7 @@ export function ManualMigrationPage({ tokenId }) {
 
   // LOCAL STATE
   const [isOpenAdjust, setIsOpenAdjust] = useState(false)
-  const [strategy, setStrategy] = useState(strategiesManual)
+  const [strategy, setStrategy] = useState()
 
   const existingPosition = useMemo(() => {
     if (tokenId) {
@@ -78,67 +78,62 @@ export function ManualMigrationPage({ tokenId }) {
   )
 
   const strategyData = useMemo(() => {
-    const manualStrategy = [
-      {
-        content: (
-          <div className='flex flex-1 items-center justify-between'>
-            <div>
-              <TextHeading>Manual ({strategiesManual?.title})</TextHeading>
-              <div className='mt-1 flex gap-2'>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{pool?.apr ?? 0}</Paragraph>
-                </div>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>${formatAmount(pool?.tvlUSD)}</Paragraph>
-                </div>
-              </div>
-            </div>
-            <NeutralBadge>{strategiesManual.description}</NeutralBadge>
-          </div>
-        ),
-        active: strategy?.address === strategiesManual.address,
-        onClickHandler: () => {
-          setStrategy(strategiesManual)
-        },
-      },
-    ]
+    const subPools = pool?.subpools
+      ?.filter(sub => MANUAL_TYPES.includes(sub.title))
+      .map(sub => {
+        let { title } = sub
+        let isFarming = false
+        let badge = '80% Fees'
+        if (title === 'CL_SwapFee') title = 'Manual (Swap Fees)'
 
-    if (incentiveAddress && incentiveAddress !== zeroAddress) {
-      const farmingPool = pool?.subpools?.find(sub => sub.title === 'CL_Farming')
-      manualStrategy.push({
-        content: (
-          <div className='flex flex-1 items-center justify-between'>
-            <div>
-              <TextHeading>Manual Farming</TextHeading>
-              <div className='mt-1 flex gap-2'>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{formatAmount(farmingPool?.gauge?.apr)}%</Paragraph>
-                </div>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                  <Paragraph className='text-sm'>${formatAmount(farmingPool?.gauge?.tvl)}</Paragraph>
+        if (title === 'CL_Farming') {
+          title = 'Manual ($THE Emissions)'
+          isFarming = true
+          badge = '$THE + 10% Fees'
+        }
+
+        const strategyInfo = {
+          ...sub,
+          type: 'manual',
+          isFarming,
+        }
+
+        return {
+          content: (
+            <div className='flex flex-1 items-center justify-between'>
+              <div>
+                <TextHeading>{title}</TextHeading>
+                <div className='mt-1 flex gap-2'>
+                  <div className='flex items-center gap-1'>
+                    <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
+                    <Paragraph className='text-sm'>{formatAmount(sub?.gauge?.apr)}%</Paragraph>
+                  </div>
+                  <div className='flex items-center gap-1'>
+                    <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
+                    <Paragraph className='text-sm'>${formatAmount(sub?.gauge?.tvl)}</Paragraph>
+                  </div>
                 </div>
               </div>
+
+              <NeutralBadge>{badge}</NeutralBadge>
             </div>
-            <NeutralBadge>$THE + 10% Fees</NeutralBadge>
-          </div>
-        ),
-        active: strategy?.address === farmingPool?.address,
-        onClickHandler: () => {
-          setStrategy({
-            ...farmingPool,
-            type: 'manual',
-            isFarming: true,
-          })
-        },
+          ),
+          strategy: strategyInfo,
+          active: strategy?.address === sub?.address,
+          onClickHandler: () => {
+            setStrategy(strategyInfo)
+          },
+        }
       })
-    }
 
-    return manualStrategy
-  }, [incentiveAddress, pool?.apr, pool?.subpools, pool?.tvlUSD, strategy?.address, t])
+    return subPools ?? []
+  }, [pool?.subpools, strategy?.address, t])
+
+  useEffect(() => {
+    if (!strategy) {
+      setStrategy(strategyData?.at(0)?.strategy)
+    }
+  }, [strategy, strategyData])
 
   const [fusionStateV2, fusionV2, poolAddressV2] = useFusionState({ currencyA, currencyB, version: 2 })
   const [fusionStateV3, fusionV3] = useFusionState({ currencyA, currencyB, version: 3 })
