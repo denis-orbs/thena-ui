@@ -9,8 +9,9 @@ import NextImage from '@/components/image/NextImage'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES } from '@/constant'
+import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import { formatAmount } from '@/lib/utils'
+import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { InfoIcon } from '@/svgs'
 
 function Title({ title, length }) {
@@ -79,18 +80,24 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
     return data.map(pool => ({
       pair: (
         <div className='flex items-center gap-3'>
-          <IconGroup
-            className='-space-x-2'
-            classNames={{
-              image: 'outline-2 w-7 h-7',
-            }}
-            logo1={pool.token0.logoURI}
-            logo2={pool.token1.logoURI}
-          />
-          <div className='flex flex-col'>
-            <TextHeading>{pool.symbol}</TextHeading>
-            <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
-          </div>
+          {pool.type !== PAIR_TYPES.WEIGHTED ? (
+            <>
+              <IconGroup
+                className='-space-x-2'
+                classNames={{
+                  image: 'outline-2 w-7 h-7',
+                }}
+                logo1={pool.token0.logoURI}
+                logo2={pool.token1.logoURI}
+              />
+              <div className='flex flex-col'>
+                <TextHeading>{pool.symbol}</TextHeading>
+                <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
+              </div>
+            </>
+          ) : (
+            <ListTokenPercantage listToken={pool.tokens} />
+          )}
 
           {/* BEGIN Special pools */}
           {pool.address === weETHPoolAddress && (
@@ -166,14 +173,14 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
           {pool.address === BNBLpBNBPoolAdress && (
             <>
               <div className='flex items-center gap-2'>
-                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1-1`}>
+                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
                   <NextImage
                     className='h-full w-full rounded-full object-cover'
                     alt='Quaaloop'
                     src='/images/quaaloop.png'
                   />
                 </div>
-                <CustomTooltip id={`pool-special-${pool.address}-tooltip1-1`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
                 </CustomTooltip>
               </div>
@@ -184,7 +191,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
               <div className='flex items-center gap-2'>
                 <div
                   className='flex size-8 items-center rounded-full bg-white'
-                  data-tooltip-id={`pool-special-${pool.address}-BTCBmBTCAddress-1`}
+                  data-tooltip-id={`pool-special-${pool.address}-BTCBmBTCAddress`}
                 >
                   <NextImage
                     className='w-full rounded-full object-cover'
@@ -193,7 +200,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
                   />
                 </div>
                 <CustomTooltip
-                  id={`pool-special-${pool.address}-BTCBmBTCAddress-1`}
+                  id={`pool-special-${pool.address}-BTCBmBTCAddress`}
                   className='rounded-md !py-2'
                   place='top'
                 >
@@ -248,12 +255,22 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
         <div className='flex items-center gap-1'>
           <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(pool.tvlUSD)}</Paragraph>
           <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
-          <CustomTooltip id={`tvl-${pool.address}`}>
-            <div className='flex flex-col gap-1'>
-              <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
-              <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
-            </div>
-          </CustomTooltip>
+          {pool.type === PAIR_TYPES.WEIGHTED ? (
+            <CustomTooltip id={`tvl-${pool.address}`}>
+              <div className='flex flex-col gap-1'>
+                {(pool.tokens || []).map(token => (
+                  <p key={token.address}>{`${formatAmount(token.reserve)} ${token.symbol}`}</p>
+                ))}
+              </div>
+            </CustomTooltip>
+          ) : (
+            <CustomTooltip id={`tvl-${pool.address}`}>
+              <div className='flex flex-col gap-1'>
+                <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
+                <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
+              </div>
+            </CustomTooltip>
+          )}
         </div>
       ),
       volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,
