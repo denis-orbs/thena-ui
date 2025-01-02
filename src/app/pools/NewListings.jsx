@@ -30,14 +30,17 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
   const { push } = useRouter()
   const sortedData = useMemo(
     () =>
-      pools.sort((a, b) => {
+      [...pools].sort((a, b) => {
         let res
         switch (sort.value) {
           case 'pair':
             res = a.symbol.localeCompare(b.symbol) * (sort.isDesc ? -1 : 1)
             break
           case 'apr':
-            res = (a.highApr - b.highApr) * (sort.isDesc ? -1 : 1)
+            res =
+              ((a.type === PAIR_TYPES.WEIGHTED ? a.aprNumber : a.highApr) -
+                (b.type === PAIR_TYPES.WEIGHTED ? b.aprNumber : b.highApr)) *
+              (sort.isDesc ? -1 : 1)
             break
           case 'tvl':
             res = (a.tvlUSD - b.tvlUSD) * (sort.isDesc ? -1 : 1)
