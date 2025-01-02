@@ -51,7 +51,7 @@ function AddLiquidityClPool({
             setIsAutomatic={setIsAutomatic}
             isReverse={isReverse}
             setIsReverse={setIsReverse}
-            // isModal={isModal}
+            isAdd={isAdd}
           />
         )}
       </Box>

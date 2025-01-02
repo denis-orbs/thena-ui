@@ -1,9 +1,11 @@
 'use client'
 
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
+import { zeroAddress } from 'viem'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -34,6 +36,51 @@ import LiquidityChartRangeInput from './FusionAdd/LiquidityChartRangeInput'
 import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const feeAmount = 3000
+
+const defaultSwapFees = {
+  tvl: new BigNumber(0),
+  totalSupply: 0,
+  lpPrice: 0,
+  type: 'Conc Liquidity',
+  gauge: {
+    apr: new BigNumber(0),
+    projectedApr: new BigNumber(0),
+    voteApr: new BigNumber(0),
+    totalSupply: 0,
+    address: '0x0000000000000000000000000000000000000000',
+    fee: '0x0000000000000000000000000000000000000000',
+    bribe: '0x0000000000000000000000000000000000000000',
+    weight: new BigNumber(0),
+    weightPercent: new BigNumber(0),
+    bribes: {
+      fee: null,
+      bribe: null,
+    },
+    isAlive: false,
+    tvl: new BigNumber(0),
+    bribeUsd: new BigNumber(0),
+    pooled0: new BigNumber(0),
+    pooled1: new BigNumber(0),
+  },
+  allowed: {},
+  stable: false,
+  title: 'CL_SwapFee',
+  account: {
+    walletBalance: new BigNumber(0),
+    gaugeBalance: new BigNumber(0),
+    gaugeEarned: new BigNumber(0),
+    totalLp: 0,
+    token0claimable: new BigNumber(0),
+    token1claimable: new BigNumber(0),
+    staked0: new BigNumber(0),
+    staked1: new BigNumber(0),
+    stakedUsd: new BigNumber(0),
+    earnedUsd: new BigNumber(0),
+    total0: new BigNumber(0),
+    total1: new BigNumber(0),
+    totalUsd: new BigNumber(0),
+  },
+}
 
 const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
@@ -93,6 +140,7 @@ export default function ChooseStrategy({
   setIsAutomatic,
   isReverse,
   setIsReverse,
+  isAdd,
   isModal,
 }) {
   const dispatch = useDispatch()
@@ -129,8 +177,8 @@ export default function ChooseStrategy({
   const baseCurrency = useCurrency(firstAsset?.address)
   const quoteCurrency = useCurrency(secondAsset?.address)
   const mintInfo = useV3DerivedMintInfo(
-    baseCurrency,
-    quoteCurrency,
+    baseCurrency?.wrapped,
+    quoteCurrency?.wrapped,
     feeAmount,
     baseCurrency,
     undefined,
@@ -196,8 +244,20 @@ export default function ChooseStrategy({
     price,
   ])
 
+  const setSubpool = useCallback(() => {
+    if (isAdd) {
+      defaultSwapFees.token0 = firstAsset
+      defaultSwapFees.token1 = secondAsset
+      defaultSwapFees.address = zeroAddress
+    }
+  }, [firstAsset, isAdd, secondAsset])
+
+  useEffect(() => {
+    setSubpool()
+  }, [setSubpool])
+
   const strategyData = useMemo(() => {
-    const autoStrategy = (pair?.subpools || []).map(sub => {
+    const autoStrategy = (isAdd ? [defaultSwapFees] : pair?.subpools || []).map(sub => {
       let { title } = sub
       let isFarming = false
 
@@ -263,7 +323,7 @@ export default function ChooseStrategy({
     })
 
     return autoStrategy
-  }, [pair?.subpools, t, strategy?.address, setStrategy])
+  }, [isAdd, pair?.subpools, t, strategy?.address, setStrategy])
 
   const periods = useMemo(
     () => [
@@ -328,10 +388,14 @@ export default function ChooseStrategy({
             token0: {
               ...strategy?.token0,
               reserve: strategy?.token0?.reserve?.toNumber(),
+              balance: strategy?.token0?.balance?.toNumber(),
+              totalValue: strategy?.token0?.totalValue?.toNumber(),
             },
             token1: {
               ...strategy?.token1,
               reserve: strategy?.token1?.reserve?.toNumber(),
+              balance: strategy?.token1?.balance?.toNumber(),
+              totalValue: strategy?.token1?.totalValue?.toNumber(),
             },
             account: {
               ...strategy?.walletBalance,

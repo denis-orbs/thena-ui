@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
 import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex, zeroAddress } from 'viem'
@@ -1053,6 +1053,7 @@ const getGaugeReward = async (gaugeContract, assets, account, chainId) => {
 }
 
 export const usePositionData = (pool, isStaked) => {
+  const claimableStaked = useRef(0)
   const { chainId, account } = useWallet()
   const assets = useAssets()
   const poolContract = getWeightedPoolContract(pool?.address, chainId)
@@ -1148,7 +1149,11 @@ export const usePositionData = (pool, isStaked) => {
     }
   }, [expectedFees, mappedToken, tokenAddresses])
 
-  const { data: claimableFeeStake, mutate: mutateStake } = useSWR(
+  const {
+    data: claimableFeeStake,
+    isLoading,
+    mutate: mutateStake,
+  } = useSWR(
     pool.gauge.address !== zeroAddress && ['getGaugeReward', gaugeContract, assets, account, chainId, isStaked],
     () => getGaugeReward(gaugeContract, assets, account, chainId),
     {
@@ -1156,13 +1161,21 @@ export const usePositionData = (pool, isStaked) => {
     },
   )
 
+  let result = claimableFeeStake
+
+  if (isLoading) {
+    result = claimableStaked.current
+  } else {
+    claimableStaked.current = claimableFeeStake
+  }
+
   const mutatePosition = useCallback(() => {
     mutateTokens()
     mutateFees()
     mutateStake()
   }, [mutateFees, mutateTokens, mutateStake])
 
-  return { claimableFee: isStaked ? claimableFeeStake : claimableFeeUnStake, depositValue, mutatePosition }
+  return { claimableFee: isStaked ? result : claimableFeeUnStake, depositValue, mutatePosition }
 }
 
 export const useWeightedPositionList = () => {

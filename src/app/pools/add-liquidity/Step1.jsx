@@ -288,7 +288,7 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
               ) : null
             }
             TrailingIcon={<ChevronDownIcon className={cn(isTokenModalOpen && 'rotate-180')} />}
-            val={secondAsset?.symbol}
+            val={secondAsset?.symbol || ''}
             placeholder='Select Asset'
             readOnly
           />
