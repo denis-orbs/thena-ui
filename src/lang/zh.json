@@ -657,7 +657,7 @@
   "Win Amount": "奖励金额",
   "Trade Perps": "交易永续合约",
   "Trade perpetual contracts with leverage": "使用杠杆交易永续合约",
-  "Audited by": "由",
+  "Backed by": "获得",
   "Total [symbol] Locked": "总 {symbol}锁定数量",
   "ID": "ID",
   "Type of Reward": "奖励类型",
@@ -667,7 +667,7 @@
   "Out of Range": "超出范围",
   "In Range": "在范围内",
   "0": "0",
-  "Audit": "审计",
+  "Audit": "投资与支持",
   "Provide better price": "，通过整合多个来源的流动性，可以提供更优的价格。",
   "Trade To Earn": "Trade To Earn",
   "Total daily rewards available": "今日奖励总额",
@@ -1177,5 +1177,6 @@
   "Quaaloops Boost": "Liquidity providers in this pool are eligible for LoopFi's 10x Quaaloops Boost",
   "Seeking better price": "Seeking better price",
   "Babypie's Liquidity RUSH campaign": "Liquidity providers in this pool are eligible for Babypie's Liquidity RUSH campaign",
-  "Hot Pools": "Hot Pools"
+  "Hot Pools": "Hot Pools",
+  "uniBTC FBTC pool tooltip": "Liquidity providers in this pool are eligible for 2x Sparks in Ignition's Sparkle Campaign"
 }

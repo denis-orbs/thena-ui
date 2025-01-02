@@ -178,6 +178,7 @@ export default function PoolsPage() {
       const ynBNBPoolAddress = '0xcfac0990700ed9b67fefbd4b26a79e426468a419'
       const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
       const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
+      const uniBTCFBTC = '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7' // uniBTC/FBTC
 
       return sortedData.map(pool => ({
         pair: (
@@ -278,6 +279,22 @@ export default function PoolsPage() {
                   </div>
                   <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
                     <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
+                  </CustomTooltip>
+                </div>
+              </>
+            )}
+            {pool.address === uniBTCFBTC && (
+              <>
+                <div className='flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
+                    <NextImage
+                      className='h-full w-full rounded-full bg-white object-cover p-1'
+                      alt='Quaaloop'
+                      src='/svgs/fbtcYieldCampaign.svg'
+                    />
+                  </div>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>{t('uniBTC FBTC pool tooltip')}</TextHeading>
                   </CustomTooltip>
                 </div>
               </>
