@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import SelectPair from '@/components/common/AddLiquidity/SelectPair'
 import Modal from '@/components/modal'
 import { useAssets } from '@/context/assetsContext'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 
 export default function AddLiquidityModal({ popup, setPopup }) {
   const [currentStep, setCurrentStep] = useState(0)
@@ -20,10 +21,12 @@ export default function AddLiquidityModal({ popup, setPopup }) {
 
   const assets = useAssets()
 
+  const { customTokens } = useCustomTokens()
+
   useEffect(() => {
-    setFirstAsset(assets.find(ele => ele.address === firstAddress))
-    setSecondAsset(assets.find(ele => ele.address === secondAddress))
-  }, [assets, firstAddress, secondAddress])
+    setFirstAsset([...assets, ...customTokens].find(ele => ele.address === firstAddress))
+    setSecondAsset([...assets, ...customTokens].find(ele => ele.address === secondAddress))
+  }, [assets, firstAddress, secondAddress, customTokens])
 
   const goToLiquidityPage = () => {
     push(`/pools/add-liquidity?firstAddress=${firstAddress}&secondAddress=${secondAddress}&pairType=${pairType}`)

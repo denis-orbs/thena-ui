@@ -8,6 +8,7 @@ import { TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { cn } from '@/lib/utils'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 import { ArrowLeftIcon } from '@/svgs'
 
 function AddLiquidityClPool({
@@ -22,6 +23,7 @@ function AddLiquidityClPool({
 }) {
   const t = useTranslations()
   const assets = useAssets()
+  const { customTokens } = useCustomTokens()
   const [isReverse, setIsReverse] = useState(true)
   return (
     <>
@@ -42,8 +44,12 @@ function AddLiquidityClPool({
           <ChooseStrategy
             pool={pool}
             pairType={PAIR_TYPES.LSD}
-            firstAsset={assets.find(asset => asset.address.toLowerCase() === pool?.token0?.address?.toLowerCase())}
-            secondAsset={assets.find(asset => asset.address.toLowerCase() === pool?.token1?.address?.toLowerCase())}
+            firstAsset={[...assets, ...customTokens].find(
+              asset => asset.address.toLowerCase() === pool?.token0?.address?.toLowerCase(),
+            )}
+            secondAsset={[...assets, ...customTokens].find(
+              asset => asset.address.toLowerCase() === pool?.token1?.address?.toLowerCase(),
+            )}
             strategy={strategy}
             setStrategy={setStrategy}
             setCurrentStep={setCurrentStep}

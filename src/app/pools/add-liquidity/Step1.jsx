@@ -14,6 +14,7 @@ import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { cn, formatAmount, getPoolType, wrappedAddress } from '@/lib/utils'
 import TokenModal from '@/modules/TokenModal'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 import { ChevronDownIcon } from '@/svgs'
 
 import Navigation from './Navigation'
@@ -138,6 +139,7 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   const [secondAddress, setSecondAddress] = useState(searchParams.get('secondAddress') || null)
 
   const assets = useAssets()
+  const { customTokens } = useCustomTokens()
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false)
   const [isFirstSelected, setIsFirstSelected] = useState(false)
 
@@ -148,9 +150,9 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   }
 
   useEffect(() => {
-    setFirstAsset(assets.find(ele => ele.address === firstAddress))
-    setSecondAsset(assets.find(ele => ele.address === secondAddress))
-  }, [assets, firstAddress, secondAddress])
+    setFirstAsset([...assets, ...customTokens].find(ele => ele.address === firstAddress))
+    setSecondAsset([...assets, ...customTokens].find(ele => ele.address === secondAddress))
+  }, [assets, firstAddress, secondAddress, customTokens])
 
   const availablePools = useMemo(() => {
     if (!firstAddress || !secondAddress) return []

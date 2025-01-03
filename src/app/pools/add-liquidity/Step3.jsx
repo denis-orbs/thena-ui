@@ -20,6 +20,7 @@ import { cn, formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
 
 import TransactionSettingModal from './TransactionSettingModal'
@@ -33,25 +34,26 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
   const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
 
   const assets = useAssets()
+  const { customTokens } = useCustomTokens()
   const fusionPairs = useFusionPairs()
   const [firstAsset, secondAsset] = useMemo(
     () => [
-      assets.find(item => item.address.toLowerCase() === pool?.token0?.address.toLowerCase()),
-      assets.find(item => item.address.toLowerCase() === pool?.token1?.address.toLowerCase()),
+      [...assets, ...customTokens].find(item => item.address.toLowerCase() === pool?.token0?.address.toLowerCase()),
+      [...assets, ...customTokens].find(item => item.address.toLowerCase() === pool?.token1?.address.toLowerCase()),
     ],
-    [assets, pool],
+    [assets, customTokens, pool?.token0?.address, pool?.token1?.address],
   )
   const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
   const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)
 
   const assetA = useMemo(
-    () => assets.find(item => item.address?.toLowerCase() === firstAsset.address?.toLowerCase()),
-    [firstAsset.address, assets],
+    () => [...assets, ...customTokens].find(item => item.address?.toLowerCase() === firstAsset.address?.toLowerCase()),
+    [assets, customTokens, firstAsset.address],
   )
 
   const assetB = useMemo(
-    () => assets.find(item => item.address?.toLowerCase() === secondAsset.address?.toLowerCase()),
-    [secondAsset.address, assets],
+    () => [...assets, ...customTokens].find(item => item.address?.toLowerCase() === secondAsset.address?.toLowerCase()),
+    [assets, customTokens, secondAsset.address],
   )
 
   const baseCurrency = currencyA
