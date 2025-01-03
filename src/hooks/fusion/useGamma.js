@@ -436,3 +436,42 @@ export const useGammaRemove = () => {
 
   return { onGammaRemove, pending }
 }
+
+export const useGammaClaim = () => {
+  const t = useTranslations()
+
+  const [pending, setPending] = useState(false)
+  const { networkId } = useChainSettings()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const onGammaClaim = useCallback(
+    async (pool, callback) => {
+      const key = uuidv4()
+      const claimId = uuidv4()
+      startTxn({
+        key,
+        title: t('Harvest Rewards'),
+        transactions: {
+          [claimId]: {
+            desc: t('Harvest Rewards'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+      setPending(true)
+      const gammaFarming = getGammaHyperVisorContract(pool.address, networkId, pool.account?.version)
+
+      if (!(await writeTxn(key, claimId, gammaFarming, 'claim', []))) {
+        setPending(false)
+        return
+      }
+      callback()
+      endTxn({ key, final: 'Harvest Successful' })
+      setPending(false)
+    },
+    [startTxn, writeTxn, endTxn, networkId, t],
+  )
+
+  return { onGammaClaim, pending }
+}

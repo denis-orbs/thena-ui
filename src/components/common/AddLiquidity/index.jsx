@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
+import { useV3MintState } from '@/state/fusion/hooks'
 import { useCustomTokens } from '@/state/tokenCustom/store'
 
 import ChooseStrategy from './ChooseStrategy'
@@ -15,9 +16,9 @@ import V1Add from './V1Add'
 let init = false
 
 export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModal = false, isAdd = false }) {
+  const { strategy } = useV3MintState()
+
   const [pairType, setPairType] = useState(PAIR_TYPES.LSD)
-  const [strategy, setStrategy] = useState()
-  const [isAutomatic, setIsAutomatic] = useState(false)
   const [isReverse, setIsReverse] = useState(true)
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
@@ -61,6 +62,7 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
           isModal={isModal}
         />
       )}
+
       {currentStep === 1 &&
         (pairType === PAIR_TYPES.LSD ? (
           <ChooseStrategy
@@ -68,11 +70,7 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
             pairType={pairType}
             firstAsset={firstAsset}
             secondAsset={secondAsset}
-            strategy={strategy}
-            setStrategy={setStrategy}
             setCurrentStep={setCurrentStep}
-            isAutomatic={isAutomatic}
-            setIsAutomatic={setIsAutomatic}
             isReverse={isReverse}
             setIsReverse={setIsReverse}
             isModal={isModal}
@@ -90,8 +88,9 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
             setSlippage={setSlippage}
           />
         ))}
+
       {currentStep === 2 &&
-        (isAutomatic ? (
+        (strategy.isAutomatic ? (
           <FusionAdd strategy={isAdd ? pool : strategy} isModal={isModal} isAdd={isAdd} />
         ) : (
           <ManualAdd
@@ -100,7 +99,6 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
             isReverse={isReverse}
             slippage={slippage}
             isModal={isModal}
-            strategy={strategy}
           />
         ))}
     </>

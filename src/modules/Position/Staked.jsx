@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 import { GreenBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -7,18 +8,25 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
+import { updateStrategy } from '@/state/fusion/actions'
 import { InfoIcon } from '@/svgs'
 
 import AddPositionModal from './AddPositionModal'
 import GaugeManageModal from './GaugeManageModal'
+import RemovePositionModal from './RemovePositionModal'
 
 export default function Staked({ pool }) {
+  const [removePopup, setRemovePopup] = useState(false)
   const [popup, setPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
+  const { onGammaClaim, pending: claimPending } = useGammaClaim()
   const { onGaugeHarvest, pending } = useGaugeHarvest()
+
+  const dispatch = useDispatch()
   const t = useTranslations()
 
   const token0Percent = useMemo(() => {
@@ -88,25 +96,60 @@ export default function Staked({ pool }) {
         </div>
       </div>
       <div className='mt-auto flex w-full gap-3'>
-        <TextButton className='w-full' onClick={() => setPopup(true)}>
+        <TextButton className={cn('w-full', pool?.account?.version === 3 && 'hidden')} onClick={() => setPopup(true)}>
           {t('Unstake')}
         </TextButton>
+
+        <OutlinedButton
+          className={cn('w-full', pool?.account?.version === 2 && 'hidden')}
+          onClick={() => setRemovePopup(true)}
+        >
+          {t('Remove')}
+        </OutlinedButton>
+
         <OutlinedButton
           className='w-full'
-          onClick={() => onGaugeHarvest(pool)}
-          disabled={pending || pool.account.earnedUsd.isZero()}
+          onClick={() => {
+            if (pool?.account?.version === 2) onGaugeHarvest(pool)
+            else onGammaClaim(pool)
+          }}
+          disabled={pending || claimPending || pool.account.earnedUsd.isZero()}
         >
           {t('Harvest')}
         </OutlinedButton>
+
         <EmphasisButton
           className='w-full'
           onClick={() => {
+            dispatch(
+              updateStrategy({
+                strategy: {
+                  // ...pool,
+                  token0: {
+                    ...pool?.token0,
+                    reserve: pool?.token0?.reserve?.toNumber(),
+                    balance: pool?.token0?.balance?.toNumber(),
+                    totalValue: pool?.token0?.totalValue?.toNumber(),
+                  },
+                  token1: {
+                    ...pool?.token1,
+                    reserve: pool?.token1?.reserve?.toNumber(),
+                    balance: pool?.token1?.balance?.toNumber(),
+                    totalValue: pool?.token1?.totalValue?.toNumber(),
+                  },
+                  isAutomatic: true,
+                  isFarming: true, // TODO: REMOVE HARD CODE
+                  version: pool?.account?.version ?? 3,
+                },
+              }),
+            )
             setAddPopup(true)
           }}
         >
           {t('Add')}
         </EmphasisButton>
       </div>
+
       <GaugeManageModal
         title='Unstake LP'
         pair={pool}
@@ -117,6 +160,9 @@ export default function Staked({ pool }) {
         onGaugeManage={onGaugeUnstake}
         pending={unstakePending}
       />
+
+      <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={pool} />
+
       <AddPositionModal popup={addPopup} setPopup={setAddPopup} strategy={pool} />
     </Box>
   )

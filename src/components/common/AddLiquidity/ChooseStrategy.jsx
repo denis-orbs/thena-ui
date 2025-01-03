@@ -26,7 +26,7 @@ import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
-import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
+import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite } from '@/svgs'
 
@@ -135,16 +135,14 @@ export default function ChooseStrategy({
   firstAsset,
   secondAsset,
   setCurrentStep,
-  strategy,
-  setStrategy,
-  isAutomatic,
-  setIsAutomatic,
   isReverse,
   setIsReverse,
   isAdd,
   isModal,
 }) {
   const dispatch = useDispatch()
+  const { strategy } = useV3MintState()
+
   const { networkId } = useChainSettings()
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
@@ -257,6 +255,15 @@ export default function ChooseStrategy({
     setSubpool()
   }, [setSubpool])
 
+  const setStrategy = useCallback(
+    strategyInfo => {
+      onLeftRangeInput('')
+      onRightRangeInput('')
+      dispatch(updateStrategy({ strategy: strategyInfo }))
+    },
+    [dispatch, onLeftRangeInput, onRightRangeInput],
+  )
+
   const strategyData = useMemo(() => {
     const autoStrategy = (isAdd ? [defaultSwapFees] : pair?.subpools || []).map(sub => {
       let { title } = sub
@@ -314,8 +321,21 @@ export default function ChooseStrategy({
         active: strategy?.address === sub.address,
         onClickHandler: () => {
           setStrategy({
-            ...sub,
-            isManual: ['CL_Farming', 'CL_SwapFee'].includes(sub.title),
+            // ...sub,
+            token0: {
+              ...sub?.token0,
+              reserve: sub?.token0?.reserve?.toNumber(),
+              balance: sub?.token0?.balance?.toNumber(),
+              totalValue: sub?.token0?.totalValue?.toNumber(),
+            },
+            token1: {
+              ...sub?.token1,
+              reserve: sub?.token1?.reserve?.toNumber(),
+              balance: sub?.token1?.balance?.toNumber(),
+              totalValue: sub?.token1?.totalValue?.toNumber(),
+            },
+            address: sub.address,
+            isAutomatic: !['CL_Farming', 'CL_SwapFee'].includes(sub.title),
             isFarming,
             version: 3,
           })
@@ -360,54 +380,6 @@ export default function ChooseStrategy({
     [timeWindow],
   )
 
-  useEffect(() => {
-    if (strategy?.isManual) {
-      setIsAutomatic(false)
-    } else {
-      setIsAutomatic(true)
-    }
-
-    if (strategy) {
-      dispatch(
-        updateStrategy({
-          strategy: {
-            ...strategy,
-            tvl: strategy?.tvl?.toNumber(),
-            apr: strategy?.apr?.toNumber(),
-            gauge: {
-              ...strategy?.gauge,
-              apr: strategy?.gauge?.apr?.toNumber(),
-              projectedApr: strategy?.gauge?.projectedApr?.toNumber(),
-              voteApr: strategy?.gauge?.voteApr?.toNumber(),
-              weight: strategy?.gauge?.weight?.toNumber(),
-              weightPercent: strategy?.gauge?.weightPercent?.toNumber(),
-              tvl: strategy?.gauge?.tvl?.toNumber(),
-              bribeUsd: strategy?.gauge?.bribeUsd?.toNumber(),
-              pooled0: strategy?.gauge?.pooled0?.toNumber(),
-              pooled1: strategy?.gauge?.pooled1?.toNumber(),
-            },
-            token0: {
-              ...strategy?.token0,
-              reserve: strategy?.token0?.reserve?.toNumber(),
-              balance: strategy?.token0?.balance?.toNumber(),
-              totalValue: strategy?.token0?.totalValue?.toNumber(),
-            },
-            token1: {
-              ...strategy?.token1,
-              reserve: strategy?.token1?.reserve?.toNumber(),
-              balance: strategy?.token1?.balance?.toNumber(),
-              totalValue: strategy?.token1?.totalValue?.toNumber(),
-            },
-            account: {
-              ...strategy?.walletBalance,
-              walletBalance: strategy?.walletBalance?.toNumber(),
-            },
-          },
-        }),
-      )
-    }
-  }, [dispatch, setIsAutomatic, strategy])
-
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
@@ -428,7 +400,7 @@ export default function ChooseStrategy({
               )}
             </div>
 
-            {isAutomatic && strategy && (
+            {strategy?.isAutomatic && (
               <>
                 {!mintInfo.noLiquidity && strategyData && (
                   <>
@@ -490,7 +462,7 @@ export default function ChooseStrategy({
             )}
           </div>
 
-          {!isAutomatic && (
+          {!strategy?.isAutomatic && (
             <ManualStrategy
               firstAsset={firstAsset}
               secondAsset={secondAsset}
@@ -504,11 +476,11 @@ export default function ChooseStrategy({
 
       <div className={cn('mt-auto inline-flex w-full flex-col pt-5', isModal && 'px-3 pt-3 lg:px-6')}>
         <PrimaryButton
-          disabled={!strategy && isAutomatic}
+          disabled={!strategy && strategy?.isAutomatic}
           onClick={() => {
             setCurrentStep(2)
           }}
-          className={strategy || !isAutomatic ? 'bg-primary-600 hover:bg-primary-700' : ''}
+          className={strategy || !strategy?.isAutomatic ? 'bg-primary-600 hover:bg-primary-700' : ''}
         >
           {t('Continue')}
         </PrimaryButton>

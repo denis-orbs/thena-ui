@@ -30,7 +30,8 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
   const { onDefiedgeRemove, pending: defiedgePending } = useDefiedgeRemove()
   const t = useTranslations()
 
-  const balance = strategy.account.walletBalance
+  const balance = strategy?.account?.version === 2 ? strategy.account.walletBalance : strategy.account.gaugeBalance
+
   const firstAmount = useMemo(
     () => strategy.token0.reserve && strategy.token0.reserve.times(amount || 0).div(strategy.totalSupply),
     [strategy, amount],

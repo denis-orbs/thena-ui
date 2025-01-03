@@ -55,6 +55,7 @@ import {
   fusionRouterAbi,
   gammaClearingAbi,
   gammaHypervisorAbi,
+  gammaHypervisorAbiV3,
   gammaUniProxyAbi,
   gaugeSimpleAbi,
   ichiVaultAbi,
@@ -169,7 +170,13 @@ export const getGammaUNIProxyContract = (chainId, version = 3) => {
 
 export const getGammaClearingContract = (address, chainId) => getContract(gammaClearingAbi, address, chainId)
 
-export const getGammaHyperVisorContract = (address, chainId) => getContract(gammaHypervisorAbi, address, chainId)
+export const getGammaHyperVisorContract = (address, chainId, version) => {
+  if (version === 3) {
+    return getContract(gammaHypervisorAbiV3, address, chainId)
+  }
+
+  return getContract(gammaHypervisorAbi, address, chainId)
+}
 
 /** **************************************************************************************************
                                             Defiedge

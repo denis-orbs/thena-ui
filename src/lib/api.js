@@ -140,8 +140,8 @@ export const fetchNfts = nftId =>
 
 export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
 
-export const fetchPairInfos = account => {
-  const res = fetch(`${backendApiTestNet}/getpairaccount?account=${account?.toLowerCase()}`)
+export const fetchPairInfos = (account, chainId) => {
+  const res = fetch(`${backendApiTestNet}/getpairaccount/${chainId}?account=${account?.toLowerCase()}`)
     .then(r => r.json())
     .then(r => r.data)
   return res

@@ -132,6 +132,13 @@ export default createReducer(initialState, builder =>
       ...state,
       presetRange,
     }))
+    /**
+     * @property {Object} strategy - The strategy payload.
+     * @property {boolean} strategy.isAutomatic - Indicates if the strategy is automatic.
+     * @property {boolean} strategy.isFarming - Indicates if the strategy is for farming.
+     * @property {number} strategy.version - The version of the strategy (2 or 3).
+     * ...
+     */
     .addCase(updateStrategy, (state, { payload: { strategy } }) => ({
       ...state,
       strategy,

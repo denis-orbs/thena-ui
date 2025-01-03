@@ -20,14 +20,16 @@ import { useCurrency } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
-import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
+import { useV3DerivedMintInfo, useV3MintState } from '@/state/fusion/hooks'
+import { useCustomTokens } from '@/state/tokenCustom/store'
 import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
 
 import TransactionSettingModal from './TransactionSettingModal'
 
 const feeAmount = 3000
-export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strategy, showSidebar = true }) {
+export default function Step3({ pool, isAdd, setCurrentStep, showSidebar = true }) {
   const t = useTranslations()
+  const { strategy } = useV3MintState()
 
   const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
@@ -136,7 +138,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
           <NeutralBadge>{getPoolType(pair.type)}</NeutralBadge>
         </div>
 
-        {isAutomatic ? (
+        {strategy?.isAutomatic ? (
           <FusionAdd strategy={isAdd ? pair : strategy} isAdd={isAdd} />
         ) : (
           <>
@@ -161,7 +163,7 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
                 <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
               )}
               <>
-                {Boolean(!mintInfo.noLiquidity) && isAutomatic && (
+                {Boolean(!mintInfo.noLiquidity) && strategy?.isAutomatic && (
                   <>
                     <div className='flex flex-col gap-4'>
                       <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
