@@ -8,7 +8,7 @@ import CustomTooltip from '@/components/tooltip'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import useWallet from '@/hooks/useWallet'
 import { addToken, cn, formatAmount, goScan } from '@/lib/utils'
-import { useCustomTokens } from '@/state/tokenCustom/store'
+import { useLocalTokens } from '@/state/localTokens/store'
 import { ExternalIcon, MinusIcon, PlusCircleIcon, PlusIcon } from '@/svgs'
 
 import WarningModal from './WarningModal'
@@ -26,14 +26,14 @@ export function ItemToken({
   const [token, setToken] = useState(item)
   const { account, chainId } = useWallet()
   const [isWarning, setIsWarning] = useState('')
-  const { addTokenCustom, removeTokenCustom } = useCustomTokens()
+  const { addLocalToken, removeLocalToken } = useLocalTokens()
 
   const handleAddToken = tk => {
     delete tk.isCustom
     delete tk.balance
     tk.isFromStorage = true
 
-    addTokenCustom(tk)
+    addLocalToken(tk)
   }
 
   const { balance } = token
@@ -151,7 +151,7 @@ export function ItemToken({
         title='Are you sure?'
         buttonTitle='Remove'
         onConfirm={() => {
-          removeTokenCustom(token.address)
+          removeLocalToken(token.address)
           setToken(prev => ({
             ...prev,
             isCustom: true,

@@ -253,6 +253,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       {mintInfo.noLiquidity && (
         <div className='flex flex-col gap-3'>
           <Info className='text-sm'>{t('Initialize warning')}</Info>
+          <Info className='text-sm'>{t('Initialize warning2')}</Info>
           <div className='flex items-center justify-between'>
             <TextHeading className='w-1/2'>
               {t('Starting [symbol] Price:', { symbol: baseCurrency?.symbol })}

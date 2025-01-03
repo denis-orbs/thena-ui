@@ -4,27 +4,27 @@ import { BNB, ChainId, Token } from 'thena-sdk-core'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { getTokenInfo } from '@/lib/helper'
+import { useLocalTokens } from '@/state/localTokens/store'
 import { useChainSettings } from '@/state/settings/hooks'
-import { useCustomTokens } from '@/state/tokenCustom/store'
 
 // undefined if invalid or does not exist
 // otherwise returns the token
 export function useToken(tokenAddress) {
   const assets = useAssets()
   const customAssets = useCustomAssets()
-  const { customTokens } = useCustomTokens()
+  const { localTokens } = useLocalTokens()
 
   return useMemo(() => {
     if (!tokenAddress) return undefined
     let asset = getTokenInfo({ tokenAddress, assets, customAssets })
 
     if (!asset) {
-      asset = customTokens.find(tk => tk.address.toLowerCase() === tokenAddress.toLowerCase())
+      asset = localTokens.find(tk => tk.address.toLowerCase() === tokenAddress.toLowerCase())
     }
 
     if (!asset) return undefined
     return new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
-  }, [assets, customAssets, customTokens, tokenAddress])
+  }, [assets, customAssets, localTokens, tokenAddress])
 }
 
 export const useCurrency = tokenAddress => {

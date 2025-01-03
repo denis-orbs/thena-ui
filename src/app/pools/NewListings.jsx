@@ -24,12 +24,13 @@ function Title({ title, length }) {
 function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
   const t = useTranslations()
   const [sort, setSort] = useState(sortOptions[1])
-  const newSortOptions = [...sortOptions]
+  const newSortOptions = useMemo(() => [...sortOptions], [sortOptions])
   const [currentPage, setCurrentPage] = useState(1)
   const { push } = useRouter()
+
   const sortedData = useMemo(
     () =>
-      pools.sort((a, b) => {
+      [...pools].sort((a, b) => {
         let res
         switch (sort.value) {
           case 'pair':

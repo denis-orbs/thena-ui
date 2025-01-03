@@ -212,6 +212,7 @@
   "Asset 2": "Asset 2",
   "No strategy found": "未找到策略",
   "Initialize warning": "在您添加流动性之前，必须初始化此池。要初始化，请选择池的起始价格。然后，输入您的流动性价格范围和存款金额。由于需进行初始化的链上操作，矿工费用将高于一般。",
+  "Initialize warning2": "请在创建该仓位后，如果生成的手续费未显示在界面上，请联系 THENA 团队。您可以使用右下角的小部件提交工单。",
   "Starting [symbol] Price:": "起始 {symbol} 价格:",
   "Minimum Price": "最低价格",
   "Maximum Price": "最高价格",
@@ -657,7 +658,7 @@
   "Win Amount": "奖励金额",
   "Trade Perps": "交易永续合约",
   "Trade perpetual contracts with leverage": "使用杠杆交易永续合约",
-  "Audited by": "由",
+  "Backed by": "获得",
   "Total [symbol] Locked": "总 {symbol}锁定数量",
   "ID": "ID",
   "Type of Reward": "奖励类型",
@@ -667,7 +668,7 @@
   "Out of Range": "超出范围",
   "In Range": "在范围内",
   "0": "0",
-  "Audit": "审计",
+  "Audit": "投资与支持",
   "Provide better price": "，通过整合多个来源的流动性，可以提供更优的价格。",
   "Trade To Earn": "Trade To Earn",
   "Total daily rewards available": "今日奖励总额",
@@ -1177,5 +1178,6 @@
   "Quaaloops Boost": "Liquidity providers in this pool are eligible for LoopFi's 10x Quaaloops Boost",
   "Seeking better price": "Seeking better price",
   "Babypie's Liquidity RUSH campaign": "Liquidity providers in this pool are eligible for Babypie's Liquidity RUSH campaign",
-  "Hot Pools": "Hot Pools"
+  "Hot Pools": "Hot Pools",
+  "uniBTC FBTC pool tooltip": "Liquidity providers in this pool are eligible for 2x Sparks in Ignition's Sparkle Campaign"
 }
