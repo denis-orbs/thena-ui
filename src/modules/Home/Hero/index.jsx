@@ -54,7 +54,7 @@ function Hero() {
           }}
         >
           <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Backed by')}</span>
-          <HomeImage alt='zepplin logo' src='/images/binancelabs_logo.png' />
+          <HomeImage alt='binancelabs logo' src='/images/binancelabs_logo.png' />
           {/* Hidden on EN, only show on ZH */}
           <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Audit')}</span>
         </div>

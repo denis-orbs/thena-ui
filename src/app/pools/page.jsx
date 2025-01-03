@@ -519,7 +519,7 @@ export default function PoolsPage() {
         {/* New Listings pool */}
         {newListingsPool.length > 0 && (
           <NewListings
-            title={<>✨ {t('New Listings')}</>}
+            title={`✨ ${t('New Listings')}`}
             pools={newListingsPool}
             sortOptions={sortOptions}
             listPoolAddressSpecial={listPoolAddressSpecial}
@@ -529,7 +529,7 @@ export default function PoolsPage() {
         {/* Hot Pools */}
         {hotPools.length > 0 && (
           <NewListings
-            title={<>🔥 {t('Hot Pools')}</>}
+            title={`🔥 ${t('Hot Pools')}`}
             pools={hotPools}
             sortOptions={sortOptions}
             listPoolAddressSpecial={listPoolAddressSpecial}
