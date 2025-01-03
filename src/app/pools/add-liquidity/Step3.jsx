@@ -14,13 +14,13 @@ import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
-import { useCustomTokens } from '@/state/tokenCustom/store'
 import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
 
 import TransactionSettingModal from './TransactionSettingModal'
@@ -34,26 +34,26 @@ export default function Step3({ pool, isAutomatic, isAdd, setCurrentStep, strate
   const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
 
   const assets = useAssets()
-  const { customTokens } = useCustomTokens()
+  const customAssets = useCustomAssets()
   const fusionPairs = useFusionPairs()
   const [firstAsset, secondAsset] = useMemo(
     () => [
-      [...assets, ...customTokens].find(item => item.address.toLowerCase() === pool?.token0?.address.toLowerCase()),
-      [...assets, ...customTokens].find(item => item.address.toLowerCase() === pool?.token1?.address.toLowerCase()),
+      [...assets, ...customAssets].find(item => item.address.toLowerCase() === pool?.token0?.address.toLowerCase()),
+      [...assets, ...customAssets].find(item => item.address.toLowerCase() === pool?.token1?.address.toLowerCase()),
     ],
-    [assets, customTokens, pool?.token0?.address, pool?.token1?.address],
+    [assets, customAssets, pool?.token0?.address, pool?.token1?.address],
   )
   const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
   const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)
 
   const assetA = useMemo(
-    () => [...assets, ...customTokens].find(item => item.address?.toLowerCase() === firstAsset.address?.toLowerCase()),
-    [assets, customTokens, firstAsset.address],
+    () => [...assets, ...customAssets].find(item => item.address?.toLowerCase() === firstAsset.address?.toLowerCase()),
+    [assets, customAssets, firstAsset.address],
   )
 
   const assetB = useMemo(
-    () => [...assets, ...customTokens].find(item => item.address?.toLowerCase() === secondAsset.address?.toLowerCase()),
-    [assets, customTokens, secondAsset.address],
+    () => [...assets, ...customAssets].find(item => item.address?.toLowerCase() === secondAsset.address?.toLowerCase()),
+    [assets, customAssets, secondAsset.address],
   )
 
   const baseCurrency = currencyA

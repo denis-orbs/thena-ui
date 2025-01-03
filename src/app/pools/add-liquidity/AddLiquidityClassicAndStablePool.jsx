@@ -8,8 +8,8 @@ import V1Add from '@/components/common/AddLiquidity/V1Add'
 import { TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
 import { cn, formatAmount } from '@/lib/utils'
-import { useCustomTokens } from '@/state/tokenCustom/store'
 import { ArrowLeftIcon, DownloadSuccessIcon, PercentIcon } from '@/svgs'
 
 import TransactionSettingModal from './TransactionSettingModal'
@@ -17,7 +17,7 @@ import TransactionSettingModal from './TransactionSettingModal'
 function AddLiquidityClassicAndStablePool({ pool, setCurrentStep, isAdd, showSidebar = true }) {
   const t = useTranslations()
   const assets = useAssets()
-  const { customTokens } = useCustomTokens()
+  const customAssets = useCustomAssets()
   const [firstAmount, setFirstAmount] = useState()
   const [secondAmount, setSecondAmount] = useState()
   const [slippage, setSlippage] = useState(0.5)
@@ -38,10 +38,10 @@ function AddLiquidityClassicAndStablePool({ pool, setCurrentStep, isAdd, showSid
 
         <V1Add
           pairType={pool.type}
-          firstAsset={[...assets, ...customTokens].find(
+          firstAsset={[...assets, ...customAssets].find(
             asset => asset.address.toLowerCase() === pool?.token0?.address?.toLowerCase(),
           )}
-          secondAsset={[...assets, ...customTokens].find(
+          secondAsset={[...assets, ...customAssets].find(
             asset => asset.address.toLowerCase() === pool?.token1?.address?.toLowerCase(),
           )}
           setFirstAmountValue={setFirstAmount}

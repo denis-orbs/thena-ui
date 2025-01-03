@@ -11,10 +11,10 @@ import Input from '@/components/input'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { cn, formatAmount, getPoolType, wrappedAddress } from '@/lib/utils'
 import TokenModal from '@/modules/TokenModal'
-import { useCustomTokens } from '@/state/tokenCustom/store'
 import { ChevronDownIcon } from '@/svgs'
 
 import Navigation from './Navigation'
@@ -139,7 +139,7 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   const [secondAddress, setSecondAddress] = useState(searchParams.get('secondAddress') || null)
 
   const assets = useAssets()
-  const { customTokens } = useCustomTokens()
+  const customAssets = useCustomAssets()
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false)
   const [isFirstSelected, setIsFirstSelected] = useState(false)
 
@@ -150,9 +150,9 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   }
 
   useEffect(() => {
-    setFirstAsset([...assets, ...customTokens].find(ele => ele.address === firstAddress))
-    setSecondAsset([...assets, ...customTokens].find(ele => ele.address === secondAddress))
-  }, [assets, firstAddress, secondAddress, customTokens])
+    setFirstAsset([...assets, ...customAssets].find(ele => ele.address === firstAddress))
+    setSecondAsset([...assets, ...customAssets].find(ele => ele.address === secondAddress))
+  }, [assets, firstAddress, secondAddress, customAssets])
 
   const availablePools = useMemo(() => {
     if (!firstAddress || !secondAddress) return []

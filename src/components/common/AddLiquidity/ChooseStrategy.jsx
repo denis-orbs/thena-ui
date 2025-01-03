@@ -38,6 +38,7 @@ import ManualStrategy from './FusionAdd/ManualStrategy'
 const feeAmount = 3000
 
 const defaultSwapFees = {
+  address: zeroAddress,
   tvl: new BigNumber(0),
   totalSupply: 0,
   lpPrice: 0,
