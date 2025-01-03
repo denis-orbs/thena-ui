@@ -367,6 +367,9 @@ export default function ChooseStrategy({
       setIsAutomatic(true)
     }
 
+    onLeftRangeInput('')
+    onRightRangeInput('')
+
     if (strategy) {
       dispatch(
         updateStrategy({
@@ -406,7 +409,7 @@ export default function ChooseStrategy({
         }),
       )
     }
-  }, [dispatch, setIsAutomatic, strategy])
+  }, [dispatch, onLeftRangeInput, onRightRangeInput, setIsAutomatic, strategy])
 
   return (
     <>

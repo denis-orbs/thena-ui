@@ -2,10 +2,13 @@ import { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import useSWRImmutable from 'swr/immutable'
+import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { pairAPIAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
+import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useExtraRewardsInfo } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
@@ -17,12 +20,25 @@ import { fromWei } from '@/lib/utils'
 import { updatePools } from './actions'
 import { useChainSettings } from '../settings/hooks'
 
-const fetchUserFusions = async (_, account) => {
-  const pairInfos = await fetchPairInfos(account)
+const fetchUserFusionsV2 = async (account, pools, chainId) => {
+  if (chainId === CHAIN_ID.TEST_BSC) return []
+
+  const pairInfos = await callMulti(
+    pools.map(pool => ({
+      address: Contracts.pairAPI[chainId],
+      abi: pairAPIAbi,
+      functionName: chainId === ChainId.BSC ? 'getPairAccount' : 'getPairSimpleAccount',
+      args: [pool.address, account],
+      chainId,
+    })),
+    true,
+  )
+
   return pairInfos.map(pool => {
     const { pair_address, claimable0, claimable1, account_lp_balance, account_gauge_earned, account_gauge_balance } =
       pool
     return {
+      version: 2,
       address: pair_address, // pair contract address
       walletBalance: account_lp_balance, // account LP tokens balance
       gaugeBalance: account_gauge_balance, // account pair staked in gauge balance
@@ -34,7 +50,25 @@ const fetchUserFusions = async (_, account) => {
   })
 }
 
-const fetchIchiAllowed = async (_, pools, chainId) => {
+const fetchUserFusionsV3 = async (account, chainId) => {
+  const pairInfos = await fetchPairInfos(account, chainId)
+  return pairInfos.map(pool => {
+    const { pair_address, claimable0, claimable1, account_gauge_balance, account_gauge_earned } = pool
+    // On V3 - no need to stake in GAUGE
+    return {
+      version: 3,
+      address: pair_address,
+      walletBalance: 0n,
+      gaugeBalance: account_gauge_balance,
+      totalLp: account_gauge_balance,
+      gaugeEarned: account_gauge_earned, // account earned emissions for this pair
+      token0claimable: claimable0,
+      token1claimable: claimable1,
+    }
+  })
+}
+
+const fetchIchiAllowed = async (pools, chainId) => {
   const ichi = pools.filter(pool => pool.type === 'ICHI')
   const allowed0 = await callMulti(
     ichi.map(pool => ({
@@ -70,11 +104,19 @@ function Updater() {
   const { networkId } = useChainSettings()
   const { data: pools = [] } = useSWR(['pools api', networkId], { fetcher: fetchPoolsV3 })
 
-  const { data: userInfos } = useSWRImmutable(account && pools ? ['pools user api', account, networkId] : null, url =>
-    fetchUserFusions(url, account, pools, networkId),
+  const { data: userInfos } = useSWRImmutable(
+    account && pools ? ['pools user api', account, networkId] : null,
+    async () => {
+      const [userFusionsV2, userFusionsV3] = await Promise.all([
+        fetchUserFusionsV2(account, pools, networkId),
+        fetchUserFusionsV3(account, networkId),
+      ])
+      return [...userFusionsV2, ...userFusionsV3]
+    },
   )
-  const { data: poolsWithAllowed } = useSWR(pools && pools.length > 0 ? ['vaults/allowed', networkId] : null, url =>
-    fetchIchiAllowed(url, pools, networkId),
+
+  const { data: poolsWithAllowed } = useSWR(pools && pools.length > 0 ? ['vaults/allowed', networkId] : null, () =>
+    fetchIchiAllowed(pools, networkId),
   )
 
   const fetchInfo = useCallback(async () => {
@@ -202,6 +244,7 @@ function Updater() {
             }
             extraRewardsInUsd = extraRewards.amount * prices[foundExtra.doubleRewarderSymbol]
           }
+
           if (found) {
             user = {
               ...found,
@@ -210,7 +253,7 @@ function Updater() {
               walletBalance: formatEther(found.walletBalance),
               gaugeBalance: formatEther(found.gaugeBalance),
               totalLp: formatEther(found.totalLp),
-              gaugeEarned: formatEther(found.gaugeEarned),
+              gaugeEarned: fromWei(found.gaugeEarned).toNumber(),
               stakedUsd: fromWei(found.gaugeBalance).times(lpPrice).toNumber(),
               earnedUsd: fromWei(found.gaugeEarned).times(prices.THE).plus(extraRewardsInUsd).toNumber(),
               totalUsd: fromWei(found.totalLp).times(lpPrice).toNumber(),
