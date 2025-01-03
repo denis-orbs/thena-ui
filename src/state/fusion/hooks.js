@@ -177,8 +177,8 @@ export const useV3DerivedMintInfo = (
   // currencies
   const currencies = useMemo(
     () => ({
-      [Field.CURRENCY_A]: currencyA?.wrapped,
-      [Field.CURRENCY_B]: currencyB?.wrapped,
+      [Field.CURRENCY_A]: currencyA,
+      [Field.CURRENCY_B]: currencyB,
     }),
     [currencyA, currencyB],
   )

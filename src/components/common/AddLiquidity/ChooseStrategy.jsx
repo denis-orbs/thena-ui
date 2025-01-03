@@ -177,8 +177,8 @@ export default function ChooseStrategy({
   const baseCurrency = useCurrency(firstAsset?.address)
   const quoteCurrency = useCurrency(secondAsset?.address)
   const mintInfo = useV3DerivedMintInfo(
-    baseCurrency?.wrapped,
-    quoteCurrency?.wrapped,
+    baseCurrency || undefined,
+    quoteCurrency || undefined,
     feeAmount,
     baseCurrency,
     undefined,
