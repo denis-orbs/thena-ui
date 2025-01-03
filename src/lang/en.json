@@ -212,6 +212,7 @@
   "Asset 2": "Asset 2",
   "No strategy found": "No strategy found",
   "Initialize warning": "This pool must be initialized before you can add liquidity. To initialize, select a starting price for the pool. Then, enter your liquidity price range and deposit amount. Gas fees will be higher than usual due to the initialization transaction.",
+  "Initialize warning2": "Please contact THENA team after creating this position if the generated fees are not displayed on UI. You can open a ticket using the widget on the lower right corner",
   "Starting [symbol] Price:": "Starting {symbol} Price:",
   "Minimum Price": "Minimum Price",
   "Maximum Price": "Maximum Price",
