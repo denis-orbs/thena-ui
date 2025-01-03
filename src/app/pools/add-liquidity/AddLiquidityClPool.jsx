@@ -11,20 +11,12 @@ import { useCustomAssets } from '@/context/customAssetsContext'
 import { cn } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
-function AddLiquidityClPool({
-  pool,
-  setCurrentStep,
-  isAutomatic,
-  setIsAutomatic,
-  strategy,
-  setStrategy,
-  isAdd,
-  showSidebar = true,
-}) {
+function AddLiquidityClPool({ pool, setCurrentStep, isAdd, showSidebar = true }) {
   const t = useTranslations()
   const assets = useAssets()
   const customAssets = useCustomAssets()
   const [isReverse, setIsReverse] = useState(true)
+
   return (
     <>
       <Box className={cn('w-full flex-[6] flex-col py-3 lg:py-6', !showSidebar ? 'w-full' : '')}>
@@ -50,17 +42,14 @@ function AddLiquidityClPool({
             secondAsset={[...assets, ...customAssets].find(
               asset => asset.address.toLowerCase() === pool?.token1?.address?.toLowerCase(),
             )}
-            strategy={strategy}
-            setStrategy={setStrategy}
             setCurrentStep={setCurrentStep}
-            isAutomatic={isAutomatic}
-            setIsAutomatic={setIsAutomatic}
             isReverse={isReverse}
             setIsReverse={setIsReverse}
             isAdd={isAdd}
           />
         )}
       </Box>
+
       {showSidebar && (
         <div className='flex-[4]'>
           <Box className='flex flex-col gap-4'>

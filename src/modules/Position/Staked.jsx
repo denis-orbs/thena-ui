@@ -124,7 +124,20 @@ export default function Staked({ pool }) {
             dispatch(
               updateStrategy({
                 strategy: {
-                  isManual: false,
+                  // ...pool,
+                  token0: {
+                    ...pool?.token0,
+                    reserve: pool?.token0?.reserve?.toNumber(),
+                    balance: pool?.token0?.balance?.toNumber(),
+                    totalValue: pool?.token0?.totalValue?.toNumber(),
+                  },
+                  token1: {
+                    ...pool?.token1,
+                    reserve: pool?.token1?.reserve?.toNumber(),
+                    balance: pool?.token1?.balance?.toNumber(),
+                    totalValue: pool?.token1?.totalValue?.toNumber(),
+                  },
+                  isAutomatic: true,
                   isFarming: true, // TODO: REMOVE HARD CODE
                   version: pool?.account?.version ?? 3,
                 },

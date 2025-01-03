@@ -18,22 +18,22 @@ import {
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { errorToast } from '@/lib/notify'
 import { fromWei } from '@/lib/utils'
+import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
-export const useAlgebraAdd = (version = 3) => {
+export const useAlgebraAdd = () => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
   const { startTxn, writeTxn, endTxn, sendTxn } = useTxn()
   const t = useTranslations()
 
-  /**
-   * Params boolean isFarming
-   * - true:  will farming THE emission
-   * - false: will earn from transactions fee
-   */
+  const { strategy } = useV3MintState()
+  const version = strategy?.version ?? 3
+  const isFarming = strategy?.isFarming ?? false
+
   const onAlgebraAdd = useCallback(
-    async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline, isFarming = false) => {
+    async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline) => {
       try {
         const key = uuidv4()
         const approve1uuid = uuidv4()
@@ -201,7 +201,7 @@ export const useAlgebraAdd = (version = 3) => {
         throw e
       }
     },
-    [version, chainId, startTxn, t, account, sendTxn, endTxn, writeTxn],
+    [chainId, version, isFarming, t, startTxn, account, sendTxn, endTxn, writeTxn],
   )
 
   return { onAlgebraAdd, pending }

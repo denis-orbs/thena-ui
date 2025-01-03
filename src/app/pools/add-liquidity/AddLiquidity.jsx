@@ -8,9 +8,7 @@ import Step3 from './Step3'
 
 function AddLiquidity({ showSidebar, step, setCurrentStep, pool }) {
   const [poolSelected, setPoolSelected] = useState(pool)
-  const [isAutomatic, setIsAutomatic] = useState(true)
   const [isAdd, setIsAdd] = useState(false)
-  const [strategy, setStrategy] = useState()
 
   return (
     <>
@@ -30,11 +28,7 @@ function AddLiquidity({ showSidebar, step, setCurrentStep, pool }) {
               pool={poolSelected}
               setCurrentStep={setCurrentStep}
               currentStep={step}
-              isAutomatic={isAutomatic}
-              setIsAutomatic={setIsAutomatic}
               isAdd={isAdd}
-              setStrategy={setStrategy}
-              strategy={strategy}
               showSidebar={showSidebar}
             />
           ) : (
@@ -46,15 +40,7 @@ function AddLiquidity({ showSidebar, step, setCurrentStep, pool }) {
       {step === 2 && (
         <>
           {poolSelected ? (
-            <Step3
-              isAdd={isAdd}
-              isAutomatic={isAutomatic}
-              pool={poolSelected}
-              setCurrentStep={setCurrentStep}
-              setStrategy={setStrategy}
-              strategy={strategy}
-              showSidebar={showSidebar}
-            />
+            <Step3 isAdd={isAdd} pool={poolSelected} setCurrentStep={setCurrentStep} showSidebar={showSidebar} />
           ) : (
             <Loading />
           )}
