@@ -11,33 +11,33 @@ import { fromWei } from '@/lib/utils'
 export const useTokensState = create()(
   persist(
     set => ({
-      customTokens: [],
+      localTokens: [],
 
-      addTokenCustom: token =>
+      addLocalToken: token =>
         set(state => ({
-          customTokens: [...state.customTokens, token],
+          localTokens: [...state.localTokens, token],
         })),
 
-      removeTokenCustom: address =>
-        set(({ customTokens }) => ({
-          customTokens: customTokens.filter(item => getAddress(item.address) !== getAddress(address)),
+      removeLocalToken: address =>
+        set(({ localTokens }) => ({
+          localTokens: localTokens.filter(item => getAddress(item.address) !== getAddress(address)),
         })),
     }),
     {
       name: 'tokens-storage',
       partialize: state => ({
-        customTokens: state.customTokens,
+        localTokens: state.localTokens,
       }),
     },
   ),
 )
 
-export const useCustomTokens = () => {
-  const { customTokens, addTokenCustom, removeTokenCustom } = useTokensState()
+export const useLocalTokens = () => {
+  const { localTokens, addLocalToken, removeLocalToken } = useTokensState()
   const { account } = useWallet()
 
   const { data: balances } = useReadContracts({
-    contracts: customTokens.map(token => ({
+    contracts: localTokens.map(token => ({
       abi: ERC20Abi,
       address: token.address,
       functionName: 'balanceOf',
@@ -48,19 +48,19 @@ export const useCustomTokens = () => {
     },
   })
 
-  const customTokensWithBalances = useMemo(
+  const localTokensWithBalances = useMemo(
     () =>
-      customTokens.map((tk, index) => ({
+      localTokens.map((tk, index) => ({
         ...tk,
         price: 0,
         balance: fromWei(balances?.[index]?.result || 0n, tk.decimals),
       })),
-    [balances, customTokens],
+    [balances, localTokens],
   )
 
   return {
-    customTokens: customTokensWithBalances,
-    addTokenCustom,
-    removeTokenCustom,
+    localTokens: localTokensWithBalances,
+    addLocalToken,
+    removeLocalToken,
   }
 }

@@ -15,7 +15,7 @@ import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { useCustomTokens } from '@/state/tokenCustom/store'
+import { useLocalTokens } from '@/state/localTokens/store'
 
 import { ItemToken } from './ItemToken'
 
@@ -104,10 +104,10 @@ function TokenModal({
   const [searchText, setSearchText] = useState('')
 
   const search = useDebounce(searchText)
-  const { customTokens } = useCustomTokens()
+  const { localTokens } = useLocalTokens()
 
   const filteredAssets = useMemo(() => {
-    const tokenList = customTokens.concat(baseAssets)
+    const tokenList = localTokens.concat(baseAssets)
 
     const result = search
       ? tokenList.filter(
@@ -122,7 +122,7 @@ function TokenModal({
     }
 
     return result
-  }, [baseAssets, customToken, customTokens, search])
+  }, [baseAssets, customToken, localTokens, search])
 
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
