@@ -105,7 +105,9 @@ export function useFusions(poolKeys, version) {
 }
 
 export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPool = false }) {
-  const [token0, token1] = currencyA?.sortsBefore(currencyB) ? [currencyA, currencyB] : [currencyB, currencyA]
+  const wTokenA = currencyA?.wrapped
+  const wTokenB = currencyB?.wrapped
+  const [token0, token1] = wTokenA?.sortsBefore(wTokenB) ? [wTokenA, wTokenB] : [wTokenB, wTokenA]
   const chainId = token0?.chainId ?? 56
 
   let functionName
