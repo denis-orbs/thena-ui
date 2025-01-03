@@ -6,6 +6,7 @@ import fusionQuoterAbi from './fusionQuoter.json'
 import fusionRouterAbi from './fusionRouter.json'
 import gammaClearingAbi from './gammaClearing.json'
 import gammaHypervisorAbi from './gammaHypervisor.json'
+import gammaHypervisorAbiV3 from './gammaHypervisorV3.json'
 import gammaUniProxyAbi from './gammaUniProxy.json'
 import gaugeSimpleAbi from './gaugeSimple.json'
 import gaugev2Abi from './gaugev2.json'
@@ -24,6 +25,7 @@ export {
   fusionRouterAbi,
   gammaClearingAbi,
   gammaHypervisorAbi,
+  gammaHypervisorAbiV3,
   gammaUniProxyAbi,
   gaugeSimpleAbi,
   gaugev2Abi,
