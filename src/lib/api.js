@@ -62,7 +62,7 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
 export const fetchCustomAssets = async networkId => {
   try {
     const getCustomTokens = async () => {
-      const response = await fetch(`${backendApi}/customAssets`, {
+      const response = await fetch(`${networkId === 97 ? backendApiTestNet : backendApi}/customAssets`, {
         method: 'get',
       })
       return response.json()
