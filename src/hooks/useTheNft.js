@@ -143,7 +143,7 @@ export const useStakeNft = () => {
       const isApproved = await readCall(theNFTContract, 'isApprovedForAll', [account, newStakingAddress])
       startTxn({
         key,
-        title: t('Stake theNFTs'),
+        title: 'Stake theNFTs',
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
@@ -200,7 +200,7 @@ export const useUnstakeNft = () => {
       const unstakeuuid = uuidv4()
       startTxn({
         key,
-        title: t('Unstake theNFTs'),
+        title: 'Unstake theNFTs',
         transactions: {
           [unstakeuuid]: {
             desc: t('Unstake theNFTs'),
@@ -307,7 +307,7 @@ export const useNftFeesClaim = () => {
     const harvestuuid = uuidv4()
     startTxn({
       key,
-      title: t('Claim Fees'),
+      title: 'Claim Fees',
       transactions: {
         [harvestuuid]: {
           desc: t('Claim Fees'),
@@ -347,7 +347,7 @@ export const useNftRoyaltyClaim = () => {
       const harvestuuid = uuidv4()
       startTxn({
         key,
-        title: t('Claim Fees'),
+        title: 'Claim Fees',
         transactions: {
           [harvestuuid]: {
             desc: t('Claim Fees'),

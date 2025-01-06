@@ -294,7 +294,7 @@ export const useJoinTC = () => {
       setPending(true)
       startTxn({
         key,
-        title: t('Join Competition'),
+        title: 'Join Competition',
         transactions,
       })
       for (let i = 0; i < Object.keys(tokens).length; i++) {
@@ -365,7 +365,7 @@ export const useDepositToTC = () => {
       setPending(true)
       startTxn({
         key,
-        title: t('Deposit'),
+        title: 'Deposit',
         transactions: {
           ...(!isApprovedWinningToken && {
             [approveTokenuuid]: {
@@ -524,7 +524,7 @@ export const useWithdrawDepositTC = () => {
       setLoading(true)
       startTxn({
         key,
-        title: t('Withdraw Deposit'),
+        title: 'Withdraw Deposit',
         transactions: {
           [withdrawuuid]: {
             desc: t('Withdraw Deposit'),
@@ -574,7 +574,7 @@ export const useIncreaseTCSpotPrize = () => {
       setPending(true)
       startTxn({
         key,
-        title: t('Increase Prize Pool'),
+        title: 'Increase Prize Pool',
         transactions: {
           ...(!isApprovedToken && {
             [approveTokenuuid]: {

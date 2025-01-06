@@ -32,7 +32,7 @@ export const useCreateLock = () => {
       const isApproved = fromWei(allowance).gte(amount)
       startTxn({
         key,
-        title: t('Lock your THE'),
+        title: 'Lock your THE',
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
@@ -95,7 +95,7 @@ export const useExtendLock = () => {
       const unlockTime = dayjs(selectedDate).diff(dayjs(), 'second') + 100
       startTxn({
         key,
-        title: t('Extend Lock Duration'),
+        title: 'Extend Lock Duration',
         transactions: {
           [extenduuid]: {
             desc: t('Extend Lock Duration'),
@@ -146,7 +146,7 @@ export const useIncreaseLock = () => {
       const isApproved = fromWei(allowance).gte(amount)
       startTxn({
         key,
-        title: t('Increase Lock Amount'),
+        title: 'Increase Lock Amount',
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
@@ -203,7 +203,7 @@ export const useMerge = () => {
       const mergeuuid = uuidv4()
       startTxn({
         key,
-        title: t('Merge veTHE'),
+        title: 'Merge veTHE',
         transactions: {
           ...(from.voted && {
             [resetuuid]: {
@@ -355,7 +355,7 @@ export const useTransfer = () => {
       const transferuuid = uuidv4()
       startTxn({
         key,
-        title: t('Transfer veTHE'),
+        title: 'Transfer veTHE',
         transactions: {
           ...(from.voted && {
             [resetuuid]: {
@@ -474,7 +474,7 @@ export const useVote = () => {
       const voteuuid = uuidv4()
       startTxn({
         key,
-        title: t('Cast Votes'),
+        title: 'Cast Votes',
         transactions: {
           [voteuuid]: {
             desc: t('Cast Votes'),
@@ -527,7 +527,7 @@ export const useReset = () => {
       const resetuuid = uuidv4()
       startTxn({
         key,
-        title: t('Reset Votes'),
+        title: 'Reset Votes',
         transactions: {
           [resetuuid]: {
             desc: t('Reset Votes'),
@@ -570,7 +570,7 @@ export const usePoke = () => {
       const pokeuuid = uuidv4()
       startTxn({
         key,
-        title: t('Revote'),
+        title: 'Revote',
         transactions: {
           [pokeuuid]: {
             desc: t('Revote'),
@@ -657,7 +657,7 @@ export const useClaimBribes = () => {
       }
       startTxn({
         key,
-        title: t('Claim Incentives + Fees'),
+        title: 'Claim Incentives + Fees',
         transactions: result,
       })
       setPending(true)
@@ -703,7 +703,7 @@ export const useClaimRebase = () => {
       const veClaimuuid = uuidv4()
       startTxn({
         key,
-        title: t('Claim Rebase'),
+        title: 'Claim Rebase',
         transactions: {
           [veClaimuuid]: {
             desc: t('Claim Rebase'),
