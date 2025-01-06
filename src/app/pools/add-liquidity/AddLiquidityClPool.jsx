@@ -6,15 +6,14 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import { TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
-import { useCustomAssets } from '@/context/customAssetsContext'
+import { useToken } from '@/hooks/fusion/Tokens'
 import { cn } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 function AddLiquidityClPool({ pool, setCurrentStep, isAdd, showSidebar = true }) {
   const t = useTranslations()
-  const assets = useAssets()
-  const customAssets = useCustomAssets()
+  const firstAsset = useToken(pool?.token0?.address)
+  const secondAsset = useToken(pool?.token1?.address)
   const [isReverse, setIsReverse] = useState(true)
 
   return (
@@ -36,12 +35,8 @@ function AddLiquidityClPool({ pool, setCurrentStep, isAdd, showSidebar = true })
           <ChooseStrategy
             pool={pool}
             pairType={PAIR_TYPES.LSD}
-            firstAsset={[...assets, ...customAssets].find(
-              asset => asset.address.toLowerCase() === pool?.token0?.address?.toLowerCase(),
-            )}
-            secondAsset={[...assets, ...customAssets].find(
-              asset => asset.address.toLowerCase() === pool?.token1?.address?.toLowerCase(),
-            )}
+            firstAsset={firstAsset}
+            secondAsset={secondAsset}
             setCurrentStep={setCurrentStep}
             isReverse={isReverse}
             setIsReverse={setIsReverse}

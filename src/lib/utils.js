@@ -141,7 +141,7 @@ export const wrappedAddress = asset => {
     return Contracts.WBNB[asset.chainId].toLowerCase()
   }
 
-  return asset.address
+  return asset.address.toLowerCase()
 }
 
 export const unwrappedSymbol = asset => (!asset ? null : asset.symbol === 'WBNB' ? 'BNB' : asset.symbol)

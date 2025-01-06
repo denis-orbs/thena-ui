@@ -15,6 +15,7 @@ import { useCustomAssets } from '@/context/customAssetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { cn, formatAmount, getPoolType, wrappedAddress } from '@/lib/utils'
 import TokenModal from '@/modules/TokenModal'
+import { useLocalTokens } from '@/state/localTokens/store'
 import { ChevronDownIcon } from '@/svgs'
 
 import Navigation from './Navigation'
@@ -132,6 +133,7 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   const t = useTranslations()
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
+  const { localTokens } = useLocalTokens()
 
   const searchParams = useSearchParams()
   const pairType = searchParams.get('pairType')
@@ -150,9 +152,9 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   }
 
   useEffect(() => {
-    setFirstAsset([...assets, ...customAssets].find(ele => ele.address === firstAddress))
-    setSecondAsset([...assets, ...customAssets].find(ele => ele.address === secondAddress))
-  }, [assets, firstAddress, secondAddress, customAssets])
+    setFirstAsset([...assets, ...customAssets, ...localTokens].find(ele => ele.address === firstAddress))
+    setSecondAsset([...assets, ...customAssets, ...localTokens].find(ele => ele.address === secondAddress))
+  }, [assets, firstAddress, secondAddress, customAssets, localTokens])
 
   const availablePools = useMemo(() => {
     if (!firstAddress || !secondAddress) return []

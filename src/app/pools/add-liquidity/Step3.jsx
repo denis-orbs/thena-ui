@@ -13,10 +13,8 @@ import IconGroup from '@/components/icongroup'
 import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
-import { useCustomAssets } from '@/context/customAssetsContext'
 import { useFusionPairs } from '@/context/fusionsContext'
-import { useCurrency } from '@/hooks/fusion/Tokens'
+import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
@@ -34,28 +32,11 @@ export default function Step3({ pool, isAdd, setCurrentStep, showSidebar = true 
   const [slippage, setSlippage] = useState(0.5)
   const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
 
-  const assets = useAssets()
-  const customAssets = useCustomAssets()
+  const firstAsset = useToken(pool?.token0?.address)
+  const secondAsset = useToken(pool?.token1?.address)
   const fusionPairs = useFusionPairs()
-  const [firstAsset, secondAsset] = useMemo(
-    () => [
-      [...assets, ...customAssets].find(item => item.address.toLowerCase() === pool?.token0?.address.toLowerCase()),
-      [...assets, ...customAssets].find(item => item.address.toLowerCase() === pool?.token1?.address.toLowerCase()),
-    ],
-    [assets, customAssets, pool?.token0?.address, pool?.token1?.address],
-  )
   const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
   const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)
-
-  const assetA = useMemo(
-    () => [...assets, ...customAssets].find(item => item.address?.toLowerCase() === firstAsset.address?.toLowerCase()),
-    [assets, customAssets, firstAsset.address],
-  )
-
-  const assetB = useMemo(
-    () => [...assets, ...customAssets].find(item => item.address?.toLowerCase() === secondAsset.address?.toLowerCase()),
-    [assets, customAssets, secondAsset.address],
-  )
 
   const baseCurrency = currencyA
   const quoteCurrency = currencyB
@@ -149,8 +130,8 @@ export default function Step3({ pool, isAdd, setCurrentStep, showSidebar = true 
               <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
               {isZapper ? (
                 <ZapperPane
-                  asset1={assetA}
-                  asset2={assetB}
+                  asset1={firstAsset}
+                  asset2={secondAsset}
                   slippage={slippage}
                   poolId={pool?.address}
                   tickLower={tickLower}
