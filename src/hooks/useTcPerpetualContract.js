@@ -294,7 +294,7 @@ export const useJoinTCPerpetual = () => {
       setPending(true)
       startTxn({
         key,
-        title: t('Join Competition'),
+        title: 'Join Competition',
         transactions,
       })
       for (let i = 0; i < Object.keys(tokens).length; i++) {
@@ -427,7 +427,7 @@ export const useWithdrawTCPerps = () => {
       setLoading(true)
       startTxn({
         key,
-        title: t('Withdraw Deposit'),
+        title: 'Withdraw Deposit',
         transactions: {
           [withdrawuuid]: {
             desc: t('Withdraw Deposit'),
@@ -586,7 +586,7 @@ export const useDeallocateTCPerp = () => {
 
       startTxn({
         key,
-        title: t('Deallocate'),
+        title: 'Deallocate',
         transactions: {
           [deallocateuuid]: {
             desc: t('Deallocate'),
@@ -830,7 +830,7 @@ export const useIncreasePrizeTCPerp = () => {
       setPending(true)
       startTxn({
         key,
-        title: t('Increase Prize Pool'),
+        title: 'Increase Prize Pool',
         transactions: {
           ...(!isApprovedToken && {
             [approveTokenuuid]: {

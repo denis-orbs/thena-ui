@@ -50,7 +50,7 @@ export function JoinModal({ competition, open, onClose }) {
 
     const notEnoughFee = entryFeeUpdate
       .map((e, index) => {
-        if (prizeToken[index].address.toLowerCase() === winningToken.address.toLowerCase()) {
+        if (prizeToken[index].address.toLowerCase() === winningToken?.address?.toLowerCase()) {
           const totalAmount = fromWei(entryFeeUpdate[index], prizeToken[index]?.decimals).plus(
             fromWei(depositBalance, winningToken?.decimals),
           )
@@ -62,7 +62,7 @@ export function JoinModal({ competition, open, onClose }) {
       })
       .some(item => item)
 
-    const notEnoughDeposit = fromWei(depositBalance, winningToken?.decimals).gt(winningToken.balance)
+    const notEnoughDeposit = fromWei(depositBalance, winningToken?.decimals).gt(winningToken?.balance)
 
     return notEnoughDeposit || notEnoughFee
   }, [entryFeeUpdate, inputStartingBalance, market, prizeToken, startingBalance, winningToken])
@@ -113,7 +113,7 @@ export function JoinModal({ competition, open, onClose }) {
       if (!isInvalidAmount(startingBalance) || !isInvalidAmount(minimumBalance)) {
         return t('Pay Deposit To Join Message', {
           depositAmount: formatAmount(fromWei(startingBalance, winningToken?.decimals)),
-          depositTicker: winningToken.symbol,
+          depositTicker: winningToken?.symbol,
         })
       }
       return t('Free To Join Message')
@@ -129,16 +129,16 @@ export function JoinModal({ competition, open, onClose }) {
     // Entry fee and deposit required
     return t('Pay Entry Fee And Deposit To Join Message', {
       depositAmount: isInvalidAmount(startingBalance)
-        ? formatAmount(fromWei(minimumBalance, winningToken.decimals))
-        : formatAmount(fromWei(startingBalance, winningToken.decimals)),
-      depositTicker: winningToken.symbol,
+        ? formatAmount(fromWei(minimumBalance, winningToken?.decimals))
+        : formatAmount(fromWei(startingBalance, winningToken?.decimals)),
+      depositTicker: winningToken?.symbol,
       entryFeeText: entryFeeArr.map(item => `${item.data} ${item.symbol}`).join(', '),
     })
-  }, [entryFeeArr, entryFeeUpdate, minimumBalance, startingBalance, t, winningToken.decimals, winningToken.symbol])
+  }, [entryFeeArr, entryFeeUpdate, minimumBalance, startingBalance, t, winningToken?.decimals, winningToken?.symbol])
 
   const totalToken = useMemo(() => {
     const indexToken = prizeToken.findIndex(
-      (token, index) => token.symbol === winningToken.symbol && Number(entryFeeUpdate[index]) > 0,
+      (token, index) => token.symbol === winningToken?.symbol && Number(entryFeeUpdate[index]) > 0,
     )
     if (indexToken !== -1) {
       const depositBalance =
@@ -148,7 +148,7 @@ export function JoinModal({ competition, open, onClose }) {
 
       prizeTokenArr = prizeToken.map((pt, index) => ({
         data:
-          pt.symbol === winningToken.symbol && Number(entryFeeUpdate[index]) > 0
+          pt.symbol === winningToken?.symbol && Number(entryFeeUpdate[index]) > 0
             ? formatAmount(
                 fromWei(entryFeeUpdate[index], pt.decimals).toNumber() +
                   fromWei(depositBalance, pt.decimals).toNumber(),
@@ -164,7 +164,7 @@ export function JoinModal({ competition, open, onClose }) {
       return prizeTokenArr.map(item => `${item.data} ${item.ticker}`).join(', ')
     }
     return ''
-  }, [entryFeeUpdate, market, minimumBalance, prizeToken, startingBalance, winningToken.symbol])
+  }, [entryFeeUpdate, market, minimumBalance, prizeToken, startingBalance, winningToken?.symbol])
 
   return (
     <Modal isOpen={open} closeModal={onClose} width={540} title={t('Join Competition')}>
@@ -222,8 +222,8 @@ export function JoinModal({ competition, open, onClose }) {
                 </TextHeading>
                 <div className='mt-2 flex space-x-2'>
                   <Image
-                    alt={winningToken.name}
-                    src={winningToken.logoURI}
+                    alt={winningToken?.name}
+                    src={winningToken?.logoURI}
                     className='flex-shrink-0'
                     width={20}
                     height={20}
@@ -233,10 +233,10 @@ export function JoinModal({ competition, open, onClose }) {
                     {formatAmount(
                       fromWei(
                         isInvalidAmount(startingBalance) ? minimumBalance : startingBalance,
-                        winningToken.decimals,
+                        winningToken?.decimals,
                       ),
                     )}{' '}
-                    {winningToken.symbol}
+                    {winningToken?.symbol}
                   </Paragraph>
                 </div>
               </div>
@@ -270,7 +270,7 @@ export function JoinModal({ competition, open, onClose }) {
                   pathname: '/swap',
                   query: {
                     inputCurrency: 'BNB',
-                    outputCurrency: winningToken.address,
+                    outputCurrency: winningToken?.address,
                   },
                 }}
               >

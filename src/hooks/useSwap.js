@@ -139,6 +139,7 @@ export const useOdosSwap = (autoClose = false) => {
       startTxn({
         key,
         title: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
+        isTranslation: false,
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {
@@ -550,7 +551,7 @@ export const useWrap = () => {
 
       startTxn({
         key,
-        title: t('Wrap'),
+        title: 'Wrap',
         transactions: {
           [wrapuuid]: {
             desc: t('Wrap'),
@@ -583,7 +584,7 @@ export const useWrap = () => {
 
       startTxn({
         key,
-        title: t('Unwrap'),
+        title: 'Unwrap',
         transactions: {
           [unwrapuuid]: {
             desc: t('Unwrap'),
@@ -647,7 +648,7 @@ export const useTCSpotOOESwap = () => {
       const swapuuid = uuidv4()
       startTxn({
         key,
-        title: t('Swap'),
+        title: 'Swap',
         transactions: {
           [swapuuid]: {
             desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
@@ -691,7 +692,7 @@ export const useTCSpotAlgebraSwap = () => {
       const swapuuid = uuidv4()
       startTxn({
         key,
-        title: t('Swap'),
+        title: 'Swap',
         transactions: {
           [swapuuid]: {
             desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
@@ -787,7 +788,7 @@ export const useTCSpot1InchSwap = () => {
       const swapuuid = uuidv4()
       startTxn({
         key,
-        title: t('Swap'),
+        title: 'Swap',
         transactions: {
           [swapuuid]: {
             desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),
@@ -977,7 +978,7 @@ export const useTCSpotOdosSwap = () => {
 
       startTxn({
         key,
-        title: t('Swap'),
+        title: 'Swap',
         transactions: {
           [swapuuid]: {
             desc: t('Swap [symbolA] for [symbolB]', { symbolA: fromAsset.symbol, symbolB: toAsset.symbol }),

@@ -157,7 +157,7 @@ export const useIchiManage = () => {
       setPending(true)
       startTxn({
         key,
-        title: t('Deposit and Stake'),
+        title: 'Deposit and Stake',
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
@@ -295,7 +295,7 @@ export const useIchiRemove = () => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: t('Remove Liquidity'),
+        title: 'Remove Liquidity',
         transactions: {
           [removeuuid]: {
             desc: t('Remove Liquidity'),
