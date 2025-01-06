@@ -11,8 +11,8 @@ import { useAssets } from '@/context/assetsContext'
 import { useWrap } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
 import { fromWei } from '@/lib/utils'
+import { useLocalTokens } from '@/state/localTokens/store'
 import { useChainSettings } from '@/state/settings/hooks'
-import { useCustomTokens } from '@/state/tokenCustom/store'
 
 import SwapBest from './SwapBest'
 import SwapFusion from './SwapFusion'
@@ -31,7 +31,7 @@ export default function SwapPage() {
   const assets = useAssets()
   const { onWrap, onUnwrap, pending: wrapPending } = useWrap()
   const { account, chainId } = useWallet()
-  const { customTokens } = useCustomTokens()
+  const { localTokens } = useLocalTokens()
 
   const { data: tokenFromBalance } = useBalance({
     token: fromAsset?.address ?? '',
@@ -54,7 +54,7 @@ export default function SwapPage() {
   const { from, to } = useMemo(() => {
     if (!assets || !assets.length) return { from: null, to: null }
 
-    const assetList = customTokens.concat(assets)
+    const assetList = localTokens.concat(assets)
 
     const fromCurrency = inputCurrency
       ? assetList.find(asset => asset.address.toLowerCase() === inputCurrency.toLowerCase())
@@ -68,7 +68,7 @@ export default function SwapPage() {
       from: fromCurrency,
       to: toCurrency,
     }
-  }, [assets, customTokens, inputCurrency, outputCurrency])
+  }, [assets, localTokens, inputCurrency, outputCurrency])
 
   useEffect(() => {
     let fromAddress = 'BNB'

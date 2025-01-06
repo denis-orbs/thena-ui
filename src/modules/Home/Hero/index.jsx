@@ -50,11 +50,11 @@ function Hero() {
         <div
           className='z-30 flex cursor-pointer items-center space-x-3'
           onClick={() => {
-            window.open('https://blog.openzeppelin.com/retro-thena-audit', '_blank')
+            window.open('https://x.com/BinanceLabs/article/1873984088559747124', '_blank')
           }}
         >
-          <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Audited by')}</span>
-          <HomeImage alt='zepplin logo' src='/images/home/hero/z.svg' />
+          <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Backed by')}</span>
+          <HomeImage alt='binancelabs logo' src='/images/binancelabs_logo.png' />
           {/* Hidden on EN, only show on ZH */}
           <span className='text-sm leading-5 tracking-[-0.42px] text-white/[65%]'>{t('Audit')}</span>
         </div>

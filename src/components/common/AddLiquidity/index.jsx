@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useV3MintState } from '@/state/fusion/hooks'
-import { useCustomTokens } from '@/state/tokenCustom/store'
+import { useLocalTokens } from '@/state/localTokens/store'
 
 import ChooseStrategy from './ChooseStrategy'
 import FusionAdd from './FusionAdd'
@@ -37,14 +37,14 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
     }
   }, [assets, pool, firstAsset, secondAsset, pairType])
 
-  const { customTokens } = useCustomTokens()
+  const { localTokens } = useLocalTokens()
 
   useEffect(() => {
-    const assetList = customTokens.concat(assets)
+    const assetList = localTokens.concat(assets)
 
     setFirstAsset(assetList.find(ele => ele.address === firstAddress))
     setSecondAsset(assetList.find(ele => ele.address === secondAddress))
-  }, [assets, customTokens, firstAddress, secondAddress])
+  }, [assets, localTokens, firstAddress, secondAddress])
 
   useEffect(() => () => (init = false), [])
 
