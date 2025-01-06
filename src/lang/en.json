@@ -1320,5 +1320,8 @@
   "Pool Deployer": "Pool Deployer",
   "Success": "Success",
   "Select Pool Type": "Select Pool Type",
-  "uniBTC FBTC pool tooltip": "Liquidity providers in this pool are eligible for 2x Sparks in Ignition's Sparkle Campaign"
+  "uniBTC FBTC pool tooltip": "Liquidity providers in this pool are eligible for 2x Sparks in Ignition's Sparkle Campaign",
+  "warning un-farming pool": "You need to activate \"Earn $THE\" to continue earning rewards.",
+  "warning Out of Range": "You need to re-provide your liquidity in range to continue earning rewards.",
+  "Earn $THE": "Earn $THE"
 }

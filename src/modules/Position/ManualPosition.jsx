@@ -165,13 +165,25 @@ export default function ManualPosition({ pool }) {
             </Paragraph>
           </div>
         </div>
-        {!Number(liquidity) ? (
-          <YellowBadge>{t('Closed')}</YellowBadge>
-        ) : outOfRange ? (
-          <PrimaryBadge>{t('Out of Range')}</PrimaryBadge>
-        ) : (
-          <GreenBadge>{t('In Range')}</GreenBadge>
-        )}
+
+        <div className='flex flex-wrap justify-end gap-2'>
+          {pool.deployer === zeroAddress ? (
+            <>
+              <PrimaryBadge>$THE</PrimaryBadge>
+              <GreenBadge>10% Fees</GreenBadge>
+            </>
+          ) : (
+            <GreenBadge>80% Fees</GreenBadge>
+          )}
+
+          {!Number(liquidity) ? (
+            <YellowBadge>{t('Closed')}</YellowBadge>
+          ) : outOfRange ? (
+            <PrimaryBadge>{t('Out of Range')}</PrimaryBadge>
+          ) : (
+            <GreenBadge>{t('In Range')}</GreenBadge>
+          )}
+        </div>
       </div>
 
       <div className='flex flex-col gap-3'>
@@ -270,11 +282,50 @@ export default function ManualPosition({ pool }) {
             })}
           </Paragraph>
         </div>
+
+        <Box
+          className={cn('flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950', {
+            hidden:
+              pool?.isFarming ||
+              !incentiveAddress ||
+              incentiveAddress === zeroAddress ||
+              pool?.deployer !== zeroAddress ||
+              Number(liquidity) <= 0,
+          })}
+        >
+          <div className='size-5'>
+            <InfoIcon className='size-5 stroke-primary-600' />
+          </div>
+
+          <div className='flex flex-col'>
+            <TextSubHeading className='text-base text-primary-100'>{t('warning un-farming pool')}</TextSubHeading>
+          </div>
+        </Box>
+
+        <WarningOutOfRange isShow={outOfRange} />
       </div>
 
       <div id='BUTTONS_GROUP' className='flex w-full gap-3'>
+        {Number(liquidity) > 0 ? (
+          <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
+            {t('Remove')}
+          </OutlinedButton>
+        ) : (
+          <OutlinedButton
+            className='w-full'
+            onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
+            disabled={pending}
+          >
+            {t('Burn')}
+          </OutlinedButton>
+        )}
+
         {version === 3 && (
-          <TextButton className='w-full' disabled={!fees || feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
+          <TextButton
+            className={cn('w-full', { hidden: !fees || feesInUsd.isZero() })}
+            disabled={!fees || feesInUsd.isZero()}
+            onClick={() => setClaimPopup(true)}
+          >
             {t('Claim')}
           </TextButton>
         )}
@@ -291,22 +342,8 @@ export default function ManualPosition({ pool }) {
           disabled={pool?.isFarming || isEnterFarmLoading}
           onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
         >
-          {t('Stake')}
+          {t('Earn $THE')}
         </EmphasisButton>
-
-        {Number(liquidity) > 0 ? (
-          <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
-            {t('Remove')}
-          </OutlinedButton>
-        ) : (
-          <OutlinedButton
-            className='w-full'
-            onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
-            disabled={pending}
-          >
-            {t('Burn')}
-          </OutlinedButton>
-        )}
 
         {version === 3 && (
           <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
@@ -352,6 +389,26 @@ export default function ManualPosition({ pool }) {
         _fusion={_fusion}
         tickAtLimit={tickAtLimit}
       />
+    </Box>
+  )
+}
+
+export function WarningOutOfRange({ isShow }) {
+  const t = useTranslations()
+
+  return (
+    <Box
+      className={cn('hidden flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950', {
+        flex: isShow,
+      })}
+    >
+      <div className='size-5'>
+        <InfoIcon className='size-5 stroke-primary-600' />
+      </div>
+
+      <div className='flex flex-col'>
+        <TextSubHeading className='text-base text-primary-100'>{t('warning Out of Range')}</TextSubHeading>
+      </div>
     </Box>
   )
 }

@@ -28,6 +28,7 @@ import { InfoIcon, RefreshIcon } from '@/svgs'
 
 import AddManualModal from './AddManualModal'
 import ClaimModal from './ClaimModal'
+import { WarningOutOfRange } from './ManualPosition'
 import RemoveManualModal from './RemoveManualModal'
 
 export function FarmingPosition({ pool }) {
@@ -177,15 +178,18 @@ export function FarmingPosition({ pool }) {
           </div>
         </div>
 
-        <GreenBadge>Farming</GreenBadge>
+        <div className='flex flex-wrap justify-end gap-2'>
+          <PrimaryBadge>$THE</PrimaryBadge>
+          <GreenBadge>10% Fees</GreenBadge>
 
-        {!Number(liquidity) ? (
-          <YellowBadge>{t('Closed')}</YellowBadge>
-        ) : outOfRange ? (
-          <PrimaryBadge>{t('Out of Range')}</PrimaryBadge>
-        ) : (
-          <GreenBadge>{t('In Range')}</GreenBadge>
-        )}
+          {!Number(liquidity) ? (
+            <YellowBadge>{t('Closed')}</YellowBadge>
+          ) : outOfRange ? (
+            <PrimaryBadge>{t('Out of Range')}</PrimaryBadge>
+          ) : (
+            <GreenBadge>{t('In Range')}</GreenBadge>
+          )}
+        </div>
       </div>
 
       <div className='flex flex-col gap-3'>
@@ -288,6 +292,8 @@ export function FarmingPosition({ pool }) {
             })}
           </Paragraph>
         </div>
+
+        <WarningOutOfRange isShow={outOfRange} />
       </div>
 
       <div id='BUTTONS_GROUP' className='flex w-full gap-3'>
