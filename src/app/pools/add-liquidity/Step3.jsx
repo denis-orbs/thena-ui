@@ -14,7 +14,7 @@ import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useFusionPairs } from '@/context/fusionsContext'
-import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
+import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
@@ -32,8 +32,8 @@ export default function Step3({ pool, isAdd, setCurrentStep, showSidebar = true 
   const [slippage, setSlippage] = useState(0.5)
   const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
 
-  const firstAsset = useToken(pool?.token0?.address)
-  const secondAsset = useToken(pool?.token1?.address)
+  const firstAsset = useGetAsset(pool?.token0?.address)
+  const secondAsset = useGetAsset(pool?.token1?.address)
   const fusionPairs = useFusionPairs()
   const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
   const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)

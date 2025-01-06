@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 
 import SelectPair from '@/components/common/AddLiquidity/SelectPair'
 import Modal from '@/components/modal'
-import { useToken } from '@/hooks/fusion/Tokens'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 
 export default function AddLiquidityModal({ popup, setPopup }) {
   const { push } = useRouter()
@@ -15,8 +15,8 @@ export default function AddLiquidityModal({ popup, setPopup }) {
   const [firstAddress, setFirstAddress] = useState()
   const [secondAddress, setSecondAddress] = useState()
 
-  const firstAsset = useToken(firstAddress)
-  const secondAsset = useToken(secondAddress)
+  const firstAsset = useGetAsset(firstAddress)
+  const secondAsset = useGetAsset(secondAddress)
 
   const goToLiquidityPage = () => {
     push(`/pools/add-liquidity?firstAddress=${firstAddress}&secondAddress=${secondAddress}&pairType=${pairType}`)

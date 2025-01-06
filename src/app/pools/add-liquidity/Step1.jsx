@@ -11,7 +11,7 @@ import Input from '@/components/input'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
-import { useToken } from '@/hooks/fusion/Tokens'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getPoolType, wrappedAddress } from '@/lib/utils'
 import TokenModal from '@/modules/TokenModal'
 import { ChevronDownIcon } from '@/svgs'
@@ -134,8 +134,8 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   const pairType = searchParams.get('pairType')
   const [firstAddress, setFirstAddress] = useState(searchParams.get('firstAddress') || null)
   const [secondAddress, setSecondAddress] = useState(searchParams.get('secondAddress') || null)
-  const firstAsset = useToken(firstAddress)
-  const secondAsset = useToken(secondAddress)
+  const firstAsset = useGetAsset(firstAddress)
+  const secondAsset = useGetAsset(secondAddress)
 
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false)
   const [isFirstSelected, setIsFirstSelected] = useState(false)

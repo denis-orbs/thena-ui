@@ -6,14 +6,14 @@ import { TextIconButton } from '@/components/buttons/IconButton'
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import { TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { useToken } from '@/hooks/fusion/Tokens'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { cn } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 function AddLiquidityClPool({ pool, setCurrentStep, isAdd, showSidebar = true }) {
   const t = useTranslations()
-  const firstAsset = useToken(pool?.token0?.address)
-  const secondAsset = useToken(pool?.token1?.address)
+  const firstAsset = useGetAsset(pool?.token0?.address)
+  const secondAsset = useGetAsset(pool?.token1?.address)
   const [isReverse, setIsReverse] = useState(true)
 
   return (
