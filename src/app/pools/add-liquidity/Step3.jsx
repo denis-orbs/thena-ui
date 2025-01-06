@@ -21,7 +21,6 @@ import { cn, formatAmount, getPoolType, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintState } from '@/state/fusion/hooks'
-import { useCustomTokens } from '@/state/tokenCustom/store'
 import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
 
 import TransactionSettingModal from './TransactionSettingModal'
