@@ -1,35 +1,22 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import SelectPair from '@/components/common/AddLiquidity/SelectPair'
 import Modal from '@/components/modal'
-import { useAssets } from '@/context/assetsContext'
-import { useCustomAssets } from '@/context/customAssetsContext'
-import { useLocalTokens } from '@/state/localTokens/store'
+import { useToken } from '@/hooks/fusion/Tokens'
 
 export default function AddLiquidityModal({ popup, setPopup }) {
-  const [currentStep, setCurrentStep] = useState(0)
-  const [firstAsset, setFirstAsset] = useState()
-  const [secondAsset, setSecondAsset] = useState()
-  const [pairType, setPairType] = useState()
+  const { push } = useRouter()
 
+  const [pairType, setPairType] = useState()
+  const [currentStep, setCurrentStep] = useState(0)
   const [firstAddress, setFirstAddress] = useState()
   const [secondAddress, setSecondAddress] = useState()
 
-  const { push } = useRouter()
-
-  const assets = useAssets()
-
-  const customAssets = useCustomAssets()
-
-  const { localTokens } = useLocalTokens()
-
-  useEffect(() => {
-    setFirstAsset([...assets, ...customAssets, ...localTokens].find(ele => ele.address === firstAddress))
-    setSecondAsset([...assets, ...customAssets, ...localTokens].find(ele => ele.address === secondAddress))
-  }, [assets, firstAddress, secondAddress, customAssets, localTokens])
+  const firstAsset = useToken(firstAddress)
+  const secondAsset = useToken(secondAddress)
 
   const goToLiquidityPage = () => {
     push(`/pools/add-liquidity?firstAddress=${firstAddress}&secondAddress=${secondAddress}&pairType=${pairType}`)

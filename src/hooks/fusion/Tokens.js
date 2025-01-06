@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { BNB, ChainId, Token } from 'thena-sdk-core'
 
+import { UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { getTokenInfo } from '@/lib/helper'
@@ -23,7 +24,9 @@ export function useToken(tokenAddress) {
     }
 
     if (!asset) return undefined
-    return new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
+    const token = new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
+    token.logoURI = asset?.logoURI ?? UNKNOWN_LOGO
+    return token
   }, [assets, customAssets, localTokens, tokenAddress])
 }
 

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { OutlinedButton, TextButton } from '@/components/buttons/Button'
@@ -10,12 +10,10 @@ import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
-import { useCustomAssets } from '@/context/customAssetsContext'
 import { usePairs } from '@/context/pairsContext'
+import { useToken } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getPoolType, wrappedAddress } from '@/lib/utils'
 import TokenModal from '@/modules/TokenModal'
-import { useLocalTokens } from '@/state/localTokens/store'
 import { ChevronDownIcon } from '@/svgs'
 
 import Navigation from './Navigation'
@@ -131,17 +129,14 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
 export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   const { pairs } = usePairs()
   const t = useTranslations()
-  const [firstAsset, setFirstAsset] = useState()
-  const [secondAsset, setSecondAsset] = useState()
-  const { localTokens } = useLocalTokens()
 
   const searchParams = useSearchParams()
   const pairType = searchParams.get('pairType')
   const [firstAddress, setFirstAddress] = useState(searchParams.get('firstAddress') || null)
   const [secondAddress, setSecondAddress] = useState(searchParams.get('secondAddress') || null)
+  const firstAsset = useToken(firstAddress)
+  const secondAsset = useToken(secondAddress)
 
-  const assets = useAssets()
-  const customAssets = useCustomAssets()
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false)
   const [isFirstSelected, setIsFirstSelected] = useState(false)
 
@@ -150,11 +145,6 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   const toggleDrawer = () => {
     setIsOpenNavigation(!isOpenNavigation)
   }
-
-  useEffect(() => {
-    setFirstAsset([...assets, ...customAssets, ...localTokens].find(ele => ele.address === firstAddress))
-    setSecondAsset([...assets, ...customAssets, ...localTokens].find(ele => ele.address === secondAddress))
-  }, [assets, firstAddress, secondAddress, customAssets, localTokens])
 
   const availablePools = useMemo(() => {
     if (!firstAddress || !secondAddress) return []
