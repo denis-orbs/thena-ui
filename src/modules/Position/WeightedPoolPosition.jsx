@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import AddLiquidityWeightedModal from '@/app/pools/AddLiquidityWeightedModal'
@@ -46,6 +46,24 @@ export function WeightedPoolPosition({ pool, isStake }) {
       }),
     [pool, onClaimFees, mutatePosition],
   )
+
+  const weightsPrice = useMemo(() => {
+    let totalWeight = 0
+
+    const totalUsd = (depositValue?.tokens || []).reduce((sum, token) => sum + token.price * token.amount, 0)
+
+    const weights = (depositValue?.tokens || []).map((token, index) => {
+      const tokenUsd = token.price * token.amount
+      if (index === depositValue.tokens.length - 1) return 100 - totalWeight
+      const weight = (tokenUsd / totalUsd) * 100
+      if (index < depositValue.tokens.length - 1) {
+        totalWeight += weight
+      }
+      return weight
+    })
+
+    return weights
+  }, [depositValue.tokens])
 
   return (
     <div className='flex h-full flex-col justify-between rounded-xl bg-neutral-900 p-4'>
@@ -99,7 +117,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
               </span>
               <span>
                 <span>{formatAmount(token?.amount)}</span>
-                <span className='text-sm text-neutral-500'>({formatAmount(token?.weight)}%)</span>
+                <span className='text-sm text-neutral-500'>({formatAmount(weightsPrice[index])}%)</span>
               </span>
             </div>
           ))}

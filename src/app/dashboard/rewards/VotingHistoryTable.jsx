@@ -13,6 +13,7 @@ import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
 import { formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
+import { usePools } from '@/state/pools/hooks'
 import { useLocaleSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite, InfoIcon } from '@/svgs'
 
@@ -68,7 +69,8 @@ export default function VotingHistoryTable({ userVotes }) {
   const { locale } = useLocaleSettings()
   const [sort, setSort] = useState(sortOptions[5])
   const [currentPage, setCurrentPage] = useState(1)
-  const { pairs } = usePairs()
+  const pools = usePools()
+  const { weightedPools } = usePairs()
   const assets = useAssets()
 
   const groupedVotes = useMemo(
@@ -82,7 +84,7 @@ export default function VotingHistoryTable({ userVotes }) {
               amount: +reward.amount || 0,
             }
           })
-          const pairData = (pairs || []).find(
+          const pairData = ([...pools, ...weightedPools] || []).find(
             pair => pair?.address?.toLowerCase() === poolVote?.pool?.id?.toLowerCase(),
           )
           return {
@@ -99,7 +101,7 @@ export default function VotingHistoryTable({ userVotes }) {
         }),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [assets, JSON.stringify(pairs), userVotes.votes],
+    [assets, JSON.stringify(pools), weightedPools, userVotes.votes],
   )
 
   const calRewardUsd = useCallback(
@@ -164,7 +166,7 @@ export default function VotingHistoryTable({ userVotes }) {
                 />
                 <div className='flex flex-col'>
                   <TextHeading>{vote?.pool?.symbol}</TextHeading>
-                  <Paragraph>{vote?.pool?.type}</Paragraph>
+                  <Paragraph>{vote?.pool?.title === 'CL_Farming' ? 'Conc. Liquidity' : vote?.pool?.title}</Paragraph>
                 </div>
               </>
             )}
