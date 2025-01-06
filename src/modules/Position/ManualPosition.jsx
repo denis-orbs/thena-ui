@@ -302,7 +302,7 @@ export default function ManualPosition({ pool }) {
           </div>
         </Box>
 
-        <WarningOutOfRange isShow={outOfRange} />
+        <WarningOutOfRange isShow={outOfRange && Number(liquidity) > 0} />
       </div>
 
       <div id='BUTTONS_GROUP' className='flex w-full gap-3'>
