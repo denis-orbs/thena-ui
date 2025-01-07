@@ -60,54 +60,23 @@ export default function Navigation({ isOpen, setIsOpen }) {
       <div className='flex flex-col gap-6 py-4'>
         <div className='flex flex-col gap-2'>
           <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Liquidity Pools')}</TextHeading>
-          <Paragraph className='text-[16px] lg:text-[18px]'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In imperdiet, sem non ullamcorper commodo, nisi
-            magna mattis lorem, sit amet sodales lectus ligula nec velit. Mauris ultricies massa non massa fringilla,
-            quis congue augue ornare. Vestibulum ut risus vitae tellus dignissim ultrices. Ut tincidunt vestibulum
-            consectetur. Nam semper iaculis venenatis.
-          </Paragraph>
-          <Paragraph className='text-[16px] lg:text-[18px]'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In imperdiet, sem non ullamcorper commodo, nisi
-            magna mattis lorem, sit amet sodales lectus ligula nec velit. Mauris ultricies massa non massa fringilla,
-            quis congue augue ornare. Vestibulum ut risus vitae tellus dignissim ultrices. Ut tincidunt vestibulum
-            consectetur. Nam semper iaculis venenatis.
-          </Paragraph>
+          <Paragraph className='text-[16px] lg:text-[18px]'>{t('Conc Desc')}</Paragraph>
         </div>
         <div className='flex flex-col gap-2'>
           <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Concentrated Liquidity Pools')}</TextHeading>
-          <Paragraph className='text-[16px] lg:text-[18px]'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In imperdiet, sem non ullamcorper commodo, nisi
-            magna mattis lorem, sit amet sodales lectus ligula nec velit. Mauris ultricies massa non massa fringilla,
-            quis congue augue ornare. Vestibulum ut risus vitae tellus dignissim ultrices. Ut tincidunt vestibulum
-            consectetur. Nam semper iaculis venenatis.
-          </Paragraph>
+          <Paragraph className='text-[16px] lg:text-[18px]'>{t('Conc Desc')}</Paragraph>
         </div>
         <div className='flex flex-col gap-2'>
           <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Classic Pools')}</TextHeading>
-          <Paragraph className='text-[16px] lg:text-[18px]'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In imperdiet, sem non ullamcorper commodo, nisi
-            magna mattis lorem, sit amet sodales lectus ligula nec velit. Mauris ultricies massa non massa fringilla,
-            quis congue augue ornare. Vestibulum ut risus vitae tellus dignissim ultrices. Ut tincidunt vestibulum
-            consectetur. Nam semper iaculis venenatis.
-          </Paragraph>
+          <Paragraph className='text-[16px] lg:text-[18px]'>{t('Classic Desc')}</Paragraph>
         </div>
         <div className='flex flex-col gap-2'>
           <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Stable Pools')}</TextHeading>
-          <Paragraph className='text-[16px] lg:text-[18px]'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In imperdiet, sem non ullamcorper commodo, nisi
-            magna mattis lorem, sit amet sodales lectus ligula nec velit. Mauris ultricies massa non massa fringilla,
-            quis congue augue ornare. Vestibulum ut risus vitae tellus dignissim ultrices. Ut tincidunt vestibulum
-            consectetur. Nam semper iaculis venenatis.
-          </Paragraph>
+          <Paragraph className='text-[16px] lg:text-[18px]'>{t('Stable Desc')}</Paragraph>
         </div>
         <div className='flex flex-col gap-2'>
           <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Weighted Pools')}</TextHeading>
-          <Paragraph className='text-[16px] lg:text-[18px]'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. In imperdiet, sem non ullamcorper commodo, nisi
-            magna mattis lorem, sit amet sodales lectus ligula nec velit. Mauris ultricies massa non massa fringilla,
-            quis congue augue ornare. Vestibulum ut risus vitae tellus dignissim ultrices. Ut tincidunt vestibulum
-            consectetur. Nam semper iaculis venenatis.
-          </Paragraph>
+          <Paragraph className='text-[16px] lg:text-[18px]'>{t('Weighted Desc')}</Paragraph>
         </div>
       </div>
     </div>

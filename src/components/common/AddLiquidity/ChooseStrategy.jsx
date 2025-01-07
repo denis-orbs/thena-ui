@@ -19,7 +19,7 @@ import { FusionRangeType, GAMMA_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
-import { useCurrency } from '@/hooks/fusion/Tokens'
+import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
@@ -185,8 +185,8 @@ export default function ChooseStrategy({
   )
 
   const { data: pairPrices = [], error } = useFetchPairPrices({
-    token0Address: wrappedAddress(pair?.token0),
-    token1Address: wrappedAddress(pair?.token1),
+    token0Address: useGetAsset(pair?.token0?.address),
+    token1Address: useGetAsset(pair?.token1?.address),
     timeWindow,
   })
 

@@ -6,13 +6,13 @@ import { liquidityHub } from '@/modules/LiquidityHub'
 
 import { ZERO_VALUE } from './utils'
 
-const backendApi = 'https://api.thena.fi/api/v1'
-const backendApiTestNet = 'https://testnet-thena-backend.zinza.com.vn/api/v1'
+// const backendApi = 'https://api.thena.fi/api/v1'
+const backendApi = 'https://testnet-thena-backend.zinza.com.vn/api/v1'
 
 export const fetchAssets = async (networkId, liquidityHubEnabled) => {
   try {
     const getTokens = async () => {
-      const response = await fetch(`${networkId === 97 ? backendApiTestNet : backendApi}/assets`, {
+      const response = await fetch(`${backendApi}/assets`, {
         method: 'get',
       })
       return response.json()
@@ -62,7 +62,7 @@ export const fetchAssets = async (networkId, liquidityHubEnabled) => {
 export const fetchCustomAssets = async networkId => {
   try {
     const getCustomTokens = async () => {
-      const response = await fetch(`${networkId === 97 ? backendApiTestNet : backendApi}/customAssets`, {
+      const response = await fetch(`${backendApi}/customAssets/${networkId}`, {
         method: 'get',
       })
       return response.json()
@@ -87,11 +87,7 @@ export const fetchCustomAssets = async networkId => {
 }
 
 export const fetchPoolsV3 = params =>
-  fetch(
-    `${params[1] === 97 ? backendApiTestNet : backendApi}/${
-      params[1] === ChainId.BSC || params[1] === 97 ? 'fusions?v=3' : 'opfusions'
-    }`,
-  )
+  fetch(`${backendApi}/${params[1] === ChainId.BSC || params[1] === 97 ? 'fusions?v=3' : 'opfusions'}`)
     .then(r => r.json())
     .then(r => r.data)
 
@@ -106,17 +102,17 @@ export const fetchBscPairsV3 = () =>
     .then(r => r.data)
 
 export const fetchCLpoolV2 = chainId =>
-  fetch(`${backendApiTestNet}/topPairs/${chainId}?type=CL`)
+  fetch(`${backendApi}/topPairs/${chainId}?type=CL`)
     .then(r => r.json())
     .then(r => (Array.isArray(r.data) ? r.data : []))
 
 export const fetchBscTestnetPairsV3 = () =>
-  fetch(`${backendApiTestNet}/topPairs/97?v=3`)
+  fetch(`${backendApi}/topPairs/97?v=3`)
     .then(r => r.json())
     .then(r => r.data)
 
 export const fetchWeightedPools = chainId =>
-  fetch(`${backendApiTestNet}/weightedpools/${chainId}`)
+  fetch(`${backendApi}/weightedpools/${chainId}`)
     .then(r => r.json())
     .then(r => (Array.isArray(r.data) ? r.data : []))
 
@@ -131,7 +127,7 @@ export const fetchTopTokens = params =>
     .then(r => r.data)
 
 export const fetVeTHETokens = (chainId, account) =>
-  fetch(`${backendApiTestNet}/vethes/${chainId}/${account}`)
+  fetch(`${backendApi}/vethes/${chainId}/${account}`)
     .then(r => r.json())
     .then(r => r.data)
 
@@ -141,13 +137,13 @@ export const fetchNfts = nftId =>
 export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
 
 export const fetchPairInfos = (account, chainId) => {
-  const res = fetch(`${backendApiTestNet}/getpairaccount/${chainId}?account=${account?.toLowerCase()}`)
+  const res = fetch(`${backendApi}/getpairaccount/${chainId}?account=${account?.toLowerCase()}`)
     .then(r => r.json())
     .then(r => r.data)
   return res
 }
 
 export const fetchVotingHistory = (account, skip = 0, limit = 10) =>
-  fetch(`${backendApiTestNet}/vote/history?address=${account}&skip=${skip}&limit=${limit}`)
+  fetch(`${backendApi}/vote/history?address=${account}&skip=${skip}&limit=${limit}`)
     .then(r => r.json())
     .then(r => r)
