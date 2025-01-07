@@ -137,7 +137,7 @@ export const isInvalidAmount = amount => !amount || Number(amount) === Number.is
 export const wrappedAddress = asset => {
   if (!asset) return null
 
-  if (asset.address === 'BNB') {
+  if (asset.address === 'BNB' || asset.symbol === 'BNB') {
     return Contracts.WBNB[asset.chainId].toLowerCase()
   }
 
