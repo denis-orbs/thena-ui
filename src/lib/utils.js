@@ -137,11 +137,11 @@ export const isInvalidAmount = amount => !amount || Number(amount) === Number.is
 export const wrappedAddress = asset => {
   if (!asset) return null
 
-  if (asset.address === 'BNB' || asset.symbol === 'BNB') {
+  if (asset.address === 'BNB') {
     return Contracts.WBNB[asset.chainId].toLowerCase()
   }
 
-  return asset.address.toLowerCase()
+  return asset?.address?.toLowerCase()
 }
 
 export const unwrappedSymbol = asset => (!asset ? null : asset.symbol === 'WBNB' ? 'BNB' : asset.symbol)
