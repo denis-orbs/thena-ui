@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { ChainId } from 'thena-sdk-core'
 
 import Contracts from '@/constant/contracts'
 import { liquidityHub } from '@/modules/LiquidityHub'
@@ -87,7 +86,7 @@ export const fetchCustomAssets = async networkId => {
 }
 
 export const fetchPoolsV3 = params =>
-  fetch(`${backendApi}/${params[1] === ChainId.BSC || params[1] === 97 ? 'fusions?v=3' : 'opfusions'}`)
+  fetch(`${backendApi}/fusions/${params[1]}?v=3`)
     .then(r => r.json())
     .then(r => r.data)
 
