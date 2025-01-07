@@ -62,10 +62,7 @@ function SelectTokenButton({ token, setTokenSelected, tokenSelected }) {
   return (
     <>
       {token.token ? (
-        <TokenBadge
-          asset={{ ...token.token, symbol: token.token?.symbol === 'WBNB' ? 'BNB' : token.token?.symbol || 'UNKNOWN' }}
-          onClick={() => setTokenPopup(true)}
-        />
+        <TokenBadge asset={token.token} onClick={() => setTokenPopup(true)} />
       ) : (
         <EmphasisButton
           className='h-10 w-[130px] !gap-1 rounded-full pl-[6px] pr-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
@@ -91,6 +88,7 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
 
   const handleSelectedToken = useCallback(
     data => {
+      const symbol = data.address === 'BNB' ? 'BNB' : data.symbol
       const asset = getAsset(wrappedAddress(data))
       setTokenSelected(prev => {
         const updatedTokens = [...prev]
@@ -99,6 +97,7 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
           token: {
             ...asset,
             address: wrappedAddress(asset),
+            symbol,
           },
         }
         return updateWeight(updatedTokens)
@@ -238,12 +237,20 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
       errorMessages.push(t('All tokens in a pool must have a weighting higher than zero'))
     }
 
+    if (totalWeight > 100) {
+      errorMessages.push(t('Warning total weight Weighted Pool'))
+    }
+
     return errorMessages.map((message, index) => <ErrorMessage key={index} message={message} />)
-  }, [checkAllWeightingHigherThanZero, t, tokenSelected, tokensAndWeights])
+  }, [checkAllWeightingHigherThanZero, totalWeight, t, tokenSelected, tokensAndWeights])
 
   const isDisable = useMemo(
-    () => !checkAllWeightingHigherThanZero || tokensAndWeights.length <= 1 || tokenSelected.length <= 1,
-    [checkAllWeightingHigherThanZero, tokenSelected, tokensAndWeights],
+    () =>
+      !checkAllWeightingHigherThanZero ||
+      tokensAndWeights.length <= 1 ||
+      tokenSelected.length <= 1 ||
+      totalWeight > 100,
+    [checkAllWeightingHigherThanZero, tokenSelected.length, tokensAndWeights.length, totalWeight],
   )
 
   return (

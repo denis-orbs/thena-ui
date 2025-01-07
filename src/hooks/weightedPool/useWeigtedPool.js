@@ -215,7 +215,7 @@ export const useWeightedPool = () => {
         if (!isApprovedFee) {
           tokenItem.id = approveFeeuuid
           transactions[approveFeeuuid] = {
-            desc: `${t('Approve')} ${tokenItem.symbol}`,
+            desc: `${t('Approve')} ${tokenItem.symbol === 'BNB' ? 'WBNB' : tokenItem.symbol}`,
             status: TXN_STATUS.START,
             hash: null,
           }

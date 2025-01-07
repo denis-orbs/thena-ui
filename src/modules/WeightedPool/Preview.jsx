@@ -29,8 +29,7 @@ export function TokenAndInitialSeedItem({ item }) {
         />
         <div className='flex flex-col gap-1'>
           <span>
-            {item.token?.symbol === 'WBNB' ? 'BNB' : item.token?.symbol || 'UNKNOWN'}{' '}
-            <span className='text-neutral-400'>({item.weight}%)</span>
+            {item.token?.symbol} <span className='text-neutral-400'>({item.weight}%)</span>
           </span>
           <TextSubHeading className='lg:text-base'>
             {t('Initial weight')}: {item.weight}%

@@ -53,7 +53,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     setTokenAndWeights(prev =>
       prev.map(item => ({
         ...item,
-        amount: null,
+        amount: '',
       })),
     )
   }, [setTokenAndWeights])
@@ -183,17 +183,9 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
             </div>
           )}
           {(tokensAndWeights || []).map((item, index) => (
-            // <InputLiquidityToken
-            //   key={`${item?.token?.address}_${index}`}
-            //   asset={item.token}
-            //   weight={`(${item.weight}%)`}
-            //   setTokenAndWeights={value => handleAmountChange(value, item.token)}
-            //   amount={item.amount}
-            // />
             <InputTokenMemo
               key={`${item?.token?.address}_${index}`}
               token={item.token}
-              // title={`${t('Token')} ${index + 1}`}
               autoFocus={index === 0}
               amount={item.amount}
               onAmountChange={value => handleAmountChange(value, item.token)}

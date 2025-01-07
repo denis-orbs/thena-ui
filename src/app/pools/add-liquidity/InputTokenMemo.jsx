@@ -8,7 +8,6 @@ function InputTokenMemo({ token, title, autoFocus, amount, onAmountChange, alowD
   return (
     <BalanceInput
       type='number'
-      key={token?.address}
       amount={amount}
       asset={token}
       title={title}

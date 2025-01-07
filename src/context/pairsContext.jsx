@@ -52,7 +52,7 @@ function PairsContextProvider({ children }) {
   )
 
   const { data: weightedPools = [], isLoading: weightedLoading } = useSWR(
-    ['weighted pool api'],
+    ['weighted pool api', networkId],
     () => fetchWeightedPools(networkId),
     {
       refreshInterval: 60000,

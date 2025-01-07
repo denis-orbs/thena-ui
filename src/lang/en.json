@@ -1323,5 +1323,7 @@
   "uniBTC FBTC pool tooltip": "Liquidity providers in this pool are eligible for 2x Sparks in Ignition's Sparkle Campaign",
   "warning un-farming pool": "You need to activate \"Earn $THE\" to continue earning rewards.",
   "warning Out of Range": "You need to re-provide your liquidity in range to continue earning rewards.",
-  "Earn $THE": "Earn $THE"
+  "Earn $THE": "Earn $THE",
+  "Warning total weight Weighted Pool": "The total weighting of all tokens must equal exactly 100% before you can proceed.",
+  "This pool has no Gauge": "This pool doesn't support staking"
 }

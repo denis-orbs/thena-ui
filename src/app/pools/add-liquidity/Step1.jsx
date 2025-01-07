@@ -82,7 +82,7 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
                       src={token?.logoURI || UNKNOWN_LOGO}
                       alt='THENA First Logo'
                     />
-                    <span>{token?.symbol}</span>
+                    <span>{token?.symbol === 'WBNB' ? 'BNB' : token?.symbol || 'UNKNOWN'}</span>
                     <Paragraph>{token.weight}%</Paragraph>
                   </div>
                 ))}

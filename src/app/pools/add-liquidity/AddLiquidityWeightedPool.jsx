@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { zeroAddress } from 'viem'
 
 import MenuTab from '@/app/arena/rankings/MenuTab'
 import SuccessModal from '@/app/arena/thena-id/SuccessModal'
@@ -13,6 +14,7 @@ import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import InputManyToken from '@/components/input/InputManyToken'
 import TokenInput from '@/components/input/TokenInput'
 import Tabs from '@/components/tabs'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
@@ -407,9 +409,19 @@ function AddLiquidityWeightedPool({
             <SecondaryButton disabled={isDisable} onClick={() => onAddLiquidity(false)} className='w-1/2'>
               {t('Add Liquidity')}
             </SecondaryButton>
-            <PrimaryButton disabled={isDisable} onClick={() => onAddLiquidity(true)} className='w-1/2'>
+            <PrimaryButton
+              disabled={isDisable || pool?.gauge?.address === zeroAddress}
+              onClick={() => onAddLiquidity(true)}
+              className='w-1/2'
+              data-tooltip-id={`add-liquidity-stake-${pool.address}`}
+            >
               {t('Add Liquidity & Stake')}
             </PrimaryButton>
+            {pool.gauge.address === zeroAddress && (
+              <CustomTooltip id={`add-liquidity-stake-${pool.address}`} className='max-w-[500px]'>
+                {t('This pool has no Gauge')}
+              </CustomTooltip>
+            )}
           </div>
           <SuccessModal
             isOpen={isSuccess}

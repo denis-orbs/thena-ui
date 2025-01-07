@@ -175,9 +175,15 @@ export function WeightedPoolPosition({ pool, isStake }) {
             disabled={stakePending || pool.gauge.address === zeroAddress}
             className='h-11 w-full'
             onClick={() => setPopupStake(true)}
+            data-tooltip-id={`stake-position-${pool.address}`}
           >
             {t('Stake')}
           </TextButton>
+          {pool.gauge.address === zeroAddress && (
+            <CustomTooltip id={`stake-position-${pool.address}`} className='max-w-[500px]'>
+              {t('This pool has no Gauge')}
+            </CustomTooltip>
+          )}
 
           <OutlinedButton
             disabled={pendingClaimFees || isInvalidAmount(claimableFee.total)}
