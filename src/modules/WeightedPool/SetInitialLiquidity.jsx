@@ -1,15 +1,16 @@
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
+import InputTokenMemo from '@/app/pools/add-liquidity/InputTokenMemo'
 import Box from '@/components/box'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useTokenBalanceFn } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { formatAmount, fromWei, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
+import { formatAmount, roundIfMoreThanDecimals } from '@/lib/utils'
 import { ArrowLeftIcon, InfoCirCleDisableIcon } from '@/svgs'
-
-import InputLiquidityToken from './InputLiquidityToken'
 
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
   const t = useTranslations()
@@ -20,13 +21,19 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
 
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
-  const isInsufficientBalance = useCallback((amount, asset) => {
-    const amountToWei = toWei(amount, asset?.decimals)
-    if (fromWei(amountToWei, asset?.decimals).gt(asset?.balance)) {
-      return true
-    }
-    return false
-  }, [])
+  const { getBalance } = useTokenBalanceFn()
+
+  const isInsufficientBalance = useCallback(
+    (amount, asset) => {
+      // const amountToWei = toWei(amount, asset?.decimals)
+      const { balance } = getBalance(asset, true)
+      if (new BigNumber(amount).gt(balance)) {
+        return true
+      }
+      return false
+    },
+    [getBalance],
+  )
 
   const available = useMemo(
     () =>
@@ -176,12 +183,22 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
             </div>
           )}
           {(tokensAndWeights || []).map((item, index) => (
-            <InputLiquidityToken
+            // <InputLiquidityToken
+            //   key={`${item?.token?.address}_${index}`}
+            //   asset={item.token}
+            //   weight={`(${item.weight}%)`}
+            //   setTokenAndWeights={value => handleAmountChange(value, item.token)}
+            //   amount={item.amount}
+            // />
+            <InputTokenMemo
               key={`${item?.token?.address}_${index}`}
-              asset={item.token}
-              weight={`(${item.weight}%)`}
-              setTokenAndWeights={value => handleAmountChange(value, item.token)}
+              token={item.token}
+              // title={`${t('Token')} ${index + 1}`}
+              autoFocus={index === 0}
               amount={item.amount}
+              onAmountChange={value => handleAmountChange(value, item.token)}
+              alowDouble
+              weight={item.weight}
             />
           ))}
         </>

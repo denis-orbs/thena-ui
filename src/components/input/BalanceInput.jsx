@@ -17,7 +17,16 @@ import Skeleton from '../skeleton'
 import Tabs from '../tabs'
 import { TextSubHeading } from '../typography'
 
-function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChange, title, autoFocus = false }) {
+function BalanceInput({
+  asset,
+  setAsset,
+  maxBalance = null,
+  amount,
+  onAmountChange,
+  title,
+  autoFocus = false,
+  weight,
+}) {
   const assets = useAssets()
   const t = useTranslations()
   const { account } = useWallet()
@@ -120,7 +129,9 @@ function BalanceInput({ asset, setAsset, maxBalance = null, amount, onAmountChan
               ) : (
                 <CircleImage alt='thena' className='h-6 w-6' src={asset.logoURI ?? ''} />
               )}
-              <span className='text-nowrap'>{maxBalance ? 'BNB + WBNB' : asset.symbol}</span>
+              <span className='text-nowrap'>
+                {`${maxBalance ? 'BNB + WBNB' : asset.symbol} ${weight ? `(${weight}%)` : ''}`}
+              </span>
             </div>
           ) : (
             <Skeleton className='h-6 w-10' />

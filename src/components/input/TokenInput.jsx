@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { UNKNOWN_LOGO } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
+import { useTokenBalance } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount } from '@/lib/utils'
 import SelectTokenFromList from '@/modules/SelectTokenModal/SelectTokenFromList'
 import { ChevronDownIcon } from '@/svgs'
@@ -31,20 +31,9 @@ function TokenInput({
   alowDouble = false,
   disabledSelect = false,
 }) {
-  const assets = useAssets()
-  const [tokenPopup, setTokenPopup] = useState(false)
   const t = useTranslations()
-
-  const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
-
-  const isDouble = useMemo(() => asset?.name === 'Wrapped BNB', [asset?.name])
-
-  const balance = useMemo(() => {
-    if (isDouble) {
-      return asset?.balance?.plus(bnbBalance)
-    }
-    return asset?.balance
-  }, [asset, isDouble, bnbBalance])
+  const [tokenPopup, setTokenPopup] = useState(false)
+  const { balance, isDouble } = useTokenBalance(asset, alowDouble)
 
   const wrapAssetsData = useMemo(
     () =>

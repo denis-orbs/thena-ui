@@ -210,7 +210,7 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
     if (pairType && pairType !== PAIR_TYPES.WEIGHTED) return result
     result.push({
       ...mockWeightedPool,
-      symbol: `${firstAsset?.symbol}/${secondAsset?.symbol}`,
+      symbol: `${firstAsset?.symbol}-${secondAsset?.symbol}`,
       tokens: [
         { ...firstAsset, weight: 50 },
         { ...secondAsset, weight: 50 },

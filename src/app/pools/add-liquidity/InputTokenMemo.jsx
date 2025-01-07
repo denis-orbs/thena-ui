@@ -1,19 +1,10 @@
-import React, { memo, useMemo } from 'react'
+import React, { memo } from 'react'
 
 import BalanceInput from '@/components/input/BalanceInput'
-import { useAssets } from '@/context/assetsContext'
+import { useTokenBalance } from '@/hooks/fusion/Tokens'
 
-function InputTokenMemo({ token, title, autoFocus, amount, onAmountChange }) {
-  const assets = useAssets()
-  const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
-  const isDouble = useMemo(() => token.symbol === 'WBNB' || token.name === 'Wrapped BNB', [token])
-  const balance = useMemo(() => {
-    if (isDouble) {
-      return token?.balance?.plus(bnbBalance)
-    }
-    return token?.balance
-  }, [isDouble, token?.balance, bnbBalance])
-
+function InputTokenMemo({ token, title, autoFocus, amount, onAmountChange, alowDouble, weight }) {
+  const { balance, isDouble } = useTokenBalance(token, alowDouble)
   return (
     <BalanceInput
       type='number'
@@ -24,6 +15,7 @@ function InputTokenMemo({ token, title, autoFocus, amount, onAmountChange }) {
       maxBalance={isDouble ? balance : null}
       autoFocus={autoFocus}
       onAmountChange={onAmountChange}
+      weight={weight}
     />
   )
 }

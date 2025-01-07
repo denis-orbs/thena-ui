@@ -179,10 +179,26 @@ export const useWeightedPool = () => {
       const createuuid = uuidv4()
       const initialLiquidityuuid = uuidv4()
       const registerPooluuid = uuidv4()
+      const wrapuuid = uuidv4()
 
       const transactions = {}
 
       setPending(true)
+
+      const wBNB = (tokens || []).find(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
+      const index = (tokens || []).findIndex(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
+      let amountToWrap
+      if (wBNB && wBNB.balance.lt(fromWei(amounts?.[index]))) {
+        amountToWrap = fromWei(amounts?.[index]).minus(wBNB.balance)
+      }
+
+      if (amountToWrap) {
+        transactions[wrapuuid] = {
+          desc: t('Wrap'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
 
       for (const tokenItem of tokens) {
         const tokenContract = getERC20Contract(tokenItem.address, chainId)
@@ -216,6 +232,7 @@ export const useWeightedPool = () => {
         status: TXN_STATUS.START,
         hash: null,
       }
+
       transactions[initialLiquidityuuid] = {
         desc: t('Add initial liquidity'),
         status: TXN_STATUS.START,
@@ -227,6 +244,16 @@ export const useWeightedPool = () => {
         title: 'Create Weighted Pool',
         transactions,
       })
+
+      console.log({ amountToWrap })
+
+      if (amountToWrap && chainId !== CHAIN_ID.TEST_BSC) {
+        const wbnbContract = getWBNBContract(chainId)
+        if (!(await writeTxn(key, wrapuuid, wbnbContract, 'deposit', [], toWei(amountToWrap).dp(0).toString(10)))) {
+          setPending(false)
+          return
+        }
+      }
 
       for (const tokenItem of tokens) {
         if (tokenItem.id) {

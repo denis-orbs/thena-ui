@@ -52,7 +52,7 @@ function PairsContextProvider({ children }) {
   )
 
   const { data: weightedPools = [], isLoading: weightedLoading } = useSWR(
-    networkId === 97 && ['weighted pool api'],
+    ['weighted pool api'],
     () => fetchWeightedPools(networkId),
     {
       refreshInterval: 60000,
@@ -72,7 +72,10 @@ function PairsContextProvider({ children }) {
   const pairs = useMemo(
     () => ({
       // TODO: Pairs V3, weighted pools
-      [ChainId.BSC]: { data: bscPairs || [], isLoading: bscLoading },
+      [ChainId.BSC]: {
+        data: [...(bscPairs || []), ...(weightedPools || [])],
+        isLoading: bscLoading,
+      },
       [ChainId.OPBNB]: { data: opPairs || [], isLoading: opLoading },
       97: {
         data: [...(weightedPools || []), ...(bscTestnetPairsV3 || [])],
@@ -111,11 +114,12 @@ const usePairs = () => {
         if (ele.tokens && Array.isArray(ele.tokens)) {
           const tokens = ele.tokens.map(token => {
             const tokenDetail = getTokenInfo({ tokenAddress: token.address, assets, customAssets })
-            tokenDetail.symbol = tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN'
+            const symbol = tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN'
 
             return {
               ...token,
               ...tokenDetail,
+              symbol,
             }
           })
 

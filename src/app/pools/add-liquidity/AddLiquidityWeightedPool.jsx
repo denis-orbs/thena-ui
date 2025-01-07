@@ -17,6 +17,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
+import { useTokenBalance } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { usePositionData, useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { getTokenInfo } from '@/lib/helper'
@@ -80,7 +81,7 @@ function AddLiquidityWeightedPool({
   )
 
   const [tokensData, setTokensData] = useState(tokensAsset)
-  const [tokenDeposit, setTokenDeposit] = useState()
+  const [tokenDeposit, setTokenDeposit] = useState(tokensAsset?.[0])
   const [minBPTAmountOut, setMinBPTAmountOut] = useState('')
 
   useEffect(() => {
@@ -94,7 +95,6 @@ function AddLiquidityWeightedPool({
         balance: tokensAsset.find(asset => asset.address === item.address)?.balance || 0,
       }))
     })
-    setTokenDeposit(tokensAsset?.[0])
   }, [tokensAsset])
 
   const calcMinBPT = useCallback(async () => {
@@ -167,26 +167,28 @@ function AddLiquidityWeightedPool({
     [depositType, t],
   )
 
+  const { balance } = useTokenBalance(tokenDeposit, true)
+
   const percents = useMemo(
     () => [
       {
         label: '10%',
-        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.times(0.1).toString(10)),
+        onClickHandler: () => setAmountDeposit(balance.times(0.1).toString(10)),
       },
       {
         label: '25%',
-        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.times(0.25).toString(10)),
+        onClickHandler: () => setAmountDeposit(balance.times(0.25).toString(10)),
       },
       {
         label: '50%',
-        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.times(0.5).toString(10)),
+        onClickHandler: () => setAmountDeposit(balance.times(0.5).toString(10)),
       },
       {
         label: 'Max',
-        onClickHandler: () => setAmountDeposit(tokenDeposit?.balance.toString(10)),
+        onClickHandler: () => setAmountDeposit(balance.toString(10)),
       },
     ],
-    [tokenDeposit?.balance, setAmountDeposit],
+    [balance, setAmountDeposit],
   )
 
   const isDisable = useMemo(() => {
@@ -364,18 +366,20 @@ function AddLiquidityWeightedPool({
                 <div className='flex flex-row justify-between'>
                   <TextHeading>{t('Deposit Token')}</TextHeading> <Tabs data={percents} />
                 </div>
-                <div className='relative flex w-full flex-col gap-2'>
-                  <TokenInput
-                    asset={tokenDeposit}
-                    setAsset={setTokenDeposit}
-                    amount={amountDeposit}
-                    setAmount={setAmountDeposit}
-                    autoFocus
-                    assetData={tokensAsset}
-                    assetNull
-                    alowDouble
-                  />
-                </div>
+                {tokenDeposit && (
+                  <div className='relative flex w-full flex-col gap-2'>
+                    <TokenInput
+                      asset={tokenDeposit}
+                      setAsset={setTokenDeposit}
+                      amount={amountDeposit}
+                      setAmount={setAmountDeposit}
+                      autoFocus
+                      assetData={tokensAsset}
+                      assetNull
+                      alowDouble
+                    />
+                  </div>
+                )}
               </>
             )}
             {depositType === DEPOSIT_TYPE.ALL &&

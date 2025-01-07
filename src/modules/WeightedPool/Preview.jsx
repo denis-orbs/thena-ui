@@ -29,11 +29,12 @@ export function TokenAndInitialSeedItem({ item }) {
         />
         <div className='flex flex-col gap-1'>
           <span>
-            {item.token.symbol} <span className='text-neutral-400'>({item.weight}%)</span>
+            {item.token?.symbol === 'WBNB' ? 'BNB' : item.token?.symbol || 'UNKNOWN'}{' '}
+            <span className='text-neutral-400'>({item.weight}%)</span>
           </span>
-          <Paragraph>
+          <TextSubHeading className='lg:text-base'>
             {t('Initial weight')}: {item.weight}%
-          </Paragraph>
+          </TextSubHeading>
         </div>
       </div>
       <div className='flex flex-col'>
@@ -184,7 +185,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, setFee
           {t('Preview New Weighted Pool')}
         </TextHeading>
       </div>
-      <TextHeading>{t('Tokens and Initial Seed Liquidity')}</TextHeading>
+      <TextHeading className='text-base lg:text-[18px]'>{t('Tokens and Initial Seed Liquidity')}</TextHeading>
       <div className='flex flex-col divide-y divide-neutral-700'>
         {tokensAndWeights.map((item, index) => (
           <TokenAndInitialSeedItem item={item} key={`${item.token}_${index}`} />

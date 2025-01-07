@@ -9,6 +9,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/butt
 import { OutlineIconButton } from '@/components/buttons/IconButton'
 import Input from '@/components/input'
 import { TextHeading } from '@/components/typography'
+import { useGetAssetFn } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { cn, formatAmount, wrappedAddress } from '@/lib/utils'
 import { ChevronDownIcon, InfoIcon, LockIcon, PlusIcon, TrashIcon, UnlockIcon } from '@/svgs'
@@ -61,7 +62,10 @@ function SelectTokenButton({ token, setTokenSelected, tokenSelected }) {
   return (
     <>
       {token.token ? (
-        <TokenBadge asset={token.token} onClick={() => setTokenPopup(true)} />
+        <TokenBadge
+          asset={{ ...token.token, symbol: token.token?.symbol === 'WBNB' ? 'BNB' : token.token?.symbol || 'UNKNOWN' }}
+          onClick={() => setTokenPopup(true)}
+        />
       ) : (
         <EmphasisButton
           className='h-10 w-[130px] !gap-1 rounded-full pl-[6px] pr-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
@@ -83,21 +87,24 @@ function SelectTokenButton({ token, setTokenSelected, tokenSelected }) {
 }
 
 function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
+  const { getAsset } = useGetAssetFn()
+
   const handleSelectedToken = useCallback(
     data => {
+      const asset = getAsset(wrappedAddress(data))
       setTokenSelected(prev => {
         const updatedTokens = [...prev]
         updatedTokens[index] = {
           ...updatedTokens[index],
           token: {
-            ...data,
-            address: wrappedAddress(data),
+            ...asset,
+            address: wrappedAddress(asset),
           },
         }
         return updateWeight(updatedTokens)
       })
     },
-    [index, setTokenSelected],
+    [getAsset, index, setTokenSelected],
   )
 
   const handleRemoveToken = useCallback(() => {
@@ -190,6 +197,12 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   const [totalWeight, setTotalWeight] = useState(0)
 
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
+  useEffect(() => {
+    const tokens = tokenSelected.filter(item => item.token !== null)
+    setTotalWeight(tokens.reduce((sum, curr) => sum + curr.weight, 0))
+    setTokenAndWeights(tokens)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setTokenAndWeights, JSON.stringify(tokenSelected)])
 
   const totalBalance = useMemo(
     () =>
@@ -205,13 +218,6 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
       }, 0),
     [getValueTokenAmountToUSD, tokensAndWeights],
   )
-
-  useEffect(() => {
-    const tokens = tokenSelected.filter(item => item.token !== null)
-    setTotalWeight(tokens.reduce((sum, curr) => sum + curr.weight, 0))
-    setTokenAndWeights(tokens)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setTokenAndWeights, JSON.stringify(tokenSelected)])
 
   const handleAddToken = useCallback(() => {
     setTokenSelected(prev => [...prev, initialToken])

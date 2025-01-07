@@ -133,15 +133,19 @@ const Contracts = {
   },
   weightedPoolFactory: {
     [CHAIN_ID.TEST_BSC]: '0xb5fa74122fc89b7e9f1b3cf45798c8215f89f0dd',
+    [CHAIN_ID.BSC]: '0x70f9e58d40099aa56e7b32e855b0ebaf010d5bff',
   },
   weightedPoolVault: {
     [CHAIN_ID.TEST_BSC]: '0xb6c15845dc57f041ef7ad38ec50e8f99ea3bb547',
+    [CHAIN_ID.BSC]: '0xecDF5fB5D7197e6bDd915aDA7E8467aECb331771',
   },
   weightedPoolRouter: {
     [CHAIN_ID.TEST_BSC]: '0x00837794D018d5c3cE7763cEAeFbe2fC0B145110',
+    [CHAIN_ID.BSC]: '0xe223c443e62f9fd63ea97364670c1eb95797de00',
   },
   weightedPoolRouterSimulator: {
     [CHAIN_ID.TEST_BSC]: '0x216e64ac3d286794b3725477dd524836621456c7',
+    [CHAIN_ID.BSC]: '0x0dd6121b8a37164d653ab6049db099a18be87b0d',
   },
   algebraFactoryV2: {
     [CHAIN_ID.TEST_BSC]: '0xFBFB64eD1C70bb8d4c8bFCc338C10a5120809538',

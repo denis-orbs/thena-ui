@@ -89,8 +89,8 @@ export default function CreateWeightedPoolPage() {
   const [tokensAndWeights, setTokenAndWeights] = useState(() => {
     const firstAddress = searchParams.get('firstAddress')
     const secondAddress = searchParams.get('secondAddress')
-    const firstToken = assets.find(asset => asset.address === firstAddress)
-    const secondAsset = assets.find(asset => asset.address === secondAddress)
+    const firstToken = assets.find(asset => asset.address.toLowerCase() === firstAddress.toLowerCase())
+    const secondAsset = assets.find(asset => asset.address.toLowerCase() === secondAddress.toLowerCase())
     return [
       { token: firstToken || null, lock: false, weight: 50 },
       { token: secondAsset || null, lock: false, weight: 50 },
@@ -99,7 +99,10 @@ export default function CreateWeightedPoolPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const initialPoolSymbol = useMemo(() => {
     const result = tokensAndWeights.reduce(
-      (str, curr, index) => (index > 0 ? `${str}-${curr?.token?.symbol}` : `${str}${curr?.token?.symbol}`),
+      (str, curr, index) =>
+        index > 0
+          ? `${str}-${curr?.token?.symbol === 'WBNB' ? 'BNB' : curr?.token?.symbol}`
+          : `${str}${curr?.token?.symbol === 'WBNB' ? 'BNB' : curr?.token?.symbol}`,
       '',
     )
     return result

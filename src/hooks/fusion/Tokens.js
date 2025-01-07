@@ -1,6 +1,8 @@
-import { useMemo } from 'react'
+import BigNumber from 'bignumber.js'
+import { useCallback, useMemo } from 'react'
 import { BNB, ChainId, Token } from 'thena-sdk-core'
 
+import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { getTokenInfo } from '@/lib/helper'
@@ -22,6 +24,28 @@ export function useGetAsset(tokenAddress) {
 
     return asset
   }, [assets, customAssets, localTokens, tokenAddress])
+}
+
+export function useGetAssetFn() {
+  const assets = useAssets()
+  const customAssets = useCustomAssets()
+  const { localTokens } = useLocalTokens()
+
+  const getAsset = useCallback(
+    tokenAddress => {
+      if (!tokenAddress) return undefined
+      let asset = getTokenInfo({ tokenAddress, assets, customAssets })
+
+      if (!asset) {
+        asset = localTokens.find(tk => tk.address.toLowerCase() === tokenAddress.toLowerCase())
+      }
+
+      return asset
+    },
+    [assets, customAssets, localTokens],
+  )
+
+  return { getAsset }
 }
 // undefined if invalid or does not exist
 // otherwise returns the token
@@ -80,4 +104,56 @@ export const useStableTokens = () => {
         : [],
     [assets],
   )
+}
+
+export const useTokenBalance = (token, alowDouble) => {
+  const assets = useAssets()
+  const { networkId } = useChainSettings()
+  const bnbBalance = useMemo(() => assets.find(ele => ele.address === 'BNB')?.balance || new BigNumber(0), [assets])
+  const wbnbBalance = useMemo(
+    () => assets.find(ele => ele.address === Contracts.WBNB[networkId].toLowerCase())?.balance || new BigNumber(0),
+    [assets, networkId],
+  )
+  const isDouble = useMemo(() => token?.symbol === 'BNB' || token?.name === 'Wrapped BNB', [token])
+  const balance = useMemo(() => {
+    if (isDouble && alowDouble) {
+      return wbnbBalance.plus(bnbBalance)
+    }
+    return token?.balance
+  }, [isDouble, alowDouble, token?.balance, wbnbBalance, bnbBalance])
+
+  if (!token) {
+    return { balance: new BigNumber(0), isDouble: false }
+  }
+
+  return { balance, isDouble: alowDouble ? isDouble : false }
+}
+
+export const useTokenBalanceFn = () => {
+  const assets = useAssets()
+  const { networkId } = useChainSettings()
+
+  const bnbBalance = useMemo(() => assets.find(ele => ele.address === 'BNB')?.balance || new BigNumber(0), [assets])
+  const wbnbBalance = useMemo(
+    () => assets.find(ele => ele.address === Contracts.WBNB[networkId].toLowerCase())?.balance || new BigNumber(0),
+    [assets, networkId],
+  )
+
+  const getBalance = useCallback(
+    (token, alowDouble) => {
+      const isDouble = token?.symbol === 'BNB' || token?.name === 'Wrapped BNB'
+
+      if (!token) {
+        return { balance: new BigNumber(0), isDouble: false }
+      }
+
+      if (isDouble && alowDouble) {
+        return { balance: wbnbBalance.plus(bnbBalance), isDouble: true }
+      }
+      return { balance: token?.balance, isDouble: alowDouble ? isDouble : false }
+    },
+    [bnbBalance, wbnbBalance],
+  )
+
+  return { getBalance }
 }
