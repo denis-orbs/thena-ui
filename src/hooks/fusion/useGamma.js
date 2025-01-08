@@ -399,7 +399,7 @@ export const useGammaRemove = () => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: t('Remove Liquidity'),
+        title: 'Remove Liquidity',
         transactions: {
           [removeuuid]: {
             desc: t('Remove Liquidity'),

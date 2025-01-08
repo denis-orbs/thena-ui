@@ -53,7 +53,7 @@ export const useGaugeAdd = () => {
       const adduuid = uuidv4()
       startTxn({
         key,
-        title: t('Add Gauge'),
+        title: 'Add Gauge',
         transactions: {
           [adduuid]: {
             desc: t('Add Gauge'),
@@ -98,7 +98,7 @@ export const useBribeAdd = () => {
       setPending(true)
       startTxn({
         key,
-        title: t('Add Incentive'),
+        title: 'Add Incentive',
         transactions: {
           ...(!isApproved && {
             [approveuuid]: {

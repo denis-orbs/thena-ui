@@ -224,19 +224,6 @@ function TokenModal({
         <Paragraph className='px-3'>{t('Assets')}</Paragraph>
 
         <div className='max-h-[340px] overflow-auto' id='scrollableDiv'>
-          {/* {filteredAssets.map(item => ( */}
-          {/*   <ItemToken */}
-          {/*     key={item.address} */}
-          {/*     item={item} */}
-          {/*     setPopup={setPopup} */}
-          {/*     selectedAsset={selectedAsset} */}
-          {/*     setSelectedAsset={setSelectedAsset} */}
-          {/*     otherAsset={otherAsset} */}
-          {/*     setOtherAsset={setOtherAsset} */}
-          {/*     onAssetSelect={onAssetSelect} */}
-          {/*   /> */}
-          {/* ))} */}
-
           <InfiniteScroll dataLength={filteredAssets.length}>
             {filteredAssets?.map(item => (
               <RenderIfVisible key={item.address} root={rootRef.current}>

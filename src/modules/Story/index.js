@@ -122,7 +122,8 @@ export const useUpdateParticipantProfile = () => {
 const V4_GENERATE_AVATAR_PROFILE_URL = gql`
   mutation V4_GENERATE_AVATAR_PROFILE_URL($fileName: String!, $fileType: String!, $userId: String!) {
     generatePresignedUrl(input: { fileName: $fileName, fileType: $fileType, userId: $userId, type: CUSTOM_AVATAR }) {
-      signedRequest
+      signedUrl
+      fields
       url
     }
   }
@@ -140,7 +141,7 @@ export const useUpdateParticipantAvatar = () => {
 
   const createPresignUrlFn = useCallback(async ({ file, userId }) => {
     const {
-      generatePresignedUrl: { signedRequest, url },
+      generatePresignedUrl: { signedUrl, fields, url },
     } = await v4Client.request(
       V4_GENERATE_AVATAR_PROFILE_URL,
       {
@@ -153,16 +154,20 @@ export const useUpdateParticipantAvatar = () => {
       },
     )
 
-    if (signedRequest && url) {
-      const { status, statusText } = await fetch(signedRequest, {
-        method: 'PUT',
-        body: file,
+    const formData = new FormData()
+    Object.entries(JSON.parse(fields)).forEach(([key, value]) => {
+      formData.append(key, value)
+    })
+
+    formData.append('file', file)
+
+    if (signedUrl && url) {
+      const { status, statusText } = await fetch(signedUrl, {
+        method: 'POST',
+        body: formData,
         redirect: 'follow',
-        headers: {
-          'Content-Type': file.type,
-        },
       })
-      if (status !== 200) {
+      if (status !== 204) {
         throw new Error(statusText)
       } else {
         return url

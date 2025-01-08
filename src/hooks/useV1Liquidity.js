@@ -41,7 +41,7 @@ export const useV1Add = () => {
       }
       startTxn({
         key,
-        title: t('Add Liquidity'),
+        title: 'Add Liquidity',
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {
@@ -179,7 +179,7 @@ export const useV1AddAndStake = () => {
       }
       startTxn({
         key,
-        title: t('Add Liquidity'),
+        title: 'Add Liquidity',
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {
@@ -335,7 +335,7 @@ export const useClaimFees = () => {
 
       startTxn({
         key,
-        title: t('Claim Fees'),
+        title: 'Claim Fees',
         transactions: {
           [claimuuid]: {
             desc: t('Claim Fees'),

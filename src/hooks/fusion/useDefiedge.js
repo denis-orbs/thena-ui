@@ -42,7 +42,7 @@ export const useDefiedgeAdd = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: t('Add Liquidity'),
+        title: 'Add Liquidity',
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
@@ -154,7 +154,7 @@ export const useDefiedgeAddAndStake = () => {
       const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
       startTxn({
         key,
-        title: t('Add Liquidity'),
+        title: 'Add Liquidity',
         transactions: {
           ...(amountToWrap && {
             [wrapuuid]: {
@@ -282,7 +282,7 @@ export const useDefiedgeRemove = () => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: t('Remove Liquidity'),
+        title: 'Remove Liquidity',
         transactions: {
           [removeuuid]: {
             desc: t('Remove Liquidity'),

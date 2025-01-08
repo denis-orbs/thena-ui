@@ -50,7 +50,7 @@ export function JoinModal({ competition, open, onClose }) {
 
     const notEnoughFee = entryFeeUpdate
       .map((e, index) => {
-        if (prizeToken[index].address.toLowerCase() === winningToken?.address.toLowerCase()) {
+        if (prizeToken[index].address.toLowerCase() === winningToken?.address?.toLowerCase()) {
           const totalAmount = fromWei(entryFeeUpdate[index], prizeToken[index]?.decimals).plus(
             fromWei(depositBalance, winningToken?.decimals),
           )

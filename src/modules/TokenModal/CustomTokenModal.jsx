@@ -57,14 +57,14 @@ function CustomTokenModal({ popup, setPopup, setSelectedAsset, assets }) {
                 setSelectedAsset(item)
                 setPopup(false)
               }}
-              key={item.address}
+              key={item?.address}
             >
               <div className='flex items-center gap-2 rounded-lg'>
                 <CircleImage src={item?.logoURI} width={32} height={32} alt='thena token' />
                 <div className='flex flex-col'>
                   <div className='flex items-center space-x-1'>
                     <TextHeading>{item?.symbol}</TextHeading>
-                    {item.address !== 'BNB' && (
+                    {item?.address !== 'BNB' && (
                       <div className='flex items-center gap-1'>
                         <CustomTooltip id={`add-tooltip-${idx}`} className='rounded-md !py-2'>
                           <TextHeading className='text-xs'>{t('Add to Wallet')}</TextHeading>
@@ -74,7 +74,7 @@ function CustomTokenModal({ popup, setPopup, setSelectedAsset, assets }) {
                           onClick={e => {
                             e.stopPropagation()
                             e.preventDefault()
-                            goScan(networkId, item.address)
+                            goScan(networkId, item?.address)
                           }}
                           data-tooltip-id={`contract-tooltip-${idx}`}
                         />
@@ -84,12 +84,14 @@ function CustomTokenModal({ popup, setPopup, setSelectedAsset, assets }) {
                       </div>
                     )}
                   </div>
-                  <TextSubHeading>{item.name}</TextSubHeading>
+                  <TextSubHeading>{item?.name}</TextSubHeading>
                 </div>
               </div>
               <div className='flex flex-col'>
-                <TextHeading className='text-right'>{formatAmount(item.balance)}</TextHeading>
-                <TextSubHeading className='text-right'>${formatAmount(item.balance.times(item.price))}</TextSubHeading>
+                <TextHeading className='text-right'>{formatAmount(item?.balance)}</TextHeading>
+                <TextSubHeading className='text-right'>
+                  ${formatAmount(item?.balance.times(item?.price))}
+                </TextSubHeading>
               </div>
             </div>
           ))}

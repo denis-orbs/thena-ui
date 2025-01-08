@@ -1,6 +1,7 @@
 'use client'
 
 import dayjs from 'dayjs'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
@@ -15,7 +16,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useWithdrawLock } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
-import { formatAmount, goToDoc } from '@/lib/utils'
+import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCirclePrimary, InfoCircleWhite } from '@/svgs'
 
@@ -63,7 +64,8 @@ const sortOptions = [
 ]
 
 export default function LockPage() {
-  const [sort, setSort] = useState(sortOptions[0])
+  const [sort, setSort] = useState({})
+  const { push } = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const { account } = useWallet()
   const { veTHEs, isLoading, updateVeTHEs } = useVeTHEsContext()
@@ -173,6 +175,14 @@ export default function LockPage() {
     [JSON.stringify(sortedData), theAsset, t],
   )
 
+  const isNearlyExpired = useMemo(() => {
+    const now = dayjs()
+    return veTHEs.some(ve => {
+      const lockedEnd = dayjs(ve.lockedEnd * 1000)
+      return lockedEnd.subtract(14, 'days').isBefore(now)
+    })
+  }, [veTHEs])
+
   const openModal = () => {
     setIsCreateOpen(true)
   }
@@ -182,16 +192,27 @@ export default function LockPage() {
       <h2>{t('Lock')}</h2>
       {account ? (
         <div className='flex flex-col'>
-          <Info className='justify-between lg:p-8'>
-            <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
-            <p>{t('Lock THE Desciption')}</p>
-            <TertiaryButton
-              className='min-w-fit'
-              onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe')}
-            >
-              {t('Learn More')}
-            </TertiaryButton>
-          </Info>
+          <article className='my-4 flex flex-col gap-4 lg:flex-row'>
+            <Info className='justify-between lg:p-8'>
+              <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+              <p>{t('Lock THE Desciption')}</p>
+              <TertiaryButton
+                className='min-w-fit'
+                onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe')}
+              >
+                {t('Learn More')}
+              </TertiaryButton>
+            </Info>
+
+            <Info className={cn('justify-between lg:p-8', !isNearlyExpired ?? 'hidden')}>
+              <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+              <p>{t('Warning THE claim rebase fee')}</p>
+              <PrimaryButton className='min-w-fit' onClick={() => push('/dashboard/rewards')}>
+                {t('Rewards')}
+              </PrimaryButton>
+            </Info>
+          </article>
+
           <div className='mb-4 mt-10 flex items-center justify-between'>
             <TextHeading className='text-xl'>{t('Locked Positions')}</TextHeading>
             {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>{t('Create Lock')}</PrimaryButton>}

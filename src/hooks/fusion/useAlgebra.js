@@ -221,7 +221,7 @@ export const useAlgebraClaim = (version = 3) => {
       setPending(true)
       startTxn({
         key,
-        title: t('Claim Fees'),
+        title: 'Claim Fees',
         transactions: {
           [claimuuid]: {
             desc: t('Claim Fees'),
@@ -396,7 +396,7 @@ export const useAlgebraRemove = (version = 3) => {
       const removeuuid = uuidv4()
       startTxn({
         key,
-        title: t('Remove Liquidity'),
+        title: 'Remove Liquidity',
         transactions: {
           [removeuuid]: {
             desc: t('Remove Liquidity'),
@@ -515,7 +515,7 @@ export const useAlgebraIncrease = (version = 3) => {
       const adduuid = uuidv4()
       startTxn({
         key,
-        title: t('Add Liquidity'),
+        title: 'Add Liquidity',
         transactions: {
           ...(!isFirstApproved && {
             [approve1uuid]: {

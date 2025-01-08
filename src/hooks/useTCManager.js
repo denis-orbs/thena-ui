@@ -38,7 +38,7 @@ export const useCreateTC = () => {
 
       startTxn({
         key,
-        title: t('Create Trading Competition'),
+        title: 'Create Trading Competition',
         transactions: {
           ...(!isApprovedFee && {
             [approveFeeuuid]: {

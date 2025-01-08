@@ -251,7 +251,7 @@ export const useMintThenaId = () => {
         setLoading(true)
         startTxn({
           key,
-          title: t('Mint Thena Id'),
+          title: 'Mint Thena Id',
           transactions: {
             ...(!isApprovedToken && {
               [approveTokenUuid]: {
@@ -329,7 +329,7 @@ export const useGiftThenaId = () => {
         setLoading(true)
         startTxn({
           key,
-          title: t('Send As Gift'),
+          title: 'Send As Gift',
           transactions: {
             ...(!isApprovedToken && {
               [approveTokenUuid]: {
@@ -407,7 +407,7 @@ export const useBatchMintThenaId = () => {
         setLoading(true)
         startTxn({
           key,
-          title: t('Mint Thena Id'),
+          title: 'Mint Thena Id',
           transactions: {
             ...(!isApprovedToken && {
               [approveTokenUuid]: {
@@ -483,7 +483,7 @@ export const useBatchGiftThenaId = () => {
         setLoading(true)
         startTxn({
           key,
-          title: t('Send As Gift'),
+          title: 'Send As Gift',
           transactions: {
             ...(!isApprovedToken && {
               [approveTokenUuid]: {
@@ -555,7 +555,7 @@ export const useTransferThenaId = () => {
         setLoading(true)
         startTxn({
           key,
-          title: t('Transfer THENA ID'),
+          title: 'Transfer THENA ID',
           transactions: {
             [transferUuid]: {
               desc: t('Transfer THENA ID'),

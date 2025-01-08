@@ -9,7 +9,8 @@ import { getFromLocalStorage } from '@/lib/helper'
 const V4_GENERATE_PRESIGNED_URL = gql`
   mutation V4_GENERATE_PRESIGNED_URL($fileName: String!, $fileType: String!, $userId: String!, $type: BucketType) {
     generatePresignedUrl(input: { fileName: $fileName, fileType: $fileType, userId: $userId, type: $type }) {
-      signedRequest
+      signedUrl
+      fields
       url
     }
   }
@@ -19,7 +20,7 @@ export const useCreatePresignedUrl = () => {
 
   const createPresignedUrlFn = useCallback(async ({ file, userId, type }) => {
     const {
-      generatePresignedUrl: { signedRequest, url },
+      generatePresignedUrl: { signedUrl, fields, url },
     } = await v4Client.request(
       V4_GENERATE_PRESIGNED_URL,
       {
@@ -33,16 +34,24 @@ export const useCreatePresignedUrl = () => {
       },
     )
 
-    if (signedRequest && url) {
-      const { status, statusText } = await fetch(signedRequest, {
-        method: 'PUT',
-        body: file,
+    const formData = new FormData()
+    Object.entries(JSON.parse(fields)).forEach(([key, value]) => {
+      formData.append(key, value)
+    })
+
+    formData.append('file', file)
+
+    // const s3Response = await axios.post(signedUrl, formData, {
+    //   headers: { 'Content-Type': 'multipart/form-data' },
+    // })
+
+    if (signedUrl && url) {
+      const { status, statusText } = await fetch(signedUrl, {
+        method: 'POST',
+        body: formData,
         redirect: 'follow',
-        headers: {
-          'Content-Type': file.type,
-        },
       })
-      if (status !== 200) {
+      if (status !== 204) {
         throw new Error(statusText)
       } else {
         return url
