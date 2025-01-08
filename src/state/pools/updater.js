@@ -83,6 +83,7 @@ const fetchIchiAllowed = async (pools, chainId) => {
   const result = []
   pools.forEach(pool => {
     const isIchi = pool.type === 'ICHI'
+    if (pool.type === 'Volatile') pool.type = 'Classic'
     const deposit = !isIchi ? null : allowed0[index] ? pool.token0 : pool.token1
     if (isIchi) {
       index++

@@ -40,7 +40,7 @@ export default function NotStaked({ pool }) {
     return fees0.plus(fees1)
   }, [pool])
 
-  const isLegacy = useMemo(() => ['Stable', 'Volatile'].includes(pool.title), [pool])
+  const isLegacy = useMemo(() => ['Stable', 'CLassic'].includes(pool.title), [pool])
 
   return (
     <Box className='flex flex-col gap-4'>

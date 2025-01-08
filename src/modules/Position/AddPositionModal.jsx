@@ -6,7 +6,7 @@ import AddLiquidity from '@/components/common/AddLiquidity'
 import Modal from '@/components/modal'
 
 export default function AddPositionModal({ popup, setPopup, strategy }) {
-  const currentStep = useMemo(() => (['Stable', 'Volatile'].includes(strategy.title) ? 1 : 2), [strategy])
+  const currentStep = useMemo(() => (['Stable', 'CLassic'].includes(strategy.title) ? 1 : 2), [strategy])
 
   return (
     <Modal

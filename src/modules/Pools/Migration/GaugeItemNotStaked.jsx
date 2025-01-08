@@ -30,7 +30,7 @@ export function GaugeItemNotStaked({ showAdjustButton = false, pool }) {
     return fees0.plus(fees1)
   }, [pool])
 
-  const isLegacy = useMemo(() => ['Stable', 'Volatile'].includes(pool.title), [pool])
+  const isLegacy = useMemo(() => ['Stable', 'CLassic'].includes(pool.title), [pool])
   return (
     <div>
       <div className='flex items-start justify-between'>

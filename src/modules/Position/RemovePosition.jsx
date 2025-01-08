@@ -62,7 +62,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
       warnToast(errorMsg, 'warn')
       return
     }
-    if (['Stable', 'Volatile'].includes(strategy.title)) {
+    if (['Stable', 'CLassic'].includes(strategy.title)) {
       onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
       onGammaRemove(strategy, amount, callback)

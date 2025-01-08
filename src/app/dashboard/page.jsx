@@ -110,7 +110,7 @@ export default function HoldingsPage() {
         break
 
       case FILTERS.Legacy:
-        result = stakedPools.filter(ele => ['Stable', 'Volatile'].includes(ele.title))
+        result = stakedPools.filter(ele => ['Stable', 'CLassic'].includes(ele.title))
         break
 
       case FILTERS.Gamma:

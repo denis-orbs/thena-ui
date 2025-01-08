@@ -11,7 +11,7 @@ import PoolTitle from '../PoolTitle'
 
 export default function ManagePositionModal({ popup, setPopup, strategy }) {
   const [isRemove, setIsRemove] = useState(false)
-  const currentStep = useMemo(() => (['Stable', 'Volatile'].includes(strategy.title) ? 1 : 2), [strategy])
+  const currentStep = useMemo(() => (['Stable', 'CLassic'].includes(strategy.title) ? 1 : 2), [strategy])
 
   const manageSelections = useMemo(
     () => [
