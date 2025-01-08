@@ -110,8 +110,8 @@ export const fetchBscTestnetPairsV3 = () =>
     .then(r => r.json())
     .then(r => r.data)
 
-export const fetchWeightedPools = chainId =>
-  fetch(`${backendApi}/weightedpools/${chainId}`)
+export const fetchWeightedPools = params =>
+  fetch(`${backendApi}/weightedpools/${params[1]}`)
     .then(r => r.json())
     .then(r => (Array.isArray(r.data) ? r.data : []))
 

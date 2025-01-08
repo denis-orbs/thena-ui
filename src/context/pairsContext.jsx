@@ -52,8 +52,8 @@ function PairsContextProvider({ children }) {
   )
 
   const { data: weightedPools = [], isLoading: weightedLoading } = useSWR(
-    ['weighted pool api', networkId],
-    () => fetchWeightedPools(networkId),
+    networkId ? ['weighted pool api', networkId] : null,
+    { fetcher: fetchWeightedPools },
     {
       refreshInterval: 60000,
     },
@@ -74,7 +74,7 @@ function PairsContextProvider({ children }) {
       // TODO: Pairs V3, weighted pools
       [ChainId.BSC]: {
         data: [...(bscPairs || []), ...(weightedPools || [])],
-        isLoading: bscLoading,
+        isLoading: bscLoading || weightedLoading,
       },
       [ChainId.OPBNB]: { data: opPairs || [], isLoading: opLoading },
       97: {
