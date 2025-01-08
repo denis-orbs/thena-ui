@@ -135,7 +135,9 @@ export function WeightedPoolPosition({ pool, isStake }) {
                   <>
                     {(claimableFee?.tokenList || []).map((reward, index) => (
                       <p key={`${reward.address}-${index}`}>
-                        {`${formatAmount(reward?.fee)} ${reward?.symbol || 'UNKNOWN'}`}
+                        {`${formatAmount(reward?.fee)} ${
+                          reward?.name === 'Wrapped BNB' ? 'WBNB' : reward?.symbol || 'UNKNOWN'
+                        }`}
                       </p>
                     ))}
                   </>
@@ -143,7 +145,10 @@ export function WeightedPoolPosition({ pool, isStake }) {
                   <>
                     {(claimableFee?.tokenList || []).map((reward, index) => (
                       <p key={`${reward.address}-${index}`}>
-                        {!isInvalidAmount(reward?.fee) && `${formatAmount(reward?.fee)} ${reward?.symbol || 'UNKNOWN'}`}
+                        {!isInvalidAmount(reward?.fee) &&
+                          `${formatAmount(reward?.fee)} ${
+                            reward?.name === 'Wrapped BNB' ? 'WBNB' : reward?.symbol || 'UNKNOWN'
+                          }`}
                       </p>
                     ))}
                   </>
