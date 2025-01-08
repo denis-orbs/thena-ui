@@ -7,7 +7,9 @@ import React, { useMemo, useState } from 'react'
 import IconGroup from '@/components/icongroup'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { formatAmount } from '@/lib/utils'
+import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 
 const sortOptions = [
   {
@@ -92,18 +94,24 @@ export default function PairsTable({ data, hidePagination = false }) {
       sortedData.map(item => ({
         name: (
           <div className='flex items-center gap-3'>
-            <IconGroup
-              className='-space-x-2'
-              classNames={{
-                image: 'outline-2 w-7 h-7',
-              }}
-              logo1={item.token0.logoURI}
-              logo2={item.token1.logoURI}
-            />
-            <div className='flex flex-col'>
-              <TextHeading>{item.symbol}</TextHeading>
-              <Paragraph className='text-sm'>{t(item.type)}</Paragraph>
-            </div>
+            {item.type === PAIR_TYPES.WEIGHTED ? (
+              <ListTokenPercantage listToken={item.tokens} />
+            ) : (
+              <>
+                <IconGroup
+                  className='-space-x-2'
+                  classNames={{
+                    image: 'outline-2 w-7 h-7',
+                  }}
+                  logo1={item.token0.logoURI}
+                  logo2={item.token1.logoURI}
+                />
+                <div className='flex flex-col'>
+                  <TextHeading>{item.symbol}</TextHeading>
+                  <Paragraph className='text-sm'>{t(item.type)}</Paragraph>
+                </div>
+              </>
+            )}
           </div>
         ),
         liquidity: <Paragraph>${formatAmount(item.tvlUSD)}</Paragraph>,
