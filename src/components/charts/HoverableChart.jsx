@@ -27,6 +27,11 @@ function HoverableChart({ chartData, protocolData, valueProperty, title, ChartCo
     }
   }, [protocolData, hover, valueProperty])
 
+  useEffect(() => {
+    setHover(protocolData?.[valueProperty] || undefined)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title])
+
   const formattedData = useMemo(() => {
     if (chartData) {
       return chartData

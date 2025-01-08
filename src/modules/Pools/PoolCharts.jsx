@@ -33,7 +33,6 @@ export function PoolChart({ address }) {
   const [secondAsset, setSecondAsset] = useState()
   const [strategy, setStrategy] = useState(null)
   const [isReverse, setIsReverse] = useState(false)
-
   const pair = useMemo(
     () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
     [pairs, address],
