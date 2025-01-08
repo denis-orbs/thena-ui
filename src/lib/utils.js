@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { isNil, sample } from 'lodash'
 import { twMerge } from 'tailwind-merge'
 
-import { RPC_PROVIDERS, SCAN_URLS } from '@/constant'
+import { FusionRangeType, GAMMA_TYPES, MANUAL_TYPES, RPC_PROVIDERS, SCAN_URLS } from '@/constant'
 import Contracts from '@/constant/contracts'
 
 BigNumber.config({
@@ -273,4 +273,20 @@ export const roundIfMoreThanDecimals = (number, decimals = 18) => {
     return Math.floor(number * 10 ** decimals) / 10 ** decimals
   }
   return number
+}
+
+export const getLiquidityRangeType = strategyTitle => {
+  if (GAMMA_TYPES.includes(strategyTitle)) {
+    return FusionRangeType.GAMMA_RANGE
+  }
+
+  if (MANUAL_TYPES.includes(strategyTitle)) {
+    return FusionRangeType.MANUAL_RANGE
+  }
+
+  if (strategyTitle === 'DefiEdge') {
+    return FusionRangeType.DEFIEDGE_RANGE
+  }
+
+  return FusionRangeType.ICHI_RANGE
 }

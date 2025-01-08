@@ -22,9 +22,9 @@ export const usePoolAlgebraInfo = (token0Address, token1Address) => {
   const { chainId } = useWallet()
   const currency0 = useCurrency(token0Address)
   const currency1 = useCurrency(token1Address)
-  const [baseCurrency, quoteCurrency] = currency0.sortsBefore(currency1)
-    ? [currency0, currency1]
-    : [currency1, currency0]
+  const [baseCurrency, quoteCurrency] = currency0.wrapped.sortsBefore(currency1.wrapped)
+    ? [currency0.wrapped, currency1.wrapped]
+    : [currency1.wrapped, currency0.wrapped]
 
   const algebraFactory = getAlgebraFactoryContract(chainId, 3)
   const { data: poolAddresses } = useReadContracts({

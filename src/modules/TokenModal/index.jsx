@@ -12,9 +12,11 @@ import Modal from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
 import { ERC20Abi } from '@/constant/abi'
+import { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
+import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 
 import { ItemToken } from './ItemToken'
@@ -188,8 +190,8 @@ function TokenModal({
           placeholder='Search by Name, Symbol or Address'
           autoFocus
         />
-        <Paragraph>{t('Trending Assets')}</Paragraph>
-        <div className='flex flex-wrap gap-2'>
+        <Paragraph className={cn(chainId === CHAIN_ID.TEST_BSC && 'hidden')}>{t('Trending Assets')}</Paragraph>
+        <div className={cn('flex flex-wrap gap-2', chainId === CHAIN_ID.TEST_BSC && 'hidden')}>
           {TRENDING_TOKENS.map((item, idx) => (
             <div
               key={idx}
