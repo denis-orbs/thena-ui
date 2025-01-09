@@ -1,9 +1,8 @@
 'use client'
 
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 
 import Box from '@/components/box'
@@ -24,7 +23,7 @@ function calculatePadding(ctx) {
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 export default function PoolSummary({ tokensAndWeights }) {
-  const [centerLogo, setCenterLogo] = useState(null)
+  // const [centerLogo, setCenterLogo] = useState(null)
 
   const data = useMemo(
     () =>
@@ -75,14 +74,14 @@ export default function PoolSummary({ tokensAndWeights }) {
         },
       },
     },
-    onHover: (event, chartElement) => {
-      if (chartElement.length) {
-        const { index } = chartElement[0]
-        setCenterLogo(data[index]?.data?.logoURI)
-      } else {
-        setCenterLogo(null)
-      }
-    },
+    // onHover: (event, chartElement) => {
+    //   if (chartElement.length) {
+    //     const { index } = chartElement[0]
+    //     setCenterLogo(data[index]?.data?.logoURI)
+    //   } else {
+    //     setCenterLogo(null)
+    //   }
+    // },
     cutout: data.map(item => item.cutout),
   }
 
@@ -109,9 +108,9 @@ export default function PoolSummary({ tokensAndWeights }) {
       <div className='flex items-center justify-center'>
         <div className='relative h-[230px] w-[230px] overflow-visible'>
           <Doughnut height={200} width={200} data={finalData} options={options} className='z-20' />
-          <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'>
+          {/* <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'>
             {centerLogo && <Image src={centerLogo} width={60} height={60} alt='logo' />}
-          </div>
+          </div> */}
         </div>
       </div>
       {/* ['#32002F', '#580055', '#84007F', '#B000AA', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE'] */}
