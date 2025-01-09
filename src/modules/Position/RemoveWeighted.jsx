@@ -204,7 +204,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
               {removeType === REMOVE_TYPE.SINGLE && (
                 <TokenInput
                   title={t('You Will Receive')}
-                  asset={tokenReceive}
+                  asset={{ ...tokenReceive, symbol: tokenReceive.symbol === 'BNB' ? 'WBNB' : tokenReceive.symbol }}
                   setAsset={setTokenReceive}
                   amount={minAmountOut}
                   autoFocus
@@ -221,7 +221,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
                       <div className='flex flex-row justify-between' key={token.address}>
                         <div className='flex gap-1'>
                           <CircleImage alt={token.symbol} src={token?.logoURI || UNKNOWN_LOGO} className='h-5 w-5' />
-                          <Paragraph>{token.symbol}</Paragraph>
+                          <Paragraph>{token.symbol === 'BNB' ? 'WBNB' : token.symbol}</Paragraph>
                         </div>
                         <Paragraph>{formatAmount(minAmountsOut?.[index] || 0)}</Paragraph>
                       </div>
