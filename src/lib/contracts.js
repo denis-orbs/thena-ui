@@ -8,12 +8,10 @@ import {
   dibsRewarderAbi,
   ERC20Abi,
   farmCenterAbi,
-  feeAbi,
   gaugeAbi,
   globalFactoryAbi,
   incentiveMakerAbi,
   minterAbi,
-  minterTestnetAbi,
   mockERC20Abi,
   mockERC20BNBAbi,
   multiCallAbi,
@@ -110,8 +108,6 @@ export const getGaugeContract = (address, chainId) => getContract(gaugeAbi, addr
 
 export const getBribeContract = (address, chainId) => getContract(bribeAbi, address, chainId)
 
-export const getFeeContract = (address, chainId) => getContract(feeAbi, address, chainId)
-
 export const getPairContract = (address, chainId) => getContract(pairAbi, address, chainId)
 
 export const getGlobalFactoryContract = chainId => getContract(globalFactoryAbi, Contracts.globalFactory, chainId)
@@ -123,9 +119,6 @@ export const getGlobalFactoryContract = chainId => getContract(globalFactoryAbi,
 export const getVeTHEAPIContract = chainId => getContract(veTHEApiAbi, Contracts.veTHEAPI, chainId)
 
 export const getRewardsAPIContract = chainId => getContract(rewardsAPIAbi, Contracts.rewardsAPI, chainId)
-
-// export const getRewardsDistributorContract = () => getContract(rewardsDistributorAbi, Contracts.rewardsDistributor, 97)
-// export const getRewardsDistributorContract = () => getContract(rewardsDistributorAbi, Contracts.rewardsDistributor, 97)
 
 /** **************************************************************************************************
                                           theNFT (THENIANs)
@@ -229,20 +222,9 @@ export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Co
 // export const getVotingEScrowContract = () => getContract(votingEscrowAbi, Contracts.votingEscrow, 97)
 
 /** ******************************************************************************************************
-                                          VotingEscrowAttach
-******************************************************************************************************* */
-// export const getVotingEScrowAttachContract = () => getContract(votingEscrowAttachAbi, Contracts.votingEscrowAttach, 97)
-// export const getVotingEScrowAttachContract = () => getContract(votingEscrowAttachAbi, Contracts.votingEscrowAttach, 97)
-
-/** ******************************************************************************************************
                                           Claimer
 ******************************************************************************************************* */
 export const getClaimerContract = chainId => getContract(claimerAbi, Contracts.claimer, chainId)
-
-/** ******************************************************************************************************
-                                          Minter
-******************************************************************************************************* */
-export const getMinterTestnetContract = () => getContract(minterTestnetAbi, Contracts.minter, 97)
 
 /** ******************************************************************************************************
                                           ALGEBRA_POOL_DEPLOYER_TESTNET
@@ -284,10 +266,6 @@ export const getAlgebraFactoryContract = (chainId = 56, version = 3) => {
 //   getContract(algebraVaultFactoryStubAbi, Contracts.ALGEBRA_VAULT_FACTORY_STUB_TESTNET, 97)
 
 /** ******************************************************************************************************
-                                          TICK_LENS_TESTNET
-******************************************************************************************************* */
-// export const getTickLensContract = () => getContract(tickLensAbi, Contracts.TICK_LENS_TESTNET, 97)
-// export const getTickLensContract = () => getContract(tickLensAbi, Contracts.TICK_LENS_TESTNET, 97)
 
 /** ******************************************************************************************************
                                           QUOTER_TESTNET
