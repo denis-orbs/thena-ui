@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 
@@ -130,10 +130,11 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   const { pairs } = usePairs()
   const t = useTranslations()
 
+  const { replace } = useRouter()
   const searchParams = useSearchParams()
   const pairType = searchParams.get('pairType')
-  const [firstAddress, setFirstAddress] = useState(searchParams.get('firstAddress') || null)
-  const [secondAddress, setSecondAddress] = useState(searchParams.get('secondAddress') || null)
+  const firstAddress = searchParams.get('firstAddress') || null
+  const secondAddress = searchParams.get('secondAddress') || null
   const firstAsset = useGetAsset(firstAddress)
   const secondAsset = useGetAsset(secondAddress)
 
@@ -175,7 +176,6 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
     if (pairType && pairType !== PAIR_TYPES.LSD) checkLSD = true
     if (!checkLSD) {
       result.push({
-        ...mockWeightedPool,
         symbol: `${firstAsset?.symbol}/${secondAsset?.symbol}`,
         token0: firstAsset,
         token1: secondAsset,
@@ -224,11 +224,26 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
   const onDeposit = useCallback(
     (pool, isAdd = false) => {
       setPoolSelected(pool)
-      nextStep(1)
+      nextStep(2)
       setIsAdd(isAdd)
     },
     [nextStep, setIsAdd, setPoolSelected],
   )
+
+  const updateSearchParams = updates => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null) {
+        params.delete(key)
+      } else {
+        params.set(key, value)
+      }
+    })
+
+    const newPathname = `${window.location.pathname}?${params.toString()}`
+    replace(newPathname)
+  }
 
   return (
     <div className='flex max-w-[1028px] flex-col gap-4 lg:gap-6'>
@@ -315,17 +330,17 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
         selectedAsset={isFirstSelected ? firstAsset : secondAsset}
         setSelectedAsset={item => {
           if (isFirstSelected) {
-            setFirstAddress(item.address)
+            updateSearchParams({ firstAddress: item.address })
           } else {
-            setSecondAddress(item.address)
+            updateSearchParams({ secondAddress: item.address })
           }
         }}
         otherAsset={isFirstSelected ? secondAsset : firstAsset}
         setOtherAsset={item => {
           if (isFirstSelected) {
-            setSecondAddress(item.address)
+            updateSearchParams({ secondAddress: item.address })
           } else {
-            setFirstAddress(item.address)
+            updateSearchParams({ firstAddress: item.address })
           }
         }}
       />

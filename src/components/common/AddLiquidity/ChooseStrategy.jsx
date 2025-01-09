@@ -9,7 +9,6 @@ import { zeroAddress } from 'viem'
 
 import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { PrimaryButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Selector from '@/components/selector'
 import Tabs from '@/components/tabs'
@@ -129,27 +128,16 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   return preset
 }
 
-export default function ChooseStrategy({
-  pairType,
-  firstAsset,
-  secondAsset,
-  setCurrentStep,
-  isReverse,
-  setIsReverse,
-  isAdd,
-  isModal,
-}) {
+export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isReverse, setIsReverse, isAdd, isModal }) {
+  const t = useTranslations()
   const dispatch = useDispatch()
   const { strategy } = useV3MintState()
-
   const { networkId } = useChainSettings()
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
-  const t = useTranslations()
-
   const { locale } = useLocaleSettings()
-  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
 
+  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
   const pair = useMemo(() => {
     const found = (pairs ?? []).find(
       ele =>
@@ -224,17 +212,13 @@ export default function ChooseStrategy({
     onChangePresetRange(preset)
   }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, price])
 
-  const setSubpool = useCallback(() => {
+  useEffect(() => {
     if (isAdd) {
       defaultSwapFees.token0 = firstAsset
       defaultSwapFees.token1 = secondAsset
       defaultSwapFees.address = zeroAddress
     }
   }, [firstAsset, isAdd, secondAsset])
-
-  useEffect(() => {
-    setSubpool()
-  }, [setSubpool])
 
   const setStrategy = useCallback(
     strategyInfo => {
@@ -384,7 +368,7 @@ export default function ChooseStrategy({
               )}
             </div>
 
-            {strategy?.isAutomatic && (
+            {strategy?.isAutomatic ? (
               <>
                 {!mintInfo.noLiquidity && strategyData && (
                   <>
@@ -443,31 +427,17 @@ export default function ChooseStrategy({
                   </div>
                 </Box>
               </>
+            ) : (
+              <ManualStrategy
+                firstAsset={firstAsset}
+                secondAsset={secondAsset}
+                isReverse={isReverse}
+                setIsReverse={setIsReverse}
+                strategy={strategy}
+              />
             )}
           </div>
-
-          {isChooseStrategy && strategy && !strategy?.isAutomatic && (
-            <ManualStrategy
-              firstAsset={firstAsset}
-              secondAsset={secondAsset}
-              isReverse={isReverse}
-              setIsReverse={setIsReverse}
-              strategy={strategy}
-            />
-          )}
         </div>
-      </div>
-
-      <div className={cn('mt-auto inline-flex w-full flex-col pt-5', isModal && 'px-3 pt-3 lg:px-6')}>
-        <PrimaryButton
-          disabled={!strategy && strategy?.isAutomatic}
-          onClick={() => {
-            setCurrentStep(3)
-          }}
-          className={strategy || !strategy?.isAutomatic ? 'bg-primary-600 hover:bg-primary-700' : ''}
-        >
-          {t('Continue')}
-        </PrimaryButton>
       </div>
     </>
   )

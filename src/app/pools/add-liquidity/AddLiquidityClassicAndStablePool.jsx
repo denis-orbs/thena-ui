@@ -28,7 +28,7 @@ function AddLiquidityClassicAndStablePool({ pool, setCurrentStep, isAdd, showSid
         <div className='mb-4 h-11 w-fit'>
           {showSidebar ? (
             <TextHeading className='font-archia text-3xl text-neutral-50'>
-              <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(0)} />
+              <TextIconButton Icon={ArrowLeftIcon} onClick={() => setCurrentStep(1)} />
               {t('Add Liquidity')}
             </TextHeading>
           ) : (
