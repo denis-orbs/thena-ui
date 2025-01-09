@@ -162,14 +162,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   )
   const baseCurrency = useCurrency(firstAsset?.address)
   const quoteCurrency = useCurrency(secondAsset?.address)
-  const mintInfo = useV3DerivedMintInfo(
-    baseCurrency || undefined,
-    quoteCurrency || undefined,
-    feeAmount,
-    baseCurrency,
-    undefined,
-    strategy?.version ?? 3,
-  )
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
 
   const { data: pairPrices = [], error } = useFetchPairPrices({
     token0Address: useGetAsset(pair?.token0?.address),
@@ -290,6 +283,10 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
           setStrategy({
             // ...sub,
             title: sub.title,
+            account: {
+              totalLp: sub?.account?.totalLp?.toNumber(),
+              gaugeBalance: sub?.account?.gaugeBalance?.toNumber(),
+            },
             token0: {
               ...sub?.token0,
               reserve: sub?.token0?.reserve?.toNumber(),
@@ -433,7 +430,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                 secondAsset={secondAsset}
                 isReverse={isReverse}
                 setIsReverse={setIsReverse}
-                strategy={strategy}
               />
             )}
           </div>

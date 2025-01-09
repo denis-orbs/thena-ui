@@ -12,11 +12,11 @@ import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
 import ZapperPane from '@/components/common/AddLiquidity/FusionAdd/ZapperPane'
 import IconGroup from '@/components/icongroup'
 import Selection from '@/components/selection'
-import { TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
-import { cn } from '@/lib/utils'
+import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintState } from '@/state/fusion/hooks'
@@ -25,10 +25,11 @@ import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, Right
 import TransactionSettingModal from '../TransactionSettingModal'
 
 const feeAmount = 3000
-export default function AddLiquidityCLPane({ pool, isAdd, goPreviousStep, showSidebar = true }) {
+export default function AddLiquidityCLPane({ pool, isAdd, isReverse, goPreviousStep, showSidebar = true }) {
   const t = useTranslations()
   const { strategy } = useV3MintState()
 
+  const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
   const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
 
@@ -37,17 +38,12 @@ export default function AddLiquidityCLPane({ pool, isAdd, goPreviousStep, showSi
   const secondAddress = searchParams.get('secondAddress') || pool?.token1?.address
 
   const fusionPairs = useFusionPairs()
-  const baseCurrency = useCurrency(firstAddress)
-  const quoteCurrency = useCurrency(secondAddress)
 
-  const mintInfo = useV3DerivedMintInfo(
-    baseCurrency,
-    quoteCurrency,
-    feeAmount,
-    baseCurrency,
-    undefined,
-    strategy?.version ?? 3,
-  )
+  const currencyA = useCurrency(firstAddress)
+  const currencyB = useCurrency(secondAddress)
+  const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
+  const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
 
   const currentPrice = useMemo(() => {
     if (!mintInfo.price) return
@@ -71,6 +67,26 @@ export default function AddLiquidityCLPane({ pool, isAdd, goPreviousStep, showSi
     }
   }, [pool, fusionPairs])
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
+
+  const addSelections = useMemo(
+    () => [
+      {
+        label: 'Default',
+        active: !isZapper,
+        onClickHandler: () => {
+          setIsZapper(false)
+        },
+      },
+      {
+        label: 'Zapper',
+        active: isZapper,
+        onClickHandler: () => {
+          setIsZapper(true)
+        },
+      },
+    ],
+    [isZapper],
+  )
 
   return (
     <div className='flex w-full flex-col gap-6 lg:flex-row lg:gap-8'>
@@ -99,19 +115,66 @@ export default function AddLiquidityCLPane({ pool, isAdd, goPreviousStep, showSi
           <NeutralBadge>{PAIR_TYPES.LSD}</NeutralBadge>
         </div>
 
+        <div className={cn('flex justify-end', strategy?.isAutomatic && 'hidden')}>
+          <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
+        </div>
+
         {strategy?.isAutomatic ? (
           <FusionAdd strategy={isAdd ? pair : strategy} isAdd={isAdd} />
         ) : (
-          <ManualAddPane
-            mintInfo={mintInfo}
-            pair={pair}
-            baseCurrency={baseCurrency}
-            quoteCurrency={quoteCurrency}
-            setSlippage={setSlippage}
-            slippage={slippage}
-            tickLower={tickLower}
-            tickUpper={tickUpper}
-          />
+          <div className='space-y-6'>
+            <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
+            {isZapper ? (
+              <ZapperPane
+                asset1={baseCurrency}
+                asset2={quoteCurrency}
+                slippage={slippage}
+                tickLower={tickLower}
+                tickUpper={tickUpper}
+                mintInfo={mintInfo}
+                strategy={strategy}
+              />
+            ) : (
+              <>
+                <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
+
+                <div className='mt-5 flex flex-col gap-4'>
+                  <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
+                  <div className='flex flex-col gap-3'>
+                    <div className='flex items-center justify-between'>
+                      <Paragraph className='font-medium'>
+                        {unwrappedSymbol(strategy?.token0)} {t('Amount')}
+                      </Paragraph>
+                      <Paragraph>{formatAmount(strategy?.token0?.reserve)}</Paragraph>
+                    </div>
+                    <div className='flex items-center justify-between'>
+                      <Paragraph className='font-medium'>
+                        {unwrappedSymbol(strategy?.token1)} {t('Amount')}
+                      </Paragraph>
+                      <Paragraph>{formatAmount(strategy?.token1?.reserve)}</Paragraph>
+                    </div>
+                  </div>
+                </div>
+                <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+                  <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
+                  <div className='flex flex-col gap-3'>
+                    <div className='flex items-center justify-between'>
+                      <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+                      <Paragraph>{formatAmount(strategy?.account?.totalLp)} LP</Paragraph>
+                    </div>
+                  </div>
+                </div>
+
+                <ManualAdd
+                  baseCurrency={baseCurrency}
+                  quoteCurrency={quoteCurrency}
+                  mintInfo={mintInfo}
+                  slippage={slippage}
+                  strategy={strategy}
+                />
+              </>
+            )}
+          </div>
         )}
       </Box>
 
@@ -173,65 +236,5 @@ export default function AddLiquidityCLPane({ pool, isAdd, goPreviousStep, showSi
         slippage={slippage}
       />
     </div>
-  )
-}
-
-function ManualAddPane({ pair, mintInfo, slippage, setSlippage, tickLower, tickUpper, baseCurrency, quoteCurrency }) {
-  const [isZapper, setIsZapper] = useState(false)
-  const { strategy } = useV3MintState()
-
-  const addSelections = useMemo(
-    () => [
-      {
-        label: 'Default',
-        active: !isZapper,
-        onClickHandler: () => {
-          setIsZapper(false)
-        },
-      },
-      {
-        label: 'Zapper',
-        active: isZapper,
-        onClickHandler: () => {
-          setIsZapper(true)
-        },
-      },
-    ],
-    [isZapper],
-  )
-
-  return (
-    <>
-      <div className='flex justify-end'>
-        <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
-      </div>
-
-      <div className='space-y-6'>
-        <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
-        {isZapper ? (
-          <ZapperPane
-            asset1={baseCurrency}
-            asset2={quoteCurrency}
-            slippage={slippage}
-            poolId={pair?.address}
-            tickLower={tickLower}
-            tickUpper={tickUpper}
-            mintInfo={mintInfo}
-            strategy={strategy}
-          />
-        ) : (
-          <>
-            <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-            <ManualAdd
-              baseCurrency={baseCurrency}
-              quoteCurrency={quoteCurrency}
-              mintInfo={mintInfo}
-              slippage={slippage}
-              strategy={strategy}
-            />
-          </>
-        )}
-      </div>
-    </>
   )
 }

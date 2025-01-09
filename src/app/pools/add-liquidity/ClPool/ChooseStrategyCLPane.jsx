@@ -1,6 +1,6 @@
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useState } from 'react'
+import React from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -13,10 +13,17 @@ import { cn } from '@/lib/utils'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { ArrowLeftIcon } from '@/svgs'
 
-export function ChooseStrategyCLPane({ pool, goPreviousStep, goNextStep, isAdd, showSidebar }) {
+export function ChooseStrategyCLPane({
+  pool,
+  goPreviousStep,
+  goNextStep,
+  isAdd,
+  showSidebar,
+  isReverse,
+  setIsReverse,
+}) {
   const t = useTranslations()
   const { strategy } = useV3MintState()
-  const [isReverse, setIsReverse] = useState(true)
 
   const searchParams = useSearchParams()
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address

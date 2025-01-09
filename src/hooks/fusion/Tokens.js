@@ -64,7 +64,13 @@ export const useCurrency = tokenAddress => {
   const { networkId } = useChainSettings()
   const isBNB = tokenAddress?.toUpperCase() === 'BNB'
   const token = useToken(isBNB ? undefined : tokenAddress)
-  return isBNB ? BNB.onChain(networkId) : token
+  if (isBNB) {
+    const currency = BNB.onChain(networkId)
+    currency.logoURI = 'https://cdn.thena.fi/assets/WBNB.png'
+    currency.address = 'BNB'
+    return currency
+  }
+  return token
 }
 
 const STABLE_TOKENS = {

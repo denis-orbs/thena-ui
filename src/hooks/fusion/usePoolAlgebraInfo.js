@@ -18,7 +18,7 @@ import useWallet from '../useWallet'
  *   - pluginAddress: The address of the plugin associated with the pool.
  *   - incentiveAddress: The address of the incentive contract associated with the pool.
  */
-export const usePoolAlgebraInfo = (token0Address, token1Address) => {
+export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true) => {
   const { chainId } = useWallet()
   const currency0 = useCurrency(token0Address)
   const currency1 = useCurrency(token1Address)
@@ -41,7 +41,7 @@ export const usePoolAlgebraInfo = (token0Address, token1Address) => {
       },
     ],
     query: {
-      enabled: !!token0Address && !!token1Address,
+      enabled: !!token0Address && !!token1Address && enabled,
       staleTime: Infinity,
     },
   })

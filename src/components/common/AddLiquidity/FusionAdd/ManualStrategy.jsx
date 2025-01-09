@@ -35,26 +35,18 @@ import { RangeSelector } from '../components/RangeSelector'
 
 const feeAmount = 3000
 
-function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse, strategy }) {
+function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
   const { locale } = useLocaleSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
-
-  const currencyA = useCurrency(firstAsset ? firstAsset.address : undefined)
-  const currencyB = useCurrency(secondAsset ? secondAsset.address : undefined)
-
   const stableAssets = useStableTokens()
+
+  const currencyA = useCurrency(firstAsset?.address)
+  const currencyB = useCurrency(secondAsset?.address)
   const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
   const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
 
-  const mintInfo = useV3DerivedMintInfo(
-    baseCurrency ?? undefined,
-    quoteCurrency ?? undefined,
-    feeAmount,
-    baseCurrency ?? undefined,
-    undefined,
-    strategy?.version ?? 3,
-  )
   const { ticksAtLimit, invertPrice } = mintInfo
   const t = useTranslations()
 
