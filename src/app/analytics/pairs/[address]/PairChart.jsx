@@ -6,9 +6,9 @@ import useSWR from 'swr'
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
-import { FUSION_MULTI_CHAIN_START_TIME, V1_MULTI_CHAIN_START_TIME } from '@/constant'
+import { FUSION_MULTI_CHAIN_START_TIME, PAIR_TYPES, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { fetchChartData } from '@/hooks/useGraph'
-import { fusionClient, v1Client } from '@/lib/graphql'
+import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
 
 const V1_DAY_DATAS = gql`
@@ -41,6 +41,19 @@ const FUSION_DAY_DATAS = gql`
       volumeUSD
       untrackedVolumeUSD
       tvlUSD
+    }
+  }
+`
+
+const WEIGHTED_DAY_DATA = gql`
+  query weightedPairCharts($address: String!) {
+    poolSnapshots(first: 1000, where: { pool_: { address: $address } }) {
+      timestamp
+      swapsCount
+      swapVolume
+      swapFees
+      liquidity
+      amounts
     }
   }
 `
@@ -85,11 +98,38 @@ export const getFusionChartData = async (chainId, address, skip) => {
   }
 }
 
+export const getWeightedChartData = async (chainId, address, skip) => {
+  try {
+    const { poolSnapshots } = await weightedClient[chainId].request(WEIGHTED_DAY_DATA, {
+      address,
+      skip,
+    })
+
+    const data = poolSnapshots?.map(ele => ({
+      date: ele.timestamp,
+      dayVolume: Number(ele.swapVolume),
+      tvlUSD: Number(ele.liquidity),
+      dayFees: Number(ele.swapFees),
+    }))
+
+    return { data, error: false }
+  } catch (error) {
+    console.error('Failed to fetch fusion pair chart data', error)
+    return { data: [], error: true }
+  }
+}
+
 export const fetchPairChartData = async (chainId, pair) => {
-  if (pair.isFusion) {
+  if (pair.type === PAIR_TYPES.WEIGHTED) {
+    const { data: fusiondata } = await fetchChartData(getWeightedChartData, [chainId, pair.address], false)
+    return fusiondata
+  }
+
+  if (pair.type === PAIR_TYPES.LSD) {
     const { data: fusiondata } = await fetchChartData(getFusionChartData, [chainId, pair.address], false)
     return fusiondata
   }
+
   const { data: v1data } = await fetchChartData(getV1ChartData, [chainId, pair.address, pair.fee], false)
   return v1data
 }

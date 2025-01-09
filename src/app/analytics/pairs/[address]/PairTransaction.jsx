@@ -9,8 +9,9 @@ import useSWR from 'swr'
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
-import { fusionClient, v1Client } from '@/lib/graphql'
+import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -154,6 +155,39 @@ const FUSION_TRANSACTIONS = gql`
       amount0
       amount1
       amountUSD
+    }
+  }
+`
+
+const WEIGHTED_TRANSACTIONS = gql`
+  query fusionTransactions($pairs: [String]!) {
+    swaps(first: 50, orderBy: timestamp, orderDirection: desc, where: { poolId_: { address: $address } }) {
+      tokenIn
+      tokenOut
+      tx
+      timestamp
+      tokenAmountIn
+      tokenAmountOut
+      tokenInSym
+      tokenOutSym
+      valueUSD
+    }
+    poolActivities(first: 100, orderBy: timestamp, orderDirection: desc, where: { pool_: { address: $address } }) {
+      id
+      tx
+      type
+      user
+      valueUSD
+      sender
+      timestamp
+      block
+      amounts
+      pool {
+        tokens {
+          address
+          symbol
+        }
+      }
     }
   }
 `
@@ -335,6 +369,61 @@ const getFusionTransactions = async (chainId, pairs) => {
   }
 }
 
+const getWeightedTransactions = async (chainId, pairs) => {
+  try {
+    const newTxns = []
+    const { poolActivities, swaps } = await weightedClient[chainId].request(WEIGHTED_TRANSACTIONS, {
+      pairs,
+    })
+
+    poolActivities.forEach(ele => {
+      newTxns.push({
+        hash: ele.tx,
+        timestamp: ele.timestamp,
+        type: ele.type === 'Join' ? TXN_TYPE.ADD : TXN_TYPE.REMOVE,
+        account: ele.sender,
+        amountUSD: ele.valueUSD,
+        tokens: ele.pool.tokens.map((token, index) => ({
+          ...token,
+          amount: ele.amounts[index],
+        })),
+      })
+    })
+
+    // TODO: update ele type based on response of API
+    swaps.forEach(ele => {
+      const newTxn = {}
+      newTxn.hash = ele.tx
+      newTxn.timestamp = ele.timestamp
+      newTxn.account = ele.caller
+      newTxn.amountUSD = ele.valueUSD
+      newTxn.type = TXN_TYPE.SWAP
+
+      newTxn.token0Symbol = formatTokenSymbol(ele.tokenIn)
+      newTxn.token1Symbol = formatTokenSymbol(ele.tokenOut)
+
+      newTxn.token0Amount = ele.tokenAmountIn
+      newTxn.token1Amount = ele.tokenAmountOut
+
+      newTxns.push(newTxn)
+    })
+
+    const data = newTxns
+      .map(ele => ({
+        ...ele,
+        timestamp: parseFloat(ele.timestamp),
+        token0Amount: parseFloat(ele.token0Amount),
+        token1Amount: parseFloat(ele.token1Amount),
+        amountUSD: parseFloat(ele.amountUSD),
+      }))
+      .sort((a, b) => b.timestamp - a.timestamp)
+    return { data, error: false }
+  } catch (error) {
+    console.error('Failed to fetch fusion pair transaction data', error)
+    return { data: [], error: true }
+  }
+}
+
 const getTransactionType = (event, symbol0, symbol1, t) => {
   const formattedS0 = symbol0?.length > 8 ? `${symbol0.slice(0, 7)}...` : symbol0
   const formattedS1 = symbol1?.length > 8 ? `${symbol1.slice(0, 7)}...` : symbol1
@@ -359,12 +448,18 @@ const getTransactionType = (event, symbol0, symbol1, t) => {
   }
 }
 
-const fetchPairTransaction = async (chainId, pairs, isFusion) => {
-  if (isFusion) {
-    const { data: fusiondata } = await getFusionTransactions(chainId, pairs)
+const fetchPairTransaction = async (chainId, pair) => {
+  if (pair.type === PAIR_TYPES.WEIGHTED) {
+    const { data: fusiondata } = await getWeightedTransactions(chainId, [pair.address])
     return fusiondata
   }
-  const { data: v1data } = await getV1Transactions(chainId, pairs)
+
+  if (pair.type === PAIR_TYPES.LSD) {
+    const { data: fusiondata } = await getFusionTransactions(chainId, [pair.address])
+    return fusiondata
+  }
+
+  const { data: v1data } = await getV1Transactions(chainId, [pair.address])
   return v1data
 }
 
@@ -407,7 +502,7 @@ const sortOptions = [
   },
 ]
 
-export default function TransactionTable({ pairs, isFusion }) {
+export default function TransactionTable({ pair }) {
   const [sort, setSort] = useState(sortOptions[5])
   const [currentPage, setCurrentPage] = useState(1)
   const [filter, setFilter] = useState(TXN_TYPE.All)
@@ -415,8 +510,8 @@ export default function TransactionTable({ pairs, isFusion }) {
   const t = useTranslations()
 
   const { data: txnData } = useSWR(
-    pairs && pairs.length > 0 && ['analytics/pair/transaction', pairs[0]],
-    () => fetchPairTransaction(networkId, pairs, isFusion),
+    pair && ['analytics/pair/transaction', pair],
+    () => fetchPairTransaction(networkId, pair),
     {
       refreshInterval: 0,
     },
