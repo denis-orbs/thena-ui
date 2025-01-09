@@ -13,15 +13,14 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Selector from '@/components/selector'
 import Tabs from '@/components/tabs'
-import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { FusionRangeType, GAMMA_TYPES } from '@/constant'
+import { GAMMA_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { callMulti } from '@/lib/contractActions'
-import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
+import { cn, formatAmount, getLiquidityRangeType, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
@@ -220,29 +219,10 @@ export default function ChooseStrategy({
     if (!price) return
 
     dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
-
     onLeftRangeInput(preset ? String(+price * preset.min) : '')
     onRightRangeInput(preset ? String(+price * preset.max) : '')
     onChangePresetRange(preset)
-    if (strategy) {
-      onChangeLiquidityRangeType(
-        GAMMA_TYPES.includes(strategy.title)
-          ? FusionRangeType.GAMMA_RANGE
-          : strategy.title === 'DefiEdge'
-            ? FusionRangeType.DEFIEDGE_RANGE
-            : FusionRangeType.ICHI_RANGE,
-      )
-    }
-  }, [
-    preset,
-    strategy,
-    dispatch,
-    onChangePresetRange,
-    onLeftRangeInput,
-    onRightRangeInput,
-    onChangeLiquidityRangeType,
-    price,
-  ])
+  }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, price])
 
   const setSubpool = useCallback(() => {
     if (isAdd) {
@@ -262,8 +242,9 @@ export default function ChooseStrategy({
       onLeftRangeInput('')
       onRightRangeInput('')
       dispatch(updateStrategy({ strategy: strategyInfo }))
+      onChangeLiquidityRangeType(getLiquidityRangeType(strategyInfo.title))
     },
-    [dispatch, onLeftRangeInput, onRightRangeInput],
+    [dispatch, onChangeLiquidityRangeType, onLeftRangeInput, onRightRangeInput],
   )
 
   const strategyData = useMemo(() => {
@@ -324,6 +305,7 @@ export default function ChooseStrategy({
         onClickHandler: () => {
           setStrategy({
             // ...sub,
+            title: sub.title,
             token0: {
               ...sub?.token0,
               reserve: sub?.token0?.reserve?.toNumber(),
@@ -480,21 +462,13 @@ export default function ChooseStrategy({
         <PrimaryButton
           disabled={!strategy && strategy?.isAutomatic}
           onClick={() => {
-            setCurrentStep(2)
+            setCurrentStep(3)
           }}
           className={strategy || !strategy?.isAutomatic ? 'bg-primary-600 hover:bg-primary-700' : ''}
         >
           {t('Continue')}
         </PrimaryButton>
       </div>
-
-      <CustomTooltip id='management-tooltip' className='max-w-[320px]'>
-        <div className='flex flex-col gap-2'>
-          <TextHeading className='text-sm'>{t('How to Choose a Strategy')}</TextHeading>
-          <Paragraph className='text-xs'>{t('Automatic Strategy')}</Paragraph>
-          <Paragraph className='text-xs'>{t('Manual Strategy')}</Paragraph>
-        </div>
-      </CustomTooltip>
     </>
   )
 }
