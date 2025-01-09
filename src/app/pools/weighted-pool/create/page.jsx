@@ -1,12 +1,15 @@
 'use client'
 
+import { isEmpty } from 'lodash'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
+import Loading from '@/app/loading'
 import { TextButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import MaxInitialLiquidity from '@/modules/WeightedPool/MaxInitialLiquidity'
 import PoolSummary from '@/modules/WeightedPool/PoolSummary'
@@ -81,21 +84,55 @@ function PoolWithStep({
 }
 
 export default function CreateWeightedPoolPage() {
-  const searchParams = useSearchParams()
+  // const searchParams = useSearchParams()
   const { push } = useRouter()
   const t = useTranslations()
   const assets = useAssets()
   const [fees, setFees] = useState(0.3)
-  const [tokensAndWeights, setTokenAndWeights] = useState(() => {
-    const firstAddress = searchParams.get('firstAddress')
-    const secondAddress = searchParams.get('secondAddress')
-    const firstToken = assets.find(asset => asset.address.toLowerCase() === firstAddress.toLowerCase())
-    const secondAsset = assets.find(asset => asset.address.toLowerCase() === secondAddress.toLowerCase())
-    return [
-      { token: firstToken || null, lock: false, weight: 50 },
-      { token: secondAsset || null, lock: false, weight: 50 },
-    ]
-  })
+  const [tokensAndWeights, setTokenAndWeights] = useState([])
+
+  const searchParams = useSearchParams()
+  const firstAddress = searchParams.get('firstAddress')
+  const secondAddress = searchParams.get('secondAddress')
+  const firstToken = useGetAsset(firstAddress)
+  const secondToken = useGetAsset(secondAddress)
+
+  useEffect(() => {
+    setTokenAndWeights(prev => {
+      if (!prev || prev.length === 0 || !prev?.[0]?.token || !prev?.[1]?.token) {
+        return [
+          { token: firstToken || null, lock: false, weight: 50 },
+          { token: secondToken || null, lock: false, weight: 50 },
+        ]
+      }
+      return prev.map(item => {
+        const itemAddress = item?.token?.address
+        if (firstToken?.address?.toLowerCase() === itemAddress?.toLowerCase()) {
+          console.log('check1')
+          return {
+            ...item,
+            token: {
+              ...item.token,
+              ...firstToken,
+            },
+          }
+        }
+
+        if (secondToken?.address?.toLowerCase() === itemAddress?.toLowerCase()) {
+          console.log('check2')
+          return {
+            ...item,
+            token: {
+              ...item.token,
+              ...secondToken,
+            },
+          }
+        }
+        return item
+      })
+    })
+  }, [firstAddress, firstToken, secondAddress, secondAddress?.address, secondToken])
+
   const [currentStep, setCurrentStep] = useState(1)
   const initialPoolSymbol = useMemo(() => {
     const result = tokensAndWeights.reduce(
@@ -107,6 +144,10 @@ export default function CreateWeightedPoolPage() {
     )
     return result
   }, [tokensAndWeights])
+
+  if (!tokensAndWeights || isEmpty(tokensAndWeights)) {
+    return <Loading />
+  }
 
   return (
     <div className='flex flex-col'>

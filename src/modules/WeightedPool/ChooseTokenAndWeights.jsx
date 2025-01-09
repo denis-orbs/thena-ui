@@ -190,10 +190,8 @@ export function ErrorMessage({ message, type = 'error', className }) {
 
 export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
   const t = useTranslations()
-  const [tokenSelected, setTokenSelected] = useState(
-    tokensAndWeights.length > 0 ? tokensAndWeights : [initialToken, initialToken],
-  )
   const [totalWeight, setTotalWeight] = useState(0)
+  const [tokenSelected, setTokenSelected] = useState(tokensAndWeights)
 
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
   useEffect(() => {

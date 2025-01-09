@@ -15,7 +15,7 @@ import { ArrowLeftIcon, InfoCirCleDisableIcon } from '@/svgs'
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
   const t = useTranslations()
   // const [lastIndexChange, setLastIndexChange] = useState(0)
-  const [isAutoOptimize, setIsAutoOptimize] = useState(false)
+  const [isAutoOptimize, setIsAutoOptimize] = useState(true)
 
   const [totalWhenOptimize, setTotalWhenOptimize] = useState(null)
 
