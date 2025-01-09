@@ -33,6 +33,7 @@ export default function PairDetailPage({ params }) {
     () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
     [pairs, address],
   )
+
   if (isLoading || !pairs || !pair) {
     return (
       <div className='flex w-full items-center'>
@@ -168,7 +169,8 @@ export default function PairDetailPage({ params }) {
         </div>
         <PairChart pair={pair} />
       </div>
-      <TransactionTable pairs={[pair.address]} isFusion={pair.isFusion} />
+
+      <TransactionTable pair={pair} />
     </div>
   )
 }

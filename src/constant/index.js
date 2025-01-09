@@ -1,16 +1,18 @@
 import dayjs from 'dayjs'
-import { ChainId, WBNB } from 'thena-sdk-core'
+import { WBNB } from 'thena-sdk-core'
+
+import { CHAIN_ID } from './contracts'
 
 export const CHAIN_LIST = {
-  [ChainId.BSC]: {
-    chainId: ChainId.BSC,
+  [CHAIN_ID.BSC]: {
+    chainId: CHAIN_ID.BSC,
     title: 'BNB Chain',
     img: '/images/header/bnb.svg',
     scanUrl: 'https://bscscan.com',
     scanName: 'View on BscScan',
   },
-  [ChainId.OPBNB]: {
-    chainId: ChainId.OPBNB,
+  [CHAIN_ID.OPBNB]: {
+    chainId: CHAIN_ID.OPBNB,
     title: 'opBNB',
     img: '/images/header/opbnb.svg',
     scanUrl: 'https://opbnb.bscscan.com/',
@@ -26,9 +28,9 @@ export const CHAIN_LIST = {
 }
 
 export const RPC_PROVIDERS = {
-  // [ChainId.BSC]: ['https://rpc.ankr.com/bsc/c524849c12e5d6a1f7c0a4def3ae2b387b9f9a7902adc16822bc6825aff6d5b6'],
-  [ChainId.BSC]: ['https://bsc-rpc.publicnode.com'],
-  [ChainId.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
+  // [CHAIN_ID.BSC]: ['https://rpc.ankr.com/bsc/c524849c12e5d6a1f7c0a4def3ae2b387b9f9a7902adc16822bc6825aff6d5b6'],
+  [CHAIN_ID.BSC]: ['https://bsc-rpc.publicnode.com'],
+  [CHAIN_ID.OPBNB]: ['https://opbnb-mainnet-rpc.bnbchain.org'],
   97: ['https://bsc-testnet-rpc.publicnode.com'],
 }
 
@@ -38,8 +40,8 @@ export const LOCALES = {
 }
 
 export const SCAN_URLS = {
-  [ChainId.BSC]: 'https://bscscan.com',
-  [ChainId.OPBNB]: 'https://opbnb.bscscan.com',
+  [CHAIN_ID.BSC]: 'https://bscscan.com',
+  [CHAIN_ID.OPBNB]: 'https://opbnb.bscscan.com',
   97: 'https://testnet.bscscan.com',
 }
 
@@ -57,10 +59,10 @@ export const LOTTERY_STATUS = {
   LOST: 2,
 }
 
-export const SupportedChainIds = [ChainId.BSC, ChainId.OPBNB]
+export const SupportedChainIds = [CHAIN_ID.BSC, CHAIN_ID.OPBNB]
 
 export const V1_ROUTE_ASSETS = {
-  [ChainId.BSC]: [
+  [CHAIN_ID.BSC]: [
     {
       symbol: 'WBNB',
       address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
@@ -122,10 +124,10 @@ export const V1_ROUTE_ASSETS = {
       logoURI: 'https://thena.fi/logo.png',
     },
   ],
-  [ChainId.OPBNB]: [
+  [CHAIN_ID.OPBNB]: [
     {
       symbol: 'WBNB',
-      address: WBNB[ChainId.OPBNB].address,
+      address: WBNB[CHAIN_ID.OPBNB].address,
       logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
     },
     {
@@ -153,22 +155,28 @@ export const NEXT_EPOCH_TIMESTAMP = 1696464000
 export const ONE_DAY_UNIX = 86400
 
 export const V1_MULTI_CHAIN_START_TIME = {
-  [ChainId.BSC]: 1672790400,
-  [ChainId.OPBNB]: 1701993600,
+  [CHAIN_ID.BSC]: 1672790400,
+  [CHAIN_ID.OPBNB]: 1701993600,
 }
 
 export const FUSION_MULTI_CHAIN_START_TIME = {
-  [ChainId.BSC]: 1681862400,
-  [ChainId.OPBNB]: 1702339200,
+  [CHAIN_ID.BSC]: 1681862400,
+  [CHAIN_ID.OPBNB]: 1702339200,
+}
+
+export const WEIGHTED_MULTI_CHAIN_START_TIME = {
+  [CHAIN_ID.BSC]: 1681862400,
+  [CHAIN_ID.OPBNB]: 1702339200,
+  [CHAIN_ID.TEST_BSC]: 1681862400,
 }
 
 export const NEW_POOLS = {
-  [ChainId.BSC]: ['0xdc6f26e5f8a7ea128a8a06ce07681b3cde5280f2', '0x01dd2d28eeb95d740acb5344b1e2c99b61cc3e64'],
-  [ChainId.OPBNB]: [],
+  [CHAIN_ID.BSC]: ['0xdc6f26e5f8a7ea128a8a06ce07681b3cde5280f2', '0x01dd2d28eeb95d740acb5344b1e2c99b61cc3e64'],
+  [CHAIN_ID.OPBNB]: [],
 }
 
 export const STABLE_TOKENS = {
-  [ChainId.BSC]: {
+  [CHAIN_ID.BSC]: {
     BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     USDT: '0x55d398326f99059fF775485246999027B3197955',
     USDC: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
@@ -185,13 +193,13 @@ export const STABLE_TOKENS = {
     CASH: '0x54c331bb7d32fbfc17bc9accab2e2d12d0d1b222',
     USDV: '0x953e94caf91a1e32337d0548b9274f337920edfa',
   },
-  [ChainId.OPBNB]: {
+  [CHAIN_ID.OPBNB]: {
     USDT: '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3',
   },
 }
 
 export const DoubleRewarders = {
-  [ChainId.BSC]: [
+  [CHAIN_ID.BSC]: [
     {
       pairAddress: '0x2b3510f57365aa17bff8e6360ea67c136175dc6d',
       doubleRewarderAddress: '0xA7266B2303725F731851dfE944a432f8A2EA5c9c',
@@ -203,7 +211,7 @@ export const DoubleRewarders = {
       doubleRewarderSymbol: 'liveTHE',
     },
   ],
-  [ChainId.OPBNB]: [],
+  [CHAIN_ID.OPBNB]: [],
   97: [],
 }
 
@@ -245,7 +253,7 @@ export const GAMMA_TYPES = ['Narrow', 'Wide', 'Correlated', 'CL_Stable']
 export const MANUAL_TYPES = ['CL_Farming', 'CL_SwapFee']
 
 export const TAX_ASSETS = {
-  [ChainId.BSC]: [
+  [CHAIN_ID.BSC]: [
     '0x74ccbe53f77b08632ce0cb91d3a545bf6b8e0979', // fBOMB
     '0xc95cd75dcea473a30c8470b232b36ee72ae5dcc2', // CHAM
     '0x3a806a3315e35b3f5f46111adb6e2baf4b14a70d', // LIBERA
@@ -254,7 +262,7 @@ export const TAX_ASSETS = {
     '0xa7266989b0df675cc8257d53b6bc1358faf6626a', // IPAD
     '0xa1a020d3b354d6460ee3c272976f213160bd6b1c', // FS
   ],
-  [ChainId.OPBNB]: [],
+  [CHAIN_ID.OPBNB]: [],
 }
 
 export const STABLE_FEE = 0.0001

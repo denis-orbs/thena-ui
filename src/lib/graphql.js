@@ -44,6 +44,13 @@ export const fusionClient = {
   [CHAIN_ID.TEST_BSC]: new GraphQLClient(fusionGraphUrl[CHAIN_ID.TEST_BSC]),
 }
 
+export const weightedClient = {
+  [CHAIN_ID.BSC]: new GraphQLClient(
+    'https://api.studio.thegraph.com/query/70764/thena-bsc-weighted-pool/version/latest',
+  ),
+  [CHAIN_ID.TEST_BSC]: new GraphQLClient(''),
+}
+
 export const blockClient = {
   [ChainId.BSC]: new GraphQLClient(blockGraphUrl[ChainId.BSC]),
   [ChainId.OPBNB]: new GraphQLClient(blockGraphUrl[ChainId.OPBNB]),
