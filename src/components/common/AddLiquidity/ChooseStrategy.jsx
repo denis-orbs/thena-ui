@@ -214,6 +214,7 @@ export default function ChooseStrategy({
 
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   const isSorted = baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped)
+  const [isChooseStrategy, setIsChooseStrategy] = useState(false)
 
   useEffect(() => {
     if (!price) return
@@ -257,6 +258,7 @@ export default function ChooseStrategy({
 
   const setStrategy = useCallback(
     strategyInfo => {
+      setIsChooseStrategy(true)
       onLeftRangeInput('')
       onRightRangeInput('')
       dispatch(updateStrategy({ strategy: strategyInfo }))
@@ -462,7 +464,7 @@ export default function ChooseStrategy({
             )}
           </div>
 
-          {!strategy?.isAutomatic && (
+          {isChooseStrategy && strategy && !strategy?.isAutomatic && (
             <ManualStrategy
               firstAsset={firstAsset}
               secondAsset={secondAsset}
