@@ -37,11 +37,12 @@ function PairsContextProvider({ children }) {
       refreshInterval: 60000,
     },
   )
-
+  const prevNetworkId = useRef(networkId)
   useEffect(() => {
-    if (networkId) {
+    if (networkId && networkId !== prevNetworkId.current) {
       mutate(['bsc pairs api', networkId])
       mutate(['weighted pool api', networkId])
+      prevNetworkId.current = networkId
     }
   }, [networkId])
 

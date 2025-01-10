@@ -74,7 +74,7 @@ const useFusionPairsV2 = () => {
   const { networkId } = useChainSettings()
 
   const { data: pairs = [] } = useSWR(
-    networkId === 97 ? 'pairs api version 2' : null,
+    ['pairs api version 2', networkId],
     { fetcher: () => fetchTopPairs({ networkId, version: 2, type: 'CL' }) },
     { refreshInterval: 60_000 },
   )

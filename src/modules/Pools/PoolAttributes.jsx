@@ -62,17 +62,13 @@ export function PoolAttributesCL({ strategy, pool }) {
         {/* Pool Name */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Name')}:</div>
-          <div className='col-span-5 text-neutral-50'>
-            {strategy.type === 'manual' ? pool.symbol : strategy?.symbol}
-          </div>
+          <div className='col-span-5 text-neutral-50'>{pool.symbol ?? strategy?.symbol}</div>
         </div>
 
         {/* Pool Symbol */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Symbol')}:</div>
-          <div className='col-span-5 text-neutral-50'>
-            {strategy.type === 'manual' ? pool.symbol : strategy?.symbol}
-          </div>
+          <div className='col-span-5 text-neutral-50'>{pool.symbol ?? strategy?.symbol}</div>
         </div>
 
         {/* Pool Type */}

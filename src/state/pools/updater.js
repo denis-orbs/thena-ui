@@ -125,7 +125,7 @@ function Updater() {
 
   const { data: poolsWithAllowed } = useSWR(
     (fusionPoolsV2 && fusionPoolsV2.length > 0) || (fusionPoolsV3 && fusionPoolsV3.length > 0)
-      ? ['vaults/allowed', networkId]
+      ? ['vaults/allowed', networkId, fusionPoolsV2.length, fusionPoolsV3.length]
       : null,
     () => fetchIchiAllowed([...fusionPoolsV2, ...fusionPoolsV3], networkId),
   )
