@@ -201,7 +201,7 @@ export default function LockPage() {
               </TertiaryButton>
             </Info>
 
-            <Info className={cn('justify-between lg:p-8', !isNearlyExpired ?? 'hidden')}>
+            <Info className={cn('justify-between lg:p-8', !isNearlyExpired && 'hidden')}>
               <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
               <p>{t('Warning THE claim rebase fee')}</p>
               <PrimaryButton className='min-w-fit' onClick={() => push('/dashboard/rewards')}>
