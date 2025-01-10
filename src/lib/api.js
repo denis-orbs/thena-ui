@@ -85,10 +85,14 @@ export const fetchCustomAssets = async networkId => {
   }
 }
 
-export const fetchFusionPools = async ({ networkId, version = 3 }) =>
-  fetch(`${backendApi}/fusions/${networkId}?v=${version}`)
+export const fetchFusionPools = async ({ networkId, version = 3, type }) => {
+  let url = `${backendApi}/fusions/${networkId}?v=${version}`
+  if (type) url += `&type=${type}`
+
+  return fetch(url)
     .then(r => r.json())
     .then(r => r.data)
+}
 
 export const fetchStats = () =>
   fetch(`${backendApi}/stats`)

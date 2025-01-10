@@ -108,7 +108,9 @@ function Updater() {
   const prices = usePrices()
   const extraRewardsInfo = useExtraRewardsInfo()
   const { networkId } = useChainSettings()
-  // const { data: fusionPoolsV3 = [] } = useSWR(['fusions api v3', networkId], { fetcher: () => fetchFusionPools({ networkId }) })
+  const { data: fusionPoolsV3 = [] } = useSWR(['fusions api v3', networkId], {
+    fetcher: () => fetchFusionPools({ networkId, version: 3, type: 'cl' }),
+  })
   const { data: fusionPoolsV2 = [] } = useSWR(['fusions api v2', networkId], {
     fetcher: () => fetchFusionPools({ networkId, version: 2 }),
   })
@@ -122,8 +124,10 @@ function Updater() {
   })
 
   const { data: poolsWithAllowed } = useSWR(
-    fusionPoolsV2 && fusionPoolsV2.length > 0 ? ['vaults/allowed', networkId] : null,
-    () => fetchIchiAllowed(fusionPoolsV2, networkId),
+    (fusionPoolsV2 && fusionPoolsV2.length > 0) || (fusionPoolsV3 && fusionPoolsV3.length > 0)
+      ? ['vaults/allowed', networkId]
+      : null,
+    () => fetchIchiAllowed([...fusionPoolsV2, ...fusionPoolsV3], networkId),
   )
 
   const fetchInfo = useCallback(async () => {
