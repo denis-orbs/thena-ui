@@ -85,8 +85,8 @@ export const fetchCustomAssets = async networkId => {
   }
 }
 
-export const fetchPoolsV3 = params =>
-  fetch(`${backendApi}/fusions/${params[1]}?v=3`)
+export const fetchFusionPools = async ({ networkId, version = 3 }) =>
+  fetch(`${backendApi}/fusions/${networkId}?v=${version}`)
     .then(r => r.json())
     .then(r => r.data)
 
@@ -95,30 +95,19 @@ export const fetchStats = () =>
     .then(r => r.json())
     .then(r => r.data)
 
-export const fetchBscPairsV3 = () =>
-  fetch(`${backendApi}/topPairs/56?v=3`)
+export const fetchTopPairs = async ({ networkId, version = 3, type }) => {
+  let url = `${backendApi}/topPairs/${networkId}?v=${version}`
+  if (type) url += `&type=${type}`
+
+  return fetch(url)
     .then(r => r.json())
     .then(r => r.data)
+}
 
-export const fetchCLpoolV2 = chainId =>
-  fetch(`${backendApi}/topPairs/${chainId}?type=CL`)
+export const fetchWeightedPools = ({ networkId }) =>
+  fetch(`${backendApi}/weightedpools/${networkId}`)
     .then(r => r.json())
     .then(r => (Array.isArray(r.data) ? r.data : []))
-
-export const fetchBscTestnetPairsV3 = () =>
-  fetch(`${backendApi}/topPairs/97?v=3`)
-    .then(r => r.json())
-    .then(r => r.data)
-
-export const fetchWeightedPools = params =>
-  fetch(`${backendApi}/weightedpools/${params[1]}`)
-    .then(r => r.json())
-    .then(r => (Array.isArray(r.data) ? r.data : []))
-
-export const fetchOpPairs = () =>
-  fetch(`${backendApi}/topPairs/204`)
-    .then(r => r.json())
-    .then(r => r.data)
 
 export const fetchTopTokens = params =>
   fetch(`${backendApi}/topTokens/${params[1]}`)
@@ -135,7 +124,7 @@ export const fetchNfts = nftId =>
 
 export const fetchRevenue = () => fetch('https://flask-henlo-world.vercel.app/').then(r => r.json())
 
-export const fetchPairInfos = (account, chainId) => {
+export const fetchFusionPoolsInfos = ({ account, chainId }) => {
   const res = fetch(`${backendApi}/getpairaccount/${chainId}?account=${account?.toLowerCase()}`)
     .then(r => r.json())
     .then(r => r.data)

@@ -13,7 +13,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useExtraRewardsInfo } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
-import { fetchPairInfos, fetchPoolsV3 } from '@/lib/api'
+import { fetchFusionPools, fetchFusionPoolsInfos } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import { fromWei } from '@/lib/utils'
 
@@ -23,36 +23,41 @@ import { useChainSettings } from '../settings/hooks'
 const fetchUserFusionsV2 = async (account, pools, chainId) => {
   if (chainId === CHAIN_ID.TEST_BSC) return []
 
-  const pairInfos = await callMulti(
-    pools.map(pool => ({
-      address: Contracts.pairAPI[chainId],
-      abi: pairAPIAbi,
-      functionName: chainId === ChainId.BSC ? 'getPairAccount' : 'getPairSimpleAccount',
-      args: [pool.address, account],
-      chainId,
-    })),
-    true,
-  )
+  try {
+    const pairInfos = await callMulti(
+      pools.map(pool => ({
+        address: Contracts.pairAPI[chainId],
+        abi: pairAPIAbi,
+        functionName: chainId === ChainId.BSC ? 'getPairAccount' : 'getPairSimpleAccount',
+        args: [pool.address, account],
+        chainId,
+      })),
+      true,
+    )
 
-  return pairInfos.map(pool => {
-    const { pair_address, claimable0, claimable1, account_lp_balance, account_gauge_earned, account_gauge_balance } =
-      pool
-    return {
-      version: 2,
-      address: pair_address, // pair contract address
-      walletBalance: account_lp_balance, // account LP tokens balance
-      gaugeBalance: account_gauge_balance, // account pair staked in gauge balance
-      totalLp: account_lp_balance + account_gauge_balance, // account total LP tokens balance
-      gaugeEarned: account_gauge_earned, // account earned emissions for this pair
-      token0claimable: claimable0, // claimable 1st token from fees (for unstaked positions)
-      token1claimable: claimable1, // claimable 2nd token from fees (for unstaked positions)
-    }
-  })
+    return pairInfos.map(pool => {
+      const { pair_address, claimable0, claimable1, account_lp_balance, account_gauge_earned, account_gauge_balance } =
+        pool
+      return {
+        version: 2,
+        address: pair_address, // pair contract address
+        walletBalance: account_lp_balance, // account LP tokens balance
+        gaugeBalance: account_gauge_balance, // account pair staked in gauge balance
+        totalLp: account_lp_balance + account_gauge_balance, // account total LP tokens balance
+        gaugeEarned: account_gauge_earned, // account earned emissions for this pair
+        token0claimable: claimable0, // claimable 1st token from fees (for unstaked positions)
+        token1claimable: claimable1, // claimable 2nd token from fees (for unstaked positions)
+      }
+    })
+  } catch (error) {
+    console.error(error)
+    return []
+  }
 }
 
 const fetchUserFusionsV3 = async (account, chainId) => {
-  const pairInfos = await fetchPairInfos(account, chainId)
-  return pairInfos.map(pool => {
+  const fusionPoolsInfos = await fetchFusionPoolsInfos({ account, chainId })
+  return fusionPoolsInfos.map(pool => {
     const { pair_address, claimable0, claimable1, account_gauge_balance, account_gauge_earned } = pool
     // On V3 - no need to stake in GAUGE
     return {
@@ -103,21 +108,22 @@ function Updater() {
   const prices = usePrices()
   const extraRewardsInfo = useExtraRewardsInfo()
   const { networkId } = useChainSettings()
-  const { data: pools = [] } = useSWR(['pools api', networkId], { fetcher: fetchPoolsV3 })
+  // const { data: fusionPoolsV3 = [] } = useSWR(['fusions api v3', networkId], { fetcher: () => fetchFusionPools({ networkId }) })
+  const { data: fusionPoolsV2 = [] } = useSWR(['fusions api v2', networkId], {
+    fetcher: () => fetchFusionPools({ networkId, version: 2 }),
+  })
 
-  const { data: userInfos } = useSWRImmutable(
-    account && pools ? ['pools user api', account, networkId] : null,
-    async () => {
-      const [userFusionsV2, userFusionsV3] = await Promise.all([
-        fetchUserFusionsV2(account, pools, networkId),
-        fetchUserFusionsV3(account, networkId),
-      ])
-      return [...userFusionsV2, ...userFusionsV3]
-    },
-  )
+  const { data: userInfos } = useSWRImmutable(account ? ['pools user api', account, networkId] : null, async () => {
+    const [userFusionsV2, userFusionsV3] = await Promise.all([
+      fetchUserFusionsV2(account, fusionPoolsV2, networkId),
+      fetchUserFusionsV3(account, networkId),
+    ])
+    return [...userFusionsV2, ...userFusionsV3]
+  })
 
-  const { data: poolsWithAllowed } = useSWR(pools && pools.length > 0 ? ['vaults/allowed', networkId] : null, () =>
-    fetchIchiAllowed(pools, networkId),
+  const { data: poolsWithAllowed } = useSWR(
+    fusionPoolsV2 && fusionPoolsV2.length > 0 ? ['vaults/allowed', networkId] : null,
+    () => fetchIchiAllowed(fusionPoolsV2, networkId),
   )
 
   const fetchInfo = useCallback(async () => {
@@ -129,8 +135,6 @@ function Updater() {
       const livetheThe = '0x3765476bffe43cf4c0656bf3a7529c54ae247056' // livethe/the
       const theUsdtWide = '0xb420adb29afd0a4e771739f0a29a4e077eff1acb' // the/usdt wide
       const ankrBnbTheNarrow = '0xd2f1045b4e5ba91ee725e8bf50740617a92e4a5f' // ankrbnb/the wide
-
-      // const totalWeight = poolsWithAllowed.reduce((sum, current) => sum + (current?.gauge?.weight ?? 0), 0)
 
       userInfo = poolsWithAllowed
         .map(fusion => {

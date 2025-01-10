@@ -6,7 +6,7 @@ import { poolAbi } from '@/constant/abi/fusion'
 import { CHAIN_ID } from '@/constant/contracts'
 import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { poolTestNetV3Abi } from '@/constant/v3-abi'
-import { fetchCLpoolV2 } from '@/lib/api'
+import { fetchTopPairs } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -54,10 +54,10 @@ function FusionsContextProvider({ children }) {
   const pairs = useContext(PairsContext)
 
   const fusionPairs = useMemo(() => {
-    const { data } = pairs[networkId]
+    const { data } = pairs
     if (!data?.length) return []
     return data.filter(ele => ele.isFusion)
-  }, [pairs, networkId])
+  }, [pairs])
 
   const { data } = useSWR(
     fusionPairs.length > 0 ? ['fusion/pairs', networkId] : null,
@@ -75,7 +75,7 @@ const useFusionPairsV2 = () => {
 
   const { data: pairs = [] } = useSWR(
     networkId === 97 ? 'pairs api version 2' : null,
-    { fetcher: () => fetchCLpoolV2(networkId) },
+    { fetcher: () => fetchTopPairs({ networkId, version: 2, type: 'CL' }) },
     { refreshInterval: 60_000 },
   )
 

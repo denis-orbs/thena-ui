@@ -1,11 +1,10 @@
 import BigNumber from 'bignumber.js'
-import React, { createContext, useContext, useMemo, useRef } from 'react'
-import useSWR from 'swr'
-import { ChainId } from 'thena-sdk-core'
+import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+import useSWR, { mutate } from 'swr'
 
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
-import { fetchBscPairsV3, fetchBscTestnetPairsV3, fetchOpPairs, fetchWeightedPools } from '@/lib/api'
+import { fetchTopPairs, fetchWeightedPools } from '@/lib/api'
 import { getTokenInfo } from '@/lib/helper'
 import { formatAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
@@ -15,81 +14,49 @@ import { useCustomAssets } from './customAssetsContext'
 import { useVaults } from './vaultsContext'
 
 const initialState = {
-  [ChainId.BSC]: {
-    data: [],
-    weightedPools: [],
-    isLoading: false,
-  },
-  [ChainId.OPBNB]: {
-    data: [],
-    isLoading: false,
-  },
-  97: {
-    data: [],
-    weightedPools: [],
-    isLoading: false,
-  },
+  data: [],
+  isLoading: false,
 }
 
 const PairsContext = createContext(initialState)
 
 function PairsContextProvider({ children }) {
   const { networkId } = useChainSettings()
-  const { data: bscPairs, isLoading: bscLoading } = useSWR(
-    networkId === ChainId.BSC ? 'bsc pairs api' : null,
-    { fetcher: fetchBscPairsV3 },
-    {
-      refreshInterval: 60000,
-    },
-  )
-
-  const { data: bscTestnetPairsV3 = [], isLoading: bscTestnetV3Loading } = useSWR(
-    networkId === 97 ? 'bscTestnet pairs api version 3' : null,
-    { fetcher: fetchBscTestnetPairsV3 },
+  const { data: pairList = [], isLoading: pairsLoading } = useSWR(
+    ['bsc pairs api', networkId],
+    { fetcher: () => fetchTopPairs({ networkId }) },
     {
       refreshInterval: 60000,
     },
   )
 
   const { data: weightedPools = [], isLoading: weightedLoading } = useSWR(
-    networkId ? ['weighted pool api', networkId] : null,
-    { fetcher: fetchWeightedPools },
+    ['weighted pool api', networkId],
+    { fetcher: () => fetchWeightedPools({ networkId }) },
     {
       refreshInterval: 60000,
     },
   )
 
-  const { data: opPairs, isLoading: opLoading } = useSWR(
-    networkId === ChainId.OPBNB ? 'opbnb pairs api' : null,
-    {
-      fetcher: fetchOpPairs,
-    },
-    {
-      refreshInterval: 60000,
-    },
-  )
+  useEffect(() => {
+    if (networkId) {
+      mutate(['bsc pairs api', networkId])
+      mutate(['weighted pool api', networkId])
+    }
+  }, [networkId])
 
   const pairs = useMemo(
     () => ({
-      // TODO: Pairs V3, weighted pools
-      [ChainId.BSC]: {
-        data: [...(bscPairs || []), ...(weightedPools || [])],
-        isLoading: bscLoading || weightedLoading,
-      },
-      [ChainId.OPBNB]: { data: opPairs || [], isLoading: opLoading },
-      97: {
-        data: [...(weightedPools || []), ...(bscTestnetPairsV3 || [])],
-        isLoading: bscTestnetV3Loading || weightedLoading,
-      },
+      data: [...weightedPools, ...pairList],
+      isLoading: pairsLoading || weightedLoading,
     }),
-    [bscPairs, bscLoading, opPairs, opLoading, weightedPools, bscTestnetPairsV3, bscTestnetV3Loading, weightedLoading],
+    [weightedPools, pairList, pairsLoading, weightedLoading],
   )
 
   return <PairsContext.Provider value={pairs}>{children}</PairsContext.Provider>
 }
 
 const usePairs = () => {
-  const { networkId } = useChainSettings()
   const pairs = useContext(PairsContext)
   const assets = useAssets()
   const customAssets = useCustomAssets()
@@ -98,7 +65,7 @@ const usePairs = () => {
   const prevPair = useRef([])
 
   return useMemo(() => {
-    const { data, isLoading } = pairs[networkId]
+    const { data, isLoading } = pairs
     if (!assets.length || !pools.length || !data) {
       return {
         pairs: prevPair.current,
@@ -171,12 +138,7 @@ const usePairs = () => {
         }
 
         const subpools = [...pools, ...vaults]
-          .filter(
-            ele =>
-              [ele.token0.address, ele.token1.address].includes(pair.token0.address) &&
-              [ele.token0.address, ele.token1.address].includes(pair.token1.address) &&
-              ele.type === pair.type,
-          )
+          .filter(ele => ele.basePool.toLowerCase() === pair.address.toLowerCase())
           .sort((a, b) => b.gauge.apr.minus(a.gauge.apr).toNumber())
 
         const poolsWithApr = subpools.filter(ele => ele.gauge.apr.gt(1))
@@ -209,7 +171,7 @@ const usePairs = () => {
       weightedPools: weightedPoolsData,
       isLoading,
     }
-  }, [pairs, networkId, assets, pools, customAssets, vaults])
+  }, [pairs, assets, pools, customAssets, vaults])
 }
 
 export { PairsContext, PairsContextProvider, usePairs }
