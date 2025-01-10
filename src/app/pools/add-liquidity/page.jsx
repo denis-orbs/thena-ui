@@ -21,10 +21,7 @@ export default function AddLiquidityPage() {
   const t = useTranslations()
   const poolAddress = searchParams.get('pool')
   const [poolSelected, setPoolSelected] = useState(null)
-
-  const [step, setStep] = useState(
-    isNaN(parseInt(searchParams.get('step'), 10)) ? 0 : parseInt(searchParams.get('step'), 10),
-  )
+  const [step, setStep] = useState(Number(searchParams.get('step') ?? 1))
 
   const poolDefault = useMemo(() => pairs.find(pool => pool.address === poolAddress), [pairs, poolAddress])
 
@@ -56,7 +53,7 @@ export default function AddLiquidityPage() {
         </TextButton>
       </div>
       <TextHeading className='my-4 font-archia text-[26px] font-semibold lg:text-4xl'>{t('Add Liquidity')}</TextHeading>
-      <AddLiquidity pool={poolSelected} setCurrentStep={setStep} step={step} />
+      <AddLiquidity pool={poolSelected} setStep={setStep} step={step} />
     </div>
   )
 }

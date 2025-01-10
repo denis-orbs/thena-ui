@@ -96,6 +96,7 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0xF1E919e24159b14aC32790dD4828B671E2158982',
   },
   nonfungiblePositionManagerV3: {
+    [CHAIN_ID.BSC]: '0xbf77b742eE1c0a6883c009Ce590A832DeBe74064',
     [CHAIN_ID.TEST_BSC]: '0x723E22B19528B86a94C3933b7d6096B145a85Df2',
   },
   gammaUniProxy: {
@@ -164,10 +165,11 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x78dBf0C75383a89F1a37f3b07f54AE1888Fc7F71',
   },
   incentiveMaker: {
+    [CHAIN_ID.BSC]: '0x1927CD283Ea8505660616304BC7c36AAc4A7E7aA',
     [CHAIN_ID.TEST_BSC]: '0xd95314Bc66EEFD266B1042DC8C2D8A70cAd52Be9',
   },
   pluginFactory: {
-    [CHAIN_ID.BSC]: '',
+    [CHAIN_ID.BSC]: '0xf5C9dF01a8Aef34063d250e4e14588253723779F',
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
 }

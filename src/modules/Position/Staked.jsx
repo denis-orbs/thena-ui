@@ -10,8 +10,8 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
-import { cn, formatAmount } from '@/lib/utils'
-import { updateStrategy } from '@/state/fusion/actions'
+import { cn, formatAmount, getLiquidityRangeType } from '@/lib/utils'
+import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { InfoIcon } from '@/svgs'
 
 import AddPositionModal from './AddPositionModal'
@@ -121,10 +121,12 @@ export default function Staked({ pool }) {
         <EmphasisButton
           className='w-full'
           onClick={() => {
+            dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
             dispatch(
               updateStrategy({
                 strategy: {
                   // ...pool,
+                  title: pool?.title,
                   token0: {
                     ...pool?.token0,
                     reserve: pool?.token0?.reserve?.toNumber(),
