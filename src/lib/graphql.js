@@ -39,9 +39,21 @@ export const v1Client = {
 }
 
 export const fusionClient = {
+  3: {
+    [CHAIN_ID.BSC]: new GraphQLClient('https://api.studio.thegraph.com/query/70764/thena-bsc-v3-fusion/version/latest'),
+    [CHAIN_ID.TEST_BSC]: new GraphQLClient(
+      'https://api.studio.thegraph.com/query/70764/thena-chapel-v3-fusion/version/latest',
+    ),
+  },
+  2: {
+    [CHAIN_ID.BSC]: new GraphQLClient(fusionGraphUrl[CHAIN_ID.BSC]),
+    [CHAIN_ID.OPBNB]: new GraphQLClient(fusionGraphUrl[CHAIN_ID.OPBNB]),
+  },
   [CHAIN_ID.BSC]: new GraphQLClient(fusionGraphUrl[CHAIN_ID.BSC]),
   [CHAIN_ID.OPBNB]: new GraphQLClient(fusionGraphUrl[CHAIN_ID.OPBNB]),
-  [CHAIN_ID.TEST_BSC]: new GraphQLClient(fusionGraphUrl[CHAIN_ID.TEST_BSC]),
+  [CHAIN_ID.TEST_BSC]: new GraphQLClient(
+    'https://api.studio.thegraph.com/query/70764/thena-chapel-v3-fusion/version/latest',
+  ),
 }
 
 export const weightedClient = {

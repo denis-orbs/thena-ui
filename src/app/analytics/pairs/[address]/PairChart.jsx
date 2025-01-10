@@ -126,6 +126,7 @@ export const fetchPairChartData = async (chainId, pair) => {
   }
 
   if (pair.type === PAIR_TYPES.LSD) {
+    // TODO: ADD OPTION VERSION OF CL POOL
     const { data: fusiondata } = await fetchChartData(getFusionChartData, [chainId, pair.address], false)
     return fusiondata
   }

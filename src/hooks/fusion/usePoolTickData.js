@@ -18,23 +18,24 @@ const getActiveTick = (tickCurrent, feeAmount) =>
     ? Math.floor(tickCurrent / TICK_SPACING) * TICK_SPACING
     : undefined
 
-const ALL_TICKS = gql`
-  query allV3Ticks($poolAddress: String!, $skip: Int!) {
-    ticks(first: 1000, skip: $skip, where: { poolAddress: $poolAddress }, orderBy: tickIdx) {
-      tickIdx
-      liquidityNet
-      price0
-      price1
-    }
-  }
-`
-
-const fetchTicksData = async (chainId, address, skip = 0) => {
+const fetchTicksData = async ({ networkId, version, poolAddress, skip = 0 }) => {
   try {
-    const { ticks } = await fusionClient[chainId].request(ALL_TICKS, {
-      poolAddress: address,
-      skip,
-    })
+    const { ticks } = await fusionClient[version][networkId].request(
+      gql`
+        query allV3Ticks($poolAddress: String!, $skip: Int!) {
+          ticks(first: 1000, skip: $skip, where: { poolAddress: $poolAddress }, orderBy: tickIdx) {
+            tickIdx
+            liquidityNet
+            price0
+            price1
+          }
+        }
+      `,
+      {
+        poolAddress: poolAddress.toLowerCase(),
+        skip,
+      },
+    )
     return { ticks, error: false }
   } catch (error) {
     console.error('Failed to fetch fusion ticks data', error)
@@ -42,20 +43,29 @@ const fetchTicksData = async (chainId, address, skip = 0) => {
   }
 }
 
-function useTicksFromSubgraph(poolAddress, skip = 0) {
+function useTicksFromSubgraph({ poolAddress, version, skip = 0 }) {
   const { networkId } = useChainSettings()
 
   return useSWR(poolAddress && ['fusion/ticks', poolAddress], () =>
-    fetchTicksData(networkId, poolAddress?.toLowerCase(), skip),
+    fetchTicksData({
+      networkId,
+      version,
+      poolAddress,
+      skip,
+    }),
   )
 }
 
 const MAX_THE_GRAPH_TICK_FETCH_VALUE = 1000
 // Fetches all ticks for a given pool
-function useAllV3Ticks(poolAddress) {
+function useAllV3Ticks({ poolAddress, version = 2 }) {
   const [skipNumber, setSkipNumber] = useState(0)
   const [subgraphTickData, setSubgraphTickData] = useState([])
-  const { data, error, isLoading } = useTicksFromSubgraph(poolAddress, skipNumber)
+  const { data, error, isLoading } = useTicksFromSubgraph({
+    poolAddress,
+    version,
+    skip: skipNumber,
+  })
 
   useEffect(() => {
     if (data?.ticks?.length) {
@@ -75,16 +85,17 @@ function useAllV3Ticks(poolAddress) {
 
 export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
   const { strategy } = useV3MintState()
+  const { version = 3, isFarming = true } = strategy
   const [poolState, pool, poolAddress] = useFusionState({
     currencyA,
     currencyB,
-    version: strategy?.version ?? 3,
-    isFarmingPool: strategy?.isFarming ?? true,
+    version,
+    isFarmingPool: isFarming,
   })
 
   // Find nearest valid tick for pool in case tick is not initialized.
   const activeTick = useMemo(() => getActiveTick(pool?.tickCurrent, feeAmount), [pool, feeAmount])
-  const { isLoading, error, ticks } = useAllV3Ticks(poolAddress)
+  const { isLoading, error, ticks } = useAllV3Ticks({ poolAddress, version })
 
   return useMemo(() => {
     if (
