@@ -173,7 +173,7 @@ export default function ManualPosition({ pool }) {
               <GreenBadge>10% Fees</GreenBadge>
             </>
           ) : (
-            <GreenBadge>80% Fees</GreenBadge>
+            <>{pool?.version === 3 && <GreenBadge>80% Fees</GreenBadge>}</>
           )}
 
           {!Number(liquidity) ? (
