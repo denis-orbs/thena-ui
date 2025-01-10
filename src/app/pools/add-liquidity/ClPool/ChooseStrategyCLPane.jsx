@@ -38,7 +38,7 @@ export function ChooseStrategyCLPane({
   const secondAsset = useGetAsset(secondAddress)
 
   return (
-    <>
+    <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>
       <Box className={cn('y-3 w-full flex-[6] lg:py-6', showSidebar ? '' : 'w-full')}>
         <div className='mb-4 flex w-full items-center justify-between'>
           <TextHeading className='font-archia text-3xl text-neutral-50'>
@@ -56,7 +56,7 @@ export function ChooseStrategyCLPane({
           isAdd={isAdd}
         />
 
-        <div className={cn('mt-auto inline-flex w-full flex-col pt-5')}>
+        <div className={cn('mt-auto inline-flex w-full flex-col pt-5', !strategy && 'hidden')}>
           <PrimaryButton
             disabled={!strategy && strategy?.isAutomatic}
             className={strategy || !strategy?.isAutomatic ? 'bg-primary-600 hover:bg-primary-700' : ''}
@@ -96,6 +96,6 @@ export function ChooseStrategyCLPane({
           </Box>
         </div>
       )}
-    </>
+    </div>
   )
 }

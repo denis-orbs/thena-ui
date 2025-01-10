@@ -194,7 +194,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
 
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   const isSorted = baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped)
-  const [isChooseStrategy, setIsChooseStrategy] = useState(false)
 
   useEffect(() => {
     if (!price) return
@@ -215,7 +214,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
 
   const setStrategy = useCallback(
     strategyInfo => {
-      setIsChooseStrategy(true)
       onLeftRangeInput('')
       onRightRangeInput('')
       dispatch(updateStrategy({ strategy: strategyInfo }))
@@ -284,7 +282,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
             // ...sub,
             title: sub.title,
             account: {
-              totalLp: sub?.account?.totalLp?.toNumber(),
+              totalLp: sub?.account?.totalLp,
               gaugeBalance: sub?.account?.gaugeBalance?.toNumber(),
             },
             token0: {
@@ -365,7 +363,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
               )}
             </div>
 
-            {strategy?.isAutomatic ? (
+            {strategy && strategy.isAutomatic && (
               <>
                 {!mintInfo.noLiquidity && strategyData && (
                   <>
@@ -424,7 +422,9 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                   </div>
                 </Box>
               </>
-            ) : (
+            )}
+
+            {strategy && !strategy.isAutomatic && (
               <ManualStrategy
                 firstAsset={firstAsset}
                 secondAsset={secondAsset}

@@ -1,5 +1,4 @@
 [
-  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
   {
     "anonymous": false,
     "inputs": [
@@ -8,7 +7,8 @@
       { "indexed": true, "internalType": "int24", "name": "topTick", "type": "int24" },
       { "indexed": false, "internalType": "uint128", "name": "liquidityAmount", "type": "uint128" },
       { "indexed": false, "internalType": "uint256", "name": "amount0", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "amount1", "type": "uint256" }
+      { "indexed": false, "internalType": "uint256", "name": "amount1", "type": "uint256" },
+      { "indexed": false, "internalType": "uint24", "name": "pluginFee", "type": "uint24" }
     ],
     "name": "Burn",
     "type": "event"
@@ -28,11 +28,23 @@
   },
   {
     "anonymous": false,
-    "inputs": [
-      { "indexed": false, "internalType": "uint16", "name": "communityFee0New", "type": "uint16" },
-      { "indexed": false, "internalType": "uint16", "name": "communityFee1New", "type": "uint16" }
-    ],
+    "inputs": [{ "indexed": false, "internalType": "uint16", "name": "communityFeeNew", "type": "uint16" }],
     "name": "CommunityFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "address", "name": "newCommunityVault", "type": "address" }],
+    "name": "CommunityVault",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "amount0", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "amount1", "type": "uint256" }
+    ],
+    "name": "ExcessTokens",
     "type": "event"
   },
   {
@@ -56,23 +68,11 @@
   },
   {
     "anonymous": false,
-    "inputs": [{ "indexed": true, "internalType": "address", "name": "virtualPoolAddress", "type": "address" }],
-    "name": "Incentive",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [
       { "indexed": false, "internalType": "uint160", "name": "price", "type": "uint160" },
       { "indexed": false, "internalType": "int24", "name": "tick", "type": "int24" }
     ],
     "name": "Initialize",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "uint32", "name": "liquidityCooldown", "type": "uint32" }],
-    "name": "LiquidityCooldown",
     "type": "event"
   },
   {
@@ -91,6 +91,28 @@
   },
   {
     "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "address", "name": "newPluginAddress", "type": "address" }],
+    "name": "Plugin",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "uint8", "name": "newPluginConfig", "type": "uint8" }],
+    "name": "PluginConfig",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount0", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "amount1", "type": "uint256" }
+    ],
+    "name": "Skim",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       { "indexed": true, "internalType": "address", "name": "sender", "type": "address" },
       { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" },
@@ -98,23 +120,25 @@
       { "indexed": false, "internalType": "int256", "name": "amount1", "type": "int256" },
       { "indexed": false, "internalType": "uint160", "name": "price", "type": "uint160" },
       { "indexed": false, "internalType": "uint128", "name": "liquidity", "type": "uint128" },
-      { "indexed": false, "internalType": "int24", "name": "tick", "type": "int24" }
+      { "indexed": false, "internalType": "int24", "name": "tick", "type": "int24" },
+      { "indexed": false, "internalType": "uint24", "name": "overrideFee", "type": "uint24" },
+      { "indexed": false, "internalType": "uint24", "name": "pluginFee", "type": "uint24" }
     ],
     "name": "Swap",
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "activeIncentive",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "int24", "name": "newTickSpacing", "type": "int24" }],
+    "name": "TickSpacing",
+    "type": "event"
   },
   {
     "inputs": [
       { "internalType": "int24", "name": "bottomTick", "type": "int24" },
       { "internalType": "int24", "name": "topTick", "type": "int24" },
-      { "internalType": "uint128", "name": "amount", "type": "uint128" }
+      { "internalType": "uint128", "name": "amount", "type": "uint128" },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
     ],
     "name": "burn",
     "outputs": [
@@ -142,7 +166,7 @@
   },
   {
     "inputs": [],
-    "name": "dataStorageOperator",
+    "name": "communityVault",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
@@ -151,6 +175,13 @@
     "inputs": [],
     "name": "factory",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "fee",
+    "outputs": [{ "internalType": "uint16", "name": "currentFee", "type": "uint16" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -167,27 +198,31 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "int24", "name": "bottomTick", "type": "int24" },
-      { "internalType": "int24", "name": "topTick", "type": "int24" }
-    ],
-    "name": "getInnerCumulatives",
+    "inputs": [],
+    "name": "getCommunityFeePending",
     "outputs": [
-      { "internalType": "int56", "name": "innerTickCumulative", "type": "int56" },
-      { "internalType": "uint160", "name": "innerSecondsSpentPerLiquidity", "type": "uint160" },
-      { "internalType": "uint32", "name": "innerSecondsSpent", "type": "uint32" }
+      { "internalType": "uint128", "name": "", "type": "uint128" },
+      { "internalType": "uint128", "name": "", "type": "uint128" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint32[]", "name": "secondsAgos", "type": "uint32[]" }],
-    "name": "getTimepoints",
+    "inputs": [],
+    "name": "getPluginFeePending",
     "outputs": [
-      { "internalType": "int56[]", "name": "tickCumulatives", "type": "int56[]" },
-      { "internalType": "uint160[]", "name": "secondsPerLiquidityCumulatives", "type": "uint160[]" },
-      { "internalType": "uint112[]", "name": "volatilityCumulatives", "type": "uint112[]" },
-      { "internalType": "uint256[]", "name": "volumePerAvgLiquiditys", "type": "uint256[]" }
+      { "internalType": "uint128", "name": "", "type": "uint128" },
+      { "internalType": "uint128", "name": "", "type": "uint128" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getReserves",
+    "outputs": [
+      { "internalType": "uint128", "name": "", "type": "uint128" },
+      { "internalType": "uint128", "name": "", "type": "uint128" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -198,10 +233,9 @@
     "outputs": [
       { "internalType": "uint160", "name": "price", "type": "uint160" },
       { "internalType": "int24", "name": "tick", "type": "int24" },
-      { "internalType": "uint16", "name": "fee", "type": "uint16" },
-      { "internalType": "uint16", "name": "timepointIndex", "type": "uint16" },
-      { "internalType": "uint16", "name": "communityFeeToken0", "type": "uint16" },
-      { "internalType": "uint16", "name": "communityFeeToken1", "type": "uint16" },
+      { "internalType": "uint16", "name": "lastFee", "type": "uint16" },
+      { "internalType": "uint8", "name": "pluginConfig", "type": "uint8" },
+      { "internalType": "uint16", "name": "communityFee", "type": "uint16" },
       { "internalType": "bool", "name": "unlocked", "type": "bool" }
     ],
     "stateMutability": "view",
@@ -216,6 +250,20 @@
   },
   {
     "inputs": [],
+    "name": "isUnlocked",
+    "outputs": [{ "internalType": "bool", "name": "unlocked", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lastFeeTransferTimestamp",
+    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "liquidity",
     "outputs": [{ "internalType": "uint128", "name": "", "type": "uint128" }],
     "stateMutability": "view",
@@ -223,21 +271,14 @@
   },
   {
     "inputs": [],
-    "name": "liquidityCooldown",
-    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
+    "name": "maxLiquidityPerTick",
+    "outputs": [{ "internalType": "uint128", "name": "", "type": "uint128" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "maxLiquidityPerTick",
-    "outputs": [{ "internalType": "uint128", "name": "", "type": "uint128" }],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
     "inputs": [
-      { "internalType": "address", "name": "sender", "type": "address" },
+      { "internalType": "address", "name": "leftoversRecipient", "type": "address" },
       { "internalType": "address", "name": "recipient", "type": "address" },
       { "internalType": "int24", "name": "bottomTick", "type": "int24" },
       { "internalType": "int24", "name": "topTick", "type": "int24" },
@@ -254,11 +295,24 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "nextTickGlobal",
+    "outputs": [{ "internalType": "int24", "name": "", "type": "int24" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "plugin",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "name": "positions",
     "outputs": [
-      { "internalType": "uint128", "name": "liquidity", "type": "uint128" },
-      { "internalType": "uint32", "name": "lastLiquidityAddTimestamp", "type": "uint32" },
+      { "internalType": "uint256", "name": "liquidity", "type": "uint256" },
       { "internalType": "uint256", "name": "innerFeeGrowth0Token", "type": "uint256" },
       { "internalType": "uint256", "name": "innerFeeGrowth1Token", "type": "uint256" },
       { "internalType": "uint128", "name": "fees0", "type": "uint128" },
@@ -268,29 +322,70 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "uint16", "name": "communityFee0", "type": "uint16" },
-      { "internalType": "uint16", "name": "communityFee1", "type": "uint16" }
+    "inputs": [],
+    "name": "prevTickGlobal",
+    "outputs": [{ "internalType": "int24", "name": "", "type": "int24" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "safelyGetStateOfAMM",
+    "outputs": [
+      { "internalType": "uint160", "name": "sqrtPrice", "type": "uint160" },
+      { "internalType": "int24", "name": "tick", "type": "int24" },
+      { "internalType": "uint16", "name": "lastFee", "type": "uint16" },
+      { "internalType": "uint8", "name": "pluginConfig", "type": "uint8" },
+      { "internalType": "uint128", "name": "activeLiquidity", "type": "uint128" },
+      { "internalType": "int24", "name": "nextTick", "type": "int24" },
+      { "internalType": "int24", "name": "previousTick", "type": "int24" }
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint16", "name": "newCommunityFee", "type": "uint16" }],
     "name": "setCommunityFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "virtualPoolAddress", "type": "address" }],
-    "name": "setIncentive",
+    "inputs": [{ "internalType": "address", "name": "newCommunityVault", "type": "address" }],
+    "name": "setCommunityVault",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint32", "name": "newLiquidityCooldown", "type": "uint32" }],
-    "name": "setLiquidityCooldown",
+    "inputs": [{ "internalType": "uint16", "name": "newFee", "type": "uint16" }],
+    "name": "setFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
+  {
+    "inputs": [{ "internalType": "address", "name": "newPluginAddress", "type": "address" }],
+    "name": "setPlugin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint8", "name": "newConfig", "type": "uint8" }],
+    "name": "setPluginConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "int24", "name": "newTickSpacing", "type": "int24" }],
+    "name": "setTickSpacing",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  { "inputs": [], "name": "skim", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [
       { "internalType": "address", "name": "recipient", "type": "address" },
@@ -309,14 +404,14 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "sender", "type": "address" },
+      { "internalType": "address", "name": "leftoversRecipient", "type": "address" },
       { "internalType": "address", "name": "recipient", "type": "address" },
       { "internalType": "bool", "name": "zeroToOne", "type": "bool" },
-      { "internalType": "int256", "name": "amountRequired", "type": "int256" },
+      { "internalType": "int256", "name": "amountToSell", "type": "int256" },
       { "internalType": "uint160", "name": "limitSqrtPrice", "type": "uint160" },
       { "internalType": "bytes", "name": "data", "type": "bytes" }
     ],
-    "name": "swapSupportingFeeOnInputTokens",
+    "name": "swapWithPaymentInAdvance",
     "outputs": [
       { "internalType": "int256", "name": "amount0", "type": "int256" },
       { "internalType": "int256", "name": "amount1", "type": "int256" }
@@ -324,11 +419,12 @@
     "stateMutability": "nonpayable",
     "type": "function"
   },
+  { "inputs": [], "name": "sync", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [],
     "name": "tickSpacing",
     "outputs": [{ "internalType": "int24", "name": "", "type": "int24" }],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -339,32 +435,29 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "int24", "name": "", "type": "int24" }],
-    "name": "ticks",
-    "outputs": [
-      { "internalType": "uint128", "name": "liquidityTotal", "type": "uint128" },
-      { "internalType": "int128", "name": "liquidityDelta", "type": "int128" },
-      { "internalType": "uint256", "name": "outerFeeGrowth0Token", "type": "uint256" },
-      { "internalType": "uint256", "name": "outerFeeGrowth1Token", "type": "uint256" },
-      { "internalType": "int56", "name": "outerTickCumulative", "type": "int56" },
-      { "internalType": "uint160", "name": "outerSecondsPerLiquidity", "type": "uint160" },
-      { "internalType": "uint32", "name": "outerSecondsSpent", "type": "uint32" },
-      { "internalType": "bool", "name": "initialized", "type": "bool" }
-    ],
+    "inputs": [],
+    "name": "tickTreeRoot",
+    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "index", "type": "uint256" }],
-    "name": "timepoints",
+    "inputs": [{ "internalType": "int16", "name": "", "type": "int16" }],
+    "name": "tickTreeSecondLayer",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "int24", "name": "", "type": "int24" }],
+    "name": "ticks",
     "outputs": [
-      { "internalType": "bool", "name": "initialized", "type": "bool" },
-      { "internalType": "uint32", "name": "blockTimestamp", "type": "uint32" },
-      { "internalType": "int56", "name": "tickCumulative", "type": "int56" },
-      { "internalType": "uint160", "name": "secondsPerLiquidityCumulative", "type": "uint160" },
-      { "internalType": "uint88", "name": "volatilityCumulative", "type": "uint88" },
-      { "internalType": "int24", "name": "averageTick", "type": "int24" },
-      { "internalType": "uint144", "name": "volumePerLiquidityCumulative", "type": "uint144" }
+      { "internalType": "uint256", "name": "liquidityTotal", "type": "uint256" },
+      { "internalType": "int128", "name": "liquidityDelta", "type": "int128" },
+      { "internalType": "int24", "name": "prevTick", "type": "int24" },
+      { "internalType": "int24", "name": "nextTick", "type": "int24" },
+      { "internalType": "uint256", "name": "outerFeeGrowth0Token", "type": "uint256" },
+      { "internalType": "uint256", "name": "outerFeeGrowth1Token", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
