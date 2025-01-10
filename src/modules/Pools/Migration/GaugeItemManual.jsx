@@ -177,15 +177,19 @@ export function GaugeItemManual({ existingPosition, position, fusion, version = 
           </div>
           <div className='flex flex-row justify-between'>
             <Paragraph>{t('Current Price')}</Paragraph>
-            <div className='flex flex-row justify-between gap-1'>
-              <TextHeading>{currentPrice}</TextHeading>
-              <Paragraph className='text-sm'>
-                {t('[symbolA] per [symbolB]', {
-                  symbolA: unwrappedSymbol(reversePrice ? asset0 : asset1),
-                  symbolB: unwrappedSymbol(reversePrice ? asset1 : asset0),
-                })}
-              </Paragraph>
-            </div>
+            {fusion ? (
+              <div className='flex flex-row justify-between gap-1'>
+                <TextHeading>{currentPrice}</TextHeading>
+                <Paragraph className='text-sm'>
+                  {t('[symbolA] per [symbolB]', {
+                    symbolA: unwrappedSymbol(reversePrice ? asset0 : asset1),
+                    symbolB: unwrappedSymbol(reversePrice ? asset1 : asset0),
+                  })}
+                </Paragraph>
+              </div>
+            ) : (
+              <p>Not initiated yet</p>
+            )}
           </div>
         </div>
       </div>

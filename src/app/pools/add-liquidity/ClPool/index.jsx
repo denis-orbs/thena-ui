@@ -15,7 +15,7 @@ function AddLiquidityClPool({ pool, setCurrentStep, isAdd = false, showSidebar =
   }
 
   return (
-    <div>
+    <div className='w-full'>
       <span ref={targetRef} className='inline h-0 w-0' />
 
       {isChooseStrategy ? (

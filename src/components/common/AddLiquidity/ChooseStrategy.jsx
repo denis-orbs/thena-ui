@@ -68,7 +68,7 @@ const defaultSwapFees = {
     walletBalance: new BigNumber(0),
     gaugeBalance: new BigNumber(0),
     gaugeEarned: new BigNumber(0),
-    totalLp: 0,
+    totalLp: new BigNumber(0),
     token0claimable: new BigNumber(0),
     token1claimable: new BigNumber(0),
     staked0: new BigNumber(0),
@@ -282,7 +282,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
             // ...sub,
             title: sub.title,
             account: {
-              totalLp: sub?.account?.totalLp,
+              totalLp: sub?.account?.totalLp?.toNumber(),
               gaugeBalance: sub?.account?.gaugeBalance?.toNumber(),
             },
             token0: {

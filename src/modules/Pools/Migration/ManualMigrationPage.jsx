@@ -33,7 +33,7 @@ import { getTokenInfo } from '@/lib/helper'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount } from '@/lib/utils'
 import { AdjustNewPositionModal, GaugeItemManual } from '@/modules/Pools/Migration'
-import { ArrowLeftIcon, ArrowNarrowUpRightIcon, ArrowRightIcon } from '@/svgs'
+import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
 export function ManualMigrationPage({ tokenId }) {
   const t = useTranslations()
@@ -223,7 +223,7 @@ export function ManualMigrationPage({ tokenId }) {
       feeValue0,
       feeValue1,
       tokenId: existingPosition?.tokenId,
-      isFarming: strategy.isFarming,
+      isFarming: strategy?.isFarming,
       callback: () => {
         mutateManual()
         push('/dashboard')
@@ -249,7 +249,7 @@ export function ManualMigrationPage({ tokenId }) {
   }
 
   return (
-    <div className='mx-auto flex flex-col justify-center lg:flex-row'>
+    <div className='mx-auto max-w-5xl'>
       <div className='h-11 w-[98px]'>
         <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/dashboard')}>
           {t('Back')}
@@ -257,15 +257,9 @@ export function ManualMigrationPage({ tokenId }) {
       </div>
 
       <Box className='rounded-xl bg-neutral-900 px-3 py-6 lg:px-7'>
-        <div className='flex flex-col gap-2'>
+        <div className='mb-10 flex flex-col gap-2'>
           <TextHeading className='font-archia text-3xl'>{t('Migration')}</TextHeading>
-          <TextSubHeading className='text-base text-neutral-300'>
-            {t('Migration description')}&nbsp;
-            <span className='flex items-center text-primary-600'>
-              {t('KyberSwap migration contract')}&nbsp;
-              <ArrowNarrowUpRightIcon className='h-3 w-3 !stroke-primary-600' />
-            </span>
-          </TextSubHeading>
+          <TextSubHeading className='text-base text-neutral-300'>{t('Migration description')}&nbsp;</TextSubHeading>
         </div>
 
         <div className='my-4 flex flex-col gap-4 md:flex-row'>
@@ -297,7 +291,7 @@ export function ManualMigrationPage({ tokenId }) {
             {t('Cancel')}
           </EmphasisButton>
           <PrimaryButton className='w-full lg:w-[50%]' onClick={onSubmit}>
-            {t('Migrate Now')}
+            {fusionV3 ? t('Migrate Now') : t('Migrate & create Pool')}
           </PrimaryButton>
         </div>
       </Box>
