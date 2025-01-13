@@ -17,7 +17,7 @@ import { GAMMA_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
-import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { useCurrency } from '@/hooks/fusion/Tokens'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, getLiquidityRangeType, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
@@ -165,8 +165,8 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
 
   const { data: pairPrices = [], error } = useFetchPairPrices({
-    token0Address: useGetAsset(pair?.token0?.address),
-    token1Address: useGetAsset(pair?.token1?.address),
+    token0Address: wrappedAddress(pair?.token0),
+    token1Address: wrappedAddress(pair?.token1),
     timeWindow,
   })
 
