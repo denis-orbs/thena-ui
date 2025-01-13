@@ -269,26 +269,21 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
               </div>
             </div>
 
-            {GAMMA_TYPES.includes(sub.title) &&
-              (strategy?.address === sub.address ? (
-                <PrimaryBadge>{sub.title}</PrimaryBadge>
-              ) : (
-                <NeutralBadge>{sub.title}</NeutralBadge>
-              ))}
+            <div className='flex flex-wrap gap-2'>
+              {GAMMA_TYPES.includes(sub.title) && <NeutralBadge>{sub.title}</NeutralBadge>}
 
-            {sub.title === 'ICHI' &&
-              (strategy?.address === sub.address ? (
-                <PrimaryBadge>
-                  {sub.allowed.symbol} {t('Deposit')}
-                </PrimaryBadge>
-              ) : (
-                <NeutralBadge>
-                  {sub.allowed.symbol} {t('Deposit')}
-                </NeutralBadge>
-              ))}
+              {sub.title === 'ICHI' && (
+                <>
+                  <PrimaryBadge>
+                    {sub.allowed.symbol} {t('Deposit')}
+                  </PrimaryBadge>
+                  <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>
+                </>
+              )}
 
-            {sub.title === 'CL_Farming' && <NeutralBadge>$THE + 10% Fees</NeutralBadge>}
-            {sub.title === 'CL_SwapFee' && <NeutralBadge>80% Fees</NeutralBadge>}
+              {sub.title === 'CL_Farming' && <NeutralBadge>$THE + 10% Fees</NeutralBadge>}
+              {sub.title === 'CL_SwapFee' && <NeutralBadge>80% Fees</NeutralBadge>}
+            </div>
           </div>
         ),
         active: strategy?.address === sub.address,
@@ -300,6 +295,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
               totalLp: sub?.account?.totalLp?.toNumber(),
               gaugeBalance: sub?.account?.gaugeBalance?.toNumber(),
             },
+            allowed: sub.allowed,
             token0: {
               ...sub?.token0,
               reserve: sub?.token0?.reserve?.toNumber(),

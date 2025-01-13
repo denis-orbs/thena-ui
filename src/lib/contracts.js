@@ -57,6 +57,7 @@ import {
   gammaHypervisorAbiV3,
   gammaUniProxyAbi,
   gaugeSimpleAbi,
+  ichiFarmingAbi,
   ichiVaultAbi,
   vaultDepositGaurdAbi,
 } from '@/constant/abi/fusion'
@@ -185,8 +186,21 @@ export const getDefiedgeStrategyContract = (address, chainId) => getContract(def
                                             ICHI
   ************************************************************************************************** */
 
-export const getVaultDepositContract = chainId =>
-  getContract(vaultDepositGaurdAbi, Contracts.vaultDepositGuard, chainId)
+export const getVaultDepositContract = (chainId, version = 2, isFarming = false) => {
+  if (version === 3) {
+    const address = isFarming
+      ? Contracts.vaultDepositGuardV3Farming[chainId]
+      : Contracts.vaultDepositGuardV3Fee[chainId]
+
+    return {
+      address,
+      abi: vaultDepositGaurdAbi,
+    }
+  }
+
+  return getContract(vaultDepositGaurdAbi, Contracts.vaultDepositGuard, chainId)
+}
+export const getIchiFarmingContract = (address, chainId) => getContract(ichiFarmingAbi, address, chainId)
 
 export const getIchiVaultContract = (address, chainId) => getContract(ichiVaultAbi, address, chainId)
 

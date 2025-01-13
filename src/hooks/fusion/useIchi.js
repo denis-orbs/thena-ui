@@ -11,6 +11,7 @@ import { readCall, simulateCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getGaugeSimpleContract,
+  getIchiFarmingContract,
   getIchiVaultContract,
   getVaultDepositContract,
   getWBNBContract,
@@ -322,4 +323,170 @@ export const useIchiRemove = () => {
   )
 
   return { onIchiRemove, pending }
+}
+
+export const useIchiManageV3 = () => {
+  const [pending, setPending] = useState(false)
+  const { account } = useWallet()
+  const { networkId } = useChainSettings()
+  const { startTxn, endTxn, writeTxn, updateTxn, closeTxn } = useTxn()
+  const t = useTranslations()
+
+  const addIchiPool = useCallback(
+    async (vault, amount, amountToWrap, slippage) => {
+      const { token0, token1, address: vaultAddress, isFarming = false } = vault
+      const vaultContract = getIchiVaultContract(vaultAddress, networkId)
+
+      if (token0.address === vault.allowed.address) {
+        const maxRes = await readCall(vaultContract, 'deposit0Max', [], networkId)
+        const deposit0Max = fromWei(maxRes, token0.decimals)
+        if (deposit0Max.lt(amount)) {
+          warnToast(`Maximum deposit amount of ${token0.symbol} is ${deposit0Max.toFormat(0)}.`)
+          return
+        }
+      } else {
+        const maxRes = await readCall(vaultContract, 'deposit1Max', [], networkId)
+        const deposit1Max = fromWei(maxRes, token1.decimals)
+        if (deposit1Max.lt(amount)) {
+          warnToast(`Maximum deposit amount of ${token1.symbol} is ${deposit1Max.toFormat(0)}.`)
+          return
+        }
+      }
+
+      const key = uuidv4()
+      const wrapuuid = uuidv4()
+      const approveuuid = uuidv4()
+      const supplyuuid = uuidv4()
+      const approve1uuid = uuidv4()
+      const stakeuuid = uuidv4()
+      const depositToken = token0.address === vault.allowed.address ? token0 : token1
+      const tokenContract = getERC20Contract(depositToken.address, networkId)
+      const depositGuardContract = getVaultDepositContract(networkId, 3, isFarming)
+
+      const allowance = await readCall(tokenContract, 'allowance', [account, depositGuardContract.address], networkId)
+      const isApproved = fromWei(allowance, depositToken.decimals).gte(amount)
+
+      const transactions = {}
+      if (amountToWrap) {
+        transactions[wrapuuid] = {
+          desc: t('Wrap'),
+          status: TXN_STATUS.WAITING,
+          hash: null,
+        }
+      }
+
+      if (!isApproved) {
+        transactions[approveuuid] = {
+          desc: `${t('Approve')} ${depositToken.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[supplyuuid] = {
+        desc: `${t('Deposit')} ${depositToken.symbol}`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      if (isFarming) {
+        transactions[approve1uuid] = {
+          desc: `${t('Approve')} LP`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+        transactions[stakeuuid] = {
+          desc: `${t('Stake')} LP`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      startTxn({ key, transactions, title: 'Deposit' })
+      setPending(true)
+
+      // Wrap BNB
+      if (amountToWrap) {
+        const wbnbContract = getWBNBContract(networkId)
+        if (!(await writeTxn(key, wrapuuid, wbnbContract, 'deposit', [], toWei(amountToWrap).dp(0).toString(10)))) {
+          setPending(false)
+          return
+        }
+      }
+
+      // Approve deposit token
+      if (!isApproved) {
+        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [depositGuardContract.address, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      // Deposit
+      const vaultDeployerAddress = Contracts.vaultDeployer[networkId]
+      const depositAmount = toWei(amount, depositToken.decimals).dp(0).toString(10)
+      let lpAmount = await simulateCall(
+        depositGuardContract,
+        'forwardDepositToICHIVault',
+        [vaultAddress, vaultDeployerAddress, depositToken.address, depositAmount, '0', account],
+        networkId,
+      )
+      lpAmount = new BigNumber(lpAmount)
+        .times(Math.floor((100 - slippage) * 1000))
+        .div(100000)
+        .dp(0)
+        .toString(10)
+
+      if (isInvalidAmount(lpAmount)) {
+        setPending(false)
+        errorToast('Error', 'Deposit Not Allowed Description')
+        closeTxn()
+        return
+      }
+
+      if (
+        !(await writeTxn(key, supplyuuid, depositGuardContract, 'forwardDepositToICHIVault', [
+          vaultAddress,
+          vaultDeployerAddress,
+          depositToken.address,
+          depositAmount,
+          lpAmount,
+          account,
+        ]))
+      ) {
+        setPending(false)
+        return
+      }
+
+      if (isFarming) {
+        // Approve LP
+        const farmingAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
+        const allowance1 = await readCall(vaultContract, 'allowance', [account, farmingAddress], networkId)
+        const lpBalance = await readCall(vaultContract, 'balanceOf', [account], networkId)
+        const isVaultApproved = fromWei(allowance1).gte(lpBalance)
+
+        if (!isVaultApproved) {
+          if (!(await writeTxn(key, approve1uuid, vaultContract, 'approve', [farmingAddress, maxUint256]))) {
+            setPending(false)
+            return
+          }
+        } else {
+          updateTxn({ key, uuid: approve1uuid, status: TXN_STATUS.SUCCESS })
+        }
+
+        // Stake LP
+        const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
+        if (!(await writeTxn(key, stakeuuid, farmingContract, 'stake', [lpBalance, account]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      endTxn({ key, final: 'Liquidity Added' })
+      setPending(false)
+    },
+    [networkId, account, startTxn, t, writeTxn, endTxn, closeTxn, updateTxn],
+  )
+
+  return { addIchiPool, pending }
 }

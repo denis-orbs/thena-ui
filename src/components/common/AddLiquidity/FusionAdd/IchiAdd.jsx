@@ -9,7 +9,7 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import BalanceInput from '@/components/input/BalanceInput'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { useIchiManage } from '@/hooks/fusion/useIchi'
+import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
@@ -18,12 +18,13 @@ import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 
 export default function IchiAdd({ strategy, isAdd, isModal }) {
   const [amount, setAmount] = useState('')
-  const { onIchiAddAndStake, pending } = useIchiManage()
+  // const { onIchiAddAndStake, pending } = useIchiManage()
+  const { addIchiPool, pending } = useIchiManageV3()
   const { account } = useWallet()
   const assets = useAssets()
   const [slippage, setSlippage] = useState(0.5)
   const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
-  const depositToken = assets.find(ele => ele.address.toLowerCase() === strategy.allowed.address)
+  const depositToken = assets.find(ele => ele.address.toLowerCase() === strategy?.allowed?.address)
   const t = useTranslations()
 
   const isDouble = useMemo(() => depositToken.symbol === 'WBNB', [depositToken])
@@ -57,9 +58,9 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
     if (errorMsg) {
       warnToast(errorMsg)
     } else {
-      onIchiAddAndStake(strategy, amount, amountToWrap, slippage)
+      addIchiPool(strategy, amount, amountToWrap, slippage)
     }
-  }, [strategy, amount, amountToWrap, slippage, errorMsg, onIchiAddAndStake])
+  }, [strategy, amount, amountToWrap, slippage, errorMsg, addIchiPool])
 
   return (
     <>
@@ -119,7 +120,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
             }}
             className='w-full'
           >
-            {t('Add Liquidity & Stake')}
+            {t('Add Liquidity')}
           </PrimaryButton>
         ) : (
           <ConnectButton className='w-full' />
