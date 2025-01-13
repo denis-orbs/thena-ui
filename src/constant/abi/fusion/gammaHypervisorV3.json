@@ -4,6 +4,7 @@
       { "internalType": "address", "name": "_pool", "type": "address" },
       { "internalType": "address", "name": "_nonfungiblePositionManager", "type": "address" },
       { "internalType": "address", "name": "_incentiveMaker", "type": "address" },
+      { "internalType": "address", "name": "_receiver", "type": "address" },
       { "internalType": "string", "name": "name", "type": "string" },
       { "internalType": "string", "name": "symbol", "type": "string" }
     ],
@@ -193,6 +194,12 @@
   },
   {
     "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "address", "name": "newReceiver", "type": "address" }],
+    "name": "TransferReceiver",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [{ "indexed": false, "internalType": "address", "name": "account", "type": "address" }],
     "name": "Unpaused",
     "type": "event"
@@ -288,17 +295,6 @@
     "stateMutability": "view",
     "type": "function"
   },
-  { "inputs": [], "name": "claim", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-  {
-    "inputs": [{ "internalType": "address", "name": "_user", "type": "address" }],
-    "name": "claimable",
-    "outputs": [
-      { "internalType": "uint256", "name": "rewardTokenClaimable", "type": "uint256" },
-      { "internalType": "uint256", "name": "bonusRewardTokenClaimable", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
   {
     "inputs": [{ "internalType": "uint256[4]", "name": "inMin", "type": "uint256[4]" }],
     "name": "compound",
@@ -371,6 +367,19 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "uint256", "name": "deposit0", "type": "uint256" },
+      { "internalType": "uint256", "name": "deposit1", "type": "uint256" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "address", "name": "from", "type": "address" },
+      { "internalType": "uint256[4]", "name": "inMin", "type": "uint256[4]" }
+    ],
+    "name": "depositAndStake",
+    "outputs": [{ "internalType": "uint256", "name": "shares", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "directDeposit",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
@@ -426,16 +435,6 @@
   },
   {
     "inputs": [],
-    "name": "getLastSecondRewards",
-    "outputs": [
-      { "internalType": "uint256", "name": "rewardPerSecond", "type": "uint256" },
-      { "internalType": "uint256", "name": "bonusRewardPerSecond", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "getLimitPosition",
     "outputs": [
       { "internalType": "uint128", "name": "liquidity", "type": "uint128" },
@@ -445,12 +444,33 @@
     "stateMutability": "view",
     "type": "function"
   },
+  { "inputs": [], "name": "getReward", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [],
     "name": "getTotalAmounts",
     "outputs": [
       { "internalType": "uint256", "name": "total0", "type": "uint256" },
       { "internalType": "uint256", "name": "total1", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTotalAmountsPlusFees",
+    "outputs": [
+      { "internalType": "uint256", "name": "total0", "type": "uint256" },
+      { "internalType": "uint256", "name": "total1", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getUnclaimedFees",
+    "outputs": [
+      { "internalType": "uint256", "name": "fees0", "type": "uint256" },
+      { "internalType": "uint256", "name": "fees1", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -470,13 +490,6 @@
     "name": "increaseAllowance",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "isClaimPaused",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -543,7 +556,6 @@
     "stateMutability": "view",
     "type": "function"
   },
-  { "inputs": [], "name": "pause", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [],
     "name": "paused",
@@ -588,33 +600,20 @@
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  { "inputs": [], "name": "removeWhitelisted", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-  { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [],
-    "name": "rewardData",
-    "outputs": [
-      { "internalType": "uint256", "name": "rewardAmount", "type": "uint256" },
-      { "internalType": "uint256", "name": "bonusRewardAmount", "type": "uint256" },
-      { "internalType": "uint256", "name": "lastTimeUpdated", "type": "uint256" },
-      { "internalType": "uint256", "name": "rewardPerToken", "type": "uint256" },
-      { "internalType": "uint256", "name": "bonusRewardPerToken", "type": "uint256" }
-    ],
+    "name": "receiver",
+    "outputs": [{ "internalType": "contract IMultiFeeDistribution", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
+  { "inputs": [], "name": "removeWhitelisted", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [],
     "name": "rewardToken",
     "outputs": [{ "internalType": "contract IERC20", "name": "", "type": "address" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "bool", "name": "_pause", "type": "bool" }],
-    "name": "setClaimPause",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -638,8 +637,7 @@
     "inputs": [
       { "internalType": "address", "name": "_pool", "type": "address" },
       { "internalType": "address", "name": "_nonfungiblePositionManager", "type": "address" },
-      { "internalType": "address", "name": "_farmingCenter", "type": "address" },
-      { "internalType": "address", "name": "_incentiveMaker", "type": "address" }
+      { "internalType": "address", "name": "_farmingCenter", "type": "address" }
     ],
     "name": "setProtocolAddresses",
     "outputs": [],
@@ -724,20 +722,18 @@
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  { "inputs": [], "name": "unpause", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-  { "inputs": [], "name": "updateIncentiveKey", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "userData",
-    "outputs": [
-      { "internalType": "uint256", "name": "tokenAmount", "type": "uint256" },
-      { "internalType": "uint256", "name": "lastTimeUpdated", "type": "uint256" },
-      { "internalType": "uint256", "name": "rewardTokenClaimable", "type": "uint256" },
-      { "internalType": "uint256", "name": "bonusRewardTokenClaimable", "type": "uint256" },
-      { "internalType": "uint256", "name": "rewardPerToken", "type": "uint256" },
-      { "internalType": "uint256", "name": "bonusRewardPerToken", "type": "uint256" }
-    ],
-    "stateMutability": "view",
+    "inputs": [{ "internalType": "address", "name": "newReceiver", "type": "address" }],
+    "name": "transferReceiver",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_incentiveMaker", "type": "address" }],
+    "name": "updateIncentiveMaker",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

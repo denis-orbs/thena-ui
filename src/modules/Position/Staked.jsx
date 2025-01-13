@@ -8,7 +8,7 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useGammaClaim } from '@/hooks/fusion/useGamma'
+import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getLiquidityRangeType } from '@/lib/utils'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
@@ -25,6 +25,10 @@ export default function Staked({ pool }) {
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
   const { onGaugeHarvest, pending } = useGaugeHarvest()
+
+  const {
+    rewardsData: { totalUsd, rewards },
+  } = useGammaData(pool)
 
   const dispatch = useDispatch()
   const t = useTranslations()
@@ -81,15 +85,25 @@ export default function Staked({ pool }) {
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
-            <TextHeading>${formatAmount(pool.account.earnedUsd)}</TextHeading>
+            <TextHeading>${formatAmount(totalUsd)}</TextHeading>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`stake-${pool.address}`} />
             <CustomTooltip id={`stake-${pool.address}`}>
-              {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
-              {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
-              {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
-              {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
-              {pool.account.extraRewards && (
-                <p>{`${formatAmount(pool.account.extraRewards.amount)} ${pool.account.extraRewards.symbol}`}</p>
+              {pool.version === 2 ? (
+                <>
+                  {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
+                  {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
+                  {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
+                  {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
+                  {pool.account.extraRewards && (
+                    <p>{`${formatAmount(pool.account.extraRewards.amount)} ${pool.account.extraRewards.symbol}`}</p>
+                  )}
+                </>
+              ) : (
+                <>
+                  {(rewards || []).map(item => (
+                    <p>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
+                  ))}
+                </>
               )}
             </CustomTooltip>
           </div>

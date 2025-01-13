@@ -65,7 +65,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
     if (['Stable', 'CLassic'].includes(strategy.title)) {
       onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
-      onGammaRemove(strategy, amount, callback)
+      onGammaRemove(strategy, amount, strategy.version, callback)
     } else if (strategy.title === 'ICHI') {
       onIchiRemove(strategy, amount, callback)
     } else if (strategy.title === 'DefiEdge') {

@@ -13,7 +13,6 @@ import ZapperPane from '@/components/common/AddLiquidity/FusionAdd/ZapperPane'
 import IconGroup from '@/components/icongroup'
 import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
@@ -104,12 +103,12 @@ export default function AddLiquidityCLPane({ pool, isAdd, isReverse, goPreviousS
               classNames={{
                 image: 'outline-[2.6px] w-7 h-7',
               }}
-              logo1={baseCurrency?.logoURI}
-              logo2={quoteCurrency?.logoURI}
+              logo1={isReverse ? quoteCurrency?.logoURI : baseCurrency?.logoURI}
+              logo2={isReverse ? baseCurrency?.logoURI : quoteCurrency?.logoURI}
             />
-            <TextHeading>{`${baseCurrency?.symbol}/${quoteCurrency?.symbol}`}</TextHeading>
+            <TextHeading>{pool?.symbol}</TextHeading>
           </div>
-          <NeutralBadge>{PAIR_TYPES.LSD}</NeutralBadge>
+          <NeutralBadge>{strategy.title}</NeutralBadge>
         </div>
 
         <div className={cn('flex justify-end', strategy?.isAutomatic && 'hidden')}>

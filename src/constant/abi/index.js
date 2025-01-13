@@ -23,6 +23,7 @@ import minterAbi from './minter.json'
 import mockERC20Abi from './mockERC20.json'
 import mockERC20BNBAbi from './mockERC20WBNB.json'
 import multiCallAbi from './multiCall.json'
+import multiFeeDistributionAbi from './multiFeeDistribution.json'
 import muonAbi from './muon.json'
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
@@ -75,6 +76,7 @@ export {
   mockERC20Abi,
   mockERC20BNBAbi,
   multiCallAbi,
+  multiFeeDistributionAbi,
   muonAbi,
   numeralAbi,
   pairAbi,

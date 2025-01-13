@@ -133,11 +133,6 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   }, [amountA, amountB, baseCurrency, quoteCurrency, wbnbBalance, networkId])
 
   const onAddLiquidity = useCallback(() => {
-    // if (errorMessage) {
-    //   warnToast(errorMessage, 'warn')
-    //   return
-    // }
-
     if (mintInfo?.strategy?.isFarming) {
       onGammaAddAndStake(amountA, amountB, amountToWrap, strategy)
     } else {

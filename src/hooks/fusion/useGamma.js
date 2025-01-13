@@ -1,10 +1,11 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import {
@@ -13,6 +14,7 @@ import {
   getGammaHyperVisorContract,
   getGammaUNIProxyContract,
   getGaugeContract,
+  getMultiFeeDistributionContract,
   getWBNBContract,
 } from '@/lib/contracts'
 import { successToast, warnToast } from '@/lib/notify'
@@ -394,13 +396,21 @@ export const useGammaRemove = () => {
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
   const onGammaRemove = useCallback(
-    async (pool, amount, callback) => {
+    async (pool, amount, version, callback) => {
       const key = uuidv4()
       const removeuuid = uuidv4()
+      const unstakeuuid = uuidv4()
       startTxn({
         key,
         title: 'Remove Liquidity',
         transactions: {
+          ...(version === 3 && {
+            [unstakeuuid]: {
+              desc: t('Unstake'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
           [removeuuid]: {
             desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
@@ -409,7 +419,16 @@ export const useGammaRemove = () => {
         },
       })
       setPending(true)
-      const gammaUNIProxyContract = getGammaHyperVisorContract(pool.address, networkId)
+      const gammaUNIProxyContract = getGammaHyperVisorContract(pool.address, networkId, version)
+
+      if (version === 3) {
+        const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], networkId)
+        const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, networkId)
+        if (!(await writeTxn(key, unstakeuuid, multiFeeDistributionContract, 'unstake', [toWei(amount).toFixed(0)]))) {
+          setPending(false)
+          return
+        }
+      }
 
       if (
         !(await writeTxn(key, removeuuid, gammaUNIProxyContract, 'withdraw', [
@@ -474,4 +493,35 @@ export const useGammaClaim = () => {
   )
 
   return { onGammaClaim, pending }
+}
+
+export const useGammaData = pool => {
+  const { account, chainId } = useWallet()
+  const assets = useAssets()
+  const [rewardsData, setRewardsData] = useState([])
+
+  const getClaimableRewards = useCallback(async () => {
+    if (pool.version === 3) {
+      const gammaUNIProxyContract = getGammaHyperVisorContract(pool.address, chainId, 3)
+      const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], chainId)
+      const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
+      const [tokens, amounts] = await readCall(multiFeeDistributionContract, 'claimableRewards', [account])
+      let totalUsd = 0
+      const rewards = tokens.map((token, index) => {
+        const asset = assets.find(item => item.address.toLowerCase() === token.toLowerCase())
+        totalUsd += asset.price * fromWei(amounts[index]).toNumber()
+        return {
+          asset: asset || { address: token, name: 'Unknown' },
+          amount: fromWei(amounts[index]),
+        }
+      })
+      setRewardsData({ totalUsd, rewards })
+    }
+  }, [account, assets, chainId, pool.address, pool.version])
+
+  useEffect(() => {
+    getClaimableRewards()
+  }, [getClaimableRewards])
+
+  return { rewardsData }
 }

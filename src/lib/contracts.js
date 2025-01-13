@@ -15,6 +15,7 @@ import {
   mockERC20Abi,
   mockERC20BNBAbi,
   multiCallAbi,
+  multiFeeDistributionAbi,
   muonAbi,
   pairAbi,
   rewardsAPIAbi,
@@ -160,6 +161,9 @@ export const getGammaUNIProxyContract = (chainId, version = 3) => {
 
   return getContract(gammaUniProxyAbi, Contracts.gammaUniProxy, chainId)
 }
+
+export const getMultiFeeDistributionContract = (address, chainId) =>
+  getContract(multiFeeDistributionAbi, address, chainId)
 
 export const getGammaClearingContract = (address, chainId) => getContract(gammaClearingAbi, address, chainId)
 
