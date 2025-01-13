@@ -205,11 +205,11 @@ export default function ManualPosition({ position: manualPosition }) {
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
             <TextSubHeading className='text-xs'>{t('Min Price')}</TextSubHeading>
             <TextHeading>
-              {formatAmountLP(
-                reversePrice
-                  ? 1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)
-                  : formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER),
-              )}
+              <>
+                {reversePrice
+                  ? formatAmountLP(1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER))
+                  : formatAmountLP(formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
+              </>
             </TextHeading>
             <Paragraph className='text-[10px]'>
               {t('[symbolA] per [symbolB]', {
@@ -221,11 +221,9 @@ export default function ManualPosition({ position: manualPosition }) {
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
             <TextSubHeading className='text-xs'>{t('Max Price')}</TextSubHeading>
             <TextHeading>
-              {formatAmountLP(
-                reversePrice
-                  ? 1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
-                  : formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
-              )}
+              {reversePrice
+                ? formatAmountLP(1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER))
+                : formatAmountLP(formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
             </TextHeading>
             <Paragraph className='text-[10px]'>
               {t('[symbolA] per [symbolB]', {
