@@ -78,9 +78,9 @@ export const getV1ChartData = async (chainId, address, fee, skip) => {
   }
 }
 
-export const getFusionChartData = async (chainId, address, skip) => {
+export const getFusionChartData = async ({ chainId, address, version = 2, skip = 0 }) => {
   try {
-    const { poolDayDatas } = await fusionClient[chainId].request(FUSION_DAY_DATAS, {
+    const { poolDayDatas } = await fusionClient[version][chainId].request(FUSION_DAY_DATAS, {
       address,
       startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
       skip,
@@ -126,8 +126,11 @@ export const fetchPairChartData = async (chainId, pair) => {
   }
 
   if (pair.type === PAIR_TYPES.LSD) {
-    // TODO: ADD OPTION VERSION OF CL POOL
-    const { data: fusiondata } = await fetchChartData(getFusionChartData, [chainId, pair.address], false)
+    const { data: fusiondata } = await fetchChartData(
+      getFusionChartData,
+      [{ chainId, address: pair?.address, version: pair?.version }],
+      false,
+    )
     return fusiondata
   }
 
