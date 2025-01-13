@@ -20,9 +20,7 @@ import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintState } from '@/state/fusion/hooks'
-import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, PercentIcon, RightInIcon, RightOutIcon } from '@/svgs'
-
-import TransactionSettingModal from '../TransactionSettingModal'
+import { ArrowLeftIcon, CheckCircleIcon, DownloadSuccessIcon, RightInIcon, RightOutIcon } from '@/svgs'
 
 const feeAmount = 3000
 export default function AddLiquidityCLPane({ pool, isAdd, isReverse, goPreviousStep, showSidebar = true }) {
@@ -31,7 +29,6 @@ export default function AddLiquidityCLPane({ pool, isAdd, isReverse, goPreviousS
 
   const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
-  const [openTransactionSetting, setOpenTransactionSetting] = useState(false)
 
   const searchParams = useSearchParams()
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
@@ -216,25 +213,9 @@ export default function AddLiquidityCLPane({ pool, isAdd, isReverse, goPreviousS
                 </div>
               </div>
             </div>
-            <div className='flex flex-row items-center gap-2'>
-              <PercentIcon className='h-5 w-5 stroke-success-600' />
-              <div className='flex flex-row gap-1'>
-                <span>{t('slippage applied', { percent: slippage })}</span>
-                <span className='!cursor-pointer underline' onClick={() => setOpenTransactionSetting(true)}>
-                  {t('Adjust')}
-                </span>
-              </div>
-            </div>
           </div>
         </Box>
       </div>
-
-      <TransactionSettingModal
-        isOpen={openTransactionSetting}
-        setIsOpen={setOpenTransactionSetting}
-        updateSlippage={setSlippage}
-        slippage={slippage}
-      />
     </div>
   )
 }

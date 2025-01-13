@@ -333,7 +333,7 @@ export const useGammaAddAndStake = () => {
       ).numerator.toString()
 
       if (
-        !(await writeTxn(key, supplyuuid, gammaUNIProxyContract, 'deposit', [
+        !(await writeTxn(key, supplyuuid, gammaUNIProxyContract, version === 3 ? 'depositAndStake' : 'deposit', [
           firstParam,
           secondParam,
           account,
