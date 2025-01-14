@@ -9,7 +9,7 @@ import useSWR from 'swr'
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
+import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
@@ -298,10 +298,10 @@ const getV1Transactions = async (chainId, pairs) => {
   }
 }
 
-const getFusionTransactions = async (chainId, pairs) => {
+const getFusionTransactions = async (chainId, version, pairs) => {
   try {
     const newTxns = []
-    const result = await fusionClient[chainId].request(FUSION_TRANSACTIONS, {
+    const result = await fusionClient[version][chainId].request(FUSION_TRANSACTIONS, {
       pairs,
     })
 
@@ -455,7 +455,9 @@ const fetchPairTransaction = async (chainId, pair) => {
   }
 
   if (pair.type === PAIR_TYPES.LSD) {
-    const { data: fusiondata } = await getFusionTransactions(chainId, [pair.address])
+    const version = pair?.version
+    const swapPool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[0])?.address
+    const { data: fusiondata } = await getFusionTransactions(chainId, version, [pair.address, swapPool])
     return fusiondata
   }
 
@@ -510,7 +512,7 @@ export default function TransactionTable({ pair }) {
   const t = useTranslations()
 
   const { data: txnData } = useSWR(
-    pair && ['analytics/pair/transaction', pair],
+    pair && ['analytics/pair/transaction', pair.address],
     () => fetchPairTransaction(networkId, pair),
     {
       refreshInterval: 0,
