@@ -135,7 +135,11 @@ export const fetchFusionPoolsInfos = ({ account, chainId }) => {
   return res
 }
 
-export const fetchVotingHistory = (account, skip = 0, limit = 10) =>
-  fetch(`${backendApi}/vote/history?address=${account}&skip=${skip}&limit=${limit}`)
+export const fetchVotingHistory = (account, veTHEId, chainId, skip = 0, limit = 10) =>
+  fetch(
+    `${backendApi}/vote/history/${chainId}?${
+      veTHEId !== 'All' ? `tokenId=${veTHEId}&` : ''
+    }address=${account}&skip=${skip}&limit=${limit}`,
+  )
     .then(r => r.json())
     .then(r => r)

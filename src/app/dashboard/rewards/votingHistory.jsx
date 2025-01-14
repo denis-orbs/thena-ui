@@ -365,16 +365,16 @@ function TitleEpoch({ epoch, open }) {
   )
 }
 
-function VotingHistory() {
-  const { account } = useWallet()
+function VotingHistory({ veTHEId }) {
+  const { account, chainId } = useWallet()
   const [currentPage, setCurrentPage] = useState(1)
 
   const t = useTranslations()
 
   const fetchVotingHistoryData = useCallback(
-    async (limit = 10, skip = 0) => {
+    async (tokenVeTHEId, limit = 10, skip = 0) => {
       try {
-        const data = await fetchVotingHistory(account?.toLowerCase(), skip, limit)
+        const data = await fetchVotingHistory(account?.toLowerCase(), tokenVeTHEId, chainId, skip, limit)
         if (data?.data) {
           const result = data.data.map(item => ({
             ...item,
@@ -394,12 +394,12 @@ function VotingHistory() {
         return null
       }
     },
-    [account],
+    [account, chainId],
   )
 
   const { data: epochVotingHistory, isLoading } = useSWR(
-    account && ['epochVotingHistory', account, currentPage],
-    () => fetchVotingHistoryData(10, (currentPage - 1) * 10),
+    account && ['epochVotingHistory', account, currentPage, veTHEId],
+    () => fetchVotingHistoryData(veTHEId, 10, (currentPage - 1) * 10),
     {
       refreshInterval: 60000,
     },

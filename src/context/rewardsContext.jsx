@@ -5,7 +5,7 @@ import useSWRImmutable from 'swr/immutable'
 
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
-import { v3ClientSubGraph } from '@/lib/graphql'
+import { voterSubgraph } from '@/lib/graphql'
 import { fromWei, isInvalidAmount } from '@/lib/utils'
 import { usePoolsWithGauge } from '@/state/pools/hooks'
 
@@ -55,9 +55,9 @@ const V3_GET_USER_REWARDS = gql`
   }
 `
 
-const fetchUserRewards = async userId => {
+const fetchUserRewards = async (userId, chainId) => {
   try {
-    const { userRewards } = await v3ClientSubGraph.request(V3_GET_USER_REWARDS, {
+    const { userRewards } = await voterSubgraph[chainId].request(V3_GET_USER_REWARDS, {
       user: userId,
     })
 
@@ -105,7 +105,7 @@ function RewardsContextProvider({ children }) {
   //   error: currentError,
   //   mutate: currentMutate,
   // } = useSWRImmutable(
-  //   account && gaugeAddresses.length > 0 && chainId === ChainId.BSC ? ['current rewards api', account] : null,
+  //   account && gaugeAddresses.length > 0 && chainIdp === ChainId.BSC ? ['current rewards api', account] : null,
   //   ([url, acc]) => fetchCurrentRewards(url, acc, chainId, gaugeAddresses),
   //   {
   //     refreshInterval: 60000,
@@ -128,8 +128,8 @@ function RewardsContextProvider({ children }) {
     data: current,
     error: currentError,
     mutate: currentMutate,
-  } = useSWRImmutable(account && chainId === 97 ? ['current rewards api', account] : null, () =>
-    fetchUserRewards(account.toLowerCase()),
+  } = useSWRImmutable(account && chainId ? ['current rewards api', account, chainId] : null, () =>
+    fetchUserRewards(account.toLowerCase(), chainId),
   )
 
   const currentRewards = useMemo(() => {

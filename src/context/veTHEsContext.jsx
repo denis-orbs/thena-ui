@@ -13,7 +13,7 @@ const veTHEsContext = React.createContext({
 function VeTHEsContextProvider({ children }) {
   const { account, chainId } = useWallet()
 
-  const { data, isLoading, error, mutate } = useSWR(account ? ['vethes api', account] : null, () =>
+  const { data, isLoading, error, mutate } = useSWR(account ? ['vethes api', account, chainId] : null, () =>
     fetVeTHETokens(chainId, account),
   )
 
