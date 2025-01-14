@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import { Info, Warning } from '@/components/alert'
 import Input from '@/components/input'
 import Selection from '@/components/selection'
+import Skeleton from '@/components/skeleton'
 import Spinner from '@/components/spinner'
 import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
@@ -83,11 +84,25 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       mintInfo.pool,
     )
 
-  const { data: pairPrices = [], error } = useFetchPairPrices({
+  const {
+    data: pairPrices = [],
+    isLoading,
+    error,
+  } = useFetchPairPrices({
     token0Address: wrappedAddress(quoteCurrency),
     token1Address: wrappedAddress(baseCurrency),
     timeWindow,
   })
+
+  const minValue = useMemo(
+    () => pairPrices.reduce((min, current) => (current.value < min.value ? current : min), pairPrices[0]),
+    [pairPrices],
+  )
+
+  const maxValue = useMemo(
+    () => pairPrices.reduce((max, current) => (current.value > max.value ? current : max), pairPrices[0]),
+    [pairPrices],
+  )
 
   const leftPrice = useMemo(
     () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceLower : priceUpper?.invert()),
@@ -416,20 +431,24 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
           <Tabs data={periods} />
         </div>
 
-        <div className='mt-2 flex h-[250px] items-center justify-center'>
-          {error ? (
-            <Paragraph>Failed to load price chart for this pair</Paragraph>
-          ) : (
-            <PoolChart
-              data={pairPrices}
-              timeWindow={timeWindow}
-              locale={locale}
-              current={Number(currentPrice)}
-              upper={Number(rightPrice?.toSignificant(6))}
-              lower={Number(leftPrice?.toSignificant(6))}
-            />
-          )}
-        </div>
+        {isLoading ? (
+          <Skeleton className='mt-2 flex h-[300px] items-center justify-center' />
+        ) : (
+          <div className='mt-2 flex h-[300px] items-center justify-center'>
+            {error ? (
+              <Paragraph>Failed to load price chart for this pair</Paragraph>
+            ) : (
+              <PoolChart
+                data={pairPrices}
+                timeWindow={timeWindow}
+                locale={locale}
+                current={Number(currentPrice)}
+                upper={maxValue?.value}
+                lower={minValue?.value}
+              />
+            )}
+          </div>
+        )}
       </div>
       {/* <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
       <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} /> */}

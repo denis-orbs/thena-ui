@@ -101,7 +101,7 @@ export default function Staked({ pool }) {
               ) : (
                 <>
                   {(rewards || []).map(item => (
-                    <p>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
+                    <p key={item.asset.address}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
                   ))}
                 </>
               )}

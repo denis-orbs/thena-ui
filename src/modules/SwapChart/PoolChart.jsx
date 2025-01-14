@@ -8,7 +8,7 @@ import { formatAmount } from '@/lib/utils'
 
 import { PairDataTimeWindow } from './fetch'
 
-function PoolChart({ data, locale, timeWindow, upper, current, lower }) {
+function PoolChart({ data, locale, timeWindow, upper, lower }) {
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
 
@@ -18,18 +18,10 @@ function PoolChart({ data, locale, timeWindow, upper, current, lower }) {
         time: time.getTime(),
         value,
       }))
-
-      const startTime = (baseData[0]?.time ?? 0) - 1
-      const endTime = (baseData[baseData.length - 1]?.time ?? 0) + 1
-
-      return [
-        { time: startTime, value: lower, color: 'transparent' },
-        ...baseData,
-        { time: endTime, value: upper, color: 'transparent' },
-      ]
+      return baseData
     }
     return []
-  }, [data, lower, upper])
+  }, [data])
 
   useEffect(() => {
     if (!chartRef?.current) return
@@ -117,16 +109,16 @@ function PoolChart({ data, locale, timeWindow, upper, current, lower }) {
       })
     }
 
-    if (current) {
-      newSeries.createPriceLine({
-        price: current,
-        color: 'pink',
-        lineWidth: 1,
-        lineStyle: 1,
-        axisLabelVisible: true,
-        title: 'current',
-      })
-    }
+    // if (current) {
+    //   newSeries.createPriceLine({
+    //     price: current,
+    //     color: 'pink',
+    //     lineWidth: 1,
+    //     lineStyle: 1,
+    //     axisLabelVisible: true,
+    //     title: 'current',
+    //   })
+    // }
 
     if (lower) {
       newSeries.createPriceLine({
@@ -142,7 +134,7 @@ function PoolChart({ data, locale, timeWindow, upper, current, lower }) {
     return () => {
       chart.remove()
     }
-  }, [timeWindow, locale, upper, current, lower, transformedData])
+  }, [timeWindow, locale, upper, lower, transformedData])
 
   return (
     <>

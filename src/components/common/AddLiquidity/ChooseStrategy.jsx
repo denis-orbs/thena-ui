@@ -11,6 +11,7 @@ import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import Highlight from '@/components/highlight'
 import Selector from '@/components/selector'
+import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES } from '@/constant'
@@ -164,11 +165,25 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   const quoteCurrency = useCurrency(secondAsset?.address)
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
 
-  const { data: pairPrices = [], error } = useFetchPairPrices({
+  const {
+    data: pairPrices = [],
+    isLoading,
+    error,
+  } = useFetchPairPrices({
     token0Address: wrappedAddress(pair?.token0),
     token1Address: wrappedAddress(pair?.token1),
     timeWindow,
   })
+
+  const minValue = useMemo(
+    () => pairPrices.reduce((min, current) => (current.value < min.value ? current : min), pairPrices[0]),
+    [pairPrices],
+  )
+
+  const maxValue = useMemo(
+    () => pairPrices.reduce((max, current) => (current.value > max.value ? current : max), pairPrices[0]),
+    [pairPrices],
+  )
 
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
@@ -397,29 +412,23 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                     <h6 className='font-bold'>Historical price</h6>
                     <Tabs data={periods} />
                   </div>
-
-                  <div className='mt-2 flex h-[250px] items-center justify-center'>
-                    {error ? (
-                      <Paragraph>Failed to load price chart for this pair</Paragraph>
-                    ) : (
-                      <PoolChart
-                        data={pairPrices}
-                        timeWindow={timeWindow}
-                        locale={locale}
-                        upper={
-                          isSorted
-                            ? Number(priceLower?.invert()?.toSignificant(6))
-                            : Number(priceUpper?.invert()?.toSignificant(6))
-                        }
-                        current={Number(currentPrice)}
-                        lower={
-                          isSorted
-                            ? Number(priceUpper?.invert()?.toSignificant(6))
-                            : Number(priceLower?.invert()?.toSignificant(6))
-                        }
-                      />
-                    )}
-                  </div>
+                  {isLoading ? (
+                    <Skeleton className='mt-2 flex h-[300px] items-center justify-center' />
+                  ) : (
+                    <div className='mt-2 flex h-[300px] items-center justify-center'>
+                      {error ? (
+                        <Paragraph>Failed to load price chart for this pair</Paragraph>
+                      ) : (
+                        <PoolChart
+                          data={pairPrices}
+                          timeWindow={timeWindow}
+                          locale={locale}
+                          upper={isSorted ? minValue?.value : maxValue?.value}
+                          lower={isSorted ? maxValue?.value : minValue?.value}
+                        />
+                      )}
+                    </div>
+                  )}
                 </Box>
               </>
             )}
