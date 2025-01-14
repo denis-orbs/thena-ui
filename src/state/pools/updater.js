@@ -58,15 +58,15 @@ const fetchUserFusionsV2 = async (account, pools, chainId) => {
 const fetchUserFusionsV3 = async (account, chainId) => {
   const fusionPoolsInfos = await fetchFusionPoolsInfos({ account, chainId })
   return fusionPoolsInfos.map(pool => {
-    const { pair_address, claimable0, claimable1, account_gauge_balance, account_gauge_earned } = pool
-    // On V3 - no need to stake in GAUGE
+    const { pair_address, claimable0, claimable1, account_gauge_balance, account_gauge_earned, account_lp_balance } =
+      pool
     return {
       version: 3,
       address: pair_address,
-      walletBalance: 0n,
+      walletBalance: account_lp_balance,
       gaugeBalance: account_gauge_balance,
-      totalLp: account_gauge_balance,
-      gaugeEarned: account_gauge_earned, // account earned emissions for this pair
+      totalLp: account_lp_balance + account_gauge_balance,
+      gaugeEarned: account_gauge_earned,
       token0claimable: claimable0,
       token1claimable: claimable1,
     }

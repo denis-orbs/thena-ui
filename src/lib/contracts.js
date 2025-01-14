@@ -59,6 +59,7 @@ import {
   gaugeSimpleAbi,
   ichiFarmingAbi,
   ichiVaultAbi,
+  ichiVaultAbiV3,
   vaultDepositGaurdAbi,
 } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
@@ -202,7 +203,10 @@ export const getVaultDepositContract = (chainId, version = 2, isFarming = false)
 }
 export const getIchiFarmingContract = (address, chainId) => getContract(ichiFarmingAbi, address, chainId)
 
-export const getIchiVaultContract = (address, chainId) => getContract(ichiVaultAbi, address, chainId)
+export const getIchiVaultContract = (address, chainId, version = 2) => {
+  if (version === 3) return getContract(ichiVaultAbiV3, address, chainId)
+  return getContract(ichiVaultAbi, address, chainId)
+}
 
 /** **************************************************************************************************
                                             TC (Trading Competition)

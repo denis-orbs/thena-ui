@@ -312,10 +312,7 @@ export const useIchiRemove = () => {
         setPending(false)
         return
       }
-      endTxn({
-        key,
-        final: 'Liquidity Remove Successful',
-      })
+      endTxn({ key, final: 'Liquidity Remove Successful' })
       callback()
       setPending(false)
     },
@@ -335,7 +332,7 @@ export const useIchiManageV3 = () => {
   const addIchiPool = useCallback(
     async (vault, amount, amountToWrap, slippage) => {
       const { token0, token1, address: vaultAddress, isFarming = false } = vault
-      const vaultContract = getIchiVaultContract(vaultAddress, networkId)
+      const vaultContract = getIchiVaultContract(vaultAddress, networkId, 3)
 
       if (token0.address === vault.allowed.address) {
         const maxRes = await readCall(vaultContract, 'deposit0Max', [], networkId)
@@ -488,5 +485,61 @@ export const useIchiManageV3 = () => {
     [networkId, account, startTxn, t, writeTxn, endTxn, closeTxn, updateTxn],
   )
 
-  return { addIchiPool, pending }
+  const stakeIchiPool = useCallback(
+    async ({ vaultAddress, amount, callback }) => {
+      const key = uuidv4()
+      const approveId = uuidv4()
+      const stakeId = uuidv4()
+
+      const transactions = {}
+      transactions[approveId] = {
+        desc: `${t('Approve')} LP`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+      transactions[stakeId] = {
+        desc: `${t('Stake')} LP`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      startTxn({ key, transactions, title: 'Stake' })
+      setPending(true)
+
+      const vaultContract = getIchiVaultContract(vaultAddress, networkId, 3)
+      const farmingAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
+      const allowance1 = await readCall(vaultContract, 'allowance', [account, farmingAddress], networkId)
+      const lpBalance = await readCall(vaultContract, 'balanceOf', [account], networkId)
+      const isVaultApproved = fromWei(allowance1).gte(lpBalance)
+      const isValidAmount = toWei(amount).lte(lpBalance)
+
+      if (!isValidAmount) {
+        warnToast('Invalid Amount')
+        setPending(false)
+        return
+      }
+
+      if (!isVaultApproved) {
+        if (!(await writeTxn(key, approveId, vaultContract, 'approve', [farmingAddress, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      } else {
+        updateTxn({ key, uuid: approveId, status: TXN_STATUS.SUCCESS })
+      }
+
+      // Stake LP
+      const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
+      if (!(await writeTxn(key, stakeId, farmingContract, 'stake', [lpBalance, account]))) {
+        setPending(false)
+      }
+
+      endTxn({ key, final: 'Stake Liquidity Successful' })
+      callback()
+      setPending(false)
+    },
+    [account, endTxn, networkId, startTxn, t, updateTxn, writeTxn],
+  )
+
+  return { addIchiPool, stakeIchiPool, pending }
 }
