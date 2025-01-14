@@ -5,13 +5,17 @@ import React, { useMemo, useState } from 'react'
 import AddLiquidity from '@/components/common/AddLiquidity'
 import Modal from '@/components/modal'
 import Selection from '@/components/selection'
+import { PAIR_TYPES } from '@/constant'
 
 import RemovePosition from './RemovePosition'
 import PoolTitle from '../PoolTitle'
 
 export default function ManagePositionModal({ popup, setPopup, strategy }) {
   const [isRemove, setIsRemove] = useState(false)
-  const currentStep = useMemo(() => (['Stable', 'CLassic'].includes(strategy.title) ? 1 : 2), [strategy])
+  const currentStep = useMemo(
+    () => ([PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(strategy.title) ? 1 : 2),
+    [strategy],
+  )
 
   const manageSelections = useMemo(
     () => [

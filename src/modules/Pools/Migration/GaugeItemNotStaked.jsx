@@ -8,6 +8,7 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { AdjustNewPositionModal } from '@/modules/Pools/Migration'
 import { InfoIcon } from '@/svgs'
@@ -30,7 +31,7 @@ export function GaugeItemNotStaked({ showAdjustButton = false, pool }) {
     return fees0.plus(fees1)
   }, [pool])
 
-  const isLegacy = useMemo(() => ['Stable', 'CLassic'].includes(pool.title), [pool])
+  const isLegacy = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title), [pool])
   return (
     <div>
       <div className='flex items-start justify-between'>

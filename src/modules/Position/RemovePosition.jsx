@@ -8,7 +8,7 @@ import CircleImage from '@/components/image/CircleImage'
 import DoubleInput from '@/components/input/DoubleInput'
 import { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES } from '@/constant'
+import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import { useDefiedgeRemove } from '@/hooks/fusion/useDefiedge'
 import { useGammaRemove } from '@/hooks/fusion/useGamma'
 import { useIchiRemove } from '@/hooks/fusion/useIchi'
@@ -62,7 +62,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
       warnToast(errorMsg, 'warn')
       return
     }
-    if (['Stable', 'CLassic'].includes(strategy.title)) {
+    if ([PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(strategy.title)) {
       onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
       onGammaRemove(strategy, amount, strategy.version, callback)

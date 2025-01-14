@@ -7,6 +7,7 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { useGuageStake } from '@/hooks/useGauge'
 import { useClaimFees } from '@/hooks/useV1Liquidity'
 import { formatAmount, ZERO_VALUE } from '@/lib/utils'
@@ -40,7 +41,7 @@ export default function NotStaked({ pool }) {
     return fees0.plus(fees1)
   }, [pool])
 
-  const isLegacy = useMemo(() => ['Stable', 'CLassic'].includes(pool.title), [pool])
+  const isLegacy = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title), [pool])
 
   return (
     <Box className='flex flex-col gap-4'>
