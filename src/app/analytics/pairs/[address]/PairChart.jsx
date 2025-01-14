@@ -6,7 +6,7 @@ import useSWR from 'swr'
 import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
-import { FUSION_MULTI_CHAIN_START_TIME, PAIR_TYPES, V1_MULTI_CHAIN_START_TIME } from '@/constant'
+import { FUSION_MULTI_CHAIN_START_TIME, MANUAL_TYPES, PAIR_TYPES, V1_MULTI_CHAIN_START_TIME } from '@/constant'
 import { fetchChartData } from '@/hooks/useGraph'
 import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -126,12 +126,33 @@ export const fetchPairChartData = async (chainId, pair) => {
   }
 
   if (pair.type === PAIR_TYPES.LSD) {
-    const { data: fusiondata } = await fetchChartData(
+    const version = pair?.version
+    const { data: fusionData } = await fetchChartData(
       getFusionChartData,
-      [{ chainId, address: pair?.address, version: pair?.version }],
+      [{ chainId, address: pair?.address, version }],
       false,
     )
-    return fusiondata
+    if (!pair?.version === 3) return fusionData
+
+    const swapfeePool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[1])
+    if (!swapfeePool) return fusionData
+
+    const { data: fusionData2 } = await fetchChartData(
+      getFusionChartData,
+      [{ chainId, address: swapfeePool.address, version }],
+      false,
+    )
+
+    return fusionData.map(data => {
+      const matchingData = fusionData2.find(ele => ele.date === data.date)
+      if (!matchingData) return data
+      return {
+        date: data.date,
+        dayFees: data.dayFees + matchingData.dayFees,
+        dayVolume: data.dayVolume + matchingData.dayVolume,
+        tvlUSD: data.tvlUSD + matchingData.tvlUSD,
+      }
+    })
   }
 
   const { data: v1data } = await fetchChartData(getV1ChartData, [chainId, pair.address, pair.fee], false)
