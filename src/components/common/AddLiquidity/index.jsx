@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
@@ -17,9 +18,8 @@ let init = false
 
 export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModal = false, isAdd = false }) {
   const { strategy } = useV3MintState()
-
+  const { isReverse } = useSelector(state => state.fusion)
   const [pairType, setPairType] = useState(PAIR_TYPES.LSD)
-  const [isReverse, setIsReverse] = useState(true)
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
   const [firstAddress, setFirstAddress] = useState()
@@ -72,7 +72,6 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
             secondAsset={secondAsset}
             setCurrentStep={setCurrentStep}
             isReverse={isReverse}
-            setIsReverse={setIsReverse}
             isModal={isModal}
           />
         ) : (

@@ -14,6 +14,7 @@ import {
   typeStartPriceInput,
   updateCurrentStep,
   updateDynamicFee,
+  updateIsReverse,
   updateLiquidityRangeType,
   updatePresetRange,
   updateSelectedPreset,
@@ -46,6 +47,7 @@ const initialState = {
   },
   liquidityRangeType: FusionRangeType.MANUAL_RANGE,
   presetRange: undefined,
+  isReverse: true,
 }
 
 export default createReducer(initialState, builder =>
@@ -98,6 +100,10 @@ export default createReducer(initialState, builder =>
     .addCase(updateSelectedPreset, (state, { payload: { preset } }) => ({
       ...state,
       preset,
+    }))
+    .addCase(updateIsReverse, (state, { payload: { isReverse } }) => ({
+      ...state,
+      isReverse,
     }))
     .addCase(selectCurrency, (state, { payload: { currencyId, field } }) => {
       const otherField = field === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A

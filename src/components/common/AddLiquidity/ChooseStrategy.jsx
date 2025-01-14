@@ -129,7 +129,7 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   return preset
 }
 
-export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isReverse, setIsReverse, isAdd, isModal }) {
+export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isReverse, isAdd, isModal }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const { strategy } = useV3MintState()
@@ -434,12 +434,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
             )}
 
             {strategy && !strategy.isAutomatic && (
-              <ManualStrategy
-                firstAsset={firstAsset}
-                secondAsset={secondAsset}
-                isReverse={isReverse}
-                setIsReverse={setIsReverse}
-              />
+              <ManualStrategy firstAsset={firstAsset} secondAsset={secondAsset} isReverse={isReverse} />
             )}
           </div>
         </div>

@@ -13,15 +13,7 @@ import { cn } from '@/lib/utils'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { ArrowLeftIcon } from '@/svgs'
 
-export function ChooseStrategyCLPane({
-  pool,
-  goPreviousStep,
-  goNextStep,
-  isAdd,
-  showSidebar,
-  isReverse,
-  setIsReverse,
-}) {
+export function ChooseStrategyCLPane({ pool, goPreviousStep, goNextStep, isAdd, showSidebar, isReverse }) {
   const t = useTranslations()
   const { strategy } = useV3MintState()
 
@@ -52,7 +44,6 @@ export function ChooseStrategyCLPane({
           firstAsset={firstAsset}
           secondAsset={secondAsset}
           isReverse={isReverse}
-          setIsReverse={setIsReverse}
           isAdd={isAdd}
         />
 

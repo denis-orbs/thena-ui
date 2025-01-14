@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl'
 import { useEffect, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { fetchPairChartData } from '@/app/analytics/pairs/[address]/PairChart'
@@ -32,7 +33,9 @@ export function PoolChart({ address }) {
   const [firstAsset, setFirstAsset] = useState()
   const [secondAsset, setSecondAsset] = useState()
   const [strategy, setStrategy] = useState(null)
-  const [isReverse, setIsReverse] = useState(false)
+
+  const { isReverse } = useSelector(state => state.fusion)
+
   const pair = useMemo(
     () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
     [pairs, address],
@@ -104,7 +107,6 @@ export function PoolChart({ address }) {
             strategy={strategy}
             setStrategy={setStrategy}
             isReverse={isReverse}
-            setIsReverse={setIsReverse}
             isModal={false}
           />
         )

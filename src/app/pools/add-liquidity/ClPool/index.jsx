@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import AddLiquidityCLPane from './AddLiquidityCLPane'
 import { ChooseStrategyCLPane } from './ChooseStrategyCLPane'
 
 function AddLiquidityClPool({ pool, setCurrentStep, isAdd = false, showSidebar = true }) {
   const [isChooseStrategy, setIsChooseStrategy] = useState(true)
-  const [isReverse, setIsReverse] = useState(true)
+
+  const { isReverse } = useSelector(state => state.fusion)
   const targetRef = useRef(null)
 
   const scrollToComponent = () => {
@@ -29,7 +31,6 @@ function AddLiquidityClPool({ pool, setCurrentStep, isAdd = false, showSidebar =
             scrollToComponent()
           }}
           isReverse={isReverse}
-          setIsReverse={setIsReverse}
         />
       ) : (
         <AddLiquidityCLPane

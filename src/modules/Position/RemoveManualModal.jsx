@@ -132,7 +132,10 @@ export default function RemoveManualModal({
             {additionRewards?.map(reward => {
               const amount = formatAmount(reward?.toSignificant())
               return (
-                <div className={cn('flex items-center justify-between', amount === '0' && 'hidden')}>
+                <div
+                  key={reward?.currency?.address}
+                  className={cn('flex items-center justify-between', amount === '0' && 'hidden')}
+                >
                   <div className='flex items-center gap-1'>
                     <CircleImage className='h-4 w-4' src={reward?.currency?.logoURI} alt='thena logo' />
                     <Paragraph className='text-sm'>{reward?.currency?.symbol} reward farmed</Paragraph>

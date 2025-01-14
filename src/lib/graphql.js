@@ -34,7 +34,7 @@ export const v4SubGraphT2EUrl = 'https://api.studio.thegraph.com/query/70764/the
 export const codexGraphUrl = 'https://graph.codex.io/graphql'
 
 export const voterSubGrapUrl = {
-  [CHAIN_ID.BSC]: '',
+  [CHAIN_ID.BSC]: 'https://api.studio.thegraph.com/query/70764/thena-chapel-v3-voter/version/latest',
   [CHAIN_ID.OPBNB]: '',
   [CHAIN_ID.TEST_BSC]: 'https://api.studio.thegraph.com/query/70764/thena-chapel-v3-voter/version/latest',
 }

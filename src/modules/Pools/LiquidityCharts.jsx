@@ -18,7 +18,7 @@ import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
-import { Bound, setInitialTokenPrice, updateSelectedPreset } from '@/state/fusion/actions'
+import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite } from '@/svgs'
@@ -81,7 +81,6 @@ export default function LiquidityCharts({
   strategy,
   setStrategy,
   isReverse,
-  setIsReverse,
   isModal,
 }) {
   const dispatch = useDispatch()
@@ -237,18 +236,18 @@ export default function LiquidityCharts({
         label: firstAsset.symbol,
         active: !isReverse,
         onClickHandler: () => {
-          setIsReverse(false)
+          dispatch(updateIsReverse({ isReverse: false }))
         },
       },
       {
         label: secondAsset.symbol,
         active: isReverse,
         onClickHandler: () => {
-          setIsReverse(true)
+          dispatch(updateIsReverse({ isReverse: true }))
         },
       },
     ],
-    [firstAsset, secondAsset, isReverse, setIsReverse],
+    [firstAsset.symbol, isReverse, secondAsset.symbol, dispatch],
   )
 
   return mintInfo.strategy ? (
@@ -289,8 +288,8 @@ export default function LiquidityCharts({
                   priceUpper={priceUpper}
                   onLeftRangeInput={onLeftRangeInput}
                   onRightRangeInput={onRightRangeInput}
-                  interactive={false}
-                  handleShow
+                  // interactive={false}
+                  // handleShow
                 />
               </div>
             )}

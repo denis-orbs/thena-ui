@@ -70,8 +70,8 @@ export default function ClaimModal({
             <Paragraph>{formatAmount(feeValue1?.toSignificant())}</Paragraph>
           </div>
 
-          {additionRewards?.map(reward => (
-            <div className='flex items-center justify-between'>
+          {(additionRewards || []).map(reward => (
+            <div key={reward?.currency?.address} className='flex items-center justify-between'>
               <div className='flex items-center gap-1'>
                 <CircleImage className='h-4 w-4' src={reward?.currency?.logoURI} alt='thena logo' />
                 <Paragraph className='font-medium'>{reward?.currency?.symbol} (Farming)</Paragraph>

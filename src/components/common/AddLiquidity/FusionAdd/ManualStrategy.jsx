@@ -17,7 +17,7 @@ import { cn, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
-import { Bound, setInitialTokenPrice, updateSelectedPreset } from '@/state/fusion/actions'
+import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import {
   useActivePreset,
   useRangeHopCallbacks,
@@ -36,7 +36,7 @@ import { RangeSelector } from '../components/RangeSelector'
 
 const feeAmount = 3000
 
-function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
+function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
   const { locale } = useLocaleSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
@@ -126,7 +126,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
         label: unwrappedSymbol(firstAsset),
         active: !isReverse,
         onClickHandler: () => {
-          setIsReverse(false)
+          dispatch(updateIsReverse({ isReverse: false }))
           if (!ticksAtLimit[Bound.LOWER] && !ticksAtLimit[Bound.UPPER]) {
             onLeftRangeInput((invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
             onRightRangeInput((invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
@@ -139,7 +139,7 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
         label: unwrappedSymbol(secondAsset),
         active: isReverse,
         onClickHandler: () => {
-          setIsReverse(true)
+          dispatch(updateIsReverse({ isReverse: true }))
           if (!ticksAtLimit[Bound.LOWER] && !ticksAtLimit[Bound.UPPER]) {
             onLeftRangeInput((invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
             onRightRangeInput((invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
@@ -150,18 +150,18 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse, setIsReverse }) {
       },
     ],
     [
-      isReverse,
-      setIsReverse,
       firstAsset,
+      isReverse,
       secondAsset,
-      invertPrice,
+      dispatch,
+      ticksAtLimit,
       onFieldAInput,
       onFieldBInput,
       onLeftRangeInput,
-      onRightRangeInput,
+      invertPrice,
       priceLower,
       priceUpper,
-      ticksAtLimit,
+      onRightRangeInput,
     ],
   )
 
