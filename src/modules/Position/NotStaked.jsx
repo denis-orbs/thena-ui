@@ -8,6 +8,7 @@ import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
+import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGuageStake } from '@/hooks/useGauge'
 import { useClaimFees } from '@/hooks/useV1Liquidity'
 import { formatAmount, ZERO_VALUE } from '@/lib/utils'
@@ -19,13 +20,15 @@ import ManagePositionModal from './ManagePositionModal'
 import RemovePositionModal from './RemovePositionModal'
 
 export default function NotStaked({ pool }) {
+  const t = useTranslations()
+
   const [popup, setPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const [managePopup, setManagePopup] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGuageStake()
+  const { stakeIchiPool, pending: stakeIchiPending } = useIchiManageV3()
   const { onClaimFees, pending: feesPending } = useClaimFees()
-  const t = useTranslations()
 
   const walletUsd = useMemo(() => pool.account.totalUsd.minus(pool.account.stakedUsd), [pool])
   const token0Amount = useMemo(() => pool.account.total0.minus(pool.account.staked0), [pool])
@@ -140,8 +143,8 @@ export default function NotStaked({ pool }) {
         label='Stake'
         popup={popup}
         setPopup={setPopup}
-        onGaugeManage={onGaugeStake}
-        pending={stakePending}
+        onGaugeManage={handleStake}
+        pending={stakePending || stakeIchiPending}
       />
       <AddPositionModal popup={addPopup} setPopup={setAddPopup} strategy={pool} />
       <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={pool} />

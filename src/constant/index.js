@@ -249,8 +249,17 @@ export const FusionRangeType = {
   MANUAL_RANGE: 'manual',
 }
 
-export const GAMMA_TYPES = ['Narrow', 'Wide', 'Correlated', 'CL_Stable']
+export const GAMMA_TYPES = [
+  'Narrow_Farming',
+  'Wide_Farming',
+  'Correlated_Farming',
+  'Narrow_SwapFee',
+  'Wide_SwapFee',
+  'Correlated_SwapFee',
+  'CL_Stable',
+]
 export const MANUAL_TYPES = ['CL_Farming', 'CL_SwapFee']
+export const ICHI_TYPES = ['ICHI_Farming', 'ICHI_SwapFee']
 
 export const TAX_ASSETS = {
   [CHAIN_ID.BSC]: [

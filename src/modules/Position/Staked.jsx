@@ -8,6 +8,7 @@ import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { GAMMA_TYPES } from '@/constant'
 import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getLiquidityRangeType } from '@/lib/utils'
@@ -37,6 +38,12 @@ export default function Staked({ pool }) {
     const token0InUsd = pool.account.staked0.times(pool.token0.price)
     return token0InUsd.div(pool.account.stakedUsd).times(100).toFixed(2)
   }, [pool])
+
+  const handleUnstake = amount => {
+    onGaugeUnstake(pool, amount, () => {
+      setPopup(false)
+    })
+  }
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -85,26 +92,27 @@ export default function Staked({ pool }) {
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
-            <TextHeading>${formatAmount(totalUsd)}</TextHeading>
+            <TextHeading>
+              ${formatAmount(GAMMA_TYPES.includes(pool.type) ? totalUsd : pool.account.earnedUsd)}
+            </TextHeading>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`stake-${pool.address}`} />
+
             <CustomTooltip id={`stake-${pool.address}`}>
-              {pool.version === 2 ? (
-                <>
-                  {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
-                  {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
-                  {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
-                  {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
-                  {pool.account.extraRewards && (
-                    <p>{`${formatAmount(pool.account.extraRewards.amount)} ${pool.account.extraRewards.symbol}`}</p>
-                  )}
-                </>
-              ) : (
-                <>
-                  {(rewards || []).map(item => (
-                    <p key={item.asset.address}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
-                  ))}
-                </>
-              )}
+              <div className={cn(GAMMA_TYPES.includes(pool.type) && 'hidden')}>
+                {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
+                {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
+                {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
+                {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
+                {pool.account.extraRewards && (
+                  <p>{`${formatAmount(pool.account.extraRewards.amount)} ${pool.account.extraRewards.symbol}`}</p>
+                )}
+              </div>
+
+              <div className={cn(!GAMMA_TYPES.includes(pool.type) && 'hidden')}>
+                {(rewards || []).map(item => (
+                  <p>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
+                ))}
+              </div>
             </CustomTooltip>
           </div>
         </div>
@@ -173,7 +181,7 @@ export default function Staked({ pool }) {
         label='Unstake'
         popup={popup}
         setPopup={setPopup}
-        onGaugeManage={onGaugeUnstake}
+        onGaugeManage={handleUnstake}
         pending={unstakePending}
       />
 

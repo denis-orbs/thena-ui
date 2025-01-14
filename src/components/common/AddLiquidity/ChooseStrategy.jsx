@@ -14,7 +14,7 @@ import Selector from '@/components/selector'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
@@ -240,15 +240,17 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   const strategyData = useMemo(() => {
     const autoStrategy = (isAdd ? [defaultSwapFees] : pair?.subpools || []).map(sub => {
       let { title } = sub
+
       let isFarming = false
+      if (sub.title.includes('_Farming')) {
+        isFarming = false
+      }
 
       if (title === 'CL_SwapFee') title = 'Manual (Swap Fees)'
-      if (title === 'CL_Farming') {
-        title = 'Manual ($THE Emissions)'
-        isFarming = true
-      } else if (GAMMA_TYPES.includes(sub.title)) {
+      if (title === 'CL_Farming') title = 'Manual ($THE Emissions)'
+
+      if (GAMMA_TYPES.includes(sub.title)) {
         title = 'Gamma'
-        isFarming = true
       }
 
       return {
@@ -270,9 +272,9 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
             </div>
 
             <div className='flex flex-wrap gap-2'>
-              {GAMMA_TYPES.includes(sub.title) && <NeutralBadge>{sub.title}</NeutralBadge>}
+              {GAMMA_TYPES.includes(sub.title) && <NeutralBadge>{sub.title.split('_')[0]}</NeutralBadge>}
 
-              {sub.title === 'ICHI' && (
+              {ICHI_TYPES.includes(sub.title) && (
                 <>
                   <PrimaryBadge>
                     {sub.allowed.symbol} {t('Deposit')}
