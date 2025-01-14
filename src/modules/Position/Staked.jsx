@@ -1,10 +1,11 @@
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { GreenBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -34,6 +35,7 @@ export default function Staked({ pool }) {
   const dispatch = useDispatch()
   const t = useTranslations()
 
+  const version = pool?.account?.version ?? 2
   const token0Percent = useMemo(() => {
     const token0InUsd = pool.account.staked0.times(pool.token0.price)
     return token0InUsd.div(pool.account.stakedUsd).times(100).toFixed(2)
@@ -118,21 +120,18 @@ export default function Staked({ pool }) {
         </div>
       </div>
       <div className='mt-auto flex w-full gap-3'>
-        <TextButton className={cn('w-full', pool?.account?.version === 3 && 'hidden')} onClick={() => setPopup(true)}>
+        <TextButton className={cn('w-full', version === 3 && 'hidden')} onClick={() => setPopup(true)}>
           {t('Unstake')}
         </TextButton>
 
-        <OutlinedButton
-          className={cn('w-full', pool?.account?.version === 2 && 'hidden')}
-          onClick={() => setRemovePopup(true)}
-        >
+        <OutlinedButton className={cn('w-full', version === 2 && 'hidden')} onClick={() => setRemovePopup(true)}>
           {t('Remove')}
         </OutlinedButton>
 
         <OutlinedButton
           className='w-full'
           onClick={() => {
-            if (pool?.account?.version === 2) onGaugeHarvest(pool)
+            if (version === 2) onGaugeHarvest(pool)
             else onGammaClaim(pool)
           }}
           disabled={pending || claimPending || pool.account.earnedUsd.isZero()}
@@ -141,7 +140,7 @@ export default function Staked({ pool }) {
         </OutlinedButton>
 
         <EmphasisButton
-          className='w-full'
+          className={cn('w-full', version === 2 && 'hidden')}
           onClick={() => {
             dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
             dispatch(
@@ -163,7 +162,7 @@ export default function Staked({ pool }) {
                   },
                   isAutomatic: true,
                   isFarming: true, // TODO: REMOVE HARD CODE
-                  version: pool?.account?.version ?? 3,
+                  version,
                 },
               }),
             )
@@ -172,6 +171,10 @@ export default function Staked({ pool }) {
         >
           {t('Add')}
         </EmphasisButton>
+
+        <Link href={`/pools/migration?address=${pool.address}`} className={cn('w-full', version === 3 && 'hidden')}>
+          <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+        </Link>
       </div>
 
       <GaugeManageModal

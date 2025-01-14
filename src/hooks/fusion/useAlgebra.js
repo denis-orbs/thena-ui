@@ -255,13 +255,17 @@ export const useAlgebraClaim = (version = 3) => {
         //   },
         // ])
 
-        await writeTxn(key, claimFarmId, farmingCenter, 'collectAndClaimRewards', [
+        const tx = await writeTxn(key, claimFarmId, farmingCenter, 'collectAndClaimRewards', [
           THE_ADDRESS,
           account,
           MaxUint256,
           poolkey,
           tokenId,
         ])
+        if (!tx) {
+          setPending(false)
+          return
+        }
       }
 
       const positionManger = getPositionManagerContract(chainId, version)

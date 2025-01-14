@@ -1,21 +1,18 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 
 import { PrimaryBadge } from '@/components/badges/Badge'
-import { EmphasisButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { formatAmount, ZERO_VALUE } from '@/lib/utils'
-import { AdjustNewPositionModal } from '@/modules/Pools/Migration'
 import { InfoIcon } from '@/svgs'
 
-export function GaugeItemNotStaked({ showAdjustButton = false, pool }) {
+export function GaugeItemNotStaked({ pool }) {
   const t = useTranslations()
-  const [isOpenAdjust, setIsOpenAdjust] = useState(false)
 
   const walletUsd = useMemo(() => pool.account.totalUsd.minus(pool.account.stakedUsd), [pool])
   const token1Amount = useMemo(() => pool.account.total1.minus(pool.account.staked1), [pool])
@@ -33,7 +30,7 @@ export function GaugeItemNotStaked({ showAdjustButton = false, pool }) {
 
   const isLegacy = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title), [pool])
   return (
-    <div>
+    <div className='flex h-full flex-col justify-start gap-3 rounded-xl border border-neutral-600 p-4 lg:p-6'>
       <div className='flex items-start justify-between'>
         <div className='flex items-center gap-3'>
           <IconGroup
@@ -92,14 +89,6 @@ export function GaugeItemNotStaked({ showAdjustButton = false, pool }) {
               </CustomTooltip>
             </div>
           </div>
-        )}
-        {showAdjustButton && (
-          <>
-            <EmphasisButton onClick={() => setIsOpenAdjust(true)} className='mt-3 w-full'>
-              {t('Adjust New Position')}
-            </EmphasisButton>
-            <AdjustNewPositionModal isOpen={isOpenAdjust} onClose={() => setIsOpenAdjust(false)} />
-          </>
         )}
       </div>
     </div>

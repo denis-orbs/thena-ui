@@ -9,31 +9,34 @@ import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useManuals } from '@/context/manualsContext'
-import { usePairs } from '@/context/pairsContext'
+import { useVaults } from '@/context/vaultsContext'
 import { GaugeItemNotStaked, GaugeItemStaked, ManualMigrationPage } from '@/modules/Pools/Migration'
-import { ArrowLeftIcon, ArrowNarrowUpRightIcon, ArrowRightIcon } from '@/svgs'
+import { usePools } from '@/state/pools/hooks'
+import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
 export default function MigrationPage() {
   const t = useTranslations()
-
+  const { push } = useRouter()
   const searchParams = useSearchParams()
   const tokenId = searchParams.get('tokenId')
   const address = searchParams.get('address')
-  const { push } = useRouter()
-  const { pairs, isLoading } = usePairs()
+
+  const pools = usePools()
+  const vaults = useVaults()
   const userManuals = useManuals()
+  const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
 
   const positionV2 = useMemo(() => {
     if (address) {
-      return pairs.find(ele => ele?.address.toLowerCase() === address.toLowerCase())
+      return userPools.find(ele => ele?.address.toLowerCase() === address.toLowerCase())
     }
 
     if (tokenId) {
       return userManuals.find(ele => ele.tokenId === +tokenId && ele.version === 2)
     }
-  }, [pairs, address, tokenId, userManuals])
+  }, [userPools, address, tokenId, userManuals])
 
-  if (isLoading || !positionV2) {
+  if (!positionV2) {
     return <Loading />
   }
 
@@ -42,24 +45,17 @@ export default function MigrationPage() {
   }
 
   return (
-    <div className='mx-auto flex flex-col lg:flex-row'>
+    <div className='mx-auto max-w-5xl'>
       <div className='h-11 w-[98px]'>
-        <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/pools')}>
+        <TextButton LeadingIcon={ArrowLeftIcon} onClick={() => push('/dashboard')}>
           {t('Back')}
         </TextButton>
       </div>
 
       <Box className='rounded-xl bg-neutral-900 px-3 py-6 lg:px-7'>
-        <div className='flex flex-col gap-2'>
+        <div className='mb-10 flex flex-col gap-2'>
           <TextHeading className='font-archia text-3xl'>{t('Migration')}</TextHeading>
-
-          <TextSubHeading className='text-base text-neutral-300'>
-            {t('Migration description')}&nbsp;
-            <span className='flex items-center text-primary-600'>
-              {t('KyberSwap migration contract')}&nbsp;
-              <ArrowNarrowUpRightIcon className='h-3 w-3 !stroke-primary-600' />
-            </span>
-          </TextSubHeading>
+          <TextSubHeading className='text-base text-neutral-300'>{t('Migration description')}</TextSubHeading>
         </div>
 
         <div className='mt-4 grid items-stretch gap-4 lg:grid-cols-[48%_2%_48%]'>
@@ -76,8 +72,8 @@ export default function MigrationPage() {
           <article className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your New V3 Gauge')}</TextHeading>
 
-            {positionV2.account.walletBalance.gt(0) && <GaugeItemNotStaked showAdjustButton pool={positionV2} />}
-            {positionV2.account.gaugeBalance.gt(0) && <GaugeItemStaked showAdjustButton pool={positionV2} />}
+            {positionV2.account.walletBalance.gt(0) && <GaugeItemNotStaked pool={positionV2} />}
+            {positionV2.account.gaugeBalance.gt(0) && <GaugeItemStaked pool={positionV2} />}
           </article>
         </div>
 
@@ -86,8 +82,9 @@ export default function MigrationPage() {
         </Box>
 
         <div className='mt-6 flex flex-col justify-between gap-3 lg:flex-row'>
-          <EmphasisButton className='w-full lg:w-[50%]'>{t('Cancel')}</EmphasisButton>
-
+          <EmphasisButton className='w-full lg:w-[50%]' onClick={() => push('/dashboard')}>
+            {t('Cancel')}
+          </EmphasisButton>
           <PrimaryButton className='w-full lg:w-[50%]'>{t('Migrate Now')}</PrimaryButton>
         </div>
       </Box>
