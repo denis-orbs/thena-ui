@@ -13,7 +13,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useAlgebraRemove } from '@/hooks/fusion/useAlgebra'
 import useDebounce from '@/hooks/useDebounce'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
 import SettingSlippageModal from './SettingSlippageModal'
@@ -25,6 +25,7 @@ export default function RemoveManualModal({
   position,
   feeValue0,
   feeValue1,
+  additionRewards,
   mutateManual,
   outOfRange,
   fee,
@@ -127,6 +128,19 @@ export default function RemoveManualModal({
               </div>
               <Paragraph>{formatAmount(feeValue1?.toSignificant(), false, 4)}</Paragraph>
             </div>
+
+            {additionRewards?.map(reward => {
+              const amount = formatAmount(reward?.toSignificant())
+              return (
+                <div className={cn('flex items-center justify-between', amount === '0' && 'hidden')}>
+                  <div className='flex items-center gap-1'>
+                    <CircleImage className='h-4 w-4' src={reward?.currency?.logoURI} alt='thena logo' />
+                    <Paragraph className='text-sm'>{reward?.currency?.symbol} reward farmed</Paragraph>
+                  </div>
+                  <Paragraph>{amount}</Paragraph>
+                </div>
+              )
+            })}
           </div>
         </div>
       </ModalBody>
