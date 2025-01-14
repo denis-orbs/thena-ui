@@ -30,7 +30,8 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
   const { onDefiedgeRemove, pending: defiedgePending } = useDefiedgeRemove()
   const t = useTranslations()
 
-  const balance = strategy?.account?.version === 2 ? strategy.account.walletBalance : strategy.account.gaugeBalance
+  const version = strategy?.account?.version ?? 3
+  const balance = version === 2 ? strategy.account.walletBalance : strategy.account.gaugeBalance
 
   const firstAmount = useMemo(
     () => strategy.token0.reserve && strategy.token0.reserve.times(amount || 0).div(strategy.totalSupply),
@@ -65,9 +66,14 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
     if ([PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(strategy.title)) {
       onV1Remove(strategy, amount, deadline, firstAmount, secondAmount, slippage, callback)
     } else if (GAMMA_TYPES.includes(strategy.title)) {
-      onGammaRemove(strategy, amount, strategy.version, callback)
+      onGammaRemove(strategy, amount, version, callback)
     } else if (strategy.title === 'ICHI') {
-      onIchiRemove(strategy, amount, callback)
+      onIchiRemove({
+        pool: strategy,
+        amount,
+        version,
+        callback,
+      })
     } else if (strategy.title === 'DefiEdge') {
       onDefiedgeRemove(strategy, amount, callback)
     }
@@ -83,6 +89,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
     callback,
     onGammaRemove,
     onIchiRemove,
+    version,
     onDefiedgeRemove,
   ])
 

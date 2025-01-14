@@ -291,13 +291,22 @@ export const useIchiRemove = () => {
   const t = useTranslations()
 
   const onIchiRemove = useCallback(
-    async (pool, amount, callback) => {
+    async ({ pool, amount, version, callback }) => {
       const key = uuidv4()
       const removeuuid = uuidv4()
+      const unstakeuuid = uuidv4()
+
       startTxn({
         key,
         title: 'Remove Liquidity',
         transactions: {
+          ...(version === 3 && {
+            [unstakeuuid]: {
+              desc: t('Unstake'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
           [removeuuid]: {
             desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
@@ -306,7 +315,16 @@ export const useIchiRemove = () => {
         },
       })
       setPending(true)
-      const vaultContract = getIchiVaultContract(pool.address, networkId)
+      const vaultContract = getIchiVaultContract(pool.address, networkId, version)
+
+      if (version === 3) {
+        const farmingAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
+        const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
+        if (!(await writeTxn(key, unstakeuuid, farmingContract, 'unstake', [toWei(amount).toFixed(0)]))) {
+          setPending(false)
+          return
+        }
+      }
 
       if (!(await writeTxn(key, removeuuid, vaultContract, 'withdraw', [toWei(amount).toFixed(0), account]))) {
         setPending(false)
@@ -532,6 +550,7 @@ export const useIchiManageV3 = () => {
       const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
       if (!(await writeTxn(key, stakeId, farmingContract, 'stake', [lpBalance, account]))) {
         setPending(false)
+        return
       }
 
       endTxn({ key, final: 'Stake Liquidity Successful' })
