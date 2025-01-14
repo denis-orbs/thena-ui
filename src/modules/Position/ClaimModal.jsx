@@ -11,7 +11,17 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useAlgebraClaim } from '@/hooks/fusion/useAlgebra'
 import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 
-export default function ClaimModal({ popup, setPopup, pool, feeValue0, feeValue1, mutate, fee, outOfRange }) {
+export default function ClaimModal({
+  popup,
+  setPopup,
+  pool,
+  feeValue0,
+  feeValue1,
+  additionRewards,
+  mutate,
+  fee,
+  outOfRange,
+}) {
   const { tokenId, asset0, asset1, isFarming, key } = pool
   const { pending, onAlgebraClaim } = useAlgebraClaim(pool?.version ?? 3)
 
@@ -43,23 +53,35 @@ export default function ClaimModal({ popup, setPopup, pool, feeValue0, feeValue1
           </div>
           {outOfRange ? <PrimaryBadge>Out of Range</PrimaryBadge> : <GreenBadge>In Range</GreenBadge>}
         </div>
+
         <div className='flex flex-col gap-3'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-1'>
               <CircleImage className='h-4 w-4' src={asset0.logoURI} alt='thena logo' />
-              <Paragraph className='font-medium'>{unwrappedSymbol(asset0)}</Paragraph>
+              <Paragraph className='font-medium'>{unwrappedSymbol(asset0)} (Fees)</Paragraph>
             </div>
             <Paragraph>{formatAmount(feeValue0?.toSignificant())}</Paragraph>
           </div>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-1'>
               <CircleImage className='h-4 w-4' src={asset1.logoURI} alt='thena logo' />
-              <Paragraph className='font-medium'>{unwrappedSymbol(asset1)}</Paragraph>
+              <Paragraph className='font-medium'>{unwrappedSymbol(asset1)} (Fees)</Paragraph>
             </div>
             <Paragraph>{formatAmount(feeValue1?.toSignificant())}</Paragraph>
           </div>
+
+          {additionRewards?.map(reward => (
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center gap-1'>
+                <CircleImage className='h-4 w-4' src={reward?.currency?.logoURI} alt='thena logo' />
+                <Paragraph className='font-medium'>{reward?.currency?.symbol} (Farming)</Paragraph>
+              </div>
+              <Paragraph>{formatAmount(reward?.toSignificant())}</Paragraph>
+            </div>
+          ))}
         </div>
       </ModalBody>
+
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <TextButton className='w-full' onClick={() => setPopup(false)}>
           Cancel

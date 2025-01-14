@@ -216,14 +216,22 @@ export const useAlgebraClaim = (version = 3) => {
   const onAlgebraClaim = useCallback(
     async ({ tokenId, feeValue0, feeValue1, isFarming, poolkey }, callback) => {
       const key = uuidv4()
-      const claimuuid = uuidv4()
+      const claimFeeId = uuidv4()
+      const claimFarmId = uuidv4()
 
       setPending(true)
       startTxn({
         key,
         title: 'Claim Fees',
         transactions: {
-          [claimuuid]: {
+          ...(isFarming && {
+            [claimFarmId]: {
+              desc: t('Claim Farming Rewards'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [claimFeeId]: {
             desc: t('Claim Fees'),
             status: TXN_STATUS.START,
             hash: null,
@@ -239,26 +247,34 @@ export const useAlgebraClaim = (version = 3) => {
 
         const THE_ADDRESS = Contracts.THE[chainId]
         const farmingCenter = getFarmingCenterContract(chainId)
-        await writeTxn(key, claimuuid, farmingCenter, 'collectAndClaimRewards', [
+        // const res = await callMulti([
+        //   {
+        //     ...farmingCenter,
+        //     functionName: 'collectAndClaimRewards',
+        //     args: [THE_ADDRESS, account, MaxUint256, poolkey, tokenId],
+        //   },
+        // ])
+
+        await writeTxn(key, claimFarmId, farmingCenter, 'collectAndClaimRewards', [
           THE_ADDRESS,
           account,
           MaxUint256,
           poolkey,
           tokenId,
         ])
-      } else {
-        const positionManger = getPositionManagerContract(chainId, version)
-        const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
-          tokenId,
-          expectedCurrencyOwed0: feeValue0,
-          expectedCurrencyOwed1: feeValue1,
-          recipient: account,
-        })
+      }
 
-        if (!(await sendTxn(key, claimuuid, positionManger.address, calldata, value))) {
-          setPending(false)
-          return
-        }
+      const positionManger = getPositionManagerContract(chainId, version)
+      const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
+        tokenId,
+        expectedCurrencyOwed0: feeValue0,
+        expectedCurrencyOwed1: feeValue1,
+        recipient: account,
+      })
+
+      if (!(await sendTxn(key, claimFeeId, positionManger.address, calldata, value))) {
+        setPending(false)
+        return
       }
 
       endTxn({ key, final: 'Claimed fees' })
