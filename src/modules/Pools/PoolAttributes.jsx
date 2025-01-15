@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
-import { SCAN_URLS } from '@/constant'
+import { ICHI_TYPES, SCAN_URLS } from '@/constant'
 import { basePluginAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
@@ -49,7 +49,7 @@ export function PoolAttributesCL({ strategy, pool }) {
   const linkDocsStrategy = useMemo(() => {
     let resultProvider = ''
     let resultType = ''
-    if (strategy.title === 'ICHI') {
+    if (ICHI_TYPES.includes(strategy.title)) {
       resultProvider = 'https://docs.ichi.org/home/how-ichi-works'
       resultType = 'https://docs.ichi.org/home/how-ichi-works#singletoken-deposit'
     }
@@ -102,7 +102,7 @@ export function PoolAttributesCL({ strategy, pool }) {
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Strategy Type')}:</div>
           <Link target='_blank' href={linkDocsStrategy[1]} className='col-span-5 flex items-center gap-1'>
-            <span>{strategy.title === 'ICHI' ? 'Single deposit' : 'Manual'}</span>
+            <span>{ICHI_TYPES.includes(strategy.title) ? 'Single deposit' : 'Manual'}</span>
             <div className='item-center flex cursor-pointer gap-1'>
               <LinkExternalIcon className='inline-block h-4 w-4' />
             </div>

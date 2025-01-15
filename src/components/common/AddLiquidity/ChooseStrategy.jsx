@@ -123,7 +123,7 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
     preset = await fetchGammaInfo(chainId, strategy)
   } else if (strategy.title === 'DefiEdge') {
     preset = await fetchDefiedgeInfo(chainId, strategy, currentTick)
-  } else if (strategy.title === 'ICHI') {
+  } else if (ICHI_TYPES.includes(strategy.title)) {
     preset = await fetchIchiInfo(chainId, strategy, currentTick)
   }
   return preset
@@ -251,6 +251,9 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
 
       if (GAMMA_TYPES.includes(sub.title)) {
         title = 'Gamma'
+      }
+      if (ICHI_TYPES.includes(sub.title)) {
+        title = 'ICHI'
       }
 
       return {
