@@ -5,8 +5,8 @@ import { computePoolAddress, Pool } from 'thena-fusion-sdk'
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { algebraFactoryAbi } from '@/constant/abi'
+import { poolAbi } from '@/constant/abi/fusion'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
-import { poolMainNetV2Abi } from '@/constant/v2-mainnet-abi'
 import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { algebraFactoryV3Abi } from '@/constant/v3-abi'
 import { useFusionPairs } from '@/context/fusionsContext'
@@ -135,7 +135,7 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
     },
   })
 
-  const poolContract = { address: poolAddress, abi: chainId === CHAIN_ID.BSC ? poolMainNetV2Abi : poolTestNetV2Abi }
+  const poolContract = { address: poolAddress, abi: version === 2 ? poolAbi : poolTestNetV2Abi }
   const { data: poolInfo } = useReadContracts({
     contracts: [
       { ...poolContract, functionName: 'liquidity' },

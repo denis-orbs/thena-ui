@@ -480,8 +480,10 @@ export const useGammaClaim = () => {
       })
       setPending(true)
       const gammaFarming = getGammaHyperVisorContract(pool.address, networkId, pool.account?.version)
+      const receiver = await readCall(gammaFarming, 'receiver', [], networkId)
+      const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, networkId)
 
-      if (!(await writeTxn(key, claimId, gammaFarming, 'claim', []))) {
+      if (!(await writeTxn(key, claimId, multiFeeDistributionContract, 'getAllRewards', []))) {
         setPending(false)
         return
       }
