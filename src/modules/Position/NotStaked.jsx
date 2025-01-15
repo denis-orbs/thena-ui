@@ -71,7 +71,7 @@ export default function NotStaked({ pool }) {
           />
           <div className='flex flex-col'>
             <TextHeading>{pool.symbol}</TextHeading>
-            <TextSubHeading>{pool.title}</TextSubHeading>
+            <TextSubHeading>{pool.title.replace('_', ' ')}</TextSubHeading>
           </div>
         </div>
         <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>

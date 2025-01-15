@@ -5,7 +5,7 @@ import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { pairAPIAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
@@ -17,7 +17,7 @@ import { fetchFusionPools, fetchFusionPoolsInfos } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import { fromWei } from '@/lib/utils'
 
-import { updatePools } from './actions'
+import { updatePools, updatePoolsMigration } from './actions'
 import { useChainSettings } from '../settings/hooks'
 
 const fetchUserFusionsV2 = async (account, pools, chainId) => {
@@ -317,6 +317,22 @@ function Updater() {
       }),
     )
   }, [dispatch, assets, extraRewardsInfo, networkId, poolsWithAllowed, userInfos, prices])
+
+  useEffect(() => {
+    const payload = fusionPoolsV3.reduce(
+      (acc, pool) => {
+        if (ICHI_TYPES.includes(pool.type)) {
+          acc.ichi.push(pool)
+        } else if (GAMMA_TYPES.includes(pool.type)) {
+          acc.gamma.push(pool)
+        }
+        return acc
+      },
+      { ichi: [], gamma: [] },
+    )
+
+    dispatch(updatePoolsMigration(payload))
+  }, [dispatch, fusionPoolsV3])
 
   useEffect(() => {
     fetchInfo()

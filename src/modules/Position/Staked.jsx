@@ -14,6 +14,7 @@ import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getLiquidityRangeType } from '@/lib/utils'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
+import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
 import AddPositionModal from './AddPositionModal'
@@ -31,6 +32,13 @@ export default function Staked({ pool }) {
   const {
     rewardsData: { totalUsd, rewards },
   } = useGammaData(pool)
+
+  const migrationOptions = useGetAutoPoolMigration({
+    token0Address: pool.token0.address,
+    token1Address: pool.token1.address,
+    type: pool.title,
+    version: pool.account.version,
+  })
 
   const dispatch = useDispatch()
   const t = useTranslations()
@@ -59,10 +67,11 @@ export default function Staked({ pool }) {
           />
           <div className='flex flex-col'>
             <TextHeading>{pool.symbol}</TextHeading>
-            <TextSubHeading>{pool.title}</TextSubHeading>
+            <TextSubHeading>{pool.title.replace('_', ' ')}</TextSubHeading>
           </div>
         </div>
         <GreenBadge>{t('Staked')}</GreenBadge>
+        <GreenBadge>{pool.account.version}</GreenBadge>
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
@@ -112,7 +121,7 @@ export default function Staked({ pool }) {
 
               <div className={cn(!GAMMA_TYPES.includes(pool.type) && 'hidden')}>
                 {(rewards || []).map(item => (
-                  <p>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
+                  <p key={item.asset.symbol}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
                 ))}
               </div>
             </CustomTooltip>
@@ -139,42 +148,43 @@ export default function Staked({ pool }) {
           {t('Harvest')}
         </OutlinedButton>
 
-        <EmphasisButton
-          className={cn('w-full', version === 2 && 'hidden')}
-          onClick={() => {
-            dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
-            dispatch(
-              updateStrategy({
-                strategy: {
-                  // ...pool,
-                  title: pool?.title,
-                  token0: {
-                    ...pool?.token0,
-                    reserve: pool?.token0?.reserve?.toNumber(),
-                    balance: pool?.token0?.balance?.toNumber(),
-                    totalValue: pool?.token0?.totalValue?.toNumber(),
+        {migrationOptions && migrationOptions.length > 0 ? (
+          <Link href={`/pools/migration?address=${pool.address}`} className='w-full'>
+            <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+          </Link>
+        ) : (
+          <EmphasisButton
+            className={cn('w-full')}
+            onClick={() => {
+              dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
+              dispatch(
+                updateStrategy({
+                  strategy: {
+                    title: pool?.title,
+                    token0: {
+                      ...pool?.token0,
+                      reserve: pool?.token0?.reserve?.toNumber(),
+                      balance: pool?.token0?.balance?.toNumber(),
+                      totalValue: pool?.token0?.totalValue?.toNumber(),
+                    },
+                    token1: {
+                      ...pool?.token1,
+                      reserve: pool?.token1?.reserve?.toNumber(),
+                      balance: pool?.token1?.balance?.toNumber(),
+                      totalValue: pool?.token1?.totalValue?.toNumber(),
+                    },
+                    isAutomatic: true,
+                    isFarming: pool.title.includes('Farming'),
+                    version,
                   },
-                  token1: {
-                    ...pool?.token1,
-                    reserve: pool?.token1?.reserve?.toNumber(),
-                    balance: pool?.token1?.balance?.toNumber(),
-                    totalValue: pool?.token1?.totalValue?.toNumber(),
-                  },
-                  isAutomatic: true,
-                  isFarming: true, // TODO: REMOVE HARD CODE
-                  version,
-                },
-              }),
-            )
-            setAddPopup(true)
-          }}
-        >
-          {t('Add')}
-        </EmphasisButton>
-
-        <Link href={`/pools/migration?address=${pool.address}`} className={cn('w-full', version === 3 && 'hidden')}>
-          <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
-        </Link>
+                }),
+              )
+              setAddPopup(true)
+            }}
+          >
+            {t('Add')}
+          </EmphasisButton>
+        )}
       </div>
 
       <GaugeManageModal
