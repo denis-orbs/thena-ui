@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { zeroAddress } from 'viem'
 
-import { PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { ZERO_VALUE } from '@/lib/utils'
 
@@ -99,4 +99,23 @@ export const usePoolsWithGauge = () => {
   const poolWithGauge = useMemo(() => (pools ? pools.filter(pool => pool.gauge.address !== zeroAddress) : []), [pools])
 
   return [...poolWithGauge, ...weightedPoolsWithGauge]
+}
+
+export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, version }) => {
+  const { autoPoolsMigration } = useSelector(state => state.pools)
+  if (version === 3) return null
+
+  let strategy = null
+  if (GAMMA_TYPES.includes(type)) {
+    strategy = 'gamma'
+  } else if (ICHI_TYPES.includes(type)) {
+    strategy = 'ichi'
+  }
+
+  if (!strategy) return null
+  return autoPoolsMigration[strategy].filter(
+    pool =>
+      (pool.token0.address === token0Address && pool.token1.address === token1Address) ||
+      (pool.token0.address === token1Address && pool.token1.address === token0Address),
+  )
 }

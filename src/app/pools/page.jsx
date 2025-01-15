@@ -19,7 +19,7 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, SPECIAL_POOLS } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
@@ -30,15 +30,6 @@ import { ArrowRightIcon, InfoIcon } from '@/svgs'
 
 import AddLiquidityModal from './addLiquidityModal'
 import NewListings from './NewListings'
-
-export const listPoolAddressSpecial = [
-  '0x755a52d29b24d6871899a84f476339183e9dc95d',
-  '0xa07bbf09b48e8d219774ac9b92622f5260a9c9f4',
-  '0x04d6115703b0127888323f142b8046c7c13f857d',
-  '0x5b0baf66718caabda49a4af32eb455c3b99b5821',
-  '0xbf121d987f9635ed6d2f7bb957fbbe163bdea0e0',
-  '0xf8a4cdf9efc4b9b38eaa6e27ee281cb2111fa664',
-]
 
 const sortOptions = [
   {
@@ -79,7 +70,7 @@ const sortOptions = [
   },
 ]
 
-export const STRATEGIES = {
+const STRATEGIES = {
   All: 'All',
   ICHI: 'ICHI',
   Gamma: 'Gamma',
@@ -245,7 +236,7 @@ export default function PoolsPage() {
                 </CustomTooltip>
               </div>
             )}
-            {listPoolAddressSpecial.includes(pool.address) && (
+            {SPECIAL_POOLS.includes(pool.address) && (
               <div className='flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id={`pool-special-${pool.address}`}>
                   <NextImage
@@ -376,7 +367,9 @@ export default function PoolsPage() {
                           {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
                         </TextHeading>
                         {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
-                        {sub.title === 'ICHI' && <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>}
+                        {ICHI_TYPES.includes(sub.title) && (
+                          <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
+                        )}
                       </div>
                       <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
                     </div>
@@ -607,7 +600,7 @@ export default function PoolsPage() {
             title={`✨ ${t('New Listings')}`}
             pools={newListingsPool}
             sortOptions={sortOptions}
-            listPoolAddressSpecial={listPoolAddressSpecial}
+            listPoolAddressSpecial={SPECIAL_POOLS}
           />
         )}
 
@@ -617,7 +610,7 @@ export default function PoolsPage() {
             title={`🔥 ${t('Hot Pools')}`}
             pools={hotPools}
             sortOptions={sortOptions}
-            listPoolAddressSpecial={listPoolAddressSpecial}
+            listPoolAddressSpecial={SPECIAL_POOLS}
           />
         )}
         <Table

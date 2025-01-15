@@ -14,7 +14,7 @@ import Selector from '@/components/selector'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
@@ -123,7 +123,7 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
     preset = await fetchGammaInfo(chainId, strategy)
   } else if (strategy.title === 'DefiEdge') {
     preset = await fetchDefiedgeInfo(chainId, strategy, currentTick)
-  } else if (strategy.title === 'ICHI') {
+  } else if (ICHI_TYPES.includes(strategy.title)) {
     preset = await fetchIchiInfo(chainId, strategy, currentTick)
   }
   return preset
@@ -240,15 +240,20 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   const strategyData = useMemo(() => {
     const autoStrategy = (isAdd ? [defaultSwapFees] : pair?.subpools || []).map(sub => {
       let { title } = sub
+
       let isFarming = false
+      if (sub.title.includes('_Farming')) {
+        isFarming = false
+      }
 
       if (title === 'CL_SwapFee') title = 'Manual (Swap Fees)'
-      if (title === 'CL_Farming') {
-        title = 'Manual ($THE Emissions)'
-        isFarming = true
-      } else if (GAMMA_TYPES.includes(sub.title)) {
+      if (title === 'CL_Farming') title = 'Manual ($THE Emissions)'
+
+      if (GAMMA_TYPES.includes(sub.title)) {
         title = 'Gamma'
-        isFarming = true
+      }
+      if (ICHI_TYPES.includes(sub.title)) {
+        title = 'ICHI'
       }
 
       return {
@@ -269,26 +274,21 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
               </div>
             </div>
 
-            {GAMMA_TYPES.includes(sub.title) &&
-              (strategy?.address === sub.address ? (
-                <PrimaryBadge>{sub.title}</PrimaryBadge>
-              ) : (
-                <NeutralBadge>{sub.title}</NeutralBadge>
-              ))}
+            <div className='flex flex-wrap gap-2'>
+              {GAMMA_TYPES.includes(sub.title) && <NeutralBadge>{sub.title.split('_')[0]}</NeutralBadge>}
 
-            {sub.title === 'ICHI' &&
-              (strategy?.address === sub.address ? (
-                <PrimaryBadge>
-                  {sub.allowed.symbol} {t('Deposit')}
-                </PrimaryBadge>
-              ) : (
-                <NeutralBadge>
-                  {sub.allowed.symbol} {t('Deposit')}
-                </NeutralBadge>
-              ))}
+              {ICHI_TYPES.includes(sub.title) && (
+                <>
+                  <PrimaryBadge>
+                    {sub.allowed.symbol} {t('Deposit')}
+                  </PrimaryBadge>
+                  <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>
+                </>
+              )}
 
-            {sub.title === 'CL_Farming' && <NeutralBadge>$THE + 10% Fees</NeutralBadge>}
-            {sub.title === 'CL_SwapFee' && <NeutralBadge>80% Fees</NeutralBadge>}
+              {sub.title === 'CL_Farming' && <NeutralBadge>$THE + 10% Fees</NeutralBadge>}
+              {sub.title === 'CL_SwapFee' && <NeutralBadge>80% Fees</NeutralBadge>}
+            </div>
           </div>
         ),
         active: strategy?.address === sub.address,
@@ -300,6 +300,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
               totalLp: sub?.account?.totalLp?.toNumber(),
               gaugeBalance: sub?.account?.gaugeBalance?.toNumber(),
             },
+            allowed: sub.allowed,
             token0: {
               ...sub?.token0,
               reserve: sub?.token0?.reserve?.toNumber(),

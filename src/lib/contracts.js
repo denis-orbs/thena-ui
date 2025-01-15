@@ -57,7 +57,9 @@ import {
   gammaHypervisorAbiV3,
   gammaUniProxyAbi,
   gaugeSimpleAbi,
+  ichiFarmingAbi,
   ichiVaultAbi,
+  ichiVaultAbiV3,
   vaultDepositGaurdAbi,
 } from '@/constant/abi/fusion'
 import Contracts from '@/constant/contracts'
@@ -185,10 +187,26 @@ export const getDefiedgeStrategyContract = (address, chainId) => getContract(def
                                             ICHI
   ************************************************************************************************** */
 
-export const getVaultDepositContract = chainId =>
-  getContract(vaultDepositGaurdAbi, Contracts.vaultDepositGuard, chainId)
+export const getVaultDepositContract = (chainId, version = 2, isFarming = false) => {
+  if (version === 3) {
+    const address = isFarming
+      ? Contracts.vaultDepositGuardV3Farming[chainId]
+      : Contracts.vaultDepositGuardV3Fee[chainId]
 
-export const getIchiVaultContract = (address, chainId) => getContract(ichiVaultAbi, address, chainId)
+    return {
+      address,
+      abi: vaultDepositGaurdAbi,
+    }
+  }
+
+  return getContract(vaultDepositGaurdAbi, Contracts.vaultDepositGuard, chainId)
+}
+export const getIchiFarmingContract = (address, chainId) => getContract(ichiFarmingAbi, address, chainId)
+
+export const getIchiVaultContract = (address, chainId, version = 2) => {
+  if (version === 3) return getContract(ichiVaultAbiV3, address, chainId)
+  return getContract(ichiVaultAbi, address, chainId)
+}
 
 /** **************************************************************************************************
                                             TC (Trading Competition)

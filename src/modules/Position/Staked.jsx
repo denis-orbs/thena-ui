@@ -1,17 +1,20 @@
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { GreenBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { GAMMA_TYPES } from '@/constant'
 import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getLiquidityRangeType } from '@/lib/utils'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
+import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
 import AddPositionModal from './AddPositionModal'
@@ -30,13 +33,27 @@ export default function Staked({ pool }) {
     rewardsData: { totalUsd, rewards },
   } = useGammaData(pool)
 
+  const migrationOptions = useGetAutoPoolMigration({
+    token0Address: pool.token0.address,
+    token1Address: pool.token1.address,
+    type: pool.title,
+    version: pool.account.version,
+  })
+
   const dispatch = useDispatch()
   const t = useTranslations()
 
+  const version = pool?.account?.version ?? 2
   const token0Percent = useMemo(() => {
     const token0InUsd = pool.account.staked0.times(pool.token0.price)
     return token0InUsd.div(pool.account.stakedUsd).times(100).toFixed(2)
   }, [pool])
+
+  const handleUnstake = amount => {
+    onGaugeUnstake(pool, amount, () => {
+      setPopup(false)
+    })
+  }
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -50,10 +67,11 @@ export default function Staked({ pool }) {
           />
           <div className='flex flex-col'>
             <TextHeading>{pool.symbol}</TextHeading>
-            <TextSubHeading>{pool.title}</TextSubHeading>
+            <TextSubHeading>{pool.title.replace('_', ' ')}</TextSubHeading>
           </div>
         </div>
         <GreenBadge>{t('Staked')}</GreenBadge>
+        <GreenBadge>{pool.account.version}</GreenBadge>
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
@@ -85,46 +103,44 @@ export default function Staked({ pool }) {
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
-            <TextHeading>${formatAmount(totalUsd)}</TextHeading>
+            <TextHeading>
+              ${formatAmount(GAMMA_TYPES.includes(pool.type) ? totalUsd : pool.account.earnedUsd)}
+            </TextHeading>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`stake-${pool.address}`} />
+
             <CustomTooltip id={`stake-${pool.address}`}>
-              {pool.version === 2 ? (
-                <>
-                  {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
-                  {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
-                  {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
-                  {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
-                  {pool.account.extraRewards && (
-                    <p>{`${formatAmount(pool.account.extraRewards.amount)} ${pool.account.extraRewards.symbol}`}</p>
-                  )}
-                </>
-              ) : (
-                <>
-                  {(rewards || []).map(item => (
-                    <p key={item.asset.address}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
-                  ))}
-                </>
-              )}
+              <div className={cn(GAMMA_TYPES.includes(pool.type) && 'hidden')}>
+                {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
+                {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
+                {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
+                {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
+                {pool.account.extraRewards && (
+                  <p>{`${formatAmount(pool.account.extraRewards.amount)} ${pool.account.extraRewards.symbol}`}</p>
+                )}
+              </div>
+
+              <div className={cn(!GAMMA_TYPES.includes(pool.type) && 'hidden')}>
+                {(rewards || []).map(item => (
+                  <p key={item.asset.symbol}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
+                ))}
+              </div>
             </CustomTooltip>
           </div>
         </div>
       </div>
       <div className='mt-auto flex w-full gap-3'>
-        <TextButton className={cn('w-full', pool?.account?.version === 3 && 'hidden')} onClick={() => setPopup(true)}>
+        <TextButton className={cn('w-full', version === 3 && 'hidden')} onClick={() => setPopup(true)}>
           {t('Unstake')}
         </TextButton>
 
-        <OutlinedButton
-          className={cn('w-full', pool?.account?.version === 2 && 'hidden')}
-          onClick={() => setRemovePopup(true)}
-        >
+        <OutlinedButton className={cn('w-full', version === 2 && 'hidden')} onClick={() => setRemovePopup(true)}>
           {t('Remove')}
         </OutlinedButton>
 
         <OutlinedButton
           className='w-full'
           onClick={() => {
-            if (pool?.account?.version === 2) onGaugeHarvest(pool)
+            if (version === 2) onGaugeHarvest(pool)
             else onGammaClaim(pool)
           }}
           disabled={pending || claimPending || pool.account.earnedUsd.isZero()}
@@ -132,38 +148,43 @@ export default function Staked({ pool }) {
           {t('Harvest')}
         </OutlinedButton>
 
-        <EmphasisButton
-          className='w-full'
-          onClick={() => {
-            dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
-            dispatch(
-              updateStrategy({
-                strategy: {
-                  // ...pool,
-                  title: pool?.title,
-                  token0: {
-                    ...pool?.token0,
-                    reserve: pool?.token0?.reserve?.toNumber(),
-                    balance: pool?.token0?.balance?.toNumber(),
-                    totalValue: pool?.token0?.totalValue?.toNumber(),
+        {migrationOptions && migrationOptions.length > 0 ? (
+          <Link href={`/pools/migration?address=${pool.address}`} className='w-full'>
+            <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+          </Link>
+        ) : (
+          <EmphasisButton
+            className={cn('w-full')}
+            onClick={() => {
+              dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
+              dispatch(
+                updateStrategy({
+                  strategy: {
+                    title: pool?.title,
+                    token0: {
+                      ...pool?.token0,
+                      reserve: pool?.token0?.reserve?.toNumber(),
+                      balance: pool?.token0?.balance?.toNumber(),
+                      totalValue: pool?.token0?.totalValue?.toNumber(),
+                    },
+                    token1: {
+                      ...pool?.token1,
+                      reserve: pool?.token1?.reserve?.toNumber(),
+                      balance: pool?.token1?.balance?.toNumber(),
+                      totalValue: pool?.token1?.totalValue?.toNumber(),
+                    },
+                    isAutomatic: true,
+                    isFarming: pool.title.includes('Farming'),
+                    version,
                   },
-                  token1: {
-                    ...pool?.token1,
-                    reserve: pool?.token1?.reserve?.toNumber(),
-                    balance: pool?.token1?.balance?.toNumber(),
-                    totalValue: pool?.token1?.totalValue?.toNumber(),
-                  },
-                  isAutomatic: true,
-                  isFarming: true, // TODO: REMOVE HARD CODE
-                  version: pool?.account?.version ?? 3,
-                },
-              }),
-            )
-            setAddPopup(true)
-          }}
-        >
-          {t('Add')}
-        </EmphasisButton>
+                }),
+              )
+              setAddPopup(true)
+            }}
+          >
+            {t('Add')}
+          </EmphasisButton>
+        )}
       </div>
 
       <GaugeManageModal
@@ -173,7 +194,7 @@ export default function Staked({ pool }) {
         label='Unstake'
         popup={popup}
         setPopup={setPopup}
-        onGaugeManage={onGaugeUnstake}
+        onGaugeManage={handleUnstake}
         pending={unstakePending}
       />
 

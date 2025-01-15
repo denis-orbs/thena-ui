@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256 } from 'viem'
 
-import { TXN_STATUS } from '@/constant'
+import { GAMMA_TYPES, TXN_STATUS } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
@@ -501,7 +501,7 @@ export const useGammaData = pool => {
   const [rewardsData, setRewardsData] = useState([])
 
   const getClaimableRewards = useCallback(async () => {
-    if (pool.version === 3) {
+    if (pool.version === 3 && GAMMA_TYPES.includes(pool.title)) {
       const gammaUNIProxyContract = getGammaHyperVisorContract(pool.address, chainId, 3)
       const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], chainId)
       const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
@@ -517,7 +517,7 @@ export const useGammaData = pool => {
       })
       setRewardsData({ totalUsd, rewards })
     }
-  }, [account, assets, chainId, pool.address, pool.version])
+  }, [account, assets, chainId, pool.address, pool.title, pool.version])
 
   useEffect(() => {
     getClaimableRewards()

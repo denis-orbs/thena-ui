@@ -249,8 +249,17 @@ export const FusionRangeType = {
   MANUAL_RANGE: 'manual',
 }
 
-export const GAMMA_TYPES = ['Narrow', 'Wide', 'Correlated', 'CL_Stable']
+export const GAMMA_TYPES = [
+  'Narrow_Farming',
+  'Wide_Farming',
+  'Correlated_Farming',
+  'Narrow_SwapFee',
+  'Wide_SwapFee',
+  'Correlated_SwapFee',
+  'CL_Stable',
+]
 export const MANUAL_TYPES = ['CL_Farming', 'CL_SwapFee']
+export const ICHI_TYPES = ['ICHI_Farming', 'ICHI_SwapFee', 'ICHI']
 
 export const TAX_ASSETS = {
   [CHAIN_ID.BSC]: [
@@ -264,6 +273,15 @@ export const TAX_ASSETS = {
   ],
   [CHAIN_ID.OPBNB]: [],
 }
+
+export const SPECIAL_POOLS = [
+  '0x755a52d29b24d6871899a84f476339183e9dc95d',
+  '0xa07bbf09b48e8d219774ac9b92622f5260a9c9f4',
+  '0x04d6115703b0127888323f142b8046c7c13f857d',
+  '0x5b0baf66718caabda49a4af32eb455c3b99b5821',
+  '0xbf121d987f9635ed6d2f7bb957fbbe163bdea0e0',
+  '0xf8a4cdf9efc4b9b38eaa6e27ee281cb2111fa664',
+]
 
 export const STABLE_FEE = 0.0001
 export const VOLATILE_FEE = 0.002

@@ -1,18 +1,15 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 
 import { GreenBadge } from '@/components/badges/Badge'
-import { EmphasisButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { formatAmount } from '@/lib/utils'
-import { AdjustNewPositionModal } from '@/modules/Pools/Migration'
 import { InfoIcon } from '@/svgs'
 
-export function GaugeItemStaked({ showAdjustButton = false, pool }) {
+export function GaugeItemStaked({ pool }) {
   const t = useTranslations()
-  const [isOpenAdjust, setIsOpenAdjust] = useState(false)
 
   const token0Percent = useMemo(() => {
     const token0InUsd = pool.account.staked0.times(pool.token0.price)
@@ -78,14 +75,6 @@ export function GaugeItemStaked({ showAdjustButton = false, pool }) {
               )}
             </CustomTooltip>
           </div>
-          {showAdjustButton && (
-            <>
-              <EmphasisButton onClick={() => setIsOpenAdjust(true)} className='mt-3 w-full'>
-                {t('Adjust New Position')}
-              </EmphasisButton>
-              <AdjustNewPositionModal isOpen={isOpenAdjust} onClose={() => setIsOpenAdjust(false)} />
-            </>
-          )}
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ import SearchInput from '@/components/input/SearchInput'
 import Toggle from '@/components/toggle'
 // import NextImage from '@/components/common/NextImage'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useManuals } from '@/context/manualsContext'
@@ -102,7 +102,7 @@ export default function HoldingsPage() {
 
     switch (filter) {
       case FILTERS.ICHI:
-        result = stakedPools.filter(ele => ele.title === 'ICHI')
+        result = stakedPools.filter(ele => ICHI_TYPES.includes(ele.title))
         break
 
       case FILTERS.DefiEdge:

@@ -9,7 +9,7 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import BalanceInput from '@/components/input/BalanceInput'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { useIchiManage } from '@/hooks/fusion/useIchi'
+import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
@@ -18,12 +18,13 @@ import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 
 export default function IchiAdd({ strategy, isAdd, isModal }) {
   const [amount, setAmount] = useState('')
-  const { onIchiAddAndStake, pending } = useIchiManage()
+  const { onIchiAddAndStake: addIchiPoolV2, pending: pendingV2 } = useIchiManage()
+  const { addIchiPool: addIchiPoolV3, pending: pendingV3 } = useIchiManageV3()
   const { account } = useWallet()
   const assets = useAssets()
   const [slippage, setSlippage] = useState(0.5)
   const bnbBalance = assets.find(ele => ele.address === 'BNB').balance
-  const depositToken = assets.find(ele => ele.address.toLowerCase() === strategy.allowed.address)
+  const depositToken = assets.find(ele => ele.address.toLowerCase() === strategy?.allowed?.address)
   const t = useTranslations()
 
   const isDouble = useMemo(() => depositToken.symbol === 'WBNB', [depositToken])
@@ -56,10 +57,12 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
   const onAddLiquidityAndStake = useCallback(() => {
     if (errorMsg) {
       warnToast(errorMsg)
+    } else if (strategy?.account?.version === 2) {
+      addIchiPoolV2(strategy, amount, amountToWrap, slippage)
     } else {
-      onIchiAddAndStake(strategy, amount, amountToWrap, slippage)
+      addIchiPoolV3(strategy, amount, amountToWrap, slippage)
     }
-  }, [strategy, amount, amountToWrap, slippage, errorMsg, onIchiAddAndStake])
+  }, [addIchiPoolV3, amount, amountToWrap, errorMsg, addIchiPoolV2, slippage, strategy])
 
   return (
     <>
@@ -113,13 +116,13 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
       >
         {account ? (
           <PrimaryButton
-            disabled={pending}
+            disabled={pendingV2 || pendingV3}
             onClick={() => {
               onAddLiquidityAndStake()
             }}
             className='w-full'
           >
-            {t('Add Liquidity & Stake')}
+            {t('Add Liquidity')}
           </PrimaryButton>
         ) : (
           <ConnectButton className='w-full' />

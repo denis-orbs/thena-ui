@@ -1,16 +1,18 @@
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
+import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGuageStake } from '@/hooks/useGauge'
 import { useClaimFees } from '@/hooks/useV1Liquidity'
-import { formatAmount, ZERO_VALUE } from '@/lib/utils'
+import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 import AddPositionModal from './AddPositionModal'
@@ -19,13 +21,27 @@ import ManagePositionModal from './ManagePositionModal'
 import RemovePositionModal from './RemovePositionModal'
 
 export default function NotStaked({ pool }) {
+  const t = useTranslations()
+
   const [popup, setPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const [managePopup, setManagePopup] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGuageStake()
+  const { stakeIchiPool, pending: stakeIchiPending } = useIchiManageV3()
   const { onClaimFees, pending: feesPending } = useClaimFees()
-  const t = useTranslations()
+
+  const handleStake = amount => {
+    if (pool?.account?.version === 3) {
+      stakeIchiPool({
+        vaultAddress: pool.address,
+        amount,
+        callback: () => setPopup(false),
+      })
+    } else {
+      onGaugeStake(pool, amount, () => setPopup(false))
+    }
+  }
 
   const walletUsd = useMemo(() => pool.account.totalUsd.minus(pool.account.stakedUsd), [pool])
   const token0Amount = useMemo(() => pool.account.total0.minus(pool.account.staked0), [pool])
@@ -55,7 +71,7 @@ export default function NotStaked({ pool }) {
           />
           <div className='flex flex-col'>
             <TextHeading>{pool.symbol}</TextHeading>
-            <TextSubHeading>{pool.title}</TextSubHeading>
+            <TextSubHeading>{pool.title.replace('_', ' ')}</TextSubHeading>
           </div>
         </div>
         <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
@@ -127,9 +143,15 @@ export default function NotStaked({ pool }) {
             <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
               {t('Remove')}
             </OutlinedButton>
-            <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
+            <EmphasisButton className={cn('w-full', pool.version === 2 && 'hidden')} onClick={() => setAddPopup(true)}>
               {t('Add')}
             </EmphasisButton>
+            <Link
+              href={`/pools/migration?address=${pool.address}`}
+              className={cn('w-full', pool.version === 3 && 'hidden')}
+            >
+              <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+            </Link>
           </>
         )}
       </div>
@@ -140,8 +162,8 @@ export default function NotStaked({ pool }) {
         label='Stake'
         popup={popup}
         setPopup={setPopup}
-        onGaugeManage={onGaugeStake}
-        pending={stakePending}
+        onGaugeManage={handleStake}
+        pending={stakePending || stakeIchiPending}
       />
       <AddPositionModal popup={addPopup} setPopup={setAddPopup} strategy={pool} />
       <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={pool} />

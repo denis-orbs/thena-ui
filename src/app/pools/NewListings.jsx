@@ -9,7 +9,7 @@ import NextImage from '@/components/image/NextImage'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { InfoIcon } from '@/svgs'
@@ -245,7 +245,9 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
                         {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
                       </TextHeading>
                       {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
-                      {sub.title === 'ICHI' && <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>}
+                      {ICHI_TYPES.includes(sub.title) && (
+                        <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
+                      )}
                     </div>
                     <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
                   </div>

@@ -17,7 +17,7 @@ import NextImage from '@/components/image/NextImage'
 import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { PAIR_TYPES, SPECIAL_POOLS, UNKNOWN_LOGO } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useWindowSize } from '@/hooks/useWindowSize'
@@ -35,7 +35,6 @@ import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/svgs'
 
 import Liquidity from './Liquidity'
-import { listPoolAddressSpecial } from '../page'
 
 const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
 const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
@@ -276,7 +275,7 @@ export default function SpecificPoolPage({ params }) {
               </>
             )}
 
-            {listPoolAddressSpecial.includes(pool.address) && (
+            {SPECIAL_POOLS.includes(pool.address) && (
               <div className='mb-5 ml-4 mt-4 flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id={`pool-${pool?.address}`}>
                   <NextImage

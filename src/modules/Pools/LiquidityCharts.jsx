@@ -11,7 +11,7 @@ import Highlight from '@/components/highlight'
 import Selection from '@/components/selection'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { FusionRangeType, GAMMA_TYPES } from '@/constant'
+import { FusionRangeType, GAMMA_TYPES, ICHI_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
@@ -68,7 +68,7 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
     preset = await fetchGammaInfo(chainId, strategy)
   } else if (strategy.title === 'DefiEdge') {
     preset = await fetchDefiedgeInfo(chainId, strategy, currentTick)
-  } else if (strategy.title === 'ICHI') {
+  } else if (ICHI_TYPES.includes(strategy.title)) {
     preset = await fetchIchiInfo(chainId, strategy, currentTick)
   }
   return preset
