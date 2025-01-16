@@ -21,7 +21,7 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import { simulateCall } from '@/lib/contractActions'
-import { getAlgebraNPMContract } from '@/lib/contracts'
+import { getPositionManagerContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
@@ -32,8 +32,8 @@ import AddManualModal from './AddManualModal'
 import ClaimModal from './ClaimModal'
 import RemoveManualModal from './RemoveManualModal'
 
-export const fetchManualInfo = async (account, tokenId, chainId) => {
-  const algebraContract = getAlgebraNPMContract(chainId)
+export const fetchManualInfo = async (account, tokenId, chainId, version) => {
+  const algebraContract = getPositionManagerContract(chainId, version)
   const balance = await simulateCall(
     algebraContract,
     'collect',
@@ -64,7 +64,7 @@ export default function ManualPosition({ pool }) {
   // MARK: fetch data from ABI and CONTRACT
   const { data: fees, mutate } = useSWR(
     account && tokenId ? ['manuals/fee', tokenId, account, chainId] : null,
-    () => fetchManualInfo(account, tokenId, chainId),
+    () => fetchManualInfo(account, tokenId, chainId, version),
     {
       refreshInterval: 60000,
     },
