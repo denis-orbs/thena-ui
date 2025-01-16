@@ -56,10 +56,12 @@ function Popover({ inputPage = '', setInputPage, showPopover = false, setShowPop
       data-popover
       id='popover-default-1'
       role='tooltip'
-      className={`absolute ${
-        showPopover ? '' : 'invisible opacity-0'
-        // eslint-disable-next-line max-len
-      } left-1/2 top-12 z-10 inline-block -translate-x-1/2 rounded-lg border border-neutral-600 bg-neutral-800 text-sm text-neutral-500 shadow-sm transition-opacity duration-300 lg:left-1/2`}
+      className={cn(
+        'absolute',
+        showPopover ? '' : 'invisible opacity-0',
+        'left-1/2 top-12 z-10 inline-block -translate-x-1/2 rounded-lg',
+        'border border-neutral-600 bg-neutral-800 text-sm text-neutral-500 shadow-sm transition-opacity duration-300',
+      )}
     >
       <div className='flex items-center justify-between rounded-t-lg border-b border-neutral-600 bg-neutral-700 px-3 py-2'>
         <TextSubHeading className='text-nowrap text-white'>Go to page</TextSubHeading>
@@ -374,9 +376,9 @@ function VotingHistory({ veTHEId }) {
   const fetchVotingHistoryData = useCallback(
     async (tokenVeTHEId, limit = 10, skip = 0) => {
       try {
-        const data = await fetchVotingHistory(account?.toLowerCase(), tokenVeTHEId, chainId, skip, limit)
-        if (data?.data) {
-          const result = data.data.map(item => ({
+        const res = await fetchVotingHistory(account?.toLowerCase(), tokenVeTHEId, chainId, skip, limit)
+        if (res?.data) {
+          const result = res.data.map(item => ({
             ...item,
             totalVetheBalance: (item.votes || []).reduce((sum, vote) => sum + parseFloat(vote?.vetheBalance || 0), 0),
             totalVotesEpoch: (item.votes || []).reduce(
@@ -386,7 +388,7 @@ function VotingHistory({ veTHEId }) {
             ),
           }))
 
-          return { ...data, data: result }
+          return { ...res, data: result }
         }
         return null
       } catch (error) {

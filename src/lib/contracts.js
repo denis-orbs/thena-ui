@@ -22,6 +22,7 @@ import {
   routerAbi,
   royaltyAbi,
   stakingAbi,
+  testnetClaimerAbi,
   ThenianAbi,
   veDistAbi,
   veTHEAbi,
@@ -62,7 +63,7 @@ import {
   ichiVaultAbiV3,
   vaultDepositGaurdAbi,
 } from '@/constant/abi/fusion'
-import Contracts from '@/constant/contracts'
+import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { algebraFactoryMainNetV2Abi } from '@/constant/v2-mainnet-abi'
 import { algebraFactoryTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { algebraFactoryV3Abi, nonfungiblePositionManagerV3Abi } from '@/constant/v3-abi'
@@ -246,7 +247,8 @@ export const getTCPerpRewarderContract = () => getContract(tcPerpRewarderAbi, Co
 /** ******************************************************************************************************
                                           Claimer
 ******************************************************************************************************* */
-export const getClaimerContract = chainId => getContract(claimerAbi, Contracts.claimer, chainId)
+export const getClaimerContract = chainId =>
+  getContract(chainId === CHAIN_ID.TEST_BSC ? testnetClaimerAbi : claimerAbi, Contracts.claimer, chainId)
 
 /** ******************************************************************************************************
                                           ALGEBRA_POOL_DEPLOYER_TESTNET

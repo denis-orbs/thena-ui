@@ -59,6 +59,8 @@ export default function CurrentRewards({ rewards, currentMutate }) {
     () =>
       rewards.map(pool => {
         const isVeTHE = pool && Number(pool.id) > 0
+
+        // Rebase rewards
         if (isVeTHE) {
           return {
             id: (
@@ -88,22 +90,10 @@ export default function CurrentRewards({ rewards, currentMutate }) {
             ),
           }
         }
+
+        // Incentive rewards
         return {
           id: (
-            // <div className='flex items-center gap-3'>
-            //   <IconGroup
-            //     className='-space-x-2'
-            //     classNames={{
-            //       image: 'outline-2 w-7 h-7',
-            //     }}
-            //     logo1={pool.token0?.logoURI}
-            //     logo2={pool.token1?.logoURI}
-            //   />
-            //   <div className='flex flex-col'>
-            //     <TextHeading>{pool.symbol}</TextHeading>
-            //     <Paragraph className='text-sm'>{t(pool.title)}</Paragraph>
-            //   </div>
-            // </div>
             <>
               {pool.type !== PAIR_TYPES.WEIGHTED ? (
                 <>
@@ -151,8 +141,7 @@ export default function CurrentRewards({ rewards, currentMutate }) {
           ),
         }
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(rewards), prices.THE, t],
+    [bribePending, currentMutate, onClaimBribes, onClaimRebase, prices.THE, rebasePending, rewards, t, updateVeTHEs],
   )
 
   return rewards.length > 0 ? (

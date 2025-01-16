@@ -34,6 +34,7 @@ import routerAbi from './router.json'
 import royaltyAbi from './royalty.json'
 import stakingAbi from './staking.json'
 import swapRouterAbi from './swapRouterTestnet.json'
+import testnetClaimerAbi from './testnet-claimer.json'
 import ThenianAbi from './thenian.json'
 import veDistAbi from './veDist.json'
 import veTHEAbi from './veTHE.json'
@@ -88,6 +89,7 @@ export {
   royaltyAbi,
   stakingAbi,
   swapRouterAbi,
+  testnetClaimerAbi,
   ThenianAbi,
   veDistAbi,
   veTHEAbi,

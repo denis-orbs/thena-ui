@@ -91,7 +91,6 @@ export default function VotingHistoryTable({ userVotes }) {
             tokenId: vote.tokenId,
             epochStartTimestamp: vote.epochStartTimestamp,
             vetheBalance: vote.vetheBalance,
-            totalWeight: poolVote.totalWeight,
             weight: poolVote.weight,
             lastUpdate: poolVote.lastUpdate,
             pool: pairData,
@@ -213,8 +212,11 @@ export default function VotingHistoryTable({ userVotes }) {
             <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(calRewardUsd(vote.rewards))}</Paragraph>
             {vote.rewards?.length > 0 && (
               <>
-                <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`my-reward-${vote?.pool?.address}`} />
-                <CustomTooltip id={`my-reward-${vote?.pool?.address}`}>
+                <InfoIcon
+                  className='size-4 stroke-neutral-400'
+                  data-tooltip-id={`my-reward-${vote.tokenId}-${vote.pool?.address}`}
+                />
+                <CustomTooltip id={`my-reward-${vote.tokenId}-${vote.pool?.address}`}>
                   {(vote.rewards || []).every(item => +item.amount === 0) ? (
                     <>
                       {(vote.rewards || []).map((reward, index) => (

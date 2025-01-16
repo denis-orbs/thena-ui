@@ -33,7 +33,6 @@ export default function RewardsPage() {
   const { veTHEs } = useVeTHEsContext()
   const { current } = useContext(rewardsContext)
   const { rewards: veRewards, currentMutate } = current
-  // const { rewards: expectedRewards } = next
   const { onClaimAll, pending: allPending } = useClaimAll()
   const t = useTranslations()
 
@@ -68,11 +67,6 @@ export default function RewardsPage() {
     })
     return total
   }, [veRewards, filteredVeTHEs, prices])
-
-  // const totalExpectedUsd = useMemo(
-  //   () => expectedRewards.reduce((sum, curr) => sum.plus(curr.totalUsd), new BigNumber(0)),
-  //   [expectedRewards],
-  // )
 
   const typeSelections = useMemo(
     () => [

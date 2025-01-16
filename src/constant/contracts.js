@@ -133,6 +133,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0xA2Bc09C290a260CDc6B63a5434ed81614A9624DE',
   },
   claimer: {
+    [CHAIN_ID.BSC]: '0xd2D64e094D37dD7D7759603fB9ed6b2306D1e5b2',
     [CHAIN_ID.TEST_BSC]: '0x02308f4455CD6d2109092c7903D1ed843440e1F7',
   },
   globalFactory: {
