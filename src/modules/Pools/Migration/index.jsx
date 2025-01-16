@@ -1,4 +1,5 @@
 export * from './AdjustNewPositionModal'
+export * from './AutoMigrationPage'
 export * from './GaugeItemManual'
 export * from './GaugeItemNotStaked'
 export * from './GaugeItemStaked'

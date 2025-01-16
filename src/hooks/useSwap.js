@@ -7,7 +7,7 @@ import { ChainId, WBNB } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
 import { decodeEventLog, decodeFunctionData, encodePacked, erc20Abi, getAddress, maxUint256, zeroAddress } from 'viem'
 
-import { TXN_STATUS } from '@/constant'
+import { HASH, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { oneInchApiKey } from '@/constant/env'
 import useWallet from '@/hooks/useWallet'
@@ -28,7 +28,56 @@ const Connectors =
   '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11,0x52f24a5e03aee338da5fd9df68d2b6fae1178827,0x90c97f71e18723b0cf0dfa30ee176ab653e89f40,0x1bdd3cf7f79cfb8edbb955f20ad99211551ba275'
 const quoteUrl = 'https://api.odos.xyz/sor/quote/v2'
 
+export const fetchOdosQuote = async ({ inputAmount, networkId, inputToken, outputToken, account, slippage }) => {
+  const quoteRequestBody = {
+    chainId: networkId,
+    inputTokens: [
+      {
+        tokenAddress: getAddress(inputToken),
+        amount: inputAmount,
+      },
+    ],
+    outputTokens: [
+      {
+        tokenAddress: getAddress(outputToken),
+        proportion: 1,
+      },
+    ],
+    userAddr: getAddress(account || zeroAddress),
+    slippageLimitPercent: slippage,
+    referralCode: 121015208,
+    sourceWhitelist: ['Wrapped BNB', 'Thena Stable', 'Thena Volatile', 'Thena Fusion'],
+    pathVizImage: true,
+    disableRFQs: true,
+    compact: true,
+    pathVizImageConfig: {
+      linkColors: ['#B386FF', '#FBA499', '#F9EC66', '#F199EE'],
+      nodeColor: '#422D4C',
+      nodeTextColor: '#D9D5DB',
+      legendTextColor: '#FCE6FB',
+      height: 300,
+    },
+  }
+
+  const response = await fetch(quoteUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(quoteRequestBody),
+  })
+  let quote
+  if (response.status === 200) {
+    quote = await response.json()
+    // handle quote response data
+  }
+
+  return quote
+}
+
 export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippage, networkId) => {
+  const inputAmount = toWei(fromAmount, fromAsset?.decimals).dp(0).toString(10)
+  const inputToken = getAddress(fromAsset?.address === 'BNB' ? zeroAddress : fromAsset?.address ?? zeroAddress)
+  const outputToken = getAddress(toAsset?.address === 'BNB' ? zeroAddress : toAsset?.address ?? zeroAddress)
+
   const res = useSWR(
     fromAsset &&
       toAsset &&
@@ -41,52 +90,15 @@ export const useOdosQuoteSwap = (account, fromAsset, toAsset, fromAmount, slippa
         fromAmount,
         slippage,
       ],
-    async () => {
-      const inputAmount = toWei(fromAmount, fromAsset.decimals).dp(0).toString(10)
-
-      const quoteRequestBody = {
-        chainId: networkId, // Replace with desired chainId
-        inputTokens: [
-          {
-            tokenAddress: getAddress(fromAsset.address === 'BNB' ? zeroAddress : fromAsset.address), // checksummed input token address
-            amount: inputAmount, // input amount as a string in fixed integer precision
-          },
-        ],
-        outputTokens: [
-          {
-            tokenAddress: getAddress(toAsset.address === 'BNB' ? zeroAddress : toAsset.address), // checksummed output token address
-            proportion: 1,
-          },
-        ],
-        userAddr: getAddress(account || zeroAddress), // checksummed user address
-        slippageLimitPercent: slippage, // set your slippage limit percentage (1 = 1%),
-        referralCode: 121015208, // referral code (recommended)
-        sourceWhitelist: ['Wrapped BNB', 'Thena Stable', 'Thena Volatile', 'Thena Fusion'],
-        pathVizImage: true,
-        disableRFQs: true,
-        compact: true,
-        pathVizImageConfig: {
-          linkColors: ['#B386FF', '#FBA499', '#F9EC66', '#F199EE'],
-          nodeColor: '#422D4C',
-          nodeTextColor: '#D9D5DB',
-          legendTextColor: '#FCE6FB',
-          height: 300,
-        },
-      }
-
-      const response = await fetch(quoteUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(quoteRequestBody),
-      })
-      let quote
-      if (response.status === 200) {
-        quote = await response.json()
-        // handle quote response data
-      }
-
-      return quote
-    },
+    async () =>
+      await fetchOdosQuote({
+        inputAmount,
+        networkId,
+        inputToken,
+        outputToken,
+        account,
+        slippage,
+      }),
     {
       refreshInterval: 30000,
     },
@@ -387,10 +399,9 @@ export const useThenaFusionSwap = (autoClose = false) => {
       }
 
       if (toAsset.address === 'BNB') {
-        const transferHash = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
         const events = txnReceipt.logs
         const transferEvent = events.find(
-          e => getAddress(e.address) === getAddress(WBNB[chainId].address) && e.topics[0] === transferHash,
+          e => getAddress(e.address) === getAddress(WBNB[chainId].address) && e.topics[0] === HASH.TRANSFER,
         )
 
         const decodeData = decodeEventLog({
