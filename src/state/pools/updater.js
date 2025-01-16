@@ -74,7 +74,7 @@ const fetchUserFusionsV3 = async (account, chainId) => {
 }
 
 const fetchIchiAllowed = async (pools, chainId) => {
-  const ichi = pools.filter(pool => pool.type === 'ICHI')
+  const ichi = pools.filter(pool => ICHI_TYPES.includes(pool.type))
   const allowed0 = await callMulti(
     ichi.map(pool => ({
       address: pool.address,
@@ -84,10 +84,11 @@ const fetchIchiAllowed = async (pools, chainId) => {
       chainId,
     })),
   )
+
   let index = 0
   const result = []
   pools.forEach(pool => {
-    const isIchi = pool.type === 'ICHI'
+    const isIchi = ICHI_TYPES.includes(pool.type)
     if (pool.type === 'Volatile') pool.type = 'Classic'
     const deposit = !isIchi ? null : allowed0[index] ? pool.token0 : pool.token1
     if (isIchi) {
@@ -133,6 +134,11 @@ function Updater() {
   const fetchInfo = useCallback(async () => {
     if (!poolsWithAllowed || poolsWithAllowed.length === 0) return
     let userInfo = []
+    const autoPoolV3 = {
+      ichi: [],
+      gamma: [],
+    }
+
     if (poolsWithAllowed.length > 0 && assets.length > 0) {
       const bnbTheNarrow = '0xed044cd5654ad208b1bc594fd108c132224e3f3c'
       const bnbTheWide = '0xe8ec29b75d98d3cdc47db9797b00dcaabea2b15b'
@@ -153,6 +159,7 @@ function Updater() {
           } else {
             kind = fusion.type === 'Stable' ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC
           }
+
           const asset0 = assets.find(ele => ele.address.toLowerCase() === fusion?.token0.address.toLowerCase())
           const asset1 = assets.find(ele => ele.address.toLowerCase() === fusion.token1.address.toLowerCase())
           const allowed = assets.find(ele => ele.address.toLowerCase() === fusion.allowed?.address.toLowerCase())
@@ -269,6 +276,24 @@ function Updater() {
               extraRewards,
             }
           }
+
+          if (fusion?.version === 3) {
+            if (ICHI_TYPES.includes(fusion.type)) {
+              autoPoolV3.ichi.push({
+                ...fusion,
+                allowed: {
+                  address: allowed?.address,
+                  symbol: allowed?.symbol,
+                  decimals: allowed?.decimals,
+                  logoURI: allowed?.logoURI,
+                  price: allowed?.price,
+                },
+              })
+            } else if (GAMMA_TYPES.includes(fusion.type)) {
+              autoPoolV3.gamma.push(fusion)
+            }
+          }
+
           return {
             ...fusion,
             stable: fusion.type === 'Stable',
@@ -316,23 +341,8 @@ function Updater() {
         networkId,
       }),
     )
+    dispatch(updatePoolsMigration(autoPoolV3))
   }, [dispatch, assets, extraRewardsInfo, networkId, poolsWithAllowed, userInfos, prices])
-
-  useEffect(() => {
-    const payload = fusionPoolsV3.reduce(
-      (acc, pool) => {
-        if (ICHI_TYPES.includes(pool.type)) {
-          acc.ichi.push(pool)
-        } else if (GAMMA_TYPES.includes(pool.type)) {
-          acc.gamma.push(pool)
-        }
-        return acc
-      },
-      { ichi: [], gamma: [] },
-    )
-
-    dispatch(updatePoolsMigration(payload))
-  }, [dispatch, fusionPoolsV3])
 
   useEffect(() => {
     fetchInfo()

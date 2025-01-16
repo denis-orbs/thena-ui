@@ -2,14 +2,15 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256 } from 'viem'
+import { decodeEventLog, erc20Abi, maxUint256 } from 'viem'
 
-import { TXN_STATUS } from '@/constant'
+import { HASH, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
-import { readCall, simulateCall } from '@/lib/contractActions'
+import { readCall, simulateCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
+  getGaugeContract,
   getGaugeSimpleContract,
   getIchiFarmingContract,
   getIchiVaultContract,
@@ -20,6 +21,8 @@ import { errorToast, warnToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+
+import { fetchOdosQuote, simulateOdosSwap } from '../useSwap'
 
 export const useIchiManage = () => {
   const [pending, setPending] = useState(false)
@@ -561,4 +564,261 @@ export const useIchiManageV3 = () => {
   )
 
   return { addIchiPool, stakeIchiPool, pending }
+}
+
+export const useMigrationIchi = () => {
+  const t = useTranslations()
+
+  const [pending, setPending] = useState(false)
+  const { account } = useWallet()
+  const { networkId } = useChainSettings()
+  const { startTxn, endTxn, writeTxn, updateTxn, closeTxn, sendTxn } = useTxn()
+
+  const migrateIchi = useCallback(
+    async ({ positionV2, strategy, callback }) => {
+      if (!positionV2 || !strategy) return
+
+      const { token0, token1, address: vaultAddressV2, gauge } = positionV2
+      const { allowed: depositToken, isFarming, address: vaultAddressV3 } = strategy
+      const gaugeContract = getGaugeContract(gauge.address, networkId)
+      const depositGuardContract = getVaultDepositContract(networkId, 3, isFarming)
+      const vaultContractV2 = getIchiVaultContract(vaultAddressV2, networkId, 2)
+      const vaultContractV3 = getIchiVaultContract(vaultAddressV3, networkId, 3)
+
+      const key = uuidv4()
+      const unstakedId = uuidv4()
+      const removeId = uuidv4()
+      const approveSwapId = uuidv4()
+      const swapId = uuidv4()
+      const approveId = uuidv4()
+      const supplyId = uuidv4()
+      const approveLPId = uuidv4()
+      const stakeId = uuidv4()
+
+      const stakedBalance = positionV2.account?.gaugeBalance
+      const totalLp = positionV2.account?.totalLp
+      const swapToken = depositToken.address === token0.address ? token1 : token0
+
+      const slippage = 0.5
+
+      const routerAddress = Contracts.odos[networkId]
+      const swapTokenContract = getERC20Contract(swapToken.address, networkId)
+      const allowanceSwap = await readCall(swapTokenContract, 'allowance', [account, routerAddress], networkId)
+
+      const tokenContract = getERC20Contract(depositToken.address, networkId)
+      const allowance = await readCall(tokenContract, 'allowance', [account, depositGuardContract.address], networkId)
+      const isApprovedStake = fromWei(allowance, depositToken.decimals).gte(totalLp)
+
+      const transactions = {}
+      if (stakedBalance.gt(0)) {
+        transactions[unstakedId] = {
+          desc: t('Unstake'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[removeId] = {
+        desc: t('Remove Liquidity'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      transactions[approveSwapId] = {
+        desc: `${t('Approve')} ${swapToken.symbol}`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      transactions[swapId] = {
+        desc: t('Swap [symbolA] for [symbolB]', { symbolA: swapToken.symbol, symbolB: depositToken.symbol }),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      if (!isApprovedStake) {
+        transactions[approveId] = {
+          desc: `${t('Approve')} ${depositToken.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[supplyId] = {
+        desc: `${t('Deposit')} ${depositToken.symbol}`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      if (isFarming) {
+        transactions[approveLPId] = {
+          desc: `${t('Approve')} LP`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+        transactions[stakeId] = {
+          desc: `${t('Stake')} LP`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      startTxn({ key, transactions, title: 'Migrate' })
+      setPending(true)
+
+      // MARK: UNSTAKE AND WITHDRAW FROM V2
+      if (stakedBalance.gt(0)) {
+        if (!(await writeTxn(key, unstakedId, gaugeContract, 'withdrawAllAndHarvest', []))) {
+          setPending(false)
+          return
+        }
+      }
+
+      const withdrawTx = await writeTxn(key, removeId, vaultContractV2, 'withdraw', [
+        toWei(totalLp).toFixed(0),
+        account,
+      ])
+      if (!withdrawTx) {
+        setPending(false)
+        return
+      }
+      const withdrawReceipt = await waitCall(withdrawTx)
+      const events = withdrawReceipt.logs
+      const transferEvent = events.filter(e => e.topics[0] === HASH.TRANSFER)
+      const transferAmounts = transferEvent.reduce((acc, o) => {
+        const decodeData = decodeEventLog({
+          abi: erc20Abi,
+          data: o.data,
+          topics: o.topics,
+        })
+
+        const address = o.address.toLowerCase()
+        if (!acc[address]) {
+          acc[address] = 0n
+        }
+        acc[address] += decodeData.args.value
+
+        return acc
+      }, {})
+
+      // MARK: APPROVE + SWAP BY ODOS
+      const isApprovedSwap = fromWei(allowanceSwap, swapToken.decimals).gte(transferAmounts[swapToken.address])
+      if (isApprovedSwap) {
+        updateTxn({ key, uuid: approveSwapId, status: TXN_STATUS.SUCCESS, hash: '' })
+        setPending(false)
+      } else {
+        const tx = await writeTxn(key, approveSwapId, swapTokenContract, 'approve', [routerAddress, maxUint256])
+        if (!tx) {
+          setPending(false)
+          return
+        }
+      }
+
+      const quote = await fetchOdosQuote({
+        inputAmount: transferAmounts[swapToken.address].toString(),
+        inputToken: swapToken.address,
+        outputToken: depositToken.address,
+        networkId,
+        account,
+        slippage,
+      })
+
+      const { to, data, value } = await simulateOdosSwap(account, quote.pathId, () => {
+        setPending(false)
+      })
+      const swapTx = await sendTxn(key, swapId, to, data, value)
+      if (!swapTx) {
+        setPending(false)
+        return
+      }
+
+      const swapReceipt = await waitCall(swapTx)
+      const swapEvent = swapReceipt.logs.filter(
+        e => e.topics[0] === HASH.TRANSFER && e.address.toLowerCase() === depositToken.address.toLowerCase(),
+      )
+      const swapedAmount = swapEvent.reduce((sum, e) => {
+        const decodeData = decodeEventLog({
+          abi: erc20Abi,
+          data: e.data,
+          topics: e.topics,
+        })
+        sum += decodeData.args.value
+        return sum
+      }, 0n)
+
+      // MARK: APPROVE + DEPOSIT TOKEN
+      if (!isApprovedStake) {
+        if (!(await writeTxn(key, approveId, tokenContract, 'approve', [depositGuardContract.address, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      const depositAmount = swapedAmount + transferAmounts[depositToken.address]
+      const vaultDeployerAddress = Contracts.vaultDeployer[networkId]
+      let lpAmount = await simulateCall(
+        depositGuardContract,
+        'forwardDepositToICHIVault',
+        [vaultAddressV3, vaultDeployerAddress, depositToken.address, depositAmount, '0', account],
+        networkId,
+      )
+      lpAmount = new BigNumber(lpAmount)
+        .times(Math.floor((100 - slippage) * 1000))
+        .div(100000)
+        .dp(0)
+        .toString(10)
+
+      if (isInvalidAmount(lpAmount)) {
+        setPending(false)
+        errorToast('Error', 'Deposit Not Allowed Description')
+        closeTxn()
+        return
+      }
+
+      if (
+        !(await writeTxn(key, supplyId, depositGuardContract, 'forwardDepositToICHIVault', [
+          vaultAddressV3,
+          vaultDeployerAddress,
+          depositToken.address,
+          depositAmount,
+          lpAmount,
+          account,
+        ]))
+      ) {
+        setPending(false)
+        return
+      }
+
+      if (isFarming) {
+        // MARK: APPROVE LP AND FARMING
+        const farmingAddress = await readCall(vaultContractV3, 'farmingContract', [], networkId)
+        const allowance1 = await readCall(vaultContractV3, 'allowance', [account, farmingAddress], networkId)
+        const lpBalance = await readCall(vaultContractV3, 'balanceOf', [account], networkId)
+        const isVaultApproved = fromWei(allowance1).gte(lpBalance)
+
+        if (!isVaultApproved) {
+          if (!(await writeTxn(key, approveLPId, vaultContractV3, 'approve', [farmingAddress, maxUint256]))) {
+            setPending(false)
+            return
+          }
+        } else {
+          updateTxn({ key, uuid: approveLPId, status: TXN_STATUS.SUCCESS })
+        }
+
+        // Stake LP
+        const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
+        if (!(await writeTxn(key, stakeId, farmingContract, 'stake', [lpBalance, account]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      callback()
+      endTxn({ key, final: 'Migrate Successful' })
+      setPending(false)
+    },
+    [networkId, account, t, startTxn, writeTxn, sendTxn, endTxn, updateTxn, closeTxn],
+  )
+
+  return { migrateIchi, pending }
 }

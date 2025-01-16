@@ -527,3 +527,133 @@ export const useGammaData = pool => {
 
   return { rewardsData }
 }
+
+export const useGammaMigration = () => {
+  const t = useTranslations()
+
+  const [pending, setPending] = useState(false)
+  const { networkId } = useChainSettings()
+  const { account } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const migrateGamma = useCallback(
+    async ({ pool, callback }) => {
+      const isStaked = pool.account.gaugeBalance > 0
+      const amount = pool.account.totalLp
+
+      const key = uuidv4()
+
+      const unstakedId = uuidv4()
+      const removeId = uuidv4()
+      // const swapId = uuidv4()
+      const approve1uuid = uuidv4()
+      const approve2uuid = uuidv4()
+      const depositId = uuidv4()
+
+      const gammaPairAddress = pool.address
+      const { token0, token1 } = pool
+      const firstContract = getERC20Contract(token0.address, networkId)
+      const secondContract = getERC20Contract(token1.address, networkId)
+      const baseAllowance = await readCall(firstContract, 'allowance', [account, gammaPairAddress], networkId)
+      const isFirstApproved = fromWei(baseAllowance, token0.decimals).gte(amount.toExact())
+      const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaPairAddress], networkId)
+      const isSecondApproved = fromWei(quoteAllowance, token1.decimals).gte(amount.toExact())
+
+      const transactions = {}
+
+      if (isStaked) {
+        transactions[unstakedId] = {
+          desc: `${t('Unstake')} V2`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[removeId] = {
+        desc: `${t('Remove Liquidity')} V2`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      if (!isFirstApproved) {
+        transactions[approve1uuid] = {
+          desc: `${t('Approve')} ${token0.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      if (!isSecondApproved) {
+        transactions[approve2uuid] = {
+          desc: `${t('Approve')} ${token1.symbol}`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      startTxn({ key, title: t('Migration'), transactions })
+      setPending(true)
+      const gammaV2 = getGammaHyperVisorContract(pool.address, networkId, 2)
+      const gammaV3 = getGammaHyperVisorContract(pool.address, networkId, 3)
+
+      if (isStaked) {
+        const gaugeContract = getGaugeContract(pool.gauge.address, networkId)
+        if (!(await writeTxn(key, unstakedId, gaugeContract, 'withdrawAllAndHarvest', []))) {
+          setPending(false)
+          return
+        }
+      }
+
+      const txHash = await writeTxn(key, removeId, gammaV2, 'withdraw', [
+        toWei(amount).toFixed(0),
+        account,
+        account,
+        [0, 0, 0, 0],
+      ])
+      if (!txHash) {
+        setPending(false)
+        return
+      }
+
+      // TODO: swap
+
+      // TODO: add liquidity
+      if (!isFirstApproved) {
+        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [gammaPairAddress, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      if (!isSecondApproved) {
+        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [gammaPairAddress, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      const amountA = '0'
+      const amountB = '0'
+
+      if (
+        !(await writeTxn(key, depositId, gammaV3, 'deposit', [
+          amountA,
+          amountB,
+          account,
+          gammaPairAddress,
+          [0, 0, 0, 0],
+        ]))
+      ) {
+        setPending(false)
+        return
+      }
+
+      callback()
+      endTxn({ key, final: 'Migration Successful' })
+      setPending(false)
+    },
+    [t, startTxn, networkId, writeTxn, account, endTxn],
+  )
+
+  return { migrateGamma, pending }
+}
