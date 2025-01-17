@@ -578,8 +578,8 @@ export const useMigrationIchi = () => {
     async ({ positionV2, strategy, callback }) => {
       if (!positionV2 || !strategy) return
 
-      const { token0, token1, address: vaultAddressV2, gauge } = positionV2
-      const { allowed: depositToken, isFarming, address: vaultAddressV3 } = strategy
+      const { address: vaultAddressV2, gauge, token0, token1 } = positionV2
+      const { address: vaultAddressV3, allowed: depositToken, isFarming } = strategy
       const gaugeContract = getGaugeContract(gauge.address, networkId)
       const depositGuardContract = getVaultDepositContract(networkId, 3, isFarming)
       const vaultContractV2 = getIchiVaultContract(vaultAddressV2, networkId, 2)
@@ -612,14 +612,14 @@ export const useMigrationIchi = () => {
       const transactions = {}
       if (stakedBalance.gt(0)) {
         transactions[unstakedId] = {
-          desc: t('Unstake'),
+          desc: `${t('Unstake')} V2`,
           status: TXN_STATUS.START,
           hash: null,
         }
       }
 
       transactions[removeId] = {
-        desc: t('Remove Liquidity'),
+        desc: `${t('Remove Liquidity')} V2`,
         status: TXN_STATUS.START,
         hash: null,
       }
