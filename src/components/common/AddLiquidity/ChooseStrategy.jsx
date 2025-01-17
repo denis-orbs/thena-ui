@@ -242,8 +242,8 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
       let { title } = sub
 
       let isFarming = false
-      if (sub.title.includes('_Farming')) {
-        isFarming = false
+      if (sub.title.includes('Farming')) {
+        isFarming = true
       }
 
       if (title === 'CL_SwapFee') title = 'Manual (Swap Fees)'
