@@ -140,6 +140,7 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
     contracts: [
       { ...poolContract, functionName: 'liquidity' },
       { ...poolContract, functionName: 'globalState' },
+      { ...poolContract, functionName: 'fee' },
     ],
     query: {
       enabled: !!poolAddress,
@@ -150,7 +151,7 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
   const globalStates = poolInfo?.[1]?.result
   const price = new BigNumber(globalStates?.[0]).toString(10)
   const tick = Number(globalStates?.[1]) ?? 0
-  const fee = Number(globalStates?.[2])
+  const fee = Number(globalStates?.[2]) || poolInfo?.[2]?.result
 
   if (!token0 || !token1 || !fee || !price || !liquidity) return [PoolState.NOT_EXISTS, null]
   return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick), poolAddress]

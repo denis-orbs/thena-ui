@@ -364,11 +364,7 @@ export function FarmingPosition({ pool }) {
           {t('Remove')}
         </OutlinedButton>
 
-        <TextButton
-          className='w-full'
-          disabled={!farmRewardData || feesInUsd.isZero()}
-          onClick={() => setClaimPopup(true)}
-        >
+        <TextButton className='w-full' disabled={feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
           {t('Claim')}
         </TextButton>
 
