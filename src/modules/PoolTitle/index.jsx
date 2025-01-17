@@ -19,10 +19,12 @@ export default function PoolTitle({ strategy }) {
         />
         <div className='flex flex-col gap-1'>
           <TextHeading>{strategy.symbol}</TextHeading>
-          <Paragraph className='text-xs'>{GAMMA_TYPES.includes(strategy.title) ? 'Gamma' : strategy.title}</Paragraph>
+          <Paragraph className='text-xs'>
+            {GAMMA_TYPES.includes(strategy.title) ? 'Gamma' : strategy.title.replace('_', ' ')}
+          </Paragraph>
         </div>
       </div>
-      {GAMMA_TYPES.includes(strategy.title) && <NeutralBadge>{strategy.title}</NeutralBadge>}
+      {GAMMA_TYPES.includes(strategy.title) && <NeutralBadge>{strategy.title.replace('_', ' ')}</NeutralBadge>}
       {ICHI_TYPES.includes(strategy.title) && <NeutralBadge>{strategy.allowed.symbol}</NeutralBadge>}
     </div>
   )

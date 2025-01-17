@@ -381,11 +381,7 @@ function VotingHistory({ veTHEId }) {
           const result = res.data.map(item => ({
             ...item,
             totalVetheBalance: (item.votes || []).reduce((sum, vote) => sum + parseFloat(vote?.vetheBalance || 0), 0),
-            totalVotesEpoch: (item.votes || []).reduce(
-              (sum, vote) =>
-                sum + (vote.poolVotes || []).reduce((curr, poolVote) => curr + parseFloat(poolVote.totalVote), 0),
-              0,
-            ),
+            totalVotesEpoch: item.epochTotalVotes,
           }))
 
           return { ...res, data: result }

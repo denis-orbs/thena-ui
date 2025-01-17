@@ -71,7 +71,6 @@ export default function Staked({ pool }) {
           </div>
         </div>
         <GreenBadge>{t('Staked')}</GreenBadge>
-        <GreenBadge>{pool.account.version}</GreenBadge>
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
