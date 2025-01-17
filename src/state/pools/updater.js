@@ -5,7 +5,7 @@ import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { pairAPIAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
@@ -150,11 +150,7 @@ function Updater() {
         .map(fusion => {
           const { lpPrice, gauge } = fusion
           let kind
-          if (
-            ['Narrow', 'Wide', 'Correlated', 'CL_Stable', 'ICHI', 'DefiEdge', 'CL_Farming', 'CL_SwapFee'].includes(
-              fusion.type,
-            )
-          ) {
+          if ([...GAMMA_TYPES, ...MANUAL_TYPES, ...ICHI_TYPES].includes(fusion.type)) {
             kind = PAIR_TYPES.LSD
           } else {
             kind = fusion.type === 'Stable' ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC
@@ -262,12 +258,20 @@ function Updater() {
           }
 
           if (found) {
+            let walletBalance = formatEther(found.walletBalance)
+            let gaugeBalance = formatEther(found.gaugeBalance)
+
+            if (fusion.type === ICHI_TYPES[1]) {
+              gaugeBalance = formatEther(found.walletBalance)
+              walletBalance = formatEther(0n)
+            }
+
             user = {
               ...found,
               token0claimable: formatUnits(found.token0claimable, token0.decimals),
               token1claimable: formatUnits(found.token1claimable, token1.decimals),
-              walletBalance: formatEther(found.walletBalance),
-              gaugeBalance: formatEther(found.gaugeBalance),
+              walletBalance,
+              gaugeBalance,
               totalLp: formatEther(found.totalLp),
               gaugeEarned: fromWei(found.gaugeEarned).toNumber(),
               stakedUsd: fromWei(found.gaugeBalance).times(lpPrice).toNumber(),

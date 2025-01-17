@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { decodeEventLog, erc20Abi, maxUint256 } from 'viem'
 
-import { HASH, TXN_STATUS } from '@/constant'
+import { HASH, ICHI_TYPES, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
 import { readCall, simulateCall, waitCall } from '@/lib/contractActions'
@@ -298,12 +298,13 @@ export const useIchiRemove = () => {
       const key = uuidv4()
       const removeuuid = uuidv4()
       const unstakeuuid = uuidv4()
+      const isFarming = pool.title === ICHI_TYPES[0] && version === 3
 
       startTxn({
         key,
         title: 'Remove Liquidity',
         transactions: {
-          ...(version === 3 && {
+          ...(isFarming && {
             [unstakeuuid]: {
               desc: t('Unstake'),
               status: TXN_STATUS.START,
@@ -320,7 +321,7 @@ export const useIchiRemove = () => {
       setPending(true)
       const vaultContract = getIchiVaultContract(pool.address, networkId, version)
 
-      if (version === 3) {
+      if (isFarming) {
         const farmingAddress = await readCall(vaultContract, 'farmingContract', [], networkId)
         const farmingContract = getIchiFarmingContract(farmingAddress, networkId)
         if (!(await writeTxn(key, unstakeuuid, farmingContract, 'unstake', [toWei(amount).toFixed(0)]))) {
