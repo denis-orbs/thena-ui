@@ -160,7 +160,7 @@ const FUSION_TRANSACTIONS = gql`
 `
 
 const WEIGHTED_TRANSACTIONS = gql`
-  query fusionTransactions($pairs: [String]!) {
+  query fusionTransactions($address: String!) {
     swaps(first: 50, orderBy: timestamp, orderDirection: desc, where: { poolId_: { address: $address } }) {
       tokenIn
       tokenOut
@@ -369,11 +369,11 @@ const getFusionTransactions = async (chainId, version, pairs) => {
   }
 }
 
-const getWeightedTransactions = async (chainId, pairs) => {
+const getWeightedTransactions = async (chainId, address) => {
   try {
     const newTxns = []
     const { poolActivities, swaps } = await weightedClient[chainId].request(WEIGHTED_TRANSACTIONS, {
-      pairs,
+      address,
     })
 
     poolActivities.forEach(ele => {
@@ -424,15 +424,23 @@ const getWeightedTransactions = async (chainId, pairs) => {
   }
 }
 
-const getTransactionType = (event, symbol0, symbol1, t) => {
+const getTransactionType = (event, symbol0, symbol1, t, tokens, isWeighted = false) => {
   const formattedS0 = symbol0?.length > 8 ? `${symbol0.slice(0, 7)}...` : symbol0
   const formattedS1 = symbol1?.length > 8 ? `${symbol1.slice(0, 7)}...` : symbol1
   switch (event) {
     case TXN_TYPE.ADD:
-      return t('Add [symbolA] and [symbolB]', {
-        symbolA: formattedS0,
-        symbolB: formattedS1,
-      })
+      if (!isWeighted) {
+        return t('Add [symbolA] and [symbolB]', {
+          symbolA: formattedS0,
+          symbolB: formattedS1,
+        })
+      }
+
+      return tokens.reduce(
+        (str, tk, index) => str + tk.symbol + (index < tokens.length - 1 ? ` ${t('And')} ` : ''),
+        `${t('Add')} `,
+      )
+
     case TXN_TYPE.REMOVE:
       return t('Remove [symbolA] and [symbolB]', {
         symbolA: formattedS0,
@@ -450,7 +458,7 @@ const getTransactionType = (event, symbol0, symbol1, t) => {
 
 const fetchPairTransaction = async (chainId, pair) => {
   if (pair.type === PAIR_TYPES.WEIGHTED) {
-    const { data: fusiondata } = await getWeightedTransactions(chainId, [pair.address])
+    const { data: fusiondata } = await getWeightedTransactions(chainId, pair.address)
     return fusiondata
   }
 
@@ -564,6 +572,8 @@ export default function TransactionTable({ pair }) {
     [txnData, sort, filter],
   )
 
+  console.log({ sortedData })
+
   const final = useMemo(
     () =>
       sortedData.map(item => ({
@@ -574,7 +584,9 @@ export default function TransactionTable({ pair }) {
               goScan(networkId, item.hash, true)
             }}
           >
-            {getTransactionType(item.type, item.token1Symbol, item.token0Symbol, t)}
+            {pair.type === PAIR_TYPES.WEIGHTED
+              ? getTransactionType(item.type, item.token1Symbol, item.token0Symbol, t, pair.tokens, true)
+              : getTransactionType(item.type, item.token1Symbol, item.token0Symbol, t, pair.tokens, true)}
           </div>
         ),
         total: <Paragraph>${formatAmount(item.amountUSD, true)}</Paragraph>,
