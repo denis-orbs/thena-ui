@@ -7,10 +7,13 @@ import { v4 as uuidv4 } from 'uuid'
 import { getAddress, maxUint256 } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
+import { vammZapAbi } from '@/constant/abi'
+import Contracts from '@/constant/contracts'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getFarmingCenterContract,
+  getGaugeContract,
   getInsentiveContract,
   getPositionManagerContract,
 } from '@/lib/contracts'
@@ -43,10 +46,10 @@ export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amount
       // TODO: replace with pool address
       const params = {
         dex: 'DEX_THENAALGEBRAINTEGRAL',
-        'pool.id': '0x9ea0f51fd2133d995cf00229bc523737415ad318',
+        'pool.id': getAddress(poolId),
         'position.tickLower': tickLower,
         'position.tickUpper': tickUpper,
-        tokenIn: tokenIn.address,
+        tokenIn: getAddress(tokenIn.address),
         amountIn: amount,
         slippage,
       }
@@ -215,4 +218,130 @@ export const useZapperAddLiquidity = () => {
   )
 
   return { handleAddLiquidity, pending }
+}
+
+export const useV1Zapper = () => {
+  const t = useTranslations()
+  const { startTxn, writeTxn, endTxn, updateTxn } = useTxn()
+
+  const [pending, setPending] = useState(false)
+  const { account, chainId } = useWallet()
+  const vammZapAddress = Contracts.vammZap[chainId]
+
+  const onAddLiquidity = useCallback(
+    async ({ token, amount, gaugeAddress, pairAddress, zapSwapSlippage }) => {
+      try {
+        if (!account) {
+          throw new Error('Please connect your wallet')
+        }
+
+        const key = uuidv4()
+        const approveId = uuidv4()
+        const addLiquidityId = uuidv4()
+        const approveNft = uuidv4()
+        const approveStakeId = uuidv4()
+        const stakeId = uuidv4()
+        const transactions = {}
+
+        let isApproved = false
+        const tokenContract = getERC20Contract(token.address, chainId)
+        if (token.address !== 'BNB') {
+          const allowance = await readCall(tokenContract, 'allowance', [account, vammZapAddress])
+          isApproved = fromWei(allowance, token.decimals).gte(amount)
+        }
+
+        if (token.address !== 'BNB' && !isApproved) {
+          transactions[approveId] = {
+            desc: 'Approving token',
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
+        transactions[addLiquidityId] = {
+          desc: 'Add Liquidity',
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+
+        if (gaugeAddress) {
+          transactions[approveNft] = {
+            desc: `${t('Approve')} LP`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+
+          transactions[stakeId] = {
+            desc: `${t('Stake')} LP`,
+            status: TXN_STATUS.START,
+            hash: null,
+          }
+        }
+
+        startTxn({ key, transactions, title: t('Add Liquidity') })
+        setPending(true)
+
+        // MARK: APPROVE TOKENS
+        setPending(true)
+        if (!isApproved) {
+          if (!(await writeTxn(key, approveId, tokenContract, 'approve', [vammZapAddress, maxUint256]))) {
+            setPending(false)
+            return
+          }
+        }
+
+        // MARK: ADD LIQUIDITY
+        const amountIn = toWei(
+          new BigNumber(amount).decimalPlaces(token.decimals, BigNumber.ROUND_DOWN).toString(),
+          token.decimals,
+        )
+        const txhash = await writeTxn(
+          key,
+          addLiquidityId,
+          {
+            address: vammZapAddress,
+            abi: vammZapAbi,
+          },
+          'zapIn',
+          [token.address, amountIn, zapSwapSlippage, pairAddress],
+        )
+        if (!txhash) {
+          setPending(false)
+          return
+        }
+
+        // MARK: ADD LIQUIDITY
+        if (gaugeAddress) {
+          const lpContract = getERC20Contract(pairAddress, chainId)
+          const allowance = await readCall(lpContract, 'allowance', [account, gaugeAddress], chainId)
+          const lpBalance = await readCall(lpContract, 'balanceOf', [account], chainId)
+          const isLpApproved = fromWei(allowance).gte(lpBalance)
+
+          if (!isLpApproved) {
+            if (!(await writeTxn(key, approveStakeId, lpContract, 'approve', [gaugeAddress, maxUint256]))) {
+              setPending(false)
+              return
+            }
+          } else {
+            updateTxn({ key, uuid: approveStakeId, status: TXN_STATUS.SUCCESS, hash: 'hash' })
+          }
+
+          const gaugeContract = getGaugeContract(gaugeAddress, chainId)
+          if (!(await writeTxn(key, stakeId, gaugeContract, 'deposit', [lpBalance]))) {
+            setPending(false)
+            return
+          }
+        }
+
+        endTxn({ key, final: 'Liquidity Add Successful' })
+        setPending(false)
+      } catch (e) {
+        setPending(false)
+        throw e
+      }
+    },
+    [account, chainId, startTxn, t, writeTxn, vammZapAddress, endTxn, updateTxn],
+  )
+
+  return { onAddLiquidity, pending }
 }

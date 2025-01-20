@@ -122,8 +122,8 @@ export default function AddLiquidityCLPane({ pool, isAdd, isReverse, goPreviousS
             <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
             {isZapper ? (
               <ZapperPane
-                asset1={baseCurrency}
-                asset2={quoteCurrency}
+                token1Address={baseCurrency.address}
+                token2Address={quoteCurrency.address}
                 slippage={slippage}
                 tickLower={tickLower}
                 tickUpper={tickUpper}

@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
+import { formatEther } from 'viem'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
@@ -7,13 +8,18 @@ import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import TokenInput from '@/components/input/TokenInput'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
+import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { ArrowRightIcon } from '@/svgs'
 
-function ZapperPane({ asset1, asset2, slippage, tickLower, tickUpper, deadline, mintInfo, strategy }) {
+function ZapperPane({ token1Address, token2Address, slippage, tickLower, tickUpper, deadline, mintInfo, strategy }) {
+  const asset1 = useGetAsset(token1Address)
+  const asset2 = useGetAsset(token2Address)
+
   const t = useTranslations()
   const { account } = useWallet()
   const [tokensData] = useState([asset1, asset2])
@@ -21,6 +27,7 @@ function ZapperPane({ asset1, asset2, slippage, tickLower, tickUpper, deadline, 
   const { handleAddLiquidity } = useZapperAddLiquidity()
 
   const [amount, setAmount] = useState(0)
+  const amountIn = useDebounce(amount, 500)
 
   const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset1.address, asset2.address)
 
@@ -29,7 +36,7 @@ function ZapperPane({ asset1, asset2, slippage, tickLower, tickUpper, deadline, 
     tickUpper,
     poolId: strategy?.isFarming ? poolAddress : customPoolAddress,
     tokenIn: tokenDeposit,
-    amountIn: amount,
+    amountIn,
     slippage: slippage * 100,
   })
 
@@ -81,7 +88,7 @@ function ZapperPane({ asset1, asset2, slippage, tickLower, tickUpper, deadline, 
             type='number'
             className='w-full flex-[4] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
             placeholder='0.0'
-            value={formatAmount(data?.positionDetails?.addedAmount ?? 0)}
+            value={formatEther(data?.positionDetails?.addedLiquidity ?? 0n)}
             readOnly
           />
           <div
@@ -121,7 +128,7 @@ function ZapperPane({ asset1, asset2, slippage, tickLower, tickUpper, deadline, 
               route: data?.route,
               mintInfo,
               deadline,
-              amount,
+              amount: amountIn,
               token: tokenDeposit,
               isFarming: Boolean(strategy?.isFarming),
             })

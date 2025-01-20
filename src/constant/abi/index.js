@@ -36,6 +36,7 @@ import stakingAbi from './staking.json'
 import swapRouterAbi from './swapRouterTestnet.json'
 import testnetClaimerAbi from './testnet-claimer.json'
 import ThenianAbi from './thenian.json'
+import vammZapAbi from './vammZap.json'
 import veDistAbi from './veDist.json'
 import veTHEAbi from './veTHE.json'
 import veTHEApiAbi from './veTHEAPI.json'
@@ -91,6 +92,7 @@ export {
   swapRouterAbi,
   testnetClaimerAbi,
   ThenianAbi,
+  vammZapAbi,
   veDistAbi,
   veTHEAbi,
   veTHEApiAbi,
