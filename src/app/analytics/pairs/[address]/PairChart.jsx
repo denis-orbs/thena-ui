@@ -121,7 +121,7 @@ export const getWeightedChartData = async (chainId, address, skip) => {
 
 export const fetchPairChartData = async (chainId, pair) => {
   if (pair.type === PAIR_TYPES.WEIGHTED) {
-    const { data: fusiondata } = await fetchChartData(getWeightedChartData, [chainId, pair.address], false)
+    const { data: fusiondata = [] } = await fetchChartData(getWeightedChartData, [chainId, pair.address], false)
     return fusiondata
   }
 
@@ -137,22 +137,32 @@ export const fetchPairChartData = async (chainId, pair) => {
     const swapfeePool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[1])
     if (!swapfeePool) return fusionData
 
-    const { data: fusionData2 } = await fetchChartData(
+    const { data: fusionData2 = [] } = await fetchChartData(
       getFusionChartData,
       [{ chainId, address: swapfeePool.address, version }],
       false,
     )
 
-    return fusionData.map(data => {
-      const matchingData = fusionData2.find(ele => ele.date === data.date)
-      if (!matchingData) return data
-      return {
-        date: data.date,
-        dayFees: data.dayFees + matchingData.dayFees,
-        dayVolume: data.dayVolume + matchingData.dayVolume,
-        tvlUSD: data.tvlUSD + matchingData.tvlUSD,
+    const mergedData = []
+    const allDates = new Set([...fusionData.map(d => d.date), ...fusionData2.map(d => d.date)])
+
+    allDates.forEach(date => {
+      const data1 = fusionData.find(d => d.date === date)
+      const data2 = fusionData2.find(d => d.date === date)
+
+      if (data1 && data2) {
+        mergedData.push({
+          date,
+          dayFees: data1.dayFees + data2.dayFees,
+          dayVolume: data1.dayVolume + data2.dayVolume,
+          tvlUSD: data1.tvlUSD + data2.tvlUSD,
+        })
+      } else {
+        mergedData.push(data1 || data2)
       }
     })
+
+    return mergedData
   }
 
   const { data: v1data } = await fetchChartData(getV1ChartData, [chainId, pair.address, pair.fee], false)
