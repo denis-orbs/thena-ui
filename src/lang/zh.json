@@ -212,7 +212,6 @@
   "Asset 2": "Asset 2",
   "No strategy found": "未找到策略",
   "Initialize warning": "在您添加流动性之前，必须初始化此池。要初始化，请选择池的起始价格。然后，输入您的流动性价格范围和存款金额。由于需进行初始化的链上操作，矿工费用将高于一般。",
-  "Initialize warning2": "请在创建该仓位后，如果生成的手续费未显示在界面上，请联系 THENA 团队。您可以使用右下角的小部件提交工单。",
   "Starting [symbol] Price:": "起始 {symbol} 价格:",
   "Minimum Price": "最低价格",
   "Maximum Price": "最高价格",
