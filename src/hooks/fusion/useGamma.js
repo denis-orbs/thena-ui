@@ -2,12 +2,13 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256 } from 'viem'
+import { decodeEventLog, erc20Abi, maxUint256 } from 'viem'
 
-import { GAMMA_TYPES, TXN_STATUS } from '@/constant'
+import { GAMMA_TYPES, HASH, TXN_STATUS } from '@/constant'
+import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
-import { readCall } from '@/lib/contractActions'
+import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getGammaClearingContract,
@@ -22,6 +23,8 @@ import { fromWei, toWei } from '@/lib/utils'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
+
+import { fetchOdosQuote, simulateOdosSwap } from '../useSwap'
 
 export const useGammaAdd = () => {
   const [pending, setPending] = useState(false)
@@ -209,7 +212,8 @@ export const useGammaAddAndStake = () => {
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
   const onGammaAddAndStake = useCallback(
-    async (amountA, amountB, amountToWrap, gammaPair, version = 3) => {
+    async (amountA, amountB, amountToWrap, gammaPair) => {
+      const version = gammaPair?.version ?? 3
       const baseCurrency = amountA.currency
       const quoteCurrency = amountB.currency
       const baseCurrencyAddress = baseCurrency.wrapped ? baseCurrency.wrapped.address.toLowerCase() : ''
@@ -534,30 +538,33 @@ export const useGammaMigration = () => {
   const [pending, setPending] = useState(false)
   const { networkId } = useChainSettings()
   const { account } = useWallet()
-  const { startTxn, endTxn, writeTxn } = useTxn()
+  const { startTxn, endTxn, writeTxn, sendTxn, updateTxn } = useTxn()
 
   const migrateGamma = useCallback(
-    async ({ pool, callback }) => {
-      const isStaked = pool.account.gaugeBalance > 0
-      const amount = pool.account.totalLp
+    async ({ positionV2, strategy, callback }) => {
+      const isStaked = positionV2.account.gaugeBalance > 0
+      const amount = positionV2.account.totalLp
+
+      const { address: gammaAddressV2, token0, token1 } = positionV2
+      const { address: gammaAddressV3, _isFarming } = strategy
 
       const key = uuidv4()
-
       const unstakedId = uuidv4()
       const removeId = uuidv4()
-      // const swapId = uuidv4()
+      const approveSwapId = uuidv4()
+      const swapId = uuidv4()
       const approve1uuid = uuidv4()
       const approve2uuid = uuidv4()
       const depositId = uuidv4()
 
-      const gammaPairAddress = pool.address
-      const { token0, token1 } = pool
+      const gammaV2 = getGammaHyperVisorContract(gammaAddressV2, networkId, 2)
+      const gammaV3 = getGammaHyperVisorContract(gammaAddressV3, networkId, 3)
       const firstContract = getERC20Contract(token0.address, networkId)
       const secondContract = getERC20Contract(token1.address, networkId)
-      const baseAllowance = await readCall(firstContract, 'allowance', [account, gammaPairAddress], networkId)
-      const isFirstApproved = fromWei(baseAllowance, token0.decimals).gte(amount.toExact())
-      const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaPairAddress], networkId)
-      const isSecondApproved = fromWei(quoteAllowance, token1.decimals).gte(amount.toExact())
+      const baseAllowance = await readCall(firstContract, 'allowance', [account, gammaAddressV3], networkId)
+      const isFirstApproved = fromWei(baseAllowance, token0.decimals).gte(amount)
+      const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaAddressV3], networkId)
+      const isSecondApproved = fromWei(quoteAllowance, token1.decimals).gte(amount)
 
       const transactions = {}
 
@@ -571,6 +578,18 @@ export const useGammaMigration = () => {
 
       transactions[removeId] = {
         desc: `${t('Remove Liquidity')} V2`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      transactions[approveSwapId] = {
+        desc: `${t('Approve')}`,
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      transactions[swapId] = {
+        desc: t('Re-balance'),
         status: TXN_STATUS.START,
         hash: null,
       }
@@ -591,56 +610,174 @@ export const useGammaMigration = () => {
         }
       }
 
+      transactions[depositId] = {
+        desc: 'Deposit Liquidity to V3',
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
       startTxn({ key, title: t('Migration'), transactions })
       setPending(true)
-      const gammaV2 = getGammaHyperVisorContract(pool.address, networkId, 2)
-      const gammaV3 = getGammaHyperVisorContract(pool.address, networkId, 3)
 
+      // TODO: UNSTAKE AND WITHDRAW V2
       if (isStaked) {
-        const gaugeContract = getGaugeContract(pool.gauge.address, networkId)
+        const gaugeContract = getGaugeContract(positionV2.gauge.address, networkId)
         if (!(await writeTxn(key, unstakedId, gaugeContract, 'withdrawAllAndHarvest', []))) {
           setPending(false)
           return
         }
       }
 
-      const txHash = await writeTxn(key, removeId, gammaV2, 'withdraw', [
+      const withdrawTx = await writeTxn(key, removeId, gammaV2, 'withdraw', [
         toWei(amount).toFixed(0),
         account,
         account,
         [0, 0, 0, 0],
       ])
-      if (!txHash) {
+      if (!withdrawTx) {
         setPending(false)
         return
       }
+      const withdrawReceipt = await waitCall(withdrawTx)
+      const events = withdrawReceipt.logs
+      const transferEvent = events.filter(e => e.topics[0] === HASH.TRANSFER)
+      const transferAmounts = transferEvent.reduce((acc, o) => {
+        const decodeData = decodeEventLog({
+          abi: erc20Abi,
+          data: o.data,
+          topics: o.topics,
+        })
 
-      // TODO: swap
+        const address = o.address.toLowerCase()
+        if (!acc[address]) {
+          acc[address] = 0n
+        }
+        acc[address] += decodeData.args.value
 
-      // TODO: add liquidity
+        return acc
+      }, {})
+
+      console.log(transferAmounts)
+
+      // TODO: RE-BALANCE
+      const gammaUNIProxyContract = getGammaUNIProxyContract(networkId, 3)
+      const rangeAmountOfToken1 = await readCall(
+        gammaUNIProxyContract,
+        'getDepositAmount',
+        [gammaAddressV3, token0.address, transferAmounts[token0.address]],
+        networkId,
+      )
+
+      const [min, max] = rangeAmountOfToken1
+      const targetToken1 = (min + max) / 2
+
+      let swapFromAmount = 0n
+      let fromToken = null
+      let toToken = null
+      if (min > transferAmounts[token1.address]) {
+        console.log('Token 1 is insufficient')
+        console.log('swap token0 to token1')
+
+        fromToken = token0
+        toToken = token1
+        const priceRatio = token0.price / token1.price
+        const swapToAmount = targetToken1 - transferAmounts[token1.address]
+        swapFromAmount = swapToAmount / priceRatio
+      } else if (max < transferAmounts[token1.address]) {
+        console.log('Token 1 is excess')
+        console.log('swap token1 to token0')
+        fromToken = token1
+        toToken = token0
+        const priceRatio = token1.price / token0.price
+        const swapToAmount = transferAmounts[token1.address] - targetToken1
+        swapFromAmount = swapToAmount / priceRatio
+      }
+
+      const swapAmount = {
+        [fromToken.address]: -swapFromAmount, // have to negative number
+        [toToken.address]: 0n,
+      }
+      if (swapFromAmount > 0n && fromToken && toToken) {
+        console.log('swap')
+        const routerAddress = Contracts.odos[networkId]
+        // MARK: APPROVE + SWAP BY ODOS
+        const swapTokenContract = getERC20Contract(fromToken.address, networkId)
+        const allowanceSwap = await readCall(swapTokenContract, 'allowance', [account, routerAddress], networkId)
+        const isApprovedSwap = fromWei(allowanceSwap, fromToken.decimals).gte(swapFromAmount)
+        if (isApprovedSwap) {
+          updateTxn({ key, uuid: approveSwapId, status: TXN_STATUS.SUCCESS, hash: '' })
+          setPending(false)
+        } else {
+          const tx = await writeTxn(key, approveSwapId, swapTokenContract, 'approve', [routerAddress, maxUint256])
+          if (!tx) {
+            setPending(false)
+            return
+          }
+        }
+
+        const quote = await fetchOdosQuote({
+          inputAmount: swapFromAmount.toString(),
+          inputToken: fromToken.address,
+          outputToken: toToken.address,
+          networkId,
+          account,
+          slippage: 0.5,
+        })
+
+        const { to, data, value } = await simulateOdosSwap(account, quote.pathId, () => {
+          setPending(false)
+        })
+        const swapTx = await sendTxn(key, swapId, to, data, value)
+        if (!swapTx) {
+          setPending(false)
+          return
+        }
+
+        const swapReceipt = await waitCall(swapTx)
+        const swapEvent = swapReceipt.logs.filter(
+          e => e.topics[0] === HASH.TRANSFER && e.address.toLowerCase() === fromToken.address.toLowerCase(),
+        )
+        const swapedAmount = swapEvent.reduce((sum, e) => {
+          const decodeData = decodeEventLog({
+            abi: erc20Abi,
+            data: e.data,
+            topics: e.topics,
+          })
+          sum += decodeData.args.value
+          return sum
+        }, 0n)
+
+        swapAmount[toToken.address] = swapedAmount
+      } else {
+        updateTxn({ key, uuid: approveSwapId, status: TXN_STATUS.SUCCESS, hash: '' })
+        updateTxn({ key, uuid: swapId, status: TXN_STATUS.SUCCESS, hash: '' })
+        setPending(false)
+      }
+
+      // TODO: ADD LIQUIDITY
       if (!isFirstApproved) {
-        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [gammaPairAddress, maxUint256]))) {
+        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [gammaAddressV3, maxUint256]))) {
           setPending(false)
           return
         }
       }
 
       if (!isSecondApproved) {
-        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [gammaPairAddress, maxUint256]))) {
+        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [gammaAddressV3, maxUint256]))) {
           setPending(false)
           return
         }
       }
 
-      const amountA = '0'
-      const amountB = '0'
+      const amountA = transferAmounts[token0.address] + swapAmount[token0.address]
+      const amountB = transferAmounts[token1.address] + swapAmount[token1.address]
 
       if (
-        !(await writeTxn(key, depositId, gammaV3, 'deposit', [
+        !(await writeTxn(key, depositId, gammaV3, 'depositAndStake', [
           amountA,
           amountB,
           account,
-          gammaPairAddress,
+          gammaAddressV3,
           [0, 0, 0, 0],
         ]))
       ) {
@@ -652,7 +789,7 @@ export const useGammaMigration = () => {
       endTxn({ key, final: 'Migration Successful' })
       setPending(false)
     },
-    [t, startTxn, networkId, writeTxn, account, endTxn],
+    [networkId, account, t, startTxn, writeTxn, endTxn, sendTxn, updateTxn],
   )
 
   return { migrateGamma, pending }
