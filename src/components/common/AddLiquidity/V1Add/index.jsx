@@ -20,6 +20,8 @@ import PoolTitle from '@/modules/PoolTitle'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 
+import ZapperPane from './ZapperPane'
+
 export default function V1Add({
   pairType,
   isModal,
@@ -214,7 +216,7 @@ export default function V1Add({
             <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
           </div>
           {isZapper ? (
-            <div className='flex flex-col gap-5'>{t('Coming Soon')}</div>
+            <ZapperPane asset0={firstAsset} asset1={secondAsset} slippage={slippage} strategy={strategy} />
           ) : (
             <div className='flex flex-col'>
               <div className='mb-5 flex flex-col gap-2'>
@@ -233,6 +235,7 @@ export default function V1Add({
                   onAmountChange={onSecondChange}
                 />
               </div>
+
               {strategy ? (
                 <>
                   <div className='flex flex-col gap-4'>
@@ -299,38 +302,42 @@ export default function V1Add({
           )}
         </>
       </div>
-      {!isZapper && (
-        <div
-          className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row', isModal && 'px-3 lg:px-6')}
-        >
-          {account ? (
-            <>
-              <SecondaryButton
-                disabled={pending}
+
+      <div
+        className={cn(
+          'mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row',
+          isModal && 'px-3 lg:px-6',
+          isZapper && 'hidden',
+        )}
+      >
+        {account ? (
+          <>
+            <SecondaryButton
+              disabled={pending}
+              onClick={() => {
+                onAddLiquidity()
+              }}
+              className='w-full'
+            >
+              {t('Add Liquidity')}
+            </SecondaryButton>
+
+            {strategy && strategy.gauge.address !== zeroAddress && (
+              <PrimaryButton
+                disabled={stakePending}
                 onClick={() => {
-                  onAddLiquidity()
+                  onAddAndStake()
                 }}
                 className='w-full'
               >
-                {t('Add Liquidity')}
-              </SecondaryButton>
-              {strategy && strategy.gauge.address !== zeroAddress && (
-                <PrimaryButton
-                  disabled={stakePending}
-                  onClick={() => {
-                    onAddAndStake()
-                  }}
-                  className='w-full'
-                >
-                  {t('Add Liquidity & Stake')}
-                </PrimaryButton>
-              )}
-            </>
-          ) : (
-            <ConnectButton className='w-full' />
-          )}
-        </div>
-      )}
+                {t('Add Liquidity & Stake')}
+              </PrimaryButton>
+            )}
+          </>
+        ) : (
+          <ConnectButton className='w-full' />
+        )}
+      </div>
     </>
   )
 }
