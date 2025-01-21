@@ -140,6 +140,7 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0x02308f4455CD6d2109092c7903D1ed843440e1F7',
   },
   globalFactory: {
+    [CHAIN_ID.BSC]: '0x247009C6F39bC08d5d39ac38c9D5a0D316947D9C',
     [CHAIN_ID.TEST_BSC]: '0x4C9498aB0639A7aa67bCaB0dDac3C73B7212CA7B',
   },
   weightedPoolFactory: {

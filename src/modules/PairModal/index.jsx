@@ -1,7 +1,6 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import { NeutralBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
@@ -53,10 +52,7 @@ function PairModal({ popup, setPopup, setSelected, pools }) {
             >
               <div className='flex items-center gap-3'>
                 {pool.type === PAIR_TYPES.WEIGHTED ? (
-                  <>
-                    <ListTokenPercantage listToken={pool.tokens} />
-                    <NeutralBadge className='text-sm'>{pool.title}</NeutralBadge>
-                  </>
+                  <ListTokenPercantage listToken={pool.tokens} />
                 ) : (
                   <>
                     <IconGroup
