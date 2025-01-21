@@ -553,18 +553,13 @@ export const useGammaMigration = () => {
       const removeId = uuidv4()
       const approveSwapId = uuidv4()
       const swapId = uuidv4()
-      const approve1uuid = uuidv4()
-      const approve2uuid = uuidv4()
+      const approve1Id = uuidv4()
+      const approve2Id = uuidv4()
       const depositId = uuidv4()
 
       const gammaV2 = getGammaHyperVisorContract(gammaAddressV2, networkId, 2)
-      const gammaV3 = getGammaHyperVisorContract(gammaAddressV3, networkId, 3)
       const firstContract = getERC20Contract(token0.address, networkId)
       const secondContract = getERC20Contract(token1.address, networkId)
-      const baseAllowance = await readCall(firstContract, 'allowance', [account, gammaAddressV3], networkId)
-      const isFirstApproved = fromWei(baseAllowance, token0.decimals).gte(amount)
-      const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaAddressV3], networkId)
-      const isSecondApproved = fromWei(quoteAllowance, token1.decimals).gte(amount)
 
       const transactions = {}
 
@@ -594,20 +589,16 @@ export const useGammaMigration = () => {
         hash: null,
       }
 
-      if (!isFirstApproved) {
-        transactions[approve1uuid] = {
-          desc: `${t('Approve')} ${token0.symbol}`,
-          status: TXN_STATUS.START,
-          hash: null,
-        }
+      transactions[approve1Id] = {
+        desc: `${t('Approve')} ${token0.symbol}`,
+        status: TXN_STATUS.START,
+        hash: null,
       }
 
-      if (!isSecondApproved) {
-        transactions[approve2uuid] = {
-          desc: `${t('Approve')} ${token1.symbol}`,
-          status: TXN_STATUS.START,
-          hash: null,
-        }
+      transactions[approve2Id] = {
+        desc: `${t('Approve')} ${token1.symbol}`,
+        status: TXN_STATUS.START,
+        hash: null,
       }
 
       transactions[depositId] = {
@@ -628,6 +619,7 @@ export const useGammaMigration = () => {
         }
       }
 
+      setPending(true)
       const withdrawTx = await writeTxn(key, removeId, gammaV2, 'withdraw', [
         toWei(amount).toFixed(0),
         account,
@@ -638,6 +630,7 @@ export const useGammaMigration = () => {
         setPending(false)
         return
       }
+
       const withdrawReceipt = await waitCall(withdrawTx)
       const events = withdrawReceipt.logs
       const transferEvent = events.filter(e => e.topics[0] === HASH.TRANSFER)
@@ -647,19 +640,20 @@ export const useGammaMigration = () => {
           data: o.data,
           topics: o.topics,
         })
-
         const address = o.address.toLowerCase()
         if (!acc[address]) {
-          acc[address] = 0n
+          acc[address] = BigNumber(0)
         }
-        acc[address] += decodeData.args.value
+        const { to = '' } = decodeData.args
+        if (to.toLowerCase() === account.toLowerCase()) {
+          acc[address] = acc[address].plus(BigNumber(decodeData.args.value.toString()))
+        }
 
         return acc
       }, {})
 
-      console.log(transferAmounts)
-
       // TODO: RE-BALANCE
+      setPending(true)
       const gammaUNIProxyContract = getGammaUNIProxyContract(networkId, 3)
       const rangeAmountOfToken1 = await readCall(
         gammaUNIProxyContract,
@@ -669,36 +663,35 @@ export const useGammaMigration = () => {
       )
 
       const [min, max] = rangeAmountOfToken1
-      const targetToken1 = (min + max) / 2
+      const targetToken1 = BigNumber(min).plus(max).div(2)
 
-      let swapFromAmount = 0n
+      let swapFromAmount = BigNumber(0)
       let fromToken = null
       let toToken = null
-      if (min > transferAmounts[token1.address]) {
+      if (transferAmounts[token1.address].lt(min)) {
         console.log('Token 1 is insufficient')
-        console.log('swap token0 to token1')
+        console.log('swap token 0 to token1')
 
         fromToken = token0
         toToken = token1
-        const priceRatio = token0.price / token1.price
-        const swapToAmount = targetToken1 - transferAmounts[token1.address]
-        swapFromAmount = swapToAmount / priceRatio
-      } else if (max < transferAmounts[token1.address]) {
+        const priceRatio = BigNumber(token0.price).div(token1.price)
+        const swapToAmount = BigNumber(targetToken1).minus(transferAmounts[token1.address])
+        swapFromAmount = swapToAmount.div(priceRatio).dp(0)
+      } else if (transferAmounts[token1.address].gt(max)) {
         console.log('Token 1 is excess')
-        console.log('swap token1 to token0')
+        console.log('swap token 1 to token 0')
         fromToken = token1
         toToken = token0
-        const priceRatio = token1.price / token0.price
-        const swapToAmount = transferAmounts[token1.address] - targetToken1
-        swapFromAmount = swapToAmount / priceRatio
+        const priceRatio = BigNumber(token1.price).div(token0.price)
+        const swapToAmount = BigNumber(transferAmounts[token1.address]).minus(targetToken1)
+        swapFromAmount = swapToAmount.div(priceRatio).dp(0)
       }
 
       const swapAmount = {
-        [fromToken.address]: -swapFromAmount, // have to negative number
-        [toToken.address]: 0n,
+        [fromToken.address]: BigNumber(-swapFromAmount), // have to negative number
+        [toToken.address]: BigNumber(0),
       }
-      if (swapFromAmount > 0n && fromToken && toToken) {
-        console.log('swap')
+      if (swapFromAmount.gt(0) && fromToken && toToken) {
         const routerAddress = Contracts.odos[networkId]
         // MARK: APPROVE + SWAP BY ODOS
         const swapTokenContract = getERC20Contract(fromToken.address, networkId)
@@ -747,7 +740,7 @@ export const useGammaMigration = () => {
           return sum
         }, 0n)
 
-        swapAmount[toToken.address] = swapedAmount
+        swapAmount[toToken.address] = BigNumber(swapedAmount)
       } else {
         updateTxn({ key, uuid: approveSwapId, status: TXN_STATUS.SUCCESS, hash: '' })
         updateTxn({ key, uuid: swapId, status: TXN_STATUS.SUCCESS, hash: '' })
@@ -755,25 +748,32 @@ export const useGammaMigration = () => {
       }
 
       // TODO: ADD LIQUIDITY
+      const amountA = transferAmounts[token0.address].plus(swapAmount[token0.address])
+      const amountB = transferAmounts[token1.address].plus(swapAmount[token1.address])
+
+      setPending(true)
+      const baseAllowance = await readCall(firstContract, 'allowance', [account, gammaAddressV3], networkId)
+      const isFirstApproved = fromWei(baseAllowance, token0.decimals).gte(amountA)
       if (!isFirstApproved) {
-        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [gammaAddressV3, maxUint256]))) {
-          setPending(false)
-          return
-        }
+        updateTxn({ key, uuid: approve1Id, status: TXN_STATUS.SUCCESS, hash: '' })
+      } else if (!(await writeTxn(key, approve1Id, firstContract, 'approve', [gammaAddressV3, maxUint256]))) {
+        setPending(false)
+        return
       }
 
-      if (!isSecondApproved) {
-        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [gammaAddressV3, maxUint256]))) {
-          setPending(false)
-          return
-        }
+      setPending(true)
+      const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaAddressV3], networkId)
+      const isSecondApproved = fromWei(quoteAllowance, token1.decimals).gte(amountB)
+      if (isSecondApproved) {
+        updateTxn({ key, uuid: approve2Id, status: TXN_STATUS.SUCCESS, hash: '' })
+      } else if (!(await writeTxn(key, approve2Id, secondContract, 'approve', [gammaAddressV3, maxUint256]))) {
+        setPending(false)
+        return
       }
 
-      const amountA = transferAmounts[token0.address] + swapAmount[token0.address]
-      const amountB = transferAmounts[token1.address] + swapAmount[token1.address]
-
+      setPending(true)
       if (
-        !(await writeTxn(key, depositId, gammaV3, 'depositAndStake', [
+        !(await writeTxn(key, depositId, gammaUNIProxyContract, 'depositAndStake', [
           amountA,
           amountB,
           account,

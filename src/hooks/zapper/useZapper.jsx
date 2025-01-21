@@ -317,13 +317,11 @@ export const useV1Zapper = () => {
           const lpBalance = await readCall(lpContract, 'balanceOf', [account], chainId)
           const isLpApproved = fromWei(allowance).gte(lpBalance)
 
-          if (!isLpApproved) {
-            if (!(await writeTxn(key, approveStakeId, lpContract, 'approve', [gaugeAddress, maxUint256]))) {
-              setPending(false)
-              return
-            }
-          } else {
-            updateTxn({ key, uuid: approveStakeId, status: TXN_STATUS.SUCCESS, hash: 'hash' })
+          if (isLpApproved) {
+            updateTxn({ key, uuid: approveStakeId, status: TXN_STATUS.SUCCESS })
+          } else if (!(await writeTxn(key, approveStakeId, lpContract, 'approve', [gaugeAddress, maxUint256]))) {
+            setPending(false)
+            return
           }
 
           const gaugeContract = getGaugeContract(gaugeAddress, chainId)

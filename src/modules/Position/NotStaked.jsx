@@ -13,6 +13,7 @@ import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGuageStake } from '@/hooks/useGauge'
 import { useClaimFees } from '@/hooks/useV1Liquidity'
 import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
+import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
 import AddPositionModal from './AddPositionModal'
@@ -58,6 +59,13 @@ export default function NotStaked({ pool }) {
   }, [pool])
 
   const isLegacy = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title), [pool])
+
+  const migrationOptions = useGetAutoPoolMigration({
+    token0Address: pool.token0.address,
+    token1Address: pool.token1.address,
+    type: pool.title,
+    version: pool.account.version,
+  })
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -146,12 +154,12 @@ export default function NotStaked({ pool }) {
             <EmphasisButton className={cn('w-full', pool.version === 2 && 'hidden')} onClick={() => setAddPopup(true)}>
               {t('Add')}
             </EmphasisButton>
-            <Link
-              href={`/pools/migration?address=${pool.address}`}
-              className={cn('w-full', pool.version === 3 && 'hidden')}
-            >
-              <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
-            </Link>
+
+            {migrationOptions && migrationOptions.length > 0 && (
+              <Link href={`/pools/migration?address=${pool.address}`} className='w-full'>
+                <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+              </Link>
+            )}
           </>
         )}
       </div>

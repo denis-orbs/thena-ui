@@ -274,8 +274,8 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
               </div>
             </div>
 
-            <div className='flex flex-wrap gap-2'>
-              {GAMMA_TYPES.includes(sub.title) && <NeutralBadge>{sub.title.split('_')[0]}</NeutralBadge>}
+            <div className='flex flex-wrap justify-end gap-2'>
+              {GAMMA_TYPES.includes(sub.title) && <NeutralBadge>{sub.title.replace('_', ' ')}</NeutralBadge>}
 
               {ICHI_TYPES.includes(sub.title) && (
                 <>
