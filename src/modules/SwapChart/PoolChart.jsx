@@ -8,7 +8,8 @@ import { formatAmount } from '@/lib/utils'
 
 import { PairDataTimeWindow } from './fetch'
 
-function PoolChart({ data, locale, timeWindow, upper, lower }) {
+function PoolChart({ data, timeWindow, upper, lower }) {
+  console.log(data)
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
 
@@ -134,15 +135,13 @@ function PoolChart({ data, locale, timeWindow, upper, lower }) {
     return () => {
       chart.remove()
     }
-  }, [timeWindow, locale, upper, lower, transformedData])
+  }, [timeWindow, upper, lower, transformedData])
 
   return (
-    <>
+    <div className='flex h-full w-full flex-1'>
       {(!chartCreated || !transformedData.length) && <Skeleton />}
-      <div className='flex h-full w-full flex-1'>
-        <div className='max-w-full flex-1' ref={chartRef} />
-      </div>
-    </>
+      <div className='w-full flex-1' ref={chartRef} />
+    </div>
   )
 }
 

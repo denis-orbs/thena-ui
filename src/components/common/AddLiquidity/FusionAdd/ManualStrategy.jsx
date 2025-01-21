@@ -26,7 +26,6 @@ import {
   useV3MintState,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { useLocaleSettings } from '@/state/settings/hooks'
 
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
 // import { EnterAmounts } from './containers/EnterAmounts'
@@ -37,7 +36,6 @@ import { RangeSelector } from '../components/RangeSelector'
 const feeAmount = 3000
 
 function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
-  const { locale } = useLocaleSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
   const stableAssets = useStableTokens()
@@ -440,7 +438,6 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
               <PoolChart
                 data={pairPrices}
                 timeWindow={timeWindow}
-                locale={locale}
                 current={Number(currentPrice)}
                 upper={maxValue?.value}
                 lower={minValue?.value}

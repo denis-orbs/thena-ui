@@ -26,7 +26,7 @@ import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
-import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
+import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite } from '@/svgs'
 
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
@@ -136,7 +136,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   const { networkId } = useChainSettings()
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
-  const { locale } = useLocaleSettings()
 
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
   const pair = useMemo(() => {
@@ -423,7 +422,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                         <PoolChart
                           data={pairPrices}
                           timeWindow={timeWindow}
-                          locale={locale}
                           upper={isSorted ? minValue?.value : maxValue?.value}
                           lower={isSorted ? maxValue?.value : minValue?.value}
                         />
