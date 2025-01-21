@@ -109,23 +109,34 @@ function Updater() {
   const prices = usePrices()
   const extraRewardsInfo = useExtraRewardsInfo()
   const { networkId } = useChainSettings()
-  const { data: fusionPoolsV3 = [] } = useSWR(['fusions api v3', networkId], {
-    fetcher: () => fetchFusionPools({ networkId, version: 3, type: 'cl' }),
-  })
-  const { data: fusionPoolsV2 = [] } = useSWR(['fusions api v2', networkId], {
-    fetcher: () => fetchFusionPools({ networkId, version: 2 }),
-  })
 
-  const { data: userInfos } = useSWRImmutable(account ? ['pools user api', account, networkId] : null, async () => {
-    const [userFusionsV2, userFusionsV3] = await Promise.all([
-      fetchUserFusionsV2(account, fusionPoolsV2, networkId),
-      fetchUserFusionsV3(account, networkId),
-    ])
-    return [...userFusionsV2, ...userFusionsV3]
-  })
+  const { data: [fusionPoolsV3 = [], fusionPoolsV2 = []] = [] } = useSWR(['fusions api', networkId], () =>
+    Promise.all([
+      fetchFusionPools({
+        networkId,
+        version: 3,
+        type: 'cl',
+      }),
+      fetchFusionPools({
+        networkId,
+        version: 2,
+      }),
+    ]),
+  )
+
+  const { data: userInfos } = useSWRImmutable(
+    account && fusionPoolsV2.length > 0 ? ['pools user api', account, fusionPoolsV2.length, networkId] : null,
+    async () => {
+      const [userFusionsV2, userFusionsV3] = await Promise.all([
+        fetchUserFusionsV2(account, fusionPoolsV2, networkId),
+        fetchUserFusionsV3(account, networkId),
+      ])
+      return [...userFusionsV2, ...userFusionsV3]
+    },
+  )
 
   const { data: poolsWithAllowed } = useSWR(
-    (fusionPoolsV2 && fusionPoolsV2.length > 0) || (fusionPoolsV3 && fusionPoolsV3.length > 0)
+    fusionPoolsV2.length > 0 || fusionPoolsV3.length > 0
       ? ['vaults/allowed', networkId, fusionPoolsV2.length, fusionPoolsV3.length]
       : null,
     () => fetchIchiAllowed([...fusionPoolsV2, ...fusionPoolsV3], networkId),

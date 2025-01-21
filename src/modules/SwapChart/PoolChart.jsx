@@ -9,7 +9,6 @@ import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from './fetch'
 
 function PoolChart({ data, timeWindow, upper, lower }) {
-  console.log(data)
   const chartRef = useRef(null)
   const [chartCreated, setChart] = useState()
 
