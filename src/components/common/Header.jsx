@@ -272,8 +272,8 @@ function Header() {
   const router = useRouter()
   const { push } = router
   const pathname = usePathname()
-  const { account, chainId } = useWallet()
-  const { networkId, updateNetwork } = useChainSettings()
+  const { account } = useWallet()
+  const { networkId } = useChainSettings()
   const prices = usePrices()
   const t = useTranslations()
   // start: fix social auth login
@@ -306,11 +306,11 @@ function Header() {
     }
   }, [account, signWallet])
 
-  useEffect(() => {
-    if ([ChainId.BSC, ChainId.OPBNB, 97].includes(chainId) && chainId !== networkId) {
-      updateNetwork(chainId)
-    }
-  }, [account, chainId, networkId, updateNetwork])
+  // useEffect(() => {
+  //   if ([ChainId.BSC, ChainId.OPBNB, 97].includes(chainId) && chainId !== networkId) {
+  //     updateNetwork(chainId)
+  //   }
+  // }, [account, chainId, networkId, updateNetwork])
 
   const { data: userInfo } = useSWR(['fetchUserInfo', account])
 

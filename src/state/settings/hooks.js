@@ -46,17 +46,17 @@ export const useSettings = () => {
 export const useChainSettings = () => {
   const { networkId } = useSelector(state => state.settings)
   const dispatch = useDispatch()
-  const { address, chainId } = useAccount()
+  const { chainId } = useAccount()
   const { switchChain } = useSwitchChain()
 
   const updateNetwork = useCallback(
     val => {
-      if (address && val !== chainId) {
+      if (val !== chainId) {
         switchChain({ chainId: val })
+        dispatch(switchNetwork(val))
       }
-      dispatch(switchNetwork(val))
     },
-    [address, chainId, dispatch, switchChain],
+    [chainId, dispatch, switchChain],
   )
 
   return { networkId: networkId || ChainId.BSC, updateNetwork }
