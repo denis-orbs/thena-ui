@@ -1,0 +1,148 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
+import React, { useMemo } from 'react'
+
+import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
+import IconGroup from '@/components/icongroup'
+import CustomTooltip from '@/components/tooltip'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { cn, formatAmount } from '@/lib/utils'
+import { InfoIcon } from '@/svgs'
+
+export function GaugeItem({ pool, strategy }) {
+  const t = useTranslations()
+
+  const walletUsd = useMemo(() => pool.account.totalUsd.minus(pool.account.stakedUsd), [pool])
+  const token1Amount = useMemo(() => pool.account.total1.minus(pool.account.staked1), [pool])
+  const token0Amount = useMemo(() => pool.account.total0.minus(pool.account.staked0), [pool])
+
+  const token0Percent = useMemo(() => {
+    const token0InUsd = token0Amount.times(pool.token0.price)
+    return token0InUsd.div(walletUsd).times(100).toFixed(2)
+  }, [walletUsd, token0Amount, pool])
+
+  const otherToken = useMemo(() => {
+    if (!strategy?.allowed) return null
+
+    if (strategy.allowed.address === pool.token0.address) {
+      return {
+        ...pool.token1,
+        amount: token1Amount,
+        swapToAmount: (token1Amount * pool.token1.price) / strategy.allowed.price,
+      }
+    }
+    return {
+      ...pool.token0,
+      amount: token0Amount,
+      swapToAmount: (token0Amount * pool.token0.price) / strategy.allowed.price,
+    }
+  }, [strategy?.allowed, pool?.token0, pool?.token1, token0Amount, token1Amount])
+
+  return (
+    <div className='flex h-full flex-col justify-start gap-3 rounded-xl border border-neutral-600 p-4 lg:p-6'>
+      <div className='flex items-start justify-between'>
+        <div className='flex items-center gap-3'>
+          <IconGroup
+            className='-space-x-2'
+            classNames={{ image: 'w-8 h-8 outline-2' }}
+            logo1={pool.token0.logoURI}
+            logo2={pool.token1.logoURI}
+          />
+          <div className='flex flex-col'>
+            <TextHeading>{pool.symbol}</TextHeading>
+            <TextSubHeading>{pool.title}</TextSubHeading>
+          </div>
+        </div>
+        <PrimaryBadge className={cn('text-xs', strategy && 'hidden')}>
+          {pool?.account?.stakedUsd.gt(0) ? 'Staked' : 'Not Staked'}
+        </PrimaryBadge>
+
+        <GreenBadge className={cn('hidden', strategy && 'block')}>
+          {strategy?.isFarming ? '$THE + 10% Fee' : 'Earn Swap fee'}
+        </GreenBadge>
+      </div>
+
+      <div className='flex flex-col gap-3'>
+        <div className='flex items-center justify-between'>
+          <Paragraph className='text-sm'>APR</Paragraph>
+          <TextHeading>{formatAmount(strategy?.gauge?.apr ?? pool.gauge.apr)}%</TextHeading>
+        </div>
+        <div className='flex items-center justify-between'>
+          <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
+          <TextHeading>${formatAmount(pool.account.totalUsd.minus(pool.account.stakedUsd))}</TextHeading>
+        </div>
+
+        {/* pool v2 info */}
+        {(!strategy || !strategy?.allowed) && (
+          <>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='text-sm'>
+                {pool.token0.symbol} {t('Deposit')}
+              </Paragraph>
+              <div className='flex gap-1'>
+                <TextHeading>{`${formatAmount(token0Amount)}`}</TextHeading>
+                <TextSubHeading>{`(${formatAmount(token0Percent)}%)`}</TextSubHeading>
+              </div>
+            </div>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='text-sm'>
+                {pool.token1.symbol} {t('Deposit')}
+              </Paragraph>
+              <div className='flex gap-1'>
+                <TextHeading>{`${formatAmount(token1Amount)}`}</TextHeading>
+                <TextSubHeading>({formatAmount(100 - token0Percent)}%)</TextSubHeading>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ichi v3 info */}
+        {strategy?.allowed && (
+          <>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='text-sm'>Swap</Paragraph>
+              <div className='flex gap-1'>
+                <TextHeading>
+                  {otherToken?.amount.toFixed(6)} {otherToken?.symbol} to {otherToken?.swapToAmount.toFixed(6)}{' '}
+                  {strategy?.allowed?.symbol}
+                </TextHeading>
+              </div>
+            </div>
+
+            <div className='flex items-center justify-between'>
+              <Paragraph className='text-sm'>
+                {strategy?.allowed?.symbol} {t('Deposit')}
+              </Paragraph>
+              <div className='flex gap-1'>
+                <TextHeading>
+                  {`${
+                    strategy.allowed.address === pool.token0.address ? token0Amount.toFixed(6) : token1Amount.toFixed(6)
+                  }`}{' '}
+                  + {`${otherToken?.swapToAmount.toFixed(6)}`}
+                </TextHeading>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className={cn('flex items-center justify-between', strategy && 'hidden')}>
+        <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
+        <div className='flex items-center gap-1'>
+          <TextHeading>${formatAmount(pool.account.earnedUsd)}</TextHeading>
+          <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${pool.address}`} />
+          <CustomTooltip id={`net-${pool.address}`}>
+            {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
+            {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
+            {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
+            {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
+            {pool.account.extraRewards && (
+              <p>{`${formatAmount(pool.account.extraRewards.amount)} ${pool.account.extraRewards.symbol}`}</p>
+            )}
+          </CustomTooltip>
+        </div>
+      </div>
+    </div>
+  )
+}

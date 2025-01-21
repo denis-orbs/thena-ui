@@ -15,7 +15,7 @@ import { useVaults } from '@/context/vaultsContext'
 import { useGammaMigration } from '@/hooks/fusion/useGamma'
 import { useMigrationIchi } from '@/hooks/fusion/useIchi'
 import { formatAmount } from '@/lib/utils'
-import { GaugeItemNotStaked, GaugeItemStaked } from '@/modules/Pools/Migration'
+import { GaugeItem } from '@/modules/Pools/Migration'
 import { useGetAutoPoolMigration, usePools } from '@/state/pools/hooks'
 import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
@@ -139,8 +139,7 @@ export function AutoMigrationPage({ address }) {
         <div className='mt-4 grid items-stretch gap-4 lg:grid-cols-[48%_2%_48%]'>
           <article className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2 text-lg'>{t('Your Current Gauge')}</TextHeading>
-            {positionV2.account.walletBalance.gt(0) && <GaugeItemNotStaked pool={positionV2} />}
-            {positionV2.account.gaugeBalance.gt(0) && <GaugeItemStaked pool={positionV2} />}
+            <GaugeItem pool={positionV2} />
           </article>
 
           <span className='flex items-center justify-center'>
@@ -149,9 +148,7 @@ export function AutoMigrationPage({ address }) {
 
           <article className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your New V3 Gauge')}</TextHeading>
-
-            {positionV2.account.walletBalance.gt(0) && <GaugeItemNotStaked pool={positionV2} />}
-            {positionV2.account.gaugeBalance.gt(0) && <GaugeItemStaked pool={positionV2} />}
+            <GaugeItem pool={positionV2} strategy={strategy} />
           </article>
         </div>
 
