@@ -256,7 +256,7 @@ export default function PoolsPage() {
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
                       alt='Kernel'
-                      src='/images/Kernel.svg'
+                      src='/images/kernel.svg'
                     />
                   </div>
                   <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
