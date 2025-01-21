@@ -148,7 +148,7 @@ const usePairs = () => {
         const apr =
           !subpools.length || !highApr
             ? '0%'
-            : subpools.length === 1 || lowApr === highApr
+            : subpools.length === 1 || lowApr === highApr || lowApr === 0
               ? `${formatAmount(highApr)}%`
               : `${formatAmount(lowApr)} ~ ${formatAmount(highApr)}%`
         return {
