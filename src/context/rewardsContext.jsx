@@ -60,7 +60,7 @@ const fetchUserRewards = async (userId, chainId) => {
 function RewardsContextProvider({ children }) {
   const { account, chainId } = useWallet()
   const assets = useAssets()
-  const pools = usePoolsWithGauge()
+  const poolsWithGauge = usePoolsWithGauge()
 
   const {
     data: current,
@@ -77,7 +77,7 @@ function RewardsContextProvider({ children }) {
       return []
     }
 
-    return pools
+    return poolsWithGauge
       .map(pool => {
         const result = {}
         const isFeeExist = false
@@ -124,7 +124,7 @@ function RewardsContextProvider({ children }) {
         }
       })
       .filter(pool => (pool.rewards || []).some(reward => !isInvalidAmount(reward.amount)))
-  }, [current, currentError, pools, assets])
+  }, [current, currentError, poolsWithGauge, assets])
 
   const final = useMemo(
     () => ({

@@ -118,7 +118,7 @@ export const fetchTopTokens = params =>
     .then(r => r.json())
     .then(r => r.data)
 
-export const fetVeTHETokens = (chainId, account) =>
+export const fetchVeTHETokens = (chainId, account) =>
   fetch(`${backendApi}/vethes/${chainId}/${account}`)
     .then(r => r.json())
     .then(r => r.data)

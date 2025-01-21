@@ -28,7 +28,6 @@ import {
   veTHEAbi,
   veTHEApiAbi,
   voterAbi,
-  voterTestNetAbi,
   wbnbAbi,
   weightedGaugeAbi,
   weightedPoolAbi,
@@ -105,8 +104,7 @@ export const getVeDistContract = chainId => getContract(veDistAbi, Contracts.veD
 
 export const getMinterContract = () => getContract(minterAbi, Contracts.minter, ChainId.BSC)
 
-export const getVoterContract = chainId =>
-  getContract(chainId !== 97 ? voterAbi : voterTestNetAbi, Contracts.voter, chainId)
+export const getVoterContract = chainId => getContract(voterAbi, Contracts.voter, chainId)
 
 export const getGaugeContract = (address, chainId) => getContract(gaugeAbi, address, chainId)
 

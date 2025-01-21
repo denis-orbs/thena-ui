@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { zeroAddress } from 'viem'
 
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { usePairs } from '@/context/pairsContext'
+import { useWeightedPoolsWithGauge } from '@/hooks/weightedPool/useWeigtedPool'
 import { ZERO_VALUE } from '@/lib/utils'
 
 import { useChainSettings } from '../settings/hooks'
@@ -89,16 +89,11 @@ export const useDefiedges = () => {
 
 export const usePoolsWithGauge = () => {
   const pools = usePools()
-  const { weightedPools } = usePairs()
+  const weightedPoolsWithGauge = useWeightedPoolsWithGauge()
 
-  const weightedPoolsWithGauge = useMemo(
-    () => (weightedPools ? weightedPools.filter(pool => pool.gauge.address !== zeroAddress) : []),
-    [weightedPools],
-  )
+  const poolsWithGauge = useMemo(() => (pools ? pools.filter(pool => pool.gauge.address !== zeroAddress) : []), [pools])
 
-  const poolWithGauge = useMemo(() => (pools ? pools.filter(pool => pool.gauge.address !== zeroAddress) : []), [pools])
-
-  return [...poolWithGauge, ...weightedPoolsWithGauge]
+  return [...poolsWithGauge, ...weightedPoolsWithGauge]
 }
 
 export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, version }) => {

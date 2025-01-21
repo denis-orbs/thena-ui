@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
-import { zeroAddress } from 'viem'
 
 import { Neutral } from '@/components/alert'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -18,11 +17,10 @@ import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useMutateAssets } from '@/context/assetsContext'
 import { useBribeAdd } from '@/hooks/useProtocols'
 import useWallet from '@/hooks/useWallet'
-import { useWeightedPoolsWithGauge } from '@/hooks/weightedPool/useWeigtedPool'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
-import { usePools } from '@/state/pools/hooks'
+import { usePoolsWithGauge } from '@/state/pools/hooks'
 import { ArrowLeftIcon, ChevronDownIcon } from '@/svgs'
 
 import { TokenModal } from './TokenModal'
@@ -36,34 +34,25 @@ export default function IncentivePage() {
   const [pair, setPair] = useState(null)
   const [asset, setAsset] = useState(null)
   const mutateAssets = useMutateAssets()
-  const pools = usePools()
-  const poolsWithGauge = useMemo(
+  const poolsWithGauge = usePoolsWithGauge()
+  const { onBribeAdd, pending } = useBribeAdd()
+  const t = useTranslations()
+
+  const updatedPoolsWithGauge = useMemo(
     () =>
-      pools
-        .filter(
-          pool =>
-            pool &&
-            pool.gauge.address !== zeroAddress &&
-            (pool.type === PAIR_TYPES.LSD ? pool?.title === 'CL_Farming' : true),
-        )
+      poolsWithGauge
+        .filter(pool => !(pool.version === 2 && pool.type === PAIR_TYPES.LSD))
         .map(item => ({
           ...item,
           title: item?.title === 'CL_Farming' ? 'Conc. Liquidity' : item?.title,
         })),
-    [pools],
+    [poolsWithGauge],
   )
-  const { onBribeAdd, pending } = useBribeAdd()
-  const t = useTranslations()
 
-  const weightedPool = useWeightedPoolsWithGauge()
   const topPools = useMemo(
     () =>
-      pools
-        .filter(pool => (pool.type === PAIR_TYPES.LSD ? pool?.title === 'CL_Farming' : true))
-        .concat(weightedPool)
-        .sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber())
-        .slice(0, 4),
-    [pools, weightedPool],
+      updatedPoolsWithGauge.sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber()).slice(0, 4),
+    [updatedPoolsWithGauge],
   )
 
   const errorMsg = useMemo(() => {
@@ -223,12 +212,7 @@ export default function IncentivePage() {
         </div>
       </div>
 
-      <PairModal
-        popup={pairOpen}
-        setPopup={setPairOpen}
-        setSelected={setPair}
-        pools={poolsWithGauge.concat(weightedPool)}
-      />
+      <PairModal popup={pairOpen} setPopup={setPairOpen} setSelected={setPair} pools={updatedPoolsWithGauge} />
 
       <TokenModal
         popup={tokenOpen}

@@ -4,7 +4,7 @@ import React, { useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
 import useWallet from '@/hooks/useWallet'
-import { fetVeTHETokens } from '@/lib/api'
+import { fetchVeTHETokens } from '@/lib/api'
 
 const veTHEsContext = React.createContext({
   veTHEs: [],
@@ -14,7 +14,7 @@ function VeTHEsContextProvider({ children }) {
   const { account, chainId } = useWallet()
 
   const { data, isLoading, error, mutate } = useSWR(account ? ['vethes api', account, chainId] : null, () =>
-    fetVeTHETokens(chainId, account),
+    fetchVeTHETokens(chainId, account),
   )
 
   const result = useMemo(() => {
@@ -23,19 +23,7 @@ function VeTHEsContextProvider({ children }) {
     }
 
     const finalData = (data || []).map(veTHE => {
-      const {
-        amount,
-        rebaseAmount,
-        votingAmount,
-        tokenId,
-        // lockedAt,
-        lockedEnd,
-        // token,
-        // decimals,
-        votes,
-        voted,
-        votedCurrentEpoch,
-      } = veTHE
+      const { amount, rebaseAmount, votingAmount, tokenId, lockedEnd, votes, voted, votedCurrentEpoch } = veTHE
       const totalWeight = votes.reduce((sum, current) => sum + current.weight, 0)
       const diff = dayjs.unix(Number(lockedEnd)).diff(dayjs(), 'days')
 
@@ -55,6 +43,7 @@ function VeTHEsContextProvider({ children }) {
         expire: diff,
       }
     })
+
     return {
       veTHEs: finalData ?? [],
       isLoading,

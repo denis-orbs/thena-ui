@@ -934,9 +934,10 @@ export const useWeightedPoolsWithGauge = () => {
   const extraRewardsInfo = useExtraRewardsInfo()
   const { weightedPools = [] } = usePairs()
   const prices = usePrices()
-  let userInfo = []
+
+  let weightedPoolsWithGauge = []
   if (weightedPools.length > 0 && assets.length > 0) {
-    userInfo = weightedPools
+    weightedPoolsWithGauge = weightedPools
       .map(weighted => {
         const { gauge } = weighted
         const tokens = weighted.tokens.map(token => {
@@ -1032,7 +1033,8 @@ export const useWeightedPoolsWithGauge = () => {
       .filter(item => item.gauge.address !== ZERO_ADDRESS)
       .sort((a, b) => (a.gauge.tvl - b.gauge.tvl) * -1)
   }
-  return userInfo
+
+  return weightedPoolsWithGauge
 }
 
 const getGaugeReward = async (gaugeContract, assets, account, chainId) => {
@@ -1049,8 +1051,6 @@ const getGaugeReward = async (gaugeContract, assets, account, chainId) => {
           chainId,
         })),
     )
-
-    // const rewardAddressToLowerCase = (rewardsAddress || []).map(item => item.toLowerCase())
 
     const rewardsAsset = rewardsAddress
       .map(reward => assets.find(asset => asset.address === reward.toLowerCase()))

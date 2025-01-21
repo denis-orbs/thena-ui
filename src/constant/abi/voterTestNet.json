@@ -18,11 +18,7 @@
   },
   { "inputs": [], "name": "NotManager", "type": "error" },
   { "inputs": [], "name": "NotOwnerOrApproved", "type": "error" },
-  {
-    "inputs": [{ "internalType": "address", "name": "pool", "type": "address" }],
-    "name": "NotPool",
-    "type": "error"
-  },
+  { "inputs": [{ "internalType": "address", "name": "pool", "type": "address" }], "name": "NotPool", "type": "error" },
   { "inputs": [], "name": "PoolExists", "type": "error" },
   { "inputs": [], "name": "PoolNotExists", "type": "error" },
   { "inputs": [], "name": "PoolWeightZero", "type": "error" },
@@ -30,216 +26,95 @@
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "pool",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "gauge",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "votingIncentives",
-        "type": "address"
-      }
+      { "indexed": true, "internalType": "address", "name": "pool", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "gauge", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "votingIncentives", "type": "address" }
     ],
     "name": "AddPool",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "pool",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "indexed": true, "internalType": "address", "name": "pool", "type": "address" }],
     "name": "BanPool",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
+      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
     ],
     "name": "OwnershipTransferred",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "indexed": false, "internalType": "address", "name": "account", "type": "address" }],
     "name": "Paused",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "pool",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "indexed": true, "internalType": "address", "name": "pool", "type": "address" }],
     "name": "RemovePool",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "voter",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      }
+      { "indexed": false, "internalType": "address", "name": "voter", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256" }
     ],
     "name": "Reset",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "pool",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "indexed": true, "internalType": "address", "name": "pool", "type": "address" }],
     "name": "RevivePool",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "manager",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "stauts",
-        "type": "bool"
-      }
+      { "indexed": true, "internalType": "address", "name": "manager", "type": "address" },
+      { "indexed": false, "internalType": "bool", "name": "stauts", "type": "bool" }
     ],
     "name": "SetManagerStatus",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "minter",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "indexed": true, "internalType": "address", "name": "minter", "type": "address" }],
     "name": "SetMinter",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "ve",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "indexed": true, "internalType": "address", "name": "ve", "type": "address" }],
     "name": "SetVeTHE",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "vea",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "indexed": true, "internalType": "address", "name": "vea", "type": "address" }],
     "name": "SetVotingEscrowAttach",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "indexed": false, "internalType": "address", "name": "account", "type": "address" }],
     "name": "Unpaused",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "voter",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      }
+      { "indexed": false, "internalType": "address", "name": "voter", "type": "address" },
+      { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256" }
     ],
     "name": "Vote",
     "type": "event"
@@ -248,11 +123,7 @@
     "inputs": [
       { "internalType": "address", "name": "pool", "type": "address" },
       { "internalType": "address", "name": "gauge", "type": "address" },
-      {
-        "internalType": "address",
-        "name": "votingIncentives",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "votingIncentives", "type": "address" }
     ],
     "name": "addPoolData",
     "outputs": [],
@@ -262,13 +133,7 @@
   {
     "inputs": [],
     "name": "attach",
-    "outputs": [
-      {
-        "internalType": "contract IVotingEscrowAttach",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "contract IVotingEscrowAttach", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -349,11 +214,7 @@
       {
         "components": [
           { "internalType": "address", "name": "gauge", "type": "address" },
-          {
-            "internalType": "address",
-            "name": "votingIncentives",
-            "type": "address"
-          }
+          { "internalType": "address", "name": "votingIncentives", "type": "address" }
         ],
         "internalType": "struct IVoter.PoolData",
         "name": "",
@@ -418,13 +279,7 @@
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
+  { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [{ "internalType": "uint256", "name": "_tokenId", "type": "uint256" }],
     "name": "reset",
@@ -479,21 +334,9 @@
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "uint256",
-            "name": "vetheBalance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalWeight",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "weights",
-            "type": "uint256[]"
-          },
+          { "internalType": "uint256", "name": "vetheBalance", "type": "uint256" },
+          { "internalType": "uint256", "name": "totalWeight", "type": "uint256" },
+          { "internalType": "uint256[]", "name": "weights", "type": "uint256[]" },
           { "internalType": "address[]", "name": "pools", "type": "address[]" }
         ],
         "internalType": "struct IVoter.TokenIdVote",

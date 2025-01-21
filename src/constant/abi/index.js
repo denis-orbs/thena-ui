@@ -41,7 +41,6 @@ import veDistAbi from './veDist.json'
 import veTHEAbi from './veTHE.json'
 import veTHEApiAbi from './veTHEAPI.json'
 import voterAbi from './voter.json'
-import voterTestNetAbi from './voterTestNet.json'
 import votingEscrowAbi from './votingEscrow.json'
 import wbnbAbi from './wbnb.json'
 import weightedGaugeAbi from './weighted-pool/gauge.json'
@@ -97,7 +96,6 @@ export {
   veTHEAbi,
   veTHEApiAbi,
   voterAbi,
-  voterTestNetAbi,
   votingEscrowAbi,
   wbnbAbi,
   weightedGaugeAbi,

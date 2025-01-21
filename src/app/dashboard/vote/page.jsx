@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId } from 'thena-sdk-core'
-import { zeroAddress } from 'viem'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
@@ -27,13 +26,12 @@ import { useEpochTimer, useVoteEmissions } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import { usePoke, useReset, useVote } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
-import { useWeightedPoolsWithGauge } from '@/hooks/weightedPool/useWeigtedPool'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { usePools } from '@/state/pools/hooks'
+import { usePoolsWithGauge } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
@@ -82,11 +80,6 @@ const sortOptions = [
   },
 ]
 
-// const HIDDEN_POOLS = [
-//   '0x5f28dccd24d1fcb6805e6d71ec15fa93cb0cf360', // SolvBTC/BTCB - DefiEdge
-//   '0x7ddb9392376359a36847b351db5c3562499fa373', // SolvBTC/BNB - DefiEdge
-// ]
-
 export default function VotePage() {
   const [searchText, setSearchText] = useState('')
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -97,10 +90,9 @@ export default function VotePage() {
   const [percent, setPercent] = useState({})
   const { account } = useWallet()
   const { veTHEs, updateVeTHEs } = useVeTHEsContext()
-  const pools = usePools()
+  const poolsWithGauge = usePoolsWithGauge()
   const prices = usePrices()
 
-  const weightedPools = useWeightedPoolsWithGauge()
   const { voteEmssions } = useVoteEmissions()
   const { days, hours, mins, epoch } = useEpochTimer()
   const { onVote, pending: votePending } = useVote()
@@ -141,10 +133,8 @@ export default function VotePage() {
 
   const userPools = useMemo(
     () =>
-      [...pools, ...weightedPools]
-        // .filter(pair => !HIDDEN_POOLS.includes(pair.address))
-        .filter(pair => pair.title !== 'DefiEdge') // hide all DeFi Edge
-        .filter(pair => pair.gauge.address !== zeroAddress && pair.gauge.isAlive)
+      poolsWithGauge
+        .filter(pool => pool.gauge.isAlive && !(pool.version === 2 && pool.type === PAIR_TYPES.LSD))
         .map(pair => {
           const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
           let votes = {
@@ -172,7 +162,7 @@ export default function VotePage() {
             votes,
           }
         }),
-    [pools, veTHE, weightedPools],
+    [poolsWithGauge, veTHE],
   )
 
   const filteredPools = useMemo(() => {
@@ -240,6 +230,7 @@ export default function VotePage() {
       }),
     [filteredPools, sort],
   )
+
   const finalPools = useMemo(
     () =>
       sortedPools.map(pool => ({
