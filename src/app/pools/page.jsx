@@ -175,7 +175,8 @@ export default function PoolsPage() {
   const finalPools = useMemo(
     () => {
       const weETHPoolAddress = '0xc0e1c9fec0d8888039095da014382d027f27069d'
-      const ynBNBPoolAddress = '0xcfac0990700ed9b67fefbd4b26a79e426468a419'
+      const ynBNBxPoolAddress = '0xcdedb4bad9978e1d0a82ad2061d0345f48014bc4' // ynBNBx/BNB
+      const BTCBynBTCkPoolAddress = '0x94b3c0050e9111e955e3f3a48543bbf30ba44bbc' // BTCB/ynBTCk
       const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
       const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
       const uniBTCFBTC = '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7' // uniBTC/FBTC
@@ -237,7 +238,7 @@ export default function PoolsPage() {
                 </CustomTooltip>
               </div>
             )}
-            {pool.address === ynBNBPoolAddress && (
+            {(pool.address === ynBNBxPoolAddress || pool.address === BTCBynBTCkPoolAddress) && (
               <>
                 <div className='flex items-center gap-2'>
                   <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
@@ -250,19 +251,16 @@ export default function PoolsPage() {
                   <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
                     <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
                   </CustomTooltip>
-                </div>
-                <div className='flex items-center gap-2'>
+
                   <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip2`}>
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
-                      alt='EtherFi'
-                      src='/images/Turtle-Seeds.svg'
+                      alt='Kernel'
+                      src='/images/Kernel.svg'
                     />
                   </div>
                   <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
-                    <TextHeading className='text-xs'>
-                      {t('Liquidity providers in this pool are eligible for Turtle Club 10% emission boost')}
-                    </TextHeading>
+                    <TextHeading className='text-xs'>{t('Kernel Points Tooltip')}</TextHeading>
                   </CustomTooltip>
                 </div>
               </>
