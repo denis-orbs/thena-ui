@@ -289,34 +289,31 @@ export default function SpecificPoolPage({ params }) {
                 </CustomTooltip>
               </div>
             )}
-            {pool?.address === '0xcfac0990700ed9b67fefbd4b26a79e426468a419' && (
-              <div className='mt-5 flex gap-2'>
-                <div className='flex items-center gap-2'>
-                  <div className='size-6' data-tooltip-id={`pool-special-${pool?.address}-tooltip1`}>
-                    <NextImage
-                      className='h-full w-full rounded-full object-cover'
-                      alt='YieldNest’s'
-                      src='/images/yieldnest_seed_3d__1__360.png'
-                    />
-                  </div>
-                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
-                    <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
-                  </CustomTooltip>
+
+            {(pool.address === '0xcdedb4bad9978e1d0a82ad2061d0345f48014bc4' ||
+              pool.address === '0x94b3c0050e9111e955e3f3a48543bbf30ba44bbc') && (
+              <div className='mt-5 flex items-center gap-2'>
+                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='YieldNest’s'
+                    src='/images/yieldnest_seed_3d__1__360.png'
+                  />
                 </div>
-                <div className='flex items-center gap-2'>
-                  <div className='size-6' data-tooltip-id={`pool-special-${pool?.address}-tooltip2`}>
-                    <NextImage
-                      className='h-full w-full rounded-full object-cover'
-                      alt='Turtle'
-                      src='/images/Turtle-Seeds.svg'
-                    />
-                  </div>
-                  <CustomTooltip id={`pool-special-${pool?.address}-tooltip2`} className='rounded-md !py-2' place='top'>
-                    <TextHeading className='text-xs'>
-                      {t('Liquidity providers in this pool are eligible for Turtle Club 10% emission boost')}
-                    </TextHeading>
-                  </CustomTooltip>
+                <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
+                </CustomTooltip>
+
+                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip2`}>
+                  <NextImage
+                    className='h-full w-full rounded-full object-cover'
+                    alt='Kernel'
+                    src='/images/Kernel.svg'
+                  />
                 </div>
+                <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>{t('Kernel Points Tooltip')}</TextHeading>
+                </CustomTooltip>
               </div>
             )}
           </>
