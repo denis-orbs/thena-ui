@@ -230,7 +230,7 @@ export const useV3DerivedMintInfo = (
         : balances[1],
   }
 
-  const [poolState, pool] = useFusionState({
+  const [poolState, pool, poolAddress] = useFusionState({
     currencyA: currencies[Field.CURRENCY_A],
     currencyB: currencies[Field.CURRENCY_B],
     isFarmingPool: strategy?.isFarming,
@@ -586,6 +586,7 @@ export const useV3DerivedMintInfo = (
     currencies,
     pool,
     poolState,
+    poolAddress,
     currencyBalances,
     parsedAmounts,
     ticks,

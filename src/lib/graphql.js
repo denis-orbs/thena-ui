@@ -62,6 +62,11 @@ export const fusionClient = {
   ),
 }
 
+export const fusionFarmingClient = {
+  56: new GraphQLClient('https://api.studio.thegraph.com/query/70764/thena-bsc-v3-fusion-farming/version/latest'),
+  97: new GraphQLClient('https://api.studio.thegraph.com/query/70764/thena-chapel-v3-fusion-farming/version/latest'),
+}
+
 export const weightedClient = {
   [CHAIN_ID.BSC]: new GraphQLClient(
     'https://api.studio.thegraph.com/query/70764/thena-bsc-weighted-pool/version/latest',

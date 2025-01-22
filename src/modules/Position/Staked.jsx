@@ -172,6 +172,7 @@ export default function Staked({ pool }) {
                       balance: pool?.token1?.balance?.toNumber(),
                       totalValue: pool?.token1?.totalValue?.toNumber(),
                     },
+                    tvl: pool?.tvl?.toNumber(),
                     isAutomatic: true,
                     isFarming: pool.title.includes('Farming'),
                     version,

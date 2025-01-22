@@ -12,6 +12,7 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
+import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { PoolState } from '@/hooks/fusion/useFusions'
 import { cn, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
@@ -28,8 +29,6 @@ import {
 import { Presets } from '@/state/fusion/reducer'
 
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
-// import { EnterAmounts } from './containers/EnterAmounts'
-// import ManualAdd from './ManualAdd'
 import { PresetRanges } from '../components/PresetRange'
 import { RangeSelector } from '../components/RangeSelector'
 
@@ -117,6 +116,13 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
 
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
   }, [mintInfo])
+
+  const apr = useEstimateAPR({
+    poolAddress: mintInfo.poolAddress,
+    pool: mintInfo.pool,
+    tickLower,
+    tickUpper,
+  })
 
   const assetSelections = useMemo(
     () => [
@@ -385,6 +391,12 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
           </div>
         </div>
         <div className='flex flex-col gap-3'>
+          <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'>
+            <div className='mt-1 flex items-center justify-between'>
+              <TextHeading className='text-sm'>Est. APR for $1k</TextHeading>
+              <strong className='flex items-center gap-2'>{Number(apr).toFixed(2)}%</strong>
+            </div>
+          </div>
           <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'>
             <TextHeading className='text-sm'>{t('Risk')}</TextHeading>
             {_risk && (
