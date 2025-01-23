@@ -7,29 +7,53 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import TokenInput from '@/components/input/TokenInput'
 import Tabs from '@/components/tabs'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { ICHI_TYPES } from '@/constant'
 import { useGetAsset } from '@/hooks/fusion/Tokens'
+import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
-import { cn } from '@/lib/utils'
-import { ArrowRightIcon } from '@/svgs'
+import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { Bound } from '@/state/fusion/actions'
+import { ArrowRightIcon, InfoIcon } from '@/svgs'
 
-function ZapperPane({ token1Address, token2Address, slippage, tickLower, tickUpper, deadline, mintInfo, strategy }) {
-  const asset1 = useGetAsset(token1Address)
-  const asset2 = useGetAsset(token2Address)
-
+function ZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo, strategy }) {
   const t = useTranslations()
+
+  const [token0, token1] = useMemo(() => {
+    const [wrappedTokenA, wrappedTokenB] = [baseCurrency?.wrapped, quoteCurrency?.wrapped]
+    if (!wrappedTokenA || !wrappedTokenB) return [null, null]
+
+    return wrappedTokenA.sortsBefore(wrappedTokenB) ? [wrappedTokenA, wrappedTokenB] : [wrappedTokenB, wrappedTokenA]
+  }, [baseCurrency?.wrapped, quoteCurrency?.wrapped])
+
+  const asset0 = useGetAsset(token0.address)
+  const asset1 = useGetAsset(token1.address)
+  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
+
   const { account } = useWallet()
-  const [tokensData] = useState([asset1, asset2])
-  const [tokenDeposit, setTokenDeposit] = useState(asset1)
+  const [tokenDeposit, setTokenDeposit] = useState(asset0)
   const { handleAddLiquidity } = useZapperAddLiquidity()
 
   const [amount, setAmount] = useState(0)
   const amountIn = useDebounce(amount, 500)
+  const apr = useEstimateAPR({
+    pool: mintInfo.pool,
+    poolAddress: mintInfo.poolAddress,
+    tickUpper,
+    tickLower,
+    token0: tokenDeposit.address === asset0.address ? asset0 : null,
+    token1: tokenDeposit.address === asset1.address ? asset1 : null,
+    amount0: amountIn,
+    amount1: amountIn,
+    isFarming: strategy?.title === ICHI_TYPES[1],
+    tvl: strategy?.tvl,
+  })
 
-  const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset1.address, asset2.address)
+  const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset0.address, asset1.address)
 
   const { data, isFetching } = useGetZapInRoute({
     tickLower,
@@ -74,7 +98,7 @@ function ZapperPane({ token1Address, token2Address, slippage, tickLower, tickUpp
           amount={amount}
           setAmount={setAmount}
           autoFocus
-          assetData={tokensData}
+          assetData={[asset0, asset1]}
           assetNull
         />
       </div>
@@ -99,13 +123,13 @@ function ZapperPane({ token1Address, token2Address, slippage, tickLower, tickUpp
             )}
           >
             <ThreeIconGroup
-              logo1={asset1.logoURI}
-              logo2={asset2.logoURI}
+              logo1={asset0.logoURI}
+              logo2={asset1.logoURI}
               classNames={{ image: 'w-6 h-6' }}
               className='-space-x-1'
             />
             <span className='text-wrap'>
-              {asset1.symbol}-{asset2.symbol}
+              {asset0.symbol}-{asset1.symbol}
             </span>
           </div>
         </div>
@@ -115,9 +139,51 @@ function ZapperPane({ token1Address, token2Address, slippage, tickLower, tickUpp
         </div>
       </div>
 
-      <div className='my-2 flex flex-row justify-between'>
-        <TextSubHeading>{t('Total Deposit')}</TextSubHeading>
-        <Paragraph>${data?.zapDetails?.finalAmountUsd ?? 0}</Paragraph>
+      <div className='mb-5'>
+        <div className='my-2 flex flex-row justify-between'>
+          <Paragraph>{t('Total Deposit')}</Paragraph>
+          <Paragraph>${data?.zapDetails?.finalAmountUsd ?? 0}</Paragraph>
+        </div>
+
+        <div className='mt-5 flex items-center justify-between'>
+          <Paragraph className='font-medium'>Estimated APR</Paragraph>
+          <Paragraph className='flex items-center gap-1'>
+            {apr?.toFixed(2)}%
+            <InfoIcon className='ml-1 h-4 w-4 stroke-neutral-400' data-tooltip-id='apr-info' />
+          </Paragraph>
+
+          <CustomTooltip id='apr-info' className='max-w-[320px]'>
+            Estimated return based on monthly trade fees and farming yield
+          </CustomTooltip>
+        </div>
+
+        <div className='mt-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+          <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
+          <div className='flex flex-col gap-3'>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='font-medium'>
+                {unwrappedSymbol(strategy?.token0)} {t('Amount')}
+              </Paragraph>
+              <Paragraph>{formatAmount(strategy?.token0?.reserve)}</Paragraph>
+            </div>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='font-medium'>
+                {unwrappedSymbol(strategy?.token1)} {t('Amount')}
+              </Paragraph>
+              <Paragraph>{formatAmount(strategy?.token1?.reserve)}</Paragraph>
+            </div>
+          </div>
+        </div>
+
+        <div className='mt-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+          <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
+          <div className='flex flex-col gap-3'>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+              <Paragraph>{formatAmount(strategy?.account?.totalLp)} LP</Paragraph>
+            </div>
+          </div>
+        </div>
       </div>
 
       {account ? (

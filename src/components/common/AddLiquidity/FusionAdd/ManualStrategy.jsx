@@ -10,7 +10,7 @@ import Spinner from '@/components/spinner'
 import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { FusionRangeType } from '@/constant'
+import { FusionRangeType, ICHI_TYPES } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { PoolState } from '@/hooks/fusion/useFusions'
@@ -34,7 +34,7 @@ import { RangeSelector } from '../components/RangeSelector'
 
 const feeAmount = 3000
 
-function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
+function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
   const stableAssets = useStableTokens()
@@ -44,6 +44,18 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
   const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
   const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
+  //
+  // get value and prices at ticks
+  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
+  const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
+  const apr = useEstimateAPR({
+    pool: mintInfo.pool,
+    poolAddress: mintInfo.poolAddress,
+    tickUpper,
+    tickLower,
+    isFarming: strategy?.title === ICHI_TYPES[1],
+    tvl: strategy?.tvl,
+  })
 
   const { ticksAtLimit, invertPrice } = mintInfo
   const t = useTranslations()
@@ -65,11 +77,6 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
     const stablecoins = stableAssets.map(token => token.address)
     return stablecoins.includes(baseCurrency?.wrapped?.address) && stablecoins.includes(quoteCurrency?.wrapped?.address)
   }, [baseCurrency, quoteCurrency, stableAssets])
-
-  // get value and prices at ticks
-  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
-
-  const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
 
   const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper, getSetFullRange } =
     useRangeHopCallbacks(
@@ -116,13 +123,6 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
 
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
   }, [mintInfo])
-
-  const apr = useEstimateAPR({
-    poolAddress: mintInfo.poolAddress,
-    pool: mintInfo.pool,
-    tickLower,
-    tickUpper,
-  })
 
   const assetSelections = useMemo(
     () => [
@@ -392,10 +392,17 @@ function ManualStrategy({ firstAsset, secondAsset, isReverse }) {
         </div>
         <div className='flex flex-col gap-3'>
           <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'>
-            <div className='mt-1 flex items-center justify-between'>
-              <TextHeading className='text-sm'>Est. APR for $1k</TextHeading>
-              <strong className='flex items-center gap-2'>{Number(apr).toFixed(2)}%</strong>
+            <div className='mt-1 flex cursor-pointer items-center justify-between'>
+              <TextHeading className='text-sm' data-tooltip-id='APR-INFO'>
+                Est. APR for $1k
+              </TextHeading>
+              <strong data-tooltip-id='APR-INFO' className='flex items-center gap-2'>
+                {Number(apr).toFixed(2)}%
+              </strong>
             </div>
+            <CustomTooltip id='APR-INFO' className='max-w-[320px]'>
+              Estimated return based on monthly trade fees and farming yield
+            </CustomTooltip>
           </div>
           <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'>
             <TextHeading className='text-sm'>{t('Risk')}</TextHeading>

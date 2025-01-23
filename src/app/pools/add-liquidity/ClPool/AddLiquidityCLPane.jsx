@@ -7,15 +7,14 @@ import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
-import { EnterAmounts } from '@/components/common/AddLiquidity/FusionAdd/containers/EnterAmounts'
 import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
 import ZapperPane from '@/components/common/AddLiquidity/FusionAdd/ZapperPane'
 import IconGroup from '@/components/icongroup'
 import Selection from '@/components/selection'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { TextHeading } from '@/components/typography'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintState } from '@/state/fusion/hooks'
@@ -108,7 +107,7 @@ export default function AddLiquidityCLPane({ pool, isAdd, isReverse, goPreviousS
             />
             <TextHeading>{pool?.symbol}</TextHeading>
           </div>
-          <NeutralBadge>{strategy.title}</NeutralBadge>
+          <NeutralBadge>{strategy?.title?.replace('_', ' ')}</NeutralBadge>
         </div>
 
         <div className={cn('flex justify-end', strategy?.isAutomatic && 'hidden')}>
@@ -122,53 +121,20 @@ export default function AddLiquidityCLPane({ pool, isAdd, isReverse, goPreviousS
             <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
             {isZapper ? (
               <ZapperPane
-                token1Address={baseCurrency.address}
-                token2Address={quoteCurrency.address}
+                baseCurrency={baseCurrency}
+                quoteCurrency={quoteCurrency}
                 slippage={slippage}
-                tickLower={tickLower}
-                tickUpper={tickUpper}
                 mintInfo={mintInfo}
                 strategy={strategy}
               />
             ) : (
-              <>
-                <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-
-                <div className='mt-5 flex flex-col gap-4'>
-                  <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-                  <div className='flex flex-col gap-3'>
-                    <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>
-                        {unwrappedSymbol(strategy?.token0)} {t('Amount')}
-                      </Paragraph>
-                      <Paragraph>{formatAmount(strategy?.token0?.reserve)}</Paragraph>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>
-                        {unwrappedSymbol(strategy?.token1)} {t('Amount')}
-                      </Paragraph>
-                      <Paragraph>{formatAmount(strategy?.token1?.reserve)}</Paragraph>
-                    </div>
-                  </div>
-                </div>
-                <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-                  <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-                  <div className='flex flex-col gap-3'>
-                    <div className='flex items-center justify-between'>
-                      <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                      <Paragraph>{formatAmount(strategy?.account?.totalLp)} LP</Paragraph>
-                    </div>
-                  </div>
-                </div>
-
-                <ManualAdd
-                  baseCurrency={baseCurrency}
-                  quoteCurrency={quoteCurrency}
-                  mintInfo={mintInfo}
-                  slippage={slippage}
-                  strategy={strategy}
-                />
-              </>
+              <ManualAdd
+                baseCurrency={baseCurrency}
+                quoteCurrency={quoteCurrency}
+                mintInfo={mintInfo}
+                slippage={slippage}
+                strategy={strategy}
+              />
             )}
           </div>
         )}
