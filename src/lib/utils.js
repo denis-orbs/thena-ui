@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { isNil, sample } from 'lodash'
 import { twMerge } from 'tailwind-merge'
 
-import { FusionRangeType, GAMMA_TYPES, MANUAL_TYPES, RPC_PROVIDERS, SCAN_URLS } from '@/constant'
+import { FusionRangeType, GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, RPC_PROVIDERS, SCAN_URLS } from '@/constant'
 import Contracts from '@/constant/contracts'
 
 BigNumber.config({
@@ -289,4 +289,18 @@ export const getLiquidityRangeType = strategyTitle => {
   }
 
   return FusionRangeType.ICHI_RANGE
+}
+
+export const getDisplayedStrategy = strategy => {
+  const str = strategy.replace(/_(Farming|SwapFee)$/, '').replace('_', ' ')
+
+  if (GAMMA_TYPES.includes(strategy)) {
+    return `Gamma ${str}`
+  }
+
+  if (ICHI_TYPES.includes(strategy)) {
+    return strategy.replace('_', ' ')
+  }
+
+  return str
 }

@@ -80,7 +80,6 @@ const useFusionPairsV2 = () => {
   )
 
   const fusionPairs = useMemo(() => pairs.filter(ele => ele.isFusion), [pairs])
-  // const fusionPairs = pairs
 
   const { data } = useSWR(
     fusionPairs.length > 0 ? ['fusion/pairs', networkId] : null,

@@ -546,7 +546,7 @@ export const useGammaMigration = () => {
       const amount = positionV2.account.totalLp
 
       const { address: gammaAddressV2, token0, token1 } = positionV2
-      const { address: gammaAddressV3, _isFarming } = strategy
+      const { address: gammaAddressV3, _isFarming: isFarming } = strategy
 
       const key = uuidv4()
       const unstakedId = uuidv4()
@@ -652,7 +652,7 @@ export const useGammaMigration = () => {
         return acc
       }, {})
 
-      // TODO: RE-BALANCE
+      // MARK: RE-BALANCE
       setPending(true)
       const gammaUNIProxyContract = getGammaUNIProxyContract(networkId, 3)
       const rangeAmountOfToken1 = await readCall(
@@ -747,7 +747,6 @@ export const useGammaMigration = () => {
         setPending(false)
       }
 
-      // TODO: ADD LIQUIDITY
       const amountA = transferAmounts[token0.address].plus(swapAmount[token0.address])
       const amountB = transferAmounts[token1.address].plus(swapAmount[token1.address])
 
@@ -773,7 +772,8 @@ export const useGammaMigration = () => {
 
       setPending(true)
       if (
-        !(await writeTxn(key, depositId, gammaUNIProxyContract, 'depositAndStake', [
+        // TODO: Gamma Fees only
+        !(await writeTxn(key, depositId, gammaUNIProxyContract, isFarming ? 'depositAndStake' : 'depositAndStake', [
           amountA,
           amountB,
           account,

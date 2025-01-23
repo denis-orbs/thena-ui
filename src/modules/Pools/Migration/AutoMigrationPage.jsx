@@ -10,16 +10,16 @@ import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
+import { ICHI_TYPES } from '@/constant'
 import { useVaults } from '@/context/vaultsContext'
 import { useGammaMigration } from '@/hooks/fusion/useGamma'
 import { useMigrationIchi } from '@/hooks/fusion/useIchi'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { GaugeItem } from '@/modules/Pools/Migration'
 import { useGetAutoPoolMigration, usePools } from '@/state/pools/hooks'
 import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
-export function AutoMigrationPage({ address }) {
+export function AutoMigrationPage({ address, staked }) {
   const t = useTranslations()
   const { push } = useRouter()
   const [strategy, setStrategy] = useState()
@@ -47,16 +47,9 @@ export function AutoMigrationPage({ address }) {
     const subPools = migrationOptions?.map(sub => {
       const { type } = sub
       let isFarming = false
-      let badge = type
 
       if (type?.includes('Farming')) {
         isFarming = true
-      }
-
-      if (ICHI_TYPES?.includes(type)) {
-        badge = `${sub?.allowed?.symbol} ${t('Deposit')}`
-      } else if (GAMMA_TYPES?.includes(type)) {
-        badge = type.replace('_', ' ')
       }
 
       const strategyInfo = {
@@ -69,7 +62,7 @@ export function AutoMigrationPage({ address }) {
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading>{type.replace('_', ' ')} </TextHeading>
+              <TextHeading>{getDisplayedStrategy(type)}</TextHeading>
               <div className='mt-1 flex gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
@@ -82,7 +75,7 @@ export function AutoMigrationPage({ address }) {
               </div>
             </div>
 
-            <NeutralBadge>{badge}</NeutralBadge>
+            <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>
           </div>
         ),
         strategy: strategyInfo,
@@ -139,7 +132,7 @@ export function AutoMigrationPage({ address }) {
         <div className='mt-4 grid items-stretch gap-4 lg:grid-cols-[48%_2%_48%]'>
           <article className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2 text-lg'>{t('Your Current Gauge')}</TextHeading>
-            <GaugeItem pool={positionV2} />
+            <GaugeItem pool={positionV2} staked={staked} />
           </article>
 
           <span className='flex items-center justify-center'>

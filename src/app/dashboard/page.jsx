@@ -90,11 +90,6 @@ export default function HoldingsPage() {
     [veRewards],
   )
 
-  // const totalExpectedUsd = useMemo(
-  //   () => expectedRewards.reduce((sum, curr) => sum.plus(curr.totalUsd), new BigNumber(0)),
-  //   [expectedRewards],
-  // )
-
   const filteredPools = useMemo(() => {
     let result = []
     const stakedPools = userPools.filter(ele => (stakedOnly ? ele.account.gaugeBalance.gt(0) : true))

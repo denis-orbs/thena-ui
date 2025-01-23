@@ -12,7 +12,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES } from '@/constant'
 import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
-import { cn, formatAmount, getLiquidityRangeType } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
@@ -67,7 +67,7 @@ export default function Staked({ pool }) {
           />
           <div className='flex flex-col'>
             <TextHeading>{pool.symbol}</TextHeading>
-            <Paragraph className='text-xs'>{pool.title.replace('_', ' ')}</Paragraph>
+            <Paragraph className='text-xs'>{getDisplayedStrategy(pool.title)}</Paragraph>
           </div>
         </div>
         <GreenBadge>{t('Staked')}</GreenBadge>
@@ -148,7 +148,7 @@ export default function Staked({ pool }) {
         </OutlinedButton>
 
         {migrationOptions && migrationOptions.length > 0 ? (
-          <Link href={`/pools/migration?address=${pool.address}`} className='w-full'>
+          <Link href={`/pools/migration?address=${pool.address}&staked=true`} className='w-full'>
             <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
           </Link>
         ) : (

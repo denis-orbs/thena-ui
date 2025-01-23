@@ -3,24 +3,33 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
-import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
+import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { cn, formatAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
-export function GaugeItem({ pool, strategy }) {
+export function GaugeItem({ pool, strategy, staked = false }) {
   const t = useTranslations()
 
-  const walletUsd = useMemo(() => pool.account.totalUsd.minus(pool.account.stakedUsd), [pool])
-  const token1Amount = useMemo(() => pool.account.total1.minus(pool.account.staked1), [pool])
-  const token0Amount = useMemo(() => pool.account.total0.minus(pool.account.staked0), [pool])
+  const depositValueUSD = useMemo(
+    () => (staked ? pool.account.stakedUsd : pool.account.totalUsd.minus(pool.account.stakedUsd)),
+    [pool, staked],
+  )
+  const token0Amount = useMemo(
+    () => (staked ? pool.account.staked0 : pool.account.total0.minus(pool.account.staked0)),
+    [pool, staked],
+  )
+  const token1Amount = useMemo(
+    () => (staked ? pool.account.staked1 : pool.account.total1.minus(pool.account.staked1)),
+    [pool, staked],
+  )
 
   const token0Percent = useMemo(() => {
     const token0InUsd = token0Amount.times(pool.token0.price)
-    return token0InUsd.div(walletUsd).times(100).toFixed(2)
-  }, [walletUsd, token0Amount, pool])
+    return token0InUsd.div(depositValueUSD).times(100).toFixed(2)
+  }, [depositValueUSD, token0Amount, pool])
 
   const otherToken = useMemo(() => {
     if (!strategy?.allowed) return null
@@ -54,13 +63,13 @@ export function GaugeItem({ pool, strategy }) {
             <TextSubHeading>{pool.title}</TextSubHeading>
           </div>
         </div>
-        <PrimaryBadge className={cn('text-xs', strategy && 'hidden')}>
-          {pool?.account?.stakedUsd.gt(0) ? 'Staked' : 'Not Staked'}
+        <PrimaryBadge className={cn('text-xs', strategy && 'hidden', staked && 'bg-success-600 text-success-100')}>
+          {t(staked ? 'Staked' : 'Not Staked')}
         </PrimaryBadge>
 
-        <GreenBadge className={cn('hidden', strategy && 'block')}>
-          {strategy?.isFarming ? '$THE + 10% Fee' : 'Earn Swap fee'}
-        </GreenBadge>
+        <NeutralBadge className={cn('hidden', strategy && 'block')}>
+          {strategy?.isFarming ? 'Farm Strategy' : 'Fee Strategy'}
+        </NeutralBadge>
       </div>
 
       <div className='flex flex-col gap-3'>
@@ -70,11 +79,13 @@ export function GaugeItem({ pool, strategy }) {
         </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
-          <TextHeading>${formatAmount(pool.account.totalUsd.minus(pool.account.stakedUsd))}</TextHeading>
+          <TextHeading>
+            {strategy ? '≈' : ''} ${formatAmount(depositValueUSD)}
+          </TextHeading>
         </div>
 
-        {/* pool v2 info */}
-        {(!strategy || !strategy?.allowed) && (
+        {!strategy ? (
+          // position v2 info
           <>
             <div className='flex items-center justify-between'>
               <Paragraph className='text-sm'>
@@ -95,10 +106,8 @@ export function GaugeItem({ pool, strategy }) {
               </div>
             </div>
           </>
-        )}
-
-        {/* ichi v3 info */}
-        {strategy?.allowed && (
+        ) : strategy.allowed ? (
+          // ICHI V3 info
           <>
             <div className='flex items-center justify-between'>
               <Paragraph className='text-sm'>Swap</Paragraph>
@@ -124,7 +133,7 @@ export function GaugeItem({ pool, strategy }) {
               </div>
             </div>
           </>
-        )}
+        ) : null}
       </div>
 
       <div className={cn('flex items-center justify-between', strategy && 'hidden')}>

@@ -10,13 +10,14 @@ export default function MigrationPage() {
   const searchParams = useSearchParams()
   const tokenId = searchParams.get('tokenId')
   const address = searchParams.get('address')
+  const staked = Boolean(searchParams.get('staked'))
 
   if (tokenId) {
     return <ManualMigrationPage tokenId={tokenId} />
   }
 
   if (address) {
-    return <AutoMigrationPage address={address} />
+    return <AutoMigrationPage address={address} staked={staked} />
   }
 
   return <Loading />

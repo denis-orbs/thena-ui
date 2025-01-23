@@ -30,6 +30,7 @@ export const useGuageStake = () => {
 
       startTxn({
         key,
+        title: 'Stake',
         desc: `${t('Stake')} LP`,
         transactions: {
           ...(!isApproved && {

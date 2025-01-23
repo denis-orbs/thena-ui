@@ -12,7 +12,7 @@ import { PAIR_TYPES } from '@/constant'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGuageStake } from '@/hooks/useGauge'
 import { useClaimFees } from '@/hooks/useV1Liquidity'
-import { cn, formatAmount, ZERO_VALUE } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
@@ -79,7 +79,7 @@ export default function NotStaked({ pool }) {
           />
           <div className='flex flex-col'>
             <TextHeading>{pool.symbol}</TextHeading>
-            <Paragraph className='text-xs'>{pool.title.replace('_', ' ')}</Paragraph>
+            <Paragraph className='text-xs'>{getDisplayedStrategy(pool.title)}</Paragraph>
           </div>
         </div>
         <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
@@ -130,9 +130,12 @@ export default function NotStaked({ pool }) {
         )}
       </div>
       <div className='mt-auto flex w-full gap-3'>
-        <TextButton className='w-full' onClick={() => setPopup(true)}>
-          {t('Stake')}
-        </TextButton>
+        {!migrationOptions && (
+          <TextButton className='w-full' onClick={() => setPopup(true)}>
+            {t('Stake')}
+          </TextButton>
+        )}
+
         {isLegacy ? (
           <>
             <OutlinedButton

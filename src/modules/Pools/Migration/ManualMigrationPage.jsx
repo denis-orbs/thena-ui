@@ -16,6 +16,8 @@ import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES } from '@/constant'
+import { poolAbi } from '@/constant/abi/fusion'
+import { CHAIN_ID } from '@/constant/contracts'
 import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
@@ -136,9 +138,14 @@ export function ManualMigrationPage({ tokenId }) {
   }, [strategy, strategyData])
 
   const [fusionStateV2, fusionV2, poolAddressV2] = useFusionState({ currencyA, currencyB, version: 2 })
-  const [fusionStateV3, fusionV3] = useFusionState({ currencyA, currencyB, version: 3 })
+  const [fusionStateV3, fusionV3] = useFusionState({
+    currencyA,
+    currencyB,
+    version: 3,
+    isFarmingPool: strategy?.isFarming,
+  })
 
-  const contractV2 = { address: poolAddressV2, abi: poolTestNetV2Abi }
+  const contractV2 = { address: poolAddressV2, abi: chainId === CHAIN_ID.TEST_BSC ? poolTestNetV2Abi : poolAbi }
   const { data: poolInfoV2 } = useReadContracts({
     contracts: [
       { ...contractV2, functionName: 'liquidity' },
