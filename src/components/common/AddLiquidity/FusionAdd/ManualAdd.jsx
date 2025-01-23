@@ -7,7 +7,7 @@ import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { ICHI_TYPES } from '@/constant'
+import { MANUAL_TYPES } from '@/constant'
 import { useAlgebraAdd } from '@/hooks/fusion/useAlgebra'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import useWallet from '@/hooks/useWallet'
@@ -41,7 +41,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
     amount0: amountA?.quotient,
     token1,
     amount1: amountB?.quotient,
-    isFarming: strategy?.title === ICHI_TYPES[1],
+    isFarming: strategy?.title === MANUAL_TYPES[0],
     tvl: strategy?.tvl,
   })
 

@@ -9,7 +9,7 @@ import TokenInput from '@/components/input/TokenInput'
 import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { ICHI_TYPES } from '@/constant'
+import { MANUAL_TYPES } from '@/constant'
 import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
@@ -49,7 +49,7 @@ function ZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo,
     token1: tokenDeposit.address === asset1.address ? asset1 : null,
     amount0: amountIn,
     amount1: amountIn,
-    isFarming: strategy?.title === ICHI_TYPES[1],
+    isFarming: strategy?.title === MANUAL_TYPES[0],
     tvl: strategy?.tvl,
   })
 

@@ -10,7 +10,7 @@ import Spinner from '@/components/spinner'
 import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { FusionRangeType, ICHI_TYPES } from '@/constant'
+import { FusionRangeType, MANUAL_TYPES } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { PoolState } from '@/hooks/fusion/useFusions'
@@ -53,7 +53,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
     poolAddress: mintInfo.poolAddress,
     tickUpper,
     tickLower,
-    isFarming: strategy?.title === ICHI_TYPES[1],
+    isFarming: strategy?.title === MANUAL_TYPES[0],
     tvl: strategy?.tvl,
   })
 

@@ -3,8 +3,9 @@ import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
 import { Position } from 'thena-fusion-sdk'
-import { useReadContract } from 'wagmi'
+import { useReadContracts } from 'wagmi'
 
+import { eternalVirtualPoolAbi } from '@/constant/abi/fusion'
 import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei } from '@/lib/utils'
@@ -24,7 +25,7 @@ const getFusionFeesData = async ({ chainId, pool }) => {
         }
       `,
       {
-        pool,
+        pool: pool.toLowerCase(),
         date: Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60, // current time in seconds - 30 days
       },
     )
@@ -97,22 +98,34 @@ export const useEstimateAPR = ({
     enabled: !!poolAddress && isFarming,
     staleTime: Infinity,
   })
-  const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken } = farmingData || {}
+  const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken, virtualPool } = farmingData || {}
+
   const tokenReward = useGetAsset(rewardToken)
   const tokenBonus = useGetAsset(Number(bonusRewardRate) !== 0 ? bonusRewardToken : null)
   const rewardPerSecond = fromWei(rewardRate)
     .times(tokenReward?.price ?? 0)
     .plus(fromWei(bonusRewardRate).times(tokenBonus?.price ?? 0))
 
-  const { data: globalState = {} } = useReadContract({
-    functionName: 'globalState',
-    address: poolAddress,
-    abi: poolTestNetV2Abi,
+  const { data: farmInfo } = useReadContracts({
+    contracts: [
+      {
+        functionName: 'globalState',
+        address: poolAddress,
+        abi: poolTestNetV2Abi,
+      },
+      {
+        functionName: 'currentLiquidity',
+        address: virtualPool,
+        abi: eternalVirtualPoolAbi,
+      },
+    ],
     enabled: !!poolAddress,
   })
-  const { communityFee = 0n } = globalState
-  let earnPercent = communityFee / 1000n
-  if (isFarming) earnPercent = 1000n - communityFee / 1000n
+  const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
+  const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
+
+  let earnPercent = communityFee.div(1000)
+  if (isFarming) earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
   if (!tickLower || !tickUpper || !pool) return BigNumber(0)
 
@@ -156,15 +169,14 @@ export const useEstimateAPR = ({
     })
   }
 
-  const liquidityRatio = BigNumber(position.liquidity).div(pool.liquidity)
-
+  const farmRatio = BigNumber(position.liquidity).div(farmLiquidity)
   const farmApr = rewardPerSecond
-    .times(liquidityRatio)
+    .times(farmRatio)
     .times(86400 * 365)
-    .times(100)
     .div(tvl)
 
-  const feeAPR = liquidityRatio.times(avgPoolFees).div(tvl).times(earnPercent)
+  const feeRatio = BigNumber(position.liquidity).div(pool.liquidity)
+  const feeAPR = feeRatio.times(avgPoolFees).div(tvl).times(earnPercent)
 
   return farmApr.plus(feeAPR)
 }
@@ -187,32 +199,43 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1
     enabled: !!poolAddress && position?.isFarming,
     staleTime: Infinity,
   })
-  const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken } = farmingData || {}
+  const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken, virtualPool } = farmingData || {}
   const tokenReward = useGetAsset(rewardToken)
   const tokenBonus = useGetAsset(Number(bonusRewardRate) !== 0 ? bonusRewardToken : null)
   const rewardPerSecond = fromWei(rewardRate)
     .times(tokenReward?.price ?? 0)
     .plus(fromWei(bonusRewardRate).times(tokenBonus?.price ?? 0))
 
-  const { data: globalState = {} } = useReadContract({
-    functionName: 'globalState',
-    address: poolAddress,
-    abi: poolTestNetV2Abi,
+  const { data: farmInfo } = useReadContracts({
+    contracts: [
+      {
+        functionName: 'globalState',
+        address: poolAddress,
+        abi: poolTestNetV2Abi,
+      },
+      {
+        functionName: 'currentLiquidity',
+        address: virtualPool,
+        abi: eternalVirtualPoolAbi,
+      },
+    ],
     enabled: !!poolAddress,
   })
-  const { communityFee = 0n } = globalState
-  let earnPercent = communityFee / 1000n
-  if (position?.isFarming) earnPercent = 1000n - communityFee / 1000n
+  const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
+  const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
+
+  let earnPercent = communityFee.div(1000)
+  if (position.isFarming) earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
   if (!tickLower || !tickUpper || !position) return BigNumber(0)
-  const liquidityRatio = BigNumber(liquidity).div(totalLiquidity)
 
+  const farmRatio = BigNumber(position.liquidity).div(farmLiquidity)
   const farmApr = rewardPerSecond
-    .times(liquidityRatio)
+    .times(farmRatio)
     .times(86400 * 365)
-    .times(100)
     .div(tvl)
 
-  const feeAPR = liquidityRatio.times(avgPoolFees).div(tvl).times(earnPercent)
+  const liquidityFeeRatio = BigNumber(liquidity).div(totalLiquidity)
+  const feeAPR = liquidityFeeRatio.times(avgPoolFees).div(tvl).times(earnPercent)
   return farmApr.plus(feeAPR)
 }
