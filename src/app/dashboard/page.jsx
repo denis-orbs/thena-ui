@@ -266,9 +266,9 @@ export default function HoldingsPage() {
                   pool.type === 'Manual' ? (
                     <React.Fragment key={`pool-${idx}`}>
                       {pool.isFarming ? (
-                        <FarmingPosition pool={pool} key={`pool-${idx}`} />
+                        <FarmingPosition position={pool} key={`pool-${idx}`} />
                       ) : (
-                        <ManualPosition pool={pool} key={`pool-${idx}`} />
+                        <ManualPosition position={pool} key={`pool-${idx}`} />
                       )}
                     </React.Fragment>
                   ) : (

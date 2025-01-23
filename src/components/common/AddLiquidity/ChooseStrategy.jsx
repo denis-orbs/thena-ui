@@ -434,7 +434,12 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
             )}
 
             {strategy && !strategy.isAutomatic && (
-              <ManualStrategy firstAsset={firstAsset} secondAsset={secondAsset} isReverse={isReverse} />
+              <ManualStrategy
+                firstAsset={firstAsset}
+                secondAsset={secondAsset}
+                isReverse={isReverse}
+                strategy={strategy}
+              />
             )}
           </div>
         </div>

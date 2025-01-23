@@ -1,6 +1,7 @@
 import algebraAbiV2 from './algebraV2.json'
 import algebraAbiV3 from './algebraV3.json'
 import defiedgeStrategyAbi from './defiedgeStrategy.json'
+import eternalVirtualPoolAbi from './eternalVirtualPool.json'
 import algebraFactoryAbi from './factory.json'
 import fusionQuoterAbi from './fusionQuoter.json'
 import fusionRouterAbi from './fusionRouter.json'
@@ -23,6 +24,7 @@ export {
   algebraAbiV3,
   algebraFactoryAbi,
   defiedgeStrategyAbi,
+  eternalVirtualPoolAbi,
   fusionQuoterAbi,
   fusionRouterAbi,
   gammaClearingAbi,
