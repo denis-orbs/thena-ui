@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
@@ -5,7 +6,7 @@ import useSWRImmutable from 'swr/immutable'
 import { ChainId } from 'thena-sdk-core'
 import { formatEther, formatUnits } from 'viem'
 
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { GAMMA_TYPES, ICHI_SwapFee, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { pairAPIAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
@@ -65,7 +66,7 @@ const fetchUserFusionsV3 = async (account, chainId) => {
       address: pair_address,
       walletBalance: account_lp_balance,
       gaugeBalance: account_gauge_balance,
-      totalLp: account_lp_balance + account_gauge_balance,
+      totalLp: BigNumber(account_lp_balance).plus(account_gauge_balance),
       gaugeEarned: account_gauge_earned,
       token0claimable: claimable0,
       token1claimable: claimable1,
@@ -272,9 +273,10 @@ function Updater() {
             let walletBalance = formatEther(found.walletBalance)
             let gaugeBalance = formatEther(found.gaugeBalance)
 
-            if (fusion.type === ICHI_TYPES[1]) {
+            // ICHI Swap fees => make it Staked
+            if (fusion.type === ICHI_SwapFee) {
               gaugeBalance = formatEther(found.walletBalance)
-              walletBalance = formatEther(0n)
+              walletBalance = '0'
             }
 
             user = {

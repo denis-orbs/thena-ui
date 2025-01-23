@@ -299,7 +299,7 @@ export const getDisplayedStrategy = strategy => {
   }
 
   if (ICHI_TYPES.includes(strategy)) {
-    return strategy.replace('_', ' ')
+    return 'ICHI'
   }
 
   return str

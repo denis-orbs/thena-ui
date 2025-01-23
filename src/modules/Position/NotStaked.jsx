@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import { PrimaryBadge } from '@/components/badges/Badge'
+import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
@@ -82,7 +82,11 @@ export default function NotStaked({ pool }) {
             <Paragraph className='text-xs'>{getDisplayedStrategy(pool.title)}</Paragraph>
           </div>
         </div>
-        <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
+        <div className='flex items-center gap-2'>
+          {/* TODO: Gamma Fee strategy */}
+          {pool?.title?.includes('_Farming') && <GreenBadge>Farm Strategy</GreenBadge>}
+          <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
+        </div>
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>

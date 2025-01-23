@@ -263,6 +263,7 @@ export const GAMMA_TYPES = [
 ]
 export const MANUAL_TYPES = ['CL_Farming', 'CL_SwapFee']
 export const ICHI_TYPES = ['ICHI_Farming', 'ICHI_SwapFee', 'ICHI']
+export const ICHI_SwapFee = 'ICHI_SwapFee'
 
 export const TAX_ASSETS = {
   [CHAIN_ID.BSC]: [

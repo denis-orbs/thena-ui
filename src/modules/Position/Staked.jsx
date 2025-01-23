@@ -9,7 +9,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_SwapFee } from '@/constant'
 import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
@@ -29,6 +29,8 @@ export default function Staked({ pool }) {
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
   const { onGaugeHarvest, pending } = useGaugeHarvest()
 
+  const isICHISwapFee = useMemo(() => pool?.title === ICHI_SwapFee, [pool])
+
   const {
     rewardsData: { totalUsd, rewards },
   } = useGammaData(pool)
@@ -44,10 +46,15 @@ export default function Staked({ pool }) {
   const t = useTranslations()
 
   const version = pool?.account?.version ?? 2
+  const depositValueUSD = useMemo(
+    () => (isICHISwapFee ? pool?.account.totalUsd : pool.account.stakedUsd),
+    [isICHISwapFee, pool.account.stakedUsd, pool.account.totalUsd],
+  )
+
   const token0Percent = useMemo(() => {
     const token0InUsd = pool.account.staked0.times(pool.token0.price)
-    return token0InUsd.div(pool.account.stakedUsd).times(100).toFixed(2)
-  }, [pool])
+    return token0InUsd.div(depositValueUSD).times(100).toFixed(2)
+  }, [depositValueUSD, pool.account.staked0, pool.token0.price])
 
   const handleUnstake = amount => {
     onGaugeUnstake(pool, amount, () => {
@@ -70,7 +77,13 @@ export default function Staked({ pool }) {
             <Paragraph className='text-xs'>{getDisplayedStrategy(pool.title)}</Paragraph>
           </div>
         </div>
-        <GreenBadge>{t('Staked')}</GreenBadge>
+        <GreenBadge>
+          {pool?.title?.includes('_Farming')
+            ? 'Farm Strategy'
+            : pool?.title?.includes('_SwapFee')
+              ? 'Fee Strategy'
+              : t('Staked')}
+        </GreenBadge>
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
@@ -79,7 +92,7 @@ export default function Staked({ pool }) {
         </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
-          <TextHeading>${formatAmount(pool.account.stakedUsd)}</TextHeading>
+          <TextHeading>${formatAmount(depositValueUSD)}</TextHeading>
         </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>
