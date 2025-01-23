@@ -16,6 +16,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
+import { useCalculateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { useFusionState } from '@/hooks/fusion/useFusions'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
@@ -26,6 +27,7 @@ import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
+import { usePools } from '@/state/pools/hooks'
 import { InfoIcon, RefreshIcon } from '@/svgs'
 
 import AddManualModal from './AddManualModal'
@@ -50,11 +52,12 @@ export const fetchManualInfo = async (account, tokenId, chainId, version) => {
   return balance
 }
 
-export default function ManualPosition({ pool }) {
+export default function ManualPosition({ position }) {
   const t = useTranslations()
   const { mutateManual } = useContext(ManualsContext)
   const { account, chainId } = useWallet()
-  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = pool
+  const pools = usePools()
+  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = position
 
   const [claimPopup, setClaimPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
@@ -70,16 +73,16 @@ export default function ManualPosition({ pool }) {
     },
   )
 
-  const { poolAddress, incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
+  const { incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
   const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
-  const { pending, onAlgebraBurn } = useAlgebraBurn(pool?.version ?? 3)
+  const { pending, onAlgebraBurn } = useAlgebraBurn(position?.version ?? 3)
 
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
-  const [fusionState, fusion] = useFusionState({
+  const [fusionState, fusion, poolAddress] = useFusionState({
     currencyA: currency0,
     currencyB: currency1,
-    isFarmingPool: pool?.deployer === zeroAddress,
+    isFarmingPool: position?.deployer === zeroAddress,
     version,
   })
 
@@ -101,7 +104,7 @@ export default function ManualPosition({ pool }) {
     return [fusionState, fusion]
   }, [fusion, fusionState, prevFusion, prevFusionState])
 
-  const position = useMemo(() => {
+  const _position = useMemo(() => {
     if (_fusion) {
       return new Position({
         pool: _fusion,
@@ -113,13 +116,26 @@ export default function ManualPosition({ pool }) {
     return undefined
   }, [liquidity, _fusion, tickLower, tickUpper])
 
-  const amount0 = useMemo(() => (position ? position.amount0.toExact() : 0), [position])
-  const amount1 = useMemo(() => (position ? position.amount1.toExact() : 0), [position])
+  const amount0 = useMemo(() => (_position ? _position.amount0.toExact() : 0), [_position])
+  const amount1 = useMemo(() => (_position ? _position.amount1.toExact() : 0), [_position])
   const amount0InUsd = useMemo(() => BigNumber(amount0) * asset0.price, [amount0, asset0])
   const amount1InUsd = useMemo(() => BigNumber(amount1) * asset1.price, [amount1, asset1])
 
   const token0 = useToken(asset0.address)
   const token1 = useToken(asset1.address)
+
+  const poolInfo = useMemo(
+    () =>
+      pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_Farming'),
+    [poolAddress, pools],
+  )
+  const apr = useCalculateAPR({
+    position,
+    poolAddress,
+    totalLiquidity: _fusion?.liquidity,
+    tvl: poolInfo?.tvl ?? 1,
+  })
+
   const feeValue0 = useMemo(
     () => CurrencyAmount.fromRawAmount(unwrappedToken(token0), new BigNumber(fees ? fees[0] : 0).toString(10)),
     [token0, fees],
@@ -167,13 +183,13 @@ export default function ManualPosition({ pool }) {
         </div>
 
         <div className='flex flex-wrap justify-end gap-2'>
-          {pool.deployer === zeroAddress ? (
+          {position.deployer === zeroAddress ? (
             <>
               <PrimaryBadge>$THE</PrimaryBadge>
               <GreenBadge>10% Fees</GreenBadge>
             </>
           ) : (
-            <>{pool?.version === 3 && <GreenBadge>80% Fees</GreenBadge>}</>
+            <>{position?.version === 3 && <GreenBadge>80% Fees</GreenBadge>}</>
           )}
 
           {!Number(liquidity) ? (
@@ -187,6 +203,10 @@ export default function ManualPosition({ pool }) {
       </div>
 
       <div className='flex flex-col gap-3'>
+        <div className={cn('flex items-center justify-between', position?.version === 2 && 'hidden')}>
+          <span className='text-sm text-neutral-300'>{t('APR')}</span>
+          <span>{apr.toFixed(2)}%</span>
+        </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
           <TextHeading>${formatAmount(fiatValueOfLiquidity)}</TextHeading>
@@ -239,8 +259,8 @@ export default function ManualPosition({ pool }) {
             <TextHeading>
               <>
                 {reversePrice
-                  ? formatAmountLP(1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER))
-                  : formatAmountLP(formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
+                  ? formatAmountLP(1 / formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))
+                  : formatAmountLP(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
               </>
             </TextHeading>
             <Paragraph className='text-[10px]'>
@@ -254,8 +274,8 @@ export default function ManualPosition({ pool }) {
             <TextSubHeading className='text-xs'>{t('Max Price')}</TextSubHeading>
             <TextHeading>
               {reversePrice
-                ? formatAmountLP(1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER))
-                : formatAmountLP(formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
+                ? formatAmountLP(1 / formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))
+                : formatAmountLP(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
             </TextHeading>
             <Paragraph className='text-[10px]'>
               {t('[symbolA] per [symbolB]', {
@@ -284,10 +304,10 @@ export default function ManualPosition({ pool }) {
         <Box
           className={cn('flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950', {
             hidden:
-              pool?.isFarming ||
+              position?.isFarming ||
               !incentiveAddress ||
               incentiveAddress === zeroAddress ||
-              pool?.deployer !== zeroAddress ||
+              position?.deployer !== zeroAddress ||
               Number(liquidity) <= 0,
           })}
         >
@@ -331,13 +351,13 @@ export default function ManualPosition({ pool }) {
         <EmphasisButton
           className={cn('w-full', {
             hidden:
-              pool?.isFarming ||
+              position?.isFarming ||
               !incentiveAddress ||
               incentiveAddress === zeroAddress ||
-              pool?.deployer !== zeroAddress ||
+              position?.deployer !== zeroAddress ||
               Number(liquidity) <= 0,
           })}
-          disabled={pool?.isFarming || isEnterFarmLoading}
+          disabled={position?.isFarming || isEnterFarmLoading}
           onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
         >
           {t('Earn $THE')}
@@ -359,7 +379,7 @@ export default function ManualPosition({ pool }) {
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}
-        pool={pool}
+        pool={position}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
         mutate={mutate}
@@ -369,8 +389,8 @@ export default function ManualPosition({ pool }) {
       <RemoveManualModal
         popup={removePopup}
         setPopup={setRemovePopup}
-        pool={pool}
-        position={position}
+        pool={position}
+        position={_position}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
         mutateManual={mutateManual}
@@ -380,8 +400,8 @@ export default function ManualPosition({ pool }) {
       <AddManualModal
         popup={addPopup}
         setPopup={setAddPopup}
-        pool={pool}
-        position={position}
+        pool={position}
+        position={_position}
         mutateManual={mutateManual}
         outOfRange={outOfRange}
         _fusion={_fusion}

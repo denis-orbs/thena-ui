@@ -16,15 +16,11 @@ import Contracts from '@/constant/contracts'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useGetAsset, useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
+import { useCalculateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { useFusionState } from '@/hooks/fusion/useFusions'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
-import {
-  getAlgebraFactoryContract,
-  getFarmingCenterContract,
-  getInsentiveContract,
-  getPositionManagerContract,
-} from '@/lib/contracts'
+import { getFarmingCenterContract, getInsentiveContract, getPositionManagerContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
@@ -37,21 +33,20 @@ import ClaimModal from './ClaimModal'
 import { WarningOutOfRange } from './ManualPosition'
 import RemoveManualModal from './RemoveManualModal'
 
-export function FarmingPosition({ pool }) {
+export function FarmingPosition({ position }) {
   const t = useTranslations()
   const { account, chainId } = useWallet()
   const pools = usePools()
   const { mutateManual } = useContext(ManualsContext)
   const incentiveMaker = getInsentiveContract(chainId)
   const farmingCenter = getFarmingCenterContract(chainId)
-  const algebraFactory = getAlgebraFactoryContract(chainId)
-  const positionManagerContract = getPositionManagerContract(chainId, pool.version)
+  const positionManagerContract = getPositionManagerContract(chainId, position.version)
 
   const [claimPopup, setClaimPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
 
-  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId } = pool
+  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId } = position
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
 
@@ -59,14 +54,10 @@ export function FarmingPosition({ pool }) {
   const { onAlgebraBurn, pending } = useAlgebraBurn()
   // const { onExitFarming, pending: isRemoveFarmLoading } = useAlgebraExitFarming()
 
-  const { data: poolAddress } = useReadContract({
-    ...algebraFactory,
-    functionName: 'computePoolAddress',
-    args: [asset0?.address, asset1?.address],
-    query: {
-      enabled: !!asset0 && !!asset1,
-      staleTime: Infinity,
-    },
+  const [fusionState, fusion, poolAddress] = useFusionState({
+    currencyA: currency0,
+    currencyB: currency1,
+    isFarmingPool: position?.deployer === zeroAddress,
   })
 
   const { data: key } = useReadContract({
@@ -78,12 +69,13 @@ export function FarmingPosition({ pool }) {
       staleTime: Infinity,
     },
   })
+
   const { data: farmRewards } = useSimulateContract({
     ...farmingCenter,
     functionName: 'collectRewards',
-    args: [key, pool?.tokenId],
+    args: [key, position?.tokenId],
     query: {
-      enabled: !!key && !!pool?.tokenId,
+      enabled: !!key && !!position?.tokenId,
     },
   })
 
@@ -99,17 +91,11 @@ export function FarmingPosition({ pool }) {
       },
     ],
     query: {
-      enabled: !!key && !!pool?.tokenId,
+      enabled: !!key && !!position?.tokenId,
     },
   })
   const farmRewardData = farmRewards?.result
   const feeRewardData = feeRewards?.result
-
-  const poolFusion = useMemo(
-    () =>
-      pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_Farming'),
-    [poolAddress, pools],
-  )
 
   const tickAtLimit = useMemo(
     () => ({
@@ -118,12 +104,6 @@ export function FarmingPosition({ pool }) {
     }),
     [tickLower, tickUpper],
   )
-  const [fusionState, fusion] = useFusionState({
-    currencyA: currency0,
-    currencyB: currency1,
-    isFarmingPool: pool?.deployer === zeroAddress,
-  })
-
   const [prevFusionState, prevFusion] = usePrevious([fusionState, fusion]) || []
 
   const [, _fusion] = useMemo(() => {
@@ -134,7 +114,7 @@ export function FarmingPosition({ pool }) {
     return [fusionState, fusion]
   }, [fusion, fusionState, prevFusion, prevFusionState])
 
-  const position = useMemo(() => {
+  const _position = useMemo(() => {
     if (_fusion) {
       return new Position({
         pool: _fusion,
@@ -146,13 +126,25 @@ export function FarmingPosition({ pool }) {
     return undefined
   }, [liquidity, _fusion, tickLower, tickUpper])
 
-  const amount0 = useMemo(() => (position ? position.amount0.toExact() : 0), [position])
-  const amount1 = useMemo(() => (position ? position.amount1.toExact() : 0), [position])
+  const amount0 = useMemo(() => (_position ? _position.amount0.toExact() : 0), [_position])
+  const amount1 = useMemo(() => (_position ? _position.amount1.toExact() : 0), [_position])
   const amount0InUsd = useMemo(() => BigNumber(amount0) * asset0.price, [amount0, asset0])
   const amount1InUsd = useMemo(() => BigNumber(amount1) * asset1.price, [amount1, asset1])
-
   const token0 = useToken(asset0.address)
   const token1 = useToken(asset1.address)
+
+  const poolInfo = useMemo(
+    () =>
+      pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_Farming'),
+    [poolAddress, pools],
+  )
+  const apr = useCalculateAPR({
+    position,
+    poolAddress,
+    totalLiquidity: _fusion?.liquidity,
+    tvl: poolInfo?.tlv ?? 1,
+  })
+
   const THE = useGetAsset(Contracts.THE[chainId])
   const WBNB = useGetAsset(Contracts.WBNB[chainId])
 
@@ -226,7 +218,7 @@ export function FarmingPosition({ pool }) {
               {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
             </TextHeading>
             <Paragraph className='text-xs'>
-              #{pool.tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
+              #{position.tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
             </Paragraph>
           </div>
         </div>
@@ -247,7 +239,7 @@ export function FarmingPosition({ pool }) {
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
           <span className='text-sm text-neutral-300'>{t('APR')}</span>
-          <span>{formatAmount(poolFusion?.gauge?.apr || 0)}%</span>
+          <span>{apr.toFixed(2)}%</span>
         </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
@@ -307,8 +299,8 @@ export function FarmingPosition({ pool }) {
             <TextHeading>
               {formatAmountLP(
                 reversePrice
-                  ? 1 / formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER)
-                  : formatTickPrice(position?.token0PriceLower, tickAtLimit, Bound.LOWER),
+                  ? 1 / formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER)
+                  : formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER),
               )}
             </TextHeading>
             <Paragraph className='text-[10px]'>
@@ -323,8 +315,8 @@ export function FarmingPosition({ pool }) {
             <TextHeading>
               {formatAmountLP(
                 reversePrice
-                  ? 1 / formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
-                  : formatTickPrice(position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
+                  ? 1 / formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
+                  : formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
               )}
             </TextHeading>
             <Paragraph className='text-[10px]'>
@@ -370,7 +362,7 @@ export function FarmingPosition({ pool }) {
 
         <OutlinedButton
           className={cn('block w-full', {
-            hidden: pool?.isFarming || Number(liquidity) > 0,
+            hidden: position?.isFarming || Number(liquidity) > 0,
           })}
           onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
           disabled={pending}
@@ -386,7 +378,7 @@ export function FarmingPosition({ pool }) {
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}
-        pool={{ ...pool, key }}
+        pool={{ ...position, key }}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
         additionRewards={[feeThe, feeWbnb]}
@@ -397,8 +389,8 @@ export function FarmingPosition({ pool }) {
       <RemoveManualModal
         popup={removePopup}
         setPopup={setRemovePopup}
-        pool={pool}
-        position={position}
+        pool={position}
+        position={_position}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
         additionRewards={[feeThe, feeWbnb]}
@@ -409,8 +401,8 @@ export function FarmingPosition({ pool }) {
       <AddManualModal
         popup={addPopup}
         setPopup={setAddPopup}
-        pool={pool}
-        position={position}
+        pool={position}
+        position={_position}
         mutateManual={mutateManual}
         outOfRange={outOfRange}
         _fusion={_fusion}

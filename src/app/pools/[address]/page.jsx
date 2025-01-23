@@ -433,7 +433,7 @@ export default function SpecificPoolPage({ params }) {
                 userPositions.map((ele, idx) =>
                   ele.type === 'Manual' ? (
                     <React.Fragment key={`pos-fragment-${idx}`}>
-                      {ele.isFarming ? <FarmingPosition pool={ele} /> : <ManualPosition pool={ele} />}
+                      {ele.isFarming ? <FarmingPosition position={ele} /> : <ManualPosition position={ele} />}
                     </React.Fragment>
                   ) : (
                     <Position pool={ele} key={ele?.address} />
