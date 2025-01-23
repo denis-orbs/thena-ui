@@ -9,7 +9,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_SwapFee } from '@/constant'
+import { GAMMA_TYPES, ICHI_SwapFee, ICHI_TYPES } from '@/constant'
 import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
@@ -19,12 +19,14 @@ import { InfoIcon } from '@/svgs'
 
 import AddPositionModal from './AddPositionModal'
 import GaugeManageModal from './GaugeManageModal'
+import MigrateWarningModal from './MigrateWarningModal'
 import RemovePositionModal from './RemovePositionModal'
 
 export default function Staked({ pool }) {
   const [removePopup, setRemovePopup] = useState(false)
   const [popup, setPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
+  const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
   const { onGaugeHarvest, pending } = useGaugeHarvest()
@@ -41,6 +43,7 @@ export default function Staked({ pool }) {
     type: pool.title,
     version: pool.account.version,
   })
+  const migrationLink = useMemo(() => `/pools/migration?address=${pool.address}&staked=true`, [pool.address])
 
   const dispatch = useDispatch()
   const t = useTranslations()
@@ -141,64 +144,83 @@ export default function Staked({ pool }) {
         </div>
       </div>
       <div className='mt-auto flex w-full gap-3'>
-        <TextButton className={cn('w-full', version === 3 && 'hidden')} onClick={() => setPopup(true)}>
-          {t('Unstake')}
-        </TextButton>
+        {version === 2 ? (
+          // Version 2 actions
+          <>
+            <TextButton className='w-full' onClick={() => setPopup(true)}>
+              {t('Unstake')}
+            </TextButton>
 
-        <OutlinedButton className={cn('w-full', version === 2 && 'hidden')} onClick={() => setRemovePopup(true)}>
-          {t('Remove')}
-        </OutlinedButton>
-
-        <OutlinedButton
-          className='w-full'
-          onClick={() => {
-            if (version === 2) onGaugeHarvest(pool)
-            else onGammaClaim(pool)
-          }}
-          disabled={pending || claimPending || pool.account.earnedUsd.isZero()}
-        >
-          {t('Harvest')}
-        </OutlinedButton>
-
-        {migrationOptions && migrationOptions.length > 0 ? (
-          <Link href={`/pools/migration?address=${pool.address}&staked=true`} className='w-full'>
-            <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
-          </Link>
+            {migrationOptions && migrationOptions.length > 0 ? (
+              <Link href={migrationLink} className='w-full'>
+                <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+              </Link>
+            ) : (
+              <PrimaryButton className='w-full' onClick={() => setMigrateWarningPopup(true)}>
+                {t('Migrate')}
+              </PrimaryButton>
+            )}
+          </>
         ) : (
-          <EmphasisButton
-            className={cn('w-full')}
-            onClick={() => {
-              dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
-              dispatch(
-                updateStrategy({
-                  strategy: {
-                    title: pool?.title,
-                    token0: {
-                      ...pool?.token0,
-                      reserve: pool?.token0?.reserve?.toNumber(),
-                      balance: pool?.token0?.balance?.toNumber(),
-                      totalValue: pool?.token0?.totalValue?.toNumber(),
+          // Version 3 actions
+          <>
+            <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
+              {t('Remove')}
+            </OutlinedButton>
+
+            <OutlinedButton
+              className='w-full'
+              onClick={() => {
+                if (version === 2) onGaugeHarvest(pool)
+                else onGammaClaim(pool)
+              }}
+              disabled={pending || claimPending || pool.account.earnedUsd.isZero()}
+            >
+              {t('Harvest')}
+            </OutlinedButton>
+
+            <EmphasisButton
+              className={cn('w-full')}
+              onClick={() => {
+                dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
+                dispatch(
+                  updateStrategy({
+                    strategy: {
+                      title: pool?.title,
+                      token0: {
+                        ...pool?.token0,
+                        reserve: pool?.token0?.reserve?.toNumber(),
+                        balance: pool?.token0?.balance?.toNumber(),
+                        totalValue: pool?.token0?.totalValue?.toNumber(),
+                      },
+                      token1: {
+                        ...pool?.token1,
+                        reserve: pool?.token1?.reserve?.toNumber(),
+                        balance: pool?.token1?.balance?.toNumber(),
+                        totalValue: pool?.token1?.totalValue?.toNumber(),
+                      },
+                      tvl: pool?.tvl?.toNumber(),
+                      isAutomatic: true,
+                      isFarming: pool.title.includes('Farming'),
+                      version,
                     },
-                    token1: {
-                      ...pool?.token1,
-                      reserve: pool?.token1?.reserve?.toNumber(),
-                      balance: pool?.token1?.balance?.toNumber(),
-                      totalValue: pool?.token1?.totalValue?.toNumber(),
-                    },
-                    tvl: pool?.tvl?.toNumber(),
-                    isAutomatic: true,
-                    isFarming: pool.title.includes('Farming'),
-                    version,
-                  },
-                }),
-              )
-              setAddPopup(true)
-            }}
-          >
-            {t('Add')}
-          </EmphasisButton>
+                  }),
+                )
+                setAddPopup(true)
+              }}
+            >
+              {t('Add')}
+            </EmphasisButton>
+          </>
         )}
       </div>
+
+      <MigrateWarningModal
+        popup={migrateWarningPopup}
+        setPopup={setMigrateWarningPopup}
+        strategy={ICHI_TYPES.includes(pool.title) ? 'ICHI' : 'Gamma'}
+        link={migrationLink}
+      />
 
       <GaugeManageModal
         title='Unstake LP'

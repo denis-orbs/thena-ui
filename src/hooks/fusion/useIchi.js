@@ -823,3 +823,70 @@ export const useMigrationIchi = () => {
 
   return { migrateIchi, pending }
 }
+
+export const useIchiWithdraw = () => {
+  const t = useTranslations()
+
+  const [pending, setPending] = useState(false)
+  const { account } = useWallet()
+  const { networkId } = useChainSettings()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const withdrawIchi = useCallback(
+    async ({ positionV2, callback }) => {
+      if (!positionV2) return
+
+      const { address: vaultAddressV2, gauge } = positionV2
+      const gaugeContract = getGaugeContract(gauge.address, networkId)
+      const vaultContractV2 = getIchiVaultContract(vaultAddressV2, networkId, 2)
+
+      const key = uuidv4()
+      const unstakedId = uuidv4()
+      const removeId = uuidv4()
+
+      const stakedBalance = positionV2.account?.gaugeBalance
+      const totalLp = positionV2.account?.totalLp
+
+      const transactions = {}
+      if (stakedBalance.gt(0)) {
+        transactions[unstakedId] = {
+          desc: t('Unstake'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[removeId] = {
+        desc: t('Remove Liquidity'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      startTxn({ key, transactions, title: 'Withdraw' })
+      setPending(true)
+
+      if (stakedBalance.gt(0)) {
+        if (!(await writeTxn(key, unstakedId, gaugeContract, 'withdrawAllAndHarvest', []))) {
+          setPending(false)
+          return
+        }
+      }
+
+      const withdrawTx = await writeTxn(key, removeId, vaultContractV2, 'withdraw', [
+        toWei(totalLp).toFixed(0),
+        account,
+      ])
+      if (!withdrawTx) {
+        setPending(false)
+        return
+      }
+
+      callback()
+      endTxn({ key, final: 'Withdraw Successfully' })
+      setPending(false)
+    },
+    [account, endTxn, networkId, startTxn, t, writeTxn],
+  )
+
+  return { withdrawIchi, pending }
+}

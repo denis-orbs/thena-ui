@@ -948,6 +948,7 @@ export const useWeightedPoolsWithGauge = () => {
             ...token,
             reserve: new BigNumber(token.reserve),
             ...tokenDetail,
+            symbol: tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN',
           }
         })
         const totalTvl = new BigNumber(weighted.tvlUSD)

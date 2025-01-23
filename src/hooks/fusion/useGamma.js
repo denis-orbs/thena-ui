@@ -794,3 +794,75 @@ export const useGammaMigration = () => {
 
   return { migrateGamma, pending }
 }
+
+export const useGammaWithdraw = () => {
+  const t = useTranslations()
+
+  const [pending, setPending] = useState(false)
+  const { networkId } = useChainSettings()
+  const { account } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const withdrawGamma = useCallback(
+    async ({ positionV2, callback }) => {
+      if (!positionV2) return
+
+      const isStaked = positionV2.account.gaugeBalance > 0
+      const amount = positionV2.account.totalLp
+
+      const { address: gammaAddressV2 } = positionV2
+
+      const key = uuidv4()
+      const unstakedId = uuidv4()
+      const removeId = uuidv4()
+
+      const gammaV2 = getGammaHyperVisorContract(gammaAddressV2, networkId, 2)
+
+      const transactions = {}
+
+      if (isStaked) {
+        transactions[unstakedId] = {
+          desc: t('Unstake'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+
+      transactions[removeId] = {
+        desc: t('Remove Liquidity'),
+        status: TXN_STATUS.START,
+        hash: null,
+      }
+
+      startTxn({ key, title: 'Withdraw', transactions })
+      setPending(true)
+
+      if (isStaked) {
+        const gaugeContract = getGaugeContract(positionV2.gauge.address, networkId)
+        if (!(await writeTxn(key, unstakedId, gaugeContract, 'withdrawAllAndHarvest', []))) {
+          setPending(false)
+          return
+        }
+      }
+
+      setPending(true)
+      const withdrawTx = await writeTxn(key, removeId, gammaV2, 'withdraw', [
+        toWei(amount).toFixed(0),
+        account,
+        account,
+        [0, 0, 0, 0],
+      ])
+      if (!withdrawTx) {
+        setPending(false)
+        return
+      }
+
+      callback()
+      endTxn({ key, final: 'Withdraw Successfully' })
+      setPending(false)
+    },
+    [networkId, account, t, startTxn, writeTxn, endTxn],
+  )
+
+  return { withdrawGamma, pending }
+}

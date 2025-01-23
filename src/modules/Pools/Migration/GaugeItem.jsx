@@ -7,7 +7,7 @@ import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 export function GaugeItem({ pool, strategy, staked = false }) {
@@ -60,7 +60,7 @@ export function GaugeItem({ pool, strategy, staked = false }) {
           />
           <div className='flex flex-col'>
             <TextHeading>{pool.symbol}</TextHeading>
-            <TextSubHeading>{pool.title}</TextSubHeading>
+            <TextSubHeading>{getDisplayedStrategy(pool.title)}</TextSubHeading>
           </div>
         </div>
         <PrimaryBadge className={cn('text-xs', strategy && 'hidden', staked && 'bg-success-600 text-success-100')}>

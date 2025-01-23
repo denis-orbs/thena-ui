@@ -82,7 +82,7 @@ const usePairs = () => {
         if (ele.tokens && Array.isArray(ele.tokens)) {
           const tokens = ele.tokens.map(token => {
             const tokenDetail = getTokenInfo({ tokenAddress: token.address, assets, customAssets })
-            const symbol = tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN'
+            const symbol = tokenDetail?.symbol === 'WBNB' ? 'WBNB' : tokenDetail?.symbol || 'UNKNOWN'
 
             return {
               ...token,

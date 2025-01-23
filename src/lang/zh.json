@@ -1327,5 +1327,6 @@
   "Earn $THE": "赚取 $THE",
   "Warning total weight Weighted Pool": "The total weighting of all tokens must equal exactly 100% before you can proceed.",
   "This pool has no Gauge": "This pool doesn't support staking",
-  "Warning THE claim rebase fee": "要领取您的 rebase，请访问奖励页面并在锁定期结束前领取。锁定期结束后，rebase 将不再可供领取。"
+  "Warning THE claim rebase fee": "要领取您的 rebase，请访问奖励页面并在锁定期结束前领取。锁定期结束后，rebase 将不再可供领取。",
+  "withdraw and deposit manually warning": "策略尚未为该资金池部署。您可以提取流动性，然后将其添加到手动CL资金池中。"
 }
