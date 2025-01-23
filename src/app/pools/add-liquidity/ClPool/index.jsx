@@ -25,7 +25,7 @@ function AddLiquidityClPool({ pool, setCurrentStep, isAdd = false, showSidebar =
           pool={pool}
           isAdd={isAdd}
           showSidebar={showSidebar}
-          goPreviousStep={() => setCurrentStep(2)}
+          goPreviousStep={() => setCurrentStep(1)}
           goNextStep={() => {
             setIsChooseStrategy(false)
             scrollToComponent()

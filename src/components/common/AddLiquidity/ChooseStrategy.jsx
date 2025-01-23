@@ -237,7 +237,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   )
 
   const strategyData = useMemo(() => {
-    const autoStrategy = (isAdd ? [defaultSwapFees] : pair?.subpools || []).map(sub => {
+    const autoStrategy = (pair?.subpools && pair.subpools.length > 0 ? pair.subpools : [defaultSwapFees]).map(sub => {
       let { title } = sub
 
       let isFarming = false
@@ -323,7 +323,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
     })
 
     return autoStrategy
-  }, [isAdd, pair?.subpools, t, strategy?.address, setStrategy])
+  }, [pair?.subpools, t, strategy?.address, setStrategy])
 
   const periods = useMemo(
     () => [
