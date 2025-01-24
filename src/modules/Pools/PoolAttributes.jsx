@@ -4,8 +4,8 @@ import React, { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
-import { ICHI_TYPES, SCAN_URLS } from '@/constant'
-import { basePluginAbi } from '@/constant/abi'
+import { ICHI_TYPES, MANUAL_TYPES, SCAN_URLS } from '@/constant'
+import { algebraPoolV3, basePluginAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
@@ -20,12 +20,21 @@ export function PoolAttributesCL({ strategy, pool }) {
 
   const { poolAdministrators, pluginAdministrators } = useGetAdministrator()
 
+  const { data: plugInAddress } = useReadContract({
+    address: strategy?.address,
+    abi: algebraPoolV3,
+    functionName: 'plugin',
+    query: {
+      enabled: MANUAL_TYPES.includes(strategy?.title),
+      staleTime: Infinity,
+    },
+  })
   const { data: feeType } = useReadContract({
-    address: strategy?.plugInAddress,
+    address: plugInAddress,
     abi: basePluginAbi,
     functionName: 'feeType',
     query: {
-      enabled: !!strategy?.plugInAddress && strategy.plugInAddress !== zeroAddress,
+      enabled: !!plugInAddress && plugInAddress !== zeroAddress,
       staleTime: Infinity,
     },
   })
@@ -122,12 +131,15 @@ export function PoolAttributesCL({ strategy, pool }) {
             <div
               onClick={
                 () =>
-                  goScan(networkId, strategy.title === 'CL_Farming' ? zeroAddress : Contracts.pluginFactory[networkId])
+                  goScan(
+                    networkId,
+                    strategy.title.includes('Farming') ? zeroAddress : Contracts.pluginFactory[networkId],
+                  )
                 // eslint-disable-next-line react/jsx-curly-newline
               }
               className='item-center flex cursor-pointer gap-1'
             >
-              <span>{strategy.title === 'CL_Farming' ? zeroAddress : Contracts.pluginFactory[networkId]}</span>
+              <span>{strategy.title.includes('Farming') ? zeroAddress : Contracts.pluginFactory[networkId]}</span>
               <LinkExternalIcon className='inline-block h-4 w-4' />
             </div>
           </div>
@@ -137,8 +149,8 @@ export function PoolAttributesCL({ strategy, pool }) {
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Pool Address')}:</div>
           <div className='col-span-5 text-neutral-50'>
-            <div onClick={() => goScan(networkId, pool.address)} className='item-center flex cursor-pointer gap-1'>
-              <span>{pool.address}</span>
+            <div onClick={() => goScan(networkId, strategy.address)} className='item-center flex cursor-pointer gap-1'>
+              <span>{strategy.address}</span>
               <LinkExternalIcon className='inline-block h-4 w-4' />
             </div>
           </div>
@@ -171,13 +183,13 @@ export function PoolAttributesCL({ strategy, pool }) {
           <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
           <div className='col-span-5 text-neutral-50'>
             <span className='mr-1'>{pool?.fee}%</span>
-            <span className={cn(strategy.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
+            <span className={cn(plugInAddress && 'hidden')}>({t('editable by governance')})</span>
 
             <Link
               target='_blank'
               className={cn(
                 'hidden text-primary-400',
-                strategy?.plugInAddress && strategy?.plugInAddress !== zeroAddress && 'inline-block',
+                plugInAddress && plugInAddress !== zeroAddress && 'inline-block',
               )}
               href={
                 feeType
