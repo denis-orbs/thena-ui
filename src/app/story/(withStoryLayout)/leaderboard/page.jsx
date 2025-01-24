@@ -22,14 +22,11 @@ export default function LeaderboardPage() {
 
   const leaderBoardNav = useMemo(() => {
     const currentTime = new Date()
-    const [start12, start3, start4, start5, start6, start7, start8] = [
+    const [start12, start3, start4, start5] = [
       chapters?.[1]?.startTimestamp,
       chapters?.[2]?.startTimestamp,
       chapters?.[3]?.startTimestamp,
       chapters?.[4]?.startTimestamp,
-      chapters?.[5]?.startTimestamp,
-      chapters?.[6]?.startTimestamp,
-      chapters?.[7]?.startTimestamp,
     ]
 
     return [
@@ -62,24 +59,6 @@ export default function LeaderboardPage() {
         index: 5,
         name: '5',
         available: start5 && currentTime > new Date(start5),
-      },
-      {
-        id: 6,
-        index: 6,
-        name: '6',
-        available: start6 && currentTime > new Date(start6),
-      },
-      {
-        id: 7,
-        index: 7,
-        name: '7',
-        available: start7 && currentTime > new Date(start7),
-      },
-      {
-        id: 8,
-        index: 8,
-        name: '8',
-        available: start8 && currentTime > new Date(start8),
       },
     ]
   }, [chapters])

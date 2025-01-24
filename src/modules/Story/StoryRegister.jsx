@@ -96,7 +96,7 @@ export default function StoryRegister({ isRegistered }) {
   }
 
   return (
-    <div className='border-gradient-secondary w-full rounded-xl p-px md:w-[610px]'>
+    <div className='border-gradient-secondary hidden w-full rounded-xl p-px md:w-[610px]'>
       <Box className='z-10 h-full rounded-[11px] bg-neutral-900 px-4 md:px-6 lg:px-8'>
         {isRegistered ? (
           <div className='flex flex-col justify-center'>
