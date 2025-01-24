@@ -457,7 +457,7 @@ export const useWithdrawLock = () => {
 
         endTxn({
           key,
-          final: 'Withdraw Successful',
+          final: 'Withdraw Successfully',
         })
         setPending(false)
         callback()

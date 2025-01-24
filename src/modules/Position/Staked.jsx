@@ -221,8 +221,12 @@ export default function Staked({ pool }) {
       <MigrateWarningModal
         popup={migrateWarningPopup}
         setPopup={setMigrateWarningPopup}
-        strategy={ICHI_TYPES.includes(pool.title) ? 'ICHI' : 'Gamma'}
+        strategy={pool.type === PAIR_TYPES.LSD ? (ICHI_TYPES.includes(pool.title) ? 'ICHI' : 'Gamma') : 'V1'}
         link={migrationLink}
+        handleWithdrawV1={() => {
+          setMigrateWarningPopup(false)
+          setPopup(true)
+        }}
       />
 
       <GaugeManageModal
