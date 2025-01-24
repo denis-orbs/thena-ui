@@ -143,6 +143,7 @@ export function VaultsContextProvider({ children }) {
         account: user,
         algebra: vault.algebraAddress,
         basePool: vault.basePool,
+        version: 2,
       }
     })
   }, [vaultsData, userInfo, assets, error, userError, networkId])

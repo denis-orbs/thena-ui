@@ -490,3 +490,80 @@ export const useV1Remove = () => {
 
   return { onV1Remove, pending }
 }
+
+export const useV1Migrate = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+
+  const migrateV1 = useCallback(
+    async ({ positionV2, strategy, callback }) => {
+      if (!positionV2 || !strategy) return
+
+      const key = uuidv4()
+      const unstakeId = uuidv4()
+      const approveId = uuidv4()
+      const stakeId = uuidv4()
+
+      setPending(true)
+
+      startTxn({
+        key,
+        title: t('Unstake and Harvest'),
+        transactions: {
+          [unstakeId]: {
+            desc: t('Unstake and Harvest'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [approveId]: {
+            desc: `${t('Approve')} LP`,
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [stakeId]: {
+            desc: t('stake'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+      const gaugeContractV2 = getGaugeContract(positionV2.gauge.address, chainId)
+      if (!(await writeTxn(key, unstakeId, gaugeContractV2, 'withdrawAllAndHarvest', []))) {
+        setPending(false)
+        return
+      }
+
+      const lpContract = getERC20Contract(positionV2.address, chainId)
+      const allowance = await readCall(lpContract, 'allowance', [account, positionV2.gauge.address], chainId)
+      const balanceOf = await readCall(lpContract, 'balanceOf', [account], chainId)
+      const isApproved = fromWei(allowance).gte(balanceOf)
+
+      setPending(true)
+      if (!isApproved) {
+        updateTxn({ key, uuid: approveId, status: TXN_STATUS.SUCCESS })
+        setPending(false)
+      } else if (!(await writeTxn(key, approveId, lpContract, 'approve', [strategy.gauge.address, maxUint256]))) {
+        setPending(false)
+        return
+      }
+
+      setPending(true)
+      const gaugeContractV3 = getGaugeContract(strategy.gauge.address, chainId)
+      if (!(await writeTxn(key, stakeId, gaugeContractV3, 'deposit', [balanceOf]))) {
+        setPending(false)
+        return
+      }
+
+      endTxn({ key, final: 'migrate Successful' })
+      setPending(false)
+      callback()
+    },
+    [startTxn, t, chainId, writeTxn, account, endTxn, updateTxn],
+  )
+
+  return { migrateV1, pending }
+}

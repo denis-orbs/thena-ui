@@ -89,7 +89,7 @@ const fetchIchiAllowed = async (pools, chainId) => {
   const result = []
   pools.forEach(pool => {
     const isIchi = ICHI_TYPES.includes(pool.type)
-    if (pool.type === 'Volatile') pool.type = 'Classic'
+    if (pool.type === 'Volatile') pool.type = PAIR_TYPES.CLASSIC
     const deposit = !isIchi ? null : allowed0[index] ? pool.token0 : pool.token1
     if (isIchi) {
       index++
@@ -146,6 +146,8 @@ function Updater() {
     const autoPoolV3 = {
       ichi: [],
       gamma: [],
+      classic: [],
+      stable: [],
     }
 
     if (poolsWithAllowed.length > 0 && assets.length > 0) {
@@ -294,6 +296,10 @@ function Updater() {
               })
             } else if (GAMMA_TYPES.includes(fusion.type)) {
               autoPoolV3.gamma.push(fusion)
+            } else if (fusion.type === PAIR_TYPES.CLASSIC) {
+              autoPoolV3.classic.push(fusion)
+            } else if (fusion.type === PAIR_TYPES.STABLE) {
+              autoPoolV3.stable.push(fusion)
             }
           }
 

@@ -7,6 +7,7 @@ import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { cn, formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
@@ -77,6 +78,7 @@ export function GaugeItem({ pool, strategy, staked = false }) {
           <Paragraph className='text-sm'>APR</Paragraph>
           <TextHeading>{formatAmount(strategy?.gauge?.apr ?? pool.gauge.apr)}%</TextHeading>
         </div>
+
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
           <TextHeading>
@@ -84,8 +86,8 @@ export function GaugeItem({ pool, strategy, staked = false }) {
           </TextHeading>
         </div>
 
-        {!strategy ? (
-          // position v2 info
+        {(!strategy || strategy?.type === PAIR_TYPES.STABLE || strategy.type === PAIR_TYPES.STABLE) && (
+          // POSITION V2 INFO OR CLASSIC/STABLE POOL
           <>
             <div className='flex items-center justify-between'>
               <Paragraph className='text-sm'>
@@ -106,8 +108,10 @@ export function GaugeItem({ pool, strategy, staked = false }) {
               </div>
             </div>
           </>
-        ) : strategy.allowed ? (
-          // ICHI V3 info
+        )}
+
+        {strategy?.allowed && (
+          // ICHI V3 INFO
           <>
             <div className='flex items-center justify-between'>
               <Paragraph className='text-sm'>Swap</Paragraph>
@@ -133,7 +137,7 @@ export function GaugeItem({ pool, strategy, staked = false }) {
               </div>
             </div>
           </>
-        ) : null}
+        )}
       </div>
 
       <div className={cn('flex items-center justify-between', strategy && 'hidden')}>

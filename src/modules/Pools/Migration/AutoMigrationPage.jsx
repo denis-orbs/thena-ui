@@ -10,10 +10,11 @@ import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { ICHI_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
 import { useVaults } from '@/context/vaultsContext'
 import { useGammaMigration, useGammaWithdraw } from '@/hooks/fusion/useGamma'
 import { useIchiWithdraw, useMigrationIchi } from '@/hooks/fusion/useIchi'
+import { useV1Migrate } from '@/hooks/useV1Liquidity'
 import { formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { GaugeItem } from '@/modules/Pools/Migration'
 import { useGetAutoPoolMigration, usePools } from '@/state/pools/hooks'
@@ -27,6 +28,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
   const [strategy, setStrategy] = useState()
   const { migrateGamma } = useGammaMigration()
   const { migrateIchi } = useMigrationIchi()
+  const { migrateV1 } = useV1Migrate()
   const { withdrawIchi } = useIchiWithdraw()
   const { withdrawGamma } = useGammaWithdraw()
   const [popup, setPopup] = useState(false)
@@ -37,7 +39,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
 
   const positionV2 = useMemo(() => {
     if (address) {
-      return userPools.find(ele => ele?.address.toLowerCase() === address.toLowerCase())
+      return userPools.find(ele => ele?.address.toLowerCase() === address.toLowerCase() && ele.version === 2)
     }
   }, [address, userPools])
 
@@ -67,7 +69,6 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
 
       const strategyInfo = {
         ...sub,
-        type: 'auto',
         isFarming,
       }
 
@@ -113,16 +114,22 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
       migrateIchi({
         positionV2,
         strategy,
-        callback: () => setPopup(true),
+        callback: () => push('/dashboard'),
       })
-    } else {
+    } else if (GAMMA_TYPES.includes(positionV2?.title)) {
       migrateGamma({
         positionV2,
         strategy,
-        callback: () => setPopup(true),
+        callback: () => push('/dashboard'),
+      })
+    } else {
+      migrateV1({
+        positionV2,
+        strategy,
+        callback: () => push('/dashboard'),
       })
     }
-  }, [migrateGamma, migrateIchi, positionV2, strategy])
+  }, [migrateGamma, migrateIchi, migrateV1, positionV2, push, strategy])
 
   const handleWithdraw = useCallback(() => {
     if (ICHI_TYPES.includes(positionV2?.title)) {

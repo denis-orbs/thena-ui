@@ -162,13 +162,13 @@ export default function NotStaked({ pool }) {
             <EmphasisButton className={cn('w-full', pool.version === 2 && 'hidden')} onClick={() => setAddPopup(true)}>
               {t('Add')}
             </EmphasisButton>
-
-            {migrationOptions && migrationOptions.length > 0 && (
-              <Link href={`/pools/migration?address=${pool.address}`} className='w-full'>
-                <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
-              </Link>
-            )}
           </>
+        )}
+
+        {migrationOptions && migrationOptions.length > 0 && (
+          <Link href={`/pools/migration?address=${pool.address}`} className='w-full'>
+            <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+          </Link>
         )}
       </div>
       <GaugeManageModal

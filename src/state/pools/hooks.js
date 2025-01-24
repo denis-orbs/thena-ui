@@ -105,6 +105,10 @@ export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, ve
     strategy = 'gamma'
   } else if (ICHI_TYPES.includes(type)) {
     strategy = 'ichi'
+  } else if (type === PAIR_TYPES.CLASSIC) {
+    strategy = 'classic'
+  } else if (type === PAIR_TYPES.STABLE) {
+    strategy = 'stable'
   }
 
   if (!strategy) return null
