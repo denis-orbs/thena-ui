@@ -146,9 +146,6 @@ export function GaugeItem({ pool, strategy, staked = false }) {
             {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
             {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
             {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
-            {pool.account.extraRewards && (
-              <p>{`${formatAmount(pool.account.extraRewards.amount)} ${pool.account.extraRewards.symbol}`}</p>
-            )}
           </CustomTooltip>
         </div>
       </div>

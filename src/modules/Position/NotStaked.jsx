@@ -34,6 +34,7 @@ export default function NotStaked({ pool }) {
 
   const handleStake = amount => {
     if (pool?.account?.version === 3) {
+      // TODO: Gamma, V3 Stable/Classic gauge
       stakeIchiPool({
         vaultAddress: pool.address,
         amount,

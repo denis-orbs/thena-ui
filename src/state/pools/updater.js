@@ -11,7 +11,6 @@ import { pairAPIAbi } from '@/constant/abi'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
-import { useExtraRewardsInfo } from '@/hooks/useGeneral'
 import usePrices from '@/hooks/usePrices'
 import useWallet from '@/hooks/useWallet'
 import { fetchFusionPools, fetchFusionPoolsInfos } from '@/lib/api'
@@ -108,7 +107,6 @@ function Updater() {
   const { account } = useWallet()
   const assets = useAssets()
   const prices = usePrices()
-  const extraRewardsInfo = useExtraRewardsInfo()
   const { networkId } = useChainSettings()
 
   const { data: [fusionPoolsV3 = [], fusionPoolsV2 = []] = [] } = useSWR(['fusions api', networkId], () =>
@@ -116,7 +114,6 @@ function Updater() {
       fetchFusionPools({
         networkId,
         version: 3,
-        type: 'cl',
       }),
       fetchFusionPools({
         networkId,
@@ -240,7 +237,9 @@ function Updater() {
               })
             }
           }
-          const found = (userInfos ?? []).find(item => item.address.toLowerCase() === fusion.address.toLowerCase())
+          const found = (userInfos ?? []).find(
+            item => item.address.toLowerCase() === fusion.address.toLowerCase() && item.version === fusion.version,
+          )
           let user = {
             walletBalance: 0,
             gaugeBalance: 0,
@@ -255,18 +254,6 @@ function Updater() {
             total0: 0,
             total1: 0,
             totalUsd: 0,
-          }
-          let extraApr = 0
-          let extraRewards = null
-          let extraRewardsInUsd = 0
-          const foundExtra = (extraRewardsInfo ?? []).find(ele => ele.pairAddress === fusion.address)
-          if (foundExtra) {
-            extraApr = ((foundExtra.rewardRate * 31536000 * prices[foundExtra.doubleRewarderSymbol]) / gaugeTvl) * 100
-            extraRewards = {
-              amount: foundExtra.pendingReward,
-              symbol: foundExtra.doubleRewarderSymbol,
-            }
-            extraRewardsInUsd = extraRewards.amount * prices[foundExtra.doubleRewarderSymbol]
           }
 
           if (found) {
@@ -288,9 +275,8 @@ function Updater() {
               totalLp: formatEther(found.totalLp),
               gaugeEarned: fromWei(found.gaugeEarned).toNumber(),
               stakedUsd: fromWei(found.gaugeBalance).times(lpPrice).toNumber(),
-              earnedUsd: fromWei(found.gaugeEarned).times(prices.THE).plus(extraRewardsInUsd).toNumber(),
+              earnedUsd: fromWei(found.gaugeEarned).times(prices.THE).toNumber(),
               totalUsd: fromWei(found.totalLp).times(lpPrice).toNumber(),
-              extraRewards,
             }
           }
 
@@ -336,7 +322,7 @@ function Updater() {
               ...fusion.gauge,
               bribes: finalBribes,
               tvl: gaugeTvl,
-              apr: fusion.gauge.apr + extraApr,
+              apr: fusion.gauge.apr,
               bribeUsd,
               pooled0: fusion.totalSupply ? (fusion.token0.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,
               pooled1: fusion.totalSupply ? (fusion.token1.reserve * fusion.gauge.totalSupply) / fusion.totalSupply : 0,
@@ -359,7 +345,7 @@ function Updater() {
       }),
     )
     dispatch(updatePoolsMigration(autoPoolV3))
-  }, [dispatch, assets, extraRewardsInfo, networkId, poolsWithAllowed, userInfos, prices])
+  }, [dispatch, assets, networkId, poolsWithAllowed, userInfos, prices])
 
   useEffect(() => {
     fetchInfo()

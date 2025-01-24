@@ -9,7 +9,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_SwapFee, ICHI_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_SwapFee, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
@@ -129,9 +129,6 @@ export default function Staked({ pool }) {
                 {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
                 {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
                 {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
-                {pool.account.extraRewards && (
-                  <p>{`${formatAmount(pool.account.extraRewards.amount)} ${pool.account.extraRewards.symbol}`}</p>
-                )}
               </div>
 
               <div className={cn(!GAMMA_TYPES.includes(pool.type) && 'hidden')}>
@@ -164,9 +161,15 @@ export default function Staked({ pool }) {
         ) : (
           // Version 3 actions
           <>
-            <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
-              {t('Remove')}
-            </OutlinedButton>
+            {pool.type === PAIR_TYPES.LSD ? (
+              <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
+                {t('Remove')}
+              </OutlinedButton>
+            ) : (
+              <TextButton className='w-full' onClick={() => setPopup(true)}>
+                {t('Unstake')}
+              </TextButton>
+            )}
 
             <OutlinedButton
               className='w-full'

@@ -1,5 +1,6 @@
 'use client'
 
+import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
@@ -68,42 +69,57 @@ export default function SpecificPoolPage({ params }) {
 
   const { strategy } = useV3MintState()
 
-  const pool = useMemo(
+  const pair = useMemo(
     () =>
       pairs.find(
         ele =>
           ele?.address.toLowerCase() === address.toLowerCase() ||
           ele?.addressPoolFee?.toLowerCase() === address.toLowerCase(),
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [address, JSON.stringify(pairs)],
+    [address, pairs],
   )
 
-  const { balance: weightedPoolBalance } = useWeightPoolData(pool?.type === PAIR_TYPES.WEIGHTED ? pool.address : null)
+  const { balance: weightedPoolBalance } = useWeightPoolData(pair?.type === PAIR_TYPES.WEIGHTED ? pair.address : null)
 
   const { gaugeBalance, isLoading: loadingGaugeBalance } = useGaugeBalance(
-    pool?.type === PAIR_TYPES.WEIGHTED ? pool.gauge.address : zeroAddress,
+    pair?.type === PAIR_TYPES.WEIGHTED ? pair.gauge.address : zeroAddress,
   )
 
-  const userPools = useMemo(() => (pool ? (pool?.subpools || []).filter(ele => ele.account.totalLp.gt(0)) : []), [pool])
+  const userPools = useMemo(() => {
+    if (!pair) return []
+
+    const subPoolsPositions = (pair?.subpools || []).filter(ele => ele.account.totalLp.gt(0))
+
+    if (pair.type !== PAIR_TYPES.LSD) {
+      const v3Pos = subPoolsPositions.find(ele => ele.account.version === 3)
+      const v2Pos = subPoolsPositions.find(ele => ele.account.version === 2)
+
+      if (v3Pos && v2Pos && v2Pos.account.walletBalance.gt(0)) {
+        v2Pos.account.walletBalance = new BigNumber(0)
+      }
+    }
+
+    return subPoolsPositions
+  }, [pair])
+
   const userManuals = useMemo(
     () =>
-      pool && pool.type !== PAIR_TYPES.WEIGHTED
+      pair && pair.type !== PAIR_TYPES.WEIGHTED
         ? manuals.filter(
             ele =>
-              [pool?.token0.address, pool?.token1.address].includes(ele.token0Address.toLowerCase()) &&
-              [pool?.token0.address, pool?.token1.address].includes(ele.token1Address.toLowerCase()),
+              [pair?.token0.address, pair?.token1.address].includes(ele.token0Address.toLowerCase()) &&
+              [pair?.token0.address, pair?.token1.address].includes(ele.token1Address.toLowerCase()),
           )
         : [],
-    [manuals, pool],
+    [manuals, pair],
   )
 
   const userPositions = useMemo(
-    () => [...userPools, ...userManuals].filter(position => position.version === 3).filter(item => Boolean(item)),
+    () => [...userPools, ...userManuals].filter(item => Boolean(item)),
     [userManuals, userPools],
   )
 
-  if (isLoading || !pool || loadingGaugeBalance) {
+  if (isLoading || !pair || loadingGaugeBalance) {
     return <Loading />
   }
 
@@ -117,18 +133,18 @@ export default function SpecificPoolPage({ params }) {
         {/* Title */}
         <div className='mb-6 mt-4'>
           <div>
-            {pool.type !== PAIR_TYPES.WEIGHTED ? (
+            {pair.type !== PAIR_TYPES.WEIGHTED ? (
               <div className='flex space-x-4'>
                 <IconGroup
                   classNames={{
                     image: 'w-[36px] lg:w-[56px]',
                   }}
-                  logo1={pool?.token0.logoURI}
-                  logo2={pool?.token1.logoURI}
+                  logo1={pair?.token0.logoURI}
+                  logo2={pair?.token1.logoURI}
                 />
                 <div className='flex items-center gap-2'>
                   <div className='flex items-center gap-3'>
-                    <TextHeading className='text-xl lg:text-4xl'>{pool?.symbol}</TextHeading>
+                    <TextHeading className='text-xl lg:text-4xl'>{pair?.symbol}</TextHeading>
                   </div>
                 </div>
               </div>
@@ -138,13 +154,13 @@ export default function SpecificPoolPage({ params }) {
                   classNames={{
                     image: 'w-[36px] lg:w-[56px] h-[36px] lg:h-[56px] text-xl font-medium leading-5 text-[#1C2027]',
                   }}
-                  logo1={pool?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                  logo2={pool?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                  extendNumber={(pool?.tokens?.length || 2) - 2}
+                  logo1={pair?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
+                  logo2={pair?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
+                  extendNumber={(pair?.tokens?.length || 2) - 2}
                 />
                 <div className='flex items-center gap-2'>
                   <div className='flex w-full flex-wrap items-center gap-1 lg:gap-3'>
-                    {(pool?.tokens || []).map(token => (
+                    {(pair?.tokens || []).map(token => (
                       <div className='flex items-center gap-1' key={token?.address}>
                         <span className='text-xl font-semibold leading-10 lg:text-4xl'>{token?.symbol}</span>
                         <span className='text-sm leading-10 text-neutral-300 lg:text-[26px]'>
@@ -167,18 +183,18 @@ export default function SpecificPoolPage({ params }) {
           <div className='mb-6 flex items-center justify-between gap-3 lg:mb-7'>
             <div className='flex gap-3'>
               <NeutralBadge className='inline text-[14px] font-normal leading-5 text-neutral-50'>
-                {t(pool?.type ?? 'Weighted')}
+                {t(pair?.type ?? 'Weighted')}
               </NeutralBadge>
               <NeutralBadge className='inline whitespace-nowrap text-[14px] font-normal leading-5'>
                 <span className='text-neutral-300 '>{t('Fee')}: </span>
-                <span className='text-neutral-50'>{pool?.fee}%</span>
+                <span className='text-neutral-50'>{pair?.fee}%</span>
               </NeutralBadge>
             </div>
             <div className='flex w-full gap-3 lg:w-auto'>
               <TextIconButton
                 className='h-11 w-11 border-[1px] border-neutral-600'
                 Icon={ExternalIcon}
-                onClick={() => goScan(networkId, pool?.address)}
+                onClick={() => goScan(networkId, pair?.address)}
                 data-tooltip-id='contract-tooltip'
               />
               <CustomTooltip id='contract-tooltip' className='rounded-md !py-2' place='top'>
@@ -187,7 +203,7 @@ export default function SpecificPoolPage({ params }) {
               <TextIconButton
                 className='h-11 w-11 border-[1px] border-neutral-600'
                 Icon={AnalyticsIcon}
-                onClick={() => push(`/analytics/pairs/${pool?.address}`)}
+                onClick={() => push(`/analytics/pairs/${pair?.address}`)}
                 data-tooltip-id='analytics-tooltip'
               />
               <CustomTooltip id='analytics-tooltip' className='rounded-md !py-2' place='top'>
@@ -198,7 +214,7 @@ export default function SpecificPoolPage({ params }) {
 
           {/* Code for special pools */}
           <>
-            {pool?.address === '0xc0e1c9fec0d8888039095da014382d027f27069d' && (
+            {pair?.address === '0xc0e1c9fec0d8888039095da014382d027f27069d' && (
               <div className='ml-4 mt-5 flex items-center gap-2'>
                 <div className='size-6' data-tooltip-id='etherBadgeIconDetail'>
                   <NextImage
@@ -224,7 +240,7 @@ export default function SpecificPoolPage({ params }) {
               </div>
             )}
 
-            {pool.address === BNBLpBNBPoolAdress && (
+            {pair.address === BNBLpBNBPoolAdress && (
               <>
                 <div className='ml-4 mt-5 flex items-center gap-2'>
                   <div className='size-6' data-tooltip-id='BNBLpBNBPoolAdress'>
@@ -241,24 +257,24 @@ export default function SpecificPoolPage({ params }) {
               </>
             )}
 
-            {pool.address === uniBTCFBTC && (
+            {pair.address === uniBTCFBTC && (
               <>
                 <div className='ml-4 mt-5 flex items-center gap-2'>
-                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pair.address}-tooltip1`}>
                     <NextImage
                       className='h-full w-full rounded-full bg-white object-cover p-1'
                       alt='Quaaloop'
                       src='/svgs/fbtcYieldCampaign.svg'
                     />
                   </div>
-                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                  <CustomTooltip id={`pool-special-${pair.address}-tooltip1`} className='rounded-md !py-2' place='top'>
                     <TextHeading className='text-xs'>{t('uniBTC FBTC pool tooltip')}</TextHeading>
                   </CustomTooltip>
                 </div>
               </>
             )}
 
-            {pool.address === BTCBmBTCAddress && (
+            {pair.address === BTCBmBTCAddress && (
               <>
                 <div className='ml-4 mt-5 flex items-center gap-2'>
                   <div className='flex size-8 items-center rounded-full bg-white' data-tooltip-id='BTCBmBTCAddress'>
@@ -275,43 +291,43 @@ export default function SpecificPoolPage({ params }) {
               </>
             )}
 
-            {SPECIAL_POOLS.includes(pool.address) && (
+            {SPECIAL_POOLS.includes(pair.address) && (
               <div className='mb-5 ml-4 mt-4 flex items-center gap-2'>
-                <div className='size-6' data-tooltip-id={`pool-${pool?.address}`}>
+                <div className='size-6' data-tooltip-id={`pool-${pair?.address}`}>
                   <NextImage
                     className='h-full w-full rounded-full object-cover'
                     alt='EtherFi'
                     src='/images/GQhgnIEbUAA4gjewe.jpeg'
                   />
                 </div>
-                <CustomTooltip id={`pool-${pool?.address}`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-${pair?.address}`} className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('Pool Special tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
             )}
 
-            {(pool.address === '0xcdedb4bad9978e1d0a82ad2061d0345f48014bc4' ||
-              pool.address === '0x94b3c0050e9111e955e3f3a48543bbf30ba44bbc') && (
+            {(pair.address === '0xcdedb4bad9978e1d0a82ad2061d0345f48014bc4' ||
+              pair.address === '0x94b3c0050e9111e955e3f3a48543bbf30ba44bbc') && (
               <div className='mt-5 flex items-center gap-2'>
-                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
+                <div className='size-6' data-tooltip-id={`pool-special-${pair.address}-tooltip1`}>
                   <NextImage
                     className='h-full w-full rounded-full object-cover'
                     alt='YieldNest’s'
                     src='/images/yieldnest_seed_3d__1__360.png'
                   />
                 </div>
-                <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-special-${pair.address}-tooltip1`} className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('Seeds Boost')}</TextHeading>
                 </CustomTooltip>
 
-                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip2`}>
+                <div className='size-6' data-tooltip-id={`pool-special-${pair.address}-tooltip2`}>
                   <NextImage
                     className='h-full w-full rounded-full object-cover'
                     alt='Kernel'
                     src='/images/Kernel.svg'
                   />
                 </div>
-                <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
+                <CustomTooltip id={`pool-special-${pair.address}-tooltip2`} className='rounded-md !py-2' place='top'>
                   <TextHeading className='text-xs'>{t('Kernel Points Tooltip')}</TextHeading>
                 </CustomTooltip>
               </div>
@@ -322,19 +338,19 @@ export default function SpecificPoolPage({ params }) {
           <div className='flex w-full flex-col gap-6 lg:hidden'>
             <Box className='grid grid-cols-2 gap-5 lg:grid-cols-4'>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading>{pool?.apr || '0%'}</TextHeading>
+                <TextHeading>{pair?.apr || '0%'}</TextHeading>
                 <Paragraph>{t('APR')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.tvlUSD)}</TextHeading>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pair?.tvlUSD)}</TextHeading>
                 <Paragraph>{t('TVL')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.dayVolume)}</TextHeading>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pair?.dayVolume)}</TextHeading>
                 <Paragraph>{t('Volume (24h)')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.dayFees)}</TextHeading>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pair?.dayFees)}</TextHeading>
                 <Paragraph>{t('Fees (24h)')}</Paragraph>
               </div>
             </Box>
@@ -345,19 +361,19 @@ export default function SpecificPoolPage({ params }) {
             <TextHeading className='font-archia text-4xl font-semibold leading-[34px]'>{t('Pool Info')}</TextHeading>
             <Box className='grid grid-cols-2 gap-5 lg:grid-cols-4'>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading>{pool?.apr ?? '0%'}</TextHeading>
+                <TextHeading>{pair?.apr ?? '0%'}</TextHeading>
                 <Paragraph>{t('APR')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.tvlUSD)}</TextHeading>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pair?.tvlUSD)}</TextHeading>
                 <Paragraph>{t('TVL')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.dayVolume)}</TextHeading>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pair?.dayVolume)}</TextHeading>
                 <Paragraph>{t('Volume (24h)')}</Paragraph>
               </div>
               <div className='flex w-full flex-col gap-2'>
-                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pool?.dayFees)}</TextHeading>
+                <TextHeading className='w-full min-w-0 truncate'>${formatAmount(pair?.dayFees)}</TextHeading>
                 <Paragraph>{t('Fees (24h)')}</Paragraph>
               </div>
             </Box>
@@ -365,7 +381,7 @@ export default function SpecificPoolPage({ params }) {
 
           {/* Pool charts */}
           <div className='mb-6 mt-6'>
-            <PoolChart address={pool.address} />
+            <PoolChart address={pair.address} />
           </div>
 
           {/* Liquidity Fees table */}
@@ -374,7 +390,7 @@ export default function SpecificPoolPage({ params }) {
               <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
                 {t('Liquidity Fees')}
               </TextHeading>
-              <LiquidityFeesTable pool={pool} />
+              <LiquidityFeesTable pool={pair} />
             </div>
 
             {/* Pool attributes */}
@@ -382,10 +398,10 @@ export default function SpecificPoolPage({ params }) {
               <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
                 {t('Pool Attributes')}
               </TextHeading>
-              {pool.type === PAIR_TYPES.LSD ? (
+              {pair.type === PAIR_TYPES.LSD ? (
                 <>
                   {strategy ? (
-                    <PoolAttributesCL strategy={strategy} pool={pool} />
+                    <PoolAttributesCL strategy={strategy} pool={pair} />
                   ) : (
                     <div className='flex w-full flex-col items-center justify-center gap-4 rounded-xl border border-neutral-800 px-6 py-[120px]'>
                       <Highlight>
@@ -401,7 +417,7 @@ export default function SpecificPoolPage({ params }) {
                   )}
                 </>
               ) : (
-                <NormalPoolAttributes pool={pool} />
+                <NormalPoolAttributes pool={pair} />
               )}
             </div>
           </div>
@@ -409,7 +425,7 @@ export default function SpecificPoolPage({ params }) {
 
         <div className='flex-[4] flex-col gap-12'>
           <div className='mt-[72px] max-lg:hidden'>
-            <Liquidity pool={pool} />
+            <Liquidity pool={pair} />
           </div>
 
           {/* User positions */}
@@ -418,12 +434,12 @@ export default function SpecificPoolPage({ params }) {
               {t('My Positions')}
             </TextHeading>
             <div className='grid grid-cols-1 gap-4'>
-              {pool.type === PAIR_TYPES.WEIGHTED ? (
+              {pair.type === PAIR_TYPES.WEIGHTED ? (
                 <>
                   {!isInvalidAmount(weightedPoolBalance) || !isInvalidAmount(gaugeBalance) ? (
                     <>
-                      {!isInvalidAmount(weightedPoolBalance) && <WeightedPoolPosition pool={pool} isStake={false} />}
-                      {!isInvalidAmount(gaugeBalance) && <WeightedPoolPosition pool={pool} isStake />}
+                      {!isInvalidAmount(weightedPoolBalance) && <WeightedPoolPosition pool={pair} isStake={false} />}
+                      {!isInvalidAmount(gaugeBalance) && <WeightedPoolPosition pool={pair} isStake />}
                     </>
                   ) : (
                     <NoPosition />
@@ -436,7 +452,7 @@ export default function SpecificPoolPage({ params }) {
                       {ele.isFarming ? <FarmingPosition position={ele} /> : <ManualPosition position={ele} />}
                     </React.Fragment>
                   ) : (
-                    <Position pool={ele} key={ele?.address} />
+                    <Position pool={ele} key={`${ele?.address}-${idx}`} />
                   ),
                 )
               ) : (
@@ -456,7 +472,7 @@ export default function SpecificPoolPage({ params }) {
             width={windowSize.width > 1024 ? 570 : windowSize.width * 0.9}
             closeModal={() => setShowModalAdd(false)}
           >
-            <Liquidity pool={pool} isModal />
+            <Liquidity pool={pair} isModal />
           </Modal>
         </div>
       </div>

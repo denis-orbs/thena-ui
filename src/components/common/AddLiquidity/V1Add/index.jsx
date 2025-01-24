@@ -11,13 +11,13 @@ import BalanceInput from '@/components/input/BalanceInput'
 import Selection from '@/components/selection'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { usePairs } from '@/context/pairsContext'
 import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, isInvalidAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
+import { usePools } from '@/state/pools/hooks'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 
 import ZapperPane from './ZapperPane'
@@ -43,19 +43,28 @@ export default function V1Add({
   const { deadline } = useSettings()
   const { onV1Add, pending } = useV1Add()
   const { onV1AddAndStake, pending: stakePending } = useV1AddAndStake()
-  const { pairs } = usePairs()
+  const pools = usePools()
   const t = useTranslations()
 
-  const pair = useMemo(
-    () =>
-      (pairs ?? []).find(
+  const pool = useMemo(() => {
+    const v3Pool = pools.find(
+      ele =>
+        [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(firstAsset)) &&
+        [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(secondAsset)) &&
+        pairType === ele.type &&
+        ele.version === 3,
+    )
+
+    return (
+      v3Pool ||
+      pools.find(
         ele =>
           [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(firstAsset)) &&
           [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(secondAsset)) &&
           pairType === ele.type,
-      ),
-    [pairs, firstAsset, secondAsset, pairType],
-  )
+      )
+    )
+  }, [pools, firstAsset, secondAsset, pairType])
 
   const isFromBNB = useMemo(
     () => ['BNB', WBNB[networkId].address.toLowerCase()].includes(firstAsset?.address),
@@ -66,8 +75,6 @@ export default function V1Add({
     () => ['BNB', WBNB[networkId].address.toLowerCase()].includes(secondAsset?.address),
     [networkId, secondAsset],
   )
-
-  const strategy = useMemo(() => (pair ? pair.subpools[0] : undefined), [pair])
 
   const addSelections = useMemo(
     () => [
@@ -92,10 +99,10 @@ export default function V1Add({
   const onFirstChange = useCallback(
     val => {
       setFirstAmount(val)
-      if (strategy) {
-        const isReverse = wrappedAddress(secondAsset) === strategy.token0.address
-        const token0Reserve = isReverse ? strategy.token1.reserve : strategy.token0.reserve
-        const token1Reserve = isReverse ? strategy.token0.reserve : strategy.token1.reserve
+      if (pool) {
+        const isReverse = wrappedAddress(secondAsset) === pool.token0.address
+        const token0Reserve = isReverse ? pool.token1.reserve : pool.token0.reserve
+        const token1Reserve = isReverse ? pool.token0.reserve : pool.token1.reserve
         setSecondAmount(
           val
             ? token1Reserve
@@ -107,7 +114,7 @@ export default function V1Add({
         )
       }
     },
-    [strategy, secondAsset],
+    [pool, secondAsset],
   )
 
   useEffect(() => {
@@ -123,10 +130,10 @@ export default function V1Add({
   const onSecondChange = useCallback(
     val => {
       setSecondAmount(val)
-      if (strategy) {
-        const isReverse = wrappedAddress(firstAsset) === strategy.token1.address
-        const token0Reserve = isReverse ? strategy.token1.reserve : strategy.token0.reserve
-        const token1Reserve = isReverse ? strategy.token0.reserve : strategy.token1.reserve
+      if (pool) {
+        const isReverse = wrappedAddress(firstAsset) === pool.token1.address
+        const token0Reserve = isReverse ? pool.token1.reserve : pool.token0.reserve
+        const token1Reserve = isReverse ? pool.token0.reserve : pool.token1.reserve
         setFirstAmount(
           val
             ? token0Reserve
@@ -138,7 +145,7 @@ export default function V1Add({
         )
       }
     },
-    [strategy, firstAsset],
+    [pool, firstAsset],
   )
 
   const errorMsg = useMemo(() => {
@@ -180,7 +187,7 @@ export default function V1Add({
       return
     }
     onV1AddAndStake(
-      strategy,
+      pool,
       firstAsset,
       secondAsset,
       firstAmount,
@@ -196,7 +203,7 @@ export default function V1Add({
   }, [
     errorMsg,
     onV1AddAndStake,
-    strategy,
+    pool,
     firstAsset,
     secondAsset,
     firstAmount,
@@ -209,14 +216,14 @@ export default function V1Add({
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
-        {isAdd && strategy && <PoolTitle strategy={strategy} />}
+        {isAdd && pool && <PoolTitle strategy={pool} />}
         <Selection data={addSelections} isFull isTranslation={false} />
         <>
           <div className='flex justify-end'>
             <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
           </div>
           {isZapper ? (
-            <ZapperPane asset0={firstAsset} asset1={secondAsset} slippage={slippage} strategy={strategy} />
+            <ZapperPane asset0={firstAsset} asset1={secondAsset} slippage={slippage} strategy={pool} />
           ) : (
             <div className='flex flex-col'>
               <div className='mb-5 flex flex-col gap-2'>
@@ -236,22 +243,22 @@ export default function V1Add({
                 />
               </div>
 
-              {strategy ? (
+              {pool ? (
                 <>
                   <div className='flex flex-col gap-4'>
                     <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
                     <div className='flex flex-col gap-3'>
                       <div className='flex items-center justify-between'>
                         <Paragraph className='font-medium'>
-                          {unwrappedSymbol(strategy.token0)} {t('Amount')}
+                          {unwrappedSymbol(pool.token0)} {t('Amount')}
                         </Paragraph>
-                        <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
+                        <Paragraph>{formatAmount(pool.token0.reserve)}</Paragraph>
                       </div>
                       <div className='flex items-center justify-between'>
                         <Paragraph className='font-medium'>
-                          {unwrappedSymbol(strategy.token1)} {t('Amount')}
+                          {unwrappedSymbol(pool.token1)} {t('Amount')}
                         </Paragraph>
-                        <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
+                        <Paragraph>{formatAmount(pool.token1.reserve)}</Paragraph>
                       </div>
                     </div>
                   </div>
@@ -260,11 +267,11 @@ export default function V1Add({
                     <div className='flex flex-col gap-3'>
                       <div className='flex items-center justify-between'>
                         <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                        <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
+                        <Paragraph>{formatAmount(pool.account.totalLp)} LP</Paragraph>
                       </div>
                       <div className='flex items-center justify-between'>
                         <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                        <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
+                        <Paragraph>{formatAmount(pool.account.gaugeBalance)} LP</Paragraph>
                       </div>
                     </div>
                   </div>
@@ -322,7 +329,8 @@ export default function V1Add({
               {t('Add Liquidity')}
             </SecondaryButton>
 
-            {strategy && strategy.gauge.address !== zeroAddress && (
+            {/* If v2 gauge, dont show Stake */}
+            {pool && pool.gauge.address !== zeroAddress && pool.version === 3 && (
               <PrimaryButton
                 disabled={stakePending}
                 onClick={() => {

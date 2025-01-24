@@ -23,7 +23,7 @@ const PairsContext = createContext(initialState)
 function PairsContextProvider({ children }) {
   const { networkId } = useChainSettings()
   const { data: pairList = [], isLoading: pairsLoading } = useSWR(
-    ['bsc pairs api', networkId],
+    ['pairs api v3', networkId],
     { fetcher: () => fetchTopPairs({ networkId }) },
     {
       refreshInterval: 60000,
@@ -40,7 +40,7 @@ function PairsContextProvider({ children }) {
   const prevNetworkId = useRef(networkId)
   useEffect(() => {
     if (networkId && networkId !== prevNetworkId.current) {
-      mutate(['bsc pairs api', networkId])
+      mutate(['pairs api v3', networkId])
       mutate(['weighted pool api', networkId])
       prevNetworkId.current = networkId
     }

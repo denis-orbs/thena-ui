@@ -29,8 +29,6 @@ import { getTokenInfo } from '@/lib/helper'
 import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
-import { useExtraRewardsInfo } from '../useGeneral'
-import usePrices from '../usePrices'
 import useWallet from '../useWallet'
 
 const toBytes32 = hexString => {
@@ -931,9 +929,7 @@ export const useWeightedPool = () => {
 export const useWeightedPoolsWithGauge = () => {
   const assets = useAssets()
   const customAssets = useCustomAssets()
-  const extraRewardsInfo = useExtraRewardsInfo()
   const { weightedPools = [] } = usePairs()
-  const prices = usePrices()
 
   let weightedPoolsWithGauge = []
   if (weightedPools.length > 0 && assets.length > 0) {
@@ -1006,19 +1002,13 @@ export const useWeightedPoolsWithGauge = () => {
           totals: [],
           totalUsd: 0,
         }
-        let extraApr = 0
-        const foundExtra = (extraRewardsInfo ?? []).find(ele => ele.pairAddress === weighted.address)
-        if (foundExtra) {
-          extraApr =
-            ((foundExtra.rewardRate * 31536000 * prices[foundExtra.doubleRewarderSymbol]) / weighted.tvlUSD) * 100
-        }
         return {
           ...weighted,
           stable: 'false',
           type: PAIR_TYPES.WEIGHTED,
           title: weighted.type,
           tvl: totalTvl,
-          apr: weighted.gauge.apr + extraApr,
+          apr: weighted.gauge.apr,
           tokens,
           allowed: {},
           gauge: {

@@ -62,7 +62,6 @@ export default function HoldingsPage() {
   const userManuals = useManuals()
   const { current } = useContext(rewardsContext)
   const { rewards: veRewards } = current
-  // const { rewards: expectedRewards } = next
   const { networkId } = useChainSettings()
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
   const farmedPools = pools.filter(item => item.account.gaugeEarned.gt(0))

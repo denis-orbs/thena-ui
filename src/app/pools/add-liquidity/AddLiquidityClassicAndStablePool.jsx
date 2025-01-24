@@ -9,6 +9,7 @@ import { TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
+import { getTokenInfo } from '@/lib/helper'
 import { cn, formatAmount } from '@/lib/utils'
 import { ArrowLeftIcon, DownloadSuccessIcon, PercentIcon } from '@/svgs'
 
@@ -38,16 +39,10 @@ function AddLiquidityClassicAndStablePool({ pool, setCurrentStep, isAdd, showSid
 
         <V1Add
           pairType={pool.type}
-          firstAsset={[...assets, ...customAssets].find(
-            asset => asset.address.toLowerCase() === pool?.token0?.address?.toLowerCase(),
-          )}
-          secondAsset={[...assets, ...customAssets].find(
-            asset => asset.address.toLowerCase() === pool?.token1?.address?.toLowerCase(),
-          )}
+          firstAsset={getTokenInfo({ tokenAddress: pool?.token0?.address, assets, customAssets })}
+          secondAsset={getTokenInfo({ tokenAddress: pool?.token1?.address, assets, customAssets })}
           setFirstAmountValue={setFirstAmount}
           setSecondAmountValue={setSecondAmount}
-          // setFirstAddress={setFirstAddress}
-          // setSecondAddress={setSecondAddress}
           isAdd={isAdd}
           slippage={slippage}
           setSlippage={setSlippage}
