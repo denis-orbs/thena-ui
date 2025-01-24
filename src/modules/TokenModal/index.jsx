@@ -96,6 +96,7 @@ function TokenModal({
   otherAsset,
   setOtherAsset,
   onAssetSelect = () => {},
+  isHideTrending = false,
 }) {
   const t = useTranslations()
   const { account, chainId } = useWallet()
@@ -190,8 +191,10 @@ function TokenModal({
           placeholder='Search by Name, Symbol or Address'
           autoFocus
         />
-        <Paragraph className={cn(chainId === CHAIN_ID.TEST_BSC && 'hidden')}>{t('Trending Assets')}</Paragraph>
-        <div className={cn('flex flex-wrap gap-2', chainId === CHAIN_ID.TEST_BSC && 'hidden')}>
+        <Paragraph className={cn((chainId === CHAIN_ID.TEST_BSC || isHideTrending) && 'hidden')}>
+          {t('Trending Assets')}
+        </Paragraph>
+        <div className={cn('flex flex-wrap gap-2', (chainId === CHAIN_ID.TEST_BSC || isHideTrending) && 'hidden')}>
           {TRENDING_TOKENS.map((item, idx) => (
             <div
               key={idx}

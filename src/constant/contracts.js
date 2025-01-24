@@ -99,8 +99,14 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x643B68Bf3f855B8475C0A700b6D1020bfc21d02e',
     [CHAIN_ID.TEST_BSC]: '0x723E22B19528B86a94C3933b7d6096B145a85Df2',
   },
-  vammZap: {
+  classicZap: {
     [CHAIN_ID.BSC]: '0x6cc221b101aba5abcd48d36c94c5b007f8055bf1',
+  },
+  stableZap: {
+    [CHAIN_ID.BSC]: '0xFc7Ce1679E3a87A996284f69D176428877d4C5A6',
+  },
+  gammaZap: {
+    [CHAIN_ID.BSC]: '0xf388769360bcbb9183ba3821e337b666cb392b73',
   },
   gammaUniProxy: {
     [CHAIN_ID.BSC]: '0xF75c017E3b023a593505e281b565ED35Cc120efa',
