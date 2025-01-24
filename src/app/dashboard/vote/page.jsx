@@ -134,7 +134,7 @@ export default function VotePage() {
   const userPools = useMemo(
     () =>
       poolsWithGauge
-        .filter(pool => pool.gauge.isAlive && !(pool.version === 2 && pool.type === PAIR_TYPES.LSD))
+        .filter(pool => pool.gauge.isAlive && pool.version === 3)
         .map(pair => {
           const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
           let votes = {

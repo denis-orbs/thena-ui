@@ -41,7 +41,7 @@ export default function IncentivePage() {
   const updatedPoolsWithGauge = useMemo(
     () =>
       poolsWithGauge
-        .filter(pool => !(pool.version === 2 && pool.type === PAIR_TYPES.LSD))
+        .filter(pool => pool.gauge.isAlive && pool.version === 3)
         .map(item => ({
           ...item,
           title: item?.title === 'CL_Farming' ? 'Conc. Liquidity' : item?.title,
