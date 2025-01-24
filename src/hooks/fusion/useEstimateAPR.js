@@ -5,8 +5,7 @@ import { gql } from 'graphql-request'
 import { Position } from 'thena-fusion-sdk'
 import { useReadContracts } from 'wagmi'
 
-import { eternalVirtualPoolAbi } from '@/constant/abi/fusion'
-import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
+import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -111,7 +110,7 @@ export const useEstimateAPR = ({
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: poolTestNetV2Abi,
+        abi: newPoolAbi,
       },
       {
         functionName: 'currentLiquidity',
@@ -223,7 +222,7 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: poolTestNetV2Abi,
+        abi: newPoolAbi,
       },
       {
         functionName: 'currentLiquidity',

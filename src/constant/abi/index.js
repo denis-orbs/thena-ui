@@ -25,6 +25,8 @@ import mockERC20BNBAbi from './mockERC20WBNB.json'
 import multiCallAbi from './multiCall.json'
 import multiFeeDistributionAbi from './multiFeeDistribution.json'
 import muonAbi from './muon.json'
+import nonfungiblePositionManagerV2Abi from './nonfungiblePositionManager.json'
+import nonfungiblePositionManagerV3Abi from './nonfungiblePositionManagerv3.json'
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
 import pluginFactoryAbi from './pluginFactoryAbi.json'
@@ -80,6 +82,8 @@ export {
   multiCallAbi,
   multiFeeDistributionAbi,
   muonAbi,
+  nonfungiblePositionManagerV2Abi,
+  nonfungiblePositionManagerV3Abi,
   numeralAbi,
   pairAbi,
   pairAPIAbi,

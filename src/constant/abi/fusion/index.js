@@ -16,6 +16,7 @@ import ichiVaultAbi from './ichiVault.json'
 import ichiVaultAbiV3 from './ichiVaultV3.json'
 import selfPermitAbi from './ISelfPermit.json'
 import multicallV3Abi from './multicallv3.json'
+import newPoolAbi from './newPool.json'
 import poolAbi from './pool.json'
 import vaultDepositGaurdAbi from './vaultDepositGaurd.json'
 
@@ -37,6 +38,7 @@ export {
   ichiVaultAbi,
   ichiVaultAbiV3,
   multicallV3Abi,
+  newPoolAbi,
   poolAbi,
   selfPermitAbi,
   vaultDepositGaurdAbi,
