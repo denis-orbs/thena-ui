@@ -43,6 +43,18 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
     }
   }, [address, userPools])
 
+  const strategyType = useMemo(() => {
+    if (ICHI_TYPES.includes(positionV2?.title)) {
+      return 'Ichi'
+    }
+
+    if (GAMMA_TYPES.includes(positionV2?.title)) {
+      return 'Gamma'
+    }
+
+    return 'V1'
+  }, [positionV2?.title])
+
   const addLiqLink = useMemo(
     () =>
       `/pools/add-liquidity?firstAddress=${positionV2?.token0?.address}` +
@@ -89,7 +101,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
               </div>
             </div>
 
-            <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>
+            {strategyType !== 'V1' && <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>}
           </div>
         ),
         strategy: strategyInfo,
@@ -101,7 +113,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
     })
 
     return subPools ?? []
-  }, [migrationOptions, strategy?.address, t])
+  }, [migrationOptions, strategyType, strategy?.address, t])
 
   useEffect(() => {
     if (!strategy) {
@@ -110,13 +122,13 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
   }, [strategy, strategyData])
 
   const handleMigrate = useCallback(() => {
-    if (ICHI_TYPES.includes(positionV2?.title)) {
+    if (strategyType === 'Ichi') {
       migrateIchi({
         positionV2,
         strategy,
         callback: () => push('/dashboard'),
       })
-    } else if (GAMMA_TYPES.includes(positionV2?.title)) {
+    } else if (strategyType === 'Gamma') {
       migrateGamma({
         positionV2,
         strategy,
@@ -129,7 +141,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
         callback: () => push('/dashboard'),
       })
     }
-  }, [migrateGamma, migrateIchi, migrateV1, positionV2, push, strategy])
+  }, [migrateGamma, migrateIchi, migrateV1, strategyType, positionV2, push, strategy])
 
   const handleWithdraw = useCallback(() => {
     if (ICHI_TYPES.includes(positionV2?.title)) {
@@ -179,7 +191,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
 
               <article className='flex h-full w-full flex-col'>
                 <TextHeading className='mb-2'>{t('Your New V3 Gauge')}</TextHeading>
-                <GaugeItem pool={positionV2} strategy={strategy} />
+                <GaugeItem pool={positionV2} strategy={strategy} strategyType={strategyType} staked={staked} />
               </article>
             </>
           )}

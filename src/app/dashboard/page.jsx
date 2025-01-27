@@ -26,7 +26,7 @@ import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useGuageAllHarvset } from '@/hooks/useGauge'
 import useWallet from '@/hooks/useWallet'
 import { useWeightedPositionList } from '@/hooks/weightedPool/useWeigtedPool'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { FarmingPosition } from '@/modules/Position/FarmingPosition'
 import ManualPosition from '@/modules/Position/ManualPosition'
 import NotStaked from '@/modules/Position/NotStaked'
@@ -46,6 +46,28 @@ const FILTERS = {
   Manual: 'Manual',
   WEIGHTED: 'Weighted',
   Legacy: 'V1',
+}
+
+const updateWalletBalance = positions => {
+  const groupedPositions = positions.reduce((map, position) => {
+    if (!map[position.address]) {
+      map[position.address] = []
+    }
+    map[position.address].push(position)
+    return map
+  }, {})
+
+  Object.values(groupedPositions).forEach(group => {
+    const posV2 = group.find(pos => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pos.type) && pos.version === 2)
+    const posV3 = group.find(pos => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pos.type) && pos.version === 3)
+
+    if (posV2 && posV3 && !isInvalidAmount(posV2.account.walletBalance)) {
+      // Update walletBalance for the version 2 position
+      posV2.account.walletBalance = new BigNumber(0)
+    }
+  })
+
+  return positions
 }
 
 export default function HoldingsPage() {
@@ -125,18 +147,20 @@ export default function HoldingsPage() {
           : [...userPools, ...userManuals, ...weightedPositionList]
         break
     }
-    return !searchText
+    const filtered = !searchText
       ? result
       : result &&
-          result.filter(item => {
-            const withSpace = item.symbol.replace('/', ' ')
-            const withComma = item.symbol.replace('/', ',')
-            return (
-              item.symbol.toLowerCase().includes(searchText.toLowerCase()) ||
-              withSpace.toLowerCase().includes(searchText.toLowerCase()) ||
-              withComma.toLowerCase().includes(searchText.toLowerCase())
-            )
-          })
+        result.filter(item => {
+          const withSpace = item.symbol.replace('/', ' ')
+          const withComma = item.symbol.replace('/', ',')
+          return (
+            item.symbol.toLowerCase().includes(searchText.toLowerCase()) ||
+            withSpace.toLowerCase().includes(searchText.toLowerCase()) ||
+            withComma.toLowerCase().includes(searchText.toLowerCase())
+          )
+        })
+
+    return updateWalletBalance(filtered)
   }, [userPools, filter, searchText, stakedOnly, userManuals, weightedPositionList])
 
   useEffect(() => {

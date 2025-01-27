@@ -7,11 +7,10 @@ import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
 import { cn, formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
-export function GaugeItem({ pool, strategy, staked = false }) {
+export function GaugeItem({ pool, strategy, staked = false, strategyType = 'V1' }) {
   const t = useTranslations()
 
   const depositValueUSD = useMemo(
@@ -64,11 +63,17 @@ export function GaugeItem({ pool, strategy, staked = false }) {
             <TextSubHeading>{getDisplayedStrategy(pool.title)}</TextSubHeading>
           </div>
         </div>
-        <PrimaryBadge className={cn('text-xs', strategy && 'hidden', staked && 'bg-success-600 text-success-100')}>
+        <PrimaryBadge
+          className={cn(
+            'text-xs',
+            strategy && strategyType !== 'V1' && 'hidden',
+            staked && 'bg-success-600 text-success-100',
+          )}
+        >
           {t(staked ? 'Staked' : 'Not Staked')}
         </PrimaryBadge>
 
-        <NeutralBadge className={cn('hidden', strategy && 'block')}>
+        <NeutralBadge className={cn('hidden', strategy && strategyType !== 'V1' && 'block')}>
           {strategy?.isFarming ? 'Farm Strategy' : 'Fee Strategy'}
         </NeutralBadge>
       </div>
@@ -82,12 +87,12 @@ export function GaugeItem({ pool, strategy, staked = false }) {
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
           <TextHeading>
-            {strategy ? '≈' : ''} ${formatAmount(depositValueUSD)}
+            {strategy && strategyType !== 'V1' ? '≈' : ''} ${formatAmount(depositValueUSD)}
           </TextHeading>
         </div>
 
-        {(!strategy || strategy?.type === PAIR_TYPES.STABLE || strategy.type === PAIR_TYPES.STABLE) && (
-          // POSITION V2 INFO OR CLASSIC/STABLE POOL
+        {!strategy ? (
+          // POSITION V2 INFO
           <>
             <div className='flex items-center justify-between'>
               <Paragraph className='text-sm'>
@@ -108,9 +113,29 @@ export function GaugeItem({ pool, strategy, staked = false }) {
               </div>
             </div>
           </>
-        )}
-
-        {strategy?.allowed && (
+        ) : strategyType === 'V1' ? (
+          // Classic/Stable gauge V3 info
+          <>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='text-sm'>
+                {pool.token0.symbol} {t('Deposit')}
+              </Paragraph>
+              <div className='flex gap-1'>
+                <TextHeading>{`${formatAmount(token0Amount)}`}</TextHeading>
+                <TextSubHeading>{`(${formatAmount(token0Percent)}%)`}</TextSubHeading>
+              </div>
+            </div>
+            <div className='flex items-center justify-between'>
+              <Paragraph className='text-sm'>
+                {pool.token1.symbol} {t('Deposit')}
+              </Paragraph>
+              <div className='flex gap-1'>
+                <TextHeading>{`${formatAmount(token1Amount)}`}</TextHeading>
+                <TextSubHeading>({formatAmount(100 - token0Percent)}%)</TextSubHeading>
+              </div>
+            </div>
+          </>
+        ) : strategy?.allowed ? (
           // ICHI V3 INFO
           <>
             <div className='flex items-center justify-between'>
@@ -137,7 +162,8 @@ export function GaugeItem({ pool, strategy, staked = false }) {
               </div>
             </div>
           </>
-        )}
+        ) : // Gamma V3 position (preview nothing for now)
+        null}
       </div>
 
       <div className={cn('flex items-center justify-between', strategy && 'hidden')}>

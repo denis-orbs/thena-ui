@@ -1166,7 +1166,7 @@
   "tBNB": "tBNB",
   "Voting history": "Voting history",
   "Migrate Your Conc Liquidity Positions": "Migrate Your Conc. Liquidity Positions",
-  "Migrate Your Conc Liquidity Positions description": "We are upgrading our CL gauges. We advise you to migrate all your positions as soon as possible. Don’t worry, during the migration all rewards will be claimed and current deposits will be withdrawn and deposited to a new V3 gauges. Staked positions will be unstaked and staked to a new gauge.",
+  "Migrate Your Conc Liquidity Positions description": "We are upgrading our gauges. We advise you to migrate all your positions as soon as possible. Don’t worry, during the migration all rewards will be claimed and current deposits will be withdrawn and deposited to a new V3 gauges. Staked positions will be unstaked and staked to a new gauge.",
   "Your Conc Liquidity Positions": "Your Conc. Liquidity Positions",
   "Migration": "Migration",
   "Migration description": "This will safely migrate your old V2 gauge to a new one. The process is completely trustless.",

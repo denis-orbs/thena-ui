@@ -11,7 +11,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGuageStake } from '@/hooks/useGauge'
-import { useClaimFees } from '@/hooks/useV1Liquidity'
+import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
 import { cn, formatAmount, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
@@ -30,16 +30,21 @@ export default function NotStaked({ pool }) {
   const [managePopup, setManagePopup] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGuageStake()
   const { stakeIchiPool, pending: stakeIchiPending } = useIchiManageV3()
+  const { onV1Stake, pending: stakeV1Pending } = useV1Stake()
   const { onClaimFees, pending: feesPending } = useClaimFees()
 
   const handleStake = amount => {
     if (pool?.account?.version === 3) {
-      // TODO: Gamma, V3 Stable/Classic gauge
-      stakeIchiPool({
-        vaultAddress: pool.address,
-        amount,
-        callback: () => setPopup(false),
-      })
+      // TODO: Gamma
+      if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pool.type)) {
+        onV1Stake(pool, amount, () => setPopup(false))
+      } else {
+        stakeIchiPool({
+          vaultAddress: pool.address,
+          amount,
+          callback: () => setPopup(false),
+        })
+      }
     } else {
       onGaugeStake(pool, amount, () => setPopup(false))
     }
@@ -179,7 +184,7 @@ export default function NotStaked({ pool }) {
         popup={popup}
         setPopup={setPopup}
         onGaugeManage={handleStake}
-        pending={stakePending || stakeIchiPending}
+        pending={stakePending || stakeIchiPending || stakeV1Pending}
       />
       <AddPositionModal popup={addPopup} setPopup={setAddPopup} strategy={pool} />
       <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={pool} />

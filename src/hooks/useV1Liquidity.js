@@ -510,7 +510,7 @@ export const useV1Migrate = () => {
 
       startTxn({
         key,
-        title: t('Unstake and Harvest'),
+        title: 'Migrate',
         transactions: {
           [unstakeId]: {
             desc: t('Unstake and Harvest'),
@@ -523,7 +523,7 @@ export const useV1Migrate = () => {
             hash: null,
           },
           [stakeId]: {
-            desc: t('stake'),
+            desc: t('Stake LP'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -544,11 +544,12 @@ export const useV1Migrate = () => {
 
       setPending(true)
       if (!isApproved) {
+        if (!(await writeTxn(key, approveId, lpContract, 'approve', [strategy.gauge.address, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      } else {
         updateTxn({ key, uuid: approveId, status: TXN_STATUS.SUCCESS })
-        setPending(false)
-      } else if (!(await writeTxn(key, approveId, lpContract, 'approve', [strategy.gauge.address, maxUint256]))) {
-        setPending(false)
-        return
       }
 
       setPending(true)
@@ -558,7 +559,7 @@ export const useV1Migrate = () => {
         return
       }
 
-      endTxn({ key, final: 'migrate Successful' })
+      endTxn({ key, final: 'Migrate Successful' })
       setPending(false)
       callback()
     },
@@ -566,4 +567,66 @@ export const useV1Migrate = () => {
   )
 
   return { migrateV1, pending }
+}
+
+export const useV1Stake = () => {
+  const [pending, setPending] = useState(false)
+  const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+
+  const onV1Stake = useCallback(
+    async (pool, amount, callback) => {
+      const key = uuidv4()
+      const approveId = uuidv4()
+      const stakeId = uuidv4()
+
+      startTxn({
+        key,
+        title: 'Stake',
+        transactions: {
+          [approveId]: {
+            desc: `${t('Approve')} LP`,
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [stakeId]: {
+            desc: t('Stake LP'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      setPending(true)
+
+      const lpContract = getERC20Contract(pool.address, chainId)
+      const allowance = await readCall(lpContract, 'allowance', [account, pool.gauge.address], chainId)
+      const isApproved = fromWei(allowance).gte(amount)
+
+      if (!isApproved) {
+        if (!(await writeTxn(key, approveId, lpContract, 'approve', [pool.gauge.address, maxUint256]))) {
+          setPending(false)
+          return
+        }
+      } else {
+        updateTxn({ key, uuid: approveId, status: TXN_STATUS.SUCCESS })
+      }
+
+      const depositAmount = toWei(amount).dp(0).toString(10)
+      setPending(true)
+      const gaugeContractV3 = getGaugeContract(pool.gauge.address, chainId)
+      if (!(await writeTxn(key, stakeId, gaugeContractV3, 'deposit', [depositAmount]))) {
+        setPending(false)
+        return
+      }
+
+      endTxn({ key, final: 'Staked' })
+      setPending(false)
+      callback()
+    },
+    [startTxn, t, chainId, writeTxn, account, endTxn, updateTxn],
+  )
+
+  return { onV1Stake, pending }
 }

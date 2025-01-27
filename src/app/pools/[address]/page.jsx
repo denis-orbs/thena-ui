@@ -456,7 +456,7 @@ export default function SpecificPoolPage({ params }) {
                   ),
                 )
               ) : (
-                <NoPosition key='noPosition' />
+                <NoPosition />
               )}
             </div>
           </div>
