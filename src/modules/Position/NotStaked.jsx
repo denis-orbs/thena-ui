@@ -4,11 +4,12 @@ import React, { useMemo, useState } from 'react'
 
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
+import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGuageStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
@@ -30,12 +31,19 @@ export default function NotStaked({ pool }) {
   const [managePopup, setManagePopup] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGuageStake()
   const { stakeIchiPool, pending: stakeIchiPending } = useIchiManageV3()
+  const { stakeGamma, pending: stakeGammaPending } = useStakeGamma()
   const { onV1Stake, pending: stakeV1Pending } = useV1Stake()
   const { onClaimFees, pending: feesPending } = useClaimFees()
 
   const handleStake = amount => {
     if (pool?.account?.version === 3) {
-      // TODO: Gamma
+      if (GAMMA_TYPES.includes(pool.title)) {
+        stakeGamma({
+          position: pool,
+          amount,
+          callback: () => setPopup(false),
+        })
+      }
       if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pool.type)) {
         onV1Stake(pool, amount, () => setPopup(false))
       } else {
@@ -89,8 +97,7 @@ export default function NotStaked({ pool }) {
           </div>
         </div>
         <div className='flex items-center gap-2'>
-          {/* TODO: Gamma Fee strategy */}
-          {pool?.title?.includes('_Farming') && <GreenBadge>Farm Strategy</GreenBadge>}
+          {pool?.title?.includes('Farming') && <GreenBadge>Farm Strategy</GreenBadge>}
           <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
         </div>
       </div>
@@ -141,9 +148,9 @@ export default function NotStaked({ pool }) {
       </div>
       <div className='mt-auto flex w-full gap-3'>
         {!migrationOptions && (
-          <TextButton className='w-full' onClick={() => setPopup(true)}>
+          <PrimaryButton className='w-full' onClick={() => setPopup(true)}>
             {t('Stake')}
-          </TextButton>
+          </PrimaryButton>
         )}
 
         {isLegacy ? (
@@ -184,7 +191,7 @@ export default function NotStaked({ pool }) {
         popup={popup}
         setPopup={setPopup}
         onGaugeManage={handleStake}
-        pending={stakePending || stakeIchiPending || stakeV1Pending}
+        pending={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
       />
       <AddPositionModal popup={addPopup} setPopup={setAddPopup} strategy={pool} />
       <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={pool} />
