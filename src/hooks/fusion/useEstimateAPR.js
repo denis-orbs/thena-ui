@@ -26,7 +26,7 @@ const getFusionFeesData = async ({ chainId, pool }) => {
       `,
       {
         pool: pool.toLowerCase(),
-        date: Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60, // current time in seconds - 30 days
+        date: Math.floor(Date.now() / 1000) - 24 * 60 * 60, // current time in seconds - 1 day
       },
     )
 

@@ -153,7 +153,7 @@ function ZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo,
           </Paragraph>
 
           <CustomTooltip id='apr-info' className='max-w-[320px]'>
-            Estimated return based on monthly trade fees and farming yield
+            Estimated return based on daily trade fees and farming yield
           </CustomTooltip>
         </div>
 

@@ -390,6 +390,9 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
           <div data-tooltip-id='APR-INFO' className='w-fit rounded-md bg-neutral-700 p-2'>
             <TextHeading className='text-sm font-bold'>{Number(apr).toFixed(2)}%</TextHeading>
           </div>
+          <CustomTooltip id='APR-INFO' className='max-w-[320px]'>
+            Estimated return based on daily trade fees and farming yield
+          </CustomTooltip>
         </div>
 
         <div className='flex flex-col gap-3'>
@@ -400,9 +403,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
                 {feeString} {t('Fee')}
               </strong>
             </div>
-            <CustomTooltip id='APR-INFO' className='max-w-[320px]'>
-              Estimated return based on monthly trade fees and farming yield
-            </CustomTooltip>
           </div>
           <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'>
             <TextHeading className='text-sm'>{t('Risk')}</TextHeading>

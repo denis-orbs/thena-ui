@@ -11,7 +11,7 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_SwapFee, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
-import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
+import { useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
@@ -29,7 +29,6 @@ export default function Staked({ pool }) {
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
-  const { onGaugeHarvest, pending } = useGaugeHarvest()
 
   const isICHISwapFee = useMemo(() => pool?.title === ICHI_SwapFee, [pool])
 
@@ -177,10 +176,10 @@ export default function Staked({ pool }) {
             <OutlinedButton
               className='w-full'
               onClick={() => {
-                if (version === 2) onGaugeHarvest(pool)
-                else onGammaClaim(pool)
+                // TODO: ICHI/Stable/Classic claim (with Solidly pools, use `onGaugeHarvest`)
+                onGammaClaim(pool)
               }}
-              disabled={pending || claimPending || pool.account.earnedUsd.isZero()}
+              disabled={claimPending || pool.account.earnedUsd.isZero()}
             >
               {t('Harvest')}
             </OutlinedButton>
