@@ -285,7 +285,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                 </>
               )}
 
-              {sub.title === 'CL_Farming' && <NeutralBadge>$THE + 10% Fees</NeutralBadge>}
+              {sub.title === 'CL_Farming' && <NeutralBadge>$THE</NeutralBadge>}
               {sub.title === 'CL_SwapFee' && <NeutralBadge>80% Fees</NeutralBadge>}
             </div>
           </div>

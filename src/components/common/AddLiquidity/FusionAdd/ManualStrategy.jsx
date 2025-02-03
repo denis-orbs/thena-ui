@@ -383,21 +383,21 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
       )}
       <div className='grid grid-cols-2 gap-4'>
         <div className='flex flex-col justify-center gap-1.5 rounded-md bg-neutral-800 px-4 py-3'>
-          <TextHeading className='text-sm'>{t(mintInfo.noLiquidity ? 'New pool' : 'Current Pool')}</TextHeading>
-          <div className='w-fit rounded-md bg-neutral-700 p-2'>
-            <TextHeading className='text-sm'>
-              {feeString} {t('Fee')}
-            </TextHeading>
+          <TextHeading className='text-sm' data-tooltip-id='APR-INFO'>
+            Estimate APR for $1k
+          </TextHeading>
+
+          <div data-tooltip-id='APR-INFO' className='w-fit rounded-md bg-neutral-700 p-2'>
+            <TextHeading className='text-sm font-bold'>{Number(apr).toFixed(2)}%</TextHeading>
           </div>
         </div>
+
         <div className='flex flex-col gap-3'>
           <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'>
             <div className='mt-1 flex cursor-pointer items-center justify-between'>
-              <TextHeading className='text-sm' data-tooltip-id='APR-INFO'>
-                Est. APR for $1k
-              </TextHeading>
-              <strong data-tooltip-id='APR-INFO' className='flex items-center gap-2'>
-                {Number(apr).toFixed(2)}%
+              <TextHeading className='text-sm'>{t(mintInfo.noLiquidity ? 'New pool' : 'Current Pool')}</TextHeading>
+              <strong className='text-sm'>
+                {feeString} {t('Fee')}
               </strong>
             </div>
             <CustomTooltip id='APR-INFO' className='max-w-[320px]'>
