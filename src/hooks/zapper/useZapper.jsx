@@ -156,7 +156,7 @@ export const useZapperAddLiquidity = () => {
           }
 
           transactions[stakeId] = {
-            desc: `${t('Stake')} LP`,
+            desc: t('Earn $THE'),
             status: TXN_STATUS.START,
             hash: null,
           }
@@ -175,7 +175,7 @@ export const useZapperAddLiquidity = () => {
         }
 
         // MARK: ADD LIQUIDITY
-        const hash = sendTxn(key, addLiquidityId, buildData.routerAddress, buildData.callData, buildData.value)
+        const hash = await sendTxn(key, addLiquidityId, buildData.routerAddress, buildData.callData, buildData.value)
         const addTxRecieve = await waitCall(hash)
 
         if (isFarming) {

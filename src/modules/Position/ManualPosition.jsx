@@ -348,7 +348,7 @@ export default function ManualPosition({ position }) {
           </TextButton>
         )}
 
-        <EmphasisButton
+        <PrimaryButton
           className={cn('w-full', {
             hidden:
               position?.isFarming ||
@@ -361,7 +361,7 @@ export default function ManualPosition({ position }) {
           onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
         >
           {t('Earn $THE')}
-        </EmphasisButton>
+        </PrimaryButton>
 
         {version === 3 && (
           <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>

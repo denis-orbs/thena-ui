@@ -130,8 +130,20 @@ export const useEstimateAPR = ({
   if (!tickLower || !tickUpper || !pool) return BigNumber(0)
 
   let position = null
-  const amountToken0 = typeof amount0 === 'object' ? amount0 : toWei(Number(amount0), currency0?.decimals ?? 18)
-  const amountToken1 = typeof amount1 === 'object' ? amount1 : toWei(Number(amount1), currency1?.decimals ?? 18)
+  const amountToken0 =
+    typeof amount0 === 'object'
+      ? amount0
+      : toWei(
+          new BigNumber(amount0).decimalPlaces(currency0?.decimals ?? 18, BigNumber.ROUND_DOWN).toString(),
+          currency0?.decimals ?? 18,
+        )
+  const amountToken1 =
+    typeof amount1 === 'object'
+      ? amount1
+      : toWei(
+          new BigNumber(amount1).decimalPlaces(currency0?.decimals ?? 18, BigNumber.ROUND_DOWN).toString(),
+          currency1?.decimals ?? 18,
+        )
 
   if (token0 && token1) {
     position = Position.fromAmounts({

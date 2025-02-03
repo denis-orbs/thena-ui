@@ -104,7 +104,7 @@ export const useAlgebraAdd = () => {
           }
 
           transactions[stakeId] = {
-            desc: `${t('Stake')} LP`,
+            desc: t('Earn $THE'),
             status: TXN_STATUS.START,
             hash: null,
           }
