@@ -62,7 +62,7 @@ const getFusionFarmingData = async ({ chainId, pool }) => {
       },
     )
 
-    return eternalFarmings?.at(0)
+    return eternalFarmings?.at(0) ?? {}
   } catch (error) {
     console.error(`[${chainId}] fusion fees data fetch error: ${JSON.stringify(error)}`)
   }
@@ -98,7 +98,7 @@ export const useEstimateAPR = ({
     enabled: !!poolAddress && isFarming,
     staleTime: Infinity,
   })
-  const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken, virtualPool } = farmingData || {}
+  const { rewardRate = '0', rewardToken, bonusRewardRate = '0', bonusRewardToken, virtualPool } = farmingData
 
   const tokenReward = useGetAsset(rewardToken)
   const tokenBonus = useGetAsset(Number(bonusRewardRate) !== 0 ? bonusRewardToken : null)
