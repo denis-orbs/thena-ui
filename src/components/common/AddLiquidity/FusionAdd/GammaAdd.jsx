@@ -24,6 +24,7 @@ import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/ho
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { EnterAmounts } from './containers/EnterAmounts'
+import { ZapperPaneV1 } from '../V1Add/ZapperPane'
 
 const feeAmount = 3000
 
@@ -156,7 +157,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
           <Selection data={addSelections} isFull />
 
           {isZapper ? (
-            <div className='flex flex-col gap-5'>{t('Coming Soon')}</div>
+            <ZapperPaneV1 asset0={baseCurrency} asset1={quoteCurrency} strategy={strategy} />
           ) : (
             <div className='flex flex-col'>
               <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
