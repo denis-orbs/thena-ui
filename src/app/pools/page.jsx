@@ -358,20 +358,22 @@ export default function PoolsPage() {
               <div className='flex flex-col gap-1'>
                 <TextHeading className='text-sm'>APR</TextHeading>
                 <div className='flex flex-col gap-1'>
-                  {pool.subpools.map((sub, idx) => (
-                    <div className='flex justify-between gap-2' key={`pair-${idx}`}>
-                      <div className='flex gap-1'>
-                        <TextHeading className='text-xs'>
-                          {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
-                        </TextHeading>
-                        {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
-                        {ICHI_TYPES.includes(sub.title) && (
-                          <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
-                        )}
+                  {pool.subpools
+                    .filter(item => item.version === 3)
+                    .map((sub, idx) => (
+                      <div className='flex justify-between gap-2' key={`pair-${idx}`}>
+                        <div className='flex gap-1'>
+                          <TextHeading className='text-xs'>
+                            {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
+                          </TextHeading>
+                          {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
+                          {ICHI_TYPES.includes(sub.title) && (
+                            <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
+                          )}
+                        </div>
+                        <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
                       </div>
-                      <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             </CustomTooltip>

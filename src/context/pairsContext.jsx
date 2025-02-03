@@ -142,13 +142,15 @@ const usePairs = () => {
           .filter(ele => ele.basePool.toLowerCase() === pair.address.toLowerCase())
           .sort((a, b) => b.gauge.apr.minus(a.gauge.apr).toNumber())
 
-        const highApr = subpools.length > 0 ? subpools[0].gauge.apr.toNumber() : 0
-        const poolsWithApr = subpools.filter(ele => ele.gauge.apr.gt(1))
+        const v3Subpools = subpools.filter(ele => ele.version === 3)
+
+        const highApr = v3Subpools.length > 0 ? v3Subpools[0].gauge.apr.toNumber() : 0
+        const poolsWithApr = v3Subpools.filter(ele => ele.gauge.apr.gt(1))
         const lowApr = poolsWithApr.length > 0 ? poolsWithApr[poolsWithApr.length - 1].gauge.apr.toNumber() : 0
         const apr =
-          !subpools.length || !highApr
+          !v3Subpools.length || !highApr
             ? '0%'
-            : subpools.length === 1 || lowApr === highApr || lowApr === 0
+            : v3Subpools.length === 1 || lowApr === highApr || lowApr === 0
               ? `${formatAmount(highApr)}%`
               : `${formatAmount(lowApr)} ~ ${formatAmount(highApr)}%`
         return {

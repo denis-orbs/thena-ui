@@ -121,9 +121,12 @@ export default function Staked({ pool }) {
             <TextHeading>
               ${formatAmount(GAMMA_TYPES.includes(pool.type) ? totalUsd : pool.account.earnedUsd)}
             </TextHeading>
-            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`stake-${pool.address}`} />
+            <InfoIcon
+              className='h-4 w-4 stroke-neutral-400'
+              data-tooltip-id={`stake-${pool.address}-${pool.account.earnedUsd}`}
+            />
 
-            <CustomTooltip id={`stake-${pool.address}`}>
+            <CustomTooltip id={`stake-${pool.address}-${pool.account.earnedUsd}`}>
               <div className={cn(GAMMA_TYPES.includes(pool.type) && 'hidden')}>
                 {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
                 {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
