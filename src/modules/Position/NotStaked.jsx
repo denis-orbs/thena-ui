@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -8,18 +8,19 @@ import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/butt
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGuageStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
-import { cn, formatAmount, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
+import { formatAmount, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
 import AddPositionModal from './AddPositionModal'
 import GaugeManageModal from './GaugeManageModal'
 import ManagePositionModal from './ManagePositionModal'
+import MigrateWarningModal from './MigrateWarningModal'
 import RemovePositionModal from './RemovePositionModal'
 
 export default function NotStaked({ pool }) {
@@ -34,29 +35,38 @@ export default function NotStaked({ pool }) {
   const { stakeGamma, pending: stakeGammaPending } = useStakeGamma()
   const { onV1Stake, pending: stakeV1Pending } = useV1Stake()
   const { onClaimFees, pending: feesPending } = useClaimFees()
+  const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
 
-  const handleStake = amount => {
-    if (pool?.account?.version === 3) {
-      if (GAMMA_TYPES.includes(pool.title)) {
-        stakeGamma({
-          position: pool,
-          amount,
-          callback: () => setPopup(false),
-        })
-      }
-      if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pool.type)) {
-        onV1Stake(pool, amount, () => setPopup(false))
+  const version = pool?.account?.version ?? 2
+  const migrationLink = useMemo(() => `/pools/migration?address=${pool.address}&staked=false`, [pool.address])
+
+  const handleStake = useCallback(
+    amount => {
+      if (version === 3) {
+        // Gamma pools
+        if (GAMMA_TYPES.includes(pool.title)) {
+          stakeGamma({
+            position: pool,
+            amount,
+            callback: () => setPopup(false),
+          })
+        } else if ([PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pool.type)) {
+          // V1 pools
+          onV1Stake(pool, amount, () => setPopup(false))
+        } else {
+          // Ichi pools
+          stakeIchiPool({
+            vaultAddress: pool.address,
+            amount,
+            callback: () => setPopup(false),
+          })
+        }
       } else {
-        stakeIchiPool({
-          vaultAddress: pool.address,
-          amount,
-          callback: () => setPopup(false),
-        })
+        onGaugeStake(pool, amount, () => setPopup(false))
       }
-    } else {
-      onGaugeStake(pool, amount, () => setPopup(false))
-    }
-  }
+    },
+    [version, pool, stakeGamma, onV1Stake, stakeIchiPool, onGaugeStake],
+  )
 
   const walletUsd = useMemo(() => pool.account.totalUsd.minus(pool.account.stakedUsd), [pool])
   const token0Amount = useMemo(() => pool.account.total0.minus(pool.account.staked0), [pool])
@@ -72,7 +82,7 @@ export default function NotStaked({ pool }) {
     return fees0.plus(fees1)
   }, [pool])
 
-  const isLegacy = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title), [pool])
+  const isV1Pool = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title), [pool])
 
   const migrationOptions = useGetAutoPoolMigration({
     token0Address: pool.token0.address,
@@ -128,7 +138,7 @@ export default function NotStaked({ pool }) {
             <TextSubHeading>({formatAmount(100 - token0Percent)}%)</TextSubHeading>
           </div>
         </div>
-        {isLegacy && (
+        {isV1Pool && (
           <div className='flex items-center justify-between'>
             <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
             <div className='flex items-center gap-1'>
@@ -153,7 +163,7 @@ export default function NotStaked({ pool }) {
           </PrimaryButton>
         )}
 
-        {isLegacy ? (
+        {isV1Pool ? (
           <>
             <OutlinedButton
               className='w-full'
@@ -171,18 +181,33 @@ export default function NotStaked({ pool }) {
             <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
               {t('Remove')}
             </OutlinedButton>
-            <EmphasisButton className={cn('w-full', pool.version === 2 && 'hidden')} onClick={() => setAddPopup(true)}>
-              {t('Add')}
-            </EmphasisButton>
+            {version === 3 ? (
+              <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
+                {t('Add')}
+              </EmphasisButton>
+            ) : migrationOptions && migrationOptions.length > 0 ? (
+              <Link href={`/pools/migration?address=${pool.address}`} className='w-full'>
+                <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+              </Link>
+            ) : (
+              <PrimaryButton className='w-full' onClick={() => setMigrateWarningPopup(true)}>
+                {t('Migrate')}
+              </PrimaryButton>
+            )}
           </>
         )}
-
-        {migrationOptions && migrationOptions.length > 0 && (
-          <Link href={`/pools/migration?address=${pool.address}`} className='w-full'>
-            <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
-          </Link>
-        )}
       </div>
+
+      <MigrateWarningModal
+        popup={migrateWarningPopup}
+        setPopup={setMigrateWarningPopup}
+        strategy={pool.type === PAIR_TYPES.LSD ? (ICHI_TYPES.includes(pool.title) ? 'ICHI' : 'Gamma') : 'V1'}
+        link={migrationLink}
+        handleWithdrawV1={() => {
+          setMigrateWarningPopup(false)
+          setPopup(true)
+        }}
+      />
       <GaugeManageModal
         title='Stake LP'
         pair={pool}

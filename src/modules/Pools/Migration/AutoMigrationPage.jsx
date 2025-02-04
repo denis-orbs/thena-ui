@@ -210,7 +210,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
         ) : (
           <Box className='mt-[30px] flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950'>
             <TextHeading className='text-neutral-100'>
-              {`${getDisplayedStrategy(positionV2?.title)} ${t('withdraw and deposit manually warning')}`}
+              {`${strategyType} ${t('withdraw and deposit manually warning')}`}
             </TextHeading>
           </Box>
         )}

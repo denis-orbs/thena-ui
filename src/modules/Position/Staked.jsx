@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { GreenBadge } from '@/components/badges/Badge'
@@ -56,11 +56,14 @@ export default function Staked({ pool }) {
     return token0InUsd.div(depositValueUSD).times(100).toFixed(2)
   }, [depositValueUSD, pool.account.staked0, pool.token0.price])
 
-  const handleUnstake = amount => {
-    onGaugeUnstake(pool, amount, () => {
-      setPopup(false)
-    })
-  }
+  const handleUnstake = useCallback(
+    amount => {
+      onGaugeUnstake(pool, amount, () => {
+        setPopup(false)
+      })
+    },
+    [onGaugeUnstake, pool],
+  )
 
   return (
     <Box className='flex flex-col gap-4'>

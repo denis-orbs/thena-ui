@@ -10,8 +10,8 @@ export default function MigrationPage() {
   const searchParams = useSearchParams()
   const tokenId = searchParams.get('tokenId')
   const address = searchParams.get('address')
-  const staked = Boolean(searchParams.get('staked'))
-  const withdraw = Boolean(searchParams.get('withdraw'))
+  const staked = Boolean(searchParams.get('staked') === 'true')
+  const withdraw = Boolean(searchParams.get('withdraw') === 'true')
 
   if (tokenId) {
     return <ManualMigrationPage tokenId={tokenId} />
