@@ -14,13 +14,20 @@ import Selector from '@/components/selector'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { callMulti } from '@/lib/contractActions'
-import { cn, formatAmount, getLiquidityRangeType, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
+import {
+  cn,
+  formatAmount,
+  getDisplayedStrategy,
+  getLiquidityRangeType,
+  unwrappedSymbol,
+  wrappedAddress,
+} from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
@@ -238,28 +245,16 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
 
   const strategyData = useMemo(() => {
     const autoStrategy = (pair?.subpools && pair.subpools.length > 0 ? pair.subpools : [defaultSwapFees]).map(sub => {
-      let { title } = sub
-
       let isFarming = false
       if (sub.title.includes('Farming')) {
         isFarming = true
-      }
-
-      if (title === 'CL_SwapFee') title = 'Manual (Swap Fees)'
-      if (title === 'CL_Farming') title = 'Manual ($THE Emissions)'
-
-      if (GAMMA_TYPES.includes(sub.title)) {
-        title = 'Gamma'
-      }
-      if (ICHI_TYPES.includes(sub.title)) {
-        title = 'ICHI'
       }
 
       return {
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading>{title}</TextHeading>
+              <TextHeading>{getDisplayedStrategy(sub.title)}</TextHeading>
 
               <div className='mt-1 flex gap-2'>
                 <div className='flex items-center gap-1'>
@@ -274,19 +269,13 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
             </div>
 
             <div className='flex flex-wrap justify-end gap-2'>
-              {GAMMA_TYPES.includes(sub.title) && <NeutralBadge>{sub.title.replace('_', ' ')}</NeutralBadge>}
-
               {ICHI_TYPES.includes(sub.title) && (
-                <>
-                  <PrimaryBadge>
-                    {sub.allowed.symbol} {t('Deposit')}
-                  </PrimaryBadge>
-                  <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>
-                </>
+                <PrimaryBadge>
+                  {sub.allowed.symbol} {t('Deposit')}
+                </PrimaryBadge>
               )}
 
-              {sub.title === 'CL_Farming' && <NeutralBadge>$THE</NeutralBadge>}
-              {sub.title === 'CL_SwapFee' && <NeutralBadge>80% Fees</NeutralBadge>}
+              <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>
             </div>
           </div>
         ),
@@ -314,7 +303,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
               totalValue: sub?.token1?.totalValue?.toNumber(),
             },
             address: sub.address,
-            isAutomatic: !['CL_Farming', 'CL_SwapFee'].includes(sub.title),
+            isAutomatic: !MANUAL_TYPES.includes(sub.title),
             isFarming,
             version: 3,
           })

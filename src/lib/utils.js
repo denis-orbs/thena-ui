@@ -302,5 +302,9 @@ export const getDisplayedStrategy = strategy => {
     return 'ICHI'
   }
 
+  if (MANUAL_TYPES.includes(strategy)) {
+    return 'Manual'
+  }
+
   return str
 }
