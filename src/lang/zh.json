@@ -1331,5 +1331,6 @@
   "withdraw and deposit manually warning": "策略尚未为该资金池部署。您可以提取流动性，然后将其添加到手动CL资金池中。",
   "Withdraw Successfully": "提取成功",
   "Gauge Is Not Available": "量表不可用",
-  "Withdraw From Gauge Desc": "此池的量表不可用。请从非活动量表中提取流动性。"
+  "Withdraw From Gauge Desc": "此池的量表不可用。请从非活动量表中提取流动性。",
+  "Claim Farming Rewards": "领取挖矿奖励"
 }

@@ -98,7 +98,7 @@ function PoolItem({ pool, onDeposit, isAdd = false }) {
               </div>
               <div className='flex flex-col lg:min-w-[200px]'>
                 <TextHeading className='text-xs lg:text-sm'>TVL</TextHeading>
-                <Paragraph className='text-sm lg:text-base'>${formatAmount(pool?.tlvUSD || 0)}</Paragraph>
+                <Paragraph className='text-sm lg:text-base'>${formatAmount(pool?.tvlUSD || 0)}</Paragraph>
               </div>
             </div>
           )}

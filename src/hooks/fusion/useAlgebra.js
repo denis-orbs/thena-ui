@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
-import { JSBI, MaxUint256, Percent } from 'thena-sdk-core'
+import { JSBI, Percent } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
 import { maxUint256, parseUnits } from 'viem'
 
@@ -222,20 +222,23 @@ export const useAlgebraClaim = (version = 3) => {
       setPending(true)
       startTxn({
         key,
-        title: 'Claim Fees',
+        title: 'Claim Rewards',
         transactions: {
-          ...(isFarming && {
-            [claimFarmId]: {
-              desc: t('Claim Farming Rewards'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }),
-          [claimFeeId]: {
-            desc: t('Claim Fees'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
+          ...(isFarming
+            ? {
+                [claimFarmId]: {
+                  desc: t('Claim Farming Rewards'),
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+              }
+            : {
+                [claimFeeId]: {
+                  desc: t('Claim Fees'),
+                  status: TXN_STATUS.START,
+                  hash: null,
+                },
+              }),
         },
       })
 
@@ -245,43 +248,28 @@ export const useAlgebraClaim = (version = 3) => {
           return
         }
 
-        const THE_ADDRESS = Contracts.THE[chainId]
         const farmingCenter = getFarmingCenterContract(chainId)
-        // const res = await callMulti([
-        //   {
-        //     ...farmingCenter,
-        //     functionName: 'collectAndClaimRewards',
-        //     args: [THE_ADDRESS, account, MaxUint256, poolkey, tokenId],
-        //   },
-        // ])
 
-        const tx = await writeTxn(key, claimFarmId, farmingCenter, 'collectAndClaimRewards', [
-          THE_ADDRESS,
-          account,
-          MaxUint256,
-          poolkey,
+        if (!(await writeTxn(key, claimFarmId, farmingCenter, 'collectAndClaimRewards', [account, poolkey, tokenId]))) {
+          setPending(false)
+          return
+        }
+      } else {
+        const positionManger = getPositionManagerContract(chainId, version)
+        const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
           tokenId,
-        ])
-        if (!tx) {
+          expectedCurrencyOwed0: feeValue0,
+          expectedCurrencyOwed1: feeValue1,
+          recipient: account,
+        })
+
+        if (!(await sendTxn(key, claimFeeId, positionManger.address, calldata, value))) {
           setPending(false)
           return
         }
       }
 
-      const positionManger = getPositionManagerContract(chainId, version)
-      const { calldata, value } = NonfungiblePositionManager.collectCallParameters({
-        tokenId,
-        expectedCurrencyOwed0: feeValue0,
-        expectedCurrencyOwed1: feeValue1,
-        recipient: account,
-      })
-
-      if (!(await sendTxn(key, claimFeeId, positionManger.address, calldata, value))) {
-        setPending(false)
-        return
-      }
-
-      endTxn({ key, final: 'Claimed fees' })
+      endTxn({ key, final: 'Claimed' })
       setPending(false)
       callback()
     },

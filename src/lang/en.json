@@ -1330,5 +1330,6 @@
   "withdraw and deposit manually warning": "strategy is not deployed for this pool. You can withdraw the liquidity and then add it to the manual CL pool.",
   "Withdraw Successfully": "Withdraw Successfully",
   "Gauge Is Not Available": "Gauge Is Not Available",
-  "Withdraw From Gauge Desc": "The V3 gauge for this pool is not available. Please withdraw from the inactive gauge."
+  "Withdraw From Gauge Desc": "The V3 gauge for this pool is not available. Please withdraw from the inactive gauge.",
+  "Claim Farming Rewards": "Claim Farming Rewards"
 }

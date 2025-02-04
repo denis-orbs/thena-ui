@@ -60,7 +60,7 @@ export function FarmingPosition({ position }) {
     isFarmingPool: position?.deployer === zeroAddress,
   })
 
-  const { data: key } = useReadContract({
+  const { data: poolKey } = useReadContract({
     ...incentiveMaker,
     functionName: 'poolToKey',
     args: [poolAddress],
@@ -73,9 +73,9 @@ export function FarmingPosition({ position }) {
   const { data: farmRewards } = useSimulateContract({
     ...farmingCenter,
     functionName: 'collectRewards',
-    args: [key, position?.tokenId],
+    args: [poolKey, position?.tokenId],
     query: {
-      enabled: !!key && !!position?.tokenId,
+      enabled: !!poolKey && !!position?.tokenId,
     },
   })
 
@@ -91,7 +91,7 @@ export function FarmingPosition({ position }) {
       },
     ],
     query: {
-      enabled: !!key && !!position?.tokenId,
+      enabled: !!poolKey && !!position?.tokenId,
     },
   })
   const farmRewardData = farmRewards?.result
@@ -138,21 +138,24 @@ export function FarmingPosition({ position }) {
       pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_Farming'),
     [poolAddress, pools],
   )
+
   const apr = useCalculateAPR({
     position,
     poolAddress,
     totalLiquidity: _fusion?.liquidity,
-    tvl: poolInfo?.tlv ?? 1,
+    tvl: poolInfo?.tvl ?? 1,
   })
 
   const THE = useGetAsset(Contracts.THE[chainId])
   const WBNB = useGetAsset(Contracts.WBNB[chainId])
 
-  const feeThe = useMemo(
+  const farmRewardTHE = useMemo(
     () => CurrencyAmount.fromRawAmount(THE, new BigNumber(farmRewardData ? farmRewardData[0] : 0).toString(10)),
     [THE, farmRewardData],
   )
-  const feeWbnb = useMemo(
+
+  // TODO: WBNB or BNB?
+  const farmRewardWBNB = useMemo(
     () => CurrencyAmount.fromRawAmount(WBNB, new BigNumber(farmRewardData ? farmRewardData[1] : 0).toString(10)),
     [WBNB, farmRewardData],
   )
@@ -378,10 +381,10 @@ export function FarmingPosition({ position }) {
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}
-        pool={{ ...position, key }}
+        pool={{ ...position, key: poolKey }}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
-        additionRewards={[feeThe, feeWbnb]}
+        additionRewards={[farmRewardTHE, farmRewardWBNB]}
         mutate={() => {}}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
@@ -393,7 +396,7 @@ export function FarmingPosition({ position }) {
         position={_position}
         feeValue0={feeValue0}
         feeValue1={feeValue1}
-        additionRewards={[feeThe, feeWbnb]}
+        additionRewards={[farmRewardTHE, farmRewardWBNB]}
         mutateManual={mutateManual}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}

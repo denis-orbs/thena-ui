@@ -41,9 +41,7 @@
   },
   {
     "inputs": [
-      { "internalType": "contract IERC20Minimal", "name": "rewardToken", "type": "address" },
       { "internalType": "address", "name": "to", "type": "address" },
-      { "internalType": "uint256", "name": "amountRequested", "type": "uint256" },
       {
         "components": [
           { "internalType": "contract IERC20Minimal", "name": "rewardToken", "type": "address" },
@@ -60,8 +58,7 @@
     "name": "collectAndClaimRewards",
     "outputs": [
       { "internalType": "uint256", "name": "reward", "type": "uint256" },
-      { "internalType": "uint256", "name": "bonusReward", "type": "uint256" },
-      { "internalType": "uint256", "name": "rewardBalanceBefore", "type": "uint256" }
+      { "internalType": "uint256", "name": "bonusReward", "type": "uint256" }
     ],
     "stateMutability": "nonpayable",
     "type": "function"
