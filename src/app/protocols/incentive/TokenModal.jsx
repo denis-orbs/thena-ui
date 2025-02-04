@@ -51,7 +51,7 @@ export function TokenModal({
   const tokenList = useMemo(() => {
     const whiteListToken = new Set()
     whiteList?.forEach(element => {
-      whiteListToken.add(element?.result.toLowerCase())
+      whiteListToken.add(element?.result?.toLowerCase())
     })
 
     return baseAssets.filter(asset => whiteListToken.has(asset.address.toLowerCase()))

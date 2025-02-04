@@ -87,14 +87,16 @@ export const useBribeAdd = () => {
   const t = useTranslations()
 
   const onBribeAdd = useCallback(
-    async (pool, asset, amount, callback) => {
+    async (pool, asset, amounts, callback) => {
+      const total = Object.values(amounts).reduce((sum, curr) => sum + Number(curr), 0)
+
       const key = uuidv4()
       const approveuuid = uuidv4()
       const bribeuuid = uuidv4()
       const bribeAddress = pool.gauge.bribe
       const tokenContract = getERC20Contract(asset.address, chainId)
       const allowance = await readCall(tokenContract, 'allowance', [account, bribeAddress], chainId)
-      const isApproved = fromWei(allowance).gte(amount)
+      const isApproved = fromWei(allowance).gte(total)
       setPending(true)
       startTxn({
         key,
@@ -122,9 +124,11 @@ export const useBribeAdd = () => {
       }
 
       const bribeContract = getBribeContract(bribeAddress, chainId)
-      const sendAmount = toWei(amount, asset.decimals).toFixed(0)
-      const params = [asset.address, sendAmount]
-      if (!(await writeTxn(key, bribeuuid, bribeContract, 'notifyRewardAmount', params))) {
+      const txHash = await writeTxn(key, bribeuuid, bribeContract, 'notifyRewardAmountForMultipleEpoch', [
+        asset.address,
+        Object.values(amounts).map(val => toWei(val, asset.decimals).toFixed(0)),
+      ])
+      if (!txHash) {
         setPending(false)
         return
       }
