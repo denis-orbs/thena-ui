@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { JSBI, MaxUint256, Percent } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256, parseUnits, zeroAddress } from 'viem'
+import { maxUint256, parseUnits } from 'viem'
 
 import { TXN_STATUS } from '@/constant'
 import { pluginFactoryAbi } from '@/constant/abi'
@@ -313,7 +313,7 @@ export const useAlgebraEnterFarming = () => {
       const positionManger = getPositionManagerContract(chainId, 3)
 
       const farmingApprovals = await readCall(positionManger, 'farmingApprovals', [tokenId], chainId)
-      const isNotAppproved = farmingApprovals === zeroAddress
+      const isNotAppproved = farmingApprovals !== farmingCenter.address
 
       const transactions = {}
       if (isNotAppproved) {
@@ -325,11 +325,11 @@ export const useAlgebraEnterFarming = () => {
       }
 
       transactions[stakeId] = {
-        desc: `${t('Stake')} LP`,
+        desc: t('Earn $THE'),
         status: TXN_STATUS.START,
         hash: null,
       }
-      startTxn({ key, title: t('Stake'), transactions })
+      startTxn({ key, title: t('Earn $THE'), transactions })
       setPending(true)
 
       if (isNotAppproved) {

@@ -184,10 +184,7 @@ export default function ManualPosition({ position }) {
 
         <div className='flex flex-wrap justify-end gap-2'>
           {position.deployer === zeroAddress ? (
-            <>
-              <PrimaryBadge>$THE</PrimaryBadge>
-              <GreenBadge>10% Fees</GreenBadge>
-            </>
+            <GreenBadge>$THE</GreenBadge>
           ) : (
             <>{position?.version === 3 && <GreenBadge>80% Fees</GreenBadge>}</>
           )}

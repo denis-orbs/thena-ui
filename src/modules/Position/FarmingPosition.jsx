@@ -224,7 +224,7 @@ export function FarmingPosition({ position }) {
         </div>
 
         <div className='flex flex-wrap justify-end gap-2'>
-          <GreenBadge>$THE + 10% Fees</GreenBadge>
+          <GreenBadge>$THE</GreenBadge>
 
           {!Number(liquidity) ? (
             <YellowBadge>{t('Closed')}</YellowBadge>
