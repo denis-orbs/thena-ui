@@ -20,7 +20,7 @@ import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import { ArrowRightIcon, InfoIcon } from '@/svgs'
 
-function ZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo, strategy }) {
+function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo, strategy }) {
   const t = useTranslations()
 
   const [token0, token1] = useMemo(() => {
@@ -210,4 +210,4 @@ function ZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo,
   )
 }
 
-export default ZapperPane
+export default KyberZapperPane

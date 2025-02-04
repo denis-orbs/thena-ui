@@ -30,6 +30,7 @@ function TokenInput({
   title,
   alowDouble = false,
   disabledSelect = false,
+  isHideTrending = false,
 }) {
   const t = useTranslations()
   const [tokenPopup, setTokenPopup] = useState(false)
@@ -113,6 +114,7 @@ function TokenInput({
             setSelectedAsset={setAsset}
             otherAsset={otherAsset}
             setOtherAsset={setOtherAsset}
+            isHideTrending={isHideTrending}
           />
         ) : (
           <SelectTokenFromList

@@ -35,7 +35,6 @@ export const useAddGamma = () => {
 
   const handleAddGamma = useCallback(
     async (amountA, amountB, amountToWrap, gammaPair) => {
-      console.log(gammaPair)
       const isFarming = gammaPair?.isFarming
       const baseCurrency = amountA.currency
       const quoteCurrency = amountB.currency
@@ -411,7 +410,7 @@ export const useGammaMigration = () => {
 
       // MARK: RE-BALANCE
       setPending(true)
-      const gammaUNIProxyContract = getGammaUNIProxyContract({ chainId: networkId, version: 3, isFarming: true })
+      const gammaUNIProxyContract = getGammaUNIProxyContract({ chainId: networkId, version: 3, isFarming })
       const rangeAmountOfToken1 = await readCall(
         gammaUNIProxyContract,
         'getDepositAmount',

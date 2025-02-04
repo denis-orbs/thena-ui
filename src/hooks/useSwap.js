@@ -26,7 +26,9 @@ import { useTxn } from '@/state/transactions/hooks'
 const EnabledDexIds = '43,47'
 const Connectors =
   '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11,0x52f24a5e03aee338da5fd9df68d2b6fae1178827,0x90c97f71e18723b0cf0dfa30ee176ab653e89f40,0x1bdd3cf7f79cfb8edbb955f20ad99211551ba275'
-const quoteUrl = 'https://api.odos.xyz/sor/quote/v2'
+
+export const quoteUrl = 'https://api.odos.xyz/sor/quote/v2'
+export const assembleOdosUrl = 'https://api.odos.xyz/sor/assemble'
 
 export const fetchOdosQuote = async ({ inputAmount, networkId, inputToken, outputToken, account, slippage }) => {
   const quoteRequestBody = {
@@ -112,8 +114,7 @@ export async function simulateOdosSwap(account, quotePathId, onError) {
     pathId: quotePathId, // Replace with the pathId from quote response in step 1
     simulate: true, // this can be set to true if the user isn't doing their own estimate gas call for the transaction
   }
-  const assembleUrl = 'https://api.odos.xyz/sor/assemble'
-  const response = await fetch(assembleUrl, {
+  const response = await fetch(assembleOdosUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(assembleRequestBody),
@@ -904,14 +905,12 @@ export const useGetOdosTxSwap = (account, quote) => {
   const { data: assembleData, isFetching } = useQuery({
     queryKey: ['getTx', quote?.pathId, getAddress(account || zeroAddress)],
     queryFn: async () => {
-      const assembleUrl = 'https://api.odos.xyz/sor/assemble'
-
       const assembleRequestBody = {
         userAddr: getAddress(account || zeroAddress), // the checksummed address used to generate the quote
         pathId: quote?.pathId, // Replace with the pathId from quote response in step 1
         simulate: true, // this can be set to true if the user isn't doing their own estimate gas call for the transaction
       }
-      const response_2 = await fetch(assembleUrl, {
+      const response_2 = await fetch(assembleOdosUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(assembleRequestBody),
@@ -964,7 +963,7 @@ export const useGetOdosTxSwap = (account, quote) => {
       })
       return { data: args, isLoading: isFetching }
     } catch (error) {
-      console.log('error')
+      console.error('error', error)
       return { data: undefined, isLoading: false }
     }
   }
