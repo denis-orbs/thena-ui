@@ -13,17 +13,45 @@
       },
       {
         "internalType": "address",
-        "name": "_bribeFactory",
+        "name": "_feeDistributor",
         "type": "address"
       },
       {
-        "internalType": "string",
-        "name": "_type",
-        "type": "string"
+        "internalType": "address",
+        "name": "_claimer",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "AddressZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotClaimer",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotVoter",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Paused",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -99,6 +127,58 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "address",
+        "name": "claimer",
+        "type": "address"
+      }
+    ],
+    "name": "SetClaimer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "minter",
+        "type": "address"
+      }
+    ],
+    "name": "SetMinter",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "SetOwner",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
+      }
+    ],
+    "name": "SetVoter",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
@@ -111,6 +191,19 @@
       }
     ],
     "name": "Staked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Unpaused",
     "type": "event"
   },
   {
@@ -134,12 +227,12 @@
   },
   {
     "inputs": [],
-    "name": "TYPE",
+    "name": "PRECISION",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "uint256",
         "name": "",
-        "type": "string"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -161,63 +254,8 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "_deposit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "_totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "_withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
-        "name": "_rewardsToken",
+        "name": "_token",
         "type": "address"
       }
     ],
@@ -230,7 +268,7 @@
     "inputs": [
       {
         "internalType": "address[]",
-        "name": "_rewardsToken",
+        "name": "_tokens",
         "type": "address[]"
       }
     ],
@@ -327,7 +365,7 @@
   },
   {
     "inputs": [],
-    "name": "bribeFactory",
+    "name": "claimer",
     "outputs": [
       {
         "internalType": "address",
@@ -341,13 +379,31 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "deposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_owner",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_rewardToken",
+        "name": "_token",
         "type": "address"
       }
     ],
@@ -371,7 +427,7 @@
       },
       {
         "internalType": "address",
-        "name": "_rewardToken",
+        "name": "_token",
         "type": "address"
       }
     ],
@@ -402,6 +458,19 @@
     "name": "emergencyRecoverERC20",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feeDistributor",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -534,7 +603,7 @@
     "name": "minter",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IMinter",
         "name": "",
         "type": "address"
       }
@@ -546,7 +615,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_rewardsToken",
+        "name": "_token",
         "type": "address"
       },
       {
@@ -556,6 +625,24 @@
       }
     ],
     "name": "notifyRewardAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_rewards",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "notifyRewardAmountForMultipleEpoch",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -576,8 +663,34 @@
   {
     "inputs": [
       {
+        "internalType": "bool",
+        "name": "status",
+        "type": "bool"
+      }
+    ],
+    "name": "pause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "paused",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
-        "name": "tokenAddress",
+        "name": "_token",
         "type": "address"
       },
       {
@@ -586,7 +699,33 @@
         "type": "uint256"
       }
     ],
-    "name": "recoverERC20AndUpdateData",
+    "name": "recoverERC20AndUpdateLastIncetive",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      }
+    ],
+    "name": "removeReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "removeRewards",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -613,6 +752,16 @@
       },
       {
         "internalType": "uint256",
+        "name": "incentivesAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "feesAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "rewardsPerEpoch",
         "type": "uint256"
       },
@@ -629,7 +778,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_rewardsToken",
+        "name": "_token",
         "type": "address"
       },
       {
@@ -685,6 +834,19 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_claimer",
+        "type": "address"
+      }
+    ],
+    "name": "setClaimer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_minter",
         "type": "address"
       }
@@ -711,7 +873,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_Voter",
+        "name": "_voter",
         "type": "address"
       }
     ],
@@ -805,9 +967,22 @@
     "name": "ve",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IVotingEscrow",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "version",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -824,6 +999,37 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "votingIncentivesFactory",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]
