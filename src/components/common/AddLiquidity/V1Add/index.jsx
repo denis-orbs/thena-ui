@@ -9,7 +9,7 @@ import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { usePools } from '@/state/pools/hooks'
 
 import { ManualPaneV1 } from './ManualPane'
-import { ZapperPaneV1 } from './ZapperPane'
+import { TheZapperPane } from './ZapperPane'
 
 export default function V1Add({
   pairType,
@@ -72,7 +72,7 @@ export default function V1Add({
       </div>
 
       {isZapper ? (
-        <ZapperPaneV1 asset0={firstAsset} asset1={secondAsset} slippage={slippage} strategy={pool} />
+        <TheZapperPane asset0={firstAsset} asset1={secondAsset} slippage={slippage} strategy={pool} />
       ) : (
         <ManualPaneV1
           isModal

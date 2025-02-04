@@ -21,8 +21,7 @@ const getZapAddress = (strategy, chainId) => {
   if (strategy.type === PAIR_TYPES.STABLE) return { address: Contracts.stableZap[chainId], isV1: true }
 }
 
-export function ZapperPaneV1({ asset0, asset1, slippage = 1, strategy }) {
-  console.log(strategy)
+export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
   const t = useTranslations()
   const { address: pairAddress, gauge } = strategy
   const zapSwapSlippage = 10000 - slippage * 100

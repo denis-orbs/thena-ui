@@ -8,7 +8,7 @@ import Box from '@/components/box'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
 import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
-import ZapperPane from '@/components/common/AddLiquidity/FusionAdd/ZapperPane'
+import KyberZapperPane from '@/components/common/AddLiquidity/FusionAdd/ZapperPane'
 import IconGroup from '@/components/icongroup'
 import Selection from '@/components/selection'
 import { TextHeading } from '@/components/typography'
@@ -120,7 +120,7 @@ export default function AddLiquidityCLPane({ pool, isAdd, isReverse, goPreviousS
           <div className='space-y-6'>
             <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
             {isZapper ? (
-              <ZapperPane
+              <KyberZapperPane
                 baseCurrency={baseCurrency}
                 quoteCurrency={quoteCurrency}
                 slippage={slippage}
