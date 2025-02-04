@@ -94,8 +94,11 @@ function PoolChart({ data, timeWindow, upper, lower }) {
     })
     setChart(chart)
     newSeries.setData(transformedData)
-
-    chart.timeScale().fitContent()
+    setTimeout(() => {
+      if (chart) {
+        chart?.timeScale()?.fitContent()
+      }
+    }, 500)
 
     // Add custom price lines for upper, current, and lower levels
     if (upper) {
