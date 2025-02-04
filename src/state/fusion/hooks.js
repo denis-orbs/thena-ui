@@ -116,8 +116,8 @@ export const useV3MintActionHandlers = noLiquidity => {
   }
 }
 
-const fetchGammaDepositAmounts = async (address, currencies, chainId, version) => {
-  const gammaUNIProxyContract = getGammaUNIProxyContract(chainId, version)
+const fetchGammaDepositAmounts = async (address, currencies, chainId, version, isFarming) => {
+  const gammaUNIProxyContract = getGammaUNIProxyContract({ chainId, version, isFarming })
   const depositAmounts = await callMulti(
     currencies.map(currency => ({
       ...gammaUNIProxyContract,
@@ -168,7 +168,7 @@ export const useV3DerivedMintInfo = (
     presetRange && presetRange.address && gammaCurrencies.length > 0
       ? ['gamma/depositAmounts', presetRange.address, currencyA, currencyB, chainId]
       : null,
-    () => fetchGammaDepositAmounts(presetRange.address, gammaCurrencies, chainId, version),
+    () => fetchGammaDepositAmounts(presetRange.address, gammaCurrencies, chainId, version, strategy?.isFarming),
   )
 
   const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A

@@ -9,9 +9,9 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_SwapFee, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { useGammaClaim, useGammaData } from '@/hooks/fusion/useGamma'
-import { useGuageUnstake } from '@/hooks/useGauge'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { useGammaClaim, useGetGammaReward } from '@/hooks/fusion/useGamma'
+import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
@@ -30,11 +30,9 @@ export default function Staked({ pool }) {
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
 
-  const isICHISwapFee = useMemo(() => pool?.title === ICHI_SwapFee, [pool])
+  const isSwapFee = useMemo(() => pool?.title.includes('SwapFee'), [pool])
 
-  const {
-    rewardsData: { totalUsd, rewards },
-  } = useGammaData(pool)
+  const { rewardsData } = useGetGammaReward(pool)
 
   const migrationOptions = useGetAutoPoolMigration({
     token0Address: pool.token0.address,
@@ -49,8 +47,8 @@ export default function Staked({ pool }) {
 
   const version = pool?.account?.version ?? 2
   const depositValueUSD = useMemo(
-    () => (isICHISwapFee ? pool?.account.totalUsd : pool.account.stakedUsd),
-    [isICHISwapFee, pool.account.stakedUsd, pool.account.totalUsd],
+    () => (isSwapFee ? pool?.account.totalUsd : pool.account.stakedUsd),
+    [isSwapFee, pool.account.stakedUsd, pool.account.totalUsd],
   )
 
   const token0Percent = useMemo(() => {
@@ -118,7 +116,7 @@ export default function Staked({ pool }) {
           <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>
-              ${formatAmount(GAMMA_TYPES.includes(pool.type) ? totalUsd : pool.account.earnedUsd)}
+              ${formatAmount(GAMMA_TYPES.includes(pool.title) ? rewardsData?.totalUsd : pool.account.earnedUsd)}
             </TextHeading>
             <InfoIcon
               className='h-4 w-4 stroke-neutral-400'
@@ -126,15 +124,15 @@ export default function Staked({ pool }) {
             />
 
             <CustomTooltip id={`stake-${pool.address}-${pool.account.earnedUsd}`}>
-              <div className={cn(GAMMA_TYPES.includes(pool.type) && 'hidden')}>
+              <div className={cn(GAMMA_TYPES.includes(pool.title) && 'hidden')}>
                 {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
                 {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
                 {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
                 {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
               </div>
 
-              <div className={cn(!GAMMA_TYPES.includes(pool.type) && 'hidden')}>
-                {(rewards || []).map(item => (
+              <div className={cn(!GAMMA_TYPES.includes(pool.title) && 'hidden')}>
+                {(rewardsData.rewards || []).map(item => (
                   <p key={item.asset.symbol}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
                 ))}
               </div>

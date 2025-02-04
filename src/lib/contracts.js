@@ -155,9 +155,13 @@ export const getFusionQuoterContract = chainId => getContract(fusionQuoterAbi, C
                                             Gamma
  ************************************************************************************************** */
 
-export const getGammaUNIProxyContract = (chainId, version = 3) => {
+export const getGammaUNIProxyContract = ({ chainId, version = 3, isFarming = true }) => {
   if (version === 3) {
-    return getContract(gammaUniProxyAbi, Contracts.gammaUniProxyV3, chainId)
+    const addressList = isFarming ? Contracts.gammaUniProxyFarmV3 : Contracts.gammaUniProxyFeeV3
+    return {
+      abi: gammaUniProxyAbi,
+      address: addressList[chainId],
+    }
   }
 
   return getContract(gammaUniProxyAbi, Contracts.gammaUniProxy, chainId)

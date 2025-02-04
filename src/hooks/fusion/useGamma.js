@@ -11,14 +11,12 @@ import useWallet from '@/hooks/useWallet'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
-  getGammaClearingContract,
   getGammaHyperVisorContract,
   getGammaUNIProxyContract,
   getGaugeContract,
   getMultiFeeDistributionContract,
   getWBNBContract,
 } from '@/lib/contracts'
-import { successToast, warnToast } from '@/lib/notify'
 import { fromWei, toWei } from '@/lib/utils'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -26,7 +24,7 @@ import { useTxn } from '@/state/transactions/hooks'
 
 import { fetchOdosQuote, simulateOdosSwap } from '../useSwap'
 
-export const useGammaAdd = () => {
+export const useAddGamma = () => {
   const [pending, setPending] = useState(false)
   const { account } = useWallet()
   const { networkId } = useChainSettings()
@@ -35,8 +33,10 @@ export const useGammaAdd = () => {
 
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
-  const onGammaAdd = useCallback(
+  const handleAddGamma = useCallback(
     async (amountA, amountB, amountToWrap, gammaPair) => {
+      console.log(gammaPair)
+      const isFarming = gammaPair?.isFarming
       const baseCurrency = amountA.currency
       const quoteCurrency = amountB.currency
       const baseCurrencyAddress = baseCurrency.wrapped ? baseCurrency.wrapped.address.toLowerCase() : ''
@@ -44,219 +44,14 @@ export const useGammaAdd = () => {
       const gammaPairAddress = gammaPair?.address
 
       if (!amountA || !amountB || !gammaPairAddress) return
-      const gammaUNIProxyContract = getGammaUNIProxyContract(networkId)
-      const clearingAddress = await readCall(gammaUNIProxyContract, 'clearance', [], networkId)
-      const clearingContract = getGammaClearingContract(clearingAddress, networkId)
-      const positionsResp = await readCall(clearingContract, 'positions', [gammaPairAddress], networkId)
-      const deposit0MaxRes = positionsResp?.[8] || 0n
-      const deposit1MaxRes = positionsResp?.[9] || 0n
-      const key = uuidv4()
-      const wrapuuid = uuidv4()
-      const approve1uuid = uuidv4()
-      const approve2uuid = uuidv4()
-      const supplyuuid = uuidv4()
-      const firstContract = getERC20Contract(baseCurrencyAddress, networkId)
-      const secondContract = getERC20Contract(quoteCurrencyAddress, networkId)
-      const baseAllowance = await readCall(firstContract, 'allowance', [account, gammaPairAddress], networkId)
-      const isFirstApproved = fromWei(baseAllowance, baseCurrency.decimals).gte(amountA.toExact())
-      const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaPairAddress], networkId)
-      const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
-
-      const firstParam = (
-        baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountA : amountB
-      ).numerator.toString()
-      const secondParam = (
-        baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountB : amountA
-      ).numerator.toString()
-
-      const firstParamNumber = Number(firstParam)
-      const secondParamNumber = Number(secondParam)
-      const deposit0MaxNumber = new BigNumber(deposit0MaxRes).toNumber()
-      const deposit1MaxNumber = new BigNumber(deposit1MaxRes).toNumber()
-
-      const checkMaxA = Math.ceil(firstParamNumber / deposit0MaxNumber)
-      const checkMaxB = Math.ceil(secondParamNumber / deposit1MaxNumber)
-
-      const checkMax = Math.max(checkMaxA, checkMaxB)
-
-      let transactions = {
-        ...(amountToWrap && {
-          [wrapuuid]: {
-            desc: t('Wrap'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        }),
-        ...(!isFirstApproved && {
-          [approve1uuid]: {
-            desc: `${t('Approve')} ${baseCurrency.symbol}`,
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        }),
-        ...(!isSecondApproved && {
-          [approve2uuid]: {
-            desc: `${t('Approve')} ${quoteCurrency.symbol}`,
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        }),
-      }
-
-      const supplyuuidList = []
-      if (checkMax > 1) {
-        for (let i = 0; i < checkMax; i++) {
-          const uuidI = uuidv4()
-          supplyuuidList.push(uuidI)
-          transactions = {
-            ...transactions,
-            [uuidI]: {
-              desc: t('Add Liquidity'),
-              status: TXN_STATUS.START,
-              hash: null,
-            },
-          }
-        }
-      } else {
-        transactions = {
-          ...transactions,
-          [supplyuuid]: {
-            desc: t('Add Liquidity'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        }
-      }
-
-      startTxn({ key, title: t('Add Liquidity'), transactions })
-      setPending(true)
-      if (amountToWrap) {
-        const wbnbContract = getWBNBContract(networkId)
-        if (!(await writeTxn(key, wrapuuid, wbnbContract, 'deposit', [], amountToWrap.toString(10)))) {
-          setPending(false)
-          return
-        }
-      }
-      if (!isFirstApproved) {
-        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [gammaPairAddress, maxUint256]))) {
-          setPending(false)
-          return
-        }
-      }
-
-      if (!isSecondApproved) {
-        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [gammaPairAddress, maxUint256]))) {
-          setPending(false)
-          return
-        }
-      }
-
-      if (checkMax > 1) {
-        successToast(`Your request is above Gamma max deposit. Your deposit is split in ${checkMax} transactions`)
-        for (let i = 1; i < checkMax + 1; i++) {
-          const firstParamI =
-            firstParamNumber > deposit0MaxNumber * i
-              ? deposit0MaxNumber
-              : firstParamNumber - deposit0MaxNumber * (i - 1)
-          const secondParamI =
-            secondParamNumber > deposit1MaxNumber * i
-              ? deposit1MaxNumber
-              : secondParamNumber - deposit1MaxNumber * (i - 1)
-
-          if (
-            !(await writeTxn(key, supplyuuidList[i - 1], gammaUNIProxyContract, 'deposit', [
-              firstParamI > 0 ? firstParamI : '0',
-              secondParamI > 0 ? secondParamI : '0',
-              account,
-              gammaPairAddress,
-              [0, 0, 0, 0],
-            ]))
-          ) {
-            setPending(false)
-            return
-          }
-        }
-      } else if (
-        !(await writeTxn(key, supplyuuid, gammaUNIProxyContract, 'deposit', [
-          firstParam,
-          secondParam,
-          account,
-          gammaPairAddress,
-          [0, 0, 0, 0],
-        ]))
-      ) {
-        setPending(false)
-        return
-      }
-      onFieldAInput('')
-      onFieldBInput('')
-      endTxn({
-        key,
-        final: 'Liquidity Add Successful',
-      })
-      setPending(false)
-    },
-    [account, startTxn, writeTxn, endTxn, networkId, onFieldAInput, onFieldBInput, t],
-  )
-
-  return { onGammaAdd, pending }
-}
-
-export const useGammaAddAndStake = () => {
-  const [pending, setPending] = useState(false)
-  const { account } = useWallet()
-  const { networkId } = useChainSettings()
-  const { startTxn, endTxn, writeTxn, updateTxn } = useTxn()
-  const t = useTranslations()
-
-  const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
-
-  const onGammaAddAndStake = useCallback(
-    async (amountA, amountB, amountToWrap, gammaPair) => {
-      const version = gammaPair?.version ?? 3
-      const baseCurrency = amountA.currency
-      const quoteCurrency = amountB.currency
-      const baseCurrencyAddress = baseCurrency.wrapped ? baseCurrency.wrapped.address.toLowerCase() : ''
-      const quoteCurrencyAddress = quoteCurrency.wrapped ? quoteCurrency.wrapped.address.toLowerCase() : ''
-      const gammaPairAddress = gammaPair?.address
-
-      if (!amountA || !amountB || !gammaPairAddress) return
-      const gammaUNIProxyContract = getGammaUNIProxyContract(networkId, version)
-
-      if (version === 2) {
-        const clearingAddress = await readCall(gammaUNIProxyContract, 'clearance', [], networkId)
-        const clearingContract = getGammaClearingContract(clearingAddress, networkId)
-        const { deposit0Max: deposit0MaxRes, deposit1Max: deposit1MaxRes } = await readCall(
-          clearingContract,
-          'positions',
-          [gammaPairAddress],
-          networkId,
-        )
-
-        const deposit0Max = fromWei(deposit0MaxRes, gammaPair.token0.decimals)
-        const deposit1Max = fromWei(deposit1MaxRes, gammaPair.token1.decimals)
-
-        if (
-          deposit0Max.lt((baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountA : amountB).toExact())
-        ) {
-          warnToast(`Maximum deposit amount of ${gammaPair.token0.symbol} is ${deposit0Max.toFormat(0)}.`, 'warn')
-          return
-        }
-        if (
-          deposit1Max.lt((baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountB : amountA).toExact())
-        ) {
-          warnToast(`Maximum deposit amount of ${gammaPair.token1.symbol} is ${deposit1Max.toFormat(0)}.`, 'warn')
-          return
-        }
-      }
+      const gammaUNIProxyContract = getGammaUNIProxyContract({ chainId: networkId, version: 3, isFarming })
 
       const key = uuidv4()
       const wrapuuid = uuidv4()
       const approve1uuid = uuidv4()
       const approve2uuid = uuidv4()
-      const approve3uuid = uuidv4()
       const supplyuuid = uuidv4()
-      const stakeuuid = uuidv4()
+
       const firstContract = getERC20Contract(baseCurrencyAddress, networkId)
       const secondContract = getERC20Contract(quoteCurrencyAddress, networkId)
       const baseAllowance = await readCall(firstContract, 'allowance', [account, gammaPairAddress], networkId)
@@ -293,20 +88,6 @@ export const useGammaAddAndStake = () => {
         hash: null,
       }
 
-      if (version === 2) {
-        transactions[approve3uuid] = {
-          desc: `${t('Approve')} LP`,
-          status: TXN_STATUS.START,
-          hash: null,
-        }
-
-        transactions[stakeuuid] = {
-          desc: `${t('Stake')} LP`,
-          status: TXN_STATUS.START,
-          hash: null,
-        }
-      }
-
       startTxn({ key, title: t('Add Liquidity'), transactions })
 
       setPending(true)
@@ -338,8 +119,9 @@ export const useGammaAddAndStake = () => {
         baseCurrencyAddress === gammaPair.token0.address.toLowerCase() ? amountB : amountA
       ).numerator.toString()
 
+      setPending(false)
       if (
-        !(await writeTxn(key, supplyuuid, gammaUNIProxyContract, version === 3 ? 'depositAndStake' : 'deposit', [
+        !(await writeTxn(key, supplyuuid, gammaUNIProxyContract, isFarming ? 'depositAndStake' : 'deposit', [
           firstParam,
           secondParam,
           account,
@@ -351,31 +133,6 @@ export const useGammaAddAndStake = () => {
         return
       }
 
-      // MARK: It will be automatically farming after you deposit into that pool (Gamma farming v3)
-      if (version === 2) {
-        const lpContract = getERC20Contract(gammaPairAddress, networkId)
-        const allowance = await readCall(lpContract, 'allowance', [account, gammaPair.gauge.address], networkId)
-        const lpBalance = await readCall(lpContract, 'balanceOf', [account], networkId)
-        const isLpApproved = fromWei(allowance).gte(lpBalance)
-        if (!isLpApproved) {
-          if (!(await writeTxn(key, approve3uuid, lpContract, 'approve', [gammaPair.gauge.address, maxUint256]))) {
-            setPending(false)
-            return
-          }
-        } else {
-          updateTxn({
-            key,
-            uuid: approve3uuid,
-            status: TXN_STATUS.SUCCESS,
-          })
-        }
-        const gaugeContract = getGaugeContract(gammaPair.gauge.address, networkId)
-        if (!(await writeTxn(key, stakeuuid, gaugeContract, 'deposit', [lpBalance]))) {
-          setPending(false)
-          return
-        }
-      }
-
       onFieldAInput('')
       onFieldBInput('')
       endTxn({
@@ -384,10 +141,10 @@ export const useGammaAddAndStake = () => {
       })
       setPending(false)
     },
-    [account, endTxn, networkId, onFieldAInput, onFieldBInput, startTxn, t, updateTxn, writeTxn],
+    [account, endTxn, networkId, onFieldAInput, onFieldBInput, startTxn, t, writeTxn],
   )
 
-  return { onGammaAddAndStake, pending }
+  return { handleAddGamma, pending }
 }
 
 export const useGammaRemove = () => {
@@ -501,13 +258,13 @@ export const useGammaClaim = () => {
   return { onGammaClaim, pending }
 }
 
-export const useGammaData = pool => {
+export const useGetGammaReward = pool => {
   const { account, chainId } = useWallet()
   const assets = useAssets()
   const [rewardsData, setRewardsData] = useState([])
 
   const getClaimableRewards = useCallback(async () => {
-    if (pool.version === 3 && GAMMA_TYPES.includes(pool.title)) {
+    if (pool.version === 3 && GAMMA_TYPES.includes(pool.title) && pool.title.includes('Farming')) {
       const gammaUNIProxyContract = getGammaHyperVisorContract(pool.address, chainId, 3)
       const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], chainId)
       const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
@@ -523,7 +280,7 @@ export const useGammaData = pool => {
       })
       setRewardsData({ totalUsd, rewards })
     }
-  }, [account, assets, chainId, pool.address, pool.title, pool.version])
+  }, [account, assets, chainId, pool])
 
   useEffect(() => {
     getClaimableRewards()
@@ -546,7 +303,7 @@ export const useGammaMigration = () => {
       const amount = positionV2.account.totalLp
 
       const { address: gammaAddressV2, token0, token1 } = positionV2
-      const { address: gammaAddressV3, _isFarming: isFarming } = strategy
+      const { address: gammaAddressV3, isFarming } = strategy
 
       const key = uuidv4()
       const unstakedId = uuidv4()
@@ -654,7 +411,7 @@ export const useGammaMigration = () => {
 
       // MARK: RE-BALANCE
       setPending(true)
-      const gammaUNIProxyContract = getGammaUNIProxyContract(networkId, 3)
+      const gammaUNIProxyContract = getGammaUNIProxyContract({ chainId: networkId, version: 3, isFarming: true })
       const rangeAmountOfToken1 = await readCall(
         gammaUNIProxyContract,
         'getDepositAmount',
@@ -772,8 +529,7 @@ export const useGammaMigration = () => {
 
       setPending(true)
       if (
-        // TODO: Gamma Fees only
-        !(await writeTxn(key, depositId, gammaUNIProxyContract, isFarming ? 'depositAndStake' : 'depositAndStake', [
+        !(await writeTxn(key, depositId, gammaUNIProxyContract, isFarming ? 'depositAndStake' : 'deposit', [
           amountA,
           amountB,
           account,
@@ -865,4 +621,70 @@ export const useGammaWithdraw = () => {
   )
 
   return { withdrawGamma, pending }
+}
+
+export const useStakeGamma = () => {
+  const t = useTranslations()
+
+  const [pending, setPending] = useState(false)
+  const { networkId } = useChainSettings()
+  const { account } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const stakeGamma = useCallback(
+    async ({ position, callback }) => {
+      const key = uuidv4()
+      const approveuuid = uuidv4()
+      const stakeuuid = uuidv4()
+      const lpContract = getERC20Contract(position.address, networkId)
+
+      setPending(true)
+      const gammaUNIProxyContract = getGammaHyperVisorContract(position.address, networkId, 3)
+      const receiver = await readCall(gammaUNIProxyContract, 'receiver', [], networkId)
+      const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, networkId)
+
+      const amount = toWei(position?.account?.walletBalance ?? 0, 18)
+      const allowance = await readCall(lpContract, 'allowance', [account, receiver], networkId)
+      const isApproved = amount.lte(allowance)
+
+      startTxn({
+        key,
+        title: 'Stake',
+        desc: `${t('Stake')} LP`,
+        transactions: {
+          ...(!isApproved && {
+            [approveuuid]: {
+              desc: `${t('Approve')} LP`,
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          [stakeuuid]: {
+            desc: `${t('Stake')} ${position.symbol} LP`,
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      if (!isApproved) {
+        if (!(await writeTxn(key, approveuuid, lpContract, 'approve', [receiver, amount]))) {
+          setPending(false)
+          return
+        }
+      }
+
+      if (!(await writeTxn(key, stakeuuid, multiFeeDistributionContract, 'stake', [amount, account]))) {
+        setPending(false)
+        return
+      }
+
+      endTxn({ key, final: 'Stake Successful' })
+      setPending(false)
+      callback()
+    },
+    [networkId, account, t, startTxn, writeTxn, endTxn],
+  )
+
+  return { stakeGamma, pending }
 }

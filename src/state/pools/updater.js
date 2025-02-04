@@ -263,7 +263,10 @@ function Updater() {
             let gaugeBalance = formatEther(found.gaugeBalance)
 
             // ICHI Swap fees => make it Staked
-            if (fusion.type === ICHI_SwapFee) {
+            if (
+              fusion.type === ICHI_SwapFee ||
+              (GAMMA_TYPES.includes(fusion.type) && fusion.type.includes('SwapFee'))
+            ) {
               gaugeBalance = formatEther(found.walletBalance)
               walletBalance = '0'
             }

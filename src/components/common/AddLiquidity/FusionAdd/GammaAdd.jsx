@@ -14,7 +14,7 @@ import { FusionRangeType } from '@/constant'
 import { gammaHypervisorAbi } from '@/constant/abi/fusion'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
-import { useGammaAdd, useGammaAddAndStake } from '@/hooks/fusion/useGamma'
+import { useAddGamma } from '@/hooks/fusion/useGamma'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
@@ -77,8 +77,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
   const wbnbBalance = useCurrencyBalance(WBNB[networkId])
 
-  const { onGammaAdd, pending } = useGammaAdd()
-  const { onGammaAddAndStake, pendingStake } = useGammaAddAndStake()
+  const { handleAddGamma, pending } = useAddGamma()
   const dispatch = useDispatch()
 
   const { data: preset } = useSWR(
@@ -133,12 +132,8 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   }, [amountA, amountB, baseCurrency, quoteCurrency, wbnbBalance, networkId])
 
   const onAddLiquidity = useCallback(() => {
-    if (mintInfo?.strategy?.isFarming) {
-      onGammaAddAndStake(amountA, amountB, amountToWrap, strategy)
-    } else {
-      onGammaAdd(amountA, amountB, amountToWrap, strategy)
-    }
-  }, [amountA, amountB, amountToWrap, mintInfo?.strategy?.isFarming, onGammaAdd, onGammaAddAndStake, strategy])
+    handleAddGamma(amountA, amountB, amountToWrap, strategy)
+  }, [amountA, amountB, amountToWrap, handleAddGamma, strategy])
 
   useEffect(() => {
     if (!price) return
@@ -208,7 +203,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
           {account ? (
             <>
               <PrimaryButton
-                disabled={pending || pendingStake}
+                disabled={pending}
                 onClick={() => {
                   onAddLiquidity()
                 }}
