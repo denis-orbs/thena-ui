@@ -24,9 +24,8 @@ function VeTHEsContextProvider({ children }) {
 
     const finalData = (data || []).map(veTHE => {
       const { amount, rebaseAmount, votingAmount, tokenId, lockedEnd, votes, voted, votedCurrentEpoch } = veTHE
-      const totalWeight = votes.reduce((sum, current) => sum + current.weight, 0)
+      const totalWeight = votes.reduce((sum, current) => sum + Number(current.weight), 0)
       const diff = dayjs.unix(Number(lockedEnd)).diff(dayjs(), 'days')
-
       return {
         voted,
         votedCurrentEpoch,
