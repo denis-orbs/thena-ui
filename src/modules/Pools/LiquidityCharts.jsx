@@ -288,7 +288,7 @@ export default function LiquidityCharts({
                   priceUpper={priceUpper}
                   onLeftRangeInput={onLeftRangeInput}
                   onRightRangeInput={onRightRangeInput}
-                  // interactive={false}
+                  interactive={mintInfo.liquidityRangeType === 'manual'}
                   // handleShow
                 />
               </div>

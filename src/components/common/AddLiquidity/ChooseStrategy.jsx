@@ -191,6 +191,8 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
     [pairPrices],
   )
 
+  console.log({ minValue, maxValue })
+
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
 
@@ -214,7 +216,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   }, [mintInfo.price, mintInfo.invertPrice])
 
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
-  const isSorted = baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped)
+  // const isSorted = baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped)
 
   useEffect(() => {
     if (!price) return
@@ -347,7 +349,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
     ],
     [timeWindow],
   )
-
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
@@ -412,8 +413,8 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                         <PoolChart
                           data={pairPrices}
                           timeWindow={timeWindow}
-                          upper={isSorted ? minValue?.value : maxValue?.value}
-                          lower={isSorted ? maxValue?.value : minValue?.value}
+                          upper={maxValue?.value}
+                          lower={minValue?.value}
                         />
                       )}
                     </div>

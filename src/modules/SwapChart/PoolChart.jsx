@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/lib/utils'
@@ -10,7 +10,7 @@ import { PairDataTimeWindow } from './fetch'
 
 function PoolChart({ data, timeWindow, upper, lower }) {
   const chartRef = useRef(null)
-  const [chartCreated, setChart] = useState()
+  const chartCreated = useRef(null)
 
   const transformedData = useMemo(() => {
     if (data) {
@@ -92,14 +92,11 @@ function PoolChart({ data, timeWindow, upper, lower }) {
       },
       priceScaleId: 'right',
     })
-    setChart(chart)
+    chartCreated.current = chart
     newSeries.setData(transformedData)
-    setTimeout(() => {
-      if (chart) {
-        chart?.timeScale()?.fitContent()
-      }
-    }, 500)
-
+    if (chartCreated.current) {
+      chart.timeScale().fitContent()
+    }
     // Add custom price lines for upper, current, and lower levels
     if (upper) {
       newSeries.createPriceLine({
@@ -137,11 +134,12 @@ function PoolChart({ data, timeWindow, upper, lower }) {
     return () => {
       chart.remove()
     }
-  }, [timeWindow, upper, lower, transformedData])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeWindow, upper, lower, transformedData, chartCreated?.current])
 
   return (
     <div className='flex h-full w-full flex-1'>
-      {(!chartCreated || !transformedData.length) && <Skeleton />}
+      {(!chartCreated.current || !transformedData.length) && <Skeleton />}
       <div className='w-full flex-1' ref={chartRef} />
     </div>
   )
