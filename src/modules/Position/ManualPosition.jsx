@@ -183,7 +183,7 @@ export default function ManualPosition({ position }) {
         </div>
 
         <div className='flex flex-wrap justify-end gap-2'>
-          <GreenBadge>Fees Strategy</GreenBadge>
+          <GreenBadge>Fee Strategy</GreenBadge>
 
           {!Number(liquidity) ? (
             <YellowBadge>{t('Closed')}</YellowBadge>

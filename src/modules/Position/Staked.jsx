@@ -11,7 +11,7 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim, useGetGammaReward } from '@/hooks/fusion/useGamma'
-import { useGuageUnstake } from '@/hooks/useGauge'
+import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
@@ -27,12 +27,11 @@ export default function Staked({ pool }) {
   const [popup, setPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
-  const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
-  const { onGammaClaim, pending: claimPending } = useGammaClaim()
-
-  const isSwapFee = useMemo(() => pool?.title.includes('SwapFee'), [pool])
 
   const { rewardsData } = useGetGammaReward(pool)
+  const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
+  const { onGammaClaim, pending: claimPending } = useGammaClaim()
+  const { onGaugeHarvest } = useGaugeHarvest()
 
   const migrationOptions = useGetAutoPoolMigration({
     token0Address: pool.token0.address,
@@ -40,7 +39,8 @@ export default function Staked({ pool }) {
     type: pool.title,
     version: pool.account.version,
   })
-  const migrationLink = useMemo(() => `/pools/migration?address=${pool.address}&staked=true`, [pool.address])
+  const isSwapFee = pool?.title.includes('SwapFee')
+  const migrationLink = `/pools/migration?address=${pool.address}&staked=true`
 
   const dispatch = useDispatch()
   const t = useTranslations()
@@ -64,6 +64,16 @@ export default function Staked({ pool }) {
     },
     [onGaugeUnstake, pool],
   )
+
+  const handleHavest = useCallback(() => {
+    if (GAMMA_TYPES.includes(pool.title)) {
+      onGammaClaim(pool)
+    } else if (ICHI_TYPES.includes(pool.title)) {
+      // TODO: ICHI claim
+    } else {
+      onGaugeHarvest(pool)
+    }
+  }, [onGammaClaim, onGaugeHarvest, pool])
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -115,34 +125,47 @@ export default function Staked({ pool }) {
             <TextSubHeading>({formatAmount(100 - token0Percent)}%)</TextSubHeading>
           </div>
         </div>
+
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
-          <div className='flex items-center gap-1'>
-            <TextHeading>
-              ${formatAmount(GAMMA_TYPES.includes(pool.title) ? rewardsData?.totalUsd : pool.account.earnedUsd)}
-            </TextHeading>
-            <InfoIcon
-              className='h-4 w-4 stroke-neutral-400'
-              data-tooltip-id={`stake-${pool.address}-${pool.account.earnedUsd}`}
-            />
+          {isSwapFee ? (
+            <div className='flex items-center gap-1'>
+              <TextHeading>Auto Compound</TextHeading>
+              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='AUTO_COMPOUND' />
+              <CustomTooltip className='max-w-[320px]' id='AUTO_COMPOUND'>
+                Your rewards are automatically compounded back into your liquidity. Please check with Gamma or ICHI for
+                the details of their strategies.
+              </CustomTooltip>
+            </div>
+          ) : (
+            <div className='flex items-center gap-1'>
+              <TextHeading>
+                ${formatAmount(GAMMA_TYPES.includes(pool.title) ? rewardsData?.totalUsd : pool.account.earnedUsd)}
+              </TextHeading>
+              <InfoIcon
+                className='h-4 w-4 stroke-neutral-400'
+                data-tooltip-id={`stake-${pool.address}-${pool.account.earnedUsd}`}
+              />
 
-            <CustomTooltip id={`stake-${pool.address}-${pool.account.earnedUsd}`}>
-              <div className={cn(GAMMA_TYPES.includes(pool.title) && 'hidden')}>
-                {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
-                {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
-                {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
-                {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
-              </div>
+              <CustomTooltip id={`stake-${pool.address}-${pool.account.earnedUsd}`}>
+                <div className={cn(GAMMA_TYPES.includes(pool.title) && 'hidden')}>
+                  {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
+                  {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
+                  {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
+                  {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
+                </div>
 
-              <div className={cn(!GAMMA_TYPES.includes(pool.title) && 'hidden')}>
-                {(rewardsData.rewards || []).map(item => (
-                  <p key={item.asset.symbol}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
-                ))}
-              </div>
-            </CustomTooltip>
-          </div>
+                <div className={cn(!GAMMA_TYPES.includes(pool.title) && 'hidden')}>
+                  {(rewardsData.rewards || []).map(item => (
+                    <p key={item.asset.symbol}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
+                  ))}
+                </div>
+              </CustomTooltip>
+            </div>
+          )}
         </div>
       </div>
+
       <div className='mt-auto flex w-full gap-3'>
         {version === 2 ? (
           // Version 2 actions
@@ -175,11 +198,8 @@ export default function Staked({ pool }) {
             )}
 
             <OutlinedButton
-              className='w-full'
-              onClick={() => {
-                // TODO: ICHI/Stable/Classic claim (with Solidly pools, use `onGaugeHarvest`)
-                onGammaClaim(pool)
-              }}
+              className={cn('w-full', isSwapFee && 'hidden')}
+              onClick={handleHavest}
               disabled={claimPending || pool.account.earnedUsd.isZero()}
             >
               {t('Harvest')}

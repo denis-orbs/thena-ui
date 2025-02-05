@@ -191,8 +191,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
     [pairPrices],
   )
 
-  console.log({ minValue, maxValue })
-
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
 

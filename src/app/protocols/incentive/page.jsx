@@ -228,7 +228,7 @@ export default function IncentivePage() {
 
             <label className={cn('mb-6 flex items-center gap-2', epochs <= 1 && 'hidden')}>
               <CheckBox
-                className={cn(!isFixedAmount && 'bg-neutral-300')}
+                className={cn(!isFixedAmount && 'bg-neutral-700')}
                 checked={isFixedAmount}
                 setChecked={setIsFixedAmount}
               />
@@ -301,7 +301,7 @@ export default function IncentivePage() {
           </TextHeading>
 
           {pair && (
-            <article className='mb-6 flex items-center justify-between'>
+            <article className='mb-5 flex items-center justify-between border-b border-neutral-700 pb-5'>
               <TextHeading className='block'>Pair</TextHeading>
               <div className='mt-2 flex items-center gap-3'>
                 {pair.type === PAIR_TYPES.WEIGHTED ? (
@@ -332,9 +332,7 @@ export default function IncentivePage() {
             </article>
           )}
 
-          <hr className='border-neutral-700 pb-5' />
-
-          <article className='flex items-center justify-between pb-5'>
+          <article className='mb-5 flex items-center justify-between border-b border-neutral-700 pb-5'>
             <TextHeading>Rewards Token</TextHeading>
             <TextHeading className='flex items-center gap-2'>
               <CircleImage alt='thena' className='size-5' src={asset?.logoURI ?? ''} />
@@ -342,9 +340,7 @@ export default function IncentivePage() {
             </TextHeading>
           </article>
 
-          <hr className='border-neutral-700 pb-6' />
-
-          <article className={cn('space-y-5 pb-5', !asset && 'hidden')}>
+          <article className={cn('mb-5 space-y-5 border-b border-neutral-700 pb-5', !asset && 'hidden')}>
             <TextHeading className='font-bold'>Epochs and Rewards</TextHeading>
 
             {Array.from({ length: epochs }, (_, i) => {
@@ -378,8 +374,6 @@ export default function IncentivePage() {
             })}
           </article>
 
-          <hr className='hidden border-neutral-700 pb-6 md:block' />
-
           <article className={cn('my-3 hidden justify-between', total > 0 && 'flex')}>
             <TextHeading>{t('Total Deposit')}</TextHeading>
             <article className='flex items-center justify-center gap-2'>
@@ -410,6 +404,7 @@ export default function IncentivePage() {
               onBribeAdd(pair, asset, amounts, () => {
                 setAmounts({})
                 setEpochs(1)
+                setIsConfirmState(false)
                 setPair(null)
                 setAsset(null)
                 mutateAssets()
@@ -422,12 +417,12 @@ export default function IncentivePage() {
 
         <div className='rounded-xl bg-neutral-900 p-5'>
           <TextHeading className='mb-2 block text-xl'>{t('Total Incentives')}</TextHeading>
-          <Paragraph className={cn('mb-6 block text-sm')}>Select a pair to view the total rewards deposited.</Paragraph>
-
-          <hr className='border-neutral-700 pb-6' />
+          <Paragraph className={cn('mb-5 block border-b border-neutral-700 pb-5 text-sm')}>
+            Select a pair to view the total rewards deposited.
+          </Paragraph>
 
           {pair && (
-            <article className='mb-6'>
+            <article className='mb-6 border-b border-neutral-700 pb-5'>
               <TextHeading className='block'>Selected Pair</TextHeading>
               <div className='mt-2 flex items-center gap-3'>
                 {pair.type === PAIR_TYPES.WEIGHTED ? (
@@ -457,8 +452,6 @@ export default function IncentivePage() {
               </div>
             </article>
           )}
-
-          <hr className='border-neutral-700 pb-5' />
 
           <article className={cn('space-y-5', !asset && 'hidden')}>
             <div className='hidden grid-cols-5 md:grid'>
