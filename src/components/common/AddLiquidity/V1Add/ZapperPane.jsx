@@ -5,6 +5,7 @@ import { zeroAddress } from 'viem'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import TokenInput from '@/components/input/TokenInput'
+import Spinner from '@/components/spinner'
 import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
@@ -190,11 +191,19 @@ export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
           !isUseTokenInPair && (isLoading1 || isLoading0) && 'block',
         )}
       >
-        <p className='mt-4'>On Loading Best router</p>
+        <SecondaryButton className='w-full'>
+          Finding Best Quote
+          <Spinner className='size-5' />
+        </SecondaryButton>
       </div>
 
       {account ? (
-        <div className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
+        <div
+          className={cn(
+            'mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row',
+            !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
+          )}
+        >
           <SecondaryButton
             disabled={!amountIn || (!isUseTokenInPair && !bestQuote)}
             onClick={() => handleAddLiquidity({ isStake: false })}
