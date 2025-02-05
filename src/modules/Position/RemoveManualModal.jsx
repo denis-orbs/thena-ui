@@ -13,7 +13,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useAlgebraRemove } from '@/hooks/fusion/useAlgebra'
 import useDebounce from '@/hooks/useDebounce'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
 import SettingSlippageModal from './SettingSlippageModal'
@@ -23,9 +23,8 @@ export default function RemoveManualModal({
   setPopup,
   pool,
   position,
-  feeValue0,
-  feeValue1,
-  additionRewards,
+  reward0,
+  reward1,
   mutateManual,
   outOfRange,
   fee,
@@ -42,11 +41,20 @@ export default function RemoveManualModal({
 
   const onRemove = useCallback(() => {
     if (debouncedPercent > 0) {
-      onAlgebraRemove(pool.tokenId, position, liquidityPercentage, feeValue0, feeValue1, slippage, deadline, () => {
-        setPercent(0)
-        setPopup(false)
-        mutateManual()
-      })
+      onAlgebraRemove(
+        pool.tokenId,
+        position,
+        liquidityPercentage,
+        reward0?.amount,
+        reward1?.amount,
+        slippage,
+        deadline,
+        () => {
+          setPercent(0)
+          setPopup(false)
+          mutateManual()
+        },
+      )
     } else {
       warnToast('Invalid Amount', 'warn')
     }
@@ -54,8 +62,8 @@ export default function RemoveManualModal({
     pool,
     position,
     liquidityPercentage,
-    feeValue0,
-    feeValue1,
+    reward0,
+    reward1,
     debouncedPercent,
     deadline,
     slippage,
@@ -116,34 +124,18 @@ export default function RemoveManualModal({
             </div>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1'>
-                <CircleImage className='h-4 w-4' src={pool.asset0.logoURI} alt='thena logo' />
-                <Paragraph className='text-sm'>{pool.asset0.symbol} Fee Earned</Paragraph>
+                <CircleImage className='h-4 w-4' src={reward0?.token?.logoURI} alt='thena logo' />
+                <Paragraph className='text-sm'>{reward0?.token?.symbol}</Paragraph>
               </div>
-              <Paragraph>{formatAmount(feeValue0?.toSignificant(), false, 4)}</Paragraph>
+              <Paragraph>{formatAmount(reward0?.amount?.toSignificant(), false, 4)}</Paragraph>
             </div>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1'>
-                <CircleImage className='h-4 w-4' src={pool.asset1.logoURI} alt='thena logo' />
-                <Paragraph className='text-sm'>{pool.asset1.symbol} Fee Earned</Paragraph>
+                <CircleImage className='h-4 w-4' src={reward1?.token?.logoURI} alt='thena logo' />
+                <Paragraph className='text-sm'>{reward1?.token?.symbol}</Paragraph>
               </div>
-              <Paragraph>{formatAmount(feeValue1?.toSignificant(), false, 4)}</Paragraph>
+              <Paragraph>{formatAmount(reward1?.amount?.toSignificant(), false, 4)}</Paragraph>
             </div>
-
-            {additionRewards?.map(reward => {
-              const amount = formatAmount(reward?.toSignificant())
-              return (
-                <div
-                  key={reward?.currency?.address}
-                  className={cn('flex items-center justify-between', amount === '0' && 'hidden')}
-                >
-                  <div className='flex items-center gap-1'>
-                    <CircleImage className='h-4 w-4' src={reward?.currency?.logoURI} alt='thena logo' />
-                    <Paragraph className='text-sm'>{reward?.currency?.symbol} reward farmed</Paragraph>
-                  </div>
-                  <Paragraph>{amount}</Paragraph>
-                </div>
-              )
-            })}
           </div>
         </div>
       </ModalBody>

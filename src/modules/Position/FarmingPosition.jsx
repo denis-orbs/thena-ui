@@ -3,25 +3,25 @@ import { useTranslations } from 'next-intl'
 import { useContext, useMemo, useState } from 'react'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
-import { maxUint128, zeroAddress } from 'viem'
+import { zeroAddress } from 'viem'
 import { useReadContract, useSimulateContract } from 'wagmi'
 
 import { GreenBadge, PrimaryBadge, YellowBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import Contracts from '@/constant/contracts'
 import { ManualsContext } from '@/context/manualsContext'
-import { useCurrency, useGetAsset, useToken } from '@/hooks/fusion/Tokens'
-import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
+import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
 import { useCalculateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { useFusionState } from '@/hooks/fusion/useFusions'
+import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
-import { getFarmingCenterContract, getInsentiveContract, getPositionManagerContract } from '@/lib/contracts'
-import { unwrappedToken } from '@/lib/fusion'
+import { getFarmingCenterContract, getInsentiveContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
@@ -35,12 +35,9 @@ import RemoveManualModal from './RemoveManualModal'
 
 export function FarmingPosition({ position }) {
   const t = useTranslations()
-  const { account, chainId } = useWallet()
+  const { chainId } = useWallet()
   const pools = usePools()
   const { mutateManual } = useContext(ManualsContext)
-  const incentiveMaker = getInsentiveContract(chainId)
-  const farmingCenter = getFarmingCenterContract(chainId)
-  const positionManagerContract = getPositionManagerContract(chainId, position.version)
 
   const [claimPopup, setClaimPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
@@ -51,15 +48,17 @@ export function FarmingPosition({ position }) {
   const currency1 = useCurrency(asset1.address)
 
   // CALL APIs & SMART CONTRACTS
+  const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
   const { onAlgebraBurn, pending } = useAlgebraBurn()
-  // const { onExitFarming, pending: isRemoveFarmLoading } = useAlgebraExitFarming()
 
+  const { incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
   const [fusionState, fusion, poolAddress] = useFusionState({
     currencyA: currency0,
     currencyB: currency1,
     isFarmingPool: position?.deployer === zeroAddress,
   })
 
+  const incentiveMaker = getInsentiveContract(chainId)
   const { data: poolKey } = useReadContract({
     ...incentiveMaker,
     functionName: 'poolToKey',
@@ -70,7 +69,8 @@ export function FarmingPosition({ position }) {
     },
   })
 
-  const { data: farmRewards } = useSimulateContract({
+  const farmingCenter = getFarmingCenterContract(chainId)
+  const { data: farmRewards, refetch: refetchFarm } = useSimulateContract({
     ...farmingCenter,
     functionName: 'collectRewards',
     args: [poolKey, position?.tokenId],
@@ -78,25 +78,7 @@ export function FarmingPosition({ position }) {
       enabled: !!poolKey && !!position?.tokenId,
     },
   })
-
-  const { data: feeRewards } = useSimulateContract({
-    ...positionManagerContract,
-    functionName: 'collect',
-    args: [
-      {
-        tokenId,
-        recipient: account,
-        amount0Max: maxUint128,
-        amount1Max: maxUint128,
-      },
-    ],
-    query: {
-      enabled: !!poolKey && !!position?.tokenId,
-    },
-  })
   const farmRewardData = farmRewards?.result
-  const feeRewardData = feeRewards?.result
-
   const tickAtLimit = useMemo(
     () => ({
       [Bound.LOWER]: tickLower ? tickLower === nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING) : undefined,
@@ -130,8 +112,6 @@ export function FarmingPosition({ position }) {
   const amount1 = useMemo(() => (_position ? _position.amount1.toExact() : 0), [_position])
   const amount0InUsd = useMemo(() => BigNumber(amount0) * asset0.price, [amount0, asset0])
   const amount1InUsd = useMemo(() => BigNumber(amount1) * asset1.price, [amount1, asset1])
-  const token0 = useToken(asset0.address)
-  const token1 = useToken(asset1.address)
 
   const poolInfo = useMemo(
     () =>
@@ -149,32 +129,18 @@ export function FarmingPosition({ position }) {
   const THE = useGetAsset(Contracts.THE[chainId])
   const WBNB = useGetAsset(Contracts.WBNB[chainId])
 
-  const farmRewardTHE = useMemo(
-    () => CurrencyAmount.fromRawAmount(THE, new BigNumber(farmRewardData ? farmRewardData[0] : 0).toString(10)),
-    [THE, farmRewardData],
-  )
-
-  // TODO: WBNB or BNB?
-  const farmRewardWBNB = useMemo(
-    () => CurrencyAmount.fromRawAmount(WBNB, new BigNumber(farmRewardData ? farmRewardData[1] : 0).toString(10)),
-    [WBNB, farmRewardData],
-  )
-
-  const feeValue0 = useMemo(
-    () =>
-      CurrencyAmount.fromRawAmount(
-        unwrappedToken(token0),
-        new BigNumber(feeRewardData ? feeRewardData[0] : 0).toString(10),
-      ),
-    [token0, feeRewardData],
-  )
-  const feeValue1 = useMemo(
-    () =>
-      CurrencyAmount.fromRawAmount(
-        unwrappedToken(token1),
-        new BigNumber(feeRewardData ? feeRewardData[1] : 0).toString(10),
-      ),
-    [token1, feeRewardData],
+  const { reward0, reward1 } = useMemo(
+    () => ({
+      reward0: {
+        token: THE,
+        amount: CurrencyAmount.fromRawAmount(THE, BigNumber(farmRewardData?.[0] ?? 0n)),
+      },
+      reward1: {
+        token: WBNB,
+        amount: CurrencyAmount.fromRawAmount(WBNB, BigNumber(farmRewardData?.[1] ?? 0n)),
+      },
+    }),
+    [farmRewardData, THE, WBNB],
   )
 
   const feesInUsd = useMemo(() => {
@@ -186,14 +152,8 @@ export function FarmingPosition({ position }) {
         .plus(fromWei(farmRewardData[1]).times(WBNB.price))
     }
 
-    if (feeRewardData) {
-      usdFee = usdFee
-        .plus(fromWei(feeRewardData[0], asset0.decimalse).times(asset0.price))
-        .plus(fromWei(feeRewardData[1], asset1.decimalse).times(asset0.price))
-    }
-
     return usdFee
-  }, [farmRewardData, THE.price, WBNB.price, feeRewardData, asset0.decimalse, asset0.price, asset1.decimalse])
+  }, [farmRewardData, THE.price, WBNB.price])
 
   const fiatValueOfLiquidity = useMemo(() => amount0InUsd + amount1InUsd, [amount0InUsd, amount1InUsd])
 
@@ -227,7 +187,7 @@ export function FarmingPosition({ position }) {
         </div>
 
         <div className='flex flex-wrap justify-end gap-2'>
-          <GreenBadge>$THE</GreenBadge>
+          <GreenBadge>Farm Strategy</GreenBadge>
 
           {!Number(liquidity) ? (
             <YellowBadge>{t('Closed')}</YellowBadge>
@@ -274,14 +234,8 @@ export function FarmingPosition({ position }) {
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />
             <CustomTooltip id={`net-${tokenId}`}>
-              {farmRewardData?.[0] && <p>{`${formatAmount(fromWei(farmRewardData[0], 18))} THE`}</p>}
-              {farmRewardData?.[1] && <p>{`${formatAmount(fromWei(farmRewardData[1], 18))} WBNB`}</p>}
-              {feeRewardData?.[0] && (
-                <p>{`${formatAmount(fromWei(feeRewardData[0], asset0.decimals))} ${unwrappedSymbol(asset0)}`}</p>
-              )}
-              {feeRewardData?.[1] && (
-                <p>{`${formatAmount(fromWei(feeRewardData[1], asset1.decimals))} ${unwrappedSymbol(asset1)}`}</p>
-              )}
+              <p>{`${formatAmount(fromWei(farmRewardData?.[0] ?? 0n, 18))} THE`}</p>
+              <p>{`${formatAmount(fromWei(farmRewardData?.[1] ?? 0n, 18))} WBNB`}</p>
             </CustomTooltip>
           </div>
         </div>
@@ -346,6 +300,24 @@ export function FarmingPosition({ position }) {
           </Paragraph>
         </div>
 
+        <Box
+          className={cn('flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950', {
+            hidden:
+              position?.isFarming ||
+              !incentiveAddress ||
+              incentiveAddress === zeroAddress ||
+              position?.deployer !== zeroAddress ||
+              Number(liquidity) <= 0,
+          })}
+        >
+          <div className='size-5'>
+            <InfoIcon className='size-5 stroke-primary-600' />
+          </div>
+
+          <div className='flex flex-col'>
+            <TextSubHeading className='text-base text-primary-100'>{t('warning un-farming pool')}</TextSubHeading>
+          </div>
+        </Box>
         <WarningOutOfRange isShow={outOfRange} />
       </div>
 
@@ -359,9 +331,24 @@ export function FarmingPosition({ position }) {
           {t('Remove')}
         </OutlinedButton>
 
-        <TextButton className='w-full' disabled={feesInUsd.isZero()} onClick={() => setClaimPopup(true)}>
+        <TextButton className={cn('w-full', feesInUsd.isZero() && 'hidden')} onClick={() => setClaimPopup(true)}>
           {t('Claim')}
         </TextButton>
+
+        <PrimaryButton
+          className={cn('w-full', {
+            hidden:
+              position?.isFarming ||
+              !incentiveAddress ||
+              incentiveAddress === zeroAddress ||
+              position?.deployer !== zeroAddress ||
+              Number(liquidity) <= 0,
+          })}
+          disabled={position?.isFarming || isEnterFarmLoading}
+          onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
+        >
+          {t('Earn $THE')}
+        </PrimaryButton>
 
         <OutlinedButton
           className={cn('block w-full', {
@@ -382,10 +369,9 @@ export function FarmingPosition({ position }) {
         popup={claimPopup}
         setPopup={setClaimPopup}
         pool={{ ...position, key: poolKey }}
-        feeValue0={feeValue0}
-        feeValue1={feeValue1}
-        additionRewards={[farmRewardTHE, farmRewardWBNB]}
-        mutate={() => {}}
+        reward0={reward0}
+        reward1={reward1}
+        mutate={refetchFarm}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
       />
@@ -394,9 +380,8 @@ export function FarmingPosition({ position }) {
         setPopup={setRemovePopup}
         pool={position}
         position={_position}
-        feeValue0={feeValue0}
-        feeValue1={feeValue1}
-        additionRewards={[farmRewardTHE, farmRewardWBNB]}
+        reward0={reward0}
+        reward1={reward1}
         mutateManual={mutateManual}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}

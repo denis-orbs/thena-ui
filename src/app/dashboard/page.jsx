@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { ChainId } from 'thena-sdk-core'
+import { zeroAddress } from 'viem'
 
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -288,7 +289,7 @@ export default function HoldingsPage() {
                 {filteredPools.map((pool, idx) =>
                   pool.type === 'Manual' ? (
                     <React.Fragment key={`pool-${idx}`}>
-                      {pool.isFarming ? (
+                      {pool?.deployer === zeroAddress ? (
                         <FarmingPosition position={pool} key={`pool-${idx}`} />
                       ) : (
                         <ManualPosition position={pool} key={`pool-${idx}`} />

@@ -11,24 +11,14 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useAlgebraClaim } from '@/hooks/fusion/useAlgebra'
 import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 
-export default function ClaimModal({
-  popup,
-  setPopup,
-  pool,
-  feeValue0,
-  feeValue1,
-  additionRewards,
-  mutate,
-  fee,
-  outOfRange,
-}) {
-  const { tokenId, asset0, asset1, isFarming, key } = pool
+export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mutate, fee, outOfRange }) {
+  const { tokenId, isFarming, key } = pool
   const { pending, onAlgebraClaim } = useAlgebraClaim(pool?.version ?? 3)
 
   return (
     <Modal
       isOpen={popup}
-      title='Claim Fees'
+      title='Claim Rewards'
       closeModal={() => {
         setPopup(false)
       }}
@@ -57,28 +47,18 @@ export default function ClaimModal({
         <div className='flex flex-col gap-3'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-1'>
-              <CircleImage className='h-4 w-4' src={asset0.logoURI} alt='thena logo' />
-              <Paragraph className='font-medium'>{unwrappedSymbol(asset0)} (Fees)</Paragraph>
+              <CircleImage className='h-4 w-4' src={reward0?.token?.logoURI} alt='thena logo' />
+              <Paragraph className='font-medium'>{unwrappedSymbol(reward0?.token)}</Paragraph>
             </div>
-            <Paragraph>{formatAmount(feeValue0?.toSignificant())}</Paragraph>
+            <Paragraph>{formatAmount(reward0?.amount?.toSignificant())}</Paragraph>
           </div>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-1'>
-              <CircleImage className='h-4 w-4' src={asset1.logoURI} alt='thena logo' />
-              <Paragraph className='font-medium'>{unwrappedSymbol(asset1)} (Fees)</Paragraph>
+              <CircleImage className='h-4 w-4' src={reward1?.token?.logoURI} alt='thena logo' />
+              <Paragraph className='font-medium'>{unwrappedSymbol(reward1?.token)}</Paragraph>
             </div>
-            <Paragraph>{formatAmount(feeValue1?.toSignificant())}</Paragraph>
+            <Paragraph>{formatAmount(reward1?.amount?.toSignificant())}</Paragraph>
           </div>
-
-          {(additionRewards || []).map(reward => (
-            <div key={reward?.currency?.address} className='flex items-center justify-between'>
-              <div className='flex items-center gap-1'>
-                <CircleImage className='h-4 w-4' src={reward?.currency?.logoURI} alt='thena logo' />
-                <Paragraph className='font-medium'>{reward?.currency?.symbol} (Farming)</Paragraph>
-              </div>
-              <Paragraph>{formatAmount(reward?.toSignificant())}</Paragraph>
-            </div>
-          ))}
         </div>
       </ModalBody>
 
@@ -90,10 +70,19 @@ export default function ClaimModal({
           className='w-full'
           disabled={pending}
           onClick={() => {
-            onAlgebraClaim({ tokenId, feeValue0, feeValue1, isFarming, poolkey: key }, () => {
-              setPopup(false)
-              mutate()
-            })
+            onAlgebraClaim(
+              {
+                tokenId,
+                feeValue0: reward0.amount,
+                feeValue1: reward1.amount,
+                isFarming,
+                poolkey: key,
+              },
+              () => {
+                setPopup(false)
+                mutate()
+              },
+            )
           }}
         >
           Claim

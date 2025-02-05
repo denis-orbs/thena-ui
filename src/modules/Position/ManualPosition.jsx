@@ -15,15 +15,13 @@ import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
-import { useAlgebraBurn, useAlgebraEnterFarming } from '@/hooks/fusion/useAlgebra'
+import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
 import { useCalculateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { useFusionState } from '@/hooks/fusion/useFusions'
-import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import { simulateCall } from '@/lib/contractActions'
 import { getPositionManagerContract } from '@/lib/contracts'
-import { unwrappedToken } from '@/lib/fusion'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
@@ -72,9 +70,6 @@ export default function ManualPosition({ position }) {
       refreshInterval: 60000,
     },
   )
-
-  const { incentiveAddress } = usePoolAlgebraInfo(asset0?.address, asset1?.address)
-  const { onEnterFarming, pending: isEnterFarmLoading } = useAlgebraEnterFarming()
   const { pending, onAlgebraBurn } = useAlgebraBurn(position?.version ?? 3)
 
   const currency0 = useCurrency(asset0.address)
@@ -136,13 +131,18 @@ export default function ManualPosition({ position }) {
     tvl: poolInfo?.tvl ?? 1,
   })
 
-  const feeValue0 = useMemo(
-    () => CurrencyAmount.fromRawAmount(unwrappedToken(token0), new BigNumber(fees ? fees[0] : 0).toString(10)),
-    [token0, fees],
-  )
-  const feeValue1 = useMemo(
-    () => CurrencyAmount.fromRawAmount(unwrappedToken(token1), new BigNumber(fees ? fees[1] : 0).toString(10)),
-    [token1, fees],
+  const { reward0, reward1 } = useMemo(
+    () => ({
+      reward0: {
+        token: token0,
+        amount: CurrencyAmount.fromRawAmount(token0, BigNumber(fees?.[0] ?? 0n)),
+      },
+      reward1: {
+        token: token1,
+        amount: CurrencyAmount.fromRawAmount(token1, BigNumber(fees?.[1] ?? 0n)),
+      },
+    }),
+    [token0, token1, fees],
   )
 
   const feesInUsd = useMemo(
@@ -183,11 +183,7 @@ export default function ManualPosition({ position }) {
         </div>
 
         <div className='flex flex-wrap justify-end gap-2'>
-          {position.deployer === zeroAddress ? (
-            <GreenBadge>$THE</GreenBadge>
-          ) : (
-            <>{position?.version === 3 && <GreenBadge>80% Fees</GreenBadge>}</>
-          )}
+          <GreenBadge>Fees Strategy</GreenBadge>
 
           {!Number(liquidity) ? (
             <YellowBadge>{t('Closed')}</YellowBadge>
@@ -297,26 +293,6 @@ export default function ManualPosition({ position }) {
             })}
           </Paragraph>
         </div>
-
-        <Box
-          className={cn('flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950', {
-            hidden:
-              position?.isFarming ||
-              !incentiveAddress ||
-              incentiveAddress === zeroAddress ||
-              position?.deployer !== zeroAddress ||
-              Number(liquidity) <= 0,
-          })}
-        >
-          <div className='size-5'>
-            <InfoIcon className='size-5 stroke-primary-600' />
-          </div>
-
-          <div className='flex flex-col'>
-            <TextSubHeading className='text-base text-primary-100'>{t('warning un-farming pool')}</TextSubHeading>
-          </div>
-        </Box>
-
         <WarningOutOfRange isShow={outOfRange && Number(liquidity) > 0} />
       </div>
 
@@ -337,28 +313,13 @@ export default function ManualPosition({ position }) {
 
         {version === 3 && (
           <TextButton
-            className={cn('w-full', { hidden: !fees || feesInUsd.isZero() })}
-            disabled={!fees || feesInUsd.isZero()}
+            className={cn('w-full', { hidden: feesInUsd.isZero() })}
+            disabled={feesInUsd.isZero()}
             onClick={() => setClaimPopup(true)}
           >
             {t('Claim')}
           </TextButton>
         )}
-
-        <PrimaryButton
-          className={cn('w-full', {
-            hidden:
-              position?.isFarming ||
-              !incentiveAddress ||
-              incentiveAddress === zeroAddress ||
-              position?.deployer !== zeroAddress ||
-              Number(liquidity) <= 0,
-          })}
-          disabled={position?.isFarming || isEnterFarmLoading}
-          onClick={() => onEnterFarming({ tokenId, poolAddress }, () => mutateManual())}
-        >
-          {t('Earn $THE')}
-        </PrimaryButton>
 
         {version === 3 && (
           <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
@@ -377,8 +338,8 @@ export default function ManualPosition({ position }) {
         popup={claimPopup}
         setPopup={setClaimPopup}
         pool={position}
-        feeValue0={feeValue0}
-        feeValue1={feeValue1}
+        reward0={reward0}
+        reward1={reward1}
         mutate={mutate}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
@@ -388,8 +349,8 @@ export default function ManualPosition({ position }) {
         setPopup={setRemovePopup}
         pool={position}
         position={_position}
-        feeValue0={feeValue0}
-        feeValue1={feeValue1}
+        reward0={reward0}
+        reward1={reward1}
         mutateManual={mutateManual}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
