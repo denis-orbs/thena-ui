@@ -306,6 +306,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
             isAutomatic: !MANUAL_TYPES.includes(sub.title),
             isFarming,
             version: 3,
+            fee: sub?.fee,
           })
         },
       }

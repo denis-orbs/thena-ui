@@ -182,7 +182,7 @@ export function PoolAttributesCL({ strategy, pool }) {
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Swap fees')}:</div>
           <div className='col-span-5 text-neutral-50'>
-            <span className='mr-1'>{pool?.fee}%</span>
+            <span className='mr-1'>{strategy.title === 'CL_SwapFee' ? strategy?.fee : pool?.fee}%</span>
             <span className={cn(plugInAddress && 'hidden')}>({t('editable by governance')})</span>
 
             <Link
