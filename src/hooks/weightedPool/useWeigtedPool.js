@@ -938,7 +938,6 @@ export const useWeightedPoolsWithGauge = () => {
         const { gauge } = weighted
         const tokens = weighted.tokens.map(token => {
           const tokenDetail = getTokenInfo({ tokenAddress: token.address, assets, customAssets })
-          tokenDetail.symbol = tokenDetail?.symbol === 'WBNB' ? 'BNB' : tokenDetail?.symbol || 'UNKNOWN'
 
           return {
             ...token,

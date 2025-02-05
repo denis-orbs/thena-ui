@@ -22,9 +22,9 @@ export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true)
   const { chainId } = useWallet()
   const currency0 = useCurrency(token0Address)
   const currency1 = useCurrency(token1Address)
-  const [baseCurrency, quoteCurrency] = currency0.wrapped.sortsBefore(currency1.wrapped)
-    ? [currency0.wrapped, currency1.wrapped]
-    : [currency1.wrapped, currency0.wrapped]
+  const [baseCurrency, quoteCurrency] = currency0?.wrapped?.sortsBefore(currency1?.wrapped)
+    ? [currency0?.wrapped, currency1?.wrapped]
+    : [currency1?.wrapped, currency0?.wrapped]
 
   const algebraFactory = getAlgebraFactoryContract(chainId, 3)
   const { data: poolAddresses } = useReadContracts({
@@ -32,12 +32,12 @@ export const usePoolAlgebraInfo = (token0Address, token1Address, enabled = true)
       {
         ...algebraFactory,
         functionName: 'computePoolAddress',
-        args: [baseCurrency.address, quoteCurrency.address],
+        args: [baseCurrency?.address, quoteCurrency?.address],
       },
       {
         ...algebraFactory,
         functionName: 'computeCustomPoolAddress',
-        args: [Contracts.pluginFactory[chainId], baseCurrency.address, quoteCurrency.address],
+        args: [Contracts.pluginFactory[chainId], baseCurrency?.address, quoteCurrency?.address],
       },
     ],
     query: {

@@ -48,14 +48,14 @@ export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mu
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-1'>
               <CircleImage className='h-4 w-4' src={reward0?.token?.logoURI} alt='thena logo' />
-              <Paragraph className='font-medium'>{unwrappedSymbol(reward0?.token)}</Paragraph>
+              <Paragraph className='font-medium'>{reward0?.token?.symbol}</Paragraph>
             </div>
             <Paragraph>{formatAmount(reward0?.amount?.toSignificant())}</Paragraph>
           </div>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-1'>
               <CircleImage className='h-4 w-4' src={reward1?.token?.logoURI} alt='thena logo' />
-              <Paragraph className='font-medium'>{unwrappedSymbol(reward1?.token)}</Paragraph>
+              <Paragraph className='font-medium'>{reward1?.token?.symbol}</Paragraph>
             </div>
             <Paragraph>{formatAmount(reward1?.amount?.toSignificant())}</Paragraph>
           </div>

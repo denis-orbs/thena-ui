@@ -33,7 +33,7 @@ import { getAlgebraNPMContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { getTokenInfo } from '@/lib/helper'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { AdjustNewPositionModal, GaugeItemManual } from '@/modules/Pools/Migration'
 import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
@@ -44,7 +44,7 @@ export function ManualMigrationPage({ tokenId }) {
   const assets = useAssets()
   const customAssets = useCustomAssets()
   const { mutateManual, positions } = useContext(ManualsContext)
-  const { account, chainId } = useWallet()
+  const { account, chainId = 56 } = useWallet()
 
   // GLOBAL STATE
   const { push } = useRouter()
@@ -59,7 +59,7 @@ export function ManualMigrationPage({ tokenId }) {
       return positions.find(ele => ele.tokenId === +tokenId && ele.version === 2)
     }
   }, [tokenId, positions])
-  const { asset0, asset1, liquidity: posLiquidity, tickLower, tickUpper } = existingPosition
+  const { asset0, asset1, liquidity: posLiquidity, tickLower, tickUpper } = existingPosition ?? {}
 
   const [firstAsset, secondAsset] = useMemo(
     () => [
@@ -83,15 +83,9 @@ export function ManualMigrationPage({ tokenId }) {
     const subPools = pool?.subpools
       ?.filter(sub => MANUAL_TYPES.includes(sub.title))
       .map(sub => {
-        let { title } = sub
         let isFarming = false
-        let badge = '80% Fees'
-        if (title === 'CL_SwapFee') title = 'Manual (Swap Fees)'
-
-        if (title === 'CL_Farming') {
-          title = 'Manual ($THE Emissions)'
+        if (sub.title.includes('Farming')) {
           isFarming = true
-          badge = '$THE + 10% Fees'
         }
 
         const strategyInfo = {
@@ -104,7 +98,7 @@ export function ManualMigrationPage({ tokenId }) {
           content: (
             <div className='flex flex-1 items-center justify-between'>
               <div>
-                <TextHeading>{title}</TextHeading>
+                <TextHeading>{getDisplayedStrategy(sub.title)}</TextHeading>
                 <div className='mt-1 flex gap-2'>
                   <div className='flex items-center gap-1'>
                     <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
@@ -112,12 +106,12 @@ export function ManualMigrationPage({ tokenId }) {
                   </div>
                   <div className='flex items-center gap-1'>
                     <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
-                    <Paragraph className='text-sm'>${formatAmount(sub?.gauge?.tvl)}</Paragraph>
+                    <Paragraph className='text-sm'>${formatAmount(sub?.tvl)}</Paragraph>
                   </div>
                 </div>
               </div>
 
-              <NeutralBadge>{badge}</NeutralBadge>
+              <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>
             </div>
           ),
           strategy: strategyInfo,
@@ -203,16 +197,18 @@ export function ManualMigrationPage({ tokenId }) {
     },
   })
 
-  const token0 = useToken(asset0.address)
-  const token1 = useToken(asset1.address)
-  const feeValue0 = useMemo(
-    () => CurrencyAmount.fromRawAmount(unwrappedToken(token0), new BigNumber(fees?.result?.[0] ?? 0).toString(10)),
-    [token0, fees],
-  )
-  const feeValue1 = useMemo(
-    () => CurrencyAmount.fromRawAmount(unwrappedToken(token1), new BigNumber(fees?.result?.[1] ?? 0).toString(10)),
-    [token1, fees],
-  )
+  const token0 = useToken(asset0?.address)
+  const token1 = useToken(asset1?.address)
+  const feeValue0 = useMemo(() => {
+    if (token0 && fees) {
+      return CurrencyAmount.fromRawAmount(unwrappedToken(token0), new BigNumber(fees?.result?.[0] ?? 0).toString(10))
+    }
+  }, [token0, fees])
+  const feeValue1 = useMemo(() => {
+    if (token1 && fees) {
+      return CurrencyAmount.fromRawAmount(unwrappedToken(token1), new BigNumber(fees?.result?.[1] ?? 0).toString(10))
+    }
+  }, [token1, fees])
 
   const tickCurrent = positionV2?.pool?.tickCurrent
   const outOfRange = tickCurrent < tickLower || tickCurrent >= tickUpper
