@@ -118,12 +118,6 @@ export function PoolAttributesCL({ strategy, pool }) {
           </Link>
         </div>
 
-        {/* Protocol version */}
-        {/* <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
-          <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
-        </div> */}
-
         {/* Pool Deployer */}
         <div className='grid grid-cols-7'>
           <div className='col-span-2 text-neutral-300'>{t('Pool Deployer')}:</div>
@@ -171,12 +165,6 @@ export function PoolAttributesCL({ strategy, pool }) {
             </div>
           </div>
         )}
-
-        {/* Pool Type */}
-        {/* <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Pool Type')}:</div>
-          <div className='col-span-5 text-neutral-50'>TODO</div>
-        </div> */}
 
         {/* Swap fees */}
         <div className='grid grid-cols-7'>
@@ -255,12 +243,6 @@ export function PoolAttributesCL({ strategy, pool }) {
         ) : (
           <></>
         )}
-
-        {/* LP token price */}
-        {/* <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('LP token price')}:</div>
-          <div className='col-span-5 text-neutral-50'>${formatAmount(strategy?.lpPrice || 0)}</div>
-        </div> */}
       </div>
     </div>
   )
@@ -317,12 +299,6 @@ export function NormalPoolAttributes({ pool }) {
             <span className={cn(pool.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
           </div>
         </div>
-
-        {/* Protocol version */}
-        {/* <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Protocol version')}:</div>
-          <div className='col-span-5 text-neutral-50'>{t('THENA V3')}</div>
-        </div> */}
 
         {/* Pool Owner */}
         {pool?.owner ? (

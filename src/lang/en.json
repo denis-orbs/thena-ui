@@ -1331,5 +1331,9 @@
   "Withdraw Successfully": "Withdraw Successfully",
   "Gauge Is Not Available": "Gauge Is Not Available",
   "Withdraw From Gauge Desc": "The V3 gauge for this pool is not available. Please withdraw from the inactive gauge.",
-  "Claim Farming Rewards": "Claim Farming Rewards"
+  "Claim Farming Rewards": "Claim Farming Rewards",
+  "Auto Compound tooltip": "Your rewards are automatically compounded back into your liquidity. Please check with Gamma or ICHI the details of their strategies.",
+  "Auto Farming tooltip": "You earn $THE emissions. Please check with Gamma or ICHI for the details of their strategies.",
+  "Manual Fee tooltip": "You earn a share of fees generated, the rest goes to THENA treasury. You can check Fee Share under Pool Attributes for each pool.",
+  "Manual Farming tooltip": "You earn $THE emissions, fees are distributed to veTHE holders & TheNFT stakers."
 }

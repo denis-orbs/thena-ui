@@ -133,8 +133,7 @@ export default function Staked({ pool }) {
               <TextHeading>Auto Compound</TextHeading>
               <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='AUTO_COMPOUND' />
               <CustomTooltip className='max-w-[320px]' id='AUTO_COMPOUND'>
-                Your rewards are automatically compounded back into your liquidity. Please check with Gamma or ICHI for
-                the details of their strategies.
+                {t('Auto Compound tooltip')}
               </CustomTooltip>
             </div>
           ) : (

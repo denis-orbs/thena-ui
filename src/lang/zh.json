@@ -1332,5 +1332,9 @@
   "Withdraw Successfully": "提取成功",
   "Gauge Is Not Available": "量表不可用",
   "Withdraw From Gauge Desc": "此池的量表不可用。请从非活动量表中提取流动性。",
-  "Claim Farming Rewards": "领取挖矿奖励"
+  "Claim Farming Rewards": "领取挖矿奖励",
+  "Auto Compound tooltip": "您的奖励会自动复利回到您的流动性中。请与 Gamma 或 ICHI 确认其策略的具体详情。",
+  "Auto Farming tooltip": "您将获得 $THE 激励。请与 Gamma 或 ICHI 确认其策略的具体详情。",
+  "Manual Fee tooltip": "您将获得部分交易手续费收益，剩余部分将进入 THENA 国库。您可以在每个池的“池属性”中查看手续费分配详情。",
+  "Manual Farming tooltip": "您将获得 $THE 激励，手续费收益将分配给 veTHE 持有者和 TheNFT 质押者。"
 }

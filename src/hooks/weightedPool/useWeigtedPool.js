@@ -44,12 +44,13 @@ const toBytes32 = hexString => {
 
 const getBalance = async (contract, account, chainId) => {
   try {
+    if (!account) return new BigNumber(0)
     const balance = await readCall(contract, 'balanceOf', [account], chainId)
 
     return fromWei(balance)
   } catch (error) {
     console.error('Failed to fetch balance or decimals:', error)
-    return 0
+    return new BigNumber(0)
   }
 }
 

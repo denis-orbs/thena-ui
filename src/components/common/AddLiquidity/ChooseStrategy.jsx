@@ -13,6 +13,7 @@ import Highlight from '@/components/highlight'
 import Selector from '@/components/selector'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
@@ -246,6 +247,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   const strategyData = useMemo(() => {
     const autoStrategy = (pair?.subpools && pair.subpools.length > 0 ? pair.subpools : [defaultSwapFees]).map(sub => {
       let isFarming = false
+      const isAutomatic = !MANUAL_TYPES.includes(sub.title)
       if (sub.title.includes('Farming')) {
         isFarming = true
       }
@@ -256,7 +258,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
             <div>
               <TextHeading>{getDisplayedStrategy(sub.title)}</TextHeading>
 
-              <div className='mt-1 flex gap-2'>
+              <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
                   <Paragraph className='text-sm'>{formatAmount(sub.gauge.apr)}%</Paragraph>
@@ -264,6 +266,12 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
                   <Paragraph className='text-sm'>${formatAmount(sub.tvl)}</Paragraph>
+                </div>
+                <div className='flex items-center gap-1'>
+                  <TextHeading className='text-sm'>{t('Rewards')}:</TextHeading>
+                  <Paragraph className='text-sm'>
+                    {isFarming ? 'THE' : isAutomatic ? 'Auto Compound' : sub.symbol.replace('/', ', ')}
+                  </Paragraph>
                 </div>
               </div>
             </div>
@@ -275,14 +283,17 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                 </PrimaryBadge>
               )}
 
-              <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>
+              <NeutralBadge>
+                <p data-tooltip-id={`${isAutomatic ? 'auto' : 'manual'}-${isFarming ? 'farm' : 'fee'}-tooltip`}>
+                  {isFarming ? 'Farm Strategy' : 'Fee Strategy'}
+                </p>
+              </NeutralBadge>
             </div>
           </div>
         ),
         active: strategy?.address === sub.address,
         onClickHandler: () => {
           setStrategy({
-            // ...sub,
             title: sub.title,
             tvl: sub.tvl.toNumber(),
             account: {
@@ -303,7 +314,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
               totalValue: sub?.token1?.totalValue?.toNumber(),
             },
             address: sub.address,
-            isAutomatic: !MANUAL_TYPES.includes(sub.title),
+            isAutomatic,
             isFarming,
             version: 3,
             fee: sub?.fee,
@@ -348,6 +359,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
     ],
     [timeWindow],
   )
+
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
@@ -355,7 +367,35 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
           <div className='flex flex-col gap-5'>
             <div className='flex flex-col gap-3'>
               {strategyData ? (
-                <Selector data={strategyData} selected={strategy} setSelected={setStrategy} />
+                <>
+                  <Selector data={strategyData} selected={strategy} setSelected={setStrategy} />
+
+                  {/* Tooltips for Strategies */}
+                  <CustomTooltip
+                    className='z-50 max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                    id='auto-fee-tooltip'
+                  >
+                    {t('Auto Compound tooltip')}
+                  </CustomTooltip>
+                  <CustomTooltip
+                    className='z-50 max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                    id='auto-farm-tooltip'
+                  >
+                    {t('Auto Farming tooltip')}
+                  </CustomTooltip>
+                  <CustomTooltip
+                    className='z-50 max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                    id='manual-fee-tooltip'
+                  >
+                    {t('Manual Fee tooltip')}
+                  </CustomTooltip>
+                  <CustomTooltip
+                    className='z-50 max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+                    id='manual-farm-tooltip'
+                  >
+                    {t('Manual Farming tooltip')}
+                  </CustomTooltip>
+                </>
               ) : (
                 <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[60px]'>
                   <Highlight>
