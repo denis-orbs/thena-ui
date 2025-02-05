@@ -227,7 +227,11 @@ export default function IncentivePage() {
             </div>
 
             <label className={cn('mb-6 flex items-center gap-2', epochs <= 1 && 'hidden')}>
-              <CheckBox className='!border-red-400' checked={isFixedAmount} setChecked={setIsFixedAmount} />
+              <CheckBox
+                className={cn(!isFixedAmount && 'bg-neutral-300')}
+                checked={isFixedAmount}
+                setChecked={setIsFixedAmount}
+              />
               <span>{t('Fixed amount per epoch')}</span>
             </label>
 
@@ -348,18 +352,26 @@ export default function IncentivePage() {
               return (
                 <div className='flex flex-col justify-between gap-4 border-b border-neutral-700 pb-5 md:flex-row md:border-none md:pb-0'>
                   <TextHeading className='flex justify-between gap-3 md:justify-start'>
-                    <p>Epoch {currentEpoch + i}</p>
-                    <Paragraph>
-                      {startDate.format('MMM D')} - {endDate.format('MMM D, YYYY')}
-                    </Paragraph>
+                    <p className='flex flex-col gap-2 md:flex-row'>
+                      <TextHeading>Epoch</TextHeading>
+                      {currentEpoch + i}
+                    </p>
+                    <p className='flex flex-col gap-2 md:flex-row'>
+                      <TextHeading className='md:hidden'>Duration</TextHeading>
+                      <Paragraph>
+                        {startDate.format('MMM D')} - {endDate.format('MMM D, YYYY')}
+                      </Paragraph>
+                    </p>
                   </TextHeading>
 
-                  <TextHeading className='flex gap-3'>
-                    <Paragraph className='md:hidden'>Your deposit:</Paragraph>
-                    <Paragraph>${formatAmount(amounts[i] * (asset?.price || 0))}</Paragraph> -
-                    <p>
-                      {formatAmount(amounts[i])} {asset?.symbol}
-                    </p>
+                  <TextHeading className='flex flex-col gap-3 md:flex-row'>
+                    <TextHeading className='md:hidden'>Your deposit:</TextHeading>
+                    <Paragraph>
+                      ${formatAmount(amounts[i] * (asset?.price || 0))} -{' '}
+                      <span className='text-neutral-50'>
+                        {formatAmount(amounts[i])} {asset?.symbol}
+                      </span>
+                    </Paragraph>
                   </TextHeading>
                 </div>
               )
