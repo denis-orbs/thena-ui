@@ -1,0 +1,12 @@
+[
+  {
+    "inputs": [
+      { "internalType": "enum KeeperRegistryBase2_1.Trigger", "name": "triggerType", "type": "uint8" },
+      { "internalType": "uint32", "name": "gasLimit", "type": "uint32" }
+    ],
+    "name": "getMaxPaymentForGas",
+    "outputs": [{ "internalType": "uint96", "name": "maxPayment", "type": "uint96" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

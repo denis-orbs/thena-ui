@@ -7,6 +7,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
+import { useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
@@ -22,6 +23,8 @@ const UPDATE_REGISTRATION = {
 function RegisterAutomation({ chainLINK, chainLINKAmount, updateRegistration = () => {} }) {
   const [popup, setPopup] = useState(false)
   const { chainId } = useWallet()
+
+  const automationAddress = useGetMaxPaymentForGas()
 
   const t = useTranslations()
 
@@ -62,7 +65,11 @@ function RegisterAutomation({ chainLINK, chainLINKAmount, updateRegistration = (
           suffix={`$${chainLINK ? formatAmount((chainLINKAmount || 0) * (chainLINK.price || 0)) : 0}`}
         />
       </div>
-      {chainLINKAmount < 0.1 && <ErrorMessage message={t('LINK Amount should be larger')} />}
+      {chainLINKAmount < automationAddress && (
+        <ErrorMessage
+          message={t('LINK Amount should be larger than [value]', { value: formatAmount(automationAddress) })}
+        />
+      )}
       <ErrorMessage message={t('Registration automation contract description')} />
       <SelectTokenFromList
         allowSearch={false}

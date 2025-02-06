@@ -207,5 +207,9 @@ const Contracts = {
   transparentUpgradeableProxy: {
     [CHAIN_ID.TEST_BSC]: '0x7aD0076eB790d977295dceF026Bac917aF72d40B',
   },
+  registry: {
+    [CHAIN_ID.BSC]: '0xDc21E279934fF6721CaDfDD112DAfb3261f09A2C',
+    [CHAIN_ID.TEST_BSC]: '0x96bb60aAAec09A0FceB4527b81bbF3Cc0c171393',
+  },
 }
 export default Contracts

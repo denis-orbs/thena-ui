@@ -1418,7 +1418,7 @@
   "Automatically increase your veTHE lock timestamp by one week every week": "Automatically increase your veTHE lock timestamp by one week every week. You can cancel it anytime.",
   "Scheduled timestamp for automation execution": "Scheduled timestamp for automation execution. The process will repeat every week at the same selected time of the epoch.",
   "Create Automation": "Create Automation",
-  "LINK Amount should be larger": "LINK Amount should be larger than 0.1.",
+  "LINK Amount should be larger than [value]": "LINK Amount should be larger than {value}.",
   "View Details": "View Details",
   "You have successfully created automation for your [veTHEId] veTHE ID": "You have successfully created automation for your {veTHEId} veTHE ID.",
   "Automation execution time": "Automation execution time",

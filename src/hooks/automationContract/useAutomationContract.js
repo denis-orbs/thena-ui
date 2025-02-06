@@ -8,6 +8,7 @@ import { AUTOMATION_STATUS, PAIR_TYPES, TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
 import {
   getLinkTokenContract,
+  getRegistryContract,
   getVeTheAutomationContract,
   getVeTheAutomationFactoryContract,
   getVeTHEContract,
@@ -17,6 +18,19 @@ import { usePoolsWithGauge } from '@/state/pools/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
+
+export const useGetMaxPaymentForGas = () => {
+  const { chainId } = useWallet()
+  const registryContract = getRegistryContract(chainId)
+  const { data: automationAddress } = useReadContract({
+    ...registryContract,
+    functionName: 'getMaxPaymentForGas',
+    args: [0, 700000],
+    enabled: Boolean(chainId),
+  })
+
+  return fromWei(automationAddress).toNumber() + 0.5
+}
 
 export const useCreateAutomation = () => {
   const [pending, setPending] = useState(false)

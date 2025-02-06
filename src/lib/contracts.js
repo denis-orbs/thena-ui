@@ -20,6 +20,7 @@ import {
   nonfungiblePositionManagerV2Abi,
   nonfungiblePositionManagerV3Abi,
   pairAbi,
+  resgistryAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,
@@ -291,3 +292,5 @@ export const getVeTheAutomationFactoryContract = chainId =>
 export const getVeTheAutomationContract = (address, chainId) => getContract(veTheAutomationAbi, address, chainId)
 
 export const getLinkTokenContract = chainId => getContract(linkTokenAbi, Contracts.chainlinkToken[chainId], chainId)
+
+export const getRegistryContract = chainId => getContract(resgistryAbi, Contracts.registry[chainId], chainId)

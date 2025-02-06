@@ -44,7 +44,6 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
 
   useEffect(() => {
     if (selected) {
-      console.log({ selected })
       onSelected({
         lock,
         weight,

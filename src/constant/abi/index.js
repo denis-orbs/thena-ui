@@ -30,6 +30,7 @@ import nonfungiblePositionManagerV3Abi from './nonfungiblePositionManagerv3.json
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
 import pluginFactoryAbi from './pluginFactoryAbi.json'
+import resgistryAbi from './registryAbi.json'
 import rewardEarnedAbi from './rewardEarned.json'
 import routerAbi from './router.json'
 import royaltyAbi from './royalty.json'
@@ -82,6 +83,7 @@ export {
   pairAbi,
   pairAPIAbi,
   pluginFactoryAbi,
+  resgistryAbi,
   rewardEarnedAbi,
   routerAbi,
   royaltyAbi,
