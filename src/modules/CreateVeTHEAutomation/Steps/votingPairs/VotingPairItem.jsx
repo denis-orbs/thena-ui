@@ -9,7 +9,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { cn } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
-import { usePoolsWithGauge } from '@/state/pools/hooks'
+import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { ChevronDownIcon, LockIcon, TrashIcon, UnlockIcon } from '@/svgs'
 
 function VotingPairItem({ pair, onSelected, onRemovePair }) {
@@ -40,14 +40,16 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
     }
   }, [])
 
-  const poolsWithGauge = usePoolsWithGauge()
+  const poolsWithGauge = useV3PoolsWithGauge()
 
   const pairs = useMemo(
     () =>
-      poolsWithGauge.map(item => ({
-        ...item,
-        title: item?.title === 'CL_Farming' ? 'Conc. Liquidity' : item?.title,
-      })),
+      poolsWithGauge
+        .filter(pool => pool.version === 3)
+        .map(pool => ({
+          ...pool,
+          title: pool?.title === 'CL_Farming' ? 'Conc. Liquidity' : pool?.title,
+        })),
     [poolsWithGauge],
   )
 

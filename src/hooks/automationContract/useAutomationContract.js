@@ -15,7 +15,7 @@ import {
   getVeTHEContract,
 } from '@/lib/contracts'
 import { convertBooleansToHex, convertHexToBooleans, fromWei, toWei } from '@/lib/utils'
-import { usePoolsWithGauge } from '@/state/pools/hooks'
+import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -299,7 +299,7 @@ export const useStatusAndBalanceMultiple = veTHEs => {
 
 export const useAutomationContractDetail = tokenId => {
   const { chainId } = useWallet()
-  const pools = usePoolsWithGauge()
+  const pools = useV3PoolsWithGauge()
   const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
 
   const { data: automationAddress, refetch: mutateData1 } = useReadContract({

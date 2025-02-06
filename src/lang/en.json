@@ -1450,5 +1450,7 @@
   "You need to register the automation for your [veTheId] lock and grant the necessary veTHE approvals for it to function properly": "You need to register the automation for your {veTheId} lock and grant the necessary veTHE approvals for it to function properly",
   "Warning underfunded Automation [veTheId]": "Your  “Automation {veTheId}” contract is underfunded. Consider adding funds.",
   "Next relock": "Next relock",
-  "Edit Setting": "Edit Setting"
+  "Edit Setting": "Edit Setting",
+  "Current LINK balance": "Current LINK balance",
+  "Minimum LINK balance required": "Minimum LINK balance required"
 }

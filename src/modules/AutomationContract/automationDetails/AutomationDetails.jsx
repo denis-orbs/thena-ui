@@ -55,7 +55,7 @@ function AutomationDetails({ contractData }) {
         </Box>
 
         {/* Vote Details */}
-        <Box className='space-y-4'>
+        <Box className='space-y-4 '>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Vote Details')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between'>
@@ -68,29 +68,31 @@ function AutomationDetails({ contractData }) {
                 {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
               </TextHeading>
             </div>
-            {(contractData?.votes?.pairs || []).map((pair, index) => (
-              <div key={`${pair?.pair?.address}_${index}`} className='flex flex-row justify-between'>
-                {pair?.pair?.type !== PAIR_TYPES.WEIGHTED ? (
-                  <div className='flex flex-row gap-3'>
-                    <IconGroup
-                      className='-space-x-2'
-                      classNames={{
-                        image: 'outline-2 w-7 h-7',
-                      }}
-                      logo1={pair?.pair?.token0?.logoURI || UNKNOWN_LOGO}
-                      logo2={pair?.pair?.token1?.logoURI || UNKNOWN_LOGO}
-                    />
-                    <div className='flex flex-row gap-[6px]'>
-                      <TextHeading>{pair?.pair?.symbol || 'UNKNOWN'}</TextHeading>
-                      <Paragraph className='text-sm'>{t(pair?.pair?.type || '')}</Paragraph>
+            <div className='flex max-h-[120px] flex-col gap-3 overflow-y-auto'>
+              {(contractData?.votes?.pairs || []).map((pair, index) => (
+                <div key={`${pair?.pair?.address}_${index}`} className='flex flex-row justify-between'>
+                  {pair?.pair?.type !== PAIR_TYPES.WEIGHTED ? (
+                    <div className='flex flex-row gap-3'>
+                      <IconGroup
+                        className='-space-x-2'
+                        classNames={{
+                          image: 'outline-2 w-7 h-7',
+                        }}
+                        logo1={pair?.pair?.token0?.logoURI || UNKNOWN_LOGO}
+                        logo2={pair?.pair?.token1?.logoURI || UNKNOWN_LOGO}
+                      />
+                      <div className='flex flex-row gap-[6px]'>
+                        <TextHeading>{pair?.pair?.symbol || 'UNKNOWN'}</TextHeading>
+                        <Paragraph className='text-sm'>{t(pair?.pair?.type || '')}</Paragraph>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <ListTokenPercantage listToken={pair?.pair?.tokens} />
-                )}
-                <TextHeading>{pair.weight}%</TextHeading>
-              </div>
-            ))}
+                  ) : (
+                    <ListTokenPercantage listToken={pair?.pair?.tokens} />
+                  )}
+                  <TextHeading>{pair.weight}%</TextHeading>
+                </div>
+              ))}
+            </div>
           </div>
         </Box>
 

@@ -22,6 +22,7 @@ function SelectVotingPairsAndWeights({ data, updateVotingPairs, onRemovePair, on
     setTotalWeight(tokens.reduce((sum, curr) => sum + curr.weight, 0))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(data)])
+
   return (
     <div className='w-full space-y-6'>
       <div className='flex items-center gap-1'>
