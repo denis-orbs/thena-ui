@@ -6,6 +6,7 @@ import fusionReducer from './fusion/reducer'
 import poolsReducer from './pools/reducer'
 import settingsReducer from './settings/reducer'
 import transactionsReducer from './transactions/reducer'
+import veTHEAutomationContract from './veTHEAutomationContract/reducer'
 
 const createNoopStorage = () => ({
   getItem(_key) {
@@ -37,6 +38,7 @@ const persistedReducer = persistReducer(
     pools: poolsReducer,
     transactions: transactionsReducer,
     fusion: fusionReducer,
+    veTHEAutomationContract,
   }),
 )
 

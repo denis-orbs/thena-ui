@@ -3,9 +3,10 @@
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 
 import { Info } from '@/components/alert'
+import { GreenBadge } from '@/components/badges/Badge'
 import { EmphasisButton, PrimaryButton, SecondaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Spinner from '@/components/spinner'
@@ -17,8 +18,9 @@ import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useWithdrawLock } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
+import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoCirclePrimary, InfoCircleWhite } from '@/svgs'
+import { GiftIcon, InfoCirclePrimary, InfoCircleWhite, LockIcon, RefreshIcon } from '@/svgs'
 
 import CreateLockModal from './createLockModal'
 import ManageModal from './manageModal'
@@ -28,37 +30,43 @@ const sortOptions = [
   {
     label: 'veTHE ID',
     value: 'id',
-    width: 'lg:w-[18%]',
+    width: 'lg:w-[10%]',
     isDesc: true,
   },
   {
     label: 'Lock Value',
     value: 'value',
-    width: 'lg:w-[18%]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
     label: 'Locked Amount',
     value: 'amount',
-    width: 'lg:w-[18%]',
+    width: 'lg:w-[12%]',
     isDesc: true,
   },
   {
     label: 'Lock Expire',
     value: 'expire',
-    width: 'lg:w-[18%]',
+    width: 'lg:w-[16%]',
     isDesc: true,
   },
   {
     label: 'Votes Used',
     value: 'used',
-    width: 'lg:flex-1',
+    width: 'lg:flex-1 lg:w-[8%]',
     isDesc: true,
+  },
+  {
+    label: 'Automation',
+    value: 'automation',
+    width: 'lg:w-[8%]',
+    disabled: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'lg:w-[150px]',
+    width: 'lg:w-[25%]',
     disabled: true,
   },
 ]
@@ -81,6 +89,8 @@ export default function LockPage() {
   const selected = useMemo(() => veTHEs.find(veTHE => veTHE.id === selectedId), [veTHEs, selectedId])
   const { onWithdrawLock, pending } = useWithdrawLock()
   const t = useTranslations()
+
+  const scrollRef = useRef(null)
 
   const sortedData = useMemo(
     () =>
@@ -148,27 +158,37 @@ export default function LockPage() {
             {veTHE.votedCurrentEpoch ? t('Yes') : t('No')}
           </Paragraph>
         ),
-        action: veTHE.voting_amount.isZero() ? (
-          <SecondaryButton
-            disabled={pending}
-            onClick={() => {
-              onWithdrawLock(veTHE, () => {
-                updateVeTHEs()
-              })
-            }}
-          >
-            {t('Withdraw')}
-          </SecondaryButton>
-        ) : (
-          <EmphasisButton
-            className='w-full lg:w-fit'
-            onClick={() => {
-              setSelectedId(veTHE.id)
-              setIsManageOpen(true)
-            }}
-          >
-            {t('Manage')}
-          </EmphasisButton>
+        automation: (
+          <div>
+            <GreenBadge>{t('Active')}</GreenBadge>
+          </div>
+        ),
+        action: (
+          <div className='flex flex-row gap-3'>
+            <TertiaryButton className='min-w-fit'>{t('Auto Lock Vote')}</TertiaryButton>
+            {veTHE.voting_amount.isZero() ? (
+              <SecondaryButton
+                disabled={pending}
+                onClick={() => {
+                  onWithdrawLock(veTHE, () => {
+                    updateVeTHEs()
+                  })
+                }}
+              >
+                {t('Withdraw')}
+              </SecondaryButton>
+            ) : (
+              <EmphasisButton
+                className='w-full lg:w-fit'
+                onClick={() => {
+                  setSelectedId(veTHE.id)
+                  setIsManageOpen(true)
+                }}
+              >
+                {t('Manage')}
+              </EmphasisButton>
+            )}
+          </div>
         ),
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -187,9 +207,21 @@ export default function LockPage() {
     setIsCreateOpen(true)
   }
 
+  const handleScroll = useCallback(() => {
+    if (scrollRef && scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [])
+
   return (
     <div className='flex flex-col gap-4'>
       <h2>{t('Lock')}</h2>
+      <div>
+        <Paragraph>{t('Lock description')}</Paragraph>{' '}
+        <span onClick={handleScroll} className='cursor-pointer text-primary-600'>
+          {t('How it works')}
+        </span>
+      </div>
       {account ? (
         <div className='flex flex-col'>
           <article className='my-4 flex flex-col gap-4 lg:flex-row'>
@@ -246,6 +278,22 @@ export default function LockPage() {
       ) : (
         <NotConnected />
       )}
+      <div ref={scrollRef}>
+        <p className='mb-10 text-3xl font-semibold'>{t('How it Works')}?</p>
+        <div className='flex flex-col justify-between md:flex-row'>
+          <HowItWorksItem
+            icon={LockIcon}
+            title={t('Create Lock Position')}
+            description={t('Create Lock Position Description')}
+          />
+          <HowItWorksItem
+            icon={RefreshIcon}
+            title={t('Automate Your Lock')}
+            description={t('Automate Your Lock Description')}
+          />
+          <HowItWorksItem icon={GiftIcon} title={t('Earn Rewards')} description={t('Earn Rewards Description')} />
+        </div>
+      </div>
       <CreateLockModal
         popup={isCreateOpen}
         setPopup={setIsCreateOpen}

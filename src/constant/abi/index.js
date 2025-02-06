@@ -37,6 +37,7 @@ import vammZapAbi from './vammZap.json'
 import veDistAbi from './veDist.json'
 import veTHEAbi from './veTHE.json'
 import veTHEApiAbi from './veTHEAPI.json'
+import veTheAutomationAbi from './veTheAutomation.json'
 import voterAbi from './voter.json'
 import voterV2Abi from './voterV2.json'
 import wbnbAbi from './wbnb.json'
@@ -88,6 +89,7 @@ export {
   veDistAbi,
   veTHEAbi,
   veTHEApiAbi,
+  veTheAutomationAbi,
   voterAbi,
   voterV2Abi,
   wbnbAbi,

@@ -308,3 +308,15 @@ export const getDisplayedStrategy = strategy => {
 
   return str
 }
+
+export const convertBooleansToHex = (bit0, bit1, bit2) => {
+  const bitA = bit0 ? 1 : 0
+  const bitB = bit1 ? 1 : 0
+  const bitC = bit2 ? 1 : 0
+
+  const binaryString = `${bitA}${bitB}${bitC}`
+
+  const hexValue = parseInt(binaryString, 2).toString(16).toUpperCase()
+
+  return `0x0${hexValue}`
+}

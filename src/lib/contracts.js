@@ -26,6 +26,7 @@ import {
   ThenianAbi,
   veDistAbi,
   veTHEAbi,
+  veTheAutomationAbi,
   voterAbi,
   voterV2Abi,
   wbnbAbi,
@@ -281,3 +282,6 @@ export const getWeightedPoolRouterSimulatorContract = chainId =>
 export const getWeightedPoolFeesContract = (address, chainId) => getContract(weightedPoolFeesAbi, address, chainId)
 
 export const getWeightedGaugeContract = (address, chainId) => getContract(weightedGaugeAbi, address, chainId)
+
+export const getVeTheAutomationContract = chainId =>
+  getContract(veTheAutomationAbi, Contracts.veTheAutomation[chainId], chainId)

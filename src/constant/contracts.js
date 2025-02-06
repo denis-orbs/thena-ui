@@ -193,5 +193,8 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x438e337779dB4389841ECd4DF8cD38EcAA0dA19d',
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
+  veTheAutomation: {
+    [CHAIN_ID.TEST_BSC]: '0xca21384cbd550635706e6cc260db9857c15ea4a2',
+  },
 }
 export default Contracts
