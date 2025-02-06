@@ -1,9 +1,11 @@
 import { isEmpty } from 'lodash'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import SuccessModal from '@/components/modal/SuccessModal'
 import { useCreateAutomation, useEditAutomation } from '@/hooks/automationContract/useAutomationContract'
 
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
@@ -12,6 +14,7 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
   const t = useTranslations()
 
   const { createData } = useSelector(state => state.veTHEAutomationContract)
+  const { push } = useRouter()
 
   const [error, setError] = useState()
 
@@ -19,16 +22,14 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
 
   const { onEditAutomation, pending: pendingEdit } = useEditAutomation()
 
+  const [isSuccess, setIsSuccess] = useState(false)
+
   const isDisabled = useMemo(() => {
     if (currentStep === 1) {
-      return !createData?.veTHEId
-    }
-
-    if (currentStep === 2) {
       return !createData?.settings?.executionTime
     }
 
-    if (currentStep === 3) {
+    if (currentStep === 2 && createData?.votes?.isAutoVote) {
       const pairs = createData?.votes?.pairs || []
 
       if (isEmpty(pairs)) return true
@@ -50,8 +51,13 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
       }
     }
 
-    if (currentStep === 4) {
-      if ((!createData.registration?.chainlink || !createData.registration?.chainlinkAmount) && !isEdit) {
+    if (currentStep === 3) {
+      if (
+        (!createData.registration?.chainlink ||
+          !createData.registration?.chainlinkAmount ||
+          createData.registration?.chainlinkAmount < 0.1) &&
+        !isEdit
+      ) {
         return true
       }
     }
@@ -61,9 +67,9 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
   }, [
     createData.registration?.chainlink,
     createData.registration?.chainlinkAmount,
-    createData?.settings?.executionTime,
-    createData?.veTHEId,
-    createData?.votes?.pairs,
+    createData.settings?.executionTime,
+    createData.votes?.isAutoVote,
+    createData.votes?.pairs,
     currentStep,
     isEdit,
     t,
@@ -75,7 +81,7 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
       <>
         {isEdit ? (
           <div className='flex flex-row gap-4'>
-            {currentStep < 4 && (
+            {currentStep < 3 && (
               <EmphasisButton className='w-full' onClick={onNext} disabled={isDisabled}>
                 {t('Next')}
               </EmphasisButton>
@@ -90,24 +96,45 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
           </div>
         ) : (
           <>
-            {currentStep < 4 && (
+            {currentStep < 3 && (
               <PrimaryButton className='w-full' onClick={onNext} disabled={isDisabled}>
                 {t('Next')}
               </PrimaryButton>
             )}
 
-            {currentStep === 4 && (
+            {currentStep === 3 && (
               <PrimaryButton
                 disabled={pendingCreate || isDisabled}
                 className='w-full'
-                onClick={() => onCreateAutomation(createData)}
+                onClick={
+                  () =>
+                    onCreateAutomation(createData, () => {
+                      setIsSuccess(true)
+                    })
+                  // eslint-disable-next-line react/jsx-curly-newline
+                }
               >
-                {t('Confirm')}
+                {t('Create Automation')}
               </PrimaryButton>
             )}
           </>
         )}
       </>
+      <SuccessModal
+        isOpen={!pendingCreate && isSuccess}
+        heading={t('Success')}
+        message={t('You have successfully created automation for your [veTHEId] veTHE ID', {
+          veTHEId: createData?.veTHEId || '',
+        })}
+        onClose={() => {
+          setIsSuccess(false)
+        }}
+        buttonAction={
+          <EmphasisButton onClick={() => push(`/dashboard/lock/automation/${createData.veTHEId}`)} className='w-full'>
+            {t('View Details')}
+          </EmphasisButton>
+        }
+      />
     </div>
   )
 }

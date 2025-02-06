@@ -1,20 +1,17 @@
 import React from 'react'
 
-import Step1Details from './Steps/Step1Details'
-import Step2Settings from './Steps/Step2Settings'
-import Step3Vote from './Steps/Step3Vote'
-import Step4Create from './Steps/Step4Create'
+import Step1Settings from './Steps/Step1Settings'
+import Step2Vote from './Steps/Step2Vote'
+import Step3Create from './Steps/Step3Create'
 
 function StepContent({ currentStep, isEdit }) {
   switch (currentStep) {
     case 1:
-      return <Step1Details isEdit={isEdit} />
+      return <Step1Settings isEdit={isEdit} />
     case 2:
-      return <Step2Settings />
+      return <Step2Vote />
     case 3:
-      return <Step3Vote />
-    case 4:
-      return <Step4Create />
+      return <Step3Create />
     default:
       return null
   }

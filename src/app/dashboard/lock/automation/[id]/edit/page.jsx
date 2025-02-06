@@ -9,7 +9,7 @@ import CreateVeTHEAutomation from '@/modules/CreateVeTHEAutomation'
 function EditVeTHEAutomationPage({ params }) {
   const { id } = params
   const { contractData, isLoading, mutateAutomationData } = useAutomationContractDetail(id)
-  if (isLoading) return <Loading />
+  if (isLoading || !id || !contractData.address) return <Loading />
   return (
     <div className='container mx-auto'>
       <CreateVeTHEAutomation contractData={contractData} mutateAutomationData={mutateAutomationData} isEdit />

@@ -24,7 +24,7 @@ export const initialState = {
     },
     registration: {
       chainlink: undefined,
-      chainkAmount: undefined,
+      chainlinkAmount: undefined,
     },
   },
 }

@@ -15,6 +15,7 @@ import CheckBox from '@/components/checkbox'
 import NextImage from '@/components/image/NextImage'
 import Input from '@/components/input'
 import LabelTooltip from '@/components/label/LabelTooltip'
+import SuccessModal from '@/components/modal/SuccessModal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useUserInfo } from '@/context/userInfoContext'
@@ -31,7 +32,6 @@ import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
-import SuccessModal from './SuccessModal'
 import ThenaIdInput from '../profile/ThenaIdInput'
 
 const DEFAULT_THENAID_DATA = {

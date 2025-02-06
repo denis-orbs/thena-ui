@@ -253,11 +253,16 @@ export const AUTOMATION_STATUS = {
 
 export const ACTION_AUTOMATION_TYPE = {
   DETAIL: 'detail',
-  EDIT: 'edit',
+  EDIT_SETTINGS: 'editSettings',
+  EDIT_GAS_LIMIT: 'editGasLimit',
+  EDIT_MAX_GAS_PRICE: 'editMaxGasPrice',
+  WITHDRAW_FUNDS: 'withdrawFunds',
   PAUSE: 'pause',
   CANCEL: 'cancel',
   UNPAUSE: 'unpause',
   CREATE: 'create',
+  REGISTER_AUTOMATION: 'registerAutomation',
+  DEPOSIT_FUNDS: 'depositFunds',
 }
 
 export const EDIT_AUTOMATION_TYPE = {

@@ -3,11 +3,15 @@ import React from 'react'
 import Box from '@/components/box'
 import { cn } from '@/lib/utils'
 
-function Stepper({ steps, currentStep }) {
+function Stepper({ steps, currentStep, setCurrentStep, isEdit }) {
   return (
     <Box className='flex flex-col gap-6'>
       {steps.map((step, index) => (
-        <div key={index} className='flex items-center gap-3'>
+        <div
+          key={index}
+          onClick={() => (isEdit ? setCurrentStep(index + 1) : {})}
+          className={cn('flex items-center gap-3', isEdit ? 'cursor-pointer' : '')}
+        >
           <div
             className={cn(
               'flex h-9 w-9 items-center justify-center rounded-lg',

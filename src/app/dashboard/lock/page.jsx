@@ -67,7 +67,7 @@ const sortOptions = [
   {
     label: '',
     value: 'action',
-    width: 'lg:w-[25%]',
+    width: 'lg:w-[25%] max-[1536px]:!w-[43%] max-lg:!w-full',
     disabled: true,
   },
 ]

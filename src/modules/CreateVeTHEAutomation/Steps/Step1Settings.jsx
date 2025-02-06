@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { DateTimePickerCustom } from '@/components/input/DateTimePickerCustom'
 import Toggle from '@/components/toggle'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
 import { InfoIcon } from '@/svgs'
@@ -17,7 +18,7 @@ const SETTINGS_TYPE = {
 
 const week = 86400 * 7 * 1000
 
-function Step2Settings() {
+function Step1Settings({ isEdit }) {
   const t = useTranslations()
 
   const { createData } = useSelector(state => state.veTHEAutomationContract)
@@ -37,11 +38,13 @@ function Step2Settings() {
               ...currentSettings,
               isRelockEveryWeek: !currentSettings.isRelockEveryWeek,
             }
-          case SETTINGS_TYPE.EXECUTION_TIME:
+          case SETTINGS_TYPE.EXECUTION_TIME: {
+            console.log({ value })
             return {
               ...currentSettings,
               executionTime: value,
             }
+          }
           default:
             return currentSettings
         }
@@ -76,20 +79,41 @@ function Step2Settings() {
           onChange={() => updateSetting(SETTINGS_TYPE.CLAIM)}
           label='Claim rebase rewards every week'
         />
-        <InfoIcon className='h-4 w-4 stroke-neutral-400' />
+        <InfoIcon data-tooltip-id='setting-claim-rebase' className='h-4 w-4 stroke-neutral-400' />
+        <CustomTooltip
+          className='z-40 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+          id='setting-claim-rebase'
+          place='bottom'
+        >
+          {t('Automatically claim your rebase rewards every week')}
+        </CustomTooltip>
       </div>
       <div className='flex items-center gap-1'>
         <Toggle
           checked={createData?.settings?.isRelockEveryWeek}
           onChange={() => updateSetting(SETTINGS_TYPE.RELOCK)}
-          label='Relock contract every 1 Week'
+          label='Relock veTHE every 1 Week'
         />
-        <InfoIcon className='h-4 w-4 stroke-neutral-400' />
+        <InfoIcon data-tooltip-id='settings-relock' className='h-4 w-4 stroke-neutral-400' />
+        <CustomTooltip
+          className='z-40 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+          id='settings-relock'
+          place='bottom'
+        >
+          {t('Automatically increase your veTHE lock timestamp by one week every week')}
+        </CustomTooltip>
       </div>
       <div className='space-y-3'>
         <div className='flex items-center gap-2'>
           <TextHeading>{t('Contract Execution Time')}</TextHeading>
-          <InfoIcon className='h-4 w-4 stroke-neutral-400' />
+          <InfoIcon data-tooltip-id='setting-execution-time' className='h-4 w-4 stroke-neutral-400' />
+          <CustomTooltip
+            className='z-40 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
+            id='setting-execution-time'
+            place='bottom'
+          >
+            {t('Scheduled timestamp for automation execution')}
+          </CustomTooltip>
         </div>
         <div className='w-full'>
           <DateTimePickerCustom
@@ -97,13 +121,12 @@ function Step2Settings() {
             selectedDate={new Date(createData?.settings?.executionTime || Date.now())}
             onChange={date => {
               const newDate = new Date(date).getTime()
-              const curDate = new Date().getTime()
-              const res = Math.max(newDate, curDate)
-              updateSetting(SETTINGS_TYPE.EXECUTION_TIME, res)
+              updateSetting(SETTINGS_TYPE.EXECUTION_TIME, newDate)
             }}
             minDate={getIsoString()}
             showTimeSelect
             dateFormat='MMM D, YYYY [at] HH:mm [UTC]'
+            disabled={isEdit}
           />
         </div>
       </div>
@@ -123,4 +146,4 @@ function Step2Settings() {
   )
 }
 
-export default Step2Settings
+export default Step1Settings

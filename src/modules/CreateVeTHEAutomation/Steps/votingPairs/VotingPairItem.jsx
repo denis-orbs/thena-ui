@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useRef, useState } from 'react'
 
 import { OutlineIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
@@ -18,15 +18,67 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
   const [selected, setSelected] = useState(pair.pair)
   const [weight, setWeight] = useState(pair.weight)
   const [lock, setLock] = useState(pair.lock)
+  const [width, setWidth] = useState(0)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (ref.current) {
+      const resizeObserver = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          if (entry.target === ref.current) {
+            const newWidth = entry.contentRect.width
+            setWidth(newWidth)
+          }
+        }
+      })
+
+      resizeObserver.observe(ref.current)
+
+      return () => {
+        resizeObserver.disconnect()
+      }
+    }
+  }, [])
 
   const pairs = usePoolsWithGauge()
 
   useEffect(() => {
     if (selected) {
+      console.log({ selected })
       onSelected({
         lock,
         weight,
-        pair: selected,
+        pair: {
+          address: selected.address,
+          basePool: selected.basePool,
+          lpPrice: selected.lpPrice,
+          stable: selected.stable,
+          symbol: selected.symbol,
+          title: selected.title,
+          type: selected.type,
+          version: selected.version,
+          ...(selected.type === PAIR_TYPES.WEIGHTED
+            ? {
+                tokens: (selected.tokens || []).map(token => ({
+                  ...token,
+                  totalValue: token?.totalValue?.toString() || 0,
+                  balance: token?.balance?.toString() || 0,
+                  reserve: token?.reserve?.toString() || 0,
+                })),
+              }
+            : {
+                token0: {
+                  ...selected.token0,
+                  reserve: selected?.token0?.reserve?.toString() || 0,
+                  balance: selected?.token0?.balance?.toString() || 0,
+                },
+                token1: {
+                  ...selected.token1,
+                  reserve: selected?.token1?.reserve?.toString() || 0,
+                  balance: selected?.token1?.balance?.toString() || 0,
+                },
+              }),
+        },
       })
     }
   }, [lock, onSelected, selected, weight])
@@ -37,9 +89,12 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
     setLock(prev => (pair.lock !== prev ? pair.lock : prev))
   }, [pair])
   return (
-    <div className='fex-row flex items-center justify-between px-4 py-[14px]'>
+    <div
+      ref={ref}
+      className={cn('fex-row flex justify-between px-4 py-[14px]', width < 450 ? 'flex-col' : 'flex-row items-center')}
+    >
       <div
-        className='flex cursor-pointer items-center justify-between rounded-full bg-neutral-700 p-2 xl:px-4 xl:py-3'
+        className='float-left flex w-fit cursor-pointer items-center justify-between rounded-full bg-neutral-700 p-2 xl:px-4 xl:py-3'
         onClick={() => setIsOpen(!isOpen)}
       >
         {selected ? (
@@ -66,7 +121,7 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
             )}
             <div className='flex items-end gap-[6px]'>
               <TextHeading className='text-sm'>{selected.symbol}</TextHeading>
-              <Paragraph className='text-sm'>{selected.title}</Paragraph>
+              {selected.type !== PAIR_TYPES.WEIGHTED && <Paragraph className='text-sm'>{selected.type}</Paragraph>}
             </div>
           </div>
         ) : (
@@ -76,7 +131,7 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
           className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', isOpen ? 'rotate-180' : 'rotate-0')}
         />
       </div>
-      <div className='flex flex-row items-center'>
+      <div className={cn('float-right flex flex-row items-center', width < 450 ? 'mt-3 justify-between' : '')}>
         <div className='mr-3'>
           <Input
             className='h-11 w-[70px] border-none bg-transparent'
@@ -93,12 +148,14 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
             suffix='%'
           />
         </div>
-        <OutlineIconButton
-          className='mr-2'
-          Icon={lock ? LockIcon : UnlockIcon}
-          onClick={() => setLock(prev => !prev)}
-        />
-        <OutlineIconButton Icon={TrashIcon} onClick={onRemovePair} />
+        <div>
+          <OutlineIconButton
+            className='mr-2 h-7 w-7'
+            Icon={lock ? LockIcon : UnlockIcon}
+            onClick={() => setLock(prev => !prev)}
+          />
+          <OutlineIconButton className='h-7 w-7' Icon={TrashIcon} onClick={onRemovePair} />
+        </div>
       </div>
 
       <PairModal popup={isOpen} setPopup={setIsOpen} setSelected={setSelected} pools={pairs} />

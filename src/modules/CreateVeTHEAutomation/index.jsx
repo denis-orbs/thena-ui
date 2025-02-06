@@ -23,8 +23,8 @@ const NAVIGATION_TYPE = {
   PREV: 'prev',
 }
 
-const steps = ['Details', 'Settings', 'Vote', 'Create']
-const stepsTitle = ['Details', 'Settings', 'Voting Pairs and Weights', 'Create Contract']
+const steps = ['Settings', 'Vote', 'Create']
+const stepsTitle = ['Settings', 'Voting Pairs and Weights', 'Create Contract']
 function CreateVeTHEAutomation({ contractData, isEdit, mutateAutomationData }) {
   const { veTHESelected } = useSelector(state => state.veTHEAutomationContract)
   const t = useTranslations()
@@ -67,7 +67,7 @@ function CreateVeTHEAutomation({ contractData, isEdit, mutateAutomationData }) {
   return (
     <div className='space-y-10'>
       <div>
-        <div className='h-11 w-[140px]'>
+        <div className='mb-6 h-11 w-[140px]'>
           <TextButton onClick={() => push('/dashboard/lock')} LeadingIcon={ArrowLeftIcon}>
             {t('Lock Page')}
           </TextButton>
@@ -80,7 +80,7 @@ function CreateVeTHEAutomation({ contractData, isEdit, mutateAutomationData }) {
       <div className='flex flex-col gap-5 lg:flex-row xl:gap-8'>
         {/* Stepper */}
         <div className='max-lg:hidden xl:min-w-[380px]'>
-          <Stepper steps={steps} currentStep={currentStep} />
+          <Stepper isEdit={isEdit} steps={steps} currentStep={currentStep} setCurrentStep={setCurrentStep} />
         </div>
 
         {/* Main Content */}

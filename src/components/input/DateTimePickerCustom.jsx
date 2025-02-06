@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import ReactDatePicker from 'react-datepicker'
 import { createPortal } from 'react-dom'
 
+import { cn } from '@/lib/utils'
 import { ArrowLeftIcon, CalendarIcon } from '@/svgs'
 
 import Input from '.'
@@ -261,7 +262,16 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
   )
 }
 
-export function DateTimePickerCustom({ title, selectedDate, minDate, maxDate, dateFormat, onChange, ...rest }) {
+export function DateTimePickerCustom({
+  title,
+  selectedDate,
+  minDate,
+  maxDate,
+  dateFormat,
+  onChange,
+  disabled,
+  ...rest
+}) {
   const [isOpenModal, setIsOpenModal] = useState(false)
 
   const onOpenModal = useCallback(() => setIsOpenModal(true), [])
@@ -270,14 +280,17 @@ export function DateTimePickerCustom({ title, selectedDate, minDate, maxDate, da
     <>
       <div className='relative flex items-center'>
         <div
-          className='w-full cursor-pointer rounded-lg border border-neutral-700 bg-neutral-700 py-3 pl-[48px] text-neutral-50 placeholder-neutral-400 caret-transparent focus:border-neutral-500'
+          className={cn(
+            'w-full cursor-pointer rounded-lg border border-neutral-700 bg-neutral-700 py-3 pl-[48px] text-neutral-50 placeholder-neutral-400 caret-transparent focus:border-neutral-500',
+            disabled ? 'cursor-not-allowed' : '',
+          )}
           onClick={() => onOpenModal()}
         >
           {dayjs(selectedDate).format(dateFormat)}
         </div>
         <CalendarIcon className='absolute left-4 top-[14px] h-5 w-5' />
       </div>
-      {isOpenModal && (
+      {!disabled && isOpenModal && (
         <DateTimePickerModal
           value={selectedDate}
           isOpen={isOpenModal}

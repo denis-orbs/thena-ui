@@ -147,26 +147,24 @@ function AutomationDetails({ contractData }) {
               <Paragraph>{t('Gas limit')}</Paragraph>
               <TextHeading className='flex flex-row gap-1'>{formatAmount(contractData.gasLimit)}</TextHeading>
             </div>
+          </div>
+        </Box>
+
+        {/* Execution */}
+        <Box className='space-y-4'>
+          <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Execution')}</TextHeading>
+          <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between'>
-              <Paragraph>{t('Contract execution date')}</Paragraph>
+              <Paragraph>{t('Automation execution time')}</Paragraph>
               <TextHeading>
                 {dayjs(contractData?.settings?.executionTime).format('MMM D, YYYY [at] HH:mm [UTC]')}
               </TextHeading>
             </div>
-          </div>
-        </Box>
-
-        {/* Trigger */}
-        <Box className='space-y-4'>
-          <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Trigger')}</TextHeading>
-          <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between'>
-              <Paragraph>{t('Type')}</Paragraph>
-              <TextHeading className='flex flex-row gap-1'>TODO</TextHeading>
-            </div>
-            <div className='space-y-3'>
-              <Paragraph>{t('Check data (Base16)')}</Paragraph>
-              <Box className='w-full bg-neutral-700'>TODO</Box>
+              <Paragraph>{t('Next execution')}</Paragraph>
+              <TextHeading>
+                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
+              </TextHeading>
             </div>
           </div>
         </Box>

@@ -12,7 +12,7 @@ import {
   getVeTheAutomationFactoryContract,
   getVeTHEContract,
 } from '@/lib/contracts'
-import { convertBooleansToHex, convertHexToBooleans, toWei } from '@/lib/utils'
+import { convertBooleansToHex, convertHexToBooleans, fromWei, toWei } from '@/lib/utils'
 import { usePoolsWithGauge } from '@/state/pools/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -53,7 +53,7 @@ export const useCreateAutomation = () => {
   )
 
   const onCreateAutomation = useCallback(
-    async contract => {
+    async (contract, onSuccess = () => {}) => {
       const key = uuidv4()
       const createAutouuid = uuidv4()
       const upkeepuuid = uuidv4()
@@ -66,7 +66,8 @@ export const useCreateAutomation = () => {
       const { chainlink, chainlinkAmount } = registration
 
       const tokenId = contract.veTHEId
-      const startTimestamp = settings.executionTime
+      // Save UTC
+      const startTimestamp = settings.executionTime - new Date().getTimezoneOffset() * 60 * 1000
       const operations = convertBooleansToHex(votes.isAutoVote, settings.isClaimEveryWeek, settings.isRelockEveryWeek)
       const pools = pairs.map(pair => pair.pair.address)
       const weights = pairs.map(pair => pair.weight)
@@ -83,18 +84,18 @@ export const useCreateAutomation = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
-          [approveAutomationuuid]: {
-            desc: t('Approve automation'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
           [approveChainlinkuuid]: {
-            desc: t('Approve Chainlink'),
+            desc: t('Approve ChainLINK'),
             status: TXN_STATUS.START,
             hash: null,
           },
           [upkeepuuid]: {
-            desc: t('Upkeep through Chainlink Registrar'),
+            desc: t('Register [contractName] contract', { contractName: `veTHE Contract ${tokenId}` }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [approveAutomationuuid]: {
+            desc: t('Approve veTHE [tokenId]', { tokenId }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -125,14 +126,6 @@ export const useCreateAutomation = () => {
           [automationAddress, tokenId],
           chainId,
         )
-        if (!isApproveAutomation) {
-          if (
-            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
-          ) {
-            setPending(false)
-            return
-          }
-        }
 
         const linkTokenContract = getLinkTokenContract(chainId)
         if (
@@ -152,10 +145,20 @@ export const useCreateAutomation = () => {
           return false
         }
 
+        if (!isApproveAutomation) {
+          if (
+            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
+          ) {
+            setPending(false)
+            return
+          }
+        }
+
         endTxn({
           key,
           final: 'Create Automation Contract Successful',
         })
+        onSuccess()
 
         return true
       } catch (error) {
@@ -330,7 +333,7 @@ export const useAutomationContractDetail = tokenId => {
     settings: {
       isClaimEveryWeek,
       isRelockEveryWeek,
-      executionTime: Number(runTimestamp) * 1000,
+      executionTime: Number(runTimestamp) * 1000 + new Date().getTimezoneOffset() * 60 * 1000,
     },
     votes: {
       isAutoVote,
@@ -558,18 +561,18 @@ export const useActiveAutomation = () => {
         key,
         title: 'Active Automation Contract',
         transactions: {
-          [approveAutomationuuid]: {
-            desc: t('Approve automation'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
           [approveChainlinkuuid]: {
-            desc: t('Approve Chainlink'),
+            desc: t('Approve LINK'),
             status: TXN_STATUS.START,
             hash: null,
           },
           [upkeepuuid]: {
-            desc: t('Upkeep through Chainlink Registrar'),
+            desc: t('Register [contractName] contract', { contractName: `veTHE Contract ${tokenId}` }),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [approveAutomationuuid]: {
+            desc: t('Approve veTHE [tokenId]', { tokenId }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -585,15 +588,6 @@ export const useActiveAutomation = () => {
           [automationAddress, tokenId],
           chainId,
         )
-        if (!isApproveAutomation) {
-          if (
-            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
-          ) {
-            setPending(false)
-            return
-          }
-        }
-
         const linkTokenContract = getLinkTokenContract(chainId)
         if (
           !(await writeTxn(key, approveChainlinkuuid, linkTokenContract, 'approve', [automationAddress, maxUint256]))
@@ -610,6 +604,15 @@ export const useActiveAutomation = () => {
         ) {
           setPending(false)
           return false
+        }
+
+        if (!isApproveAutomation) {
+          if (
+            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
+          ) {
+            setPending(false)
+            return
+          }
         }
 
         endTxn({
@@ -630,4 +633,229 @@ export const useActiveAutomation = () => {
   )
 
   return { onActive, pending }
+}
+
+export const useEditGasLimit = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const t = useTranslations()
+
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const onEditGasLimit = useCallback(
+    async (address, gasLimit, onSuccess = () => {}) => {
+      try {
+        const veTheAutomationContract = getVeTheAutomationContract(address, chainId)
+        const key = uuidv4()
+        const editGasLimituuid = uuidv4()
+        setPending(true)
+
+        startTxn({
+          key,
+          title: 'Edit gas limit',
+          transactions: {
+            [editGasLimituuid]: {
+              desc: t('Edit gas limit'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
+        if (!(await writeTxn(key, editGasLimituuid, veTheAutomationContract, 'setUpkeepGasLimit', [gasLimit]))) {
+          setPending(false)
+          return
+        }
+
+        endTxn({
+          key,
+          final: 'Edit gas limit Successful',
+        })
+
+        onSuccess()
+
+        return true
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+  return { onEditGasLimit, pending }
+}
+
+export const useEditMaxGasPrice = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const t = useTranslations()
+
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const onEditMaxGasPrice = useCallback(
+    async (address, max, onSuccess = () => {}) => {
+      try {
+        const veTheAutomationContract = getVeTheAutomationContract(address, chainId)
+        const key = uuidv4()
+        const editGasLimituuid = uuidv4()
+        setPending(true)
+
+        startTxn({
+          key,
+          title: 'Edit max gas price',
+          transactions: {
+            [editGasLimituuid]: {
+              desc: t('Edit max gas price'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
+        if (!(await writeTxn(key, editGasLimituuid, veTheAutomationContract, 'setMaxGasPrice', [max]))) {
+          setPending(false)
+          return
+        }
+
+        endTxn({
+          key,
+          final: 'Edit max gas price Successful',
+        })
+
+        onSuccess()
+
+        return true
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+  return { onEditMaxGasPrice, pending }
+}
+
+export const useDepositFunds = () => {
+  const [pending, setPending] = useState(false)
+  const { account, chainId } = useWallet()
+  const t = useTranslations()
+
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const onDepositFunds = useCallback(
+    async (automationAddress, tokenAddress, amount, onSuccess = () => {}) => {
+      try {
+        const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+        const linkTokenContract = getLinkTokenContract(chainId)
+        const key = uuidv4()
+        const deposituuid = uuidv4()
+        const approveuuid = uuidv4()
+        setPending(true)
+
+        const allowance = await readCall(linkTokenContract, 'allowance', [account, automationAddress], chainId)
+        const isApproved = fromWei(allowance).gte(amount)
+
+        startTxn({
+          key,
+          title: 'Funding Contract',
+          transactions: {
+            ...(!isApproved && {
+              [approveuuid]: {
+                desc: `${t('Approve')} LINK`,
+                status: TXN_STATUS.START,
+                hash: null,
+              },
+            }),
+            [deposituuid]: {
+              desc: t('Deposit LINK'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
+        if (!isApproved) {
+          if (!(await writeTxn(key, approveuuid, linkTokenContract, 'approve', [automationAddress, maxUint256]))) {
+            setPending(false)
+            return
+          }
+        }
+
+        if (
+          !(await writeTxn(key, deposituuid, veTheAutomationContract, 'depositFunds', [tokenAddress, toWei(amount)]))
+        ) {
+          setPending(false)
+          return
+        }
+
+        endTxn({
+          key,
+          final: 'Edit max gas price Successful',
+        })
+
+        onSuccess()
+
+        return true
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [account, chainId, endTxn, startTxn, t, writeTxn],
+  )
+  return { onDepositFunds, pending }
+}
+
+export const useWithdrawFunds = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const t = useTranslations()
+
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const onWithdrawFunds = useCallback(
+    async (automationAddress, tokenAddress, onSuccess = () => {}) => {
+      try {
+        const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+        const key = uuidv4()
+        const withdrawuuid = uuidv4()
+        setPending(true)
+
+        startTxn({
+          key,
+          title: 'Withdraw funds',
+          transactions: {
+            [withdrawuuid]: {
+              desc: t('Withdraw'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
+        if (!(await writeTxn(key, withdrawuuid, veTheAutomationContract, 'withdrawFunds', [tokenAddress]))) {
+          setPending(false)
+          return
+        }
+
+        endTxn({
+          key,
+          final: 'Withdraw funds Successful',
+        })
+
+        onSuccess()
+
+        return true
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+  return { onWithdrawFunds, pending }
 }

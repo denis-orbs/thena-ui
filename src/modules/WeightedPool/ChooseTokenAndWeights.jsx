@@ -172,7 +172,7 @@ const initialToken = {
   weight: 0,
 }
 
-export function ErrorMessage({ message, type = 'error', className }) {
+export function ErrorMessage({ message, type = 'error', className, showIcon = true }) {
   return (
     <Box
       className={cn(
@@ -181,9 +181,11 @@ export function ErrorMessage({ message, type = 'error', className }) {
         className,
       )}
     >
-      <div className='flex h-10 w-10 items-center'>
-        <InfoIcon className={cn('h-5 w-5 !stroke-primary-600', type === 'warn' ? '!stroke-warn-600' : '')} />
-      </div>
+      {showIcon && (
+        <div className='flex h-10 w-10 items-center'>
+          <InfoIcon className={cn('h-5 w-5 !stroke-primary-600', type === 'warn' ? '!stroke-warn-600' : '')} />
+        </div>
+      )}
       <div>{message}</div>
     </Box>
   )
