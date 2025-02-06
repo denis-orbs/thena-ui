@@ -98,15 +98,15 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
     timeWindow,
   })
 
-  const minValue = useMemo(
-    () => pairPrices.reduce((min, current) => (current.value < min.value ? current : min), pairPrices[0]),
-    [pairPrices],
-  )
+  // const minValue = useMemo(
+  //   () => pairPrices.reduce((min, current) => (current.value < min.value ? current : min), pairPrices[0]),
+  //   [pairPrices],
+  // )
 
-  const maxValue = useMemo(
-    () => pairPrices.reduce((max, current) => (current.value > max.value ? current : max), pairPrices[0]),
-    [pairPrices],
-  )
+  // const maxValue = useMemo(
+  //   () => pairPrices.reduce((max, current) => (current.value > max.value ? current : max), pairPrices[0]),
+  //   [pairPrices],
+  // )
 
   const leftPrice = useMemo(
     () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceLower : priceUpper?.invert()),
@@ -458,8 +458,8 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
                 data={pairPrices}
                 timeWindow={timeWindow}
                 current={Number(currentPrice)}
-                upper={maxValue?.value}
-                lower={minValue?.value}
+                upper={mintInfo?.ticksAtLimit[Bound.UPPER] ? Infinity : Number(rightPrice?.toSignificant(5)) ?? 0}
+                lower={mintInfo?.ticksAtLimit[Bound.LOWER] ? 0 : Number(leftPrice?.toSignificant(5)) ?? 0}
               />
             )}
           </div>
