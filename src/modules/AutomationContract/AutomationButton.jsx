@@ -8,7 +8,7 @@ import Dropdown from '@/components/dropdown'
 import Skeleton from '@/components/skeleton'
 import { ACTION_AUTOMATION_TYPE, AUTOMATION_STATUS } from '@/constant'
 import { useAutomationContractDetail, useAutomationStatus } from '@/hooks/automationContract/useAutomationContract'
-import { setSelectedVeTHE } from '@/state/veTHEAutomationContract/action'
+import { createVeTHEAutomationContract, setSelectedVeTHE } from '@/state/veTHEAutomationContract/action'
 
 import ConfirmAutomationModal from './ConfirmAutomationModal'
 
@@ -104,6 +104,29 @@ function AutomationButton({ veTHE }) {
             amount: veTHE.amount.toString(),
             rebase_amount: veTHE.rebase_amount.toString(),
             voting_amount: veTHE.voting_amount.toString(),
+          },
+        }),
+      )
+
+      dispatch(
+        createVeTHEAutomationContract({
+          createData: {
+            veTHEId: veTHE.id,
+            settings: {
+              isClaimEveryWeek: true,
+              isRelockEveryWeek: true,
+              executionTime: new Date().getTime(),
+            },
+            votes: {
+              isAutoVote: true,
+              pairs: [
+                {
+                  lock: false,
+                  weight: 100,
+                  pair: undefined,
+                },
+              ],
+            },
           },
         }),
       )

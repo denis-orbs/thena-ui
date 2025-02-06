@@ -1,14 +1,14 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 
 import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
-import ConfirmModal from '@/components/modal/ConfirmModal'
 import Skeleton from '@/components/skeleton'
 import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import { useCancelAutomation, usePauseAutomation } from '@/hooks/automationContract/useAutomationContract'
 import { EditIcon } from '@/svgs'
+
+import ConfirmAutomationModal from '../ConfirmAutomationModal'
 
 const ACTION_TYPE = {
   PAUSE: 'pause',
@@ -19,30 +19,9 @@ const ACTION_TYPE = {
 function Head({ tokenId, address, status, mutateAutomationData = () => {} }) {
   const t = useTranslations()
   const { push } = useRouter()
-  const [popup, setPopup] = useState(false)
+  const [pending, setPending] = useState(false)
   const [actionType, setActionType] = useState()
-
-  const { onPauseAutomation, pending: pendingPause } = usePauseAutomation()
-  const { onCancelAutomation, pending: pendingCancel } = useCancelAutomation()
-
-  const textData = useMemo(() => {
-    const result = {
-      title: `${t('Are You Sure')}?`,
-      desc: '',
-      confirm: '',
-    }
-    if (actionType === ACTION_TYPE.PAUSE) {
-      result.desc = t('Confirm pause automation')
-      result.confirm = t('Pause Automation')
-    } else if (actionType === ACTION_TYPE.UNPAUSE) {
-      result.desc = t('Confirm unpause automation')
-      result.confirm = t('Unpause Automation')
-    } else if (actionType === ACTION_TYPE.CANCEL) {
-      result.desc = t('Confirm cancel automation')
-      result.confirm = t('Cancel Deposit')
-    }
-    return result
-  }, [actionType, t])
+  const [showModal, setShowModal] = useState(false)
 
   return (
     <div className='mt-4 flex flex-col justify-between gap-4 lg:flex-row'>
@@ -57,9 +36,9 @@ function Head({ tokenId, address, status, mutateAutomationData = () => {} }) {
             <OutlinedButton
               onClick={() => {
                 setActionType(ACTION_TYPE.CANCEL)
-                setPopup(true)
+                setShowModal(true)
               }}
-              disabled={!tokenId || pendingCancel}
+              disabled={!tokenId || pending}
               className='w-1/2 px-2 py-3 lg:min-w-[168px]'
             >
               {t('Cancel Automation')}
@@ -68,9 +47,9 @@ function Head({ tokenId, address, status, mutateAutomationData = () => {} }) {
               <EmphasisButton
                 onClick={() => {
                   setActionType(status === AUTOMATION_STATUS.PAUSED ? ACTION_TYPE.UNPAUSE : ACTION_TYPE.PAUSE)
-                  setPopup(true)
+                  setShowModal(true)
                 }}
-                disabled={!tokenId || pendingPause}
+                disabled={!tokenId || pending}
                 className='w-1/2 px-3  py-3 lg:min-w-[168px]'
               >
                 {t(status === AUTOMATION_STATUS.PAUSED ? 'Unpause Automation' : 'Pause Automation')}
@@ -89,22 +68,16 @@ function Head({ tokenId, address, status, mutateAutomationData = () => {} }) {
           {t('Create New Automation')}
         </OutlinedButton>
       )}
-      <ConfirmModal
-        onConfirm={() => {
-          if (actionType === ACTION_TYPE.PAUSE) {
-            onPauseAutomation(address, ACTION_TYPE.PAUSE, mutateAutomationData)
-          } else if (actionType === ACTION_TYPE.UNPAUSE) {
-            onPauseAutomation(address, ACTION_TYPE.UNPAUSE, mutateAutomationData)
-          } else if (actionType === ACTION_TYPE.CANCEL) {
-            onCancelAutomation(address, mutateAutomationData)
-          }
+      <ConfirmAutomationModal
+        actionType={actionType}
+        address={address}
+        mutateAutomationData={mutateAutomationData}
+        showModal={showModal}
+        setIsPending={setPending}
+        setShowModal={_ => {
+          setActionType()
+          setShowModal(false)
         }}
-        popup={popup}
-        setPopup={setPopup}
-        cancelButton={t('Close')}
-        confirmButton={textData?.confirm}
-        title={textData?.title}
-        desc={textData?.desc}
       />
     </div>
   )

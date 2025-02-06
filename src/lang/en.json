@@ -1397,5 +1397,8 @@
   "": "",
   "Automation": "Automation",
   "How It Works": "How It Works",
-  "Add Automation": "Add Automation"
+  "Add Automation": "Add Automation",
+  "Waring automation lock": "This lock has automation. Changing the lock duration may override the current automation settings.",
+  "Warning automation merge": "This lock has automation. Merging this veTHE to another will cancel the current automation.",
+  "Warning automation split": "This lock has automation. Spliting this veTHE will cancel the current automation."
 }

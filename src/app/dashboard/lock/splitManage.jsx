@@ -11,10 +11,11 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { useSplit } from '@/hooks/useVeThe'
 import { warnToast } from '@/lib/notify'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
+import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 
 const validNumber = val => (val === '' ? 0 : Number(val))
 
-export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
+export default function SplitManage({ selected, setPopup, updateVeTHEs, isAutomation }) {
   const [numberOfInputs, setNumberOfInputs] = useState(2)
   const [customInput, setCustomInput] = useState('')
   const [isCustom, setIsCustom] = useState(false)
@@ -150,6 +151,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs }) {
           <Paragraph>{t('Total Split Amount')}</Paragraph>
           <TextHeading>{total}%</TextHeading>
         </div>
+        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation lock')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <PrimaryButton
