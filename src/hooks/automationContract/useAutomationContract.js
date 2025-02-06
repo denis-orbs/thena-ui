@@ -544,7 +544,6 @@ export const useEditAutomation = () => {
     async (contract, onSuccess) => {
       const key = uuidv4()
       const operationsuuid = uuidv4()
-      const poolWeightuuid = uuidv4()
       const veTheAutomationContract = getVeTheAutomationContract(contract.address, chainId)
 
       const { settings, votes } = contract
@@ -560,13 +559,7 @@ export const useEditAutomation = () => {
         title: 'Edit Automation Contract',
         transactions: {
           [operationsuuid]: {
-            desc: t('Set Operations Contract'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-
-          [poolWeightuuid]: {
-            desc: t('Set Pools And Weights Contract'),
+            desc: t('Edit Setting'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -575,12 +568,9 @@ export const useEditAutomation = () => {
 
       try {
         setPending(true)
-        if (!(await writeTxn(key, operationsuuid, veTheAutomationContract, 'setOperations', [operations]))) {
-          setPending(false)
-          return false
-        }
-
-        if (!(await writeTxn(key, poolWeightuuid, veTheAutomationContract, 'setPoolsAndWeights', [pools, weights]))) {
+        if (
+          !(await writeTxn(key, operationsuuid, veTheAutomationContract, 'setOperations', [operations, pools, weights]))
+        ) {
           setPending(false)
           return false
         }

@@ -6,21 +6,19 @@ import { useSelector } from 'react-redux'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SuccessModal from '@/components/modal/SuccessModal'
-import { useCreateAutomation, useEditAutomation } from '@/hooks/automationContract/useAutomationContract'
+import { useCreateAutomation, useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
 
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
 
-function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = () => {} }) {
+function NavigationBottom({ currentStep, onNext }) {
   const t = useTranslations()
-
+  const maxPaymentForGas = useGetMaxPaymentForGas()
   const { createData } = useSelector(state => state.veTHEAutomationContract)
   const { push } = useRouter()
 
   const [error, setError] = useState()
 
   const { onCreateAutomation, pending: pendingCreate } = useCreateAutomation()
-
-  const { onEditAutomation, pending: pendingEdit } = useEditAutomation()
 
   const [isSuccess, setIsSuccess] = useState(false)
 
@@ -53,10 +51,9 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
 
     if (currentStep === 3) {
       if (
-        (!createData.registration?.chainlink ||
-          !createData.registration?.chainlinkAmount ||
-          createData.registration?.chainlinkAmount < 0.1) &&
-        !isEdit
+        !createData.registration?.chainlink ||
+        !createData.registration?.chainlinkAmount ||
+        createData.registration?.chainlinkAmount < maxPaymentForGas
       ) {
         return true
       }
@@ -67,11 +64,11 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
   }, [
     createData.registration?.chainlink,
     createData.registration?.chainlinkAmount,
-    createData.settings?.executionTime,
-    createData.votes?.isAutoVote,
-    createData.votes?.pairs,
+    createData?.settings?.executionTime,
+    createData?.votes?.isAutoVote,
+    createData?.votes?.pairs,
     currentStep,
-    isEdit,
+    maxPaymentForGas,
     t,
   ])
 
@@ -79,45 +76,26 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
     <div className='mt-4 space-y-4'>
       {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
       <>
-        {isEdit ? (
-          <div className='flex flex-row gap-4'>
-            {currentStep < 3 && (
-              <EmphasisButton className='w-full' onClick={onNext} disabled={isDisabled}>
-                {t('Next')}
-              </EmphasisButton>
-            )}
-            <PrimaryButton
-              disabled={pendingEdit}
-              className='w-full'
-              onClick={() => onEditAutomation(createData, mutateAutomationData)}
-            >
-              {t('Save Changes')}
-            </PrimaryButton>
-          </div>
-        ) : (
-          <>
-            {currentStep < 3 && (
-              <PrimaryButton className='w-full' onClick={onNext} disabled={isDisabled}>
-                {t('Next')}
-              </PrimaryButton>
-            )}
+        {currentStep < 3 && (
+          <PrimaryButton className='w-full' onClick={onNext} disabled={isDisabled}>
+            {t('Next')}
+          </PrimaryButton>
+        )}
 
-            {currentStep === 3 && (
-              <PrimaryButton
-                disabled={pendingCreate || isDisabled}
-                className='w-full'
-                onClick={
-                  () =>
-                    onCreateAutomation(createData, () => {
-                      setIsSuccess(true)
-                    })
-                  // eslint-disable-next-line react/jsx-curly-newline
-                }
-              >
-                {t('Create Automation')}
-              </PrimaryButton>
-            )}
-          </>
+        {currentStep === 3 && (
+          <PrimaryButton
+            disabled={pendingCreate || isDisabled}
+            className='w-full'
+            onClick={
+              () =>
+                onCreateAutomation(createData, () => {
+                  setIsSuccess(true)
+                })
+              // eslint-disable-next-line react/jsx-curly-newline
+            }
+          >
+            {t('Create Automation')}
+          </PrimaryButton>
         )}
       </>
       <SuccessModal

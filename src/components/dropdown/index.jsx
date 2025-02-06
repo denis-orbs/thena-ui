@@ -48,6 +48,7 @@ function Dropdown({
         TrailingIcon={
           <ChevronDownIcon
             className={cn('transfrom transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
+            onClick={() => setOpen(!open)}
           />
         }
         isLocale={isLocale}

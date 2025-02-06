@@ -63,7 +63,6 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
               assetData={chainLINKData}
               assetNull
             />
-            {/* {amount < 0.1 && <ErrorMessage message={t('LINK Amount should be larger')} />} */}
           </div>
         </div>
       </ModalBody>

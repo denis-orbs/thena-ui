@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { memo, useEffect, useRef, useState } from 'react'
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react'
 
 import { OutlineIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
@@ -40,7 +40,16 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
     }
   }, [])
 
-  const pairs = usePoolsWithGauge()
+  const poolsWithGauge = usePoolsWithGauge()
+
+  const pairs = useMemo(
+    () =>
+      poolsWithGauge.map(item => ({
+        ...item,
+        title: item?.title === 'CL_Farming' ? 'Conc. Liquidity' : item?.title,
+      })),
+    [poolsWithGauge],
+  )
 
   useEffect(() => {
     if (selected) {

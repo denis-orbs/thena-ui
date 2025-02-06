@@ -5,7 +5,7 @@ import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import { useAutomationStatus } from '@/hooks/automationContract/useAutomationContract'
+import { useAutomationStatus, useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
 import { InfoIcon } from '@/svgs'
 
 import DepositFundsModal from './Edits/DepositFundsModal'
@@ -14,6 +14,7 @@ import ChainlinkModal from './head/ChainlinkModal'
 function WarningWithAction({ mutateAutomationData, contractData }) {
   const [chainLINKPopup, setChainLINKPopup] = useState(false)
   const [depositFundsPopup, setDepositFundsPopup] = useState(false)
+  const maxPaymentForGas = useGetMaxPaymentForGas()
 
   const { status, mutateData: mutateDataStatus } = useAutomationStatus(contractData.veTHEId)
 
@@ -28,7 +29,7 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
       }
     }
 
-    if (contractData.balance < 0.1) {
+    if (contractData.balance < maxPaymentForGas) {
       return {
         message: (
           <>
@@ -41,7 +42,7 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
       }
     }
     return undefined
-  }, [contractData.balance, status, t])
+  }, [contractData.balance, maxPaymentForGas, status, t])
 
   if (!data) return <></>
   return (

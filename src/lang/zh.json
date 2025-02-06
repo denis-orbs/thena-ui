@@ -1446,5 +1446,7 @@
   "Automation relock description": "Automatically increase your veTHE lock timestamp by one week every week.",
   "Automation vote description": "Automatically cast votes for your selected pairs each epoch.",
   "Edit Automation Execution Time": "Edit Automation Execution Time",
-  "Edit Execution Time": "Edit Execution Time"
+  "Edit Execution Time": "Edit Execution Time",
+  "Next relock": "Next relock",
+  "Edit Setting": "Edit Setting"
 }

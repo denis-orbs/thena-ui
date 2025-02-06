@@ -50,12 +50,12 @@ function CreateVeTHEAutomation() {
       </div>
       <div className='flex flex-col gap-5 lg:flex-row xl:gap-8'>
         {/* Stepper */}
-        <div className='max-lg:hidden xl:min-w-[380px]'>
+        <div className='max-lg:hidden lg:min-w-[200px] xl:min-w-[320px]'>
           <Stepper steps={steps} currentStep={currentStep} setCurrentStep={setCurrentStep} />
         </div>
 
         {/* Main Content */}
-        <Box className='flex-1 space-y-9 xl:min-w-[500px]'>
+        <Box className='flex-1 space-y-9 xl:min-w-[480px]'>
           <NavigationTop
             steps={stepsTitle}
             currentStep={currentStep}
@@ -66,7 +66,7 @@ function CreateVeTHEAutomation() {
         </Box>
 
         {/* Selected veTHE ID */}
-        <div className='xl:min-w-[380px]'>
+        <div className='xl:min-w-[300px]'>
           <SelectedVeTHEID veTHESelected={veTHESelected} />
         </div>
       </div>

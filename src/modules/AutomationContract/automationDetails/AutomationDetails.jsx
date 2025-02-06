@@ -7,6 +7,7 @@ import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCopyText } from '@/hooks/useCopyText'
+import useWallet from '@/hooks/useWallet'
 import { calculateNextWeek, formatAddress, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { CheckIcon, CopyArenaIcon } from '@/svgs'
@@ -14,6 +15,7 @@ import { CheckIcon, CopyArenaIcon } from '@/svgs'
 function AutomationDetails({ contractData }) {
   const t = useTranslations()
   const { onCopy, copied } = useCopyText()
+  const { account } = useWallet()
   return (
     <div className='space-y-4'>
       <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Automation Details')}</TextHeading>
@@ -44,7 +46,7 @@ function AutomationDetails({ contractData }) {
               <TextHeading>{contractData?.settings?.isRelockEveryWeek ? t('Yes') : t('No')}</TextHeading>
             </div>
             <div className='flex flex-row justify-between'>
-              <Paragraph>{t('Next rebase claim')}</Paragraph>
+              <Paragraph>{t('Next relock')}</Paragraph>
               <TextHeading>
                 {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
               </TextHeading>
@@ -99,7 +101,13 @@ function AutomationDetails({ contractData }) {
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Owner address')}</Paragraph>
               <TextHeading className='flex flex-row gap-1'>
-                TODO <CopyArenaIcon className='h-4 w-4 stroke-neutral-50' />
+                {formatAddress(account)}
+                <div
+                  onClick={e => onCopy(e, account, 'ownerAddress')}
+                  className='h-5 w-5 cursor-pointer stroke-neutral-200'
+                >
+                  {copied === 'ownerAddress' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+                </div>
               </TextHeading>
             </div>
             <div className='flex flex-row justify-between'>
