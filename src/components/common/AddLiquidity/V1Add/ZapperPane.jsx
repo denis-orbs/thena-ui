@@ -2,12 +2,13 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
+import Box from '@/components/box'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import TokenInput from '@/components/input/TokenInput'
 import Spinner from '@/components/spinner'
 import Tabs from '@/components/tabs'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useDebounce from '@/hooks/useDebounce'
@@ -15,6 +16,7 @@ import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
 import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
 import { cn, formatAmount, fromWei, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
+import { InfoIcon } from '@/svgs'
 
 const getZapAddress = (strategy, chainId) => {
   if (GAMMA_TYPES.includes(strategy.title)) return { address: Contracts.gammaZap[chainId], isV1: false }
@@ -182,6 +184,24 @@ export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
               </div>
             </div>
           </div>
+
+          <Box
+            className={cn(
+              'mt-5 flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950',
+              {
+                hidden: Number(amountIn) * Number(tokenDeposit?.price ?? 0) < 10_000,
+              },
+            )}
+          >
+            <div className='size-5'>
+              <InfoIcon className='size-5 stroke-primary-600' />
+            </div>
+            <TextSubHeading className='text-base text-primary-100'>
+              You are about to zap in an amount exceeding $10,000. To safeguard your investment, please ensure you are
+              using sandwich protection. This precaution helps protect your transaction from potential front-running and
+              other malicious activities. Proceed with caution.
+            </TextSubHeading>
+          </Box>
         </>
       )}
 

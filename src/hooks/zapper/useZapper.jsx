@@ -472,10 +472,10 @@ export const useGammaZapper = () => {
           const receiver = await readCall(gammaHyper, 'receiver', [], chainId)
           const allowance = await readCall(gammaHyper, 'allowance', [account, receiver], chainId)
           const balance = await readCall(gammaHyper, 'balanceOf', [account], chainId)
-          const isApproved2 = BigNumber.from(balance).lte(allowance)
+          const isApproved2 = BigNumber(balance).lte(allowance)
 
           if (!isApproved2) {
-            const txHash = await writeTxn(key, approveStakeId, gammaHyper, 'approve', [receiver, amount])
+            const txHash = await writeTxn(key, approveStakeId, gammaHyper, 'approve', [receiver, balance])
             if (!txHash) {
               setPending(false)
               return
