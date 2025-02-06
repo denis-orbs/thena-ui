@@ -224,7 +224,7 @@ export default function ManualPosition({ position }) {
           </div>
         </div>
 
-        <div className='flex items-center justify-between'>
+        <div className={cn('flex items-center justify-between', feesInUsd.isZero() && 'hidden')}>
           <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>

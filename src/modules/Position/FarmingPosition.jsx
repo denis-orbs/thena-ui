@@ -228,14 +228,18 @@ export function FarmingPosition({ position }) {
           </div>
         </div>
 
-        <div className='flex items-center justify-between'>
+        <div className={cn('flex items-center justify-between', feesInUsd.isZero() && 'hidden')}>
           <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
           <div className='flex items-center gap-1'>
             <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`net-${tokenId}`} />
             <CustomTooltip id={`net-${tokenId}`}>
-              <p>{`${formatAmount(fromWei(farmRewardData?.[0] ?? 0n, 18))} THE`}</p>
-              <p>{`${formatAmount(fromWei(farmRewardData?.[1] ?? 0n, 18))} WBNB`}</p>
+              <p className={cn(farmRewardData && farmRewardData[0] === 0n && 'hidden')}>
+                {`${formatAmount(fromWei(farmRewardData?.[0] ?? 0n, 18))} THE`}
+              </p>
+              <p className={cn(farmRewardData && farmRewardData[1] === 0n && 'hidden')}>
+                {`${formatAmount(fromWei(farmRewardData?.[1] ?? 0n, 18))} WBNB`}
+              </p>
             </CustomTooltip>
           </div>
         </div>
