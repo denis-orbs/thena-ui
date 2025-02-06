@@ -21,6 +21,7 @@ import { ArrowLeftIcon, ExternalIcon } from '@/svgs'
 
 import PairChart from './PairChart'
 import TransactionTable from './PairTransaction'
+import WeightedTransactionTable from './WeightedPairTransaction'
 
 export default function PairDetailPage({ params }) {
   const { address } = params
@@ -170,7 +171,7 @@ export default function PairDetailPage({ params }) {
         <PairChart pair={pair} />
       </div>
 
-      <TransactionTable pair={pair} />
+      {pair.type === PAIR_TYPES.WEIGHTED ? <WeightedTransactionTable pair={pair} /> : <TransactionTable pair={pair} />}
     </div>
   )
 }

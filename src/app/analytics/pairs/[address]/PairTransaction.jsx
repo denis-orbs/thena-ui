@@ -11,11 +11,11 @@ import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
-import { fusionClient, v1Client, weightedClient } from '@/lib/graphql'
+import { fusionClient, v1Client } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
-const TXN_TYPE = {
+export const TXN_TYPE = {
   All: 'All',
   SWAP: 'Swaps',
   ADD: 'Additions',
@@ -155,39 +155,6 @@ const FUSION_TRANSACTIONS = gql`
       amount0
       amount1
       amountUSD
-    }
-  }
-`
-
-const WEIGHTED_TRANSACTIONS = gql`
-  query fusionTransactions($address: String!) {
-    swaps(first: 50, orderBy: timestamp, orderDirection: desc, where: { poolId_: { address: $address } }) {
-      tokenIn
-      tokenOut
-      tx
-      timestamp
-      tokenAmountIn
-      tokenAmountOut
-      tokenInSym
-      tokenOutSym
-      valueUSD
-    }
-    poolActivities(first: 100, orderBy: timestamp, orderDirection: desc, where: { pool_: { address: $address } }) {
-      id
-      tx
-      type
-      user
-      valueUSD
-      sender
-      timestamp
-      block
-      amounts
-      pool {
-        tokens {
-          address
-          symbol
-        }
-      }
     }
   }
 `
@@ -353,6 +320,7 @@ const getFusionTransactions = async (chainId, version, pairs) => {
       newTxn.amountUSD = swap.amountUSD
       newTxns.push(newTxn)
     })
+
     const data = newTxns
       .map(ele => ({
         ...ele,
@@ -369,77 +337,15 @@ const getFusionTransactions = async (chainId, version, pairs) => {
   }
 }
 
-const getWeightedTransactions = async (chainId, address) => {
-  try {
-    const newTxns = []
-    const { poolActivities, swaps } = await weightedClient[chainId].request(WEIGHTED_TRANSACTIONS, {
-      address,
-    })
-
-    poolActivities.forEach(ele => {
-      newTxns.push({
-        hash: ele.tx,
-        timestamp: ele.timestamp,
-        type: ele.type === 'Join' ? TXN_TYPE.ADD : TXN_TYPE.REMOVE,
-        account: ele.sender,
-        amountUSD: ele.valueUSD,
-        tokens: ele.pool.tokens.map((token, index) => ({
-          ...token,
-          amount: ele.amounts[index],
-        })),
-      })
-    })
-
-    // TODO: update ele type based on response of API
-    swaps.forEach(ele => {
-      const newTxn = {}
-      newTxn.hash = ele.tx
-      newTxn.timestamp = ele.timestamp
-      newTxn.account = ele.caller
-      newTxn.amountUSD = ele.valueUSD
-      newTxn.type = TXN_TYPE.SWAP
-
-      newTxn.token0Symbol = formatTokenSymbol(ele.tokenIn)
-      newTxn.token1Symbol = formatTokenSymbol(ele.tokenOut)
-
-      newTxn.token0Amount = ele.tokenAmountIn
-      newTxn.token1Amount = ele.tokenAmountOut
-
-      newTxns.push(newTxn)
-    })
-
-    const data = newTxns
-      .map(ele => ({
-        ...ele,
-        timestamp: parseFloat(ele.timestamp),
-        token0Amount: parseFloat(ele.token0Amount),
-        token1Amount: parseFloat(ele.token1Amount),
-        amountUSD: parseFloat(ele.amountUSD),
-      }))
-      .sort((a, b) => b.timestamp - a.timestamp)
-    return { data, error: false }
-  } catch (error) {
-    console.error('Failed to fetch fusion pair transaction data', error)
-    return { data: [], error: true }
-  }
-}
-
-const getTransactionType = (event, symbol0, symbol1, t, tokens, isWeighted = false) => {
+const getTransactionType = (event, symbol0, symbol1, t) => {
   const formattedS0 = symbol0?.length > 8 ? `${symbol0.slice(0, 7)}...` : symbol0
   const formattedS1 = symbol1?.length > 8 ? `${symbol1.slice(0, 7)}...` : symbol1
   switch (event) {
     case TXN_TYPE.ADD:
-      if (!isWeighted) {
-        return t('Add [symbolA] and [symbolB]', {
-          symbolA: formattedS0,
-          symbolB: formattedS1,
-        })
-      }
-
-      return tokens.reduce(
-        (str, tk, index) => str + tk.symbol + (index < tokens.length - 1 ? ` ${t('And')} ` : ''),
-        `${t('Add')} `,
-      )
+      return t('Add [symbolA] and [symbolB]', {
+        symbolA: formattedS0,
+        symbolB: formattedS1,
+      })
 
     case TXN_TYPE.REMOVE:
       return t('Remove [symbolA] and [symbolB]', {
@@ -457,11 +363,6 @@ const getTransactionType = (event, symbol0, symbol1, t, tokens, isWeighted = fal
 }
 
 const fetchPairTransaction = async (chainId, pair) => {
-  if (pair.type === PAIR_TYPES.WEIGHTED) {
-    const { data: fusiondata } = await getWeightedTransactions(chainId, pair.address)
-    return fusiondata
-  }
-
   if (pair.type === PAIR_TYPES.LSD) {
     const version = pair?.version
     const swapPool = pair.subpools.find(ele => ele.title === MANUAL_TYPES[0])?.address
@@ -572,8 +473,6 @@ export default function TransactionTable({ pair }) {
     [txnData, sort, filter],
   )
 
-  console.log({ sortedData })
-
   const final = useMemo(
     () =>
       sortedData.map(item => ({
@@ -584,9 +483,7 @@ export default function TransactionTable({ pair }) {
               goScan(networkId, item.hash, true)
             }}
           >
-            {pair.type === PAIR_TYPES.WEIGHTED
-              ? getTransactionType(item.type, item.token1Symbol, item.token0Symbol, t, pair.tokens, true)
-              : getTransactionType(item.type, item.token1Symbol, item.token0Symbol, t, pair.tokens, true)}
+            {getTransactionType(item.type, item.token1Symbol, item.token0Symbol, t)}
           </div>
         ),
         total: <Paragraph>${formatAmount(item.amountUSD, true)}</Paragraph>,
@@ -612,8 +509,7 @@ export default function TransactionTable({ pair }) {
         ),
         time: <Paragraph>{formatTime(item.timestamp)}</Paragraph>,
       })),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(sortedData), t],
+    [networkId, sortedData, t],
   )
 
   return (
