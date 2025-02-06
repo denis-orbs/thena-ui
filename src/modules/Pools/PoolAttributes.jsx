@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
-import { ICHI_TYPES, MANUAL_TYPES, SCAN_URLS } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, SCAN_URLS } from '@/constant'
 import { algebraPoolV3, basePluginAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
@@ -13,6 +13,7 @@ import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
 import { LinkExternalIcon } from '@/svgs'
 
 export function PoolAttributesCL({ strategy, pool }) {
+  const isAutomatic = !MANUAL_TYPES.includes(strategy.title)
   const t = useTranslations()
 
   const { networkId } = useChainSettings()
@@ -62,6 +63,15 @@ export function PoolAttributesCL({ strategy, pool }) {
       resultProvider = 'https://docs.ichi.org/home/how-ichi-works'
       resultType = 'https://docs.ichi.org/home/how-ichi-works#singletoken-deposit'
     }
+    if (GAMMA_TYPES.includes(strategy.title)) {
+      resultProvider = 'https://docs.gamma.xyz/gamma/features/introduction'
+      if (strategy.title.includes('Narrow')) {
+        resultType = 'https://docs.gamma.xyz/gamma/features/strategies#dynamic-range-wide-narrow'
+      }
+      if (strategy.title.includes('Stable')) {
+        resultType = 'https://docs.gamma.xyz/gamma/features/strategies#stable'
+      }
+    }
     return [resultProvider, resultType]
   }, [strategy.title])
 
@@ -96,27 +106,43 @@ export function PoolAttributesCL({ strategy, pool }) {
             </Link>
           </div>
         </div>
-        {/* Strategy Provider */}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Strategy Provider')}:</div>
-          <Link target='_blank' href={linkDocsStrategy[0]} className='col-span-5 flex items-center gap-1'>
-            <span>{strategy.title}</span>
-            <div className='item-center flex cursor-pointer gap-1'>
-              <LinkExternalIcon className='inline-block h-4 w-4' />
+        {isAutomatic && (
+          <>
+            {/* Strategy Provider */}
+            <div className='grid grid-cols-7'>
+              <div className='col-span-2 text-neutral-300'>{t('Strategy Provider')}:</div>
+              <Link target='_blank' href={linkDocsStrategy[0]} className='col-span-5 flex items-center gap-1'>
+                <span>
+                  {ICHI_TYPES.includes(strategy.title)
+                    ? 'Ichi'
+                    : NARROW_TYPES.includes(strategy.title)
+                      ? 'Gamma'
+                      : 'Unknown'}
+                </span>
+                <div className='item-center flex cursor-pointer gap-1'>
+                  <LinkExternalIcon className='inline-block h-4 w-4' />
+                </div>
+              </Link>
             </div>
-          </Link>
-        </div>
 
-        {/* Strategy Type */}
-        <div className='grid grid-cols-7'>
-          <div className='col-span-2 text-neutral-300'>{t('Strategy Type')}:</div>
-          <Link target='_blank' href={linkDocsStrategy[1]} className='col-span-5 flex items-center gap-1'>
-            <span>{ICHI_TYPES.includes(strategy.title) ? 'Single deposit' : 'Manual'}</span>
-            <div className='item-center flex cursor-pointer gap-1'>
-              <LinkExternalIcon className='inline-block h-4 w-4' />
+            {/* Strategy Type */}
+            <div className='grid grid-cols-7'>
+              <div className='col-span-2 text-neutral-300'>{t('Strategy Type')}:</div>
+              <Link target='_blank' href={linkDocsStrategy[1]} className='col-span-5 flex items-center gap-1'>
+                <span>
+                  {ICHI_TYPES.includes(strategy.title)
+                    ? 'Single deposit'
+                    : NARROW_TYPES.includes(strategy.title)
+                      ? 'Narrow'
+                      : 'Unknown'}
+                </span>
+                <div className='item-center flex cursor-pointer gap-1'>
+                  <LinkExternalIcon className='inline-block h-4 w-4' />
+                </div>
+              </Link>
             </div>
-          </Link>
-        </div>
+          </>
+        )}
 
         {/* Pool Deployer */}
         <div className='grid grid-cols-7'>

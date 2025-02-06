@@ -263,6 +263,7 @@ export const GAMMA_TYPES = [
 ]
 export const MANUAL_TYPES = ['CL_Farming', 'CL_SwapFee']
 export const ICHI_TYPES = ['ICHI_Farming', 'ICHI_SwapFee', 'ICHI']
+export const NARROW_TYPES = ['Narrow_Farming', 'Narrow_SwapFee']
 export const ICHI_SwapFee = 'ICHI_SwapFee'
 
 export const TAX_ASSETS = {
