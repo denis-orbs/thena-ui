@@ -5,11 +5,6 @@ import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/a
 
 import SelectVotingPairsAndWeights from '../SelectVotingPairsAndWeights'
 
-const UPDATE_TYPE = {
-  AUTO: 'isAutoVote',
-  PAIRS: 'pairs',
-}
-
 export const updateWeight = pairs => {
   const weightLocked = pairs.filter(item => item.lock).reduce((sum, cur) => sum + cur.weight, 0)
   const pairUnLock = pairs.filter(item => !item.lock && item.pair !== undefined)
@@ -53,37 +48,44 @@ function Step2Vote() {
   const { createData } = useSelector(state => state.veTHEAutomationContract)
   const dispatch = useDispatch()
 
-  const updateVotingPairs = useCallback(
-    (type, pair, index) => {
+  const handleVotingPairs = useCallback(
+    (actionType, payload) => {
       const currentVotes = createData?.votes
-      const updatedVotes = (() => {
-        switch (type) {
-          case UPDATE_TYPE.AUTO:
-            return {
-              ...currentVotes,
-              isAutoVote: !currentVotes.isAutoVote,
-            }
-          case UPDATE_TYPE.PAIRS: {
-            const updatedPairs = [...currentVotes.pairs]
-            updatedPairs[index] = { ...pair, pair: { ...pair.pair, subpools: [] } }
-            const newPairs = updateWeight(updatedPairs)
-            return {
-              ...currentVotes,
-              pairs: newPairs,
-            }
-          }
-          default:
-            return currentVotes
+      const updatedVotes = { ...currentVotes }
+
+      switch (actionType) {
+        case 'TOGGLE_AUTO':
+          updatedVotes.isAutoVote = !currentVotes.isAutoVote
+          break
+
+        case 'UPDATE_PAIR': {
+          const { index, pair } = payload
+          const updatedPairs = [...currentVotes.pairs]
+          updatedPairs[index] = { ...pair, pair: { ...pair.pair, subpools: [] } }
+          updatedVotes.pairs = updateWeight(updatedPairs)
+          break
         }
-      })()
+
+        case 'ADD_PAIR':
+          updatedVotes.pairs = [...currentVotes.pairs, { lock: false, weight: 0, pair: undefined }]
+          break
+
+        case 'REMOVE_PAIR': {
+          const { index } = payload
+          const updatedPairs = [...currentVotes.pairs]
+          updatedPairs.splice(index, 1)
+          updatedVotes.pairs = updateWeight(updatedPairs)
+          break
+        }
+
+        default:
+          return
+      }
 
       if (JSON.stringify(currentVotes) !== JSON.stringify(updatedVotes)) {
         dispatch(
           createVeTHEAutomationContract({
-            createData: {
-              ...createData,
-              votes: updatedVotes,
-            },
+            createData: { ...createData, votes: updatedVotes },
           }),
         )
       }
@@ -91,54 +93,7 @@ function Step2Vote() {
     [createData, dispatch],
   )
 
-  const onAddPair = useCallback(() => {
-    const pairsArr = [...createData.votes.pairs]
-    pairsArr.push({
-      lock: false,
-      weight: 0,
-      pair: undefined,
-    })
-    dispatch(
-      createVeTHEAutomationContract({
-        createData: {
-          ...createData,
-          votes: {
-            ...createData.votes,
-            pairs: pairsArr,
-          },
-        },
-      }),
-    )
-  }, [createData, dispatch])
-
-  const onRemovePair = useCallback(
-    index => {
-      const pairsArr = [...createData.votes.pairs]
-      pairsArr.splice(index, 1)
-      const newPairs = updateWeight(pairsArr)
-      dispatch(
-        createVeTHEAutomationContract({
-          createData: {
-            ...createData,
-            votes: {
-              ...createData.votes,
-              pairs: newPairs,
-            },
-          },
-        }),
-      )
-    },
-    [createData, dispatch],
-  )
-
-  return (
-    <SelectVotingPairsAndWeights
-      data={createData}
-      onAddPair={onAddPair}
-      onRemovePair={onRemovePair}
-      updateVotingPairs={updateVotingPairs}
-    />
-  )
+  return <SelectVotingPairsAndWeights data={createData} handleVotingPairs={handleVotingPairs} />
 }
 
 export default Step2Vote

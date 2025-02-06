@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { memo, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { OutlineIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
@@ -12,12 +12,14 @@ import PairModal from '@/modules/PairModal'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { ChevronDownIcon, LockIcon, TrashIcon, UnlockIcon } from '@/svgs'
 
-function VotingPairItem({ pair, onSelected, onRemovePair }) {
+function VotingPairItem({ pair, onSelected, onRemovePair, pairsSelected }) {
   const t = useTranslations()
   const [isOpen, setIsOpen] = useState(false)
-  const [selected, setSelected] = useState(pair.pair)
-  const [weight, setWeight] = useState(pair.weight)
-  const [lock, setLock] = useState(pair.lock)
+  const [pairState, setPairState] = useState({
+    selected: pair.pair,
+    weight: pair.weight,
+    lock: pair.lock,
+  })
   const [width, setWidth] = useState(0)
   const ref = useRef(null)
 
@@ -42,62 +44,61 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
 
   const poolsWithGauge = useV3PoolsWithGauge()
 
-  const pairs = useMemo(
-    () =>
-      poolsWithGauge
-        .filter(pool => pool.version === 3)
-        .map(pool => ({
-          ...pool,
-          title: pool?.title === 'CL_Farming' ? 'Conc. Liquidity' : pool?.title,
-        })),
-    [poolsWithGauge],
-  )
+  const selectedAddresses = new Set(pairsSelected.map(p => p.pair?.address?.toLowerCase()))
+  const filteredPairs = poolsWithGauge
+    .filter(pool => pool.version === 3 && !selectedAddresses.has(pool.address.toLowerCase()))
+    .map(pool => ({
+      ...pool,
+      title: pool?.title === 'CL_Farming' ? 'Conc. Liquidity' : pool?.title,
+    }))
 
   useEffect(() => {
-    if (selected) {
-      onSelected({
-        lock,
-        weight,
-        pair: {
-          address: selected.address,
-          basePool: selected.basePool,
-          lpPrice: selected.lpPrice,
-          stable: selected.stable,
-          symbol: selected.symbol,
-          title: selected.title,
-          type: selected.type,
-          version: selected.version,
-          ...(selected.type === PAIR_TYPES.WEIGHTED
-            ? {
-                tokens: (selected.tokens || []).map(token => ({
-                  ...token,
-                  totalValue: token?.totalValue?.toString() || 0,
-                  balance: token?.balance?.toString() || 0,
-                  reserve: token?.reserve?.toString() || 0,
-                })),
-              }
-            : {
-                token0: {
-                  ...selected.token0,
-                  reserve: selected?.token0?.reserve?.toString() || 0,
-                  balance: selected?.token0?.balance?.toString() || 0,
-                },
-                token1: {
-                  ...selected.token1,
-                  reserve: selected?.token1?.reserve?.toString() || 0,
-                  balance: selected?.token1?.balance?.toString() || 0,
-                },
-              }),
-        },
-      })
-    }
-  }, [lock, onSelected, selected, weight])
+    if (!pairState.selected) return
+    onSelected({
+      lock: pairState.lock,
+      weight: pairState.weight,
+      pair: {
+        address: pairState.selected.address,
+        basePool: pairState.selected.basePool,
+        lpPrice: pairState.selected.lpPrice,
+        stable: pairState.selected.stable,
+        symbol: pairState.selected.symbol,
+        title: pairState.selected.title,
+        type: pairState.selected.type,
+        version: pairState.selected.version,
+        ...(pairState.selected.type === PAIR_TYPES.WEIGHTED
+          ? {
+              tokens: (pairState.selected.tokens || []).map(token => ({
+                ...token,
+                totalValue: token?.totalValue?.toString() || 0,
+                balance: token?.balance?.toString() || 0,
+                reserve: token?.reserve?.toString() || 0,
+              })),
+            }
+          : {
+              token0: {
+                ...pairState.selected.token0,
+                reserve: pairState.selected?.token0?.reserve?.toString() || 0,
+                balance: pairState.selected?.token0?.balance?.toString() || 0,
+              },
+              token1: {
+                ...pairState.selected.token1,
+                reserve: pairState.selected?.token1?.reserve?.toString() || 0,
+                balance: pairState.selected?.token1?.balance?.toString() || 0,
+              },
+            }),
+      },
+    })
+  }, [pairState, onSelected])
 
   useEffect(() => {
-    setSelected(prev => (JSON.stringify(pair.pair) !== JSON.stringify(pair) ? pair.pair : prev))
-    setWeight(prev => (pair.weight !== prev ? pair.weight : prev))
-    setLock(prev => (pair.lock !== prev ? pair.lock : prev))
+    setPairState({
+      selected: pair.pair,
+      weight: pair.weight,
+      lock: pair.lock,
+    })
   }, [pair])
+
   return (
     <div
       ref={ref}
@@ -107,17 +108,17 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
         className='float-left flex w-fit cursor-pointer items-center justify-between rounded-full bg-neutral-700 p-2 xl:px-4 xl:py-3'
         onClick={() => setIsOpen(!isOpen)}
       >
-        {selected ? (
+        {pair.pair ? (
           <div className='flex items-center gap-1'>
-            {selected.type === PAIR_TYPES.WEIGHTED ? (
+            {pair.pair.type === PAIR_TYPES.WEIGHTED ? (
               <ThreeIconGroup
                 className='-space-x-2'
                 classNames={{
                   image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
                 }}
-                logo1={selected?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                logo2={selected?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                extendNumber={(selected?.tokens?.length || 2) - 2}
+                logo1={pair.pair?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
+                logo2={pair.pair?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
+                extendNumber={(pair.pair?.tokens?.length || 2) - 2}
               />
             ) : (
               <IconGroup
@@ -125,13 +126,13 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
                 classNames={{
                   image: 'outline-2 w-8 h-8',
                 }}
-                logo1={selected.token0.logoURI}
-                logo2={selected.token1.logoURI}
+                logo1={pair.pair.token0.logoURI ?? UNKNOWN_LOGO}
+                logo2={pair.pair.token1.logoURI ?? UNKNOWN_LOGO}
               />
             )}
             <div className='flex items-end gap-[6px]'>
-              <TextHeading className='text-sm'>{selected.symbol}</TextHeading>
-              {selected.type !== PAIR_TYPES.WEIGHTED && <Paragraph className='text-sm'>{selected.type}</Paragraph>}
+              <TextHeading className='text-sm'>{pair.pair.symbol}</TextHeading>
+              {pair.pair.type !== PAIR_TYPES.WEIGHTED && <Paragraph className='text-sm'>{pair.pair.type}</Paragraph>}
             </div>
           </div>
         ) : (
@@ -147,13 +148,8 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
             className='h-11 w-[70px] border-none bg-transparent'
             classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7' }}
             type='number'
-            min={0}
-            step={1}
-            val={weight || ''}
-            onChange={event => {
-              setWeight(Number(event.target.value))
-              setLock(true)
-            }}
+            val={pairState.weight || ''}
+            onChange={event => setPairState(prev => ({ ...prev, weight: Number(event.target.value), lock: true }))}
             placeholder=''
             suffix='%'
           />
@@ -161,15 +157,20 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
         <div>
           <OutlineIconButton
             className='mr-2 h-7 w-7'
-            Icon={lock ? LockIcon : UnlockIcon}
-            onClick={() => setLock(prev => !prev)}
+            Icon={pairState.lock ? LockIcon : UnlockIcon}
+            onClick={() => setPairState(prev => ({ ...prev, lock: !prev.lock }))}
           />
           <OutlineIconButton className='h-7 w-7' Icon={TrashIcon} onClick={onRemovePair} />
         </div>
       </div>
 
-      <PairModal popup={isOpen} setPopup={setIsOpen} setSelected={setSelected} pools={pairs} />
+      <PairModal
+        popup={isOpen}
+        setPopup={setIsOpen}
+        setSelected={selected => setPairState(prev => ({ ...prev, selected }))}
+        pools={filteredPairs}
+      />
     </div>
   )
 }
-export default memo(VotingPairItem)
+export default VotingPairItem

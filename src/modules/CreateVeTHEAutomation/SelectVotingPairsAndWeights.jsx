@@ -8,12 +8,12 @@ import { PlusIcon } from '@/svgs'
 
 import VotingPairItem from './Steps/votingPairs/VotingPairItem'
 
-const UPDATE_TYPE = {
-  AUTO: 'isAutoVote',
-  PAIRS: 'pairs',
-}
+// const UPDATE_TYPE = {
+//   AUTO: 'isAutoVote',
+//   PAIRS: 'pairs',
+// }
 
-function SelectVotingPairsAndWeights({ data, updateVotingPairs, onRemovePair, onAddPair }) {
+function SelectVotingPairsAndWeights({ data, handleVotingPairs }) {
   const t = useTranslations()
   const [totalWeight, setTotalWeight] = useState(0)
 
@@ -28,7 +28,7 @@ function SelectVotingPairsAndWeights({ data, updateVotingPairs, onRemovePair, on
       <div className='flex items-center gap-1'>
         <Toggle
           checked={data.votes.isAutoVote}
-          onChange={() => updateVotingPairs(UPDATE_TYPE.AUTO)}
+          onChange={() => handleVotingPairs('TOGGLE_AUTO')}
           label='Automatically vote each epoch'
         />
       </div>
@@ -39,17 +39,17 @@ function SelectVotingPairsAndWeights({ data, updateVotingPairs, onRemovePair, on
             <div className='divide-y divide-neutral-700 rounded-xl border border-neutral-700'>
               {data.votes.pairs.map((item, index) => (
                 <VotingPairItem
-                  key={`${item?.address}_${index}`}
+                  key={`${item?.pair?.address}_${index}`}
                   pair={item}
-                  onSelected={pair => updateVotingPairs(UPDATE_TYPE.PAIRS, pair, index)}
+                  onSelected={pair => handleVotingPairs('UPDATE_PAIR', { pair, index })}
                   pairsSelected={data.votes.pairs}
-                  onRemovePair={() => onRemovePair(index)}
+                  onRemovePair={() => handleVotingPairs('REMOVE_PAIR', { index })}
                 />
               ))}
             </div>
             <OutlinedButton
               className='h-11 w-[130px] border border-primary-600 p-0 text-primary-600 hover:text-primary-600'
-              onClick={onAddPair}
+              onClick={() => handleVotingPairs('ADD_PAIR')}
             >
               <PlusIcon className='h-4 w-4 !stroke-primary-600' />
               {t('Add Pair')}

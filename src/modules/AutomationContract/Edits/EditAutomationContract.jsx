@@ -17,11 +17,6 @@ const SETTINGS_TYPE = {
   EXECUTION_TIME: 'execution',
 }
 
-const UPDATE_TYPE = {
-  AUTO: 'isAutoVote',
-  PAIRS: 'pairs',
-}
-
 function EditAutomationContract({ data }) {
   const t = useTranslations()
   const [dataEdit, setDataEdit] = useState({ ...data })
@@ -64,68 +59,52 @@ function EditAutomationContract({ data }) {
     [dataEdit],
   )
 
-  const updateVotingPairs = useCallback(
-    (type, pair, index) => {
-      const currentVotes = dataEdit?.votes
-      const updatedVotes = (() => {
-        switch (type) {
-          case UPDATE_TYPE.AUTO:
-            return {
-              ...currentVotes,
-              isAutoVote: !currentVotes.isAutoVote,
-            }
-          case UPDATE_TYPE.PAIRS: {
-            const updatedPairs = [...currentVotes.pairs]
+  const handleVotingPairs = useCallback((action, payload) => {
+    setDataEdit(prev => {
+      if (!prev?.votes) return prev
+
+      const currentVotes = prev.votes
+      const updatedVotes = { ...currentVotes }
+
+      switch (action) {
+        case 'TOGGLE_AUTO':
+          updatedVotes.isAutoVote = !currentVotes.isAutoVote
+          break
+
+        case 'UPDATE_PAIR': {
+          const { pair, index } = payload
+          const updatedPairs = [...currentVotes.pairs]
+          if (index !== -1) {
             updatedPairs[index] = { ...pair, pair: { ...pair.pair, subpools: [] } }
-            const newPairs = updateWeight(updatedPairs)
-            return {
-              ...currentVotes,
-              pairs: newPairs,
-            }
           }
-          default:
-            return currentVotes
+          updatedVotes.pairs = updateWeight(updatedPairs)
+          break
         }
-      })()
 
-      if (JSON.stringify(currentVotes) !== JSON.stringify(updatedVotes)) {
-        setDataEdit({ ...dataEdit, votes: updatedVotes })
+        case 'ADD_PAIR': {
+          // const addressRandom = `0x${uuidv4().replace(/-/g, '').slice(0, 40)}`
+          updatedVotes.pairs = [...currentVotes.pairs, { lock: false, weight: 0, pair: undefined }]
+          break
+        }
+
+        case 'REMOVE_PAIR': {
+          const { index } = payload
+          const newArray = [...currentVotes.pairs.slice(0, index), ...currentVotes.pairs.slice(index + 1)]
+          updatedVotes.pairs = updateWeight(newArray)
+          break
+        }
+
+        default:
+          return prev
       }
-    },
-    [dataEdit],
-  )
 
-  const onAddPair = useCallback(() => {
-    const pairsArr = [...dataEdit.votes.pairs]
-    pairsArr.push({
-      lock: false,
-      weight: 0,
-      pair: undefined,
-    })
-    setDataEdit({
-      ...dataEdit,
-      votes: {
-        ...dataEdit.votes,
-        pairs: pairsArr,
-      },
-    })
-  }, [dataEdit])
+      if (JSON.stringify(currentVotes) === JSON.stringify(updatedVotes)) {
+        return prev
+      }
 
-  const onRemovePair = useCallback(
-    index => {
-      const pairsArr = [...dataEdit.votes.pairs]
-      pairsArr.splice(index, 1)
-      const newPairs = updateWeight(pairsArr)
-      setDataEdit({
-        ...dataEdit,
-        votes: {
-          ...dataEdit.votes,
-          pairs: newPairs,
-        },
-      })
-    },
-    [dataEdit],
-  )
+      return { ...prev, votes: updatedVotes }
+    })
+  }, [])
 
   const [error, setError] = useState()
 
@@ -149,6 +128,7 @@ function EditAutomationContract({ data }) {
       setError(t('Total weight invalid'))
       return true
     }
+    setError()
   }, [dataEdit?.votes?.pairs, t])
 
   return (
@@ -192,12 +172,7 @@ function EditAutomationContract({ data }) {
           </div>
           <div className='col-span-full flex flex-row lg:col-span-8'>
             <div className='w-full space-y-11'>
-              <SelectVotingPairsAndWeights
-                data={dataEdit}
-                onAddPair={onAddPair}
-                onRemovePair={onRemovePair}
-                updateVotingPairs={updateVotingPairs}
-              />
+              <SelectVotingPairsAndWeights data={dataEdit} handleVotingPairs={handleVotingPairs} />
               {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
               <PrimaryButton
                 disabled={pendingEdit || isDisabled}
