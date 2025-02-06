@@ -4,6 +4,8 @@ import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import Input from '@/components/input'
+import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { useCreateAutomation, useEditAutomation } from '@/hooks/automationContract/useAutomationContract'
 
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
@@ -54,6 +56,9 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
     return false
   }, [createData?.settings?.executionTime, createData?.veTHEId, createData?.votes?.pairs, currentStep, t])
 
+  const [linkAmount, setLinkAmount] = useState(0)
+  const [popup, setPopup] = useState(false)
+
   return (
     <div className='mt-4 space-y-4'>
       {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
@@ -82,13 +87,45 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
             )}
 
             {currentStep === 4 && (
-              <PrimaryButton disabled={pendingCreate} className='w-full' onClick={() => onCreateAutomation(createData)}>
+              <PrimaryButton disabled={pendingCreate} className='w-full' onClick={() => setPopup(true)}>
                 {t('Confirm')}
               </PrimaryButton>
             )}
           </>
         )}
       </>
+
+      <Modal
+        isOpen={popup}
+        closeModal={() => {
+          setPopup(false)
+        }}
+        width={480}
+        title={t('Enter Link Amount')}
+      >
+        <ModalBody>
+          <div className='flex w-full flex-col gap-4'>
+            <div className='flex flex-col gap-3'>
+              <Input val={linkAmount} placeholder='Link Amount' onChange={e => setLinkAmount(Number(e.target.value))} />
+            </div>
+          </div>
+        </ModalBody>
+
+        <ModalFooter className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+          <EmphasisButton className='w-full' onClick={() => setPopup()}>
+            {t('Cancel')}
+          </EmphasisButton>
+          <PrimaryButton
+            className='w-full'
+            onClick={() => {
+              onCreateAutomation(createData, linkAmount)
+              setPopup(false)
+            }}
+          >
+            {t('Save')}
+          </PrimaryButton>
+        </ModalFooter>
+      </Modal>
     </div>
   )
 }

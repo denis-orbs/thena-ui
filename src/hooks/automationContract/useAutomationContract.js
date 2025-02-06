@@ -1,13 +1,14 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
-import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
+import { maxUint256, zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { AUTOMATION_STATUS, TXN_STATUS } from '@/constant'
+import Contracts from '@/constant/contracts'
 import { readCall } from '@/lib/contractActions'
-import { getVeTheAutomationContract, getVeTheAutomationFactoryContract } from '@/lib/contracts'
-import { convertBooleansToHex, convertHexToBooleans } from '@/lib/utils'
+import { getTheContract, getVeTheAutomationContract, getVeTheAutomationFactoryContract } from '@/lib/contracts'
+import { convertBooleansToHex, convertHexToBooleans, toWei } from '@/lib/utils'
 import { usePoolsWithGauge } from '@/state/pools/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -21,9 +22,12 @@ export const useCreateAutomation = () => {
   const { startTxn, endTxn, writeTxn } = useTxn()
 
   const onCreateAutomation = useCallback(
-    async contract => {
+    async (contract, linkAmount) => {
       const key = uuidv4()
       const createAutouuid = uuidv4()
+      const upkeepuuid = uuidv4()
+      const approveuuid = uuidv4()
+      const approveLinkuuid = uuidv4()
       const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
       const { settings, votes } = contract
 
@@ -35,6 +39,10 @@ export const useCreateAutomation = () => {
       const pools = pairs.map(pair => pair.pair.address)
       const weights = pairs.map(pair => pair.weight)
 
+      const theContract = getTheContract(chainId)
+      // const veTHEaddress = Contracts.veTHE[chainId]
+      setPending(true)
+
       startTxn({
         key,
         title: 'Create Automation Contract',
@@ -44,11 +52,20 @@ export const useCreateAutomation = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
+          [approveLinkuuid]: {
+            desc: t('Approve Link Token'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [upkeepuuid]: {
+            desc: t('Upkeep through Chainlink Registrar'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
         },
       })
 
       try {
-        setPending(true)
         if (
           !(await writeTxn(key, createAutouuid, veTheAutomationFactoryContract, 'createAutomation', [
             tokenId,
@@ -62,6 +79,39 @@ export const useCreateAutomation = () => {
           return false
         }
 
+        const { data: automationAddress } = await readCall(
+          veTheAutomationFactoryContract,
+          'tokenIdToAutomation',
+          [tokenId],
+          chainId,
+        )
+
+        const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+
+        if (
+          !(await writeTxn(key, approveuuid, theContract, 'approve', [
+            Contracts.transparentUpgradeableProxy[chainId],
+            maxUint256,
+          ]))
+        ) {
+          setPending(false)
+          return
+        }
+        if (
+          !(await writeTxn(key, createAutouuid, veTheAutomationContract, 'registerUpkeep', [
+            Contracts.linkToken[chainId],
+            toWei(linkAmount),
+          ]))
+        ) {
+          setPending(false)
+          return false
+        }
+
+        const isSuccess = await writeTxn(key, approveuuid, theContract, 'approve', [automationAddress, maxUint256])
+        if (!isSuccess) {
+          setPending(false)
+          return
+        }
         endTxn({
           key,
           final: 'Create Automation Contract Successful',
@@ -80,20 +130,67 @@ export const useCreateAutomation = () => {
   return { onCreateAutomation, pending }
 }
 
-export const useIsAutomation = address => {
+export const getStatusString = status => {
+  switch (status) {
+    case 0:
+      return AUTOMATION_STATUS.PENDING
+    case 1:
+      return AUTOMATION_STATUS.ACTIVE
+    case 2:
+      return AUTOMATION_STATUS.PAUSED
+    case 3:
+      return AUTOMATION_STATUS.CANCELED
+    default:
+      return 'unknown'
+  }
+}
+
+export const useAutomationAddress = tokenId => {
   const { chainId } = useWallet()
-
-  const isAutomation = useCallback(async () => {
-    const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-    const isAuto = await readCall(veTheAutomationFactoryContract, 'isAutomation', [address], chainId)
-    return isAuto
-  }, [address, chainId])
-
-  const { data, isLoading } = useSWR(['fetch is automation', address], () => isAutomation(), {
-    refreshInterval: 0,
+  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
+  const { data: automationAddress } = useReadContract({
+    ...veTheAutomationFactoryContract,
+    functionName: 'tokenIdToAutomation',
+    args: [tokenId],
+    enabled: Boolean(tokenId) && Boolean(chainId),
   })
 
-  return { data, isLoading }
+  return automationAddress
+}
+
+export const useAutomationStatus = vetTHEId => {
+  const { chainId } = useWallet()
+  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
+  const {
+    data: automationAddress,
+    refetch: mutateData1,
+    isLoading: isLoading1,
+  } = useReadContract({
+    ...veTheAutomationFactoryContract,
+    functionName: 'tokenIdToAutomation',
+    args: [vetTHEId],
+    enabled: Boolean(vetTHEId) && Boolean(chainId),
+  })
+
+  const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+
+  const {
+    data: status,
+    isLoading: isLoading2,
+    refetch: mutateData2,
+  } = useReadContract({
+    ...veTheAutomationContract,
+    functionName: 'status',
+    enabled: Boolean(vetTHEId) && Boolean(automationAddress) && automationAddress !== zeroAddress && Boolean(chainId),
+  })
+
+  const statusString = useMemo(() => getStatusString(status), [status])
+
+  if (automationAddress === zeroAddress) {
+    return { status: AUTOMATION_STATUS.NO, isLoading: isLoading1, mutateData: mutateData1 }
+  }
+
+  return { status: statusString, isLoading: isLoading2, mutateData: mutateData2 }
 }
 
 export const useAutomationContractDetail = tokenId => {
@@ -156,20 +253,7 @@ export const useAutomationContractDetail = tokenId => {
         }
   })
 
-  const statusString = useMemo(() => {
-    switch (status) {
-      case 0:
-        return AUTOMATION_STATUS.PENDING
-      case 1:
-        return AUTOMATION_STATUS.ACTIVE
-      case 2:
-        return AUTOMATION_STATUS.PAUSED
-      case 3:
-        return AUTOMATION_STATUS.CANCELED
-      default:
-        return 'unknown'
-    }
-  }, [status])
+  const statusString = useMemo(() => getStatusString(status), [status])
 
   const contractData = {
     address: automationAddress,

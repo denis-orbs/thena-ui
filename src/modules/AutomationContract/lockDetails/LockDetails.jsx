@@ -1,31 +1,16 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React from 'react'
 
-import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { AUTOMATION_STATUS } from '@/constant'
 import { formatAmount } from '@/lib/utils'
+
+import AutomationStatus from '../AutomationStatus'
 
 function LockDetails({ contractData }) {
   const t = useTranslations()
-
-  const styleStatus = useMemo(() => {
-    switch (contractData.status) {
-      case AUTOMATION_STATUS.PENDING:
-        return 'bg-[#0000F5]'
-      case AUTOMATION_STATUS.ACTIVE:
-        return 'bg-success-600'
-      case AUTOMATION_STATUS.PAUSED:
-        return 'bg-warn-600'
-      case 3:
-        return 'bg-error-600'
-      default:
-        return 'unknown'
-    }
-  }, [contractData.status])
 
   return (
     <div className='space-y-4'>
@@ -33,8 +18,8 @@ function LockDetails({ contractData }) {
       <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Lock Details')}</TextHeading>
       <div className='grid grid-cols-2 gap-2 lg:grid-cols-5 lg:gap-6'>
         <Box className='flex w-full flex-col gap-2'>
-          <div className='bg-bl flex items-center gap-1'>
-            <NeutralBadge className={styleStatus}>{contractData.status}</NeutralBadge>
+          <div className='flex items-center gap-1'>
+            <AutomationStatus veTHEId={contractData?.veTHEId} />
           </div>
           <Paragraph className='text-sm'>{t('Automation Status')}</Paragraph>
         </Box>

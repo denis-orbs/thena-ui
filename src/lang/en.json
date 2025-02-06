@@ -1344,7 +1344,6 @@
   "Earn Rewards": "Earn Rewards",
   "Earn Rewards Description": "In hac habitasse platea dictumst. Vestibulum pretium congue nulla in feugiat. Duis rhoncus viverra facilisis.",
   "Active": "Active",
-  "Auto Lock Vote": "Auto Lock & Vote",
   "Contract Name": "Contract Name",
   "Lock Page": "Lock Page",
   "Your veTHE ID": "Your veTHE ID",
@@ -1395,5 +1394,8 @@
   "Confirm cancel automation": "Canceling your automation will stop it from running, and you'll need to manually vote, lock, and claim your rebase rewards. Your remaining deposit will be withdrawn.",
   "Unpause Automation": "Unpause Automation",
   "Cancel Deposit": "Cancel Deposit",
-  "": ""
+  "": "",
+  "Automation": "Automation",
+  "How It Works": "How It Works",
+  "Add Automation": "Add Automation"
 }

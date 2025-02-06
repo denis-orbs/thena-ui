@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 
 import { Info } from '@/components/alert'
-import { GreenBadge } from '@/components/badges/Badge'
 import { EmphasisButton, PrimaryButton, SecondaryButton, TertiaryButton } from '@/components/buttons/Button'
 import Highlight from '@/components/highlight'
 import Spinner from '@/components/spinner'
@@ -18,6 +17,8 @@ import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { useWithdrawLock } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
+import AutomationButton from '@/modules/AutomationContract/AutomationButton'
+import AutomationStatus from '@/modules/AutomationContract/AutomationStatus'
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
 import { useChainSettings } from '@/state/settings/hooks'
 import { GiftIcon, InfoCirclePrimary, InfoCircleWhite, LockIcon, RefreshIcon } from '@/svgs'
@@ -158,14 +159,10 @@ export default function LockPage() {
             {veTHE.votedCurrentEpoch ? t('Yes') : t('No')}
           </Paragraph>
         ),
-        automation: (
-          <div>
-            <GreenBadge>{t('Active')}</GreenBadge>
-          </div>
-        ),
+        automation: <AutomationStatus veTHEId={veTHE.id} />,
         action: (
           <div className='flex flex-row gap-3'>
-            <TertiaryButton className='min-w-fit'>{t('Auto Lock Vote')}</TertiaryButton>
+            <AutomationButton veTHE={veTHE} />
             {veTHE.voting_amount.isZero() ? (
               <SecondaryButton
                 disabled={pending}

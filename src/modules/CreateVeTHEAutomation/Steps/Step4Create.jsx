@@ -10,7 +10,7 @@ import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 
 function Step4Create() {
   const t = useTranslations()
-  const { createData } = useSelector(state => state.veTHEAutomationContract)
+  const { createData, veTHESelected } = useSelector(state => state.veTHEAutomationContract)
   return (
     <div className='space-y-5 divide-y divide-neutral-700 '>
       {/* Details */}
@@ -22,7 +22,7 @@ function Step4Create() {
         </div>
         <div className='flex flex-row justify-between'>
           <Paragraph>{t('Contract Name')}</Paragraph>
-          <TextHeading>{createData?.contractName || 'UNKNOWN'}</TextHeading>
+          <TextHeading>{`veTHE Automation - ID ${veTHESelected?.id}`}</TextHeading>
         </div>
       </div>
 

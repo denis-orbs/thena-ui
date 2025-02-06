@@ -196,5 +196,11 @@ const Contracts = {
   veTheAutomationFactory: {
     [CHAIN_ID.TEST_BSC]: '0xca21384cbd550635706e6cc260db9857c15ea4a2',
   },
+  linkToken: {
+    [CHAIN_ID.TEST_BSC]: '0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06',
+  },
+  transparentUpgradeableProxy: {
+    [CHAIN_ID.TEST_BSC]: '0x7aD0076eB790d977295dceF026Bac917aF72d40B',
+  },
 }
 export default Contracts

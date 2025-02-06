@@ -247,6 +247,17 @@ export const AUTOMATION_STATUS = {
   ACTIVE: 'Active',
   PAUSED: 'Paused',
   CANCELED: 'Canceled',
+  NO: 'No',
+  UNKNOWN: 'unknown',
+}
+
+export const ACTION_AUTOMATION_TYPE = {
+  DETAIL: 'detail',
+  EDIT: 'edit',
+  PAUSE: 'pause',
+  CANCEL: 'cancel',
+  UNPAUSE: 'unpause',
+  CREATE: 'create',
 }
 
 export const EDIT_AUTOMATION_TYPE = {
