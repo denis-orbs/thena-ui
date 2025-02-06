@@ -102,7 +102,7 @@ export default function IncentivePage() {
         <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => push('/protocols')}>
           {t('Back')}
         </TextButton>
-        <h2>{t('Voting Incentive')}</h2>
+        <h2 className='font-archia'>{t('Voting Incentive')}</h2>
       </div>
 
       <div className='flex flex-col gap-4'>
@@ -151,7 +151,7 @@ export default function IncentivePage() {
 
       <div className='grid grid-cols-1 gap-8 lg:grid-cols-2'>
         <div className={cn('rounded-xl bg-neutral-900 p-5', isConfirmState && 'hidden')}>
-          <TextHeading className='text-xl'>{t('Add Incentive')}</TextHeading>
+          <h2 className='font-archia text-3xl'>Add Incentive</h2>
 
           <div className='flex flex-col gap-4 pt-8'>
             <div className='flex flex-col gap-2'>
@@ -226,14 +226,14 @@ export default function IncentivePage() {
               />
             </div>
 
-            <label className={cn('mb-6 flex items-center gap-2', epochs <= 1 && 'hidden')}>
+            <div className={cn('mb-6 flex w-fit cursor-pointer items-center gap-2', epochs <= 1 && 'hidden')}>
               <CheckBox
                 className={cn(!isFixedAmount && 'bg-neutral-700')}
                 checked={isFixedAmount}
                 setChecked={setIsFixedAmount}
               />
-              <span>{t('Fixed amount per epoch')}</span>
-            </label>
+              <span onClick={() => setIsFixedAmount(prev => !prev)}>{t('Fixed amount per epoch')}</span>
+            </div>
 
             {Array.from({ length: epochs }, (_, i) => {
               const { startDate, endDate } = calculateEpochPeriod(currentEpoch + i)
@@ -295,9 +295,9 @@ export default function IncentivePage() {
         </div>
 
         <div className={cn('rounded-xl bg-neutral-900 p-5', !isConfirmState && 'hidden')}>
-          <TextHeading className='mb-8 flex items-center text-xl'>
+          <TextHeading className='mb-8 flex items-center '>
             <TextButton className='w-fit' LeadingIcon={ArrowLeftIcon} onClick={() => setIsConfirmState(false)} />
-            Confirm Incentive
+            <h2 className='font-archia text-3xl'>Confirm Incentive</h2>
           </TextHeading>
 
           {pair && (
@@ -416,7 +416,7 @@ export default function IncentivePage() {
         </div>
 
         <div className='rounded-xl bg-neutral-900 p-5'>
-          <TextHeading className='mb-2 block text-xl'>{t('Total Incentives')}</TextHeading>
+          <h2 className='mb-2 font-archia text-2xl'>Total Incentives</h2>
           <Paragraph className={cn('mb-5 block border-b border-neutral-700 pb-5 text-sm')}>
             Select a pair to view the total rewards deposited.
           </Paragraph>
@@ -486,6 +486,9 @@ export default function IncentivePage() {
         <TextHeading className='text-xl'>{t('What is a Voting Incentive')}</TextHeading>
         <Paragraph>{t('Voting Incentive Description')}</Paragraph>
       </Neutral>
+
+      {/* Allow user scoll down a bit to let the form at the center */}
+      <div className='md:h-[20dvh]' />
 
       <PairModal popup={pairOpen} setPopup={setPairOpen} setSelected={setPair} pools={updatedPoolsWithGauge} />
 
