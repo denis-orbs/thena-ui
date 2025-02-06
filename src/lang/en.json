@@ -1400,5 +1400,17 @@
   "Add Automation": "Add Automation",
   "Waring automation lock": "This lock has automation. Changing the lock duration may override the current automation settings.",
   "Warning automation merge": "This lock has automation. Merging this veTHE to another will cancel the current automation.",
-  "Warning automation split": "This lock has automation. Spliting this veTHE will cancel the current automation."
+  "Warning automation split": "This lock has automation. Spliting this veTHE will cancel the current automation.",
+  "Select Chainlink": "Select Chainlink",
+  "Link Amount": "Link Amount",
+  "Create Contract": "Create Contract",
+  "Starting Balance": "Starting Balance",
+  "Registration automation contract description": "Deposit LINK to your contract. Select an amount that will satisfy multiple performances to start, then fund the contract directly once it's operational.",
+  "Active Automation Contract": "Active Automation Contract",
+  "Upkeep through Chainlink Registrar": "Upkeep through Chainlink Registrar",
+  "Enter Chainlink Amount": "Enter Chainlink Amount",
+  "Activity Type": "Activity Type",
+  "Save": "Save",
+  "Active Automation": "Active Automation",
+  "Create New Automation": "Create New Automation"
 }

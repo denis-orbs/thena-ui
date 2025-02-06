@@ -14,7 +14,7 @@ import ConfirmAutomationModal from './ConfirmAutomationModal'
 
 function AutomationButton({ veTHE }) {
   const { id: veTHEId } = veTHE
-  const { isLoading, status } = useAutomationStatus(veTHEId)
+  const { isLoading, status, mutateData: mutateDataStatus } = useAutomationStatus(veTHEId)
   const t = useTranslations()
   const dispatch = useDispatch()
   const [showModal, setShowModal] = useState(false)
@@ -71,30 +71,6 @@ function AutomationButton({ veTHE }) {
     }
   }, [status, veTHEId])
 
-  useEffect(() => {
-    if (!action) return
-
-    if (action.type === ACTION_AUTOMATION_TYPE.DETAIL) {
-      push(`/dashboard/lock-automation/${action.id}`)
-    }
-
-    if (action.type === ACTION_AUTOMATION_TYPE.EDIT) {
-      push(`/dashboard/lock-automation/${action.id}/edit`)
-    }
-  }, [action, push])
-
-  useEffect(() => {
-    if (!action) return
-
-    if (
-      action.type === ACTION_AUTOMATION_TYPE.CANCEL ||
-      action.type === ACTION_AUTOMATION_TYPE.PAUSE ||
-      action.type === ACTION_AUTOMATION_TYPE.UNPAUSE
-    ) {
-      setShowModal(true)
-    }
-  }, [action])
-
   const onClickAddAutomation = useCallback(() => {
     if (veTHE) {
       dispatch(
@@ -130,18 +106,46 @@ function AutomationButton({ veTHE }) {
           },
         }),
       )
-      push('/dashboard/lock-automation/')
+      push('/dashboard/lock/automation/')
     }
   }, [dispatch, push, veTHE])
+
+  useEffect(() => {
+    if (!action) return
+
+    if (action.type === ACTION_AUTOMATION_TYPE.DETAIL) {
+      push(`/dashboard/lock/automation/${action.id}`)
+    }
+
+    if (action.type === ACTION_AUTOMATION_TYPE.EDIT) {
+      push(`/dashboard/lock/automation/${action.id}/edit`)
+    }
+
+    if (action.type === ACTION_AUTOMATION_TYPE.CREATE) {
+      onClickAddAutomation()
+    }
+  }, [action, onClickAddAutomation, push])
+
+  useEffect(() => {
+    if (!action) return
+
+    if (
+      action.type === ACTION_AUTOMATION_TYPE.CANCEL ||
+      action.type === ACTION_AUTOMATION_TYPE.PAUSE ||
+      action.type === ACTION_AUTOMATION_TYPE.UNPAUSE
+    ) {
+      setShowModal(true)
+    }
+  }, [action])
 
   return (
     <>
       {isLoading ? (
-        <Skeleton className='h-11 w-40 rounded-full' />
+        <Skeleton className='h-11 w-full rounded-xl' />
       ) : (
         <>
           {(status === AUTOMATION_STATUS.NO || status === AUTOMATION_STATUS.UNKNOWN) && (
-            <TertiaryButton className='min-w-fit' onClick={onClickAddAutomation}>
+            <TertiaryButton className='w-full p-3' onClick={onClickAddAutomation}>
               {t('Add Automation')}
             </TertiaryButton>
           )}
@@ -150,7 +154,7 @@ function AutomationButton({ veTHE }) {
             <>
               <Dropdown
                 placeHolder={t('Automation')}
-                className='h-11 w-40'
+                className='h-11 w-full'
                 data={actions || []}
                 setSelected={setAction}
               />
@@ -161,7 +165,10 @@ function AutomationButton({ veTHE }) {
       <ConfirmAutomationModal
         actionType={action?.type}
         address={contractData.address}
-        mutateAutomationData={mutateAutomationData}
+        mutateAutomationData={() => {
+          mutateAutomationData()
+          mutateDataStatus()
+        }}
         showModal={showModal}
         setShowModal={setShowModal}
       />

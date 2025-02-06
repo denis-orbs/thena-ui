@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -31,6 +32,8 @@ function CreateVeTHEAutomation({ contractData, isEdit, mutateAutomationData }) {
   const { veTHEs } = useVeTHEsContext()
   const [isInitialed, setIsInitialed] = useState(false)
 
+  const { push } = useRouter()
+
   const handleNavigation = type => {
     if (currentStep < steps.length && type === NAVIGATION_TYPE.NEXT) setCurrentStep(currentStep + 1)
 
@@ -48,10 +51,11 @@ function CreateVeTHEAutomation({ contractData, isEdit, mutateAutomationData }) {
         dispatch(
           setSelectedVeTHE({
             veTHESelected: {
-              ...veTHE,
+              id: veTHE.id,
               amount: veTHE.amount.toString(),
               rebase_amount: veTHE.rebase_amount.toString(),
               voting_amount: veTHE.voting_amount.toString(),
+              lockedEnd: veTHE.lockedEnd,
             },
           }),
         )
@@ -64,7 +68,7 @@ function CreateVeTHEAutomation({ contractData, isEdit, mutateAutomationData }) {
     <div className='space-y-10'>
       <div>
         <div className='h-11 w-[140px]'>
-          <TextButton onClick={() => {}} LeadingIcon={ArrowLeftIcon}>
+          <TextButton onClick={() => push('/dashboard/lock')} LeadingIcon={ArrowLeftIcon}>
             {t('Lock Page')}
           </TextButton>
         </div>
@@ -73,14 +77,14 @@ function CreateVeTHEAutomation({ contractData, isEdit, mutateAutomationData }) {
           {isEdit && ` ${contractData.veTHEId}`}
         </TextHeading>
       </div>
-      <div className='flex flex-col gap-8 lg:flex-row'>
+      <div className='flex flex-col gap-5 lg:flex-row xl:gap-8'>
         {/* Stepper */}
-        <div className='max-lg:hidden lg:min-w-[380px]'>
+        <div className='max-lg:hidden xl:min-w-[380px]'>
           <Stepper steps={steps} currentStep={currentStep} />
         </div>
 
         {/* Main Content */}
-        <Box className='flex-1 space-y-9 lg:min-w-[500px]'>
+        <Box className='flex-1 space-y-9 xl:min-w-[500px]'>
           <NavigationTop
             steps={stepsTitle}
             currentStep={currentStep}
@@ -96,7 +100,7 @@ function CreateVeTHEAutomation({ contractData, isEdit, mutateAutomationData }) {
         </Box>
 
         {/* Selected veTHE ID */}
-        <div className='lg:min-w-[380px]'>
+        <div className='xl:min-w-[380px]'>
           <SelectedVeTHEID veTHESelected={veTHESelected} />
         </div>
       </div>

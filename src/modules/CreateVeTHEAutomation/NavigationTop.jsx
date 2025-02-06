@@ -9,8 +9,12 @@ import { ArrowLeftIcon } from '@/svgs'
 function NavigationTop({ steps, currentStep, onPrev }) {
   const t = useTranslations()
   return (
-    <div className='flex items-center'>
-      <TextButton onClick={onPrev} className={cn('', currentStep === 1 ? 'hidden' : '')} LeadingIcon={ArrowLeftIcon} />
+    <div className='flex items-center gap-1'>
+      <TextButton
+        onClick={onPrev}
+        className={cn('p-2', currentStep === 1 ? 'hidden' : '')}
+        LeadingIcon={ArrowLeftIcon}
+      />
       <TextHeading className='font-archia text-2xl font-semibold lg:text-3xl'>{t(steps[currentStep - 1])}</TextHeading>
     </div>
   )

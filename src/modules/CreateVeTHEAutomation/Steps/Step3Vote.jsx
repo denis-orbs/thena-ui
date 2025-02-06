@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { OutlinedButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
 import { TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
 import { InfoIcon, PlusIcon } from '@/svgs'
 
@@ -170,19 +169,10 @@ function Step3Vote() {
           ))}
         </div>
         <OutlinedButton
-          // disabled={tokenSelected.length >= 8}
-          className={cn(
-            'h-11 w-[130px] border border-primary-600 p-0 text-primary-600 hover:text-primary-600',
-            // tokenSelected.length >= 8 ? 'border-neutral-600 text-neutral-600 hover:text-neutral-600' : '',
-          )}
+          className='h-11 w-[130px] border border-primary-600 p-0 text-primary-600 hover:text-primary-600'
           onClick={onAddPair}
         >
-          <PlusIcon
-            className={cn(
-              'h-4 w-4 !stroke-primary-600',
-              //  tokenSelected.length >= 8 ? '!stroke-neutral-600' : ''
-            )}
-          />
+          <PlusIcon className='h-4 w-4 !stroke-primary-600' />
           {t('Add Pair')}
         </OutlinedButton>
       </div>

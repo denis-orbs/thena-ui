@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
@@ -10,10 +11,11 @@ import { ArrowLeftIcon } from '@/svgs'
 function ContractPage({ params }) {
   const t = useTranslations()
   const { id } = params
+  const { push } = useRouter()
   return (
     <div className='mx-auto'>
       <div className='h-11 w-[140px]'>
-        <TextButton onClick={() => {}} LeadingIcon={ArrowLeftIcon}>
+        <TextButton onClick={() => push('/dashboard/lock')} LeadingIcon={ArrowLeftIcon}>
           {t('Lock Page')}
         </TextButton>
       </div>

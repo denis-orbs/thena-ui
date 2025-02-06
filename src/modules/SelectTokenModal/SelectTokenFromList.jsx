@@ -8,7 +8,14 @@ import useDebounce from '@/hooks/useDebounce'
 
 import { ItemToken } from '../TokenModal/ItemToken'
 
-export default function SelectTokenFromList({ isOpen, setIsOpen, tokens, setToken, selectedAsset }) {
+export default function SelectTokenFromList({
+  isOpen,
+  setIsOpen,
+  tokens,
+  setToken,
+  selectedAsset,
+  allowSearch = true,
+}) {
   const t = useTranslations()
   const handleSelect = useCallback(
     token => {
@@ -41,15 +48,17 @@ export default function SelectTokenFromList({ isOpen, setIsOpen, tokens, setToke
       width={480}
       title='Select Asset'
     >
-      <div className='mb-3 inline-flex w-full flex-col gap-4 px-6 py-3'>
-        <SearchInput
-          className='w-full'
-          val={searchText}
-          setVal={setSearchText}
-          placeholder='Search by Name, Symbol or Address'
-          autoFocus
-        />
-      </div>
+      {allowSearch && (
+        <div className='mb-3 inline-flex w-full flex-col gap-4 px-6 py-3'>
+          <SearchInput
+            className='w-full'
+            val={searchText}
+            setVal={setSearchText}
+            placeholder='Search by Name, Symbol or Address'
+            autoFocus
+          />
+        </div>
+      )}
 
       <div className='h-px w-full border border-neutral-700' />
 

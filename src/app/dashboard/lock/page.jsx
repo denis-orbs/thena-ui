@@ -31,7 +31,7 @@ const sortOptions = [
   {
     label: 'veTHE ID',
     value: 'id',
-    width: 'lg:w-[10%]',
+    width: 'lg:w-[8%]',
     isDesc: true,
   },
   {
@@ -43,25 +43,25 @@ const sortOptions = [
   {
     label: 'Locked Amount',
     value: 'amount',
-    width: 'lg:w-[12%]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
     label: 'Lock Expire',
     value: 'expire',
-    width: 'lg:w-[16%]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
     label: 'Votes Used',
     value: 'used',
-    width: 'lg:flex-1 lg:w-[8%]',
+    width: 'lg:flex-1 lg:w-[10%]',
     isDesc: true,
   },
   {
     label: 'Automation',
     value: 'automation',
-    width: 'lg:w-[8%]',
+    width: 'lg:w-[12%]',
     disabled: true,
   },
   {
@@ -161,30 +161,35 @@ export default function LockPage() {
         ),
         automation: <AutomationStatus veTHEId={veTHE.id} />,
         action: (
-          <div className='flex flex-row gap-3'>
-            <AutomationButton veTHE={veTHE} />
-            {veTHE.voting_amount.isZero() ? (
-              <SecondaryButton
-                disabled={pending}
-                onClick={() => {
-                  onWithdrawLock(veTHE, () => {
-                    updateVeTHEs()
-                  })
-                }}
-              >
-                {t('Withdraw')}
-              </SecondaryButton>
-            ) : (
-              <EmphasisButton
-                className='w-full lg:w-fit'
-                onClick={() => {
-                  setSelectedId(veTHE.id)
-                  setIsManageOpen(true)
-                }}
-              >
-                {t('Manage')}
-              </EmphasisButton>
-            )}
+          <div className='flex w-full flex-row gap-3'>
+            <div className='w-1/2'>
+              <AutomationButton veTHE={veTHE} />
+            </div>
+            <div className='w-1/2'>
+              {veTHE.voting_amount.isZero() ? (
+                <SecondaryButton
+                  disabled={pending}
+                  onClick={() => {
+                    onWithdrawLock(veTHE, () => {
+                      updateVeTHEs()
+                    })
+                  }}
+                  className='w-full'
+                >
+                  {t('Withdraw')}
+                </SecondaryButton>
+              ) : (
+                <EmphasisButton
+                  className='w-full'
+                  onClick={() => {
+                    setSelectedId(veTHE.id)
+                    setIsManageOpen(true)
+                  }}
+                >
+                  {t('Manage')}
+                </EmphasisButton>
+              )}
+            </div>
           </div>
         ),
       })),

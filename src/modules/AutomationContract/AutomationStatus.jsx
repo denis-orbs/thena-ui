@@ -11,15 +11,15 @@ function AutomationStatus({ veTHEId }) {
     if (!isLoading) {
       switch (status) {
         case AUTOMATION_STATUS.PENDING:
-          return 'bg-[#0000F5]'
+          return 'bg-[#0000F5] text-[#E6E6FE]'
         case AUTOMATION_STATUS.ACTIVE:
-          return 'bg-success-600'
+          return 'bg-success-600 text-success-100'
         case AUTOMATION_STATUS.PAUSED:
-          return 'bg-warn-600'
+          return 'bg-warn-700 text-warn-100'
         case AUTOMATION_STATUS.CANCELED:
           return 'bg-error-600'
         case AUTOMATION_STATUS.NO:
-          return 'bg-transparent text-error-600'
+          return 'bg-transparent text-error-600 lg:text-base'
         default:
           return ''
       }

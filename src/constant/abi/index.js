@@ -14,6 +14,7 @@ import algebraPoolV3 from './fusion/AlgebraPoolV3.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
 import incentiveMakerAbi from './incentiveMaker.json'
+import linkTokenAbi from './linkToken.json'
 import arabicAbi from './mint/arabicNumeral.json'
 import characterSetAbi from './mint/characterSet.json'
 import emojiClubAbi from './mint/emojiClub.json'
@@ -70,6 +71,7 @@ export {
   globalFactoryAbi,
   hindiNumeralAbi,
   incentiveMakerAbi,
+  linkTokenAbi,
   minterAbi,
   multiCallAbi,
   multiFeeDistributionAbi,

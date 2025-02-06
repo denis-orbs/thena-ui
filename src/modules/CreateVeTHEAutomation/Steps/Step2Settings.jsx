@@ -103,7 +103,7 @@ function Step2Settings() {
             }}
             minDate={getIsoString()}
             showTimeSelect
-            dateFormat='YYYY/MM/DD hh:mm A'
+            dateFormat='MMM D, YYYY [at] HH:mm [UTC]'
           />
         </div>
       </div>
@@ -113,7 +113,7 @@ function Step2Settings() {
           {[1, 2, 3, 4, 5].map((item, index) => (
             <Paragraph key={index}>
               {`${item}. ${dayjs((createData?.settings?.executionTime || 0) + index * week).format(
-                'YYYY/MM/DD hh:mm A',
+                'MMM D, YYYY [at] HH:mm [UTC]',
               )}`}
             </Paragraph>
           ))}

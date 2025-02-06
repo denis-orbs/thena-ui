@@ -1,13 +1,17 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256, zeroAddress } from 'viem'
+import { decodeEventLog, maxUint256, zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { AUTOMATION_STATUS, TXN_STATUS } from '@/constant'
-import Contracts from '@/constant/contracts'
+import { AUTOMATION_STATUS, PAIR_TYPES, TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
-import { getTheContract, getVeTheAutomationContract, getVeTheAutomationFactoryContract } from '@/lib/contracts'
+import {
+  getLinkTokenContract,
+  getVeTheAutomationContract,
+  getVeTheAutomationFactoryContract,
+  getVeTHEContract,
+} from '@/lib/contracts'
 import { convertBooleansToHex, convertHexToBooleans, toWei } from '@/lib/utils'
 import { usePoolsWithGauge } from '@/state/pools/hooks'
 import { useTxn } from '@/state/transactions/hooks'
@@ -19,19 +23,47 @@ export const useCreateAutomation = () => {
   const { chainId } = useWallet()
   const t = useTranslations()
 
-  const { startTxn, endTxn, writeTxn } = useTxn()
+  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
+
+  const { startTxn, endTxn, writeTxn, writeTxn2 } = useTxn()
+
+  const handleGetAddress = useCallback(
+    async txnReceipt => {
+      try {
+        console.log({ txnReceipt })
+        const event = txnReceipt.logs[0]
+        const eventLogs = decodeEventLog({
+          abi: veTheAutomationFactoryContract.abi,
+          data: event.data,
+          topics: event.topics,
+        })
+
+        if (eventLogs) {
+          if (eventLogs.args) {
+            return eventLogs.args.automation
+          }
+        }
+
+        return ''
+      } catch (error) {
+        console.log({ error })
+      }
+    },
+    [veTheAutomationFactoryContract],
+  )
 
   const onCreateAutomation = useCallback(
-    async (contract, linkAmount) => {
+    async contract => {
       const key = uuidv4()
       const createAutouuid = uuidv4()
       const upkeepuuid = uuidv4()
-      const approveuuid = uuidv4()
-      const approveLinkuuid = uuidv4()
-      const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-      const { settings, votes } = contract
+      const approveAutomationuuid = uuidv4()
+      const approveChainlinkuuid = uuidv4()
+      const { settings, votes, registration } = contract
 
       const { pairs } = votes
+
+      const { chainlink, chainlinkAmount } = registration
 
       const tokenId = contract.veTHEId
       const startTimestamp = settings.executionTime
@@ -39,8 +71,7 @@ export const useCreateAutomation = () => {
       const pools = pairs.map(pair => pair.pair.address)
       const weights = pairs.map(pair => pair.weight)
 
-      const theContract = getTheContract(chainId)
-      // const veTHEaddress = Contracts.veTHE[chainId]
+      const theContract = getVeTHEContract(chainId)
       setPending(true)
 
       startTxn({
@@ -52,8 +83,13 @@ export const useCreateAutomation = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
-          [approveLinkuuid]: {
-            desc: t('Approve Link Token'),
+          [approveAutomationuuid]: {
+            desc: t('Approve automation'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [approveChainlinkuuid]: {
+            desc: t('Approve Chainlink'),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -66,52 +102,56 @@ export const useCreateAutomation = () => {
       })
 
       try {
-        if (
-          !(await writeTxn(key, createAutouuid, veTheAutomationFactoryContract, 'createAutomation', [
-            tokenId,
-            Math.floor(startTimestamp / 1000),
-            operations,
-            pools,
-            weights,
-          ]))
-        ) {
+        const txHash = await writeTxn2(key, createAutouuid, veTheAutomationFactoryContract, 'createAutomation', [
+          tokenId,
+          Math.floor(startTimestamp / 1000),
+          operations,
+          pools,
+          weights,
+        ])
+
+        if (!txHash) {
           setPending(false)
           return false
         }
 
-        const { data: automationAddress } = await readCall(
-          veTheAutomationFactoryContract,
-          'tokenIdToAutomation',
-          [tokenId],
-          chainId,
-        )
+        const automationAddress = await handleGetAddress(txHash)
 
         const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
 
+        const isApproveAutomation = await readCall(
+          theContract,
+          'isApprovedOrOwner',
+          [automationAddress, tokenId],
+          chainId,
+        )
+        if (!isApproveAutomation) {
+          if (
+            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
+          ) {
+            setPending(false)
+            return
+          }
+        }
+
+        const linkTokenContract = getLinkTokenContract(chainId)
         if (
-          !(await writeTxn(key, approveuuid, theContract, 'approve', [
-            Contracts.transparentUpgradeableProxy[chainId],
-            maxUint256,
-          ]))
+          !(await writeTxn(key, approveChainlinkuuid, linkTokenContract, 'approve', [automationAddress, maxUint256]))
         ) {
           setPending(false)
           return
         }
+
         if (
-          !(await writeTxn(key, createAutouuid, veTheAutomationContract, 'registerUpkeep', [
-            Contracts.linkToken[chainId],
-            toWei(linkAmount),
+          !(await writeTxn(key, upkeepuuid, veTheAutomationContract, 'registerUpkeep', [
+            chainlink.address,
+            toWei(chainlinkAmount),
           ]))
         ) {
           setPending(false)
           return false
         }
 
-        const isSuccess = await writeTxn(key, approveuuid, theContract, 'approve', [automationAddress, maxUint256])
-        if (!isSuccess) {
-          setPending(false)
-          return
-        }
         endTxn({
           key,
           final: 'Create Automation Contract Successful',
@@ -124,7 +164,7 @@ export const useCreateAutomation = () => {
         setPending(false)
       }
     },
-    [chainId, endTxn, startTxn, t, writeTxn],
+    [chainId, endTxn, handleGetAddress, startTxn, t, veTheAutomationFactoryContract, writeTxn, writeTxn2],
   )
 
   return { onCreateAutomation, pending }
@@ -196,7 +236,6 @@ export const useAutomationStatus = vetTHEId => {
 export const useAutomationContractDetail = tokenId => {
   const { chainId } = useWallet()
   const pools = usePoolsWithGauge()
-
   const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
 
   const { data: automationAddress } = useReadContract({
@@ -242,7 +281,36 @@ export const useAutomationContractDetail = tokenId => {
     const result = pools.find(pool => pool.address.toLowerCase() === address.toLowerCase())
     return result
       ? {
-          pair: result,
+          pair: {
+            address: result.address,
+            basePool: result.basePool,
+            lpPrice: result.lpPrice,
+            stable: result.stable,
+            symbol: result.symbol,
+            title: result.title,
+            type: result.type,
+            version: result.version,
+            ...(result.type === PAIR_TYPES.WEIGHTED
+              ? {
+                  tokens: (result.tokens || []).map(token => ({
+                    ...token,
+                    totalValue: token?.totalValue?.toNumber() || 0,
+                    balance: token?.balance?.toNumber() || 0,
+                  })),
+                }
+              : {
+                  token0: {
+                    ...result.token0,
+                    reserve: result?.token0?.reserve?.toNumber() || 0,
+                    balance: result?.token0?.balance?.toNumber() || 0,
+                  },
+                  token1: {
+                    ...result.token1,
+                    reserve: result?.token1?.reserve?.toNumber() || 0,
+                    balance: result?.token1?.balance?.toNumber() || 0,
+                  },
+                }),
+          },
           weight: Number(weights[index]),
           lock: true,
         }
@@ -468,4 +536,98 @@ export const useEditAutomation = () => {
   )
 
   return { onEditAutomation, pending }
+}
+
+export const useActiveAutomation = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const t = useTranslations()
+
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const onActive = useCallback(
+    async (automationAddress, tokenId, chainlink, chainlinkAmount, onSuccess) => {
+      const key = uuidv4()
+      const upkeepuuid = uuidv4()
+      const approveAutomationuuid = uuidv4()
+      const approveChainlinkuuid = uuidv4()
+
+      const theContract = getVeTHEContract(chainId)
+      setPending(true)
+
+      startTxn({
+        key,
+        title: 'Active Automation Contract',
+        transactions: {
+          [approveAutomationuuid]: {
+            desc: t('Approve automation'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [approveChainlinkuuid]: {
+            desc: t('Approve Chainlink'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+          [upkeepuuid]: {
+            desc: t('Upkeep through Chainlink Registrar'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      try {
+        const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+
+        const isApproveAutomation = await readCall(
+          theContract,
+          'isApprovedOrOwner',
+          [automationAddress, tokenId],
+          chainId,
+        )
+        if (!isApproveAutomation) {
+          if (
+            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
+          ) {
+            setPending(false)
+            return
+          }
+        }
+
+        const linkTokenContract = getLinkTokenContract(chainId)
+        if (
+          !(await writeTxn(key, approveChainlinkuuid, linkTokenContract, 'approve', [automationAddress, maxUint256]))
+        ) {
+          setPending(false)
+          return
+        }
+
+        if (
+          !(await writeTxn(key, upkeepuuid, veTheAutomationContract, 'registerUpkeep', [
+            chainlink.address,
+            toWei(chainlinkAmount),
+          ]))
+        ) {
+          setPending(false)
+          return false
+        }
+
+        endTxn({
+          key,
+          final: 'Create Automation Contract Successful',
+        })
+
+        onSuccess()
+
+        return true
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { onActive, pending }
 }

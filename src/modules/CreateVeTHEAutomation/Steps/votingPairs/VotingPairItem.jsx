@@ -39,11 +39,11 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
   return (
     <div className='fex-row flex items-center justify-between px-4 py-[14px]'>
       <div
-        className='flex cursor-pointer items-center justify-between rounded-full bg-neutral-700 px-4 py-3'
+        className='flex cursor-pointer items-center justify-between rounded-full bg-neutral-700 p-2 xl:px-4 xl:py-3'
         onClick={() => setIsOpen(!isOpen)}
       >
         {selected ? (
-          <div className='flex items-center gap-3'>
+          <div className='flex items-center gap-1'>
             {selected.type === PAIR_TYPES.WEIGHTED ? (
               <ThreeIconGroup
                 className='-space-x-2'
@@ -64,8 +64,8 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
                 logo2={selected.token1.logoURI}
               />
             )}
-            <div className='flex items-end gap-2'>
-              <TextHeading>{selected.symbol}</TextHeading>
+            <div className='flex items-end gap-[6px]'>
+              <TextHeading className='text-sm'>{selected.symbol}</TextHeading>
               <Paragraph className='text-sm'>{selected.title}</Paragraph>
             </div>
           </div>

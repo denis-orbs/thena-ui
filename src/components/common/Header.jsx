@@ -479,7 +479,7 @@ function Header() {
       },
       {
         label: 'Lock',
-        active: pathname === '/dashboard/lock',
+        active: pathname.includes('/dashboard/lock'),
         onClickHandler: () => {
           push('/dashboard/lock')
         },

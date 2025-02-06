@@ -6,8 +6,10 @@ import { EmphasisButton, OutlinedButton } from '@/components/buttons/Button'
 import Skeleton from '@/components/skeleton'
 import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
+import { useAutomationStatus } from '@/hooks/automationContract/useAutomationContract'
 import { EditIcon } from '@/svgs'
 
+import ChainlinkModal from './ChainlinkModal'
 import ConfirmAutomationModal from '../ConfirmAutomationModal'
 
 const ACTION_TYPE = {
@@ -22,6 +24,8 @@ function Head({ tokenId, address, status, mutateAutomationData = () => {} }) {
   const [pending, setPending] = useState(false)
   const [actionType, setActionType] = useState()
   const [showModal, setShowModal] = useState(false)
+  const { mutateData: mutateDataStatus } = useAutomationStatus(tokenId)
+  const [popup, setPopup] = useState(false)
 
   return (
     <div className='mt-4 flex flex-col justify-between gap-4 lg:flex-row'>
@@ -32,38 +36,44 @@ function Head({ tokenId, address, status, mutateAutomationData = () => {} }) {
       )}
       {status !== AUTOMATION_STATUS.CANCELED ? (
         <div className='flex flex-col gap-3 lg:flex-row'>
-          <div className='order-2 flex  gap-3 lg:order-1'>
-            <OutlinedButton
-              onClick={() => {
-                setActionType(ACTION_TYPE.CANCEL)
-                setShowModal(true)
-              }}
-              disabled={!tokenId || pending}
-              className='w-1/2 px-2 py-3 lg:min-w-[168px]'
-            >
-              {t('Cancel Automation')}
-            </OutlinedButton>
-            {status !== AUTOMATION_STATUS.PENDING && (
-              <EmphasisButton
+          {status !== AUTOMATION_STATUS.PENDING ? (
+            <div className='order-2 flex  gap-3 lg:order-1'>
+              <OutlinedButton
                 onClick={() => {
-                  setActionType(status === AUTOMATION_STATUS.PAUSED ? ACTION_TYPE.UNPAUSE : ACTION_TYPE.PAUSE)
+                  setActionType(ACTION_TYPE.CANCEL)
                   setShowModal(true)
                 }}
                 disabled={!tokenId || pending}
-                className='w-1/2 px-3  py-3 lg:min-w-[168px]'
+                className='w-1/2 px-2 py-3 lg:min-w-fit'
               >
-                {t(status === AUTOMATION_STATUS.PAUSED ? 'Unpause Automation' : 'Pause Automation')}
-              </EmphasisButton>
-            )}
-          </div>
+                {t('Cancel Automation')}
+              </OutlinedButton>
+              {status !== AUTOMATION_STATUS.PENDING && (
+                <EmphasisButton
+                  onClick={() => {
+                    setActionType(status === AUTOMATION_STATUS.PAUSED ? ACTION_TYPE.UNPAUSE : ACTION_TYPE.PAUSE)
+                    setShowModal(true)
+                  }}
+                  disabled={!tokenId || pending}
+                  className='w-1/2 px-3  py-3 lg:min-w-fit'
+                >
+                  {t(status === AUTOMATION_STATUS.PAUSED ? 'Unpause Automation' : 'Pause Automation')}
+                </EmphasisButton>
+              )}
+            </div>
+          ) : (
+            <EmphasisButton onClick={() => setPopup(true)} disabled={!tokenId || pending} className='w-full lg:w-fit'>
+              {t('Active Automation')}
+            </EmphasisButton>
+          )}
           <EmphasisButton disabled={!tokenId} className='order-1 lg:order-2' onClick={() => push(`${tokenId}/edit`)}>
             {t('Edit Automation')} <EditIcon className='h-4 w-4' />
           </EmphasisButton>
         </div>
       ) : (
         <OutlinedButton
-          onClick={() => push('/dashboard/lock-automation/')}
-          className='h-11 w-[130px] border border-primary-600 p-0 text-primary-600 hover:text-primary-600'
+          onClick={() => push('/dashboard/lock/automation/')}
+          className='h-11 w-fit border border-primary-600 p-0 text-primary-600 hover:text-primary-600'
         >
           {t('Create New Automation')}
         </OutlinedButton>
@@ -71,13 +81,27 @@ function Head({ tokenId, address, status, mutateAutomationData = () => {} }) {
       <ConfirmAutomationModal
         actionType={actionType}
         address={address}
-        mutateAutomationData={mutateAutomationData}
+        mutateAutomationData={() => {
+          mutateAutomationData()
+          mutateDataStatus()
+        }}
         showModal={showModal}
         setIsPending={setPending}
         setShowModal={_ => {
           setActionType()
           setShowModal(false)
         }}
+      />
+      {/* Input chainLinkAmount */}
+      <ChainlinkModal
+        tokenId={tokenId}
+        address={address}
+        mutateAutomationData={() => {
+          mutateAutomationData()
+          mutateDataStatus()
+        }}
+        popup={popup}
+        setPopup={setPopup}
       />
     </div>
   )

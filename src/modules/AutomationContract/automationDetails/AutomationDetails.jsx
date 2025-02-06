@@ -29,7 +29,7 @@ function AutomationDetails({ contractData }) {
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Next rebase claim')}</Paragraph>
               <TextHeading>
-                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('YYYY/MM/DD hh:mm A')}
+                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
               </TextHeading>
             </div>
           </div>
@@ -46,7 +46,7 @@ function AutomationDetails({ contractData }) {
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Next rebase claim')}</Paragraph>
               <TextHeading>
-                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('YYYY/MM/DD hh:mm A')}
+                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
               </TextHeading>
             </div>
           </div>
@@ -63,7 +63,7 @@ function AutomationDetails({ contractData }) {
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Next vote')}</Paragraph>
               <TextHeading>
-                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('YYYY/MM/DD hh:mm A')}
+                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
               </TextHeading>
             </div>
             {(contractData?.votes?.pairs || []).map((pair, index) => (
@@ -104,9 +104,7 @@ function AutomationDetails({ contractData }) {
             </div>
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Date')}</Paragraph>
-              <TextHeading>
-                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('YYYY/MM/DD hh:mm A')}
-              </TextHeading>
+              <TextHeading>TODO</TextHeading>
             </div>
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Transaction Hash')}</Paragraph>
@@ -134,12 +132,6 @@ function AutomationDetails({ contractData }) {
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Contract')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex flex-row justify-between'>
-              <Paragraph>{t('ID')}</Paragraph>
-              <TextHeading className='flex flex-row gap-1'>
-                TODO <CopyArenaIcon className='h-4 w-4 stroke-neutral-50' />
-              </TextHeading>
-            </div>
-            <div className='flex flex-row justify-between'>
               <Paragraph>{t('Contract address')}</Paragraph>
               <TextHeading className='flex flex-row items-center gap-1'>
                 {formatAddress(contractData.address)}
@@ -157,7 +149,9 @@ function AutomationDetails({ contractData }) {
             </div>
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Contract execution date')}</Paragraph>
-              <TextHeading>{dayjs(contractData?.settings?.executionTime).format('YYYY/MM/DD hh:mm A')}</TextHeading>
+              <TextHeading>
+                {dayjs(contractData?.settings?.executionTime).format('MMM D, YYYY [at] HH:mm [UTC]')}
+              </TextHeading>
             </div>
           </div>
         </Box>

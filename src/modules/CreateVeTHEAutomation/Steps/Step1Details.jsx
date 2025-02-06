@@ -49,7 +49,12 @@ function Step1Details({ isEdit }) {
 
         <div className='space-y-3'>
           <TextHeading>{t('Contract Name')}</TextHeading>
-          <Input val={`veTHE Automation - ID ${veTHESelected?.id}`} readOnly type='text' placeholder='Name' />
+          <Input
+            val={veTHESelected ? `veTHE Automation - ID ${veTHESelected?.id}` : ''}
+            readOnly
+            type='text'
+            placeholder='Name'
+          />
         </div>
       </div>
     </div>

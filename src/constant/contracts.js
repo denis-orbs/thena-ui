@@ -196,8 +196,13 @@ const Contracts = {
   veTheAutomationFactory: {
     [CHAIN_ID.TEST_BSC]: '0xca21384cbd550635706e6cc260db9857c15ea4a2',
   },
-  linkToken: {
-    [CHAIN_ID.TEST_BSC]: '0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06',
+  chainlinkToken: {
+    // ERC20LINK
+    [CHAIN_ID.TEST_BSC]: '0x84b9b910527ad5c03a9ca831909e21e236ea7b06',
+  },
+  chainlinkTokenERC677: {
+    // ERC677LINK
+    [CHAIN_ID.TEST_BSC]: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
   },
   transparentUpgradeableProxy: {
     [CHAIN_ID.TEST_BSC]: '0x7aD0076eB790d977295dceF026Bac917aF72d40B',

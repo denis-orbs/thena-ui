@@ -6,15 +6,15 @@ import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useCountdown } from '@/hooks/useCountdown'
+import usePrices from '@/hooks/usePrices'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount } from '@/lib/utils'
 
 import AutomationStatus from '../AutomationStatus'
 
-function LockDetails({ contractData }) {
+function LockDetails({ contractData, veTHE }) {
   const t = useTranslations()
-
-  console.log({ executionTime: contractData.settings.executionTime })
+  const prices = usePrices()
   const { text } = useCountdown(EVENT_TYPES.LIVE, contractData.settings.executionTime / 1000, true)
 
   return (
@@ -41,25 +41,25 @@ function LockDetails({ contractData }) {
           <div className='flex items-center gap-1'>
             <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
             <div className='flex items-center gap-1'>
-              <TextHeading className='text-2xl'>{formatAmount(123)}TODO</TextHeading>
-              <TextSubHeading>${formatAmount(123)}TODO</TextSubHeading>
+              <TextHeading className='text-2xl'>{formatAmount(veTHE?.voting_amount)}</TextHeading>
+              <TextSubHeading>${formatAmount((prices?.THE || 0) * (veTHE?.voting_amount || 0))}</TextSubHeading>
             </div>
           </div>
-          <Paragraph className='text-sm'>{t('Lock amount')}</Paragraph>
+          <Paragraph className='text-sm'>{t('Lock Value')}</Paragraph>
         </Box>
         <Box className='flex w-full flex-col gap-2'>
           <div className='flex items-center gap-1'>
             <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
             <div className='flex items-center gap-1'>
-              <TextHeading className='text-2xl'>{formatAmount(123)}TODO</TextHeading>
-              <TextSubHeading>${formatAmount(123)}TODO</TextSubHeading>
+              <TextHeading className='text-2xl'>{formatAmount(veTHE?.amount || 0)}</TextHeading>
+              <TextSubHeading>${formatAmount((prices?.THE || 0) * (veTHE?.amount || 0) || 0)}</TextSubHeading>
             </div>
           </div>
-          <Paragraph className='text-sm'>{t('Lock Value')}</Paragraph>
+          <Paragraph className='text-sm'>{t('Lock amount')}</Paragraph>
         </Box>
         <Box className='col-span-2 flex w-full flex-col gap-2 lg:col-span-1'>
           <div className='flex items-center gap-1'>
-            <TextHeading className='text-2xl'>{t('Automated')}TODO</TextHeading>
+            <TextHeading className='text-2xl'>{t('Automated')}</TextHeading>
           </div>
           <Paragraph className='text-sm'>{t('Lock expire')}</Paragraph>
         </Box>

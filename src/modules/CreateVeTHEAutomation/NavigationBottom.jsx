@@ -4,8 +4,6 @@ import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import Input from '@/components/input'
-import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { useCreateAutomation, useEditAutomation } from '@/hooks/automationContract/useAutomationContract'
 
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
@@ -52,19 +50,31 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
       }
     }
 
+    if (currentStep === 4) {
+      if ((!createData.registration?.chainlink || !createData.registration?.chainlinkAmount) && !isEdit) {
+        return true
+      }
+    }
+
     setError()
     return false
-  }, [createData?.settings?.executionTime, createData?.veTHEId, createData?.votes?.pairs, currentStep, t])
-
-  const [linkAmount, setLinkAmount] = useState(0)
-  const [popup, setPopup] = useState(false)
+  }, [
+    createData.registration?.chainlink,
+    createData.registration?.chainlinkAmount,
+    createData?.settings?.executionTime,
+    createData?.veTHEId,
+    createData?.votes?.pairs,
+    currentStep,
+    isEdit,
+    t,
+  ])
 
   return (
     <div className='mt-4 space-y-4'>
       {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
       <>
         {isEdit ? (
-          <div className='grid w-full grid-cols-2 gap-4'>
+          <div className='flex flex-row gap-4'>
             {currentStep < 4 && (
               <EmphasisButton className='w-full' onClick={onNext} disabled={isDisabled}>
                 {t('Next')}
@@ -87,45 +97,17 @@ function NavigationBottom({ currentStep, onNext, isEdit, mutateAutomationData = 
             )}
 
             {currentStep === 4 && (
-              <PrimaryButton disabled={pendingCreate} className='w-full' onClick={() => setPopup(true)}>
+              <PrimaryButton
+                disabled={pendingCreate || isDisabled}
+                className='w-full'
+                onClick={() => onCreateAutomation(createData)}
+              >
                 {t('Confirm')}
               </PrimaryButton>
             )}
           </>
         )}
       </>
-
-      <Modal
-        isOpen={popup}
-        closeModal={() => {
-          setPopup(false)
-        }}
-        width={480}
-        title={t('Enter Link Amount')}
-      >
-        <ModalBody>
-          <div className='flex w-full flex-col gap-4'>
-            <div className='flex flex-col gap-3'>
-              <Input val={linkAmount} placeholder='Link Amount' onChange={e => setLinkAmount(Number(e.target.value))} />
-            </div>
-          </div>
-        </ModalBody>
-
-        <ModalFooter className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
-          <EmphasisButton className='w-full' onClick={() => setPopup()}>
-            {t('Cancel')}
-          </EmphasisButton>
-          <PrimaryButton
-            className='w-full'
-            onClick={() => {
-              onCreateAutomation(createData, linkAmount)
-              setPopup(false)
-            }}
-          >
-            {t('Save')}
-          </PrimaryButton>
-        </ModalFooter>
-      </Modal>
     </div>
   )
 }

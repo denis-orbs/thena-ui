@@ -12,6 +12,7 @@ import {
   gaugeAbi,
   globalFactoryAbi,
   incentiveMakerAbi,
+  linkTokenAbi,
   minterAbi,
   multiCallAbi,
   multiFeeDistributionAbi,
@@ -288,3 +289,5 @@ export const getVeTheAutomationFactoryContract = chainId =>
   getContract(veTheAutomationFactoryAbi, Contracts.veTheAutomationFactory[chainId], chainId)
 
 export const getVeTheAutomationContract = (address, chainId) => getContract(veTheAutomationAbi, address, chainId)
+
+export const getLinkTokenContract = chainId => getContract(linkTokenAbi, Contracts.chainlinkToken[chainId], chainId)
