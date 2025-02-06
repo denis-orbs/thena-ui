@@ -18,7 +18,7 @@ const SETTINGS_TYPE = {
 
 const week = 86400 * 7 * 1000
 
-function Step1Settings({ isEdit }) {
+function Step1Settings() {
   const t = useTranslations()
 
   const { createData } = useSelector(state => state.veTHEAutomationContract)
@@ -39,7 +39,6 @@ function Step1Settings({ isEdit }) {
               isRelockEveryWeek: !currentSettings.isRelockEveryWeek,
             }
           case SETTINGS_TYPE.EXECUTION_TIME: {
-            console.log({ value })
             return {
               ...currentSettings,
               executionTime: value,
@@ -126,7 +125,6 @@ function Step1Settings({ isEdit }) {
             minDate={getIsoString()}
             showTimeSelect
             dateFormat='MMM D, YYYY [at] HH:mm [UTC]'
-            disabled={isEdit}
           />
         </div>
       </div>

@@ -1439,5 +1439,10 @@
   "Withdraw Funds": "Withdraw Funds",
   "Select ChainLINK": "Select ChainLINK",
   "Change max gas price": "Change max gas price",
-  "Max Gas": "Max Gas"
+  "Max Gas": "Max Gas",
+  "Warning register automation": "You need to register the automation and grant the necessary veTHE approvals for it to function properly.",
+  "Automation rebase description": "Automatically claim your rebase rewards every week. If you disable this option you will have to manually claim rebase before your lock period ends.",
+  "Automation relock description": "Automatically increase your veTHE lock timestamp by one week every week.",
+  "Automation vote description": "Automatically cast votes for your selected pairs each epoch.",
+  "Warning automation underfunded": "This contract is underfunded. Consider adding funds."
 }

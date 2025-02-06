@@ -20,7 +20,10 @@ import WithdrawFundsModal from './WithdrawFundsModal'
 
 function AutomationButton({ veTHE, isDetail = false }) {
   const { id: veTHEId, lockedEnd } = veTHE
+
   const { isLoading, status, mutateData: mutateDataStatus } = useAutomationStatus(veTHEId)
+  const { contractData, mutateAutomationData } = useAutomationContractDetail(veTHEId)
+
   const t = useTranslations()
   const dispatch = useDispatch()
 
@@ -32,8 +35,6 @@ function AutomationButton({ veTHE, isDetail = false }) {
   const [depositFundsPopup, setDepositFundsPopup] = useState(false)
   const [withdrawFundsPopup, setWithdrawFundsPopup] = useState(false)
   const [maxGasPricePopup, setMaxGasPricePopup] = useState(false)
-
-  const { contractData, mutateAutomationData } = useAutomationContractDetail(veTHEId)
 
   const nowInSeconds = Math.floor(Date.now() / 1000)
 

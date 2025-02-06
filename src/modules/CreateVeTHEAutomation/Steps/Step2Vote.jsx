@@ -1,21 +1,16 @@
-import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { OutlinedButton } from '@/components/buttons/Button'
-import Toggle from '@/components/toggle'
-import { TextHeading } from '@/components/typography'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
-import { InfoIcon, PlusIcon } from '@/svgs'
 
-import VotingPairItem from './votingPairs/VotingPairItem'
+import SelectVotingPairsAndWeights from '../SelectVotingPairsAndWeights'
 
 const UPDATE_TYPE = {
   AUTO: 'isAutoVote',
   PAIRS: 'pairs',
 }
 
-const updateWeight = pairs => {
+export const updateWeight = pairs => {
   const weightLocked = pairs.filter(item => item.lock).reduce((sum, cur) => sum + cur.weight, 0)
   const pairUnLock = pairs.filter(item => !item.lock && item.pair !== undefined)
   if (pairUnLock.length === 0) return pairs
@@ -55,17 +50,8 @@ const updateWeight = pairs => {
 }
 
 function Step2Vote() {
-  const t = useTranslations()
   const { createData } = useSelector(state => state.veTHEAutomationContract)
   const dispatch = useDispatch()
-
-  const [totalWeight, setTotalWeight] = useState(0)
-
-  useEffect(() => {
-    const tokens = [...createData.votes.pairs].filter(item => item.pair !== undefined)
-    setTotalWeight(tokens.reduce((sum, curr) => sum + curr.weight, 0))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(createData)])
 
   const updateVotingPairs = useCallback(
     (type, pair, index) => {
@@ -146,55 +132,12 @@ function Step2Vote() {
   )
 
   return (
-    <div className='space-y-6'>
-      <div className='flex items-center gap-1'>
-        <Toggle
-          checked={createData.votes.isAutoVote}
-          onChange={() => updateVotingPairs(UPDATE_TYPE.AUTO)}
-          label='Automatically vote each epoch'
-        />
-        <InfoIcon className='h-4 w-4 stroke-neutral-400' />
-      </div>
-      {createData.votes.isAutoVote && (
-        <>
-          <div className='space-y-3'>
-            <TextHeading>{t('Select Voting Pairs and Weights')}</TextHeading>
-            <div className='divide-y divide-neutral-700 rounded-xl border border-neutral-700'>
-              {createData.votes.pairs.map((item, index) => (
-                <VotingPairItem
-                  key={`${item?.address}_${index}`}
-                  pair={item}
-                  onSelected={data => updateVotingPairs(UPDATE_TYPE.PAIRS, data, index)}
-                  pairsSelected={createData.votes.pairs}
-                  onRemovePair={() => onRemovePair(index)}
-                />
-              ))}
-            </div>
-            <OutlinedButton
-              className='h-11 w-[130px] border border-primary-600 p-0 text-primary-600 hover:text-primary-600'
-              onClick={onAddPair}
-            >
-              <PlusIcon className='h-4 w-4 !stroke-primary-600' />
-              {t('Add Pair')}
-            </OutlinedButton>
-          </div>
-          <div className='space-y-2'>
-            <div className='flex flex-row justify-between'>
-              <TextHeading>{t('Total Allocated')}</TextHeading>
-              <span>{totalWeight}%</span>
-            </div>
-            <div className='mt-3 inline-block h-3 w-full rounded-md bg-neutral-500'>
-              <div
-                style={{
-                  width: `${totalWeight > 100 ? 100 : totalWeight}%`,
-                }}
-                className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
-              />
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+    <SelectVotingPairsAndWeights
+      data={createData}
+      onAddPair={onAddPair}
+      onRemovePair={onRemovePair}
+      updateVotingPairs={updateVotingPairs}
+    />
   )
 }
 

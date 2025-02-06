@@ -255,7 +255,7 @@ export const useAutomationContractDetail = tokenId => {
   const pools = usePoolsWithGauge()
   const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
 
-  const { data: automationAddress } = useReadContract({
+  const { data: automationAddress, refetch: mutateData1 } = useReadContract({
     ...veTheAutomationFactoryContract,
     functionName: 'tokenIdToAutomation',
     args: [tokenId],
@@ -267,7 +267,7 @@ export const useAutomationContractDetail = tokenId => {
   const {
     data: contractInfo,
     isLoading,
-    refetch: mutateData,
+    refetch: mutateData2,
   } = useReadContracts({
     contracts: [
       { ...veTheAutomationContract, functionName: 'getBalance' },
@@ -360,8 +360,10 @@ export const useAutomationContractDetail = tokenId => {
   }
 
   const mutateAutomationData = useCallback(() => {
-    mutateData()
-  }, [mutateData])
+    mutateData1()
+    mutateData2()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mutateData1, mutateData2, tokenId])
 
   return { contractData, mutateAutomationData, isLoading }
 }

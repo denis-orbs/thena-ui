@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import TokenInput from '@/components/input/TokenInput'
@@ -22,10 +22,11 @@ function DepositFundsModal({ contract, popup, setPopup }) {
 
   const [chainLINK, setChainLINK] = useState()
 
-  // const chainLINK = useMemo(
-  //   () => (assets || []).find(asset => Contracts.chainlinkToken[chainId] === asset.address),
-  //   [assets, chainId],
-  // )
+  useEffect(() => {
+    if (veTHEId) {
+      mutateAutomationData()
+    }
+  }, [mutateAutomationData, veTHEId])
 
   const chainLINKData = useMemo(
     () =>
