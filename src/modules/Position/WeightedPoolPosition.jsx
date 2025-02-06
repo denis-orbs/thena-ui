@@ -69,7 +69,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
     <div className='flex h-full flex-col justify-between rounded-xl bg-neutral-900 p-4'>
       <div className='flex-1'>
         <div className='flex justify-between space-x-2'>
-          <div className='flex'>
+          <div className='flex gap-2'>
             <ThreeIconGroup
               className='-space-x-2'
               classNames={{

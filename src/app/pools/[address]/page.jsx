@@ -149,7 +149,7 @@ export default function SpecificPoolPage({ params }) {
                 </div>
               </div>
             ) : (
-              <div className='flex'>
+              <div className='flex gap-2'>
                 <ThreeIconGroup
                   classNames={{
                     image: 'w-[36px] lg:w-[56px] h-[36px] lg:h-[56px] text-xl font-medium leading-5 text-[#1C2027]',
