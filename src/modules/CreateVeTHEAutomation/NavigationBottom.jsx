@@ -3,12 +3,12 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { useCreateAutomation } from '@/hooks/automationContract/useAutomationContract'
 
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
 
-function NavigationBottom({ currentStep, onNext }) {
+function NavigationBottom({ currentStep, onNext, isEdit }) {
   const t = useTranslations()
 
   const { createData } = useSelector(state => state.veTHEAutomationContract)
@@ -19,7 +19,7 @@ function NavigationBottom({ currentStep, onNext }) {
 
   const isDisabled = useMemo(() => {
     if (currentStep === 1) {
-      return !createData?.veTHEId || !createData?.contractName
+      return !createData?.veTHEId
     }
 
     if (currentStep === 2) {
@@ -50,29 +50,46 @@ function NavigationBottom({ currentStep, onNext }) {
 
     setError()
     return false
-  }, [
-    createData?.contractName,
-    createData?.settings?.executionTime,
-    createData?.veTHEId,
-    createData?.votes?.pairs,
-    currentStep,
-    t,
-  ])
+  }, [createData?.settings?.executionTime, createData?.veTHEId, createData?.votes?.pairs, currentStep, t])
 
   return (
     <div className='mt-4 space-y-4'>
       {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
-      {currentStep < 4 && (
-        <PrimaryButton className='w-full' onClick={onNext} disabled={isDisabled}>
-          {t('Next')}
-        </PrimaryButton>
-      )}
+      <>
+        {isEdit ? (
+          <>
+            {currentStep < 4 && (
+              <div className='grid w-full grid-cols-2 gap-4'>
+                <EmphasisButton className='w-full' onClick={onNext} disabled={isDisabled}>
+                  {t('Next')}
+                </EmphasisButton>
+                <PrimaryButton className='w-full' disabled={isDisabled}>
+                  {t('Save Changes')}
+                </PrimaryButton>
+              </div>
+            )}
+            {currentStep === 4 && (
+              <PrimaryButton disabled={pendingCreate} className='w-full' onClick={() => onCreateAutomation(createData)}>
+                {t('Save Changes')}
+              </PrimaryButton>
+            )}
+          </>
+        ) : (
+          <>
+            {currentStep < 4 && (
+              <PrimaryButton className='w-full' onClick={onNext} disabled={isDisabled}>
+                {t('Next')}
+              </PrimaryButton>
+            )}
 
-      {currentStep === 4 && (
-        <PrimaryButton disabled={pendingCreate} className='w-full' onClick={() => onCreateAutomation(createData)}>
-          {t('Confirm')}
-        </PrimaryButton>
-      )}
+            {currentStep === 4 && (
+              <PrimaryButton disabled={pendingCreate} className='w-full' onClick={() => onCreateAutomation(createData)}>
+                {t('Confirm')}
+              </PrimaryButton>
+            )}
+          </>
+        )}
+      </>
     </div>
   )
 }

@@ -320,3 +320,11 @@ export const convertBooleansToHex = (bit0, bit1, bit2) => {
 
   return `0x0${hexValue}`
 }
+
+export const convertHexToBooleans = hexValue => {
+  const binaryString = parseInt(hexValue, 16).toString(2).padStart(3, '0')
+
+  const booleansArray = binaryString.split('').map(bit => bit === '1')
+
+  return booleansArray
+}

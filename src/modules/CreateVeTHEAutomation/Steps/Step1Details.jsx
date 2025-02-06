@@ -8,7 +8,7 @@ import { createVeTHEAutomationContract, setSelectedVeTHE } from '@/state/veTHEAu
 
 import VeTHEDropdownData from '../VeTHEDropdownData'
 
-function Step1Details() {
+function Step1Details({ isEdit }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const { veTHESelected, createData } = useSelector(state => state.veTHEAutomationContract)
@@ -39,32 +39,17 @@ function Step1Details() {
     [createData, dispatch],
   )
 
-  const updateContractName = useCallback(
-    event => {
-      const contractName = event.target.value
-      dispatch(
-        createVeTHEAutomationContract({
-          createData: {
-            ...createData,
-            contractName,
-          },
-        }),
-      )
-    },
-    [createData, dispatch],
-  )
-
   return (
     <div className='space-y-9'>
       <div className='space-y-6'>
         <div className='space-y-3'>
           <TextHeading>{t('Your veTHE ID')}</TextHeading>
-          <VeTHEDropdownData veTHESelected={veTHESelected} setVeTHESelected={setVeTHESelected} />
+          <VeTHEDropdownData disabled={isEdit} veTHESelected={veTHESelected} setVeTHESelected={setVeTHESelected} />
         </div>
 
         <div className='space-y-3'>
           <TextHeading>{t('Contract Name')}</TextHeading>
-          <Input val={createData?.contractName} type='text' placeholder='Name' onChange={updateContractName} />
+          <Input val={`veTHE Automation - ID ${veTHESelected.id}`} readOnly type='text' placeholder='Name' />
         </div>
       </div>
     </div>

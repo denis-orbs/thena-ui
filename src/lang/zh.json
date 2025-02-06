@@ -1361,5 +1361,6 @@
   "Settings": "Settings",
   "Contract Execution Time": "Contract Execution Time",
   "Total weight invalid": "The total weighting of all pools must equal exactly 100% before you continue.",
-  "InvalidWeight": "All pools must have a weighting higher than zero. Either remove or replace or set it above 0.01%."
+  "InvalidWeight": "All pools must have a weighting higher than zero. Either remove or replace or set it above 0.01%.",
+  "Edit Automation Contract": "Edit Automation Contract"
 }

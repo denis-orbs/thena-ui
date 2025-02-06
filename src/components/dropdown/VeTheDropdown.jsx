@@ -17,6 +17,7 @@ function VeTheDropdown({
   isApproved,
   approvedId,
   setApprovedId,
+  disabled = false,
   isLocale = true,
 }) {
   const [open, setOpen] = useState(false)
@@ -54,6 +55,7 @@ function VeTheDropdown({
         }
         isLocale={isLocale}
         readOnly
+        disabled={disabled}
       />
       <div
         className={cn(

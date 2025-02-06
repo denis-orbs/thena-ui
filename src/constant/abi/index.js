@@ -1,4 +1,6 @@
 import algebraFactoryAbi from './algebraFactoryAbi.json'
+import veTheAutomationAbi from './automation/veTheAutomation.json'
+import veTheAutomationFactoryAbi from './automation/veTheAutomationFactory.json'
 import basePluginAbi from './basePluginAbi.json'
 import bribeAbi from './bribe.json'
 import claimerAbi from './claimer.json'
@@ -37,7 +39,6 @@ import vammZapAbi from './vammZap.json'
 import veDistAbi from './veDist.json'
 import veTHEAbi from './veTHE.json'
 import veTHEApiAbi from './veTHEAPI.json'
-import veTheAutomationAbi from './veTheAutomation.json'
 import voterAbi from './voter.json'
 import voterV2Abi from './voterV2.json'
 import wbnbAbi from './wbnb.json'
@@ -90,6 +91,7 @@ export {
   veTHEAbi,
   veTHEApiAbi,
   veTheAutomationAbi,
+  veTheAutomationFactoryAbi,
   voterAbi,
   voterV2Abi,
   wbnbAbi,

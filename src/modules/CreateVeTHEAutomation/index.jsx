@@ -1,12 +1,14 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import Box from '@/components/box'
 import { TextButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
+import { useVeTHEsContext } from '@/context/veTHEsContext'
+import { createVeTHEAutomationContract, setSelectedVeTHE } from '@/state/veTHEAutomationContract/action'
 import { ArrowLeftIcon } from '@/svgs'
 
 import NavigationBottom from './NavigationBottom'
@@ -22,16 +24,40 @@ const NAVIGATION_TYPE = {
 
 const steps = ['Details', 'Settings', 'Vote', 'Create']
 const stepsTitle = ['Details', 'Settings', 'Voting Pairs and Weights', 'Create Contract']
-function CreateVeTHEAutomation() {
+function CreateVeTHEAutomation({ contractData, isEdit }) {
   const { veTHESelected } = useSelector(state => state.veTHEAutomationContract)
   const t = useTranslations()
   const [currentStep, setCurrentStep] = useState(1)
+  const { veTHEs } = useVeTHEsContext()
 
   const handleNavigation = type => {
     if (currentStep < steps.length && type === NAVIGATION_TYPE.NEXT) setCurrentStep(currentStep + 1)
 
     if (currentStep > 1 && type === NAVIGATION_TYPE.PREV) setCurrentStep(currentStep - 1)
   }
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (isEdit) {
+      dispatch(createVeTHEAutomationContract({ createData: { ...contractData } }))
+      const { veTHEId } = contractData
+      const veTHE = veTHEs.find(ve => ve.id.toString() === veTHEId)
+      console.log({ veTHEs, veTHEId })
+      if (veTHE) {
+        dispatch(
+          setSelectedVeTHE({
+            veTHESelected: {
+              ...veTHE,
+              amount: veTHE.amount.toString(),
+              rebase_amount: veTHE.rebase_amount.toString(),
+              voting_amount: veTHE.voting_amount.toString(),
+            },
+          }),
+        )
+      }
+    }
+  }, [contractData, dispatch, isEdit, veTHEs])
 
   return (
     <div className='space-y-10'>
@@ -42,7 +68,8 @@ function CreateVeTHEAutomation() {
           </TextButton>
         </div>
         <TextHeading className='font-archia text-3xl font-semibold text-neutral-50 lg:text-[40px]'>
-          {t('Create Automation Contract')}
+          {t(isEdit ? 'Edit Automation Contract' : 'Create Automation Contract')}
+          {isEdit && ` ${contractData.veTHEId}`}
         </TextHeading>
       </div>
       <div className='flex flex-col gap-8 lg:flex-row'>
@@ -58,8 +85,12 @@ function CreateVeTHEAutomation() {
             currentStep={currentStep}
             onPrev={() => handleNavigation(NAVIGATION_TYPE.PREV)}
           />
-          <StepContent currentStep={currentStep} />
-          <NavigationBottom currentStep={currentStep} onNext={() => handleNavigation(NAVIGATION_TYPE.NEXT)} />
+          <StepContent currentStep={currentStep} isEdit={isEdit} />
+          <NavigationBottom
+            currentStep={currentStep}
+            onNext={() => handleNavigation(NAVIGATION_TYPE.NEXT)}
+            isEdit={isEdit}
+          />
         </Box>
 
         {/* Selected veTHE ID */}

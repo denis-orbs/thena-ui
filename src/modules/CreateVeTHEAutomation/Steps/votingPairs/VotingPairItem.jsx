@@ -7,9 +7,9 @@ import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import Input from '@/components/input'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { usePairs } from '@/context/pairsContext'
 import { cn } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
+import { usePoolsWithGauge } from '@/state/pools/hooks'
 import { ChevronDownIcon, LockIcon, TrashIcon, UnlockIcon } from '@/svgs'
 
 function VotingPairItem({ pair, onSelected, onRemovePair }) {
@@ -19,7 +19,7 @@ function VotingPairItem({ pair, onSelected, onRemovePair }) {
   const [weight, setWeight] = useState(pair.weight)
   const [lock, setLock] = useState(pair.lock)
 
-  const { pairs = [] } = usePairs()
+  const pairs = usePoolsWithGauge()
 
   useEffect(() => {
     if (selected) {

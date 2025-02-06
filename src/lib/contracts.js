@@ -27,6 +27,7 @@ import {
   veDistAbi,
   veTHEAbi,
   veTheAutomationAbi,
+  veTheAutomationFactoryAbi,
   voterAbi,
   voterV2Abi,
   wbnbAbi,
@@ -283,5 +284,7 @@ export const getWeightedPoolFeesContract = (address, chainId) => getContract(wei
 
 export const getWeightedGaugeContract = (address, chainId) => getContract(weightedGaugeAbi, address, chainId)
 
-export const getVeTheAutomationContract = chainId =>
-  getContract(veTheAutomationAbi, Contracts.veTheAutomation[chainId], chainId)
+export const getVeTheAutomationFactoryContract = chainId =>
+  getContract(veTheAutomationFactoryAbi, Contracts.veTheAutomationFactory[chainId], chainId)
+
+export const getVeTheAutomationContract = (address, chainId) => getContract(veTheAutomationAbi, address, chainId)

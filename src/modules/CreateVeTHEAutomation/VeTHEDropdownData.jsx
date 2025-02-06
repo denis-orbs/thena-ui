@@ -11,7 +11,7 @@ import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 
-function VeTHEDropdownData({ veTHESelected, setVeTHESelected }) {
+function VeTHEDropdownData({ veTHESelected, setVeTHESelected, disabled }) {
   const t = useTranslations()
   const { veTHEs } = useVeTHEsContext()
   const { account, chainId } = useWallet()
@@ -45,6 +45,7 @@ function VeTHEDropdownData({ veTHESelected, setVeTHESelected }) {
       isApproved={isApproved}
       approvedId={approvedId}
       setApprovedId={setApprovedId}
+      disabled={disabled}
     />
   )
 }
