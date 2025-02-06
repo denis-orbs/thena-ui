@@ -38,17 +38,12 @@ export default function GaugePage() {
 
   const poolsWithoutGauge = useMemo(
     () =>
-      pools
-        .filter(
-          pair =>
-            pair &&
-            pair.gauge.address === zeroAddress &&
-            (pair.type === PAIR_TYPES.LSD ? pair?.title === 'CL_Farming' : true),
-        )
-        .map(item => ({
-          ...item,
-          title: item?.title === 'CL_Farming' ? 'Conc. Liquidity' : item?.title,
-        })),
+      pools.filter(
+        pair =>
+          pair &&
+          pair.gauge.address === zeroAddress &&
+          (pair.type === PAIR_TYPES.LSD ? pair?.title === 'CL_Farming' : true),
+      ),
     [pools],
   )
 

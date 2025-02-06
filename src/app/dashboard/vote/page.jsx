@@ -31,7 +31,7 @@ import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { usePoolsWithGauge } from '@/state/pools/hooks'
+import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
@@ -90,7 +90,7 @@ export default function VotePage() {
   const [percent, setPercent] = useState({})
   const { account } = useWallet()
   const { veTHEs, updateVeTHEs } = useVeTHEsContext()
-  const poolsWithGauge = usePoolsWithGauge()
+  const v3PoolsWithGauge = useV3PoolsWithGauge()
   const prices = usePrices()
 
   const { voteEmssions } = useVoteEmissions()
@@ -133,36 +133,35 @@ export default function VotePage() {
 
   const userPools = useMemo(
     () =>
-      poolsWithGauge
-        .filter(pool => pool.gauge.isAlive && pool.version === 3)
-        .map(pair => {
-          const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
-          let votes = {
-            weight: new BigNumber(0),
-            weightPercent: new BigNumber(0),
-            rewards: new BigNumber(0),
-            perRewards,
-          }
-          if (veTHE && veTHE.votes.length > 0) {
-            const found = veTHE.votes.find(ele => ele.address.toLowerCase() === pair.address.toLowerCase())
-            if (found) {
-              const rewards =
-                !veTHE.votedCurrentEpoch || pair.gauge.weight.isZero()
-                  ? new BigNumber(0)
-                  : pair.gauge.bribeUsd.div(pair.gauge.weight).times(found.weight)
-              votes = {
-                ...found,
-                rewards,
-                perRewards,
-              }
+      v3PoolsWithGauge.map(pair => {
+        const perRewards = pair.gauge.bribeUsd.div(pair.gauge.weight.plus(1000)).times(1000)
+        let votes = {
+          weight: new BigNumber(0),
+          weightPercent: new BigNumber(0),
+          rewards: new BigNumber(0),
+          perRewards,
+        }
+        if (veTHE && veTHE.votes.length > 0) {
+          const found = veTHE.votes.find(ele => ele.address.toLowerCase() === pair.address.toLowerCase())
+          if (found) {
+            const rewards =
+              !veTHE.votedCurrentEpoch || pair.gauge.weight.isZero()
+                ? new BigNumber(0)
+                : pair.gauge.bribeUsd.div(pair.gauge.weight).times(found.weight)
+            votes = {
+              ...found,
+              rewards,
+              perRewards,
             }
           }
-          return {
-            ...pair,
-            votes,
-          }
-        }),
-    [poolsWithGauge, veTHE],
+        }
+
+        return {
+          ...pair,
+          votes,
+        }
+      }),
+    [v3PoolsWithGauge, veTHE],
   )
 
   const filteredPools = useMemo(() => {

@@ -7,7 +7,7 @@ import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { voterSubgraph } from '@/lib/graphql'
 import { fromWei, isInvalidAmount } from '@/lib/utils'
-import { usePoolsWithGauge } from '@/state/pools/hooks'
+import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 
 const rewardsContext = React.createContext({
   current: {
@@ -60,7 +60,7 @@ const fetchUserRewards = async (userId, chainId) => {
 function RewardsContextProvider({ children }) {
   const { account, chainId } = useWallet()
   const assets = useAssets()
-  const poolsWithGauge = usePoolsWithGauge()
+  const v3PoolsWithGauge = useV3PoolsWithGauge(false)
 
   const {
     data: current,
@@ -77,8 +77,7 @@ function RewardsContextProvider({ children }) {
       return []
     }
 
-    return poolsWithGauge
-      .filter(pool => pool.version === 3)
+    return v3PoolsWithGauge
       .map(pool => {
         const result = {}
         const isFeeExist = false
@@ -125,7 +124,7 @@ function RewardsContextProvider({ children }) {
         }
       })
       .filter(pool => (pool.rewards || []).some(reward => !isInvalidAmount(reward.amount)))
-  }, [current, currentError, poolsWithGauge, assets])
+  }, [current, currentError, v3PoolsWithGauge, assets])
 
   const final = useMemo(
     () => ({

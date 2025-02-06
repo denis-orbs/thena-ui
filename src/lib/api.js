@@ -5,6 +5,7 @@ import { liquidityHub } from '@/modules/LiquidityHub'
 
 import { ZERO_VALUE } from './utils'
 
+// TODO: Fix on prod
 // const backendApi = 'https://api.thena.fi/api/v1'
 const backendApi = 'https://api-dev.thena.fi/api/v1'
 

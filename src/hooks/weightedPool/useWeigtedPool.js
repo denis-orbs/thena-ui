@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { encodePacked, getAddress, maxUint256, parseEventLogs, toHex, zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { PAIR_TYPES, TXN_STATUS, ZERO_ADDRESS } from '@/constant'
+import { PAIR_TYPES, TXN_STATUS } from '@/constant'
 import { weightedPoolAbi, weightedPoolFactoryAbi, weightedPoolFeesAbi } from '@/constant/abi'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import { useAssets, useMutateAssets } from '@/context/assetsContext'
@@ -927,14 +927,14 @@ export const useWeightedPool = () => {
   }
 }
 
-export const useWeightedPoolsWithGauge = () => {
+export const useWeightedPools = () => {
   const assets = useAssets()
   const customAssets = useCustomAssets()
-  const { weightedPools = [] } = usePairs()
+  const { weightedPools: weightedPairs = [] } = usePairs()
 
-  let weightedPoolsWithGauge = []
-  if (weightedPools.length > 0 && assets.length > 0) {
-    weightedPoolsWithGauge = weightedPools
+  let weightedPools = []
+  if (weightedPairs.length > 0 && assets.length > 0) {
+    weightedPools = weightedPairs
       .map(weighted => {
         const { gauge } = weighted
         const tokens = weighted.tokens.map(token => {
@@ -1019,13 +1019,13 @@ export const useWeightedPoolsWithGauge = () => {
             bribes: finalBribes,
           },
           account: user,
+          version: 3,
         }
       })
-      .filter(item => item.gauge.address !== ZERO_ADDRESS)
       .sort((a, b) => (a.gauge.tvl - b.gauge.tvl) * -1)
   }
 
-  return weightedPoolsWithGauge
+  return weightedPools
 }
 
 const getGaugeReward = async (gaugeContract, assets, account, chainId) => {

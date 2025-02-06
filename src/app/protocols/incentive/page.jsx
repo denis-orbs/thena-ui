@@ -23,7 +23,7 @@ import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount } from '@/lib/utils'
 import PairModal from '@/modules/PairModal'
-import { usePoolsWithGauge } from '@/state/pools/hooks'
+import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { ArrowLeftIcon, ChevronDownIcon, InfoIcon } from '@/svgs'
 
 import { TokenModal } from './TokenModal'
@@ -59,25 +59,13 @@ export default function IncentivePage() {
   const [asset, setAsset] = useState(null)
   const [epochs, setEpochs] = useState(1)
   const mutateAssets = useMutateAssets()
-  const poolsWithGauge = usePoolsWithGauge()
+  const v3PoolsWithGauge = useV3PoolsWithGauge()
   const { onBribeAdd, pending } = useBribeAdd()
   const t = useTranslations()
 
-  const updatedPoolsWithGauge = useMemo(
-    () =>
-      poolsWithGauge
-        .filter(pool => pool.gauge.isAlive && pool.version === 3)
-        .map(item => ({
-          ...item,
-          title: item?.title === 'CL_Farming' ? 'Conc. Liquidity' : item?.title,
-        })),
-    [poolsWithGauge],
-  )
-
   const topPools = useMemo(
-    () =>
-      updatedPoolsWithGauge.sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber()).slice(0, 4),
-    [updatedPoolsWithGauge],
+    () => v3PoolsWithGauge.sort((a, b) => a.gauge.bribeUsd.minus(b.gauge.bribeUsd).times(-1).toNumber()).slice(0, 4),
+    [v3PoolsWithGauge],
   )
 
   const errorMsg = useMemo(() => {
@@ -490,7 +478,7 @@ export default function IncentivePage() {
       {/* Allow user scoll down a bit to let the form at the center */}
       <div className='md:h-[20dvh]' />
 
-      <PairModal popup={pairOpen} setPopup={setPairOpen} setSelected={setPair} pools={updatedPoolsWithGauge} />
+      <PairModal popup={pairOpen} setPopup={setPairOpen} setSelected={setPair} pools={v3PoolsWithGauge} />
 
       <TokenModal
         popup={tokenOpen}

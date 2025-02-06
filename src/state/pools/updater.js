@@ -109,17 +109,22 @@ function Updater() {
   const prices = usePrices()
   const { networkId } = useChainSettings()
 
-  const { data: [fusionPoolsV3 = [], fusionPoolsV2 = []] = [] } = useSWR(['fusions api', networkId], () =>
-    Promise.all([
-      fetchFusionPools({
-        networkId,
-        version: 3,
-      }),
-      fetchFusionPools({
-        networkId,
-        version: 2,
-      }),
-    ]),
+  const { data: [fusionPoolsV3 = [], fusionPoolsV2 = []] = [] } = useSWR(
+    ['fusions api', networkId],
+    () =>
+      Promise.all([
+        fetchFusionPools({
+          networkId,
+          version: 3,
+        }),
+        fetchFusionPools({
+          networkId,
+          version: 2,
+        }),
+      ]),
+    {
+      refreshInterval: 60000,
+    },
   )
 
   const { data: userInfos } = useSWRImmutable(

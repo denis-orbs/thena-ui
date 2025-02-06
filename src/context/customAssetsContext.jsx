@@ -46,6 +46,7 @@ function CustomAssetsContextProvider({ children }) {
     ['custom-assets/total', networkId],
     async () => await fetchCustomAssets(networkId),
     {
+      refreshInterval: 120000,
       revalidateOnFocus: false,
     },
   )

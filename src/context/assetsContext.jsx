@@ -63,6 +63,7 @@ function AssetsContextProvider({ children }) {
       return data
     },
     {
+      refreshInterval: 60000,
       revalidateOnFocus: false,
     },
   )
@@ -80,7 +81,7 @@ function AssetsContextProvider({ children }) {
         .sort((a, b) => b.totalValue.minus(a.totalValue).toNumber())
     },
     {
-      refreshInterval: 10000,
+      refreshInterval: 15000,
       revalidateOnFocus: false,
     },
   )

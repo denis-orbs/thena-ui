@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { zeroAddress } from 'viem'
 
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { useWeightedPoolsWithGauge } from '@/hooks/weightedPool/useWeigtedPool'
+import { useWeightedPools } from '@/hooks/weightedPool/useWeigtedPool'
 import { ZERO_VALUE } from '@/lib/utils'
 
 import { useChainSettings } from '../settings/hooks'
@@ -87,13 +87,19 @@ export const useDefiedges = () => {
   return useMemo(() => pools.filter(pool => pool.title === 'DefiEdge'), [pools])
 }
 
-export const usePoolsWithGauge = () => {
+export const useV3PoolsWithGauge = (isAlive = true) => {
   const pools = usePools()
-  const weightedPoolsWithGauge = useWeightedPoolsWithGauge()
+  const weightedPools = useWeightedPools()
 
-  const poolsWithGauge = useMemo(() => (pools ? pools.filter(pool => pool.gauge.address !== zeroAddress) : []), [pools])
+  return useMemo(() => {
+    if (!Array.isArray(pools) || !Array.isArray(weightedPools)) return []
 
-  return [...poolsWithGauge, ...weightedPoolsWithGauge]
+    return [...pools, ...weightedPools].filter(pool => {
+      const hasGauge = pool.version === 3 && pool.gauge.address !== zeroAddress
+      return isAlive ? hasGauge && pool.gauge.isAlive : hasGauge
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAlive, pools, weightedPools.length])
 }
 
 export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, version }) => {

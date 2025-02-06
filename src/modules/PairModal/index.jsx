@@ -65,7 +65,9 @@ function PairModal({ popup, setPopup, setSelected, pools }) {
                     />
                     <div className='flex flex-col'>
                       <TextHeading>{pool.symbol}</TextHeading>
-                      <Paragraph className='text-sm'>{pool.title ?? pool.type}</Paragraph>
+                      <Paragraph className='text-sm'>
+                        {pool.title === 'CL_Farming' ? 'Conc. Liquidity' : pool.title ?? pool.type}
+                      </Paragraph>
                     </div>
                   </>
                 )}
