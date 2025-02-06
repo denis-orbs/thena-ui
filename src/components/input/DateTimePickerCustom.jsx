@@ -33,7 +33,17 @@ function formatAMPM(date, type = 'hours') {
   return minutes
 }
 
-function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDate, maxDate, ...rest }) {
+function DateTimePickerModal({
+  onChange,
+  value,
+  isOpen,
+  closeModal,
+  title,
+  minDate,
+  maxDate,
+  disabledPast = true,
+  ...rest
+}) {
   const t = useTranslations()
   const [step, setStep] = useState(STEP.DATE)
   const [dateValue, setDateValue] = useState(value)
@@ -192,7 +202,7 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
               },
             }}
             className='bg-transparent'
-            disablePast
+            disablePast={disabledPast}
             ampmInClock
             disableIgnoringDatePartForTimeValidation
             minutesStep={1}
@@ -218,7 +228,7 @@ function DateTimePickerModal({ onChange, value, isOpen, closeModal, title, minDa
         </div>
       )
     }
-  }, [step, dateValue, minDate, maxDate, rest, t, hours, minutes, view, typeTime])
+  }, [step, dateValue, minDate, maxDate, rest, t, hours, minutes, disabledPast, view, typeTime])
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} width={400} title={title} fontSizeTitle='text-xl lg:text-2xl'>
@@ -270,6 +280,7 @@ export function DateTimePickerCustom({
   dateFormat,
   onChange,
   disabled,
+  disablePast = true,
   ...rest
 }) {
   const [isOpenModal, setIsOpenModal] = useState(false)
@@ -300,6 +311,7 @@ export function DateTimePickerCustom({
           rest={rest}
           title={title}
           onChange={onChange}
+          disabledPast={disablePast}
         />
       )}
     </>

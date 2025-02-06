@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
-import React, { useCallback } from 'react'
+import React from 'react'
 
 import { DateTimePickerCustom } from '@/components/input/DateTimePickerCustom'
 import CustomTooltip from '@/components/tooltip'
@@ -10,13 +10,6 @@ import { InfoIcon } from '@/svgs'
 const week = 86400 * 7 * 1000
 
 function SelectExecutionTime({ executionTime, updateData }) {
-  const getIsoString = useCallback(timestamp => {
-    const curTimeStamp = new Date().getTime()
-    const finalTS = timestamp || curTimeStamp
-    const finalDate = new Date(finalTS)
-    return finalDate
-  }, [])
-
   const t = useTranslations()
 
   return (
@@ -41,9 +34,9 @@ function SelectExecutionTime({ executionTime, updateData }) {
               const newDate = new Date(date).getTime()
               updateData(newDate)
             }}
-            minDate={getIsoString()}
-            showTimeSelect
             dateFormat='MMM D, YYYY [at] HH:mm [UTC]'
+            disablePast={false}
+            minDate={new Date(Date.now() + new Date().getTimezoneOffset() * 60 * 1000)}
           />
         </div>
       </div>
