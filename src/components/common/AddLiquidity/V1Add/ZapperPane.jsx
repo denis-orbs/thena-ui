@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
@@ -188,18 +189,23 @@ export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
           <Box
             className={cn(
               'mt-5 flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950',
-              {
-                hidden: Number(amountIn) * Number(tokenDeposit?.price ?? 0) < 10_000,
-              },
             )}
           >
             <div className='size-5'>
               <InfoIcon className='size-5 stroke-primary-600' />
             </div>
             <TextSubHeading className='text-base text-primary-100'>
-              You are about to zap in an amount exceeding $10,000. To safeguard your investment, please ensure you are
-              using sandwich protection. This precaution helps protect your transaction from potential front-running and
-              other malicious activities. Proceed with caution.
+              If you are zapping a considerable amount of funds, please ensure to use{' '}
+              <Link
+                target='_blank'
+                className='text-primary-500'
+                href='https://cyberscope.medium.com/sandwich-attacks-in-crypto-how-to-protect-yourself-9e9c223c7e3a'
+                rel='noreferrer'
+              >
+                protection against sandwich attacks
+              </Link>{' '}
+              to safeguard your investment. This precaution helps protect your transaction from potential front-running
+              and other malicious activities.
             </TextSubHeading>
           </Box>
         </>
