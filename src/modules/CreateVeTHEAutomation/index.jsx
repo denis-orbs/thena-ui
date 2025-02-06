@@ -24,11 +24,12 @@ const NAVIGATION_TYPE = {
 
 const steps = ['Details', 'Settings', 'Vote', 'Create']
 const stepsTitle = ['Details', 'Settings', 'Voting Pairs and Weights', 'Create Contract']
-function CreateVeTHEAutomation({ contractData, isEdit }) {
+function CreateVeTHEAutomation({ contractData, isEdit, mutateAutomationData }) {
   const { veTHESelected } = useSelector(state => state.veTHEAutomationContract)
   const t = useTranslations()
   const [currentStep, setCurrentStep] = useState(1)
   const { veTHEs } = useVeTHEsContext()
+  const [isInitialed, setIsInitialed] = useState(false)
 
   const handleNavigation = type => {
     if (currentStep < steps.length && type === NAVIGATION_TYPE.NEXT) setCurrentStep(currentStep + 1)
@@ -39,11 +40,10 @@ function CreateVeTHEAutomation({ contractData, isEdit }) {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && contractData && !isInitialed) {
       dispatch(createVeTHEAutomationContract({ createData: { ...contractData } }))
       const { veTHEId } = contractData
       const veTHE = veTHEs.find(ve => ve.id.toString() === veTHEId)
-      console.log({ veTHEs, veTHEId })
       if (veTHE) {
         dispatch(
           setSelectedVeTHE({
@@ -55,9 +55,10 @@ function CreateVeTHEAutomation({ contractData, isEdit }) {
             },
           }),
         )
+        setIsInitialed(true)
       }
     }
-  }, [contractData, dispatch, isEdit, veTHEs])
+  }, [contractData, dispatch, isEdit, veTHEs, isInitialed])
 
   return (
     <div className='space-y-10'>
@@ -90,6 +91,7 @@ function CreateVeTHEAutomation({ contractData, isEdit }) {
             currentStep={currentStep}
             onNext={() => handleNavigation(NAVIGATION_TYPE.NEXT)}
             isEdit={isEdit}
+            mutateAutomationData={mutateAutomationData}
           />
         </Box>
 

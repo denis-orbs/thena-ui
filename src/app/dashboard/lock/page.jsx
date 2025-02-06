@@ -219,7 +219,7 @@ export default function LockPage() {
       <div>
         <Paragraph>{t('Lock description')}</Paragraph>{' '}
         <span onClick={handleScroll} className='cursor-pointer text-primary-600'>
-          {t('How it works')}
+          {t('How It Works')}
         </span>
       </div>
       {account ? (

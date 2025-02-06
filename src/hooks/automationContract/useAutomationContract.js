@@ -1,10 +1,10 @@
 import { useTranslations } from 'next-intl'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
 import { useReadContract, useReadContracts } from 'wagmi'
 
-import { TXN_STATUS } from '@/constant'
+import { AUTOMATION_STATUS, TXN_STATUS } from '@/constant'
 import { readCall } from '@/lib/contractActions'
 import { getVeTheAutomationContract, getVeTheAutomationFactoryContract } from '@/lib/contracts'
 import { convertBooleansToHex, convertHexToBooleans } from '@/lib/utils'
@@ -111,13 +111,19 @@ export const useAutomationContractDetail = tokenId => {
 
   const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
 
-  const { data: contractInfo, isLoading } = useReadContracts({
+  const {
+    data: contractInfo,
+    isLoading,
+    refetch: mutateData,
+  } = useReadContracts({
     contracts: [
       { ...veTheAutomationContract, functionName: 'getBalance' },
       { ...veTheAutomationContract, functionName: 'getPoolsAndWeights' },
       { ...veTheAutomationContract, functionName: 'operations' },
       { ...veTheAutomationContract, functionName: 'runTimestamp' },
       { ...veTheAutomationContract, functionName: 'status' },
+      { ...veTheAutomationContract, functionName: 'upkeepGasLimit' },
+      { ...veTheAutomationContract, functionName: 'forwarder' },
     ],
     query: {
       enabled: Boolean(tokenId),
@@ -132,6 +138,8 @@ export const useAutomationContractDetail = tokenId => {
   const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(operations) || [[], [], []]
   const { result: runTimestamp } = contractInfo?.[3] || {}
   const { result: status } = contractInfo?.[4] || {}
+  const gasLimit = contractInfo?.[5]?.result || 0
+  const forwarder = contractInfo?.[6]?.result || null
 
   const pairs = poolsAddress.map((address, index) => {
     const result = pools.find(pool => pool.address.toLowerCase() === address.toLowerCase())
@@ -148,7 +156,23 @@ export const useAutomationContractDetail = tokenId => {
         }
   })
 
+  const statusString = useMemo(() => {
+    switch (status) {
+      case 0:
+        return AUTOMATION_STATUS.PENDING
+      case 1:
+        return AUTOMATION_STATUS.ACTIVE
+      case 2:
+        return AUTOMATION_STATUS.PAUSED
+      case 3:
+        return AUTOMATION_STATUS.CANCELED
+      default:
+        return 'unknown'
+    }
+  }, [status])
+
   const contractData = {
+    address: automationAddress,
     veTHEId: tokenId,
     contractName: `veTHE Automation - ID ${tokenId}`,
     settings: {
@@ -160,9 +184,204 @@ export const useAutomationContractDetail = tokenId => {
       isAutoVote,
       pairs,
     },
-    status,
+    status: statusString,
     balance: balance?.toString() || '0',
+    gasLimit,
+    forwarder,
   }
 
-  return { contractData, isLoading }
+  const mutateAutomationData = useCallback(() => {
+    mutateData()
+  }, [mutateData])
+
+  return { contractData, mutateAutomationData, isLoading }
+}
+
+const ACTION_PAUSE_TYPE = {
+  PAUSE: 'pause',
+  UNPAUSE: 'unpause',
+}
+
+export const usePauseAutomation = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+
+  const t = useTranslations()
+
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const onPauseAutomation = useCallback(
+    async (automationAddress, type, onSuccess) => {
+      const key = uuidv4()
+      const pauseuuid = uuidv4()
+      const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+
+      startTxn({
+        key,
+        title: `${type === ACTION_PAUSE_TYPE.PAUSE ? 'Pause' : 'Unpause'} Automation Contract`,
+        transactions: {
+          [pauseuuid]: {
+            desc: t(type === ACTION_PAUSE_TYPE.PAUSE ? 'Pause' : 'Unpause'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      try {
+        setPending(true)
+        if (
+          !(await writeTxn(
+            key,
+            pauseuuid,
+            veTheAutomationContract,
+            type === ACTION_PAUSE_TYPE.PAUSE ? 'pause' : 'unpause',
+            [],
+          ))
+        ) {
+          setPending(false)
+          return false
+        }
+
+        endTxn({
+          key,
+          final: `${type === ACTION_PAUSE_TYPE.PAUSE ? 'Pause' : 'Unpause'} Automation Contract Successful`,
+        })
+
+        onSuccess()
+        return true
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { onPauseAutomation, pending }
+}
+
+export const useCancelAutomation = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+
+  const t = useTranslations()
+
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const onCancelAutomation = useCallback(
+    async (automationAddress, onSuccess) => {
+      const key = uuidv4()
+      const canceluuid = uuidv4()
+      const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+
+      startTxn({
+        key,
+        title: 'Cancel Automation Contract',
+        transactions: {
+          [canceluuid]: {
+            desc: t('Cancel'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      try {
+        setPending(true)
+        if (!(await writeTxn(key, canceluuid, veTheAutomationContract, 'cancel', []))) {
+          setPending(false)
+          return false
+        }
+
+        endTxn({
+          key,
+          final: 'Cancel Automation Contract Successful',
+        })
+
+        onSuccess()
+        return true
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { onCancelAutomation, pending }
+}
+
+export const useEditAutomation = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+
+  const t = useTranslations()
+
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const onEditAutomation = useCallback(
+    async (contract, onSuccess) => {
+      const key = uuidv4()
+      const operationsuuid = uuidv4()
+      const poolWeightuuid = uuidv4()
+      const veTheAutomationContract = getVeTheAutomationContract(contract.address, chainId)
+
+      const { settings, votes } = contract
+
+      const { pairs } = votes
+
+      const operations = convertBooleansToHex(votes.isAutoVote, settings.isClaimEveryWeek, settings.isRelockEveryWeek)
+      const pools = pairs.map(pair => pair.pair.address)
+      const weights = pairs.map(pair => pair.weight)
+
+      startTxn({
+        key,
+        title: 'Edit Automation Contract',
+        transactions: {
+          [operationsuuid]: {
+            desc: t('Set Operations Contract'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+
+          [poolWeightuuid]: {
+            desc: t('Set Pools And Weights Contract'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        },
+      })
+
+      try {
+        setPending(true)
+        if (!(await writeTxn(key, operationsuuid, veTheAutomationContract, 'setOperations', [operations]))) {
+          setPending(false)
+          return false
+        }
+
+        if (!(await writeTxn(key, poolWeightuuid, veTheAutomationContract, 'setPoolsAndWeights', [pools, weights]))) {
+          setPending(false)
+          return false
+        }
+
+        endTxn({
+          key,
+          final: 'Edit Automation Contract Successful',
+        })
+
+        onSuccess()
+        return true
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+
+  return { onEditAutomation, pending }
 }

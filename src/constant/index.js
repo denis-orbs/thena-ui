@@ -242,6 +242,19 @@ export const PAIR_TYPES = {
   WEIGHTED: 'Weighted',
 }
 
+export const AUTOMATION_STATUS = {
+  PENDING: 'Pending',
+  ACTIVE: 'Active',
+  PAUSED: 'Paused',
+  CANCELED: 'Canceled',
+}
+
+export const EDIT_AUTOMATION_TYPE = {
+  OPERATIONS: 'operations',
+  POOL_AND_WEIGHT: 'poolAndWeight',
+  ALL: 'all',
+}
+
 export const FusionRangeType = {
   ICHI_RANGE: 'ichi',
   GAMMA_RANGE: 'gamma',

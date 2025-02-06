@@ -1,0 +1,80 @@
+import { useTranslations } from 'next-intl'
+import React, { useMemo } from 'react'
+
+import { NeutralBadge } from '@/components/badges/Badge'
+import Box from '@/components/box'
+import CircleImage from '@/components/image/CircleImage'
+import Skeleton from '@/components/skeleton'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { AUTOMATION_STATUS } from '@/constant'
+import { formatAmount } from '@/lib/utils'
+
+function LockDetails({ contractData }) {
+  const t = useTranslations()
+
+  const styleStatus = useMemo(() => {
+    switch (contractData.status) {
+      case AUTOMATION_STATUS.PENDING:
+        return 'bg-[#0000F5]'
+      case AUTOMATION_STATUS.ACTIVE:
+        return 'bg-success-600'
+      case AUTOMATION_STATUS.PAUSED:
+        return 'bg-warn-600'
+      case 3:
+        return 'bg-error-600'
+      default:
+        return 'unknown'
+    }
+  }, [contractData.status])
+
+  return (
+    <div className='space-y-4'>
+      <div className='hidden bg-[#0000F5]' />
+      <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Lock Details')}</TextHeading>
+      <div className='grid grid-cols-2 gap-2 lg:grid-cols-5 lg:gap-6'>
+        <Box className='flex w-full flex-col gap-2'>
+          <div className='bg-bl flex items-center gap-1'>
+            <NeutralBadge className={styleStatus}>{contractData.status}</NeutralBadge>
+          </div>
+          <Paragraph className='text-sm'>{t('Automation Status')}</Paragraph>
+        </Box>
+        <Box className='flex w-full flex-col gap-2'>
+          {contractData?.veTHEId ? (
+            <TextHeading className='text-xl lg:text-2xl'>{contractData?.veTHEId}</TextHeading>
+          ) : (
+            <Skeleton className='h-8 w-14' />
+          )}
+          <Paragraph className='text-sm'>{t('veTHE ID')}</Paragraph>
+        </Box>
+        <Box className='flex w-full flex-col gap-2'>
+          <div className='flex items-center gap-1'>
+            <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+            <div className='flex items-center gap-1'>
+              <TextHeading className='text-2xl'>{formatAmount(123)}TODO</TextHeading>
+              <TextSubHeading>${formatAmount(123)}TODO</TextSubHeading>
+            </div>
+          </div>
+          <Paragraph className='text-sm'>{t('Lock amount')}</Paragraph>
+        </Box>
+        <Box className='flex w-full flex-col gap-2'>
+          <div className='flex items-center gap-1'>
+            <CircleImage className='h-5 w-5' src='https://cdn.thena.fi/assets/THE.png' alt='thena logo' />
+            <div className='flex items-center gap-1'>
+              <TextHeading className='text-2xl'>{formatAmount(123)}TODO</TextHeading>
+              <TextSubHeading>${formatAmount(123)}TODO</TextSubHeading>
+            </div>
+          </div>
+          <Paragraph className='text-sm'>{t('Lock Value')}</Paragraph>
+        </Box>
+        <Box className='col-span-2 flex w-full flex-col gap-2 lg:col-span-1'>
+          <div className='flex items-center gap-1'>
+            <TextHeading className='text-2xl'>{t('Automated')}TODO</TextHeading>
+          </div>
+          <Paragraph className='text-sm'>{t('Lock expire')}</Paragraph>
+        </Box>
+      </div>
+    </div>
+  )
+}
+
+export default LockDetails
