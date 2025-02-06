@@ -20,6 +20,7 @@
   { "inputs": [], "name": "NotOwnerNorApproved", "type": "error" },
   { "inputs": [], "name": "NotRegistered", "type": "error" },
   { "inputs": [], "name": "OnlySimulatedBackend", "type": "error" },
+  { "inputs": [], "name": "PastTime", "type": "error" },
   { "inputs": [], "name": "ReentrancyGuardReentrantCall", "type": "error" },
   { "inputs": [], "name": "RegistrationFailed", "type": "error" },
   {
@@ -69,17 +70,18 @@
   },
   {
     "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "bytes1", "name": "operations", "type": "bytes1" }],
+    "inputs": [
+      { "indexed": false, "internalType": "bytes1", "name": "operations", "type": "bytes1" },
+      { "indexed": false, "internalType": "address[]", "name": "pools", "type": "address[]" },
+      { "indexed": false, "internalType": "uint256[]", "name": "weights", "type": "uint256[]" }
+    ],
     "name": "OperationsUpdated",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [
-      { "indexed": false, "internalType": "address[]", "name": "pools", "type": "address[]" },
-      { "indexed": false, "internalType": "uint256[]", "name": "weights", "type": "uint256[]" }
-    ],
-    "name": "PoolsAndWeightsUpdated",
+    "inputs": [{ "indexed": false, "internalType": "uint256", "name": "runTimestamp", "type": "uint256" }],
+    "name": "RunTimestampUpdated",
     "type": "event"
   },
   {
@@ -118,7 +120,6 @@
     "inputs": [
       { "indexed": true, "internalType": "address", "name": "automation", "type": "address" },
       { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-      { "indexed": true, "internalType": "uint256", "name": "upkeepId", "type": "uint256" },
       { "indexed": false, "internalType": "bytes1", "name": "operations", "type": "bytes1" },
       { "indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256" }
     ],
@@ -160,6 +161,13 @@
   },
   {
     "inputs": [],
+    "name": "INTERVAL",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "approved",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
@@ -170,8 +178,8 @@
     "inputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
     "name": "checkUpkeep",
     "outputs": [
-      { "internalType": "bool", "name": "", "type": "bool" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
+      { "internalType": "bool", "name": "upkeepNeeded", "type": "bool" },
+      { "internalType": "bytes", "name": "performData", "type": "bytes" }
     ],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -241,6 +249,13 @@
   },
   {
     "inputs": [],
+    "name": "name",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "operations",
     "outputs": [{ "internalType": "bytes1", "name": "", "type": "bytes1" }],
     "stateMutability": "view",
@@ -300,18 +315,19 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "bytes1", "name": "_operations", "type": "bytes1" }],
+    "inputs": [
+      { "internalType": "bytes1", "name": "_operations", "type": "bytes1" },
+      { "internalType": "address[]", "name": "_pools", "type": "address[]" },
+      { "internalType": "uint256[]", "name": "_weights", "type": "uint256[]" }
+    ],
     "name": "setOperations",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address[]", "name": "_pools", "type": "address[]" },
-      { "internalType": "uint256[]", "name": "_weights", "type": "uint256[]" }
-    ],
-    "name": "setPoolsAndWeights",
+    "inputs": [{ "internalType": "uint256", "name": "_runTimestamp", "type": "uint256" }],
+    "name": "setRunTimestamp",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -326,7 +342,7 @@
   {
     "inputs": [],
     "name": "status",
-    "outputs": [{ "internalType": "enum IVeTheAutomation.Status", "name": "", "type": "uint8" }],
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
     "stateMutability": "view",
     "type": "function"
   },

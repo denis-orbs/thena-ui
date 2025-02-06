@@ -19,10 +19,9 @@
   },
   { "inputs": [], "name": "AutomationExist", "type": "error" },
   { "inputs": [], "name": "DiffLength", "type": "error" },
-  { "inputs": [], "name": "NextEpochTime", "type": "error" },
   { "inputs": [], "name": "NoOperations", "type": "error" },
   { "inputs": [], "name": "NotOwnerNorApproved", "type": "error" },
-  { "inputs": [], "name": "PastEpochTime", "type": "error" },
+  { "inputs": [], "name": "PastTime", "type": "error" },
   { "inputs": [], "name": "ZeroAddress", "type": "error" },
   { "inputs": [], "name": "ZeroPoolLength", "type": "error" },
   {
@@ -98,13 +97,6 @@
     "inputs": [],
     "name": "FACTORY_MANAGER_ROLE",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "VOTE_DEADLINE_BUFFER",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },

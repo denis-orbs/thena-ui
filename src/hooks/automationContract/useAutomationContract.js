@@ -45,7 +45,6 @@ export const useCreateAutomation = () => {
   const handleGetAddress = useCallback(
     async txnReceipt => {
       try {
-        console.log({ txnReceipt })
         const event = txnReceipt.logs[0]
         const eventLogs = decodeEventLog({
           abi: veTheAutomationFactoryContract.abi,
@@ -799,6 +798,61 @@ export const useEditMaxGasPrice = () => {
     [chainId, endTxn, startTxn, t, writeTxn],
   )
   return { onEditMaxGasPrice, pending }
+}
+
+export const useSetRunTimestamp = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const t = useTranslations()
+
+  const { startTxn, endTxn, writeTxn } = useTxn()
+
+  const onSetRunTimestamp = useCallback(
+    async (address, timestamp, onSuccess = () => {}) => {
+      try {
+        const veTheAutomationContract = getVeTheAutomationContract(address, chainId)
+        const key = uuidv4()
+        const setRunTimesuuid = uuidv4()
+        setPending(true)
+        const startTimestamp = timestamp - new Date().getTimezoneOffset() * 60 * 1000
+        startTxn({
+          key,
+          title: 'Set Run Timestamp',
+          transactions: {
+            [setRunTimesuuid]: {
+              desc: t('Set Run Timestamp'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
+        if (
+          !(await writeTxn(key, setRunTimesuuid, veTheAutomationContract, 'setRunTimestamp', [
+            Math.floor(startTimestamp / 1000),
+          ]))
+        ) {
+          setPending(false)
+          return
+        }
+
+        endTxn({
+          key,
+          final: 'Set Run Timestamp Successful',
+        })
+
+        onSuccess()
+
+        return true
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setPending(false)
+      }
+    },
+    [chainId, endTxn, startTxn, t, writeTxn],
+  )
+  return { onSetRunTimestamp, pending }
 }
 
 export const useDepositFunds = () => {

@@ -194,7 +194,7 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
   veTheAutomationFactory: {
-    [CHAIN_ID.TEST_BSC]: '0xca21384cbd550635706e6cc260db9857c15ea4a2',
+    [CHAIN_ID.TEST_BSC]: '0xc84f8b2ddbcd2bc862b80b432c86c0af121504c7',
   },
   chainlinkToken: {
     // ERC20LINK

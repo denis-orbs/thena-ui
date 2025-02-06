@@ -3,11 +3,13 @@ import React, { useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
+import { useSetRunTimestamp } from '@/hooks/automationContract/useAutomationContract'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import SelectExecutionTime from '@/modules/CreateVeTHEAutomation/SelectExecutionTime'
 
 function EditExecutionTimeModal({ popup, setPopup, contract }) {
   const t = useTranslations()
+  const { onSetRunTimestamp, pending } = useSetRunTimestamp()
   const [executionTime, setExecutionTime] = useState(contract?.settings?.executionTime)
   const windowSize = useWindowSize()
   return (
@@ -28,11 +30,9 @@ function EditExecutionTimeModal({ popup, setPopup, contract }) {
         </EmphasisButton>
         <PrimaryButton
           className='w-full'
-          // disabled={pending}
+          disabled={pending}
           onClick={() => {
-            // onDepositFunds(contract.address, chainLINK.address, amount, () => {
-            //   mutateAutomationData()
-            // })
+            onSetRunTimestamp(contract.address, executionTime)
             setPopup(false)
           }}
         >
