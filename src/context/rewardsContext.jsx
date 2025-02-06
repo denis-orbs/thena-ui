@@ -78,6 +78,7 @@ function RewardsContextProvider({ children }) {
     }
 
     return poolsWithGauge
+      .filter(pool => pool.version === 3)
       .map(pool => {
         const result = {}
         const isFeeExist = false
