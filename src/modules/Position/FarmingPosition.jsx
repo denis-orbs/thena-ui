@@ -378,7 +378,7 @@ export function FarmingPosition({ position }) {
       <RemoveManualModal
         popup={removePopup}
         setPopup={setRemovePopup}
-        pool={position}
+        pool={{ ...position, key: poolKey }}
         position={_position}
         reward0={reward0}
         reward1={reward1}

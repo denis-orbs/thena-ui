@@ -395,17 +395,39 @@ export const useAlgebraExitFarming = () => {
 export const useAlgebraRemove = (version = 3) => {
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
-  const { startTxn, endTxn, sendTxn } = useTxn()
+  const { startTxn, endTxn, sendTxn, writeTxn } = useTxn()
   const t = useTranslations()
 
   const onAlgebraRemove = useCallback(
-    async (tokenId, position, liquidityPercentage, feeValue0, feeValue1, slippage, deadline, callback) => {
+    async ({
+      tokenId,
+      farmReward,
+      position,
+      liquidityPercentage,
+      currency0,
+      currency1,
+      slippage,
+      deadline,
+      callback,
+    }) => {
       const key = uuidv4()
+      const claimRewardId = uuidv4()
       const removeuuid = uuidv4()
+
+      const { reward0, reward1, poolkey } = farmReward ?? {}
+      const rewardAmount = Number(reward0?.toSignificant() ?? 0) + Number(reward1?.toSignificant() ?? 0)
+
       startTxn({
         key,
         title: 'Remove Liquidity',
         transactions: {
+          ...(rewardAmount > 0 && {
+            [claimRewardId]: {
+              desc: t('Claim Rewards'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
           [removeuuid]: {
             desc: t('Remove Liquidity'),
             status: TXN_STATUS.START,
@@ -413,9 +435,19 @@ export const useAlgebraRemove = (version = 3) => {
           },
         },
       })
+
+      if (rewardAmount > 0) {
+        const farmingCenter = getFarmingCenterContract(chainId)
+        if (
+          !(await writeTxn(key, claimRewardId, farmingCenter, 'collectAndClaimRewards', [account, poolkey, tokenId]))
+        ) {
+          setPending(false)
+          return
+        }
+      }
+
       setPending(true)
       const positionManger = getPositionManagerContract(chainId, version)
-
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
       const { calldata, value } = NonfungiblePositionManager.removeCallParameters(position, {
@@ -425,8 +457,8 @@ export const useAlgebraRemove = (version = 3) => {
         deadline: timestamp.toString(),
         burnToken: true,
         collectOptions: {
-          expectedCurrencyOwed0: feeValue0,
-          expectedCurrencyOwed1: feeValue1,
+          expectedCurrencyOwed0: currency0,
+          expectedCurrencyOwed1: currency1,
           recipient: account,
         },
       })
@@ -440,7 +472,7 @@ export const useAlgebraRemove = (version = 3) => {
       setPending(false)
       callback()
     },
-    [account, startTxn, endTxn, sendTxn, chainId, t, version],
+    [startTxn, t, chainId, version, account, sendTxn, endTxn, writeTxn],
   )
 
   return { onAlgebraRemove, pending }

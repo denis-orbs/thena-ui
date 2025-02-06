@@ -239,10 +239,9 @@ export class NonfungiblePositionManager extends SelfPermit {
 
     if (options.liquidityPercentage.equalTo(ONE)) {
       if (options.burnToken) {
+        // remove 100% liquidity + isBurnToken = true
         calldatas.push(NonfungiblePositionManager.getCalldata('burn', [tokenId]))
       }
-    } else {
-      invariant(options.burnToken !== true, 'CANNOT_BURN')
     }
 
     return {

@@ -1,7 +1,8 @@
 'use client'
 
+import BigNumber from 'bignumber.js'
 import React, { useCallback, useMemo, useState } from 'react'
-import { Percent } from 'thena-sdk-core'
+import { CurrencyAmount, Percent } from 'thena-sdk-core'
 
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
 import { PrimaryButton, TextButton } from '@/components/buttons/Button'
@@ -36,40 +37,52 @@ export default function RemoveManualModal({
   const liquidityPercentage = useMemo(() => new Percent(percent, 100), [percent])
   const { pending, onAlgebraRemove } = useAlgebraRemove(pool?.version ?? 3)
 
-  const liquidityValue0 = useMemo(() => ((position?.amount0.toExact() || 0) * percent) / 100, [position, percent])
-  const liquidityValue1 = useMemo(() => ((position?.amount1.toExact() || 0) * percent) / 100, [position, percent])
+  const { pool: _pool, amount0, amount1 } = position ?? {}
+  const liquidityValue0 = useMemo(() => ((amount0?.toExact() || 0) * percent) / 100, [amount0, percent])
+  const liquidityValue1 = useMemo(() => ((amount1?.toExact() || 0) * percent) / 100, [amount1, percent])
 
   const onRemove = useCallback(() => {
+    const farmReward = pool?.isFarming
+      ? {
+          reward0: reward0.amount,
+          reward1: reward1.amount,
+          poolkey: pool.key,
+        }
+      : {}
+
     if (debouncedPercent > 0) {
-      onAlgebraRemove(
-        pool.tokenId,
+      onAlgebraRemove({
+        tokenId: pool?.tokenId,
+        farmReward,
         position,
         liquidityPercentage,
-        reward0?.amount,
-        reward1?.amount,
+        currency0: CurrencyAmount.fromRawAmount(_pool?.token0, BigNumber(0n)),
+        currency1: CurrencyAmount.fromRawAmount(_pool?.token1, BigNumber(0n)),
         slippage,
         deadline,
-        () => {
+        callback: () => {
           setPercent(0)
           setPopup(false)
           mutateManual()
         },
-      )
+      })
     } else {
       warnToast('Invalid Amount', 'warn')
     }
   }, [
+    _pool?.token0,
+    _pool?.token1,
+    deadline,
+    debouncedPercent,
+    liquidityPercentage,
+    mutateManual,
+    onAlgebraRemove,
     pool,
     position,
-    liquidityPercentage,
-    reward0,
-    reward1,
-    debouncedPercent,
-    deadline,
-    slippage,
-    onAlgebraRemove,
+    reward0.amount,
+    reward1.amount,
     setPopup,
-    mutateManual,
+    slippage,
   ])
 
   return (
