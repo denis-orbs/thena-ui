@@ -1,22 +1,19 @@
-import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
 import React, { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { DateTimePickerCustom } from '@/components/input/DateTimePickerCustom'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading } from '@/components/typography'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
 import { InfoIcon } from '@/svgs'
+
+import SelectExecutionTime from '../SelectExecutionTime'
 
 const SETTINGS_TYPE = {
   CLAIM: 'claim',
   RELOCK: 'relock',
   EXECUTION_TIME: 'execution',
 }
-
-const week = 86400 * 7 * 1000
 
 function Step1Settings() {
   const t = useTranslations()
@@ -63,13 +60,6 @@ function Step1Settings() {
     [createData, dispatch],
   )
 
-  const getIsoString = useCallback(timestamp => {
-    const curTimeStamp = new Date().getTime()
-    const finalTS = timestamp || curTimeStamp
-    const finalDate = new Date(finalTS)
-    return finalDate
-  }, [])
-
   return (
     <div className='space-y-6'>
       <div className='flex flex-row items-center gap-1'>
@@ -102,44 +92,10 @@ function Step1Settings() {
           {t('Automatically increase your veTHE lock timestamp by one week every week')}
         </CustomTooltip>
       </div>
-      <div className='space-y-3'>
-        <div className='flex items-center gap-2'>
-          <TextHeading>{t('Contract Execution Time')}</TextHeading>
-          <InfoIcon data-tooltip-id='setting-execution-time' className='h-4 w-4 stroke-neutral-400' />
-          <CustomTooltip
-            className='z-40 min-w-[136px] max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
-            id='setting-execution-time'
-            place='bottom'
-          >
-            {t('Scheduled timestamp for automation execution')}
-          </CustomTooltip>
-        </div>
-        <div className='w-full'>
-          <DateTimePickerCustom
-            title='Contract Execution Time'
-            selectedDate={new Date(createData?.settings?.executionTime || Date.now())}
-            onChange={date => {
-              const newDate = new Date(date).getTime()
-              updateSetting(SETTINGS_TYPE.EXECUTION_TIME, newDate)
-            }}
-            minDate={getIsoString()}
-            showTimeSelect
-            dateFormat='MMM D, YYYY [at] HH:mm [UTC]'
-          />
-        </div>
-      </div>
-      <div className='space-y-3'>
-        <TextHeading>{t('Next 5 Scheduled Dates')}</TextHeading>
-        <div className='flex flex-col gap-3'>
-          {[1, 2, 3, 4, 5].map((item, index) => (
-            <Paragraph key={index}>
-              {`${item}. ${dayjs((createData?.settings?.executionTime || 0) + index * week).format(
-                'MMM D, YYYY [at] HH:mm [UTC]',
-              )}`}
-            </Paragraph>
-          ))}
-        </div>
-      </div>
+      <SelectExecutionTime
+        data={createData?.settings?.executionTime}
+        updateData={date => updateSetting(SETTINGS_TYPE.EXECUTION_TIME, date)}
+      />
     </div>
   )
 }

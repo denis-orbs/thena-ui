@@ -56,7 +56,7 @@ function Step3Create() {
           <TextHeading>{createData?.settings?.isRelockEveryWeek ? 'Yes' : 'No'}</TextHeading>
         </div>
         <div className='flex flex-row justify-between'>
-          <Paragraph>{t('Contract Execution Time')}</Paragraph>
+          <Paragraph>{t('Automation Execution Time')}</Paragraph>
           <TextHeading>{dayjs(createData?.settings?.executionTime).format('YYYY/MM/DD hh:mm A')}</TextHeading>
         </div>
       </div>

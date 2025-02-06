@@ -24,7 +24,7 @@ function RegisterAutomation({ chainLINK, chainLINKAmount, updateRegistration = (
   const [popup, setPopup] = useState(false)
   const { chainId } = useWallet()
 
-  const automationAddress = useGetMaxPaymentForGas()
+  const maxPaymentForGas = useGetMaxPaymentForGas()
 
   const t = useTranslations()
 
@@ -65,9 +65,9 @@ function RegisterAutomation({ chainLINK, chainLINKAmount, updateRegistration = (
           suffix={`$${chainLINK ? formatAmount((chainLINKAmount || 0) * (chainLINK.price || 0)) : 0}`}
         />
       </div>
-      {chainLINKAmount < automationAddress && (
+      {chainLINKAmount < maxPaymentForGas && (
         <ErrorMessage
-          message={t('LINK Amount should be larger than [value]', { value: formatAmount(automationAddress) })}
+          message={t('LINK Amount should be larger than [value]', { value: formatAmount(maxPaymentForGas) })}
         />
       )}
       <ErrorMessage message={t('Registration automation contract description')} />

@@ -1358,7 +1358,7 @@
   "Add Pair": "Add Pair",
   "Automatically vote each epoch": "Automatically vote each epoch",
   "Settings": "Settings",
-  "Contract Execution Time": "Contract Execution Time",
+  "Automation Execution Time": "Automation Execution Time",
   "Total weight invalid": "The total weighting of all pools must equal exactly 100% before you continue.",
   "InvalidWeight": "All pools must have a weighting higher than zero. Either remove or replace or set it above 0.01%.",
   "Edit Automation Contract": "Edit Automation Contract",
@@ -1444,5 +1444,7 @@
   "Warning register automation": "You need to register the automation and grant the necessary veTHE approvals for it to function properly.",
   "Automation rebase description": "Automatically claim your rebase rewards every week. If you disable this option you will have to manually claim rebase before your lock period ends.",
   "Automation relock description": "Automatically increase your veTHE lock timestamp by one week every week.",
-  "Automation vote description": "Automatically cast votes for your selected pairs each epoch."
+  "Automation vote description": "Automatically cast votes for your selected pairs each epoch.",
+  "Edit Automation Execution Time": "Edit Automation Execution Time",
+  "Edit Execution Time": "Edit Execution Time"
 }

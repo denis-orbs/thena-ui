@@ -9,9 +9,8 @@ import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useAutomationContractDetail, useDepositFunds } from '@/hooks/automationContract/useAutomationContract'
 import useWallet from '@/hooks/useWallet'
-import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 
-function DepositFundsModal({ contract, popup, setPopup }) {
+function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) {
   const { veTHEId } = contract
   const t = useTranslations()
   const [amount, setAmount] = useState()
@@ -64,7 +63,7 @@ function DepositFundsModal({ contract, popup, setPopup }) {
               assetData={chainLINKData}
               assetNull
             />
-            {amount < 0.1 && <ErrorMessage message={t('LINK Amount should be larger')} />}
+            {/* {amount < 0.1 && <ErrorMessage message={t('LINK Amount should be larger')} />} */}
           </div>
         </div>
       </ModalBody>
@@ -78,6 +77,7 @@ function DepositFundsModal({ contract, popup, setPopup }) {
           onClick={() => {
             onDepositFunds(contract.address, chainLINK.address, amount, () => {
               mutateAutomationData()
+              onSuccess()
             })
             setPopup(false)
           }}

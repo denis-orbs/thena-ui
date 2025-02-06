@@ -1,11 +1,12 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
+import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
 import { decodeEventLog, maxUint256, zeroAddress } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { AUTOMATION_STATUS, PAIR_TYPES, TXN_STATUS } from '@/constant'
-import { readCall } from '@/lib/contractActions'
+import { callMulti, readCall } from '@/lib/contractActions'
 import {
   getLinkTokenContract,
   getRegistryContract,
@@ -103,13 +104,13 @@ export const useCreateAutomation = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
-          [upkeepuuid]: {
-            desc: t('Register [contractName] contract', { contractName: `veTHE Contract ${tokenId}` }),
+          [approveAutomationuuid]: {
+            desc: t('Approve veTHE [tokenId]', { tokenId }),
             status: TXN_STATUS.START,
             hash: null,
           },
-          [approveAutomationuuid]: {
-            desc: t('Approve veTHE [tokenId]', { tokenId }),
+          [upkeepuuid]: {
+            desc: t('Register [contractName] contract', { contractName: `veTHE Contract ${tokenId}` }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -149,6 +150,15 @@ export const useCreateAutomation = () => {
           return
         }
 
+        if (!isApproveAutomation) {
+          if (
+            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
+          ) {
+            setPending(false)
+            return
+          }
+        }
+
         if (
           !(await writeTxn(key, upkeepuuid, veTheAutomationContract, 'registerUpkeep', [
             chainlink.address,
@@ -157,15 +167,6 @@ export const useCreateAutomation = () => {
         ) {
           setPending(false)
           return false
-        }
-
-        if (!isApproveAutomation) {
-          if (
-            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
-          ) {
-            setPending(false)
-            return
-          }
         }
 
         endTxn({
@@ -248,6 +249,53 @@ export const useAutomationStatus = vetTHEId => {
   }
 
   return { status: statusString, isLoading: isLoading2, mutateData: mutateData2 }
+}
+
+export const useStatusAndBalanceMultiple = veTHEs => {
+  const { chainId } = useWallet()
+  const fetchContractsStatusAndBalance = useCallback(async () => {
+    const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
+    const contractsAddress = await callMulti(
+      veTHEs.map(veTHE => ({
+        ...veTheAutomationFactoryContract,
+        functionName: 'tokenIdToAutomation',
+        args: [veTHE.id],
+        chainId,
+      })),
+    )
+
+    const contractsStatus = await callMulti(
+      contractsAddress.map(address => ({
+        ...getVeTheAutomationContract(address, chainId),
+        functionName: 'status',
+      })),
+    )
+
+    const contractsBalance = await callMulti(
+      contractsAddress.map(address => ({
+        ...getVeTheAutomationContract(address, chainId),
+        functionName: 'getBalance',
+      })),
+    )
+    const result = veTHEs.map((veTHE, index) => ({
+      ...veTHE,
+      contractAddress: contractsAddress[index],
+      status: contractsStatus[index] ?? null,
+      balanceAuto: contractsBalance[index] ?? null,
+    }))
+
+    return result
+  }, [chainId, veTHEs])
+
+  const { data, isLoading, mutate } = useSWR(
+    ['fetchContractsStatus', chainId, veTHEs.length],
+    () => fetchContractsStatusAndBalance(),
+    {
+      refreshInterval: 0,
+    },
+  )
+
+  return { data, isLoading, mutate }
 }
 
 export const useAutomationContractDetail = tokenId => {
@@ -582,13 +630,13 @@ export const useActiveAutomation = () => {
             status: TXN_STATUS.START,
             hash: null,
           },
-          [upkeepuuid]: {
-            desc: t('Register [contractName] contract', { contractName: `veTHE Contract ${tokenId}` }),
+          [approveAutomationuuid]: {
+            desc: t('Approve veTHE [tokenId]', { tokenId }),
             status: TXN_STATUS.START,
             hash: null,
           },
-          [approveAutomationuuid]: {
-            desc: t('Approve veTHE [tokenId]', { tokenId }),
+          [upkeepuuid]: {
+            desc: t('Register [contractName] contract', { contractName: `veTHE Contract ${tokenId}` }),
             status: TXN_STATUS.START,
             hash: null,
           },
@@ -612,6 +660,15 @@ export const useActiveAutomation = () => {
           return
         }
 
+        if (!isApproveAutomation) {
+          if (
+            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
+          ) {
+            setPending(false)
+            return
+          }
+        }
+
         if (
           !(await writeTxn(key, upkeepuuid, veTheAutomationContract, 'registerUpkeep', [
             chainlink.address,
@@ -620,15 +677,6 @@ export const useActiveAutomation = () => {
         ) {
           setPending(false)
           return false
-        }
-
-        if (!isApproveAutomation) {
-          if (
-            !(await writeTxn(key, approveAutomationuuid, theContract, 'setApprovalForAll', [automationAddress, true]))
-          ) {
-            setPending(false)
-            return
-          }
         }
 
         endTxn({

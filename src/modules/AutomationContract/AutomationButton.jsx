@@ -13,6 +13,7 @@ import { createVeTHEAutomationContract, setSelectedVeTHE } from '@/state/veTHEAu
 
 import ConfirmAutomationModal from './ConfirmAutomationModal'
 import DepositFundsModal from './Edits/DepositFundsModal'
+import EditExecutionTimeModal from './Edits/EditExecutionTimeModal'
 import EditGasLimitModal from './Edits/EditGasLimitModal'
 import EditMaxGasPriceModal from './Edits/EditMaxGasPriceModal'
 import ChainlinkModal from './head/ChainlinkModal'
@@ -35,6 +36,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
   const [depositFundsPopup, setDepositFundsPopup] = useState(false)
   const [withdrawFundsPopup, setWithdrawFundsPopup] = useState(false)
   const [maxGasPricePopup, setMaxGasPricePopup] = useState(false)
+  const [executionTimePopup, setExecutionTimePopup] = useState(false)
 
   const nowInSeconds = Math.floor(Date.now() / 1000)
 
@@ -59,6 +61,11 @@ function AutomationButton({ veTHE, isDetail = false }) {
         label: 'Edit Settings',
         id: veTHEId,
         type: ACTION_AUTOMATION_TYPE.EDIT_SETTINGS,
+      },
+      [ACTION_AUTOMATION_TYPE.EDIT_EXECUTION_TIME]: {
+        label: 'Edit Execution Time',
+        id: veTHEId,
+        type: ACTION_AUTOMATION_TYPE.EDIT_EXECUTION_TIME,
       },
       [ACTION_AUTOMATION_TYPE.EDIT_GAS_LIMIT]: {
         label: 'Edit gas limit',
@@ -106,6 +113,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
       return [
         options[ACTION_AUTOMATION_TYPE.DEPOSIT_FUNDS],
         options[ACTION_AUTOMATION_TYPE.EDIT_SETTINGS],
+        options[ACTION_AUTOMATION_TYPE.EDIT_EXECUTION_TIME],
         options[ACTION_AUTOMATION_TYPE.EDIT_GAS_LIMIT],
         options[ACTION_AUTOMATION_TYPE.EDIT_MAX_GAS_PRICE],
         ...(isDetail ? [] : [options[ACTION_AUTOMATION_TYPE.DETAIL]]),
@@ -125,6 +133,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
       return [
         options[ACTION_AUTOMATION_TYPE.DEPOSIT_FUNDS],
         options[ACTION_AUTOMATION_TYPE.EDIT_SETTINGS],
+        options[ACTION_AUTOMATION_TYPE.EDIT_EXECUTION_TIME],
         options[ACTION_AUTOMATION_TYPE.EDIT_GAS_LIMIT],
         options[ACTION_AUTOMATION_TYPE.EDIT_MAX_GAS_PRICE],
         ...(isDetail ? [] : [options[ACTION_AUTOMATION_TYPE.DETAIL]]),
@@ -231,6 +240,11 @@ function AutomationButton({ veTHE, isDetail = false }) {
       setWithdrawFundsPopup(true)
       setAction()
     }
+
+    if (action.type === ACTION_AUTOMATION_TYPE.EDIT_EXECUTION_TIME) {
+      setExecutionTimePopup(true)
+      setAction()
+    }
   }, [action, chainId, contractData.address])
 
   return (
@@ -259,6 +273,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
                   setAction(data)
                   setActionConfirm(data)
                 }}
+                listClassNames='w-[240px]'
               />
             </>
           )}
@@ -288,6 +303,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
       <DepositFundsModal contract={contractData} popup={depositFundsPopup} setPopup={setDepositFundsPopup} />
       <WithdrawFundsModal contract={contractData} popup={withdrawFundsPopup} setPopup={setWithdrawFundsPopup} />
       <EditMaxGasPriceModal contract={contractData} popup={maxGasPricePopup} setPopup={setMaxGasPricePopup} />
+      <EditExecutionTimeModal contract={contractData} popup={executionTimePopup} setPopup={setExecutionTimePopup} />
     </>
   )
 }

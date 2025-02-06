@@ -1,5 +1,6 @@
+import { isEmpty } from 'lodash'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
@@ -8,6 +9,7 @@ import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useEditAutomation } from '@/hooks/automationContract/useAutomationContract'
 import SelectVotingPairsAndWeights from '@/modules/CreateVeTHEAutomation/SelectVotingPairsAndWeights'
 import { updateWeight } from '@/modules/CreateVeTHEAutomation/Steps/Step2Vote'
+import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 
 const SETTINGS_TYPE = {
   CLAIM: 'claim',
@@ -125,6 +127,30 @@ function EditAutomationContract({ data }) {
     [dataEdit],
   )
 
+  const [error, setError] = useState()
+
+  const isDisabled = useMemo(() => {
+    const pairs = dataEdit?.votes?.pairs || []
+
+    if (isEmpty(pairs)) return true
+
+    const checkInvalidPair = pairs.some(pair => !pair.pair)
+    if (checkInvalidPair) return true
+
+    const checkInvalidWeight = pairs.some(pair => pair.weight <= 0 || !pair.weight)
+    if (checkInvalidWeight) {
+      setError(t('InvalidWeight'))
+      return true
+    }
+
+    const totalWeight = pairs.reduce((sum, pair) => sum + pair.weight, 0)
+
+    if (totalWeight < 100 || totalWeight > 100) {
+      setError(t('Total weight invalid'))
+      return true
+    }
+  }, [dataEdit?.votes?.pairs, t])
+
   return (
     <Box>
       <div className='divide-y divide-neutral-700'>
@@ -153,7 +179,7 @@ function EditAutomationContract({ data }) {
             <Toggle
               checked={dataEdit?.settings?.isRelockEveryWeek}
               onChange={() => updateSetting(SETTINGS_TYPE.RELOCK)}
-              label='Claim rebase rewards every week'
+              label='Relock veTHE every 1 Week'
             />
           </div>
         </div>
@@ -161,8 +187,8 @@ function EditAutomationContract({ data }) {
         {/* Vote */}
         <div className='grid grid-cols-12 gap-5 py-9 lg:gap-10'>
           <div className='col-span-full flex flex-col gap-3 lg:col-span-4'>
-            <TextHeading>{t('Relock')}</TextHeading>
-            <TextSubHeading>{t('Automation relock description')}</TextSubHeading>
+            <TextHeading>{t('Vote')}</TextHeading>
+            <TextSubHeading>{t('Automation vote description')}</TextSubHeading>
           </div>
           <div className='col-span-full flex flex-row lg:col-span-8'>
             <div className='w-full space-y-11'>
@@ -172,8 +198,9 @@ function EditAutomationContract({ data }) {
                 onRemovePair={onRemovePair}
                 updateVotingPairs={updateVotingPairs}
               />
+              {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
               <PrimaryButton
-                disabled={pendingEdit}
+                disabled={pendingEdit || isDisabled}
                 className='w-full lg:w-fit'
                 onClick={() => onEditAutomation(dataEdit)}
               >

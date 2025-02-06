@@ -4,7 +4,7 @@ import { useTranslations } from 'use-intl'
 import { OutlinedButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
 import { TextHeading } from '@/components/typography'
-import { InfoIcon, PlusIcon } from '@/svgs'
+import { PlusIcon } from '@/svgs'
 
 import VotingPairItem from './Steps/votingPairs/VotingPairItem'
 
@@ -30,7 +30,6 @@ function SelectVotingPairsAndWeights({ data, updateVotingPairs, onRemovePair, on
           onChange={() => updateVotingPairs(UPDATE_TYPE.AUTO)}
           label='Automatically vote each epoch'
         />
-        <InfoIcon className='h-4 w-4 stroke-neutral-400' />
       </div>
       {data.votes.isAutoVote && (
         <>

@@ -254,6 +254,7 @@ export const AUTOMATION_STATUS = {
 export const ACTION_AUTOMATION_TYPE = {
   DETAIL: 'detail',
   EDIT_SETTINGS: 'editSettings',
+  EDIT_EXECUTION_TIME: 'editExecutionTime',
   EDIT_GAS_LIMIT: 'editGasLimit',
   EDIT_MAX_GAS_PRICE: 'editMaxGasPrice',
   WITHDRAW_FUNDS: 'withdrawFunds',
