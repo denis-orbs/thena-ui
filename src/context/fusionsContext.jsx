@@ -10,6 +10,7 @@ import { useChainSettings } from '@/state/settings/hooks'
 import { PairsContext } from './pairsContext'
 
 const initialState = []
+const FusionsContext = createContext(initialState)
 
 const fetchFusionInfo = async (fusionPairs, _chainId) => {
   const liquidities = await callMulti(
@@ -43,11 +44,8 @@ const fetchFusionInfo = async (fusionPairs, _chainId) => {
   }))
 }
 
-const FusionsContext = createContext(initialState)
-
 function FusionsContextProvider({ children }) {
   const { networkId } = useChainSettings()
-
   const pairs = useContext(PairsContext)
 
   const fusionPairs = useMemo(() => {
@@ -89,11 +87,9 @@ const useFusionPairsV2 = () => {
   return data?.map(ele => ({ ...ele, version: 2 }))
 }
 
-const useFusionPairs = (version = 3) => {
-  const fusionPairsV3 = useContext(FusionsContext)
-  const fusionPairsV2 = useFusionPairsV2()
-
-  return version === 2 ? fusionPairsV2 : fusionPairsV3
+const useFusionPairs = () => {
+  const fusionPairs = useContext(FusionsContext)
+  return fusionPairs
 }
 
 export { FusionsContextProvider, useFusionPairs, useFusionPairsV2 }

@@ -13,8 +13,6 @@ import {
   globalFactoryAbi,
   incentiveMakerAbi,
   minterAbi,
-  mockERC20Abi,
-  mockERC20BNBAbi,
   multiCallAbi,
   multiFeeDistributionAbi,
   muonAbi,
@@ -78,13 +76,11 @@ export const getContract = (abi, addressOrAddressMap, chainId) => {
                                             Common
   ************************************************************************************************** */
 
-export const getERC20Contract = (address, chainId) =>
-  getContract(chainId !== 97 ? ERC20Abi : mockERC20Abi, address, chainId)
+export const getERC20Contract = (address, chainId) => getContract(ERC20Abi, address, chainId)
 
-export const getTheContract = chainId => getContract(chainId !== 97 ? ERC20Abi : mockERC20Abi, Contracts.THE, chainId)
+export const getTheContract = chainId => getContract(ERC20Abi, Contracts.THE, chainId)
 
-export const getWBNBContract = chainId =>
-  getContract(chainId !== 97 ? wbnbAbi : mockERC20BNBAbi, Contracts.WBNB, chainId)
+export const getWBNBContract = chainId => getContract(wbnbAbi, Contracts.WBNB, chainId)
 
 export const getMulticallContract = chainId => getContract(multiCallAbi, Contracts.multiCall, chainId)
 
@@ -175,15 +171,11 @@ export const getGammaHyperVisorContract = (address, chainId, version) => {
   return getContract(gammaHypervisorAbi, address, chainId)
 }
 
-/** **************************************************************************************************
-                                            Defiedge
-  ************************************************************************************************** */
-
 export const getDefiedgeStrategyContract = (address, chainId) => getContract(defiedgeStrategyAbi, address, chainId)
 
 /** **************************************************************************************************
                                             ICHI
-  ************************************************************************************************** */
+*************************************************************************************************** */
 
 export const getVaultDepositContract = (chainId, version = 2, isFarming = false) => {
   if (version === 3) {
@@ -265,7 +257,7 @@ export const getFarmingCenterContract = chainId => ({
   address: Contracts.farmingCenter[chainId],
 })
 
-export const getInsentiveContract = chainId => ({
+export const getIncentiveContract = chainId => ({
   abi: incentiveMakerAbi,
   address: Contracts.incentiveMaker[chainId],
 })

@@ -11,8 +11,6 @@ import { useFusionPairs } from '@/context/fusionsContext'
 import { callMulti } from '@/lib/contractActions'
 import { getAlgebraFactoryContract } from '@/lib/contracts'
 
-import { useToken } from './Tokens'
-
 export const PoolState = {
   LOADING: 'LOADING',
   NOT_EXISTS: 'NOT_EXISTS',
@@ -45,7 +43,7 @@ const fetchPoolAddress = async (transformed, version = 3) => {
 }
 
 export function useFusions(poolKeys, version) {
-  const fusionPairs = useFusionPairs(version)
+  const fusionPairs = useFusionPairs()
 
   const transformed = useMemo(
     () =>
@@ -153,17 +151,4 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
 
   if (!token0 || !token1 || !fee || !price || !liquidity) return [PoolState.NOT_EXISTS, null]
   return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick), poolAddress]
-}
-
-export function useFusion(currencyA, currencyB, version = 3) {
-  const poolKeys = useMemo(() => [[currencyA, currencyB]], [currencyA, currencyB])
-
-  return useFusions(poolKeys, version)[0] ?? []
-}
-
-export function useTokensSymbols(token0, token1) {
-  const _token0 = useToken(token0)
-  const _token1 = useToken(token1)
-
-  return useMemo(() => [_token0, _token1], [_token0, _token1])
 }

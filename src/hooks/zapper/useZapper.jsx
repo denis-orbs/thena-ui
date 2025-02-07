@@ -16,7 +16,7 @@ import {
   getFarmingCenterContract,
   getGammaHyperVisorContract,
   getGaugeContract,
-  getInsentiveContract,
+  getIncentiveContract,
   getMultiFeeDistributionContract,
   getPositionManagerContract,
 } from '@/lib/contracts'
@@ -167,7 +167,7 @@ export const useZapperAddLiquidity = () => {
 
         if (isFarming) {
           const farmingCenter = getFarmingCenterContract(chainId)
-          const incentiveMaker = getInsentiveContract(chainId)
+          const incentiveMaker = getIncentiveContract(chainId)
           const positionManger = getPositionManagerContract(chainId, 3)
 
           // MARK: APPROVE LP TOKEN FOR FARMING
