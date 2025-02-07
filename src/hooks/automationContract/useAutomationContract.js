@@ -401,7 +401,7 @@ export const useAutomationContractDetail = tokenId => {
       pairs,
     },
     status: statusString,
-    balance: balance?.toString() || '0',
+    balance: Number(balance?.toString() || '0'),
     gasLimit,
     forwarder,
   }

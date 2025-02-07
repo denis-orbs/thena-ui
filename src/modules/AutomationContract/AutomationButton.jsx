@@ -217,7 +217,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
         <Skeleton className='h-11 w-full rounded-xl' />
       ) : (
         <>
-          {status === AUTOMATION_STATUS.NO ? (
+          {status === AUTOMATION_STATUS.NO || (status === AUTOMATION_STATUS.CANCELED && contractData.balance === 0) ? (
             <TertiaryButton
               disabled={nowInSeconds >= lockedEnd}
               className='w-full py-3 lg:px-1'

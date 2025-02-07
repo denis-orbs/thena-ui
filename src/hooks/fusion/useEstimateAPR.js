@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
 import { Position } from 'thena-fusion-sdk'
+import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
@@ -114,7 +115,7 @@ export const useEstimateAPR = ({
       },
       {
         functionName: 'currentLiquidity',
-        address: virtualPool,
+        address: virtualPool ?? zeroAddress,
         abi: eternalVirtualPoolAbi,
       },
     ],

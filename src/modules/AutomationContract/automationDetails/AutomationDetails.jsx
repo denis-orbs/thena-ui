@@ -12,7 +12,7 @@ import { calculateNextWeek, formatAddress, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { CheckIcon, CopyArenaIcon } from '@/svgs'
 
-function AutomationDetails({ contractData }) {
+function AutomationDetails({ contractData, transactionHash }) {
   const t = useTranslations()
   const { onCopy, copied } = useCopyText()
   const { account } = useWallet()
@@ -119,7 +119,13 @@ function AutomationDetails({ contractData }) {
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Transaction Hash')}</Paragraph>
               <TextHeading className='flex flex-row gap-1'>
-                TODO <CopyArenaIcon className='h-4 w-4 stroke-neutral-50' />
+                {formatAddress(transactionHash)}
+                <div
+                  onClick={e => onCopy(e, transactionHash, 'transactionHash')}
+                  className='h-5 w-5 cursor-pointer stroke-neutral-200'
+                >
+                  {copied === 'transactionHash' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+                </div>
               </TextHeading>
             </div>
             <div className='flex flex-row justify-between'>

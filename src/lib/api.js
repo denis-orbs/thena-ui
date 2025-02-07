@@ -144,3 +144,8 @@ export const fetchVotingHistory = (account, veTHEId, chainId, skip = 0, limit = 
   )
     .then(r => r.json())
     .then(r => r)
+
+export const fetchAutomationHistory = (chainId, tokenId) =>
+  fetch(`${backendApi}/vethes/automation/${chainId}/${tokenId}`)
+    .then(r => r.json())
+    .then(r => r.data)
