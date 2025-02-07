@@ -39,15 +39,27 @@ export default function AnalyticsPage() {
   const { tokens } = useTokens()
   const t = useTranslations()
 
-  const totalStats = useMemo(
-    () =>
-      !stats
-        ? undefined
-        : networkId === ChainId.BSC
-          ? stats.find(ele => ele.type === 'bsc-total')
-          : stats.find(ele => ele.type === 'op-total'),
-    [networkId, stats],
-  )
+  const totalStats = useMemo(() => {
+    if (!stats) return undefined
+
+    if (networkId === ChainId.BSC) {
+      return stats.reduce((acc, curr) => {
+        if (curr.type.startsWith('bsc-') && curr.type !== 'bsc-total') {
+          return {
+            type: 'bsc-total',
+            tvlUSD: (acc?.tvlUSD || 0) + curr.tvlUSD,
+            tvlChange: (acc?.tvlChange || 0) + curr.tvlChange,
+            volumeUSD: (acc?.volumeUSD || 0) + curr.volumeUSD,
+            volumeChange: (acc?.volumeChange || 0) + curr.volumeChange,
+            feesUSD: (acc?.feesUSD || 0) + curr.feesUSD,
+            feesChange: (acc?.feesChange || 0) + curr.feesChange,
+          }
+        }
+        return acc
+      }, null)
+    }
+    return stats.find(ele => ele.type === 'op-total')
+  }, [networkId, stats])
 
   return (
     <div className='flex flex-col gap-10'>
