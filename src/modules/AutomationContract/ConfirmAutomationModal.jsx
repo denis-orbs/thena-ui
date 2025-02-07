@@ -45,7 +45,6 @@ function ConfirmAutomationModal({
     <ConfirmModal
       onConfirm={() => {
         if (actionType === ACTION_AUTOMATION_TYPE.PAUSE) {
-          console.log({ actionType })
           onPauseAutomation(address, ACTION_AUTOMATION_TYPE.PAUSE, mutateAutomationData)
         } else if (actionType === ACTION_AUTOMATION_TYPE.UNPAUSE) {
           onPauseAutomation(address, ACTION_AUTOMATION_TYPE.UNPAUSE, mutateAutomationData)

@@ -14,6 +14,7 @@ import algebraPoolV3 from './fusion/AlgebraPoolV3.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
 import incentiveMakerAbi from './incentiveMaker.json'
+import keeperRegistryAbi from './keeperRegistryAbi.json'
 import linkTokenAbi from './linkToken.json'
 import arabicAbi from './mint/arabicNumeral.json'
 import characterSetAbi from './mint/characterSet.json'
@@ -30,7 +31,6 @@ import nonfungiblePositionManagerV3Abi from './nonfungiblePositionManagerv3.json
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
 import pluginFactoryAbi from './pluginFactoryAbi.json'
-import resgistryAbi from './registryAbi.json'
 import rewardEarnedAbi from './rewardEarned.json'
 import routerAbi from './router.json'
 import royaltyAbi from './royalty.json'
@@ -72,6 +72,7 @@ export {
   globalFactoryAbi,
   hindiNumeralAbi,
   incentiveMakerAbi,
+  keeperRegistryAbi,
   linkTokenAbi,
   minterAbi,
   multiCallAbi,
@@ -83,7 +84,6 @@ export {
   pairAbi,
   pairAPIAbi,
   pluginFactoryAbi,
-  resgistryAbi,
   rewardEarnedAbi,
   routerAbi,
   royaltyAbi,

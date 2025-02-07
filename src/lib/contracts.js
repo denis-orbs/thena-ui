@@ -12,6 +12,7 @@ import {
   gaugeAbi,
   globalFactoryAbi,
   incentiveMakerAbi,
+  keeperRegistryAbi,
   linkTokenAbi,
   minterAbi,
   multiCallAbi,
@@ -20,7 +21,6 @@ import {
   nonfungiblePositionManagerV2Abi,
   nonfungiblePositionManagerV3Abi,
   pairAbi,
-  resgistryAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,
@@ -238,7 +238,7 @@ export const getClaimerContract = chainId =>
   getContract(chainId === CHAIN_ID.TEST_BSC ? testnetClaimerAbi : claimerAbi, Contracts.claimer, chainId)
 
 /** ******************************************************************************************************
-                                          ALGEBRA_FACTORY_TESTNET
+                                          ALGEBRA_FACTORY
 ******************************************************************************************************* */
 export const getAlgebraFactoryContract = (chainId = 56, version = 3) => {
   const address = version === 3 ? Contracts.algebraFactoryV3 : Contracts.algebraFactoryV2
@@ -246,7 +246,7 @@ export const getAlgebraFactoryContract = (chainId = 56, version = 3) => {
 }
 
 /** ******************************************************************************************************
-                                          NONFUNGIBLE_POSITION_MANAGER_TESTNET
+                                          NONFUNGIBLE_POSITION_MANAGER
 ******************************************************************************************************* */
 
 export const getPositionManagerContract = (chainId = 56, version = 3) => {
@@ -286,6 +286,10 @@ export const getWeightedPoolFeesContract = (address, chainId) => getContract(wei
 
 export const getWeightedGaugeContract = (address, chainId) => getContract(weightedGaugeAbi, address, chainId)
 
+/** ******************************************************************************************************
+                                          veTHE Automation
+******************************************************************************************************* */
+
 export const getVeTheAutomationFactoryContract = chainId =>
   getContract(veTheAutomationFactoryAbi, Contracts.veTheAutomationFactory[chainId], chainId)
 
@@ -293,4 +297,5 @@ export const getVeTheAutomationContract = (address, chainId) => getContract(veTh
 
 export const getLinkTokenContract = chainId => getContract(linkTokenAbi, Contracts.chainlinkToken[chainId], chainId)
 
-export const getRegistryContract = chainId => getContract(resgistryAbi, Contracts.registry[chainId], chainId)
+export const getKeeperRegistryContract = chainId =>
+  getContract(keeperRegistryAbi, Contracts.keeperRegistry[chainId], chainId)

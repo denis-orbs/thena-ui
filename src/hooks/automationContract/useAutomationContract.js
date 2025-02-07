@@ -8,8 +8,8 @@ import { useReadContract, useReadContracts } from 'wagmi'
 import { AUTOMATION_STATUS, PAIR_TYPES, TXN_STATUS } from '@/constant'
 import { callMulti, readCall } from '@/lib/contractActions'
 import {
+  getKeeperRegistryContract,
   getLinkTokenContract,
-  getRegistryContract,
   getVeTheAutomationContract,
   getVeTheAutomationFactoryContract,
   getVeTHEContract,
@@ -22,7 +22,7 @@ import useWallet from '../useWallet'
 
 export const useGetMaxPaymentForGas = () => {
   const { chainId } = useWallet()
-  const registryContract = getRegistryContract(chainId)
+  const registryContract = getKeeperRegistryContract(chainId)
   const { data: automationAddress } = useReadContract({
     ...registryContract,
     functionName: 'getMaxPaymentForGas',

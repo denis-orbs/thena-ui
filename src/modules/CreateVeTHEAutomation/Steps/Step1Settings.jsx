@@ -19,11 +19,9 @@ function Step1Settings() {
   const t = useTranslations()
 
   const { createData } = useSelector(state => state.veTHEAutomationContract)
-  console.log({ createData })
   const dispatch = useDispatch()
   const updateSetting = useCallback(
     (type, value) => {
-      console.log({ type, value })
       const currentSettings = createData?.settings || {}
       const updatedSettings = (() => {
         switch (type) {

@@ -76,7 +76,6 @@ const getWeightedTransactions = async (chainId, address) => {
     const { poolActivities, swaps } = await weightedClient[chainId].request(WEIGHTED_TRANSACTIONS, {
       address,
     })
-    console.log({ poolActivities, swaps })
 
     poolActivities.forEach(ele => {
       newTxns.push({

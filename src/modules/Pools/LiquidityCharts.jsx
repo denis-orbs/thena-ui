@@ -83,7 +83,6 @@ export default function LiquidityCharts({
   isReverse,
   isModal,
 }) {
-  console.log({ pairType, strategy })
   const dispatch = useDispatch()
   const { networkId } = useChainSettings()
   const { pairs } = usePairs()

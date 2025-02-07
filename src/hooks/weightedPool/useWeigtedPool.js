@@ -244,8 +244,6 @@ export const useWeightedPool = () => {
         transactions,
       })
 
-      console.log({ amountToWrap })
-
       if (amountToWrap && chainId !== CHAIN_ID.TEST_BSC) {
         const wbnbContract = getWBNBContract(chainId)
         if (!(await writeTxn(key, wrapuuid, wbnbContract, 'deposit', [], toWei(amountToWrap).dp(0).toString(10)))) {

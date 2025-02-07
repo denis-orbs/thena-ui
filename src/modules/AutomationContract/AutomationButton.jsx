@@ -217,7 +217,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
         <Skeleton className='h-11 w-full rounded-xl' />
       ) : (
         <>
-          {(status === AUTOMATION_STATUS.NO || status === AUTOMATION_STATUS.UNKNOWN) && (
+          {status === AUTOMATION_STATUS.NO ? (
             <TertiaryButton
               disabled={nowInSeconds >= lockedEnd}
               className='w-full py-3 lg:px-1'
@@ -225,21 +225,17 @@ function AutomationButton({ veTHE, isDetail = false }) {
             >
               {t('Add Automation')}
             </TertiaryButton>
-          )}
-
-          {status !== AUTOMATION_STATUS.NO && (
-            <>
-              <Dropdown
-                placeHolder={t('Automation')}
-                className='h-11 w-full'
-                data={actions || []}
-                setSelected={data => {
-                  setAction(data)
-                  setActionConfirm(data)
-                }}
-                listClassNames='w-[240px]'
-              />
-            </>
+          ) : (
+            <Dropdown
+              placeHolder={t('Automation')}
+              className='h-11 w-full'
+              data={actions || []}
+              setSelected={data => {
+                setAction(data)
+                setActionConfirm(data)
+              }}
+              listClassNames='w-[240px]'
+            />
           )}
         </>
       )}
