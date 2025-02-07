@@ -26,8 +26,15 @@ import CurrentRewards from './currentRewards'
 import VotingHistory from './votingHistory'
 import NotConnected from '../NotConnected'
 
+const RewardsTab = {
+  CURRENT: 'current',
+  HISTORY: 'history',
+  V2_REWARDS: 'v2_rewards',
+}
+
+// TODO: V2 rewards
 export default function RewardsPage() {
-  const [isExpected, setIsExpected] = useState(false)
+  const [activeTab, setActiveTab] = useState(RewardsTab.CURRENT)
   const { account } = useWallet()
   const prices = usePrices()
   const { veTHEs } = useVeTHEsContext()
@@ -66,26 +73,26 @@ export default function RewardsPage() {
       total = total?.plus(ele?.rebase_amount?.times(prices.THE))
     })
     return total
-  }, [veRewards, filteredVeTHEs, prices])
+  }, [veRewards, filteredVeTHEs, prices.THE])
 
   const typeSelections = useMemo(
     () => [
       {
         label: 'Current Epoch',
-        active: !isExpected,
+        active: activeTab === RewardsTab.CURRENT,
         onClickHandler: () => {
-          setIsExpected(false)
+          setActiveTab(RewardsTab.CURRENT)
         },
       },
       {
         label: 'Voting History',
-        active: isExpected,
+        active: activeTab === RewardsTab.HISTORY,
         onClickHandler: () => {
-          setIsExpected(true)
+          setActiveTab(RewardsTab.HISTORY)
         },
       },
     ],
-    [setIsExpected, isExpected],
+    [activeTab],
   )
 
   return (
@@ -103,7 +110,7 @@ export default function RewardsPage() {
                 {t('Total Rewards:')} ${formatAmount(totalUsd)}
               </p>
             </div>
-            {!isExpected && (
+            {activeTab !== RewardsTab.HISTORY && (
               <TertiaryButton
                 className='min-w-fit'
                 onClick={() => {
@@ -117,12 +124,11 @@ export default function RewardsPage() {
           </Info>
         )}
       </div>
-      {!account && <NotConnected />}
-      {account && (
+      {account ? (
         <>
           <div className='flex flex-col justify-between gap-4 lg:flex-row'>
             <Selection className='h-11 w-fit' data={typeSelections} />
-            {isExpected && (
+            {activeTab === RewardsTab.HISTORY && (
               <VeTheDropdown
                 className='w-full md:w-[200px]'
                 data={[{ id: 'All' }, ...veTHEs].map(item => ({
@@ -139,12 +145,14 @@ export default function RewardsPage() {
               />
             )}
           </div>
-          {isExpected ? (
+          {activeTab === RewardsTab.HISTORY ? (
             <VotingHistory veTHEId={veTHEId} />
           ) : (
             <CurrentRewards rewards={currentRewards} currentMutate={currentMutate} />
           )}
         </>
+      ) : (
+        <NotConnected />
       )}
     </div>
   )

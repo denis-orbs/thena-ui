@@ -708,13 +708,14 @@ export const useClaimRebase = () => {
   return { onClaimRebase: handleClaimRebase, pending }
 }
 
-export const useClaimAll = () => {
+// TODO: Remove later, currently used for v2 voting rewards
+export const useClaimAllV2 = () => {
   const [pending, setPending] = useState(false)
   const { chainId } = useWallet()
   const { startTxn, endTxn, writeTxn } = useTxn()
   const t = useTranslations()
 
-  const handleClaimAll = useCallback(
+  const handleClaimAllV2 = useCallback(
     async (veRewards, veTHEs, callback) => {
       const key = uuidv4()
       const bribesuuid = uuidv4()
@@ -779,6 +780,94 @@ export const useClaimAll = () => {
         }
       }
       if (veTHEs.length > 0) {
+        const params = veTHEs.map(ele => ele.id)
+        const isSuccess = await writeTxn(key, veuuid, veDistContract, 'claim_many', [params])
+        if (!isSuccess) {
+          setPending(false)
+          return
+        }
+      }
+
+      endTxn({
+        key,
+        final: 'Claimed All Rewards',
+      })
+      setPending(false)
+      callback()
+    },
+    [startTxn, endTxn, writeTxn, chainId, t],
+  )
+
+  return { onClaimAllV2: handleClaimAllV2, pending }
+}
+
+export const useClaimAll = () => {
+  const [pending, setPending] = useState(false)
+  const { chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const handleClaimAll = useCallback(
+    async (veRewards, veTHEs, callback) => {
+      const key = uuidv4()
+      const bribesuuid = uuidv4()
+      const veuuid = uuidv4()
+
+      const transactions = {
+        ...(veRewards.length > 0 && {
+          [bribesuuid]: {
+            desc: t('Claim Incentives + Fees'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        }),
+        ...(veTHEs.length > 0 && {
+          [veuuid]: {
+            desc: t('Claim Rebases'),
+            status: TXN_STATUS.START,
+            hash: null,
+          },
+        }),
+      }
+      startTxn({
+        key,
+        title: 'Claim All',
+        transactions,
+      })
+
+      setPending(true)
+
+      // Claim bribes
+      if (veRewards.length > 0) {
+        const claimContract = getClaimerContract(chainId)
+        const votingIncentives = []
+        const rewardsTokensArray = []
+        veRewards.forEach(item => {
+          if (item.votingIncentives) {
+            votingIncentives.push(item.votingIncentives)
+          }
+          if (item.rewards && Array.isArray(item.rewards)) {
+            const thisPoolRewardTokens = item.rewards.map(token => token.address)
+            rewardsTokensArray.push(thisPoolRewardTokens)
+          }
+        })
+        const claimBribesParams = [Array.from(votingIncentives), Array.from(rewardsTokensArray)]
+        const isSuccess = await writeTxn(
+          key,
+          bribesuuid,
+          claimContract,
+          chainId === CHAIN_ID.TEST_BSC ? 'claimVotingIncetivesAddress' : 'claimVotingIncentivesAddress',
+          claimBribesParams,
+        )
+        if (!isSuccess) {
+          setPending(false)
+          return
+        }
+      }
+
+      // Claim rebase
+      if (veTHEs.length > 0) {
+        const veDistContract = getVeDistContract(chainId)
         const params = veTHEs.map(ele => ele.id)
         const isSuccess = await writeTxn(key, veuuid, veDistContract, 'claim_many', [params])
         if (!isSuccess) {
