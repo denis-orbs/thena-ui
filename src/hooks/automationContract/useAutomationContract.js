@@ -68,55 +68,55 @@ export const useCreateAutomation = () => {
 
   const onCreateAutomation = useCallback(
     async (contract, onSuccess = () => {}) => {
-      const key = uuidv4()
-      const createAutouuid = uuidv4()
-      const upkeepuuid = uuidv4()
-      const approveAutomationuuid = uuidv4()
-      const approveChainlinkuuid = uuidv4()
-      const { settings, votes, registration } = contract
-
-      const { pairs } = votes
-
-      const { chainlink, chainlinkAmount } = registration
-
-      const tokenId = contract.veTHEId
-      // Save UTC
-      const startTimestamp = settings.executionTime - new Date().getTimezoneOffset() * 60 * 1000
-      const operations = convertBooleansToHex(votes.isAutoVote, settings.isClaimEveryWeek, settings.isRelockEveryWeek)
-      const pools = pairs.map(pair => pair.pair.address)
-      const weights = pairs.map(pair => pair.weight)
-
-      const theContract = getVeTHEContract(chainId)
-      setPending(true)
-
-      startTxn({
-        key,
-        title: 'Create Automation Contract',
-        transactions: {
-          [createAutouuid]: {
-            desc: t('Create'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-          [approveChainlinkuuid]: {
-            desc: t('Approve ChainLINK'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-          [approveAutomationuuid]: {
-            desc: t('Approve veTHE [tokenId]', { tokenId }),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-          [upkeepuuid]: {
-            desc: t('Register [contractName] contract', { contractName: `veTHE Contract ${tokenId}` }),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        },
-      })
-
       try {
+        const key = uuidv4()
+        const createAutouuid = uuidv4()
+        const upkeepuuid = uuidv4()
+        const approveAutomationuuid = uuidv4()
+        const approveChainlinkuuid = uuidv4()
+        const { settings, votes, registration } = contract
+
+        const { pairs } = votes
+
+        const { chainlink, chainlinkAmount } = registration
+
+        const tokenId = contract.veTHEId
+        // Save UTC
+        const startTimestamp = settings.executionTime - new Date().getTimezoneOffset() * 60 * 1000
+        const operations = convertBooleansToHex(votes.isAutoVote, settings.isClaimEveryWeek, settings.isRelockEveryWeek)
+        const pools = pairs.map(pair => pair.pair.address)
+        const weights = pairs.map(pair => pair.weight)
+
+        const theContract = getVeTHEContract(chainId)
+        setPending(true)
+
+        startTxn({
+          key,
+          title: 'Create Automation Contract',
+          transactions: {
+            [createAutouuid]: {
+              desc: t('Create'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+            [approveChainlinkuuid]: {
+              desc: t('Approve ChainLINK'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+            [approveAutomationuuid]: {
+              desc: t('Approve veTHE [tokenId]', { tokenId }),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+            [upkeepuuid]: {
+              desc: t('Register [contractName] contract', { contractName: `veTHE Contract ${tokenId}` }),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          },
+        })
+
         const txHash = await writeTxn2(key, createAutouuid, veTheAutomationFactoryContract, 'createAutomation', [
           tokenId,
           Math.floor(startTimestamp / 1000),

@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 import Loading from '@/app/loading'
 import { TextButton } from '@/components/buttons/Button'
@@ -24,7 +24,12 @@ function EditVeTHEAutomationPage({ params }) {
     }
   }, [mutateAutomationData, id])
 
-  if (isLoading || !id || !contractData.address) return <Loading />
+  const isLoaded = useMemo(
+    () => (contractData?.votes?.pairs || []).every(item => Boolean(item.pair)),
+    [contractData?.votes?.pairs],
+  )
+
+  if (isLoading || !id || !contractData.address || !isLoaded) return <Loading />
   return (
     <div className='container mx-auto space-y-10'>
       <div>
