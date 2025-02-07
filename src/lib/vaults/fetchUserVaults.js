@@ -73,6 +73,7 @@ export const fetchUserVaultsData = async (account, networkId) => {
   ])
 
   return ICHI_VAULTS[networkId].map((vault, index) => ({
+    version: vault.version,
     address: vault.address,
     walletBalance: walletBalances[index],
     gaugeBalance: gaugeBalances[index],
