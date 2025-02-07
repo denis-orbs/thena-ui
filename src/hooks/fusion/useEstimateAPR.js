@@ -5,8 +5,7 @@ import { gql } from 'graphql-request'
 import { Position } from 'thena-fusion-sdk'
 import { useReadContracts } from 'wagmi'
 
-import { eternalVirtualPoolAbi } from '@/constant/abi/fusion'
-import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
+import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -26,7 +25,7 @@ const getFusionFeesData = async ({ chainId, pool }) => {
       `,
       {
         pool: pool.toLowerCase(),
-        date: Math.floor(Date.now() / 1000) - 24 * 60 * 60, // current time in seconds - 1 day
+        date: Math.floor(Date.now() / 1000) - 24 * 60 * 60 * 7, // current time in seconds - 7 day
       },
     )
 
@@ -111,7 +110,7 @@ export const useEstimateAPR = ({
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: poolTestNetV2Abi,
+        abi: newPoolAbi,
       },
       {
         functionName: 'currentLiquidity',
@@ -183,12 +182,15 @@ export const useEstimateAPR = ({
 
   const farmRatio = BigNumber(position.liquidity).div(farmLiquidity)
   const farmApr = rewardPerSecond
-    .times(farmRatio)
+    .times(farmRatio.gt(1) ? 1 : farmRatio)
     .times(86400 * 365)
     .div(tvl)
 
   const feeRatio = BigNumber(position.liquidity).div(pool.liquidity)
-  const feeAPR = feeRatio.times(avgPoolFees).div(tvl).times(earnPercent)
+  const feeAPR = BigNumber(feeRatio.gt(1) ? 1 : feeRatio)
+    .times(avgPoolFees)
+    .div(tvl)
+    .times(earnPercent)
 
   return farmApr.plus(feeAPR)
 }
@@ -223,7 +225,7 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1
       {
         functionName: 'globalState',
         address: poolAddress,
-        abi: poolTestNetV2Abi,
+        abi: newPoolAbi,
       },
       {
         functionName: 'currentLiquidity',
@@ -243,11 +245,15 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1
 
   const farmRatio = BigNumber(position.liquidity).div(farmLiquidity)
   const farmApr = rewardPerSecond
-    .times(farmRatio)
+    .times(farmRatio.gt(1) ? 1 : farmRatio)
     .times(86400 * 365)
     .div(tvl)
 
-  const liquidityFeeRatio = BigNumber(liquidity).div(totalLiquidity)
-  const feeAPR = liquidityFeeRatio.times(avgPoolFees).div(tvl).times(earnPercent)
+  const feeRatio = BigNumber(liquidity).div(totalLiquidity)
+  const feeAPR = BigNumber(feeRatio.gt(1) ? 1 : feeRatio)
+    .times(avgPoolFees)
+    .div(tvl)
+    .times(earnPercent)
+
   return farmApr.plus(feeAPR)
 }

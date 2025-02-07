@@ -12,7 +12,7 @@ import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getFarmingCenterContract,
-  getInsentiveContract,
+  getIncentiveContract,
   getPositionManagerContract,
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
@@ -44,7 +44,7 @@ export const useAlgebraAdd = () => {
         const stakeId = uuidv4()
 
         const farmingCenter = getFarmingCenterContract(chainId)
-        const incentiveMaker = getInsentiveContract(chainId)
+        const incentiveMaker = getIncentiveContract(chainId)
         const positionManger = getPositionManagerContract(chainId, version)
 
         const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
@@ -296,7 +296,7 @@ export const useAlgebraEnterFarming = () => {
       const approveId = uuidv4()
       const stakeId = uuidv4()
 
-      const incentiveMaker = getInsentiveContract(chainId)
+      const incentiveMaker = getIncentiveContract(chainId)
       const farmingCenter = getFarmingCenterContract(chainId)
       const positionManger = getPositionManagerContract(chainId, 3)
 
@@ -655,7 +655,7 @@ export const useAlgebraMigration = () => {
       const nftPositionV3 = Contracts.nonfungiblePositionManagerV3[chainId]
       const nftPositionV2 = Contracts.nonfungiblePositionManagerV2[chainId]
       const farmingCenter = getFarmingCenterContract(chainId)
-      const incentiveMaker = getInsentiveContract(chainId)
+      const incentiveMaker = getIncentiveContract(chainId)
       const positionManger = getPositionManagerContract(chainId, 3)
 
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))

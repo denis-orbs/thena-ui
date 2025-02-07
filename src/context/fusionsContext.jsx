@@ -2,10 +2,7 @@ import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
-import { poolAbi } from '@/constant/abi/fusion'
-import { CHAIN_ID } from '@/constant/contracts'
-import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
-import { poolTestNetV3Abi } from '@/constant/v3-abi'
+import { newPoolAbi, poolAbi } from '@/constant/abi/fusion'
 import { fetchTopPairs } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -13,12 +10,13 @@ import { useChainSettings } from '@/state/settings/hooks'
 import { PairsContext } from './pairsContext'
 
 const initialState = []
+const FusionsContext = createContext(initialState)
 
 const fetchFusionInfo = async (fusionPairs, _chainId) => {
   const liquidities = await callMulti(
     fusionPairs.map(pool => ({
       address: pool.address,
-      abi: _chainId === CHAIN_ID.TEST_BSC ? (pool.version === 2 ? poolTestNetV2Abi : poolTestNetV3Abi) : poolAbi,
+      abi: pool.version === 2 ? poolAbi : newPoolAbi,
       functionName: 'liquidity',
       args: [],
       chainId: _chainId,
@@ -27,7 +25,7 @@ const fetchFusionInfo = async (fusionPairs, _chainId) => {
   const globalStates = await callMulti(
     fusionPairs.map(pool => ({
       address: pool.address,
-      abi: _chainId === CHAIN_ID.TEST_BSC ? (pool.version === 2 ? poolTestNetV2Abi : poolTestNetV3Abi) : poolAbi,
+      abi: pool.version === 2 ? poolAbi : newPoolAbi,
       functionName: 'globalState',
       args: [],
       chainId: _chainId,
@@ -46,11 +44,8 @@ const fetchFusionInfo = async (fusionPairs, _chainId) => {
   }))
 }
 
-const FusionsContext = createContext(initialState)
-
 function FusionsContextProvider({ children }) {
   const { networkId } = useChainSettings()
-
   const pairs = useContext(PairsContext)
 
   const fusionPairs = useMemo(() => {
@@ -92,11 +87,9 @@ const useFusionPairsV2 = () => {
   return data?.map(ele => ({ ...ele, version: 2 }))
 }
 
-const useFusionPairs = (version = 3) => {
-  const fusionPairsV3 = useContext(FusionsContext)
-  const fusionPairsV2 = useFusionPairsV2()
-
-  return version === 2 ? fusionPairsV2 : fusionPairsV3
+const useFusionPairs = () => {
+  const fusionPairs = useContext(FusionsContext)
+  return fusionPairs
 }
 
 export { FusionsContextProvider, useFusionPairs, useFusionPairsV2 }

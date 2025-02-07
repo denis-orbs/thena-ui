@@ -5,15 +5,11 @@ import { computePoolAddress, Pool } from 'thena-fusion-sdk'
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { algebraFactoryAbi } from '@/constant/abi'
-import { poolAbi } from '@/constant/abi/fusion'
+import { newPoolAbi, poolAbi } from '@/constant/abi/fusion'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
-import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
-import { algebraFactoryV3Abi } from '@/constant/v3-abi'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { callMulti } from '@/lib/contractActions'
 import { getAlgebraFactoryContract } from '@/lib/contracts'
-
-import { useToken } from './Tokens'
 
 export const PoolState = {
   LOADING: 'LOADING',
@@ -38,7 +34,7 @@ const fetchPoolAddress = async (transformed, version = 3) => {
       .filter(value => !!value)
       .map(value => ({
         address: version === 2 ? Contracts.algebraFactoryV2[_networkId] : Contracts.algebraFactoryV3[_networkId],
-        abi: version === 2 ? algebraFactoryAbi : algebraFactoryV3Abi,
+        abi: algebraFactoryAbi,
         functionName: 'computePoolAddress',
         args: [value[0]?.address, value[1]?.address],
         _networkId,
@@ -47,7 +43,7 @@ const fetchPoolAddress = async (transformed, version = 3) => {
 }
 
 export function useFusions(poolKeys, version) {
-  const fusionPairs = useFusionPairs(version)
+  const fusionPairs = useFusionPairs()
 
   const transformed = useMemo(
     () =>
@@ -135,7 +131,7 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
     },
   })
 
-  const poolContract = { address: poolAddress, abi: version === 2 ? poolAbi : poolTestNetV2Abi }
+  const poolContract = { address: poolAddress, abi: version === 2 ? poolAbi : newPoolAbi }
   const { data: poolInfo } = useReadContracts({
     contracts: [
       { ...poolContract, functionName: 'liquidity' },
@@ -155,17 +151,4 @@ export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPoo
 
   if (!token0 || !token1 || !fee || !price || !liquidity) return [PoolState.NOT_EXISTS, null]
   return [PoolState.EXISTS, new Pool(token0, token1, fee, price, liquidity, tick), poolAddress]
-}
-
-export function useFusion(currencyA, currencyB, version = 3) {
-  const poolKeys = useMemo(() => [[currencyA, currencyB]], [currencyA, currencyB])
-
-  return useFusions(poolKeys, version)[0] ?? []
-}
-
-export function useTokensSymbols(token0, token1) {
-  const _token0 = useToken(token0)
-  const _token1 = useToken(token1)
-
-  return useMemo(() => [_token0, _token1], [_token0, _token1])
 }

@@ -21,7 +21,7 @@ import { useFusionState } from '@/hooks/fusion/useFusions'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
-import { getFarmingCenterContract, getInsentiveContract } from '@/lib/contracts'
+import { getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
@@ -58,7 +58,7 @@ export function FarmingPosition({ position }) {
     isFarmingPool: position?.deployer === zeroAddress,
   })
 
-  const incentiveMaker = getInsentiveContract(chainId)
+  const incentiveMaker = getIncentiveContract(chainId)
   const { data: poolKey } = useReadContract({
     ...incentiveMaker,
     functionName: 'poolToKey',

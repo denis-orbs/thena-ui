@@ -88,6 +88,7 @@ export default function PoolsPage() {
   const { push } = useRouter()
   const { pairs } = usePairs()
   const vaults = useVaults()
+  const vaultsV3 = useMemo(() => vaults.filter(v => v.version === 3), [vaults])
   const { networkId } = useChainSettings()
   const t = useTranslations()
 
@@ -435,13 +436,13 @@ export default function PoolsPage() {
 
   return (
     <div>
-      {vaults.length > 0 && (
+      {vaultsV3.length > 0 && (
         <>
           <div className='flex items-center justify-between'>
             <h2>{networkId === ChainId.BSC ? t('THE Single Sided Vaults') : t('Single Sided Vaults')} </h2>
           </div>
           <div className='mt-4 flex items-center gap-8 overflow-auto pb-4'>
-            {vaults.map(trending => (
+            {vaultsV3.map(trending => (
               <Box
                 className='flex w-full cursor-pointer flex-col gap-4'
                 key={trending.address}

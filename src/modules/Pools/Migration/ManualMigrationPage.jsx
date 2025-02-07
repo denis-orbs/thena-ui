@@ -16,9 +16,8 @@ import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES } from '@/constant'
-import { poolAbi } from '@/constant/abi/fusion'
+import { newPoolAbi, poolAbi } from '@/constant/abi/fusion'
 import { CHAIN_ID } from '@/constant/contracts'
-import { poolTestNetV2Abi } from '@/constant/v2-testnet-abi'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { ManualsContext } from '@/context/manualsContext'
@@ -29,7 +28,7 @@ import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
-import { getAlgebraNPMContract } from '@/lib/contracts'
+import { getPositionManagerContract } from '@/lib/contracts'
 import { unwrappedToken } from '@/lib/fusion'
 import { getTokenInfo } from '@/lib/helper'
 import { warnToast } from '@/lib/notify'
@@ -139,7 +138,7 @@ export function ManualMigrationPage({ tokenId }) {
     isFarmingPool: strategy?.isFarming,
   })
 
-  const contractV2 = { address: poolAddressV2, abi: chainId === CHAIN_ID.TEST_BSC ? poolTestNetV2Abi : poolAbi }
+  const contractV2 = { address: poolAddressV2, abi: chainId === CHAIN_ID.TEST_BSC ? newPoolAbi : poolAbi }
   const { data: poolInfoV2 } = useReadContracts({
     contracts: [
       { ...contractV2, functionName: 'liquidity' },
@@ -179,7 +178,7 @@ export function ManualMigrationPage({ tokenId }) {
   const amountA = useMemo(() => positionV2?.amount0?.toExact() ?? 0, [positionV2])
   const amountB = useMemo(() => positionV2?.amount1?.toExact() ?? 0, [positionV2])
 
-  const algebraContract = getAlgebraNPMContract(chainId)
+  const algebraContract = getPositionManagerContract(chainId, 2)
   const { data: fees } = useSimulateContract({
     address: algebraContract.address,
     abi: algebraContract.abi,

@@ -14,6 +14,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8',
       basePool: '0x51bd5e6d3da9064d59bcaa5a76776560ab42ceb8',
+      version: 2,
     },
     // USDT/THE (USDT)
     {
@@ -27,6 +28,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x98a0004b8e9fe161369528a2e07de56c15a27d76',
       basePool: '0x98a0004b8e9fe161369528a2e07de56c15a27d76',
+      version: 2,
     },
     // ETH/THE (ETH)
     {
@@ -40,6 +42,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x752328a1e16d38933789860b8c09f6f2cc6c63d6',
       basePool: '0x752328a1e16d38933789860b8c09f6f2cc6c63d6',
+      version: 2,
     },
     // USDC/THE (USDC)
     {
@@ -53,6 +56,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x7c0b5d39765b221810d477e8f02d47a9badf018a',
       basePool: '0x7c0b5d39765b221810d477e8f02d47a9badf018a',
+      version: 2,
     },
     // BTCB/THE (BTCB)
     {
@@ -66,6 +70,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x0EF4A107b48163ab4b57FCa36e1352151a587Be4',
       algebraAddress: '0x246505db95e5a60d8524d52b9ed3dbaf6ee2584f',
       basePool: '0x246505db95e5a60d8524d52b9ed3dbaf6ee2584f',
+      version: 2,
     },
   ],
   [ChainId.OPBNB]: [
@@ -81,6 +86,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
       algebraAddress: '0xa7e84de1f48743143223ba17153ea88732490cd2',
       basePool: '0xa7e84de1f48743143223ba17153ea88732490cd2',
+      version: 2,
     },
     // ETH/BTCB (ETH)
     {
@@ -94,6 +100,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
       algebraAddress: '0xa7e84de1f48743143223ba17153ea88732490cd2',
       basePool: '0xa7e84de1f48743143223ba17153ea88732490cd2',
+      version: 2,
     },
     // BNB/USDT (USDT)
     {
@@ -107,6 +114,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
       algebraAddress: '0xdc83c475dab357b6c3cd66e1a16cfdab08992560',
       basePool: '0xdc83c475dab357b6c3cd66e1a16cfdab08992560',
+      version: 2,
     },
     // USDT/ETH (USDT)
     {
@@ -120,6 +128,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
       algebraAddress: '0x2c8d50474decffbae19cb2af02d646897b2b869c',
       basePool: '0x2c8d50474decffbae19cb2af02d646897b2b869c',
+      version: 2,
     },
     // BNB/ETH (BNB)
     {
@@ -133,6 +142,7 @@ export const ICHI_VAULTS = {
       rewardAddress: '0x9d94a7ff461e83f161c8c040e78557e31d8cba72',
       algebraAddress: '0x55ce9b92f2d0a842e639c354d72f2e85c5382e5f',
       basePool: '0x55ce9b92f2d0a842e639c354d72f2e85c5382e5f',
+      version: 2,
     },
     // // BTCB/USDT (BTCB)
     // {

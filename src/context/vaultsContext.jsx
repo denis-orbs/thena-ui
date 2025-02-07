@@ -109,7 +109,6 @@ export function VaultsContextProvider({ children }) {
             .times(asset0.price)
             .plus(earned1.times(asset1?.price))
             .plus(isTwoRewards ? 0 : earned2.times(asset2?.price)),
-          version: 2, // TODO: FIX HARD CODE of ICHI
         }
       }
 
@@ -143,7 +142,7 @@ export function VaultsContextProvider({ children }) {
         account: user,
         algebra: vault.algebraAddress,
         basePool: vault.basePool,
-        version: 2,
+        version: vault.version,
       }
     })
   }, [vaultsData, userInfo, assets, error, userError, networkId])
