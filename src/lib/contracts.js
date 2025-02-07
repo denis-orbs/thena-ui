@@ -18,7 +18,6 @@ import {
   multiFeeDistributionAbi,
   muonAbi,
   pairAbi,
-  rewardsAPIAbi,
   routerAbi,
   royaltyAbi,
   stakingAbi,
@@ -26,8 +25,8 @@ import {
   ThenianAbi,
   veDistAbi,
   veTHEAbi,
-  veTHEApiAbi,
   voterAbi,
+  voterV2Abi,
   wbnbAbi,
   weightedGaugeAbi,
   weightedPoolAbi,
@@ -104,7 +103,15 @@ export const getVeDistContract = chainId => getContract(veDistAbi, Contracts.veD
 
 export const getMinterContract = () => getContract(minterAbi, Contracts.minter, ChainId.BSC)
 
-export const getVoterContract = chainId => getContract(voterAbi, Contracts.voter, chainId)
+export const getVoterContract = (chainId, version = 3) => {
+  if (version === 2) {
+    return {
+      address: '0x3A1D0952809F4948d15EBCe8d345962A282C4fCb',
+      abi: voterV2Abi,
+    }
+  }
+  return getContract(voterAbi, Contracts.voter, chainId)
+}
 
 export const getGaugeContract = (address, chainId) => getContract(gaugeAbi, address, chainId)
 
@@ -113,14 +120,6 @@ export const getBribeContract = (address, chainId) => getContract(bribeAbi, addr
 export const getPairContract = (address, chainId) => getContract(pairAbi, address, chainId)
 
 export const getGlobalFactoryContract = chainId => getContract(globalFactoryAbi, Contracts.globalFactory, chainId)
-
-/** **************************************************************************************************
-                                            API contracts
- ************************************************************************************************** */
-
-export const getVeTHEAPIContract = chainId => getContract(veTHEApiAbi, Contracts.veTHEAPI, chainId)
-
-export const getRewardsAPIContract = chainId => getContract(rewardsAPIAbi, Contracts.rewardsAPI, chainId)
 
 /** **************************************************************************************************
                                           theNFT (THENIANs)

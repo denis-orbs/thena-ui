@@ -4,9 +4,10 @@ import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TXN_STATUS } from '@/constant'
+import { rewardEarnedAbi } from '@/constant/abi'
 import Contracts, { CHAIN_ID } from '@/constant/contracts'
 import useWallet from '@/hooks/useWallet'
-import { readCall } from '@/lib/contractActions'
+import { callMulti, readCall } from '@/lib/contractActions'
 import {
   getClaimerContract,
   getTheContract,
@@ -721,41 +722,42 @@ export const useClaimAllV2 = () => {
       const bribesuuid = uuidv4()
       const feeuuid = uuidv4()
       const veuuid = uuidv4()
-      // claim bribes
+
       const bribeRewards = veRewards.filter(item => item.isBribeExist)
       const feeRewards = veRewards.filter(item => item.isFeeExist)
-      const txns = {
-        ...(bribeRewards.length > 0 && {
-          [bribesuuid]: {
-            desc: t('Claim Incentives'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        }),
-        ...(feeRewards.length > 0 && {
-          [feeuuid]: {
-            desc: t('Claim Fees'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        }),
-        ...(veTHEs.length > 0 && {
-          [veuuid]: {
-            desc: t('Claim Rebases'),
-            status: TXN_STATUS.START,
-            hash: null,
-          },
-        }),
-      }
+
       startTxn({
         key,
         title: 'Claim All',
-        transactions: txns,
+        transactions: {
+          ...(bribeRewards.length > 0 && {
+            [bribesuuid]: {
+              desc: t('Claim Incentives'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          ...(feeRewards.length > 0 && {
+            [feeuuid]: {
+              desc: t('Claim Fees'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+          ...(veTHEs.length > 0 && {
+            [veuuid]: {
+              desc: t('Claim Rebases'),
+              status: TXN_STATUS.START,
+              hash: null,
+            },
+          }),
+        },
       })
 
       setPending(true)
-      const veDistContract = getVeDistContract(chainId)
-      const voterContract = getVoterContract(chainId)
+      const voterContract = getVoterContract(chainId, 2)
+      const veDistContract = getVeDistContract(chainId, 2)
+
       // claim bribes
       if (bribeRewards.length > 0) {
         const bribes = bribeRewards.map(item => item.gauge.bribe)
@@ -779,6 +781,7 @@ export const useClaimAllV2 = () => {
           return
         }
       }
+
       if (veTHEs.length > 0) {
         const params = veTHEs.map(ele => ele.id)
         const isSuccess = await writeTxn(key, veuuid, veDistContract, 'claim_many', [params])
@@ -788,17 +791,97 @@ export const useClaimAllV2 = () => {
         }
       }
 
-      endTxn({
-        key,
-        final: 'Claimed All Rewards',
-      })
+      endTxn({ key, final: 'Claimed All Rewards' })
       setPending(false)
       callback()
     },
     [startTxn, endTxn, writeTxn, chainId, t],
   )
 
-  return { onClaimAllV2: handleClaimAllV2, pending }
+  return { handleClaimAllV2, pending }
+}
+
+export const useClaimBribesV2 = () => {
+  const [pending, setPending] = useState(false)
+  const { account, chainId } = useWallet()
+  const { startTxn, endTxn, writeTxn } = useTxn()
+  const t = useTranslations()
+
+  const handleClaimBribes = useCallback(
+    async (pool, callback) => {
+      const key = uuidv4()
+
+      const rewardEarnedContract = '0x1ec88f8c3d95a6ba0560c1aa6c184e334b2c1692'
+      // fees claim
+      const callsFees = pool.rewards.map(reward => ({
+        address: rewardEarnedContract,
+        abi: rewardEarnedAbi,
+        functionName: 'earned',
+        args: [pool.gauge.fee, reward.address, account],
+        chainId,
+      }))
+      const callsBribes = pool.rewards.map(reward => ({
+        address: rewardEarnedContract,
+        abi: rewardEarnedAbi,
+        functionName: 'earned',
+        args: [pool.gauge.bribe, reward.address, account],
+        chainId,
+      }))
+      const [resFees, resBribes] = await Promise.all([callMulti(callsFees), callMulti(callsBribes)])
+      const feeTokens = []
+      resFees.forEach((item, index) => {
+        const rewardTokenAddress = pool.rewards[index].address.toLowerCase()
+        if (Number(item) > 0) feeTokens.push(rewardTokenAddress)
+      })
+      const bribeTokens = []
+      resBribes.forEach((item, index) => {
+        const rewardTokenAddress = pool.rewards[index].address.toLowerCase()
+        if (Number(item) > 0) bribeTokens.push(rewardTokenAddress)
+      })
+      const result = {}
+      const bribesuuid = uuidv4()
+      const feeuuid = uuidv4()
+      if (bribeTokens.length > 0) {
+        result[bribesuuid] = {
+          desc: t('Claim Incentives'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+      if (feeTokens.length > 0) {
+        result[feeuuid] = {
+          desc: t('Claim Fees'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      }
+      startTxn({ key, title: 'Claim Incentives + Fees', transactions: result })
+      setPending(true)
+      const voterContract = getVoterContract(chainId, 2)
+      if (bribeTokens.length > 0) {
+        const params = [[pool.gauge.bribe], [bribeTokens]]
+        const isSuccess = await writeTxn(key, bribesuuid, voterContract, 'claimBribes', params)
+        if (!isSuccess) {
+          setPending(false)
+          return
+        }
+      }
+      if (feeTokens.length > 0) {
+        const params = [[pool.gauge.fee], [feeTokens]]
+        const isSuccess = await writeTxn(key, feeuuid, voterContract, 'claimFees', params)
+        if (!isSuccess) {
+          setPending(false)
+          return
+        }
+      }
+      endTxn({ key, final: 'Claim Successful' })
+      setPending(false)
+      callback()
+    },
+    [account, startTxn, endTxn, writeTxn, chainId, t],
+  )
+
+  return { onClaimBribes: handleClaimBribes, pending }
 }
 
 export const useClaimAll = () => {
@@ -886,5 +969,5 @@ export const useClaimAll = () => {
     [startTxn, endTxn, writeTxn, chainId, t],
   )
 
-  return { onClaimAll: handleClaimAll, pending }
+  return { handleClaimAll, pending }
 }

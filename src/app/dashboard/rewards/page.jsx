@@ -1,6 +1,5 @@
 'use client'
 
-import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useContext, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -10,15 +9,15 @@ import { TertiaryButton } from '@/components/buttons/Button'
 import VeTheDropdown from '@/components/dropdown/VeTheDropdown'
 import Selection from '@/components/selection'
 import { Paragraph } from '@/components/typography'
-import { rewardsContext } from '@/context/rewardsContext'
+import { rewardsContext, useGetVeRewardV2 } from '@/context/rewardsContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useDebounce from '@/hooks/useDebounce'
 import usePrices from '@/hooks/usePrices'
-import { useClaimAll } from '@/hooks/useVeThe'
+import { useClaimAll, useClaimAllV2 } from '@/hooks/useVeThe'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount, ZERO_VALUE } from '@/lib/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 import { CoinsStackedIcon } from '@/svgs'
 
@@ -32,24 +31,28 @@ const RewardsTab = {
   V2_REWARDS: 'v2_rewards',
 }
 
-// TODO: V2 rewards
 export default function RewardsPage() {
-  const [activeTab, setActiveTab] = useState(RewardsTab.CURRENT)
-  const { account } = useWallet()
-  const prices = usePrices()
-  const { veTHEs } = useVeTHEsContext()
-  const { current } = useContext(rewardsContext)
-  const { rewards: veRewards, currentMutate } = current
-  const { onClaimAll, pending: allPending } = useClaimAll()
   const t = useTranslations()
 
-  const [approvedId, setApprovedId] = useState('All')
+  const prices = usePrices()
+  const { account } = useWallet()
   const { networkId } = useChainSettings()
+  const { current } = useContext(rewardsContext)
+  const { veTHEs } = useVeTHEsContext()
+
+  const [activeTab, setActiveTab] = useState(RewardsTab.CURRENT)
+  const [approvedId, setApprovedId] = useState('All')
+  const [veTHEId, setVeTHEId] = useState('All')
   const debouncedId = useDebounce(approvedId)
+
+  const { currentRewardsV2, refetchVetheRewardV2 } = useGetVeRewardV2()
+  const { handleClaimAllV2, pending: allPendingV2 } = useClaimAllV2()
+
+  const { rewards: veRewardsV3, currentMutate: refreshVetheRewardV3 } = current
+  const { handleClaimAll, pending: allPendingV3 } = useClaimAll()
 
   const filteredVeTHEs = useMemo(() => veTHEs.filter(ele => ele.rebase_amount.gt(0)), [veTHEs])
 
-  const [veTHEId, setVeTHEId] = useState('All')
   const { data: isApproved } = useSWR(
     debouncedId && account && networkId && ['vethe/approved', debouncedId, account, networkId],
     async () => {
@@ -65,18 +68,23 @@ export default function RewardsPage() {
     return veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
   }, [veTHEs, veTHEId])
 
-  const currentRewards = useMemo(() => [...filteredVeTHEs, ...veRewards], [filteredVeTHEs, veRewards])
+  const currentRewards = useMemo(() => [...filteredVeTHEs, ...veRewardsV3], [filteredVeTHEs, veRewardsV3])
 
   const totalUsd = useMemo(() => {
-    let total = [...veRewards].reduce((sum, curr) => sum.plus(curr.totalUsd), new BigNumber(0))
+    let total = [...veRewardsV3].reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE)
     filteredVeTHEs.forEach(ele => {
       total = total?.plus(ele?.rebase_amount?.times(prices.THE))
     })
     return total
-  }, [veRewards, filteredVeTHEs, prices.THE])
+  }, [veRewardsV3, filteredVeTHEs, prices.THE])
 
-  const typeSelections = useMemo(
-    () => [
+  const totalUsdV2 = useMemo(
+    () => currentRewardsV2?.reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE) ?? ZERO_VALUE,
+    [currentRewardsV2],
+  )
+
+  const typeSelections = useMemo(() => {
+    const selections = [
       {
         label: 'Current Epoch',
         active: activeTab === RewardsTab.CURRENT,
@@ -91,9 +99,20 @@ export default function RewardsPage() {
           setActiveTab(RewardsTab.HISTORY)
         },
       },
-    ],
-    [activeTab],
-  )
+    ]
+
+    if (totalUsdV2.gt(ZERO_VALUE)) {
+      selections.push({
+        label: 'V2 Rewards',
+        active: activeTab === RewardsTab.V2_REWARDS,
+        onClickHandler: () => {
+          setActiveTab(RewardsTab.V2_REWARDS)
+        },
+      })
+    }
+
+    return selections
+  }, [activeTab, totalUsdV2])
 
   return (
     <div className='flex flex-col gap-4'>
@@ -102,21 +121,27 @@ export default function RewardsPage() {
           <h2>{t('Rewards')}</h2>
           <Paragraph>{t('Rewards Description')}</Paragraph>
         </div>
+
         {account && (
           <Info className='flex w-auto justify-between lg:w-[550px] lg:p-8'>
             <div className='flex items-center gap-4'>
               <CoinsStackedIcon className='h-4 w-4 min-w-4 stroke-primary-600 lg:h-8 lg:w-8 lg:min-w-8' />
               <p className='text-base leading-tight lg:text-xl'>
-                {t('Total Rewards:')} ${formatAmount(totalUsd)}
+                {t('Total Rewards:')} ${formatAmount(activeTab === RewardsTab.V2_REWARDS ? totalUsdV2 : totalUsd)}
               </p>
             </div>
+
             {activeTab !== RewardsTab.HISTORY && (
               <TertiaryButton
                 className='min-w-fit'
                 onClick={() => {
-                  onClaimAll(veRewards, filteredVeTHEs, () => currentMutate())
+                  if (activeTab === RewardsTab.V2_REWARDS) {
+                    handleClaimAllV2(currentRewardsV2, [], () => refetchVetheRewardV2())
+                  } else {
+                    handleClaimAll(veRewardsV3, filteredVeTHEs, () => refreshVetheRewardV3())
+                  }
                 }}
-                disabled={allPending || totalUsd.isZero()}
+                disabled={allPendingV3 || allPendingV2 || totalUsd.isZero()}
               >
                 {t('Claim All')}
               </TertiaryButton>
@@ -124,6 +149,7 @@ export default function RewardsPage() {
           </Info>
         )}
       </div>
+
       {account ? (
         <>
           <div className='flex flex-col justify-between gap-4 lg:flex-row'>
@@ -145,10 +171,13 @@ export default function RewardsPage() {
               />
             )}
           </div>
-          {activeTab === RewardsTab.HISTORY ? (
-            <VotingHistory veTHEId={veTHEId} />
-          ) : (
-            <CurrentRewards rewards={currentRewards} currentMutate={currentMutate} />
+
+          {activeTab === RewardsTab.HISTORY && <VotingHistory veTHEId={veTHEId} />}
+          {activeTab === RewardsTab.CURRENT && (
+            <CurrentRewards rewards={currentRewards} currentMutate={refreshVetheRewardV3} version={3} />
+          )}
+          {activeTab === RewardsTab.V2_REWARDS && (
+            <CurrentRewards rewards={currentRewardsV2} currentMutate={refetchVetheRewardV2} version={2} />
           )}
         </>
       ) : (
