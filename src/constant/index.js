@@ -248,7 +248,6 @@ export const AUTOMATION_STATUS = {
   PAUSED: 'Paused',
   CANCELED: 'Canceled',
   NO: 'No',
-  UNKNOWN: 'unknown',
 }
 
 export const ACTION_AUTOMATION_TYPE = {
@@ -264,6 +263,31 @@ export const ACTION_AUTOMATION_TYPE = {
   CREATE: 'create',
   REGISTER_AUTOMATION: 'registerAutomation',
   DEPOSIT_FUNDS: 'depositFunds',
+}
+
+export const CHAINLINK_TOKEN = {
+  [CHAIN_ID.BSC]: [
+    {
+      address: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
+      name: 'Chainlink Token ERC20',
+      symbol: 'LINK',
+      decimals: 18,
+    },
+    {
+      address: '0x404460c6a5ede2d891e8297795264fde62adbb75',
+      name: 'Chainlink Token ERC677',
+      symbol: 'LINK',
+      decimals: 18,
+    },
+  ],
+  [CHAIN_ID.TEST_BSC]: [
+    {
+      address: '0x84b9b910527ad5c03a9ca831909e21e236ea7b06',
+      name: 'Chainlink Token ERC20',
+      symbol: 'LINK',
+      decimals: 18,
+    },
+  ],
 }
 
 export const EDIT_AUTOMATION_TYPE = {

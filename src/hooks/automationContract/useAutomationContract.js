@@ -198,7 +198,7 @@ export const getStatusString = status => {
     case 3:
       return AUTOMATION_STATUS.CANCELED
     default:
-      return 'unknown'
+      return AUTOMATION_STATUS.NO
   }
 }
 

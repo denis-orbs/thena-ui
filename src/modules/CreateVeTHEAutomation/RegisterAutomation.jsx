@@ -1,14 +1,12 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
-import Contracts from '@/constant/contracts'
-import { useAssets } from '@/context/assetsContext'
 import { useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
-import useWallet from '@/hooks/useWallet'
+import useChainLINKData from '@/hooks/useChainLINKData'
 import { cn, formatAmount } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
@@ -22,20 +20,10 @@ const UPDATE_REGISTRATION = {
 
 function RegisterAutomation({ chainLINK, chainLINKAmount, updateRegistration = () => {} }) {
   const [popup, setPopup] = useState(false)
-  const { chainId } = useWallet()
-
   const maxPaymentForGas = useGetMaxPaymentForGas()
 
   const t = useTranslations()
-
-  const assets = useAssets()
-  const chainLinkData = useMemo(
-    () =>
-      (assets || []).filter(asset =>
-        [Contracts.chainlinkToken[chainId], Contracts.chainlinkTokenERC677[chainId]].includes(asset.address),
-      ),
-    [assets, chainId],
-  )
+  const chainLinkData = useChainLINKData()
   return (
     <div className='space-y-3'>
       <Paragraph className='text-base'>{t('Starting Balance')}</Paragraph>

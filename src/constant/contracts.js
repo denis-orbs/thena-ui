@@ -205,7 +205,6 @@ const Contracts = {
   chainlinkTokenERC677: {
     // ERC677LINK
     [CHAIN_ID.BSC]: '0x404460c6a5ede2d891e8297795264fde62adbb75',
-    [CHAIN_ID.TEST_BSC]: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
   },
   keeperRegistry: {
     [CHAIN_ID.BSC]: '0xDc21E279934fF6721CaDfDD112DAfb3261f09A2C',

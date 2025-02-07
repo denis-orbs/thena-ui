@@ -1,14 +1,12 @@
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import TokenInput from '@/components/input/TokenInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
-import Contracts from '@/constant/contracts'
-import { useAssets } from '@/context/assetsContext'
 import { useAutomationContractDetail, useDepositFunds } from '@/hooks/automationContract/useAutomationContract'
-import useWallet from '@/hooks/useWallet'
+import useChainLINKData from '@/hooks/useChainLINKData'
 
 function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) {
   const { veTHEId } = contract
@@ -16,8 +14,6 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
   const [amount, setAmount] = useState()
   const { mutateAutomationData } = useAutomationContractDetail(veTHEId)
   const { onDepositFunds, pending } = useDepositFunds()
-  const assets = useAssets()
-  const { chainId } = useWallet()
 
   const [chainLINK, setChainLINK] = useState()
 
@@ -27,13 +23,7 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
     }
   }, [mutateAutomationData, veTHEId])
 
-  const chainLINKData = useMemo(
-    () =>
-      (assets || []).filter(asset =>
-        [Contracts.chainlinkToken[chainId], Contracts.chainlinkTokenERC677[chainId]].includes(asset.address),
-      ),
-    [assets, chainId],
-  )
+  const chainLINKData = useChainLINKData()
 
   return (
     <Modal

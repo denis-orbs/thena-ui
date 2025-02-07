@@ -1,34 +1,25 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 
+import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import CircleImage from '@/components/image/CircleImage'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
-import Contracts from '@/constant/contracts'
-import { useAssets } from '@/context/assetsContext'
 import { useWithdrawFunds } from '@/hooks/automationContract/useAutomationContract'
-import useWallet from '@/hooks/useWallet'
+import useChainLINKData from '@/hooks/useChainLINKData'
 import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
 import SelectTokenFromList from '../SelectTokenModal/SelectTokenFromList'
 
 function WithdrawFundsModal({ contract, popup, setPopup }) {
-  const { chainId } = useWallet()
   const { onWithdrawFunds, pending } = useWithdrawFunds()
 
   const t = useTranslations()
 
-  const assets = useAssets()
-  const chainLinkData = useMemo(
-    () =>
-      (assets || []).filter(asset =>
-        [Contracts.chainlinkToken[chainId], Contracts.chainlinkTokenERC677[chainId]].includes(asset.address),
-      ),
-    [assets, chainId],
-  )
+  const chainLinkData = useChainLINKData()
 
   const [tokenPopup, setTokenPopup] = useState()
   const [chainLINK, setChainLINK] = useState()
@@ -43,6 +34,9 @@ function WithdrawFundsModal({ contract, popup, setPopup }) {
       title='Withdraw Funds'
     >
       <ModalBody className='space-y-5'>
+        <Box className='flex flex-row items-center gap-3 border border-primary-800 bg-primary-950'>
+          {t('Warrning widraw fund automation')}
+        </Box>
         <TextHeading>{t('Select Tokens')}</TextHeading>
         <div
           className='flex cursor-pointer items-center justify-between rounded-[8px] bg-neutral-700 px-4 py-3'
