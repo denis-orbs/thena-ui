@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
+import { isAddress } from 'viem'
+import { useSimulateContract } from 'wagmi'
 
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
@@ -9,11 +11,12 @@ import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { pairAbi } from '@/constant/abi'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import { useGuageStake } from '@/hooks/useGauge'
 import { useClaimFees, useV1Stake } from '@/hooks/useV1Liquidity'
-import { formatAmount, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
+import { formatAmount, fromWei, getDisplayedStrategy, ZERO_VALUE } from '@/lib/utils'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
@@ -76,13 +79,30 @@ export default function NotStaked({ pool }) {
     return token0InUsd.div(walletUsd).times(100).toFixed(2)
   }, [walletUsd, token0Amount, pool])
 
-  const feesInUsd = useMemo(() => {
-    const fees0 = pool.account.token0claimable?.times(pool.token0.price) || ZERO_VALUE
-    const fees1 = pool.account.token1claimable?.times(pool.token1.price) || ZERO_VALUE
-    return fees0.plus(fees1)
-  }, [pool])
-
   const isV1Pool = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(pool.title), [pool])
+
+  const { data: fees } = useSimulateContract({
+    abi: pairAbi,
+    address: pool.address,
+    functionName: 'claimFees',
+    query: {
+      enable: isV1Pool && isAddress(pool.address),
+    },
+  })
+
+  const { feesInUsd, reward0, reward1 } = useMemo(() => {
+    const _reward0 = isV1Pool ? fromWei(fees?.result?.[0] ?? 0n, pool.token0.decimals) : pool.account.token0claimable
+    const _reward1 = isV1Pool ? fromWei(fees?.result?.[1] ?? 0n, pool.token1.decimals) : pool.account.token1claimable
+
+    const fees0 = _reward0?.times(pool.token0.price) || ZERO_VALUE
+    const fees1 = _reward1?.times(pool.token1.price) || ZERO_VALUE
+
+    return {
+      feesInUsd: fees0.plus(fees1),
+      reward0: _reward0,
+      reward1: _reward1,
+    }
+  }, [fees?.result, isV1Pool, pool])
 
   const migrationOptions = useGetAutoPoolMigration({
     token0Address: pool.token0.address,
@@ -138,6 +158,7 @@ export default function NotStaked({ pool }) {
             <TextSubHeading>({formatAmount(100 - token0Percent)}%)</TextSubHeading>
           </div>
         </div>
+
         {isV1Pool && (
           <div className='flex items-center justify-between'>
             <Paragraph className='text-sm'>{t('Claimable Amount')}</Paragraph>
@@ -145,12 +166,8 @@ export default function NotStaked({ pool }) {
               <TextHeading>${formatAmount(feesInUsd)}</TextHeading>
               <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`not-stake-${pool.address}`} />
               <CustomTooltip id={`not-stake-${pool.address}`}>
-                {pool.account.token0claimable && (
-                  <p>{`${formatAmount(pool.account.token0claimable)} ${pool.token0.symbol}`}</p>
-                )}
-                {pool.account.token1claimable && (
-                  <p>{`${formatAmount(pool.account.token1claimable)} ${pool.token1.symbol}`}</p>
-                )}
+                {reward0.gt(0) && <p>{`${formatAmount(reward0)} ${pool.token0.symbol}`}</p>}
+                {reward1.gt(0) && <p>{`${formatAmount(reward1)} ${pool.token1.symbol}`}</p>}
               </CustomTooltip>
             </div>
           </div>

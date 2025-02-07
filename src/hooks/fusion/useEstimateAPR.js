@@ -25,7 +25,7 @@ const getFusionFeesData = async ({ chainId, pool }) => {
       `,
       {
         pool: pool.toLowerCase(),
-        date: Math.floor(Date.now() / 1000) - 24 * 60 * 60, // current time in seconds - 1 day
+        date: Math.floor(Date.now() / 1000) - 24 * 60 * 60 * 7, // current time in seconds - 7 day
       },
     )
 
@@ -182,12 +182,15 @@ export const useEstimateAPR = ({
 
   const farmRatio = BigNumber(position.liquidity).div(farmLiquidity)
   const farmApr = rewardPerSecond
-    .times(farmRatio)
+    .times(farmRatio.gt(1) ? 1 : farmRatio)
     .times(86400 * 365)
     .div(tvl)
 
   const feeRatio = BigNumber(position.liquidity).div(pool.liquidity)
-  const feeAPR = feeRatio.times(avgPoolFees).div(tvl).times(earnPercent)
+  const feeAPR = BigNumber(feeRatio.gt(1) ? 1 : feeRatio)
+    .times(avgPoolFees)
+    .div(tvl)
+    .times(earnPercent)
 
   return farmApr.plus(feeAPR)
 }
@@ -242,11 +245,15 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1
 
   const farmRatio = BigNumber(position.liquidity).div(farmLiquidity)
   const farmApr = rewardPerSecond
-    .times(farmRatio)
+    .times(farmRatio.gt(1) ? 1 : farmRatio)
     .times(86400 * 365)
     .div(tvl)
 
-  const liquidityFeeRatio = BigNumber(liquidity).div(totalLiquidity)
-  const feeAPR = liquidityFeeRatio.times(avgPoolFees).div(tvl).times(earnPercent)
+  const feeRatio = BigNumber(liquidity).div(totalLiquidity)
+  const feeAPR = BigNumber(feeRatio.gt(1) ? 1 : feeRatio)
+    .times(avgPoolFees)
+    .div(tvl)
+    .times(earnPercent)
+
   return farmApr.plus(feeAPR)
 }
