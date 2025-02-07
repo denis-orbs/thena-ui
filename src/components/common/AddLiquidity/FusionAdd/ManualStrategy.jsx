@@ -391,7 +391,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
             <TextHeading className='text-sm font-bold'>{Number(apr).toFixed(2)}%</TextHeading>
           </div>
           <CustomTooltip id='APR-INFO' className='max-w-[320px]'>
-            Estimated return based on daily trade fees and farming yield
+            Estimated return based on weekly trade fees and farming yield
           </CustomTooltip>
         </div>
 

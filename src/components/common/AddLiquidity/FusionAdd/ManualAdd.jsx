@@ -71,7 +71,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
           </Paragraph>
 
           <CustomTooltip id='apr-info' className='max-w-[320px]'>
-            Estimated return based on daily trade fees and farming yield
+            Estimated return based on weekly trade fees and farming yield
           </CustomTooltip>
         </div>
       </div>
