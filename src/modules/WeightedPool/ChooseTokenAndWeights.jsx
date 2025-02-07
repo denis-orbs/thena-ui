@@ -58,7 +58,7 @@ const updateWeight = tokens => {
 function SelectTokenButton({ token, setTokenSelected, tokenSelected }) {
   const t = useTranslations()
   const [tokenPopup, setTokenPopup] = useState(false)
-  const hiddenTokens = useMemo(() => tokenSelected.map(item => item?.token?.address), [tokenSelected])
+  const hiddenTokens = useMemo(() => tokenSelected.map(item => wrappedAddress(item?.token)), [tokenSelected])
   return (
     <>
       {token.token ? (
@@ -108,6 +108,7 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
 
   const handleRemoveToken = useCallback(() => {
     setTokenSelected(prev => {
+      if (prev.length === 1) return prev
       const updatedTokens = [...prev]
       if (index > -1) {
         updatedTokens.splice(index, 1)

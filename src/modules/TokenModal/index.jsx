@@ -16,7 +16,7 @@ import { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { cn } from '@/lib/utils'
+import { cn, wrappedAddress } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 
 import { ItemToken } from './ItemToken'
@@ -96,13 +96,25 @@ function TokenModal({
   otherAsset,
   setOtherAsset,
   onAssetSelect = () => {},
+  hiddenTokens = [],
   isHideTrending = false,
 }) {
   const t = useTranslations()
   const { account, chainId } = useWallet()
   const rootRef = useRef(null)
 
-  const baseAssets = useAssets()
+  const assets = useAssets()
+
+  const baseAssets = useMemo(
+    () =>
+      hiddenTokens && Array.isArray(hiddenTokens) && hiddenTokens.length > 0
+        ? assets.filter(
+            asset => !hiddenTokens.filter(Boolean).some(token => wrappedAddress(asset).includes(token.toLowerCase())),
+          )
+        : assets,
+    [assets, hiddenTokens],
+  )
+
   const [customToken, setCustomToken] = useState()
   const [searchText, setSearchText] = useState('')
 
