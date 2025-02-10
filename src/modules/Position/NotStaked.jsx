@@ -134,7 +134,7 @@ export default function NotStaked({ pool }) {
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>APR</Paragraph>
-          <TextHeading>{formatAmount(pool.gauge.apr)}%</TextHeading>
+          <TextHeading>{formatAmount(pool.feeApr)}%</TextHeading>
         </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
