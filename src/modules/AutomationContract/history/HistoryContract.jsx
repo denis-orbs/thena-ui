@@ -53,7 +53,6 @@ function HistoryContract({ histories }) {
   const [sort, setSort] = useState({})
   const [currentPage, setCurrentPage] = useState(1)
 
-  // TODO: mock data
   const finalData = useMemo(
     () =>
       (histories || []).map(transaction => ({
@@ -74,7 +73,11 @@ function HistoryContract({ histories }) {
           </TextHeading>
         ),
         type: <TextHeading>{transaction.type}</TextHeading>,
-        amount: <TextHeading>{formatAmount(fromWei(transaction.amount))} Link</TextHeading>,
+        amount: (
+          <TextHeading>
+            {!fromWei(transaction.amount).gt(0) ? '-' : `${formatAmount(fromWei(transaction.amount))} Link`}
+          </TextHeading>
+        ),
       })),
     [copied, histories, onCopy],
   )

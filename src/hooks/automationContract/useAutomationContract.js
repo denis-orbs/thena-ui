@@ -219,6 +219,21 @@ export const useAutomationAddress = tokenId => {
   return automationAddress
 }
 
+export const useOperationsAutomation = id => {
+  const { chainId } = useWallet()
+  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
+  const { data: operationData, isLoading } = useReadContract({
+    ...veTheAutomationFactoryContract,
+    functionName: 'tokenIdToAutomation',
+    args: [id],
+    enabled: Boolean(id) && Boolean(chainId),
+  })
+
+  const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(operationData) || [[], [], []]
+
+  return { isAutoVote, isClaimEveryWeek, isRelockEveryWeek, isLoading }
+}
+
 export const useAutomationStatus = vetTHEId => {
   const { chainId } = useWallet()
   const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)

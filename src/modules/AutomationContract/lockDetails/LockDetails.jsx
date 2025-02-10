@@ -5,7 +5,7 @@ import Box from '@/components/box'
 import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
+import { useGetMaxPaymentForGas, useOperationsAutomation } from '@/hooks/automationContract/useAutomationContract'
 import { useCountdown } from '@/hooks/useCountdown'
 import usePrices from '@/hooks/usePrices'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -18,6 +18,7 @@ function LockDetails({ contractData, veTHE }) {
   const prices = usePrices()
   const { text } = useCountdown(EVENT_TYPES.LIVE, contractData.settings.executionTime / 1000, true)
   const maxPaymentForGas = useGetMaxPaymentForGas()
+  const { isRelockEveryWeek, isLoading } = useOperationsAutomation(veTHE.id)
 
   return (
     <div className='space-y-4'>
@@ -73,7 +74,17 @@ function LockDetails({ contractData, veTHE }) {
         </Box>
         <Box className='col-span-2 flex w-full flex-col gap-2 lg:col-span-1'>
           <div className='flex items-center gap-1'>
-            <TextHeading className='text-2xl'>{t('Automated')}</TextHeading>
+            {isLoading ? (
+              <Skeleton className='h-8 w-20' />
+            ) : (
+              <TextHeading className='text-2xl'>
+                {isRelockEveryWeek
+                  ? t('Automated')
+                  : veTHE.expire > 0
+                    ? t('Expires in [x] days', { x: veTHE.expire })
+                    : `Expired ${veTHE.expire * -1} days ago`}
+              </TextHeading>
+            )}
           </div>
           <Paragraph className='text-sm'>{t('Lock expire')}</Paragraph>
         </Box>
