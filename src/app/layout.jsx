@@ -63,7 +63,7 @@ export default function RootLayout({ children }) {
     <html lang='en'>
       <head>
         <script
-          src='https://attribution.metacrm.inc/tracking-1-2-0.js'
+          src='https://attribution.metacrm.inc/tracking-1-2-1.js'
           id='metacrm-tracking'
           crossOrigin='anonymous'
           {...metaCrmConfig}
