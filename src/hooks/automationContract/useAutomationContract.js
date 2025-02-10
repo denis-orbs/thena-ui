@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -23,14 +24,19 @@ import useWallet from '../useWallet'
 export const useGetMaxPaymentForGas = () => {
   const { chainId } = useWallet()
   const registryContract = getKeeperRegistryContract(chainId)
-  const { data: automationAddress } = useReadContract({
+  const { data: maxPayment } = useReadContract({
     ...registryContract,
     functionName: 'getMaxPaymentForGas',
     args: [0, 700000],
     enabled: Boolean(chainId),
   })
 
-  return fromWei(automationAddress).toNumber() + 0.5
+  // Add null check and provide default value
+  if (!maxPayment) {
+    return new BigNumber(0)
+  }
+
+  return fromWei(maxPayment)
 }
 
 export const useCreateAutomation = () => {
@@ -52,15 +58,13 @@ export const useCreateAutomation = () => {
           topics: event.topics,
         })
 
-        if (eventLogs) {
-          if (eventLogs.args) {
-            return eventLogs.args.automation
-          }
+        if (eventLogs?.args) {
+          return eventLogs.args.automation
         }
 
         return ''
       } catch (error) {
-        console.log({ error })
+        console.log('Failed to get automation address', error)
       }
     },
     [veTheAutomationFactoryContract],
@@ -100,7 +104,7 @@ export const useCreateAutomation = () => {
               hash: null,
             },
             [approveChainlinkuuid]: {
-              desc: t('Approve ChainLINK'),
+              desc: `${t('Approve')} ChainLink`,
               status: TXN_STATUS.START,
               hash: null,
             },
@@ -117,7 +121,7 @@ export const useCreateAutomation = () => {
           },
         })
 
-        const txHash = await writeTxn2(key, createAutouuid, veTheAutomationFactoryContract, 'createAutomation', [
+        const txnReceipt = await writeTxn2(key, createAutouuid, veTheAutomationFactoryContract, 'createAutomation', [
           tokenId,
           Math.floor(startTimestamp / 1000),
           operations,
@@ -125,12 +129,12 @@ export const useCreateAutomation = () => {
           weights,
         ])
 
-        if (!txHash) {
+        if (!txnReceipt) {
           setPending(false)
           return false
         }
 
-        const automationAddress = await handleGetAddress(txHash)
+        const automationAddress = await handleGetAddress(txnReceipt)
 
         const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
 
@@ -187,7 +191,7 @@ export const useCreateAutomation = () => {
   return { onCreateAutomation, pending }
 }
 
-export const getStatusString = status => {
+export const getAutomationStatusString = status => {
   switch (status) {
     case 0:
       return AUTOMATION_STATUS.PENDING
@@ -241,7 +245,7 @@ export const useAutomationStatus = vetTHEId => {
     enabled: Boolean(vetTHEId) && Boolean(automationAddress) && automationAddress !== zeroAddress && Boolean(chainId),
   })
 
-  const statusString = useMemo(() => getStatusString(status), [status])
+  const statusString = useMemo(() => getAutomationStatusString(status), [status])
 
   if (automationAddress === zeroAddress) {
     return { status: AUTOMATION_STATUS.NO, isLoading: isLoading1, mutateData: mutateData1 }
@@ -276,14 +280,17 @@ export const useStatusAndBalanceMultiple = veTHEs => {
         functionName: 'getBalance',
       })),
     )
-    const result = veTHEs.map((veTHE, index) => ({
-      ...veTHE,
-      contractAddress: contractsAddress[index],
-      status: contractsStatus[index] ?? null,
-      balanceAuto: contractsBalance[index] ?? null,
-    }))
 
-    return result
+    return veTHEs.map((veTHE, index) => {
+      const status = contractsStatus[index] ?? null
+      return {
+        ...veTHE,
+        contractAddress: contractsAddress[index],
+        status,
+        statusString: getAutomationStatusString(status),
+        balanceAuto: contractsBalance[index] ?? null,
+      }
+    })
   }, [chainId, veTHEs])
 
   const { data, isLoading, mutate } = useSWR(
@@ -385,7 +392,7 @@ export const useAutomationContractDetail = tokenId => {
         }
   })
 
-  const statusString = useMemo(() => getStatusString(status), [status])
+  const statusString = useMemo(() => getAutomationStatusString(status), [status])
 
   const contractData = {
     address: automationAddress,

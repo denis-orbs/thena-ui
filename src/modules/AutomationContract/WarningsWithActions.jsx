@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
+import { AUTOMATION_STATUS } from '@/constant'
 import {
   useAutomationStatus,
   useGetMaxPaymentForGas,
@@ -80,27 +81,32 @@ function WarningsWithActions({ veTHEs }) {
   const { data, isLoading, mutate: mutateStatusAndBalanceMultiple } = useStatusAndBalanceMultiple(veTHEs)
   const maxPaymentForGas = useGetMaxPaymentForGas()
   if (isLoading && !data && !data?.id) return null
+
   return (
     <div className='space-y-6'>
-      {(data || []).map(item =>
-        item.status === 0 ? (
-          <React.Fragment key={item.id}>
-            <WarningRegisterItem mutateStatusAndBalanceMultiple={mutateStatusAndBalanceMultiple} data={item} />
-          </React.Fragment>
-        ) : null,
-      )}
-      {(data || []).map(item =>
-        item.balanceAuto !== null &&
-        item.status !== 0 &&
-        item.status !== 3 &&
-        !fromWei(item.balanceAuto).gt(maxPaymentForGas) ? (
-          <WarningUnderfundedItem
-            mutateStatusAndBalanceMultiple={mutateStatusAndBalanceMultiple}
-            key={item.id}
-            data={item}
-          />
-        ) : null,
-      )}
+      {(data || []).map(item => {
+        if (item.statusString === AUTOMATION_STATUS.PENDING) {
+          return (
+            <React.Fragment key={item.id}>
+              <WarningRegisterItem mutateStatusAndBalanceMultiple={mutateStatusAndBalanceMultiple} data={item} />
+            </React.Fragment>
+          )
+        }
+        if (
+          item.balanceAuto !== null &&
+          item.statusString !== AUTOMATION_STATUS.CANCELED &&
+          fromWei(item.balanceAuto).lt(maxPaymentForGas)
+        ) {
+          return (
+            <WarningUnderfundedItem
+              mutateStatusAndBalanceMultiple={mutateStatusAndBalanceMultiple}
+              key={item.id}
+              data={item}
+            />
+          )
+        }
+        return null
+      })}
     </div>
   )
 }

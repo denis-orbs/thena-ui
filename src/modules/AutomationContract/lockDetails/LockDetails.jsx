@@ -17,7 +17,7 @@ function LockDetails({ contractData, veTHE }) {
   const t = useTranslations()
   const prices = usePrices()
   const { text } = useCountdown(EVENT_TYPES.LIVE, contractData.settings.executionTime / 1000, true)
-  const minimumLink = useGetMaxPaymentForGas()
+  const maxPaymentForGas = useGetMaxPaymentForGas()
 
   return (
     <div className='space-y-4'>
@@ -67,7 +67,7 @@ function LockDetails({ contractData, veTHE }) {
         </Box>
         <Box className='flex w-full flex-col gap-2'>
           <div className='flex items-center gap-1'>
-            <TextHeading className='text-2xl'>{formatAmount(minimumLink)}</TextHeading>
+            <TextHeading className='text-2xl'>{formatAmount(maxPaymentForGas)}</TextHeading>
           </div>
           <Paragraph className='text-sm'>{t('Minimum LINK balance required')}</Paragraph>
         </Box>

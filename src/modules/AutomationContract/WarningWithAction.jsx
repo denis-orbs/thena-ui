@@ -29,7 +29,7 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
       }
     }
 
-    if (contractData.balance < maxPaymentForGas) {
+    if (maxPaymentForGas.gt(contractData.balance)) {
       return {
         message: (
           <>

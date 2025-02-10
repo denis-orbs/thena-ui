@@ -53,7 +53,7 @@ function NavigationBottom({ currentStep, onNext }) {
       if (
         !createData.registration?.chainlink ||
         !createData.registration?.chainlinkAmount ||
-        createData.registration?.chainlinkAmount < maxPaymentForGas
+        maxPaymentForGas.gt(createData.registration?.chainlinkAmount)
       ) {
         return true
       }

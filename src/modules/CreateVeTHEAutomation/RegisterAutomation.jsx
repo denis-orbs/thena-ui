@@ -53,7 +53,7 @@ function RegisterAutomation({ chainLINK, chainLINKAmount, updateRegistration = (
           suffix={`$${chainLINK ? formatAmount((chainLINKAmount || 0) * (chainLINK.price || 0)) : 0}`}
         />
       </div>
-      {chainLINKAmount < maxPaymentForGas && (
+      {maxPaymentForGas.gt(chainLINKAmount) && (
         <ErrorMessage
           message={t('LINK Amount should be larger than [value]', { value: formatAmount(maxPaymentForGas) })}
         />

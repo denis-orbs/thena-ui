@@ -1429,7 +1429,6 @@
   "Edit automation gas limit warning": "Amount of gas to provide the target contract when performing automation. This will impact minimum balance requirements, and should be approximately the maximum amount of gas the transaction might use.",
   "Change Gas limit": "Change Gas limit",
   "veTHE Contract [veTHEId]": "veTHE Contract {veTHEId}",
-  "Approve LINK": "Approve LINK",
   "Deposit LINK": "Deposit LINK",
   "Add Funds": "Add Funds",
   "Fund Contract": "Fund Contract",
