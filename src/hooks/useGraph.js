@@ -116,20 +116,19 @@ const getV1OverviewChartData = async (chainId, skip) => {
  * Fetches and processes fusion overview chart data for a specific chain.
  * @returns {Promise<{ [date: number]: { volumeUSD: number, tvlUSD: number } } | { error: boolean }>}
  */
-const getFusionOverviewChartData = async (chainId, skip) => {
+const getFusionOverviewChartData = async (params, skip) => {
   try {
-    const res = await fusionClient[chainId].request(FUSION_DAY_DATAS, {
-      startTime: FUSION_MULTI_CHAIN_START_TIME[chainId],
+    const res = await fusionClient[params.version][params.chainId].request(FUSION_DAY_DATAS, {
+      startTime: FUSION_MULTI_CHAIN_START_TIME[params.chainId],
       skip,
     })
     const result = res.fusionDayDatas
-    return result.reduce((acc, ele) => {
-      acc[ele.date] = {
-        volumeUSD: parseFloat(ele.volumeUSD),
-        tvlUSD: parseFloat(ele.tvlUSD),
-      }
-      return acc
-    }, {})
+    const data = result.map(ele => ({
+      date: ele.date,
+      volumeUSD: parseFloat(ele.volumeUSD),
+      tvlUSD: parseFloat(ele.tvlUSD),
+    }))
+    return { data, error: false }
   } catch (error) {
     console.error('Failed to fetch overview chart data', error)
     return { error: true }
@@ -161,13 +160,14 @@ const getWeightedOverviewChartData = async (chainId, skip) => {
       startTime: WEIGHTED_MULTI_CHAIN_START_TIME[chainId],
       skip,
     })
-    return balancerSnapshots.reduce((acc, ele) => {
-      acc[ele.timestamp] = {
-        volumeUSD: parseFloat(ele.totalSwapVolume),
-        tvlUSD: parseFloat(ele.totalLiquidity),
-      }
-      return acc
-    }, {})
+
+    const data = balancerSnapshots.map(ele => ({
+      date: ele.date,
+      volumeUSD: parseFloat(ele.totalSwapVolume),
+      tvlUSD: parseFloat(ele.totalLiquidity),
+    }))
+
+    return { data, error: false }
   } catch (error) {
     console.error('Failed to fetch overview chart data', error)
     return { error: true }
@@ -175,19 +175,24 @@ const getWeightedOverviewChartData = async (chainId, skip) => {
 }
 
 const fetchGlobalChartData = async chainId => {
-  const [{ data: v1data }, { data: fusiondata }, { data: weightedData }] = await Promise.all([
+  const [{ data: v1data }, { data: fusiondata2 }, { data: fusiondata3 }, { data: weightedData }] = await Promise.all([
     fetchChartData(getV1OverviewChartData, [chainId], false),
-    fetchChartData(getFusionOverviewChartData, [chainId], true),
+    fetchChartData(getFusionOverviewChartData, [{ chainId, version: 2 }], true),
+    fetchChartData(getFusionOverviewChartData, [{ chainId, version: 3 }], true),
     fetchChartData(getWeightedOverviewChartData, [chainId], true),
   ])
 
+  console.log({ v1data, fusiondata2, fusiondata3, weightedData })
+
   return v1data.map(ele => {
-    const found = fusiondata?.[ele.date]
-    const found2 = weightedData?.[ele.date]
+    const foundV2 = fusiondata2.find(fusion => fusion.date === ele.date)
+    const foundV3 = fusiondata3.find(fusion => fusion.date === ele.date)
+    const foundWeighted = weightedData.find(weighted => weighted.date === ele.date)
     return {
       ...ele,
-      volumeUSD: ele.volumeUSD + (found?.volumeUSD ?? 0) + (found2?.volumeUSD ?? 0),
-      tvlUSD: ele.tvlUSD + (found?.tvlUSD ?? 0) + (found2?.tvlUSD ?? 0),
+      volumeUSD:
+        ele.volumeUSD + (foundV2?.volumeUSD ?? 0) + (foundV3?.volumeUSD ?? 0) + (foundWeighted?.volumeUSD ?? 0),
+      tvlUSD: ele.tvlUSD + (foundV2?.tvlUSD ?? 0) + (foundV3?.tvlUSD ?? 0) + (foundWeighted?.tvlUSD ?? 0),
     }
   })
 }
