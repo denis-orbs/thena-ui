@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 
@@ -6,15 +7,27 @@ import Skeleton from '@/components/skeleton'
 import { Paragraph, TextSubHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useAutomationStatus } from '@/hooks/automationContract/useAutomationContract'
+import { LinkExternalIcon } from '@/svgs'
 
 function LockExpire({ veTHE }) {
   const t = useTranslations()
+  const { push } = useRouter()
   const { status, isLoading } = useAutomationStatus(veTHE.id)
   if (isLoading) {
     return <Skeleton className='h-5 w-44' />
   }
   if (status === AUTOMATION_STATUS.ACTIVE) {
-    return <Paragraph>{t('Automated')}</Paragraph>
+    return (
+      <div
+        onClick={() => push(`/dashboard/lock/automation/${veTHE.id}`)}
+        className='flex cursor-pointer items-center gap-1'
+      >
+        <Paragraph>{t('Automated')}</Paragraph>
+        <div className='item-center flex cursor-pointer gap-1'>
+          <LinkExternalIcon className='inline-block h-4 w-4' />
+        </div>
+      </div>
+    )
   }
   return (
     <div className='flex flex-col'>
