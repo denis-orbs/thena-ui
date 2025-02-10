@@ -151,7 +151,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs, isAutoma
           <Paragraph>{t('Total Split Amount')}</Paragraph>
           <TextHeading>{total}%</TextHeading>
         </div>
-        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation lock')} />}
+        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <PrimaryButton
@@ -166,7 +166,7 @@ export default function SplitManage({ selected, setPopup, updateVeTHEs, isAutoma
               updateVeTHEs()
             })
           }}
-          disabled={pending}
+          disabled={pending || isAutomation}
         >
           {t('Split')}
         </PrimaryButton>

@@ -170,14 +170,14 @@ export default function LockManage({ selected, theAsset, updateVeTHEs, isAutomat
             </div>
           </div>
         )}
-        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation lock')} />}
+        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         {isExtend ? (
           <>
             <SecondaryButton
               className='w-full'
-              disabled={extendPending}
+              disabled={extendPending || isAutomation}
               onClick={() => {
                 if (selectedDate.getTime() / 1000 === selected.lockedEnd) {
                   warnToast('Can only increase lock duration')
@@ -193,7 +193,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs, isAutomat
             </SecondaryButton>
             <PrimaryButton
               className='w-full'
-              disabled={extendPending}
+              disabled={extendPending || isAutomation}
               onClick={() => {
                 let period
                 if (periodLevel === 3) {

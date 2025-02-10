@@ -135,7 +135,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
           selected={veTHE}
           theAsset={theAsset}
           updateVeTHEs={updateVeTHEs}
-          isAutomation={status !== AUTOMATION_STATUS.NO}
+          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
         />
       )}
       {type === ManageTypes.merge && <MergeManage selected={veTHE} isAutomation={status !== AUTOMATION_STATUS.NO} />}
@@ -144,7 +144,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
           selected={veTHE}
           setPopup={setPopup}
           updateVeTHEs={updateVeTHEs}
-          isAutomation={status !== AUTOMATION_STATUS.NO}
+          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
         />
       )}
       {type === ManageTypes.transfer && (
@@ -152,7 +152,7 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
           selected={veTHE}
           setPopup={setPopup}
           updateVeTHEs={updateVeTHEs}
-          isAutomation={status !== AUTOMATION_STATUS.NO}
+          isAutomation={status !== AUTOMATION_STATUS.NO && status !== AUTOMATION_STATUS.CANCELED}
         />
       )}
     </Modal>

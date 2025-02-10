@@ -86,12 +86,12 @@ export default function MergeManage({ selected, isAutomation }) {
             </div>
           )}
         </div>
-        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation lock')} />}
+        {isAutomation && <ErrorMessage className='lg:p-4' message={t('Waring automation manage')} />}
       </ModalBody>
       <ModalFooter className='flex flex-col-reverse gap-4 lg:flex-row'>
         <PrimaryButton
           className='w-full'
-          disabled={pending}
+          disabled={pending || isAutomation}
           onClick={() => {
             if (!veTHE) {
               warnToast('Select veTHE')
