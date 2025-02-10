@@ -12,7 +12,7 @@ import { calculateNextWeek, formatAddress, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { CheckIcon, CopyArenaIcon } from '@/svgs'
 
-function AutomationDetails({ contractData, transactionHash }) {
+function AutomationDetails({ contractData, transactionHash, date }) {
   const t = useTranslations()
   const { onCopy, copied } = useCopyText()
   const { account } = useWallet()
@@ -114,7 +114,7 @@ function AutomationDetails({ contractData, transactionHash }) {
             </div>
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Date')}</Paragraph>
-              <TextHeading>TODO</TextHeading>
+              <TextHeading>{dayjs.unix(date).format('MMM D, YYYY [at] HH:mm [UTC]')}</TextHeading>
             </div>
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Transaction Hash')}</Paragraph>

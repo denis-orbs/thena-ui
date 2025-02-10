@@ -34,7 +34,11 @@ function AutomationContractDetail({ tokenId }) {
       <Head veTHE={veTHE} />
       <WarningWithAction contractData={contractData} mutateAutomationData={mutateAutomationData} />
       <LockDetails contractData={contractData} veTHE={veTHE} />
-      <AutomationDetails contractData={contractData} transactionHash={historyData.histories} />
+      <AutomationDetails
+        contractData={contractData}
+        transactionHash={historyData.transactionHash}
+        date={historyData.date}
+      />
       <HistoryContract histories={historyData?.histories} />
     </div>
   )

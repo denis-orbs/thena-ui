@@ -1451,5 +1451,6 @@
   "Edit Setting": "Edit Setting",
   "Current LINK balance": "Current LINK balance",
   "Minimum LINK balance required": "Minimum LINK balance required",
-  "Warrning widraw fund automation": "Withdrawals can only be made after a 50-block (3 minutes) cancellation delay. Please wait for the automation to be fully canceled before proceeding"
+  "Warrning widraw fund automation": "Withdrawals can only be made after a 50-block (3 minutes) cancellation delay. Please wait for the automation to be fully canceled before proceeding",
+  "No History Found": "No History Found"
 }

@@ -57,7 +57,7 @@ function HistoryContract({ histories }) {
   const finalData = useMemo(
     () =>
       (histories || []).map(transaction => ({
-        date: <Paragraph>{dayjs(transaction.timestamp).format('MMM D, YYYY [at] HH:mm [UTC]')}</Paragraph>,
+        date: <Paragraph>{dayjs.unix(transaction.timestamp).format('MMM D, YYYY [at] HH:mm [UTC]')}</Paragraph>,
         hash: (
           <TextHeading className='flex flex-row gap-1'>
             {formatAddress(transaction.transactionHash)}
