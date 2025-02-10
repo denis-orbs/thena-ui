@@ -141,7 +141,7 @@ export const useCreateAutomation = () => {
           chainId,
         )
 
-        const linkTokenContract = getLinkTokenContract(chainId)
+        const linkTokenContract = getLinkTokenContract(chainlink.address, chainId)
         if (
           !(await writeTxn(key, approveChainlinkuuid, linkTokenContract, 'approve', [automationAddress, maxUint256]))
         ) {
@@ -641,7 +641,7 @@ export const useActiveAutomation = () => {
           [automationAddress, tokenId],
           chainId,
         )
-        const linkTokenContract = getLinkTokenContract(chainId)
+        const linkTokenContract = getLinkTokenContract(chainlink.address, chainId)
         if (
           !(await writeTxn(key, approveChainlinkuuid, linkTokenContract, 'approve', [automationAddress, maxUint256]))
         ) {
@@ -856,7 +856,7 @@ export const useDepositFunds = () => {
     async (automationAddress, tokenAddress, amount, onSuccess = () => {}) => {
       try {
         const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
-        const linkTokenContract = getLinkTokenContract(chainId)
+        const linkTokenContract = getLinkTokenContract(tokenAddress, chainId)
         const key = uuidv4()
         const deposituuid = uuidv4()
         const approveuuid = uuidv4()

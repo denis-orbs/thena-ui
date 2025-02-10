@@ -197,15 +197,6 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x7cb6aAc8df6BC7fEDccbA0262E4F9e397B1485F9',
     [CHAIN_ID.TEST_BSC]: '0xc84f8b2ddbcd2bc862b80b432c86c0af121504c7',
   },
-  chainlinkToken: {
-    // ERC20LINK
-    [CHAIN_ID.BSC]: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
-    [CHAIN_ID.TEST_BSC]: '0x84b9b910527ad5c03a9ca831909e21e236ea7b06',
-  },
-  chainlinkTokenERC677: {
-    // ERC677LINK
-    [CHAIN_ID.BSC]: '0x404460c6a5ede2d891e8297795264fde62adbb75',
-  },
   keeperRegistry: {
     [CHAIN_ID.BSC]: '0xDc21E279934fF6721CaDfDD112DAfb3261f09A2C',
     [CHAIN_ID.TEST_BSC]: '0x96bb60aAAec09A0FceB4527b81bbF3Cc0c171393',
