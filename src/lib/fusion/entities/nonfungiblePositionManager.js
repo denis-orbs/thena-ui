@@ -4,7 +4,7 @@ import invariant from 'tiny-invariant'
 import { decodeEventLog, encodeFunctionData, getAddress, keccak256, zeroAddress } from 'viem'
 
 import { ZERO_ADDRESS } from '@/constant'
-import { algebraAbiV2, algebraAbiV3 } from '@/constant/abi/fusion'
+import { nonfungiblePositionManagerV2Abi, nonfungiblePositionManagerV3Abi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { getPositionManagerContract } from '@/lib/contracts'
 
@@ -30,7 +30,7 @@ export class NonfungiblePositionManager extends SelfPermit {
 
   static getCalldata(func, args, version = 2) {
     return encodeFunctionData({
-      abi: version === 2 ? algebraAbiV2 : algebraAbiV3,
+      abi: version === 2 ? nonfungiblePositionManagerV2Abi : nonfungiblePositionManagerV3Abi,
       functionName: func,
       args,
     })

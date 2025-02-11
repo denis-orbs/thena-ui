@@ -1,5 +1,3 @@
-import algebraAbiV2 from './algebraV2.json'
-import algebraAbiV3 from './algebraV3.json'
 import defiedgeStrategyAbi from './defiedgeStrategy.json'
 import eternalVirtualPoolAbi from './eternalVirtualPool.json'
 import algebraFactoryAbi from './factory.json'
@@ -21,8 +19,6 @@ import poolAbi from './pool.json'
 import vaultDepositGaurdAbi from './vaultDepositGaurd.json'
 
 export {
-  algebraAbiV2,
-  algebraAbiV3,
   algebraFactoryAbi,
   defiedgeStrategyAbi,
   eternalVirtualPoolAbi,

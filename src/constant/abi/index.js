@@ -10,7 +10,7 @@ import dibsRewarderAbi from './dibsRewarder.json'
 import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import farmCenterAbi from './farmCenter.json'
-import algebraPoolV3 from './fusion/AlgebraPoolV3.json'
+import algebraPoolV3Abi from './fusion/AlgebraPoolV3.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
 import incentiveMakerAbi from './incentiveMaker.json'
@@ -26,7 +26,7 @@ import minterAbi from './minter.json'
 import multiCallAbi from './multiCall.json'
 import multiFeeDistributionAbi from './multiFeeDistribution.json'
 import muonAbi from './muon.json'
-import nonfungiblePositionManagerV2Abi from './nonfungiblePositionManager.json'
+import nonfungiblePositionManagerV2Abi from './nonfungiblePositionManagerv2.json'
 import nonfungiblePositionManagerV3Abi from './nonfungiblePositionManagerv3.json'
 import pairAbi from './pair.json'
 import pairAPIAbi from './pairAPI.json'
@@ -54,7 +54,7 @@ import weightedPoolFeesAbi from './weighted-pool/weightedPoolFees.json'
 
 export {
   algebraFactoryAbi,
-  algebraPoolV3,
+  algebraPoolV3Abi,
   arabicAbi,
   basePluginAbi,
   bribeAbi,

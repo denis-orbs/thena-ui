@@ -2,7 +2,7 @@ import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
-import { algebraAbiV2 } from '@/constant/abi/fusion'
+import { nonfungiblePositionManagerV2Abi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
@@ -27,7 +27,7 @@ const fetchManualV2Info = async (account, chainId) => {
   const tokenIds = await callMulti(
     tokenRequests.map(id => ({
       address,
-      abi: algebraAbiV2,
+      abi: nonfungiblePositionManagerV2Abi,
       functionName: 'tokenOfOwnerByIndex',
       args: [account, id],
       chainId,
@@ -36,7 +36,7 @@ const fetchManualV2Info = async (account, chainId) => {
   const positions = await callMulti(
     tokenIds.map(id => ({
       address,
-      abi: algebraAbiV2,
+      abi: nonfungiblePositionManagerV2Abi,
       functionName: 'positions',
       args: [id],
       chainId,

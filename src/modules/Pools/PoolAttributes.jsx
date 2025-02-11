@@ -5,7 +5,7 @@ import { zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, SCAN_URLS } from '@/constant'
-import { algebraPoolV3, basePluginAbi } from '@/constant/abi'
+import { algebraPoolV3Abi, basePluginAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
@@ -23,7 +23,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
   const { data: plugInAddress } = useReadContract({
     address: strategy?.address,
-    abi: algebraPoolV3,
+    abi: algebraPoolV3Abi,
     functionName: 'plugin',
     query: {
       enabled: MANUAL_TYPES.includes(strategy?.title),
