@@ -118,7 +118,6 @@ function Dropdown({
                 className={cn(
                   'inline-flex w-full cursor-pointer flex-col items-start justify-center gap-1',
                   'rounded-md p-3 text-neutral-300 hover:bg-neutral-700 hover:text-neutral-50',
-                  `w-[${position.width}px]`,
                 )}
                 key={`dropdown-${idx}`}
                 onMouseDown={e => {

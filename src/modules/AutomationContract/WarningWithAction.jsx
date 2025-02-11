@@ -14,7 +14,7 @@ import ChainlinkModal from './head/ChainlinkModal'
 function WarningWithAction({ mutateAutomationData, contractData }) {
   const [chainLINKPopup, setChainLINKPopup] = useState(false)
   const [depositFundsPopup, setDepositFundsPopup] = useState(false)
-  const maxPaymentForGas = useGetMaxPaymentForGas()
+  const maxPaymentForGas = useGetMaxPaymentForGas(contractData.veTHEId)
 
   const { status, mutateData: mutateDataStatus } = useAutomationStatus(contractData.veTHEId)
 

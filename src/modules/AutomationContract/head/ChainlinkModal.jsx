@@ -50,6 +50,7 @@ function ChainlinkModal({ tokenId, address, mutateAutomationData, popup, setPopu
             chainLINK={chainlink}
             chainLINKAmount={chainlinkAmount}
             updateRegistration={updateRegistration}
+            veTHEId={tokenId}
           />
         </div>
       </ModalBody>

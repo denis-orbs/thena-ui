@@ -17,7 +17,7 @@ function LockDetails({ contractData, veTHE }) {
   const t = useTranslations()
   const prices = usePrices()
   const { text } = useCountdown(EVENT_TYPES.LIVE, contractData.settings.executionTime / 1000, true)
-  const maxPaymentForGas = useGetMaxPaymentForGas()
+  const maxPaymentForGas = useGetMaxPaymentForGas(veTHE.id)
   const { isRelockEveryWeek, isLoading } = useOperationsAutomation(veTHE.id)
 
   return (

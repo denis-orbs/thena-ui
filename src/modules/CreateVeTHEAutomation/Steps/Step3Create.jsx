@@ -100,6 +100,7 @@ function Step3Create() {
           chainLINK={createData?.registration?.chainlink}
           chainLINKAmount={createData?.registration?.chainlinkAmount}
           updateRegistration={updateRegistration}
+          veTHEId={createData?.veTHEId}
         />
       </div>
     </div>

@@ -21,13 +21,39 @@ import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
 
-export const useGetMaxPaymentForGas = () => {
+export const useGetGasLimit = vetTHEId => {
   const { chainId } = useWallet()
+  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
+  const { data: address } = useReadContract({
+    ...veTheAutomationFactoryContract,
+    functionName: 'tokenIdToAutomation',
+    args: [vetTHEId],
+    enabled: Boolean(vetTHEId) && Boolean(chainId),
+  })
+
+  const veTheAutomationContract = getVeTheAutomationContract(address, chainId)
+
+  const { data: gasLimit } = useReadContract({
+    ...veTheAutomationContract,
+    functionName: 'upkeepGasLimit',
+    enabled: Boolean(vetTHEId) && Boolean(address) && address !== zeroAddress && Boolean(chainId),
+  })
+
+  if (address === zeroAddress) {
+    return null
+  }
+
+  return gasLimit
+}
+
+export const useGetMaxPaymentForGas = veTHEId => {
+  const { chainId } = useWallet()
+  const gasLimit = useGetGasLimit(veTHEId)
   const registryContract = getKeeperRegistryContract(chainId)
   const { data: maxPayment } = useReadContract({
     ...registryContract,
     functionName: 'getMaxPaymentForGas',
-    args: [0, 700000],
+    args: [0, gasLimit ?? 1000000],
     enabled: Boolean(chainId),
   })
 
@@ -37,6 +63,60 @@ export const useGetMaxPaymentForGas = () => {
   }
 
   return fromWei(maxPayment)
+}
+
+export const useGetMaxPaymentForGasMultiple = veTHEs => {
+  const { chainId } = useWallet()
+  const fetchMaxPaymentForGas = useCallback(async () => {
+    const automationAddress = await callMulti(
+      veTHEs.map(veTHE => ({
+        ...getVeTheAutomationFactoryContract(chainId),
+        functionName: 'tokenIdToAutomation',
+        args: [veTHE.id],
+        chainId,
+        enabled: Boolean(veTHE.id) && Boolean(chainId),
+      })),
+    )
+    // get upkeepGasLimit multiple per veTHE
+    // return null if address is zeroAddress
+    const gasLimits = await callMulti(
+      automationAddress.map(address => ({
+        ...getVeTheAutomationContract(address, chainId),
+        functionName: 'upkeepGasLimit',
+        enabled: Boolean(address) && address !== zeroAddress,
+      })),
+    )
+
+    // getMaxPaymentForGas multiple per veTHE
+    const registryContract = getKeeperRegistryContract(chainId)
+    const maxPayments = await callMulti(
+      gasLimits.map(gasLimit => ({
+        ...registryContract,
+        functionName: 'getMaxPaymentForGas',
+        args: [0, gasLimit ?? 1000000],
+        enabled: Boolean(chainId),
+      })),
+    )
+
+    return veTHEs.map((veTHE, index) => {
+      const maxPayment = maxPayments[index]
+      return {
+        ...veTHE,
+        maxPaymentForGas: maxPayment ? fromWei(maxPayment) : new BigNumber(0),
+      }
+    })
+  }, [chainId, veTHEs])
+
+  // useSWR to fetch multiple veTHEs
+  const { data, isLoading, mutate } = useSWR(
+    ['fetchMaxPaymentForGas', chainId, veTHEs.length],
+    () => fetchMaxPaymentForGas(),
+    {
+      refreshInterval: 0,
+    },
+  )
+
+  return { data, isLoading, mutate }
 }
 
 export const useCreateAutomation = () => {

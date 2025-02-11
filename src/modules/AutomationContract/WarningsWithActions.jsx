@@ -7,7 +7,7 @@ import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import {
   useAutomationStatus,
-  useGetMaxPaymentForGas,
+  useGetMaxPaymentForGasMultiple,
   useStatusAndBalanceMultiple,
 } from '@/hooks/automationContract/useAutomationContract'
 import { fromWei } from '@/lib/utils'
@@ -79,27 +79,36 @@ function WarningUnderfundedItem({ data, mutateStatusAndBalanceMultiple = () => {
 
 function WarningsWithActions({ veTHEs }) {
   const { data, isLoading, mutate: mutateStatusAndBalanceMultiple } = useStatusAndBalanceMultiple(veTHEs)
-  const maxPaymentForGas = useGetMaxPaymentForGas()
-  if (isLoading && !data && !data?.id) return null
+  const { data: maxPayments, isLoading: loadingGas, mutate: mutateMaxPayments } = useGetMaxPaymentForGasMultiple(veTHEs)
+  if ((isLoading && !data && !data?.id) || loadingGas) return null
 
   return (
     <div className='space-y-6'>
-      {(data || []).map(item => {
+      {(data || []).map((item, index) => {
         if (item.statusString === AUTOMATION_STATUS.PENDING) {
           return (
             <React.Fragment key={item.id}>
-              <WarningRegisterItem mutateStatusAndBalanceMultiple={mutateStatusAndBalanceMultiple} data={item} />
+              <WarningRegisterItem
+                mutateStatusAndBalanceMultiple={() => {
+                  mutateStatusAndBalanceMultiple()
+                  mutateMaxPayments()
+                }}
+                data={item}
+              />
             </React.Fragment>
           )
         }
         if (
           item.balanceAuto !== null &&
           item.statusString !== AUTOMATION_STATUS.CANCELED &&
-          fromWei(item.balanceAuto).lt(maxPaymentForGas)
+          fromWei(item.balanceAuto).lt(maxPayments[index].maxPaymentForGas)
         ) {
           return (
             <WarningUnderfundedItem
-              mutateStatusAndBalanceMultiple={mutateStatusAndBalanceMultiple}
+              mutateStatusAndBalanceMultiple={() => {
+                mutateMaxPayments()
+                mutateStatusAndBalanceMultiple()
+              }}
               key={item.id}
               data={item}
             />

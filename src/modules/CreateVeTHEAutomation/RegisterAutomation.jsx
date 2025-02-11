@@ -18,9 +18,9 @@ const UPDATE_REGISTRATION = {
   CHAINLINK_AMOUNT: 'chainlinkAmount',
 }
 
-function RegisterAutomation({ chainLINK, chainLINKAmount, updateRegistration = () => {} }) {
+function RegisterAutomation({ chainLINK, chainLINKAmount, veTHEId, updateRegistration = () => {} }) {
   const [popup, setPopup] = useState(false)
-  const maxPaymentForGas = useGetMaxPaymentForGas()
+  const maxPaymentForGas = useGetMaxPaymentForGas(veTHEId)
 
   const t = useTranslations()
   const chainLinkData = useChainLINKData()
