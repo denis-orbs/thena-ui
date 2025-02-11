@@ -260,7 +260,7 @@ export const useGammaClaim = () => {
 export const useGetGammaReward = pool => {
   const { account, chainId } = useWallet()
   const assets = useAssets()
-  const [rewardsData, setRewardsData] = useState([])
+  const [rewardsData, setRewardsData] = useState(null)
 
   const getClaimableRewards = useCallback(async () => {
     if (pool.version === 3 && GAMMA_TYPES.includes(pool.title) && pool.title.includes('Farming')) {

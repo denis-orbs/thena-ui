@@ -128,7 +128,11 @@ export default function NotStaked({ pool }) {
         </div>
         <div className='flex items-center gap-2'>
           {pool?.title?.includes('Farming') && <GreenBadge>Farm Strategy</GreenBadge>}
-          <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
+          {pool?.title?.includes(PAIR_TYPES.STABLE) || pool?.title?.includes(PAIR_TYPES.CLASSIC) ? (
+            <GreenBadge>Fee Strategy</GreenBadge>
+          ) : (
+            <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
+          )}
         </div>
       </div>
       <div className='flex flex-col gap-3'>

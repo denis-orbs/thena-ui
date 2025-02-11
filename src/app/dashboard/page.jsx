@@ -33,6 +33,7 @@ import ManualPosition from '@/modules/Position/ManualPosition'
 import NotStaked from '@/modules/Position/NotStaked'
 import Staked from '@/modules/Position/Staked'
 import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
+import { useFarmRewards } from '@/state/farmReward/store'
 import { usePools } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite, InfoIcon } from '@/svgs'
@@ -102,10 +103,16 @@ export default function HoldingsPage() {
     [veTHEs],
   )
 
-  const totalFarmed = useMemo(
-    () => pools.reduce((sum, curr) => sum.plus(curr.account.gaugeEarned), new BigNumber(0)),
-    [pools],
-  )
+  const { rewards } = useFarmRewards()
+  const totalFarmed = useMemo(() => {
+    let total = BigNumber(0)
+    Object.values(rewards).forEach(list => {
+      list.forEach(val => {
+        total = total.plus(val.amount)
+      })
+    })
+    return total
+  }, [rewards])
 
   const totalCurrentUsd = useMemo(
     () => veRewards.reduce((sum, curr) => sum.plus(curr.totalUsd), new BigNumber(0)),

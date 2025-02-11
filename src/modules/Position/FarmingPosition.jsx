@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
@@ -24,6 +24,7 @@ import useWallet from '@/hooks/useWallet'
 import { getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
 import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
+import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { Bound } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon, RefreshIcon } from '@/svgs'
@@ -35,9 +36,10 @@ import RemoveManualModal from './RemoveManualModal'
 
 export function FarmingPosition({ position }) {
   const t = useTranslations()
-  const { chainId } = useWallet()
+  const { chainId, account } = useWallet()
   const pools = usePools()
   const { mutateManual } = useContext(ManualsContext)
+  const { addReward } = useFarmRewards()
 
   const [claimPopup, setClaimPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
@@ -142,6 +144,18 @@ export function FarmingPosition({ position }) {
     }),
     [farmRewardData, THE, WBNB],
   )
+
+  useEffect(() => {
+    const amount = fromWei(farmRewardData?.[0] ?? 0n)
+    if (amount.isZero()) return
+
+    addReward({
+      type: 'manual',
+      args: [account, poolKey, tokenId],
+      amount,
+      key: getKeyFromTokenAddress('manual', [asset0.address, asset1.address]),
+    })
+  }, [account, addReward, asset0.address, asset1.address, farmRewardData, poolKey, tokenId])
 
   const feesInUsd = useMemo(() => {
     let usdFee = new BigNumber(0)

@@ -102,20 +102,26 @@ export const useV3PoolsWithGauge = (isAlive = true) => {
   }, [isAlive, pools, weightedPools.length])
 }
 
+export const getStrategy = type => {
+  if (GAMMA_TYPES.includes(type)) {
+    return 'gamma'
+  }
+  if (ICHI_TYPES.includes(type)) {
+    return 'ichi'
+  }
+  if (type === PAIR_TYPES.CLASSIC) {
+    return 'classic'
+  }
+  if (type === PAIR_TYPES.STABLE) {
+    return 'stable'
+  }
+  return null
+}
+
 export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, version }) => {
   const { autoPoolsMigration } = useSelector(state => state.pools)
   if (version === 3) return null
-
-  let strategy = null
-  if (GAMMA_TYPES.includes(type)) {
-    strategy = 'gamma'
-  } else if (ICHI_TYPES.includes(type)) {
-    strategy = 'ichi'
-  } else if (type === PAIR_TYPES.CLASSIC) {
-    strategy = 'classic'
-  } else if (type === PAIR_TYPES.STABLE) {
-    strategy = 'stable'
-  }
+  const strategy = getStrategy(type)
 
   if (!strategy) return null
   return autoPoolsMigration[strategy].filter(

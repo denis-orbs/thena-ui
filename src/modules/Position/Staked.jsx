@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { GreenBadge } from '@/components/badges/Badge'
@@ -12,9 +12,10 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim, useGetGammaReward } from '@/hooks/fusion/useGamma'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
-import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
+import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
-import { useGetAutoPoolMigration } from '@/state/pools/hooks'
+import { getStrategy, useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
 import AddPositionModal from './AddPositionModal'
@@ -29,9 +30,36 @@ export default function Staked({ pool }) {
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
 
   const { rewardsData } = useGetGammaReward(pool)
+
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
   const { onGaugeHarvest } = useGaugeHarvest()
+  const { addReward } = useFarmRewards()
+
+  useEffect(() => {
+    if (!pool) return
+
+    const type = getStrategy(pool.title)
+    let args = null
+    let amount = ZERO_VALUE
+    if (type === 'classic' || type === 'stable') {
+      args = pool.gauge.address
+      amount = pool.account.gaugeEarned
+    } else if (type === 'gamma') {
+      args = pool.address
+      amount = rewardsData?.rewards?.[0]?.amount ?? ZERO_VALUE
+    } else if (type === 'ichi') {
+      // todo: ICHI
+    }
+    if (amount.isZero()) return
+    addReward({
+      type,
+      args,
+      amount,
+      version: pool.version,
+      key: getKeyFromTokenAddress(type, [pool.token0.address, pool.token1.address]),
+    })
+  }, [addReward, pool, rewardsData])
 
   const migrationOptions = useGetAutoPoolMigration({
     token0Address: pool.token0.address,
@@ -155,7 +183,7 @@ export default function Staked({ pool }) {
                 </div>
 
                 <div className={cn(!GAMMA_TYPES.includes(pool.title) && 'hidden')}>
-                  {(rewardsData.rewards || []).map(item => (
+                  {(rewardsData?.rewards || []).map(item => (
                     <p key={item.asset.symbol}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
                   ))}
                 </div>
