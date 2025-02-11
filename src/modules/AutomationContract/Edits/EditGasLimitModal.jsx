@@ -11,7 +11,7 @@ import { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
 function EditGasLimitModal({ contract, popup, setPopup }) {
   const { veTHEId } = contract
   const t = useTranslations()
-  const [gasLimit, setGasLimit] = useState(contract.gasLimit)
+  const [gasLimit, setGasLimit] = useState(contract.gasLimit || '')
   const { mutateAutomationData } = useAutomationContractDetail(veTHEId)
   const { onEditGasLimit, pending } = useEditGasLimit()
   return (
@@ -42,7 +42,7 @@ function EditGasLimitModal({ contract, popup, setPopup }) {
         </EmphasisButton>
         <PrimaryButton
           className='w-full'
-          disabled={pending}
+          disabled={pending || Number(gasLimit) < 500000}
           onClick={() => {
             onEditGasLimit(contract.address, gasLimit, () => {
               mutateAutomationData()

@@ -63,6 +63,7 @@ export default function MergeManage({ selected, isAutomation }) {
               setSelected={setVeTHE}
               placeHolder='Make a selection'
               isLocale={false}
+              listClassNames='z-[60]'
             />
           </div>
           <div className='flex flex-col gap-2'>

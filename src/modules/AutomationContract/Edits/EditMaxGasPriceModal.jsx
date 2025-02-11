@@ -31,7 +31,6 @@ function EditMaxGasPriceModal({ contract, popup, setPopup }) {
           <div className='flex flex-col gap-[11px]'>
             <TextHeading>{t('Max Gas')}</TextHeading>
             <Input val={maxGas} onChange={e => setMaxGas(Number(e.target.value))} />
-            {/* <ErrorMessage className='lg:p-4' message={t('Edit automation gas limit warning')} showIcon={false} /> */}
           </div>
         </div>
       </ModalBody>

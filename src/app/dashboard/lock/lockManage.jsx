@@ -219,7 +219,7 @@ export default function LockManage({ selected, theAsset, updateVeTHEs, isAutomat
         ) : (
           <PrimaryButton
             className='w-full'
-            disabled={increasePending}
+            disabled={increasePending || isAutomation}
             onClick={() => {
               if (errorMsg) {
                 warnToast(errorMsg, 'warn')
