@@ -127,7 +127,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0xfac2f9E2c03185d34982B99198765955b56b6933',
   },
   vaultDepositGuardV3Farming: {
-    [CHAIN_ID.BSC]: '0xC4c351a89ddE4b3D8F52d58E48CE2d1Ed1660BA9',
+    [CHAIN_ID.BSC]: '0x70cd54a6ab9fd7a816a707016b98d56305784395',
   },
   vaultDeployer: {
     [CHAIN_ID.BSC]: '0x05cC3CA6E768a68A7f86b09e3ceE754437bd5f12',
