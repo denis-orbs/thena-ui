@@ -251,6 +251,7 @@ export default function HoldingsPage() {
                 &nbsp;
                 <span>
                   <Link className='text-primary-600' href='/'>
+                    {/* TODO: Link */}
                     {t('Learn more')}
                   </Link>
                 </span>

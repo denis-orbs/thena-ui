@@ -521,6 +521,7 @@ export default function PoolsPage() {
             &nbsp;
             <span>
               <Link className='text-primary-600' href='/'>
+                {/* TODO: Link */}
                 {t('Learn more')}
               </Link>
             </span>

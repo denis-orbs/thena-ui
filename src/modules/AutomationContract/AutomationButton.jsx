@@ -69,11 +69,6 @@ function AutomationButton({ veTHE, isDetail = false }) {
         id: veTHEId,
         type: ACTION_AUTOMATION_TYPE.EDIT_GAS_LIMIT,
       },
-      [ACTION_AUTOMATION_TYPE.EDIT_MAX_GAS_PRICE]: {
-        label: 'Edit max gas price',
-        id: veTHEId,
-        type: ACTION_AUTOMATION_TYPE.EDIT_MAX_GAS_PRICE,
-      },
       [ACTION_AUTOMATION_TYPE.REGISTER_AUTOMATION]: {
         label: 'Register Automation',
         id: veTHEId,
@@ -106,44 +101,37 @@ function AutomationButton({ veTHE, isDetail = false }) {
       },
     }
 
-    if (status === AUTOMATION_STATUS.ACTIVE) {
-      return [
-        options[ACTION_AUTOMATION_TYPE.DEPOSIT_FUNDS],
-        options[ACTION_AUTOMATION_TYPE.EDIT_SETTINGS],
-        options[ACTION_AUTOMATION_TYPE.EDIT_EXECUTION_TIME],
-        options[ACTION_AUTOMATION_TYPE.EDIT_GAS_LIMIT],
-        options[ACTION_AUTOMATION_TYPE.EDIT_MAX_GAS_PRICE],
-        ...(isDetail ? [] : [options[ACTION_AUTOMATION_TYPE.DETAIL]]),
-        options[ACTION_AUTOMATION_TYPE.PAUSE],
-        options[ACTION_AUTOMATION_TYPE.CANCEL],
-      ].filter(Boolean)
+    const getActionsByStatus = {
+      [AUTOMATION_STATUS.ACTIVE]: [
+        ACTION_AUTOMATION_TYPE.DEPOSIT_FUNDS,
+        ACTION_AUTOMATION_TYPE.EDIT_SETTINGS,
+        ACTION_AUTOMATION_TYPE.EDIT_EXECUTION_TIME,
+        ACTION_AUTOMATION_TYPE.EDIT_GAS_LIMIT,
+        ...(isDetail ? [] : [ACTION_AUTOMATION_TYPE.DETAIL]),
+        ACTION_AUTOMATION_TYPE.PAUSE,
+        ACTION_AUTOMATION_TYPE.CANCEL,
+      ],
+      [AUTOMATION_STATUS.PENDING]: [
+        ACTION_AUTOMATION_TYPE.REGISTER_AUTOMATION,
+        ...(isDetail ? [] : [ACTION_AUTOMATION_TYPE.DETAIL]),
+      ],
+      [AUTOMATION_STATUS.PAUSED]: [
+        ACTION_AUTOMATION_TYPE.DEPOSIT_FUNDS,
+        ACTION_AUTOMATION_TYPE.EDIT_SETTINGS,
+        ACTION_AUTOMATION_TYPE.EDIT_EXECUTION_TIME,
+        ACTION_AUTOMATION_TYPE.EDIT_GAS_LIMIT,
+        ...(isDetail ? [] : [ACTION_AUTOMATION_TYPE.DETAIL]),
+        ACTION_AUTOMATION_TYPE.UNPAUSE,
+        ACTION_AUTOMATION_TYPE.CANCEL,
+      ],
+      [AUTOMATION_STATUS.CANCELED]: [
+        ACTION_AUTOMATION_TYPE.WITHDRAW_FUNDS,
+        ...(isDetail ? [] : [ACTION_AUTOMATION_TYPE.DETAIL]),
+      ],
     }
 
-    if (status === AUTOMATION_STATUS.PENDING) {
-      return [
-        options[ACTION_AUTOMATION_TYPE.REGISTER_AUTOMATION],
-        ...(isDetail ? [] : [options[ACTION_AUTOMATION_TYPE.DETAIL]]),
-      ].filter(Boolean)
-    }
-
-    if (status === AUTOMATION_STATUS.PAUSED) {
-      return [
-        options[ACTION_AUTOMATION_TYPE.DEPOSIT_FUNDS],
-        options[ACTION_AUTOMATION_TYPE.EDIT_SETTINGS],
-        options[ACTION_AUTOMATION_TYPE.EDIT_EXECUTION_TIME],
-        options[ACTION_AUTOMATION_TYPE.EDIT_GAS_LIMIT],
-        options[ACTION_AUTOMATION_TYPE.EDIT_MAX_GAS_PRICE],
-        ...(isDetail ? [] : [options[ACTION_AUTOMATION_TYPE.DETAIL]]),
-        options[ACTION_AUTOMATION_TYPE.UNPAUSE],
-        options[ACTION_AUTOMATION_TYPE.CANCEL],
-      ].filter(Boolean)
-    }
-    if (status === AUTOMATION_STATUS.CANCELED) {
-      return [
-        options[ACTION_AUTOMATION_TYPE.WITHDRAW_FUNDS],
-        ...(isDetail ? [] : [options[ACTION_AUTOMATION_TYPE.DETAIL]]),
-      ].filter(Boolean)
-    }
+    const statusActions = getActionsByStatus[status] || []
+    return statusActions.map(actionType => options[actionType])
   }, [isDetail, status, veTHEId])
 
   const onClickAddAutomation = useCallback(() => {

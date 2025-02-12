@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React, { useMemo, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
@@ -34,7 +35,13 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
         message: (
           <>
             {t('Warning automation underfunded')}{' '}
-            <span className='cursor-pointer text-primary-600'>{t('Learn more')}</span>
+            <Link
+              className='text-primary-600'
+              href='https://docs.chain.link/chainlink-automation/overview/automation-economics'
+              target='_blank'
+            >
+              {t('Learn more')}
+            </Link>
           </>
         ),
         btnText: t('Fund Contract'),

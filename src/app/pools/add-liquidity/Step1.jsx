@@ -255,6 +255,7 @@ export default function Step1({ nextStep, setPoolSelected, setIsAdd }) {
           <TextSubHeading className='text-sm lg:text-base'>{t('Add liquidity sub')}</TextSubHeading>
           <span>
             <TextButton onClick={toggleDrawer} className='text-sm text-primary-600 hover:bg-transparent lg:text-base'>
+              {/* TODO: Link */}
               {t('Learn more')}
             </TextButton>
           </span>

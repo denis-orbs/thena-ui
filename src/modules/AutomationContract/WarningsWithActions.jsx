@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
@@ -60,7 +61,13 @@ function WarningUnderfundedItem({ data, mutateStatusAndBalanceMultiple = () => {
           <InfoIcon className='h-5 w-5 !stroke-primary-600' />
           <TextHeading className='text-neutral-100'>
             {t('Warning underfunded Automation [veTheId]', { veTheId: data.id })}{' '}
-            <span className='text-primary-600'>{t('Learn more')}</span>
+            <Link
+              className='text-primary-600'
+              href='https://docs.chain.link/chainlink-automation/overview/automation-economics'
+              target='_blank'
+            >
+              {t('Learn more')}
+            </Link>
           </TextHeading>
         </div>
         <PrimaryButton onClick={() => setDepositFundsPopup(true)} className='w-fit'>
