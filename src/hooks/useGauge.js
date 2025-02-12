@@ -13,7 +13,6 @@ import {
   getGammaHyperVisorContract,
   getGaugeContract,
   getMultiFeeDistributionContract,
-  getVoterContract,
 } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
 import { useFarmRewards } from '@/state/farmReward/store'
@@ -180,21 +179,12 @@ export const useGuageAllHarvset = () => {
 
   const onGaugeAllHarvest = useCallback(async () => {
     const key = uuidv4()
-    const harvestOldGaugeId = uuidv4()
     const harvestNewGaugeId = uuidv4()
     const claimFarmId = uuidv4()
 
-    const { oldGauge, newGauge, manual, gamma } = rewards
+    const { newGauge, manual, gamma } = rewards
 
     const transactions = {}
-    if (oldGauge.size > 0) {
-      transactions[harvestOldGaugeId] = {
-        desc: `${t('Harvest Rewards')} V2`,
-        status: TXN_STATUS.START,
-        hash: null,
-      }
-    }
-
     if (newGauge.size > 0) {
       transactions[harvestNewGaugeId] = {
         desc: `${t('Harvest Rewards')} Classics/stable pools`,
@@ -223,16 +213,6 @@ export const useGuageAllHarvset = () => {
 
     setPending(true)
     startTxn({ key, title: 'Harvest Rewards', transactions })
-
-    if (oldGauge.size > 0) {
-      const params = []
-      oldGauge.forEach(pair => params.push(pair.args))
-      const voterContract = getVoterContract(chainId, 2)
-      if (!(await writeTxn(key, harvestOldGaugeId, voterContract, 'claimRewards', [params]))) {
-        setPending(false)
-        return
-      }
-    }
 
     if (newGauge.size > 0) {
       const params = []

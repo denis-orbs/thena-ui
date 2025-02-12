@@ -37,7 +37,7 @@ export default function Staked({ pool }) {
   const { addReward } = useFarmRewards()
 
   useEffect(() => {
-    if (!pool) return
+    if (!pool || pool.version === 2) return
 
     const type = getStrategy(pool.title)
     let args = null

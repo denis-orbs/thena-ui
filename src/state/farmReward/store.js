@@ -15,15 +15,13 @@ export const useFarmRewards = create()(set => ({
    * @param {string} position.type - The reward type: ichi | gamma | manual | classic | stable
    * @param {string} position.key - The reward key
    * @param {number} position.amount - The reward  amount
-   * @param {string} position.version - 2 | 3
    * @param {string} position.args - The reward args used to call smart contract
    */
   addReward: position =>
     set(state => {
       let { type } = position
-      const { key, version } = position
-      if (version === 2) type = 'oldGauge'
-      else if (type === 'classic' || type === 'stable') type = 'newGauge'
+      const { key } = position
+      if (type === 'classic' || type === 'stable') type = 'newGauge'
 
       delete position.type
       delete position.key
