@@ -176,7 +176,7 @@ export default function NotStaked({ pool }) {
       <div className='mt-auto flex w-full gap-3'>
         {!migrationOptions && (
           <PrimaryButton className='w-full' onClick={() => setPopup(true)}>
-            {t('Earn $THE')}
+            {t('Stake')}
           </PrimaryButton>
         )}
 

@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
 import AddLiquidityWeightedModal from '@/app/pools/AddLiquidityWeightedModal'
@@ -17,7 +17,8 @@ import {
   useGaugeUnstakeWeighted,
   usePositionData,
 } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, isInvalidAmount } from '@/lib/utils'
+import { formatAmount, isInvalidAmount, ZERO_VALUE } from '@/lib/utils'
+import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { InfoIcon } from '@/svgs'
 
 import GaugeWeightedManageModal from './GaugeWeightedManageModal'
@@ -64,6 +65,22 @@ export function WeightedPoolPosition({ pool, isStake }) {
 
     return weights
   }, [depositValue.tokens])
+
+  const { addReward } = useFarmRewards()
+  useEffect(() => {
+    const amount = claimableFee?.total ?? ZERO_VALUE
+    if (!isStake || amount.eq(0)) return
+
+    addReward({
+      amount,
+      type: 'weighted',
+      args: pool.gauge.address,
+      key: getKeyFromTokenAddress(
+        'weight',
+        pool.tokens.map(tk => tk.address),
+      ),
+    })
+  }, [addReward, claimableFee?.total, isStake, pool])
 
   return (
     <div className='flex h-full flex-col justify-between rounded-xl bg-neutral-900 p-4'>
@@ -158,6 +175,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
           </div>
         </div>
       </div>
+
       {isStake ? (
         <div className='mt-4 flex w-full gap-3'>
           <TextButton disabled={unstakePending} className='w-full' onClick={() => setPopupStake(true)}>
@@ -203,6 +221,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
           </EmphasisButton>
         </div>
       )}
+
       <RemoveWeightedModal isOpen={isOpenRemove} pool={pool} setIsOpen={setIsOpenRemove} />
       <AddLiquidityWeightedModal isOpen={isOpenAdd} pool={pool} setIsOpen={setIsOpenAdd} isStake={isStake} />
       <ManageWeightedPositionModal popup={managePopup} setPopup={setManagePopup} pool={pool} />

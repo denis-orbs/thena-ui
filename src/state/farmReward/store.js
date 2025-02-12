@@ -21,7 +21,7 @@ export const useFarmRewards = create()(set => ({
     set(state => {
       let { type } = position
       const { key } = position
-      if (type === 'classic' || type === 'stable') type = 'newGauge'
+      if (type === 'classic' || type === 'stable' || type === 'weighted') type = 'newGauge'
 
       delete position.type
       delete position.key
