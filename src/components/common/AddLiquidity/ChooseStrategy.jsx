@@ -7,15 +7,14 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
-import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import Highlight from '@/components/highlight'
-import Selector from '@/components/selector'
-import Skeleton from '@/components/skeleton'
-import Tabs from '@/components/tabs'
-import CustomTooltip from '@/components/tooltip'
+import IconGroup from '@/components/icongroup'
+import CircleImage from '@/components/image/CircleImage'
+import Selection from '@/components/selection'
+import SelectorGrid from '@/components/selector/SelectorGrid'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
@@ -29,9 +28,7 @@ import {
   unwrappedSymbol,
   wrappedAddress,
 } from '@/lib/utils'
-import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
-import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
-import PoolChart from '@/modules/SwapChart/PoolChart'
+import { DEFAULT_LOCALE } from '@/modules/Pools/LiquidityChartRangeInput'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -40,7 +37,6 @@ import { InfoCircleWhite } from '@/svgs'
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from './FusionAdd/GammaAdd'
 import LiquidityChartRangeInput from './FusionAdd/LiquidityChartRangeInput'
-import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const feeAmount = 3000
 
@@ -90,6 +86,20 @@ const defaultSwapFees = {
   },
 }
 
+// Used to format floats representing percent change with fixed decimal places
+// FIXME: edit this function
+function formatDelta(delta, locale = DEFAULT_LOCALE) {
+  if (delta === null || delta === undefined || delta === Infinity || isNaN(delta)) {
+    return '-'
+  }
+
+  return `${Number(Math.abs(delta).toFixed(2)).toLocaleString(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: false,
+  })}%`
+}
+
 const fetchIchiInfo = async (chainId, strategy) => {
   const values = await callMulti([
     {
@@ -137,7 +147,7 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   return preset
 }
 
-export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isReverse, isAdd, isModal }) {
+export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAdd, isModal }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const { strategy } = useV3MintState()
@@ -145,7 +155,8 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
 
-  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
+  const [isAutomatic, setIsAutomatic] = useState(true)
+
   const pair = useMemo(() => {
     const found = (pairs ?? []).find(
       ele =>
@@ -172,25 +183,25 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   const quoteCurrency = useCurrency(secondAsset?.address)
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
 
-  const {
-    data: pairPrices = [],
-    isLoading,
-    error,
-  } = useFetchPairPrices({
-    token0Address: wrappedAddress(pair?.token0),
-    token1Address: wrappedAddress(pair?.token1),
-    timeWindow,
-  })
+  // const {
+  //   data: pairPrices = [],
+  //   isLoading,
+  //   error,
+  // } = useFetchPairPrices({
+  //   token0Address: wrappedAddress(pair?.token0),
+  //   token1Address: wrappedAddress(pair?.token1),
+  //   timeWindow: PairDataTimeWindow.YEAR,
+  // })
 
-  const minValue = useMemo(
-    () => pairPrices.reduce((min, current) => (current.value < min.value ? current : min), pairPrices[0]),
-    [pairPrices],
-  )
+  // const minValue = useMemo(
+  //   () => pairPrices.reduce((min, current) => (current.value < min.value ? current : min), pairPrices[0]),
+  //   [pairPrices],
+  // )
 
-  const maxValue = useMemo(
-    () => pairPrices.reduce((max, current) => (current.value > max.value ? current : max), pairPrices[0]),
-    [pairPrices],
-  )
+  // const maxValue = useMemo(
+  //   () => pairPrices.reduce((max, current) => (current.value > max.value ? current : max), pairPrices[0]),
+  //   [pairPrices],
+  // )
 
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
@@ -216,6 +227,20 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
 
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   // const isSorted = baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped)
+
+  const brushLabelValue = useCallback(
+    (d, x) => {
+      if (!price) return ''
+
+      if (d === 'w' && mintInfo.ticksAtLimit?.[Bound.UPPER]) return '0'
+      if (d === 'e' && mintInfo.ticksAtLimit?.[Bound.LOWER]) return '∞'
+
+      const percent = (x < price ? -1 : 1) * ((Math.max(x, price) - Math.min(x, price)) / price) * 100
+
+      return price ? `${(Math.sign(percent) < 0 ? '-' : '') + formatDelta(percent)}` : ''
+    },
+    [price, mintInfo.ticksAtLimit],
+  )
 
   useEffect(() => {
     if (!price) return
@@ -245,14 +270,9 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
   )
 
   const strategyData = useMemo(() => {
-    const autoStrategy = (pair?.subpools && pair.subpools.length > 0 ? pair.subpools : [defaultSwapFees]).map(sub => {
-      let isFarming = false
-      const isAutomatic = !MANUAL_TYPES.includes(sub.title)
-      if (sub.title.includes('Farming')) {
-        isFarming = true
-      }
-
-      return {
+    const autoStrategy = (pair?.subpools && pair.subpools.length > 0 ? pair.subpools : [defaultSwapFees])
+      .filter(item => !MANUAL_TYPES.includes(item.title))
+      .map(sub => ({
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
@@ -260,34 +280,36 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
 
               <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('APR')}:</TextHeading>
-                  <Paragraph className='text-sm'>{formatAmount(sub.gauge.apr)}%</Paragraph>
-                </div>
-                <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
                   <Paragraph className='text-sm'>${formatAmount(sub.tvl)}</Paragraph>
-                </div>
-                <div className='flex items-center gap-1'>
-                  <TextHeading className='text-sm'>{t('Rewards')}:</TextHeading>
-                  <Paragraph className='text-sm'>
-                    {isFarming ? 'THE' : isAutomatic ? 'Auto Compound' : sub?.symbol?.replace('/', ', ')}
-                  </Paragraph>
                 </div>
               </div>
             </div>
 
+            <TextHeading className='font-archia text-xl font-semibold text-primary-600'>
+              {formatAmount(sub.gauge.apr)}%
+            </TextHeading>
+
             <div className='flex flex-wrap justify-end gap-2'>
               {ICHI_TYPES.includes(sub.title) && (
-                <PrimaryBadge>
-                  {sub.allowed.symbol} {t('Deposit')}
-                </PrimaryBadge>
+                <div className='flex flex-col items-center gap-1'>
+                  <CircleImage alt={sub.title} className='h-8 w-8' src={sub.allowed.logoURI} />
+                  <Paragraph className='text-sm'>{t('Deposit')}</Paragraph>
+                </div>
               )}
-
-              <NeutralBadge>
-                <p data-tooltip-id={`${isAutomatic ? 'auto' : 'manual'}-${isFarming ? 'farm' : 'fee'}-tooltip`}>
-                  {isFarming ? 'Farm Strategy' : 'Fee Strategy'}
-                </p>
-              </NeutralBadge>
+              {NARROW_TYPES.includes(sub.title) && (
+                <div className='flex flex-col items-center gap-1'>
+                  <IconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'outline-2 w-7 h-7',
+                    }}
+                    logo1={sub.token0.logoURI}
+                    logo2={sub.token1.logoURI}
+                  />
+                  <Paragraph className='text-sm'>{t('Deposit')}</Paragraph>
+                </div>
+              )}
             </div>
           </div>
         ),
@@ -305,139 +327,153 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
               ...sub?.token0,
               reserve: sub?.token0?.reserve?.toNumber(),
               balance: sub?.token0?.balance?.toNumber(),
-              totalValue: sub?.token0?.totalValue,
+              totalValue: sub?.token0?.totalValue?.toNumber(),
             },
             token1: {
               ...sub?.token1,
               reserve: sub?.token1?.reserve?.toNumber(),
               balance: sub?.token1?.balance?.toNumber(),
-              totalValue: sub?.token1?.totalValue,
+              totalValue: sub?.token1?.totalValue?.toNumber(),
             },
             address: sub.address,
-            isAutomatic,
-            isFarming,
+            isAutomatic: true,
             version: 3,
             fee: sub?.fee,
           })
         },
-      }
-    })
+      }))
 
     return autoStrategy
   }, [pair?.subpools, t, strategy?.address, setStrategy])
 
-  const periods = useMemo(
+  const strategyType = useMemo(
     () => [
       {
-        label: '24H',
-        active: timeWindow === PairDataTimeWindow.DAY,
+        label: t('Manual'),
+        active: !isAutomatic,
         onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.DAY)
+          setIsAutomatic(false)
         },
       },
       {
-        label: '1W',
-        active: timeWindow === PairDataTimeWindow.WEEK,
+        label: t('Automated'),
+        active: isAutomatic,
         onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.WEEK)
-        },
-      },
-      {
-        label: '1M',
-        active: timeWindow === PairDataTimeWindow.MONTH,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.MONTH)
-        },
-      },
-      {
-        label: '1Y',
-        active: timeWindow === PairDataTimeWindow.YEAR,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.YEAR)
+          setIsAutomatic(true)
         },
       },
     ],
-    [timeWindow],
+    [isAutomatic, t],
   )
 
   return (
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
-        <div className='flex flex-col gap-5'>
-          <div className='flex flex-col gap-5'>
-            <div className='flex flex-col gap-3'>
-              {strategyData ? (
-                <>
-                  <Selector data={strategyData} selected={strategy} setSelected={setStrategy} />
-
-                  {/* Tooltips for Strategies */}
-                  <CustomTooltip
-                    className='z-50 max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
-                    id='auto-fee-tooltip'
-                  >
-                    {t('Auto Compound tooltip')}
-                  </CustomTooltip>
-                  <CustomTooltip
-                    className='z-50 max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
-                    id='auto-farm-tooltip'
-                  >
-                    {t('Auto Farming tooltip')}
-                  </CustomTooltip>
-                  <CustomTooltip
-                    className='z-50 max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
-                    id='manual-fee-tooltip'
-                  >
-                    {t('Manual Fee tooltip')}
-                  </CustomTooltip>
-                  <CustomTooltip
-                    className='z-50 max-w-[320px] !bg-neutral-500 shadow-xl after:!bg-neutral-500'
-                    id='manual-farm-tooltip'
-                  >
-                    {t('Manual Farming tooltip')}
-                  </CustomTooltip>
-                </>
-              ) : (
-                <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[60px]'>
-                  <Highlight>
-                    <InfoCircleWhite className='h-4 w-4' />
-                  </Highlight>
-                  <div className='flex flex-col items-center gap-3'>
-                    <h2>{t('No strategy found')}</h2>
-                  </div>
+        <div className='flex flex-col gap-5 lg:flex-row'>
+          <div className='flex flex-col gap-3 lg:flex-[6]'>
+            <div className='flex flex-row items-center justify-between'>
+              <div className='flex flex-row items-center justify-between gap-2'>
+                <TextHeading className='font-archia text-3xl font-semibold text-neutral-50'>
+                  {t('Automated Strategies')}
+                </TextHeading>
+                <div className='flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-700'>
+                  <InfoCircleWhite className='h-5 w-5 stroke-neutral-400' />
                 </div>
-              )}
+              </div>
+              <Selection data={strategyType} isTranslation={false} />
             </div>
-
+            {strategyData ? (
+              <SelectorGrid data={strategyData} selected={strategy} setSelected={setStrategy} />
+            ) : (
+              <div className='flex w-full flex-col items-center justify-center gap-4 px-6 py-[60px]'>
+                <Highlight>
+                  <InfoCircleWhite className='h-4 w-4 stroke-neutral-400' />
+                </Highlight>
+                <div className='flex flex-col items-center gap-3'>
+                  <h2>{t('No strategy found')}</h2>
+                </div>
+              </div>
+            )}
             {strategy && strategy.isAutomatic && (
-              <>
-                {!mintInfo.noLiquidity && strategyData && (
-                  <>
-                    <div className='-mb-2 flex items-center justify-center'>
-                      <TextHeading className='text-sm'>
-                        {t('Current Price: [price] [symbolA] [symbolB]', {
-                          price: currentPrice,
-                          symbolA: unwrappedSymbol(quoteCurrency),
-                          symbolB: unwrappedSymbol(baseCurrency),
-                        })}
-                      </TextHeading>
+              <div className='grid grid-cols-1 gap-2 lg:grid-cols-2'>
+                <div className='flex flex-col gap-2'>
+                  <Paragraph>
+                    {t('Min [symbol0] per [symbol1] price', {
+                      symbol0: strategy?.token0.symbol,
+                      symbol1: strategy?.token1.symbol,
+                    })}
+                  </Paragraph>
+                  <Box className='space-y-3 border border-neutral-700 bg-transparent'>
+                    <Paragraph className='text-xl text-neutral-400'>{formatAmount(0)}</Paragraph>
+                    <div className='flex flex-row items-center justify-between'>
+                      <Paragraph className='text-[10px]'>
+                        {strategy.token0.symbol} = {priceLower ? priceLower.toSignificant(5) : 0}{' '}
+                        {strategy.token1.symbol}
+                      </Paragraph>
+                      <Paragraph className='text-[10px]'>{brushLabelValue('w', [0])}</Paragraph>
                     </div>
-                    <LiquidityChartRangeInput
-                      currencyA={baseCurrency ?? undefined}
-                      currencyB={quoteCurrency ?? undefined}
-                      feeAmount={mintInfo.dynamicFee}
-                      ticksAtLimit={mintInfo.ticksAtLimit}
-                      price={price ? parseFloat(price) : undefined}
-                      priceLower={priceLower}
-                      priceUpper={priceUpper}
-                      onLeftRangeInput={onLeftRangeInput}
-                      onRightRangeInput={onRightRangeInput}
-                      interactive={false}
-                      handleShow={!!strategy}
-                    />
-                  </>
-                )}
+                  </Box>
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <Paragraph>
+                    {t('Max [symbol0] per [symbol1] price', {
+                      symbol0: strategy?.token0.symbol,
+                      symbol1: strategy?.token1.symbol,
+                    })}
+                  </Paragraph>
+                  <Box className='space-y-3 border border-neutral-700 bg-transparent'>
+                    <Paragraph className='text-xl text-neutral-400'>{formatAmount(0)}</Paragraph>
+                    <div className='flex flex-row items-center justify-between'>
+                      <Paragraph className='text-[10px]'>
+                        {strategy.token0.symbol} = {priceUpper ? priceUpper.toSignificant(5) : 0}{' '}
+                        {strategy.token1.symbol}
+                      </Paragraph>
+                      <Paragraph className='text-[10px]'>{brushLabelValue('e', [1])}</Paragraph>
+                    </div>
+                  </Box>
+                </div>
+              </div>
+            )}
+          </div>
 
-                <Box className={cn('hidden', priceLower && priceUpper && 'block')}>
+          {strategy && strategy.isAutomatic && (
+            <div className='hidden flex-[4] flex-col gap-5 lg:flex'>
+              <Box className='flex flex-row items-center justify-between rounded-xl bg-neutral-800'>
+                <TextHeading className='font-archia text-3xl font-semibold text-neutral-50'>
+                  {t('Pool Attributes')}
+                </TextHeading>
+                <div className='flex h-11 w-11 items-center justify-center rounded-lg bg-neutral-600'>
+                  <InfoCircleWhite className='h-5 w-5 stroke-neutral-400' />
+                </div>
+              </Box>
+              {!mintInfo.noLiquidity && strategyData && (
+                <>
+                  <div className='-mb-2 flex items-center justify-center'>
+                    <TextHeading className='text-sm'>
+                      {t('Current Price: [price] [symbolA] [symbolB]', {
+                        price: currentPrice,
+                        symbolA: unwrappedSymbol(quoteCurrency),
+                        symbolB: unwrappedSymbol(baseCurrency),
+                      })}
+                    </TextHeading>
+                  </div>
+                  <LiquidityChartRangeInput
+                    currencyA={baseCurrency ?? undefined}
+                    currencyB={quoteCurrency ?? undefined}
+                    feeAmount={mintInfo.dynamicFee}
+                    ticksAtLimit={mintInfo.ticksAtLimit}
+                    price={price ? parseFloat(price) : undefined}
+                    priceLower={priceLower}
+                    priceUpper={priceUpper}
+                    onLeftRangeInput={onLeftRangeInput}
+                    onRightRangeInput={onRightRangeInput}
+                    interactive={false}
+                    handleShow={!!strategy}
+                  />
+                </>
+              )}
+
+              {/* <Box className={cn('hidden', priceLower && priceUpper && 'block')}>
                   <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
                     <h6 className='font-bold'>Historical price</h6>
                     <Tabs data={periods} />
@@ -458,19 +494,18 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                       )}
                     </div>
                   )}
-                </Box>
-              </>
-            )}
+                </Box> */}
+            </div>
+          )}
 
-            {strategy && !strategy.isAutomatic && (
+          {/* {strategy && !strategy.isAutomatic && (
               <ManualStrategy
                 firstAsset={firstAsset}
                 secondAsset={secondAsset}
                 isReverse={isReverse}
                 strategy={strategy}
               />
-            )}
-          </div>
+            )} */}
         </div>
       </div>
     </>

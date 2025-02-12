@@ -23,6 +23,7 @@ export function TokenAmountCard({
   locked = false,
   liquidityRangeType = FusionRangeType.MANUAL_RANGE,
   title,
+  showPercent = true,
 }) {
   const { networkId } = useChainSettings()
   const bnb = useCurrency('BNB')
@@ -90,7 +91,7 @@ export function TokenAmountCard({
         <div className='flex flex-col gap-2'>
           <div className='flex items-center justify-between'>
             <p className='font-medium text-white'>{t(title)}</p>
-            <Tabs data={percents} />
+            {showPercent && <Tabs data={percents} />}
           </div>
           <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
             <div className='flex items-center justify-between gap-2'>

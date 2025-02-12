@@ -9,7 +9,7 @@ import AddLiquidityClPool from './ClPool'
 
 export default function Step2({ pool, setStep, isAdd, showSidebar = true }) {
   const searchParams = useSearchParams()
-  const pairType = searchParams.get('pairType') ?? pool.type
+  const pairType = searchParams.get('pairType') ?? pool?.type
 
   return (
     <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>

@@ -1447,5 +1447,11 @@
   "Current LINK balance": "Current LINK balance",
   "Minimum LINK balance required": "Minimum LINK balance required",
   "Warrning widraw fund automation": "Withdrawals can only be made after a 50-block (3 minutes) cancellation delay. Please wait for the automation to be fully canceled before proceeding",
-  "No History Found": "No History Found"
+  "No History Found": "No History Found",
+  "Max [symbol0] per [symbol1] price": "Max {symbol0} per {symbol1} price",
+  "Min [symbol0] per [symbol1] price": "Min {symbol0} per {symbol1} price",
+  "Automated Strategies": "Automated Strategies",
+  "Liquidity Pool Type": "Liquidity Pool Type",
+  "Chose Liquidity Type": "Chose Liquidity Type",
+  "Add Concentrated Liquidity": "Add Concentrated Liquidity"
 }

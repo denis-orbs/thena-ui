@@ -7,12 +7,11 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import BalanceInput from '@/components/input/BalanceInput'
-import { Paragraph, TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 
@@ -78,8 +77,9 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
             maxBalance={isDouble ? balance : null}
             amount={amount}
             onAmountChange={setAmount}
+            showPercent={false}
           />
-          <div className='flex flex-col gap-4'>
+          {/* <div className='flex flex-col gap-4'>
             <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center justify-between'>
@@ -108,7 +108,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
                 <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <div

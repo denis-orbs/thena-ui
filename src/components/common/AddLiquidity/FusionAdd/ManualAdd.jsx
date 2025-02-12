@@ -6,13 +6,12 @@ import { useCallback, useMemo } from 'react'
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph } from '@/components/typography'
 import { MANUAL_TYPES } from '@/constant'
 import { useAlgebraAdd } from '@/hooks/fusion/useAlgebra'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
-import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { Bound, Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
@@ -76,7 +75,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
         </div>
       </div>
 
-      <div className='mt-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+      {/* <div className='mt-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
         <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
         <div className='flex flex-col gap-3'>
           <div className='flex items-center justify-between'>
@@ -102,7 +101,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
             <Paragraph>{formatAmount(strategy?.account?.totalLp)} LP</Paragraph>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {account ? (
         <PrimaryButton

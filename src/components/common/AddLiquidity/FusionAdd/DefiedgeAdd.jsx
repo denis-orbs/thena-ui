@@ -9,7 +9,6 @@ import { zeroAddress } from 'viem'
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Spinner from '@/components/spinner'
-import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
@@ -19,7 +18,7 @@ import { readCall, simulateCall } from '@/lib/contractActions'
 import { getDefiedgeStrategyContract } from '@/lib/contracts'
 import { maxAmountSpend, tryParseAmount } from '@/lib/fusion'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, fromWei, unwrappedSymbol } from '@/lib/utils'
+import { cn, fromWei } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import { Field } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo } from '@/state/fusion/hooks'
@@ -205,6 +204,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
                     maxAmount={maxAmounts[Field.CURRENCY_A]}
                     liquidityRangeType={FusionRangeType.DEFIEDGE_RANGE}
                     title={`${t('Asset')} 1`}
+                    showPercent={false}
                   />
                   <TokenAmountCard
                     currency={quoteCurrency}
@@ -213,6 +213,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
                     maxAmount={maxAmounts[Field.CURRENCY_B]}
                     liquidityRangeType={FusionRangeType.DEFIEDGE_RANGE}
                     title={`${t('Asset')} 2`}
+                    showPercent={false}
                   />
                 </div>
               ) : (
@@ -221,7 +222,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
             ) : (
               <Spinner />
             )}
-            <div className='mt-5 flex flex-col gap-4'>
+            {/* <div className='mt-5 flex flex-col gap-4'>
               <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
               <div className='flex flex-col gap-3'>
                 <div className='flex items-center justify-between'>
@@ -250,7 +251,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
                   <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

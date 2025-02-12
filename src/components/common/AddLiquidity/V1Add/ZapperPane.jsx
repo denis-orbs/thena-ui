@@ -8,15 +8,14 @@ import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import TokenInput from '@/components/input/TokenInput'
 import Spinner from '@/components/spinner'
-import Tabs from '@/components/tabs'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
 import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
 import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
-import { cn, formatAmount, fromWei, isInvalidAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn, fromWei, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 const getZapAddress = (strategy, chainId) => {
@@ -113,33 +112,33 @@ export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
     }
   }
 
-  const percents = useMemo(
-    () => [
-      {
-        label: '10%',
-        onClickHandler: () => setAmount(tokenDeposit?.balance.times(0.1).toString(10)),
-      },
-      {
-        label: '25%',
-        onClickHandler: () => setAmount(tokenDeposit?.balance.times(0.25).toString(10)),
-      },
-      {
-        label: '50%',
-        onClickHandler: () => setAmount(tokenDeposit?.balance.times(0.5).toString(10)),
-      },
-      {
-        label: 'Max',
-        onClickHandler: () => setAmount(tokenDeposit?.balance.toString(10)),
-      },
-    ],
-    [tokenDeposit?.balance, setAmount],
-  )
+  // const percents = useMemo(
+  //   () => [
+  //     {
+  //       label: '10%',
+  //       onClickHandler: () => setAmount(tokenDeposit?.balance.times(0.1).toString(10)),
+  //     },
+  //     {
+  //       label: '25%',
+  //       onClickHandler: () => setAmount(tokenDeposit?.balance.times(0.25).toString(10)),
+  //     },
+  //     {
+  //       label: '50%',
+  //       onClickHandler: () => setAmount(tokenDeposit?.balance.times(0.5).toString(10)),
+  //     },
+  //     {
+  //       label: 'Max',
+  //       onClickHandler: () => setAmount(tokenDeposit?.balance.toString(10)),
+  //     },
+  //   ],
+  //   [tokenDeposit?.balance, setAmount],
+  // )
 
   return (
     <div className='flex flex-col gap-2'>
-      <div className='flex flex-row justify-between'>
+      {/* <div className='flex flex-row justify-between'>
         <TextHeading>{t('Deposit Token')}</TextHeading> <Tabs data={percents} />
-      </div>
+      </div> */}
 
       <div className='relative flex w-full flex-col gap-2'>
         <TokenInput
@@ -155,7 +154,7 @@ export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
 
       {strategy && (
         <>
-          <div className='flex flex-col gap-4'>
+          {/* <div className='flex flex-col gap-4'>
             <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center justify-between'>
@@ -184,7 +183,7 @@ export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
                 <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <Box
             className={cn(

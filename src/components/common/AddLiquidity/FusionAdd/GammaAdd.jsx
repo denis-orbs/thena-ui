@@ -9,7 +9,6 @@ import { JSBI, WBNB } from 'thena-sdk-core'
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Selection from '@/components/selection'
-import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { gammaHypervisorAbi } from '@/constant/abi/fusion'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
@@ -17,7 +16,7 @@ import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useAddGamma } from '@/hooks/fusion/useGamma'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
@@ -174,7 +173,7 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy }) {
       <div className='flex flex-col'>
         <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
 
-        <div className='mt-5 flex flex-col gap-4'>
+        {/* <div className='mt-5 flex flex-col gap-4'>
           <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between'>
@@ -203,7 +202,7 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy }) {
               <Paragraph>{formatAmount(strategy?.account?.gaugeBalance)} LP</Paragraph>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>

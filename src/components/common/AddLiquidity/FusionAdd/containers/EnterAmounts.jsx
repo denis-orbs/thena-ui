@@ -1,4 +1,3 @@
-import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import { maxAmountSpend } from '@/lib/fusion'
@@ -10,7 +9,6 @@ import { TokenAmountCard } from './TokenAmountCard'
 export function EnterAmounts({ currencyA, currencyB, mintInfo }) {
   const { independentField, typedValue, liquidityRangeType } = useV3MintState()
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
-  const t = useTranslations()
 
   // get formatted amounts
   const formattedAmounts = useMemo(
@@ -35,7 +33,7 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo }) {
   )
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 lg:flex-row'>
       <TokenAmountCard
         currency={currencyA}
         value={formattedAmounts[Field.CURRENCY_A]}
@@ -43,7 +41,7 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo }) {
         maxAmount={maxAmounts[Field.CURRENCY_A]}
         locked={mintInfo.depositADisabled}
         liquidityRangeType={liquidityRangeType}
-        title={`${t('Asset')} 1`}
+        showPercent={false}
       />
       <TokenAmountCard
         currency={currencyB}
@@ -52,7 +50,7 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo }) {
         maxAmount={maxAmounts[Field.CURRENCY_B]}
         locked={mintInfo.depositBDisabled}
         liquidityRangeType={liquidityRangeType}
-        title={`${t('Asset')} 2`}
+        showPercent={false}
       />
     </div>
   )

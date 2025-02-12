@@ -16,7 +16,7 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import { ArrowRightIcon, InfoIcon } from '@/svgs'
 
@@ -157,7 +157,7 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
           </CustomTooltip>
         </div>
 
-        <div className='mt-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+        {/* <div className='mt-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
           <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between'>
@@ -183,7 +183,7 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
               <Paragraph>{formatAmount(strategy?.account?.totalLp)} LP</Paragraph>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {account ? (

@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
+import { TextIconButton } from '@/components/buttons/IconButton'
 import { Collapse } from '@/components/collapse'
 import IconGroup from '@/components/icongroup'
 import NextImage from '@/components/image/NextImage'
@@ -12,7 +13,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { InfoIcon } from '@/svgs'
+import { AnalyticsIcon, InfoIcon } from '@/svgs'
 
 function Title({ title, length }) {
   return (
@@ -22,7 +23,7 @@ function Title({ title, length }) {
   )
 }
 
-function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
+function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaultShow = false }) {
   const t = useTranslations()
   const [sort, setSort] = useState(sortOptions[1])
   const newSortOptions = useMemo(() => [...sortOptions], [sortOptions])
@@ -291,9 +292,27 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
       volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,
       fee: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayFees)}</Paragraph>,
       action: (
-        <EmphasisButton className='w-full lg:w-fit' onClick={() => push(`/pools/${pool.address}`)}>
-          {t('Manage')}
-        </EmphasisButton>
+        <div className='flex gap-4'>
+          <TextIconButton
+            className='h-11 w-11 border-[1px] border-neutral-600'
+            Icon={AnalyticsIcon}
+            onClick={() => push(`/analytics/pairs/${pool?.address}`)}
+            data-tooltip-id='analytics-tooltip'
+          />
+          <EmphasisButton
+            className='w-full p-3  lg:w-fit'
+            onClick={
+              () =>
+                push(
+                  // eslint-disable-next-line max-len
+                  `/pools/add-liquidity/?firstAddress=${pool.token0.address}&secondAddress=${pool.token1.address}&pairType=${pool.type}&step=2`,
+                )
+              // eslint-disable-next-line react/jsx-curly-newline
+            }
+          >
+            {t('Deposit')}
+          </EmphasisButton>
+        </div>
       ),
     }))
   }, [listPoolAddressSpecial, push, sortedData, t])
@@ -301,7 +320,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
     <Collapse
       className='min-h-[76px] rounded-xl bg-neutral-900'
       classNames={{ chevron: 'mr-6', content: '-mt-7' }}
-      defaultShow={false}
+      defaultShow={defaultShow}
       title={<Title length={pools.length} title={title} />}
     >
       <Table

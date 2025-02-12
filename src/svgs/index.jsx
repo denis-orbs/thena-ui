@@ -78,6 +78,8 @@ import PiggyIcon from '~/svgs/piggy-bank.svg'
 import PiggySecondIcon from '~/svgs/piggy-second.svg'
 import PlusIcon from '~/svgs/plus.svg'
 import PlusCircleIcon from '~/svgs/plus-circle.svg'
+import PoolCoinsIcon from '~/svgs/pool-coins.svg'
+import PoolGroupIcon from '~/svgs/pool-group.svg'
 import PowerIcon from '~/svgs/power.svg'
 import PublicIcon from '~/svgs/public.svg'
 import RandomDice from '~/svgs/random-dice.svg'
@@ -204,6 +206,8 @@ export {
   PiggySecondIcon,
   PlusCircleIcon,
   PlusIcon,
+  PoolCoinsIcon,
+  PoolGroupIcon,
   PowerIcon,
   PriceCupIcon as PriceCup,
   PublicIcon,

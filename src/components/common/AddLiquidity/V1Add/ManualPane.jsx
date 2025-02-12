@@ -11,7 +11,7 @@ import { PAIR_TYPES } from '@/constant'
 import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, isInvalidAmount, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
+import { cn, formatAmount, isInvalidAmount, wrappedAddress } from '@/lib/utils'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 
 export function ManualPaneV1({
@@ -185,7 +185,7 @@ export function ManualPaneV1({
 
         {strategy ? (
           <>
-            <div className='flex flex-col gap-4'>
+            {/* <div className='flex flex-col gap-4'>
               <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
               <div className='flex flex-col gap-3'>
                 <div className='flex items-center justify-between'>
@@ -214,7 +214,7 @@ export function ManualPaneV1({
                   <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
                 </div>
               </div>
-            </div>
+            </div> */}
           </>
         ) : (
           <div className='flex flex-col gap-4'>

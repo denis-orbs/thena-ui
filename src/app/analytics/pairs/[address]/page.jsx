@@ -103,7 +103,10 @@ export default function PairDetailPage({ params }) {
               />
               <SecondaryButton
                 onClick={() => {
-                  push(`/pools/${pair.address}`)
+                  push(
+                    // eslint-disable-next-line max-len
+                    `/pools/add-liquidity/?firstAddress=${pair.token0.address}&secondAddress=${pair.token1.address}&pairType=${pair.type}&step=2`,
+                  )
                 }}
               >
                 {t('Add Liquidity')}
