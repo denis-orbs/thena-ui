@@ -12,6 +12,7 @@ import {
   getFarmingCenterContract,
   getGammaHyperVisorContract,
   getGaugeContract,
+  getIchiVaultContract,
   getMultiFeeDistributionContract,
 } from '@/lib/contracts'
 import { fromWei, toWei } from '@/lib/utils'
@@ -182,7 +183,7 @@ export const useGuageAllHarvset = () => {
     const harvestNewGaugeId = uuidv4()
     const claimFarmId = uuidv4()
 
-    const { newGauge, manual, gamma } = rewards
+    const { newGauge, manual, gamma, ichi } = rewards
 
     const transactions = {}
     if (newGauge.size > 0) {
@@ -205,6 +206,16 @@ export const useGuageAllHarvset = () => {
       gamma.forEach(_pair => {
         transactions[`gamma-${_pair.args}`] = {
           desc: `${t('Harvest Rewards')} Gamma pools`,
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+      })
+    }
+
+    if (ichi.size > 0) {
+      ichi.forEach(_pair => {
+        transactions[`ichi-${_pair.args}`] = {
+          desc: `${t('Harvest Rewards')} Ichi pools`,
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -272,6 +283,29 @@ export const useGuageAllHarvset = () => {
         const poolAddress = poolAddresses[i]
         const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
         const tx = await writeTxn(key, `gamma-${poolAddress}`, multiFeeDistributionContract, 'getAllRewards', [])
+        if (!tx) {
+          setPending(false)
+          return
+        }
+      }
+    }
+
+    if (ichi.size > 0) {
+      const poolAddresses = []
+      ichi.forEach(pair => poolAddresses.push(pair.args))
+
+      const receivers = await callMulti(
+        poolAddresses.map(add => ({
+          ...getIchiVaultContract(add, chainId, 3),
+          functionName: 'farmingContract',
+        })),
+      )
+
+      for (let i = 0; i < receivers.length; i++) {
+        const receiver = receivers[i]
+        const poolAddress = poolAddresses[i]
+        const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
+        const tx = await writeTxn(key, `ichi-${poolAddress}`, multiFeeDistributionContract, 'getAllRewards', [])
         if (!tx) {
           setPending(false)
           return

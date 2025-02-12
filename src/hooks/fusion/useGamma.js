@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeEventLog, erc20Abi, maxUint256 } from 'viem'
+import { decodeEventLog, erc20Abi } from 'viem'
 
 import { GAMMA_TYPES, HASH, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
@@ -54,9 +54,9 @@ export const useAddGamma = () => {
       const firstContract = getERC20Contract(baseCurrencyAddress, networkId)
       const secondContract = getERC20Contract(quoteCurrencyAddress, networkId)
       const baseAllowance = await readCall(firstContract, 'allowance', [account, gammaPairAddress], networkId)
-      const isFirstApproved = fromWei(baseAllowance, baseCurrency.decimals).gte(amountA.toExact())
+      const baseTokenToApprove = toWei(amountA.toExact(), baseCurrency.decimals).minus(baseAllowance)
       const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaPairAddress], networkId)
-      const isSecondApproved = fromWei(quoteAllowance, quoteCurrency.decimals).gte(amountB.toExact())
+      const quoteTokenToApprove = toWei(amountB.toExact(), quoteCurrency.decimals).minus(quoteAllowance)
 
       const transactions = {}
       if (amountToWrap) {
@@ -66,14 +66,14 @@ export const useAddGamma = () => {
           hash: null,
         }
       }
-      if (!isFirstApproved) {
+      if (baseTokenToApprove.gt(0)) {
         transactions[approve1uuid] = {
           desc: `${t('Approve')} ${baseCurrency.symbol}`,
           status: TXN_STATUS.START,
           hash: null,
         }
       }
-      if (!isSecondApproved) {
+      if (quoteTokenToApprove.gt(0)) {
         transactions[approve2uuid] = {
           desc: `${t('Approve')} ${quoteCurrency.symbol}`,
           status: TXN_STATUS.START,
@@ -97,15 +97,16 @@ export const useAddGamma = () => {
           return
         }
       }
-      if (!isFirstApproved) {
-        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [gammaPairAddress, maxUint256]))) {
+
+      if (baseTokenToApprove.gt(0)) {
+        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [gammaPairAddress, baseTokenToApprove]))) {
           setPending(false)
           return
         }
       }
 
-      if (!isSecondApproved) {
-        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [gammaPairAddress, maxUint256]))) {
+      if (quoteTokenToApprove.gt(0)) {
+        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [gammaPairAddress, quoteTokenToApprove]))) {
           setPending(false)
           return
         }
@@ -224,7 +225,7 @@ export const useGammaClaim = () => {
   const { startTxn, endTxn, writeTxn } = useTxn()
 
   const onGammaClaim = useCallback(
-    async (pool, callback) => {
+    async pool => {
       const key = uuidv4()
       const claimId = uuidv4()
       startTxn({
@@ -247,7 +248,7 @@ export const useGammaClaim = () => {
         setPending(false)
         return
       }
-      callback()
+      // callback()
       endTxn({ key, final: 'Harvest Successful' })
       setPending(false)
     },
@@ -452,16 +453,17 @@ export const useGammaMigration = () => {
         // MARK: APPROVE + SWAP BY ODOS
         const swapTokenContract = getERC20Contract(fromToken.address, networkId)
         const allowanceSwap = await readCall(swapTokenContract, 'allowance', [account, routerAddress], networkId)
-        const isApprovedSwap = fromWei(allowanceSwap, fromToken.decimals).gte(swapFromAmount)
-        if (isApprovedSwap) {
-          updateTxn({ key, uuid: approveSwapId, status: TXN_STATUS.SUCCESS, hash: '' })
-          setPending(false)
-        } else {
-          const tx = await writeTxn(key, approveSwapId, swapTokenContract, 'approve', [routerAddress, maxUint256])
+        const amountToApproved = swapFromAmount.minus(allowanceSwap)
+
+        if (amountToApproved.gt(0)) {
+          const tx = await writeTxn(key, approveSwapId, swapTokenContract, 'approve', [routerAddress, amountToApproved])
           if (!tx) {
             setPending(false)
             return
           }
+        } else {
+          updateTxn({ key, uuid: approveSwapId, status: TXN_STATUS.SUCCESS, hash: '' })
+          setPending(false)
         }
 
         const quote = await fetchOdosQuote({
@@ -508,20 +510,20 @@ export const useGammaMigration = () => {
 
       setPending(true)
       const baseAllowance = await readCall(firstContract, 'allowance', [account, gammaAddressV3], networkId)
-      const isFirstApproved = fromWei(baseAllowance, token0.decimals).gte(amountA)
-      if (!isFirstApproved) {
+      const amount1ToApproved = amountA.minus(baseAllowance)
+      if (amount1ToApproved.lte(0)) {
         updateTxn({ key, uuid: approve1Id, status: TXN_STATUS.SUCCESS, hash: '' })
-      } else if (!(await writeTxn(key, approve1Id, firstContract, 'approve', [gammaAddressV3, maxUint256]))) {
+      } else if (!(await writeTxn(key, approve1Id, firstContract, 'approve', [gammaAddressV3, amount1ToApproved]))) {
         setPending(false)
         return
       }
 
       setPending(true)
       const quoteAllowance = await readCall(secondContract, 'allowance', [account, gammaAddressV3], networkId)
-      const isSecondApproved = fromWei(quoteAllowance, token1.decimals).gte(amountB)
-      if (isSecondApproved) {
+      const amount2ToApproved = amountB.minus(quoteAllowance)
+      if (amount2ToApproved.lte(0)) {
         updateTxn({ key, uuid: approve2Id, status: TXN_STATUS.SUCCESS, hash: '' })
-      } else if (!(await writeTxn(key, approve2Id, secondContract, 'approve', [gammaAddressV3, maxUint256]))) {
+      } else if (!(await writeTxn(key, approve2Id, secondContract, 'approve', [gammaAddressV3, amount2ToApproved]))) {
         setPending(false)
         return
       }

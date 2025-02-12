@@ -128,11 +128,7 @@ export default function NotStaked({ pool }) {
         </div>
         <div className='flex items-center gap-2'>
           {pool?.title?.includes('Farming') && <GreenBadge>Farm Strategy</GreenBadge>}
-          {pool?.title?.includes(PAIR_TYPES.STABLE) || pool?.title?.includes(PAIR_TYPES.CLASSIC) ? (
-            <GreenBadge>Fee Strategy</GreenBadge>
-          ) : (
-            <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
-          )}
+          <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
         </div>
       </div>
       <div className='flex flex-col gap-3'>
@@ -180,7 +176,7 @@ export default function NotStaked({ pool }) {
       <div className='mt-auto flex w-full gap-3'>
         {!migrationOptions && (
           <PrimaryButton className='w-full' onClick={() => setPopup(true)}>
-            {t('Stake')}
+            {t('Earn $THE')}
           </PrimaryButton>
         )}
 

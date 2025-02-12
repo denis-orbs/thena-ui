@@ -10,7 +10,8 @@ import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { useGammaClaim, useGetGammaReward } from '@/hooks/fusion/useGamma'
+import { useGammaClaim } from '@/hooks/fusion/useGamma'
+import { useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
@@ -29,10 +30,9 @@ export default function Staked({ pool }) {
   const [addPopup, setAddPopup] = useState(false)
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
 
-  const { rewardsData } = useGetGammaReward(pool)
-
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
   const { onGammaClaim, pending: claimPending } = useGammaClaim()
+  const { onIchiClaim } = useIchiClaim()
   const { onGaugeHarvest } = useGaugeHarvest()
   const { addReward } = useFarmRewards()
 
@@ -45,12 +45,11 @@ export default function Staked({ pool }) {
     if (type === 'classic' || type === 'stable') {
       args = pool.gauge.address
       amount = pool.account.gaugeEarned
-    } else if (type === 'gamma') {
+    } else if (type === 'gamma' || type === 'ichi') {
       args = pool.address
-      amount = rewardsData?.rewards?.[0]?.amount ?? ZERO_VALUE
-    } else if (type === 'ichi') {
-      // todo: ICHI
+      amount = pool.account.gaugeEarned
     }
+
     if (amount.isZero()) return
     addReward({
       type,
@@ -59,7 +58,7 @@ export default function Staked({ pool }) {
       version: pool.version,
       key: getKeyFromTokenAddress(type, [pool.token0.address, pool.token1.address]),
     })
-  }, [addReward, pool, rewardsData])
+  }, [addReward, pool])
 
   const migrationOptions = useGetAutoPoolMigration({
     token0Address: pool.token0.address,
@@ -97,11 +96,11 @@ export default function Staked({ pool }) {
     if (GAMMA_TYPES.includes(pool.title)) {
       onGammaClaim(pool)
     } else if (ICHI_TYPES.includes(pool.title)) {
-      // TODO: ICHI claim
+      onIchiClaim(pool)
     } else {
       onGaugeHarvest(pool)
     }
-  }, [onGammaClaim, onGaugeHarvest, pool])
+  }, [onGammaClaim, onGaugeHarvest, onIchiClaim, pool])
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -166,26 +165,18 @@ export default function Staked({ pool }) {
             </div>
           ) : (
             <div className='flex items-center gap-1'>
-              <TextHeading>
-                ${formatAmount(GAMMA_TYPES.includes(pool.title) ? rewardsData?.totalUsd : pool.account.earnedUsd)}
-              </TextHeading>
+              <TextHeading>${formatAmount(pool.account.earnedUsd)}</TextHeading>
               <InfoIcon
                 className='h-4 w-4 stroke-neutral-400'
                 data-tooltip-id={`stake-${pool.address}-${pool.account.earnedUsd}`}
               />
 
               <CustomTooltip id={`stake-${pool.address}-${pool.account.earnedUsd}`}>
-                <div className={cn(GAMMA_TYPES.includes(pool.title) && 'hidden')}>
+                <div>
                   {pool.account.gaugeEarned && <p>{`${formatAmount(pool.account.gaugeEarned)} THE`}</p>}
                   {pool.account.earned0 && <p>{`${formatAmount(pool.account.earned0)} ${pool.token0.symbol}`}</p>}
                   {pool.account.earned1 && <p>{`${formatAmount(pool.account.earned1)} ${pool.token1.symbol}`}</p>}
                   {pool.account.earned2 && <p>{`${formatAmount(pool.account.earned2)} ${pool.reward.symbol}`}</p>}
-                </div>
-
-                <div className={cn(!GAMMA_TYPES.includes(pool.title) && 'hidden')}>
-                  {(rewardsData?.rewards || []).map(item => (
-                    <p key={item.asset.symbol}>{`${formatAmount(item.amount)} ${item.asset.symbol}`}</p>
-                  ))}
                 </div>
               </CustomTooltip>
             </div>

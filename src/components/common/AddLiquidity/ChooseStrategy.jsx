@@ -270,7 +270,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isRe
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('Rewards')}:</TextHeading>
                   <Paragraph className='text-sm'>
-                    {isFarming ? 'THE' : isAutomatic ? 'Auto Compound' : sub.symbol.replace('/', ', ')}
+                    {isFarming ? 'THE' : isAutomatic ? 'Auto Compound' : sub?.symbol?.replace('/', ', ')}
                   </Paragraph>
                 </div>
               </div>
