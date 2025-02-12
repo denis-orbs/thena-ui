@@ -1,14 +1,13 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { maxUint256 } from 'viem'
 
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getBribeContract, getERC20Contract, getGlobalFactoryContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { fromWei, toWei } from '@/lib/utils'
+import { toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 export const POOL_TYPES = {
@@ -96,13 +95,14 @@ export const useBribeAdd = () => {
       const bribeAddress = pool.gauge.bribe
       const tokenContract = getERC20Contract(asset.address, chainId)
       const allowance = await readCall(tokenContract, 'allowance', [account, bribeAddress], chainId)
-      const isApproved = fromWei(allowance).gte(total)
+      const amountToApprove = toWei(total, asset.decimals).minus(allowance)
+
       setPending(true)
       startTxn({
         key,
         title: 'Add Incentive',
         transactions: {
-          ...(!isApproved && {
+          ...(amountToApprove.gt(0) && {
             [approveuuid]: {
               desc: `${t('Approve')} ${asset.symbol}`,
               status: TXN_STATUS.START,
@@ -116,8 +116,9 @@ export const useBribeAdd = () => {
           },
         },
       })
-      if (!isApproved) {
-        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [bribeAddress, maxUint256]))) {
+
+      if (amountToApprove.gt(0)) {
+        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [bribeAddress, amountToApprove]))) {
           setPending(false)
           return
         }

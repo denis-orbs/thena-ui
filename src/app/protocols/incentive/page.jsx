@@ -152,7 +152,9 @@ export default function IncentivePage() {
                   <div className='flex items-center gap-3'>
                     <div className='flex items-end gap-2'>
                       <TextHeading>{pair.symbol}</TextHeading>
-                      <Paragraph className='text-sm'>{t(pair.title)}</Paragraph>
+                      <Paragraph className='text-sm'>
+                        {pair.title === 'CL_Farming' ? 'Conc. Liquidity' : pair.title ?? pair.type}
+                      </Paragraph>
                     </div>
                   </div>
                 ) : (
@@ -435,7 +437,9 @@ export default function IncentivePage() {
                 )}
                 <div className='flex items-end gap-2'>
                   <TextHeading>{pair.symbol}</TextHeading>
-                  <Paragraph className='text-sm'>{t(pair.title)}</Paragraph>
+                  <Paragraph className='text-sm'>
+                    {pair.title === 'CL_Farming' ? 'Conc. Liquidity' : pair.title ?? pair.type}
+                  </Paragraph>
                 </div>
               </div>
             </article>
