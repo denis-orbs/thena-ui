@@ -302,16 +302,23 @@ export const useAutomationAddress = tokenId => {
 export const useOperationsAutomation = id => {
   const { chainId } = useWallet()
   const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-  const { data: operationData, isLoading } = useReadContract({
+  const { data: automationAddress, isLoading } = useReadContract({
     ...veTheAutomationFactoryContract,
     functionName: 'tokenIdToAutomation',
     args: [id],
     enabled: Boolean(id) && Boolean(chainId),
   })
 
+  const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
+  const { data: operationData, isLoading1 } = useReadContract({
+    ...veTheAutomationContract,
+    functionName: 'operations',
+    enabled: Boolean(automationAddress) && Boolean(chainId),
+  })
+
   const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(operationData) || [[], [], []]
 
-  return { isAutoVote, isClaimEveryWeek, isRelockEveryWeek, isLoading }
+  return { isAutoVote, isClaimEveryWeek, isRelockEveryWeek, isLoading: isLoading || isLoading1 }
 }
 
 export const useAutomationStatus = vetTHEId => {
