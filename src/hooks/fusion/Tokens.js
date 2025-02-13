@@ -1,15 +1,14 @@
 import { useMemo } from 'react'
 import { BNB, ChainId, Token } from 'thena-sdk-core'
 
+import { UNKNOWN_LOGO } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { getTokenInfo } from '@/lib/helper'
 import { useLocalTokens } from '@/state/localTokens/store'
 import { useChainSettings } from '@/state/settings/hooks'
 
-// undefined if invalid or does not exist
-// otherwise returns the token
-export function useToken(tokenAddress) {
+export function useGetAsset(tokenAddress) {
   const assets = useAssets()
   const customAssets = useCustomAssets()
   const { localTokens } = useLocalTokens()
@@ -22,9 +21,20 @@ export function useToken(tokenAddress) {
       asset = localTokens.find(tk => tk.address.toLowerCase() === tokenAddress.toLowerCase())
     }
 
-    if (!asset) return undefined
-    return new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
+    return asset
   }, [assets, customAssets, localTokens, tokenAddress])
+}
+
+// undefined if invalid or does not exist
+// otherwise returns the token
+export function useToken(tokenAddress) {
+  const asset = useGetAsset(tokenAddress)
+  return useMemo(() => {
+    if (!asset) return undefined
+    const token = new Token(asset.chainId, asset.address, asset.decimals, asset.symbol, asset.name)
+    token.logoURI = asset.logoURI ?? UNKNOWN_LOGO
+    return token
+  }, [asset])
 }
 
 export const useCurrency = tokenAddress => {

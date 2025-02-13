@@ -3,8 +3,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { PAIR_TYPES } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
-import { useLocalTokens } from '@/state/localTokens/store'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 
 import ChooseStrategy from './ChooseStrategy'
 import FusionAdd from './FusionAdd'
@@ -19,11 +18,11 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
   const [strategy, setStrategy] = useState()
   const [isAutomatic, setIsAutomatic] = useState(true)
   const [isReverse, setIsReverse] = useState(true)
-  const [firstAsset, setFirstAsset] = useState()
-  const [secondAsset, setSecondAsset] = useState()
   const [firstAddress, setFirstAddress] = useState()
   const [secondAddress, setSecondAddress] = useState()
-  const assets = useAssets()
+
+  const firstAsset = useGetAsset(firstAddress)
+  const secondAsset = useGetAsset(secondAddress)
 
   useEffect(() => {
     if (!init && pool) {
@@ -32,16 +31,7 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
       setFirstAddress(pool.token0.address)
       setSecondAddress(pool.token1.address)
     }
-  }, [assets, pool, firstAsset, secondAsset, pairType])
-
-  const { localTokens } = useLocalTokens()
-
-  useEffect(() => {
-    const assetList = localTokens.concat(assets)
-
-    setFirstAsset(assetList.find(ele => ele.address === firstAddress))
-    setSecondAsset(assetList.find(ele => ele.address === secondAddress))
-  }, [assets, localTokens, firstAddress, secondAddress])
+  }, [pool])
 
   useEffect(() => () => (init = false), [])
 
