@@ -75,10 +75,10 @@ function AssetsContextProvider({ children }) {
       return data
         .map(ele => ({
           ...ele,
-          balance: new BigNumber(ele.balance),
-          totalValue: new BigNumber(ele.balance).times(ele.price),
+          balance: BigNumber(ele.balance),
+          totalValue: Number(ele.balance) * Number(ele.price),
         }))
-        .sort((a, b) => b.totalValue.minus(a.totalValue).toNumber())
+        .sort((a, b) => b.totalValue - a.totalValue)
     },
     {
       refreshInterval: 15000,

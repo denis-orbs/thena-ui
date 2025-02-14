@@ -4,9 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { PAIR_TYPES } from '@/constant'
-import { useAssets } from '@/context/assetsContext'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { useV3MintState } from '@/state/fusion/hooks'
-import { useLocalTokens } from '@/state/localTokens/store'
 
 import ChooseStrategy from './ChooseStrategy'
 import FusionAdd from './FusionAdd'
@@ -20,11 +19,11 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
   const { strategy } = useV3MintState()
   const { isReverse } = useSelector(state => state.fusion)
   const [pairType, setPairType] = useState(PAIR_TYPES.LSD)
-  const [firstAsset, setFirstAsset] = useState()
-  const [secondAsset, setSecondAsset] = useState()
   const [firstAddress, setFirstAddress] = useState()
   const [secondAddress, setSecondAddress] = useState()
-  const assets = useAssets()
+
+  const firstAsset = useGetAsset(firstAddress)
+  const secondAsset = useGetAsset(secondAddress)
 
   const [slippage, setSlippage] = useState(0.5)
 
@@ -35,16 +34,7 @@ export default function AddLiquidity({ currentStep, setCurrentStep, pool, isModa
       setFirstAddress(pool.token0.address)
       setSecondAddress(pool.token1.address)
     }
-  }, [assets, pool, firstAsset, secondAsset, pairType])
-
-  const { localTokens } = useLocalTokens()
-
-  useEffect(() => {
-    const assetList = localTokens.concat(assets)
-
-    setFirstAsset(assetList.find(ele => ele.address === firstAddress))
-    setSecondAsset(assetList.find(ele => ele.address === secondAddress))
-  }, [assets, localTokens, firstAddress, secondAddress])
+  }, [pool])
 
   useEffect(() => () => (init = false), [])
 

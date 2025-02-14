@@ -29,32 +29,14 @@ function StoryHome({ isUpcoming, isRegistered }) {
     account?.toLowerCase(),
   )
 
-  const currentActiveChapter = useMemo(() => {
-    const currentTime = new Date()
-    return chapters.find(chapter => {
-      const startTime = new Date(chapter?.startTimestamp ?? 0)
-      const endTime = new Date(chapter?.endTimestamp ?? 0)
-
-      return currentTime >= startTime && currentTime <= endTime
-    })
-  }, [chapters])
-
   const countDownTimeStamp = useMemo(() => {
-    if (currentActiveChapter) {
-      return isoDateToTimeStampSeconds(currentActiveChapter.endTimestamp)
+    const now = Date.now()
+    const dateString = '2025-01-25T00:00:00.000000Z'
+    if (now >= new Date(dateString).getTime()) {
+      return 0
     }
-
-    const nextChapter = chapters.find(chapter => !chapter.available)
-
-    if (nextChapter) {
-      try {
-        return isoDateToTimeStampSeconds(nextChapter.startTimestamp)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    return 0
-  }, [chapters, currentActiveChapter])
+    return isoDateToTimeStampSeconds(dateString)
+  }, [])
 
   const [isMuted, setIsMuted] = useState(true)
 
@@ -141,8 +123,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
                 <>
                   <div className='mt-4 rounded-lg bg-transparent px-6 py-6'>
                     <h2 className='mb-6 text-center font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
-                      {currentActiveChapter && t('Current Chapter Ends in')}
-                      {!currentActiveChapter && countDownTimeStamp && t('Next Chapter Available in')}
+                      THE Story Ends in
                     </h2>
                     {countDownTimeStamp && <Countdown timestamp={countDownTimeStamp} />}
                   </div>
@@ -150,7 +131,7 @@ function StoryHome({ isUpcoming, isRegistered }) {
               ) : (
                 <div className='mt-4 rounded-lg bg-transparent px-6 py-6'>
                   <h2 className='mb-6 text-center font-archia text-[26px] leading-[26px] lg:text-[30px] lg:leading-6'>
-                    {t('Next Chapter Available in')}: <span className='text-primary-600'>TBA</span>
+                    THE Story Ended
                   </h2>
                 </div>
               )}

@@ -2,13 +2,14 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
 import { useTHEStory } from '@/context/THEStoryContext'
 
 // FIXME remove mock data
 const minted = false
 
-const TOTAL_FRAGMENTS = 7
+const TOTAL_FRAGMENTS = 4
 export function RewardFragments() {
   const t = useTranslations()
   const { campaignParticipantInfo: userInfo } = useTHEStory()
@@ -54,7 +55,14 @@ export function RewardFragments() {
             {userInfo.totalFragments === TOTAL_FRAGMENTS && !minted && (
               <>
                 <TextHeading className='font-archia text-2xl font-semibold'>{t('You Won an NFT')}</TextHeading>
-                <PrimaryButton className='w-full px-8 lg:w-auto'>{t('Mint now')}</PrimaryButton>
+                <CustomTooltip id='disabled-reward' className='rounded-md !py-2' place='top'>
+                  <TextHeading className='text-xs'>
+                    The rewards for THE Story will be announced at a later time.
+                  </TextHeading>
+                </CustomTooltip>
+                <PrimaryButton className='w-full px-8 lg:w-auto' disabled data-tooltip-id='disabled-reward'>
+                  {t('Mint now')}
+                </PrimaryButton>
               </>
             )}
 

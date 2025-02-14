@@ -467,7 +467,7 @@ export const useAutomationContractDetail = tokenId => {
               ? {
                   tokens: (result.tokens || []).map(token => ({
                     ...token,
-                    totalValue: token?.totalValue?.toNumber() || 0,
+                    totalValue: token?.totalValue || 0,
                     balance: token?.balance?.toNumber() || 0,
                   })),
                 }

@@ -58,7 +58,7 @@ function CustomAssetsContextProvider({ children }) {
       return data.map(ele => ({
         ...ele,
         balance: new BigNumber(ele.balance),
-        totalValue: new BigNumber(ele.balance).times(ele.price),
+        totalValue: 0,
       }))
     },
     {

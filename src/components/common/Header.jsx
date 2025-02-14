@@ -352,7 +352,20 @@ function Header() {
           {
             heading: t('Cross-Chain'),
             subheading: t('Trade across different blockchains'),
-            onClickHandler: () => push('/swap/cross'),
+            onClickHandler: () => {
+              if (window.innerWidth > 768) {
+                push('/swap/cross')
+              } else {
+                // Create and trigger a link element instead of using window.open
+                const link = document.createElement('a')
+                link.href = 'http://squidrouter.thena.fi/'
+                link.target = '_blank'
+                link.rel = 'noopener noreferrer' // Add security best practice
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+              }
+            },
           },
           {
             heading: t('Buy Crypto'),
@@ -381,7 +394,6 @@ function Header() {
         onClickHandler: () => {
           push('/arena')
         },
-        isHighlight: true,
       },
       {
         label: 'THE Story',
@@ -389,7 +401,6 @@ function Header() {
         onClickHandler: () => {
           push('/story')
         },
-        isHighlight: true,
       },
       {
         label: 'More',

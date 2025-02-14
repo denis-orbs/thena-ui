@@ -160,7 +160,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
               </CustomTooltip>
 
               <div className='size-6' data-tooltip-id={`pool-special-new-${pool.address}-tooltip2`}>
-                <NextImage className='h-full w-full rounded-full object-cover' alt='Kernel' src='/images/Kernel.svg' />
+                <NextImage className='h-full w-full rounded-full object-cover' alt='Kernel' src='/images/kernel.svg' />
               </div>
               <CustomTooltip id={`pool-special-new-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
                 <TextHeading className='text-xs'>{t('Kernel Points Tooltip')}</TextHeading>
