@@ -103,8 +103,15 @@ export function useFusions(poolKeys, version) {
 export function useFusionState({ currencyA, currencyB, version = 3, isFarmingPool = false }) {
   const wTokenA = currencyA?.wrapped
   const wTokenB = currencyB?.wrapped
-  const [token0, token1] = wTokenA?.sortsBefore(wTokenB) ? [wTokenA, wTokenB] : [wTokenB, wTokenA]
-  const chainId = token0?.chainId ?? 56
+
+  let token0 = null
+  let token1 = null
+
+  if (wTokenA && wTokenB) {
+    // eslint-disable-next-line no-extra-semi
+    ;[token0, token1] = wTokenA.sortsBefore(wTokenB) ? [wTokenA, wTokenB] : [wTokenB, wTokenA]
+  }
+  const chainId = wTokenA?.chainId ?? 56
 
   let functionName
   let args

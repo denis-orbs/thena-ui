@@ -5,7 +5,7 @@ import Selection from '@/components/selection'
 import { TextHeading } from '@/components/typography'
 import { InfoCircleWhite } from '@/svgs'
 
-import SelectToken from './SelectToken'
+import { SelectToken } from './SelectToken'
 
 function SelectPair({ updateSearchParams, firstAsset, secondAsset }) {
   const t = useTranslations()

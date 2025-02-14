@@ -1,8 +1,6 @@
-import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import Selection from '@/components/selection'
-import { TextHeading } from '@/components/typography'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 
@@ -14,9 +12,7 @@ const PresetProfits = {
 }
 
 export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection }) {
-  // const [init, setInit] = useState(false)
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
-  const t = useTranslations()
 
   const ranges = useMemo(() => {
     if (isStablecoinPair) {
@@ -88,9 +84,9 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
 
   return (
     <div className='flex flex-col gap-3'>
-      <div className='flex items-center justify-between'>
-        <TextHeading>{t('Range Type')}</TextHeading>
-      </div>
+      {/* <div className='flex items-center justify-between'> */}
+      {/*   <TextHeading>{t('Range Type')}</TextHeading> */}
+      {/* </div> */}
       <Selection data={rangeSelections} isFull />
     </div>
   )

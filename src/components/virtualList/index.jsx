@@ -7,6 +7,7 @@ function RenderIfVisible({
   rootElementClass = '',
   placeholderElementClass = '',
   children,
+  ...props
 }) {
   const [isVisible, setIsVisible] = useState(false)
   const placeholderHeight = useRef(defaultHeight)
@@ -52,7 +53,7 @@ function RenderIfVisible({
   )
 
   return (
-    <div ref={intersectionRef} className={rootClasses}>
+    <div ref={intersectionRef} className={rootClasses} {...props}>
       {isVisible ? <>{children}</> : <div style={placeholderStyle} className={placeholderClasses} />}
     </div>
   )

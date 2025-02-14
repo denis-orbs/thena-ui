@@ -1,24 +1,15 @@
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { Info, Warning } from '@/components/alert'
 import Input from '@/components/input'
-import Selection from '@/components/selection'
-import Skeleton from '@/components/skeleton'
-import Spinner from '@/components/spinner'
-import Tabs from '@/components/tabs'
 import CustomTooltip from '@/components/tooltip'
-import { Paragraph, TextHeading } from '@/components/typography'
-import { FusionRangeType, MANUAL_TYPES } from '@/constant'
+import { TextHeading } from '@/components/typography'
+import { FusionRangeType } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
-import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
-import { PoolState } from '@/hooks/fusion/useFusions'
-import { cn, unwrappedSymbol, wrappedAddress } from '@/lib/utils'
-import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
-import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
-import PoolChart from '@/modules/SwapChart/PoolChart'
-import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
+import { unwrappedSymbol } from '@/lib/utils'
+import { Bound, setInitialTokenPrice, updateSelectedPreset } from '@/state/fusion/actions'
 import {
   useActivePreset,
   useRangeHopCallbacks,
@@ -34,44 +25,28 @@ import { RangeSelector } from '../components/RangeSelector'
 
 const feeAmount = 3000
 
-function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
-  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
+function ManualStrategy({ firstAsset, secondAsset }) {
+  const t = useTranslations()
+
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
   const stableAssets = useStableTokens()
+  const { isReverse } = useSelector(state => state.fusion)
 
   const currencyA = useCurrency(firstAsset?.address)
   const currencyB = useCurrency(secondAsset?.address)
   const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
   const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
+
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
-  //
-  // get value and prices at ticks
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
-  const apr = useEstimateAPR({
-    pool: mintInfo.pool,
-    poolAddress: mintInfo.poolAddress,
-    tickUpper,
-    tickLower,
-    isFarming: strategy?.title === MANUAL_TYPES[0],
-    tvl: strategy?.tvl,
-  })
-
-  const { ticksAtLimit, invertPrice } = mintInfo
-  const t = useTranslations()
 
   const dispatch = useDispatch()
   const activePreset = useActivePreset()
   const { startPriceTypedValue } = useV3MintState()
 
-  const {
-    onFieldAInput,
-    onFieldBInput,
-    onStartPriceInput,
-    onLeftRangeInput,
-    onRightRangeInput,
-    onChangeLiquidityRangeType,
-  } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const { onStartPriceInput, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
+    useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const isStablecoinPair = useMemo(() => {
     const stablecoins = stableAssets.map(token => token.address)
@@ -88,86 +63,11 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
       mintInfo.pool,
     )
 
-  const {
-    data: pairPrices = [],
-    isLoading,
-    error,
-  } = useFetchPairPrices({
-    token0Address: wrappedAddress(quoteCurrency),
-    token1Address: wrappedAddress(baseCurrency),
-    timeWindow,
-  })
-
-  // const minValue = useMemo(
-  //   () => pairPrices.reduce((min, current) => (current.value < min.value ? current : min), pairPrices[0]),
-  //   [pairPrices],
-  // )
-
-  // const maxValue = useMemo(
-  //   () => pairPrices.reduce((max, current) => (current.value > max.value ? current : max), pairPrices[0]),
-  //   [pairPrices],
-  // )
-
-  const leftPrice = useMemo(
-    () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceLower : priceUpper?.invert()),
-    [baseCurrency, quoteCurrency, priceLower, priceUpper],
-  )
-
-  const rightPrice = useMemo(
-    () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceUpper : priceLower?.invert()),
-    [baseCurrency, quoteCurrency, priceLower, priceUpper],
-  )
-
   const price = useMemo(() => {
     if (!mintInfo.price) return
 
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
   }, [mintInfo])
-
-  const assetSelections = useMemo(
-    () => [
-      {
-        label: unwrappedSymbol(firstAsset),
-        active: !isReverse,
-        onClickHandler: () => {
-          dispatch(updateIsReverse({ isReverse: false }))
-          if (!ticksAtLimit[Bound.LOWER] && !ticksAtLimit[Bound.UPPER]) {
-            onLeftRangeInput((invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
-            onRightRangeInput((invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
-          }
-          onFieldAInput('')
-          onFieldBInput('')
-        },
-      },
-      {
-        label: unwrappedSymbol(secondAsset),
-        active: isReverse,
-        onClickHandler: () => {
-          dispatch(updateIsReverse({ isReverse: true }))
-          if (!ticksAtLimit[Bound.LOWER] && !ticksAtLimit[Bound.UPPER]) {
-            onLeftRangeInput((invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
-            onRightRangeInput((invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
-          }
-          onFieldAInput('')
-          onFieldBInput('')
-        },
-      },
-    ],
-    [
-      firstAsset,
-      isReverse,
-      secondAsset,
-      dispatch,
-      ticksAtLimit,
-      onFieldAInput,
-      onFieldBInput,
-      onLeftRangeInput,
-      invertPrice,
-      priceLower,
-      priceUpper,
-      onRightRangeInput,
-    ],
-  )
 
   const handlePresetRangeSelection = useCallback(
     preset => {
@@ -200,61 +100,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
     return `${_price}`
   }, [mintInfo.price, mintInfo.invertPrice])
 
-  const feeString = useMemo(() => {
-    if (mintInfo.poolState === PoolState.INVALID || mintInfo.poolState === PoolState.LOADING) return <Spinner />
-
-    if (mintInfo.noLiquidity) return '0.3%'
-
-    return `${mintInfo.dynamicFee / 10000}%`
-  }, [mintInfo])
-
-  const risk = useMemo(() => {
-    const upPrice = rightPrice?.toSignificant(5)
-    const downPrice = leftPrice?.toSignificant(5)
-    if (!upPrice || !downPrice || !price) return
-
-    const upperPercent = 100 - (+price / +upPrice) * 100
-    const lowerPercent = Math.abs(100 - (+price / +downPrice) * 100)
-
-    const rangePercent = +downPrice > +price && +upPrice > 0 ? upperPercent - lowerPercent : upperPercent + lowerPercent
-
-    if (rangePercent < 7.5) {
-      return 5
-    }
-    if (rangePercent < 15) {
-      return (15 - rangePercent) / 7.5 + 4
-    }
-    if (rangePercent < 30) {
-      return (30 - rangePercent) / 15 + 3
-    }
-    if (rangePercent < 60) {
-      return (60 - rangePercent) / 30 + 2
-    }
-    if (rangePercent < 120) {
-      return (120 - rangePercent) / 60 + 1
-    }
-    return 1
-  }, [price, rightPrice, leftPrice])
-
-  const _risk = useMemo(() => {
-    const res = []
-    const split = risk?.toString().split('.')
-
-    if (!split) return
-
-    for (let i = 0; i < 10; i++) {
-      if (i < +split[0]) {
-        res.push(100)
-      } else if (i === +split[0]) {
-        res.push(parseFloat(`0.${split[1]}`) * 100)
-      } else {
-        res.push(0)
-      }
-    }
-
-    return res
-  }, [risk])
-
   const resetState = useCallback(() => {
     dispatch(updateSelectedPreset({ preset: null }))
     dispatch(setInitialTokenPrice({ typedValue: '' }))
@@ -269,48 +114,8 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const periods = useMemo(
-    () => [
-      {
-        label: '24H',
-        active: timeWindow === PairDataTimeWindow.DAY,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.DAY)
-        },
-      },
-      {
-        label: '1W',
-        active: timeWindow === PairDataTimeWindow.WEEK,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.WEEK)
-        },
-      },
-      {
-        label: '1M',
-        active: timeWindow === PairDataTimeWindow.MONTH,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.MONTH)
-        },
-      },
-      {
-        label: '1Y',
-        active: timeWindow === PairDataTimeWindow.YEAR,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.YEAR)
-        },
-      },
-    ],
-    [timeWindow],
-  )
-
   return (
     <div className='flex flex-col gap-4'>
-      <PresetRanges
-        mintInfo={mintInfo}
-        isStablecoinPair={isStablecoinPair}
-        activePreset={activePreset}
-        handlePresetRangeSelection={handlePresetRangeSelection}
-      />
       {mintInfo.noLiquidity && (
         <div className='flex flex-col gap-3'>
           <Info className='text-sm'>{t('Initialize warning')}</Info>
@@ -332,24 +137,12 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
           </div>
         </div>
       )}
+
       <div className='flex items-center justify-between'>
-        <TextHeading>{t('Price Range')}</TextHeading>
-        <Selection data={assetSelections} isSmall isTranslation={false} />
+        <TextHeading className='text-xl font-medium'>Liquidity Range</TextHeading>
+        {/* <Selection data={assetSelections} isSmall isTranslation={false} /> */}
       </div>
-      <RangeSelector
-        priceLower={priceLower}
-        priceUpper={priceUpper}
-        getDecrementLower={getDecrementLower}
-        getIncrementLower={getIncrementLower}
-        getDecrementUpper={getDecrementUpper}
-        getIncrementUpper={getIncrementUpper}
-        onLeftRangeInput={onLeftRangeInput}
-        onRightRangeInput={onRightRangeInput}
-        currencyA={baseCurrency}
-        currencyB={quoteCurrency}
-        mintInfo={mintInfo}
-        disabled={!startPriceTypedValue && !mintInfo.price}
-      />
+
       {activePreset === Presets.FULL && fullRangeWarningShown && (
         <Warning className='text-sm'>{t('Full range position')}</Warning>
       )}
@@ -381,92 +174,116 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, isReverse }) {
           />
         </div>
       )}
-      <div className='grid grid-cols-2 gap-4'>
-        <div className='flex flex-col justify-center gap-1.5 rounded-md bg-neutral-800 px-4 py-3'>
-          <TextHeading className='text-sm' data-tooltip-id='APR-INFO'>
-            Estimate APR for $1k
-          </TextHeading>
 
-          <div data-tooltip-id='APR-INFO' className='w-fit rounded-md bg-neutral-700 p-2'>
-            <TextHeading className='text-sm font-bold'>{Number(apr).toFixed(2)}%</TextHeading>
-          </div>
-          <CustomTooltip id='APR-INFO' className='max-w-[320px]'>
-            Estimated return based on weekly trade fees and farming yield
-          </CustomTooltip>
-        </div>
+      <RangeSelector
+        priceLower={priceLower}
+        priceUpper={priceUpper}
+        getDecrementLower={getDecrementLower}
+        getIncrementLower={getIncrementLower}
+        getDecrementUpper={getDecrementUpper}
+        getIncrementUpper={getIncrementUpper}
+        onLeftRangeInput={onLeftRangeInput}
+        onRightRangeInput={onRightRangeInput}
+        currencyA={baseCurrency}
+        currencyB={quoteCurrency}
+        mintInfo={mintInfo}
+        disabled={!startPriceTypedValue && !mintInfo.price}
+      />
 
-        <div className='flex flex-col gap-3'>
-          <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'>
-            <div className='mt-1 flex cursor-pointer items-center justify-between'>
-              <TextHeading className='text-sm'>{t(mintInfo.noLiquidity ? 'New pool' : 'Current Pool')}</TextHeading>
-              <strong className='text-sm'>
-                {feeString} {t('Fee')}
-              </strong>
-            </div>
-          </div>
-          <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'>
-            <TextHeading className='text-sm'>{t('Risk')}</TextHeading>
-            {_risk && (
-              <div className='flex items-center gap-2'>
-                {[1, 2, 3, 4, 5].map((_, i) => (
-                  <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'>
-                    <div
-                      key={`risk-${i}`}
-                      className='relative h-2 bg-error-600'
-                      style={{ left: `calc(-100% + ${_risk[i]}%)` }}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'>
-            <div className='mt-1 flex items-center justify-between'>
-              <TextHeading className='text-sm'>{t('Profit')}</TextHeading>
-              {_risk && (
-                <div className='flex items-center gap-2'>
-                  {[1, 2, 3, 4, 5].map((_, i) => (
-                    <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'>
-                      <div
-                        key={`risk-${i}`}
-                        className='relative h-2 bg-success-600'
-                        style={{ left: `calc(-100% + ${_risk[i]}%)` }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      <PresetRanges
+        mintInfo={mintInfo}
+        isStablecoinPair={isStablecoinPair}
+        activePreset={activePreset}
+        handlePresetRangeSelection={handlePresetRangeSelection}
+      />
 
-      <div className={cn('hidden', priceLower && priceUpper && 'block')}>
-        <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
-          <h6 className='font-bold'>Historical price</h6>
-          <Tabs data={periods} />
-        </div>
+      {/* <div className='grid grid-cols-2 gap-4'> */}
+      {/*   <div className='flex flex-col justify-center gap-1.5 rounded-md bg-neutral-800 px-4 py-3'> */}
+      {/*     <TextHeading className='text-sm' data-tooltip-id='APR-INFO'> */}
+      {/*       Estimate APR for $1k */}
+      {/*     </TextHeading> */}
+      {/**/}
+      {/*     <div data-tooltip-id='APR-INFO' className='w-fit rounded-md bg-neutral-700 p-2'> */}
+      {/*       <TextHeading className='text-sm font-bold'>{Number(apr).toFixed(2)}%</TextHeading> */}
+      {/*     </div> */}
+      {/*     <CustomTooltip id='APR-INFO' className='max-w-[320px]'> */}
+      {/*       Estimated return based on weekly trade fees and farming yield */}
+      {/*     </CustomTooltip> */}
+      {/*   </div> */}
+      {/**/}
+      {/*   <div className='flex flex-col gap-3'> */}
+      {/*     <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'> */}
+      {/*       <div className='mt-1 flex cursor-pointer items-center justify-between'> */}
+      {/*         <TextHeading className='text-sm'>{t(mintInfo.noLiquidity ? 'New pool' : 'Current Pool')}</TextHeading> */}
+      {/*         <strong className='text-sm'> */}
+      {/*           {feeString} {t('Fee')} */}
+      {/*         </strong> */}
+      {/*       </div> */}
+      {/*     </div> */}
+      {/*     <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'> */}
+      {/*       <TextHeading className='text-sm'>{t('Risk')}</TextHeading> */}
+      {/*       {_risk && ( */}
+      {/*         <div className='flex items-center gap-2'> */}
+      {/*           {[1, 2, 3, 4, 5].map((_, i) => ( */}
+      {/*             <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'> */}
+      {/*               <div */}
+      {/*                 key={`risk-${i}`} */}
+      {/*                 className='relative h-2 bg-error-600' */}
+      {/*                 style={{ left: `calc(-100% + ${_risk[i]}%)` }} */}
+      {/*               /> */}
+      {/*             </div> */}
+      {/*           ))} */}
+      {/*         </div> */}
+      {/*       )} */}
+      {/*     </div> */}
+      {/*     <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'> */}
+      {/*       <div className='mt-1 flex items-center justify-between'> */}
+      {/*         <TextHeading className='text-sm'>{t('Profit')}</TextHeading> */}
+      {/*         {_risk && ( */}
+      {/*           <div className='flex items-center gap-2'> */}
+      {/*             {[1, 2, 3, 4, 5].map((_, i) => ( */}
+      {/*               <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'> */}
+      {/*                 <div */}
+      {/*                   key={`risk-${i}`} */}
+      {/*                   className='relative h-2 bg-success-600' */}
+      {/*                   style={{ left: `calc(-100% + ${_risk[i]}%)` }} */}
+      {/*                 /> */}
+      {/*               </div> */}
+      {/*             ))} */}
+      {/*           </div> */}
+      {/*         )} */}
+      {/*       </div> */}
+      {/*     </div> */}
+      {/*   </div> */}
+      {/* </div> */}
 
-        {isLoading ? (
-          <Skeleton className='mt-2 flex h-[300px] items-center justify-center' />
-        ) : (
-          <div className='mt-2 flex h-[300px] items-center justify-center'>
-            {error ? (
-              <Paragraph>Failed to load price chart for this pair</Paragraph>
-            ) : (
-              <PoolChart
-                data={pairPrices}
-                timeWindow={timeWindow}
-                current={Number(currentPrice)}
-                upper={mintInfo?.ticksAtLimit[Bound.UPPER] ? Infinity : Number(rightPrice?.toSignificant(5)) ?? 0}
-                lower={mintInfo?.ticksAtLimit[Bound.LOWER] ? 0 : Number(leftPrice?.toSignificant(5)) ?? 0}
-              />
-            )}
-          </div>
-        )}
-      </div>
+      {/* <div className={cn('hidden', priceLower && priceUpper && 'block')}> */}
+      {/*   <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'> */}
+      {/*     <h6 className='font-bold'>Historical price</h6> */}
+      {/*     <Tabs data={periods} /> */}
+      {/*   </div> */}
+      {/**/}
+      {/*   {isLoading ? ( */}
+      {/*     <Skeleton className='mt-2 flex h-[300px] items-center justify-center' /> */}
+      {/*   ) : ( */}
+      {/*     <div className='mt-2 flex h-[300px] items-center justify-center'> */}
+      {/*       {error ? ( */}
+      {/*         <Paragraph>Failed to load price chart for this pair</Paragraph> */}
+      {/*       ) : ( */}
+      {/*         <PoolChart */}
+      {/*           data={pairPrices} */}
+      {/*           timeWindow={timeWindow} */}
+      {/*           current={Number(currentPrice)} */}
+      {/*           upper={mintInfo?.ticksAtLimit[Bound.UPPER] ? Infinity : Number(rightPrice?.toSignificant(5)) ?? 0} */}
+      {/*           lower={mintInfo?.ticksAtLimit[Bound.LOWER] ? 0 : Number(leftPrice?.toSignificant(5)) ?? 0} */}
+      {/*         /> */}
+      {/*       )} */}
+      {/*     </div> */}
+      {/*   )} */}
+      {/* </div> */}
       {/* <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
       <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} /> */}
+
       <CustomTooltip id='price-tooltip' className='max-w-[320px]'>
         <TextHeading className='text-sm'>{t('Price Range Info')}</TextHeading>
       </CustomTooltip>

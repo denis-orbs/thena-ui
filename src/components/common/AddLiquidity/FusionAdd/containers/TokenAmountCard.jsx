@@ -90,7 +90,7 @@ export function TokenAmountCard({
       ) : (
         <div className='flex flex-col gap-2'>
           <div className='flex items-center justify-between'>
-            <p className='font-medium text-white'>{t(title)}</p>
+            <p className='font-medium text-white'>{title}</p>
             {showPercent && <Tabs data={percents} />}
           </div>
           <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
@@ -131,8 +131,16 @@ export function TokenAmountCard({
             </div>
             <div className='flex items-center justify-between gap-2'>
               <TextSubHeading>${formatAmount(value * price)}</TextSubHeading>
-              <TextSubHeading>
-                {t('Balance')}: {balanceString}
+              <TextSubHeading className='space-x-2'>
+                <span>
+                  {t('Balance')}: {balanceString}
+                </span>
+                <span
+                  onClick={() => handleInput(maxAmount?.toExact())}
+                  className={cn('cursor-pointer text-primary-600', maxAmount?.toExact() === '0' && 'hidden')}
+                >
+                  {t('Max')}
+                </span>
               </TextSubHeading>
             </div>
           </div>

@@ -11,15 +11,16 @@ import RenderIfVisible from '@/components/virtualList'
 import { UNKNOWN_LOGO } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { cn, wrappedAddress } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 import { ChevronDownIcon } from '@/svgs'
 
 import { ItemToken } from '../TokenModal/ItemToken'
 
-function SelectToken({
+export function SelectToken({
   hiddenTokens = [],
   className,
   listClassNames,
@@ -28,7 +29,7 @@ function SelectToken({
   placeHolder,
   isLocale = true,
   otherAsset,
-  setOtherAsset,
+  setOtherAsset = () => {},
   prefixClass,
   dropdownAlign = 'left',
   optionWidth = null,
@@ -80,26 +81,19 @@ function SelectToken({
     }
   }, [open])
 
-  const assets = useAssets()
-
-  const baseAssets = useMemo(
-    () =>
-      hiddenTokens && Array.isArray(hiddenTokens) && hiddenTokens.length > 0
-        ? assets.filter(
-            asset => !hiddenTokens.filter(Boolean).some(token => wrappedAddress(asset).includes(token.toLowerCase())),
-          )
-        : assets,
-    [assets, hiddenTokens],
-  )
-
   const [customToken, setCustomToken] = useState()
   const [searchText, setSearchText] = useState('')
 
   const search = useDebounce(searchText)
+  const assets = useAssets()
+  const customAssets = useCustomAssets()
   const { localTokens } = useLocalTokens()
 
   const filteredAssets = useMemo(() => {
-    const tokenList = localTokens.concat(baseAssets)
+    const tokenList = localTokens
+      .concat(assets)
+      .concat(customAssets)
+      .filter(asset => !hiddenTokens.includes(asset.address))
 
     const result = search
       ? tokenList.filter(
@@ -114,7 +108,7 @@ function SelectToken({
     }
 
     return result
-  }, [baseAssets, customToken, localTokens, search])
+  }, [localTokens, assets, customAssets, search, customToken, hiddenTokens])
 
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
@@ -219,9 +213,9 @@ function SelectToken({
             <SearchInput setVal={setSearchText} val={searchText} />
             <div className='mt-4 max-h-[700px] overflow-y-auto'>
               <InfiniteScroll dataLength={filteredAssets.length}>
-                <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
+                <div className='flex flex-wrap gap-4'>
                   {filteredAssets?.map(item => (
-                    <RenderIfVisible key={item.address} root={rootRef.current}>
+                    <RenderIfVisible className='w-full' key={item.address} root={rootRef.current}>
                       <ItemToken
                         item={item}
                         setPopup={data => setOpen(data)}
@@ -233,7 +227,7 @@ function SelectToken({
                         otherAsset={otherAsset}
                         setOtherAsset={setOtherAsset}
                         onAssetSelect={setSelectedAsset}
-                        className='rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
+                        className='min-w-40 flex-1 rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
                       />
                     </RenderIfVisible>
                   ))}
@@ -246,5 +240,3 @@ function SelectToken({
     </div>
   )
 }
-
-export default SelectToken

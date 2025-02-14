@@ -1324,6 +1324,7 @@
   "warning un-farming pool": "You need to activate \"Earn $THE\" to continue earning rewards.",
   "warning Out of Range": "You need to re-provide your liquidity in range to continue earning rewards.",
   "Earn $THE": "Earn $THE",
+  "Earn Fees": "Earn Fees",
   "Warning total weight Weighted Pool": "The total weighting of all tokens must equal exactly 100% before you can proceed.",
   "This pool has no Gauge": "This pool doesn't support staking",
   "Warning THE claim rebase fee": "To receive your rebase, please visit the Rewards page and claim it before your lock period ends. After the lock period expires, the rebase will no longer be available for claiming.",

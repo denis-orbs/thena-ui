@@ -85,7 +85,7 @@ function useAllV3Ticks({ poolAddress, version = 2 }) {
 
 export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
   const { strategy } = useV3MintState()
-  const { version = 3, isFarming = true } = strategy
+  const { version = 3, isFarming = true } = strategy ?? {}
   const [poolState, pool, poolAddress] = useFusionState({
     currencyA,
     currencyB,

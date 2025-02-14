@@ -1,6 +1,7 @@
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import React from 'react'
 
+import { OutlinedButton } from '@/components/buttons/Button'
 import { PAIR_TYPES } from '@/constant'
 
 import AddLiquidityClassicAndStablePool from './AddLiquidityClassicAndStablePool'
@@ -10,9 +11,10 @@ import AddLiquidityClPool from './ClPool'
 export default function Step2({ pool, setStep, isAdd, showSidebar = true }) {
   const searchParams = useSearchParams()
   const pairType = searchParams.get('pairType') ?? pool?.type
+  const router = useRouter()
 
   return (
-    <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>
+    <div className='space-y-10'>
       {pairType === PAIR_TYPES.WEIGHTED && (
         <AddLiquidityWeightedPool pool={pool} showSidebar={showSidebar} setCurrentStep={setStep} />
       )}
@@ -29,6 +31,11 @@ export default function Step2({ pool, setStep, isAdd, showSidebar = true }) {
           showSidebar={showSidebar}
         />
       )}
+
+      <div className='mt-16'>
+        <OutlinedButton onClick={() => router.back()}>Back</OutlinedButton>
+        <OutlinedButton onClick={() => router.push('/pools')}>Cancel</OutlinedButton>
+      </div>
     </div>
   )
 }

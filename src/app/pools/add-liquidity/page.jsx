@@ -5,19 +5,21 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import { usePairs } from '@/context/pairsContext'
 
-import AddLiquidity from './AddLiquidity'
+import Step1 from './Step1'
+import Step2 from './Step2'
 
 export default function AddLiquidityPage() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const { pairs } = usePairs()
-
   const poolAddress = searchParams.get('pool')
-  const [poolSelected, setPoolSelected] = useState(null)
-  const [step, setStep] = useState(Number(searchParams.get('step') ?? 1))
 
+  const { pairs } = usePairs()
   const poolDefault = useMemo(() => pairs.find(pool => pool.address === poolAddress), [pairs, poolAddress])
+
+  const [poolSelected, setPoolSelected] = useState(poolDefault)
+  const [step, setStep] = useState(Number(searchParams.get('step') ?? 1))
+  const [isAdd, setIsAdd] = useState(false)
 
   useEffect(() => {
     if (poolDefault && !poolSelected) {
@@ -41,7 +43,8 @@ export default function AddLiquidityPage() {
 
   return (
     <div className='container mx-auto flex flex-col'>
-      <AddLiquidity pool={poolSelected} setStep={setStep} step={step} />
+      {step === 1 && <Step1 nextStep={setStep} setPoolSelected={setPoolSelected} setIsAdd={setIsAdd} />}
+      {step === 2 && <Step2 pool={poolSelected} setStep={setStep} isAdd={isAdd} />}
     </div>
   )
 }
