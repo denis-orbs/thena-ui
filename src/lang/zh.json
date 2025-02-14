@@ -1453,6 +1453,6 @@
   "Min [symbol0] per [symbol1] price": "Min {symbol0} per {symbol1} price",
   "Automated Strategies": "Automated Strategies",
   "Liquidity Pool Type": "Liquidity Pool Type",
-  "Chose Liquidity Type": "Chose Liquidity Type",
+  "Choose Liquidity Type": "选择流动性类型",
   "Add Concentrated Liquidity": "Add Concentrated Liquidity"
 }

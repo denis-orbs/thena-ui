@@ -4,7 +4,7 @@ import React, { useCallback, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SelectorGrid from '@/components/selector/SelectorGrid'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { PoolGroupIcon } from '@/svgs'
 
@@ -91,15 +91,13 @@ export default function Step1({ nextStep }) {
     <div className='space-y-10 lg:space-y-20'>
       <h4 className='flex flex-row items-center gap-3'>
         <PoolGroupIcon className='h-11 w-12 lg:h-[116px] lg:w-[108px]' />
-        <TextHeading className='font-archia text-3xl font-semibold lg:text-[96px]'>
-          {t('Chose Liquidity Type')}
-        </TextHeading>
+        <NewTextHeading>{t('Choose Liquidity Type')}</NewTextHeading>
       </h4>
 
       <div className='flex flex-col gap-4 lg:flex-row'>
         <div className='flex w-full flex-col gap-3 lg:w-[60%]'>
-          <TextHeading>{t('Liquidity Pool Type')}</TextHeading>
-          <SelectorGrid classNames={{ item: 'bg-transparent pl-0' }} data={poolTypesData} isGrid={false} />
+          <NewTextSubHeading>{t('Liquidity Pool Type')}</NewTextSubHeading>
+          <SelectorGrid data={poolTypesData} isGrid={false} />
         </div>
       </div>
 

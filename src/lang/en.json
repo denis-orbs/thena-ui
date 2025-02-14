@@ -1455,6 +1455,6 @@
   "Min [symbol0] per [symbol1] price": "Min {symbol0} per {symbol1} price",
   "Automated Strategies": "Automated Strategies",
   "Liquidity Pool Type": "Liquidity Pool Type",
-  "Chose Liquidity Type": "Chose Liquidity Type",
+  "Choose Liquidity Type": "Choose Liquidity Type",
   "Add Concentrated Liquidity": "Add Concentrated Liquidity"
 }
