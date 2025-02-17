@@ -47,9 +47,6 @@ function SelectPair({ updateSearchParams, firstAsset, secondAsset }) {
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-2' ref={wrapperSelectRef}>
         <SelectToken
           otherAsset={secondAsset}
-          setOtherAsset={item => {
-            updateSearchParams({ firstAddress: item?.address })
-          }}
           setSelectedAsset={item => {
             updateSearchParams({ firstAddress: item?.address })
           }}
@@ -60,9 +57,6 @@ function SelectPair({ updateSearchParams, firstAsset, secondAsset }) {
         />
         <SelectToken
           otherAsset={firstAsset}
-          setOtherAsset={item => {
-            updateSearchParams({ firstAddress: item?.address })
-          }}
           setSelectedAsset={item => {
             updateSearchParams({ secondAddress: item?.address })
           }}

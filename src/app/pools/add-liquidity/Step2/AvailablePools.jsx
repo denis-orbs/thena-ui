@@ -3,13 +3,14 @@ import React, { useMemo } from 'react'
 
 import NewListings from '@/app/pools/NewListings'
 import { Paragraph } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { wrappedAddress } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 const sortOptions = [
   {
-    label: 'Pairing',
+    label: 'Pair',
     value: 'pair',
     width: 'lg:w-[30%]',
     isDesc: true,
@@ -17,25 +18,19 @@ const sortOptions = [
   {
     label: 'APR',
     value: 'apr',
-    width: 'lg:w-[15%] lg:min-w-[231.61px]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
     label: 'TVL',
     value: 'tvl',
-    width: 'lg:w-[15%]',
+    width: 'lg:w-[25%]',
     isDesc: true,
   },
-  // {
-  //   label: 'Volume (24h)',
-  //   value: 'volume',
-  //   width: 'lg:w-[10%]',
-  //   isDesc: true,
-  // },
   {
     label: 'Fees (24h)',
     value: 'fee',
-    width: 'lg:w-[calc(20%-100px)]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
@@ -46,21 +41,34 @@ const sortOptions = [
   },
 ]
 
-function AvailablePools({ tokens }) {
-  const { weightedPools } = usePairs()
+function AvailablePools({ tokens = [], pairType }) {
+  const { weightedPools, pairs } = usePairs()
   const t = useTranslations()
+
   const availablePools = useMemo(() => {
-    const pools = weightedPools.filter(pool =>
-      tokens.every(token => pool.tokens.map(pToken => pToken.address).includes(wrappedAddress(token))),
-    )
-    return pools
-  }, [tokens, weightedPools])
+    if (pairType === PAIR_TYPES.WEIGHTED) {
+      return weightedPools.filter(pool =>
+        tokens.every(token => pool.tokens.map(pToken => pToken.address).includes(wrappedAddress(token))),
+      )
+    }
+
+    return pairs.filter(pair => {
+      const token0Address = wrappedAddress(tokens[0])
+      const token1Address = wrappedAddress(tokens[1])
+
+      return (
+        pair.type === pairType &&
+        ((pair.token0.address === token0Address && pair.token1.address === token1Address) ||
+          (pair.token0.address === token1Address && pair.token1.address === token0Address))
+      )
+    })
+  }, [pairType, pairs, weightedPools, tokens])
 
   return (
     <>
       {availablePools.length > 0 ? (
         <div className='w-full'>
-          <NewListings isCollapse={false} pools={availablePools} sortOptions={sortOptions} />
+          <NewListings defaultShow pools={availablePools} title={t('Available Pools')} sortOptions={sortOptions} />
         </div>
       ) : (
         <>
@@ -70,7 +78,7 @@ function AvailablePools({ tokens }) {
             </div>
             <div className='flex flex-col'>
               <Paragraph className='text-xl text-neutral-100'>
-                {t('No Pool for this Assets and Strategie found')}
+                {t('No Pool for this Assets and Strategies found')}
               </Paragraph>
               <Paragraph className='text-base text-neutral-100'>
                 {t('You can create a new Pool or change the Strategie')}

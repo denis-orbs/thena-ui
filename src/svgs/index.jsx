@@ -27,6 +27,8 @@ import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
+import CLPoolIcon from '~/svgs/cl-pool-icon.svg'
+import ClassicPoolIcon from '~/svgs/classic-pool-icon.svg'
 import Clock from '~/svgs/clock.svg'
 import CloseIcon from '~/svgs/close.svg'
 import CoinHand from '~/svgs/coin-hand.svg'
@@ -101,6 +103,7 @@ import ShareProfileIcon from '~/svgs/share-icon.svg'
 import SoundOffIcon from '~/svgs/sound-off.svg'
 import SoundOnIcon from '~/svgs/sound-on.svg'
 import SplitIcon from '~/svgs/split.svg'
+import StablePoolIcon from '~/svgs/stable-pool-icon.svg'
 import StackCoinIcon from '~/svgs/stack-coin.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 import StarLineSmallIcon from '~/svgs/star-line-small.svg'
@@ -125,6 +128,7 @@ import User from '~/svgs/user.svg'
 import UserIcon from '~/svgs/user-icon.svg'
 import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
+import WeightedPoolIcon from '~/svgs/weighted-pool-icon.svg'
 import XIcon from '~/svgs/x-close.svg'
 import ZoomInIcon from '~/svgs/zoom-in.svg'
 import ZoomOutIcon from '~/svgs/zoom-out.svg'
@@ -158,8 +162,10 @@ export {
   CheckPurpleLargeIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  ClassicPoolIcon,
   Clock,
   CloseIcon,
+  CLPoolIcon,
   CoinHand,
   CoinsHandIcon,
   CoinsStackedIcon,
@@ -234,6 +240,7 @@ export {
   SoundOffIcon,
   SoundOnIcon,
   SplitIcon,
+  StablePoolIcon,
   StackCoinIcon as StackCoin,
   StarLineLargeIcon,
   StarLineSmallIcon,
@@ -257,6 +264,7 @@ export {
   UserIcon,
   Verified,
   WalletIcon,
+  WeightedPoolIcon,
   XIcon,
   ZoomInIcon,
   ZoomOutIcon,

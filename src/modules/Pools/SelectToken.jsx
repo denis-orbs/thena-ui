@@ -11,9 +11,10 @@ import RenderIfVisible from '@/components/virtualList'
 import { UNKNOWN_LOGO } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { cn, wrappedAddress } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 import { ChevronDownIcon } from '@/svgs'
 
@@ -28,7 +29,6 @@ function SelectToken({
   placeHolder,
   isLocale = true,
   otherAsset,
-  setOtherAsset = () => {},
   prefixClass,
   dropdownAlign = 'left',
   optionWidth = null,
@@ -81,16 +81,7 @@ function SelectToken({
   }, [open])
 
   const assets = useAssets()
-
-  const baseAssets = useMemo(
-    () =>
-      hiddenTokens && Array.isArray(hiddenTokens) && hiddenTokens.length > 0
-        ? assets.filter(
-            asset => !hiddenTokens.filter(Boolean).some(token => wrappedAddress(asset).includes(token.toLowerCase())),
-          )
-        : assets,
-    [assets, hiddenTokens],
-  )
+  const customAssets = useCustomAssets()
 
   const [customToken, setCustomToken] = useState()
   const [searchText, setSearchText] = useState('')
@@ -99,22 +90,23 @@ function SelectToken({
   const { localTokens } = useLocalTokens()
 
   const filteredAssets = useMemo(() => {
-    const tokenList = localTokens.concat(baseAssets)
+    const tokenList = [...localTokens, ...assets, ...customAssets]
 
     const result = search
       ? tokenList.filter(
           asset =>
-            asset.symbol.toLowerCase().includes(search.toLowerCase()) ||
-            asset.address.toLowerCase().includes(search.toLowerCase()),
+            !hiddenTokens.includes(asset.address) &&
+            (asset.symbol.toLowerCase().includes(search.toLowerCase()) ||
+              asset.address.toLowerCase().includes(search.toLowerCase())),
         )
-      : tokenList
+      : tokenList.filter(asset => !hiddenTokens.includes(asset.address))
 
     if (result.length === 0 && customToken) {
       result.push(customToken)
     }
 
     return result
-  }, [baseAssets, customToken, localTokens, search])
+  }, [assets, customAssets, customToken, hiddenTokens, localTokens, search])
 
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
@@ -162,15 +154,16 @@ function SelectToken({
       })
     }
   }, [isSuccess, newToken, search, customToken?.address, chainId])
+
   return (
-    <div className={cn('relative h-[88px]', className)} ref={wrapperRef}>
+    <div className={cn('relative h-14 2xl:h-[88px]', className)} ref={wrapperRef}>
       <Input
-        className='h-[88px]'
+        className='h-full'
         classNames={{
-          input: cn('cursor-pointer caret-transparent h-[88px] pl-[75px]', className),
+          input: cn('cursor-pointer caret-transparent h-full pl-12 2xl:pl-[75px]', className),
         }}
         type='text'
-        val={selectedAsset?.symbol || 'UNKNOWN'}
+        val={selectedAsset?.symbol || placeHolder}
         onMouseDown={e => {
           e.preventDefault()
           setOpen(!open)
@@ -188,7 +181,7 @@ function SelectToken({
         isLocale={isLocale}
         prefix={
           <div className='flex gap-[6px]'>
-            <CircleImage alt='Token' width={50} height={50} src={selectedAsset?.logoURI ?? UNKNOWN_LOGO} />
+            <CircleImage alt='Token' className='size-8 2xl:size-12' src={selectedAsset?.logoURI ?? UNKNOWN_LOGO} />
           </div>
         }
         prefixClass={prefixClass}
@@ -216,10 +209,10 @@ function SelectToken({
                   : `${optionWidth || position.width}px`,
             }}
           >
-            <SearchInput setVal={setSearchText} val={searchText} />
-            <div className='mt-4 max-h-[700px] overflow-y-auto'>
+            <SearchInput setVal={setSearchText} val={searchText} className='mr-3' />
+            <div className='mt-4·max-h-[700px]·overflow-y-auto·scrollbar-thin·scrollbar-track-neutral-800·scrollbar-thumb-neutral-500·hover:scrollbar-thumb-neutral-400'>
               <InfiniteScroll dataLength={filteredAssets.length}>
-                <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
+                <div className='grid gap-3 md:grid-cols-2 2xl:grid-cols-3'>
                   {filteredAssets?.map(item => (
                     <RenderIfVisible key={item.address} root={rootRef.current}>
                       <ItemToken
@@ -231,9 +224,8 @@ function SelectToken({
                           setOpen(false)
                         }}
                         otherAsset={otherAsset}
-                        setOtherAsset={setOtherAsset}
-                        onAssetSelect={setSelectedAsset}
-                        className='rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
+                        setOtherAsset={() => {}}
+                        className='min-w-40 flex-1 rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
                       />
                     </RenderIfVisible>
                   ))}

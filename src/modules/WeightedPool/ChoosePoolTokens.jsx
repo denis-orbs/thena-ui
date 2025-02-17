@@ -2,11 +2,12 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import AvailablePools from '@/app/pools/add-liquidity/Step2/AvailablePools'
 import { TextHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import { cn } from '@/lib/utils'
 import { PoolCoinsIcon } from '@/svgs'
 
-import AvailablePools from './AvailablePools'
 import SelectToken from '../Pools/SelectToken'
 
 function ChoosePoolTokens({ setTokensSelect }) {
@@ -74,7 +75,7 @@ function ChoosePoolTokens({ setTokensSelect }) {
         </div>
         <div className='grid grid-cols-1 gap-4 border-b border-neutral-700 pb-8 lg:grid-cols-2'>{tokensList}</div>
       </div>
-      {finalListTokens.length >= 2 && <AvailablePools tokens={finalListTokens} />}
+      {finalListTokens.length >= 2 && <AvailablePools tokens={finalListTokens} pairType={PAIR_TYPES.WEIGHTED} />}
     </div>
   )
 }
