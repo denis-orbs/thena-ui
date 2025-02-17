@@ -4,7 +4,6 @@ import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
 import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
 import KyberZapperPane from '@/components/common/AddLiquidity/FusionAdd/ZapperPane'
 import Selection from '@/components/selection'
-import { cn } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { useV3MintState } from '@/state/fusion/hooks'
 
@@ -17,14 +16,14 @@ export default function AddLiquidityCLPane({ pool, isAdd, mintInfo, baseCurrency
   const addSelections = useMemo(
     () => [
       {
-        label: 'Default',
+        label: 'Pair Token Deposit ',
         active: !isZapper,
         onClickHandler: () => {
           setIsZapper(false)
         },
       },
       {
-        label: 'Zapper',
+        label: 'Single Token Deposit',
         active: isZapper,
         onClickHandler: () => {
           setIsZapper(true)
@@ -41,13 +40,9 @@ export default function AddLiquidityCLPane({ pool, isAdd, mintInfo, baseCurrency
         {strategy?.isAutomatic ? (
           <FusionAdd strategy={isAdd ? pool : strategy} isAdd={isAdd} />
         ) : (
-          <div className='space-y-6'>
-            <div className='flex'>
-              <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
-              <div className={cn('flex justify-end rounded-lg bg-neutral-800')}>
-                <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
-              </div>
-            </div>
+          <div className='space-y-4'>
+            <Selection className='w-full' data={addSelections} isFull isTranslation={false} />
+            <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
 
             {isZapper ? (
               <KyberZapperPane

@@ -161,11 +161,15 @@ export const Brush = ({
               >
                 <g>
                   <path
-                    className={cn('pointer-events-none cursor-ew-resize fill-[#DC00D4] stroke-[#DC00D4] stroke-[3px]')}
+                    style={{ fill: eastHandleColor, stroke: eastHandleColor }}
+                    className={cn('pointer-events-none cursor-ew-resize stroke-[3px]')}
                     d={brushHandlePath(innerHeight)}
                   />
                   <path
-                    className={cn('pointer-events-none cursor-ew-resize stroke-[#F199EE] stroke-[1.5px]')}
+                    className={cn(
+                      'pointer-events-none cursor-ew-resize  stroke-[1.5px]',
+                      interactive ? 'stroke-[#F199EE]' : 'stroke-[#35243D]',
+                    )}
                     d={brushHandleAccentPath()}
                   />
                 </g>
@@ -197,11 +201,15 @@ export const Brush = ({
               <g transform={`translate(${xScale(localBrushExtent[1])}, 0), scale(${flipEastHandle ? '-1' : '1'}, 1)`}>
                 <g>
                   <path
-                    className={cn('pointer-events-none cursor-ew-resize fill-[#DC00D4] stroke-[#DC00D4] stroke-[3px]')}
+                    style={{ fill: westHandleColor, stroke: westHandleColor }}
+                    className={cn('pointer-events-none cursor-ew-resize stroke-[3px]')}
                     d={brushHandlePath(innerHeight)}
                   />
                   <path
-                    className={cn('pointer-events-none cursor-ew-resize stroke-[#F199EE] stroke-2')}
+                    className={cn(
+                      'pointer-events-none cursor-ew-resize stroke-[1.5px]',
+                      interactive ? 'stroke-[#F199EE]' : 'stroke-[#35243D]',
+                    )}
                     d={brushHandleAccentPath()}
                   />
                 </g>
@@ -242,6 +250,7 @@ export const Brush = ({
       id,
       innerHeight,
       innerWidth,
+      interactive,
       localBrushExtent,
       showEastArrow,
       showLabels,

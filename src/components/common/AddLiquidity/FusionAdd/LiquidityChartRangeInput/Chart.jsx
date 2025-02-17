@@ -125,7 +125,7 @@ export function Chart({
           </g>
 
           <rect
-            className='cursor-grab fill-transparent active:cursor-grabbing'
+            className='size-full cursor-grab fill-transparent active:cursor-grabbing'
             width={innerWidth}
             height={height}
             ref={zoomRef}
@@ -140,8 +140,8 @@ export function Chart({
               innerWidth={innerWidth}
               innerHeight={innerHeight}
               setBrushExtent={onBrushDomainChange}
-              westHandleColor={styles.brush.handle.west}
-              eastHandleColor={styles.brush.handle.east}
+              westHandleColor={interactive ? styles.brush.handle.west : '#35243D'}
+              eastHandleColor={interactive ? styles.brush.handle.east : '#35243D'}
             />
           )}
         </g>

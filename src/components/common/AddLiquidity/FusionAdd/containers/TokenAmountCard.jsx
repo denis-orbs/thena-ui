@@ -110,7 +110,7 @@ export function TokenAmountCard({
               <div
                 className={cn(
                   'inline-flex items-center justify-center gap-2',
-                  'rounded-full bg-neutral-600 text-sm text-neutral-200',
+                  'rounded-lg bg-neutral-600 text-sm text-neutral-200',
                   'py-1.5 pl-1.5 pr-2',
                 )}
               >

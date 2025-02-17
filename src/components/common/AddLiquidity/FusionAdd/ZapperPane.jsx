@@ -156,34 +156,6 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
             Estimated return based on weekly trade fees and farming yield
           </CustomTooltip>
         </div>
-
-        {/* <div className='mt-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-          <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-          <div className='flex flex-col gap-3'>
-            <div className='flex items-center justify-between'>
-              <Paragraph className='font-medium'>
-                {unwrappedSymbol(strategy?.token0)} {t('Amount')}
-              </Paragraph>
-              <Paragraph>{formatAmount(strategy?.token0?.reserve)}</Paragraph>
-            </div>
-            <div className='flex items-center justify-between'>
-              <Paragraph className='font-medium'>
-                {unwrappedSymbol(strategy?.token1)} {t('Amount')}
-              </Paragraph>
-              <Paragraph>{formatAmount(strategy?.token1?.reserve)}</Paragraph>
-            </div>
-          </div>
-        </div>
-
-        <div className='mt-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-          <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-          <div className='flex flex-col gap-3'>
-            <div className='flex items-center justify-between'>
-              <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-              <Paragraph>{formatAmount(strategy?.account?.totalLp)} LP</Paragraph>
-            </div>
-          </div>
-        </div> */}
       </div>
 
       {account ? (

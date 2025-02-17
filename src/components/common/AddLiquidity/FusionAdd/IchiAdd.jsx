@@ -67,50 +67,22 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
     <>
       <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
+
         <div className='flex justify-end'>
           <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
         </div>
+
         <div className='flex flex-col gap-4'>
           <BalanceInput
-            title={t('Asset')}
             asset={depositToken}
             maxBalance={isDouble ? balance : null}
             amount={amount}
             onAmountChange={setAmount}
             showPercent={false}
           />
-          {/* <div className='flex flex-col gap-4'>
-            <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>
-                  {unwrappedSymbol(strategy.token0)} {t('Amount')}
-                </Paragraph>
-                <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
-              </div>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>
-                  {unwrappedSymbol(strategy.token1)} {t('Amount')}
-                </Paragraph>
-                <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
-              </div>
-            </div>
-          </div>
-          <div className='flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-            <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
-              </div>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
+
       <div
         className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row', isModal && 'px-3 lg:px-6')}
       >
