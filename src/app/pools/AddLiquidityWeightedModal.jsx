@@ -3,7 +3,7 @@ import React from 'react'
 import Modal from '@/components/modal'
 import { useWindowSize } from '@/hooks/useWindowSize'
 
-import AddLiquidityWeightedPool from './add-liquidity/AddLiquidityWeightedPool'
+import AddLiquidityWeightedPool from './add-liquidity/AddLiquidityWeightedPool-OLD'
 
 function AddLiquidityWeightedModal({ pool, isStake, isOpen, setIsOpen }) {
   const windowSize = useWindowSize()

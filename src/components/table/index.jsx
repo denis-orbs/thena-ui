@@ -119,6 +119,7 @@ function Table({
   showNumberOfPage = false,
   setNumberOfPage,
   classNames,
+  summary = undefined,
 }) {
   const t = useTranslations()
   const pathname = usePathname()
@@ -329,6 +330,17 @@ function Table({
                         </tr>
                       )
                     },
+                  )}
+                  {summary && (
+                    <tr key='table-row-summary' id='table-row-summary'>
+                      {sortOptions.map((cell, cellIdx) => (
+                        <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
+                          <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                            {summary[cell.value]}
+                          </TableCell>
+                        </td>
+                      ))}
+                    </tr>
                   )}
                 </>
               )}

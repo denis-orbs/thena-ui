@@ -30,6 +30,7 @@ import ChevronRightIcon from '~/svgs/chevron-right.svg'
 import Clock from '~/svgs/clock.svg'
 import CloseIcon from '~/svgs/close.svg'
 import CoinHand from '~/svgs/coin-hand.svg'
+import CoinsHandIcon from '~/svgs/coins-hand.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
 import CollapseUpIcon from '~/svgs/collapse-up.svg'
 import CopyIcon from '~/svgs/copy.svg'
@@ -88,6 +89,8 @@ import RefreshIcon from '~/svgs/refresh.svg'
 import RegisterIcon from '~/svgs/register.svg'
 import RightInIcon from '~/svgs/right-in.svg'
 import RightOutIcon from '~/svgs/right-out.svg'
+import ScalesPrimaryIcon from '~/svgs/scale-primary.svg'
+import ScalesIcon from '~/svgs/scales.svg'
 import SearchIcon from '~/svgs/search.svg'
 import SecondPrizeIcon from '~/svgs/second-prize.svg'
 import SendIcon from '~/svgs/send.svg'
@@ -158,6 +161,7 @@ export {
   Clock,
   CloseIcon,
   CoinHand,
+  CoinsHandIcon,
   CoinsStackedIcon,
   CollapseUpIcon,
   CopyArenaIcon,
@@ -218,6 +222,8 @@ export {
   RightInIcon,
   RightOutIcon,
   RoundedTHETokenIcon,
+  ScalesIcon,
+  ScalesPrimaryIcon,
   SearchIcon,
   SecondPrizeIcon,
   SendIcon,

@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react'
 
-import AddLiquidityWeightedPool from '@/app/pools/add-liquidity/AddLiquidityWeightedPool'
+import AddLiquidityWeightedPool from '@/app/pools/add-liquidity/AddLiquidityWeightedPool-OLD'
 import { NeutralBadge } from '@/components/badges/Badge'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import Modal from '@/components/modal'

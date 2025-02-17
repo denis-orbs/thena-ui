@@ -73,7 +73,6 @@ export default function Step2({ setStep }) {
   return (
     <div className='space-y-10 lg:space-y-20'>
       {Title}
-
       <div className='flex flex-col gap-4 lg:flex-row'>
         <div className='flex w-full flex-col gap-3 lg:w-[60%]'>
           <NewTextSubHeading>{t('Liquidity Pool Type')}</NewTextSubHeading>

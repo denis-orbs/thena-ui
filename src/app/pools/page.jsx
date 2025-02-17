@@ -28,6 +28,7 @@ import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useChainSettings } from '@/state/settings/hooks'
 import { ArrowRightIcon, InfoIcon } from '@/svgs'
 
+import AddLiquidityModal from './addLiquidityModal'
 import NewListings from './NewListings'
 
 const sortOptions = [
@@ -79,6 +80,7 @@ const STRATEGIES = {
 export default function PoolsPage() {
   const [searchText, setSearchText] = useState('')
   const [isInactive, setIsInactive] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const [sort, setSort] = useState(sortOptions[2])
   const [filter, setFilter] = useState(PAIR_TYPES.All)
   const [strategy, setStrategy] = useState(STRATEGIES.All)
@@ -268,7 +270,7 @@ export default function PoolsPage() {
                     <NextImage
                       className='h-full w-full rounded-full object-cover'
                       alt='Kernel'
-                      src='/images/Kernel.svg'
+                      src='/images/kernel.svg'
                     />
                   </div>
                   <CustomTooltip id={`pool-special-${pool.address}-tooltip2`} className='rounded-md !py-2' place='top'>
@@ -461,6 +463,7 @@ export default function PoolsPage() {
                         <TextHeading className='text-lg'>{trending.symbol}</TextHeading>
                         <NeutralBadge className='text-nowrap'>ICHI</NeutralBadge>
                       </div>
+                      {/* <Paragraph className='text-sm'>{t(PAIR_TYPES.LSD)}</Paragraph> */}
                     </div>
                   </div>
                 </div>
@@ -524,7 +527,26 @@ export default function PoolsPage() {
             </span>
           </TextSubHeading>
         </div>
+
+        {/* <PrimaryButton className='flex min-w-fit items-center gap-1' onClick={() => push('/dashboard')}> */}
+        {/*   <span>Migrate now</span> */}
+        {/*   <ArrowRightIcon className='h-5 w-5' /> */}
+        {/* </PrimaryButton> */}
       </Box>
+
+      {/* <div className='mt-6 flex flex-col gap-4'>
+        <div className='flex items-center justify-between'>
+          <TextHeading className='text-xl'>{t('Your Conc Liquidity Positions')}</TextHeading>
+        </div>
+        <Table
+          sortOptions={sortOptions}
+          data={finalPools}
+          sort={sort}
+          setSort={setSort}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div> */}
 
       <div className='mt-6 flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
@@ -600,6 +622,8 @@ export default function PoolsPage() {
           setCurrentPage={setCurrentPage}
         />
       </div>
+
+      <AddLiquidityModal popup={isOpen} setPopup={setIsOpen} />
     </div>
   )
 }

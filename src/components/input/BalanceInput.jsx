@@ -15,7 +15,7 @@ import IconGroup from '../icongroup'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
-import { TextSubHeading } from '../typography'
+import { TextHeading, TextSubHeading } from '../typography'
 
 function BalanceInput({
   asset,
@@ -27,6 +27,7 @@ function BalanceInput({
   autoFocus = false,
   weight,
   showPercent = true,
+  classNames,
 }) {
   const assets = useAssets()
   const t = useTranslations()
@@ -92,7 +93,7 @@ function BalanceInput({
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center justify-between'>
-        <p className='font-medium text-white'>{title}</p>
+        <p className={cn('font-medium text-white', classNames.title)}>{title}</p>
         {showPercent && <Tabs data={percents} />}
       </div>
       <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
@@ -140,9 +141,17 @@ function BalanceInput({
         </div>
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-          <TextSubHeading>
-            {t('Balance')}: {formatAmount(max)}
-          </TextSubHeading>
+          <div className='flex flex-row items-center justify-between gap-4'>
+            <TextSubHeading>
+              {t('Balance')}: {formatAmount(max)}
+            </TextSubHeading>
+            <TextHeading
+              className='cursor-pointer text-sm text-primary-600'
+              onClick={() => onAmountChange(max.dp(asset.decimals).toString(10))}
+            >
+              {t('Max')}
+            </TextHeading>
+          </div>
         </div>
       </div>
       {/* {errorMsg && (

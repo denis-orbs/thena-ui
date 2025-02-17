@@ -26,7 +26,7 @@ import {
   getWeightedPoolVaultContract,
 } from '@/lib/contracts'
 import { getTokenInfo } from '@/lib/helper'
-import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
+import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei, wrappedAddress } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -174,142 +174,148 @@ export const useWeightedPool = () => {
 
   const onCreateWeightedPool = useCallback(
     async (name, symbol, tokens, allocates, amounts, fee, onSuccess) => {
-      const key = uuidv4()
-      const createuuid = uuidv4()
-      const initialLiquidityuuid = uuidv4()
-      const registerPooluuid = uuidv4()
-      const wrapuuid = uuidv4()
+      try {
+        const key = uuidv4()
+        const createuuid = uuidv4()
+        const initialLiquidityuuid = uuidv4()
+        const registerPooluuid = uuidv4()
+        const wrapuuid = uuidv4()
 
-      const transactions = {}
+        const transactions = {}
 
-      setPending(true)
+        setPending(true)
 
-      const wBNB = (tokens || []).find(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
-      const index = (tokens || []).findIndex(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
-      let amountToWrap
-      if (wBNB && wBNB.balance.lt(fromWei(amounts?.[index]))) {
-        amountToWrap = fromWei(amounts?.[index]).minus(wBNB.balance)
-      }
-
-      if (amountToWrap) {
-        transactions[wrapuuid] = {
-          desc: t('Wrap'),
-          status: TXN_STATUS.START,
-          hash: null,
+        const wBNB = (tokens || []).find(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
+        const index = (tokens || []).findIndex(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
+        let amountToWrap
+        if (wBNB && wBNB.balance.lt(fromWei(amounts?.[index]))) {
+          amountToWrap = fromWei(amounts?.[index]).minus(wBNB.balance)
         }
-      }
 
-      for (const tokenItem of tokens) {
-        const tokenContract = getERC20Contract(tokenItem.address, chainId)
-        const approveFeeuuid = uuidv4()
-        const allowance = await readCall(
-          tokenContract,
-          'allowance',
-          [account, Contracts.weightedPoolRouter[chainId]],
-          chainId,
-        )
-
-        const isApprovedFee = fromWei(allowance, tokenItem.decimals).gte(tokenItem.amount)
-
-        if (!isApprovedFee) {
-          tokenItem.id = approveFeeuuid
-          transactions[approveFeeuuid] = {
-            desc: `${t('Approve')} ${tokenItem.symbol === 'BNB' ? 'WBNB' : tokenItem.symbol}`,
+        if (amountToWrap) {
+          transactions[wrapuuid] = {
+            desc: t('Wrap'),
             status: TXN_STATUS.START,
             hash: null,
           }
         }
-      }
 
-      transactions[createuuid] = {
-        desc: t('Create New Weighted Pool'),
-        status: TXN_STATUS.START,
-        hash: null,
-      }
-      transactions[registerPooluuid] = {
-        desc: t('Register Pool'),
-        status: TXN_STATUS.START,
-        hash: null,
-      }
+        for (const tokenItem of tokens) {
+          const tokenContract = getERC20Contract(wrappedAddress(tokenItem), chainId)
+          const approveFeeuuid = uuidv4()
+          const allowance = await readCall(
+            tokenContract,
+            'allowance',
+            [account, Contracts.weightedPoolRouter[chainId]],
+            chainId,
+          )
 
-      transactions[initialLiquidityuuid] = {
-        desc: t('Add initial liquidity'),
-        status: TXN_STATUS.START,
-        hash: null,
-      }
+          const isApprovedFee = fromWei(allowance, tokenItem.decimals).gte(tokenItem.amount)
 
-      startTxn({
-        key,
-        title: 'Create Weighted Pool',
-        transactions,
-      })
-
-      if (amountToWrap && chainId !== CHAIN_ID.TEST_BSC) {
-        const wbnbContract = getWBNBContract(chainId)
-        if (!(await writeTxn(key, wrapuuid, wbnbContract, 'deposit', [], toWei(amountToWrap).dp(0).toString(10)))) {
-          setPending(false)
-          return
-        }
-      }
-
-      for (const tokenItem of tokens) {
-        if (tokenItem.id) {
-          const tokenContract = getERC20Contract(tokenItem.address, chainId)
-          const isSuccess = await writeTxn(key, tokenItem.id, tokenContract, 'approve', [
-            Contracts.weightedPoolRouter[chainId],
-            maxUint256,
-          ])
-
-          if (!isSuccess) {
-            setPending(false)
-            return false
+          if (!isApprovedFee) {
+            tokenItem.id = approveFeeuuid
+            transactions[approveFeeuuid] = {
+              desc: `${t('Approve')} ${tokenItem.symbol === 'BNB' ? 'WBNB' : tokenItem.symbol}`,
+              status: TXN_STATUS.START,
+              hash: null,
+            }
           }
         }
-      }
 
-      // Convert to hex
-      const encodeName = encodePacked(['string'], [name])
-      const salt = toHex(toBytes32(encodeName))
+        transactions[createuuid] = {
+          desc: t('Create New Weighted Pool'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
+        transactions[registerPooluuid] = {
+          desc: t('Register Pool'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
 
-      const tokenIds = tokens.map(token => token.address)
+        transactions[initialLiquidityuuid] = {
+          desc: t('Add initial liquidity'),
+          status: TXN_STATUS.START,
+          hash: null,
+        }
 
-      const txHash = await writeTxn(key, createuuid, poolFactoryContract, 'create', [
-        name,
-        symbol,
-        tokenIds,
-        allocates,
-        account.toLowerCase(),
-        salt,
-      ])
+        startTxn({
+          key,
+          title: 'Create Weighted Pool',
+          transactions,
+        })
 
-      if (!txHash) {
+        if (amountToWrap && chainId !== CHAIN_ID.TEST_BSC) {
+          const wbnbContract = getWBNBContract(chainId)
+          if (!(await writeTxn(key, wrapuuid, wbnbContract, 'deposit', [], toWei(amountToWrap).dp(0).toString(10)))) {
+            setPending(false)
+            return
+          }
+        }
+
+        for (const tokenItem of tokens) {
+          if (tokenItem.id) {
+            const tokenContract = getERC20Contract(wrappedAddress(tokenItem), chainId)
+            const isSuccess = await writeTxn(key, tokenItem.id, tokenContract, 'approve', [
+              Contracts.weightedPoolRouter[chainId],
+              maxUint256,
+            ])
+
+            if (!isSuccess) {
+              setPending(false)
+              return false
+            }
+          }
+        }
+
+        // Convert to hex
+        const encodeName = encodePacked(['string'], [name])
+        const salt = toHex(toBytes32(encodeName))
+
+        const tokenIds = tokens.map(token => wrappedAddress(token))
+
+        const txHash = await writeTxn(key, createuuid, poolFactoryContract, 'create', [
+          name,
+          symbol,
+          tokenIds,
+          allocates,
+          account.toLowerCase(),
+          salt,
+        ])
+
+        if (!txHash) {
+          setPending(false)
+          return false
+        }
+
+        const poolId = await handleGetPoolId(txHash)
+        const weightedPoolContract = getWeightedPoolContract(poolId, chainId)
+        const poolId32 = await readCall(weightedPoolContract, 'getPoolId', [], chainId)
+        await writeTxn(key, registerPooluuid, routerContract, 'registerPool', [poolId32, fee * 100])
+        const result = await writeTxn(key, initialLiquidityuuid, routerContract, 'joinPoolInit', [
+          poolId32,
+          tokenIds,
+          amounts,
+        ])
+
+        if (!result) {
+          setPending(false)
+          return false
+        }
+
+        endTxn({
+          key,
+          final: 'Create Weighted Pool Successful',
+        })
         setPending(false)
-        return false
-      }
-
-      const poolId = await handleGetPoolId(txHash)
-      const weightedPoolContract = getWeightedPoolContract(poolId, chainId)
-      const poolId32 = await readCall(weightedPoolContract, 'getPoolId', [], chainId)
-      await writeTxn(key, registerPooluuid, routerContract, 'registerPool', [poolId32, fee * 100])
-      const result = await writeTxn(key, initialLiquidityuuid, routerContract, 'joinPoolInit', [
-        poolId32,
-        tokenIds,
-        amounts,
-      ])
-
-      if (!result) {
+        mutateAssets()
+        if (onSuccess) {
+          onSuccess(poolId)
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
         setPending(false)
-        return false
-      }
-
-      endTxn({
-        key,
-        final: 'Create Weighted Pool Successful',
-      })
-      setPending(false)
-      mutateAssets()
-      if (onSuccess) {
-        onSuccess(poolId)
       }
     },
     [
@@ -1124,11 +1130,11 @@ export const usePositionData = (pool, isStaked) => {
   const mappedToken = useMemo(() => {
     const map = {}
     tokenAddresses.forEach(address => {
-      const token = pool.tokens.find(item => getAddress(item.address) === getAddress(address))
+      const token = (pool?.tokens || []).find(item => getAddress(item.address) === getAddress(address))
       map[address] = token
     })
     return map
-  }, [pool.tokens, tokenAddresses])
+  }, [pool?.tokens, tokenAddresses])
 
   const depositValue = useMemo(() => {
     const lpTokenPrice = new BigNumber(pool?.lpPrice || 0)

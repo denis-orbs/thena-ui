@@ -1,20 +1,19 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import TokenBadge from '@/components/badges/TokenBadge'
 import Box from '@/components/box'
-import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
-import { OutlineIconButton } from '@/components/buttons/IconButton'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
+import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
-import { TextHeading } from '@/components/typography'
-import { useGetAssetFn } from '@/hooks/fusion/Tokens'
+import { Paragraph, TextHeading } from '@/components/typography'
+import { UNKNOWN_LOGO } from '@/constant'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { cn, formatAmount, wrappedAddress } from '@/lib/utils'
-import { ChevronDownIcon, InfoIcon, LockIcon, PlusIcon, TrashIcon, UnlockIcon } from '@/svgs'
-
-import TokenModal from '../TokenModal'
+import { cn, formatAmount } from '@/lib/utils'
+import { InfoIcon, LockIcon, UnlockIcon } from '@/svgs'
 
 const updateWeight = tokens => {
   const weightLocked = tokens.filter(item => item.lock).reduce((sum, cur) => sum + cur.weight, 0)
@@ -54,70 +53,7 @@ const updateWeight = tokens => {
     return item
   })
 }
-
-function SelectTokenButton({ token, setTokenSelected, tokenSelected }) {
-  const t = useTranslations()
-  const [tokenPopup, setTokenPopup] = useState(false)
-  const hiddenTokens = useMemo(() => tokenSelected.map(item => wrappedAddress(item?.token)), [tokenSelected])
-  return (
-    <>
-      {token.token ? (
-        <TokenBadge asset={token.token} onClick={() => setTokenPopup(true)} />
-      ) : (
-        <EmphasisButton
-          className='h-10 w-[130px] !gap-1 rounded-full pl-[6px] pr-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'
-          onClick={() => setTokenPopup(true)}
-        >
-          {t('Select Token')} <ChevronDownIcon className='h-4 w-4 !stroke-neutral-200 text-neutral-200' />
-        </EmphasisButton>
-      )}
-      <TokenModal
-        popup={tokenPopup}
-        setPopup={setTokenPopup}
-        selectedAsset={token}
-        setSelectedAsset={setTokenSelected}
-        hiddenTokens={[...hiddenTokens]}
-        showTrendingToken={false}
-      />
-    </>
-  )
-}
-
-function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
-  const { getAsset } = useGetAssetFn()
-
-  const handleSelectedToken = useCallback(
-    data => {
-      const symbol = data.address === 'BNB' ? 'BNB' : data.symbol
-      const asset = getAsset(wrappedAddress(data))
-      setTokenSelected(prev => {
-        const updatedTokens = [...prev]
-        updatedTokens[index] = {
-          ...updatedTokens[index],
-          token: {
-            ...asset,
-            address: wrappedAddress(asset),
-            symbol,
-          },
-        }
-        return updateWeight(updatedTokens)
-      })
-    },
-    [getAsset, index, setTokenSelected],
-  )
-
-  const handleRemoveToken = useCallback(() => {
-    setTokenSelected(prev => {
-      if (prev.length === 1) return prev
-      const updatedTokens = [...prev]
-      if (index > -1) {
-        updatedTokens.splice(index, 1)
-      }
-
-      return updateWeight(updatedTokens)
-    })
-  }, [index, setTokenSelected])
-
+function TokenItem({ token, index, setTokenSelected }) {
   const handleLockToken = useCallback(() => {
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
@@ -130,7 +66,6 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
   }, [index, setTokenSelected])
 
   const handleUpdateWeightToken = e => {
-    // const newVal = isNaN(Number(e.target.value)) || Number(e.target.value) < 0 ? 0 : Math.floor(Number(e.target.value))
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
       updatedTokens[index] = {
@@ -143,33 +78,27 @@ function TokenItem({ token, index, setTokenSelected, tokenSelected }) {
   }
 
   return (
-    <div className='fex-row flex items-center justify-between px-4 py-[14px]'>
-      <SelectTokenButton token={token} setTokenSelected={handleSelectedToken} tokenSelected={tokenSelected} />
-      <div className='flex flex-row items-center'>
-        <div className='mr-3'>
-          <Input
-            className='h-11 w-[70px] border-none bg-transparent'
-            classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7' }}
-            type='number'
-            min={0}
-            step={1}
-            val={token.weight || ''}
-            onChange={handleUpdateWeightToken}
-            placeholder=''
-            suffix='%'
-          />
+    <div className='flex h-11 w-[280px] items-center gap-2'>
+      <div className='fex-row flex w-[220px] items-center justify-between rounded-lg border border-neutral-700 p-1'>
+        <div className=' flex w-[40%] items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
+          <CircleImage width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
+          <Paragraph className='text-sm text-neutral-200'>{token.token.symbol}</Paragraph>
         </div>
-        <OutlineIconButton className='mr-2' Icon={token.lock ? LockIcon : UnlockIcon} onClick={handleLockToken} />
-        <OutlineIconButton Icon={TrashIcon} onClick={handleRemoveToken} />
+        <Input
+          className='w-[60%] border-none bg-transparent'
+          classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7' }}
+          type='number'
+          min={0}
+          step={1}
+          val={token.weight || ''}
+          onChange={handleUpdateWeightToken}
+          placeholder=''
+          suffix='%'
+        />
       </div>
+      <EmphasisIconButton className='h-11 w-11' Icon={token.lock ? LockIcon : UnlockIcon} onClick={handleLockToken} />
     </div>
   )
-}
-
-const initialToken = {
-  token: null,
-  lock: false,
-  weight: 0,
 }
 
 export function ErrorMessage({ message, type = 'error', className, showIcon = true }) {
@@ -195,6 +124,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   const t = useTranslations()
   const [totalWeight, setTotalWeight] = useState(0)
   const [tokenSelected, setTokenSelected] = useState(tokensAndWeights)
+  const { push } = useRouter()
 
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
   useEffect(() => {
@@ -218,10 +148,6 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
       }, 0),
     [getValueTokenAmountToUSD, tokensAndWeights],
   )
-
-  const handleAddToken = useCallback(() => {
-    setTokenSelected(prev => [...prev, initialToken])
-  }, [setTokenSelected])
 
   const checkAllWeightingHigherThanZero = useMemo(
     () => tokensAndWeights.every(item => item.weight > 0),
@@ -255,9 +181,9 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   )
 
   return (
-    <Box className='flex flex-col gap-3'>
-      <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens and Weights')}</TextHeading>
-      <div className='divide-y divide-neutral-700 rounded-xl border border-neutral-700'>
+    <div className='flex flex-col gap-3'>
+      <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
+      <div className='grid grid-cols-2 gap-4 lg:grid-cols-3'>
         {tokenSelected.map((token, index) => (
           <TokenItem
             key={`${token?.token?.address}_${index}`}
@@ -268,19 +194,6 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
           />
         ))}
       </div>
-      <OutlinedButton
-        disabled={tokenSelected.length >= 8}
-        className={cn(
-          'h-11 w-[130px] border border-primary-600 p-0 text-primary-600 hover:text-primary-600',
-          tokenSelected.length >= 8 ? 'border-neutral-600 text-neutral-600 hover:text-neutral-600' : '',
-        )}
-        onClick={() => handleAddToken()}
-      >
-        <PlusIcon
-          className={cn('h-4 w-4 !stroke-primary-600', tokenSelected.length >= 8 ? '!stroke-neutral-600' : '')}
-        />
-        {t('Add Token')}
-      </OutlinedButton>
       <div className='flex flex-col'>
         <div className='flex flex-row justify-between'>
           <TextHeading>{t('Total Weight')}</TextHeading>
@@ -304,9 +217,21 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
         <></>
       )}
       {renderMessages()}
-      <PrimaryButton disabled={isDisable} className='w-full' onClick={() => setCurrentStep(prev => prev + 1)}>
-        {t('Next')}
-      </PrimaryButton>
-    </Box>
+      <div className='flex flex-col gap-4 lg:flex-row'>
+        <EmphasisButton
+          onClick={() => push('/pools/add-liquidity?step=2&pairType=Weighted')}
+          className='w-full lg:w-fit'
+        >
+          {t('Back')}
+        </EmphasisButton>
+        <PrimaryButton
+          disabled={isDisable}
+          className='w-full lg:w-fit'
+          onClick={() => setCurrentStep(prev => prev + 1)}
+        >
+          {t('Next')}
+        </PrimaryButton>
+      </div>
+    </div>
   )
 }
