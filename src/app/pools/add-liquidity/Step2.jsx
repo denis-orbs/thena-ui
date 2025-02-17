@@ -14,10 +14,8 @@ export default function Step2({ pool, setStep, isAdd, showSidebar = true }) {
   const router = useRouter()
 
   return (
-    <div className='space-y-10'>
-      {pairType === PAIR_TYPES.WEIGHTED && (
-        <AddLiquidityWeightedPool pool={pool} showSidebar={showSidebar} setCurrentStep={setStep} />
-      )}
+    <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>
+      {pairType === PAIR_TYPES.WEIGHTED && <AddLiquidityWeightedPool pool={pool} setCurrentStep={setStep} />}
 
       {pairType === PAIR_TYPES.LSD && (
         <AddLiquidityClPool isAdd={isAdd} pool={pool} setCurrentStep={setStep} showSidebar={showSidebar} />

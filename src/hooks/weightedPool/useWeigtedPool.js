@@ -1124,11 +1124,11 @@ export const usePositionData = (pool, isStaked) => {
   const mappedToken = useMemo(() => {
     const map = {}
     tokenAddresses.forEach(address => {
-      const token = pool.tokens.find(item => getAddress(item.address) === getAddress(address))
+      const token = (pool?.tokens || []).find(item => getAddress(item.address) === getAddress(address))
       map[address] = token
     })
     return map
-  }, [pool.tokens, tokenAddresses])
+  }, [pool?.tokens, tokenAddresses])
 
   const depositValue = useMemo(() => {
     const lpTokenPrice = new BigNumber(pool?.lpPrice || 0)

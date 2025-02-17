@@ -5,7 +5,7 @@ import Selection from '@/components/selection'
 import { TextHeading } from '@/components/typography'
 import { InfoCircleWhite } from '@/svgs'
 
-import { SelectToken } from './SelectToken'
+import SelectToken from './SelectToken'
 
 function SelectPair({ updateSearchParams, firstAsset, secondAsset }) {
   const t = useTranslations()
@@ -48,10 +48,10 @@ function SelectPair({ updateSearchParams, firstAsset, secondAsset }) {
         <SelectToken
           otherAsset={secondAsset}
           setOtherAsset={item => {
-            updateSearchParams({ firstAddress: item.address })
+            updateSearchParams({ firstAddress: item?.address })
           }}
           setSelectedAsset={item => {
-            updateSearchParams({ firstAddress: item.address })
+            updateSearchParams({ firstAddress: item?.address })
           }}
           placeHolder={t('Select Token')}
           selectedAsset={firstAsset}
@@ -61,10 +61,10 @@ function SelectPair({ updateSearchParams, firstAsset, secondAsset }) {
         <SelectToken
           otherAsset={firstAsset}
           setOtherAsset={item => {
-            updateSearchParams({ firstAddress: item.address })
+            updateSearchParams({ firstAddress: item?.address })
           }}
           setSelectedAsset={item => {
-            updateSearchParams({ secondAddress: item.address })
+            updateSearchParams({ secondAddress: item?.address })
           }}
           placeHolder={t('Select Token')}
           selectedAsset={secondAsset}

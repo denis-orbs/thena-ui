@@ -23,7 +23,7 @@ function Title({ title, length }) {
   )
 }
 
-function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaultShow = false }) {
+function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaultShow = false, isCollapse = true }) {
   const t = useTranslations()
   const [sort, setSort] = useState(sortOptions[1])
   const newSortOptions = useMemo(() => [...sortOptions], [sortOptions])
@@ -133,7 +133,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaul
               </CustomTooltip>
             </div>
           )}
-          {listPoolAddressSpecial.includes(pool.address) && (
+          {(listPoolAddressSpecial || []).includes(pool.address) && (
             <div className='flex items-center gap-2'>
               <div className='size-6' data-tooltip-id={`pool-special-${pool.address}`}>
                 <NextImage
@@ -317,21 +317,34 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaul
     }))
   }, [listPoolAddressSpecial, push, sortedData, t])
   return (
-    <Collapse
-      className='min-h-[76px] rounded-xl bg-neutral-900'
-      classNames={{ chevron: 'mr-6', content: '-mt-7' }}
-      defaultShow={defaultShow}
-      title={<Title length={pools.length} title={title} />}
-    >
-      <Table
-        sortOptions={newSortOptions}
-        data={finalPools}
-        sort={sort}
-        setSort={setSort}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
-    </Collapse>
+    <>
+      {isCollapse ? (
+        <Collapse
+          className='min-h-[76px] rounded-xl bg-neutral-900'
+          classNames={{ chevron: 'mr-6', content: '-mt-7' }}
+          defaultShow={defaultShow}
+          title={<Title length={pools.length} title={title} />}
+        >
+          <Table
+            sortOptions={newSortOptions}
+            data={finalPools}
+            sort={sort}
+            setSort={setSort}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        </Collapse>
+      ) : (
+        <Table
+          sortOptions={newSortOptions}
+          data={finalPools}
+          sort={sort}
+          setSort={setSort}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
+    </>
   )
 }
 

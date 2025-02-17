@@ -1,23 +1,21 @@
 'use client'
 
 import { isEmpty } from 'lodash'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import Loading from '@/app/loading'
-import { TextButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { useGetAsset } from '@/hooks/fusion/Tokens'
+import { cn } from '@/lib/utils'
 import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
-import MaxInitialLiquidity from '@/modules/WeightedPool/MaxInitialLiquidity'
 import PoolSummary from '@/modules/WeightedPool/PoolSummary'
 import Preview from '@/modules/WeightedPool/Preview'
-import SetInitialLiquidity from '@/modules/WeightedPool/SetInitialLiquidity'
-import SetPoolFees from '@/modules/WeightedPool/SetPoolFees'
+import SetWeightedAttributes from '@/modules/WeightedPool/SetWeightedAttributes'
 import StepCreate from '@/modules/WeightedPool/StepCreate'
-import { ArrowLeftIcon } from '@/svgs'
+import { ScalesIcon } from '@/svgs'
 
 function PoolWithStep({
   currentStep,
@@ -27,6 +25,8 @@ function PoolWithStep({
   fees,
   setFees,
   initialPoolSymbol,
+  poolName,
+  setPoolName,
 }) {
   switch (currentStep) {
     case 1: {
@@ -41,26 +41,19 @@ function PoolWithStep({
 
     case 2: {
       return (
-        <SetPoolFees
+        <SetWeightedAttributes
           setCurrentStep={setCurrentStep}
           setTokenAndWeights={setTokenAndWeights}
+          tokensAndWeights={tokensAndWeights}
           fees={fees}
           setFees={setFees}
+          poolName={poolName}
+          setPoolName={setPoolName}
         />
       )
     }
 
     case 3: {
-      return (
-        <SetInitialLiquidity
-          setCurrentStep={setCurrentStep}
-          setTokenAndWeights={setTokenAndWeights}
-          tokensAndWeights={tokensAndWeights}
-        />
-      )
-    }
-
-    case 4: {
       return (
         <Preview
           setCurrentStep={setCurrentStep}
@@ -68,6 +61,7 @@ function PoolWithStep({
           fees={fees}
           setFees={setFees}
           initialPoolSymbol={initialPoolSymbol}
+          poolName={poolName}
         />
       )
     }
@@ -84,54 +78,29 @@ function PoolWithStep({
 }
 
 export default function CreateWeightedPoolPage() {
-  // const searchParams = useSearchParams()
-  const { push } = useRouter()
-  const t = useTranslations()
+  const { tokens: tokensSelected } = useSelector(state => state.weightedPool)
   const assets = useAssets()
   const [fees, setFees] = useState(0.3)
+  const [poolName, setPoolName] = useState('')
   const [tokensAndWeights, setTokenAndWeights] = useState([])
-
-  const searchParams = useSearchParams()
-  const firstAddress = searchParams.get('firstAddress')
-  const secondAddress = searchParams.get('secondAddress')
-  const firstToken = useGetAsset(firstAddress)
-  const secondToken = useGetAsset(secondAddress)
+  const t = useTranslations()
+  const { push } = useRouter()
 
   useEffect(() => {
-    setTokenAndWeights(prev => {
-      if (!prev || prev.length === 0 || !prev?.[0]?.token || !prev?.[1]?.token) {
-        return [
-          { token: firstToken || null, lock: false, weight: 50 },
-          { token: secondToken || null, lock: false, weight: 50 },
-        ]
-      }
-      return prev.map(item => {
-        const itemAddress = item?.token?.address
-        if (firstToken?.address?.toLowerCase() === itemAddress?.toLowerCase()) {
-          console.log('check1')
-          return {
-            ...item,
-            token: {
-              ...item.token,
-              ...firstToken,
-            },
-          }
-        }
+    if (!tokensSelected || tokensSelected.length <= 1) {
+      push('/pools/add-liquidity?step=2&pairType=Weighted')
+    }
+  }, [push, tokensSelected])
 
-        if (secondToken?.address?.toLowerCase() === itemAddress?.toLowerCase()) {
-          console.log('check2')
-          return {
-            ...item,
-            token: {
-              ...item.token,
-              ...secondToken,
-            },
-          }
-        }
-        return item
-      })
-    })
-  }, [firstAddress, firstToken, secondAddress, secondAddress?.address, secondToken])
+  useEffect(() => {
+    setTokenAndWeights(
+      (tokensSelected || []).map(token => ({
+        token,
+        lock: false,
+        weight: null,
+      })),
+    )
+  }, [tokensSelected])
 
   const [currentStep, setCurrentStep] = useState(1)
   const initialPoolSymbol = useMemo(() => {
@@ -150,36 +119,31 @@ export default function CreateWeightedPoolPage() {
   }
 
   return (
-    <div className='flex flex-col'>
-      <div className='h-11 w-[98px]'>
-        <TextButton onClick={() => push('/pools')} LeadingIcon={ArrowLeftIcon}>
-          {t('Back')}
-        </TextButton>
-      </div>
-      <div className='flex flex-col'>
-        <TextHeading className='mb-10 font-archia text-3xl font-semibold lg:text-[40px]'>
-          {t('THENA Weighted Pool')}
+    <div className='flex flex-col gap-8'>
+      <StepCreate currentStep={currentStep} />
+      <div className='flex items-center gap-8'>
+        <ScalesIcon className='h-[86px] w-[86px]' />
+        <TextHeading className='font-archia text-3xl font-semibold leading-[96px] lg:text-[96px]'>
+          {t('Create Weighted Pool')}
         </TextHeading>
-        <div className='flex flex-col justify-between gap-8 lg:flex-row'>
-          <div className='hidden lg:block lg:w-[380px]'>
-            <StepCreate currentStep={currentStep} />
-          </div>
-          <div className='lg:w-[616px]'>
-            <PoolWithStep
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
-              setTokenAndWeights={setTokenAndWeights}
-              tokensAndWeights={tokensAndWeights}
-              initialPoolSymbol={initialPoolSymbol}
-              fees={fees}
-              setFees={setFees}
-              assets={assets}
-            />
-          </div>
-          <div className='flex flex-col gap-8 lg:w-[380px]'>
-            <PoolSummary tokensAndWeights={tokensAndWeights} />
-            <MaxInitialLiquidity tokensAndWeights={tokensAndWeights} />
-          </div>
+      </div>
+      <div className='flex flex-col justify-between gap-8 lg:flex-row'>
+        <div className={cn('w-full', currentStep === 3 ? 'lg:w-[60%]' : 'lg:flex-[7]')}>
+          <PoolWithStep
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            setTokenAndWeights={setTokenAndWeights}
+            tokensAndWeights={tokensAndWeights}
+            initialPoolSymbol={initialPoolSymbol}
+            fees={fees}
+            setFees={setFees}
+            assets={assets}
+            poolName={poolName}
+            setPoolName={setPoolName}
+          />
+        </div>
+        <div className={cn('flex flex-[3] flex-col gap-8', currentStep === 3 && 'hidden')}>
+          <PoolSummary tokensAndWeights={tokensAndWeights} />
         </div>
       </div>
     </div>

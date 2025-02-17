@@ -3,28 +3,17 @@
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
-import { Doughnut } from 'react-chartjs-2'
 
 import Box from '@/components/box'
 import { TextHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 
-const colors = ['#32002F', '#84007F', '#B000AA', '#580055', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE']
+import PieChart from './PieChart'
 
-function calculatePadding(ctx) {
-  const { chart } = ctx
-  let padding = 0
-  chart.data.datasets.forEach(el => {
-    const hOffset = el.hoverOffset || 0
-    padding = Math.max(hOffset / 2 + 5, padding)
-  })
-  return padding
-}
+const colors = ['#32002F', '#84007F', '#B000AA', '#580055', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE']
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 export default function PoolSummary({ tokensAndWeights }) {
-  // const [centerLogo, setCenterLogo] = useState(null)
-
   const data = useMemo(
     () =>
       tokensAndWeights.length > 0
@@ -45,74 +34,11 @@ export default function PoolSummary({ tokensAndWeights }) {
     [tokensAndWeights],
   )
 
-  const options = {
-    plugins: {
-      responsive: true,
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: false,
-      },
-      centerLabel: {
-        display: true,
-      },
-    },
-    layout: {
-      padding: {
-        top(ctx) {
-          return calculatePadding(ctx)
-        },
-        bottom(ctx) {
-          return calculatePadding(ctx)
-        },
-        left(ctx) {
-          return calculatePadding(ctx)
-        },
-        right(ctx) {
-          return calculatePadding(ctx)
-        },
-      },
-    },
-    // onHover: (event, chartElement) => {
-    //   if (chartElement.length) {
-    //     const { index } = chartElement[0]
-    //     setCenterLogo(data[index]?.data?.logoURI)
-    //   } else {
-    //     setCenterLogo(null)
-    //   }
-    // },
-    cutout: data.map(item => item.cutout),
-  }
-
-  const finalData = {
-    labels: data.map(item => item.label),
-    datasets: [
-      {
-        data: data.map(item => Math.round(item.value)),
-        backgroundColor: data.map(item => item.color),
-        borderColor: data.map(item => item.color),
-        borderWidth: 1,
-        borderRadius: data.length === 1 ? 0 : 4,
-        spacing: data.length === 1 ? 0 : 2,
-        hoverOffset: 15,
-        dataVisibility: new Array(data.length).fill(true),
-      },
-    ],
-  }
-
   const t = useTranslations()
   return (
     <Box className='flex flex-col space-y-6'>
       <TextHeading className='font-archia text-2xl font-semibold'>{t('Pool Summary')}</TextHeading>
-      <div className='flex items-center justify-center'>
-        <div className='relative h-[230px] w-[230px] overflow-visible'>
-          <Doughnut height={200} width={200} data={finalData} options={options} className='z-20' />
-          {/* <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'>
-            {centerLogo && <Image src={centerLogo} width={60} height={60} alt='logo' />}
-          </div> */}
-        </div>
-      </div>
+      <PieChart tokensAndWeights={tokensAndWeights} />
       {/* ['#32002F', '#580055', '#84007F', '#B000AA', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE'] */}
       <div className='hidden bg-[#EA66E5]' />
       <div className='hidden bg-[#32002F]' />
@@ -122,7 +48,7 @@ export default function PoolSummary({ tokensAndWeights }) {
       <div className='hidden bg-[#B000AA]' />
       <div className='hidden bg-[#E333DD]' />
       <div className='hidden bg-[#F199EE]' />
-      <div className='grid grid-cols-4 justify-between'>
+      <div className='mx-auto flex justify-between gap-6'>
         {data.map((item, idx) => (
           <div key={`${item?.data?.address}_${idx}`} className='flex flex-row items-center gap-[6px]'>
             <div className={cn('h-3 w-3 rounded-full', `bg-[${item?.color}]`)} />

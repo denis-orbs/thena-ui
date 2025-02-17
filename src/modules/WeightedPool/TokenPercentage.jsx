@@ -1,16 +1,23 @@
-import CircleImage from '@/components/image/CircleImage'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph } from '@/components/typography'
 
-export function TokenPercentage({ token }) {
+import WeightedPoolLogo from './WeightedPoolLogo'
+
+export function TokenPercentage({ tokens }) {
   return (
     <div className='flex items-center gap-[6px]'>
-      <CircleImage
-        className='h-6 w-6 outline outline-4 outline-[#1C2027]'
-        src={token?.logoURI ?? ''}
-        alt={`${token?.symbol} Logo`}
-      />
-      <TextHeading>{token?.symbol}</TextHeading>
-      <Paragraph>{token?.weight}%</Paragraph>
+      <WeightedPoolLogo width={24} height={24} tokens={tokens} />
+      <div className='flex flex-col gap-1'>
+        <div>
+          {tokens.map((token, index) => (
+            <Paragraph>{`${token?.symbol}${index !== tokens.length - 1 ? '/' : ''}`}</Paragraph>
+          ))}
+        </div>
+        <div>
+          {tokens.map((token, index) => (
+            <Paragraph>{`${token?.weight}%${index !== tokens.length - 1 ? ',' : ''}`}</Paragraph>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -18,7 +25,7 @@ export function TokenPercentage({ token }) {
 export function ListTokenPercantage({ listToken }) {
   return (
     <div className='flex flex-wrap items-center gap-[14px]'>
-      {listToken?.length && listToken.map((token, index) => <TokenPercentage token={token} key={index} />)}
+      <TokenPercentage tokens={listToken} />
     </div>
   )
 }
