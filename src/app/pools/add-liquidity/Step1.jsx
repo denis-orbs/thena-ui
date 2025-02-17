@@ -1,6 +1,6 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SelectorGrid from '@/components/selector/SelectorGrid'
@@ -32,6 +32,12 @@ export default function Step1({ nextStep }) {
     },
     [replace, searchParams],
   )
+
+  useEffect(() => {
+    if (!pairType) {
+      updateSearchParams({ pairType: PAIR_TYPES.LSD })
+    }
+  }, [pairType, updateSearchParams])
 
   const poolTypesData = useMemo(
     () => [

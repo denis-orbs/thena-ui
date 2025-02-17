@@ -7,6 +7,7 @@ import { usePairs } from '@/context/pairsContext'
 
 import Step1 from './Step1'
 import Step2 from './Step2'
+import Step3 from './Step3'
 
 export default function AddLiquidityPage() {
   const router = useRouter()
@@ -45,6 +46,7 @@ export default function AddLiquidityPage() {
     <div className='container mx-auto flex flex-col'>
       {step === 1 && <Step1 nextStep={setStep} setPoolSelected={setPoolSelected} setIsAdd={setIsAdd} />}
       {step === 2 && <Step2 pool={poolSelected} setStep={setStep} isAdd={isAdd} />}
+      {step === 3 && <Step3 pool={poolSelected} setStep={setStep} isAdd={isAdd} />}
     </div>
   )
 }

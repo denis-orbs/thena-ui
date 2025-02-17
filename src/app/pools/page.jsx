@@ -567,7 +567,7 @@ export default function PoolsPage() {
             </div>
           </div>
           <div className='ml-auto flex gap-4 lg:flex-row'>
-            <Link href='/pools/add-liquidity'>
+            <Link href='/pools/add-liquidity?step=1&pairType=Conc+Liquidity'>
               <PrimaryButton className='w-full lg:w-auto'>{t('Add Liquidity')}</PrimaryButton>
             </Link>
           </div>
