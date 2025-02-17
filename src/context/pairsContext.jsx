@@ -88,6 +88,7 @@ const usePairs = () => {
               ...token,
               ...tokenDetail,
               symbol,
+              weight: Number(token.weight),
             }
           })
 

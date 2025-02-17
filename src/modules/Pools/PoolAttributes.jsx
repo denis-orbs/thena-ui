@@ -309,7 +309,7 @@ export function NormalPoolAttributes({ pool }) {
 
   return (
     <div>
-      <div className='flex flex-col gap-4 rounded-lg bg-neutral-900 p-6 text-[14px] font-normal leading-5'>
+      <div className='flex flex-col gap-4 rounded-lg border border-dashed border-primary-600 bg-primary-950 p-6 text-[14px] font-normal leading-5'>
         {/* Pool name */}
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-300'>{t('Name')}:</div>

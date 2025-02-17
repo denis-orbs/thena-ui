@@ -55,23 +55,25 @@ function ChoosePoolTokens({ setTokensSelect }) {
   }, [finalListTokens, setTokensSelect])
 
   return (
-    <div className='w-full space-y-4' ref={wrapperSelectRef}>
-      <TextHeading>{t('Choose Pool Tokens')}</TextHeading>
-      <div className='flex flex-row rounded-lg bg-neutral-800 p-1'>
-        {[2, 3, 4, 5, 6, 7, 8].map(value => (
-          <div
-            key={value}
-            onClick={() => setLength(value)}
-            className={cn('cursor-pointer rounded-md px-3 py-2', length === value && 'bg-neutral-700')}
-          >
-            <div className='flex items-center gap-2'>
-              <TextHeading>{value}</TextHeading>
-              <PoolCoinsIcon className='h-5 w-5' />
+    <div className='w-full space-y-8' ref={wrapperSelectRef}>
+      <div className='space-y-4'>
+        <TextHeading>{t('Choose Pool Tokens')}</TextHeading>
+        <div className='flex flex-row rounded-lg bg-neutral-800 p-1'>
+          {[2, 3, 4, 5, 6, 7, 8].map(value => (
+            <div
+              key={value}
+              onClick={() => setLength(value)}
+              className={cn('cursor-pointer rounded-md px-3 py-2', length === value && 'bg-neutral-700')}
+            >
+              <div className='flex items-center gap-2'>
+                <TextHeading>{value}</TextHeading>
+                <PoolCoinsIcon className='h-5 w-5' />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className='grid grid-cols-1 gap-4 border-b border-neutral-700 pb-8 lg:grid-cols-2'>{tokensList}</div>
       </div>
-      <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>{tokensList}</div>
       {finalListTokens.length >= 2 && <AvailablePools tokens={finalListTokens} />}
     </div>
   )

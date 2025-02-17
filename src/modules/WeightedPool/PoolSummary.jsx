@@ -38,7 +38,13 @@ export default function PoolSummary({ tokensAndWeights }) {
   return (
     <Box className='flex flex-col space-y-6'>
       <TextHeading className='font-archia text-2xl font-semibold'>{t('Pool Summary')}</TextHeading>
-      <PieChart tokensAndWeights={tokensAndWeights} />
+      <PieChart
+        tokens={tokensAndWeights.map(token => ({
+          ...token.token,
+          weight: token.weight,
+          amount: token.amount || 0,
+        }))}
+      />
       {/* ['#32002F', '#580055', '#84007F', '#B000AA', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE'] */}
       <div className='hidden bg-[#EA66E5]' />
       <div className='hidden bg-[#32002F]' />

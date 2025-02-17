@@ -1,9 +1,11 @@
 import { useTranslations } from 'next-intl'
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
+import { formatAmount, toWei } from '@/lib/utils'
 import { CoinsHandIcon } from '@/svgs'
 
 import PieChart from './PieChart'
@@ -12,6 +14,23 @@ import WeightedPoolLogo from './WeightedPoolLogo'
 
 export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolName }) {
   const t = useTranslations()
+
+  const tokens = useMemo(
+    () => tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount })),
+    [tokensAndWeights],
+  )
+
+  const { onCreateWeightedPool, pending } = useWeightedPool()
+
+  const onCreate = useCallback(() => {
+    const allocates = tokensAndWeights.map(token => token.weight)
+    const amounts = tokensAndWeights.map(token => toWei(Number(token.amount)))
+    const symbol = tokensAndWeights.reduce((str, token, index) =>
+      str + token.symbol + index !== tokens.length ? '/' : '',
+    )
+    onCreateWeightedPool(poolName, symbol, tokens, allocates, amounts, fees, () => {})
+  }, [fees, onCreateWeightedPool, poolName, tokens, tokensAndWeights])
+
   return (
     <div className='space-y-4'>
       <TextHeading className='font-archia text-3xl font-semibold'>{t('Overview')}</TextHeading>
@@ -19,16 +38,14 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
         <div className='flex items-center gap-4'>
           <div className='flex flex-[4] gap-4'>
             <div className='space-y-2'>
-              <WeightedPoolLogo
-                height={24}
-                width={24}
-                tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
-              />
+              <WeightedPoolLogo height={24} width={24} tokens={tokens} />
               <Paragraph className='text-xs'>{t('Weighted Pool')}</Paragraph>
             </div>
             <div className='space-y-2'>
               <div>
-                <TextHeading>$ TODO</TextHeading>
+                <TextHeading>
+                  $ {formatAmount((tokens || []).reduce((sum, token) => sum + Number(token.amount) * token.price, 0))}
+                </TextHeading>
               </div>
               <div className='flex gap-3'>
                 <CoinsHandIcon className='h-5 w-5' />
@@ -44,14 +61,16 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
         </div>
         <div className='flex gap-4'>
           <div className='flex-[4]'>
-            <PieChart tokensAndWeights={tokensAndWeights} />
+            <PieChart tokens={tokens} />
           </div>
           <div className='flex-[6]'>
-            <PoolOverviewTable tokens={tokensAndWeights} />
+            <PoolOverviewTable tokens={tokens} />
           </div>
         </div>
       </Box>
-      <PrimaryButton className='w-full'>{t('Deposit')}</PrimaryButton>
+      <PrimaryButton disabled={pending} onClick={onCreate} className='w-full'>
+        {t('Deposit')}
+      </PrimaryButton>
       <div className='flex flex-col gap-4 lg:flex-row'>
         <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(prev => prev - 1)}>
           {t('Back')}

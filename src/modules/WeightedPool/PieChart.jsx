@@ -18,13 +18,13 @@ function calculatePadding(ctx) {
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-function PieChart({ tokensAndWeights }) {
+function PieChart({ tokens }) {
   const data = useMemo(
     () =>
-      tokensAndWeights.length > 0
-        ? tokensAndWeights.map((item, index) => ({
-            data: item.token,
-            value: item.weight,
+      tokens.length > 0
+        ? tokens.map((item, index) => ({
+            data: item,
+            value: Number(item.weight),
             color: colors[index % colors.length],
             cutout: '50%',
           }))
@@ -36,7 +36,7 @@ function PieChart({ tokensAndWeights }) {
               cutout: '50%',
             },
           ],
-    [tokensAndWeights],
+    [tokens],
   )
 
   const options = {
@@ -95,7 +95,7 @@ function PieChart({ tokensAndWeights }) {
     ],
   }
 
-  const totalWeight = useMemo(() => tokensAndWeights.reduce((sum, curr) => sum + curr.weight, 0), [tokensAndWeights])
+  const totalWeight = useMemo(() => tokens.reduce((sum, curr) => sum + curr.weight, 0), [tokens])
   return (
     <div className='flex items-center justify-center'>
       <div className='relative h-[230px] w-[230px] overflow-visible'>

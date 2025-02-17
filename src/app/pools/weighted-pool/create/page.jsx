@@ -7,13 +7,13 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import Loading from '@/app/loading'
-import { TextHeading } from '@/components/typography'
+import { NewTextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { cn } from '@/lib/utils'
 import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
-import PoolSummary from '@/modules/WeightedPool/PoolSummary'
 import Preview from '@/modules/WeightedPool/Preview'
 import SetWeightedAttributes from '@/modules/WeightedPool/SetWeightedAttributes'
+import SideBarCreateWeighted from '@/modules/WeightedPool/SideBarCreateWeighted'
 import StepCreate from '@/modules/WeightedPool/StepCreate'
 import { ScalesIcon } from '@/svgs'
 
@@ -123,12 +123,10 @@ export default function CreateWeightedPoolPage() {
       <StepCreate currentStep={currentStep} />
       <div className='flex items-center gap-8'>
         <ScalesIcon className='h-[86px] w-[86px]' />
-        <TextHeading className='font-archia text-3xl font-semibold leading-[96px] lg:text-[96px]'>
-          {t('Create Weighted Pool')}
-        </TextHeading>
+        <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
       </div>
       <div className='flex flex-col justify-between gap-8 lg:flex-row'>
-        <div className={cn('w-full', currentStep === 3 ? 'lg:w-[60%]' : 'lg:flex-[7]')}>
+        <div className={cn('w-full', currentStep === 3 ? 'lg:w-[60%]' : 'lg:flex-[6]')}>
           <PoolWithStep
             currentStep={currentStep}
             setCurrentStep={setCurrentStep}
@@ -142,8 +140,8 @@ export default function CreateWeightedPoolPage() {
             setPoolName={setPoolName}
           />
         </div>
-        <div className={cn('flex flex-[3] flex-col gap-8', currentStep === 3 && 'hidden')}>
-          <PoolSummary tokensAndWeights={tokensAndWeights} />
+        <div className={cn('flex flex-[4] flex-col gap-8', currentStep === 3 && 'hidden')}>
+          <SideBarCreateWeighted fees={fees} step={currentStep} tokensAndWeights={tokensAndWeights} />
         </div>
       </div>
     </div>

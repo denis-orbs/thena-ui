@@ -15,7 +15,7 @@ import { usePairs } from '@/context/pairsContext'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { cn, wrappedAddress } from '@/lib/utils'
 import LiquidityChartRangeInput from '@/modules/Pools/LiquidityChartRangeInput'
-import { PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
+import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
@@ -211,7 +211,7 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
   )
 }
 
-function PoolInfo({ strategy, pair }) {
+export function PoolInfo({ strategy, pair }) {
   const t = useTranslations()
   const [show, setShow] = useState(false)
 
@@ -231,7 +231,11 @@ function PoolInfo({ strategy, pair }) {
       </TextHeading>
 
       <div className={cn('mt-5 overflow-hidden', show ? 'block' : 'hidden')}>
-        {strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}
+        {pair.type === PAIR_TYPES.LSD ? (
+          <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
+        ) : (
+          <>{pair && <NormalPoolAttributes pool={pair} />}</>
+        )}
       </div>
     </Box>
   )

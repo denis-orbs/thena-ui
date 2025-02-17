@@ -1,38 +1,19 @@
-import React from 'react'
+import React, { useMemo } from 'react'
+
+import { formatAmount } from '@/lib/utils'
 
 function PoolOverviewTable({ tokens }) {
-  console.log({ tokens })
-  // TODO: remove mock data
-  const data = [
-    {
-      color: 'bg-yellow-500',
-      name: 'BNB',
-      weight: '25 %',
-      value: '$ 10,0000',
-      amount: '5,453200 BNB',
-    },
-    {
-      color: 'bg-green-500',
-      name: 'USDT',
-      weight: '25 %',
-      value: '$ 10,0000',
-      amount: '10.005,00 USDT',
-    },
-    {
-      color: 'bg-pink-500',
-      name: 'THE',
-      weight: '25 %',
-      value: '$ 10,0000',
-      amount: '14.000 THE',
-    },
-    {
-      color: 'bg-blue-500',
-      name: 'ETH',
-      weight: '25 %',
-      value: '$ 10,0000',
-      amount: '2,5123 ETH',
-    },
-  ]
+  const data = useMemo(
+    () =>
+      tokens.map(token => ({
+        amount: token.amount,
+        weight: token.weight,
+        name: token.symbol,
+        valueUsd: Number(token.amount) * token.price,
+      })),
+    [tokens],
+  )
+
   return (
     <div className='rounded-lg bg-transparent text-neutral-50'>
       <table className='w-full text-left'>
@@ -52,8 +33,8 @@ function PoolOverviewTable({ tokens }) {
                 {item.name}
               </td>
               <td className='py-2'>{item.weight}</td>
-              <td className='py-2'>{item.value}</td>
-              <td className='py-2'>{item.amount}</td>
+              <td className='py-2'>${formatAmount(item.valueUsd)}</td>
+              <td className='py-2'>{formatAmount(item.amount)}</td>
             </tr>
           ))}
         </tbody>

@@ -5,9 +5,10 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import ChoosePoolTokens from '@/modules/WeightedPool/ChoosePoolTokens'
 import { tokensSelected } from '@/state/weightedPool/action'
+import { ScalesIcon } from '@/svgs'
 
 function AddLiquidityWeightedPool({ setCurrentStep }) {
   const t = useTranslations()
@@ -26,6 +27,10 @@ function AddLiquidityWeightedPool({ setCurrentStep }) {
 
   return (
     <div className='space-y-16'>
+      <div className='flex items-center gap-8'>
+        <ScalesIcon className='h-[86px] w-[86px]' />
+        <NewTextHeading>{t('Add to Weighted Pool')}</NewTextHeading>
+      </div>
       <div className='flex flex-col gap-4 lg:flex-row'>
         <div className='flex flex-[6]'>
           <ChoosePoolTokens setTokensSelect={updateTokensSelected} />

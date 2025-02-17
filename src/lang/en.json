@@ -1461,5 +1461,15 @@
   "Choose Pool Tokens": "Choose Pool Tokens",
   "Add to Weighted Pool": "Add to Weighted Pool",
   "Weighted pool description": "Weighted pools let you customize the token balance in a liquidity pool. Each token is assigned a “weight”, defining its share of the pool. You can include up to 8 tokens in a weighted pool. This allows for ratios other than 50/50, like 70/30, giving you control over the pool's composition and token prices.",
-  "Weighted Pool": "Weighted Pool"
+  "Weighted Pool": "Weighted Pool",
+  "No Pool for this Assets and Strategie found": "No Pool for this Assets and Strategie found.",
+  "You can create a new Pool or change the Strategie": "You can create a new Pool or change the Strategie to ....",
+  "Pool [fees] sidebar description": "{fees}% is best for most weighted pools with established tokens. Go higher for more exotic tokens.",
+  "Thena Governance": "Thena Governance",
+  "Thena Governance description": "Thena governance will always have ability to manage the fees of this pool if needed.",
+  "Pool Weight": "Pool Weight",
+  "Enter Name for Pool": "Enter Name for Pool",
+  "Set Pool Name": "Set Pool Name",
+  "Set Custom Fee": "Set Custom Fee",
+  "Overview": "Overview"
 }

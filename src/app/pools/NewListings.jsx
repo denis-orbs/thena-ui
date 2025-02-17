@@ -302,11 +302,16 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaul
           <EmphasisButton
             className='w-full p-3  lg:w-fit'
             onClick={
-              () =>
-                push(
-                  // eslint-disable-next-line max-len
-                  `/pools/add-liquidity/?firstAddress=${pool.token0.address}&secondAddress=${pool.token1.address}&pairType=${pool.type}&step=2`,
-                )
+              () => {
+                if (pool.type === PAIR_TYPES.WEIGHTED) {
+                  push(`/pools/add-liquidity/weighted/${pool.address}`)
+                } else {
+                  push(
+                    // eslint-disable-next-line max-len
+                    `/pools/add-liquidity/?firstAddress=${pool.token0.address}&secondAddress=${pool.token1.address}&pairType=${pool.type}&step=2`,
+                  )
+                }
+              }
               // eslint-disable-next-line react/jsx-curly-newline
             }
           >
