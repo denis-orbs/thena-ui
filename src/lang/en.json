@@ -1192,7 +1192,6 @@
   "We recommend you to provide new pools with at least": "We recommend you to provide new pools with at least $20,000 in initial funds. Based on your wallet balances for these tokens, the maximum amount you can fund this pool is $10,000.",
   "All tokens in a pool must have a weighting higher than zero": "All tokens in a pool must have a weighting higher than zero. Either remove or replace or set it above 0.01%.",
   "Set Pool Fees": "Set Pool Fees",
-  "Pool Summary": "Pool Summary",
   "Set Pool Fees description": "0.30% is best for most weighted pools with established tokens. Go higher for more exotic tokens.",
   "Pool fee message": "Thena governance will always have ability to manage the fees of this pool if needed.",
   "Total": "Total",
@@ -1473,5 +1472,6 @@
   "Choose Tokens": "Choose Tokens",
   "Classic Pool": "Classic Pool",
   "Stable Pool": "Stable Pool",
-  "Weighted Pool": "Weighted Pool"
+  "Weighted Pool": "Weighted Pool",
+  "Slippage": "Slippage"
 }

@@ -4,7 +4,7 @@ import { useTranslations } from 'use-intl'
 import BalanceInput from '@/components/input/BalanceInput'
 import { useTokenBalance } from '@/hooks/fusion/Tokens'
 
-function InputTokenMemo({ token, autoFocus, amount, onAmountChange, alowDouble, weight }) {
+function InputTokenMemo({ token, autoFocus, amount, onAmountChange, alowDouble, weight, showTitle = true }) {
   const { balance, isDouble } = useTokenBalance(token, alowDouble)
   const t = useTranslations()
   return (
@@ -17,7 +17,7 @@ function InputTokenMemo({ token, autoFocus, amount, onAmountChange, alowDouble, 
       onAmountChange={onAmountChange}
       weight={weight}
       showPercent={false}
-      title={`${t('Pool Weight')} ${weight}%`}
+      title={showTitle ? `${t('Pool Weight')} ${weight}%` : ''}
       classNames={{ title: 'text-neutral-500 text-xs' }}
     />
   )

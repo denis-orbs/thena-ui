@@ -182,6 +182,15 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
 
   return (
     <div className='flex flex-col gap-3'>
+      {tokensAndWeights.length > 0 && totalBalance < 20000 ? (
+        <ErrorMessage
+          type='warn'
+          message={t('We recommend you to provide new pools [symbol]', { yourBalance: formatAmount(totalBalance) })}
+        />
+      ) : (
+        <></>
+      )}
+      {renderMessages()}
       <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
       <div className='grid grid-cols-2 gap-4 lg:grid-cols-3'>
         {tokenSelected.map((token, index) => (
@@ -208,15 +217,6 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
           />
         </div>
       </div>
-      {tokensAndWeights.length > 0 && totalBalance < 20000 ? (
-        <ErrorMessage
-          type='warn'
-          message={t('We recommend you to provide new pools [symbol]', { yourBalance: formatAmount(totalBalance) })}
-        />
-      ) : (
-        <></>
-      )}
-      {renderMessages()}
       <div className='flex flex-col gap-4 lg:flex-row'>
         <EmphasisButton
           onClick={() => push('/pools/add-liquidity?step=2&pairType=Weighted')}

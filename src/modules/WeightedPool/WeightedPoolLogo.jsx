@@ -15,15 +15,14 @@ const splitTokens = tokens => {
   return [tokens.slice(0, mid), tokens.slice(mid)]
 }
 
-function WeightedPoolLogo({ tokens, width, height }) {
+function WeightedPoolLogo({ tokens, width, height, className, classNames = {} }) {
   const [firstRow, secondRow] = splitTokens(tokens)
   return (
-    <div className={cn(secondRow.length > 0 && '-space-y-2')}>
-      <div className='relative flex items-center -space-x-2'>
+    <div className={cn(secondRow.length > 0 && '-space-y-2', className)}>
+      <div className={cn('relative flex items-center -space-x-2', classNames.rows)}>
         {firstRow.map((token, index) => (
-          <>
+          <React.Fragment key={token.address}>
             <Image
-              key={index}
               src={token.logoURI || UNKNOWN_LOGO}
               alt={`token-${index}`}
               className='rounded-full border-2 border-[#1C2027] object-cover'
@@ -38,14 +37,13 @@ function WeightedPoolLogo({ tokens, width, height }) {
             >
               {`${token.symbol || 'UNKNOWN'} ${token.weight}%`}
             </CustomTooltip>
-          </>
+          </React.Fragment>
         ))}
       </div>
-      <div className='relative mx-auto flex items-center -space-x-2'>
+      <div className={cn('relative mx-auto flex w-fit items-center -space-x-2', classNames.rows)}>
         {secondRow.map((token, index) => (
-          <>
+          <React.Fragment key={token.address}>
             <Image
-              key={index}
               src={token.logoURI || UNKNOWN_LOGO}
               alt={`token-${index}`}
               className='rounded-full border-2 border-[#1C2027] object-cover'
@@ -60,7 +58,7 @@ function WeightedPoolLogo({ tokens, width, height }) {
             >
               {`${token.symbol || 'UNKNOWN'} ${token.weight}%`}
             </CustomTooltip>
-          </>
+          </React.Fragment>
         ))}
       </div>
     </div>

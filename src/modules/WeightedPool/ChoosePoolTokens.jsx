@@ -59,14 +59,14 @@ function ChoosePoolTokens({ setTokensSelect }) {
     <div className='w-full space-y-8' ref={wrapperSelectRef}>
       <div className='space-y-4'>
         <TextHeading>{t('Choose Pool Tokens')}</TextHeading>
-        <div className='flex flex-row rounded-lg bg-neutral-800 p-1'>
+        <div className='grid grid-cols-7 rounded-lg bg-neutral-800 p-1'>
           {[2, 3, 4, 5, 6, 7, 8].map(value => (
             <div
               key={value}
               onClick={() => setLength(value)}
-              className={cn('cursor-pointer rounded-md px-3 py-2', length === value && 'bg-neutral-700')}
+              className={cn('cursor-pointer rounded-md px-3 py-2 max-sm:px-1', length === value && 'bg-neutral-700')}
             >
-              <div className='flex items-center gap-2'>
+              <div className='mx-auto flex w-fit items-center gap-2 max-sm:gap-1'>
                 <TextHeading>{value}</TextHeading>
                 <PoolCoinsIcon className='h-5 w-5' />
               </div>

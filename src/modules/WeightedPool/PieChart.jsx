@@ -3,8 +3,9 @@ import React, { useMemo } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 
 import { TextHeading } from '@/components/typography'
+import { formatAmount } from '@/lib/utils'
 
-const colors = ['#32002F', '#84007F', '#B000AA', '#580055', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE']
+const colorsDefault = ['#32002F', '#84007F', '#B000AA', '#580055', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE']
 
 function calculatePadding(ctx) {
   const { chart } = ctx
@@ -18,14 +19,14 @@ function calculatePadding(ctx) {
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-function PieChart({ tokens }) {
+function PieChart({ tokens, colors }) {
   const data = useMemo(
     () =>
       tokens.length > 0
         ? tokens.map((item, index) => ({
             data: item,
             value: Number(item.weight),
-            color: colors[index % colors.length],
+            color: (colors || colorsDefault)[index % (colors || colorsDefault).length],
             cutout: '50%',
           }))
         : [
@@ -36,7 +37,7 @@ function PieChart({ tokens }) {
               cutout: '50%',
             },
           ],
-    [tokens],
+    [colors, tokens],
   )
 
   const options = {
@@ -101,7 +102,9 @@ function PieChart({ tokens }) {
       <div className='relative h-[230px] w-[230px] overflow-visible'>
         <Doughnut height={200} width={200} data={finalData} options={options} className='z-20' />
         <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'>
-          {totalWeight && <TextHeading className='font-archia text-3xl font-semibold'>{totalWeight}%</TextHeading>}
+          {totalWeight && (
+            <TextHeading className='font-archia text-3xl font-semibold'>{formatAmount(totalWeight)}%</TextHeading>
+          )}
         </div>
       </div>
     </div>

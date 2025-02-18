@@ -502,7 +502,7 @@ export const useWeightedPool = () => {
           [account, Contracts.weightedPoolRouter[chainId]],
           chainId,
         )
-        const isApprovedFee = fromWei(allowance, tokenItem.decimals).gte(tokenItem.amountDeposit)
+        const isApprovedFee = fromWei(allowance, tokenItem.decimals).gte(tokenItem.amount)
 
         if (!isApprovedFee) {
           tokenItem.id = approveFeeuuid
@@ -581,7 +581,7 @@ export const useWeightedPool = () => {
       })
 
       const assetsAddress = tokensData.map(asset => asset.address)
-      const maxAmountsIn = sortedAsset.map(asset => toWei(asset.amountDeposit, asset.decimals))
+      const maxAmountsIn = sortedAsset.map(asset => toWei(asset.amount, asset.decimals))
       const minAmountOut = Math.floor(
         toWei(minBPTAmountOut)
           .times((100 - slippage) / 100)
@@ -838,7 +838,7 @@ export const useWeightedPool = () => {
         return indexA - indexB
       })
 
-      const amountIns = sortedToken.map(token => toWei(token.amountDeposit || 0, token.decimals))
+      const amountIns = sortedToken.map(token => toWei(token.amount, token.decimals))
 
       try {
         const minBPTAmountOut = await readCall(

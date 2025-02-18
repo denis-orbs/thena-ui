@@ -9,12 +9,12 @@ export function TokenPercentage({ tokens }) {
       <div className='flex flex-col gap-1'>
         <div>
           {tokens.map((token, index) => (
-            <Paragraph>{`${token?.symbol}${index !== tokens.length - 1 ? '/' : ''}`}</Paragraph>
+            <Paragraph key={token.address}>{`${token?.symbol}${index !== tokens.length - 1 ? '/' : ''}`}</Paragraph>
           ))}
         </div>
         <div>
           {tokens.map((token, index) => (
-            <Paragraph>{`${token?.weight}%${index !== tokens.length - 1 ? ',' : ''}`}</Paragraph>
+            <Paragraph key={token.address}>{`${token?.weight}%${index !== tokens.length - 1 ? ',' : ''}`}</Paragraph>
           ))}
         </div>
       </div>

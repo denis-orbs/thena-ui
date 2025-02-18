@@ -1,9 +1,10 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { useTokenColor } from '@/hooks/useTokenColor'
 import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAmount, toWei } from '@/lib/utils'
 import { CoinsHandIcon } from '@/svgs'
@@ -14,6 +15,9 @@ import WeightedPoolLogo from './WeightedPoolLogo'
 
 export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolName }) {
   const t = useTranslations()
+
+  const [colors, setColors] = useState([])
+  const { renderBackgroundColors } = useTokenColor()
 
   const tokens = useMemo(
     () => tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount })),
@@ -30,6 +34,15 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
     )
     onCreateWeightedPool(poolName, symbol, tokens, allocates, amounts, fees, () => {})
   }, [fees, onCreateWeightedPool, poolName, tokens, tokensAndWeights])
+
+  useEffect(() => {
+    renderBackgroundColors(tokens.map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/'))).then(
+      result => {
+        setColors(result)
+      },
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokens.length, renderBackgroundColors])
 
   return (
     <div className='space-y-4'>
@@ -61,10 +74,10 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
         </div>
         <div className='flex gap-4'>
           <div className='flex-[4]'>
-            <PieChart tokens={tokens} />
+            <PieChart tokens={tokens} colors={colors} />
           </div>
           <div className='flex-[6]'>
-            <PoolOverviewTable tokens={tokens} />
+            <PoolOverviewTable tokens={tokens} colors={colors} />
           </div>
         </div>
       </Box>

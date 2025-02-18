@@ -232,7 +232,7 @@ export function PoolInfo({ strategy, pair }) {
       </TextHeading>
 
       <div className={cn('mt-5 overflow-hidden', show ? 'block' : 'hidden')}>
-        {pair.type === PAIR_TYPES.LSD ? (
+        {pair?.type === PAIR_TYPES.LSD ? (
           <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
         ) : (
           <>{pair && <NormalPoolAttributes pool={pair} />}</>

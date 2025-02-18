@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 
 import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { ClassicPoolIcon, CLPoolIcon, StablePoolIcon, WeightedPoolIcon } from '@/svgs'
+import { ClassicPoolIcon, CLPoolIcon, ScalesIcon, StablePoolIcon } from '@/svgs'
 
 import ChooseTokensSection from './ChooseTokensSection'
 
@@ -30,7 +30,7 @@ export default function Step2({ setStep }) {
         return renderTitle(ClassicPoolIcon, 'Classic Pool')
 
       case PAIR_TYPES.WEIGHTED:
-        return renderTitle(WeightedPoolIcon, 'Weighted Pool')
+        return renderTitle(ScalesIcon, 'Weighted Pool')
 
       default:
         return renderTitle(CLPoolIcon, 'Concentrated Liquidity')

@@ -1,11 +1,15 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Divider from '@/components/divider'
 import { NewTextSubHeading } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
 import SelectToken from '@/modules/Pools/SelectToken'
+import ChoosePoolTokens from '@/modules/WeightedPool/ChoosePoolTokens'
+import { tokensSelected } from '@/state/weightedPool/action'
 
 import AvailablePools from './AvailablePools'
 
@@ -17,6 +21,18 @@ export default function ChooseTokensSection({ pairType, setStep }) {
   const [optionWidth, setOptionWidth] = useState(0)
   const searchParams = useSearchParams()
   const { replace } = useRouter()
+
+  // for weighted pool
+  const dispatch = useDispatch()
+  const { push } = useRouter()
+  const { tokens: tokensPool } = useSelector(state => state.weightedPool || [])
+  // update token for weighted pool
+  const updateTokensSelected = useCallback(
+    tokens => {
+      dispatch(tokensSelected({ tokens }))
+    },
+    [dispatch],
+  )
 
   // Calculate width for dropdown
   useEffect(() => {
@@ -47,37 +63,41 @@ export default function ChooseTokensSection({ pairType, setStep }) {
   return (
     <>
       <div className='flex flex-col gap-5 lg:gap-8'>
-        <div className='flex flex-col gap-2'>
-          <NewTextSubHeading>{t('Choose Tokens')}</NewTextSubHeading>
-          <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
-            <SelectToken
-              otherAsset={secondAsset}
-              setSelectedAsset={asset => {
-                setFirstAsset(asset)
-                if (asset) {
-                  updateSearchParams({ firstAddress: asset.address })
-                }
-              }}
-              placeHolder={t('Select Token')}
-              selectedAsset={firstAsset}
-              dropdownAlign='left'
-              optionWidth={optionWidth}
-            />
-            <SelectToken
-              otherAsset={firstAsset}
-              setSelectedAsset={asset => {
-                setSecondAsset(asset)
-                if (asset) {
-                  updateSearchParams({ secondAddress: asset.address })
-                }
-              }}
-              placeHolder={t('Select Token')}
-              selectedAsset={secondAsset}
-              dropdownAlign='right'
-              optionWidth={optionWidth}
-            />
+        {pairType === PAIR_TYPES.WEIGHTED ? (
+          <ChoosePoolTokens setTokensSelect={updateTokensSelected} />
+        ) : (
+          <div className='flex flex-col gap-2'>
+            <NewTextSubHeading>{t('Choose Tokens')}</NewTextSubHeading>
+            <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
+              <SelectToken
+                otherAsset={secondAsset}
+                setSelectedAsset={asset => {
+                  setFirstAsset(asset)
+                  if (asset) {
+                    updateSearchParams({ firstAddress: asset.address })
+                  }
+                }}
+                placeHolder={t('Select Token')}
+                selectedAsset={firstAsset}
+                dropdownAlign='left'
+                optionWidth={optionWidth}
+              />
+              <SelectToken
+                otherAsset={firstAsset}
+                setSelectedAsset={asset => {
+                  setSecondAsset(asset)
+                  if (asset) {
+                    updateSearchParams({ secondAddress: asset.address })
+                  }
+                }}
+                placeHolder={t('Select Token')}
+                selectedAsset={secondAsset}
+                dropdownAlign='right'
+                optionWidth={optionWidth}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {firstAsset && secondAsset && (
           <>
@@ -90,12 +110,16 @@ export default function ChooseTokensSection({ pairType, setStep }) {
         <div className='mt-5 flex gap-4 lg:mt-8'>
           <EmphasisButton onClick={() => setStep(1)}>{t('Back')}</EmphasisButton>
           <PrimaryButton
-            disabled={!firstAsset || !secondAsset}
+            disabled={pairType !== PAIR_TYPES.WEIGHTED ? !firstAsset || !secondAsset : (tokensPool || []).length < 2}
             onClick={() => {
-              setStep(3)
+              if (pairType !== PAIR_TYPES.WEIGHTED) {
+                setStep(3)
+              } else {
+                push('/pools/weighted-pool/create')
+              }
             }}
           >
-            {t('Next')}
+            {t(pairType !== PAIR_TYPES.WEIGHTED ? 'Next' : 'Create New Pool')}
           </PrimaryButton>
         </div>
       </div>

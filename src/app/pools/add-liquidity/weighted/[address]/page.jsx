@@ -1,29 +1,44 @@
 'use client'
 
+import BigNumber from 'bignumber.js'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { zeroAddress } from 'viem'
 
 import MenuTab from '@/app/arena/MenuTab'
 import Loading from '@/app/loading'
 import Box from '@/components/box'
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import TokenInput from '@/components/input/TokenInput'
+import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
-import { DEPOSIT_TYPE } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
-import { formatAmount, roundIfMoreThanDecimals, unwrappedSymbol } from '@/lib/utils'
+import { useTokenColor } from '@/hooks/useTokenColor'
+import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
+import { formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals, unwrappedSymbol } from '@/lib/utils'
+import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import PieChart from '@/modules/WeightedPool/PieChart'
 import WeightedPoolLogo from '@/modules/WeightedPool/WeightedPoolLogo'
 
 import { PoolInfo } from '../../ClPool'
 import InputTokenMemo from '../../InputTokenMemo'
 
+const DEPOSIT_TYPE = {
+  SINGLE: 'single',
+  ALL: 'all',
+}
+
 function AddLiquidityWeightedPoolPage({ params }) {
   const { address } = params
+  const router = useRouter()
   const { weightedPools, isLoading } = usePairs()
   const t = useTranslations()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
-  const [depositType, setDepositType] = useState(DEPOSIT_TYPE.SINGLE)
+  const [depositType, setDepositType] = useState(DEPOSIT_TYPE.ALL)
+  const [slippage, setSlippage] = useState(0.5)
+  const [amountDeposit, setAmountDeposit] = useState('')
 
   const toggleDepositType = useMemo(
     () => [
@@ -48,7 +63,146 @@ function AddLiquidityWeightedPoolPage({ params }) {
     [address, weightedPools],
   )
 
+  const [colors, setColors] = useState([])
+  const { renderBackgroundColors } = useTokenColor()
+
+  useEffect(() => {
+    renderBackgroundColors(
+      (poolSelected?.tokens || []).map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/')),
+    ).then(result => {
+      setColors(result)
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [(poolSelected?.tokens || []).length, renderBackgroundColors])
+
   const [tokensData, setTokensData] = useState([...(poolSelected?.tokens || [])])
+
+  const [tokenDeposit, setTokenDeposit] = useState(tokensData?.[0])
+  const [minBPTAmountOut, setMinBPTAmountOut] = useState('')
+
+  const { mutatePoolBalance } = useWeightPoolData(poolSelected?.address)
+
+  const {
+    onAddLiquiditySingleToken,
+    onAddLiquidityAllToken,
+    calcMinBPTAmountOutSingleToken,
+    calcMinBPTAmountOutAllToken,
+  } = useWeightedPool()
+
+  const amountToWrap = useMemo(() => {
+    let final
+    if (depositType === DEPOSIT_TYPE.SINGLE) {
+      if (
+        tokenDeposit?.balance?.lt(amountDeposit) &&
+        (tokenDeposit?.symbol === 'BNB' || tokenDeposit?.symbol === 'WBNB')
+      ) {
+        final = new BigNumber(amountDeposit).minus(tokenDeposit.balance)
+      }
+    } else {
+      const wBNB = (tokensData || []).find(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
+      if (wBNB && wBNB.balance.lt(wBNB.amountDeposit)) {
+        final = new BigNumber(wBNB.amountDeposit).minus(wBNB.balance)
+      }
+    }
+    return final
+  }, [amountDeposit, depositType, tokenDeposit, tokensData])
+
+  const calcMinBPT = useCallback(async () => {
+    let minBPT = ''
+    if (depositType === DEPOSIT_TYPE.SINGLE) {
+      if (!isInvalidAmount(amountDeposit)) {
+        minBPT = await calcMinBPTAmountOutSingleToken(poolSelected?.poolId, tokenDeposit, amountDeposit)
+      }
+    } else if (tokensData?.length && !isInvalidAmount(tokensData[0]?.amount)) {
+      minBPT = await calcMinBPTAmountOutAllToken(poolSelected?.poolId, tokensData)
+    }
+    setMinBPTAmountOut(isInvalidAmount(minBPT) ? '' : fromWei(minBPT))
+  }, [
+    depositType,
+    tokensData,
+    amountDeposit,
+    calcMinBPTAmountOutSingleToken,
+    poolSelected?.poolId,
+    tokenDeposit,
+    calcMinBPTAmountOutAllToken,
+  ])
+
+  const debounceTimeout = useRef(null)
+  useEffect(() => {
+    clearTimeout(debounceTimeout.current)
+    debounceTimeout.current = setTimeout(() => {
+      calcMinBPT()
+    }, 300)
+  }, [calcMinBPT])
+
+  const onAddLiquidity = useCallback(
+    async withStake => {
+      if (depositType === DEPOSIT_TYPE.SINGLE) {
+        await onAddLiquiditySingleToken(
+          poolSelected,
+          tokenDeposit,
+          amountDeposit,
+          minBPTAmountOut,
+          slippage,
+          amountToWrap,
+          withStake,
+          () => {
+            mutatePoolBalance()
+          },
+        )
+      } else {
+        console.log({ poolSelected, tokensData, minBPTAmountOut, slippage, amountToWrap })
+        await onAddLiquidityAllToken(
+          poolSelected,
+          tokensData,
+          minBPTAmountOut,
+          slippage,
+          amountToWrap,
+          withStake,
+          () => {
+            mutatePoolBalance()
+          },
+        )
+      }
+    },
+    [
+      amountDeposit,
+      amountToWrap,
+      depositType,
+      minBPTAmountOut,
+      mutatePoolBalance,
+      onAddLiquidityAllToken,
+      onAddLiquiditySingleToken,
+      poolSelected,
+      slippage,
+      tokenDeposit,
+      tokensData,
+    ],
+  )
+  const isDisable = useMemo(() => {
+    if (depositType === DEPOSIT_TYPE.SINGLE) {
+      if (!tokenDeposit || amountDeposit <= 0) {
+        return true
+      }
+    }
+
+    if (depositType === DEPOSIT_TYPE.ALL) {
+      const checkAmountValid = (tokensData || []).every(token => !isInvalidAmount(token.amount))
+      if (!checkAmountValid) return true
+    }
+
+    return false
+  }, [amountDeposit, depositType, tokenDeposit, tokensData])
+
+  // const { data: chartData } = useSWR(
+  //   poolSelected && chainId && ['analytics/pair/chart', poolSelected?.address],
+  //   () => fetchPairChartData(chainId, poolSelected),
+  //   {
+  //     refreshInterval: 0,
+  //   },
+  // )
+
+  console.log({ poolSelected })
 
   const handleAmountChange = useCallback(
     (value, asset) => {
@@ -74,74 +228,124 @@ function AddLiquidityWeightedPoolPage({ params }) {
     [getValueTokenAmountToUSD],
   )
 
+  useEffect(() => {
+    setTokensData(prev => {
+      if ((prev || []).length <= 0) return poolSelected?.tokens
+      return prev
+    })
+  }, [poolSelected?.tokens])
+
   if (isLoading) return <Loading />
   return (
     <div className='space-y-8'>
       <div className='items-center space-y-2'>
         <div className='flex items-center gap-8'>
-          <WeightedPoolLogo height={60} width={60} tokens={poolSelected?.tokens || []} />
+          <WeightedPoolLogo
+            height={60}
+            width={60}
+            tokens={poolSelected?.tokens || []}
+            className='-space-y-5'
+            classNames={{ rows: '-space-x-5' }}
+          />
           <NewTextHeading>{poolSelected?.symbol || 'UNKNOWN'}</NewTextHeading>
         </div>
         <TextHeading>{t('Weighted')}</TextHeading>
       </div>
-      <div className='flex gap-4'>
-        <div className='flex-[6] space-y-8'>
+      <div className='flex flex-col gap-4 lg:flex-row'>
+        <div className='w-full space-y-8 lg:flex-[6]'>
           {/* TODO: mock data */}
           <Box className='ml-auto flex flex-row gap-10'>
             <div className='flex flex-col gap-3'>
               <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
-                {formatAmount(16.61)} %
+                {poolSelected?.apr || 0}
               </TextHeading>
               <Paragraph className='text-neutral-500'>{t('Estimated APR')}</Paragraph>
             </div>
             <div className='flex flex-col gap-3'>
               <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
-                ${formatAmount(15373984)}
+                ${formatAmount(poolSelected?.dayVolume || 0)}
               </TextHeading>
-              <Paragraph className='text-neutral-500'>{t('(24H) Volume')}</Paragraph>
+              <Paragraph className='text-neutral-500'>{t('Volume (24h)')}</Paragraph>
             </div>
 
             <div className='flex flex-col gap-3'>
               <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
-                ${formatAmount(5373)}
+                ${formatAmount(poolSelected?.dayFees || 0)}
               </TextHeading>
-              <Paragraph className='text-neutral-500'>{t('(24H) Fees')}</Paragraph>
+              <Paragraph className='text-neutral-500'>{t('Fees (24H)')}</Paragraph>
             </div>
             <div className='flex flex-col gap-3'>
               <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
-                ${formatAmount(93473141)}
+                ${formatAmount(poolSelected?.tvlUSD || 0)}
               </TextHeading>
               <Paragraph className='text-neutral-500'>{t('TVL')}</Paragraph>
             </div>
           </Box>
           <MenuTab className='grid w-full grid-cols-2' menuData={toggleDepositType} />
           <div>
+            <div className='flex items-center justify-end'>
+              <Paragraph>{t('Slippage')}</Paragraph>
+              <SettingSlippageModal updateSlippage={setSlippage} slippage={slippage} />
+            </div>
             {depositType === DEPOSIT_TYPE.ALL && (
               <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-                {depositType === DEPOSIT_TYPE.ALL &&
-                  (tokensData || []).map((token, idx) => (
-                    <InputTokenMemo
-                      key={token?.address}
-                      token={token}
-                      autoFocus={idx === 0}
-                      amount={token.amountDeposit}
-                      onAmountChange={value => handleAmountChange(value, token)}
-                      alowDouble
-                      weight={token.weight}
-                    />
-                  ))}
+                {(tokensData || []).map((token, idx) => (
+                  <InputTokenMemo
+                    key={token?.address}
+                    token={token}
+                    autoFocus={idx === 0}
+                    amount={token.amount}
+                    onAmountChange={value => handleAmountChange(value, token)}
+                    alowDouble
+                    weight={token.weight}
+                  />
+                ))}
+              </div>
+            )}
+            {depositType === DEPOSIT_TYPE.SINGLE && (
+              <div>
+                <TokenInput
+                  asset={tokenDeposit}
+                  setAsset={setTokenDeposit}
+                  amount={amountDeposit}
+                  setAmount={setAmountDeposit}
+                  autoFocus
+                  assetData={tokensData}
+                  assetNull
+                  alowDouble
+                />
               </div>
             )}
           </div>
-          <PrimaryButton className='w-full'>{t('Deposit')}</PrimaryButton>
+          <div className='flex flex-col justify-between gap-4 lg:flex-row'>
+            <SecondaryButton disabled={isDisable} onClick={() => onAddLiquidity(false)} className='w-full lg:w-1/2'>
+              {t('Add Liquidity')}
+            </SecondaryButton>
+            <PrimaryButton
+              disabled={isDisable || poolSelected?.gauge?.address === zeroAddress}
+              onClick={() => onAddLiquidity(true)}
+              className='w-full lg:w-1/2'
+              data-tooltip-id={`add-liquidity-stake-${poolSelected?.address}`}
+            >
+              {t('Add Liquidity & Stake')}
+            </PrimaryButton>
+            {poolSelected?.gauge?.address === zeroAddress && (
+              <CustomTooltip id={`add-liquidity-stake-${poolSelected?.address}`} className='max-w-[500px]'>
+                {t('This pool has no Gauge')}
+              </CustomTooltip>
+            )}
+          </div>
+          <EmphasisButton onClick={() => router.back()} className='w-full lg:w-fit'>
+            {t('Back')}
+          </EmphasisButton>
         </div>
-        <div className='flex-[4]'>
+        <div className='w-full lg:flex-[4]'>
           <PoolInfo pair={poolSelected} />
-          <PieChart tokens={poolSelected?.tokens || []} />
+          <PieChart tokens={poolSelected?.tokens || []} colors={colors} />
           <div className='mt-5 flex flex-col gap-4'>
             <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
             <div className='flex flex-col gap-3'>
-              {(poolSelected.tokens || []).map(token => (
+              {(poolSelected?.tokens || []).map(token => (
                 <div className='flex items-center justify-between'>
                   <Paragraph className='font-medium'>
                     {unwrappedSymbol(token)} {t('Amount')}

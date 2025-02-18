@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 
 import { formatAmount } from '@/lib/utils'
 
-function PoolOverviewTable({ tokens }) {
+function PoolOverviewTable({ tokens, colors }) {
   const data = useMemo(
     () =>
       tokens.map(token => ({
@@ -29,7 +29,7 @@ function PoolOverviewTable({ tokens }) {
           {data.map((item, index) => (
             <tr key={index}>
               <td className='flex items-center gap-2 py-2'>
-                <span className={`h-3 w-3 rounded-full ${item.color}`} />
+                <span className='h-3 w-3 rounded-full' style={{ backgroundColor: colors?.[index] }} />
                 {item.name}
               </td>
               <td className='py-2'>{item.weight}</td>
