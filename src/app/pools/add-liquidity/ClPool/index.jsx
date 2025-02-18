@@ -63,8 +63,18 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
   }, [firstAsset, fusionPairs, pairs, secondAsset])
 
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
-  const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
+  const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
+
+  const chartDomain = useMemo(() => {
+    const leftPrice = isReverse ? priceLower : priceUpper?.invert()
+    const rightPrice = isReverse ? priceUpper : priceLower?.invert()
+
+    return leftPrice && rightPrice
+      ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
+      : undefined
+  }, [isReverse, priceLower, priceUpper])
+
   const price = useMemo(() => {
     if (!mintInfo.price) return
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
@@ -109,20 +119,10 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
     isLoading,
     error,
   } = useFetchPairPrices({
-    token0Address: wrappedAddress(firstAsset),
-    token1Address: wrappedAddress(secondAsset),
+    token0Address: quoteCurrency?.address,
+    token1Address: baseCurrency?.address,
     timeWindow,
   })
-
-  const minValue = useMemo(
-    () => pairPrices.reduce((min, current) => (current.value < min.value ? current : min), pairPrices[0]),
-    [pairPrices],
-  )
-
-  const maxValue = useMemo(
-    () => pairPrices.reduce((max, current) => (current.value > max.value ? current : max), pairPrices[0]),
-    [pairPrices],
-  )
 
   return (
     <>
@@ -141,7 +141,7 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
       </h3>
 
       <section className='mt-10 flex w-full flex-col gap-5 lg:flex-row'>
-        <div className='flex w-full flex-[6] flex-col gap-4 lg:gap-6'>
+        <div id='LEFT-BLOCK' className='flex w-full flex-[6] flex-col gap-4 lg:gap-6'>
           <ChooseStrategy
             pairType={PAIR_TYPES.LSD}
             firstAsset={firstAsset}
@@ -149,6 +149,7 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
             isReverse={isReverse}
             isAdd={isAdd}
           />
+
           <AddLiquidityCLPane
             pool={pair}
             isAdd={isAdd}
@@ -158,11 +159,11 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
           />
         </div>
 
-        <div className={cn('hidden flex-[4]', firstAddress && secondAddress && 'block')}>
+        <div id='RIGHT-BLOCK' className={cn('hidden flex-[4]', firstAddress && secondAddress && 'block')}>
           <div className='hidden flex-[4] flex-col gap-5 lg:flex'>
             <PoolInfo strategy={strategy} pair={pair} />
 
-            {mintInfo?.strategy?.isAutomatic && (
+            {strategy?.isAutomatic && (
               <div className='pt-8'>
                 <TextHeading className='font-semibold'>Liquidity Range</TextHeading>
                 <LiquidityChartRangeInput
@@ -181,7 +182,7 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
               </div>
             )}
 
-            <div className={cn('hidden', priceLower && priceUpper && 'block')}>
+            <div className={cn('hidden', !strategy?.isAutomatic && priceLower && priceUpper && 'block')}>
               <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
                 <h6 className='font-bold'>Historical price</h6>
                 <Tabs data={periods} />
@@ -197,8 +198,8 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
                     <PoolChart
                       data={pairPrices}
                       timeWindow={timeWindow}
-                      upper={maxValue?.value}
-                      lower={minValue?.value}
+                      upper={Number(chartDomain?.leftPrice ?? 0)}
+                      lower={Number(chartDomain?.rightPrice ?? 0)}
                     />
                   )}
                 </div>

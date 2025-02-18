@@ -1,16 +1,21 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useState } from 'react'
 
-import AddLiquidity from '@/components/common/AddLiquidity'
+import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
+import V1Add from '@/components/common/AddLiquidity/V1Add'
 import Modal from '@/components/modal'
 import { PAIR_TYPES } from '@/constant'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 
 export default function AddPositionModal({ popup, setPopup, strategy }) {
-  const currentStep = useMemo(
-    () => ([PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(strategy.title) ? 1 : 2),
-    [strategy],
-  )
+  const [firstAddress, setFirstAddress] = useState(strategy.token0.address)
+  const [secondAddress, setSecondAddress] = useState(strategy.token1.address)
+
+  const firstAsset = useGetAsset(firstAddress)
+  const secondAsset = useGetAsset(secondAddress)
+
+  const [slippage, setSlippage] = useState(0.5)
 
   return (
     <Modal
@@ -20,7 +25,21 @@ export default function AddPositionModal({ popup, setPopup, strategy }) {
         setPopup(false)
       }}
     >
-      <AddLiquidity pool={strategy} currentStep={currentStep} isModal isAdd />
+      {[PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(strategy.type) ? (
+        <V1Add
+          pairType={strategy.type}
+          firstAsset={firstAsset}
+          setFirstAddress={setFirstAddress}
+          secondAsset={secondAsset}
+          setSecondAddress={setSecondAddress}
+          isModal
+          isAdd
+          slippage={slippage}
+          setSlippage={setSlippage}
+        />
+      ) : (
+        <FusionAdd strategy={strategy} isModal isAdd />
+      )}
     </Modal>
   )
 }

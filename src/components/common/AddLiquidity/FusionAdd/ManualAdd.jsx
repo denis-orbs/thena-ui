@@ -19,19 +19,6 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
   const { errorMessage } = mintInfo
   const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
   const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
-  //
-  // const apr = useEstimateAPR({
-  //   pool: mintInfo.pool,
-  //   poolAddress: mintInfo.poolAddress,
-  //   tickUpper,
-  //   tickLower,
-  //   token0,
-  //   amount0: amountA?.quotient,
-  //   token1,
-  //   amount1: amountB?.quotient,
-  //   isFarming: strategy?.title === MANUAL_TYPES[0],
-  //   tvl: strategy?.tvl,
-  // })
 
   const { onAlgebraAdd, pending } = useAlgebraAdd()
   const { deadline } = useSettings()
@@ -49,34 +36,6 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
   return (
     <section className='space-y-8'>
       <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-
-      {/* <div className='mt-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-        <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-        <div className='flex flex-col gap-3'>
-          <div className='flex items-center justify-between'>
-            <Paragraph className='font-medium'>
-              {unwrappedSymbol(strategy?.token0)} {t('Amount')}
-            </Paragraph>
-            <Paragraph>{formatAmount(strategy?.token0?.reserve)}</Paragraph>
-          </div>
-          <div className='flex items-center justify-between'>
-            <Paragraph className='font-medium'>
-              {unwrappedSymbol(strategy?.token1)} {t('Amount')}
-            </Paragraph>
-            <Paragraph>{formatAmount(strategy?.token1?.reserve)}</Paragraph>
-          </div>
-        </div>
-      </div>
-
-      <div className='my-5 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-        <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-        <div className='flex flex-col gap-3'>
-          <div className='flex items-center justify-between'>
-            <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-            <Paragraph>{formatAmount(strategy?.account?.totalLp)} LP</Paragraph>
-          </div>
-        </div>
-      </div> */}
 
       {account ? (
         <PrimaryButton

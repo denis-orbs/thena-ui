@@ -102,8 +102,13 @@ function TokenInput({
         </div>
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-          <TextSubHeading>
-            {t('Balance')}: {formatAmount(isDouble ? balance : asset?.balance)}
+          <TextSubHeading className='space-x-2'>
+            <span>
+              {t('Balance')}: {formatAmount(isDouble ? balance : asset?.balance)}
+            </span>
+            <span onClick={() => setAmount(asset.balance)} className={cn('cursor-pointer text-primary-600')}>
+              {t('Max')}
+            </span>
           </TextSubHeading>
         </div>
         {!assetData ? (

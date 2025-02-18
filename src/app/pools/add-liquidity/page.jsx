@@ -1,9 +1,7 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, { useEffect, useMemo, useState } from 'react'
-
-import { usePairs } from '@/context/pairsContext'
+import React, { useCallback } from 'react'
 
 import Step1 from './Step1'
 import Step2 from './Step2'
@@ -13,40 +11,24 @@ export default function AddLiquidityPage() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const poolAddress = searchParams.get('pool')
 
-  const { pairs } = usePairs()
-  const poolDefault = useMemo(() => pairs.find(pool => pool.address === poolAddress), [pairs, poolAddress])
+  const params = useSearchParams()
+  const step = Number(params.get('step') ?? 1)
 
-  const [poolSelected, setPoolSelected] = useState(poolDefault)
-  const [step, setStep] = useState(Number(searchParams.get('step') ?? 1))
-  const [isAdd, setIsAdd] = useState(false)
-
-  useEffect(() => {
-    if (poolDefault && !poolSelected) {
-      setPoolSelected(poolDefault)
-    }
-  }, [poolDefault, poolSelected])
-
-  useEffect(() => {
-    const query = new URLSearchParams(searchParams.toString())
-
-    if (poolSelected) {
-      query.set('pool', poolSelected?.address)
-    }
-
-    if (step) {
-      query.set('step', step)
-    }
-
-    router.replace(`${pathname}?${query.toString()}`)
-  }, [pathname, poolSelected, router, searchParams, step])
+  const setStep = useCallback(
+    nextStep => {
+      const query = new URLSearchParams(searchParams.toString())
+      query.set('step', nextStep)
+      router.replace(`${pathname}?${query.toString()}`)
+    },
+    [pathname, router, searchParams],
+  )
 
   return (
     <div className='container mx-auto flex flex-col'>
-      {step === 1 && <Step1 nextStep={setStep} setPoolSelected={setPoolSelected} setIsAdd={setIsAdd} />}
-      {step === 2 && <Step2 pool={poolSelected} setStep={setStep} isAdd={isAdd} />}
-      {step === 3 && <Step3 pool={poolSelected} setStep={setStep} isAdd={isAdd} />}
+      {step === 1 && <Step1 nextStep={setStep} />}
+      {step === 2 && <Step2 setStep={setStep} />}
+      {step === 3 && <Step3 setStep={setStep} />}
     </div>
   )
 }

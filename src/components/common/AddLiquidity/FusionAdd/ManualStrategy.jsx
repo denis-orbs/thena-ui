@@ -140,7 +140,6 @@ function ManualStrategy({ firstAsset, secondAsset }) {
 
       <div className='flex items-center justify-between'>
         <TextHeading className='text-xl font-medium'>Liquidity Range</TextHeading>
-        {/* <Selection data={assetSelections} isSmall isTranslation={false} /> */}
       </div>
 
       {activePreset === Presets.FULL && fullRangeWarningShown && (
@@ -196,93 +195,6 @@ function ManualStrategy({ firstAsset, secondAsset }) {
         activePreset={activePreset}
         handlePresetRangeSelection={handlePresetRangeSelection}
       />
-
-      {/* <div className='grid grid-cols-2 gap-4'> */}
-      {/*   <div className='flex flex-col justify-center gap-1.5 rounded-md bg-neutral-800 px-4 py-3'> */}
-      {/*     <TextHeading className='text-sm' data-tooltip-id='APR-INFO'> */}
-      {/*       Estimate APR for $1k */}
-      {/*     </TextHeading> */}
-      {/**/}
-      {/*     <div data-tooltip-id='APR-INFO' className='w-fit rounded-md bg-neutral-700 p-2'> */}
-      {/*       <TextHeading className='text-sm font-bold'>{Number(apr).toFixed(2)}%</TextHeading> */}
-      {/*     </div> */}
-      {/*     <CustomTooltip id='APR-INFO' className='max-w-[320px]'> */}
-      {/*       Estimated return based on weekly trade fees and farming yield */}
-      {/*     </CustomTooltip> */}
-      {/*   </div> */}
-      {/**/}
-      {/*   <div className='flex flex-col gap-3'> */}
-      {/*     <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'> */}
-      {/*       <div className='mt-1 flex cursor-pointer items-center justify-between'> */}
-      {/*         <TextHeading className='text-sm'>{t(mintInfo.noLiquidity ? 'New pool' : 'Current Pool')}</TextHeading> */}
-      {/*         <strong className='text-sm'> */}
-      {/*           {feeString} {t('Fee')} */}
-      {/*         </strong> */}
-      {/*       </div> */}
-      {/*     </div> */}
-      {/*     <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'> */}
-      {/*       <TextHeading className='text-sm'>{t('Risk')}</TextHeading> */}
-      {/*       {_risk && ( */}
-      {/*         <div className='flex items-center gap-2'> */}
-      {/*           {[1, 2, 3, 4, 5].map((_, i) => ( */}
-      {/*             <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'> */}
-      {/*               <div */}
-      {/*                 key={`risk-${i}`} */}
-      {/*                 className='relative h-2 bg-error-600' */}
-      {/*                 style={{ left: `calc(-100% + ${_risk[i]}%)` }} */}
-      {/*               /> */}
-      {/*             </div> */}
-      {/*           ))} */}
-      {/*         </div> */}
-      {/*       )} */}
-      {/*     </div> */}
-      {/*     <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'> */}
-      {/*       <div className='mt-1 flex items-center justify-between'> */}
-      {/*         <TextHeading className='text-sm'>{t('Profit')}</TextHeading> */}
-      {/*         {_risk && ( */}
-      {/*           <div className='flex items-center gap-2'> */}
-      {/*             {[1, 2, 3, 4, 5].map((_, i) => ( */}
-      {/*               <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'> */}
-      {/*                 <div */}
-      {/*                   key={`risk-${i}`} */}
-      {/*                   className='relative h-2 bg-success-600' */}
-      {/*                   style={{ left: `calc(-100% + ${_risk[i]}%)` }} */}
-      {/*                 /> */}
-      {/*               </div> */}
-      {/*             ))} */}
-      {/*           </div> */}
-      {/*         )} */}
-      {/*       </div> */}
-      {/*     </div> */}
-      {/*   </div> */}
-      {/* </div> */}
-
-      {/* <div className={cn('hidden', priceLower && priceUpper && 'block')}> */}
-      {/*   <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'> */}
-      {/*     <h6 className='font-bold'>Historical price</h6> */}
-      {/*     <Tabs data={periods} /> */}
-      {/*   </div> */}
-      {/**/}
-      {/*   {isLoading ? ( */}
-      {/*     <Skeleton className='mt-2 flex h-[300px] items-center justify-center' /> */}
-      {/*   ) : ( */}
-      {/*     <div className='mt-2 flex h-[300px] items-center justify-center'> */}
-      {/*       {error ? ( */}
-      {/*         <Paragraph>Failed to load price chart for this pair</Paragraph> */}
-      {/*       ) : ( */}
-      {/*         <PoolChart */}
-      {/*           data={pairPrices} */}
-      {/*           timeWindow={timeWindow} */}
-      {/*           current={Number(currentPrice)} */}
-      {/*           upper={mintInfo?.ticksAtLimit[Bound.UPPER] ? Infinity : Number(rightPrice?.toSignificant(5)) ?? 0} */}
-      {/*           lower={mintInfo?.ticksAtLimit[Bound.LOWER] ? 0 : Number(leftPrice?.toSignificant(5)) ?? 0} */}
-      {/*         /> */}
-      {/*       )} */}
-      {/*     </div> */}
-      {/*   )} */}
-      {/* </div> */}
-      {/* <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
-      <ManualAdd baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} mintInfo={mintInfo} /> */}
 
       <CustomTooltip id='price-tooltip' className='max-w-[320px]'>
         <TextHeading className='text-sm'>{t('Price Range Info')}</TextHeading>

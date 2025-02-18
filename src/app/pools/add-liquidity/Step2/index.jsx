@@ -6,7 +6,7 @@ import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { ClassicPoolIcon, CLPoolIcon, StablePoolIcon, WeightedPoolIcon } from '@/svgs'
 
-import ChooseTokensSection from './Step2/ChooseTokensSection'
+import ChooseTokensSection from './ChooseTokensSection'
 
 export default function Step2({ setStep }) {
   const t = useTranslations()

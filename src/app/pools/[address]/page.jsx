@@ -3,25 +3,23 @@
 import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
-import { PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { TextButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import NextImage from '@/components/image/NextImage'
-import Modal from '@/components/modal'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, SPECIAL_POOLS, UNKNOWN_LOGO } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
-import { useWindowSize } from '@/hooks/useWindowSize'
 import { useGaugeBalance, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAmount, goScan, isInvalidAmount } from '@/lib/utils'
 import { LiquidityFeesTable } from '@/modules/Pools/LiquidityFeesTable'
@@ -34,8 +32,6 @@ import { WeightedPoolPosition } from '@/modules/Position/WeightedPoolPosition'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/svgs'
-
-import Liquidity from './Liquidity'
 
 const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
 const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
@@ -62,10 +58,6 @@ export default function SpecificPoolPage({ params }) {
   const manuals = useManuals()
   const { pairs, isLoading } = usePairs()
   const { networkId } = useChainSettings()
-
-  const windowSize = useWindowSize()
-
-  const [showModalAdd, setShowModalAdd] = useState(false)
 
   const { strategy } = useV3MintState()
 
@@ -424,10 +416,6 @@ export default function SpecificPoolPage({ params }) {
         </div>
 
         <div className='flex-[4] flex-col gap-12'>
-          <div className='mt-[72px] max-lg:hidden'>
-            <Liquidity pool={pair} />
-          </div>
-
           {/* User positions */}
           <div className='mt-6 space-y-4'>
             <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>
@@ -460,20 +448,6 @@ export default function SpecificPoolPage({ params }) {
               )}
             </div>
           </div>
-        </div>
-        {/* Add liquidity (On mobile) */}
-        <div className='fixed bottom-0 left-0 z-50 w-full justify-center bg-neutral-800 !p-4 lg:hidden'>
-          <PrimaryButton onClick={() => setShowModalAdd(true)} className='mx-auto w-full'>
-            {t('Add Liquidity')}
-          </PrimaryButton>
-          <Modal
-            title='New Deposit'
-            isOpen={showModalAdd}
-            width={windowSize.width > 1024 ? 570 : windowSize.width * 0.9}
-            closeModal={() => setShowModalAdd(false)}
-          >
-            <Liquidity pool={pair} isModal />
-          </Modal>
         </div>
       </div>
     </div>

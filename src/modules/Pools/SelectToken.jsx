@@ -192,8 +192,7 @@ function SelectToken({
           <div
             ref={dropdownRef}
             className={cn(
-              'mt-2 max-h-[872px]',
-              'absolute flex-col items-start justify-start gap-1',
+              'absolute mt-2 flex-col items-start justify-start gap-1',
               'rounded-xl border border-neutral-600 bg-neutral-800 p-2 shadow-lg',
               'visible opacity-100',
               listClassNames,
@@ -210,7 +209,7 @@ function SelectToken({
             }}
           >
             <SearchInput setVal={setSearchText} val={searchText} className='mr-3' />
-            <div className='mt-4·max-h-[700px]·overflow-y-auto·scrollbar-thin·scrollbar-track-neutral-800·scrollbar-thumb-neutral-500·hover:scrollbar-thumb-neutral-400'>
+            <div className='mt-4 max-h-96 overflow-y-auto scrollbar-thin scrollbar-track-neutral-800 scrollbar-thumb-neutral-500 hover:scrollbar-thumb-neutral-400'>
               <InfiniteScroll dataLength={filteredAssets.length}>
                 <div className='grid gap-3 md:grid-cols-2 2xl:grid-cols-3'>
                   {filteredAssets?.map(item => (

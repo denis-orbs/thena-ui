@@ -170,14 +170,15 @@ export const useEstimateAPR = ({
       useFullPrecision: true,
     })
   } else {
-    position = Position.fromAmounts({
-      pool,
-      tickLower,
-      tickUpper,
-      amount0: toWei(500 / (currency0?.price ?? 1)),
-      amount1: toWei(500 / (currency1?.price ?? 1)),
-      useFullPrecision: true,
-    })
+    return BigNumber(0)
+    // position = Position.fromAmounts({
+    //   pool,
+    //   tickLower,
+    //   tickUpper,
+    //   amount0: toWei(500 / (currency0?.price ?? 1)),
+    //   amount1: toWei(500 / (currency1?.price ?? 1)),
+    //   useFullPrecision: true,
+    // })
   }
 
   const farmRatio = BigNumber(position.liquidity).div(BigNumber(farmLiquidity).plus(position.liquidity))

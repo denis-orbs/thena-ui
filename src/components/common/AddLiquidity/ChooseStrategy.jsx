@@ -8,7 +8,6 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
-import Box from '@/components/box'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Selection from '@/components/selection'
@@ -23,9 +22,8 @@ import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
-import { DEFAULT_LOCALE } from '@/modules/Pools/LiquidityChartRangeInput'
 import SelectToken from '@/modules/Pools/SelectToken'
-import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
+import { Bound, Field, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite } from '@/svgs'
@@ -65,6 +63,7 @@ const defaultSwapFees = {
   },
   allowed: {},
   stable: false,
+  isAutomatic: false,
   title: 'CL_SwapFee',
   account: {
     walletBalance: new BigNumber(0),
@@ -81,20 +80,6 @@ const defaultSwapFees = {
     total1: new BigNumber(0),
     totalUsd: new BigNumber(0),
   },
-}
-
-// Used to format floats representing percent change with fixed decimal places
-// FIXME: edit this function
-function formatDelta(delta, locale = DEFAULT_LOCALE) {
-  if (delta === null || delta === undefined || delta === Infinity || isNaN(delta)) {
-    return '-'
-  }
-
-  return `${Number(Math.abs(delta).toFixed(2)).toLocaleString(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-    useGrouping: false,
-  })}%`
 }
 
 const fetchIchiInfo = async (chainId, strategy) => {
@@ -189,31 +174,32 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
     if (!mintInfo.price) return
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
   }, [mintInfo])
-  const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
 
+  const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
+  const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
+
+  // TODO: check apr for both zapper/pair deposit
   const apr = useEstimateAPR({
     pool: mintInfo.pool,
     poolAddress: mintInfo.poolAddress,
     tickUpper,
     tickLower,
+    token0: baseCurrency,
+    amount0: amountA?.quotient,
+    token1: quoteCurrency,
+    amount1: amountB?.quotient,
     isFarming: strategy?.title === MANUAL_TYPES[0],
     tvl: strategy?.tvl,
   })
 
-  const brushLabelValue = useCallback(
-    (d, x) => {
-      if (!price) return ''
-
-      if (d === 'w' && mintInfo.ticksAtLimit?.[Bound.UPPER]) return '0'
-      if (d === 'e' && mintInfo.ticksAtLimit?.[Bound.LOWER]) return '∞'
-
-      const percent = (x < price ? -1 : 1) * ((Math.max(x, price) - Math.min(x, price)) / price) * 100
-
-      return price ? `${(Math.sign(percent) < 0 ? '-' : '') + formatDelta(percent)}` : ''
-    },
-    [price, mintInfo.ticksAtLimit],
-  )
+  console.log({
+    apr: Number(apr),
+    token0: baseCurrency?.symbol,
+    amount0: amountA?.quotient,
+    token1: quoteCurrency?.symbol,
+    amount1: amountB?.quotient,
+  })
 
   useEffect(() => {
     if (!price) return
@@ -244,6 +230,9 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
 
   const handleChooseStrategy = useCallback(
     sub => {
+      const _isAutomatic = !MANUAL_TYPES.includes(sub.title)
+      setIsAutomatic(_isAutomatic)
+
       setStrategy({
         title: sub.title,
         tvl: sub.tvl.toNumber(),
@@ -266,7 +255,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
         },
         address: sub.address,
         isFarming: sub.title.includes('Farming'),
-        isAutomatic: !MANUAL_TYPES.includes(sub.title),
+        isAutomatic: _isAutomatic,
         isDefault: sub?.isDefault,
         version: 3,
         fee: sub?.fee,
@@ -425,7 +414,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
               )}
             >
               <div>
-                <Paragraph>Earn Fees</Paragraph>
+                <Paragraph>{strategy?.title === 'CL_SwapFee' ? 'Earn Fees' : 'Earn THE'}</Paragraph>
                 <div className='mt-1 flex flex-wrap gap-2'>
                   <div className='flex items-center gap-1'>
                     <Paragraph className=''>{t('TVL')}:</Paragraph>
@@ -439,14 +428,23 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
                   <Paragraph>Estimate APR</Paragraph>
                   <p className='text-xl font-semibold text-primary-600'>{formatAmount(apr)}%</p>
                 </TextHeading>
-                <IconGroup
-                  className='-space-x-2'
-                  classNames={{
-                    image: 'outline-2 w-7 h-7',
-                  }}
-                  logo1={firstAsset?.logoURI}
-                  logo2={secondAsset?.logoURI}
-                />
+
+                {strategy?.title === 'CL_SwapFee' ? (
+                  <IconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'outline-2 w-7 h-7',
+                    }}
+                    logo1={firstAsset?.logoURI}
+                    logo2={secondAsset?.logoURI}
+                  />
+                ) : (
+                  <CircleImage
+                    className={cn('size-7')}
+                    src='https://cdn.thena.fi/assets/THE.png'
+                    alt='THENA First Logo'
+                  />
+                )}
               </div>
             </article>
           </div>
@@ -455,43 +453,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
         {strategy && !isAutomatic && (
           <ManualStrategy firstAsset={firstAsset} secondAsset={secondAsset} strategy={strategy} />
         )}
-
-        <div className={cn('grid grid-cols-1 gap-2 lg:grid-cols-2', (!strategy || !isAutomatic) && 'hidden')}>
-          <div className='flex flex-col gap-2'>
-            <Paragraph>
-              {t('Min [symbol0] per [symbol1] price', {
-                symbol0: strategy?.token0.symbol,
-                symbol1: strategy?.token1.symbol,
-              })}
-            </Paragraph>
-            <Box className='space-y-3 border border-neutral-700 bg-transparent'>
-              <Paragraph className='text-xl text-neutral-400'>{formatAmount(0)}</Paragraph>
-              <div className='flex flex-row items-center justify-between'>
-                <Paragraph className='text-[10px]'>
-                  {strategy?.token0?.symbol} = {priceLower ? priceLower.toSignificant(5) : 0} {strategy?.token1?.symbol}
-                </Paragraph>
-                <Paragraph className='text-[10px]'>{brushLabelValue('w', [0])}</Paragraph>
-              </div>
-            </Box>
-          </div>
-          <div className='flex flex-col gap-2'>
-            <Paragraph>
-              {t('Max [symbol0] per [symbol1] price', {
-                symbol0: strategy?.token0.symbol,
-                symbol1: strategy?.token1.symbol,
-              })}
-            </Paragraph>
-            <Box className='space-y-3 border border-neutral-700 bg-transparent'>
-              <Paragraph className='text-xl text-neutral-400'>{formatAmount(0)}</Paragraph>
-              <div className='flex flex-row items-center justify-between'>
-                <Paragraph className='text-[10px]'>
-                  {strategy?.token0?.symbol} = {priceUpper ? priceUpper.toSignificant(5) : 0} {strategy?.token1?.symbol}
-                </Paragraph>
-                <Paragraph className='text-[10px]'>{brushLabelValue('e', [1])}</Paragraph>
-              </div>
-            </Box>
-          </div>
-        </div>
       </div>
     </div>
   )

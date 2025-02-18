@@ -15,7 +15,7 @@ import IconGroup from '../icongroup'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
-import { TextHeading, TextSubHeading } from '../typography'
+import { TextSubHeading } from '../typography'
 
 function BalanceInput({
   asset,
@@ -141,17 +141,17 @@ function BalanceInput({
         </div>
         <div className='flex items-center justify-between gap-2'>
           <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-          <div className='flex flex-row items-center justify-between gap-4'>
-            <TextSubHeading>
-              {t('Balance')}: {formatAmount(max)}
-            </TextSubHeading>
-            <TextHeading
-              className='cursor-pointer text-sm text-primary-600'
+          <TextSubHeading className='space-x-2'>
+            <span>
+              {t('Balance')}:{formatAmount(max)}
+            </span>
+            <span
               onClick={() => onAmountChange(max.dp(asset.decimals).toString(10))}
+              className={cn('cursor-pointer text-primary-600', max?.eq(0) && 'hidden')}
             >
               {t('Max')}
-            </TextHeading>
-          </div>
+            </span>
+          </TextSubHeading>
         </div>
       </div>
       {/* {errorMsg && (

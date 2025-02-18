@@ -292,28 +292,25 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaul
       volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,
       fee: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayFees)}</Paragraph>,
       action: (
-        <div className='flex gap-4'>
+        <div className='flex gap-2.5'>
           <TextIconButton
-            className='h-11 w-11 border-[1px] border-neutral-600'
+            className='!size-10 border-[1px] border-neutral-600'
             Icon={AnalyticsIcon}
             onClick={() => push(`/analytics/pairs/${pool?.address}`)}
             data-tooltip-id='analytics-tooltip'
           />
           <EmphasisButton
-            className='w-full p-3  lg:w-fit'
-            onClick={
-              () => {
-                if (pool.type === PAIR_TYPES.WEIGHTED) {
-                  push(`/pools/add-liquidity/weighted/${pool.address}`)
-                } else {
-                  push(
-                    // eslint-disable-next-line max-len
-                    `/pools/add-liquidity/?firstAddress=${pool.token0.address}&secondAddress=${pool.token1.address}&pairType=${pool.type}&step=2`,
-                  )
-                }
+            className='w-full p-2 text-sm lg:w-fit'
+            onClick={() => {
+              if (pool.type === PAIR_TYPES.WEIGHTED) {
+                push(`/pools/add-liquidity/weighted/${pool.address}`)
+              } else {
+                push(
+                  // eslint-disable-next-line max-len
+                  `/pools/add-liquidity?firstAddress=${pool.token0.address}&secondAddress=${pool.token1.address}&pairType=${pool.type}&step=2`,
+                )
               }
-              // eslint-disable-next-line react/jsx-curly-newline
-            }
+            }}
           >
             {t('Deposit')}
           </EmphasisButton>

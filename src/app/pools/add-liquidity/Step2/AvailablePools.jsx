@@ -12,31 +12,31 @@ const sortOptions = [
   {
     label: 'Pair',
     value: 'pair',
-    width: 'lg:w-[30%]',
+    width: 'lg:w-[25%]',
     isDesc: true,
   },
   {
     label: 'APR',
     value: 'apr',
-    width: 'lg:w-[15%]',
+    width: 'lg:w-[12%]',
     isDesc: true,
   },
   {
     label: 'TVL',
     value: 'tvl',
-    width: 'lg:w-[25%]',
+    width: 'lg:w-[23%]',
     isDesc: true,
   },
   {
     label: 'Fees (24h)',
     value: 'fee',
-    width: 'lg:w-[15%]',
+    width: 'lg:w-[calc(40%-120px)]',
     isDesc: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'lg:w-[150px]',
+    width: 'w-[120px]',
     disabled: true,
   },
 ]
@@ -81,7 +81,7 @@ function AvailablePools({ tokens = [], pairType }) {
                 {t('No Pool for this Assets and Strategies found')}
               </Paragraph>
               <Paragraph className='text-base text-neutral-100'>
-                {t('You can create a new Pool or change the Strategie')}
+                {t('You can create a new Pool or change the Strategy')}
               </Paragraph>
             </div>
           </div>
