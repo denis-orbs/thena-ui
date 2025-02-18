@@ -248,20 +248,22 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaul
             <div className='flex flex-col gap-1'>
               <TextHeading className='text-sm'>APR</TextHeading>
               <div className='flex flex-col gap-1'>
-                {pool.subpools.map((sub, idx) => (
-                  <div className='flex justify-between gap-2' key={`pair-${idx}`}>
-                    <div className='flex gap-1'>
-                      <TextHeading className='text-xs'>
-                        {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
-                      </TextHeading>
-                      {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
-                      {ICHI_TYPES.includes(sub.title) && (
-                        <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
-                      )}
+                {pool.subpools
+                  .filter(item => item.version === 3)
+                  .map((sub, idx) => (
+                    <div className='flex justify-between gap-2' key={`pair-${idx}`}>
+                      <div className='flex gap-1'>
+                        <TextHeading className='text-xs'>
+                          {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
+                        </TextHeading>
+                        {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
+                        {ICHI_TYPES.includes(sub.title) && (
+                          <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
+                        )}
+                      </div>
+                      <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
                     </div>
-                    <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           </CustomTooltip>
@@ -302,14 +304,11 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaul
           <EmphasisButton
             className='w-full p-2 text-sm lg:w-fit'
             onClick={() => {
-              if (pool.type === PAIR_TYPES.WEIGHTED) {
-                push(`/pools/add-liquidity/weighted/${pool.address}`)
-              } else {
-                push(
-                  // eslint-disable-next-line max-len
-                  `/pools/add-liquidity?firstAddress=${pool.token0.address}&secondAddress=${pool.token1.address}&pairType=${pool.type}&step=2`,
-                )
-              }
+              push(
+                pool.type === PAIR_TYPES.WEIGHTED
+                  ? `/pools/add-liquidity/weighted/${pool.address}`
+                  : `/pools/add-liquidity?poolAddress=${pool.address}&step=3`,
+              )
             }}
           >
             {t('Deposit')}

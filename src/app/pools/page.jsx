@@ -9,6 +9,7 @@ import { ChainId } from 'thena-sdk-core'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { TextIconButton } from '@/components/buttons/IconButton'
 import Dropdown from '@/components/dropdown'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
@@ -26,7 +27,7 @@ import { useVaults } from '@/context/vaultsContext'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useChainSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, InfoIcon } from '@/svgs'
+import { AnalyticsIcon, InfoIcon } from '@/svgs'
 
 import AddLiquidityModal from './addLiquidityModal'
 import NewListings from './NewListings'
@@ -35,19 +36,19 @@ const sortOptions = [
   {
     label: 'Pairing',
     value: 'pair',
-    width: 'lg:w-[35%]',
+    width: 'lg:w-[25%]',
     isDesc: true,
   },
   {
     label: 'APR',
     value: 'apr',
-    width: 'lg:w-[20%] lg:min-w-[231.61px]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
     label: 'TVL',
     value: 'tvl',
-    width: 'lg:w-[15%]',
+    width: 'lg:w-[18%]',
     isDesc: true,
   },
   {
@@ -59,13 +60,13 @@ const sortOptions = [
   {
     label: 'Fees (24h)',
     value: 'fee',
-    width: 'lg:w-[calc(20%-100px)]',
+    width: 'lg:w-[calc(27%-140px)]',
     isDesc: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'lg:w-[100px]',
+    width: 'lg:w-[140px]',
     disabled: true,
   },
 ]
@@ -406,9 +407,26 @@ export default function PoolsPage() {
         volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,
         fee: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayFees)}</Paragraph>,
         action: (
-          <EmphasisButton className='w-full p-3  lg:w-fit' onClick={() => push(`/pools/${pool.address}`)}>
-            <ArrowRightIcon className='h-5 w-5' />
-          </EmphasisButton>
+          <div className='flex gap-2.5'>
+            <TextIconButton
+              className='!size-10 border-[1px] border-neutral-600'
+              Icon={AnalyticsIcon}
+              onClick={() => push(`/analytics/pairs/${pool?.address}`)}
+              data-tooltip-id='analytics-tooltip'
+            />
+            <EmphasisButton
+              className='w-full p-2 text-sm lg:w-fit'
+              onClick={() => {
+                push(
+                  pool.type === PAIR_TYPES.WEIGHTED
+                    ? `/pools/add-liquidity/weighted/${pool.address}`
+                    : `/pools/add-liquidity?poolAddress=${pool.address}&step=3`,
+                )
+              }}
+            >
+              {t('Deposit')}
+            </EmphasisButton>
+          </div>
         ),
       }))
     },
@@ -527,26 +545,7 @@ export default function PoolsPage() {
             </span>
           </TextSubHeading>
         </div>
-
-        {/* <PrimaryButton className='flex min-w-fit items-center gap-1' onClick={() => push('/dashboard')}> */}
-        {/*   <span>Migrate now</span> */}
-        {/*   <ArrowRightIcon className='h-5 w-5' /> */}
-        {/* </PrimaryButton> */}
       </Box>
-
-      {/* <div className='mt-6 flex flex-col gap-4'>
-        <div className='flex items-center justify-between'>
-          <TextHeading className='text-xl'>{t('Your Conc Liquidity Positions')}</TextHeading>
-        </div>
-        <Table
-          sortOptions={sortOptions}
-          data={finalPools}
-          sort={sort}
-          setSort={setSort}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
-      </div> */}
 
       <div className='mt-6 flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
