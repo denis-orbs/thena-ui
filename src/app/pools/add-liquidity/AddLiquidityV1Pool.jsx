@@ -28,6 +28,9 @@ function AddLiquidityV1Pool({ pair }) {
     setSecondAddress(pair?.token1?.address ?? searchParams.get('secondAddress'))
   }, [pair, searchParams])
 
+  const firstAsset = useGetAsset(firstAddress)
+  const secondAsset = useGetAsset(secondAddress)
+
   const pool = useMemo(() => (pair?.subpools ?? []).find(item => item.version === 3), [pair])
 
   const PageTitleSection = useMemo(() => {
@@ -77,7 +80,7 @@ function AddLiquidityV1Pool({ pair }) {
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         {/* Left side */}
         <div className='flex flex-col gap-4 lg:gap-8'>
-          {pair !== null ? (
+          {pair ? (
             <PairBasicInfo pair={pair} />
           ) : (
             <div className='flex flex-col gap-1 lg:gap-2'>
@@ -87,12 +90,12 @@ function AddLiquidityV1Pool({ pair }) {
                   classNames={{
                     image: 'size-6 lg:size-12',
                   }}
-                  logo1={pair?.token0?.logoURI ?? UNKNOWN_LOGO}
-                  logo2={pair?.token1?.logoURI ?? UNKNOWN_LOGO}
+                  logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO}
+                  logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO}
                 />
                 <NewTextHeading className='2xl:text-5xl'>
-                  {`${pair?.token0?.symbol === 'WBNB' ? 'BNB' : pair?.token0?.symbol}/${
-                    pair?.token1?.symbol === 'WBNB' ? 'BNB' : pair?.token1?.symbol
+                  {`${firstAsset?.symbol === 'WBNB' ? 'BNB' : firstAsset?.symbol || ''}/${
+                    secondAsset?.symbol === 'WBNB' ? 'BNB' : secondAsset?.symbol || ''
                   }`}
                 </NewTextHeading>
               </div>
@@ -105,18 +108,18 @@ function AddLiquidityV1Pool({ pair }) {
           <V1Add
             pool={pool}
             pairType={pair?.type}
-            firstAsset={useGetAsset(firstAddress)}
-            secondAsset={useGetAsset(secondAddress)}
+            firstAsset={firstAsset}
+            secondAsset={secondAsset}
             setFirstAddress={setFirstAddress}
             setSecondAddress={setSecondAddress}
           />
         </div>
 
         {/* Right side */}
-        <div className='flex flex-col gap-4 lg:gap-8'>
-          <PoolAttributesSection pair={pair} />
+        {pool ? (
+          <div className='flex flex-col gap-4 lg:gap-8'>
+            <PoolAttributesSection pair={pair} />
 
-          {Boolean(pool) && (
             <div className='flex flex-col gap-4 rounded-md bg-neutral-800 p-4'>
               <div className='flex flex-col gap-4'>
                 <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
@@ -150,8 +153,13 @@ function AddLiquidityV1Pool({ pair }) {
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
+            <TextHeading className='text-xl'>{t('New Deposit')}</TextHeading>
+            <Paragraph>{t('New Deposit description')}</Paragraph>
+          </div>
+        )}
       </div>
     </div>
   )

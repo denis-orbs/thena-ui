@@ -13,8 +13,8 @@ export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirs
   const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
 
-  const addSelections = useMemo(() => {
-    const selections = [
+  const addSelections = useMemo(
+    () => [
       {
         label: 'Pool Token Deposit',
         active: !isZapper,
@@ -22,24 +22,20 @@ export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirs
           setIsZapper(false)
         },
       },
-    ]
-
-    if (pool) {
-      selections.push({
+      {
         label: 'Single Token Deposit',
         active: isZapper,
         onClickHandler: () => {
           setIsZapper(true)
         },
-      })
-    }
-
-    return selections
-  }, [isZapper, pool])
+      },
+    ],
+    [isZapper],
+  )
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
-      <Selection data={addSelections} isFull isTranslation={false} />
+      {Boolean(pool) && <Selection data={addSelections} isFull isTranslation={false} />}
 
       <div className='flex justify-end'>
         <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
