@@ -1,28 +1,24 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
 import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import BalanceInput from '@/components/input/BalanceInput'
-import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, isInvalidAmount, wrappedAddress } from '@/lib/utils'
+import { isInvalidAmount, wrappedAddress } from '@/lib/utils'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 
 export function ManualPaneV1({
   strategy,
   firstAsset,
   secondAsset,
-  isModal,
   setFirstAddress,
   setSecondAddress,
-  setFirstAmountValue,
-  setSecondAmountValue,
   pairType,
   slippage,
 }) {
@@ -66,16 +62,6 @@ export function ManualPaneV1({
     },
     [strategy, secondAsset],
   )
-
-  useEffect(() => {
-    if (typeof setFirstAmountValue === 'function') {
-      setFirstAmountValue(firstAmount)
-    }
-
-    if (typeof setSecondAmountValue === 'function') {
-      setSecondAmountValue(secondAmount)
-    }
-  }, [firstAmount, secondAmount, setFirstAmountValue, setSecondAmountValue])
 
   const onSecondChange = useCallback(
     val => {
@@ -166,7 +152,7 @@ export function ManualPaneV1({
   return (
     <section>
       <div className='flex flex-col'>
-        <div className='mb-5 flex flex-col gap-2 xl:flex-row'>
+        <div className='mb-5 grid gap-2 xl:grid-cols-2'>
           <BalanceInput
             asset={firstAsset}
             setAsset={isFromBNB ? setFirstAddress : null}
@@ -182,69 +168,9 @@ export function ManualPaneV1({
             showPercent={false}
           />
         </div>
-
-        {strategy ? (
-          <>
-            {/* <div className='flex flex-col gap-4'>
-              <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-              <div className='flex flex-col gap-3'>
-                <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>
-                    {unwrappedSymbol(strategy.token0)} {t('Amount')}
-                  </Paragraph>
-                  <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>
-                    {unwrappedSymbol(strategy.token1)} {t('Amount')}
-                  </Paragraph>
-                  <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
-                </div>
-              </div>
-            </div>
-            <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-              <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-              <div className='flex flex-col gap-3'>
-                <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                  <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                  <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
-                </div>
-              </div>
-            </div> */}
-          </>
-        ) : (
-          <div className='flex flex-col gap-4'>
-            <TextHeading className='text-lg'>{t('Starting Liquidity Info')}</TextHeading>
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>
-                  {t('[symbolA] per [symbolB]', {
-                    symbolA: firstAsset?.symbol,
-                    symbolB: secondAsset?.symbol,
-                  })}
-                </Paragraph>
-                <Paragraph>{firstAmount && secondAmount ? formatAmount(firstAmount / secondAmount) : '-'}</Paragraph>
-              </div>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>
-                  {t('[symbolA] per [symbolB]', {
-                    symbolA: secondAsset?.symbol,
-                    symbolB: firstAsset?.symbol,
-                  })}
-                </Paragraph>
-                <Paragraph>{firstAmount && secondAmount ? formatAmount(secondAmount / firstAmount) : '-'}</Paragraph>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-      <div
-        className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row', isModal && 'px-3 lg:px-6')}
-      >
+
+      <div className='mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row'>
         {account ? (
           <>
             <SecondaryButton

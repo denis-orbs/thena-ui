@@ -39,8 +39,8 @@ export default function Step2() {
 
   const PoolDescriptionSection = useMemo(() => {
     const renderDescription = (title, description) => (
-      <div className='rounded-md bg-neutral-900 p-3 lg:p-4'>
-        <NewTextSubHeading className='mb-2 !text-xl'>{t(title)}</NewTextSubHeading>
+      <div className='flex h-max flex-col gap-2 rounded-md bg-neutral-900 p-3 lg:p-4'>
+        <NewTextSubHeading className='!text-xl'>{t(title)}</NewTextSubHeading>
         <p className='text-neutral-400'>{t(description)}</p>
       </div>
     )

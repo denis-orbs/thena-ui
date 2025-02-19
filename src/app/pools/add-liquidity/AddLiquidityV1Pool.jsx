@@ -1,23 +1,34 @@
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import V1Add from '@/components/common/AddLiquidity/V1Add'
+import Divider from '@/components/divider'
 import IconGroup from '@/components/icongroup'
-import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useGetAsset } from '@/hooks/fusion/Tokens'
+import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { ClassicPoolIcon, StablePoolIcon } from '@/svgs'
 
 import { PairBasicInfo } from './PairBasicInfo'
+import { PoolAttributesSection } from './PoolAttributesSection'
 
 function AddLiquidityV1Pool({ pair }) {
   const t = useTranslations()
   const searchParams = useSearchParams()
 
-  const [slippage, setSlippage] = useState(0.5)
-
   const pairType = pair?.type ?? searchParams.get('pairType')
+
+  const [firstAddress, setFirstAddress] = useState(pair?.token0?.address)
+  const [secondAddress, setSecondAddress] = useState(pair?.token1?.address)
+
+  useEffect(() => {
+    setFirstAddress(pair?.token0?.address ?? searchParams.get('firstAddress'))
+    setSecondAddress(pair?.token1?.address ?? searchParams.get('secondAddress'))
+  }, [pair, searchParams])
+
+  const pool = useMemo(() => (pair?.subpools ?? []).find(item => item.version === 3), [pair])
 
   const PageTitleSection = useMemo(() => {
     const renderTitle = (Icon, text) => (
@@ -64,6 +75,7 @@ function AddLiquidityV1Pool({ pair }) {
       {PageTitleSection}
 
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
+        {/* Left side */}
         <div className='flex flex-col gap-4 lg:gap-8'>
           {pair !== null ? (
             <PairBasicInfo pair={pair} />
@@ -91,13 +103,54 @@ function AddLiquidityV1Pool({ pair }) {
           )}
 
           <V1Add
-            pool={(pair?.subpools ?? []).find(item => item.version === 3)}
+            pool={pool}
             pairType={pair?.type}
-            firstAsset={useGetAsset(pair?.token0?.address)}
-            secondAsset={useGetAsset(pair?.token1?.address)}
-            slippage={slippage}
-            setSlippage={setSlippage}
+            firstAsset={useGetAsset(firstAddress)}
+            secondAsset={useGetAsset(secondAddress)}
+            setFirstAddress={setFirstAddress}
+            setSecondAddress={setSecondAddress}
           />
+        </div>
+
+        {/* Right side */}
+        <div className='flex flex-col gap-4 lg:gap-8'>
+          <PoolAttributesSection pair={pair} />
+
+          {Boolean(pool) && (
+            <div className='flex flex-col gap-4 rounded-md bg-neutral-800 p-4'>
+              <div className='flex flex-col gap-4'>
+                <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
+                <div className='flex flex-col gap-3'>
+                  <div className='flex items-center justify-between'>
+                    <Paragraph className='font-medium'>
+                      {unwrappedSymbol(pool.token0)} {t('Amount')}
+                    </Paragraph>
+                    <Paragraph>{formatAmount(pool.token0.reserve)}</Paragraph>
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <Paragraph className='font-medium'>
+                      {unwrappedSymbol(pool.token1)} {t('Amount')}
+                    </Paragraph>
+                    <Paragraph>{formatAmount(pool.token1.reserve)}</Paragraph>
+                  </div>
+                </div>
+              </div>
+              <Divider />
+              <div className='flex flex-col gap-4'>
+                <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
+                <div className='flex flex-col gap-3'>
+                  <div className='flex items-center justify-between'>
+                    <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+                    <Paragraph>{formatAmount(pool.account.totalLp)} LP</Paragraph>
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
+                    <Paragraph>{formatAmount(pool.account.gaugeBalance)} LP</Paragraph>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

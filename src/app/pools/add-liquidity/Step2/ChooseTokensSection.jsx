@@ -132,14 +132,21 @@ export default function ChooseTokensSection({ pairType }) {
             disabled={pairType === PAIR_TYPES.WEIGHTED ? tokensPool?.length < 2 : !firstAsset || !secondAsset}
             onClick={() => {
               if (pairType !== PAIR_TYPES.WEIGHTED) {
-                updateSearchParams({
-                  step: 3,
-                  ...(foundedPool && {
-                    firstAddress: null,
-                    secondAddress: null,
-                    poolAddress: foundedPool.address,
-                  }),
-                })
+                updateSearchParams(
+                  {
+                    step: 3,
+                    ...(foundedPool
+                      ? {
+                          firstAddress: null,
+                          secondAddress: null,
+                          poolAddress: foundedPool.address,
+                        }
+                      : {
+                          poolAddress: null,
+                        }),
+                  },
+                  true,
+                )
               } else {
                 push('/pools/weighted-pool/create')
               }

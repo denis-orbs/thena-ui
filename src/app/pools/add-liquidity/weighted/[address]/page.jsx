@@ -22,8 +22,8 @@ import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import PieChart from '@/modules/WeightedPool/PieChart'
 import WeightedPoolLogo from '@/modules/WeightedPool/WeightedPoolLogo'
 
-import { PoolInfo } from '../../ClPool'
 import InputTokenMemo from '../../InputTokenMemo'
+import { PoolAttributesSection } from '../../PoolAttributesSection'
 
 const DEPOSIT_TYPE = {
   SINGLE: 'single',
@@ -327,7 +327,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
           </EmphasisButton>
         </div>
         <div className='w-full lg:flex-[4]'>
-          <PoolInfo pair={poolSelected} />
+          <PoolAttributesSection pair={poolSelected} />
           <div>
             <PieChart tokens={poolSelected?.tokens || []} colors={colors} />
             <div

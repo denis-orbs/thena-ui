@@ -95,7 +95,7 @@ export default function Step1() {
         <EmphasisButton onClick={() => back()}>{t('Cancel')}</EmphasisButton>
         <PrimaryButton
           onClick={() => {
-            updateSearchParams({ step: 2 })
+            updateSearchParams({ step: 2 }, true)
           }}
         >
           {t('Next')}

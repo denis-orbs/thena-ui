@@ -9,8 +9,9 @@ import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import { ManualPaneV1 } from './ManualPane'
 import { ZapperPane } from './ZapperPane'
 
-export default function V1Add({ pool, pairType, firstAsset, secondAsset, slippage, setSlippage }) {
+export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirstAddress, setSecondAddress }) {
   const [isZapper, setIsZapper] = useState(false)
+  const [slippage, setSlippage] = useState(0.5)
 
   const addSelections = useMemo(() => {
     const selections = [
@@ -53,7 +54,8 @@ export default function V1Add({ pool, pairType, firstAsset, secondAsset, slippag
           firstAsset={firstAsset}
           secondAsset={secondAsset}
           slippage={slippage}
-          setSlippage={setSlippage}
+          setFirstAddress={setFirstAddress}
+          setSecondAddress={setSecondAddress}
         />
       )}
     </div>

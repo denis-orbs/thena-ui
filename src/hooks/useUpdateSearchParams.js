@@ -2,12 +2,12 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
 
 export const useUpdateSearchParams = () => {
-  const { replace } = useRouter()
+  const { replace, push } = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
 
   return useCallback(
-    updates => {
+    (updates, usePush = false) => {
       const params = new URLSearchParams(searchParams.toString())
 
       Object.entries(updates).forEach(([key, value]) => {
@@ -20,8 +20,8 @@ export const useUpdateSearchParams = () => {
 
       const newPath = params.toString() ? `${pathname}?${params.toString()}` : pathname
 
-      return replace(newPath)
+      return usePush ? push(newPath) : replace(newPath)
     },
-    [replace, searchParams, pathname],
+    [searchParams, pathname, push, replace],
   )
 }

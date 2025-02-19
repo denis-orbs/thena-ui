@@ -3,7 +3,6 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import Box from '@/components/box'
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import IconGroup from '@/components/icongroup'
 import Skeleton from '@/components/skeleton'
@@ -15,15 +14,14 @@ import { usePairs } from '@/context/pairsContext'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { cn, wrappedAddress } from '@/lib/utils'
 import LiquidityChartRangeInput from '@/modules/Pools/LiquidityChartRangeInput'
-import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
-import { InfoCircleWhite } from '@/svgs'
 
 import AddLiquidityCLPane from './AddLiquidityCLPane'
+import { PoolAttributesSection } from '../PoolAttributesSection'
 
 function AddLiquidityClPool({ pool, isAdd = false }) {
   const t = useTranslations()
@@ -161,7 +159,7 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
 
         <div id='RIGHT-BLOCK' className={cn('hidden flex-[4]', firstAddress && secondAddress && 'block')}>
           <div className='hidden flex-[4] flex-col gap-5 lg:flex'>
-            <PoolInfo strategy={strategy} pair={pair} />
+            <PoolAttributesSection strategy={strategy} pair={pair} />
 
             {strategy?.isAutomatic && (
               <div className='pt-8'>
@@ -209,36 +207,6 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
         </div>
       </section>
     </>
-  )
-}
-
-export function PoolInfo({ strategy, pair }) {
-  const t = useTranslations()
-  const [show, setShow] = useState(false)
-
-  return (
-    <Box className='bg-neutral-800'>
-      <TextHeading className='flex w-full items-center justify-between font-archia text-3xl font-semibold text-neutral-50'>
-        <h3>{t('Pool Attributes')}</h3>
-        <i
-          onClick={() => setShow(!show)}
-          className={cn(
-            'flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg ',
-            show ? 'bg-neutral-600' : 'bg-neutral-700',
-          )}
-        >
-          <InfoCircleWhite className='h-5 w-5 stroke-neutral-400' />
-        </i>
-      </TextHeading>
-
-      <div className={cn('mt-5 overflow-hidden', show ? 'block' : 'hidden')}>
-        {pair?.type === PAIR_TYPES.LSD ? (
-          <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
-        ) : (
-          <>{pair && <NormalPoolAttributes pool={pair} />}</>
-        )}
-      </div>
-    </Box>
   )
 }
 
