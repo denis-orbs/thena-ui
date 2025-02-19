@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux'
 import { zeroAddress } from 'viem'
 
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { useFusionPairs } from '@/context/fusionsContext'
+import { usePairs } from '@/context/pairsContext'
 import { useWeightedPools } from '@/hooks/weightedPool/useWeigtedPool'
 import { ZERO_VALUE } from '@/lib/utils'
 
@@ -129,4 +131,26 @@ export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, ve
       (pool.token0.address === token0Address && pool.token1.address === token1Address) ||
       (pool.token0.address === token1Address && pool.token1.address === token0Address),
   )
+}
+
+export const usePairInfo = ({ token0Address, token1Address, type, poolAddress }) => {
+  const { pairs } = usePairs()
+  const fusionPairs = useFusionPairs()
+
+  return useMemo(() => {
+    const found = pairs.find(
+      pair =>
+        (pair.address === poolAddress ||
+          (pair.token0?.address === token0Address && pair.token1?.address === token1Address) ||
+          (pair.token0?.address === token1Address && pair.token1?.address === token0Address)) &&
+        pair.type === type,
+    )
+    if (!found) return
+
+    const fusionPool = (fusionPairs ?? []).find(ele => found?.address?.toLowerCase() === ele.address)
+    return {
+      ...found,
+      currentTick: Number(fusionPool?.globalState.tick || 0),
+    }
+  }, [fusionPairs, pairs, poolAddress, token0Address, token1Address, type])
 }

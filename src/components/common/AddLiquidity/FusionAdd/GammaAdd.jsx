@@ -208,13 +208,7 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy }) {
       <div className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
         {account ? (
           <>
-            <PrimaryButton
-              disabled={pending}
-              onClick={() => {
-                onAddLiquidity()
-              }}
-              className='w-full'
-            >
+            <PrimaryButton disabled={pending} onClick={onAddLiquidity} className='w-full'>
               {t('Add Liquidity')}
             </PrimaryButton>
           </>

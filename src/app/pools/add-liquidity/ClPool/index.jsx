@@ -7,10 +7,8 @@ import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import IconGroup from '@/components/icongroup'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
-import { useFusionPairs } from '@/context/fusionsContext'
-import { usePairs } from '@/context/pairsContext'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { cn, wrappedAddress } from '@/lib/utils'
 import LiquidityChartRangeInput from '@/modules/Pools/LiquidityChartRangeInput'
@@ -19,11 +17,12 @@ import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
+import { usePairInfo } from '@/state/pools/hooks'
 
 import AddLiquidityCLPane from './AddLiquidityCLPane'
 import { PoolAttributesSection } from '../PoolAttributesSection'
 
-function AddLiquidityClPool({ pool, isAdd = false }) {
+function AddLiquidityClPool({ pool }) {
   const t = useTranslations()
 
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
@@ -31,6 +30,7 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
   const { strategy } = useV3MintState()
 
   const searchParams = useSearchParams()
+  const poolAddress = searchParams.get('poolAddress') || pool?.address
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
   const secondAddress = searchParams.get('secondAddress') || pool?.token1?.address
 
@@ -43,22 +43,12 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
   const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
   const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
 
-  const { pairs } = usePairs()
-  const fusionPairs = useFusionPairs()
-  const pair = useMemo(() => {
-    const found = (pairs ?? []).find(
-      ele =>
-        [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(firstAsset)) &&
-        [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(secondAsset)) &&
-        ele.type === PAIR_TYPES.LSD,
-    )
-    if (!found) return
-    const fusionPool = (fusionPairs ?? []).find(ele => found?.address?.toLowerCase() === ele.address)
-    return {
-      ...found,
-      currentTick: Number(fusionPool?.globalState.tick || 0),
-    }
-  }, [firstAsset, fusionPairs, pairs, secondAsset])
+  const pair = usePairInfo({
+    token0Address: wrappedAddress(firstAsset),
+    token1Address: wrappedAddress(secondAsset),
+    type: PAIR_TYPES.LSD,
+    poolAddress,
+  })
 
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
@@ -124,19 +114,17 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
 
   return (
     <>
-      <h3 className='flex flex-row items-center gap-3'>
+      <h4 className='flex flex-row items-center gap-3 lg:gap-4 2xl:gap-8'>
         <IconGroup
           className='-space-x-1'
           classNames={{
-            image: 'outline-4 w-16 h-16',
+            image: 'size-6 lg:size-10 2xl:size-[86px]',
           }}
           logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO}
           logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO}
         />
-        <TextHeading className='font-archia text-3xl font-semibold leading-[96px] lg:text-[96px]'>
-          {t('Add Concentrated Liquidity')}
-        </TextHeading>
-      </h3>
+        <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
+      </h4>
 
       <section className='mt-10 flex w-full flex-col gap-5 lg:flex-row'>
         <div id='LEFT-BLOCK' className='flex w-full flex-[6] flex-col gap-4 lg:gap-6'>
@@ -145,12 +133,10 @@ function AddLiquidityClPool({ pool, isAdd = false }) {
             firstAsset={firstAsset}
             secondAsset={secondAsset}
             isReverse={isReverse}
-            isAdd={isAdd}
           />
 
           <AddLiquidityCLPane
             pool={pair}
-            isAdd={isAdd}
             quoteCurrency={quoteCurrency}
             baseCurrency={baseCurrency}
             mintInfo={mintInfo}

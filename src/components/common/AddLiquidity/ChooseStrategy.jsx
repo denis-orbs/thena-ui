@@ -1,7 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -16,15 +16,13 @@ import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
-import { useFusionPairs } from '@/context/fusionsContext'
-import { usePairs } from '@/context/pairsContext'
 import { useCurrency } from '@/hooks/fusion/Tokens'
-import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
-import { Bound, Field, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
+import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
+import { usePairInfo } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite } from '@/svgs'
 
@@ -129,33 +127,23 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   return preset
 }
 
-export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAdd, isModal }) {
+export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isModal }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const searchParams = useSearchParams()
-  const { replace } = useRouter()
 
   const { strategy } = useV3MintState()
   const { networkId } = useChainSettings()
-  const { pairs } = usePairs()
-  const fusionPairs = useFusionPairs()
 
   const [isAutomatic, setIsAutomatic] = useState(false)
 
-  const pair = useMemo(() => {
-    const found = (pairs ?? []).find(
-      ele =>
-        [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(firstAsset)) &&
-        [ele.token0?.address, ele.token1?.address].includes(wrappedAddress(secondAsset)) &&
-        pairType === ele.type,
-    )
-    if (!found) return
-    const fusionPool = (fusionPairs ?? []).find(ele => found?.address?.toLowerCase() === ele.address)
-    return {
-      ...found,
-      currentTick: Number(fusionPool?.globalState.tick || 0),
-    }
-  }, [pairs, fusionPairs, firstAsset, secondAsset, pairType])
+  const poolAddress = searchParams.get('poolAddress')
+  const pair = usePairInfo({
+    token0Address: wrappedAddress(firstAsset),
+    token1Address: wrappedAddress(secondAsset),
+    poolAddress,
+    type: pairType,
+  })
 
   const { data: preset } = useSWR(
     strategy && pair && ['strategy/info', strategy.address],
@@ -174,32 +162,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
     if (!mintInfo.price) return
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
   }, [mintInfo])
-  const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
-
-  const amountA = mintInfo.parsedAmounts[Field.CURRENCY_A]
-  const amountB = mintInfo.parsedAmounts[Field.CURRENCY_B]
-
-  // TODO: check apr for both zapper/pair deposit
-  const apr = useEstimateAPR({
-    pool: mintInfo.pool,
-    poolAddress: mintInfo.poolAddress,
-    tickUpper,
-    tickLower,
-    token0: baseCurrency,
-    amount0: amountA?.quotient,
-    token1: quoteCurrency,
-    amount1: amountB?.quotient,
-    isFarming: strategy?.title === MANUAL_TYPES[0],
-    tvl: strategy?.tvl,
-  })
-
-  console.log({
-    apr: Number(apr),
-    token0: baseCurrency?.symbol,
-    amount0: amountA?.quotient,
-    token1: quoteCurrency?.symbol,
-    amount1: amountB?.quotient,
-  })
 
   useEffect(() => {
     if (!price) return
@@ -211,12 +173,10 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
   }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, price])
 
   useEffect(() => {
-    if (isAdd) {
-      defaultSwapFees.token0 = firstAsset
-      defaultSwapFees.token1 = secondAsset
-      defaultSwapFees.address = zeroAddress
-    }
-  }, [firstAsset, isAdd, secondAsset])
+    defaultSwapFees.token0 = firstAsset
+    defaultSwapFees.token1 = secondAsset
+    defaultSwapFees.address = zeroAddress
+  }, [firstAsset, secondAsset])
 
   const setStrategy = useCallback(
     strategyInfo => {
@@ -245,13 +205,13 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
           ...sub?.token0,
           reserve: sub?.token0?.reserve?.toNumber(),
           balance: sub?.token0?.balance?.toNumber(),
-          totalValue: sub?.token0?.totalValue?.toNumber(),
+          totalValue: sub?.token0?.totalValue,
         },
         token1: {
           ...sub?.token1,
           reserve: sub?.token1?.reserve?.toNumber(),
           balance: sub?.token1?.balance?.toNumber(),
-          totalValue: sub?.token1?.totalValue?.toNumber(),
+          totalValue: sub?.token1?.totalValue,
         },
         address: sub.address,
         isFarming: sub.title.includes('Farming'),
@@ -265,19 +225,19 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
   )
 
   useEffect(() => {
-    if (!firstAsset || !secondAsset) return
+    if (!poolAddress && (!firstAsset || !secondAsset)) return
 
     if (!pair?.subpools && !strategy) {
       handleChooseStrategy(defaultSwapFees)
       return
     }
 
-    if (pair && pair.subpools && strategy?.isDefault) {
+    if (pair?.subpools && (!strategy || strategy?.isDefault)) {
       let _strategy = pair.subpools.find(item => !MANUAL_TYPES.includes(item.title))
       if (!_strategy) _strategy = pair.subpools.find(item => MANUAL_TYPES.includes(item.title))
       handleChooseStrategy(_strategy ?? defaultSwapFees)
     }
-  }, [firstAsset, handleChooseStrategy, pair, pair?.subpools, secondAsset, strategy])
+  }, [firstAsset, handleChooseStrategy, pair?.subpools, poolAddress, secondAsset, strategy])
 
   const toggleStrategyType = enable => {
     const _strategy = pair?.subpools.find(item => {
@@ -339,24 +299,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
     return autoStrategy
   }, [pair?.subpools, t, strategy?.address, handleChooseStrategy])
 
-  const updateSearchParams = useCallback(
-    updates => {
-      const params = new URLSearchParams(searchParams.toString())
-
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value === null) {
-          params.delete(key)
-        } else {
-          params.set(key, value)
-        }
-      })
-
-      const newPathname = `${window.location.pathname}?${params.toString()}`
-      replace(newPathname)
-    },
-    [replace, searchParams],
-  )
-
   return (
     <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
       <div className='flex-[6] space-y-8'>
@@ -376,22 +318,18 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
               <SelectToken
                 selectedAsset={firstAsset}
                 otherAsset={secondAsset}
-                setSelectedAsset={item => {
-                  if (item) updateSearchParams({ firstAddress: item.address })
-                }}
                 hiddenTokens={[secondAsset?.adddress]}
                 placeHolder={t('Select Token')}
                 dropdownAlign='left'
+                isDisabled
               />
               <SelectToken
                 selectedAsset={secondAsset}
                 otherAsset={firstAsset}
                 hiddenTokens={[firstAsset?.address]}
-                setSelectedAsset={item => {
-                  if (item) updateSearchParams({ secondAddress: item.address })
-                }}
                 placeHolder={t('Select Token')}
                 dropdownAlign='right'
+                isDisabled
               />
             </article>
             <Toggle
@@ -426,7 +364,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
               <div className='flex flex-wrap justify-end gap-2'>
                 <TextHeading className='text-center font-archia'>
                   <Paragraph>Estimate APR</Paragraph>
-                  <p className='text-xl font-semibold text-primary-600'>{formatAmount(apr)}%</p>
+                  <p className='text-xl font-semibold text-primary-600'>{formatAmount(mintInfo.estimateAPR)}%</p>
                 </TextHeading>
 
                 {strategy?.title === 'CL_SwapFee' ? (
@@ -451,7 +389,11 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isAd
         )}
 
         {strategy && !isAutomatic && (
-          <ManualStrategy firstAsset={firstAsset} secondAsset={secondAsset} strategy={strategy} />
+          <ManualStrategy
+            firstAsset={firstAsset ?? pair?.token0}
+            secondAsset={secondAsset ?? pair?.token1}
+            strategy={strategy}
+          />
         )}
       </div>
     </div>

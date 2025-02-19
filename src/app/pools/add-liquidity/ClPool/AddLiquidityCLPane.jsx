@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useV3MintState } from '@/state/fusion/hooks'
 
-export default function AddLiquidityCLPane({ pool, isAdd, mintInfo, baseCurrency, quoteCurrency }) {
+export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurrency }) {
   const { strategy } = useV3MintState()
 
   const [isZapper, setIsZapper] = useState(false)
@@ -39,7 +39,7 @@ export default function AddLiquidityCLPane({ pool, isAdd, mintInfo, baseCurrency
     <div className='flex w-full flex-col gap-6 lg:flex-row lg:gap-8'>
       <div className='w-full flex-[6] flex-col bg-transparent'>
         {strategy?.isAutomatic ? (
-          <FusionAdd strategy={isAdd ? pool : strategy} isAdd={isAdd} />
+          <FusionAdd strategy={strategy} />
         ) : (
           <div className='space-y-4'>
             {!mintInfo?.noLiquidity && (

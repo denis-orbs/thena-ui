@@ -32,6 +32,7 @@ function SelectToken({
   prefixClass,
   dropdownAlign = 'left',
   optionWidth = null,
+  isDisabled = false,
 }) {
   const { account, chainId } = useWallet()
   const [open, setOpen] = useState(false)
@@ -170,13 +171,15 @@ function SelectToken({
         }}
         placeholder={placeHolder}
         TrailingIcon={
-          <ChevronDownIcon
-            className={cn('transform transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
-            onMouseDown={e => {
-              e.preventDefault()
-              setOpen(!open)
-            }}
-          />
+          !isDisabled && (
+            <ChevronDownIcon
+              className={cn('transform transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
+              onMouseDown={e => {
+                e.preventDefault()
+                setOpen(!open)
+              }}
+            />
+          )
         }
         isLocale={isLocale}
         prefix={
@@ -187,7 +190,8 @@ function SelectToken({
         prefixClass={prefixClass}
         readOnly
       />
-      {open &&
+      {!isDisabled &&
+        open &&
         createPortal(
           <div
             ref={dropdownRef}

@@ -11,21 +11,36 @@ import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { getTokenInfo } from '@/lib/helper'
+import { wrappedAddress } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
 import ChoosePoolTokens from '@/modules/WeightedPool/ChoosePoolTokens'
+import { usePairInfo } from '@/state/pools/hooks'
 import { tokensSelected } from '@/state/weightedPool/action'
 
 import AvailablePools from './AvailablePools'
 
 export default function ChooseTokensSection({ pairType }) {
-  const searchParams = useSearchParams()
   const { push } = useRouter()
+  const searchParams = useSearchParams()
+  const wrapperSelectRef = useRef(null)
+
+  const [firstAsset, setFirstAsset] = useState(null)
+  const [secondAsset, setSecondAsset] = useState(null)
+  const [optionWidth, setOptionWidth] = useState(0)
+
+  const t = useTranslations()
   const assets = useAssets()
   const customAssets = useCustomAssets()
   const updateSearchParams = useUpdateSearchParams()
 
   const firstAddress = searchParams.get('firstAddress')
   const secondAddress = searchParams.get('secondAddress')
+
+  const pair = usePairInfo({
+    token0Address: wrappedAddress(firstAsset),
+    token1Address: wrappedAddress(secondAsset),
+    type: pairType,
+  })
 
   // for weighted pool
   const dispatch = useDispatch()
@@ -45,11 +60,25 @@ export default function ChooseTokensSection({ pairType }) {
     [dispatch],
   )
 
-  const wrapperSelectRef = useRef(null)
-  const [firstAsset, setFirstAsset] = useState(null)
-  const [secondAsset, setSecondAsset] = useState(null)
-  const [optionWidth, setOptionWidth] = useState(0)
-  const [foundedPool, setFoundedPool] = useState(null)
+  const updatePathname = useCallback(() => {
+    if (pair) {
+      updateSearchParams({
+        firstAddress: null,
+        secondAddress: null,
+        poolAddress: pair.address,
+      })
+    } else {
+      updateSearchParams({
+        firstAddress: wrappedAddress(firstAsset),
+        secondAddress: wrappedAddress(secondAsset),
+        poolAddress: null,
+      })
+    }
+  }, [firstAsset, pair, secondAsset, updateSearchParams])
+
+  useEffect(() => {
+    updatePathname()
+  }, [updatePathname])
 
   useEffect(() => {
     if (pairType !== PAIR_TYPES.WEIGHTED && assets.length) {
@@ -69,15 +98,15 @@ export default function ChooseTokensSection({ pairType }) {
     }
   }, [assets, customAssets, firstAddress, firstAsset, pairType, secondAddress, secondAsset])
 
-  const t = useTranslations()
-
   // Calculate width for dropdown
   useEffect(() => {
     if (wrapperSelectRef.current) {
       const { width } = wrapperSelectRef.current.getBoundingClientRect()
-      setOptionWidth(width)
+      if (optionWidth !== width) {
+        setOptionWidth(width)
+      }
     }
-  }, [wrapperSelectRef])
+  }, [wrapperSelectRef, optionWidth])
 
   return (
     <>
@@ -90,12 +119,7 @@ export default function ChooseTokensSection({ pairType }) {
             <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
               <SelectToken
                 otherAsset={secondAsset}
-                setSelectedAsset={asset => {
-                  setFirstAsset(asset)
-                  if (asset) {
-                    updateSearchParams({ firstAddress: asset.address })
-                  }
-                }}
+                setSelectedAsset={asset => setFirstAsset(asset)}
                 placeHolder={t('Select Token')}
                 selectedAsset={firstAsset}
                 dropdownAlign='left'
@@ -103,12 +127,7 @@ export default function ChooseTokensSection({ pairType }) {
               />
               <SelectToken
                 otherAsset={firstAsset}
-                setSelectedAsset={asset => {
-                  setSecondAsset(asset)
-                  if (asset) {
-                    updateSearchParams({ secondAddress: asset.address })
-                  }
-                }}
+                setSelectedAsset={asset => setSecondAsset(asset)}
                 placeHolder={t('Select Token')}
                 selectedAsset={secondAsset}
                 dropdownAlign='right'
@@ -122,7 +141,7 @@ export default function ChooseTokensSection({ pairType }) {
           <>
             <Divider />
 
-            <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} setFoundedPool={setFoundedPool} />
+            <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} />
           </>
         )}
 
@@ -135,11 +154,11 @@ export default function ChooseTokensSection({ pairType }) {
                 updateSearchParams(
                   {
                     step: 3,
-                    ...(foundedPool
+                    ...(pair
                       ? {
                           firstAddress: null,
                           secondAddress: null,
-                          poolAddress: foundedPool.address,
+                          poolAddress: pair.address,
                         }
                       : {
                           poolAddress: null,
@@ -152,7 +171,7 @@ export default function ChooseTokensSection({ pairType }) {
               }
             }}
           >
-            {pairType !== PAIR_TYPES.WEIGHTED && foundedPool ? t('Add to Pool') : t('Create New Pool')}
+            {pairType !== PAIR_TYPES.WEIGHTED && pair ? t('Add to Pool') : t('Create New Pool')}
           </PrimaryButton>
         </div>
       </div>

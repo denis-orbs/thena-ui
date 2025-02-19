@@ -34,7 +34,7 @@ function RangePart({
   const dispatch = useDispatch()
 
   const initialTokenPrice = useInitialTokenPrice()
-  const baseToken = useGetAsset(tokenA.address)
+  const baseToken = useGetAsset(tokenA?.address)
 
   const enforcer = nextUserInput => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
@@ -98,7 +98,7 @@ function RangePart({
             disabled={disabled || locked}
           />
           <Paragraph className='text-[10px]'>
-            1 {baseToken.symbol} = ${baseToken.price}
+            1 {baseToken?.symbol} = ${baseToken?.price}
           </Paragraph>
         </div>
         <div className='flex flex-col gap-2'>

@@ -20,7 +20,7 @@ export default function PoolTitle({ strategy }) {
         <div className='flex flex-col gap-1'>
           <TextHeading>{strategy.symbol}</TextHeading>
           <Paragraph className='text-xs'>
-            {GAMMA_TYPES.includes(strategy.title) ? 'Gamma' : strategy.title.replace('_', ' ')}
+            {GAMMA_TYPES.includes(strategy.title) ? 'Gamma' : strategy.title?.replace('_', ' ')}
           </Paragraph>
         </div>
       </div>

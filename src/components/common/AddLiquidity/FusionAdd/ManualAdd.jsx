@@ -8,6 +8,7 @@ import ConnectButton from '@/components/buttons/ConnectButton'
 import { useAlgebraAdd } from '@/hooks/fusion/useAlgebra'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
+import { cn } from '@/lib/utils'
 import { Field } from '@/state/fusion/actions'
 import { useSettings } from '@/state/settings/hooks'
 
@@ -37,19 +38,15 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
     <section className='space-y-8'>
       <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
 
-      {account ? (
-        <PrimaryButton
-          disabled={pending}
-          onClick={() => {
-            onAddLiquidity()
-          }}
-          className='w-full'
-        >
-          {t('Add Liquidity')}
-        </PrimaryButton>
-      ) : (
-        <ConnectButton className='w-full' />
-      )}
+      <div className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
+        {account ? (
+          <PrimaryButton disabled={pending} onClick={onAddLiquidity} className='w-full'>
+            {t('Add Liquidity')}
+          </PrimaryButton>
+        ) : (
+          <ConnectButton className='w-full' />
+        )}
+      </div>
     </section>
   )
 }

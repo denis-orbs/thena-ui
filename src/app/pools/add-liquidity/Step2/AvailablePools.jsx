@@ -65,7 +65,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool }) {
   }, [pairType, pairs, weightedPools, tokens])
 
   useEffect(() => {
-    if (availablePools.length === 1 && pairType !== PAIR_TYPES.WEIGHTED) {
+    if (availablePools.length === 1 && pairType !== PAIR_TYPES.WEIGHTED && setFoundedPool) {
       setFoundedPool(availablePools[0])
     }
   }, [availablePools, pairType, setFoundedPool])

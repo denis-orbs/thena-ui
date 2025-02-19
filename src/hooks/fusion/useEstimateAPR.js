@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
+import moment from 'moment'
 import { Position } from 'thena-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
@@ -26,7 +27,7 @@ const getFusionFeesData = async ({ chainId, pool }) => {
       `,
       {
         pool: pool.toLowerCase(),
-        date: Math.floor(Date.now() / 1000) - 24 * 60 * 60 * 7, // current time in seconds - 7 day
+        date: moment().subtract(7, 'days').unix(), // last 7 day
       },
     )
 
@@ -144,6 +145,8 @@ export const useEstimateAPR = ({
           currency1?.decimals ?? 18,
         )
 
+  if (new BigNumber(amountToken0)?.isZero() || new BigNumber(amountToken1)?.isZero()) return new BigNumber(0)
+
   if (token0 && token1) {
     position = Position.fromAmounts({
       pool,
@@ -171,14 +174,6 @@ export const useEstimateAPR = ({
     })
   } else {
     return BigNumber(0)
-    // position = Position.fromAmounts({
-    //   pool,
-    //   tickLower,
-    //   tickUpper,
-    //   amount0: toWei(500 / (currency0?.price ?? 1)),
-    //   amount1: toWei(500 / (currency1?.price ?? 1)),
-    //   useFullPrecision: true,
-    // })
   }
 
   const farmRatio = BigNumber(position.liquidity).div(BigNumber(farmLiquidity).plus(position.liquidity))
