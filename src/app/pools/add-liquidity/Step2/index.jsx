@@ -8,7 +8,7 @@ import { ClassicPoolIcon, CLPoolIcon, ScalesIcon, StablePoolIcon } from '@/svgs'
 
 import ChooseTokensSection from './ChooseTokensSection'
 
-export default function Step2({ setStep }) {
+export default function Step2() {
   const t = useTranslations()
 
   const searchParams = useSearchParams()
@@ -64,12 +64,10 @@ export default function Step2({ setStep }) {
     <div className='space-y-6 lg:space-y-12 2xl:space-y-16'>
       {PageTitleSection}
 
-      <div className='gap-4 lg:grid lg:grid-cols-5' style={{ gridTemplateColumns: 'minmax(650px, 3fr) 2fr' }}>
-        <div>
-          <ChooseTokensSection pairType={pairType} setStep={setStep} />
-        </div>
+      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
+        <ChooseTokensSection pairType={pairType} />
 
-        <div className='mt-4 lg:mt-0'>{PoolDescriptionSection}</div>
+        {PoolDescriptionSection}
       </div>
     </div>
   )

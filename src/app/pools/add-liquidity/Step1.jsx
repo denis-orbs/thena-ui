@@ -1,37 +1,21 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SelectorGrid from '@/components/selector/SelectorGrid'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { PoolGroupIcon } from '@/svgs'
 
-export default function Step1({ nextStep }) {
+export default function Step1() {
   const t = useTranslations()
 
-  const { replace, back } = useRouter()
+  const { back } = useRouter()
   const searchParams = useSearchParams()
   const pairType = searchParams.get('pairType') || null
-
-  const updateSearchParams = useCallback(
-    updates => {
-      const params = new URLSearchParams(searchParams.toString())
-
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value === null) {
-          params.delete(key)
-        } else {
-          params.set(key, value)
-        }
-      })
-
-      const newPathname = `${window.location.pathname}?${params.toString()}`
-      replace(newPathname)
-    },
-    [replace, searchParams],
-  )
+  const updateSearchParams = useUpdateSearchParams()
 
   useEffect(() => {
     if (!pairType) {
@@ -100,8 +84,8 @@ export default function Step1({ nextStep }) {
         <NewTextHeading>{t('Choose Liquidity Type')}</NewTextHeading>
       </h4>
 
-      <div className='flex flex-col gap-4 lg:flex-row'>
-        <div className='flex w-full flex-col gap-3 lg:w-[60%]'>
+      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
+        <div className='flex flex-col gap-3'>
           <NewTextSubHeading>{t('Liquidity Pool Type')}</NewTextSubHeading>
           <SelectorGrid data={poolTypesData} isGrid={false} />
         </div>
@@ -111,7 +95,7 @@ export default function Step1({ nextStep }) {
         <EmphasisButton onClick={() => back()}>{t('Cancel')}</EmphasisButton>
         <PrimaryButton
           onClick={() => {
-            nextStep(2)
+            updateSearchParams({ step: 2 })
           }}
         >
           {t('Next')}

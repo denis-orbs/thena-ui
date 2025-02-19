@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 import NewListings from '@/app/pools/NewListings'
 import { Paragraph } from '@/components/typography'
@@ -41,7 +41,7 @@ const sortOptions = [
   },
 ]
 
-function AvailablePools({ tokens = [], pairType }) {
+function AvailablePools({ tokens = [], pairType, setFoundedPool }) {
   const { weightedPools, pairs } = usePairs()
   const t = useTranslations()
 
@@ -64,6 +64,12 @@ function AvailablePools({ tokens = [], pairType }) {
     })
   }, [pairType, pairs, weightedPools, tokens])
 
+  useEffect(() => {
+    if (availablePools.length === 1 && pairType !== PAIR_TYPES.WEIGHTED) {
+      setFoundedPool(availablePools[0])
+    }
+  }, [availablePools, pairType, setFoundedPool])
+
   return (
     <>
       {availablePools.length > 0 ? (
@@ -78,7 +84,7 @@ function AvailablePools({ tokens = [], pairType }) {
             </div>
             <div className='flex flex-col'>
               <Paragraph className='text-xl text-neutral-100'>
-                {t('No Pool for this Assets and Strategies found')}
+                {t('No pools found for these Assets and Strategies')}
               </Paragraph>
               <Paragraph className='text-base text-neutral-100'>
                 {t('You can create a new Pool or change the Strategy')}

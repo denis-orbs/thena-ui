@@ -1290,7 +1290,6 @@
   "Careful Custom Token": "ATTENTION! Custom token is used here",
   "Quaaloops Boost": "Liquidity providers in this pool are eligible for LoopFi's 10x Quaaloops Boost",
   "Transaction settings": "Transaction settings",
-  "Slippage tolerance": "Slippage tolerance",
   "Total Rewards": "Total Rewards",
   "My Votes": "My Votes",
   "Time Period": "Time Period",
@@ -1456,8 +1455,8 @@
   "Choose Pool Tokens": "Choose Pool Tokens",
   "Add to Weighted Pool": "Add to Weighted Pool",
   "Weighted pool description": "Weighted pools let you customize the token balance in a liquidity pool. Each token is assigned a “weight”, defining its share of the pool. You can include up to 8 tokens in a weighted pool. This allows for ratios other than 50/50, like 70/30, giving you control over the pool's composition and token prices.",
-  "No Pool for this Assets and Strategies found": "No Pool for this Assets and Strategies found.",
-  "You can create a new Pool or change the Strategy": "You can create a new Pool or change the Strategy",
+  "No pools found for these Assets and Strategies": "没有找到这些资产和策略的池",
+  "You can create a new Pool or change the Strategy": "您可以创建一个新的池或更改策略",
   "Pool [fees] sidebar description": "{fees}% is best for most weighted pools with established tokens. Go higher for more exotic tokens.",
   "Thena Governance": "Thena Governance",
   "Thena Governance description": "Thena governance will always have ability to manage the fees of this pool if needed.",
@@ -1472,6 +1471,7 @@
   "Stable Pool": "稳定池",
   "Weighted Pool": "加权池",
   "Estimated APR": "Estimated APR",
-  "Single Token Deposit": "Single Token Deposit",
-  "Pool Token Deposit": "Pool Token Deposit"
+  "Single Token Deposit": "单代币存款",
+  "Pool Token Deposit": "池代币存款",
+  "Add to Pool": "添加到池"
 }

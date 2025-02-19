@@ -23,7 +23,7 @@ import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/ho
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { EnterAmounts } from './containers/EnterAmounts'
-import { TheZapperPane } from '../V1Add/ZapperPane'
+import { ZapperPane } from '../V1Add/ZapperPane'
 
 const feeAmount = 3000
 
@@ -97,7 +97,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
         <Selection data={addSelections} isFull />
 
         {isZapper ? (
-          <TheZapperPane asset0={asset0} asset1={asset1} strategy={strategy} />
+          <ZapperPane asset0={asset0} asset1={asset1} strategy={strategy} />
         ) : (
           <ManualPane baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} strategy={strategy} />
         )}
