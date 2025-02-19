@@ -1,8 +1,10 @@
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import SuccessModal from '@/components/modal/SuccessModal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useTokenColor } from '@/hooks/useTokenColor'
 import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
@@ -15,6 +17,10 @@ import WeightedPoolLogo from './WeightedPoolLogo'
 
 export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolName }) {
   const t = useTranslations()
+  const { push } = useRouter()
+
+  const [showModalSuccess, setShowModalSuccess] = useState(false)
+  const [poolAddress, setPoolAddress] = useState()
 
   const [colors, setColors] = useState([])
   const { renderBackgroundColors } = useTokenColor()
@@ -32,7 +38,10 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
     const symbol = tokensAndWeights.reduce((str, token, index) =>
       str + token.symbol + index !== tokens.length ? '/' : '',
     )
-    onCreateWeightedPool(poolName, symbol, tokens, allocates, amounts, fees, () => {})
+    onCreateWeightedPool(poolName, symbol, tokens, allocates, amounts, fees, result => {
+      setPoolAddress(result)
+      setShowModalSuccess(true)
+    })
   }, [fees, onCreateWeightedPool, poolName, tokens, tokensAndWeights])
 
   useEffect(() => {
@@ -88,8 +97,26 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
         <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(prev => prev - 1)}>
           {t('Back')}
         </EmphasisButton>
-        <PrimaryButton className='w-full lg:w-fit'>{t('Cancel')}</PrimaryButton>
+        <TextButton className='w-full lg:w-fit' onClick={() => push('/pools')}>
+          {t('Cancel')}
+        </TextButton>
       </div>
+      <SuccessModal
+        isOpen={showModalSuccess && Boolean(poolAddress)}
+        onClose={() => setShowModalSuccess(false)}
+        heading={t('Deposit Successful')}
+        message={t('You have successfully deposited and staked')}
+        buttonAction={
+          <div className='flex gap-4'>
+            <EmphasisButton className='w-1/2' onClick={() => push(`/pools/${poolAddress}`)}>
+              {t('View Pool')}
+            </EmphasisButton>
+            <EmphasisButton className='w-1/2' onClick={() => push('/dashboard')}>
+              {t('View Dashboard')}
+            </EmphasisButton>
+          </div>
+        }
+      />
     </div>
   )
 }

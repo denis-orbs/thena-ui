@@ -69,7 +69,7 @@ export default function Step2({ setStep }) {
           <ChooseTokensSection pairType={pairType} setStep={setStep} />
         </div>
 
-        <div>{PoolDescriptionSection}</div>
+        <div className='mt-4 lg:mt-0'>{PoolDescriptionSection}</div>
       </div>
     </div>
   )

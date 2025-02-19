@@ -26,9 +26,11 @@ function SetWeightedAttributes({
   const t = useTranslations()
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex gap-4'>
+      <div className='flex flex-col gap-4 sm:flex-row'>
         <div className='flex min-h-full flex-[7] flex-col justify-between gap-4'>
-          <TextHeading className='font-archia text-2xl font-semibold lg:text-3xl'>{t('Set Pool Name')}</TextHeading>
+          <TextHeading className='font-archia text-xl font-semibold sm:text-2xl lg:text-3xl'>
+            {t('Set Pool Name')}
+          </TextHeading>
           <div className='flex items-center gap-4'>
             <WeightedPoolLogo
               tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}

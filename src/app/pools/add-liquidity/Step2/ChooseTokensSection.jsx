@@ -29,7 +29,15 @@ export default function ChooseTokensSection({ pairType, setStep }) {
   // update token for weighted pool
   const updateTokensSelected = useCallback(
     tokens => {
-      dispatch(tokensSelected({ tokens }))
+      dispatch(
+        tokensSelected({
+          tokens: tokens.map(token => ({
+            ...token,
+            // to save to redux
+            balance: typeof token.balance !== 'number' ? token.balance.toNumber() : token.balance,
+          })),
+        }),
+      )
     },
     [dispatch],
   )

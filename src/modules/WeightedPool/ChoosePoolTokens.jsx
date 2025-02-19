@@ -16,17 +16,24 @@ function ChoosePoolTokens({ setTokensSelect }) {
   const { tokens: tokensPool } = useSelector(state => state.weightedPool || [])
   const [tokens, setTokens] = useState([...(tokensPool || [])])
   const wrapperSelectRef = useRef(null)
+  const [optionWidth, setOptionWidth] = useState()
 
   const updateTokens = useCallback((token, index) => {
     if (token) {
       setTokens(prev => {
         const updateData = [...prev]
         updateData[index] = token
-        console.log({ updateData })
         return updateData
       })
     }
   }, [])
+
+  useEffect(() => {
+    if (wrapperSelectRef.current) {
+      const { width } = wrapperSelectRef.current.getBoundingClientRect()
+      setOptionWidth(width)
+    }
+  }, [wrapperSelectRef])
 
   const tokensList = useMemo(
     () => (
@@ -40,13 +47,12 @@ function ChoosePoolTokens({ setTokensSelect }) {
             placeHolder={t('Select Token')}
             selectedAsset={tokens?.[index]}
             dropdownAlign={index % 2 === 0 ? 'left' : 'right'}
-            optionWidth={wrapperSelectRef?.current?.getBoundingClientRect()?.width}
+            optionWidth={optionWidth}
           />
         ))}
       </>
     ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [length, t, tokens, updateTokens, wrapperSelectRef?.current],
+    [length, optionWidth, t, tokens, updateTokens],
   )
 
   const finalListTokens = useMemo(() => tokens.slice(0, length), [tokens, length])

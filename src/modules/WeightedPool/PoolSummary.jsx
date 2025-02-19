@@ -41,7 +41,7 @@ export default function PoolSummary({ tokensAndWeights }) {
           }))}
           colors={colors}
         />
-        <div className={cn('mx-auto flex justify-between gap-6', tokens.length > 4 && 'grid grid-cols-4')}>
+        <div className={cn('mx-auto flex w-fit gap-6', tokens.length > 4 && 'grid grid-cols-4')}>
           {tokens.map((item, idx) => (
             <div key={`${item?.data?.address}_${idx}`} className='flex flex-row items-center gap-[6px]'>
               <div className='h-3 w-3 rounded-full' style={{ backgroundColor: colors[idx] }} />

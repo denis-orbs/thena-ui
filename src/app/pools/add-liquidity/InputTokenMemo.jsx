@@ -15,7 +15,6 @@ function InputTokenMemo({ token, autoFocus, amount, onAmountChange, alowDouble, 
       maxBalance={isDouble ? balance : null}
       autoFocus={autoFocus}
       onAmountChange={onAmountChange}
-      weight={weight}
       showPercent={false}
       title={showTitle ? `${t('Pool Weight')} ${weight}%` : ''}
       classNames={{ title: 'text-neutral-500 text-xs' }}

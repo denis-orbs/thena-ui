@@ -78,10 +78,10 @@ function TokenItem({ token, index, setTokenSelected }) {
   }
 
   return (
-    <div className='flex h-11 w-[280px] items-center gap-2'>
-      <div className='fex-row flex w-[220px] items-center justify-between rounded-lg border border-neutral-700 p-1'>
-        <div className=' flex w-[40%] items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
-          <CircleImage width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
+    <div className='flex h-11 w-full items-center gap-2 sm:w-fit'>
+      <div className='fex-row flex w-full items-center justify-between rounded-lg border border-neutral-700 p-1 lg:w-fit'>
+        <div className=' flex w-fit items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
+          <CircleImage alt='token logo' width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
           <Paragraph className='text-sm text-neutral-200'>{token.token.symbol}</Paragraph>
         </div>
         <Input
@@ -140,7 +140,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
         const { token } = curr
         if (token) {
           const { balance } = token
-          const amountToWei = balance.toNumber()
+          const amountToWei = typeof balance !== 'number' ? balance.toNumber() : balance
           const usdValue = getValueTokenAmountToUSD(token.address, amountToWei)
           return sum + usdValue
         }
@@ -192,7 +192,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
       )}
       {renderMessages()}
       <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
-      <div className='grid grid-cols-2 gap-4 lg:grid-cols-3'>
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
         {tokenSelected.map((token, index) => (
           <TokenItem
             key={`${token?.token?.address}_${index}`}

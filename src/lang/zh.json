@@ -1470,5 +1470,8 @@
   "Choose Tokens": "选择代币",
   "Classic Pool": "经典池",
   "Stable Pool": "稳定池",
-  "Weighted Pool": "加权池"
+  "Weighted Pool": "加权池",
+  "Estimated APR": "Estimated APR",
+  "Single Token Deposit": "Single Token Deposit",
+  "Pool Token Deposit": "Pool Token Deposit"
 }

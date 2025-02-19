@@ -103,6 +103,7 @@ function BalanceInput({
             className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
             placeholder='0.0'
             value={amount}
+            defaultValue=''
             onChange={e => {
               onAmountChange(Number(e.target.value) < 0 ? '' : e.target.value)
             }}

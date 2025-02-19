@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
@@ -33,6 +34,8 @@ export function WeightedPoolPosition({ pool, isStake }) {
   const { gaugeBalance } = useGaugeBalance(pool.gauge.address)
   const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstakeWeighted(gaugeBalance)
   const [popupStake, setPopupStake] = useState(false)
+
+  const { push } = useRouter()
 
   const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
 
@@ -188,7 +191,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
           >
             {t('Harvest')}
           </OutlinedButton>
-          <EmphasisButton className='w-full' onClick={() => setIsOpenAdd(true)}>
+          <EmphasisButton className='w-full' onClick={() => push(`/pools/add-liquidity/weighted/${pool.address}`)}>
             {t('Add')}
           </EmphasisButton>
         </div>

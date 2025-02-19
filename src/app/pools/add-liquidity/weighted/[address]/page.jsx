@@ -17,7 +17,7 @@ import { usePairs } from '@/context/pairsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useTokenColor } from '@/hooks/useTokenColor'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
-import { formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
 import PieChart from '@/modules/WeightedPool/PieChart'
 import WeightedPoolLogo from '@/modules/WeightedPool/WeightedPoolLogo'
@@ -43,7 +43,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
   const toggleDepositType = useMemo(
     () => [
       {
-        title: t('Pool Token Deposit '),
+        title: t('Pool Token Deposit'),
         isActive: depositType === DEPOSIT_TYPE.ALL,
         isLink: false,
         onClick: () => setDepositType(DEPOSIT_TYPE.ALL),
@@ -151,7 +151,6 @@ function AddLiquidityWeightedPoolPage({ params }) {
           },
         )
       } else {
-        console.log({ poolSelected, tokensData, minBPTAmountOut, slippage, amountToWrap })
         await onAddLiquidityAllToken(
           poolSelected,
           tokensData,
@@ -194,16 +193,6 @@ function AddLiquidityWeightedPoolPage({ params }) {
     return false
   }, [amountDeposit, depositType, tokenDeposit, tokensData])
 
-  // const { data: chartData } = useSWR(
-  //   poolSelected && chainId && ['analytics/pair/chart', poolSelected?.address],
-  //   () => fetchPairChartData(chainId, poolSelected),
-  //   {
-  //     refreshInterval: 0,
-  //   },
-  // )
-
-  console.log({ poolSelected })
-
   const handleAmountChange = useCallback(
     (value, asset) => {
       setTokensData(prev => {
@@ -238,8 +227,8 @@ function AddLiquidityWeightedPoolPage({ params }) {
   if (isLoading) return <Loading />
   return (
     <div className='space-y-8'>
-      <div className='items-center space-y-2'>
-        <div className='flex items-center gap-8'>
+      <div className='flex flex-col gap-8 xl:gap-2'>
+        <div className='flex items-center gap-4 lg:gap-8'>
           <WeightedPoolLogo
             height={60}
             width={60}
@@ -253,29 +242,28 @@ function AddLiquidityWeightedPoolPage({ params }) {
       </div>
       <div className='flex flex-col gap-4 lg:flex-row'>
         <div className='w-full space-y-8 lg:flex-[6]'>
-          {/* TODO: mock data */}
-          <Box className='ml-auto flex flex-row gap-10'>
+          <Box className='ml-auto grid grid-cols-2 gap-4 bg-neutral-800 sm:grid-cols-4 sm:gap-6 md:gap-10'>
             <div className='flex flex-col gap-3'>
-              <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
+              <TextHeading className='gradient-text font-archia text-3xl font-semibold'>
                 {poolSelected?.apr || 0}
               </TextHeading>
               <Paragraph className='text-neutral-500'>{t('Estimated APR')}</Paragraph>
             </div>
             <div className='flex flex-col gap-3'>
-              <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
+              <TextHeading className='gradient-text font-archia text-3xl font-semibold'>
                 ${formatAmount(poolSelected?.dayVolume || 0)}
               </TextHeading>
               <Paragraph className='text-neutral-500'>{t('Volume (24h)')}</Paragraph>
             </div>
 
             <div className='flex flex-col gap-3'>
-              <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
+              <TextHeading className='gradient-text font-archia text-3xl font-semibold'>
                 ${formatAmount(poolSelected?.dayFees || 0)}
               </TextHeading>
-              <Paragraph className='text-neutral-500'>{t('Fees (24H)')}</Paragraph>
+              <Paragraph className='text-neutral-500'>{t('Fees (24h)')}</Paragraph>
             </div>
             <div className='flex flex-col gap-3'>
-              <TextHeading className='font-archia text-3xl font-semibold text-gradient-primary-start'>
+              <TextHeading className='gradient-text font-archia text-3xl font-semibold'>
                 ${formatAmount(poolSelected?.tvlUSD || 0)}
               </TextHeading>
               <Paragraph className='text-neutral-500'>{t('TVL')}</Paragraph>
@@ -284,11 +272,10 @@ function AddLiquidityWeightedPoolPage({ params }) {
           <MenuTab className='grid w-full grid-cols-2' menuData={toggleDepositType} />
           <div>
             <div className='flex items-center justify-end'>
-              <Paragraph>{t('Slippage')}</Paragraph>
               <SettingSlippageModal updateSlippage={setSlippage} slippage={slippage} />
             </div>
             {depositType === DEPOSIT_TYPE.ALL && (
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3'>
                 {(tokensData || []).map((token, idx) => (
                   <InputTokenMemo
                     key={token?.address}
@@ -341,12 +328,24 @@ function AddLiquidityWeightedPoolPage({ params }) {
         </div>
         <div className='w-full lg:flex-[4]'>
           <PoolInfo pair={poolSelected} />
-          <PieChart tokens={poolSelected?.tokens || []} colors={colors} />
+          <div>
+            <PieChart tokens={poolSelected?.tokens || []} colors={colors} />
+            <div
+              className={cn('mx-auto flex w-fit gap-6', (poolSelected?.tokens || []).length > 4 && 'grid grid-cols-4')}
+            >
+              {(poolSelected?.tokens || []).map((item, idx) => (
+                <div key={`${item?.data?.address}_${idx}`} className='flex flex-row items-center gap-[6px]'>
+                  <div className='h-3 w-3 rounded-full' style={{ backgroundColor: colors[idx] }} />
+                  <TextHeading>{item?.symbol}</TextHeading>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className='mt-5 flex flex-col gap-4'>
             <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
             <div className='flex flex-col gap-3'>
               {(poolSelected?.tokens || []).map(token => (
-                <div className='flex items-center justify-between'>
+                <div key={token.address} className='flex items-center justify-between'>
                   <Paragraph className='font-medium'>
                     {unwrappedSymbol(token)} {t('Amount')}
                   </Paragraph>

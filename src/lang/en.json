@@ -1473,5 +1473,8 @@
   "Classic Pool": "Classic Pool",
   "Stable Pool": "Stable Pool",
   "Weighted Pool": "Weighted Pool",
-  "Slippage": "Slippage"
+  "Slippage": "Slippage",
+  "Estimated APR": "Estimated APR",
+  "Single Token Deposit": "Single Token Deposit",
+  "Pool Token Deposit": "Pool Token Deposit"
 }

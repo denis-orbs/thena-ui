@@ -32,9 +32,11 @@ export default function SetPoolFees({ fees, setFees }) {
   const isCustomFee = useMemo(() => fees !== null && fees !== 0.1 && fees !== 0.3 && fees !== 1, [fees])
 
   return (
-    <div className='spy-4'>
-      <TextHeading className='font-archia text-3xl font-semibold'>{t('Set Pool Fees')}</TextHeading>
-      <div className='mt-4 flex flex-col gap-4'>
+    <div className='space-y-4'>
+      <TextHeading className='font-archia text-xl font-semibold sm:text-2xl lg:text-3xl'>
+        {t('Set Pool Fees')}
+      </TextHeading>
+      <div className='flex flex-col gap-3'>
         <div className='flex flex-row items-center justify-between'>
           <Paragraph>{t('Fees')}</Paragraph>
           <Selection className='!h-11 bg-transparent' data={poolRange} isTranslation={false} />
