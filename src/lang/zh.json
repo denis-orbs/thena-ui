@@ -1473,5 +1473,7 @@
   "Estimated APR": "Estimated APR",
   "Single Token Deposit": "单代币存款",
   "Pool Token Deposit": "池代币存款",
-  "Add to Pool": "添加到池"
+  "Add to Pool": "添加到池",
+  "View Dashboard": "View Dashboard",
+  "You have successfully deposited and staked": "You have successfully deposited and staked"
 }

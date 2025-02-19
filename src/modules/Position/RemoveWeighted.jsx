@@ -17,7 +17,7 @@ import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeig
 import { cn, formatAmount, isInvalidAmount, roundIfMoreThanDecimals, toWei } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
-import SettingSlippageModal from './SettingSlippageModal'
+import SettingSlippageDropDown from './SettingSlippageDropDown'
 
 const REMOVE_TYPE = {
   SINGLE: 'single',
@@ -195,7 +195,7 @@ function RemoveWeighted({ pool, onCancel, showTitle = true }) {
           <MenuTab className='grid w-full grid-cols-2' menuData={toggleRemoveType} />
           <div className='flex flex-col'>
             <div className='flex justify-end'>
-              <SettingSlippageModal slippage={slippagge} updateSlippage={setSlippage} />
+              <SettingSlippageDropDown slippage={slippagge} updateSlippage={setSlippage} />
             </div>
             <InputManyToken pair={pool} amount={amount} onAmountChange={handleAmountChange} title='Amount' />
           </div>

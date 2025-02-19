@@ -8,21 +8,22 @@ import { zeroAddress } from 'viem'
 
 import MenuTab from '@/app/arena/MenuTab'
 import Loading from '@/app/loading'
-import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import TokenInput from '@/components/input/TokenInput'
+import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
-import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { usePairs } from '@/context/pairsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useTokenColor } from '@/hooks/useTokenColor'
-import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
+import { useGaugeBalance, useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals, unwrappedSymbol } from '@/lib/utils'
-import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import PieChart from '@/modules/WeightedPool/PieChart'
 import WeightedPoolLogo from '@/modules/WeightedPool/WeightedPoolLogo'
 
 import InputTokenMemo from '../../InputTokenMemo'
+import { PairBasicInfo } from '../../PairBasicInfo'
 import { PoolAttributesSection } from '../../PoolAttributesSection'
 
 const DEPOSIT_TYPE = {
@@ -61,6 +62,13 @@ function AddLiquidityWeightedPoolPage({ params }) {
   const poolSelected = useMemo(
     () => (weightedPools || []).find(pool => pool.address === address),
     [address, weightedPools],
+  )
+
+  const { balance: poolBalance, isLoading: loadingPoolBalance } = useWeightPoolData(
+    poolSelected ? poolSelected.address : null,
+  )
+  const { gaugeBalance, isLoading: loadingGaugeBalance } = useGaugeBalance(
+    poolSelected ? poolSelected.gauge.address : zeroAddress,
   )
 
   const [colors, setColors] = useState([])
@@ -227,8 +235,8 @@ function AddLiquidityWeightedPoolPage({ params }) {
   if (isLoading) return <Loading />
   return (
     <div className='space-y-8'>
-      <div className='flex flex-col gap-8 xl:gap-2'>
-        <div className='flex items-center gap-4 lg:gap-8'>
+      <div className='flex flex-col gap-1 lg:gap-2'>
+        <div className='flex flex-row items-center gap-3 lg:gap-4 2xl:gap-8'>
           <WeightedPoolLogo
             height={60}
             width={60}
@@ -238,44 +246,23 @@ function AddLiquidityWeightedPoolPage({ params }) {
           />
           <NewTextHeading>{poolSelected?.symbol || 'UNKNOWN'}</NewTextHeading>
         </div>
-        <TextHeading>{t('Weighted')}</TextHeading>
+        <NewTextSubHeading className='lg:text-2xl 2xl:text-3xl'>{t('Weighted')}</NewTextSubHeading>
       </div>
-      <div className='flex flex-col gap-4 lg:flex-row'>
+      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         <div className='w-full space-y-8 lg:flex-[6]'>
-          <Box className='ml-auto grid grid-cols-2 gap-4 bg-neutral-800 sm:grid-cols-4 sm:gap-6 md:gap-10'>
-            <div className='flex flex-col gap-3'>
-              <TextHeading className='gradient-text font-archia text-3xl font-semibold'>
-                {poolSelected?.apr || 0}
-              </TextHeading>
-              <Paragraph className='text-neutral-500'>{t('Estimated APR')}</Paragraph>
-            </div>
-            <div className='flex flex-col gap-3'>
-              <TextHeading className='gradient-text font-archia text-3xl font-semibold'>
-                ${formatAmount(poolSelected?.dayVolume || 0)}
-              </TextHeading>
-              <Paragraph className='text-neutral-500'>{t('Volume (24h)')}</Paragraph>
-            </div>
-
-            <div className='flex flex-col gap-3'>
-              <TextHeading className='gradient-text font-archia text-3xl font-semibold'>
-                ${formatAmount(poolSelected?.dayFees || 0)}
-              </TextHeading>
-              <Paragraph className='text-neutral-500'>{t('Fees (24h)')}</Paragraph>
-            </div>
-            <div className='flex flex-col gap-3'>
-              <TextHeading className='gradient-text font-archia text-3xl font-semibold'>
-                ${formatAmount(poolSelected?.tvlUSD || 0)}
-              </TextHeading>
-              <Paragraph className='text-neutral-500'>{t('TVL')}</Paragraph>
-            </div>
-          </Box>
+          <PairBasicInfo pair={poolSelected} />
           <MenuTab className='grid w-full grid-cols-2' menuData={toggleDepositType} />
           <div>
             <div className='flex items-center justify-end'>
-              <SettingSlippageModal updateSlippage={setSlippage} slippage={slippage} />
+              <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} />
             </div>
             {depositType === DEPOSIT_TYPE.ALL && (
-              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3'>
+              <div
+                className={cn(
+                  'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3',
+                  (tokensData || []).length <= 2 && 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-2',
+                )}
+              >
                 {(tokensData || []).map((token, idx) => (
                   <InputTokenMemo
                     key={token?.address}
@@ -352,6 +339,27 @@ function AddLiquidityWeightedPoolPage({ params }) {
                   <Paragraph>{formatAmount(token.reserve)}</Paragraph>
                 </div>
               ))}
+            </div>
+          </div>
+          <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+            <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
+            <div className='flex flex-col gap-3'>
+              <div className='flex items-center justify-between'>
+                <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+                {loadingPoolBalance ? (
+                  <Skeleton className='h-11 w-20' />
+                ) : (
+                  <Paragraph>{formatAmount(poolBalance)} LP</Paragraph>
+                )}
+              </div>
+              <div className='flex items-center justify-between'>
+                <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
+                {loadingGaugeBalance ? (
+                  <Skeleton className='h-11 w-20' />
+                ) : (
+                  <Paragraph>{formatAmount(gaugeBalance)} LP</Paragraph>
+                )}
+              </div>
             </div>
           </div>
         </div>

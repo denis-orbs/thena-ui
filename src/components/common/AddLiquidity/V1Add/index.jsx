@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react'
 
 import Selection from '@/components/selection'
 import { cn } from '@/lib/utils'
-import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 
 import { ManualPaneV1 } from './ManualPane'
 import { ZapperPane } from './ZapperPane'
@@ -38,7 +38,7 @@ export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirs
       {Boolean(pool) && <Selection data={addSelections} isFull isTranslation={false} />}
 
       <div className='flex justify-end'>
-        <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
+        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
       </div>
 
       {isZapper ? (

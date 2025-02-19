@@ -12,31 +12,31 @@ const sortOptions = [
   {
     label: 'Pair',
     value: 'pair',
-    width: 'lg:w-[25%]',
+    width: 'lg:w-[38%]',
     isDesc: true,
   },
   {
     label: 'APR',
     value: 'apr',
-    width: 'lg:w-[12%]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
     label: 'TVL',
     value: 'tvl',
-    width: 'lg:w-[23%]',
+    width: 'lg:w-[15%]',
     isDesc: true,
   },
   {
     label: 'Fees (24h)',
     value: 'fee',
-    width: 'lg:w-[calc(40%-120px)]',
+    width: 'lg:w-[calc(30%-100px)]',
     isDesc: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'w-[120px]',
+    width: 'w-[100px]',
     disabled: true,
   },
 ]

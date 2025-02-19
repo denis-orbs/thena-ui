@@ -211,7 +211,7 @@ function SelectToken({
             <SearchInput setVal={setSearchText} val={searchText} className='mb-3' />
             <div className='mt-4·max-h-[700px]·overflow-y-auto·scrollbar-thin·scrollbar-track-neutral-800·scrollbar-thumb-neutral-500·hover:scrollbar-thumb-neutral-400'>
               <InfiniteScroll dataLength={filteredAssets.length}>
-                <div className='grid max-h-[400px] gap-3 overflow-y-auto md:grid-cols-2 2xl:grid-cols-3'>
+                <div className='grid max-h-[400px] gap-3 overflow-y-auto sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3'>
                   {filteredAssets?.map(item => (
                     <RenderIfVisible key={item.address} root={rootRef.current}>
                       <ItemToken

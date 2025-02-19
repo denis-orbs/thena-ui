@@ -1,0 +1,55 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
+import React, { useEffect, useMemo, useState } from 'react'
+
+import Box from '@/components/box'
+import { TextHeading } from '@/components/typography'
+import { useTokenColor } from '@/hooks/useTokenColor'
+import { cn } from '@/lib/utils'
+
+import PieChart from './PieChart'
+
+export default function TotalAllocated({ tokensAndWeights }) {
+  const tokens = useMemo(
+    () => tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount })),
+    [tokensAndWeights],
+  )
+
+  const [colors, setColors] = useState([])
+  const { renderBackgroundColors } = useTokenColor()
+
+  useEffect(() => {
+    renderBackgroundColors(tokens.map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/'))).then(
+      result => {
+        setColors(result)
+      },
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokens.length, renderBackgroundColors])
+
+  const t = useTranslations()
+  return (
+    <div className='space-y-4'>
+      <TextHeading className='font-archia text-2xl font-semibold'>{t('Total Allocated')}</TextHeading>
+      <Box>
+        <PieChart
+          tokens={tokensAndWeights.map(token => ({
+            ...token.token,
+            weight: token.weight,
+            amount: token.amount || 0,
+          }))}
+          colors={colors}
+        />
+        <div className={cn('mx-auto flex w-fit gap-6', tokens.length > 4 && 'grid grid-cols-4')}>
+          {tokens.map((item, idx) => (
+            <div key={`${item?.data?.address}_${idx}`} className='flex flex-row items-center gap-[6px]'>
+              <div className='h-3 w-3 rounded-full' style={{ backgroundColor: colors[idx] }} />
+              <TextHeading>{item?.symbol}</TextHeading>
+            </div>
+          ))}
+        </div>
+      </Box>
+    </div>
+  )
+}

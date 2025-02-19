@@ -5,7 +5,7 @@ import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
 import KyberZapperPane from '@/components/common/AddLiquidity/FusionAdd/ZapperPane'
 import Selection from '@/components/selection'
 import { cn } from '@/lib/utils'
-import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useV3MintState } from '@/state/fusion/hooks'
 
 export default function AddLiquidityCLPane({ pool, isAdd, mintInfo, baseCurrency, quoteCurrency }) {
@@ -45,7 +45,7 @@ export default function AddLiquidityCLPane({ pool, isAdd, mintInfo, baseCurrency
             {!mintInfo?.noLiquidity && (
               <Selection className={cn('w-full')} data={addSelections} isFull isTranslation={false} />
             )}
-            <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
+            <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
 
             {isZapper ? (
               <KyberZapperPane

@@ -188,8 +188,9 @@ export const useWeightedPool = () => {
         const wBNB = (tokens || []).find(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
         const index = (tokens || []).findIndex(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
         let amountToWrap
-        if (wBNB && wBNB.balance.lt(fromWei(amounts?.[index]))) {
-          amountToWrap = fromWei(amounts?.[index]).minus(wBNB.balance)
+        const wBNBBalance = BigNumber.isBigNumber(wBNB.balance) ? wBNB.balance : new BigNumber(wBNB.balance)
+        if (wBNB && wBNBBalance.lt(fromWei(amounts?.[index]))) {
+          amountToWrap = fromWei(amounts?.[index]).minus(wBNBBalance)
         }
 
         if (amountToWrap) {

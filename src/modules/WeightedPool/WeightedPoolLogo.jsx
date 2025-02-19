@@ -21,18 +21,18 @@ function WeightedPoolLogo({ tokens, width, height, className, classNames = {} })
     <div className={cn(secondRow.length > 0 && '-space-y-2', className)}>
       <div className={cn('relative flex items-center -space-x-2', classNames.rows)}>
         {firstRow.map((token, index) => (
-          <React.Fragment key={token.address}>
+          <React.Fragment key={`${token.address}-${index}`}>
             <Image
               src={token.logoURI || UNKNOWN_LOGO}
               alt={`token-${index}`}
               className='rounded-full border-2 border-[#1C2027] object-cover'
               width={width}
               height={height}
-              data-tooltip-id={`tooltip-token-${token.address}`}
+              data-tooltip-id={`tooltip-token-${token.address}-${index}`}
             />
             <CustomTooltip
               className='z-40 w-fit !bg-neutral-500 shadow-xl after:!bg-neutral-500'
-              id={`tooltip-token-${token.address}`}
+              id={`tooltip-token-${token.address}-${index}`}
               place='top'
             >
               {`${token.symbol || 'UNKNOWN'} ${token.weight}%`}
@@ -42,18 +42,18 @@ function WeightedPoolLogo({ tokens, width, height, className, classNames = {} })
       </div>
       <div className={cn('relative mx-auto flex w-fit items-center -space-x-2', classNames.rows)}>
         {secondRow.map((token, index) => (
-          <React.Fragment key={token.address}>
+          <React.Fragment key={`${token.address}-${index}`}>
             <Image
               src={token.logoURI || UNKNOWN_LOGO}
               alt={`token-${index}`}
               className='rounded-full border-2 border-[#1C2027] object-cover'
               width={width}
               height={height}
-              data-tooltip-id={`tooltip-token-${token.address}`}
+              data-tooltip-id={`tooltip-token-${token.address}-${index}`}
             />
             <CustomTooltip
               className='z-40 w-fit !bg-neutral-500 shadow-xl after:!bg-neutral-500'
-              id={`tooltip-token-${token.address}`}
+              id={`tooltip-token-${token.address}-${index}`}
               place='bottom'
             >
               {`${token.symbol || 'UNKNOWN'} ${token.weight}%`}

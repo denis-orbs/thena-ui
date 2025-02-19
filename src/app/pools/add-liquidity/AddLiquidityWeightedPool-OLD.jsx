@@ -24,11 +24,10 @@ import { useTokenUSDValue } from '@/hooks/usePrices'
 import { usePositionData, useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { getTokenInfo } from '@/lib/helper'
 import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals } from '@/lib/utils'
-import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { ArrowLeftIcon, ArrowRightIcon, DownloadSuccessIcon, PercentIcon } from '@/svgs'
 
 import InputTokenMemo from './InputTokenMemo'
-import TransactionSettingModal from './TransactionSettingModal'
 
 const DEPOSIT_TYPE = {
   SINGLE: 'single',
@@ -56,7 +55,6 @@ function AddLiquidityWeightedPool({
   const { mutatePosition } = usePositionData(pool, isStake)
 
   const [slippage, setSlippage] = useState(0.5)
-  const [openTransactionSetting, setOpenTransactionSetting] = useState()
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
 
   const {
@@ -361,7 +359,7 @@ function AddLiquidityWeightedPool({
           {/* TODO: Check BNB/WBNB */}
           <div className='flex flex-col'>
             <div className='flex justify-end'>
-              <SettingSlippageModal updateSlippage={setSlippage} slippage={slippage} />
+              <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} />
             </div>
             {depositType === DEPOSIT_TYPE.SINGLE && (
               <>
@@ -479,12 +477,6 @@ function AddLiquidityWeightedPool({
           </Box>
         </div>
       )}
-      <TransactionSettingModal
-        isOpen={openTransactionSetting}
-        setIsOpen={setOpenTransactionSetting}
-        updateSlippage={setSlippage}
-        slippage={slippage}
-      />
     </>
   )
 }

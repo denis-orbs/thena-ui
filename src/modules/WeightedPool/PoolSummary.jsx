@@ -1,55 +1,88 @@
-'use client'
-
-import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
+import { useTranslations } from 'use-intl'
 
 import Box from '@/components/box'
-import { TextHeading } from '@/components/typography'
-import { useTokenColor } from '@/hooks/useTokenColor'
-import { cn } from '@/lib/utils'
+import CircleImage from '@/components/image/CircleImage'
+import Table from '@/components/table'
+import { Paragraph, TextHeading } from '@/components/typography'
+import { formatAmount } from '@/lib/utils'
+import { CoinsHandIcon } from '@/svgs'
 
-import PieChart from './PieChart'
+const sortOptions = [
+  {
+    label: 'Token',
+    value: 'token',
+    width: 'lg:w-[40%]',
+    isDesc: true,
+    disabled: true,
+  },
+  {
+    label: 'USD Value',
+    value: 'valueUsd',
+    width: 'lg:w-[30%]',
+    isDesc: true,
+    disabled: true,
+  },
+  {
+    label: 'Pool',
+    value: 'weight',
+    width: 'lg:w-[30%]',
+    isDesc: true,
+    disabled: true,
+  },
+]
 
-export default function PoolSummary({ tokensAndWeights }) {
-  const tokens = useMemo(
-    () => tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount })),
-    [tokensAndWeights],
+function PoolSummary({ tokens, fees }) {
+  const t = useTranslations()
+  const dataTable = useMemo(
+    () =>
+      tokens.map(token => ({
+        token: (
+          <div className='flex items-center gap-3'>
+            <CircleImage className='h-8 w-8' src={token.logoURI} alt='thena logo' />
+            <TextHeading>{token.symbol}</TextHeading>
+          </div>
+        ),
+        valueUsd: <Paragraph>$ {formatAmount(token.price * (Number(token.amount) || 0))}</Paragraph>,
+        weight: <Paragraph>{token.weight} %</Paragraph>,
+      })),
+    [tokens],
   )
 
-  const [colors, setColors] = useState([])
-  const { renderBackgroundColors } = useTokenColor()
+  const summary = useMemo(
+    () => ({
+      token: <Paragraph>{t('Total')}</Paragraph>,
+      valueUsd: (
+        <Paragraph>
+          $ {formatAmount(tokens.reduce((curr, token) => curr + Number(token.amount || 0) * token.price, 0))}
+        </Paragraph>
+      ),
+      weight: <Paragraph>{tokens.reduce((curr, token) => curr + Number(token.weight), 0)} %</Paragraph>,
+    }),
+    [t, tokens],
+  )
 
-  useEffect(() => {
-    renderBackgroundColors(tokens.map(item => item.logoURI.replace('https://cdn.thena.fi/', '/logo-token/'))).then(
-      result => {
-        setColors(result)
-      },
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokens.length, renderBackgroundColors])
-
-  const t = useTranslations()
   return (
-    <div className='space-y-4'>
-      <TextHeading className='font-archia text-2xl font-semibold'>{t('Total Allocated')}</TextHeading>
-      <Box>
-        <PieChart
-          tokens={tokensAndWeights.map(token => ({
-            ...token.token,
-            weight: token.weight,
-            amount: token.amount || 0,
-          }))}
-          colors={colors}
-        />
-        <div className={cn('mx-auto flex w-fit gap-6', tokens.length > 4 && 'grid grid-cols-4')}>
-          {tokens.map((item, idx) => (
-            <div key={`${item?.data?.address}_${idx}`} className='flex flex-row items-center gap-[6px]'>
-              <div className='h-3 w-3 rounded-full' style={{ backgroundColor: colors[idx] }} />
-              <TextHeading>{item?.symbol}</TextHeading>
-            </div>
-          ))}
+    <Box>
+      <TextHeading>{t('Pool Attributes')}</TextHeading>
+      <div className='flex items-center justify-between border-b border-neutral-700 p-4'>
+        <div className='flex gap-3'>
+          <CoinsHandIcon className='h-5 w-5' />
+          <Paragraph>{t('Pool Fees')}</Paragraph>
         </div>
-      </Box>
-    </div>
+        <Paragraph>{`${fees} %`}</Paragraph>
+      </div>
+      <Table
+        tableBasic
+        data={dataTable}
+        currentPage={1}
+        sortOptions={sortOptions}
+        sort={sortOptions[0]}
+        notAction
+        summary={summary}
+      />
+    </Box>
   )
 }
+
+export default PoolSummary

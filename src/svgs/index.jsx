@@ -128,6 +128,7 @@ import User from '~/svgs/user.svg'
 import UserIcon from '~/svgs/user-icon.svg'
 import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
+import WarningTriangleIcon from '~/svgs/warning-triangle.svg'
 import WeightedPoolIcon from '~/svgs/weighted-pool-icon.svg'
 import XIcon from '~/svgs/x-close.svg'
 import ZoomInIcon from '~/svgs/zoom-in.svg'
@@ -264,6 +265,7 @@ export {
   UserIcon,
   Verified,
   WalletIcon,
+  WarningTriangleIcon,
   WeightedPoolIcon,
   XIcon,
   ZoomInIcon,

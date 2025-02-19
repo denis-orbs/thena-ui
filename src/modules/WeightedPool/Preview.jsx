@@ -15,7 +15,7 @@ import PieChart from './PieChart'
 import PoolOverviewTable from './PoolOverviewTable'
 import WeightedPoolLogo from './WeightedPoolLogo'
 
-export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolName }) {
+export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolName, setPoolName }) {
   const t = useTranslations()
   const { push } = useRouter()
 
@@ -30,14 +30,18 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
     [tokensAndWeights],
   )
 
+  useEffect(() => {
+    if (!poolName && tokens.length > 0) {
+      setPoolName(tokens.map(token => token.symbol).join('/'))
+    }
+  }, [poolName, setPoolName, tokens, tokens.length])
+
   const { onCreateWeightedPool, pending } = useWeightedPool()
 
   const onCreate = useCallback(() => {
     const allocates = tokensAndWeights.map(token => token.weight)
     const amounts = tokensAndWeights.map(token => toWei(Number(token.amount)))
-    const symbol = tokensAndWeights.reduce((str, token, index) =>
-      str + token.symbol + index !== tokens.length ? '/' : '',
-    )
+    const symbol = tokens.map(token => token.symbol).join('/')
     onCreateWeightedPool(poolName, symbol, tokens, allocates, amounts, fees, result => {
       setPoolAddress(result)
       setShowModalSuccess(true)

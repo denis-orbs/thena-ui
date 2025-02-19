@@ -4,14 +4,14 @@ import { useTranslations } from 'use-intl'
 import Box from '@/components/box'
 import { Paragraph, TextHeading } from '@/components/typography'
 
-import PoolAttributes from './PoolAttributes'
 import PoolSummary from './PoolSummary'
+import TotalAllocated from './TotalAllocated'
 
 function SideBarCreateWeighted({ tokensAndWeights, fees, step }) {
   const t = useTranslations()
   switch (step) {
     case 1: {
-      return <PoolSummary tokensAndWeights={tokensAndWeights} />
+      return <TotalAllocated tokensAndWeights={tokensAndWeights} />
     }
     case 2: {
       return (
@@ -24,7 +24,7 @@ function SideBarCreateWeighted({ tokensAndWeights, fees, step }) {
             <TextHeading>{t('Thena Governance')}</TextHeading>
             <Paragraph>{t('Thena Governance description', { fees })}</Paragraph>
           </Box>
-          <PoolAttributes
+          <PoolSummary
             fees={fees}
             tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount }))}
           />

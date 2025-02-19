@@ -13,7 +13,7 @@ import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
-import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 
 export default function IchiAdd({ strategy, isAdd, isModal }) {
   const [amount, setAmount] = useState('')
@@ -69,7 +69,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
 
         <div className='flex justify-end'>
-          <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
+          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
         </div>
 
         <div className='flex flex-col gap-4'>

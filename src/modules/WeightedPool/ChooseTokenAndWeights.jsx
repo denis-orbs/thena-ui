@@ -11,8 +11,7 @@ import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
-import { useTokenUSDValue } from '@/hooks/usePrices'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { InfoIcon, LockIcon, UnlockIcon } from '@/svgs'
 
 const updateWeight = tokens => {
@@ -126,7 +125,6 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   const [tokenSelected, setTokenSelected] = useState(tokensAndWeights)
   const { push } = useRouter()
 
-  const { getValueTokenAmountToUSD } = useTokenUSDValue()
   useEffect(() => {
     const tokens = tokenSelected.filter(item => item.token !== null)
     setTotalWeight(tokens.reduce((sum, curr) => sum + curr.weight, 0))
@@ -134,42 +132,10 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTokenAndWeights, JSON.stringify(tokenSelected)])
 
-  const totalBalance = useMemo(
-    () =>
-      tokensAndWeights.reduce((sum, curr) => {
-        const { token } = curr
-        if (token) {
-          const { balance } = token
-          const amountToWei = typeof balance !== 'number' ? balance.toNumber() : balance
-          const usdValue = getValueTokenAmountToUSD(token.address, amountToWei)
-          return sum + usdValue
-        }
-        return sum
-      }, 0),
-    [getValueTokenAmountToUSD, tokensAndWeights],
-  )
-
   const checkAllWeightingHigherThanZero = useMemo(
     () => tokensAndWeights.every(item => item.weight > 0),
     [tokensAndWeights],
   )
-  const renderMessages = useCallback(() => {
-    const errorMessages = []
-
-    if (tokensAndWeights.length <= 1 && tokenSelected.length <= 1) {
-      errorMessages.push(t('You must add two tokens at least to create a weighted pool'))
-    }
-
-    if (!checkAllWeightingHigherThanZero) {
-      errorMessages.push(t('All tokens in a pool must have a weighting higher than zero'))
-    }
-
-    if (totalWeight > 100) {
-      errorMessages.push(t('Warning total weight Weighted Pool'))
-    }
-
-    return errorMessages.map((message, index) => <ErrorMessage key={index} message={message} />)
-  }, [checkAllWeightingHigherThanZero, totalWeight, t, tokenSelected, tokensAndWeights])
 
   const isDisable = useMemo(
     () =>
@@ -182,15 +148,6 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
 
   return (
     <div className='flex flex-col gap-3'>
-      {tokensAndWeights.length > 0 && totalBalance < 20000 ? (
-        <ErrorMessage
-          type='warn'
-          message={t('We recommend you to provide new pools [symbol]', { yourBalance: formatAmount(totalBalance) })}
-        />
-      ) : (
-        <></>
-      )}
-      {renderMessages()}
       <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
         {tokenSelected.map((token, index) => (

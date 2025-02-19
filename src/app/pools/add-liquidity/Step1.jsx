@@ -87,7 +87,7 @@ export default function Step1() {
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         <div className='flex flex-col gap-3'>
           <NewTextSubHeading>{t('Liquidity Pool Type')}</NewTextSubHeading>
-          <SelectorGrid data={poolTypesData} isGrid={false} />
+          <SelectorGrid data={poolTypesData} isGrid={false} classNames={{ item: 'bg-transparent' }} />
         </div>
       </div>
 
