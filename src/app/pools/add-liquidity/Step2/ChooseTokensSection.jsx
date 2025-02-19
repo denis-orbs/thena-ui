@@ -7,26 +7,29 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Divider from '@/components/divider'
 import { NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
+import { useCustomAssets } from '@/context/customAssetsContext'
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
+import { getTokenInfo } from '@/lib/helper'
 import SelectToken from '@/modules/Pools/SelectToken'
 import ChoosePoolTokens from '@/modules/WeightedPool/ChoosePoolTokens'
 import { tokensSelected } from '@/state/weightedPool/action'
 
 import AvailablePools from './AvailablePools'
 
-export default function ChooseTokensSection({ pairType, setStep }) {
-  const t = useTranslations()
-  const [firstAsset, setFirstAsset] = useState(null)
-  const [secondAsset, setSecondAsset] = useState(null)
-  const wrapperSelectRef = useRef(null)
-  const [optionWidth, setOptionWidth] = useState(0)
+export default function ChooseTokensSection({ pairType }) {
   const searchParams = useSearchParams()
-  const { replace } = useRouter()
+  const { push } = useRouter()
+  const assets = useAssets()
+  const customAssets = useCustomAssets()
+  const updateSearchParams = useUpdateSearchParams()
+
+  const firstAddress = searchParams.get('firstAddress')
+  const secondAddress = searchParams.get('secondAddress')
 
   // for weighted pool
   const dispatch = useDispatch()
-  const { push } = useRouter()
   const { tokens: tokensPool } = useSelector(state => state.weightedPool || [])
-  // update token for weighted pool
   const updateTokensSelected = useCallback(
     tokens => {
       dispatch(
@@ -42,6 +45,32 @@ export default function ChooseTokensSection({ pairType, setStep }) {
     [dispatch],
   )
 
+  const wrapperSelectRef = useRef(null)
+  const [firstAsset, setFirstAsset] = useState(null)
+  const [secondAsset, setSecondAsset] = useState(null)
+  const [optionWidth, setOptionWidth] = useState(0)
+  const [foundedPool, setFoundedPool] = useState(null)
+
+  useEffect(() => {
+    if (pairType !== PAIR_TYPES.WEIGHTED && assets.length) {
+      if (!firstAsset && firstAddress) {
+        const asset = getTokenInfo({ tokenAddress: firstAddress, assets, customAssets })
+        if (asset) {
+          setFirstAsset(asset)
+        }
+      }
+
+      if (!secondAsset && secondAddress) {
+        const asset = getTokenInfo({ tokenAddress: secondAddress, assets, customAssets })
+        if (asset) {
+          setSecondAsset(asset)
+        }
+      }
+    }
+  }, [assets, customAssets, firstAddress, firstAsset, pairType, secondAddress, secondAsset])
+
+  const t = useTranslations()
+
   // Calculate width for dropdown
   useEffect(() => {
     if (wrapperSelectRef.current) {
@@ -49,24 +78,6 @@ export default function ChooseTokensSection({ pairType, setStep }) {
       setOptionWidth(width)
     }
   }, [wrapperSelectRef])
-
-  const updateSearchParams = useCallback(
-    updates => {
-      const params = new URLSearchParams(searchParams.toString())
-
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value === null) {
-          params.delete(key)
-        } else {
-          params.set(key, value)
-        }
-      })
-
-      const newPathname = `${window.location.pathname}?${params.toString()}`
-      replace(newPathname)
-    },
-    [replace, searchParams],
-  )
 
   return (
     <>
@@ -111,23 +122,30 @@ export default function ChooseTokensSection({ pairType, setStep }) {
           <>
             <Divider />
 
-            <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} />
+            <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} setFoundedPool={setFoundedPool} />
           </>
         )}
 
         <div className='mt-5 flex gap-4 lg:mt-8'>
-          <EmphasisButton onClick={() => setStep(1)}>{t('Back')}</EmphasisButton>
+          <EmphasisButton onClick={() => updateSearchParams({ step: 1 })}>{t('Back')}</EmphasisButton>
           <PrimaryButton
-            disabled={pairType !== PAIR_TYPES.WEIGHTED ? !firstAsset || !secondAsset : (tokensPool || []).length < 2}
+            disabled={pairType === PAIR_TYPES.WEIGHTED ? tokensPool?.length < 2 : !firstAsset || !secondAsset}
             onClick={() => {
               if (pairType !== PAIR_TYPES.WEIGHTED) {
-                setStep(3)
+                updateSearchParams({
+                  step: 3,
+                  ...(foundedPool && {
+                    firstAddress: null,
+                    secondAddress: null,
+                    poolAddress: foundedPool.address,
+                  }),
+                })
               } else {
                 push('/pools/weighted-pool/create')
               }
             }}
           >
-            {t(pairType !== PAIR_TYPES.WEIGHTED ? 'Next' : 'Create New Pool')}
+            {pairType !== PAIR_TYPES.WEIGHTED && foundedPool ? t('Add to Pool') : t('Create New Pool')}
           </PrimaryButton>
         </div>
       </div>

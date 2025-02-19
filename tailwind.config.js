@@ -108,6 +108,9 @@ export default {
       backgroundImage: {
         'custom-gradient': 'linear-gradient(90deg, #B386FF 0%, #FF86FA 100%)',
       },
+      gridTemplateColumns: {
+        'add-liquidity-layout': 'minmax(650px, 3fr) 2fr',
+      },
     },
   },
   plugins: [require('@tailwindcss/forms'), require('tailwind-scrollbar')],

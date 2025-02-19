@@ -166,20 +166,20 @@ export function ManualPaneV1({
   return (
     <section>
       <div className='flex flex-col'>
-        <div className='mb-5 flex flex-col gap-2'>
+        <div className='mb-5 flex flex-col gap-2 xl:flex-row'>
           <BalanceInput
-            title={`${t('Asset')} 1`}
             asset={firstAsset}
             setAsset={isFromBNB ? setFirstAddress : null}
             amount={firstAmount}
             onAmountChange={onFirstChange}
+            showPercent={false}
           />
           <BalanceInput
-            title={`${t('Asset')} 2`}
             asset={secondAsset}
             setAsset={isToBNB ? setSecondAddress : null}
             amount={secondAmount}
             onAmountChange={onSecondChange}
+            showPercent={false}
           />
         </div>
 

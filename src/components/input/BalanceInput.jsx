@@ -10,8 +10,6 @@ import { cn, formatAmount, fromWei } from '@/lib/utils'
 
 import AssetDropdown from '../dropdown/AssetDropdown'
 import IconGroup from '../icongroup'
-// import { InfoIcon } from '@/svgs'
-// import { Alert } from '../alert'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
@@ -62,12 +60,6 @@ function BalanceInput({
     [assets],
   )
 
-  // const errorMsg = useMemo(() => {
-  //   if (!asset || maxBalance.lt(amount)) {
-  //     return 'Insufficient Balance'
-  //   }
-  //   return null
-  // }, [amount, asset])
   const percents = useMemo(
     () => [
       {
@@ -93,7 +85,7 @@ function BalanceInput({
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center justify-between'>
-        <p className={cn('font-medium text-white', classNames.title)}>{title}</p>
+        <p className={cn('font-medium text-white', classNames?.title)}>{title}</p>
         {showPercent && <Tabs data={percents} />}
       </div>
       <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
@@ -155,12 +147,6 @@ function BalanceInput({
           </TextSubHeading>
         </div>
       </div>
-      {/* {errorMsg && (
-        <Alert>
-          <InfoIcon className='h-4 w-4 stroke-error-600' />
-          <p>{errorMsg}</p>
-        </Alert>
-      )} */}
     </div>
   )
 }

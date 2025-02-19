@@ -24,7 +24,7 @@ const getZapAddress = (strategy, chainId) => {
   if (strategy.type === PAIR_TYPES.STABLE) return { address: Contracts.stableZap[chainId], isV1: true }
 }
 
-export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
+export function ZapperPane({ asset0, asset1, slippage = 1, strategy }) {
   const t = useTranslations()
   const { address: pairAddress, gauge } = strategy
   const zapSwapSlippage = 10000 - slippage * 100
@@ -112,34 +112,8 @@ export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
     }
   }
 
-  // const percents = useMemo(
-  //   () => [
-  //     {
-  //       label: '10%',
-  //       onClickHandler: () => setAmount(tokenDeposit?.balance.times(0.1).toString(10)),
-  //     },
-  //     {
-  //       label: '25%',
-  //       onClickHandler: () => setAmount(tokenDeposit?.balance.times(0.25).toString(10)),
-  //     },
-  //     {
-  //       label: '50%',
-  //       onClickHandler: () => setAmount(tokenDeposit?.balance.times(0.5).toString(10)),
-  //     },
-  //     {
-  //       label: 'Max',
-  //       onClickHandler: () => setAmount(tokenDeposit?.balance.toString(10)),
-  //     },
-  //   ],
-  //   [tokenDeposit?.balance, setAmount],
-  // )
-
   return (
     <div className='flex flex-col gap-2'>
-      {/* <div className='flex flex-row justify-between'>
-        <TextHeading>{t('Deposit Token')}</TextHeading> <Tabs data={percents} />
-      </div> */}
-
       <div className='relative flex w-full flex-col gap-2'>
         <TokenInput
           asset={tokenDeposit}
@@ -154,37 +128,6 @@ export function TheZapperPane({ asset0, asset1, slippage = 1, strategy }) {
 
       {strategy && (
         <>
-          {/* <div className='flex flex-col gap-4'>
-            <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>
-                  {unwrappedSymbol(strategy.token0)} {t('Amount')}
-                </Paragraph>
-                <Paragraph>{formatAmount(strategy.token0.reserve)}</Paragraph>
-              </div>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>
-                  {unwrappedSymbol(strategy.token1)} {t('Amount')}
-                </Paragraph>
-                <Paragraph>{formatAmount(strategy.token1.reserve)}</Paragraph>
-              </div>
-            </div>
-          </div>
-          <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-            <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                <Paragraph>{formatAmount(strategy.account.totalLp)} LP</Paragraph>
-              </div>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                <Paragraph>{formatAmount(strategy.account.gaugeBalance)} LP</Paragraph>
-              </div>
-            </div>
-          </div> */}
-
           <Box
             className={cn(
               'mt-5 flex flex-row items-center justify-between gap-4 border border-primary-800 bg-primary-950',
