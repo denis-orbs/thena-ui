@@ -26,6 +26,7 @@ import { AnalyticsIcon, ArrowLeftIcon, ExternalIcon, InfoCircleWhite } from '@/s
 import { listPoolAddressSpecial } from '../page'
 
 const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
+const BNBSlpBNBPoolAdress = '0xda5bc174e3c122058eb42465b78c7e1f639820a9'
 const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
 const uniBTCFBTC = '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7' // uniBTC/FBTC
 
@@ -125,22 +126,23 @@ export default function SpecificPoolPage({ params }) {
               </div>
             )}
 
-            {pool.address === BNBLpBNBPoolAdress && (
-              <>
-                <div className='ml-4 mt-5 flex items-center gap-2'>
-                  <div className='size-6' data-tooltip-id='BNBLpBNBPoolAdress'>
-                    <NextImage
-                      className='h-full w-full rounded-full object-cover'
-                      alt='Quaaloop'
-                      src='/images/quaaloop.png'
-                    />
+            {pool.address === BNBLpBNBPoolAdress ||
+              (pool.address === BNBSlpBNBPoolAdress && (
+                <>
+                  <div className='ml-4 mt-5 flex items-center gap-2'>
+                    <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip`}>
+                      <NextImage
+                        className='h-full w-full rounded-full object-cover'
+                        alt='Quaaloop'
+                        src='/images/quaaloop.png'
+                      />
+                    </div>
+                    <CustomTooltip id={`pool-special-${pool.address}-tooltip`} className='rounded-md !py-2' place='top'>
+                      <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
+                    </CustomTooltip>
                   </div>
-                  <CustomTooltip id='BNBLpBNBPoolAdress' className='rounded-md !py-2' place='top'>
-                    <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
-                  </CustomTooltip>
-                </div>
-              </>
-            )}
+                </>
+              ))}
 
             {pool.address === uniBTCFBTC && (
               <>

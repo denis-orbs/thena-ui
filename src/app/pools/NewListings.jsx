@@ -76,6 +76,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
     const ynBNBxPoolAddress = '0xcdedb4bad9978e1d0a82ad2061d0345f48014bc4' // ynBNBx/BNB
     const BTCBynBTCkPoolAddress = '0x94b3c0050e9111e955e3f3a48543bbf30ba44bbc' // BTCB/ynBTCk
     const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
+    const BNBSlpBNBPoolAdress = '0xda5bc174e3c122058eb42465b78c7e1f639820a9'
     const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
     const uniBTCFBTC = '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7' // uniBTC/FBTC
 
@@ -157,22 +158,23 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
               </CustomTooltip>
             </div>
           )}
-          {pool.address === BNBLpBNBPoolAdress && (
-            <>
-              <div className='flex items-center gap-2'>
-                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1-1`}>
-                  <NextImage
-                    className='h-full w-full rounded-full object-cover'
-                    alt='Quaaloop'
-                    src='/images/quaaloop.png'
-                  />
+          {pool.address === BNBLpBNBPoolAdress ||
+            (pool.address === BNBSlpBNBPoolAdress && (
+              <>
+                <div className='flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
+                    <NextImage
+                      className='h-full w-full rounded-full object-cover'
+                      alt='Quaaloop'
+                      src='/images/quaaloop.png'
+                    />
+                  </div>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
+                  </CustomTooltip>
                 </div>
-                <CustomTooltip id={`pool-special-${pool.address}-tooltip1-1`} className='rounded-md !py-2' place='top'>
-                  <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
-                </CustomTooltip>
-              </div>
-            </>
-          )}
+              </>
+            ))}
           {pool.address === BTCBmBTCAddress && (
             <>
               <div className='flex items-center gap-2'>
