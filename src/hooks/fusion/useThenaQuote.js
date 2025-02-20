@@ -6,6 +6,7 @@ import { getRouterContract } from '@/lib/contracts'
 import { toWei } from '@/lib/utils'
 
 export const useThenaQuote = (fromAsset, toAsset, fromAmount, networkId, enabled) => {
+  // NOTE: If CL pool, use fusionQuoter contract
   const ThenaRouterV2Contract = getRouterContract(networkId)
 
   const amount = toWei(

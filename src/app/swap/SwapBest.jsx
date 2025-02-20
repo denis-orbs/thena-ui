@@ -17,7 +17,7 @@ import Tabs from '@/components/tabs'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useMutateAssets } from '@/context/assetsContext'
 import useDebounce from '@/hooks/useDebounce'
-import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap, useThenaFusionSwap } from '@/hooks/useSwap'
+import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap } from '@/hooks/useSwap'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/hooks/useWallet'
 import { liquidityHub } from '@/modules/LiquidityHub'
@@ -72,22 +72,24 @@ export default function SwapBest({
   const setFromAddress = useCallback(address => updateSearchParams({ inputCurrency: address }), [updateSearchParams])
   const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
 
-  const isThenaQuoteAndSwap = useMemo(() => {
-    if (
-      ['WBNB', 'BNB', 'USDT'].includes(fromAsset?.symbol) &&
-      toAsset?.address === '0x36f5675029e129b5fcabb29ec750ed268520acf7' // BAD AI Token
-    ) {
-      return true
-    }
-    if (
-      ['WBNB', 'BNB', 'USDT'].includes(toAsset?.symbol) &&
-      fromAsset?.address === '0x36f5675029e129b5fcabb29ec750ed268520acf7'
-    ) {
-      return true
-    }
+  const isThenaQuoteAndSwap = useMemo(
+    () =>
+      // if (
+      //   ['WBNB', 'BNB', 'USDT'].includes(fromAsset?.symbol) &&
+      //   toAsset?.address === '0x36f5675029e129b5fcabb29ec750ed268520acf7' // BAD AI Token
+      // ) {
+      //   return true
+      // }
+      // if (
+      //   ['WBNB', 'BNB', 'USDT'].includes(toAsset?.symbol) &&
+      //   fromAsset?.address === '0x36f5675029e129b5fcabb29ec750ed268520acf7'
+      // ) {
+      //   return true
+      // }
 
-    return false
-  }, [fromAsset?.address, fromAsset?.symbol, toAsset?.address, toAsset?.symbol])
+      false,
+    [],
+  )
 
   const {
     data: bestTrade,
@@ -100,7 +102,7 @@ export default function SwapBest({
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { handleTaxTokenSwap, pending: taxTokenSwapPending } = useTaxTokenSwap()
-  const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
+  // const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
   const { mutate: onLHSwap, isLoading: LHSwapPending } = liquidityHub.useSwap()
   const {
     data: lhQuote,
@@ -110,13 +112,9 @@ export default function SwapBest({
   const getBetterPrice = liquidityHub.useGetBetterPrice(refetchLHQuote)
   const quotePending = isLHToken ? lhQuotePending : bestTradePending
 
-  const { data: thenaQuoteData, isLoading: isLoadingThenaQuote } = useThenaQuote(
-    fromAsset,
-    toAsset,
-    fromAmount,
-    networkId,
-    isThenaQuoteAndSwap,
-  )
+  // const { data: thenaQuoteData, isLoading: isLoadingThenaQuote } = useThenaQuote(
+  const { data: thenaQuoteData } = useThenaQuote(fromAsset, toAsset, fromAmount, networkId, isThenaQuoteAndSwap)
+  // NOTE: For the above function, please check if the token pool is CL or Classic
 
   const outAmount = useMemo(() => {
     if (isThenaQuoteAndSwap) {
@@ -191,12 +189,12 @@ export default function SwapBest({
       })
     }
 
-    if (isThenaQuoteAndSwap) {
-      return handleThenaFusionSwap(fromAsset, toAsset, fromAmount, outAmount, slippage, deadline, () => {
-        setFromAmount('')
-        mutateAssets()
-      })
-    }
+    // if (isThenaQuoteAndSwap) {
+    //   return handleThenaFusionSwap(fromAsset, toAsset, fromAmount, outAmount, slippage, deadline, () => {
+    //     setFromAmount('')
+    //     mutateAssets()
+    //   })
+    // }
 
     const swapWithLh = quote => {
       onLHSwap({
@@ -236,7 +234,6 @@ export default function SwapBest({
   }, [
     fromAsset,
     toAsset,
-    isThenaQuoteAndSwap,
     isLHToken,
     getBetterPrice,
     bestTrade,
@@ -246,8 +243,6 @@ export default function SwapBest({
     slippage,
     deadline,
     mutateAssets,
-    handleThenaFusionSwap,
-    outAmount,
     onLHSwap,
     refetchLHQuote,
     lhQuote,
@@ -428,8 +423,8 @@ export default function SwapBest({
                     taxTokenSwapPending ||
                     LHSwapPending ||
                     wrapPending ||
-                    thenaSwapPending ||
-                    isLoadingThenaQuote ||
+                    // thenaSwapPending ||
+                    // isLoadingThenaQuote ||
                     btnMsg.isError
                   }
                   onClick={() => {
