@@ -312,7 +312,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
           toggleStrategyType={toggleStrategyType}
         />
 
-        {strategyAutoData && isAutomatic && <SelectorGrid data={strategyAutoData} />}
+        {strategyAutoData && isAutomatic && <SelectorGrid data={strategyAutoData} isGrid />}
 
         {!isAutomatic && (
           <div className='space-y-4'>
