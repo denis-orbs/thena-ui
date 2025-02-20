@@ -1167,6 +1167,8 @@
   "Voting history": "Voting history",
   "Migrate Your Conc Liquidity Positions": "将所有位置迁移至更新的仪表.",
   "Migrate Your Conc Liquidity Positions description": "我们已将计量系统升级到 v3。所有用户都必须尽快迁移其流动性头寸。迁移过程将自动领取任何累积奖励、提取现有存款并将其存入新的 V3 计量系统。同样，所有质押头寸都将被取消质押并在相应的新计量系统中重新质押。谢谢。了解更多。",
+  "Starting Price needed": "Starting Price needed",
+  "Start Price": "Start Price",
   "Your Conc Liquidity Positions": "Your Conc. Liquidity Positions",
   "Migration": "Migration",
   "Migration description": "This will safely migrate your old V2 gauge to a new one. The process is completely trustless.",

@@ -73,7 +73,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   const addSelections = useMemo(
     () => [
       {
-        label: 'Strategie Token Deposit ',
+        label: 'Pool Token Deposit ',
         active: !isZapper,
         onClickHandler: () => {
           setIsZapper(false)

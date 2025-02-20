@@ -21,8 +21,10 @@ export default function Step3({ setStep }) {
   const poolAddress = searchParams.get('poolAddress')
 
   useEffect(() => {
-    updateSearchParams({ pairType: null })
-  }, [updateSearchParams])
+    if (poolAddress) {
+      updateSearchParams({ pairType: null })
+    }
+  }, [poolAddress, updateSearchParams])
 
   // NOTE: Pair might be null if the pool address is not found
   const pair = useMemo(() => {

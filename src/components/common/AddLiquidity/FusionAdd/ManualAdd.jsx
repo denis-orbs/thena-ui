@@ -41,7 +41,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
       <div className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
         {account ? (
           <PrimaryButton disabled={pending} onClick={onAddLiquidity} className='w-full'>
-            {t('Add Liquidity')}
+            {t('Deposit')}
           </PrimaryButton>
         ) : (
           <ConnectButton className='w-full' />

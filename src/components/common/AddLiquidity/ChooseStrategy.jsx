@@ -8,22 +8,27 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
+import { Info } from '@/components/alert'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
+import NextImage from '@/components/image/NextImage'
+import Input from '@/components/input'
 import Selection from '@/components/selection'
 import SelectorGrid from '@/components/selector/SelectorGrid'
 import Toggle from '@/components/toggle'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
+import { useCurrency } from '@/hooks/fusion/Tokens'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
-import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
+import { updateIsReverse, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { usePairInfo } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite } from '@/svgs'
+import { InfoCircleWhite, InfoIcon, TransferIcon } from '@/svgs'
 
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from './FusionAdd/GammaAdd'
@@ -124,15 +129,23 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   return preset
 }
 
-export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isModal, mintInfo }) {
+export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isModal, isReverse, mintInfo }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const searchParams = useSearchParams()
 
-  const { strategy } = useV3MintState()
+  const { strategy, startPriceTypedValue } = useV3MintState()
+  const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType, onStartPriceInput } =
+    useV3MintActionHandlers(mintInfo.noLiquidity)
   const { networkId } = useChainSettings()
 
   const [isAutomatic, setIsAutomatic] = useState(false)
+  // const [isReverse, setIsReverse] = useState(false)
+
+  const currencyA = useCurrency(firstAsset?.address)
+  const currencyB = useCurrency(secondAsset?.address)
+  const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
+  const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
 
   const poolAddress = searchParams.get('poolAddress')
   const pair = usePairInfo({
@@ -150,8 +163,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
     },
   )
 
-  const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
-    useV3MintActionHandlers(mintInfo.noLiquidity)
   const price = useMemo(() => {
     if (!mintInfo.price) return
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
@@ -326,59 +337,103 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
                 isDisabled
               />
             </article>
-            <Toggle
-              checked={!strategy?.isFarming}
-              onChange={() => {
-                if (strategy) {
-                  const _strategy = pair?.subpools.find(item =>
-                    strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
-                  )
-                  handleChooseStrategy(_strategy ?? defaultSwapFees)
-                }
-              }}
-              label='Earn Fees'
-              className={cn(firstAsset && secondAsset ? '' : 'hidden')}
-            />
-            <article
-              className={cn(
-                'flex items-center justify-between rounded-xl bg-primary-950 p-6 font-medium',
-                firstAsset && secondAsset ? '' : 'hidden',
-              )}
-            >
-              <div>
-                <Paragraph>{strategy?.title === 'CL_SwapFee' ? 'Earn Fees' : 'Earn THE'}</Paragraph>
-                <div className='mt-1 flex flex-wrap gap-2'>
-                  <div className='flex items-center gap-1'>
-                    <Paragraph className=''>{t('TVL')}:</Paragraph>
-                    <TextHeading className=''>${formatAmount(strategy?.tvl)}</TextHeading>
+
+            {mintInfo.noLiquidity && (
+              <div className='!mt-8 flex flex-col gap-4'>
+                <Info className='items-start p-8 text-sm'>
+                  <div className='h-8 w-8'>
+                    <InfoIcon className='h-8 w-8 stroke-primary-600' />
                   </div>
+                  <div className='flex flex-col gap-2'>
+                    <div>
+                      <TextHeading className='text-xl text-neutral-100'>{t('Starting Price needed')}</TextHeading>
+                    </div>
+                    <TextSubHeading className='text-base text-primary-100'>{t('Initialize warning')}</TextSubHeading>
+                  </div>
+                </Info>
+
+                <div className='flex items-center gap-2'>
+                  <TextHeading className='text-xl font-semibold'>{t('Start Price')}</TextHeading>
+                  <Input
+                    classNames={{
+                      input: 'w-32 pr-[44px] text-right leading-5',
+                    }}
+                    val={startPriceTypedValue}
+                    onChange={e => onStartPriceInput(e.target.value)}
+                    suffix={<NextImage src={quoteCurrency?.logoURI} alt='' className='h-5 w-5' />}
+                  />
+                  <EmphasisIconButton
+                    Icon={TransferIcon}
+                    onClick={() => dispatch(updateIsReverse({ isReverse: !isReverse }))}
+                  />
+                  <TextHeading className='text-xl font-semibold'>
+                    {t('[symbolA] per [symbolB]', {
+                      symbolA: quoteCurrency?.symbol,
+                      symbolB: baseCurrency?.symbol,
+                    })}
+                  </TextHeading>
                 </div>
               </div>
+            )}
 
-              <div className='flex flex-wrap justify-end gap-2'>
-                <TextHeading className='text-center font-archia'>
-                  <Paragraph>Estimate APR</Paragraph>
-                  <p className='text-xl font-semibold text-primary-600'>{formatAmount(mintInfo.estimateAPR)}%</p>
-                </TextHeading>
+            {!mintInfo.noLiquidity && (
+              <>
+                <Toggle
+                  checked={!strategy?.isFarming}
+                  onChange={() => {
+                    if (strategy) {
+                      const _strategy = pair?.subpools.find(item =>
+                        strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
+                      )
+                      handleChooseStrategy(_strategy ?? defaultSwapFees)
+                    }
+                  }}
+                  label='Earn Fees'
+                  className={cn(firstAsset && secondAsset ? '' : 'hidden')}
+                />
 
-                {strategy?.title === 'CL_SwapFee' ? (
-                  <IconGroup
-                    className='-space-x-2'
-                    classNames={{
-                      image: 'outline-2 w-7 h-7',
-                    }}
-                    logo1={firstAsset?.logoURI}
-                    logo2={secondAsset?.logoURI}
-                  />
-                ) : (
-                  <CircleImage
-                    className={cn('size-7')}
-                    src='https://cdn.thena.fi/assets/THE.png'
-                    alt='THENA First Logo'
-                  />
-                )}
-              </div>
-            </article>
+                <article
+                  className={cn(
+                    'flex items-center justify-between rounded-xl bg-primary-950 p-6 font-medium',
+                    firstAsset && secondAsset ? '' : 'hidden',
+                  )}
+                >
+                  <div className='flex flex-col gap-1'>
+                    <Paragraph>{strategy?.title === 'CL_SwapFee' ? 'Earn Fees' : 'Earn THE'}</Paragraph>
+                    <div className='flex flex-wrap gap-2'>
+                      <div className='flex items-center gap-1'>
+                        <Paragraph className=''>{t('TVL')}:</Paragraph>
+                        <TextHeading className=''>${formatAmount(strategy?.tvl)}</TextHeading>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='flex flex-wrap justify-end gap-2'>
+                    <TextHeading className='text-center font-archia'>
+                      <Paragraph>Estimate APR</Paragraph>
+                      <p className='text-xl font-semibold text-primary-600'>{formatAmount(mintInfo.estimateAPR)}%</p>
+                    </TextHeading>
+
+                    {strategy?.title === 'CL_SwapFee' ? (
+                      <IconGroup
+                        className='-space-x-2'
+                        classNames={{
+                          image: 'outline-2 w-7 h-7',
+                        }}
+                        logo1={firstAsset?.logoURI}
+                        logo2={secondAsset?.logoURI}
+                      />
+                    ) : (
+                      <CircleImage
+                        className={cn('size-7')}
+                        src='https://cdn.thena.fi/assets/THE.png'
+                        alt='THENA First Logo'
+                      />
+                    )}
+                  </div>
+                </article>
+              </>
+            )}
           </div>
         )}
 

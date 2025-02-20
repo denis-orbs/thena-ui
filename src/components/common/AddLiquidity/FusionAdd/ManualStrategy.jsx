@@ -2,8 +2,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Info, Warning } from '@/components/alert'
-import Input from '@/components/input'
+import { Warning } from '@/components/alert'
 import CustomTooltip from '@/components/tooltip'
 import { TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
@@ -116,30 +115,8 @@ function ManualStrategy({ firstAsset, secondAsset }) {
 
   return (
     <div className='flex flex-col gap-4'>
-      {mintInfo.noLiquidity && (
-        <div className='flex flex-col gap-3'>
-          <Info className='text-sm'>{t('Initialize warning')}</Info>
-          <div className='flex items-center justify-between'>
-            <TextHeading className='w-1/2'>
-              {t('Starting [symbol] Price:', { symbol: baseCurrency?.symbol })}
-            </TextHeading>
-            <Input
-              classNames={{
-                input: 'w-full pr-[150px]',
-              }}
-              val={startPriceTypedValue}
-              onChange={e => onStartPriceInput(e.target.value)}
-              suffix={t('[symbolA] per [symbolB]', {
-                symbolA: quoteCurrency?.symbol,
-                symbolB: baseCurrency?.symbol,
-              })}
-            />
-          </div>
-        </div>
-      )}
-
       <div className='flex items-center justify-between'>
-        <TextHeading className='text-xl font-medium'>Liquidity Range</TextHeading>
+        <TextHeading className='text-xl font-semibold'>Liquidity Range</TextHeading>
       </div>
 
       {activePreset === Presets.FULL && fullRangeWarningShown && (

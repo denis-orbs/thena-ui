@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 function SelectorGrid({ data, classNames, isGrid = true }) {
   return (
-    <div className={cn('grid grid-cols-1 gap-4 lg:grid-cols-2', !isGrid && 'lg:grid-cols-1')}>
+    <div className={cn('grid grid-cols-1 gap-4 xl:grid-cols-2', !isGrid && 'lg:grid-cols-1')}>
       {data.map((ele, idx) => (
         <div
           className={cn(

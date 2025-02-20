@@ -169,7 +169,7 @@ function AddLiquidityClPool({ pool }) {
 
             <div className={cn('hidden', !strategy?.isAutomatic && priceLower && priceUpper && 'block')}>
               <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
-                <h6 className='font-bold'>Historical price</h6>
+                <h6 className='font-bold'>Price History</h6>
                 <Tabs data={periods} />
               </div>
 
