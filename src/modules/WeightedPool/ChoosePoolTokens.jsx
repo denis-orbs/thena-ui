@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import AvailablePools from '@/app/pools/add-liquidity/Step2/AvailablePools'
+import AvailablePools from '@/app/pools/(add-liquidity)/add-liquidity/Step2/AvailablePools'
 import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'

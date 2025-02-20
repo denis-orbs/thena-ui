@@ -29,8 +29,7 @@ import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, InfoIcon } from '@/svgs'
 
-import AddLiquidityModal from './addLiquidityModal'
-import NewListings from './NewListings'
+import NewListings from '../NewListings'
 
 const sortOptions = [
   {
@@ -81,7 +80,6 @@ const STRATEGIES = {
 export default function PoolsPage() {
   const [searchText, setSearchText] = useState('')
   const [isInactive, setIsInactive] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
   const [sort, setSort] = useState(sortOptions[2])
   const [filter, setFilter] = useState(PAIR_TYPES.All)
   const [strategy, setStrategy] = useState(STRATEGIES.All)
@@ -621,8 +619,6 @@ export default function PoolsPage() {
           setCurrentPage={setCurrentPage}
         />
       </div>
-
-      <AddLiquidityModal popup={isOpen} setPopup={setIsOpen} />
     </div>
   )
 }

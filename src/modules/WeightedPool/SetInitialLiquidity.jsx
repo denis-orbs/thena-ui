@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import InputTokenMemo from '@/app/pools/add-liquidity/InputTokenMemo'
+import InputTokenMemo from '@/app/pools/(add-liquidity)/add-liquidity/InputTokenMemo'
 import { TertiaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { useTokenBalanceFn } from '@/hooks/fusion/Tokens'
