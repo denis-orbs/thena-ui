@@ -1181,5 +1181,6 @@
   "Babypie's Liquidity RUSH campaign": "Liquidity providers in this pool are eligible for Babypie's Liquidity RUSH campaign",
   "Hot Pools": "Hot Pools",
   "uniBTC FBTC pool tooltip": "Liquidity providers in this pool are eligible for 2x Sparks in Ignition's Sparkle Campaign",
-  "Warning THE claim rebase fee": "To receive your rebase, please visit the Rewards page and claim it before your lock period ends. After the lock period expires, the rebase will no longer be available for claiming."
+  "Warning THE claim rebase fee": "To receive your rebase, please visit the Rewards page and claim it before your lock period ends. After the lock period expires, the rebase will no longer be available for claiming.",
+  "Communities": "Communities"
 }
