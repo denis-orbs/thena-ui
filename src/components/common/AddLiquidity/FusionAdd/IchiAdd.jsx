@@ -26,18 +26,18 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
   const depositToken = assets.find(ele => ele.address.toLowerCase() === strategy?.allowed?.address)
   const t = useTranslations()
 
-  const isDouble = useMemo(() => depositToken.symbol === 'WBNB', [depositToken])
+  const isDouble = useMemo(() => depositToken?.symbol === 'WBNB', [depositToken])
 
   const balance = useMemo(() => {
     if (isDouble) {
-      return depositToken.balance.plus(bnbBalance)
+      return depositToken?.balance.plus(bnbBalance)
     }
-    return depositToken.balance
+    return depositToken?.balance
   }, [depositToken, isDouble, bnbBalance])
 
   const amountToWrap = useMemo(() => {
     let final
-    if (depositToken.balance.lt(amount)) {
+    if (depositToken?.balance.lt(amount)) {
       final = new BigNumber(amount).minus(depositToken.balance)
     }
     return final
@@ -94,7 +94,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
             }}
             className='w-full'
           >
-            {t('Add Liquidity')}
+            {t('Deposit')}
           </PrimaryButton>
         ) : (
           <ConnectButton className='w-full' />

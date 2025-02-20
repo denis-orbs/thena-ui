@@ -139,8 +139,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
     useV3MintActionHandlers(mintInfo.noLiquidity)
   const { networkId } = useChainSettings()
 
-  const [isAutomatic, setIsAutomatic] = useState(false)
-  // const [isReverse, setIsReverse] = useState(false)
+  const [isAutomatic, setIsAutomatic] = useState(strategy?.isAutomatic ?? false)
 
   const currencyA = useCurrency(firstAsset?.address)
   const currencyB = useCurrency(secondAsset?.address)
@@ -313,9 +312,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
           toggleStrategyType={toggleStrategyType}
         />
 
-        {strategyAutoData && isAutomatic && (
-          <SelectorGrid data={strategyAutoData} selected={strategy} setSelected={setStrategy} />
-        )}
+        {strategyAutoData && isAutomatic && <SelectorGrid data={strategyAutoData} />}
 
         {!isAutomatic && (
           <div className='space-y-4'>

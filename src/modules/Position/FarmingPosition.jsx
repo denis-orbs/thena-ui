@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
@@ -12,6 +14,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
@@ -23,29 +26,29 @@ import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import { getFarmingCenterContract, getIncentiveContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
-import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount, formatAmountLP, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
-import { Bound } from '@/state/fusion/actions'
+import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon, RefreshIcon } from '@/svgs'
 
-import AddManualModal from './AddManualModal'
 import ClaimModal from './ClaimModal'
 import { WarningOutOfRange } from './ManualPosition'
 import RemoveManualModal from './RemoveManualModal'
 
 export function FarmingPosition({ position }) {
   const t = useTranslations()
+  const dispatch = useDispatch()
+  const { push } = useRouter()
   const { chainId, account } = useWallet()
   const pools = usePools()
   const { mutateManual } = useContext(ManualsContext)
   const { addReward } = useFarmRewards()
 
   const [claimPopup, setClaimPopup] = useState(false)
-  const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
 
-  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId } = position
+  const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = position
   const currency0 = useCurrency(asset0.address)
   const currency1 = useCurrency(asset1.address)
 
@@ -179,6 +182,40 @@ export function FarmingPosition({ position }) {
   const [reversePrice, setReversePrice] = useState(false)
 
   const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
+
+  const handleAdd = useCallback(() => {
+    const newStrategy = {
+      title: poolInfo?.title,
+      account: {
+        totalLp: poolInfo?.account?.totalLp?.toNumber(),
+        gaugeBalance: poolInfo?.account?.gaugeBalance?.toNumber(),
+      },
+      allowed: poolInfo?.allowed,
+      token0: {
+        ...poolInfo?.token0,
+        reserve: poolInfo?.token0?.reserve?.toNumber(),
+        balance: poolInfo?.token0?.balance?.toNumber(),
+        totalValue: poolInfo?.token0?.totalValue,
+      },
+      token1: {
+        ...poolInfo?.token1,
+        reserve: poolInfo?.token1?.reserve?.toNumber(),
+        balance: poolInfo?.token1?.balance?.toNumber(),
+        totalValue: poolInfo?.token1?.totalValue,
+      },
+      address: poolInfo?.address,
+      tvl: poolInfo?.tvl?.toNumber(),
+      isAutomatic: !MANUAL_TYPES.includes(poolInfo?.title) && poolInfo?.type === PAIR_TYPES.LSD,
+      isFarming: poolInfo?.title?.includes('Farming'),
+      version,
+      isDefault: poolInfo?.isDefault,
+      fee: poolInfo?.fee,
+    }
+
+    dispatch(updateStrategy({ strategy: newStrategy }))
+    dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo.title) }))
+    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}`)
+  }, [dispatch, poolInfo, push, version])
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -378,7 +415,7 @@ export function FarmingPosition({ position }) {
           {t('Burn')}
         </OutlinedButton>
 
-        <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
+        <EmphasisButton className='w-full' onClick={handleAdd}>
           {t('Add')}
         </EmphasisButton>
       </div>
@@ -403,16 +440,6 @@ export function FarmingPosition({ position }) {
         mutateManual={mutateManual}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
-      />
-      <AddManualModal
-        popup={addPopup}
-        setPopup={setAddPopup}
-        pool={position}
-        position={_position}
-        mutateManual={mutateManual}
-        outOfRange={outOfRange}
-        _fusion={_fusion}
-        tickAtLimit={tickAtLimit}
       />
     </Box>
   )

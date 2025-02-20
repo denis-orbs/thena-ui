@@ -209,7 +209,7 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy }) {
         {account ? (
           <>
             <PrimaryButton disabled={pending} onClick={onAddLiquidity} className='w-full'>
-              {t('Add Liquidity')}
+              {t('Deposit')}
             </PrimaryButton>
           </>
         ) : (

@@ -10,7 +10,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
@@ -101,6 +101,40 @@ export default function Staked({ pool }) {
       onGaugeHarvest(pool)
     }
   }, [onGammaClaim, onGaugeHarvest, onIchiClaim, pool])
+
+  const handleAdd = useCallback(() => {
+    const newStrategy = {
+      title: pool?.title,
+      account: {
+        totalLp: pool?.account?.totalLp?.toNumber(),
+        gaugeBalance: pool?.account?.gaugeBalance?.toNumber(),
+      },
+      allowed: pool?.allowed,
+      token0: {
+        ...pool?.token0,
+        reserve: pool?.token0?.reserve?.toNumber(),
+        balance: pool?.token0?.balance?.toNumber(),
+        totalValue: pool?.token0?.totalValue,
+      },
+      token1: {
+        ...pool?.token1,
+        reserve: pool?.token1?.reserve?.toNumber(),
+        balance: pool?.token1?.balance?.toNumber(),
+        totalValue: pool?.token1?.totalValue,
+      },
+      address: pool?.address,
+      tvl: pool?.tvl?.toNumber(),
+      isAutomatic: !MANUAL_TYPES.includes(pool?.title) && pool?.type === PAIR_TYPES.LSD,
+      isFarming: pool?.title?.includes('Farming'),
+      version,
+      isDefault: pool?.isDefault,
+      fee: pool?.fee,
+    }
+
+    dispatch(updateStrategy({ strategy: newStrategy }))
+    dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
+    push(`/pools/add-liquidity?step=3&poolAddress=${pool.basePool}`)
+  }, [dispatch, pool, push, version])
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -223,36 +257,7 @@ export default function Staked({ pool }) {
               {t('Harvest')}
             </OutlinedButton>
 
-            <EmphasisButton
-              className={cn('w-full')}
-              onClick={() => {
-                dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
-                dispatch(
-                  updateStrategy({
-                    strategy: {
-                      title: pool?.title,
-                      token0: {
-                        ...pool?.token0,
-                        reserve: pool?.token0?.reserve?.toNumber(),
-                        balance: pool?.token0?.balance?.toNumber(),
-                        totalValue: pool?.token0?.totalValue,
-                      },
-                      token1: {
-                        ...pool?.token1,
-                        reserve: pool?.token1?.reserve?.toNumber(),
-                        balance: pool?.token1?.balance?.toNumber(),
-                        totalValue: pool?.token1?.totalValue,
-                      },
-                      tvl: pool?.tvl?.toNumber(),
-                      isAutomatic: true,
-                      isFarming: pool.title.includes('Farming'),
-                      version,
-                    },
-                  }),
-                )
-                push(`/pools/add-liquidity?step=3&poolAddress=${pool.address}`)
-              }}
-            >
+            <EmphasisButton className={cn('w-full')} onClick={handleAdd}>
               {t('Add')}
             </EmphasisButton>
           </>

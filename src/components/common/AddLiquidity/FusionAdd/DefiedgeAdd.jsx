@@ -267,7 +267,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
               }}
               className='w-full'
             >
-              {t('Add Liquidity')}
+              {t('Deposit')}
             </SecondaryButton>
             {strategy && strategy.gauge.address !== zeroAddress && (
               <PrimaryButton
@@ -277,7 +277,7 @@ export default function DefiedgeAdd({ strategy, isModal, isAdd }) {
                 }}
                 className='w-full'
               >
-                {t('Add Liquidity & Stake')}
+                {t('Deposit & Stake')}
               </PrimaryButton>
             )}
           </>
