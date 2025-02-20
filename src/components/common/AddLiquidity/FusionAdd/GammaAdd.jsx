@@ -18,6 +18,7 @@ import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
 import { cn } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -64,6 +65,8 @@ export const fetchGammaInfo = async (chainId, strategy) => {
 
 export default function GammaAdd({ strategy, isModal, isAdd }) {
   const [isZapper, setIsZapper] = useState(false)
+  const [slippage, setSlippage] = useState(0.5)
+
   const baseCurrency = useCurrency(strategy?.token0?.address)
   const quoteCurrency = useCurrency(strategy?.token1?.address)
 
@@ -96,17 +99,26 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
         <Selection data={addSelections} isFull />
 
+        <div className='flex justify-end'>
+          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
+        </div>
+
         {isZapper ? (
-          <ZapperPane asset0={asset0} asset1={asset1} strategy={strategy} />
+          <ZapperPane asset0={asset0} asset1={asset1} strategy={strategy} slippage={slippage} />
         ) : (
-          <ManualPane baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} strategy={strategy} />
+          <ManualPane
+            baseCurrency={baseCurrency}
+            quoteCurrency={quoteCurrency}
+            strategy={strategy}
+            slippage={slippage}
+          />
         )}
       </div>
     </div>
   )
 }
 
-function ManualPane({ baseCurrency, quoteCurrency, strategy }) {
+function ManualPane({ baseCurrency, quoteCurrency, strategy, slippage }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { networkId } = useChainSettings()
@@ -165,8 +177,8 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy }) {
   }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType, price])
 
   const onAddLiquidity = useCallback(() => {
-    handleAddGamma(amountA, amountB, amountToWrap, strategy)
-  }, [amountA, amountB, amountToWrap, handleAddGamma, strategy])
+    handleAddGamma(amountA, amountB, amountToWrap, strategy, slippage)
+  }, [amountA, amountB, amountToWrap, handleAddGamma, slippage, strategy])
 
   return (
     <div>

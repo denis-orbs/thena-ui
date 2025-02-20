@@ -34,7 +34,7 @@ export const useAddGamma = () => {
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
   const handleAddGamma = useCallback(
-    async (amountA, amountB, amountToWrap, gammaPair) => {
+    async (amountA, amountB, amountToWrap, gammaPair, slippage = 0.5) => {
       const isFarming = gammaPair?.isFarming
       const baseCurrency = amountA.currency
       const quoteCurrency = amountB.currency
@@ -127,6 +127,7 @@ export const useAddGamma = () => {
           account,
           gammaPairAddress,
           [0, 0, 0, 0],
+          Math.floor(slippage * 100),
         ]))
       ) {
         setPending(false)
