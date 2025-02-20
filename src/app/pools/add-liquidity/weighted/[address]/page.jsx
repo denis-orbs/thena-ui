@@ -295,7 +295,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
           </div>
           <div className='flex flex-col justify-between gap-4 lg:flex-row'>
             <SecondaryButton disabled={isDisable} onClick={() => onAddLiquidity(false)} className='w-full lg:w-1/2'>
-              {t('Add Liquidity')}
+              {t('Deposit')}
             </SecondaryButton>
             <PrimaryButton
               disabled={isDisable || poolSelected?.gauge?.address === zeroAddress}
@@ -303,7 +303,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
               className='w-full lg:w-1/2'
               data-tooltip-id={`add-liquidity-stake-${poolSelected?.address}`}
             >
-              {t('Add Liquidity & Stake')}
+              {t('Deposit & Stake')}
             </PrimaryButton>
             {poolSelected?.gauge?.address === zeroAddress && (
               <CustomTooltip id={`add-liquidity-stake-${poolSelected?.address}`} className='max-w-[500px]'>

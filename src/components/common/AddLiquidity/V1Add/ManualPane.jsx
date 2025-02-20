@@ -180,7 +180,7 @@ export function ManualPaneV1({
               }}
               className='w-full'
             >
-              {t('Add Liquidity')}
+              {t('Deposit')}
             </SecondaryButton>
 
             {strategy && strategy.gauge.address !== zeroAddress && strategy.version === 3 && (
@@ -191,7 +191,7 @@ export function ManualPaneV1({
                 }}
                 className='w-full'
               >
-                {t('Add Liquidity & Stake')}
+                {t('Deposit & Stake')}
               </PrimaryButton>
             )}
           </>

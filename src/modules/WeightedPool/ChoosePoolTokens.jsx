@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import AvailablePools from '@/app/pools/add-liquidity/Step2/AvailablePools'
-import { TextHeading } from '@/components/typography'
+import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { cn } from '@/lib/utils'
@@ -70,7 +70,7 @@ function ChoosePoolTokens({ setTokensSelect }) {
   return (
     <div className='w-full space-y-8'>
       <div className='space-y-4'>
-        <TextHeading>{t('Choose Pool Tokens')}</TextHeading>
+        <NewTextSubHeading>{t('Choose Pool Tokens')}</NewTextSubHeading>
         <div className='grid grid-cols-7 rounded-lg bg-neutral-800 p-1'>
           {[2, 3, 4, 5, 6, 7, 8].map(value => (
             <div

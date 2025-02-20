@@ -109,8 +109,6 @@ export default function ChooseTokensSection({ pairType }) {
     }
   }, [wrapperSelectRef, optionWidth])
 
-  console.log({ tokensPool, totalToken })
-
   return (
     <>
       <div className='flex flex-col gap-5 lg:gap-8'>

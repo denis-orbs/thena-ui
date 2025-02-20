@@ -37,9 +37,7 @@ export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirs
     <div className={cn('inline-flex w-full flex-col gap-5')}>
       {Boolean(pool) && <Selection data={addSelections} isFull isTranslation={false} />}
 
-      <div className='flex justify-end'>
-        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
-      </div>
+      <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
 
       {isZapper ? (
         <ZapperPane asset0={firstAsset} asset1={secondAsset} slippage={slippage} strategy={pool} />

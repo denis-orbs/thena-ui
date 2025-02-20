@@ -177,7 +177,7 @@ export function ZapperPane({ asset0, asset1, slippage = 1, strategy }) {
             onClick={() => handleAddLiquidity({ isStake: false })}
             className='w-full'
           >
-            {t('Add Liquidity')}
+            {t('Deposit')}
           </SecondaryButton>
 
           <PrimaryButton
@@ -190,7 +190,7 @@ export function ZapperPane({ asset0, asset1, slippage = 1, strategy }) {
               strategy.version === 2 && 'hidden',
             )}
           >
-            {t('Add Liquidity & Stake')}
+            {t('Deposit & Stake')}
           </PrimaryButton>
         </div>
       ) : (
