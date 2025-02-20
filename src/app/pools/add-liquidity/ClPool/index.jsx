@@ -133,6 +133,7 @@ function AddLiquidityClPool({ pool }) {
             firstAsset={firstAsset}
             secondAsset={secondAsset}
             isReverse={isReverse}
+            mintInfo={mintInfo}
           />
 
           <AddLiquidityCLPane

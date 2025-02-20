@@ -16,12 +16,11 @@ import Toggle from '@/components/toggle'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
-import { useCurrency } from '@/hooks/fusion/Tokens'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
-import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
+import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { usePairInfo } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite } from '@/svgs'
@@ -29,8 +28,6 @@ import { InfoCircleWhite } from '@/svgs'
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from './FusionAdd/GammaAdd'
 import ManualStrategy from './FusionAdd/ManualStrategy'
-
-const feeAmount = 3000
 
 const defaultSwapFees = {
   isDefault: true,
@@ -127,7 +124,7 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   return preset
 }
 
-export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isModal }) {
+export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isModal, mintInfo }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const searchParams = useSearchParams()
@@ -152,10 +149,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
       refreshInterval: 0,
     },
   )
-  const baseCurrency = useCurrency(firstAsset?.address)
-  const quoteCurrency = useCurrency(secondAsset?.address)
 
-  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
   const price = useMemo(() => {
