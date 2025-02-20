@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
+import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
 import Box from '@/components/box'
@@ -39,12 +40,15 @@ export function ZapperPane({ asset0, asset1, slippage = 1, strategy }) {
 
   const isUseTokenInPair =
     tokenDeposit.address.toLowerCase() === asset0.address.toLowerCase() ||
-    tokenDeposit.address.toLowerCase() === asset1.address.toLowerCase()
+    tokenDeposit.address.toLowerCase() === asset1.address.toLowerCase() ||
+    (tokenDeposit.address === 'BNB' &&
+      (asset1.address === WBNB[chainId].address.toLowerCase() ||
+        asset0.address === WBNB[chainId].address.toLowerCase()))
 
   const { address: zapAddress, isV1 } = getZapAddress(strategy, chainId)
   const { data: quoteO } = useOdosQuoteSwapTradeTC(
     zapAddress,
-    tokenDeposit.address,
+    tokenDeposit.address === 'BNB' ? WBNB[chainId].address : tokenDeposit.address,
     asset0.address,
     amountIn,
     slippage,
@@ -54,7 +58,7 @@ export function ZapperPane({ asset0, asset1, slippage = 1, strategy }) {
   )
   const { data: quote1 } = useOdosQuoteSwapTradeTC(
     zapAddress,
-    tokenDeposit.address,
+    tokenDeposit.address === 'BNB' ? WBNB[chainId].address : tokenDeposit.address,
     asset1.address,
     amountIn,
     slippage,

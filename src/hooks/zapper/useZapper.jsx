@@ -19,6 +19,7 @@ import {
   getIncentiveContract,
   getMultiFeeDistributionContract,
   getPositionManagerContract,
+  getWBNBContract,
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { fromWei, toWei } from '@/lib/utils'
@@ -229,26 +230,37 @@ export const useV1Zapper = () => {
         const zapAddress = type === PAIR_TYPES.CLASSIC ? Contracts.classicZap[chainId] : Contracts.stableZap[chainId]
         const key = uuidv4()
         const approveId = uuidv4()
+        const wrapId = uuidv4()
         const addLiquidityId = uuidv4()
         const approveStakeId = uuidv4()
         const stakeId = uuidv4()
         const transactions = {}
 
-        let isApproved = false
-        const tokenContract = getERC20Contract(tokenDeposit.address, chainId)
-        if (tokenDeposit.address !== 'BNB') {
-          const allowance = await readCall(tokenContract, 'allowance', [account, zapAddress])
-          isApproved = fromWei(allowance, tokenDeposit.decimals).gte(amount)
+        const _tokenDeposit = tokenDeposit.address === 'BNB' ? WBNB[chainId] : tokenDeposit
+
+        const tokenContract = getERC20Contract(_tokenDeposit.address, chainId)
+        const allowance = await readCall(tokenContract, 'allowance', [account, zapAddress])
+
+        const amountIn = toWei(
+          new BigNumber(amount).decimalPlaces(_tokenDeposit.decimals, BigNumber.ROUND_DOWN).toString(),
+          _tokenDeposit.decimals,
+        )
+        const amountToApprove = amountIn.minus(allowance)
+
+        if (tokenDeposit.address === 'BNB') {
+          transactions[wrapId] = {
+            desc: 'Wrap BNB',
+            status: TXN_STATUS.START,
+            hash: null,
+          }
         }
 
-        if (tokenDeposit.address !== 'BNB' && !isApproved) {
+        if (amountToApprove.gt(0)) {
           transactions[approveId] = {
             desc: 'Approving token',
             status: TXN_STATUS.START,
             hash: null,
           }
-        } else {
-          isApproved = true
         }
 
         transactions[addLiquidityId] = {
@@ -274,10 +286,18 @@ export const useV1Zapper = () => {
         startTxn({ key, transactions, title: t('Add Liquidity') })
         setPending(true)
 
+        if (tokenDeposit.address === 'BNB') {
+          const wbnb = getWBNBContract(chainId)
+          if (!(await writeTxn(key, wrapId, wbnb, 'deposit', [], amountIn))) {
+            setPending(false)
+            return
+          }
+        }
+
         // MARK: APPROVE TOKENS
         setPending(true)
-        if (!isApproved) {
-          if (!(await writeTxn(key, approveId, tokenContract, 'approve', [zapAddress, maxUint256]))) {
+        if (amountToApprove.gt(0)) {
+          if (!(await writeTxn(key, approveId, tokenContract, 'approve', [zapAddress, amountIn]))) {
             setPending(false)
             return
           }
@@ -286,7 +306,6 @@ export const useV1Zapper = () => {
         // MARK: ADD LIQUIDITY
         let txhash = null
         if (odosParams) {
-          const tokenInAddress = tokenIn.address === 'BNB' ? WBNB[chainId] : tokenIn.address
           txhash = await writeTxn(
             key,
             addLiquidityId,
@@ -295,13 +314,9 @@ export const useV1Zapper = () => {
               abi: vammZapAbi,
             },
             'zapInOdos',
-            [tokenInAddress, zapSwapSlippage, pairAddress, ...odosParams],
+            [tokenIn.address, zapSwapSlippage, pairAddress, ...odosParams],
           )
         } else {
-          const amountIn = toWei(
-            new BigNumber(amount).decimalPlaces(tokenDeposit.decimals, BigNumber.ROUND_DOWN).toString(),
-            tokenDeposit.decimals,
-          )
           txhash = await writeTxn(
             key,
             addLiquidityId,
@@ -310,7 +325,7 @@ export const useV1Zapper = () => {
               abi: vammZapAbi,
             },
             'zapIn',
-            [tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress],
+            [_tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress],
           )
         }
 
@@ -322,9 +337,9 @@ export const useV1Zapper = () => {
         // MARK: ADD LIQUIDITY
         if (gaugeAddress) {
           const lpContract = getERC20Contract(pairAddress, chainId)
-          const allowance = await readCall(lpContract, 'allowance', [account, gaugeAddress], chainId)
+          const allowanceLp = await readCall(lpContract, 'allowance', [account, gaugeAddress], chainId)
           const lpBalance = await readCall(lpContract, 'balanceOf', [account], chainId)
-          const isLpApproved = fromWei(allowance).gte(lpBalance)
+          const isLpApproved = fromWei(allowanceLp).gte(lpBalance)
 
           if (isLpApproved) {
             updateTxn({ key, uuid: approveStakeId, status: TXN_STATUS.SUCCESS })
@@ -373,6 +388,7 @@ export const useGammaZapper = () => {
         }
 
         const zapAddress = Contracts.gammaZap[chainId]
+        const wrapId = uuidv4()
         const key = uuidv4()
         const approveId = uuidv4()
         const addLiquidityId = uuidv4()
@@ -380,22 +396,31 @@ export const useGammaZapper = () => {
         const stakeId = uuidv4()
         const transactions = {}
 
-        let isApproved = false
-        const tokenContract = getERC20Contract(tokenDeposit.address, chainId)
+        const _tokenDeposit = tokenDeposit.address === 'BNB' ? WBNB[chainId] : tokenDeposit
+        const tokenContract = getERC20Contract(_tokenDeposit.address, chainId)
 
-        if (tokenDeposit.address !== 'BNB') {
-          const allowance = await readCall(tokenContract, 'allowance', [account, zapAddress])
-          isApproved = fromWei(allowance, tokenDeposit.decimals).gte(amount)
+        const amountIn = toWei(
+          new BigNumber(amount).decimalPlaces(_tokenDeposit.decimals, BigNumber.ROUND_DOWN).toString(),
+          _tokenDeposit.decimals,
+        )
+
+        const allowance = await readCall(tokenContract, 'allowance', [account, zapAddress])
+        const amountToApprove = amountIn.minus(allowance)
+
+        if (tokenDeposit.address === 'BNB') {
+          transactions[wrapId] = {
+            desc: 'Wrap BNB',
+            status: TXN_STATUS.START,
+            hash: null,
+          }
         }
 
-        if (tokenDeposit.address !== 'BNB' && !isApproved) {
+        if (amountToApprove.gt(0)) {
           transactions[approveId] = {
             desc: 'Approving token',
             status: TXN_STATUS.START,
             hash: null,
           }
-        } else {
-          isApproved = true
         }
 
         transactions[addLiquidityId] = {
@@ -421,10 +446,18 @@ export const useGammaZapper = () => {
         startTxn({ key, transactions, title: t('Add Liquidity') })
         setPending(true)
 
+        if (tokenDeposit.address === 'BNB') {
+          const wbnb = getWBNBContract(chainId)
+          if (!(await writeTxn(key, wrapId, wbnb, 'deposit', [], amountIn))) {
+            setPending(false)
+            return
+          }
+        }
+
         // MARK: APPROVE TOKENS
         setPending(true)
-        if (!isApproved) {
-          if (!(await writeTxn(key, approveId, tokenContract, 'approve', [zapAddress, maxUint256]))) {
+        if (amountToApprove.gt(0)) {
+          if (!(await writeTxn(key, approveId, tokenContract, 'approve', [zapAddress, amountIn]))) {
             setPending(false)
             return
           }
@@ -433,7 +466,6 @@ export const useGammaZapper = () => {
         // MARK: ADD LIQUIDITY
         let txhash = null
         if (odosParams) {
-          const tokenInAddress = tokenIn.address === 'BNB' ? WBNB[chainId] : tokenIn.address
           txhash = await writeTxn(
             key,
             addLiquidityId,
@@ -442,13 +474,9 @@ export const useGammaZapper = () => {
               abi: vammZapAbi,
             },
             'zapInOdos',
-            [tokenInAddress, zapSwapSlippage, pairAddress, ...odosParams],
+            [tokenIn.address, zapSwapSlippage, pairAddress, ...odosParams],
           )
         } else {
-          const amountIn = toWei(
-            new BigNumber(amount).decimalPlaces(tokenDeposit.decimals, BigNumber.ROUND_DOWN).toString(),
-            tokenDeposit.decimals,
-          )
           txhash = await writeTxn(
             key,
             addLiquidityId,
@@ -457,7 +485,7 @@ export const useGammaZapper = () => {
               abi: vammZapAbi,
             },
             'zapIn',
-            [tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress],
+            [_tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress],
           )
         }
 
@@ -470,9 +498,9 @@ export const useGammaZapper = () => {
           const gammaHyper = getGammaHyperVisorContract(pairAddress, chainId, 3)
 
           const receiver = await readCall(gammaHyper, 'receiver', [], chainId)
-          const allowance = await readCall(gammaHyper, 'allowance', [account, receiver], chainId)
+          const allowanceLp = await readCall(gammaHyper, 'allowance', [account, receiver], chainId)
           const balance = await readCall(gammaHyper, 'balanceOf', [account], chainId)
-          const isApproved2 = BigNumber(balance).lte(allowance)
+          const isApproved2 = BigNumber(balance).lte(allowanceLp)
 
           if (!isApproved2) {
             const txHash = await writeTxn(key, approveStakeId, gammaHyper, 'approve', [receiver, balance])
