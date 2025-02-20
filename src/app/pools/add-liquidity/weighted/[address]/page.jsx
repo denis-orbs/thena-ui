@@ -8,6 +8,7 @@ import { zeroAddress } from 'viem'
 
 import MenuTab from '@/app/arena/MenuTab'
 import Loading from '@/app/loading'
+import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import TokenInput from '@/components/input/TokenInput'
 import Skeleton from '@/components/skeleton'
@@ -241,8 +242,11 @@ function AddLiquidityWeightedPoolPage({ params }) {
             height={60}
             width={60}
             tokens={poolSelected?.tokens || []}
-            className='-space-y-5'
-            classNames={{ rows: '-space-x-5' }}
+            className={cn('-space-y-5', (poolSelected?.tokens || []).length <= 4 && '-space-y-0')}
+            classNames={{
+              rows: cn('xl:-space-x-4 2xl:-space-x-5 -space-x-2'),
+              images: 'size-6 lg:size-10 2xl:size-[86px]',
+            }}
           />
           <NewTextHeading>{poolSelected?.symbol || 'UNKNOWN'}</NewTextHeading>
         </div>
@@ -253,9 +257,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
           <PairBasicInfo pair={poolSelected} />
           <MenuTab className='grid w-full grid-cols-2' menuData={toggleDepositType} />
           <div>
-            <div className='flex items-center justify-end'>
-              <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} />
-            </div>
+            <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} />
             {depositType === DEPOSIT_TYPE.ALL && (
               <div
                 className={cn(
@@ -313,7 +315,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
             {t('Back')}
           </EmphasisButton>
         </div>
-        <div className='w-full lg:flex-[4]'>
+        <div className='w-full space-y-4 lg:flex-[4]'>
           <PoolAttributesSection pair={poolSelected} />
           <div>
             <PieChart tokens={poolSelected?.tokens || []} colors={colors} />
@@ -328,40 +330,42 @@ function AddLiquidityWeightedPoolPage({ params }) {
               ))}
             </div>
           </div>
-          <div className='mt-5 flex flex-col gap-4'>
-            <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-            <div className='flex flex-col gap-3'>
-              {(poolSelected?.tokens || []).map(token => (
-                <div key={token.address} className='flex items-center justify-between'>
-                  <Paragraph className='font-medium'>
-                    {unwrappedSymbol(token)} {t('Amount')}
-                  </Paragraph>
-                  <Paragraph>{formatAmount(token.reserve)}</Paragraph>
+          <Box>
+            <div className='flex flex-col gap-4'>
+              <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
+              <div className='flex flex-col gap-3'>
+                {(poolSelected?.tokens || []).map(token => (
+                  <div key={token.address} className='flex items-center justify-between'>
+                    <Paragraph className='font-medium'>
+                      {unwrappedSymbol(token)} {t('Amount')}
+                    </Paragraph>
+                    <Paragraph>{formatAmount(token.reserve)}</Paragraph>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
+              <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
+              <div className='flex flex-col gap-3'>
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
+                  {loadingPoolBalance ? (
+                    <Skeleton className='h-11 w-20' />
+                  ) : (
+                    <Paragraph>{formatAmount(poolBalance)} LP</Paragraph>
+                  )}
                 </div>
-              ))}
-            </div>
-          </div>
-          <div className='mt-4 flex flex-col gap-4 border-t border-neutral-700 pt-4'>
-            <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                {loadingPoolBalance ? (
-                  <Skeleton className='h-11 w-20' />
-                ) : (
-                  <Paragraph>{formatAmount(poolBalance)} LP</Paragraph>
-                )}
-              </div>
-              <div className='flex items-center justify-between'>
-                <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                {loadingGaugeBalance ? (
-                  <Skeleton className='h-11 w-20' />
-                ) : (
-                  <Paragraph>{formatAmount(gaugeBalance)} LP</Paragraph>
-                )}
+                <div className='flex items-center justify-between'>
+                  <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
+                  {loadingGaugeBalance ? (
+                    <Skeleton className='h-11 w-20' />
+                  ) : (
+                    <Paragraph>{formatAmount(gaugeBalance)} LP</Paragraph>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </Box>
         </div>
       </div>
     </div>

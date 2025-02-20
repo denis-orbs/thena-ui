@@ -43,6 +43,7 @@ export default function ChooseTokensSection({ pairType }) {
   })
 
   // for weighted pool
+  const totalToken = searchParams.get('totalToken')
   const dispatch = useDispatch()
   const { tokens: tokensPool } = useSelector(state => state.weightedPool || [])
   const updateTokensSelected = useCallback(
@@ -108,6 +109,8 @@ export default function ChooseTokensSection({ pairType }) {
     }
   }, [wrapperSelectRef, optionWidth])
 
+  console.log({ tokensPool, totalToken })
+
   return (
     <>
       <div className='flex flex-col gap-5 lg:gap-8'>
@@ -136,7 +139,6 @@ export default function ChooseTokensSection({ pairType }) {
             </div>
           </div>
         )}
-
         {firstAsset && secondAsset && (
           <>
             <Divider />
@@ -144,11 +146,14 @@ export default function ChooseTokensSection({ pairType }) {
             <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} />
           </>
         )}
-
         <div className='mt-5 flex gap-4 lg:mt-8'>
           <EmphasisButton onClick={() => updateSearchParams({ step: 1 })}>{t('Back')}</EmphasisButton>
           <PrimaryButton
-            disabled={pairType === PAIR_TYPES.WEIGHTED ? tokensPool?.length < 2 : !firstAsset || !secondAsset}
+            disabled={
+              pairType === PAIR_TYPES.WEIGHTED
+                ? (tokensPool || []).length !== Number(totalToken)
+                : !firstAsset || !secondAsset
+            }
             onClick={() => {
               if (pairType !== PAIR_TYPES.WEIGHTED) {
                 updateSearchParams(

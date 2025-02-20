@@ -14,6 +14,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 import { ChevronDownIcon } from '@/svgs'
@@ -81,6 +82,7 @@ function SelectToken({
     }
   }, [open])
 
+  const { width: screenWidth } = useWindowSize()
   const assets = useAssets()
   const customAssets = useCustomAssets()
 
@@ -209,32 +211,32 @@ function SelectToken({
               width:
                 /w-\d+/.test(listClassNames) || listClassNames?.includes('w-full') || listClassNames?.includes('w-[')
                   ? undefined
-                  : `${optionWidth || position.width}px`,
+                  : `${
+                      (optionWidth || position.width) > screenWidth ? screenWidth - 20 : optionWidth || position.width
+                    }px`,
             }}
           >
             <SearchInput setVal={setSearchText} val={searchText} className='mb-3' />
-            <div className='mt-4·max-h-[700px]·overflow-y-auto·scrollbar-thin·scrollbar-track-neutral-800·scrollbar-thumb-neutral-500·hover:scrollbar-thumb-neutral-400'>
-              <InfiniteScroll dataLength={filteredAssets.length}>
-                <div className='grid max-h-[400px] gap-3 overflow-y-auto sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3'>
-                  {filteredAssets?.map(item => (
-                    <RenderIfVisible key={item.address} root={rootRef.current}>
-                      <ItemToken
-                        item={item}
-                        setPopup={data => setOpen(data)}
-                        selectedAsset={selectedAsset}
-                        setSelectedAsset={asset => {
-                          setSelectedAsset(asset)
-                          setOpen(false)
-                        }}
-                        otherAsset={otherAsset}
-                        setOtherAsset={() => {}}
-                        className='min-w-40 flex-1 rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
-                      />
-                    </RenderIfVisible>
-                  ))}
-                </div>
-              </InfiniteScroll>
-            </div>
+            <InfiniteScroll dataLength={filteredAssets.length}>
+              <div className='grid max-h-[400px] gap-3 overflow-y-auto sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3'>
+                {filteredAssets?.map(item => (
+                  <RenderIfVisible key={item.address} root={rootRef.current}>
+                    <ItemToken
+                      item={item}
+                      setPopup={data => setOpen(data)}
+                      selectedAsset={selectedAsset}
+                      setSelectedAsset={asset => {
+                        setSelectedAsset(asset)
+                        setOpen(false)
+                      }}
+                      otherAsset={otherAsset}
+                      setOtherAsset={() => {}}
+                      className='min-w-40 flex-1 rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
+                    />
+                  </RenderIfVisible>
+                ))}
+              </div>
+            </InfiniteScroll>
           </div>,
           document.body,
         )}

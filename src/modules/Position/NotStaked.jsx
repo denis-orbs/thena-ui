@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 import { isAddress } from 'viem'
@@ -28,6 +29,7 @@ import RemovePositionModal from './RemovePositionModal'
 
 export default function NotStaked({ pool }) {
   const t = useTranslations()
+  const { push } = useRouter()
 
   const [popup, setPopup] = useState(false)
   const [addPopup, setAddPopup] = useState(false)
@@ -199,7 +201,10 @@ export default function NotStaked({ pool }) {
               {t('Remove')}
             </OutlinedButton>
             {version === 3 ? (
-              <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
+              <EmphasisButton
+                className='w-full'
+                onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${pool.address}`)}
+              >
                 {t('Add')}
               </EmphasisButton>
             ) : migrationOptions && migrationOptions.length > 0 ? (

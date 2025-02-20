@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -35,6 +36,7 @@ export default function Staked({ pool }) {
   const { onIchiClaim } = useIchiClaim()
   const { onGaugeHarvest } = useGaugeHarvest()
   const { addReward } = useFarmRewards()
+  const { push } = useRouter()
 
   useEffect(() => {
     if (!pool || pool.version === 2) return
@@ -250,7 +252,7 @@ export default function Staked({ pool }) {
                     },
                   }),
                 )
-                setAddPopup(true)
+                push(`/pools/add-liquidity?step=3&poolAddress=${pool.address}`)
               }}
             >
               {t('Add')}

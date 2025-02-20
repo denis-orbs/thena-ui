@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import React, { useMemo, useState } from 'react'
 
 import Modal from '@/components/modal'
@@ -9,7 +10,8 @@ import RemovePosition from './RemovePosition'
 import PoolTitle from '../PoolTitle'
 
 export default function ManagePositionModal({ popup, setPopup, strategy }) {
-  const [isRemove, setIsRemove] = useState(false)
+  const [isRemove, setIsRemove] = useState(true)
+  const { push } = useRouter()
 
   const manageSelections = useMemo(
     () => [
@@ -17,7 +19,7 @@ export default function ManagePositionModal({ popup, setPopup, strategy }) {
         label: 'Add',
         active: !isRemove,
         onClickHandler: () => {
-          setIsRemove(false)
+          push(`/pools/add-liquidity?step=3&poolAddress=${strategy.address}`)
         },
       },
       {
@@ -28,7 +30,7 @@ export default function ManagePositionModal({ popup, setPopup, strategy }) {
         },
       },
     ],
-    [isRemove],
+    [isRemove, push, strategy.address],
   )
 
   return (
@@ -43,15 +45,7 @@ export default function ManagePositionModal({ popup, setPopup, strategy }) {
         <PoolTitle strategy={strategy} />
         <Selection data={manageSelections} isFull />
       </div>
-      {isRemove ? (
-        <RemovePosition strategy={strategy} setPopup={setPopup} isManage />
-      ) : (
-        <>
-          <p className='px-3 pt-3 font-medium text-white lg:px-6'>Add Liquidity Options</p>
-          {/* TODO: Add Liquidity redirects to page */}
-          <></>
-        </>
-      )}
+      {isRemove ? <RemovePosition strategy={strategy} setPopup={setPopup} isManage /> : <></>}
     </Modal>
   )
 }

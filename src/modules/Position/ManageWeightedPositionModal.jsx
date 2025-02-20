@@ -1,21 +1,20 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import React, { useMemo, useState } from 'react'
 
-import AddLiquidityWeightedPool from '@/app/pools/add-liquidity/AddLiquidityWeightedPool-OLD'
 import { NeutralBadge } from '@/components/badges/Badge'
 import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
 import Modal from '@/components/modal'
 import Selection from '@/components/selection'
 import { TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
-import { useWindowSize } from '@/hooks/useWindowSize'
 
 import RemoveWeighted from './RemoveWeighted'
 
 export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
-  const [isRemove, setIsRemove] = useState(false)
-  const windowSize = useWindowSize()
+  const [isRemove, setIsRemove] = useState(true)
+  const { push } = useRouter()
 
   const manageSelections = useMemo(
     () => [
@@ -23,7 +22,7 @@ export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
         label: 'Add',
         active: !isRemove,
         onClickHandler: () => {
-          setIsRemove(false)
+          push(`/pools/add-liquidity/weighted/${pool.address}`)
         },
       },
       {
@@ -34,7 +33,7 @@ export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
         },
       },
     ],
-    [isRemove],
+    [isRemove, pool.address, push],
   )
 
   return (
@@ -81,18 +80,7 @@ export default function ManageWeightedPositionModal({ popup, setPopup, pool }) {
           <RemoveWeighted showTitle={false} pool={pool} onCancel={() => setPopup(false)} />
         </>
       ) : (
-        <>
-          <p className='px-3 pt-3 font-medium text-white lg:px-6'>Add Liquidity Options</p>
-          <AddLiquidityWeightedPool
-            pool={pool}
-            isStake={false}
-            showSidebar={false}
-            setCurrentStep={() => {}}
-            width={windowSize.width >= 1024 ? '570px' : windowSize.width * 0.9}
-            isModal
-            setIsOpen={setPopup}
-          />
-        </>
+        <></>
       )}
     </Modal>
   )

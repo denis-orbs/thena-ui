@@ -8,7 +8,7 @@ function PoolOverviewTable({ tokens, colors }) {
       tokens.map(token => ({
         amount: token.amount,
         weight: token.weight,
-        name: token.symbol,
+        symbol: token.symbol,
         valueUsd: Number(token.amount) * token.price,
       })),
     [tokens],
@@ -30,11 +30,11 @@ function PoolOverviewTable({ tokens, colors }) {
             <tr key={index}>
               <td className='flex items-center gap-2 py-2'>
                 <span className='h-3 w-3 rounded-full' style={{ backgroundColor: colors?.[index] }} />
-                {item.name}
+                {item.symbol}
               </td>
-              <td className='py-2'>{item.weight}</td>
-              <td className='py-2'>${formatAmount(item.valueUsd)}</td>
-              <td className='py-2'>{formatAmount(item.amount)}</td>
+              <td className='py-2'>{item.weight} %</td>
+              <td className='py-2'>$ {formatAmount(item.valueUsd)}</td>
+              <td className='py-2'>{`${formatAmount(item.amount)} ${item.symbol}`}</td>
             </tr>
           ))}
         </tbody>

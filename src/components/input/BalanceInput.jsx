@@ -88,7 +88,9 @@ function BalanceInput({
         <p className={cn('font-medium text-white', classNames?.title)}>{title}</p>
         {showPercent && <Tabs data={percents} />}
       </div>
-      <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
+      <div
+        className={cn('flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4', classNames?.input)}
+      >
         <div className='flex items-center justify-between gap-2'>
           <input
             type='number'

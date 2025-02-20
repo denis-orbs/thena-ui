@@ -26,6 +26,7 @@ import {
   getWeightedPoolVaultContract,
 } from '@/lib/contracts'
 import { getTokenInfo } from '@/lib/helper'
+import { warnToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, roundIfMoreThanDecimals, toWei, wrappedAddress } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -339,6 +340,11 @@ export const useWeightedPool = () => {
       setPending(true)
       const tokenContract = getERC20Contract(token.address, chainId)
 
+      if (fromWei(toWei(amountDeposit, token?.decimals), token?.decimals).gt(token?.balance)) {
+        warnToast('Insufficient [Asset] Balance', { symbol: token?.symbol })
+        return false
+      }
+
       const key = uuidv4()
       const approveFeeuuid = uuidv4()
       const joinPooluuid = uuidv4()
@@ -468,6 +474,18 @@ export const useWeightedPool = () => {
 
   const onAddLiquidityAllToken = useCallback(
     async (pool, tokensData, minBPTAmountOut, slippage, amountToWrap, withStake, onSuccess) => {
+      let isOutOfBalance = false
+      for (const token of tokensData) {
+        if (fromWei(toWei(token.amount, token?.decimals), token?.decimals).gt(token?.balance)) {
+          warnToast('Insufficient [Asset] Balance', { symbol: token?.symbol })
+          isOutOfBalance = true
+        }
+      }
+
+      if (isOutOfBalance) {
+        return false
+      }
+
       const poolId32 = pool.poolId
       const key = uuidv4()
       const addLiquidityuuid = uuidv4()

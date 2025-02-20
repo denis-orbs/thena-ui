@@ -25,7 +25,7 @@ function WeightedPoolLogo({ tokens, width, height, className, classNames = {} })
             <Image
               src={token.logoURI || UNKNOWN_LOGO}
               alt={`token-${index}`}
-              className='rounded-full border-2 border-[#1C2027] object-cover'
+              className={cn('rounded-full border-2 border-[#1C2027] object-cover', classNames.images)}
               width={width}
               height={height}
               data-tooltip-id={`tooltip-token-${token.address}-${index}`}
@@ -46,7 +46,7 @@ function WeightedPoolLogo({ tokens, width, height, className, classNames = {} })
             <Image
               src={token.logoURI || UNKNOWN_LOGO}
               alt={`token-${index}`}
-              className='rounded-full border-2 border-[#1C2027] object-cover'
+              className={cn('rounded-full border-2 border-[#1C2027] object-cover', classNames.images)}
               width={width}
               height={height}
               data-tooltip-id={`tooltip-token-${token.address}-${index}`}
