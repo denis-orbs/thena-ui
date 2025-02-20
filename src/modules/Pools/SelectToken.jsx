@@ -218,7 +218,10 @@ function SelectToken({
           >
             <SearchInput setVal={setSearchText} val={searchText} className='mb-3' />
             <InfiniteScroll dataLength={filteredAssets.length}>
-              <div className='grid max-h-[400px] gap-3 overflow-y-auto sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3'>
+              <div
+                className='grid max-h-[400px] gap-3 overflow-y-auto sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3'
+                ref={rootRef}
+              >
                 {filteredAssets?.map(item => (
                   <RenderIfVisible key={item.address} root={rootRef.current}>
                     <ItemToken

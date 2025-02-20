@@ -20,7 +20,6 @@ import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions
 import { getStrategy, useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
-import AddPositionModal from './AddPositionModal'
 import GaugeManageModal from './GaugeManageModal'
 import MigrateWarningModal from './MigrateWarningModal'
 import RemovePositionModal from './RemovePositionModal'
@@ -28,7 +27,6 @@ import RemovePositionModal from './RemovePositionModal'
 export default function Staked({ pool }) {
   const [removePopup, setRemovePopup] = useState(false)
   const [popup, setPopup] = useState(false)
-  const [addPopup, setAddPopup] = useState(false)
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
 
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
@@ -284,8 +282,6 @@ export default function Staked({ pool }) {
       />
 
       <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={pool} />
-
-      <AddPositionModal popup={addPopup} setPopup={setAddPopup} strategy={pool} />
     </Box>
   )
 }

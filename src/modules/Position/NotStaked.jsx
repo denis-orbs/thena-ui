@@ -21,7 +21,6 @@ import { formatAmount, fromWei, getDisplayedStrategy, ZERO_VALUE } from '@/lib/u
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
-import AddPositionModal from './AddPositionModal'
 import GaugeManageModal from './GaugeManageModal'
 import ManagePositionModal from './ManagePositionModal'
 import MigrateWarningModal from './MigrateWarningModal'
@@ -32,7 +31,6 @@ export default function NotStaked({ pool }) {
   const { push } = useRouter()
 
   const [popup, setPopup] = useState(false)
-  const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const [managePopup, setManagePopup] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGuageStake()
@@ -240,7 +238,6 @@ export default function NotStaked({ pool }) {
         onGaugeManage={handleStake}
         pending={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
       />
-      <AddPositionModal popup={addPopup} setPopup={setAddPopup} strategy={pool} />
       <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={pool} />
       <ManagePositionModal popup={managePopup} setPopup={setManagePopup} strategy={pool} />
     </Box>
