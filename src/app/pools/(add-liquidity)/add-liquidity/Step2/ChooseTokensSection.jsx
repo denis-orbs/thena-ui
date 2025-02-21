@@ -61,26 +61,6 @@ export default function ChooseTokensSection({ pairType }) {
     [dispatch],
   )
 
-  const updatePathname = useCallback(() => {
-    if (pair) {
-      updateSearchParams({
-        firstAddress: null,
-        secondAddress: null,
-        poolAddress: pair.address,
-      })
-    } else {
-      updateSearchParams({
-        firstAddress: wrappedAddress(firstAsset),
-        secondAddress: wrappedAddress(secondAsset),
-        poolAddress: null,
-      })
-    }
-  }, [firstAsset, pair, secondAsset, updateSearchParams])
-
-  useEffect(() => {
-    updatePathname()
-  }, [updatePathname])
-
   useEffect(() => {
     if (pairType !== PAIR_TYPES.WEIGHTED && assets.length) {
       if (!firstAsset && firstAddress) {
@@ -120,7 +100,10 @@ export default function ChooseTokensSection({ pairType }) {
             <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
               <SelectToken
                 otherAsset={secondAsset}
-                setSelectedAsset={asset => setFirstAsset(asset)}
+                setSelectedAsset={asset => {
+                  setFirstAsset(asset)
+                  updateSearchParams({ firstAddress: asset?.address })
+                }}
                 placeHolder={t('Select Token')}
                 selectedAsset={firstAsset}
                 dropdownAlign='left'
@@ -128,7 +111,10 @@ export default function ChooseTokensSection({ pairType }) {
               />
               <SelectToken
                 otherAsset={firstAsset}
-                setSelectedAsset={asset => setSecondAsset(asset)}
+                setSelectedAsset={asset => {
+                  setSecondAsset(asset)
+                  updateSearchParams({ secondAddress: asset?.address })
+                }}
                 placeHolder={t('Select Token')}
                 selectedAsset={secondAsset}
                 dropdownAlign='right'
@@ -162,6 +148,7 @@ export default function ChooseTokensSection({ pairType }) {
                           firstAddress: null,
                           secondAddress: null,
                           poolAddress: pair.address,
+                          pairType: null,
                         }
                       : {
                           poolAddress: null,

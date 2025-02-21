@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
@@ -7,6 +8,7 @@ import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { useFusionPairs } from '@/context/fusionsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useWeightedPools } from '@/hooks/weightedPool/useWeigtedPool'
+import { fetchV2SolidlyPairs } from '@/lib/api'
 import { ZERO_VALUE } from '@/lib/utils'
 
 import { useChainSettings } from '../settings/hooks'
@@ -133,12 +135,30 @@ export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, ve
   )
 }
 
+export const useGetV2SolidlyPairs = pairType => {
+  const { networkId } = useChainSettings()
+
+  const { data: v2Pairs = [] } = useQuery({
+    queryKey: ['v2-solidly-pairs'],
+    queryFn: () => fetchV2SolidlyPairs({ networkId }),
+    enabled: pairType === PAIR_TYPES.CLASSIC || pairType === PAIR_TYPES.STABLE,
+    retry: 3,
+    retryDelay: 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  })
+
+  return { v2Pairs }
+}
+
 export const usePairInfo = ({ token0Address, token1Address, type, poolAddress }) => {
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
+  const { v2Pairs } = useGetV2SolidlyPairs(type)
 
   return useMemo(() => {
-    const found = pairs.find(
+    const found = [...pairs, ...v2Pairs].find(
       pair =>
         (pair.address === poolAddress ||
           (pair.token0?.address === token0Address && pair.token1?.address === token1Address) ||
@@ -152,5 +172,5 @@ export const usePairInfo = ({ token0Address, token1Address, type, poolAddress })
       ...found,
       currentTick: Number(fusionPool?.globalState.tick || 0),
     }
-  }, [fusionPairs, pairs, poolAddress, token0Address, token1Address, type])
+  }, [fusionPairs, pairs, poolAddress, token0Address, token1Address, type, v2Pairs])
 }

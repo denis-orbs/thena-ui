@@ -170,11 +170,6 @@ export const WEIGHTED_MULTI_CHAIN_START_TIME = {
   [CHAIN_ID.TEST_BSC]: 1681862400,
 }
 
-export const NEW_POOLS = {
-  [CHAIN_ID.BSC]: ['0xdc6f26e5f8a7ea128a8a06ce07681b3cde5280f2', '0x01dd2d28eeb95d740acb5344b1e2c99b61cc3e64'],
-  [CHAIN_ID.OPBNB]: [],
-}
-
 export const STABLE_TOKENS = {
   [CHAIN_ID.BSC]: {
     BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',

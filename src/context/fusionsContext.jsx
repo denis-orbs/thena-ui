@@ -3,7 +3,6 @@ import React, { createContext, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { newPoolAbi, poolAbi } from '@/constant/abi/fusion'
-import { fetchTopPairs } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
 import { useChainSettings } from '@/state/settings/hooks'
 
@@ -65,31 +64,9 @@ function FusionsContextProvider({ children }) {
   return <FusionsContext.Provider value={data}>{children}</FusionsContext.Provider>
 }
 
-const useFusionPairsV2 = () => {
-  const { networkId } = useChainSettings()
-
-  const { data: pairs = [] } = useSWR(
-    ['pairs api version 2', networkId],
-    { fetcher: () => fetchTopPairs({ networkId, version: 2, type: 'CL' }) },
-    { refreshInterval: 60_000 },
-  )
-
-  const fusionPairs = useMemo(() => pairs.filter(ele => ele.isFusion), [pairs])
-
-  const { data } = useSWR(
-    fusionPairs.length > 0 ? ['fusion/pairs', networkId] : null,
-    () => fetchFusionInfo(fusionPairs, networkId),
-    {
-      refreshInterval: 60_000,
-    },
-  )
-
-  return data?.map(ele => ({ ...ele, version: 2 }))
-}
-
 const useFusionPairs = () => {
   const fusionPairs = useContext(FusionsContext)
   return fusionPairs
 }
 
-export { FusionsContextProvider, useFusionPairs, useFusionPairsV2 }
+export { FusionsContextProvider, useFusionPairs }
