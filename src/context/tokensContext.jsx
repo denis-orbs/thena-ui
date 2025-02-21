@@ -26,14 +26,14 @@ function TokensContextProvider({ children }) {
     networkId === ChainId.BSC ? ['bsc top tokens api', ChainId.BSC] : null,
     { fetcher: fetchTopTokens },
     {
-      refreshInterval: 60000,
+      refreshInterval: 300000,
     },
   )
   const { data: opTokens, isLoading: opLoading } = useSWR(
     networkId === ChainId.OPBNB ? ['op top tokens api', ChainId.OPBNB] : null,
     { fetcher: fetchTopTokens },
     {
-      refreshInterval: 60000,
+      refreshInterval: 300000,
     },
   )
 
@@ -57,21 +57,19 @@ const useTokens = () => {
     const { data, isLoading } = tokens[networkId]
     if (!assets.length || !data) {
       return {
-        pairs: [],
+        tokens: [],
         isLoading,
       }
     }
-    const result = data
-      .sort((a, b) => b.volume - a.volume)
-      .map(token => {
-        const found = assets.find(ele => ele.address.toLowerCase() === token.address)
-        return {
-          ...token,
-          symbol: token.symbol === 'WBNB' ? 'BNB' : found ? found.symbol : token.symbol,
-          name: found?.name || 'UNKNOWN',
-          logoURI: found?.logoURI || UNKNOWN_LOGO,
-        }
-      })
+    const result = data.map(token => {
+      const found = assets.find(ele => ele.address.toLowerCase() === token.address)
+      return {
+        ...token,
+        symbol: token.symbol === 'WBNB' ? 'BNB' : found ? found.symbol : token.symbol,
+        name: found?.name || 'UNKNOWN',
+        logoURI: found?.logoURI || UNKNOWN_LOGO,
+      }
+    })
     return {
       tokens: result,
       isLoading,
