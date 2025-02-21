@@ -44,8 +44,8 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
   return (
     <div className={cn('flex items-center justify-end', className)}>
       <div className='mb-4 flex flex-col gap-3' ref={dropdownRef}>
-        <p className='flex items-center justify-end gap-1'>
-          <Paragraph>{t('Slippage Tolerance')}</Paragraph>
+        <p className='flex items-center justify-end gap-2'>
+          <Paragraph className='font-medium'>{t('Slippage Tolerance')}</Paragraph>
           <SettingsIcon
             className='h-6 w-6 cursor-pointer'
             onClick={() => {

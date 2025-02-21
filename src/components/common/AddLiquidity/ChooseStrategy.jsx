@@ -162,6 +162,9 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
     },
   )
 
+  const hasFarming = useMemo(() => pair.subpools.some(pool => pool.title === 'CL_Farming'), [pair.subpools])
+  const hasSwapFee = useMemo(() => pair.subpools.some(pool => pool.title === 'CL_SwapFee'), [pair.subpools])
+  const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
   const price = useMemo(() => {
     if (!mintInfo.price) return
     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
@@ -237,8 +240,12 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
     }
 
     if (pair?.subpools && (!strategy || strategy?.isDefault)) {
-      let _strategy = pair.subpools.find(item => !MANUAL_TYPES.includes(item.title))
-      if (!_strategy) _strategy = pair.subpools.find(item => MANUAL_TYPES.includes(item.title))
+      const priority = {
+        CL_Farming: 1,
+        CL_SwapFee: 2,
+      }
+      let _strategy = pair.subpools.sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3)).at(0)
+      if (!_strategy) _strategy = pair.subpools.find(item => !MANUAL_TYPES.includes(item.title))
       handleChooseStrategy(_strategy ?? defaultSwapFees)
     }
   }, [firstAsset, handleChooseStrategy, pair?.subpools, poolAddress, secondAsset, strategy])
@@ -373,64 +380,62 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
               </div>
             )}
 
-            {!mintInfo.noLiquidity && (
-              <>
-                <Toggle
-                  checked={!strategy?.isFarming}
-                  onChange={() => {
-                    if (strategy) {
-                      const _strategy = pair?.subpools.find(item =>
-                        strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
-                      )
-                      handleChooseStrategy(_strategy ?? defaultSwapFees)
-                    }
-                  }}
-                  label='Earn Fees'
-                  className={cn(firstAsset && secondAsset ? '' : 'hidden')}
-                />
-
-                <article
-                  className={cn(
-                    'flex items-center justify-between rounded-xl bg-primary-950 p-6 font-medium',
-                    firstAsset && secondAsset ? '' : 'hidden',
-                  )}
-                >
-                  <div className='flex flex-col gap-1'>
-                    <Paragraph>{strategy?.title === 'CL_SwapFee' ? 'Earn Fees' : 'Earn THE'}</Paragraph>
-                    <div className='flex flex-wrap gap-2'>
-                      <div className='flex items-center gap-1'>
-                        <Paragraph className=''>{t('TVL')}:</Paragraph>
-                        <TextHeading className=''>${formatAmount(strategy?.tvl)}</TextHeading>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className='flex flex-wrap justify-end gap-2'>
-                    <TextHeading className='text-center font-archia'>
-                      <Paragraph>Estimate APR</Paragraph>
-                      <p className='text-xl font-semibold text-primary-600'>{formatAmount(mintInfo.estimateAPR)}%</p>
-                    </TextHeading>
-
-                    {strategy?.title === 'CL_SwapFee' ? (
-                      <IconGroup
-                        className='-space-x-2'
-                        classNames={{
-                          image: 'outline-2 w-7 h-7',
-                        }}
-                        logo1={firstAsset?.logoURI}
-                        logo2={secondAsset?.logoURI}
-                      />
-                    ) : (
-                      <CircleImage
-                        className={cn('size-7')}
-                        src='https://cdn.thena.fi/assets/THE.png'
-                        alt='THENA First Logo'
-                      />
-                    )}
-                  </div>
-                </article>
-              </>
+            {hasSwapFee && hasFarming && (
+              <Toggle
+                checked={!strategy?.isFarming}
+                onChange={() => {
+                  if (strategy) {
+                    const _strategy = pair?.subpools.find(item =>
+                      strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
+                    )
+                    handleChooseStrategy(_strategy ?? defaultSwapFees)
+                  }
+                }}
+                label='Earn Fees'
+                className={cn(showToggle ? '' : 'hidden')}
+              />
             )}
+
+            <article
+              className={cn(
+                'flex items-center justify-between rounded-xl bg-primary-950 p-6 font-medium',
+                showToggle ? '' : 'hidden',
+              )}
+            >
+              <div className='flex flex-col gap-1'>
+                <Paragraph>{strategy?.title === 'CL_SwapFee' ? 'Earn Fees' : 'Earn THE'}</Paragraph>
+                <div className='flex flex-wrap gap-2'>
+                  <div className='flex items-center gap-1'>
+                    <Paragraph className=''>{t('TVL')}:</Paragraph>
+                    <TextHeading className=''>${formatAmount(strategy?.tvl)}</TextHeading>
+                  </div>
+                </div>
+              </div>
+
+              <div className='flex flex-wrap justify-end gap-2'>
+                <TextHeading className='text-center font-archia'>
+                  <Paragraph>Estimate APR</Paragraph>
+                  <p className='text-xl font-semibold text-primary-600'>{formatAmount(mintInfo.estimateAPR)}%</p>
+                </TextHeading>
+
+                {strategy?.title === 'CL_SwapFee' ? (
+                  <IconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'outline-2 w-7 h-7',
+                    }}
+                    logo1={firstAsset?.logoURI}
+                    logo2={secondAsset?.logoURI}
+                  />
+                ) : (
+                  <CircleImage
+                    className={cn('size-7')}
+                    src='https://cdn.thena.fi/assets/THE.png'
+                    alt='THENA First Logo'
+                  />
+                )}
+              </div>
+            </article>
           </div>
         )}
 
