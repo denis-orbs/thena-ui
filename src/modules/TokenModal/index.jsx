@@ -13,78 +13,13 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import RenderIfVisible from '@/components/virtualList'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
+import { useTokens } from '@/context/tokensContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
+import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 
 import { ItemToken } from './ItemToken'
-
-const TRENDING_TOKENS = [
-  {
-    address: 'BNB',
-    name: 'Binance Coin',
-    symbol: 'BNB',
-    decimals: 18,
-    logoURI: 'https://cdn.thena.fi/assets/WBNB.png',
-    chainId: 56,
-  },
-  {
-    name: 'BTCB Token',
-    symbol: 'BTCB',
-    decimals: 18,
-    chainId: 56,
-    address: '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c',
-    logoURI: 'https://cdn.thena.fi/assets/BTCB.png',
-  },
-  {
-    name: 'BUSD Token',
-    symbol: 'BUSD',
-    decimals: 18,
-    chainId: 56,
-    address: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-    logoURI: 'https://cdn.thena.fi/assets/BUSD.png',
-  },
-  {
-    name: 'Ethereum Token',
-    symbol: 'ETH',
-    decimals: 18,
-    chainId: 56,
-    address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
-    logoURI: 'https://cdn.thena.fi/assets/ETH.png',
-  },
-  {
-    name: 'Frax',
-    symbol: 'FRAX',
-    decimals: 18,
-    chainId: 56,
-    address: '0x90c97f71e18723b0cf0dfa30ee176ab653e89f40',
-    logoURI: 'https://cdn.thena.fi/assets/FRAX.png',
-  },
-  {
-    name: 'THENA',
-    symbol: 'THE',
-    decimals: 18,
-    chainId: 56,
-    address: '0xf4c8e32eadec4bfe97e0f595add0f4450a863a11',
-    logoURI: 'https://cdn.thena.fi/assets/THE.png',
-  },
-  {
-    name: 'USD Coin',
-    symbol: 'USDC',
-    decimals: 18,
-    chainId: 56,
-    address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
-    logoURI: 'https://cdn.thena.fi/assets/USDC.png',
-  },
-  {
-    name: 'Tether USD',
-    symbol: 'USDT',
-    decimals: 18,
-    chainId: 56,
-    address: '0x55d398326f99059ff775485246999027b3197955',
-    logoURI: 'https://cdn.thena.fi/assets/USDT.png',
-  },
-]
 
 function TokenModal({
   popup,
@@ -98,6 +33,7 @@ function TokenModal({
   const t = useTranslations()
   const { account, chainId } = useWallet()
   const rootRef = useRef(null)
+  const { tokens } = useTokens()
 
   const baseAssets = useAssets()
   const [customToken, setCustomToken] = useState()
@@ -105,6 +41,8 @@ function TokenModal({
 
   const search = useDebounce(searchText)
   const { localTokens } = useLocalTokens()
+
+  const trendingTokens = useMemo(() => (!tokens || tokens.length < 8 ? tokens : tokens.slice(0, 8)), [tokens])
 
   const filteredAssets = useMemo(() => {
     const tokenList = localTokens.concat(baseAssets)
@@ -188,32 +126,38 @@ function TokenModal({
           placeholder='Search by Name, Symbol or Address'
           autoFocus
         />
-        <Paragraph>{t('Trending Assets')}</Paragraph>
-        <div className='flex flex-wrap gap-2'>
-          {TRENDING_TOKENS.map((item, idx) => (
-            <div
-              key={idx}
-              className='flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-800 p-3'
-              onClick={() => {
-                if (otherAsset && otherAsset.address === item.address) {
-                  const temp = selectedAsset
-                  setSelectedAsset(otherAsset)
-                  setOtherAsset(temp)
-                } else {
-                  setSelectedAsset(item)
-                }
-                onAssetSelect()
-                setPopup(false)
-              }}
-            >
-              <CircleImage src={item.logoURI} className='h-8 w-8' alt='thena token' />
-              <div>
-                <TextHeading className='text-sm'>{item.symbol}</TextHeading>
-                {/* <TextSubHeading>{formatAmount(item.balance)}</TextSubHeading> */}
-              </div>
+        {trendingTokens.length > 0 && (
+          <>
+            <Paragraph>{t('Trending Assets')}</Paragraph>
+            <div className='grid grid-cols-4 gap-2'>
+              {trendingTokens.map((item, idx) => (
+                <div
+                  key={idx}
+                  className={cn(
+                    'flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-800 p-3 hover:bg-neutral-600',
+                    item.symbol.length > 5 && 'gap-1.5 px-2',
+                  )}
+                  onClick={() => {
+                    if (otherAsset && otherAsset.address === item.address) {
+                      const temp = selectedAsset
+                      setSelectedAsset(otherAsset)
+                      setOtherAsset(temp)
+                    } else {
+                      setSelectedAsset(item)
+                    }
+                    onAssetSelect()
+                    setPopup(false)
+                  }}
+                >
+                  <CircleImage src={item.logoURI} className='h-8 w-8' alt={item.symbol} />
+                  <div>
+                    <TextHeading className='text-sm'>{item.symbol}</TextHeading>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
       </div>
 
       <div className='h-px w-full border border-neutral-700' />
