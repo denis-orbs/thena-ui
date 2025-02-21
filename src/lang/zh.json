@@ -1205,7 +1205,7 @@
   "Available Pools": "可用的池",
   "Create New Pool": "创建新池",
   "New Deposit": "新存款",
-  "New Deposit description": "填写存款金额。我们根据您的价格范围计算存款金额，以匹配池中的现有流动性。没有流动性的池需要初始池价格。",
+  "New Deposit description": "填写存款金额。第一个代币与第二个代币之间的比例将定义初始化价格。请选择正确的比例，以避免在初始化过程中资金损失。如果您需要帮助，请在我们的 Discord 中寻求支持。",
   "Deposit Single Token": "Deposit Single Token",
   "Deposit All Tokens": "Deposit All Tokens",
   "Weighted Pools": "Weighted Pools",

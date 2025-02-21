@@ -1204,7 +1204,7 @@
   "Available Pools": "Available Pools",
   "Create New Pool": "Create New Pool",
   "New Deposit": "New Deposit",
-  "New Deposit description": "Fill-in the deposit amounts. We calculate the deposit amounts to match the existing liquidity in the pool with your price range. Pools without liquidity require an initial pool price.",
+  "New Deposit description": "Fill-in the deposit amounts. The ratio between the first token and the second token will define the initialization price. Please select the correct ratio to eliminate the risk to lose funds during the initialization process. If you need help, ask support in our Discord.",
   "Deposit Single Token": "Deposit Single Token",
   "Deposit All Tokens": "Deposit All Tokens",
   "Weighted Pools": "Weighted Pools",

@@ -99,14 +99,24 @@ export const useAddGamma = () => {
       }
 
       if (baseTokenToApprove.gt(0)) {
-        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [gammaPairAddress, baseTokenToApprove]))) {
+        if (
+          !(await writeTxn(key, approve1uuid, firstContract, 'approve', [
+            gammaPairAddress,
+            toWei(amountA.toExact(), baseCurrency.decimals),
+          ]))
+        ) {
           setPending(false)
           return
         }
       }
 
       if (quoteTokenToApprove.gt(0)) {
-        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [gammaPairAddress, quoteTokenToApprove]))) {
+        if (
+          !(await writeTxn(key, approve2uuid, secondContract, 'approve', [
+            gammaPairAddress,
+            toWei(amountB.toExact(), quoteCurrency.decimals),
+          ]))
+        ) {
           setPending(false)
           return
         }
@@ -457,7 +467,7 @@ export const useGammaMigration = () => {
         const amountToApproved = swapFromAmount.minus(allowanceSwap)
 
         if (amountToApproved.gt(0)) {
-          const tx = await writeTxn(key, approveSwapId, swapTokenContract, 'approve', [routerAddress, amountToApproved])
+          const tx = await writeTxn(key, approveSwapId, swapTokenContract, 'approve', [routerAddress, swapFromAmount])
           if (!tx) {
             setPending(false)
             return
@@ -514,7 +524,7 @@ export const useGammaMigration = () => {
       const amount1ToApproved = amountA.minus(baseAllowance)
       if (amount1ToApproved.lte(0)) {
         updateTxn({ key, uuid: approve1Id, status: TXN_STATUS.SUCCESS, hash: '' })
-      } else if (!(await writeTxn(key, approve1Id, firstContract, 'approve', [gammaAddressV3, amount1ToApproved]))) {
+      } else if (!(await writeTxn(key, approve1Id, firstContract, 'approve', [gammaAddressV3, amountA]))) {
         setPending(false)
         return
       }
@@ -524,7 +534,7 @@ export const useGammaMigration = () => {
       const amount2ToApproved = amountB.minus(quoteAllowance)
       if (amount2ToApproved.lte(0)) {
         updateTxn({ key, uuid: approve2Id, status: TXN_STATUS.SUCCESS, hash: '' })
-      } else if (!(await writeTxn(key, approve2Id, secondContract, 'approve', [gammaAddressV3, amount2ToApproved]))) {
+      } else if (!(await writeTxn(key, approve2Id, secondContract, 'approve', [gammaAddressV3, amountB]))) {
         setPending(false)
         return
       }
