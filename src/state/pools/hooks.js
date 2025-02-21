@@ -137,11 +137,12 @@ export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, ve
 
 export const useGetV2SolidlyPairs = pairType => {
   const { networkId } = useChainSettings()
+  const pools = usePools()
 
-  const { data: v2Pairs = [] } = useQuery({
+  const { data: v2PairsRes = [] } = useQuery({
     queryKey: ['v2-solidly-pairs'],
     queryFn: () => fetchV2SolidlyPairs({ networkId }),
-    enabled: pairType === PAIR_TYPES.CLASSIC || pairType === PAIR_TYPES.STABLE,
+    enabled: [PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pairType),
     retry: 3,
     retryDelay: 1000,
     refetchOnWindowFocus: false,
@@ -149,21 +150,39 @@ export const useGetV2SolidlyPairs = pairType => {
     refetchOnMount: false,
   })
 
+  const v2Pairs = useMemo(
+    () =>
+      v2PairsRes.map(pair => ({
+        ...pair,
+        apr: '0%',
+        subpools: pools.filter(pool => pool.basePool.toLowerCase() === pair.address.toLowerCase()),
+      })),
+    [pools, v2PairsRes],
+  )
+
   return { v2Pairs }
 }
 
-export const usePairInfo = ({ token0Address, token1Address, type, poolAddress }) => {
+export const usePairInfo = ({
+  token0Address = '',
+  token1Address = '',
+  type = PAIR_TYPES.CLASSIC,
+  poolAddress = '',
+}) => {
   const { pairs } = usePairs()
   const fusionPairs = useFusionPairs()
-  const { v2Pairs } = useGetV2SolidlyPairs(type)
+  const { v2Pairs } = useGetV2SolidlyPairs(type || PAIR_TYPES.CLASSIC)
 
   return useMemo(() => {
+    if (type === PAIR_TYPES.WEIGHTED) {
+      return
+    }
     const found = [...pairs, ...v2Pairs].find(
       pair =>
-        (pair.address === poolAddress ||
-          (pair.token0?.address === token0Address && pair.token1?.address === token1Address) ||
+        pair.address === poolAddress ||
+        (((pair.token0?.address === token0Address && pair.token1?.address === token1Address) ||
           (pair.token0?.address === token1Address && pair.token1?.address === token0Address)) &&
-        pair.type === type,
+          pair.type === type),
     )
     if (!found) return
 

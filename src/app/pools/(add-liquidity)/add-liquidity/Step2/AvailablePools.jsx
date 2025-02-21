@@ -6,6 +6,7 @@ import { Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { wrappedAddress } from '@/lib/utils'
+import { usePairInfo } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
 const sortOptions = [
@@ -42,8 +43,14 @@ const sortOptions = [
 ]
 
 function AvailablePools({ tokens = [], pairType, setFoundedPool }) {
-  const { weightedPools, pairs } = usePairs()
+  const { weightedPools } = usePairs()
   const t = useTranslations()
+
+  const foundedPair = usePairInfo({
+    token0Address: wrappedAddress(tokens[0]),
+    token1Address: wrappedAddress(tokens[1]),
+    type: pairType,
+  })
 
   const availablePools = useMemo(() => {
     if (pairType === PAIR_TYPES.WEIGHTED) {
@@ -52,29 +59,25 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool }) {
       )
     }
 
-    return pairs.filter(pair => {
-      const token0Address = wrappedAddress(tokens[0])
-      const token1Address = wrappedAddress(tokens[1])
-
-      return (
-        pair.type === pairType &&
-        ((pair.token0.address === token0Address && pair.token1.address === token1Address) ||
-          (pair.token0.address === token1Address && pair.token1.address === token0Address))
-      )
-    })
-  }, [pairType, pairs, weightedPools, tokens])
+    return []
+  }, [pairType, weightedPools, tokens])
 
   useEffect(() => {
-    if (availablePools.length === 1 && pairType !== PAIR_TYPES.WEIGHTED && setFoundedPool) {
-      setFoundedPool(availablePools[0])
+    if (foundedPair) {
+      setFoundedPool(foundedPair)
     }
-  }, [availablePools, pairType, setFoundedPool])
+  }, [foundedPair, setFoundedPool])
 
   return (
     <>
-      {availablePools.length > 0 ? (
+      {availablePools.length > 0 || foundedPair ? (
         <div className='w-full'>
-          <NewListings defaultShow pools={availablePools} title={t('Available Pools')} sortOptions={sortOptions} />
+          <NewListings
+            defaultShow
+            pools={pairType === PAIR_TYPES.WEIGHTED ? availablePools : foundedPair ? [foundedPair] : []}
+            title={t('Available Pools')}
+            sortOptions={sortOptions}
+          />
         </div>
       ) : (
         <>

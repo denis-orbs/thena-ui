@@ -11,10 +11,8 @@ import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { getTokenInfo } from '@/lib/helper'
-import { wrappedAddress } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
 import ChoosePoolTokens from '@/modules/WeightedPool/ChoosePoolTokens'
-import { usePairInfo } from '@/state/pools/hooks'
 import { tokensSelected } from '@/state/weightedPool/action'
 
 import AvailablePools from './AvailablePools'
@@ -27,6 +25,7 @@ export default function ChooseTokensSection({ pairType }) {
   const [firstAsset, setFirstAsset] = useState(null)
   const [secondAsset, setSecondAsset] = useState(null)
   const [optionWidth, setOptionWidth] = useState(0)
+  const [foundedPair, setFoundedPair] = useState(null)
 
   const t = useTranslations()
   const assets = useAssets()
@@ -35,12 +34,6 @@ export default function ChooseTokensSection({ pairType }) {
 
   const firstAddress = searchParams.get('firstAddress')
   const secondAddress = searchParams.get('secondAddress')
-
-  const pair = usePairInfo({
-    token0Address: wrappedAddress(firstAsset),
-    token1Address: wrappedAddress(secondAsset),
-    type: pairType,
-  })
 
   // for weighted pool
   const totalToken = searchParams.get('totalToken')
@@ -127,7 +120,7 @@ export default function ChooseTokensSection({ pairType }) {
           <>
             <Divider />
 
-            <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} />
+            <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} setFoundedPool={setFoundedPair} />
           </>
         )}
         <div className='mt-5 flex gap-4 lg:mt-8'>
@@ -143,11 +136,11 @@ export default function ChooseTokensSection({ pairType }) {
                 updateSearchParams(
                   {
                     step: 3,
-                    ...(pair
+                    ...(foundedPair
                       ? {
                           firstAddress: null,
                           secondAddress: null,
-                          poolAddress: pair.address,
+                          poolAddress: foundedPair.address,
                           pairType: null,
                         }
                       : {
@@ -161,7 +154,7 @@ export default function ChooseTokensSection({ pairType }) {
               }
             }}
           >
-            {pairType !== PAIR_TYPES.WEIGHTED && pair ? t('Add to Pool') : t('Create New Pool')}
+            {pairType !== PAIR_TYPES.WEIGHTED && foundedPair ? t('Add to Pool') : t('Create New Pool')}
           </PrimaryButton>
         </div>
       </div>

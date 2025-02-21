@@ -1,11 +1,12 @@
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 
 import Loading from '@/app/loading'
 import { EmphasisButton, TextButton } from '@/components/buttons/Button'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
+import { usePairInfo } from '@/state/pools/hooks'
 
 import AddLiquidityV1Pool from './AddLiquidityV1Pool'
 import AddLiquidityWeightedPool from './AddLiquidityWeightedPool'
@@ -16,7 +17,7 @@ export default function Step3({ setStep }) {
   const router = useRouter()
 
   const updateSearchParams = useUpdateSearchParams()
-  const { pairs, isLoading: isLoadingPairs } = usePairs()
+  const { isLoading: isLoadingPairs } = usePairs()
 
   const poolAddress = searchParams.get('poolAddress')
 
@@ -26,14 +27,10 @@ export default function Step3({ setStep }) {
     }
   }, [poolAddress, updateSearchParams])
 
-  // NOTE: Pair might be null if the pool address is not found
-  const pair = useMemo(() => {
-    if (poolAddress || !isLoadingPairs) {
-      return pairs.find(item => item.address === poolAddress)
-    }
-
-    return null
-  }, [poolAddress, pairs, isLoadingPairs])
+  const pair = usePairInfo({
+    poolAddress,
+    type: searchParams.get('pairType'),
+  })
 
   const pairType = pair?.type ?? searchParams.get('pairType')
 

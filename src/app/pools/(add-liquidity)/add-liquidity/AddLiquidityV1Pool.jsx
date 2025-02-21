@@ -31,7 +31,11 @@ function AddLiquidityV1Pool({ pair }) {
   const firstAsset = useGetAsset(firstAddress)
   const secondAsset = useGetAsset(secondAddress)
 
-  const pool = useMemo(() => (pair?.subpools ?? []).find(item => item.version === 3), [pair])
+  // If there is only poolv2, then use it
+  const pool = useMemo(() => {
+    if (!pair?.subpools?.length) return undefined
+    return pair.subpools.length > 1 ? pair.subpools.find(item => item.version === 3) : pair.subpools[0]
+  }, [pair])
 
   const PageTitleSection = useMemo(() => {
     const renderTitle = (Icon, text) => (
