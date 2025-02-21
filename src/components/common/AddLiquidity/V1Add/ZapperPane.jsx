@@ -108,9 +108,9 @@ export function ZapperPane({ asset0, asset1, slippage = 0.5, strategy }) {
         tokenDeposit,
         tokenIn,
         amount: amountIn,
-        isFarming: strategy.isFarming,
         pairAddress,
         zapSwapSlippage,
+        gammaSlippage: Math.floor(slippage * 100),
         odosParams: bestQuote,
       })
     }

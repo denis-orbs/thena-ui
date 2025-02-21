@@ -11,6 +11,7 @@ import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import farmCenterAbi from './farmCenter.json'
 import algebraPoolV3Abi from './fusion/AlgebraPoolV3.json'
+import gammaZapAbi from './gammaZap.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
 import incentiveMakerAbi from './incentiveMaker.json'
@@ -68,6 +69,7 @@ export {
   ERC20Abi,
   extraRewarderAbi,
   farmCenterAbi,
+  gammaZapAbi,
   gaugeAbi,
   globalFactoryAbi,
   hindiNumeralAbi,

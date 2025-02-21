@@ -8,16 +8,14 @@ import { v4 as uuidv4 } from 'uuid'
 import { getAddress, maxUint256 } from 'viem'
 
 import { PAIR_TYPES, TXN_STATUS } from '@/constant'
-import { vammZapAbi } from '@/constant/abi'
+import { gammaZapAbi, vammZapAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { readCall, waitCall } from '@/lib/contractActions'
 import {
   getERC20Contract,
   getFarmingCenterContract,
-  getGammaHyperVisorContract,
   getGaugeContract,
   getIncentiveContract,
-  getMultiFeeDistributionContract,
   getPositionManagerContract,
   getWBNBContract,
 } from '@/lib/contracts'
@@ -370,7 +368,7 @@ export const useV1Zapper = () => {
 
 export const useGammaZapper = () => {
   const t = useTranslations()
-  const { startTxn, writeTxn, endTxn, updateTxn } = useTxn()
+  const { startTxn, writeTxn, endTxn } = useTxn()
 
   const [pending, setPending] = useState(false)
   const { account, chainId } = useWallet()
@@ -381,7 +379,7 @@ export const useGammaZapper = () => {
    * @Param odosParams:   Amount to deposit (must have in case of deposit token that is not in Pair)
    * */
   const onAddLiquidity = useCallback(
-    async ({ tokenDeposit, tokenIn, amount, isFarming, pairAddress, zapSwapSlippage, odosParams }) => {
+    async ({ tokenDeposit, tokenIn, amount, pairAddress, zapSwapSlippage, gammaSlippage, odosParams }) => {
       try {
         if (!account) {
           throw new Error('Please connect your wallet')
@@ -392,8 +390,6 @@ export const useGammaZapper = () => {
         const key = uuidv4()
         const approveId = uuidv4()
         const addLiquidityId = uuidv4()
-        const approveStakeId = uuidv4()
-        const stakeId = uuidv4()
         const transactions = {}
 
         const _tokenDeposit = tokenDeposit.address === 'BNB' ? WBNB[chainId] : tokenDeposit
@@ -429,20 +425,6 @@ export const useGammaZapper = () => {
           hash: null,
         }
 
-        if (isFarming) {
-          transactions[approveStakeId] = {
-            desc: `${t('Approve')} LP`,
-            status: TXN_STATUS.START,
-            hash: null,
-          }
-
-          transactions[stakeId] = {
-            desc: `${t('Stake')} LP`,
-            status: TXN_STATUS.START,
-            hash: null,
-          }
-        }
-
         startTxn({ key, transactions, title: t('Add Liquidity') })
         setPending(true)
 
@@ -471,10 +453,10 @@ export const useGammaZapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: vammZapAbi,
+              abi: gammaZapAbi,
             },
             'zapInOdos',
-            [tokenIn.address, zapSwapSlippage, pairAddress, ...odosParams],
+            [tokenIn.address, zapSwapSlippage, pairAddress, ...odosParams, gammaSlippage, true],
           )
         } else {
           txhash = await writeTxn(
@@ -482,45 +464,16 @@ export const useGammaZapper = () => {
             addLiquidityId,
             {
               address: zapAddress,
-              abi: vammZapAbi,
+              abi: gammaZapAbi,
             },
             'zapIn',
-            [_tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress],
+            [_tokenDeposit.address, amountIn, zapSwapSlippage, pairAddress, gammaSlippage, true],
           )
         }
 
         if (!txhash) {
           setPending(false)
           return
-        }
-
-        if (isFarming) {
-          const gammaHyper = getGammaHyperVisorContract(pairAddress, chainId, 3)
-
-          const receiver = await readCall(gammaHyper, 'receiver', [], chainId)
-          const allowanceLp = await readCall(gammaHyper, 'allowance', [account, receiver], chainId)
-          const balance = await readCall(gammaHyper, 'balanceOf', [account], chainId)
-          const isApproved2 = BigNumber(balance).lte(allowanceLp)
-
-          if (!isApproved2) {
-            const txHash = await writeTxn(key, approveStakeId, gammaHyper, 'approve', [receiver, balance])
-            if (!txHash) {
-              setPending(false)
-              return
-            }
-            updateTxn({
-              key,
-              uuid: approveStakeId,
-              status: TXN_STATUS.SUCCESS,
-              hash: txHash,
-            })
-          }
-
-          const multiFeeDistributionContract = getMultiFeeDistributionContract(receiver, chainId)
-          if (!(await writeTxn(key, stakeId, multiFeeDistributionContract, 'stakeAll', [account]))) {
-            setPending(false)
-            return
-          }
         }
 
         endTxn({ key, final: 'Liquidity Add Successful' })
@@ -530,7 +483,7 @@ export const useGammaZapper = () => {
         throw e
       }
     },
-    [account, chainId, startTxn, t, endTxn, writeTxn, updateTxn],
+    [account, chainId, startTxn, t, endTxn, writeTxn],
   )
 
   return { onAddLiquidity, pending }

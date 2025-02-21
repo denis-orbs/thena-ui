@@ -106,7 +106,7 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x8b0f96e4dd9a9a30846dee60e11da312fde2dfcb',
   },
   gammaZap: {
-    [CHAIN_ID.BSC]: '0x8f48940905b47b14d0d3e7a4808d71c5b9b5e62b',
+    [CHAIN_ID.BSC]: '0x0f32300807f24c00d6a15886b0944cd934cf7f5e',
   },
   gammaUniProxy: {
     [CHAIN_ID.BSC]: '0xF75c017E3b023a593505e281b565ED35Cc120efa',
