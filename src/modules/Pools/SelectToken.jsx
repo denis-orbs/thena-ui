@@ -1,20 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
-import InfiniteScroll from 'react-infinite-scroll-component'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { formatUnits, getAddress, isAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import SearchInput from '@/components/input/SearchInput'
-import RenderIfVisible from '@/components/virtualList'
 import { UNKNOWN_LOGO } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
-import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
 import { ChevronDownIcon } from '@/svgs'
@@ -28,7 +24,6 @@ function SelectToken({
   selectedAsset,
   setSelectedAsset,
   placeHolder,
-  isLocale = true,
   otherAsset,
   prefixClass,
   dropdownAlign = 'left',
@@ -37,7 +32,6 @@ function SelectToken({
 }) {
   const { account, chainId } = useWallet()
   const [open, setOpen] = useState(false)
-  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 })
   const wrapperRef = useRef(null)
   const dropdownRef = useRef(null)
   const rootRef = useRef(null)
@@ -59,30 +53,6 @@ function SelectToken({
     }
   }, [])
 
-  useEffect(() => {
-    function updatePosition() {
-      if (!wrapperRef.current) return
-      const rect = wrapperRef.current.getBoundingClientRect()
-      setPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-      })
-    }
-
-    if (open) {
-      updatePosition()
-      window.addEventListener('resize', updatePosition)
-      window.addEventListener('scroll', updatePosition, true)
-    }
-
-    return () => {
-      window.removeEventListener('resize', updatePosition)
-      window.removeEventListener('scroll', updatePosition, true)
-    }
-  }, [open])
-
-  const { width: screenWidth } = useWindowSize()
   const assets = useAssets()
   const customAssets = useCustomAssets()
 
@@ -158,24 +128,82 @@ function SelectToken({
     }
   }, [isSuccess, newToken, search, customToken?.address, chainId])
 
+  // Start Intersection Observer
+  const [visibleItems, setVisibleItems] = useState(20)
+  const observerRef = useRef(null)
+  const lastItemRef = useRef(null)
+
+  const displayedAssets = useMemo(() => filteredAssets.slice(0, visibleItems), [filteredAssets, visibleItems])
+
+  const loadMore = useCallback(() => {
+    setVisibleItems(prev => prev + 20)
+  }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        const target = entries[0]
+        if (target.isIntersecting && visibleItems < filteredAssets.length) {
+          loadMore()
+        }
+      },
+      {
+        rootMargin: '100px',
+        threshold: 0.1,
+      },
+    )
+
+    if (lastItemRef.current) {
+      observer.observe(lastItemRef.current)
+    }
+
+    observerRef.current = observer
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+    }
+  }, [loadMore, visibleItems, filteredAssets.length])
+
+  const setLastItemRef = useCallback(element => {
+    lastItemRef.current = element
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+      if (element) {
+        observerRef.current.observe(element)
+      }
+    }
+  }, [])
+  // End Intersection Observer
+
   return (
-    <div className={cn('relative h-14 2xl:h-[88px]', className)} ref={wrapperRef}>
+    <div className={cn('relative h-14 lg:h-20', className)} ref={wrapperRef}>
       <Input
         className='h-full'
         classNames={{
-          input: cn('cursor-pointer caret-transparent h-full pl-12 2xl:pl-[75px]', className),
+          input: cn(
+            'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
+            'bg-neutral-800 hover:bg-neutral-600 pl-14 lg:pl-[72px]',
+            open && 'bg-neutral-700',
+            className,
+          ),
         }}
         type='text'
-        val={selectedAsset?.symbol || placeHolder}
+        val={selectedAsset?.symbol ?? ''}
         onMouseDown={e => {
           e.preventDefault()
           setOpen(!open)
         }}
         placeholder={placeHolder}
+        isLocale={false}
         TrailingIcon={
           !isDisabled && (
             <ChevronDownIcon
-              className={cn('transform transition-all duration-150 ease-out', open ? 'rotate-180' : 'rotate-0')}
+              className={cn(
+                'transform cursor-pointer transition-all duration-150 ease-out',
+                open ? 'rotate-180' : 'rotate-0',
+              )}
               onMouseDown={e => {
                 e.preventDefault()
                 setOpen(!open)
@@ -183,66 +211,49 @@ function SelectToken({
             />
           )
         }
-        isLocale={isLocale}
-        prefix={
-          <div className='flex gap-[6px]'>
-            <CircleImage alt='Token' className='size-8 2xl:size-12' src={selectedAsset?.logoURI ?? UNKNOWN_LOGO} />
-          </div>
-        }
+        prefix={<CircleImage alt='Token' className='size-8 lg:size-12' src={selectedAsset?.logoURI ?? UNKNOWN_LOGO} />}
         prefixClass={prefixClass}
         readOnly
       />
-      {!isDisabled &&
-        open &&
-        createPortal(
+      {/* Dropdown */}
+      {!isDisabled && open && (
+        <div
+          ref={dropdownRef}
+          className={cn(
+            'absolute z-50 mt-2 flex-col items-start justify-start gap-1',
+            'rounded-xl border border-neutral-600 bg-neutral-800 p-2 shadow-lg',
+            'visible top-full opacity-100',
+            dropdownAlign === 'right' ? 'left-auto right-0' : 'left-0 right-auto',
+            listClassNames,
+          )}
+          style={{
+            width: optionWidth ? `${optionWidth}px` : '100%',
+          }}
+        >
+          <SearchInput setVal={setSearchText} val={searchText} className='mb-3 mr-2 2xl:mr-3' />
           <div
-            ref={dropdownRef}
-            className={cn(
-              'absolute mt-2 flex-col items-start justify-start gap-1',
-              'rounded-xl border border-neutral-600 bg-neutral-800 p-2 shadow-lg',
-              'visible opacity-100',
-              listClassNames,
-            )}
-            style={{
-              position: 'absolute',
-              top: position.top,
-              left: dropdownAlign === 'right' ? 'auto' : position.left,
-              right: dropdownAlign === 'right' ? window.innerWidth - (position.left + position.width) : 'auto',
-              width:
-                /w-\d+/.test(listClassNames) || listClassNames?.includes('w-full') || listClassNames?.includes('w-[')
-                  ? undefined
-                  : `${
-                      (optionWidth || position.width) > screenWidth ? screenWidth - 20 : optionWidth || position.width
-                    }px`,
-            }}
+            className='grid max-h-[400px] gap-3 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-neutral-800 scrollbar-thumb-neutral-500 hover:scrollbar-thumb-neutral-400 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-4 2xl:pr-3'
+            ref={rootRef}
           >
-            <SearchInput setVal={setSearchText} val={searchText} className='mb-3' />
-            <InfiniteScroll dataLength={filteredAssets.length}>
-              <div
-                className='grid max-h-[400px] gap-3 overflow-y-auto sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3'
-                ref={rootRef}
-              >
-                {filteredAssets?.map(item => (
-                  <RenderIfVisible key={item.address} root={rootRef.current}>
-                    <ItemToken
-                      item={item}
-                      setPopup={data => setOpen(data)}
-                      selectedAsset={selectedAsset}
-                      setSelectedAsset={asset => {
-                        setSelectedAsset(asset)
-                        setOpen(false)
-                      }}
-                      otherAsset={otherAsset}
-                      setOtherAsset={() => {}}
-                      className='min-w-40 flex-1 rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
-                    />
-                  </RenderIfVisible>
-                ))}
+            {displayedAssets?.map((item, index) => (
+              <div key={item.address} ref={index === displayedAssets.length - 1 ? setLastItemRef : null}>
+                <ItemToken
+                  item={item}
+                  setPopup={data => setOpen(data)}
+                  selectedAsset={selectedAsset}
+                  setSelectedAsset={asset => {
+                    setSelectedAsset(asset)
+                    setOpen(false)
+                  }}
+                  otherAsset={otherAsset}
+                  setOtherAsset={() => {}}
+                  className='min-w-40 flex-1 rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
+                />
               </div>
-            </InfiniteScroll>
-          </div>,
-          document.body,
-        )}
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
