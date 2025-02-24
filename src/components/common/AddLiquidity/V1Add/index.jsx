@@ -6,7 +6,7 @@ import Selection from '@/components/selection'
 import { cn } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 
-import { ManualPaneV1 } from './ManualPane'
+import { ManualPaneV1 } from './ManualPaneV1'
 import { ZapperPane } from './ZapperPane'
 
 export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirstAddress, setSecondAddress }) {

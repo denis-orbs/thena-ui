@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
-import IconGroup from '@/components/icongroup'
+import NewIconGroup from '@/components/icongroup/NewIconGroup'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { NewTextHeading, Paragraph } from '@/components/typography'
@@ -114,15 +114,8 @@ function AddLiquidityClPool({ pool }) {
 
   return (
     <>
-      <h4 className='flex flex-row items-center gap-3 lg:gap-4 2xl:gap-8'>
-        <IconGroup
-          className='-space-x-1'
-          classNames={{
-            image: 'size-6 lg:size-10 2xl:size-[86px]',
-          }}
-          logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO}
-          logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO}
-        />
+      <h4 className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
+        <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
         <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
       </h4>
 

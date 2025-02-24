@@ -9,7 +9,7 @@ import { zeroAddress } from 'viem'
 import MenuTab from '@/app/arena/MenuTab'
 import Loading from '@/app/loading'
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import TokenInput from '@/components/input/TokenInput'
 import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
@@ -237,7 +237,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
   return (
     <div className='space-y-8'>
       <div className='flex flex-col gap-1 lg:gap-2'>
-        <div className='flex flex-row items-center gap-3 lg:gap-4 2xl:gap-8'>
+        <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
           <WeightedPoolLogo
             height={60}
             width={60}
@@ -293,14 +293,13 @@ function AddLiquidityWeightedPoolPage({ params }) {
               </div>
             )}
           </div>
-          <div className='flex flex-col justify-between gap-4 lg:flex-row'>
-            <SecondaryButton disabled={isDisable} onClick={() => onAddLiquidity(false)} className='w-full lg:w-1/2'>
+          <div className='grid gap-4 md:grid-cols-2'>
+            <EmphasisButton disabled={isDisable} onClick={() => onAddLiquidity(false)}>
               {t('Deposit')}
-            </SecondaryButton>
+            </EmphasisButton>
             <PrimaryButton
               disabled={isDisable || poolSelected?.gauge?.address === zeroAddress}
               onClick={() => onAddLiquidity(true)}
-              className='w-full lg:w-1/2'
               data-tooltip-id={`add-liquidity-stake-${poolSelected?.address}`}
             >
               {t('Deposit & Stake')}

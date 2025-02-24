@@ -16,8 +16,8 @@ export default function Step2() {
 
   const PageTitleSection = useMemo(() => {
     const renderTitle = (Icon, text) => (
-      <h4 className='flex flex-row items-center gap-3 lg:gap-4 2xl:gap-8'>
-        <Icon className='size-6 lg:size-10 2xl:size-[86px]' />
+      <h4 className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
+        <Icon className='size-5 lg:size-12 2xl:size-16' />
         <NewTextHeading>{t(text)}</NewTextHeading>
       </h4>
     )

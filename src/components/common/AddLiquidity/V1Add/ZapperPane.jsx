@@ -5,7 +5,7 @@ import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
 import Box from '@/components/box'
-import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import TokenInput from '@/components/input/TokenInput'
 import Spinner from '@/components/spinner'
@@ -176,13 +176,13 @@ export function ZapperPane({ asset0, asset1, slippage = 0.5, strategy }) {
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >
-          <SecondaryButton
+          <EmphasisButton
             disabled={!amountIn || (!isUseTokenInPair && !bestQuote)}
             onClick={() => handleAddLiquidity({ isStake: false })}
             className='w-full'
           >
             {t('Deposit')}
-          </SecondaryButton>
+          </EmphasisButton>
 
           <PrimaryButton
             disabled={!amountIn || (!isUseTokenInPair && !bestQuote)}

@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import V1Add from '@/components/common/AddLiquidity/V1Add'
 import Divider from '@/components/divider'
-import IconGroup from '@/components/icongroup'
+import NewIconGroup from '@/components/icongroup/NewIconGroup'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useGetAsset } from '@/hooks/fusion/Tokens'
@@ -42,12 +42,8 @@ function AddLiquidityV1Pool({ pair }) {
       <>
         {pair ? (
           <div className='flex flex-col gap-1 lg:gap-2'>
-            <div className='flex flex-row items-center gap-3 lg:gap-4 2xl:gap-8'>
-              <IconGroup
-                className='-space-x-0'
-                classNames={{
-                  image: 'size-6 lg:size-10 2xl:size-[86px]',
-                }}
+            <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
+              <NewIconGroup
                 logo1={pair?.token0?.logoURI ?? UNKNOWN_LOGO}
                 logo2={pair?.token1?.logoURI ?? UNKNOWN_LOGO}
               />
@@ -60,8 +56,8 @@ function AddLiquidityV1Pool({ pair }) {
             <NewTextSubHeading className='lg:text-2xl 2xl:text-3xl'>{t(text.split(' ')[0])}</NewTextSubHeading>
           </div>
         ) : (
-          <div className='flex flex-row items-center gap-3 lg:gap-4 2xl:gap-8'>
-            <Icon className='size-6 lg:size-10 2xl:size-[86px]' />
+          <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
+            <Icon className='size-5 lg:size-12 2xl:size-16' />
             <NewTextHeading>{t(text)}</NewTextHeading>
           </div>
         )}
@@ -88,11 +84,10 @@ function AddLiquidityV1Pool({ pair }) {
             <PairBasicInfo pair={pair} />
           ) : (
             <div className='flex flex-col gap-1 lg:gap-2'>
-              <div className='flex flex-row items-center gap-3 lg:gap-4 2xl:gap-8'>
-                <IconGroup
-                  className='-space-x-0'
+              <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
+                <NewIconGroup
                   classNames={{
-                    image: 'size-6 lg:size-12',
+                    image: '2xl:size-12',
                   }}
                   logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO}
                   logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO}

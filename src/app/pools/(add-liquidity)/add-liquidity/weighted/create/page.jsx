@@ -160,7 +160,7 @@ export default function CreateWeightedPoolPage() {
     <div className='flex flex-col gap-8'>
       <StepCreate currentStep={currentStep} />
       <div className='flex items-center gap-8'>
-        <ScalesIcon className='h-[86px] w-[86px]' />
+        <ScalesIcon className='size-16' />
         <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
       </div>
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>

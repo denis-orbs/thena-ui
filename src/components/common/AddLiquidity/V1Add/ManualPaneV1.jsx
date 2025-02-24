@@ -3,9 +3,10 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
-import { PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import BalanceInput from '@/components/input/BalanceInput'
+import CustomTooltip from '@/components/tooltip'
 import { PAIR_TYPES } from '@/constant'
 import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
@@ -170,29 +171,32 @@ export function ManualPaneV1({
         </div>
       </div>
 
-      <div className='mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row'>
+      <div className='mt-5 grid gap-4 md:grid-cols-2'>
         {account ? (
           <>
-            <SecondaryButton
+            <EmphasisButton
               disabled={pending}
               onClick={() => {
                 onAddLiquidity()
               }}
-              className='w-full'
             >
               {t('Deposit')}
-            </SecondaryButton>
+            </EmphasisButton>
 
-            {strategy && strategy.gauge.address !== zeroAddress && strategy.version === 3 && (
-              <PrimaryButton
-                disabled={stakePending}
-                onClick={() => {
-                  onAddAndStake()
-                }}
-                className='w-full'
-              >
-                {t('Deposit & Stake')}
-              </PrimaryButton>
+            <PrimaryButton
+              disabled={stakePending || !strategy || strategy.gauge.address === zeroAddress || strategy.version !== 3}
+              onClick={() => {
+                onAddAndStake()
+              }}
+              data-tooltip-id='add-liquidity-stake'
+            >
+              {t('Deposit & Stake')}
+            </PrimaryButton>
+
+            {(!strategy || strategy.gauge.address === zeroAddress || strategy.version !== 3) && (
+              <CustomTooltip id='add-liquidity-stake' className='max-w-full md:max-w-[500px]'>
+                {t('This pool has no Gauge')}
+              </CustomTooltip>
             )}
           </>
         ) : (
