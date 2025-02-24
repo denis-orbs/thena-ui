@@ -99,8 +99,8 @@ function SelectToken({
       ? tokenList.filter(
           asset =>
             !hiddenTokens.includes(asset.address) &&
-            (asset.symbol.toLowerCase().includes(search.toLowerCase()) ||
-              asset.address.toLowerCase().includes(search.toLowerCase())),
+            (asset?.symbol?.toLowerCase().includes(search.toLowerCase()) ||
+              asset?.address?.toLowerCase().includes(search.toLowerCase())),
         )
       : tokenList.filter(asset => !hiddenTokens.includes(asset.address))
 
