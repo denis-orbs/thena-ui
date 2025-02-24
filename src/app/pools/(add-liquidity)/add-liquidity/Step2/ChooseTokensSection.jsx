@@ -36,7 +36,6 @@ export default function ChooseTokensSection({ pairType }) {
   const secondAddress = searchParams.get('secondAddress')
 
   // for weighted pool
-  const totalToken = searchParams.get('totalToken')
   const dispatch = useDispatch()
   const { tokens: tokensPool } = useSelector(state => state.weightedPool || [])
   const updateTokensSelected = useCallback(
@@ -126,11 +125,7 @@ export default function ChooseTokensSection({ pairType }) {
         <div className='mt-5 flex gap-4 lg:mt-8'>
           <EmphasisButton onClick={() => updateSearchParams({ step: 1 })}>{t('Back')}</EmphasisButton>
           <PrimaryButton
-            disabled={
-              pairType === PAIR_TYPES.WEIGHTED
-                ? (tokensPool || []).length !== Number(totalToken)
-                : !firstAsset || !secondAsset
-            }
+            disabled={pairType === PAIR_TYPES.WEIGHTED ? tokensPool?.length < 2 : !firstAsset || !secondAsset}
             onClick={() => {
               if (pairType !== PAIR_TYPES.WEIGHTED) {
                 updateSearchParams(

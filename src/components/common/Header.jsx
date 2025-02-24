@@ -23,6 +23,7 @@ import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
 import { useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
 import { LiquidityHubSeekingBetterPriceModal } from '@/modules/LiquidityHub/components'
 import TxnModal from '@/modules/TxnModal'
@@ -280,6 +281,7 @@ function Header() {
   const { connect } = useConnect()
   const { connectionStatus } = useParticleConnect()
   const { disconnect } = useDisconnect()
+  const { width } = useWindowSize()
 
   useEffect(() => {
     if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
@@ -796,7 +798,7 @@ function Header() {
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            {!pathname.includes('/add-liquidity') ? (
+            {!pathname.includes('/add-liquidity') || width < 1024 ? (
               <>
                 <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
                   <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
@@ -819,7 +821,7 @@ function Header() {
               <></>
             )}
             {!isSmallScreen() && <ConnectButton className='flex' />}
-            {!pathname.includes('/add-liquidity') ? (
+            {!pathname.includes('/add-liquidity') || width < 1024 ? (
               <>
                 <Notification />
                 <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />

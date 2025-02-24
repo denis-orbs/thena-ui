@@ -8,7 +8,7 @@ import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { cn } from '@/lib/utils'
-import { PoolCoinsIcon } from '@/svgs'
+import { PoolCoinsIcon, WarningTriangleIcon } from '@/svgs'
 
 import SelectToken from '../Pools/SelectToken'
 
@@ -20,7 +20,8 @@ function ChoosePoolTokens({ setTokensSelect }) {
   const [optionWidth, setOptionWidth] = useState()
   const updateSearchParams = useUpdateSearchParams()
   const searchParams = useSearchParams()
-  const length = searchParams.get('totalToken') || 2
+  const [length, setLength] = useState(searchParams.get('totalToken') || 2)
+  const [hasSelected, setHasSelected] = useState(false)
 
   const updateTokens = useCallback((token, index) => {
     if (token) {
@@ -29,8 +30,13 @@ function ChoosePoolTokens({ setTokensSelect }) {
         updateData[index] = token
         return updateData
       })
+      setHasSelected(true)
     }
   }, [])
+
+  useEffect(() => {
+    setHasSelected(false)
+  }, [length])
 
   useEffect(() => {
     if (wrapperSelectRef?.current) {
@@ -47,21 +53,31 @@ function ChoosePoolTokens({ setTokensSelect }) {
     return (
       <>
         {Array.from({ length }, (_, index) => index + 1).map((_, index) => (
-          <SelectToken
-            key={tokens?.[index]?.address || index}
-            setSelectedAsset={item => {
-              updateTokens(item, index)
-            }}
-            placeHolder={t('Select Token')}
-            selectedAsset={tokens?.[index]}
-            dropdownAlign={index % 2 === 0 ? 'left' : 'right'}
-            optionWidth={optionWidth}
-            hiddenTokens={hiddenTokens}
-          />
+          <div>
+            <div className={cn('rounded-lg', hasSelected && !tokens?.[index] && 'border border-error-500')}>
+              <SelectToken
+                key={index}
+                setSelectedAsset={item => {
+                  updateTokens(item, index)
+                }}
+                placeHolder={t('Select Token')}
+                selectedAsset={tokens?.[index]}
+                dropdownAlign={index % 2 === 0 ? 'left' : 'right'}
+                optionWidth={optionWidth}
+                hiddenTokens={hiddenTokens}
+              />
+            </div>
+            {hasSelected && !tokens?.[index] && (
+              <p className='mb-2 mt-1 flex gap-1 text-error-500'>
+                <WarningTriangleIcon className='h-5 w-5' />
+                <span>{t('Select Token')}</span>
+              </p>
+            )}
+          </div>
         ))}
       </>
     )
-  }, [finalListTokens, length, optionWidth, t, tokens, updateTokens])
+  }, [finalListTokens, hasSelected, length, optionWidth, t, tokens, updateTokens])
 
   useEffect(() => {
     if (finalListTokens.length > 0) setTokensSelect(finalListTokens)
@@ -75,8 +91,14 @@ function ChoosePoolTokens({ setTokensSelect }) {
           {[2, 3, 4, 5, 6, 7, 8].map(value => (
             <div
               key={value}
-              onClick={() => updateSearchParams({ totalToken: value })}
-              className={cn('cursor-pointer rounded-md px-3 py-2 max-sm:px-1', length === value && 'bg-neutral-700')}
+              onClick={() => {
+                updateSearchParams({ totalToken: value })
+                setLength(value)
+              }}
+              className={cn(
+                'cursor-pointer rounded-md px-3 py-2 hover:bg-neutral-600 max-sm:px-1',
+                length === value && 'bg-neutral-700',
+              )}
             >
               <div className='mx-auto flex w-fit items-center gap-2 max-sm:gap-1'>
                 <TextHeading>{value}</TextHeading>
@@ -89,9 +111,7 @@ function ChoosePoolTokens({ setTokensSelect }) {
           {tokensList}
         </div>
       </div>
-      {finalListTokens.length >= 2 && finalListTokens.length === length && (
-        <AvailablePools tokens={finalListTokens} pairType={PAIR_TYPES.WEIGHTED} />
-      )}
+      {finalListTokens.length >= 2 && <AvailablePools tokens={finalListTokens} pairType={PAIR_TYPES.WEIGHTED} />}
     </div>
   )
 }
