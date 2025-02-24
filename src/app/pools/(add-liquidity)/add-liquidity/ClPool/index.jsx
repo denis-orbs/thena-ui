@@ -55,12 +55,12 @@ function AddLiquidityClPool({ pool }) {
   const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const chartDomain = useMemo(() => {
-    const leftPrice = isReverse ? priceLower : priceUpper?.invert()
-    const rightPrice = isReverse ? priceUpper : priceLower?.invert()
+    const leftPrice = isReverse ? priceUpper?.invert() : priceLower
+    const rightPrice = isReverse ? priceLower?.invert() : priceUpper
 
     return leftPrice && rightPrice
       ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
-      : undefined
+      : []
   }, [isReverse, priceLower, priceUpper])
 
   const price = useMemo(() => {
@@ -190,8 +190,9 @@ function AddLiquidityClPool({ pool }) {
                     <PoolChart
                       data={pairPrices}
                       timeWindow={timeWindow}
-                      upper={Number(chartDomain?.leftPrice ?? 0)}
-                      lower={Number(chartDomain?.rightPrice ?? 0)}
+                      current={price ? parseFloat(price) : 0}
+                      upper={Number(chartDomain[0] ?? 0)}
+                      lower={Number(chartDomain[1] ?? 0)}
                     />
                   )}
                 </div>

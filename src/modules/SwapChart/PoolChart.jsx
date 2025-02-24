@@ -8,7 +8,7 @@ import { formatAmount } from '@/lib/utils'
 
 import { PairDataTimeWindow } from './fetch'
 
-function PoolChart({ data, timeWindow, upper, lower }) {
+function PoolChart({ data, timeWindow, current, upper, lower }) {
   const chartRef = useRef(null)
   const chartCreated = useRef(null)
 
@@ -91,6 +91,8 @@ function PoolChart({ data, timeWindow, upper, lower }) {
         minMove: 0.0001,
       },
       priceScaleId: 'right',
+      priceLineVisible: false,
+      lastValueVisible: false,
     })
     chartCreated.current = chart
     newSeries.setData(transformedData)
@@ -101,7 +103,7 @@ function PoolChart({ data, timeWindow, upper, lower }) {
     if (upper) {
       newSeries.createPriceLine({
         price: upper,
-        color: '#E333DD',
+        color: '#580055',
         lineWidth: 1,
         lineStyle: 1,
         axisLabelVisible: true,
@@ -109,21 +111,22 @@ function PoolChart({ data, timeWindow, upper, lower }) {
       })
     }
 
-    // if (current) {
-    //   newSeries.createPriceLine({
-    //     price: current,
-    //     color: 'pink',
-    //     lineWidth: 1,
-    //     lineStyle: 1,
-    //     axisLabelVisible: true,
-    //     title: 'current',
-    //   })
-    // }
+    if (current) {
+      newSeries.createPriceLine({
+        price: current,
+        color: '#F199EE',
+        lineWidth: 1,
+        lineStyle: 1,
+        axisLabelVisible: true,
+        title: 'current',
+      })
+    }
 
     if (lower) {
       newSeries.createPriceLine({
         price: lower,
-        color: '#580055',
+        color: '#E333DD',
+        axisLabelTextColor: '#000000',
         lineWidth: 1,
         lineStyle: 1,
         axisLabelVisible: true,
