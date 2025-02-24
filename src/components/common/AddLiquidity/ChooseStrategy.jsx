@@ -162,8 +162,8 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
     },
   )
 
-  const hasFarming = useMemo(() => pair.subpools.some(pool => pool.title === 'CL_Farming'), [pair.subpools])
-  const hasSwapFee = useMemo(() => pair.subpools.some(pool => pool.title === 'CL_SwapFee'), [pair.subpools])
+  const hasFarming = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_Farming'), [pair?.subpools])
+  const hasSwapFee = useMemo(() => pair?.subpools?.some(pool => pool.title === 'CL_SwapFee'), [pair?.subpools])
   const showToggle = useMemo(() => firstAsset && secondAsset, [firstAsset, secondAsset])
   const price = useMemo(() => {
     if (!mintInfo.price) return
