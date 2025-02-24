@@ -7,7 +7,7 @@ import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import IconGroup from '@/components/icongroup'
 import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
-import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { cn, wrappedAddress } from '@/lib/utils'
@@ -150,7 +150,7 @@ function AddLiquidityClPool({ pool }) {
 
             {strategy?.isAutomatic && (
               <div className='pt-8'>
-                <TextHeading className='font-semibold'>Liquidity Range</TextHeading>
+                <NewTextHeading className='!text-xl font-semibold'>Liquidity Range</NewTextHeading>
                 <LiquidityChartRangeInput
                   currencyA={baseCurrency ?? undefined}
                   currencyB={quoteCurrency ?? undefined}
@@ -169,7 +169,7 @@ function AddLiquidityClPool({ pool }) {
 
             <div className={cn('hidden', !strategy?.isAutomatic && priceLower && priceUpper && 'block')}>
               <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
-                <h6 className='font-bold'>Price History</h6>
+                <NewTextHeading className='!text-xl font-semibold'>Price History</NewTextHeading>
                 <Tabs data={periods} />
               </div>
 

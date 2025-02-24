@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { Warning } from '@/components/alert'
 import CustomTooltip from '@/components/tooltip'
-import { TextHeading } from '@/components/typography'
+import { NewTextHeading, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { unwrappedSymbol } from '@/lib/utils'
@@ -116,7 +116,7 @@ function ManualStrategy({ firstAsset, secondAsset }) {
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between'>
-        <TextHeading className='text-xl font-semibold'>Liquidity Range</TextHeading>
+        <NewTextHeading className='!text-xl font-semibold'>Liquidity Range</NewTextHeading>
       </div>
 
       {activePreset === Presets.FULL && fullRangeWarningShown && (

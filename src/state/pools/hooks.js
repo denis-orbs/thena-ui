@@ -191,5 +191,6 @@ export const usePairInfo = ({
       ...found,
       currentTick: Number(fusionPool?.globalState.tick || 0),
     }
-  }, [fusionPairs, pairs, poolAddress, token0Address, token1Address, type, v2Pairs])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fusionPairs?.length, pairs?.length, poolAddress, token0Address, token1Address, type, v2Pairs?.length])
 }
