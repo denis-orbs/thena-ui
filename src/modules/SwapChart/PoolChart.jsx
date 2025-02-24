@@ -100,14 +100,14 @@ function PoolChart({ data, timeWindow, current, upper, lower }) {
       chart.timeScale().fitContent()
     }
     // Add custom price lines for upper, current, and lower levels
-    if (upper) {
+    if (lower) {
       newSeries.createPriceLine({
-        price: upper,
+        price: lower,
         color: '#580055',
         lineWidth: 1,
         lineStyle: 1,
         axisLabelVisible: true,
-        title: 'upper',
+        title: 'lower',
       })
     }
 
@@ -122,15 +122,15 @@ function PoolChart({ data, timeWindow, current, upper, lower }) {
       })
     }
 
-    if (lower) {
+    if (upper) {
       newSeries.createPriceLine({
-        price: lower,
+        price: upper,
         color: '#E333DD',
         axisLabelTextColor: '#000000',
         lineWidth: 1,
         lineStyle: 1,
         axisLabelVisible: true,
-        title: 'lower',
+        title: 'upper',
       })
     }
 

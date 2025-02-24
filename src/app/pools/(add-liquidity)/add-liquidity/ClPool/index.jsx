@@ -25,7 +25,7 @@ import { PoolAttributesSection } from '../PoolAttributesSection'
 function AddLiquidityClPool({ pool }) {
   const t = useTranslations()
 
-  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
+  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy } = useV3MintState()
 
@@ -55,8 +55,8 @@ function AddLiquidityClPool({ pool }) {
   const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const chartDomain = useMemo(() => {
-    const leftPrice = isReverse ? priceUpper?.invert() : priceLower
-    const rightPrice = isReverse ? priceLower?.invert() : priceUpper
+    const leftPrice = isReverse ? priceLower?.invert() : priceUpper
+    const rightPrice = isReverse ? priceUpper?.invert() : priceLower
 
     return leftPrice && rightPrice
       ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
