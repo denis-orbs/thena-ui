@@ -233,6 +233,10 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
   )
 
   useEffect(() => {
+    handleChooseStrategy(defaultSwapFees)
+  }, [handleChooseStrategy])
+
+  useEffect(() => {
     if (!poolAddress && (!firstAsset || !secondAsset)) return
 
     if (!pair?.subpools && !strategy) {
