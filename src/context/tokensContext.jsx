@@ -65,7 +65,6 @@ const useTokens = () => {
       const found = assets.find(ele => ele.address.toLowerCase() === token.address)
       return {
         ...token,
-        symbol: token.symbol === 'WBNB' ? 'BNB' : found ? found.symbol : token.symbol,
         name: found?.name || 'UNKNOWN',
         logoURI: found?.logoURI || UNKNOWN_LOGO,
       }
