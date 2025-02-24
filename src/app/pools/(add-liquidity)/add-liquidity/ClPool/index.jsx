@@ -146,7 +146,14 @@ function AddLiquidityClPool({ pool }) {
 
         <div id='RIGHT-BLOCK' className={cn('hidden flex-[4]', firstAddress && secondAddress && 'block')}>
           <div className='hidden flex-[4] flex-col gap-5 lg:flex'>
-            <PoolAttributesSection strategy={strategy} pair={pair} />
+            {pair ? (
+              <PoolAttributesSection strategy={strategy} pair={pair} />
+            ) : (
+              <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
+                <NewTextHeading className='!text-xl'>{t('New Deposit')}</NewTextHeading>
+                <Paragraph className='font-medium leading-5'>{t('New Deposit CL description')}</Paragraph>
+              </div>
+            )}
 
             {strategy?.isAutomatic && (
               <div className='pt-8'>

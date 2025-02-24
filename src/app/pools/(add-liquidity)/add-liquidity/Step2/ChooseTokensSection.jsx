@@ -123,7 +123,9 @@ export default function ChooseTokensSection({ pairType }) {
           </>
         )}
         <div className='mt-5 flex gap-4 lg:mt-8'>
-          <EmphasisButton onClick={() => updateSearchParams({ step: 1 })}>{t('Back')}</EmphasisButton>
+          <EmphasisButton onClick={() => updateSearchParams({ step: 1, firstAddress: null, secondAddress: null })}>
+            {t('Back')}
+          </EmphasisButton>
           <PrimaryButton
             disabled={pairType === PAIR_TYPES.WEIGHTED ? tokensPool?.length < 2 : !firstAsset || !secondAsset}
             onClick={() => {

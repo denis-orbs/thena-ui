@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo } from 'react'
 
 import NewListings from '@/app/pools/NewListings'
-import { Paragraph } from '@/components/typography'
+import { NewTextHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { wrappedAddress } from '@/lib/utils'
@@ -81,16 +81,18 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool }) {
         </div>
       ) : (
         <>
-          <div className='flex gap-1 rounded-xl border border-primary-800 bg-primary-950 p-6 lg:p-8'>
+          <div className='flex gap-4 rounded-xl border border-primary-800 bg-primary-950 p-6 lg:p-8'>
             <div className='flex h-10 w-10 items-center'>
-              <InfoIcon className='h-5 w-5 !stroke-primary-600' />
+              <InfoIcon className='h-8 w-8 !stroke-primary-600' />
             </div>
-            <div className='flex flex-col'>
-              <Paragraph className='text-xl text-neutral-100'>
-                {t('No pools found for these Assets and Strategies')}
-              </Paragraph>
-              <Paragraph className='text-base text-neutral-100'>
-                {t('You can create a new Pool or change the Strategy')}
+            <div className='flex flex-col gap-2'>
+              <NewTextHeading className='!text-xl font-medium text-neutral-100'>
+                {t('No [type] pool available for the selected tokens', {
+                  type: pairType,
+                })}
+              </NewTextHeading>
+              <Paragraph className='text-base leading-5 text-neutral-100'>
+                {t('You can begin to create a new pool below')}
               </Paragraph>
             </div>
           </div>

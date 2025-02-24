@@ -203,6 +203,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
       setStrategy({
         title: sub.title,
         tvl: sub.tvl.toNumber(),
+        apr: sub.gauge.apr ?? 0,
         account: {
           totalLp: sub?.account?.totalLp?.toNumber(),
           gaugeBalance: sub?.account?.gaugeBalance?.toNumber(),
