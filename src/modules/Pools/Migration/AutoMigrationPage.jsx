@@ -144,18 +144,22 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
   }, [migrateGamma, migrateIchi, migrateV1, strategyType, positionV2, push, strategy])
 
   const handleWithdraw = useCallback(() => {
+    const callbackLink =
+      `/pools/add-liquidity?step=3&firstAddress=${positionV2?.token0?.address}` +
+      `&secondAddress=${positionV2?.token1?.address}&type=Conc+Liquidity`
+
     if (ICHI_TYPES.includes(positionV2?.title)) {
       withdrawIchi({
         positionV2,
-        callback: () => setPopup(true),
+        callback: () => push(callbackLink),
       })
     } else {
       withdrawGamma({
         positionV2,
-        callback: () => setPopup(true),
+        callback: () => push(callbackLink),
       })
     }
-  }, [positionV2, withdrawGamma, withdrawIchi])
+  }, [positionV2, push, withdrawGamma, withdrawIchi])
 
   if (!positionV2) {
     return <Loading />

@@ -418,7 +418,7 @@ export default function PoolsPage() {
                 push(
                   pool.type === PAIR_TYPES.WEIGHTED
                     ? `/pools/add-liquidity/weighted/${pool.address}`
-                    : `/pools/add-liquidity?poolAddress=${pool.address}&step=3`,
+                    : `/pools/add-liquidity?step=3&poolAddress=${pool.address}`,
                 )
               }}
             >
