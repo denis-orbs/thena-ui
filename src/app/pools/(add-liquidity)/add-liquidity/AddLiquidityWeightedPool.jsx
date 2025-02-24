@@ -49,7 +49,7 @@ function AddLiquidityWeightedPool({ setCurrentStep }) {
         <PrimaryButton
           disabled={(tokensPool || []).length < 2}
           className='w-full lg:w-fit'
-          onClick={() => push('/pools/weighted-pool/create')}
+          onClick={() => push('/pools/add-liquidity/weighted/create')}
         >
           {t('Create New Pool')}
         </PrimaryButton>

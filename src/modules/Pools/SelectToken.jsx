@@ -13,7 +13,7 @@ import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { cn } from '@/lib/utils'
 import { useLocalTokens } from '@/state/localTokens/store'
-import { ChevronDownIcon } from '@/svgs'
+import { ChevronDownIcon, WarningTriangleIcon } from '@/svgs'
 
 import { ItemToken } from '../TokenModal/ItemToken'
 
@@ -29,6 +29,8 @@ function SelectToken({
   dropdownAlign = 'left',
   optionWidth = null,
   isDisabled = false,
+  isError,
+  errorMessage,
 }) {
   const { account, chainId } = useWallet()
   const [open, setOpen] = useState(false)
@@ -178,81 +180,95 @@ function SelectToken({
   // End Intersection Observer
 
   return (
-    <div className={cn('relative h-14 lg:h-20', className)} ref={wrapperRef}>
-      <Input
-        className='h-full'
-        classNames={{
-          input: cn(
-            'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
-            'bg-neutral-800 hover:bg-neutral-600 pl-14 lg:pl-[72px]',
-            open && 'bg-neutral-700',
-            className,
-          ),
-        }}
-        type='text'
-        val={selectedAsset?.symbol ?? ''}
-        onMouseDown={e => {
-          e.preventDefault()
-          setOpen(!open)
-        }}
-        placeholder={placeHolder}
-        isLocale={false}
-        TrailingIcon={
-          !isDisabled && (
-            <ChevronDownIcon
-              className={cn(
-                'transform cursor-pointer transition-all duration-150 ease-out',
-                open ? 'rotate-180' : 'rotate-0',
-              )}
-              onMouseDown={e => {
-                e.preventDefault()
-                setOpen(!open)
-              }}
-            />
-          )
-        }
-        prefix={<CircleImage alt='Token' className='size-8 lg:size-12' src={selectedAsset?.logoURI ?? UNKNOWN_LOGO} />}
-        prefixClass={prefixClass}
-        readOnly
-      />
-      {/* Dropdown */}
-      {!isDisabled && open && (
-        <div
-          ref={dropdownRef}
-          className={cn(
-            'absolute z-50 mt-2 flex-col items-start justify-start gap-1',
-            'rounded-xl border border-neutral-600 bg-neutral-800 p-2 shadow-lg',
-            'visible top-full opacity-100',
-            dropdownAlign === 'right' ? 'left-auto right-0' : 'left-0 right-auto',
-            listClassNames,
-          )}
-          style={{
-            width: optionWidth ? `${optionWidth}px` : '100%',
+    <div>
+      <div
+        className={cn('relative h-14 lg:h-20', isError && 'rounded-lg border border-error-500', className)}
+        ref={wrapperRef}
+      >
+        <Input
+          className='h-full'
+          classNames={{
+            input: cn(
+              'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
+              'bg-neutral-800 hover:bg-neutral-600 pl-14 lg:pl-[72px]',
+              open && 'bg-neutral-700',
+              isDisabled && 'cursor-not-allowed',
+              className,
+            ),
           }}
-        >
-          <SearchInput setVal={setSearchText} val={searchText} className='mb-3 mr-2 2xl:mr-3' />
+          type='text'
+          val={selectedAsset?.symbol ?? ''}
+          onMouseDown={e => {
+            e.preventDefault()
+            setOpen(!open)
+          }}
+          placeholder={placeHolder}
+          isLocale={false}
+          TrailingIcon={
+            !isDisabled && (
+              <ChevronDownIcon
+                className={cn(
+                  'transform cursor-pointer transition-all duration-150 ease-out',
+                  open ? 'rotate-180' : 'rotate-0',
+                )}
+                onMouseDown={e => {
+                  e.preventDefault()
+                  setOpen(!open)
+                }}
+              />
+            )
+          }
+          prefix={
+            <CircleImage alt='Token' className='size-8 lg:size-12' src={selectedAsset?.logoURI ?? UNKNOWN_LOGO} />
+          }
+          prefixClass={prefixClass}
+          readOnly
+        />
+        {/* Dropdown */}
+        {!isDisabled && open && (
           <div
-            className='grid max-h-[400px] gap-3 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-neutral-800 scrollbar-thumb-neutral-500 hover:scrollbar-thumb-neutral-400 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-4 2xl:pr-3'
-            ref={rootRef}
+            ref={dropdownRef}
+            className={cn(
+              'absolute z-50 mt-2 flex-col items-start justify-start gap-1',
+              'rounded-xl border border-neutral-600 bg-neutral-800 p-2 shadow-lg',
+              'visible top-full opacity-100',
+              dropdownAlign === 'right' ? 'left-auto right-0' : 'left-0 right-auto',
+              listClassNames,
+            )}
+            style={{
+              width: optionWidth ? `${optionWidth}px` : '100%',
+            }}
           >
-            {displayedAssets?.map((item, index) => (
-              <div key={item.address} ref={index === displayedAssets.length - 1 ? setLastItemRef : null}>
-                <ItemToken
-                  item={item}
-                  setPopup={data => setOpen(data)}
-                  selectedAsset={selectedAsset}
-                  setSelectedAsset={asset => {
-                    setSelectedAsset(asset)
-                    setOpen(false)
-                  }}
-                  otherAsset={otherAsset}
-                  setOtherAsset={() => {}}
-                  className='min-w-40 flex-1 rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
-                />
-              </div>
-            ))}
+            <SearchInput setVal={setSearchText} val={searchText} className='mb-3 mr-2 2xl:mr-3' />
+            <div
+              className='grid max-h-[400px] gap-3 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-neutral-800 scrollbar-thumb-neutral-500 hover:scrollbar-thumb-neutral-400 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-4 2xl:pr-3'
+              ref={rootRef}
+            >
+              {displayedAssets?.map((item, index) => (
+                <div key={item.address} ref={index === displayedAssets.length - 1 ? setLastItemRef : null}>
+                  <ItemToken
+                    item={item}
+                    setPopup={data => setOpen(data)}
+                    selectedAsset={selectedAsset}
+                    setSelectedAsset={asset => {
+                      setSelectedAsset(asset)
+                      setOpen(false)
+                    }}
+                    otherAsset={otherAsset}
+                    setOtherAsset={() => {}}
+                    className='min-w-40 flex-1 rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+      </div>
+      {isError && (
+        <p className='mb-2 mt-1 flex gap-1 text-error-500'>
+          <WarningTriangleIcon className='h-5 w-5' />
+          <span>{errorMessage}</span>
+        </p>
       )}
     </div>
   )

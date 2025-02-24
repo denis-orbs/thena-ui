@@ -65,12 +65,16 @@ function TokenItem({ token, index, setTokenSelected }) {
   }, [index, setTokenSelected])
 
   const handleUpdateWeightToken = e => {
+    let value = Number(e.target.value)
+    if (value < 0) value = 0
+    if (value > 100) value = 100
+
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
       updatedTokens[index] = {
         ...updatedTokens[index],
         lock: !!updatedTokens[index].token,
-        weight: Number(e.target.value),
+        weight: value,
       }
       return updateWeight(updatedTokens)
     })
@@ -78,7 +82,7 @@ function TokenItem({ token, index, setTokenSelected }) {
 
   return (
     <div className='flex h-11 w-full items-center gap-2 sm:w-fit'>
-      <div className='fex-row flex w-full items-center justify-between rounded-lg border border-neutral-700 p-1 lg:w-fit'>
+      <div className='fex-row flex w-full items-center justify-between rounded-lg border border-neutral-700 p-1 hover:bg-neutral-800 lg:w-fit'>
         <div className=' flex w-fit items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
           <CircleImage alt='token logo' width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
           <Paragraph className='text-sm text-neutral-200'>{token.token.symbol}</Paragraph>
@@ -88,6 +92,7 @@ function TokenItem({ token, index, setTokenSelected }) {
           classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7' }}
           type='number'
           min={0}
+          max={100}
           step={1}
           val={token.weight || ''}
           onChange={handleUpdateWeightToken}
@@ -104,7 +109,7 @@ export function ErrorMessage({ message, type = 'error', className, showIcon = tr
   return (
     <Box
       className={cn(
-        'flex flex-row items-center gap-3 border border-primary-800 bg-primary-950',
+        'flex flex-row items-center gap-3 rounded-lg border border-primary-800 bg-primary-950',
         type === 'warn' ? 'border-warn-950 bg-warn-950' : '',
         className,
       )}
@@ -147,7 +152,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   )
 
   return (
-    <div className='flex flex-col gap-3'>
+    <div className='flex h-full flex-col gap-3'>
       <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
         {tokenSelected.map((token, index) => (
@@ -160,21 +165,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
           />
         ))}
       </div>
-      <div className='flex flex-col'>
-        <div className='flex flex-row justify-between'>
-          <TextHeading>{t('Total Weight')}</TextHeading>
-          <span>{totalWeight}%</span>
-        </div>
-        <div className='mt-3 inline-block h-3 w-full rounded-md bg-neutral-500'>
-          <div
-            style={{
-              width: `${totalWeight > 100 ? 100 : totalWeight}%`,
-            }}
-            className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
-          />
-        </div>
-      </div>
-      <div className='flex flex-col gap-4 lg:flex-row'>
+      <div className='mt-auto flex flex-col gap-4 lg:flex-row'>
         <EmphasisButton
           onClick={() => push('/pools/add-liquidity?step=2&pairType=Weighted')}
           className='w-full lg:w-fit'

@@ -89,7 +89,10 @@ function BalanceInput({
         {showPercent && <Tabs data={percents} />}
       </div>
       <div
-        className={cn('flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4', classNames?.input)}
+        className={cn(
+          'flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4 hover:bg-neutral-800',
+          classNames?.input,
+        )}
       >
         <div className='flex items-center justify-between gap-2'>
           <input
@@ -141,7 +144,7 @@ function BalanceInput({
             </span>
             <span
               onClick={() => onAmountChange(max.dp(asset.decimals).toString(10))}
-              className={cn('cursor-pointer text-primary-600', max?.eq(0) && 'hidden')}
+              className={cn('cursor-pointer text-primary-600 hover:text-primary-400', max?.eq(0) && 'hidden')}
             >
               {t('Max')}
             </span>

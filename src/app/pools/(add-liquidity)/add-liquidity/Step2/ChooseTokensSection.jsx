@@ -1,6 +1,6 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
@@ -26,6 +26,7 @@ export default function ChooseTokensSection({ pairType }) {
   const [secondAsset, setSecondAsset] = useState(null)
   const [optionWidth, setOptionWidth] = useState(0)
   const [foundedPair, setFoundedPair] = useState(null)
+  const [isShowError, setShowError] = useState(false)
 
   const t = useTranslations()
   const assets = useAssets()
@@ -81,11 +82,75 @@ export default function ChooseTokensSection({ pairType }) {
     }
   }, [wrapperSelectRef, optionWidth])
 
+  // for weighted
+  const duplicateAddresses = useMemo(() => {
+    const addressMap = new Map()
+    const duplicates = new Set()
+
+    if ((tokensPool || []).length <= 0) return []
+    tokensPool.forEach(({ address }) => {
+      if (addressMap.has(address)) {
+        duplicates.add(address)
+      } else {
+        addressMap.set(address, true)
+      }
+    })
+
+    const result = Array.from(duplicates)
+    return result
+  }, [tokensPool])
+
+  useEffect(() => {
+    if (firstAddress && secondAddress && firstAddress !== secondAddress) {
+      setShowError(false)
+    }
+  }, [firstAddress, secondAddress])
+
+  const handleAddPool = useCallback(() => {
+    if (pairType !== PAIR_TYPES.WEIGHTED) {
+      if (!firstAddress || !secondAddress || firstAddress === secondAddress) {
+        setShowError(true)
+        return
+      }
+      updateSearchParams(
+        {
+          step: 3,
+          ...(foundedPair
+            ? {
+                firstAddress: null,
+                secondAddress: null,
+                poolAddress: foundedPair.address,
+                pairType: null,
+              }
+            : {
+                poolAddress: null,
+              }),
+        },
+        true,
+      )
+    } else {
+      if (duplicateAddresses.length > 0 || (tokensPool || []).length < 2) {
+        setShowError(true)
+        return
+      }
+      push('/pools/add-liquidity/weighted/create')
+    }
+  }, [
+    duplicateAddresses.length,
+    firstAddress,
+    foundedPair,
+    pairType,
+    push,
+    secondAddress,
+    tokensPool,
+    updateSearchParams,
+  ])
+
   return (
     <>
       <div className='flex flex-col gap-5 lg:gap-8'>
         {pairType === PAIR_TYPES.WEIGHTED ? (
-          <ChoosePoolTokens setTokensSelect={updateTokensSelected} />
+          <ChoosePoolTokens setTokensSelect={updateTokensSelected} isShowError={isShowError} />
         ) : (
           <div className='flex flex-col gap-2'>
             <NewTextSubHeading>{t('Choose Tokens')}</NewTextSubHeading>
@@ -100,6 +165,8 @@ export default function ChooseTokensSection({ pairType }) {
                 selectedAsset={firstAsset}
                 dropdownAlign='left'
                 optionWidth={optionWidth}
+                isError={isShowError && secondAddress}
+                errorMessage={!firstAddress ? t('Select token') : t('You can not select the same token twice')}
               />
               <SelectToken
                 otherAsset={firstAsset}
@@ -111,6 +178,8 @@ export default function ChooseTokensSection({ pairType }) {
                 selectedAsset={secondAsset}
                 dropdownAlign='right'
                 optionWidth={optionWidth}
+                isError={isShowError && firstAddress}
+                errorMessage={!secondAddress ? t('Select token') : t('You can not select the same token twice')}
               />
             </div>
           </div>
@@ -126,31 +195,7 @@ export default function ChooseTokensSection({ pairType }) {
           <EmphasisButton onClick={() => updateSearchParams({ step: 1, firstAddress: null, secondAddress: null })}>
             {t('Back')}
           </EmphasisButton>
-          <PrimaryButton
-            disabled={pairType === PAIR_TYPES.WEIGHTED ? tokensPool?.length < 2 : !firstAsset || !secondAsset}
-            onClick={() => {
-              if (pairType !== PAIR_TYPES.WEIGHTED) {
-                updateSearchParams(
-                  {
-                    step: 3,
-                    ...(foundedPair
-                      ? {
-                          firstAddress: null,
-                          secondAddress: null,
-                          poolAddress: foundedPair.address,
-                          pairType: null,
-                        }
-                      : {
-                          poolAddress: null,
-                        }),
-                  },
-                  true,
-                )
-              } else {
-                push('/pools/weighted-pool/create')
-              }
-            }}
-          >
+          <PrimaryButton onClick={handleAddPool}>
             {pairType !== PAIR_TYPES.WEIGHTED && foundedPair ? t('Add to Pool') : t('Create New Pool')}
           </PrimaryButton>
         </div>

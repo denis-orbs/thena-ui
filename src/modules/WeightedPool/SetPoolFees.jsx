@@ -45,7 +45,7 @@ export default function SetPoolFees({ fees, setFees }) {
           onChange={e => {
             setFees(e.target.value)
           }}
-          className={cn('h-11 w-full', isCustomFee ? 'bg-neutral-700 font-medium text-neutral-200' : '')}
+          className={cn('w-full', isCustomFee ? 'bg-neutral-700 font-medium text-neutral-200' : '')}
           placeholder='Set Custom Fee'
           suffix='%'
           classNames={{ input: 'pr-7' }}

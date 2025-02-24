@@ -187,7 +187,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
                 {available === total ? (
                   <span onClick={handleMaxTotal}>{t('Maxed')}</span>
                 ) : (
-                  <span className='cursor-pointer text-primary-400' onClick={handleMaxTotal}>
+                  <span className='cursor-pointer text-primary-600 hover:text-primary-500' onClick={handleMaxTotal}>
                     {t('Max')}
                   </span>
                 )}
@@ -195,7 +195,7 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
             </div>
           </div>
           {totalWhenOptimize !== total && (
-            <TertiaryButton className='cursor-pointer text-primary-400' onClick={handleOptimizeTotal}>
+            <TertiaryButton className='cursor-pointer text-primary-600' onClick={handleOptimizeTotal}>
               {t('Optimize')}
             </TertiaryButton>
           )}

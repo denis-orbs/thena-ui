@@ -1,4 +1,3 @@
-import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -6,22 +5,18 @@ import { useSelector } from 'react-redux'
 import AvailablePools from '@/app/pools/(add-liquidity)/add-liquidity/Step2/AvailablePools'
 import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { cn } from '@/lib/utils'
-import { PoolCoinsIcon, WarningTriangleIcon } from '@/svgs'
+import { PoolCoinsIcon } from '@/svgs'
 
 import SelectToken from '../Pools/SelectToken'
 
-function ChoosePoolTokens({ setTokensSelect }) {
+function ChoosePoolTokens({ setTokensSelect, isShowError }) {
   const t = useTranslations()
   const { tokens: tokensPool } = useSelector(state => state.weightedPool || [])
   const [tokens, setTokens] = useState([...(tokensPool || [])])
   const wrapperSelectRef = useRef(null)
   const [optionWidth, setOptionWidth] = useState()
-  const updateSearchParams = useUpdateSearchParams()
-  const searchParams = useSearchParams()
-  const [length, setLength] = useState(searchParams.get('totalToken') || 2)
-  const [hasSelected, setHasSelected] = useState(false)
+  const [length, setLength] = useState(2)
 
   const updateTokens = useCallback((token, index) => {
     if (token) {
@@ -30,14 +25,8 @@ function ChoosePoolTokens({ setTokensSelect }) {
         updateData[index] = token
         return updateData
       })
-      setHasSelected(true)
     }
   }, [])
-
-  useEffect(() => {
-    setHasSelected(false)
-  }, [length])
-
   useEffect(() => {
     if (wrapperSelectRef?.current) {
       const { width } = wrapperSelectRef.current.getBoundingClientRect()
@@ -48,36 +37,49 @@ function ChoosePoolTokens({ setTokensSelect }) {
 
   const finalListTokens = useMemo(() => tokens.slice(0, length), [tokens, length])
 
-  const tokensList = useMemo(() => {
-    const hiddenTokens = finalListTokens.map(token => token.address)
-    return (
+  const duplicateAddresses = useMemo(() => {
+    const addressMap = new Map()
+    const duplicates = new Set()
+
+    if (tokens.length <= 0) return []
+    tokens.forEach(({ address }) => {
+      if (addressMap.has(address)) {
+        duplicates.add(address)
+      } else {
+        addressMap.set(address, true)
+      }
+    })
+
+    const result = Array.from(duplicates)
+    return result
+  }, [tokens])
+
+  const tokensList = useMemo(
+    () => (
       <>
         {Array.from({ length }, (_, index) => index + 1).map((_, index) => (
-          <div>
-            <div className={cn('rounded-lg', hasSelected && !tokens?.[index] && 'border border-error-500')}>
-              <SelectToken
-                key={index}
-                setSelectedAsset={item => {
-                  updateTokens(item, index)
-                }}
-                placeHolder={t('Select Token')}
-                selectedAsset={tokens?.[index]}
-                dropdownAlign={index % 2 === 0 ? 'left' : 'right'}
-                optionWidth={optionWidth}
-                hiddenTokens={hiddenTokens}
-              />
-            </div>
-            {hasSelected && !tokens?.[index] && (
-              <p className='mb-2 mt-1 flex gap-1 text-error-500'>
-                <WarningTriangleIcon className='h-5 w-5' />
-                <span>{t('Select Token')}</span>
-              </p>
-            )}
-          </div>
+          <SelectToken
+            key={`${index}_${tokens?.[index]?.address}`}
+            setSelectedAsset={item => {
+              updateTokens(item, index)
+            }}
+            placeHolder={t('Select Token')}
+            selectedAsset={tokens?.[index]}
+            dropdownAlign={index % 2 === 0 ? 'left' : 'right'}
+            optionWidth={optionWidth}
+            isError={
+              isShowError &&
+              (duplicateAddresses.includes(tokens?.[index]?.address) || (length === 2 && !tokens?.[index]))
+            }
+            errorMessage={
+              length === 2 && !tokens?.[index] ? t('Select token') : t('You can not select the same token twice')
+            }
+          />
         ))}
       </>
-    )
-  }, [finalListTokens, hasSelected, length, optionWidth, t, tokens, updateTokens])
+    ),
+    [duplicateAddresses, isShowError, length, optionWidth, t, tokens, updateTokens],
+  )
 
   useEffect(() => {
     if (finalListTokens.length > 0) setTokensSelect(finalListTokens)
@@ -92,7 +94,6 @@ function ChoosePoolTokens({ setTokensSelect }) {
             <div
               key={value}
               onClick={() => {
-                updateSearchParams({ totalToken: value })
                 setLength(value)
               }}
               className={cn(

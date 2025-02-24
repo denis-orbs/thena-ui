@@ -26,7 +26,7 @@ function Input({
         type={type}
         lang='en'
         className={cn(
-          'w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out focus:border-neutral-500',
+          'w-full rounded-lg border border-neutral-700 bg-neutral-700 py-3 text-neutral-50 placeholder-neutral-400 transition-all duration-150 ease-out hover:bg-neutral-800 focus:border-neutral-500',
           LeadingIcon ? 'pl-12' : prefix ? prefixClass || 'pl-7' : 'pl-4',
           TrailingIcon || suffix ? 'pr-7' : 'pr-3',
           TrailingIcon && TrailingButton ? 'pr-20' : '',

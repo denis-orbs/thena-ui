@@ -129,7 +129,7 @@ export default function CreateWeightedPoolPage() {
 
     const totalWeight = tokensAndWeights.reduce((sum, curr) => sum + curr.weight, 0)
 
-    if (totalWeight > 100) {
+    if (totalWeight !== 100) {
       errorMessages.push(t('Warning total weight Weighted Pool'))
     }
 
@@ -165,7 +165,7 @@ export default function CreateWeightedPoolPage() {
       </div>
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         <div className='space-y-4'>
-          {tokensAndWeights.length > 0 && totalBalance < 20000 ? (
+          {tokensAndWeights.length > 0 && currentStep !== 1 && totalBalance < 20000 ? (
             <ErrorMessage
               type='warn'
               message={t('We recommend you to provide new pools [symbol]', { yourBalance: formatAmount(totalBalance) })}
