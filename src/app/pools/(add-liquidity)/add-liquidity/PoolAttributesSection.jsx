@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
@@ -27,13 +28,20 @@ export function PoolAttributesSection({ strategy, pair }) {
         </i>
       </NewTextSubHeading>
 
-      <div className={cn('mt-5 overflow-hidden', show ? 'block' : 'hidden')}>
-        {pair?.type === PAIR_TYPES.LSD ? (
-          <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
-        ) : (
-          <>{pair && <NormalPoolAttributes pool={pair} />}</>
-        )}
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: -10, height: 0 }}
+        animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className='overflow-hidden'
+      >
+        <div className='mt-5'>
+          {pair?.type === PAIR_TYPES.LSD ? (
+            <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
+          ) : (
+            <>{pair && <NormalPoolAttributes pool={pair} />}</>
+          )}
+        </div>
+      </motion.div>
     </Box>
   )
 }

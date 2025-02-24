@@ -1481,5 +1481,6 @@
   "Add to Pool": "Add to Pool",
   "View Dashboard": "View Dashboard",
   "You have successfully deposited and staked": "You have successfully deposited and staked",
-  "Deposit & Stake": "Deposit & Stake"
+  "Deposit & Stake": "Deposit & Stake",
+  "You can not select the same token twice": "You can not select the same token twice"
 }

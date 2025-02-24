@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
@@ -53,8 +54,13 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
             }}
           />
         </p>
-        {show && (
-          <div className='right-0 top-full z-10 flex w-fit gap-3 rounded-lg shadow-lg'>
+        <motion.div
+          initial={{ opacity: 0, y: -10, height: 0 }}
+          animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className='overflow-hidden'
+        >
+          <div className='right-0 top-full z-10 flex w-fit gap-3 rounded-lg p-2 shadow-lg'>
             <Selection data={selections} className='bg-transparent' />
             <Input
               classNames={{
@@ -65,7 +71,7 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
               suffix='%'
             />
           </div>
-        )}
+        </motion.div>
       </div>
     </div>
   )

@@ -1478,5 +1478,6 @@
   "Add to Pool": "添加到池",
   "View Dashboard": "View Dashboard",
   "You have successfully deposited and staked": "You have successfully deposited and staked",
-  "Deposit & Stake": "Deposit & Stake"
+  "Deposit & Stake": "Deposit & Stake",
+  "You can not select the same token twice": "You can not select the same token twice"
 }
