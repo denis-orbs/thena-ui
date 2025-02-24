@@ -137,7 +137,7 @@ export const V1_ROUTE_ASSETS = {
   ],
 }
 
-export const UNKNOWN_LOGO = 'https://cdn.thena.fi/assets/UKNOWN.png'
+export const UNKNOWN_LOGO = 'https://cdn.thena.fi/assets/UNKNOWN_TOKEN.png'
 
 export const NEXT_EPOCH_TIMESTAMP = 1696464000
 
