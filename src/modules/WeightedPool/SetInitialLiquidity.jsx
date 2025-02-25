@@ -10,7 +10,7 @@ import { useTokenUSDValue } from '@/hooks/usePrices'
 import { formatAmount, roundIfMoreThanDecimals } from '@/lib/utils'
 import { ScalesPrimaryIcon, WarningTriangleIcon } from '@/svgs'
 
-export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights }) {
+export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, checkError }) {
   const t = useTranslations()
   // const [lastIndexChange, setLastIndexChange] = useState(0)
   const [isAutoOptimize, setIsAutoOptimize] = useState(true)
@@ -155,18 +155,18 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
       <div className='flex flex-col gap-3'>
         <>
           {(tokensAndWeights || []).map((item, index) => (
-            <div className='space-y-2'>
+            <div className='space-y-2' key={item.token.address}>
               <InputTokenMemo
                 key={`${item?.token?.address}_${index}`}
                 token={item.token}
-                isError={item.isError}
+                isError={item.isError && checkError}
                 autoFocus={index === 0}
                 amount={item.amount}
                 onAmountChange={value => handleAmountChange(value, item.token)}
                 alowDouble
                 weight={item.weight}
               />
-              {item.isError && (
+              {item.isError && checkError && (
                 <p className='mb-2 mt-1 flex gap-1 text-error-500'>
                   <WarningTriangleIcon className='h-5 w-5' />
                   <span>{t('Insufficient [Asset] Balance', { symbol: item?.symbol })}</span>

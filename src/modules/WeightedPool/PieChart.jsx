@@ -19,27 +19,28 @@ function calculatePadding(ctx) {
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-function PieChart({ tokens, colors }) {
+function PieChart({ tokens, colors, showTotalPercent = true }) {
+  const allZero = tokens.every(item => Number(item.weight) === 0)
+
   const data = useMemo(
     () =>
-      tokens.length > 0
-        ? tokens.map((item, index) => ({
-            data: item,
-            value: Number(item.weight),
-            color: (colors || colorsDefault)[index % (colors || colorsDefault).length],
-            cutout: '50%',
-          }))
-        : [
+      allZero
+        ? [
             {
               data: {},
               value: 100,
               color: '#8E8194',
               cutout: '50%',
             },
-          ],
-    [colors, tokens],
+          ]
+        : tokens.map((item, index) => ({
+            data: item,
+            value: Number(item.weight),
+            color: (colors || colorsDefault)[index % (colors || colorsDefault).length],
+            cutout: '50%',
+          })),
+    [colors, tokens, allZero],
   )
-
   const options = {
     plugins: {
       responsive: true,
@@ -101,11 +102,13 @@ function PieChart({ tokens, colors }) {
     <div className='flex items-center justify-center'>
       <div className='relative h-[230px] w-[230px] overflow-visible'>
         <Doughnut height={200} width={200} data={finalData} options={options} className='z-20' />
-        <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'>
-          {totalWeight && (
-            <TextHeading className='font-archia text-3xl font-semibold'>{formatAmount(totalWeight)}%</TextHeading>
-          )}
-        </div>
+        {showTotalPercent && (
+          <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'>
+            {totalWeight && (
+              <TextHeading className='font-archia text-3xl font-semibold'>{formatAmount(totalWeight)}%</TextHeading>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

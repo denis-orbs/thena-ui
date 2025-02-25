@@ -293,26 +293,28 @@ function AddLiquidityWeightedPoolPage({ params }) {
               </div>
             )}
           </div>
-          <div className='grid gap-4 md:grid-cols-2'>
-            <EmphasisButton disabled={isDisable} onClick={() => onAddLiquidity(false)}>
-              {t('Deposit')}
+          <div className='space-y-16'>
+            <div className='grid gap-4 md:grid-cols-2'>
+              <EmphasisButton disabled={isDisable} onClick={() => onAddLiquidity(false)}>
+                {t('Deposit')}
+              </EmphasisButton>
+              <PrimaryButton
+                disabled={isDisable || poolSelected?.gauge?.address === zeroAddress}
+                onClick={() => onAddLiquidity(true)}
+                data-tooltip-id={`add-liquidity-stake-${poolSelected?.address}`}
+              >
+                {t('Deposit & Stake')}
+              </PrimaryButton>
+              {poolSelected?.gauge?.address === zeroAddress && (
+                <CustomTooltip id={`add-liquidity-stake-${poolSelected?.address}`} className='max-w-[500px]'>
+                  {t('This pool has no Gauge')}
+                </CustomTooltip>
+              )}
+            </div>
+            <EmphasisButton onClick={() => router.back()} className='w-full lg:w-fit'>
+              {t('Back')}
             </EmphasisButton>
-            <PrimaryButton
-              disabled={isDisable || poolSelected?.gauge?.address === zeroAddress}
-              onClick={() => onAddLiquidity(true)}
-              data-tooltip-id={`add-liquidity-stake-${poolSelected?.address}`}
-            >
-              {t('Deposit & Stake')}
-            </PrimaryButton>
-            {poolSelected?.gauge?.address === zeroAddress && (
-              <CustomTooltip id={`add-liquidity-stake-${poolSelected?.address}`} className='max-w-[500px]'>
-                {t('This pool has no Gauge')}
-              </CustomTooltip>
-            )}
           </div>
-          <EmphasisButton onClick={() => router.back()} className='w-full lg:w-fit'>
-            {t('Back')}
-          </EmphasisButton>
         </div>
         <div className='w-full space-y-4 lg:flex-[4]'>
           <PoolAttributesSection pair={poolSelected} />

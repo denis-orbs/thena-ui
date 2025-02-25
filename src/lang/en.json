@@ -1462,5 +1462,7 @@
   "You can not select the same token twice": "You can not select the same token twice",
   "Select token": "Select token",
   "Register Pool": "Register Pool",
-  "Add Initial Liquidity": "Add Initial Liquidity"
+  "Add Initial Liquidity": "Add Initial Liquidity",
+  "Total Weights do not match 100%": "Total Weights do not match 100%",
+  "The total weighting of all tokens must equal exactly 100% before you continue": "The total weighting of all tokens must equal exactly 100% before you continue."
 }

@@ -42,11 +42,11 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
     const duplicates = new Set()
 
     if (tokens.length <= 0) return []
-    tokens.forEach(({ address }) => {
-      if (addressMap.has(address)) {
-        duplicates.add(address)
+    tokens.forEach(token => {
+      if (addressMap.has(token?.address)) {
+        duplicates.add(token?.address)
       } else {
-        addressMap.set(address, true)
+        addressMap.set(token?.address, true)
       }
     })
 
@@ -102,8 +102,8 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
               )}
             >
               <div className='mx-auto flex w-fit items-center gap-2 max-sm:gap-1'>
-                <TextHeading>{value}</TextHeading>
-                <PoolCoinsIcon className='h-5 w-5' />
+                <TextHeading className='text-neutral-300'>{value}</TextHeading>
+                <PoolCoinsIcon className='h-5 w-5 stroke-neutral-300' />
               </div>
             </div>
           ))}

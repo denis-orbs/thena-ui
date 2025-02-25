@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import Loading from '@/app/loading'
-import { NewTextHeading } from '@/components/typography'
+import { NewTextHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { cn, formatAmount } from '@/lib/utils'
@@ -16,7 +16,7 @@ import Preview from '@/modules/WeightedPool/Preview'
 import SetWeightedAttributes from '@/modules/WeightedPool/SetWeightedAttributes'
 import SideBarCreateWeighted from '@/modules/WeightedPool/SideBarCreateWeighted'
 import StepCreate from '@/modules/WeightedPool/StepCreate'
-import { ScalesIcon } from '@/svgs'
+import { ScalesIcon, WarningTriangleIcon } from '@/svgs'
 
 function PoolWithStep({
   currentStep,
@@ -28,6 +28,7 @@ function PoolWithStep({
   initialPoolSymbol,
   poolName,
   setPoolName,
+  setCheckError,
 }) {
   switch (currentStep) {
     case 1: {
@@ -36,6 +37,7 @@ function PoolWithStep({
           setCurrentStep={setCurrentStep}
           tokensAndWeights={tokensAndWeights}
           setTokenAndWeights={setTokenAndWeights}
+          setCheckError={setCheckError}
         />
       )
     }
@@ -87,6 +89,7 @@ export default function CreateWeightedPoolPage() {
   const [tokensAndWeights, setTokenAndWeights] = useState([])
   const t = useTranslations()
   const { push } = useRouter()
+  const [checkError, setCheckError] = useState(false)
 
   useEffect(() => {
     if (!tokensSelected || tokensSelected.length <= 1) {
@@ -124,16 +127,27 @@ export default function CreateWeightedPoolPage() {
   const renderMessages = useCallback(() => {
     const errorMessages = []
     if (!checkAllWeightingHigherThanZero) {
-      errorMessages.push(t('All tokens in a pool must have a weighting higher than zero'))
+      errorMessages.push({ title: t('All tokens in a pool must have a weighting higher than zero') })
     }
 
     const totalWeight = tokensAndWeights.reduce((sum, curr) => sum + curr.weight, 0)
 
     if (totalWeight !== 100) {
-      errorMessages.push(t('Warning total weight Weighted Pool'))
+      errorMessages.push({
+        title: t('Total Weights do not match 100%'),
+        desc: t('The total weighting of all tokens must equal exactly 100% before you continue'),
+      })
     }
 
-    return errorMessages.map((message, index) => <ErrorMessage key={index} message={message} />)
+    return errorMessages.map((data, index) => (
+      <div className='flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 px-4 py-5' key={index}>
+        <WarningTriangleIcon className='h-5 w-5' />
+        <div className='flex flex-col gap-1'>
+          <TextHeading className='text-xl text-rose'>{data.title}</TextHeading>
+          <TextSubHeading className='text-base text-rose'>{data.desc}</TextSubHeading>
+        </div>
+      </div>
+    ))
   }, [checkAllWeightingHigherThanZero, t, tokensAndWeights])
 
   const { getValueTokenAmountToUSD } = useTokenUSDValue()
@@ -157,8 +171,8 @@ export default function CreateWeightedPoolPage() {
   }
 
   return (
-    <div className='flex flex-col gap-8'>
-      <StepCreate currentStep={currentStep} />
+    <div className='flex flex-col gap-16'>
+      <StepCreate currentStep={currentStep} setCurrentStep={setCurrentStep} />
       <div className='flex items-center gap-8'>
         <ScalesIcon className='size-16' />
         <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
@@ -173,7 +187,7 @@ export default function CreateWeightedPoolPage() {
           ) : (
             <></>
           )}
-          {renderMessages()}
+          {checkError && renderMessages()}
         </div>
       </div>
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
@@ -189,6 +203,7 @@ export default function CreateWeightedPoolPage() {
             assets={assets}
             poolName={poolName}
             setPoolName={setPoolName}
+            setCheckError={setCheckError}
           />
         </div>
         <div className={cn('flex flex-[4] flex-col gap-8', currentStep === 3 && 'hidden')}>

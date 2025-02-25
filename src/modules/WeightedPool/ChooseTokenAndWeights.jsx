@@ -52,7 +52,7 @@ const updateWeight = tokens => {
     return item
   })
 }
-function TokenItem({ token, index, setTokenSelected }) {
+function TokenItem({ token, index, setTokenSelected, max }) {
   const handleLockToken = useCallback(() => {
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
@@ -67,6 +67,7 @@ function TokenItem({ token, index, setTokenSelected }) {
   const handleUpdateWeightToken = e => {
     let value = Number(e.target.value)
     if (value < 0) value = 0
+    if (value > max) value = max
     if (value > 100) value = 100
 
     setTokenSelected(prev => {
@@ -81,18 +82,18 @@ function TokenItem({ token, index, setTokenSelected }) {
   }
 
   return (
-    <div className='flex h-11 w-full items-center gap-2 sm:w-fit'>
-      <div className='fex-row flex w-full items-center justify-between rounded-lg border border-neutral-700 p-1 hover:bg-neutral-800 lg:w-fit'>
-        <div className=' flex w-fit items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
+    <div className='flex h-11 items-center gap-2'>
+      <div className='fex-row flex w-full items-center justify-between rounded-lg border border-neutral-700 p-1 hover:bg-neutral-800 md:w-[220px]'>
+        <div className='flex items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
           <CircleImage alt='token logo' width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
           <Paragraph className='text-sm text-neutral-200'>{token.token.symbol}</Paragraph>
         </div>
         <Input
-          className='w-[60%] border-none bg-transparent'
+          className='border-none bg-transparent'
           classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7' }}
           type='number'
           min={0}
-          max={100}
+          max={max}
           step={1}
           val={token.weight || ''}
           onChange={handleUpdateWeightToken}
@@ -124,15 +125,17 @@ export function ErrorMessage({ message, type = 'error', className, showIcon = tr
   )
 }
 
-export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
+export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWeights, setCurrentStep, setCheckError }) {
   const t = useTranslations()
   const [totalWeight, setTotalWeight] = useState(0)
+  const [totalWeightLock, setTotalWeightLock] = useState(0)
   const [tokenSelected, setTokenSelected] = useState(tokensAndWeights)
   const { push } = useRouter()
 
   useEffect(() => {
     const tokens = tokenSelected.filter(item => item.token !== null)
     setTotalWeight(tokens.reduce((sum, curr) => sum + curr.weight, 0))
+    setTotalWeightLock(tokens.reduce((sum, curr) => sum + (curr.lock ? curr.weight : 0), 0))
     setTokenAndWeights(tokens)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTokenAndWeights, JSON.stringify(tokenSelected)])
@@ -147,14 +150,14 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
       !checkAllWeightingHigherThanZero ||
       tokensAndWeights.length <= 1 ||
       tokenSelected.length <= 1 ||
-      totalWeight > 100,
+      totalWeight !== 100,
     [checkAllWeightingHigherThanZero, tokenSelected.length, tokensAndWeights.length, totalWeight],
   )
 
   return (
     <div className='flex h-full flex-col gap-3'>
       <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
-      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+      <div className='mb-16 grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3'>
         {tokenSelected.map((token, index) => (
           <TokenItem
             key={`${token?.token?.address}_${index}`}
@@ -162,6 +165,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
             setTokenSelected={setTokenSelected}
             token={token}
             tokenSelected={tokenSelected}
+            max={100 - (totalWeightLock - token.weight)}
           />
         ))}
       </div>
@@ -173,9 +177,14 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
           {t('Back')}
         </EmphasisButton>
         <PrimaryButton
-          disabled={isDisable}
           className='w-full lg:w-fit'
-          onClick={() => setCurrentStep(prev => prev + 1)}
+          onClick={() => {
+            if (isDisable) {
+              setCheckError(true)
+              return
+            }
+            setCurrentStep(prev => prev + 1)
+          }}
         >
           {t('Next')}
         </PrimaryButton>

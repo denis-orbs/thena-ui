@@ -15,7 +15,7 @@ import PieChart from './PieChart'
 import PoolOverviewTable from './PoolOverviewTable'
 import WeightedPoolLogo from './WeightedPoolLogo'
 
-export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolName, setPoolName }) {
+export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolName }) {
   const t = useTranslations()
   const { push } = useRouter()
 
@@ -29,12 +29,6 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
     () => tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount })),
     [tokensAndWeights],
   )
-
-  useEffect(() => {
-    if (!poolName && tokens.length > 0) {
-      setPoolName(tokens.map(token => token.symbol).join('/'))
-    }
-  }, [poolName, setPoolName, tokens, tokens.length])
 
   const { onCreateWeightedPool, pending } = useWeightedPool()
 
@@ -87,23 +81,25 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
         </div>
         <div className='flex gap-4'>
           <div className='flex-[4]'>
-            <PieChart tokens={tokens} colors={colors} />
+            <PieChart tokens={tokens} colors={colors} showTotalPercent={false} />
           </div>
           <div className='flex-[6]'>
             <PoolOverviewTable tokens={tokens} colors={colors} />
           </div>
         </div>
       </Box>
-      <PrimaryButton disabled={pending} onClick={onCreate} className='w-full'>
-        {t('Deposit')}
-      </PrimaryButton>
-      <div className='flex flex-col gap-4 lg:flex-row'>
-        <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(prev => prev - 1)}>
-          {t('Back')}
-        </EmphasisButton>
-        <TextButton className='w-full lg:w-fit' onClick={() => push('/pools')}>
-          {t('Cancel')}
-        </TextButton>
+      <div className='space-y-16'>
+        <PrimaryButton disabled={pending} onClick={onCreate} className='w-full'>
+          {t('Deposit')}
+        </PrimaryButton>
+        <div className='flex flex-col gap-4 lg:flex-row'>
+          <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(prev => prev - 1)}>
+            {t('Back')}
+          </EmphasisButton>
+          <TextButton className='w-full lg:w-fit' onClick={() => push('/pools')}>
+            {t('Cancel')}
+          </TextButton>
+        </div>
       </div>
       <SuccessModal
         isOpen={showModalSuccess && Boolean(poolAddress)}

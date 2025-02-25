@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 
+import { Paragraph } from '@/components/typography'
 import { formatAmount } from '@/lib/utils'
 
 function PoolOverviewTable({ tokens, colors }) {
@@ -19,10 +20,18 @@ function PoolOverviewTable({ tokens, colors }) {
       <table className='w-full text-left'>
         <thead>
           <tr>
-            <th className='py-2'>Token</th>
-            <th className='py-2'>Pool Weight</th>
-            <th className='py-2'>Value in $</th>
-            <th className='py-2'>Token Amount</th>
+            <th className='py-2'>
+              <Paragraph className='text-lg font-medium text-neutral-50'>Token</Paragraph>
+            </th>
+            <th className='py-2'>
+              <Paragraph className='text-lg font-medium text-neutral-50'>Pool Weight</Paragraph>
+            </th>
+            <th className='py-2'>
+              <Paragraph className='text-lg font-medium text-neutral-50'>Value in $</Paragraph>
+            </th>
+            <th className='py-2'>
+              <Paragraph className='text-lg font-medium text-neutral-50'>Token Amount</Paragraph>
+            </th>
           </tr>
         </thead>
         <tbody>
