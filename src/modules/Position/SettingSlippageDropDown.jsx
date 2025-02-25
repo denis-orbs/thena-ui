@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
 import Input from '@/components/input'
@@ -8,7 +8,8 @@ import { Paragraph } from '@/components/typography'
 import { cn } from '@/lib/utils'
 import { SettingsIcon } from '@/svgs'
 
-const slippageTolerance = [0.1, 0.5, 1]
+const defaultSlippageOptions = [0.1, 0.5, 1]
+
 function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
   const [show, setShow] = useState(false)
   const dropdownRef = useRef(null)
@@ -16,7 +17,7 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
 
   const selections = useMemo(
     () =>
-      slippageTolerance.map(ele => ({
+      defaultSlippageOptions.map(ele => ({
         label: ele,
         active: slippage === Number(ele),
         onClickHandler: () => {
@@ -26,45 +27,32 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
     [slippage, updateSlippage],
   )
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShow(false)
-      }
-    }
-
-    if (show) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [show])
-
   return (
-    <div className={cn('flex items-center justify-end', className)}>
-      <div className='mb-4 flex flex-col gap-3' ref={dropdownRef}>
-        <p className='flex items-center justify-end gap-2'>
-          <Paragraph className='font-medium text-neutral-400'>{t('Slippage Tolerance')}</Paragraph>
-          <SettingsIcon
-            className='h-6 w-6 cursor-pointer'
+    <div className={cn('mb-4 flex items-center justify-end', className)}>
+      <div className={cn('flex flex-col', show && 'gap-3')} ref={dropdownRef}>
+        <div className='flex justify-end'>
+          <div
+            className='flex cursor-pointer items-center justify-end gap-2'
             onClick={() => {
               setShow(prev => !prev)
             }}
-          />
-        </p>
+          >
+            <Paragraph className='font-medium text-neutral-400'>{t('Slippage')}</Paragraph>
+            <SettingsIcon className='h-6 w-6 cursor-pointer' />
+          </div>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: -10, height: 0 }}
           animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className='overflow-hidden'
         >
-          <div className='right-0 top-full z-10 flex w-fit gap-3 rounded-lg p-2 shadow-lg'>
-            <Selection data={selections} className='bg-transparent' />
+          <div className='right-0 top-full z-10 flex w-fit gap-3 rounded-lg'>
+            <Selection data={selections} className='bg-transparent !text-neutral-200' />
             <Input
               classNames={{
-                input: 'w-[110px]',
+                input: 'w-20',
               }}
               val={slippage}
               onChange={e => updateSlippage(Number(e.target.value) || 0)}

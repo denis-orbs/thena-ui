@@ -99,7 +99,7 @@ function AddLiquidityV1Pool({ pair }) {
                 </NewTextHeading>
               </div>
               <NewTextSubHeading className='lg:text-2xl 2xl:text-3xl'>
-                {pairType === PAIR_TYPES.STABLE ? t('Stable') : t('Classic Pool')}
+                {pairType === PAIR_TYPES.STABLE ? t('Stable') : t('Classic')}
               </NewTextSubHeading>
             </div>
           )}

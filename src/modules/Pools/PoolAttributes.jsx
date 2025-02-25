@@ -75,6 +75,11 @@ export function PoolAttributesCL({ strategy, pool }) {
     return [resultProvider, resultType]
   }, [strategy.title])
 
+  const poolDeployer = useMemo(
+    () => (strategy.title.includes('Farming') ? zeroAddress : Contracts.pluginFactory[networkId]),
+    [networkId, strategy.title],
+  )
+
   return (
     <div className='border border-dashed border-primary-500'>
       <div className='space-y-4 rounded-lg bg-primary-950 p-6 text-[14px] font-normal leading-5'>
@@ -157,19 +162,10 @@ export function PoolAttributesCL({ strategy, pool }) {
           <div className='col-span-3 text-neutral-300'>{t('Pool Deployer')}:</div>
           <div className='col-span-4 text-neutral-50'>
             <div
-              onClick={
-                () =>
-                  goScan(
-                    networkId,
-                    strategy.title.includes('Farming') ? zeroAddress : Contracts.pluginFactory[networkId],
-                  )
-                // eslint-disable-next-line react/jsx-curly-newline
-              }
+              onClick={() => goScan(networkId, poolDeployer)}
               className='item-center flex cursor-pointer gap-1 text-primary-500'
             >
-              <span>
-                {formatAddress(strategy.title.includes('Farming') ? zeroAddress : Contracts.pluginFactory[networkId])}
-              </span>
+              <span>{formatAddress(poolDeployer)}</span>
               <LinkExternalIcon className='inline-block h-4 w-4' />
             </div>
           </div>
@@ -333,6 +329,7 @@ export function NormalPoolAttributes({ pool }) {
           <div className='col-span-3 text-neutral-300'>{t('Swap fees')}:</div>
           <div className='col-span-4 text-neutral-50'>
             <span className='mr-1'>{pool?.fee}%</span>
+            {/* TODO: Need condition to check - ask Prome */}
             <span className={cn(pool.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
           </div>
         </div>
@@ -353,10 +350,11 @@ export function NormalPoolAttributes({ pool }) {
         )}
 
         {/* Attribute immutability */}
-        <div className='grid grid-cols-7'>
+        {/* <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-300'>{t('Attribute immutability')}:</div>
-          <div className='col-span-4 text-neutral-50'>{t('Immutable except for swap fees editable by governance')}</div>
-        </div>
+          <div className='col-span-4 text-neutral-50'>{t('Immutable')}</div>
+        </div> */}
+
         {pool?.createdAt ? (
           <div className='grid grid-cols-7'>
             <div className='col-span-3 text-neutral-300'>{t('Creation date')}:</div>
@@ -375,7 +373,7 @@ export function NormalPoolAttributes({ pool }) {
         {/* Pool address */}
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-300'>{t('Pool Address')}:</div>
-          <div className='col-span-4 text-neutral-50'>
+          <div className='col-span-4 text-primary-500'>
             <div onClick={() => goScan(networkId, pool?.address)} className='item-center flex cursor-pointer gap-1'>
               <span>{formatAddress(pool?.address)}</span>
               <LinkExternalIcon className='inline-block h-4 w-4' />
