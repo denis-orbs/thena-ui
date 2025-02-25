@@ -1460,5 +1460,7 @@
   "You have successfully deposited and staked": "You have successfully deposited and staked",
   "Deposit & Stake": "Deposit & Stake",
   "You can not select the same token twice": "You can not select the same token twice",
-  "Select token": "Select token"
+  "Select token": "Select token",
+  "Register Pool": "Register Pool",
+  "Add Initial Liquidity": "Add Initial Liquidity"
 }

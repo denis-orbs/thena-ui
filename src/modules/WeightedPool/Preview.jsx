@@ -39,10 +39,10 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
   const { onCreateWeightedPool, pending } = useWeightedPool()
 
   const onCreate = useCallback(() => {
-    const allocates = tokensAndWeights.map(token => token.weight)
-    const amounts = tokensAndWeights.map(token => toWei(Number(token.amount)))
+    const allocatesPercent = tokensAndWeights.map(token => token.weight)
+    const amountsWei = tokensAndWeights.map(token => toWei(Number(token.amount)))
     const symbol = tokens.map(token => token.symbol).join('/')
-    onCreateWeightedPool(poolName, symbol, tokens, allocates, amounts, fees, result => {
+    onCreateWeightedPool(poolName, symbol, tokens, allocatesPercent, amountsWei, fees, result => {
       setPoolAddress(result)
       setShowModalSuccess(true)
     })

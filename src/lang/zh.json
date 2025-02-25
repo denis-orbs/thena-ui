@@ -1457,7 +1457,9 @@
   "Add to Pool": "添加到池",
   "View Dashboard": "View Dashboard",
   "You have successfully deposited and staked": "You have successfully deposited and staked",
-  "Select token": "Select token",
   "Deposit & Stake": "添加流动性并质押",
-  "You can not select the same token twice": "You can not select the same token twice"
+  "You can not select the same token twice": "You can not select the same token twice",
+  "Select token": "Select token",
+  "Register Pool": "Register Pool",
+  "Add Initial Liquidity": "Add Initial Liquidity"
 }

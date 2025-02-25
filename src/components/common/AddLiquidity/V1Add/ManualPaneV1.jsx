@@ -6,7 +6,6 @@ import { zeroAddress } from 'viem'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
-import CustomTooltip from '@/components/tooltip'
 import { PAIR_TYPES } from '@/constant'
 import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
@@ -171,36 +170,47 @@ export function ManualPaneV1({
         </div>
       </div>
 
-      <div className='mt-5 grid gap-4 md:grid-cols-2'>
+      <div className='mt-5 flex gap-4'>
         {account ? (
           <>
-            <EmphasisButton
-              disabled={pending}
-              onClick={() => {
-                onAddLiquidity()
-              }}
-            >
-              {t('Deposit')}
-            </EmphasisButton>
+            {strategy && strategy.gauge.address !== zeroAddress && strategy.version === 3 ? (
+              // Has gauge => Can deposit/stake
+              <>
+                <EmphasisButton
+                  disabled={pending}
+                  onClick={() => {
+                    onAddLiquidity()
+                  }}
+                  className='flex-1'
+                >
+                  {t('Deposit')}
+                </EmphasisButton>
 
-            <PrimaryButton
-              disabled={stakePending || !strategy || strategy.gauge.address === zeroAddress || strategy.version !== 3}
-              onClick={() => {
-                onAddAndStake()
-              }}
-              data-tooltip-id='add-liquidity-stake'
-            >
-              {t('Deposit & Stake')}
-            </PrimaryButton>
-
-            {(!strategy || strategy.gauge.address === zeroAddress || strategy.version !== 3) && (
-              <CustomTooltip id='add-liquidity-stake' className='max-w-full md:max-w-[500px]'>
-                {t('This pool has no Gauge')}
-              </CustomTooltip>
+                <PrimaryButton
+                  disabled={stakePending}
+                  onClick={() => {
+                    onAddAndStake()
+                  }}
+                  className='flex-1'
+                >
+                  {t('Deposit & Stake')}
+                </PrimaryButton>
+              </>
+            ) : (
+              // No gauge => Can only deposit
+              <PrimaryButton
+                disabled={pending}
+                onClick={() => {
+                  onAddLiquidity()
+                }}
+                className='flex-1'
+              >
+                {t('Deposit')}
+              </PrimaryButton>
             )}
           </>
         ) : (
-          <ConnectButton className='w-full' />
+          <ConnectButton className='flex-1' />
         )}
       </div>
     </section>

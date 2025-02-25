@@ -120,7 +120,17 @@ export const useGaugeBalance = gaugeAddress => {
   return { gaugeBalance: data, isLoading, mutateGaugeBalance: mutate }
 }
 
-const onStackLp = async (pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key) => {
+const handleStakeLP = async (
+  pool,
+  account,
+  chainId,
+  approveLpuuid,
+  lpContract,
+  writeTxn,
+  setPending,
+  stakeuuid,
+  key,
+) => {
   const weightedPoolContract = {
     address: pool.address,
     abi: weightedPoolAbi,
@@ -174,7 +184,7 @@ export const useWeightedPool = () => {
   }, [])
 
   const onCreateWeightedPool = useCallback(
-    async (name, symbol, tokens, allocates, amounts, fee, onSuccess) => {
+    async (name, symbol, tokens, allocatesPercent, amountsWei, fee, onSuccess) => {
       try {
         const key = uuidv4()
         const createuuid = uuidv4()
@@ -190,8 +200,8 @@ export const useWeightedPool = () => {
         const index = (tokens || []).findIndex(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
         let amountToWrap
         const wBNBBalance = BigNumber.isBigNumber(wBNB.balance) ? wBNB.balance : new BigNumber(wBNB.balance)
-        if (wBNB && wBNBBalance.lt(fromWei(amounts?.[index]))) {
-          amountToWrap = fromWei(amounts?.[index]).minus(wBNBBalance)
+        if (wBNB && wBNBBalance.lt(fromWei(amountsWei?.[index]))) {
+          amountToWrap = fromWei(amountsWei?.[index]).minus(wBNBBalance)
         }
 
         if (amountToWrap) {
@@ -225,10 +235,11 @@ export const useWeightedPool = () => {
         }
 
         transactions[createuuid] = {
-          desc: t('Create New Weighted Pool'),
+          desc: t('Create Weighted Pool'),
           status: TXN_STATUS.START,
           hash: null,
         }
+
         transactions[registerPooluuid] = {
           desc: t('Register Pool'),
           status: TXN_STATUS.START,
@@ -236,7 +247,7 @@ export const useWeightedPool = () => {
         }
 
         transactions[initialLiquidityuuid] = {
-          desc: t('Add initial liquidity'),
+          desc: t('Add Initial Liquidity'),
           status: TXN_STATUS.START,
           hash: null,
         }
@@ -275,12 +286,14 @@ export const useWeightedPool = () => {
         const salt = toHex(toBytes32(encodeName))
 
         const tokenIds = tokens.map(token => wrappedAddress(token))
+        // Note: 40 => divide by 100 then toWei => 16 decimals
+        const allocatesWei = allocatesPercent.map(allocates => toWei(allocates, 16).toFixed(0))
 
         const txHash = await writeTxn(key, createuuid, poolFactoryContract, 'create', [
           name,
           symbol,
           tokenIds,
-          allocates,
+          allocatesWei,
           account.toLowerCase(),
           salt,
         ])
@@ -297,7 +310,7 @@ export const useWeightedPool = () => {
         const result = await writeTxn(key, initialLiquidityuuid, routerContract, 'joinPoolInit', [
           poolId32,
           tokenIds,
-          amounts,
+          amountsWei,
         ])
 
         if (!result) {
@@ -453,7 +466,7 @@ export const useWeightedPool = () => {
       }
 
       if (withStake) {
-        await onStackLp(pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key)
+        await handleStakeLP(pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key)
       }
 
       endTxn({
@@ -620,7 +633,7 @@ export const useWeightedPool = () => {
       }
 
       if (withStake) {
-        await onStackLp(pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key)
+        await handleStakeLP(pool, account, chainId, approveLpuuid, lpContract, writeTxn, setPending, stakeuuid, key)
       }
 
       endTxn({
