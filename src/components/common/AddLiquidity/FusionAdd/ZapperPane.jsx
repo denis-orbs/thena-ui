@@ -11,7 +11,7 @@ import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { Bound } from '@/state/fusion/actions'
 
-function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo, strategy }) {
+function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo, strategy, onShowModalSuccess }) {
   const t = useTranslations()
 
   const [token0, token1] = useMemo(() => {
@@ -44,19 +44,6 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
     slippage: slippage * 100,
   })
 
-  // const apr = useEstimateAPR({
-  //   pool: mintInfo.pool,
-  //   poolAddress: mintInfo.poolAddress,
-  //   tickUpper,
-  //   tickLower,
-  //   token0: tokenDeposit.address === asset0.address ? asset0 : null,
-  //   token1: tokenDeposit.address === asset1.address ? asset1 : null,
-  //   amount0: amountIn,
-  //   amount1: amountIn,
-  //   isFarming: strategy?.title === MANUAL_TYPES[0],
-  //   tvl: strategy?.tvl,
-  // })
-
   return (
     <div className='flex flex-col gap-2'>
       <div className='relative flex w-full flex-col gap-2'>
@@ -75,14 +62,17 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
         <PrimaryButton
           disabled={isFetching || !data?.route}
           onClick={() => {
-            handleAddLiquidity({
-              route: data?.route,
-              mintInfo,
-              deadline,
-              amount: amountIn,
-              token: tokenDeposit,
-              isFarming: Boolean(strategy?.isFarming),
-            })
+            handleAddLiquidity(
+              {
+                route: data?.route,
+                mintInfo,
+                deadline,
+                amount: amountIn,
+                token: tokenDeposit,
+                isFarming: Boolean(strategy?.isFarming),
+              },
+              onShowModalSuccess,
+            )
           }}
           className='w-full'
         >

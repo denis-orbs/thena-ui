@@ -33,7 +33,7 @@ export const useAlgebraAdd = () => {
   const isFarming = strategy?.isFarming ?? false
 
   const onAlgebraAdd = useCallback(
-    async (amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline) => {
+    async ({ amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline }, callback) => {
       try {
         const key = uuidv4()
         const approve1uuid = uuidv4()
@@ -196,6 +196,7 @@ export const useAlgebraAdd = () => {
 
         endTxn({ key, final: 'Liquidity Add Successful' })
         setPending(false)
+        if (callback) callback()
       } catch (e) {
         setPending(false)
         throw e

@@ -34,7 +34,7 @@ export const useAddGamma = () => {
   const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers()
 
   const handleAddGamma = useCallback(
-    async (amountA, amountB, amountToWrap, gammaPair, slippage = 0.5) => {
+    async ({ amountA, amountB, amountToWrap, gammaPair, slippage }, callback) => {
       const isFarming = gammaPair?.isFarming
       const baseCurrency = amountA.currency
       const quoteCurrency = amountB.currency
@@ -151,6 +151,7 @@ export const useAddGamma = () => {
         final: 'Liquidity Added And Staked',
       })
       setPending(false)
+      if (callback) callback()
     },
     [account, endTxn, networkId, onFieldAInput, onFieldBInput, startTxn, t, writeTxn],
   )

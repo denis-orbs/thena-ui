@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
@@ -25,7 +25,7 @@ const getZapAddress = (strategy, chainId) => {
   if (strategy.type === PAIR_TYPES.STABLE) return { address: Contracts.stableZap[chainId], isV1: true }
 }
 
-export function ZapperPane({ asset0, asset1, slippage = 0.5, strategy }) {
+export function ZapperPane({ asset0, asset1, slippage = 0.5, strategy, onShowModalSuccess }) {
   const t = useTranslations()
   const { address: pairAddress, gauge } = strategy
   const zapSwapSlippage = 10000 - slippage * 100
@@ -91,30 +91,53 @@ export function ZapperPane({ asset0, asset1, slippage = 0.5, strategy }) {
     }
   }, [assemble0, assemble1, asset0, asset1])
 
-  const handleAddLiquidity = ({ isStake = true }) => {
-    if (isV1) {
-      addZapV1({
-        tokenDeposit,
-        tokenIn,
-        amount: amountIn,
-        gaugeAddress: isStake && gauge?.address ? gauge?.address : null,
-        pairAddress,
-        zapSwapSlippage,
-        odosParams: bestQuote,
-        type: strategy.type,
-      })
-    } else {
-      addZapGamma({
-        tokenDeposit,
-        tokenIn,
-        amount: amountIn,
-        pairAddress,
-        zapSwapSlippage,
-        gammaSlippage: Math.floor(slippage * 100),
-        odosParams: bestQuote,
-      })
-    }
-  }
+  const handleAddLiquidity = useCallback(
+    ({ isStake = true }) => {
+      if (isV1) {
+        addZapV1(
+          {
+            tokenDeposit,
+            tokenIn,
+            amount: amountIn,
+            gaugeAddress: isStake && gauge?.address ? gauge?.address : null,
+            pairAddress,
+            zapSwapSlippage,
+            odosParams: bestQuote,
+            type: strategy.type,
+          },
+          onShowModalSuccess,
+        )
+      } else {
+        addZapGamma(
+          {
+            tokenDeposit,
+            tokenIn,
+            amount: amountIn,
+            pairAddress,
+            zapSwapSlippage,
+            gammaSlippage: Math.floor(slippage * 100),
+            odosParams: bestQuote,
+          },
+          onShowModalSuccess,
+        )
+      }
+    },
+    [
+      addZapGamma,
+      addZapV1,
+      amountIn,
+      bestQuote,
+      gauge?.address,
+      isV1,
+      onShowModalSuccess,
+      pairAddress,
+      slippage,
+      strategy.type,
+      tokenDeposit,
+      tokenIn,
+      zapSwapSlippage,
+    ],
+  )
 
   return (
     <div className='flex flex-col gap-2'>

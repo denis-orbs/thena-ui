@@ -63,7 +63,7 @@ export const fetchGammaInfo = async (chainId, strategy) => {
   }
 }
 
-export default function GammaAdd({ strategy, isModal, isAdd }) {
+export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess }) {
   const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
 
@@ -104,13 +104,20 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
         </div>
 
         {isZapper ? (
-          <ZapperPane asset0={asset0} asset1={asset1} strategy={strategy} slippage={slippage} />
+          <ZapperPane
+            asset0={asset0}
+            asset1={asset1}
+            strategy={strategy}
+            slippage={slippage}
+            onShowModalSuccess={onShowModalSuccess}
+          />
         ) : (
           <ManualPane
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
             strategy={strategy}
             slippage={slippage}
+            onShowModalSuccess={onShowModalSuccess}
           />
         )}
       </div>
@@ -118,7 +125,7 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   )
 }
 
-function ManualPane({ baseCurrency, quoteCurrency, strategy, slippage }) {
+function ManualPane({ baseCurrency, quoteCurrency, strategy, slippage, onShowModalSuccess }) {
   const t = useTranslations()
   const { account } = useWallet()
   const { networkId } = useChainSettings()
@@ -177,8 +184,8 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, slippage }) {
   }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType, price])
 
   const onAddLiquidity = useCallback(() => {
-    handleAddGamma(amountA, amountB, amountToWrap, strategy, slippage)
-  }, [amountA, amountB, amountToWrap, handleAddGamma, slippage, strategy])
+    handleAddGamma({ amountA, amountB, amountToWrap, gammaPair: strategy, slippage }, onShowModalSuccess)
+  }, [amountA, amountB, amountToWrap, handleAddGamma, onShowModalSuccess, slippage, strategy])
 
   return (
     <div>

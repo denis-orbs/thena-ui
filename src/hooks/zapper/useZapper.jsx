@@ -72,7 +72,7 @@ export const useZapperAddLiquidity = () => {
   const { account, chainId } = useWallet()
 
   const handleAddLiquidity = useCallback(
-    async ({ token, amount, mintInfo, route, deadline = 1800000000, isFarming = false }) => {
+    async ({ token, amount, mintInfo, route, deadline = 1800000000, isFarming = false }, callback) => {
       try {
         if (!account) {
           throw new Error('Please connect your wallet')
@@ -195,6 +195,7 @@ export const useZapperAddLiquidity = () => {
 
         endTxn({ key, final: 'Liquidity Add Successful' })
         setPending(false)
+        if (callback) callback()
       } catch (e) {
         setPending(false)
         throw e
@@ -219,7 +220,10 @@ export const useV1Zapper = () => {
    * @Param odosParams:   Amount to deposit (must have in case of deposit token that is not in Pair)
    * */
   const onAddLiquidity = useCallback(
-    async ({ tokenDeposit, tokenIn, amount, gaugeAddress, pairAddress, zapSwapSlippage, odosParams, type }) => {
+    async (
+      { tokenDeposit, tokenIn, amount, gaugeAddress, pairAddress, zapSwapSlippage, odosParams, type },
+      callback,
+    ) => {
       try {
         if (!account) {
           throw new Error('Please connect your wallet')
@@ -355,6 +359,7 @@ export const useV1Zapper = () => {
 
         endTxn({ key, final: 'Liquidity Add Successful' })
         setPending(false)
+        if (callback) callback()
       } catch (e) {
         setPending(false)
         throw e
@@ -379,7 +384,7 @@ export const useGammaZapper = () => {
    * @Param odosParams:   Amount to deposit (must have in case of deposit token that is not in Pair)
    * */
   const onAddLiquidity = useCallback(
-    async ({ tokenDeposit, tokenIn, amount, pairAddress, zapSwapSlippage, gammaSlippage, odosParams }) => {
+    async ({ tokenDeposit, tokenIn, amount, pairAddress, zapSwapSlippage, gammaSlippage, odosParams }, callback) => {
       try {
         if (!account) {
           throw new Error('Please connect your wallet')
@@ -478,6 +483,7 @@ export const useGammaZapper = () => {
 
         endTxn({ key, final: 'Liquidity Add Successful' })
         setPending(false)
+        if (callback) callback()
       } catch (e) {
         setPending(false)
         throw e

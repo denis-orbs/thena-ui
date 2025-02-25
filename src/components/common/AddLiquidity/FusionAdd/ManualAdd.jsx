@@ -14,7 +14,7 @@ import { useSettings } from '@/state/settings/hooks'
 
 import { EnterAmounts } from './containers/EnterAmounts'
 
-export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slippage }) {
+export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slippage, onShowModalSuccess }) {
   const { account } = useWallet()
 
   const { errorMessage } = mintInfo
@@ -31,8 +31,19 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, slipp
       return
     }
 
-    onAlgebraAdd(amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline)
-  }, [errorMessage, onAlgebraAdd, amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline])
+    onAlgebraAdd({ amountA, amountB, baseCurrency, quoteCurrency, mintInfo, slippage, deadline }, onShowModalSuccess)
+  }, [
+    errorMessage,
+    onAlgebraAdd,
+    amountA,
+    amountB,
+    baseCurrency,
+    quoteCurrency,
+    mintInfo,
+    slippage,
+    deadline,
+    onShowModalSuccess,
+  ])
 
   return (
     <section className='space-y-8'>

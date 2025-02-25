@@ -190,43 +190,45 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
       onLeftRangeInput('')
       onRightRangeInput('')
       dispatch(updateStrategy({ strategy: strategyInfo }))
-      onChangeLiquidityRangeType(getLiquidityRangeType(strategyInfo.title))
+      onChangeLiquidityRangeType(getLiquidityRangeType(strategyInfo?.title))
     },
     [dispatch, onChangeLiquidityRangeType, onLeftRangeInput, onRightRangeInput],
   )
 
   const handleChooseStrategy = useCallback(
     sub => {
+      if (!sub) return setStrategy(null)
+
       const _isAutomatic = !MANUAL_TYPES.includes(sub.title)
       setIsAutomatic(_isAutomatic)
 
       setStrategy({
         title: sub.title,
-        tvl: sub?.tvl?.toNumber() ?? 0,
-        apr: sub?.gauge?.apr?.toNumber() ?? 0,
+        tvl: sub.tvl?.toNumber() ?? 0,
+        apr: sub.gauge?.apr?.toNumber() ?? 0,
         account: {
-          totalLp: sub?.account?.totalLp?.toNumber(),
-          gaugeBalance: sub?.account?.gaugeBalance?.toNumber(),
+          totalLp: sub.account?.totalLp?.toNumber(),
+          gaugeBalance: sub.account?.gaugeBalance?.toNumber(),
         },
         allowed: sub.allowed,
         token0: {
-          ...sub?.token0,
-          reserve: sub?.token0?.reserve?.toNumber(),
-          balance: sub?.token0?.balance?.toNumber(),
-          totalValue: sub?.token0?.totalValue,
+          ...sub.token0,
+          reserve: sub.token0?.reserve?.toNumber(),
+          balance: sub.token0?.balance?.toNumber(),
+          totalValue: sub.token0?.totalValue,
         },
         token1: {
-          ...sub?.token1,
-          reserve: sub?.token1?.reserve?.toNumber(),
-          balance: sub?.token1?.balance?.toNumber(),
-          totalValue: sub?.token1?.totalValue,
+          ...sub.token1,
+          reserve: sub.token1?.reserve?.toNumber(),
+          balance: sub.token1?.balance?.toNumber(),
+          totalValue: sub.token1?.totalValue,
         },
         address: sub.address,
         isFarming: sub.title.includes('Farming'),
         isAutomatic: _isAutomatic,
-        isDefault: true,
+        isDefault: sub.isDefault ?? true,
         version: 3,
-        fee: sub?.fee,
+        fee: sub.fee,
       })
     },
     [setStrategy],
@@ -245,7 +247,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
       const priority = { CL_Farming: 1, CL_SwapFee: 2 }
       let _strategy = pair.subpools.sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3)).at(0)
       if (!_strategy) _strategy = pair.subpools.find(item => !MANUAL_TYPES.includes(item.title))
-      handleChooseStrategy({ ..._strategy, isDefault: true } ?? defaultSwapFees)
+      handleChooseStrategy(_strategy ?? defaultSwapFees)
     }
   }, [firstAsset, handleChooseStrategy, pair?.subpools, poolAddress, secondAsset, strategy])
 
@@ -255,7 +257,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
         if (enable) return !MANUAL_TYPES.includes(item.title)
         return MANUAL_TYPES.includes(item.title)
       })
-      handleChooseStrategy({ ..._strategy, isDefault: true } ?? defaultSwapFees)
+      handleChooseStrategy(_strategy ?? defaultSwapFees)
       setIsAutomatic(enable)
     },
     [handleChooseStrategy, pair?.subpools],

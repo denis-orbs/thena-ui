@@ -131,7 +131,7 @@ export const useIchiManage = () => {
   )
 
   const onIchiAddAndStake = useCallback(
-    async (vault, amount, amountToWrap, slippage) => {
+    async ({ vault, amount, amountToWrap, slippage }, callback) => {
       const vaultContract = getIchiVaultContract(vault.address, networkId)
       const { token0, token1 } = vault
       if (token0.address === vault.allowed.address) {
@@ -278,6 +278,7 @@ export const useIchiManage = () => {
         final: 'Liquidity Added and Staked',
       })
       setPending(false)
+      if (callback) callback()
     },
     [networkId, account, startTxn, t, writeTxn, endTxn, closeTxn, updateTxn],
   )
@@ -351,7 +352,7 @@ export const useIchiManageV3 = () => {
   const t = useTranslations()
 
   const addIchiPool = useCallback(
-    async (vault, amount, amountToWrap, slippage) => {
+    async ({ vault, amount, amountToWrap, slippage }, callback) => {
       const { token0, token1, address: vaultAddress, isFarming = false } = vault
       const vaultContract = getIchiVaultContract(vaultAddress, networkId, 3)
 
@@ -502,6 +503,7 @@ export const useIchiManageV3 = () => {
 
       endTxn({ key, final: 'Liquidity Added' })
       setPending(false)
+      if (callback) callback()
     },
     [networkId, account, startTxn, t, writeTxn, endTxn, closeTxn, updateTxn],
   )

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { ChainId } from 'thena-sdk-core'
 
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -26,6 +27,7 @@ import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
 import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
+import { updateStrategy } from '@/state/fusion/actions'
 import { useChainSettings } from '@/state/settings/hooks'
 import { AnalyticsIcon, InfoIcon } from '@/svgs'
 
@@ -90,6 +92,7 @@ export default function PoolsPage() {
   const vaultsV3 = useMemo(() => vaults.filter(v => v.version === 3), [vaults])
   const { networkId } = useChainSettings()
   const t = useTranslations()
+  const dispatch = useDispatch()
 
   const filteredPools = useMemo(() => {
     let final
@@ -415,6 +418,7 @@ export default function PoolsPage() {
             <EmphasisButton
               className='w-full p-2 text-sm lg:w-fit'
               onClick={() => {
+                dispatch(updateStrategy({ strategy: null }))
                 push(
                   pool.type === PAIR_TYPES.WEIGHTED
                     ? `/pools/add-liquidity/weighted/${pool.address}`

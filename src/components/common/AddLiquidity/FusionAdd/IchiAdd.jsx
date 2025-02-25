@@ -15,7 +15,7 @@ import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 
-export default function IchiAdd({ strategy, isAdd, isModal }) {
+export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess }) {
   const [amount, setAmount] = useState('')
   const { onIchiAddAndStake: addIchiPoolV2, pending: pendingV2 } = useIchiManage()
   const { addIchiPool: addIchiPoolV3, pending: pendingV3 } = useIchiManageV3()
@@ -57,11 +57,11 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
     if (errorMsg) {
       warnToast(errorMsg)
     } else if (strategy?.account?.version === 2) {
-      addIchiPoolV2(strategy, amount, amountToWrap, slippage)
+      addIchiPoolV2({ vault: strategy, amount, amountToWrap, slippage }, onShowModalSuccess)
     } else {
-      addIchiPoolV3(strategy, amount, amountToWrap, slippage)
+      addIchiPoolV3({ vault: strategy, amount, amountToWrap, slippage }, onShowModalSuccess)
     }
-  }, [addIchiPoolV3, amount, amountToWrap, errorMsg, addIchiPoolV2, slippage, strategy])
+  }, [errorMsg, strategy, addIchiPoolV2, amount, amountToWrap, slippage, onShowModalSuccess, addIchiPoolV3])
 
   return (
     <>
