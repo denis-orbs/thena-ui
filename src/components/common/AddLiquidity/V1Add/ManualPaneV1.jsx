@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
@@ -6,6 +7,7 @@ import { zeroAddress } from 'viem'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
+import SuccessModal from '@/components/modal/SuccessModal'
 import { PAIR_TYPES } from '@/constant'
 import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
@@ -23,6 +25,7 @@ export function ManualPaneV1({
   slippage,
 }) {
   const t = useTranslations()
+  const { push } = useRouter()
 
   const [firstAmount, setFirstAmount] = useState('')
   const [secondAmount, setSecondAmount] = useState('')
@@ -31,6 +34,8 @@ export function ManualPaneV1({
   const { deadline } = useSettings()
   const { onV1Add, pending } = useV1Add()
   const { onV1AddAndStake, pending: stakePending } = useV1AddAndStake()
+  const [showModalSuccess, setShowModalSuccess] = useState(false)
+  const [poolAddress, setPoolAddress] = useState('')
 
   const isFromBNB = useMemo(
     () => ['BNB', WBNB[networkId].address.toLowerCase()].includes(firstAsset?.address),
@@ -110,7 +115,8 @@ export function ManualPaneV1({
       pairType === PAIR_TYPES.STABLE,
       deadline,
       slippage,
-      () => {
+      address => {
+        setPoolAddress(address)
         setFirstAmount('')
         setSecondAmount('')
       },
@@ -131,7 +137,8 @@ export function ManualPaneV1({
       pairType === PAIR_TYPES.STABLE,
       deadline,
       slippage,
-      () => {
+      address => {
+        setPoolAddress(address)
         setFirstAmount('')
         setSecondAmount('')
       },
@@ -213,6 +220,25 @@ export function ManualPaneV1({
           <ConnectButton className='flex-1' />
         )}
       </div>
+
+      <SuccessModal
+        isOpen={showModalSuccess && poolAddress}
+        onClose={() => setShowModalSuccess(false)}
+        heading={t('Deposit Successful')}
+        message={t('You have successfully deposited and staked')}
+        buttonAction={
+          <div className='flex gap-4'>
+            <EmphasisButton className='w-1/2' onClick={() => push('/pools/add-liquidity')}>
+              {/* TODO: Navigate to pool address */}
+              {/* <EmphasisButton className='w-1/2' onClick={() => push(`/pools/${poolAddress}`)}> */}
+              {t('View Pool')}
+            </EmphasisButton>
+            <EmphasisButton className='w-1/2' onClick={() => push('/dashboard')}>
+              {t('View Dashboard')}
+            </EmphasisButton>
+          </div>
+        }
+      />
     </section>
   )
 }

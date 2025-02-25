@@ -89,16 +89,13 @@ export const useV1Add = () => {
       let sendAmount0Min = toWei(sendSlippage.times(firstAmount), firstAsset.decimals).toFixed(0)
       let sendAmount1Min = toWei(sendSlippage.times(secondAmount), secondAsset.decimals).toFixed(0)
 
+      const wrappedAddress0 = firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address
+      const wrappedAddress1 = secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address
+
       const quoteRes = await readCall(
         routerContract,
         'quoteAddLiquidity',
-        [
-          firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address,
-          secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address,
-          isStable,
-          sendAmount0,
-          sendAmount1,
-        ],
+        [wrappedAddress0, wrappedAddress1, isStable, sendAmount0, sendAmount1],
         chainId,
       )
 
@@ -141,7 +138,14 @@ export const useV1Add = () => {
         key,
         final: 'Liquidity Add Successful',
       })
-      callback()
+
+      const poolAddress = await readCall(
+        routerContract,
+        'pairFor',
+        [wrappedAddress0, wrappedAddress1, isStable],
+        chainId,
+      )
+      callback(poolAddress?.toLowerCase())
       setPending(false)
     },
     [account, chainId, startTxn, writeTxn, endTxn, t],
@@ -237,16 +241,13 @@ export const useV1AddAndStake = () => {
       let sendAmount0Min = toWei(sendSlippage.times(firstAmount), firstAsset.decimals).toFixed(0)
       let sendAmount1Min = toWei(sendSlippage.times(secondAmount), secondAsset.decimals).toFixed(0)
 
+      const wrappedAddress0 = firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address
+      const wrappedAddress1 = secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address
+
       const quoteRes = await readCall(
         routerContract,
         'quoteAddLiquidity',
-        [
-          firstAsset.address === 'BNB' ? WBNB[chainId].address : firstAsset.address,
-          secondAsset.address === 'BNB' ? WBNB[chainId].address : secondAsset.address,
-          isStable,
-          sendAmount0,
-          sendAmount1,
-        ],
+        [wrappedAddress0, wrappedAddress1, isStable, sendAmount0, sendAmount1],
         chainId,
       )
 
@@ -311,7 +312,14 @@ export const useV1AddAndStake = () => {
         key,
         final: 'Liquidity add & stake successful',
       })
-      callback()
+
+      const poolAddress = await readCall(
+        routerContract,
+        'pairFor',
+        [wrappedAddress0, wrappedAddress1, isStable],
+        chainId,
+      )
+      callback(poolAddress?.toLowerCase())
       setPending(false)
     },
     [account, chainId, startTxn, writeTxn, endTxn, updateTxn, t],
