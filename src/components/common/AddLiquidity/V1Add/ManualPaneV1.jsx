@@ -5,7 +5,7 @@ import { zeroAddress } from 'viem'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
-import BalanceInput from '@/components/input/BalanceInput'
+import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import CustomTooltip from '@/components/tooltip'
 import { PAIR_TYPES } from '@/constant'
 import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
@@ -154,14 +154,14 @@ export function ManualPaneV1({
     <section>
       <div className='flex flex-col'>
         <div className='mb-5 grid gap-2 xl:grid-cols-2'>
-          <BalanceInput
+          <TokenAmountInput
             asset={firstAsset}
             setAsset={isFromBNB ? setFirstAddress : null}
             amount={firstAmount}
             onAmountChange={onFirstChange}
             showPercent={false}
           />
-          <BalanceInput
+          <TokenAmountInput
             asset={secondAsset}
             setAsset={isToBNB ? setSecondAddress : null}
             amount={secondAmount}

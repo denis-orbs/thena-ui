@@ -6,7 +6,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
-import BalanceInput from '@/components/input/BalanceInput'
+import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { useAssets } from '@/context/assetsContext'
 import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
@@ -73,7 +73,7 @@ export default function IchiAdd({ strategy, isAdd, isModal }) {
         </div>
 
         <div className='flex flex-col gap-4'>
-          <BalanceInput
+          <TokenAmountInput
             asset={depositToken}
             maxBalance={isDouble ? balance : null}
             amount={amount}

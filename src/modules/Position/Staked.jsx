@@ -152,13 +152,7 @@ export default function Staked({ pool }) {
             <Paragraph className='text-xs'>{getDisplayedStrategy(pool.title)}</Paragraph>
           </div>
         </div>
-        <GreenBadge>
-          {pool?.title?.includes('_Farming')
-            ? 'Farm Strategy'
-            : pool?.title?.includes('_SwapFee')
-              ? 'Fee Strategy'
-              : t('Staked')}
-        </GreenBadge>
+        <GreenBadge>{t('Staked')}</GreenBadge>
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>

@@ -7,6 +7,7 @@ import { NeutralBadge, PrimaryBadge } from '@/components/badges/Badge'
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { POSITION_EARNED_TYPES } from '@/constant'
 import { cn, formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
@@ -74,7 +75,7 @@ export function GaugeItem({ pool, strategy, staked = false, strategyType = 'V1' 
         </PrimaryBadge>
 
         <NeutralBadge className={cn('hidden', strategy && strategyType !== 'V1' && 'block')}>
-          {strategy?.isFarming ? 'Farm Strategy' : 'Fee Strategy'}
+          {strategy?.isFarming ? POSITION_EARNED_TYPES.EARN_THE : POSITION_EARNED_TYPES.EARN_FEE}
         </NeutralBadge>
       </div>
 

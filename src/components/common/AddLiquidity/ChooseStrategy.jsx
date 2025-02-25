@@ -224,7 +224,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
         address: sub.address,
         isFarming: sub.title.includes('Farming'),
         isAutomatic: _isAutomatic,
-        isDefault: sub?.isDefault,
+        isDefault: true,
         version: 3,
         fee: sub?.fee,
       })

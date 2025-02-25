@@ -15,7 +15,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { MANUAL_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
@@ -221,7 +221,7 @@ export default function ManualPosition({ position }) {
         </div>
 
         <div className='flex flex-wrap justify-end gap-2'>
-          <GreenBadge>Fee Strategy</GreenBadge>
+          <GreenBadge>{POSITION_EARNED_TYPES.EARN_FEE}</GreenBadge>
 
           {!Number(liquidity) ? (
             <YellowBadge>{t('Closed')}</YellowBadge>

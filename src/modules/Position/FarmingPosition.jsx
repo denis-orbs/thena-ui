@@ -14,7 +14,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { MANUAL_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
@@ -239,7 +239,7 @@ export function FarmingPosition({ position }) {
         </div>
 
         <div className='flex flex-wrap justify-end gap-2'>
-          <GreenBadge>Farm Strategy</GreenBadge>
+          <GreenBadge>{POSITION_EARNED_TYPES.EARN_THE}</GreenBadge>
 
           {!Number(liquidity) ? (
             <YellowBadge>{t('Closed')}</YellowBadge>

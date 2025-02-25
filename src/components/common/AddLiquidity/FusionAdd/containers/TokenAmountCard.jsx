@@ -93,7 +93,12 @@ export function TokenAmountCard({
             <p className='font-medium text-white'>{title}</p>
             {showPercent && <Tabs data={percents} />}
           </div>
-          <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
+          <div
+            className={cn(
+              'flex flex-col gap-3 self-stretch rounded-xl p-4',
+              'border border-neutral-700 focus-within:border-neutral-500 hover:bg-neutral-700',
+            )}
+          >
             <div className='flex items-center justify-between gap-2'>
               <input
                 type='number'
@@ -110,7 +115,7 @@ export function TokenAmountCard({
               <div
                 className={cn(
                   'inline-flex items-center justify-center gap-2',
-                  'rounded-lg bg-neutral-600 text-sm text-neutral-200',
+                  'rounded-lg text-sm text-neutral-200',
                   'py-1.5 pl-1.5 pr-2',
                 )}
               >

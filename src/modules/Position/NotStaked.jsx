@@ -11,7 +11,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/butt
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
@@ -127,7 +127,7 @@ export default function NotStaked({ pool }) {
           </div>
         </div>
         <div className='flex items-center gap-2'>
-          {pool?.title?.includes('Farming') && <GreenBadge>Farm Strategy</GreenBadge>}
+          {pool?.title?.includes('Farming') && <GreenBadge>{POSITION_EARNED_TYPES.EARN_THE}</GreenBadge>}
           <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
         </div>
       </div>

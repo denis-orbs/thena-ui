@@ -10,7 +10,7 @@ import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
 import { useVaults } from '@/context/vaultsContext'
 import { useGammaMigration, useGammaWithdraw } from '@/hooks/fusion/useGamma'
 import { useIchiWithdraw, useMigrationIchi } from '@/hooks/fusion/useIchi'
@@ -107,7 +107,9 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
               </div>
             </div>
 
-            {strategyType !== 'V1' && <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>}
+            {strategyType !== 'V1' && (
+              <NeutralBadge>{isFarming ? POSITION_EARNED_TYPES.EARN_THE : POSITION_EARNED_TYPES.EARN_FEE}</NeutralBadge>
+            )}
           </div>
         ),
         strategy: strategyInfo,

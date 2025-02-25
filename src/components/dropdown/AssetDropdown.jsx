@@ -24,14 +24,13 @@ function AssetDropdown({ className, data, selected, setSelected }) {
 
   return (
     <div className={cn('relative', className)} ref={wrapperRef}>
-      <TokenBadge asset={selected} onClick={() => setOpen(!open)} />
+      <TokenBadge id='info' asset={selected} onClick={() => setOpen(!open)} />
       <div
         className={cn(
           'visible absolute z-10 mt-2 flex-col items-start justify-start gap-1',
           'rounded-xl border border-neutral-600 bg-neutral-800 p-2 opacity-100 shadow',
           'transition-all duration-150 ease-out',
           !open && 'invisible opacity-0',
-          className,
         )}
       >
         {data.map((item, idx) => (

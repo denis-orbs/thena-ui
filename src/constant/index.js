@@ -237,6 +237,13 @@ export const PAIR_TYPES = {
   WEIGHTED: 'Weighted',
 }
 
+export const POSITION_EARNED_TYPES = {
+  EARN_THE: 'Earn $THE',
+  EARN_FEE: 'Earn Fees',
+  STAKED: 'Staked',
+  NOT_STAKED: 'Not Staked',
+}
+
 export const AUTOMATION_STATUS = {
   PENDING: 'Pending',
   ACTIVE: 'Active',
