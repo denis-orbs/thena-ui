@@ -124,7 +124,7 @@ export default function ManualPosition({ position }) {
 
   const poolInfo = useMemo(
     () =>
-      pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_Farming'),
+      pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_SwapFee'),
     [poolAddress, pools],
   )
   const apr = useCalculateAPR({
@@ -168,6 +168,8 @@ export default function ManualPosition({ position }) {
   const handleAdd = useCallback(() => {
     const newStrategy = {
       title: poolInfo?.title,
+      tvl: poolInfo?.tvl?.toNumber() ?? 0,
+      apr: poolInfo?.apr?.toNumber() ?? 0,
       account: {
         totalLp: poolInfo?.account?.totalLp?.toNumber(),
         gaugeBalance: poolInfo?.account?.gaugeBalance?.toNumber(),
@@ -186,17 +188,16 @@ export default function ManualPosition({ position }) {
         totalValue: poolInfo?.token1?.totalValue,
       },
       address: poolInfo?.address,
-      tvl: poolInfo?.tvl?.toNumber(),
-      isAutomatic: !MANUAL_TYPES.includes(poolInfo?.title) && poolInfo?.type === PAIR_TYPES.LSD,
       isFarming: poolInfo?.title?.includes('Farming'),
+      isAutomatic: !MANUAL_TYPES.includes(poolInfo?.title) && poolInfo?.type === PAIR_TYPES.LSD,
+      isDefault: true,
       version,
-      isDefault: poolInfo?.isDefault,
       fee: poolInfo?.fee,
     }
 
     dispatch(updateStrategy({ strategy: newStrategy }))
-    dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}`)
+    dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo?.title) }))
+    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo?.basePool}`)
   }, [dispatch, poolInfo, push, version])
 
   return (

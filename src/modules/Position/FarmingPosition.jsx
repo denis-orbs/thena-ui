@@ -186,6 +186,8 @@ export function FarmingPosition({ position }) {
   const handleAdd = useCallback(() => {
     const newStrategy = {
       title: poolInfo?.title,
+      tvl: poolInfo?.tvl?.toNumber() ?? 0,
+      apr: poolInfo?.apr?.toNumber() ?? 0,
       account: {
         totalLp: poolInfo?.account?.totalLp?.toNumber(),
         gaugeBalance: poolInfo?.account?.gaugeBalance?.toNumber(),
@@ -204,11 +206,10 @@ export function FarmingPosition({ position }) {
         totalValue: poolInfo?.token1?.totalValue,
       },
       address: poolInfo?.address,
-      tvl: poolInfo?.tvl?.toNumber(),
-      isAutomatic: !MANUAL_TYPES.includes(poolInfo?.title) && poolInfo?.type === PAIR_TYPES.LSD,
       isFarming: poolInfo?.title?.includes('Farming'),
+      isAutomatic: !MANUAL_TYPES.includes(poolInfo?.title) && poolInfo?.type === PAIR_TYPES.LSD,
+      isDefault: true,
       version,
-      isDefault: poolInfo?.isDefault,
       fee: poolInfo?.fee,
     }
 

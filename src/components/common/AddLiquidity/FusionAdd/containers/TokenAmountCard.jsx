@@ -90,7 +90,7 @@ export function TokenAmountCard({
       ) : (
         <div className='flex flex-col gap-2'>
           <div className='flex items-center justify-between'>
-            <p className='font-medium text-white'>{t(title)}</p>
+            <p className='font-medium text-white'>{title}</p>
             {showPercent && <Tabs data={percents} />}
           </div>
           <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>

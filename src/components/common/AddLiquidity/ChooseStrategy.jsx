@@ -35,7 +35,7 @@ import { fetchGammaInfo } from './FusionAdd/GammaAdd'
 import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const defaultSwapFees = {
-  isDefault: true,
+  isDefault: false,
   address: zeroAddress,
   tvl: new BigNumber(0),
   totalSupply: 0,
@@ -202,8 +202,8 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
 
       setStrategy({
         title: sub.title,
-        tvl: sub.tvl.toNumber(),
-        apr: sub.gauge.apr ?? 0,
+        tvl: sub?.tvl?.toNumber() ?? 0,
+        apr: sub?.gauge?.apr?.toNumber() ?? 0,
         account: {
           totalLp: sub?.account?.totalLp?.toNumber(),
           gaugeBalance: sub?.account?.gaugeBalance?.toNumber(),
@@ -233,37 +233,42 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
   )
 
   useEffect(() => {
-    handleChooseStrategy(defaultSwapFees)
-  }, [handleChooseStrategy])
-
-  useEffect(() => {
     if (!poolAddress && (!firstAsset || !secondAsset)) return
+    if (strategy && strategy.isDefault) return
 
     if (!pair?.subpools && !strategy) {
       handleChooseStrategy(defaultSwapFees)
       return
     }
 
-    if (pair?.subpools && (!strategy || strategy?.isDefault)) {
-      const priority = {
-        CL_Farming: 1,
-        CL_SwapFee: 2,
-      }
+    if (pair?.subpools && (!strategy || !strategy.isDefault)) {
+      const priority = { CL_Farming: 1, CL_SwapFee: 2 }
       let _strategy = pair.subpools.sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3)).at(0)
       if (!_strategy) _strategy = pair.subpools.find(item => !MANUAL_TYPES.includes(item.title))
-      handleChooseStrategy(_strategy ?? defaultSwapFees)
+      handleChooseStrategy({ ..._strategy, isDefault: true } ?? defaultSwapFees)
     }
   }, [firstAsset, handleChooseStrategy, pair?.subpools, poolAddress, secondAsset, strategy])
 
-  const toggleStrategyType = enable => {
-    const _strategy = pair?.subpools.find(item => {
-      if (enable) return !MANUAL_TYPES.includes(item.title)
-      return MANUAL_TYPES.includes(item.title)
-    })
+  const toggleStrategyType = useCallback(
+    enable => {
+      const _strategy = pair?.subpools.find(item => {
+        if (enable) return !MANUAL_TYPES.includes(item.title)
+        return MANUAL_TYPES.includes(item.title)
+      })
+      handleChooseStrategy({ ..._strategy, isDefault: true } ?? defaultSwapFees)
+      setIsAutomatic(enable)
+    },
+    [handleChooseStrategy, pair?.subpools],
+  )
 
-    handleChooseStrategy(_strategy ?? defaultSwapFees)
-    setIsAutomatic(enable)
-  }
+  const handleChangeManualType = useCallback(() => {
+    if (strategy) {
+      const _strategy = pair?.subpools.find(item =>
+        strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
+      )
+      handleChooseStrategy({ ..._strategy, isDefault: true } ?? defaultSwapFees)
+    }
+  }, [handleChooseStrategy, pair?.subpools, strategy])
 
   const strategyAutoData = useMemo(() => {
     const autoStrategy = (pair?.subpools ?? [])
@@ -388,14 +393,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
             {hasSwapFee && hasFarming && (
               <Toggle
                 checked={!strategy?.isFarming}
-                onChange={() => {
-                  if (strategy) {
-                    const _strategy = pair?.subpools.find(item =>
-                      strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
-                    )
-                    handleChooseStrategy(_strategy ?? defaultSwapFees)
-                  }
-                }}
+                onChange={handleChangeManualType}
                 label='Earn Fees'
                 className={cn(showToggle ? '' : 'hidden')}
               />

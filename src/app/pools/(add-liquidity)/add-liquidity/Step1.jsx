@@ -12,7 +12,7 @@ import { PoolGroupIcon } from '@/svgs'
 export default function Step1() {
   const t = useTranslations()
 
-  const { back } = useRouter()
+  const { push } = useRouter()
   const searchParams = useSearchParams()
   const pairType = searchParams.get('pairType') || null
   const updateSearchParams = useUpdateSearchParams()
@@ -92,7 +92,7 @@ export default function Step1() {
       </div>
 
       <div className='flex gap-4'>
-        <EmphasisButton onClick={() => back()}>{t('Cancel')}</EmphasisButton>
+        <EmphasisButton onClick={() => push('/pools')}>{t('Cancel')}</EmphasisButton>
         <PrimaryButton
           onClick={() => {
             updateSearchParams({ step: 2 }, true)

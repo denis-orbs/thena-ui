@@ -17,7 +17,7 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
   const addSelections = useMemo(
     () => [
       {
-        label: 'Pool Token Deposit ',
+        label: 'Pool Token Deposit',
         active: !isZapper,
         onClickHandler: () => {
           setIsZapper(false)

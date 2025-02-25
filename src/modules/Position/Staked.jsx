@@ -105,6 +105,8 @@ export default function Staked({ pool }) {
   const handleAdd = useCallback(() => {
     const newStrategy = {
       title: pool?.title,
+      tvl: pool?.tvl?.toNumber() ?? 0,
+      apr: pool?.apr?.toNumber() ?? 0,
       account: {
         totalLp: pool?.account?.totalLp?.toNumber(),
         gaugeBalance: pool?.account?.gaugeBalance?.toNumber(),
@@ -123,11 +125,10 @@ export default function Staked({ pool }) {
         totalValue: pool?.token1?.totalValue,
       },
       address: pool?.address,
-      tvl: pool?.tvl?.toNumber(),
-      isAutomatic: !MANUAL_TYPES.includes(pool?.title) && pool?.type === PAIR_TYPES.LSD,
       isFarming: pool?.title?.includes('Farming'),
+      isAutomatic: !MANUAL_TYPES.includes(pool?.title) && pool?.type === PAIR_TYPES.LSD,
+      isDefault: true,
       version,
-      isDefault: pool?.isDefault,
       fee: pool?.fee,
     }
 

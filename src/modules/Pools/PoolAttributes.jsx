@@ -81,7 +81,7 @@ export function PoolAttributesCL({ strategy, pool }) {
   )
 
   return (
-    <div className='border border-dashed border-primary-500'>
+    <div className='rounded-lg border border-dashed border-primary-500'>
       <div className='space-y-4 rounded-lg bg-primary-950 p-6 text-[14px] font-normal leading-5'>
         {/* Pool Name */}
         <div className='grid grid-cols-7'>

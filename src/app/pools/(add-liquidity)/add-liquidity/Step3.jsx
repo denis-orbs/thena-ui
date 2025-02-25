@@ -1,5 +1,5 @@
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 
 import Loading from '@/app/loading'
 import { EmphasisButton, TextButton } from '@/components/buttons/Button'
@@ -32,6 +32,19 @@ export default function Step3({ setStep }) {
     type: searchParams.get('pairType'),
   })
 
+  const handleBack = useCallback(() => {
+    const routeHistoryLength = window?.history?.length ?? 0
+    if (routeHistoryLength <= 1) {
+      updateSearchParams({
+        step: 2,
+        firstAddress: pair?.token0?.address ?? null,
+        secondAddress: pair?.token1?.address ?? null,
+      })
+    } else {
+      router.back()
+    }
+  }, [pair?.token0?.address, pair?.token1?.address, router, updateSearchParams])
+
   const pairType = pair?.type ?? searchParams.get('pairType')
 
   if (poolAddress && isLoadingPairs) {
@@ -49,7 +62,7 @@ export default function Step3({ setStep }) {
       {(pairType === PAIR_TYPES.CLASSIC || pairType === PAIR_TYPES.STABLE) && <AddLiquidityV1Pool pair={pair} />}
 
       <div className='mt-16 flex gap-4'>
-        <EmphasisButton onClick={() => router.back()}>Back</EmphasisButton>
+        <EmphasisButton onClick={handleBack}>Back</EmphasisButton>
         <TextButton onClick={() => router.push('/pools')}>Cancel</TextButton>
       </div>
     </div>
