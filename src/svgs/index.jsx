@@ -96,6 +96,7 @@ import ScalesIcon from '~/svgs/scales.svg'
 import SearchIcon from '~/svgs/search.svg'
 import SecondPrizeIcon from '~/svgs/second-prize.svg'
 import SendIcon from '~/svgs/send.svg'
+import SettingPrimaryIcon from '~/svgs/setting-primary.svg'
 import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
 import ShareIcon from '~/svgs/share.svg'
@@ -234,6 +235,7 @@ export {
   SearchIcon,
   SecondPrizeIcon,
   SendIcon,
+  SettingPrimaryIcon,
   SettingsIcon,
   ShadowIcon,
   ShareIcon,

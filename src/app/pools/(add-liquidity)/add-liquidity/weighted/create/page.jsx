@@ -195,7 +195,7 @@ export default function CreateWeightedPoolPage() {
           {checkError && renderMessages()}
         </div>
       </div>
-      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
+      <div className={currentStep === 3 ? 'w-full' : 'grid gap-4 lg:grid-cols-add-liquidity-layout'}>
         <div className='w-full'>
           <PoolWithStep
             currentStep={currentStep}

@@ -6,14 +6,14 @@ import Input from '@/components/input'
 import Selection from '@/components/selection'
 import { Paragraph } from '@/components/typography'
 import { cn } from '@/lib/utils'
-import { SettingsIcon } from '@/svgs'
+import { SettingPrimaryIcon, SettingsIcon } from '@/svgs'
 
 const defaultSlippageOptions = [0.1, 0.5, 1]
-
 function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
   const [show, setShow] = useState(false)
   const dropdownRef = useRef(null)
   const t = useTranslations()
+  const [isHovered, setIsHovered] = useState(false)
 
   const selections = useMemo(
     () =>
@@ -33,12 +33,19 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
         <div className='flex justify-end'>
           <div
             className='flex cursor-pointer items-center justify-end gap-2'
-            onClick={() => {
-              setShow(prev => !prev)
-            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={() => setShow(prev => !prev)}
           >
-            <Paragraph className='font-medium text-neutral-400'>{t('Slippage')}</Paragraph>
-            <SettingsIcon className='h-6 w-6 cursor-pointer' />
+            <Paragraph
+              className={cn(
+                'font-medium text-neutral-400 hover:text-primary-600 hover:underline',
+                isHovered && 'text-primary-600',
+              )}
+            >
+              {t('Slippage Tolerance')}
+            </Paragraph>
+            {!isHovered ? <SettingsIcon className='h-6 w-6' /> : <SettingPrimaryIcon className='h-6 w-6' />}
           </div>
         </div>
 
