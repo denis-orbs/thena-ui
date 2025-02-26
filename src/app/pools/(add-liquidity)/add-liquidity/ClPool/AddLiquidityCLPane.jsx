@@ -89,10 +89,7 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
         message={t('You have successfully deposited and staked')}
         buttonAction={
           <div className='flex gap-4'>
-            <EmphasisButton
-              className='w-1/2'
-              onClick={() => push('/pools/add-liquidity?step=1&pairType=Conc+Liquidity')}
-            >
+            <EmphasisButton className='w-1/2' onClick={() => push('/pools')}>
               {t('View Pool')}
             </EmphasisButton>
             <EmphasisButton className='w-1/2' onClick={() => push('/dashboard')}>

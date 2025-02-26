@@ -57,7 +57,7 @@ export default function Step3({ setStep }) {
         <AddLiquidityWeightedPool pool={pair} showSidebar setCurrentStep={setStep} />
       )}
 
-      {pairType === PAIR_TYPES.LSD && <AddLiquidityClPool pool={pair} setCurrentStep={setStep} showSidebar />}
+      {pairType === PAIR_TYPES.LSD && <AddLiquidityClPool pool={pair} setCurrentStep={setStep} />}
 
       {(pairType === PAIR_TYPES.CLASSIC || pairType === PAIR_TYPES.STABLE) && <AddLiquidityV1Pool pair={pair} />}
 

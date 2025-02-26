@@ -108,10 +108,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
         message={t('You have successfully deposited and staked')}
         buttonAction={
           <div className='flex gap-4'>
-            <EmphasisButton
-              className='w-1/2'
-              onClick={() => push('/pools/add-liquidity?step=1&pairType=Conc+Liquidity')}
-            >
+            <EmphasisButton className='w-1/2' onClick={() => push('/pools')}>
               {t('View Pool')}
             </EmphasisButton>
             <EmphasisButton className='w-1/2' onClick={() => push('/dashboard')}>

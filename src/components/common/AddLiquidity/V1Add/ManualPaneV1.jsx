@@ -228,9 +228,7 @@ export function ManualPaneV1({
         message={t('You have successfully deposited and staked')}
         buttonAction={
           <div className='flex gap-4'>
-            <EmphasisButton className='w-1/2' onClick={() => push('/pools/add-liquidity')}>
-              {/* TODO: Navigate to pool address */}
-              {/* <EmphasisButton className='w-1/2' onClick={() => push(`/pools/${poolAddress}`)}> */}
+            <EmphasisButton className='w-1/2' onClick={() => push('/pools')}>
               {t('View Pool')}
             </EmphasisButton>
             <EmphasisButton className='w-1/2' onClick={() => push('/dashboard')}>
