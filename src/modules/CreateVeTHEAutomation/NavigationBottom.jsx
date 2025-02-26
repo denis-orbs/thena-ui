@@ -7,10 +7,11 @@ import { shallowEqual, useSelector } from 'react-redux'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SuccessModal from '@/components/modal/SuccessModal'
 import { useCreateAutomation, useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
+import { convertBooleansToHex } from '@/lib/utils'
 
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
 
-const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registration, maxPaymentForGas, t }) => {
+const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registration, minimumBalance, t }) => {
   const message = null
 
   if (currentStep === 1) {
@@ -38,7 +39,7 @@ const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registra
     if (
       !registration?.chainlink ||
       !registration?.chainlinkAmount ||
-      maxPaymentForGas.gt(registration?.chainlinkAmount)
+      minimumBalance.gt(registration?.chainlinkAmount)
     ) {
       return { isDisabled: true, message }
     }
@@ -50,7 +51,15 @@ const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registra
 function NavigationBottom({ currentStep, onNext }) {
   const t = useTranslations()
   const { createData } = useSelector(state => state.veTHEAutomationContract, shallowEqual)
-  const maxPaymentForGas = useGetMaxPaymentForGas(createData.veTHEId)
+  const minimumBalance = useGetMaxPaymentForGas(
+    createData.veTHEId,
+    convertBooleansToHex(
+      createData.votes.isAutoVote,
+      createData.settings.isClaimEveryWeek,
+      createData.settings.isRelockEveryWeek,
+    ),
+    (createData?.votes?.pairs || []).length,
+  )
   const { push } = useRouter()
 
   const { onCreateAutomation, pending: pendingCreate } = useCreateAutomation()
@@ -65,10 +74,10 @@ function NavigationBottom({ currentStep, onNext }) {
         isAutoVote: createData?.votes?.isAutoVote,
         pairs: createData?.votes?.pairs || [],
         registration: createData?.registration,
-        maxPaymentForGas,
+        minimumBalance,
         t,
       }),
-    [createData, currentStep, maxPaymentForGas, t],
+    [createData, currentStep, minimumBalance, t],
   )
 
   return (

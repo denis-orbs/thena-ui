@@ -7,7 +7,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
 import useChainLINKData from '@/hooks/useChainLINKData'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn, convertBooleansToHex, formatAmount } from '@/lib/utils'
 import { ChevronDownIcon } from '@/svgs'
 
 import SelectTokenFromList from '../SelectTokenModal/SelectTokenFromList'
@@ -18,9 +18,17 @@ const UPDATE_REGISTRATION = {
   CHAINLINK_AMOUNT: 'chainlinkAmount',
 }
 
-function RegisterAutomation({ chainLINK, chainLINKAmount, veTHEId, updateRegistration = () => {} }) {
+function RegisterAutomation({ chainLINK, chainLINKAmount, contractData, updateRegistration = () => {} }) {
   const [popup, setPopup] = useState(false)
-  const maxPaymentForGas = useGetMaxPaymentForGas(veTHEId)
+  const maxPaymentForGas = useGetMaxPaymentForGas(
+    contractData?.veTHEId,
+    convertBooleansToHex(
+      contractData?.votes?.isAutoVote,
+      contractData?.settings?.isClaimEveryWeek,
+      contractData?.settings?.isRelockEveryWeek,
+    ),
+    (contractData?.votes?.pairs || []).filter(item => Boolean(item.pair)).length,
+  )
 
   const t = useTranslations()
   const chainLinkData = useChainLINKData()

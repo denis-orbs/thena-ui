@@ -6,12 +6,7 @@ import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import {
-  useAutomationStatus,
-  useGetMaxPaymentForGasMultiple,
-  useStatusAndBalanceMultiple,
-} from '@/hooks/automationContract/useAutomationContract'
-import { fromWei } from '@/lib/utils'
+import { useAutomationStatus, useStatusAndBalanceMultiple } from '@/hooks/automationContract/useAutomationContract'
 import { InfoIcon } from '@/svgs'
 
 import DepositFundsModal from './Edits/DepositFundsModal'
@@ -86,34 +81,27 @@ function WarningUnderfundedItem({ data, mutateStatusAndBalanceMultiple = () => {
 
 function WarningsWithActions({ veTHEs }) {
   const { data, isLoading, mutate: mutateStatusAndBalanceMultiple } = useStatusAndBalanceMultiple(veTHEs)
-  const { data: maxPayments, isLoading: loadingGas, mutate: mutateMaxPayments } = useGetMaxPaymentForGasMultiple(veTHEs)
-  if ((isLoading && !data && !data?.id) || loadingGas) return null
+  if (isLoading && !data && !data?.id) return null
 
   return (
     <div className='space-y-6'>
-      {(data || []).map((item, index) => {
+      {(data || []).map(item => {
         if (item.statusString === AUTOMATION_STATUS.PENDING) {
           return (
             <React.Fragment key={item.id}>
               <WarningRegisterItem
                 mutateStatusAndBalanceMultiple={() => {
                   mutateStatusAndBalanceMultiple()
-                  mutateMaxPayments()
                 }}
                 data={item}
               />
             </React.Fragment>
           )
         }
-        if (
-          item.balanceAuto !== null &&
-          item.statusString !== AUTOMATION_STATUS.CANCELED &&
-          fromWei(item.balanceAuto).lt(maxPayments[index].maxPaymentForGas)
-        ) {
+        if (item.statusString !== AUTOMATION_STATUS.CANCELED && item.minBalanceAuto.gt(item.balanceAuto)) {
           return (
             <WarningUnderfundedItem
               mutateStatusAndBalanceMultiple={() => {
-                mutateMaxPayments()
                 mutateStatusAndBalanceMultiple()
               }}
               key={item.id}

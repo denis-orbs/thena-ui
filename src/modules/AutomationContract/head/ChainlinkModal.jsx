@@ -4,7 +4,7 @@ import React, { useCallback, useState } from 'react'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { useActiveAutomation } from '@/hooks/automationContract/useAutomationContract'
+import { useActiveAutomation, useAutomationContractDetail } from '@/hooks/automationContract/useAutomationContract'
 import RegisterAutomation from '@/modules/CreateVeTHEAutomation/RegisterAutomation'
 
 const UPDATE_REGISTRATION = {
@@ -15,6 +15,7 @@ const UPDATE_REGISTRATION = {
 function ChainlinkModal({ tokenId, address, mutateAutomationData, popup, setPopup }) {
   const [chainlinkAmount, setChainlinkAmount] = useState()
   const [chainlink, setChainlink] = useState()
+  const { contractData } = useAutomationContractDetail(tokenId)
 
   const t = useTranslations()
 
@@ -50,7 +51,7 @@ function ChainlinkModal({ tokenId, address, mutateAutomationData, popup, setPopu
             chainLINK={chainlink}
             chainLINKAmount={chainlinkAmount}
             updateRegistration={updateRegistration}
-            veTHEId={tokenId}
+            contractData={contractData}
           />
         </div>
       </ModalBody>

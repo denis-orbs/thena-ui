@@ -9,7 +9,7 @@ import { useGetMaxPaymentForGas, useOperationsAutomation } from '@/hooks/automat
 import { useCountdown } from '@/hooks/useCountdown'
 import usePrices from '@/hooks/usePrices'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { convertBooleansToHex, formatAmount, fromWei } from '@/lib/utils'
 
 import AutomationStatus from '../AutomationStatus'
 
@@ -17,7 +17,15 @@ function LockDetails({ contractData, veTHE }) {
   const t = useTranslations()
   const prices = usePrices()
   const { text } = useCountdown(EVENT_TYPES.LIVE, contractData.settings.executionTime / 1000, true)
-  const maxPaymentForGas = useGetMaxPaymentForGas(veTHE.id)
+  const minimumBalance = useGetMaxPaymentForGas(
+    veTHE.id,
+    convertBooleansToHex(
+      contractData.votes.isAutoVote,
+      contractData.settings.isClaimEveryWeek,
+      contractData.settings.isRelockEveryWeek,
+    ),
+    (contractData?.votes?.pairs || []).length,
+  )
   const { isRelockEveryWeek, isLoading } = useOperationsAutomation(veTHE.id)
 
   return (
@@ -68,7 +76,7 @@ function LockDetails({ contractData, veTHE }) {
         </Box>
         <Box className='flex w-full flex-col gap-2'>
           <div className='flex items-center gap-1'>
-            <TextHeading className='text-2xl'>{formatAmount(maxPaymentForGas)}</TextHeading>
+            <TextHeading className='text-2xl'>{formatAmount(minimumBalance)}</TextHeading>
           </div>
           <Paragraph className='text-sm'>{t('Minimum LINK balance required')}</Paragraph>
         </Box>

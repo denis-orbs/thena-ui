@@ -6,7 +6,8 @@ import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import { useAutomationStatus, useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
+import { useAutomationStatus } from '@/hooks/automationContract/useAutomationContract'
+import { fromWei } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 import DepositFundsModal from './Edits/DepositFundsModal'
@@ -15,7 +16,6 @@ import ChainlinkModal from './head/ChainlinkModal'
 function WarningWithAction({ mutateAutomationData, contractData }) {
   const [chainLINKPopup, setChainLINKPopup] = useState(false)
   const [depositFundsPopup, setDepositFundsPopup] = useState(false)
-  const maxPaymentForGas = useGetMaxPaymentForGas(contractData.veTHEId)
 
   const { status, mutateData: mutateDataStatus } = useAutomationStatus(contractData.veTHEId)
 
@@ -30,7 +30,7 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
       }
     }
 
-    if (maxPaymentForGas.gt(contractData.balance)) {
+    if (fromWei(contractData.minBalance).gt(fromWei(contractData.balance))) {
       return {
         message: (
           <>
@@ -45,11 +45,11 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
           </>
         ),
         btnText: t('Fund Contract'),
-        onClick: () => setChainLINKPopup(true),
+        onClick: () => setDepositFundsPopup(true),
       }
     }
     return undefined
-  }, [contractData.balance, maxPaymentForGas, status, t])
+  }, [contractData.balance, contractData.minBalance, status, t])
 
   if (!data) return <></>
   return (
