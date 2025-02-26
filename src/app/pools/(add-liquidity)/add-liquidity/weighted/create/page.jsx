@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux'
 import Loading from '@/app/loading'
 import { NewTextHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { cn } from '@/lib/utils'
+import { cn, isInvalidAmount } from '@/lib/utils'
 import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import Preview from '@/modules/WeightedPool/Preview'
 import SetWeightedAttributes from '@/modules/WeightedPool/SetWeightedAttributes'
@@ -170,8 +170,8 @@ export default function CreateWeightedPoolPage() {
       <StepCreate
         currentStep={currentStep}
         setCurrentStep={setCurrentStep}
-        // isDisabled2={!checkAllWeightingHigherThanZero || totalWeight !== 100}
-        // isDisabled3={(tokensAndWeights || []).some(item => item?.isError || isInvalidAmount(item?.amount))}
+        disabled2={!checkAllWeightingHigherThanZero || totalWeight !== 100}
+        disabled3={(tokensAndWeights || []).some(item => item?.isError || isInvalidAmount(item?.amount))}
       />
       <div className='flex items-center gap-8'>
         <ScalesIcon className='size-16' />

@@ -42,7 +42,7 @@ const sortOptions = [
   },
 ]
 
-function AvailablePools({ tokens = [], pairType, setFoundedPool }) {
+function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
   const { weightedPools } = usePairs()
   const t = useTranslations()
 
@@ -65,6 +65,8 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool }) {
   useEffect(() => {
     if (foundedPair) {
       setFoundedPool(foundedPair)
+    } else {
+      setFoundedPool()
     }
   }, [foundedPair, setFoundedPool])
 

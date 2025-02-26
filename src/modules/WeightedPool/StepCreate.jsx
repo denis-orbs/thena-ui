@@ -4,7 +4,7 @@ import React from 'react'
 
 import { cn } from '@/lib/utils'
 
-export default function StepCreate({ currentStep, setCurrentStep }) {
+export default function StepCreate({ currentStep, setCurrentStep, disabled2, disabled3 }) {
   const steps = [1, 2, 3]
 
   return (
@@ -13,7 +13,10 @@ export default function StepCreate({ currentStep, setCurrentStep }) {
         <div
           key={step}
           className='flex cursor-pointer flex-row items-center gap-1'
-          onClick={() => setCurrentStep(step)}
+          onClick={() => {
+            if ((disabled2 && step === 2) || ((disabled2 || disabled3) && step === 3)) return
+            setCurrentStep(step)
+          }}
         >
           <div
             className={cn(
