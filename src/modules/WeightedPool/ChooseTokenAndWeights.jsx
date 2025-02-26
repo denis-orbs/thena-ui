@@ -83,13 +83,13 @@ function TokenItem({ token, index, setTokenSelected, max }) {
 
   return (
     <div className='flex h-11 items-center gap-2'>
-      <div className='fex-row flex w-full items-center justify-between rounded-lg border border-neutral-700 p-1 hover:bg-neutral-800 md:w-[220px]'>
+      <div className='fex-row flex w-full items-center rounded-lg border border-neutral-700 p-1 hover:bg-neutral-800'>
         <div className='flex items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
           <CircleImage alt='token logo' width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
           <Paragraph className='text-sm text-neutral-200'>{token.token.symbol}</Paragraph>
         </div>
         <Input
-          className='border-none bg-transparent'
+          className='w-full border-none bg-transparent'
           classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7' }}
           type='number'
           min={0}
@@ -157,7 +157,12 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   return (
     <div className='flex h-full flex-col gap-3'>
       <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
-      <div className='mb-16 grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3'>
+      <div
+        className={cn(
+          'mb-16 grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3',
+          tokenSelected.length === 2 && '2xl:grid-cols-2',
+        )}
+      >
         {tokenSelected.map((token, index) => (
           <TokenItem
             key={`${token?.token?.address}_${index}`}
@@ -166,6 +171,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
             token={token}
             tokenSelected={tokenSelected}
             max={100 - (totalWeightLock - token.weight)}
+            length={tokenSelected.length}
           />
         ))}
       </div>

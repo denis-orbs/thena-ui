@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import AvailablePools from '@/app/pools/(add-liquidity)/add-liquidity/Step2/AvailablePools'
 import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { cn } from '@/lib/utils'
+import { cn, wrappedAddress } from '@/lib/utils'
 import { PoolCoinsIcon } from '@/svgs'
 
 import SelectToken from '../Pools/SelectToken'
@@ -35,24 +35,24 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wrapperSelectRef?.current])
 
-  const finalListTokens = useMemo(() => tokens.slice(0, length), [tokens, length])
+  const finalListTokens = useMemo(() => (tokens.slice(0, length) || []).filter(item => Boolean(item)), [tokens, length])
 
   const duplicateAddresses = useMemo(() => {
     const addressMap = new Map()
     const duplicates = new Set()
 
-    if (tokens.length <= 0) return []
-    tokens.forEach(token => {
-      if (addressMap.has(token?.address)) {
-        duplicates.add(token?.address)
+    if (finalListTokens.length <= 0) return []
+    finalListTokens.forEach(token => {
+      if (addressMap.has(wrappedAddress(token))) {
+        duplicates.add(wrappedAddress(token))
       } else {
-        addressMap.set(token?.address, true)
+        addressMap.set(wrappedAddress(token), true)
       }
     })
 
     const result = Array.from(duplicates)
     return result
-  }, [tokens])
+  }, [finalListTokens])
 
   const tokensList = useMemo(
     () => (
@@ -68,8 +68,8 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
             dropdownAlign={index % 2 === 0 ? 'left' : 'right'}
             optionWidth={optionWidth}
             isError={
-              isShowError &&
-              (duplicateAddresses.includes(tokens?.[index]?.address) || (length === 2 && !tokens?.[index]))
+              (isShowError && finalListTokens.length < 2 && !tokens?.[index]) ||
+              duplicateAddresses.includes(wrappedAddress(tokens?.[index]))
             }
             errorMessage={
               length === 2 && !tokens?.[index] ? t('Select token') : t('You can not select the same token twice')
@@ -78,7 +78,7 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
         ))}
       </>
     ),
-    [duplicateAddresses, isShowError, length, optionWidth, t, tokens, updateTokens],
+    [duplicateAddresses, finalListTokens.length, isShowError, length, optionWidth, t, tokens, updateTokens],
   )
 
   useEffect(() => {

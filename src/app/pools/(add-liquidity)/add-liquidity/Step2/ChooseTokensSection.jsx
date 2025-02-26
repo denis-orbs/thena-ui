@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -46,7 +47,10 @@ export default function ChooseTokensSection({ pairType }) {
           tokens: tokens.map(token => ({
             ...token,
             // to save to redux
-            balance: typeof token.balance !== 'number' ? token.balance.toNumber() : token.balance,
+            balance:
+              typeof token?.balance !== 'number'
+                ? (token?.balance || new BigNumber(0)).toNumber()
+                : token?.balance || 0,
           })),
         }),
       )

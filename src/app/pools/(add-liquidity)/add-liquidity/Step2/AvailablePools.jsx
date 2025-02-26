@@ -54,7 +54,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool }) {
 
   const availablePools = useMemo(() => {
     if (pairType === PAIR_TYPES.WEIGHTED) {
-      return weightedPools.filter(pool =>
+      return (weightedPools || []).filter(pool =>
         tokens.every(token => pool.tokens.map(pToken => pToken.address).includes(wrappedAddress(token))),
       )
     }

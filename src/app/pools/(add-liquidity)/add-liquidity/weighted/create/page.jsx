@@ -9,14 +9,13 @@ import { useSelector } from 'react-redux'
 import Loading from '@/app/loading'
 import { NewTextHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
-import { useTokenUSDValue } from '@/hooks/usePrices'
-import { cn, formatAmount } from '@/lib/utils'
-import ChooseTokenAndWeights, { ErrorMessage } from '@/modules/WeightedPool/ChooseTokenAndWeights'
+import { cn } from '@/lib/utils'
+import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import Preview from '@/modules/WeightedPool/Preview'
 import SetWeightedAttributes from '@/modules/WeightedPool/SetWeightedAttributes'
 import SideBarCreateWeighted from '@/modules/WeightedPool/SideBarCreateWeighted'
 import StepCreate from '@/modules/WeightedPool/StepCreate'
-import { ScalesIcon, WarningTriangleIcon } from '@/svgs'
+import { InfoIcon, ScalesIcon, WarningTriangleIcon } from '@/svgs'
 
 function PoolWithStep({
   currentStep,
@@ -124,13 +123,13 @@ export default function CreateWeightedPoolPage() {
     [tokensAndWeights],
   )
 
+  const totalWeight = useMemo(() => tokensAndWeights.reduce((sum, curr) => sum + curr.weight, 0), [tokensAndWeights])
+
   const renderMessages = useCallback(() => {
     const errorMessages = []
     if (!checkAllWeightingHigherThanZero) {
       errorMessages.push({ title: t('All tokens in a pool must have a weighting higher than zero') })
     }
-
-    const totalWeight = tokensAndWeights.reduce((sum, curr) => sum + curr.weight, 0)
 
     if (totalWeight !== 100) {
       errorMessages.push({
@@ -148,22 +147,18 @@ export default function CreateWeightedPoolPage() {
         </div>
       </div>
     ))
-  }, [checkAllWeightingHigherThanZero, t, tokensAndWeights])
+  }, [checkAllWeightingHigherThanZero, t, totalWeight])
 
-  const { getValueTokenAmountToUSD } = useTokenUSDValue()
-  const totalBalance = useMemo(
+  const totalValueInUsd = useMemo(
     () =>
       tokensAndWeights.reduce((sum, curr) => {
-        const { token } = curr
+        const { token, amount } = curr
         if (token) {
-          const { balance } = token
-          const amountToWei = typeof balance !== 'number' ? balance.toNumber() : balance
-          const usdValue = getValueTokenAmountToUSD(token.address, amountToWei)
-          return sum + usdValue
+          return sum + Number(amount || 0) * token.price
         }
         return sum
       }, 0),
-    [getValueTokenAmountToUSD, tokensAndWeights],
+    [tokensAndWeights],
   )
 
   if (!tokensAndWeights || isEmpty(tokensAndWeights)) {
@@ -172,18 +167,28 @@ export default function CreateWeightedPoolPage() {
 
   return (
     <div className='flex flex-col gap-16'>
-      <StepCreate currentStep={currentStep} setCurrentStep={setCurrentStep} />
+      <StepCreate
+        currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
+        // isDisabled2={!checkAllWeightingHigherThanZero || totalWeight !== 100}
+        // isDisabled3={(tokensAndWeights || []).some(item => item?.isError || isInvalidAmount(item?.amount))}
+      />
       <div className='flex items-center gap-8'>
         <ScalesIcon className='size-16' />
         <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
       </div>
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         <div className='space-y-4'>
-          {tokensAndWeights.length > 0 && currentStep !== 1 && totalBalance < 20000 ? (
-            <ErrorMessage
-              type='warn'
-              message={t('We recommend you to provide new pools [symbol]', { yourBalance: formatAmount(totalBalance) })}
-            />
+          {tokensAndWeights.length > 0 && currentStep !== 2 && totalValueInUsd < 20000 ? (
+            <div className='flex items-center gap-4 rounded-lg border border-warn-950 bg-warn-950 px-4 py-5'>
+              <InfoIcon className={cn('h-5 w-5 !stroke-warn-600')} />
+              <div className='flex flex-col gap-1'>
+                <TextHeading className='text-xl text-rose'>{t('Initial funds')}</TextHeading>
+                <TextSubHeading className='text-base text-rose'>
+                  {t('We recommend you to provide new pools')}
+                </TextSubHeading>
+              </div>
+            </div>
           ) : (
             <></>
           )}

@@ -17,12 +17,12 @@ function SideBarCreateWeighted({ tokensAndWeights, fees, step }) {
       return (
         <div className='space-y-4'>
           <Box className='flex flex-col gap-2'>
-            <TextHeading>{t('Pool Fees')}</TextHeading>
-            <Paragraph>{t('Pool [fees] sidebar description', { fees })}</Paragraph>
+            <TextHeading className='font-archia text-xl font-semibold'>{t('Pool Fees')}</TextHeading>
+            <Paragraph className='text-neutral-400'>{t('Pool [fees] sidebar description', { fees })}</Paragraph>
           </Box>
           <Box className='flex flex-col gap-2'>
-            <TextHeading>{t('Thena Governance')}</TextHeading>
-            <Paragraph>{t('Thena Governance description', { fees })}</Paragraph>
+            <TextHeading className='font-archia text-xl font-semibold'>{t('Thena Governance')}</TextHeading>
+            <Paragraph className='text-neutral-400'>{t('Thena Governance description', { fees })}</Paragraph>
           </Box>
           <PoolSummary
             fees={fees}

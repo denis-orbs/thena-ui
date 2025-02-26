@@ -1243,7 +1243,7 @@
   "Your Max Initial Liquidity": "Your Max Initial Liquidity",
   "Select Token": "Select Token",
   "Optimize": "Optimize",
-  "We recommend you to provide new pools [symbol]": "We recommend you to provide new pools with at least $20,000 in initial funds. Based on your wallet balances for these tokens, the maximum amount you can fund this pool is ${yourBalance}.",
+  "We recommend you to provide new pools": "We recommend you to provide new pools with at least $20,000 in initial funds.",
   "THE MemeCoin Renaissance": "THE MemeCoin Renaissance",
   "THE Vision: DeFi": "THE Vision: DeFi",
   "Provide liquidity and stake in THE/BNB pool": "Provide liquidity and stake in THE/BNB pool",
@@ -1464,5 +1464,6 @@
   "Register Pool": "Register Pool",
   "Add Initial Liquidity": "Add Initial Liquidity",
   "Total Weights do not match 100%": "Total Weights do not match 100%",
-  "The total weighting of all tokens must equal exactly 100% before you continue": "The total weighting of all tokens must equal exactly 100% before you continue."
+  "The total weighting of all tokens must equal exactly 100% before you continue": "The total weighting of all tokens must equal exactly 100% before you continue.",
+  "Initial funds": "Initial funds"
 }

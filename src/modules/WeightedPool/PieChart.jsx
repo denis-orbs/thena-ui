@@ -104,9 +104,7 @@ function PieChart({ tokens, colors, showTotalPercent = true }) {
         <Doughnut height={200} width={200} data={finalData} options={options} className='z-20' />
         {showTotalPercent && (
           <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'>
-            {totalWeight && (
-              <TextHeading className='font-archia text-3xl font-semibold'>{formatAmount(totalWeight)}%</TextHeading>
-            )}
+            <TextHeading className='font-archia text-3xl font-semibold'>{formatAmount(totalWeight || 0)}%</TextHeading>
           </div>
         )}
       </div>
