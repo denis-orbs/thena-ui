@@ -27,6 +27,7 @@ import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
+import ChevronUpIcon from '~/svgs/chevron-up.svg'
 import CLPoolIcon from '~/svgs/cl-pool-icon.svg'
 import ClassicPoolIcon from '~/svgs/classic-pool-icon.svg'
 import Clock from '~/svgs/clock.svg'
@@ -132,6 +133,7 @@ import WalletIcon from '~/svgs/wallet.svg'
 import WarningTriangleIcon from '~/svgs/warning-triangle.svg'
 import WeightedPoolIcon from '~/svgs/weighted-pool-icon.svg'
 import XIcon from '~/svgs/x-close.svg'
+import ZapperIcon from '~/svgs/zapper.svg'
 import ZoomInIcon from '~/svgs/zoom-in.svg'
 import ZoomOutIcon from '~/svgs/zoom-out.svg'
 
@@ -164,6 +166,7 @@ export {
   CheckPurpleLargeIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
   ClassicPoolIcon,
   Clock,
   CloseIcon,
@@ -270,6 +273,7 @@ export {
   WarningTriangleIcon,
   WeightedPoolIcon,
   XIcon,
+  ZapperIcon,
   ZoomInIcon,
   ZoomOutIcon,
 }

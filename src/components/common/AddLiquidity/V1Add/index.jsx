@@ -9,9 +9,10 @@ import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
 import { cn } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
+import { ZapperIcon } from '@/svgs'
 
 import { ManualPaneV1 } from './ManualPaneV1'
-import { ZapperPane } from './ZapperPane'
+import { CommonZapperPane } from '../components/CommonZapperPane'
 
 export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirstAddress, setSecondAddress }) {
   const [isZapper, setIsZapper] = useState(false)
@@ -23,21 +24,26 @@ export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirs
   const addSelections = useMemo(
     () => [
       {
-        label: 'Pool Token Deposit',
+        label: t('Pool Token Deposit'),
         active: !isZapper,
         onClickHandler: () => {
           setIsZapper(false)
         },
       },
       {
-        label: 'Single Token Deposit',
+        label: (
+          <div className='flex items-center justify-center gap-1'>
+            <ZapperIcon className='size-5' />
+            <span>{t('Zapper Deposit')}</span>
+          </div>
+        ),
         active: isZapper,
         onClickHandler: () => {
           setIsZapper(true)
         },
       },
     ],
-    [isZapper],
+    [isZapper, t],
   )
 
   return (
@@ -47,7 +53,7 @@ export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirs
       <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
 
       {isZapper ? (
-        <ZapperPane
+        <CommonZapperPane
           asset0={firstAsset}
           asset1={secondAsset}
           slippage={slippage}

@@ -22,9 +22,10 @@ import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import { ZapperIcon } from '@/svgs'
 
 import { EnterAmounts } from './containers/EnterAmounts'
-import { ZapperPane } from '../V1Add/ZapperPane'
+import { CommonZapperPane } from '../components/CommonZapperPane'
 
 const feeAmount = 3000
 
@@ -64,6 +65,8 @@ export const fetchGammaInfo = async (chainId, strategy) => {
 }
 
 export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess }) {
+  const t = useTranslations()
+
   const [isZapper, setIsZapper] = useState(false)
   const [slippage, setSlippage] = useState(0.5)
 
@@ -76,35 +79,40 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess 
   const addSelections = useMemo(
     () => [
       {
-        label: 'Pool Token Deposit',
+        label: t('Pool Token Deposit'),
         active: !isZapper,
         onClickHandler: () => {
           setIsZapper(false)
         },
       },
       {
-        label: 'Single Token Deposit',
+        label: (
+          <div className='flex items-center justify-center gap-1'>
+            <ZapperIcon className='size-5' />
+            <span>{t('Zapper Deposit')}</span>
+          </div>
+        ),
         active: isZapper,
         onClickHandler: () => {
           setIsZapper(true)
         },
       },
     ],
-    [isZapper],
+    [isZapper, t],
   )
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
       <div className='flex flex-col gap-5'>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
-        <Selection data={addSelections} isFull />
+        <Selection data={addSelections} isFull isTranslation={false} />
 
         <div className='flex justify-end'>
           <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
         </div>
 
         {isZapper ? (
-          <ZapperPane
+          <CommonZapperPane
             asset0={asset0}
             asset1={asset1}
             strategy={strategy}

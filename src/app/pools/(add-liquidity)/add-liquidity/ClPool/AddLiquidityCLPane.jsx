@@ -4,13 +4,14 @@ import React, { useCallback, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
+import KyberZapperPane from '@/components/common/AddLiquidity/FusionAdd/KyberZapperPane'
 import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
-import KyberZapperPane from '@/components/common/AddLiquidity/FusionAdd/ZapperPane'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
 import { cn } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useV3MintState } from '@/state/fusion/hooks'
+import { ZapperIcon } from '@/svgs'
 
 export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurrency }) {
   const { strategy } = useV3MintState()
@@ -24,21 +25,26 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
   const addSelections = useMemo(
     () => [
       {
-        label: 'Pool Token Deposit',
+        label: t('Pool Token Deposit'),
         active: !isZapper,
         onClickHandler: () => {
           setIsZapper(false)
         },
       },
       {
-        label: 'Single Token Deposit',
+        label: (
+          <div className='flex items-center justify-center gap-1'>
+            <ZapperIcon className='size-5' />
+            <span>{t('Zapper Deposit')}</span>
+          </div>
+        ),
         active: isZapper,
         onClickHandler: () => {
           setIsZapper(true)
         },
       },
     ],
-    [isZapper],
+    [isZapper, t],
   )
 
   const onShowModalSuccess = useCallback(() => {

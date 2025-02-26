@@ -922,7 +922,7 @@ export const useGetOdosTxSwap = (account, quote) => {
       }
       return undefined
     },
-    refetchInterval: 10000,
+    refetchInterval: 20000,
     enabled: Boolean(quote),
     gcTime: 0,
   })
