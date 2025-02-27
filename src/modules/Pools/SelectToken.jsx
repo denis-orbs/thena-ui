@@ -195,6 +195,7 @@ function SelectToken({
               isDisabled && 'cursor-not-allowed',
               className,
             ),
+            trailingIcon: 'right-7',
           }}
           type='text'
           val={selectedAsset?.symbol ?? ''}

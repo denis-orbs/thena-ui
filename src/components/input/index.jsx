@@ -49,7 +49,11 @@ function Input({
       )}
       {LeadingIcon && <div className='absolute bottom-0 left-4 top-0 my-auto h-5 w-5'>{LeadingIcon}</div>}
       {suffix && <span className='absolute bottom-0 right-3 top-0 my-auto h-fit text-neutral-400'>{suffix}</span>}
-      {TrailingIcon && <div className='absolute bottom-0 right-7 top-0 my-auto h-5 w-5'>{TrailingIcon}</div>}
+      {TrailingIcon && (
+        <div className={cn('absolute bottom-0 right-3 top-0 my-auto h-5 w-5', classNames?.trailingIcon)}>
+          {TrailingIcon}
+        </div>
+      )}
       {TrailingButton && (
         <div className={cn('absolute bottom-0 top-0 my-auto flex items-center', TrailingIcon ? 'right-12' : 'right-3')}>
           {TrailingButton}

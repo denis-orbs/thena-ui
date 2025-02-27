@@ -9,6 +9,8 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
+import { warnToast } from '@/lib/notify'
+import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 
 function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo, strategy, onShowModalSuccess }) {
@@ -66,6 +68,13 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
         <PrimaryButton
           disabled={isFetching || !data?.route}
           onClick={() => {
+            if (
+              fromWei(toWei(amountIn, tokenDeposit?.decimals), tokenDeposit?.decimals).gt(balance) ||
+              isInvalidAmount(amountIn)
+            ) {
+              warnToast('Invalid Amount')
+              return false
+            }
             handleAddLiquidity(
               {
                 route: data?.route,

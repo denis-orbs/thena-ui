@@ -13,19 +13,14 @@ import { useV1Add, useV1AddAndStake } from '@/hooks/useV1Liquidity'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { isInvalidAmount, wrappedAddress } from '@/lib/utils'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 
-export function ManualPaneV1({
-  strategy,
-  firstAsset,
-  secondAsset,
-  setFirstAddress,
-  setSecondAddress,
-  pairType,
-  slippage,
-}) {
+export function ManualPaneV1({ strategy, firstAsset, secondAsset, setFirstAddress, setSecondAddress, pairType }) {
   const t = useTranslations()
   const { push } = useRouter()
+
+  const [slippage, setSlippage] = useState(0.5)
 
   const [firstAmount, setFirstAmount] = useState('')
   const [secondAmount, setSecondAmount] = useState('')
@@ -158,7 +153,8 @@ export function ManualPaneV1({
 
   return (
     <section>
-      <div className='flex flex-col'>
+      <div className='flex flex-col gap-4'>
+        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <div className='mb-5 grid gap-2 xl:grid-cols-2'>
           <TokenAmountInput
             asset={firstAsset}

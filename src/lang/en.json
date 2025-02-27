@@ -226,6 +226,7 @@
   "User rejected the request": "User rejected the request",
   "Warning": "Warning",
   "Invalid Amount": "Invalid Amount",
+  "Invalid Routing, please try again later": "Invalid Routing, please try again later",
   "Wrap BNB": "Wrap {amount} BNB for WBNB",
   "All done": "All done! This window will be closed in 5s.",
   "Insufficient [Asset] Balance": "Insufficient {symbol} Balance",

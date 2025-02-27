@@ -68,7 +68,6 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess 
   const t = useTranslations()
 
   const [isZapper, setIsZapper] = useState(false)
-  const [slippage, setSlippage] = useState(0.5)
 
   const baseCurrency = useCurrency(strategy?.token0?.address)
   const quoteCurrency = useCurrency(strategy?.token1?.address)
@@ -106,17 +105,11 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess 
       <div className='flex flex-col gap-5'>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
         <Selection data={addSelections} isFull isTranslation={false} />
-
-        <div className='flex justify-end'>
-          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
-        </div>
-
         {isZapper ? (
           <CommonZapperPane
             asset0={asset0}
             asset1={asset1}
             strategy={strategy}
-            slippage={slippage}
             onShowModalSuccess={onShowModalSuccess}
           />
         ) : (
@@ -124,7 +117,6 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess 
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
             strategy={strategy}
-            slippage={slippage}
             onShowModalSuccess={onShowModalSuccess}
           />
         )}
@@ -133,8 +125,9 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess 
   )
 }
 
-function ManualPane({ baseCurrency, quoteCurrency, strategy, slippage, onShowModalSuccess }) {
+function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess }) {
   const t = useTranslations()
+  const [slippage, setSlippage] = useState(0.5)
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
@@ -197,6 +190,7 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, slippage, onShowMod
 
   return (
     <div>
+      <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-4' />
       <div className='flex flex-col'>
         <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
 

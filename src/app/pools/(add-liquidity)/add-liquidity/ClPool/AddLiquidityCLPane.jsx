@@ -63,7 +63,7 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
             {!mintInfo?.noLiquidity && (
               <Selection className={cn('w-full')} data={addSelections} isFull isTranslation={false} />
             )}
-            <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
+            <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
 
             {isZapper ? (
               <KyberZapperPane

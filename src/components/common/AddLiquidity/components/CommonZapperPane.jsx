@@ -17,7 +17,9 @@ import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
 import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
-import { cn, fromWei, isInvalidAmount } from '@/lib/utils'
+import { warnToast } from '@/lib/notify'
+import { cn, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { ChevronUpIcon, InfoIcon } from '@/svgs'
 
 const getZapAddress = (strategy, chainId) => {
@@ -26,9 +28,10 @@ const getZapAddress = (strategy, chainId) => {
   if (strategy.type === PAIR_TYPES.STABLE) return { address: Contracts.stableZap[chainId], isV1: true }
 }
 
-export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onShowModalSuccess }) {
+export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess }) {
   const t = useTranslations()
   const { address: pairAddress, gauge } = strategy
+  const [slippage, setSlippage] = useState(0.5)
   const zapSwapSlippage = 10000 - slippage * 100
   const warningTextRef = useRef(null)
   const [warningTextHeight, setWarningTextHeight] = useState('0px')
@@ -103,8 +106,22 @@ export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onS
     }
   }, [assemble0, assemble1, asset0, asset1])
 
+  const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
+
   const handleAddLiquidity = useCallback(
     ({ isStake = true }) => {
+      if (
+        fromWei(toWei(amountIn, tokenDeposit?.decimals), tokenDeposit?.decimals).gt(balance) ||
+        isInvalidAmount(amountIn)
+      ) {
+        warnToast('Invalid Amount')
+        return false
+      }
+
+      if (!isUseTokenInPair && !bestQuote) {
+        warnToast('Invalid Routing, please try again later')
+        return false
+      }
       if (isV1) {
         addZapV1(
           {
@@ -138,8 +155,10 @@ export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onS
       addZapGamma,
       addZapV1,
       amountIn,
+      balance,
       bestQuote,
       gauge?.address,
+      isUseTokenInPair,
       isV1,
       onShowModalSuccess,
       pairAddress,
@@ -151,10 +170,8 @@ export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onS
     ],
   )
 
-  const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
-
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-4'>
       <Box
         className={cn(
           'flex flex-row items-start gap-2.5 border border-primary-800 bg-primary-950 py-3 md:gap-4',
@@ -196,7 +213,8 @@ export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onS
         />
       </Box>
 
-      <div className='relative flex w-full flex-col gap-2'>
+      <div className='relative flex w-full flex-col gap-4'>
+        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <TokenAmountInput
           type='number'
           amount={amount}
@@ -206,7 +224,7 @@ export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onS
           autoFocus
           onAmountChange={setAmount}
           showPercent={false}
-          assetsSelect={[asset0, asset1]}
+          assetsSelect={[]}
         />
       </div>
 
@@ -259,16 +277,11 @@ export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onS
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >
-          <EmphasisButton
-            disabled={!amountIn || (!isUseTokenInPair && !bestQuote)}
-            onClick={() => handleAddLiquidity({ isStake: false })}
-            className='w-full'
-          >
+          <EmphasisButton onClick={() => handleAddLiquidity({ isStake: false })} className='w-full'>
             {t('Deposit')}
           </EmphasisButton>
 
           <PrimaryButton
-            disabled={!amountIn || (!isUseTokenInPair && !bestQuote)}
             onClick={() => handleAddLiquidity({ isStake: true })}
             className={cn(
               'w-full',

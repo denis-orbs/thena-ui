@@ -10,18 +10,21 @@ import MenuTab from '@/app/arena/MenuTab'
 import Loading from '@/app/loading'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import TokenInput from '@/components/input/TokenInput'
+import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { usePairs } from '@/context/pairsContext'
+import { useTokenBalance } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useTokenColor } from '@/hooks/useTokenColor'
 import { useGaugeBalance, useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
+import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import PieChart from '@/modules/WeightedPool/PieChart'
 import WeightedPoolLogo from '@/modules/WeightedPool/WeightedPoolLogo'
+import { ZapperIcon } from '@/svgs'
 
 import InputTokenMemo from '../../InputTokenMemo'
 import { PairBasicInfo } from '../../PairBasicInfo'
@@ -51,7 +54,12 @@ function AddLiquidityWeightedPoolPage({ params }) {
         onClick: () => setDepositType(DEPOSIT_TYPE.ALL),
       },
       {
-        title: t('Single Token Deposit'),
+        title: (
+          <div className='flex items-center justify-center gap-1'>
+            <ZapperIcon className='size-5' />
+            <span>{t('Zapper Deposit')}</span>
+          </div>
+        ),
         isActive: depositType === DEPOSIT_TYPE.SINGLE,
         isLink: false,
         onClick: () => setDepositType(DEPOSIT_TYPE.SINGLE),
@@ -226,6 +234,8 @@ function AddLiquidityWeightedPoolPage({ params }) {
     [getValueTokenAmountToUSD],
   )
 
+  const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
+
   useEffect(() => {
     setTokensData(prev => {
       if ((prev || []).length <= 0) return poolSelected?.tokens
@@ -255,9 +265,9 @@ function AddLiquidityWeightedPoolPage({ params }) {
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         <div className='w-full space-y-8 lg:flex-[6]'>
           <PairBasicInfo pair={poolSelected} />
-          <MenuTab className='grid w-full grid-cols-2' menuData={toggleDepositType} />
-          <div>
-            <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} />
+          <div className='space-y-4'>
+            <MenuTab className='grid w-full grid-cols-2' menuData={toggleDepositType} />
+            <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} className='mb-0' />
             {depositType === DEPOSIT_TYPE.ALL && (
               <div
                 className={cn(
@@ -280,27 +290,42 @@ function AddLiquidityWeightedPoolPage({ params }) {
             )}
             {depositType === DEPOSIT_TYPE.SINGLE && (
               <div>
-                <TokenInput
-                  asset={tokenDeposit}
-                  setAsset={setTokenDeposit}
+                <TokenAmountInput
+                  type='number'
                   amount={amountDeposit}
-                  setAmount={setAmountDeposit}
+                  setAsset={setTokenDeposit}
+                  asset={tokenDeposit}
+                  maxBalance={isDouble ? balance : null}
                   autoFocus
-                  assetData={tokensData}
-                  assetNull
-                  alowDouble
+                  onAmountChange={setAmountDeposit}
+                  assetsSelect={tokensData}
+                  showPercent={false}
                 />
               </div>
             )}
           </div>
           <div className='space-y-16'>
             <div className='grid gap-4 md:grid-cols-2'>
-              <EmphasisButton disabled={isDisable} onClick={() => onAddLiquidity(false)}>
+              <EmphasisButton
+                onClick={() => {
+                  if (isDisable) {
+                    warnToast('Invalid Amount')
+                    return false
+                  }
+                  onAddLiquidity(false)
+                }}
+              >
                 {t('Deposit')}
               </EmphasisButton>
               <PrimaryButton
-                disabled={isDisable || poolSelected?.gauge?.address === zeroAddress}
-                onClick={() => onAddLiquidity(true)}
+                disabled={poolSelected?.gauge?.address === zeroAddress}
+                onClick={() => {
+                  if (isDisable) {
+                    warnToast('Invalid Amount')
+                    return false
+                  }
+                  onAddLiquidity(true)
+                }}
                 data-tooltip-id={`add-liquidity-stake-${poolSelected?.address}`}
               >
                 {t('Deposit & Stake')}

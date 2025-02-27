@@ -12,6 +12,7 @@ import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei } from '@/lib/utils'
 import SelectTokenFromList from '@/modules/SelectTokenModal/SelectTokenFromList'
+import TokenModal from '@/modules/TokenModal'
 
 import TokenBadge from '../badges/TokenBadge'
 import AssetDropdown from '../dropdown/AssetDropdown'
@@ -27,7 +28,7 @@ export function TokenAmountInput({
   autoFocus = false,
   weight,
   showPercent = true,
-  assetsSelect = [],
+  assetsSelect,
   classNames,
 }) {
   const assets = useAssets()
@@ -104,10 +105,12 @@ export function TokenAmountInput({
 
   return (
     <div className='flex flex-col gap-2'>
-      <div className='flex items-center justify-between'>
-        <p className={cn('font-medium text-white', classNames?.title)}>{title}</p>
-        {showPercent && <Tabs data={percents} />}
-      </div>
+      {(typeof title === 'string' || showPercent) && (
+        <div className='flex items-center justify-between'>
+          <p className={cn('font-medium text-white', classNames?.title)}>{title}</p>
+          {showPercent && <Tabs data={percents} />}
+        </div>
+      )}
       <div
         className={cn(
           'flex cursor-text flex-col gap-3 self-stretch rounded-xl p-4',
@@ -131,11 +134,14 @@ export function TokenAmountInput({
           />
           {setAsset ? (
             <>
-              {assetsSelect.length > 1 ? (
+              {Array.isArray(assetsSelect) ? (
                 <TokenBadge
                   className={cn(
-                    'rounded-lg [&>#info]:!bg-[#292929] [&>#info]:!bg-opacity-50',
-                    Boolean(maxBalance) && '!w-[220px]',
+                    'inline-flex items-center justify-center gap-2',
+                    'rounded-lg bg-[#29292980] text-sm text-neutral-200',
+                    'py-1.5 pl-1.5 pr-2',
+                    'cursor-pointer',
+                    Boolean(maxBalance) && 'w-[220px]',
                   )}
                   asset={asset}
                   onClick={() => setTokenPopup(true)}
@@ -194,14 +200,28 @@ export function TokenAmountInput({
           </TextSubHeading>
         </div>
       </div>
-      {assetsSelect.length > 0 && (
-        <SelectTokenFromList
-          setIsOpen={setTokenPopup}
-          isOpen={tokenPopup}
-          selectedAsset={asset}
-          tokens={wrapAssetsData}
-          setToken={setAsset}
-        />
+      {Array.isArray(assetsSelect) && (
+        <>
+          {assetsSelect.length > 0 ? (
+            <SelectTokenFromList
+              setIsOpen={setTokenPopup}
+              isOpen={tokenPopup}
+              selectedAsset={asset}
+              tokens={wrapAssetsData}
+              setToken={setAsset}
+            />
+          ) : (
+            <TokenModal
+              popup={tokenPopup}
+              setPopup={setTokenPopup}
+              selectedAsset={asset}
+              setSelectedAsset={setAsset}
+              otherAsset={() => {}}
+              setOtherAsset={() => {}}
+              isHideTrending
+            />
+          )}
+        </>
       )}
     </div>
   )
