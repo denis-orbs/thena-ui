@@ -40,10 +40,10 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
             <Paragraph
               className={cn(
                 'font-medium text-neutral-400 hover:text-primary-600 hover:underline',
-                isHovered && 'text-primary-600',
+                isHovered && 'text-primary-600 underline',
               )}
             >
-              {t('Slippage Tolerance')}
+              {t('Slippage')}
             </Paragraph>
             {!isHovered ? <SettingsIcon className='h-6 w-6' /> : <SettingPrimaryIcon className='h-6 w-6' />}
           </div>

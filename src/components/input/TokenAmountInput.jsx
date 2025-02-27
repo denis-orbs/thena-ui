@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { useBalance, useReadContract } from 'wagmi'
 
@@ -11,7 +11,9 @@ import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, fromWei } from '@/lib/utils'
+import SelectTokenFromList from '@/modules/SelectTokenModal/SelectTokenFromList'
 
+import TokenBadge from '../badges/TokenBadge'
 import AssetDropdown from '../dropdown/AssetDropdown'
 import Skeleton from '../skeleton'
 
@@ -25,6 +27,7 @@ export function TokenAmountInput({
   autoFocus = false,
   weight,
   showPercent = true,
+  assetsSelect = [],
   classNames,
 }) {
   const assets = useAssets()
@@ -82,6 +85,23 @@ export function TokenAmountInput({
     [asset, max, onAmountChange],
   )
 
+  const inputRefer = useRef(null)
+  const onfocusInput = useCallback(() => {
+    if (inputRefer && inputRefer.current) {
+      inputRefer.current.focus()
+    }
+  }, [])
+
+  const [tokenPopup, setTokenPopup] = useState(false)
+  const wrapAssetsData = useMemo(
+    () =>
+      (assetsSelect || []).map(item => ({
+        ...item,
+        symbol: item.name === 'Wrapped BNB' ? 'WBNB' : item.symbol,
+      })),
+    [assetsSelect],
+  )
+
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center justify-between'>
@@ -90,13 +110,15 @@ export function TokenAmountInput({
       </div>
       <div
         className={cn(
-          'flex flex-col gap-3 self-stretch rounded-xl p-4',
+          'flex cursor-text flex-col gap-3 self-stretch rounded-xl p-4',
           'border border-neutral-700 focus-within:border-neutral-500 hover:bg-neutral-700',
           classNames?.input,
         )}
+        onClick={onfocusInput}
       >
         <div className='flex items-center justify-between gap-2'>
           <input
+            ref={inputRefer}
             type='number'
             className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
             placeholder='0.0'
@@ -108,12 +130,26 @@ export function TokenAmountInput({
             autoFocus={autoFocus}
           />
           {setAsset ? (
-            <AssetDropdown
-              className='[&>#info]:!rounded-lg [&>#info]:!bg-[#292929] [&>#info]:!bg-opacity-50'
-              selected={asset}
-              setSelected={setAsset}
-              data={data}
-            />
+            <>
+              {assetsSelect.length > 1 ? (
+                <TokenBadge
+                  className={cn(
+                    'rounded-lg [&>#info]:!bg-[#292929] [&>#info]:!bg-opacity-50',
+                    Boolean(maxBalance) && '!w-[220px]',
+                  )}
+                  asset={asset}
+                  onClick={() => setTokenPopup(true)}
+                  isDouble={Boolean(maxBalance)}
+                />
+              ) : (
+                <AssetDropdown
+                  className='[&>#info]:!rounded-lg [&>#info]:!bg-[#292929] [&>#info]:!bg-opacity-50'
+                  selected={asset}
+                  setSelected={setAsset}
+                  data={data}
+                />
+              )}
+            </>
           ) : asset ? (
             <div
               className={cn(
@@ -158,6 +194,15 @@ export function TokenAmountInput({
           </TextSubHeading>
         </div>
       </div>
+      {assetsSelect.length > 0 && (
+        <SelectTokenFromList
+          setIsOpen={setTokenPopup}
+          isOpen={tokenPopup}
+          selectedAsset={asset}
+          tokens={wrapAssetsData}
+          setToken={setAsset}
+        />
+      )}
     </div>
   )
 }

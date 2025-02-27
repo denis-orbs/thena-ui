@@ -190,7 +190,7 @@ function SelectToken({
           classNames={{
             input: cn(
               'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
-              'bg-neutral-800 hover:bg-neutral-600 pl-14 lg:pl-[72px]',
+              'bg-neutral-900 hover:bg-neutral-700 pl-14 lg:pl-[72px]',
               open && 'bg-neutral-700',
               isDisabled && 'cursor-not-allowed',
               className,
@@ -230,7 +230,7 @@ function SelectToken({
             ref={dropdownRef}
             className={cn(
               'absolute z-50 mt-2 flex-col items-start justify-start gap-1',
-              'rounded-xl border border-neutral-600 bg-neutral-800 p-2 shadow-lg',
+              'rounded-xl border border-neutral-900 bg-neutral-900 p-2 shadow-lg',
               'visible top-full opacity-100',
               dropdownAlign === 'right' ? 'left-auto right-0' : 'left-0 right-auto',
               listClassNames,
@@ -256,7 +256,7 @@ function SelectToken({
                     }}
                     otherAsset={otherAsset}
                     setOtherAsset={() => {}}
-                    className='min-w-40 flex-1 rounded-lg border border-neutral-700 bg-neutral-700 px-3 py-5'
+                    className='min-w-40 flex-1 rounded-lg border border-neutral-800 bg-neutral-800 px-3 py-5'
                   />
                 </div>
               ))}

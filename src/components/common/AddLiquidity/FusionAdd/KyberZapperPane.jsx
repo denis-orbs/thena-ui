@@ -3,8 +3,8 @@ import React, { useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
-import TokenInput from '@/components/input/TokenInput'
-import { useGetAsset } from '@/hooks/fusion/Tokens'
+import { TokenAmountInput } from '@/components/input/TokenAmountInput'
+import { useGetAsset, useTokenBalance } from '@/hooks/fusion/Tokens'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
@@ -44,17 +44,21 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
     slippage: slippage * 100,
   })
 
+  const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
+
   return (
     <div className='flex flex-col gap-2'>
       <div className='relative flex w-full flex-col gap-2'>
-        <TokenInput
-          asset={tokenDeposit}
-          setAsset={setTokenDeposit}
+        <TokenAmountInput
+          type='number'
           amount={amount}
-          setAmount={setAmount}
+          setAsset={setTokenDeposit}
+          asset={tokenDeposit}
+          maxBalance={isDouble ? balance : null}
           autoFocus
-          assetData={[asset0, asset1]}
-          assetNull
+          onAmountChange={setAmount}
+          showPercent={false}
+          assetsSelect={[asset0, asset1]}
         />
       </div>
 

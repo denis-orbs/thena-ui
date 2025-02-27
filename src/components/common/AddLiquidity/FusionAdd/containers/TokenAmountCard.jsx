@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import { WBNB } from 'thena-sdk-core'
 
 import Highlight from '@/components/highlight'
@@ -77,6 +77,13 @@ export function TokenAmountCard({
     [maxAmount, handleInput],
   )
 
+  const inputRefer = useRef(null)
+  const onfocusInput = useCallback(() => {
+    if (inputRefer && inputRefer.current) {
+      inputRefer.current.focus()
+    }
+  }, [])
+
   return (
     <div className='w-full'>
       {locked ? (
@@ -95,12 +102,14 @@ export function TokenAmountCard({
           </div>
           <div
             className={cn(
-              'flex flex-col gap-3 self-stretch rounded-xl p-4',
+              'flex cursor-text flex-col gap-3 self-stretch rounded-xl p-4',
               'border border-neutral-700 focus-within:border-neutral-500 hover:bg-neutral-700',
             )}
+            onClick={onfocusInput}
           >
             <div className='flex items-center justify-between gap-2'>
               <input
+                ref={inputRefer}
                 type='number'
                 className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
                 placeholder='0.0'
@@ -150,12 +159,6 @@ export function TokenAmountCard({
               </TextSubHeading>
             </div>
           </div>
-          {/* {errorMsg && (
-            <Alert>
-              <InfoIcon className='h-4 w-4 stroke-error-600' />
-              <p>{errorMsg}</p>
-            </Alert>
-          )} */}
         </div>
       )}
     </div>

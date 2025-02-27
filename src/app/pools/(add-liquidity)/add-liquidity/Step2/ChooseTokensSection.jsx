@@ -12,6 +12,7 @@ import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { getTokenInfo } from '@/lib/helper'
+import { wrappedAddress } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
 import ChoosePoolTokens from '@/modules/WeightedPool/ChoosePoolTokens'
 import { tokensSelected } from '@/state/weightedPool/action'
@@ -92,11 +93,11 @@ export default function ChooseTokensSection({ pairType }) {
     const duplicates = new Set()
 
     if ((tokensPool || []).length <= 0) return []
-    tokensPool.forEach(({ address }) => {
-      if (addressMap.has(address)) {
-        duplicates.add(address)
+    tokensPool.forEach(token => {
+      if (addressMap.has(wrappedAddress(token))) {
+        duplicates.add(wrappedAddress(token))
       } else {
-        addressMap.set(address, true)
+        addressMap.set(wrappedAddress(token), true)
       }
     })
 

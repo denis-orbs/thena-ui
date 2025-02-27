@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 
 import { UNKNOWN_LOGO } from '@/constant'
 import { useTokenBalance } from '@/hooks/fusion/Tokens'
@@ -45,12 +45,23 @@ function TokenInput({
     [assetData],
   )
 
+  const inputRefer = useRef(null)
+  const onfocusInput = useCallback(() => {
+    if (inputRefer && inputRefer.current) {
+      inputRefer.current.focus()
+    }
+  }, [])
+
   return (
     <div className='flex flex-col gap-3'>
       {typeof title === 'string' && <TextHeading>{title}</TextHeading>}
-      <div className='flex flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
+      <div
+        className='flex cursor-text flex-col gap-3 self-stretch rounded-xl border border-neutral-700 p-4 focus-within:border-neutral-500 hover:bg-neutral-700'
+        onClick={onfocusInput}
+      >
         <div className='flex items-center justify-between gap-2'>
           <input
+            ref={inputRefer}
             type='number'
             className='w-[60%] border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
             placeholder='0.0'
@@ -86,7 +97,12 @@ function TokenInput({
           ) : (
             <>
               {asset ? (
-                <TokenBadge asset={asset} onClick={() => setTokenPopup(true)} isDouble={isDouble && alowDouble} />
+                <TokenBadge
+                  className='rounded-lg'
+                  asset={asset}
+                  onClick={() => setTokenPopup(true)}
+                  isDouble={isDouble && alowDouble}
+                />
               ) : assetNull ? (
                 <EmphasisButton
                   className='h-9 !w-[130px] rounded-full p-1 text-sm font-semibold text-neutral-200 transition-all duration-150 ease-out'

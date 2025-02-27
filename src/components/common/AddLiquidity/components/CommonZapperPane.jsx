@@ -7,11 +7,12 @@ import { zeroAddress } from 'viem'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
-import TokenInput from '@/components/input/TokenInput'
+import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Spinner from '@/components/spinner'
 import { TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
+import { useTokenBalance } from '@/hooks/fusion/Tokens'
 import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
@@ -150,6 +151,8 @@ export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onS
     ],
   )
 
+  const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
+
   return (
     <div className='flex flex-col gap-2'>
       <Box
@@ -194,14 +197,16 @@ export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onS
       </Box>
 
       <div className='relative flex w-full flex-col gap-2'>
-        <TokenInput
-          asset={tokenDeposit}
-          setAsset={setTokenDeposit}
+        <TokenAmountInput
+          type='number'
           amount={amount}
-          setAmount={setAmount}
-          isHideTrending
+          setAsset={setTokenDeposit}
+          asset={tokenDeposit}
+          maxBalance={isDouble ? balance : null}
           autoFocus
-          assetNull
+          onAmountChange={setAmount}
+          showPercent={false}
+          assetsSelect={[asset0, asset1]}
         />
       </div>
 
