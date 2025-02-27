@@ -78,7 +78,7 @@ export default function Step1() {
   )
 
   return (
-    <div className='space-y-10 lg:space-y-20'>
+    <div className='lg:space-y-18 space-y-10'>
       <h4 className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
         <PoolGroupIcon className='h-5 lg:h-12 2xl:h-16' />
         <NewTextHeading>{t('Choose Liquidity Type')}</NewTextHeading>

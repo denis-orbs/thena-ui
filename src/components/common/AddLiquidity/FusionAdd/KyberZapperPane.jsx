@@ -4,16 +4,19 @@ import React, { useMemo, useState } from 'react'
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
-import { useGetAsset, useTokenBalance } from '@/hooks/fusion/Tokens'
+import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
-import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import { cn, fromWei, isInvalidAmount, toWei, wrappedAddress } from '@/lib/utils'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { Bound } from '@/state/fusion/actions'
 
-function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mintInfo, strategy, onShowModalSuccess }) {
+import WarningZapper from '../components/WarningZapper'
+
+function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, strategy, onShowModalSuccess }) {
   const t = useTranslations()
 
   const [token0, token1] = useMemo(() => {
@@ -37,6 +40,8 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
 
   const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset0.address, asset1.address)
 
+  const [slippage, setSlippage] = useState(0.5)
+
   const { data, isFetching } = useGetZapInRoute({
     tickLower,
     tickUpper,
@@ -46,22 +51,38 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
     slippage: slippage * 100,
   })
 
-  const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
-
   return (
-    <div className='flex flex-col gap-2'>
-      <div className='relative flex w-full flex-col gap-2'>
-        <TokenAmountInput
-          type='number'
-          amount={amount}
-          setAsset={setTokenDeposit}
-          asset={tokenDeposit}
-          maxBalance={isDouble ? balance : null}
-          autoFocus
-          onAmountChange={setAmount}
-          showPercent={false}
-          assetsSelect={[asset0, asset1]}
-        />
+    <div className='flex flex-col gap-8'>
+      <div className='space-y-4'>
+        <WarningZapper />
+        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
+        <div className='relative flex w-full flex-col gap-2'>
+          <TokenAmountInput
+            type='number'
+            amount={amount}
+            setAsset={setTokenDeposit}
+            asset={tokenDeposit}
+            autoFocus
+            onAmountChange={setAmount}
+            showPercent={false}
+            assetsSelect={[asset0, asset1]}
+          />
+          <div className={cn('rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8')}>
+            <p className='mb-1 text-xl font-medium'>Zapper Route</p>
+            <ol className='list-inside list-decimal text-sm'>
+              <li>
+                Swap a portion of {tokenDeposit.symbol} to{' '}
+                {wrappedAddress(tokenDeposit) === wrappedAddress(token0) ? token1.symbol : token0.symbol} to match the
+                pool ratio.
+              </li>
+              <li>
+                Deposit the remaining {tokenDeposit.symbol} and swapped{' '}
+                {wrappedAddress(tokenDeposit) === wrappedAddress(token0) ? token1.symbol : token0.symbol} into the pool
+                to receive LP tokens.
+              </li>
+            </ol>
+          </div>
+        </div>
       </div>
 
       {account ? (
@@ -69,7 +90,7 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, slippage, deadline, mint
           disabled={isFetching || !data?.route}
           onClick={() => {
             if (
-              fromWei(toWei(amountIn, tokenDeposit?.decimals), tokenDeposit?.decimals).gt(balance) ||
+              fromWei(toWei(amountIn, tokenDeposit?.decimals), tokenDeposit?.decimals).gt(tokenDeposit?.balance) ||
               isInvalidAmount(amountIn)
             ) {
               warnToast('Invalid Amount')

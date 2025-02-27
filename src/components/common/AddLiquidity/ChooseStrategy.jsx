@@ -480,13 +480,17 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType }) {
   )
   return (
     <article>
-      <div className='flex items-center justify-between'>
-        <TextHeading className='font-archia text-3xl font-semibold text-neutral-50'>
+      <div className='flex flex-col items-center gap-2 lg:flex-row lg:justify-between'>
+        <TextHeading className='hidden font-archia text-3xl font-semibold text-neutral-50 lg:block'>
           {isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}
         </TextHeading>
 
-        <div className={cn('flex gap-2', strategyCount === 0 && 'hidden')}>
-          <Selection data={strategyType} isTranslation={false} />
+        <div className={cn('flex gap-2 max-lg:w-full', strategyCount === 0 && 'hidden')}>
+          <Selection
+            className='w-full max-lg:grid max-lg:grid-cols-2 lg:w-fit'
+            data={strategyType}
+            isTranslation={false}
+          />
           <i
             onClick={() => setShow(!show)}
             className={cn(

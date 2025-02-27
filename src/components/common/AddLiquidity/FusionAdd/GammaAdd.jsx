@@ -226,7 +226,7 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess 
         </div> */}
       </div>
 
-      <div className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
+      <div className={cn('mt-8 flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
         {account ? (
           <>
             <PrimaryButton disabled={pending} onClick={onAddLiquidity} className='w-full'>

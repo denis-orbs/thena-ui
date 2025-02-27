@@ -1,18 +1,14 @@
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
-import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Spinner from '@/components/spinner'
-import { TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
 import Contracts from '@/constant/contracts'
-import { useTokenBalance } from '@/hooks/fusion/Tokens'
 import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
@@ -20,7 +16,8 @@ import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
 import { cn, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
-import { ChevronUpIcon, InfoIcon } from '@/svgs'
+
+import WarningZapper from './WarningZapper'
 
 const getZapAddress = (strategy, chainId) => {
   if (GAMMA_TYPES.includes(strategy.title)) return { address: Contracts.gammaZap[chainId], isV1: false }
@@ -33,15 +30,6 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess 
   const { address: pairAddress, gauge } = strategy
   const [slippage, setSlippage] = useState(0.5)
   const zapSwapSlippage = 10000 - slippage * 100
-  const warningTextRef = useRef(null)
-  const [warningTextHeight, setWarningTextHeight] = useState('0px')
-  const [showWarning, setShowWarning] = useState(true)
-
-  useEffect(() => {
-    if (warningTextRef.current) {
-      setWarningTextHeight(showWarning ? `${warningTextRef.current.scrollHeight}px` : '0px')
-    }
-  }, [showWarning])
 
   const { account, chainId } = useWallet()
   const [tokenDeposit, setTokenDeposit] = useState(asset0)
@@ -106,12 +94,10 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess 
     }
   }, [assemble0, assemble1, asset0, asset1])
 
-  const { balance, isDouble } = useTokenBalance(tokenDeposit, true)
-
   const handleAddLiquidity = useCallback(
     ({ isStake = true }) => {
       if (
-        fromWei(toWei(amountIn, tokenDeposit?.decimals), tokenDeposit?.decimals).gt(balance) ||
+        fromWei(toWei(amountIn, tokenDeposit?.decimals), tokenDeposit?.decimals).gt(tokenDeposit?.balance) ||
         isInvalidAmount(amountIn)
       ) {
         warnToast('Invalid Amount')
@@ -155,7 +141,6 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess 
       addZapGamma,
       addZapV1,
       amountIn,
-      balance,
       bestQuote,
       gauge?.address,
       isUseTokenInPair,
@@ -171,91 +156,51 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess 
   )
 
   return (
-    <div className='flex flex-col gap-4'>
-      <Box
-        className={cn(
-          'flex flex-row items-start gap-2.5 border border-primary-800 bg-primary-950 py-3 md:gap-4',
-          !showWarning && 'items-center',
-        )}
-      >
-        <InfoIcon className='my-1 w-5 min-w-5 stroke-primary-600 md:my-2 md:w-8 md:min-w-8' />
-        <div>
-          <p className='text-xl font-medium text-primary-100'>Important Information about Zapper</p>
+    <div className='flex flex-col gap-8'>
+      <div className='relative flex w-full flex-col gap-4'>
+        <WarningZapper />
+        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
+        <div className='space-y-2'>
+          <TokenAmountInput
+            type='number'
+            amount={amount}
+            setAsset={setTokenDeposit}
+            asset={tokenDeposit}
+            autoFocus
+            onAmountChange={setAmount}
+            showPercent={false}
+            assetsSelect={[]}
+          />
           <div
-            className='overflow-hidden transition-all duration-300 ease-in-out'
-            style={{ height: warningTextHeight }}
-            ref={warningTextRef}
+            className={cn(
+              'rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8',
+              !isUseTokenInPair && !tokenIn && 'hidden',
+            )}
           >
-            <TextSubHeading className='text-base text-primary-100'>
-              If you are zapping a considerable amount of funds, please ensure to use{' '}
-              <Link
-                target='_blank'
-                className='text-primary-500'
-                href='https://cyberscope.medium.com/sandwich-attacks-in-crypto-how-to-protect-yourself-9e9c223c7e3a'
-                rel='noreferrer'
-              >
-                protection against sandwich attacks
-              </Link>{' '}
-              to safeguard your investment. This precaution helps protect your transaction from potential front-running
-              and other malicious activities.
-              <br />
-              <br />
-              This feature is incompatible with tokens that have tax implications.
-            </TextSubHeading>
+            <p className='mb-1 text-xl font-medium'>Zapper Route</p>
+            <ol className='list-inside list-decimal text-sm'>
+              {!isUseTokenInPair && (
+                <li>
+                  Swap {tokenDeposit.symbol} to {tokenIn?.symbol}.
+                </li>
+              )}
+              <li>
+                Swap a portion of {isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol} to{' '}
+                {(isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol) === asset0.symbol
+                  ? asset1.symbol
+                  : asset0.symbol}{' '}
+                to match the pool ratio.
+              </li>
+              <li>
+                Deposit the remaining {isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol} and swapped{' '}
+                {(isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol) === asset0.symbol
+                  ? asset1.symbol
+                  : asset0.symbol}{' '}
+                into the pool to receive LP tokens.
+              </li>
+            </ol>
           </div>
         </div>
-        <ChevronUpIcon
-          className={cn(
-            'w-7 min-w-7 cursor-pointer p-1 transition-all duration-300 ease-in-out md:w-9 md:min-w-9 md:p-2',
-            !showWarning && 'rotate-180',
-          )}
-          onClick={() => setShowWarning(show => !show)}
-        />
-      </Box>
-
-      <div className='relative flex w-full flex-col gap-4'>
-        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
-        <TokenAmountInput
-          type='number'
-          amount={amount}
-          setAsset={setTokenDeposit}
-          asset={tokenDeposit}
-          maxBalance={isDouble ? balance : null}
-          autoFocus
-          onAmountChange={setAmount}
-          showPercent={false}
-          assetsSelect={[]}
-        />
-      </div>
-
-      <div
-        className={cn(
-          'mt-4 border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8',
-          !isUseTokenInPair && !tokenIn && 'hidden',
-        )}
-      >
-        <p className='mb-1 text-xl font-medium'>Zapp routing</p>
-        <ol className='list-inside list-decimal text-sm'>
-          {!isUseTokenInPair && (
-            <li>
-              Swap {tokenDeposit.symbol} to {tokenIn?.symbol}.
-            </li>
-          )}
-          <li>
-            Swap a portion of {isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol} to{' '}
-            {(isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol) === asset0.symbol
-              ? asset1.symbol
-              : asset0.symbol}{' '}
-            to match the pool ratio.
-          </li>
-          <li>
-            Deposit the remaining {isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol} and swapped{' '}
-            {(isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol) === asset0.symbol
-              ? asset1.symbol
-              : asset0.symbol}{' '}
-            into the pool to receive LP tokens.
-          </li>
-        </ol>
       </div>
 
       <div

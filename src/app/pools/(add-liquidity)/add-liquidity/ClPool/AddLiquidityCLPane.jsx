@@ -9,7 +9,6 @@ import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
 import { cn } from '@/lib/utils'
-import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { ZapperIcon } from '@/svgs'
 
@@ -19,7 +18,6 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
   const { push } = useRouter()
 
   const [isZapper, setIsZapper] = useState(false)
-  const [slippage, setSlippage] = useState(0.5)
   const [showModalSuccess, setShowModalSuccess] = useState(false)
 
   const addSelections = useMemo(
@@ -63,13 +61,11 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
             {!mintInfo?.noLiquidity && (
               <Selection className={cn('w-full')} data={addSelections} isFull isTranslation={false} />
             )}
-            <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
 
             {isZapper ? (
               <KyberZapperPane
                 baseCurrency={baseCurrency}
                 quoteCurrency={quoteCurrency}
-                slippage={slippage}
                 mintInfo={mintInfo}
                 strategy={strategy}
                 onShowModalSuccess={onShowModalSuccess}
@@ -79,7 +75,6 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
                 baseCurrency={baseCurrency}
                 quoteCurrency={quoteCurrency}
                 mintInfo={mintInfo}
-                slippage={slippage}
                 strategy={strategy}
                 onShowModalSuccess={onShowModalSuccess}
               />

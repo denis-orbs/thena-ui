@@ -114,7 +114,7 @@ export function TokenAmountInput({
       <div
         className={cn(
           'flex cursor-text flex-col gap-3 self-stretch rounded-xl p-4',
-          'border border-neutral-700 focus-within:border-neutral-500 hover:bg-neutral-700',
+          'border border-neutral-700 focus-within:border-neutral-500 hover:bg-neutral-700 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
           classNames?.input,
         )}
         onClick={onfocusInput}
@@ -138,9 +138,9 @@ export function TokenAmountInput({
                 <TokenBadge
                   className={cn(
                     'inline-flex items-center justify-center gap-2',
-                    'rounded-lg bg-[#29292980] text-sm text-neutral-200',
+                    'rounded-lg bg-[#29292980] text-sm text-neutral-200 hover:bg-neutral-700',
                     'py-1.5 pl-1.5 pr-2',
-                    'cursor-pointer',
+                    'hover-dont-change-bg cursor-pointer',
                     Boolean(maxBalance) && 'w-[220px]',
                   )}
                   asset={asset}
@@ -149,7 +149,7 @@ export function TokenAmountInput({
                 />
               ) : (
                 <AssetDropdown
-                  className='[&>#info]:!rounded-lg [&>#info]:!bg-[#292929] [&>#info]:!bg-opacity-50'
+                  className='hover-dont-change-bg hover:bg-neutral-700 [&>#info]:!rounded-lg [&>#info]:!bg-[#292929]  [&>#info]:!bg-opacity-50'
                   selected={asset}
                   setSelected={setAsset}
                   data={data}

@@ -173,7 +173,7 @@ export function ManualPaneV1({ strategy, firstAsset, secondAsset, setFirstAddres
         </div>
       </div>
 
-      <div className='mt-5 flex gap-4'>
+      <div className='mt-8 flex gap-4'>
         {account ? (
           <>
             {strategy && strategy.gauge.address !== zeroAddress && strategy.version === 3 ? (

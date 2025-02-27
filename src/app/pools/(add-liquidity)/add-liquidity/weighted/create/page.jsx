@@ -179,7 +179,7 @@ export default function CreateWeightedPoolPage() {
       </div>
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         <div className='space-y-4'>
-          {tokensAndWeights.length > 0 && currentStep !== 2 && totalValueInUsd < 20000 ? (
+          {tokensAndWeights.length > 0 && currentStep === 3 && totalValueInUsd < 20000 ? (
             <div className='flex items-center gap-4 rounded-lg border border-warn-950 bg-warn-950 px-4 py-5'>
               <InfoIcon className={cn('h-5 w-5 !stroke-warn-600')} />
               <div className='flex flex-col gap-1'>
