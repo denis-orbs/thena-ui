@@ -256,7 +256,7 @@ function SelectToken({
                     }}
                     otherAsset={otherAsset}
                     setOtherAsset={() => {}}
-                    className='min-w-40 flex-1 rounded-lg border border-neutral-800 bg-neutral-800 px-3 py-5'
+                    className='bg-neutral-800 px-3 py-5 hover:bg-neutral-600'
                   />
                 </div>
               ))}

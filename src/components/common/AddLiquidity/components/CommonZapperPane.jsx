@@ -163,7 +163,7 @@ export function CommonZapperPane({ asset0, asset1, slippage = 0.5, strategy, onS
       >
         <InfoIcon className='my-1 w-5 min-w-5 stroke-primary-600 md:my-2 md:w-8 md:min-w-8' />
         <div>
-          <p className='text-xl font-medium text-primary-100'>Attention against sandwich attacks</p>
+          <p className='text-xl font-medium text-primary-100'>Important Information about Zapper</p>
           <div
             className='overflow-hidden transition-all duration-300 ease-in-out'
             style={{ height: warningTextHeight }}
