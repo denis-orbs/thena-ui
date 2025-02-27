@@ -6,7 +6,7 @@ import { TertiaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
 import Skeleton from '@/components/skeleton'
 import { ACTION_AUTOMATION_TYPE, AUTOMATION_STATUS } from '@/constant'
-import { useAutomationContractDetail, useAutomationStatus } from '@/hooks/automationContract/useAutomationContract'
+import { useAutomationContractDetail, useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import useWallet from '@/hooks/useWallet'
 
 import ConfirmAutomationModal from './ConfirmAutomationModal'
@@ -20,7 +20,9 @@ import WithdrawFundsModal from './WithdrawFundsModal'
 function AutomationButton({ veTHE, isDetail = false }) {
   const { id: veTHEId, lockedEnd } = veTHE
 
-  const { isLoading, status, mutateData: mutateDataStatus } = useAutomationStatus(veTHEId)
+  const { data: veTHEs, isLoading, refetch: refetchAutomations } = useVeTheAutomations()
+  const found = veTHEs?.find(item => item.id === veTHEId)
+  const status = found?.statusString || AUTOMATION_STATUS.NO
   const { contractData, mutateAutomationData } = useAutomationContractDetail(veTHEId)
 
   const t = useTranslations()
@@ -232,7 +234,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
         address={contractData.address}
         mutateAutomationData={() => {
           mutateAutomationData()
-          mutateDataStatus()
+          refetchAutomations()
         }}
         showModal={showModal}
         setShowModal={setShowModal}
@@ -242,7 +244,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
         address={contractData.address}
         mutateAutomationData={() => {
           mutateAutomationData()
-          mutateDataStatus()
+          refetchAutomations()
         }}
         popup={chainLINKPopup}
         setPopup={setChainLINKPopup}

@@ -6,7 +6,7 @@ import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import { useAutomationStatus, useStatusAndBalanceMultiple } from '@/hooks/automationContract/useAutomationContract'
+import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { InfoIcon } from '@/svgs'
 
 import DepositFundsModal from './Edits/DepositFundsModal'
@@ -15,7 +15,6 @@ import ChainlinkModal from './head/ChainlinkModal'
 function WarningRegisterItem({ data, mutateStatusAndBalanceMultiple = () => {} }) {
   const t = useTranslations()
   const [chainLINKPopup, setChainLINKPopup] = useState(false)
-  const { mutateData: mutateDataStatus } = useAutomationStatus(data.veTHEId)
   return (
     <>
       <Box className='flex w-full flex-row items-center justify-between gap-3 border border-primary-800 bg-primary-950'>
@@ -37,7 +36,6 @@ function WarningRegisterItem({ data, mutateStatusAndBalanceMultiple = () => {} }
         address={data.contractAddress}
         mutateAutomationData={() => {
           mutateStatusAndBalanceMultiple()
-          mutateDataStatus()
         }}
         popup={chainLINKPopup}
         setPopup={setChainLINKPopup}
@@ -79,8 +77,8 @@ function WarningUnderfundedItem({ data, mutateStatusAndBalanceMultiple = () => {
   )
 }
 
-function WarningsWithActions({ veTHEs }) {
-  const { data, isLoading, mutate: mutateStatusAndBalanceMultiple } = useStatusAndBalanceMultiple(veTHEs)
+function AutomationsWarning() {
+  const { data, isLoading, refetch: refetchAutomations } = useVeTheAutomations()
   if (isLoading && !data && !data?.id) return null
 
   return (
@@ -91,7 +89,7 @@ function WarningsWithActions({ veTHEs }) {
             <React.Fragment key={item.id}>
               <WarningRegisterItem
                 mutateStatusAndBalanceMultiple={() => {
-                  mutateStatusAndBalanceMultiple()
+                  refetchAutomations()
                 }}
                 data={item}
               />
@@ -102,7 +100,7 @@ function WarningsWithActions({ veTHEs }) {
           return (
             <WarningUnderfundedItem
               mutateStatusAndBalanceMultiple={() => {
-                mutateStatusAndBalanceMultiple()
+                refetchAutomations()
               }}
               key={item.id}
               data={item}
@@ -115,4 +113,4 @@ function WarningsWithActions({ veTHEs }) {
   )
 }
 
-export default WarningsWithActions
+export default AutomationsWarning

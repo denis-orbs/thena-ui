@@ -7,7 +7,7 @@ import Highlight from '@/components/highlight'
 import Modal, { ModalBody } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import { useAutomationStatus } from '@/hooks/automationContract/useAutomationContract'
+import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { cn } from '@/lib/utils'
 import { LockIcon, MergeIcon, SplitIcon, TransferIcon } from '@/svgs'
 
@@ -27,7 +27,9 @@ export default function ManageModal({ veTHE, popup, setPopup, theAsset, updateVe
   const [type, setType] = useState(null)
   const t = useTranslations()
 
-  const { status } = useAutomationStatus(veTHE?.id)
+  const { data: veTHEs } = useVeTheAutomations()
+  const found = veTHEs?.find(item => item.id === veTHE?.id)
+  const status = found?.statusString ?? AUTOMATION_STATUS.NO
 
   const typesData = useMemo(
     () => [

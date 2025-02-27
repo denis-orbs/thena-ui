@@ -6,7 +6,7 @@ import Box from '@/components/box'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import { useAutomationStatus } from '@/hooks/automationContract/useAutomationContract'
+import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { fromWei } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
@@ -17,7 +17,9 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
   const [chainLINKPopup, setChainLINKPopup] = useState(false)
   const [depositFundsPopup, setDepositFundsPopup] = useState(false)
 
-  const { status, mutateData: mutateDataStatus } = useAutomationStatus(contractData.veTHEId)
+  const { data: veTHEs, refetch: refetchAutomations } = useVeTheAutomations()
+  const veTHE = veTHEs?.find(item => item.id === contractData.veTHEId)
+  const status = veTHE?.statusString || AUTOMATION_STATUS.NO
 
   const t = useTranslations()
 
@@ -68,7 +70,7 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
         address={contractData.address}
         mutateAutomationData={() => {
           mutateAutomationData()
-          mutateDataStatus()
+          refetchAutomations()
         }}
         popup={chainLINKPopup}
         setPopup={setChainLINKPopup}

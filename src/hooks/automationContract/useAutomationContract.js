@@ -1,12 +1,13 @@
+import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
-import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeEventLog, maxUint256, zeroAddress } from 'viem'
+import { decodeEventLog, maxUint256 } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { AUTOMATION_STATUS, PAIR_TYPES, TXN_STATUS } from '@/constant'
+import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { callMulti, readCall } from '@/lib/contractActions'
 import {
   getLinkTokenContract,
@@ -207,81 +208,14 @@ export const getAutomationStatusString = status => {
   }
 }
 
-export const useAutomationAddress = tokenId => {
+export const useVeTheAutomations = () => {
   const { chainId } = useWallet()
-  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-  const { data: automationAddress } = useReadContract({
-    ...veTheAutomationFactoryContract,
-    functionName: 'tokenIdToAutomation',
-    args: [tokenId],
-    enabled: Boolean(tokenId) && Boolean(chainId),
-  })
+  const { veTHEs } = useVeTHEsContext()
 
-  return automationAddress
-}
-
-export const useOperationsAutomation = id => {
-  const { chainId } = useWallet()
-  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-  const { data: automationAddress, isLoading } = useReadContract({
-    ...veTheAutomationFactoryContract,
-    functionName: 'tokenIdToAutomation',
-    args: [id],
-    enabled: Boolean(id) && Boolean(chainId),
-  })
-
-  const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
-  const { data: operationData, isLoading: isLoading1 } = useReadContract({
-    ...veTheAutomationContract,
-    functionName: 'operations',
-    enabled: Boolean(automationAddress) && Boolean(chainId),
-  })
-
-  const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(operationData) || [[], [], []]
-
-  return { isAutoVote, isClaimEveryWeek, isRelockEveryWeek, isLoading: isLoading || isLoading1 }
-}
-
-export const useAutomationStatus = vetTHEId => {
-  const { chainId } = useWallet()
-  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-  const {
-    data: automationAddress,
-    refetch: mutateData1,
-    isLoading: isLoading1,
-  } = useReadContract({
-    ...veTheAutomationFactoryContract,
-    functionName: 'tokenIdToAutomation',
-    args: [vetTHEId],
-    enabled: Boolean(vetTHEId) && Boolean(chainId),
-  })
-
-  const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
-
-  const {
-    data: status,
-    isLoading: isLoading2,
-    refetch: mutateData2,
-  } = useReadContract({
-    ...veTheAutomationContract,
-    functionName: 'status',
-    enabled: Boolean(vetTHEId) && Boolean(automationAddress) && automationAddress !== zeroAddress && Boolean(chainId),
-  })
-
-  const statusString = useMemo(() => getAutomationStatusString(status), [status])
-
-  if (automationAddress === zeroAddress) {
-    return { status: AUTOMATION_STATUS.NO, isLoading: isLoading1, mutateData: mutateData1 }
-  }
-
-  return { status: statusString, isLoading: isLoading2, mutateData: mutateData2 }
-}
-
-export const useStatusAndBalanceMultiple = veTHEs => {
-  const { chainId } = useWallet()
-  const fetchContractsStatusAndBalance = useCallback(async () => {
+  const fetchAutomationContracts = useCallback(async () => {
     const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-    const contractsAddress = await callMulti(
+
+    const contractAddresses = await callMulti(
       veTHEs.map(veTHE => ({
         ...veTheAutomationFactoryContract,
         functionName: 'tokenIdToAutomation',
@@ -290,49 +224,62 @@ export const useStatusAndBalanceMultiple = veTHEs => {
       })),
     )
 
-    const contractsStatus = await callMulti(
-      contractsAddress.map(address => ({
+    const contractsStatuses = await callMulti(
+      contractAddresses.map(address => ({
         ...getVeTheAutomationContract(address, chainId),
         functionName: 'status',
       })),
     )
 
+    // Min balance for the automation to run
     const contractsMinBalance = await callMulti(
-      contractsAddress.map(address => ({
+      contractAddresses.map(address => ({
         ...getVeTheAutomationContract(address, chainId),
         functionName: 'getMinBalance',
       })),
     )
 
+    // LINK balance of the automation
     const contractsBalance = await callMulti(
-      contractsAddress.map(address => ({
+      contractAddresses.map(address => ({
         ...getVeTheAutomationContract(address, chainId),
         functionName: 'getBalance',
       })),
     )
 
+    // Automation operations
+    const contractsOperationsHex = await callMulti(
+      contractAddresses.map(address => ({
+        ...getVeTheAutomationContract(address, chainId),
+        functionName: 'operations',
+      })),
+    )
+
     return veTHEs.map((veTHE, index) => {
-      const status = contractsStatus[index] ?? null
+      const status = contractsStatuses[index] ?? null
+      const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(contractsOperationsHex[index])
+
       return {
         ...veTHE,
-        contractAddress: contractsAddress[index],
+        contractAddress: contractAddresses[index],
         status,
         statusString: getAutomationStatusString(status),
         minBalanceAuto: fromWei(contractsMinBalance[index]) ?? new BigNumber(0),
         balanceAuto: fromWei(contractsBalance[index]) ?? new BigNumber(0),
+        operations: { isAutoVote, isClaimEveryWeek, isRelockEveryWeek },
       }
     })
   }, [chainId, veTHEs])
 
-  const { data, isLoading, mutate } = useSWR(
-    ['fetchContractsStatus', chainId, veTHEs.length],
-    () => fetchContractsStatusAndBalance(),
-    {
-      refreshInterval: 0,
-    },
-  )
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['fetchVeTheAutomations', chainId, veTHEs.length],
+    queryFn: () => fetchAutomationContracts(),
+    enabled: Boolean(chainId),
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  })
 
-  return { data, isLoading, mutate }
+  return { data, isLoading, refetch }
 }
 
 export const useAutomationContractDetail = tokenId => {

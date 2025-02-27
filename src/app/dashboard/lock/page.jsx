@@ -19,8 +19,8 @@ import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import AutomationButton from '@/modules/AutomationContract/AutomationButton'
 import AutomationStatus from '@/modules/AutomationContract/AutomationStatus'
+import AutomationsWarning from '@/modules/AutomationContract/AutomationsWarning'
 import LockExpire from '@/modules/AutomationContract/LockExpire'
-import WarningsWithActions from '@/modules/AutomationContract/WarningsWithActions'
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
 import { useChainSettings } from '@/state/settings/hooks'
 import { GiftIcon, InfoCirclePrimary, InfoCircleWhite, LockIcon, RefreshIcon } from '@/svgs'
@@ -146,7 +146,7 @@ export default function LockPage() {
             <TextSubHeading>${formatAmount(veTHE.amount.times(theAsset?.price ?? 0))}</TextSubHeading>
           </div>
         ),
-        expire: <LockExpire veTHE={veTHE} />,
+        expire: <LockExpire veTHEId={veTHE.id} />,
         used: (
           <Paragraph className={veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600'}>
             {veTHE.votedCurrentEpoch ? t('Yes') : t('No')}
@@ -239,7 +239,7 @@ export default function LockPage() {
               </PrimaryButton>
             </Info>
           </article>
-          <WarningsWithActions veTHEs={veTHEs} />
+          <AutomationsWarning />
           <div className='mb-4 mt-10 flex items-center justify-between'>
             <TextHeading className='text-xl'>{t('Locked Positions')}</TextHeading>
             {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>{t('Create Lock')}</PrimaryButton>}
