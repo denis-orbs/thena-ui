@@ -11,7 +11,7 @@ import { GridLinesAnimation } from './GridLinesAnimation'
 import { Heading } from '../Common/Heading'
 import HomeImage from '../Common/HomeImage'
 
-const data = ['Partners', 'Grants', 'Audits']
+const data = ['Partners', 'Grants', 'Audits', 'Communities']
 const partnerLogos = [
   { url: '/images/home/ecosystem/partners/ankr.svg' },
   { url: '/images/home/ecosystem/partners/frax.svg' },
@@ -33,6 +33,14 @@ const auditLogos = [
   { url: '/images/home/ecosystem/audits/Hacken.png', icon: 'hacken' },
 ]
 const grantLogos = [{ url: '/images/home/ecosystem/grants/bnbchain.svg' }]
+const communityLogos = [
+  { url: '/images/home/ecosystem/communities/THE-AI-Hub.svg', link: 'https://senq.theaihub.live' },
+  { url: '/images/home/ecosystem/communities/CN.svg', link: 'https://x.com/ThenaCN' },
+  { url: '/images/home/ecosystem/communities/ES.svg', link: 'https://x.com/ThenaESP' },
+  { url: '/images/home/ecosystem/communities/CIS.svg', link: 'https://t.me/Thena_Fi_CIS' },
+  { url: '/images/home/ecosystem/communities/KR.svg', link: 'https://x.com/ThenaKorea' },
+  { url: '/images/home/ecosystem/communities/TR.svg', link: 'https://t.me/ThenaFiTurkiye' },
+]
 
 function Ecosystem() {
   const [ecosystem, setEcoSystem] = useState(data[0])
@@ -56,6 +64,9 @@ function Ecosystem() {
         break
       case data[2]:
         arr = auditLogos
+        break
+      case data[3]:
+        arr = communityLogos
         break
 
       default:
@@ -99,10 +110,12 @@ function Ecosystem() {
                   logo?.icon === 'hacken' ? '!max-h-4 !min-h-4' : logo?.icon === 'etherfi' ? '!max-h-14 !min-h-14' : '',
                   logo.url.endsWith('Algebra.png') ? 'h-[47px] w-[188px]' : '',
                   logo.url.endsWith('EtherFi.png') ? 'h-[56px] w-[114px]' : '',
+                  logo.link ? 'cursor-pointer' : '',
                 )}
                 src={logo.url}
                 alt={`Logo ${index + 1}`}
                 key={`first-${index}`}
+                onClick={() => logo.link && window.open(logo.link, '_blank')}
               />
             ))}
           </div>

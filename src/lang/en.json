@@ -1302,7 +1302,6 @@
   "Earn Fees": "Earn Fees",
   "Warning total weight Weighted Pool": "The total weighting of all tokens must equal exactly 100% before you can proceed.",
   "This pool has no Gauge": "This pool doesn't support staking",
-  "Warning THE claim rebase fee": "To receive your rebase, please visit the Rewards page and claim it before your lock period ends. After the lock period expires, the rebase will no longer be available for claiming.",
   "withdraw and deposit manually warning": "strategy is not deployed for this pool. You can withdraw the liquidity and then add it to the manual CL pool.",
   "Withdraw Successfully": "Withdraw Successfully",
   "Gauge Is Not Available": "Gauge Is Not Available",
@@ -1465,5 +1464,7 @@
   "Add Initial Liquidity": "Add Initial Liquidity",
   "Total Weights do not match 100%": "Total Weights do not match 100%",
   "The total weighting of all tokens must equal exactly 100% before you continue": "The total weighting of all tokens must equal exactly 100% before you continue.",
-  "Initial funds": "Initial funds"
+  "Initial funds": "Initial funds",
+  "Warning THE claim rebase fee": "To receive your rebase, please visit the Rewards page and claim it before your lock period ends. After the lock period expires, the rebase will no longer be available for claiming.",
+  "Communities": "Communities"
 }
