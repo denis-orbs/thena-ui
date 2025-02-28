@@ -11,19 +11,27 @@ import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { AnalyticsIcon, InfoIcon } from '@/svgs'
 
-function Title({ title, length }) {
+function Title({ title, length, className }) {
   return (
-    <div className='flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
+    <div className={cn('flex min-h-[76px] w-full items-center justify-between gap-4 p-4', className)}>
       {title} ({length})
     </div>
   )
 }
 
-function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaultShow = false, isCollapse = true }) {
+function NewListings({
+  pools,
+  classNames,
+  sortOptions,
+  listPoolAddressSpecial,
+  title,
+  defaultShow = false,
+  isCollapse = true,
+}) {
   const t = useTranslations()
   const [sort, setSort] = useState(sortOptions[1])
   const newSortOptions = useMemo(() => [...sortOptions], [sortOptions])
@@ -324,9 +332,9 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaul
       {isCollapse ? (
         <Collapse
           className='min-h-[76px] rounded-xl bg-neutral-900'
-          classNames={{ chevron: 'mr-6', content: '-mt-7' }}
+          classNames={{ chevron: 'mr-6', content: '-mt-7', divider: classNames?.divider }}
           defaultShow={defaultShow}
-          title={<Title length={pools.length} title={title} />}
+          title={<Title length={pools.length} title={title} className={classNames?.title} />}
         >
           <Table
             sortOptions={newSortOptions}
@@ -335,6 +343,11 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title, defaul
             setSort={setSort}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            classNames={{
+              header: classNames?.header,
+              cellItem: classNames?.cellItem,
+              tableContainer: classNames?.tableContainer,
+            }}
           />
         </Collapse>
       ) : (

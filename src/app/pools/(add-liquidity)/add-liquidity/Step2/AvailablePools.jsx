@@ -7,13 +7,13 @@ import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { wrappedAddress } from '@/lib/utils'
 import { usePairInfo } from '@/state/pools/hooks'
-import { InfoIcon } from '@/svgs'
+import { InfoIcon, PoolCoinsIcon } from '@/svgs'
 
 const sortOptions = [
   {
     label: 'Pair',
     value: 'pair',
-    width: 'lg:w-[38%]',
+    width: 'lg:w-[35%]',
     isDesc: true,
   },
   {
@@ -77,7 +77,19 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
           <NewListings
             defaultShow
             pools={pairType === PAIR_TYPES.WEIGHTED ? availablePools : foundedPair ? [foundedPair] : []}
-            title={t('Available Pools')}
+            title={
+              <div className='flex gap-2'>
+                <PoolCoinsIcon className='h-6 w-6 stroke-neutral-400' />
+                {t('Available Pools')}
+              </div>
+            }
+            classNames={{
+              title: 'flex flex-row justify-normal gap-2',
+              divider: 'block',
+              header: 'border-none border-transparent',
+              cellItem: 'p-2 lg:p-2',
+              tableContainer: 'space-y-4',
+            }}
             sortOptions={sortOptions}
           />
         </div>

@@ -252,7 +252,7 @@ function Table({
                       }
                     }}
                   >
-                    <TableCell className={cn('flex text-nowrap', option.justify)}>
+                    <TableCell className={cn('flex text-nowrap', option.justify, classNames?.cellItem)}>
                       <TextHeading className='text-sm'>
                         {option.label && typeof option.label === 'string' ? t(option.label) : option.label}
                       </TextHeading>
@@ -284,7 +284,9 @@ function Table({
                     <tr className={bgHightLight}>
                       {sortOptions.map((cell, cellIdx) => (
                         <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
-                          <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                          <TableCell
+                            className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify, classNames?.cellItem)}
+                          >
                             {defaultHead[cell.value]}
                           </TableCell>
                         </td>
@@ -302,7 +304,13 @@ function Table({
                           >
                             {sortOptions.map((cell, cellIdx) => (
                               <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
-                                <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                                <TableCell
+                                  className={cn(
+                                    'flex flex-col text-nowrap lg:flex-row',
+                                    cell.justify,
+                                    classNames?.cellItem,
+                                  )}
+                                >
                                   {ele[cell.value]}
                                 </TableCell>
                               </td>
@@ -322,7 +330,13 @@ function Table({
                         >
                           {sortOptions.map((cell, cellIdx) => (
                             <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
-                              <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                              <TableCell
+                                className={cn(
+                                  'flex flex-col text-nowrap lg:flex-row',
+                                  cell.justify,
+                                  classNames?.cellItem,
+                                )}
+                              >
                                 {ele[cell.value]}
                               </TableCell>
                             </td>
@@ -335,7 +349,9 @@ function Table({
                     <tr key='table-row-summary' id='table-row-summary'>
                       {sortOptions.map((cell, cellIdx) => (
                         <td key={`${cell.value}-${cellIdx}`} className={cn(cell.minWidth)}>
-                          <TableCell className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify)}>
+                          <TableCell
+                            className={cn('flex flex-col text-nowrap lg:flex-row', cell.justify, classNames?.cellItem)}
+                          >
                             {summary[cell.value]}
                           </TableCell>
                         </td>
@@ -348,10 +364,21 @@ function Table({
           </table>
         ) : (
           <>
-            <div className='hidden w-full min-w-max items-center border-b border-neutral-700 lg:flex'>
+            <div
+              className={cn(
+                'hidden w-full min-w-max items-center border-b border-neutral-700 lg:flex',
+                classNames?.header,
+              )}
+            >
               {sortOptions.map((option, idx) => (
                 <TableCell
-                  className={cn('gap-1', !option.disabled && 'cursor-pointer', option.width, option.justify)}
+                  className={cn(
+                    'gap-1',
+                    !option.disabled && 'cursor-pointer',
+                    option.width,
+                    option.justify,
+                    classNames?.cellItem,
+                  )}
                   key={`header-${idx}`}
                   onClick={() => {
                     if (!option.disabled) {
@@ -401,6 +428,7 @@ function Table({
                         'flex w-full',
                         sortOptions[0].width,
                         sortOptions[0].hiddenMobile ? 'max-lg:hidden' : 'flex',
+                        classNames?.cellItem,
                       )}
                     >
                       {ele[sortOptions[0].value]}
@@ -411,6 +439,7 @@ function Table({
                           'flex w-1/2 flex-col lg:flex-row',
                           cell.width,
                           !cell.hiddenMobile ? 'lg:flex-row' : 'hidden',
+                          classNames?.cellItem,
                         )}
                         key={`${cell.value}-${cellIdx}`}
                       >
@@ -419,7 +448,11 @@ function Table({
                       </TableCell>
                     ))}
                     {!notAction && (
-                      <TableCell className={cn('flex w-full flex-col', sortOptions[sortOptions.length - 1].width)}>
+                      <TableCell
+                        className={
+                          (cn('flex w-full flex-col', sortOptions[sortOptions.length - 1].width), classNames?.cellItem)
+                        }
+                      >
                         {ele[sortOptions[sortOptions.length - 1].value]}
                       </TableCell>
                     )}
@@ -429,161 +462,165 @@ function Table({
           </>
         )}
       </div>
-      <div className='flex flex-col justify-end gap-1 md:flex-row'>
-        {showNumberOfPage && (
-          <Dropdown
-            className='w-full md:max-w-[200px]'
-            data={[{ label: 10 }, { label: 20 }, { label: 50 }, { label: 100 }]}
-            selected={pageSize}
-            setSelected={ele => setNumberOfPage(ele.label)}
-            prefix={t('Pools per page')}
-            prefixClass='pl-[140px]'
-            isLocale={false}
-          />
-        )}
-        {!loading && pageCount > 1 && !hidePagination && (
-          <div className='flex justify-center sm:justify-end'>
-            <ul className='relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
-              <PaginateCell
-                onClick={() => {
-                  if (currentPage !== 1) {
-                    handleRedirectPage(Math.max(currentPage - 1, 1))
-                    setCurrentPage(Math.max(currentPage - 1, 1))
-                  }
-                }}
-                disabled={currentPage === 1}
-              >
-                <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
-              </PaginateCell>
-              {pageCount < 6 &&
-                new Array(pageCount).fill(0).map((item, idx) => (
-                  <PaginateCell
-                    key={`paginate-${idx}`}
-                    active={currentPage === idx + 1}
-                    onClick={() => {
-                      handleRedirectPage(idx + 1)
-                      setCurrentPage(idx + 1)
-                    }}
-                  >
-                    {idx + 1}
-                  </PaginateCell>
-                ))}
-              {pageCount >= 6 && (
-                <>
-                  <PaginateCell
-                    active={currentPage === 1}
-                    onClick={() => {
-                      handleRedirectPage(1)
-                      setCurrentPage(1)
-                    }}
-                  >
-                    1
-                  </PaginateCell>
-                  <PaginateCell
-                    active={currentPage === 2}
-                    onClick={() => {
-                      handleRedirectPage(2)
-                      setCurrentPage(2)
-                    }}
-                  >
-                    2
-                  </PaginateCell>
-                  {currentPage > 3 && (
-                    <PaginateCell
-                      onClick={() => {
-                        if (showPopoverPagination) {
-                          setShowPopover(true)
-                        } else {
-                          handleRedirectPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
-                          setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
-                        }
-                      }}
-                    >
-                      ...
-                    </PaginateCell>
-                  )}
-                  {currentPage > 2 && currentPage < pageCount - 1 && (
-                    <PaginateCell
-                      active
-                      onClick={() => {
-                        handleRedirectPage(currentPage)
-                        setCurrentPage(currentPage)
-                      }}
-                    >
-                      {currentPage}
-                    </PaginateCell>
-                  )}
-                  {currentPage < pageCount - 2 && (
-                    <PaginateCell
-                      onClick={() => {
-                        if (showPopoverPagination) {
-                          setShowPopover(true)
-                        } else {
-                          handleRedirectPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
-                          setCurrentPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
-                        }
-                      }}
-                    >
-                      ...
-                    </PaginateCell>
-                  )}
-                  <PaginateCell
-                    active={currentPage === pageCount - 1}
-                    onClick={() => {
-                      handleRedirectPage(pageCount - 1)
-                      setCurrentPage(pageCount - 1)
-                    }}
-                  >
-                    {pageCount - 1}
-                  </PaginateCell>
-                  <PaginateCell
-                    active={currentPage === pageCount}
-                    onClick={() => {
-                      handleRedirectPage(pageCount)
-                      setCurrentPage(pageCount)
-                    }}
-                  >
-                    {pageCount}
-                  </PaginateCell>
-                </>
-              )}
-              <PaginateCell
-                onClick={() => {
-                  if (currentPage !== pageCount) {
-                    handleRedirectPage(Math.min(currentPage + 1, pageCount))
-                    setCurrentPage(Math.min(currentPage + 1, pageCount))
-                  }
-                }}
-                disabled={currentPage === pageCount}
-              >
-                <ArrowLeftIcon className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`} />
-              </PaginateCell>
-              {showPopoverPagination && (
-                <Popover
-                  inputPage={inputPage}
-                  setInputPage={setInputPage}
-                  setCurrentPage={setCurrentPage}
-                  showPopover={showPopover}
-                  setShowPopover={setShowPopover}
-                  pageCount={pageCount}
+      {((!loading && pageCount > 1 && !hidePagination) || showNumberOfPage) && (
+        <div className='flex flex-col justify-end gap-1 md:flex-row'>
+          {showNumberOfPage && (
+            <Dropdown
+              className='w-full md:max-w-[200px]'
+              data={[{ label: 10 }, { label: 20 }, { label: 50 }, { label: 100 }]}
+              selected={pageSize}
+              setSelected={ele => setNumberOfPage(ele.label)}
+              prefix={t('Pools per page')}
+              prefixClass='pl-[140px]'
+              isLocale={false}
+            />
+          )}
+          {!loading && pageCount > 1 && !hidePagination && (
+            <div className='flex justify-center sm:justify-end'>
+              <ul className='relative flex w-fit items-center justify-center gap-2 px-5 py-3 lg:justify-end'>
+                <PaginateCell
                   onClick={() => {
-                    const newPage = Number(inputPage)
-                    if (newPage && newPage !== currentPage) {
-                      if (enabledRedirectOnClickPagination) {
-                        handleRedirectPage(Number(newPage))
-                      } else {
-                        setCurrentPage(newPage)
-                      }
+                    if (currentPage !== 1) {
+                      handleRedirectPage(Math.max(currentPage - 1, 1))
+                      setCurrentPage(Math.max(currentPage - 1, 1))
                     }
-                    setShowPopover(false)
-                    setInputPage('')
                   }}
-                />
-              )}
-            </ul>
-          </div>
-        )}
-      </div>
+                  disabled={currentPage === 1}
+                >
+                  <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
+                </PaginateCell>
+                {pageCount < 6 &&
+                  new Array(pageCount).fill(0).map((item, idx) => (
+                    <PaginateCell
+                      key={`paginate-${idx}`}
+                      active={currentPage === idx + 1}
+                      onClick={() => {
+                        handleRedirectPage(idx + 1)
+                        setCurrentPage(idx + 1)
+                      }}
+                    >
+                      {idx + 1}
+                    </PaginateCell>
+                  ))}
+                {pageCount >= 6 && (
+                  <>
+                    <PaginateCell
+                      active={currentPage === 1}
+                      onClick={() => {
+                        handleRedirectPage(1)
+                        setCurrentPage(1)
+                      }}
+                    >
+                      1
+                    </PaginateCell>
+                    <PaginateCell
+                      active={currentPage === 2}
+                      onClick={() => {
+                        handleRedirectPage(2)
+                        setCurrentPage(2)
+                      }}
+                    >
+                      2
+                    </PaginateCell>
+                    {currentPage > 3 && (
+                      <PaginateCell
+                        onClick={() => {
+                          if (showPopoverPagination) {
+                            setShowPopover(true)
+                          } else {
+                            handleRedirectPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                            setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                          }
+                        }}
+                      >
+                        ...
+                      </PaginateCell>
+                    )}
+                    {currentPage > 2 && currentPage < pageCount - 1 && (
+                      <PaginateCell
+                        active
+                        onClick={() => {
+                          handleRedirectPage(currentPage)
+                          setCurrentPage(currentPage)
+                        }}
+                      >
+                        {currentPage}
+                      </PaginateCell>
+                    )}
+                    {currentPage < pageCount - 2 && (
+                      <PaginateCell
+                        onClick={() => {
+                          if (showPopoverPagination) {
+                            setShowPopover(true)
+                          } else {
+                            handleRedirectPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
+                            setCurrentPage(currentPage > pageCount - 2 ? currentPage - 1 : currentPage + 1)
+                          }
+                        }}
+                      >
+                        ...
+                      </PaginateCell>
+                    )}
+                    <PaginateCell
+                      active={currentPage === pageCount - 1}
+                      onClick={() => {
+                        handleRedirectPage(pageCount - 1)
+                        setCurrentPage(pageCount - 1)
+                      }}
+                    >
+                      {pageCount - 1}
+                    </PaginateCell>
+                    <PaginateCell
+                      active={currentPage === pageCount}
+                      onClick={() => {
+                        handleRedirectPage(pageCount)
+                        setCurrentPage(pageCount)
+                      }}
+                    >
+                      {pageCount}
+                    </PaginateCell>
+                  </>
+                )}
+                <PaginateCell
+                  onClick={() => {
+                    if (currentPage !== pageCount) {
+                      handleRedirectPage(Math.min(currentPage + 1, pageCount))
+                      setCurrentPage(Math.min(currentPage + 1, pageCount))
+                    }
+                  }}
+                  disabled={currentPage === pageCount}
+                >
+                  <ArrowLeftIcon
+                    className={`h-4 w-4 rotate-180${currentPage === pageCount ? ' stroke-gray-700' : ''}`}
+                  />
+                </PaginateCell>
+                {showPopoverPagination && (
+                  <Popover
+                    inputPage={inputPage}
+                    setInputPage={setInputPage}
+                    setCurrentPage={setCurrentPage}
+                    showPopover={showPopover}
+                    setShowPopover={setShowPopover}
+                    pageCount={pageCount}
+                    onClick={() => {
+                      const newPage = Number(inputPage)
+                      if (newPage && newPage !== currentPage) {
+                        if (enabledRedirectOnClickPagination) {
+                          handleRedirectPage(Number(newPage))
+                        } else {
+                          setCurrentPage(newPage)
+                        }
+                      }
+                      setShowPopover(false)
+                      setInputPage('')
+                    }}
+                  />
+                )}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { ChevronDownIcon } from '@/svgs'
 
+import Divider from '../divider'
+
 export function Collapse({ children, title, defaultShow = true, onToggle, isOpen, classNames, ...props }) {
   const [show, setShow] = useState(defaultShow)
   const contentRef = useRef(null)
@@ -50,6 +52,7 @@ export function Collapse({ children, title, defaultShow = true, onToggle, isOpen
           <ChevronDownIcon />
         </div>
       </div>
+
       {/* Content Section */}
       <div
         ref={contentRef}
@@ -58,6 +61,7 @@ export function Collapse({ children, title, defaultShow = true, onToggle, isOpen
           maxHeight,
         }}
       >
+        <Divider className={cn('mx-4 mt-4', classNames?.divider ? classNames.divider : 'hidden')} />
         {children}
       </div>
     </div>
