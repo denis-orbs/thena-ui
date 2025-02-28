@@ -32,9 +32,9 @@ const getFusionFeesData = async ({ chainId, pool }) => {
     )
 
     const avgPoolDayFees = poolDayDatas.reduce((acc, v) => acc + Number(v.feesUSD), 0) / poolDayDatas.length
-    const avgPoolFees = avgPoolDayFees * 365
+    const annualPoolFees = avgPoolDayFees * 365
 
-    return avgPoolFees
+    return annualPoolFees
   } catch (error) {
     console.error(`[${chainId}] fusion fees data fetch error: ${JSON.stringify(error)}`)
     return 0
@@ -85,7 +85,7 @@ export const useEstimateAPR = ({
   const currency1 = useGetAsset(pool?.token1?.address)
 
   // pool fees in USD
-  const { data: avgPoolFees = 0 } = useQuery({
+  const { data: annualPoolFees = 0 } = useQuery({
     queryKey: ['fusionFeesData', poolAddress],
     queryFn: () => getFusionFeesData({ chainId, pool: poolAddress }),
     enabled: !!poolAddress,
@@ -119,7 +119,9 @@ export const useEstimateAPR = ({
         abi: eternalVirtualPoolAbi,
       },
     ],
-    enabled: !!poolAddress,
+    query: {
+      enabled: Boolean(poolAddress),
+    },
   })
   const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
@@ -177,17 +179,21 @@ export const useEstimateAPR = ({
   }
 
   const farmRatio = BigNumber(position.liquidity).div(BigNumber(farmLiquidity).plus(position.liquidity))
-  const farmApr = rewardPerSecond
-    .times(farmRatio)
-    .times(86400 * 365)
-    .div(tvl)
-    .times(100)
+  const farmApr = tvl
+    ? rewardPerSecond
+        .times(farmRatio)
+        .times(86400 * 365)
+        .div(tvl)
+        .times(100)
+    : BigNumber(0)
 
   const feeRatio = BigNumber(position.liquidity).div(BigNumber(pool.liquidity).plus(position.liquidity))
-  const feeAPR = BigNumber(feeRatio)
-    .times(avgPoolFees)
-    .div(tvl)
-    .times(earnPercent * 100)
+  const feeAPR = tvl
+    ? BigNumber(feeRatio)
+        .times(annualPoolFees)
+        .div(tvl)
+        .times(earnPercent * 100)
+    : BigNumber(0)
 
   return farmApr.plus(feeAPR)
 }
@@ -197,7 +203,7 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1
   const { networkId: chainId } = useChainSettings()
 
   // pool fees in USD
-  const { data: avgPoolFees = 0 } = useQuery({
+  const { data: annualPoolFees = 0 } = useQuery({
     queryKey: ['fusionFeesData', poolAddress],
     queryFn: () => getFusionFeesData({ chainId, pool: poolAddress }),
     enabled: !!poolAddress,
@@ -226,32 +232,38 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1
       },
       {
         functionName: 'currentLiquidity',
-        address: virtualPool,
+        address: virtualPool ?? zeroAddress,
         abi: eternalVirtualPoolAbi,
       },
     ],
-    enabled: !!poolAddress,
+    query: {
+      enabled: Boolean(poolAddress),
+    },
   })
   const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
 
   let earnPercent = communityFee.div(1000)
-  if (position.isFarming) earnPercent = BigNumber(1).minus(communityFee.div(1000))
+  if (position?.isFarming) earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
   if (!tickLower || !tickUpper || !position) return BigNumber(0)
 
-  const farmRatio = BigNumber(position.liquidity).div(farmLiquidity)
-  const farmApr = rewardPerSecond
-    .times(farmRatio)
-    .times(86400 * 365)
-    .div(tvl)
-    .times(100)
+  const farmRatio = BigNumber(position?.liquidity ?? 0).div(farmLiquidity)
+  const farmApr = tvl
+    ? rewardPerSecond
+        .times(farmRatio)
+        .times(86400 * 365)
+        .div(tvl)
+        .times(100)
+    : new BigNumber(0)
 
-  const feeRatio = BigNumber(liquidity).div(totalLiquidity)
-  const feeAPR = BigNumber(feeRatio)
-    .times(avgPoolFees)
-    .div(tvl)
-    .times(earnPercent * 100)
+  const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : new BigNumber(0)
+  const feeAPR = tvl
+    ? feeRatio
+        .times(annualPoolFees)
+        .div(tvl)
+        .times(earnPercent * 100)
+    : new BigNumber(0)
 
   return farmApr.plus(feeAPR)
 }

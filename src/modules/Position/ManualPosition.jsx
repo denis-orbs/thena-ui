@@ -116,8 +116,8 @@ export default function ManualPosition({ position }) {
 
   const amount0 = useMemo(() => (_position ? _position.amount0.toExact() : 0), [_position])
   const amount1 = useMemo(() => (_position ? _position.amount1.toExact() : 0), [_position])
-  const amount0InUsd = useMemo(() => BigNumber(amount0) * asset0.price, [amount0, asset0])
-  const amount1InUsd = useMemo(() => BigNumber(amount1) * asset1.price, [amount1, asset1])
+  const amount0InUsd = useMemo(() => BigNumber(amount0).times(asset0.price).toNumber(), [amount0, asset0])
+  const amount1InUsd = useMemo(() => BigNumber(amount1).times(asset1.price).toNumber(), [amount1, asset1])
 
   const token0 = useToken(asset0.address)
   const token1 = useToken(asset1.address)
@@ -127,11 +127,12 @@ export default function ManualPosition({ position }) {
       pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_SwapFee'),
     [poolAddress, pools],
   )
+
   const apr = useCalculateAPR({
     position,
     poolAddress,
     totalLiquidity: _fusion?.liquidity,
-    tvl: poolInfo?.tvl ?? 1,
+    tvl: amount0InUsd + amount1InUsd,
   })
 
   const { reward0, reward1 } = useMemo(
@@ -197,8 +198,8 @@ export default function ManualPosition({ position }) {
 
     dispatch(updateStrategy({ strategy: newStrategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo?.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo?.basePool}`)
-  }, [dispatch, poolInfo, push, version])
+    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo?.basePool}&pid=${tokenId}`)
+  }, [dispatch, poolInfo, push, version, tokenId])
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -236,7 +237,7 @@ export default function ManualPosition({ position }) {
       <div className='flex flex-col gap-3'>
         <div className={cn('flex items-center justify-between', position?.version === 2 && 'hidden')}>
           <span className='text-sm text-neutral-300'>{t('APR')}</span>
-          <span>{apr.toFixed(2)}%</span>
+          <span>{formatAmount(apr.toNumber())}%</span>
         </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>

@@ -10,6 +10,7 @@ import Tabs from '@/components/tabs'
 import { NewTextHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { usePositionInfo } from '@/hooks/usePositionInfo'
 import { cn, wrappedAddress } from '@/lib/utils'
 import LiquidityChartRangeInput from '@/modules/Pools/LiquidityChartRangeInput'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
@@ -24,7 +25,6 @@ import { PoolAttributesSection } from '../PoolAttributesSection'
 
 function AddLiquidityClPool({ pool }) {
   const t = useTranslations()
-
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy } = useV3MintState()
@@ -33,15 +33,24 @@ function AddLiquidityClPool({ pool }) {
   const poolAddress = searchParams.get('poolAddress') || pool?.address
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
   const secondAddress = searchParams.get('secondAddress') || pool?.token1?.address
+  const pid = searchParams.get('pid')
 
+  const position = usePositionInfo({ tokenId: pid, poolAddress })
   const firstAsset = useGetAsset(firstAddress)
   const secondAsset = useGetAsset(secondAddress)
 
   const currencyA = useCurrency(firstAddress)
   const currencyB = useCurrency(secondAddress)
 
-  const baseCurrency = useMemo(() => (isReverse ? currencyB : currencyA), [isReverse, currencyA, currencyB])
-  const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [isReverse, currencyA, currencyB])
+  const [baseCurrency, quoteCurrency] = useMemo(
+    () =>
+      position
+        ? [position.baseCurrency, position.quoteCurrency]
+        : isReverse
+          ? [currencyB, currencyA]
+          : [currencyA, currencyB],
+    [position, isReverse, currencyB, currencyA],
+  )
 
   const pair = usePairInfo({
     token0Address: wrappedAddress(firstAsset),
@@ -63,10 +72,12 @@ function AddLiquidityClPool({ pool }) {
       : []
   }, [isReverse, priceLower, priceUpper])
 
-  const price = useMemo(() => {
+  const currentPrice = useMemo(() => {
+    if (position) return position.currentPrice
     if (!mintInfo.price) return
-    return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
-  }, [mintInfo])
+    const price = mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
+    if (price) return parseFloat(price)
+  }, [mintInfo.invertPrice, mintInfo.price, position])
 
   const periods = useMemo(
     () => [
@@ -128,6 +139,7 @@ function AddLiquidityClPool({ pool }) {
             isReverse={isReverse}
             mintInfo={mintInfo}
             pair={pair}
+            position={position}
           />
 
           <AddLiquidityCLPane
@@ -135,13 +147,16 @@ function AddLiquidityClPool({ pool }) {
             quoteCurrency={quoteCurrency}
             baseCurrency={baseCurrency}
             mintInfo={mintInfo}
+            position={position}
           />
         </div>
 
         <div id='RIGHT-BLOCK' className={cn('hidden flex-[4]', firstAddress && secondAddress && 'block')}>
           <div className='hidden flex-[4] flex-col gap-5 lg:flex'>
             {pair ? (
-              <PoolAttributesSection strategy={strategy} pair={pair} />
+              <div className={cn({ 'mt-[101px]': !!position })}>
+                <PoolAttributesSection strategy={strategy} pair={pair} />
+              </div>
             ) : (
               <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
                 <NewTextHeading className='!text-xl'>{t('New Deposit')}</NewTextHeading>
@@ -156,10 +171,10 @@ function AddLiquidityClPool({ pool }) {
                   currencyA={baseCurrency ?? undefined}
                   currencyB={quoteCurrency ?? undefined}
                   feeAmount={mintInfo.dynamicFee}
-                  ticksAtLimit={mintInfo.ticksAtLimit}
-                  price={price ? parseFloat(price) : undefined}
-                  priceLower={priceLower}
-                  priceUpper={priceUpper}
+                  ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+                  price={currentPrice}
+                  priceLower={position ? position.priceLower : priceLower}
+                  priceUpper={position ? position.priceUpper : priceUpper}
                   onLeftRangeInput={onLeftRangeInput}
                   onRightRangeInput={onRightRangeInput}
                   interactive={false}
@@ -168,7 +183,15 @@ function AddLiquidityClPool({ pool }) {
               </div>
             )}
 
-            <div className={cn('hidden', !strategy?.isAutomatic && priceLower && priceUpper && 'block')}>
+            <div
+              className={cn(
+                'hidden',
+                !strategy?.isAutomatic &&
+                  (position?.minPrice ?? priceLower) &&
+                  (position?.maxPrice ?? priceUpper) &&
+                  'block',
+              )}
+            >
               <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
                 <NewTextHeading className='!text-xl font-semibold'>Price History</NewTextHeading>
                 <Tabs data={periods} />
@@ -184,9 +207,9 @@ function AddLiquidityClPool({ pool }) {
                     <PoolChart
                       data={pairPrices}
                       timeWindow={timeWindow}
-                      current={price ? parseFloat(price) : 0}
-                      upper={Number(chartDomain[0] ?? 0)}
-                      lower={Number(chartDomain[1] ?? 0)}
+                      current={Number(currentPrice)}
+                      upper={Number(position?.maxPrice ?? chartDomain[0] ?? 0)}
+                      lower={Number(position?.minPrice ?? chartDomain[1] ?? 0)}
                     />
                   )}
                 </div>

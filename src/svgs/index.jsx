@@ -35,6 +35,7 @@ import CloseIcon from '~/svgs/close.svg'
 import CoinHand from '~/svgs/coin-hand.svg'
 import CoinsHandIcon from '~/svgs/coins-hand.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
+import CoinUSDIcon from '~/svgs/coins-usd.svg'
 import CollapseUpIcon from '~/svgs/collapse-up.svg'
 import CopyIcon from '~/svgs/copy.svg'
 import CopyArenaIcon from '~/svgs/copy-arena.svg'
@@ -175,6 +176,7 @@ export {
   CoinHand,
   CoinsHandIcon,
   CoinsStackedIcon,
+  CoinUSDIcon,
   CollapseUpIcon,
   CopyArenaIcon,
   CopyIcon,

@@ -1,5 +1,5 @@
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 
 import Loading from '@/app/loading'
 import { EmphasisButton, TextButton } from '@/components/buttons/Button'
@@ -15,22 +15,14 @@ import AddLiquidityClPool from './ClPool'
 export default function Step3({ setStep }) {
   const searchParams = useSearchParams()
   const router = useRouter()
-
   const updateSearchParams = useUpdateSearchParams()
-  const { isLoading: isLoadingPairs } = usePairs()
 
   const poolAddress = searchParams.get('poolAddress')
+  const pairTypeFromParams = searchParams.get('pairType')
 
-  useEffect(() => {
-    if (poolAddress) {
-      updateSearchParams({ pairType: null })
-    }
-  }, [poolAddress, updateSearchParams])
-
-  const pair = usePairInfo({
-    poolAddress,
-    type: searchParams.get('pairType'),
-  })
+  const { isLoading: isLoadingPairs } = usePairs()
+  const pair = usePairInfo({ poolAddress, type: pairTypeFromParams })
+  const pairType = useMemo(() => pair?.type ?? pairTypeFromParams, [pair, pairTypeFromParams])
 
   const handleBack = useCallback(() => {
     const routeHistoryLength = window?.history?.length ?? 0
@@ -43,9 +35,13 @@ export default function Step3({ setStep }) {
     } else {
       router.back()
     }
-  }, [pair?.token0?.address, pair?.token1?.address, router, updateSearchParams])
+  }, [pair, router, updateSearchParams])
 
-  const pairType = pair?.type ?? searchParams.get('pairType')
+  useEffect(() => {
+    if (poolAddress) {
+      updateSearchParams({ pairType: null })
+    }
+  }, [poolAddress, updateSearchParams])
 
   if (poolAddress && isLoadingPairs) {
     return <Loading />
