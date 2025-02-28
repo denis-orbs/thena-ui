@@ -126,8 +126,8 @@ export const useEstimateAPR = ({
   const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
 
-  let earnPercent = communityFee.div(1000)
-  if (isFarming) earnPercent = BigNumber(1).minus(communityFee.div(1000))
+  let earnPercent = BigNumber(1).minus(communityFee.div(1000))
+  if (isFarming) earnPercent = communityFee.div(1000)
 
   if (!tickLower || !tickUpper || !pool) return BigNumber(0)
 
@@ -198,7 +198,7 @@ export const useEstimateAPR = ({
   return farmApr.plus(feeAPR)
 }
 
-export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1 }) => {
+export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) => {
   const { liquidity, tickLower, tickUpper } = position || {}
   const { networkId: chainId } = useChainSettings()
 
@@ -243,8 +243,8 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1
   const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
 
-  let earnPercent = communityFee.div(1000)
-  if (position?.isFarming) earnPercent = BigNumber(1).minus(communityFee.div(1000))
+  let earnPercent = BigNumber(1).minus(communityFee.div(1000))
+  if (position?.isFarming) earnPercent = communityFee.div(1000)
 
   if (!tickLower || !tickUpper || !position) return BigNumber(0)
 

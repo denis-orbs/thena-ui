@@ -30,12 +30,13 @@ function AddLiquidityClPool({ pool }) {
   const { strategy } = useV3MintState()
 
   const searchParams = useSearchParams()
+  const type = searchParams.get('type')
   const poolAddress = searchParams.get('poolAddress') || pool?.address
   const firstAddress = searchParams.get('firstAddress') || pool?.token0?.address
   const secondAddress = searchParams.get('secondAddress') || pool?.token1?.address
   const pid = searchParams.get('pid')
 
-  const position = usePositionInfo({ tokenId: pid, poolAddress })
+  const position = usePositionInfo({ tokenId: pid, poolAddress, type })
   const firstAsset = useGetAsset(firstAddress)
   const secondAsset = useGetAsset(secondAddress)
 

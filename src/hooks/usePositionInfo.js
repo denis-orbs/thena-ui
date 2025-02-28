@@ -17,7 +17,7 @@ import { useCalculateAPR } from './fusion/useEstimateAPR'
 import { useFusionState } from './fusion/useFusions'
 import usePrevious from './usePrevious'
 
-export const usePositionInfo = ({ tokenId, poolAddress }) => {
+export const usePositionInfo = ({ tokenId, poolAddress, type }) => {
   const { pairs } = usePairs()
   const manuals = useManuals()
   const [independentField, setIndependentField] = useState(Field.CURRENCY_A)
@@ -63,8 +63,8 @@ export const usePositionInfo = ({ tokenId, poolAddress }) => {
   }, [manuals, pair])
 
   const userPositions = useMemo(() => [...userPools, ...userManuals].filter(Boolean), [userManuals, userPools])
-
   const pool = useMemo(() => userPositions.find(({ tokenId: id }) => id === Number(tokenId)), [tokenId, userPositions])
+  const subpool = useMemo(() => (pair?.subpools || []).find(({ title }) => title === type), [pair?.subpools, type])
 
   const { asset0, asset1, liquidity, tickLower, tickUpper, version } = pool || {}
 
@@ -308,8 +308,8 @@ export const usePositionInfo = ({ tokenId, poolAddress }) => {
   )
 
   const apr = useCalculateAPR({
-    pool,
-    poolAddress: pool?.address,
+    position: pool,
+    poolAddress: subpool?.address,
     totalLiquidity: _fusion?.liquidity,
     tvl: Number(depositInUSD ?? 0),
   })
@@ -318,7 +318,7 @@ export const usePositionInfo = ({ tokenId, poolAddress }) => {
     ? {
         dependentField: independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A,
         currencies,
-        pool,
+        pool: { ...pool, tvl: subpool?.tvl ?? 0 },
         poolAddress: pool.address,
         currencyBalances,
         parsedAmounts,

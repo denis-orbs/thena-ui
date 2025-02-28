@@ -128,7 +128,7 @@ export function FarmingPosition({ position }) {
     position,
     poolAddress,
     totalLiquidity: _fusion?.liquidity,
-    tvl: poolInfo?.tvl ?? 1,
+    tvl: amount0InUsd + amount1InUsd,
   })
 
   const THE = useGetAsset(Contracts.THE[chainId])
@@ -215,7 +215,7 @@ export function FarmingPosition({ position }) {
 
     dispatch(updateStrategy({ strategy: newStrategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}&pid=${tokenId}`)
+    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}&pid=${tokenId}&type=${poolInfo?.title}`)
   }, [dispatch, poolInfo, push, version, tokenId])
 
   return (
@@ -254,7 +254,7 @@ export function FarmingPosition({ position }) {
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
           <span className='text-sm text-neutral-300'>{t('APR')}</span>
-          <span>{apr.toFixed(2)}%</span>
+          <span>{formatAmount(apr.toNumber())}%</span>
         </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
