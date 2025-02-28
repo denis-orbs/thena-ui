@@ -100,7 +100,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
         <Box className='space-y-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Registration')}</TextHeading>
           <div className='flex flex-col gap-3'>
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Owner address')}</Paragraph>
               <TextHeading className='flex flex-row gap-1'>
                 {formatAddress(account)}
@@ -112,11 +112,11 @@ function AutomationDetails({ contractData, transactionHash, date }) {
                 </div>
               </TextHeading>
             </div>
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Date')}</Paragraph>
               <TextHeading>{dayjs.unix(date).format('MMM D, YYYY [at] HH:mm [UTC]')}</TextHeading>
             </div>
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Transaction Hash')}</Paragraph>
               <TextHeading className='flex flex-row gap-1'>
                 {formatAddress(transactionHash)}
@@ -128,7 +128,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
                 </div>
               </TextHeading>
             </div>
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Forwarder address')}</Paragraph>
               <TextHeading className='flex flex-row items-center gap-1'>
                 {formatAddress(contractData.forwarder)}
@@ -147,7 +147,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
         <Box className='space-y-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Contract')}</TextHeading>
           <div className='flex flex-col gap-3'>
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Contract address')}</Paragraph>
               <TextHeading className='flex flex-row items-center gap-1'>
                 {formatAddress(contractData.address)}
@@ -159,7 +159,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
                 </div>
               </TextHeading>
             </div>
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Gas limit')}</Paragraph>
               <TextHeading className='flex flex-row gap-1'>{formatAmount(contractData.gasLimit)}</TextHeading>
             </div>
@@ -170,13 +170,13 @@ function AutomationDetails({ contractData, transactionHash, date }) {
         <Box className='space-y-4'>
           <TextHeading className='font-archia text-xl lg:text-2xl'>{t('Execution')}</TextHeading>
           <div className='flex flex-col gap-3'>
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Automation execution time')}</Paragraph>
               <TextHeading>
                 {dayjs(contractData?.settings?.executionTime).format('MMM D, YYYY [at] HH:mm [UTC]')}
               </TextHeading>
             </div>
-            <div className='flex flex-row justify-between'>
+            <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Next execution')}</Paragraph>
               <TextHeading>
                 {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}

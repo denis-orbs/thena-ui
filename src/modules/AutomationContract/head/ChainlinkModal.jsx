@@ -64,7 +64,7 @@ function ChainlinkModal({ address, tokenId, mutateAutomationData, popup, setPopu
           {t('Cancel')}
         </EmphasisButton>
         <PrimaryButton
-          disabled={!chainlink || !chainlinkAmount || pending}
+          disabled={!chainlink || !chainlinkAmount || minFunds.gt(new BigNumber(chainlinkAmount)) || pending}
           className='w-full'
           onClick={() => {
             if (minFunds.gt(new BigNumber(chainlinkAmount))) {

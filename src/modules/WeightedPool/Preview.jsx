@@ -58,7 +58,11 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
         <div className='flex items-center gap-4'>
           <div className='flex flex-[4] gap-4'>
             <div className='space-y-2'>
-              <WeightedPoolLogo height={24} width={24} tokens={tokens} />
+              <WeightedPoolLogo
+                height={tokens?.length === 2 ? 32 : 24}
+                width={tokens?.length === 2 ? 32 : 24}
+                tokens={tokens}
+              />
               <Paragraph className='text-xs'>{t('Weighted Pool')}</Paragraph>
             </div>
             <div className='space-y-2'>

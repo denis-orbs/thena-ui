@@ -21,7 +21,7 @@ import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
 
-export const useGetMaxPaymentForGas = (veTHEId, operations, poolLength) => {
+export const useGetMinimumFunds = (veTHEId, operations, poolLength) => {
   const { chainId } = useWallet()
   const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
 

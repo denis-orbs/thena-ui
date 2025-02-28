@@ -17,15 +17,20 @@ function WarningRegisterItem({ data, mutateStatusAndBalanceMultiple = () => {} }
   return (
     <>
       <article className='my-4'>
-        <Info className='lg:p-8'>
-          <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
-          <p>
-            {t(
-              'You need to register the automation for your [veTheId] lock and grant the necessary veTHE approvals for it to function properly',
-              { veTheId: data.id },
-            )}
-          </p>
-          <PrimaryButton onClick={() => setChainLINKPopup(true)} className='ml-auto w-fit min-w-[142px] justify-end'>
+        <Info className='flex-col sm:flex-row lg:p-8'>
+          <div className='flex items-center gap-4'>
+            <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+            <p>
+              {t(
+                'You need to register the automation for your [veTheId] lock and grant the necessary veTHE approvals for it to function properly',
+                { veTheId: data.id },
+              )}
+            </p>
+          </div>
+          <PrimaryButton
+            onClick={() => setChainLINKPopup(true)}
+            className='ml-auto max-sm:w-full sm:min-w-fit sm:justify-end'
+          >
             {t('Register Automation')}
           </PrimaryButton>
         </Info>
@@ -51,19 +56,24 @@ function WarningUnderfundedItem({ data, mutateStatusAndBalanceMultiple = () => {
   return (
     <>
       <article className='my-4'>
-        <Info className='lg:p-8'>
-          <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
-          <p>
-            {t('Warning underfunded Automation [veTheId]', { veTheId: data.id })}{' '}
-            <Link
-              className='text-primary-600'
-              href='https://docs.chain.link/chainlink-automation/overview/automation-economics'
-              target='_blank'
-            >
-              {t('Learn more')}
-            </Link>
-          </p>
-          <PrimaryButton onClick={() => setDepositFundsPopup(true)} className='mn-w-[189px] ml-auto w-fit justify-end'>
+        <Info className='flex-col sm:flex-row lg:p-8'>
+          <div className='flex items-center gap-4'>
+            <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+            <p>
+              {t('Warning underfunded Automation [veTheId]', { veTheId: data.id })}{' '}
+              <Link
+                className='text-primary-600'
+                href='https://docs.chain.link/chainlink-automation/overview/automation-economics'
+                target='_blank'
+              >
+                {t('Learn more')}
+              </Link>
+            </p>
+          </div>
+          <PrimaryButton
+            onClick={() => setDepositFundsPopup(true)}
+            className='ml-auto max-sm:w-full sm:min-w-fit sm:justify-end'
+          >
             {t('Fund Contract')}
           </PrimaryButton>
         </Info>

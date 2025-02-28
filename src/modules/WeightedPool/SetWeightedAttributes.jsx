@@ -65,8 +65,8 @@ function SetWeightedAttributes({
           <div className='flex items-center gap-4'>
             <WeightedPoolLogo
               tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
-              width={24}
-              height={24}
+              width={tokensAndWeights.length <= 4 ? 32 : 24}
+              height={tokensAndWeights.length <= 4 ? 32 : 24}
             />
             <Paragraph className='text-neutral-200'>{t('Weighted Pool')}</Paragraph>
           </div>

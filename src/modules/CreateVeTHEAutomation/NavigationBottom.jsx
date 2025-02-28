@@ -6,7 +6,7 @@ import { shallowEqual, useSelector } from 'react-redux'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SuccessModal from '@/components/modal/SuccessModal'
-import { useCreateAutomation, useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
+import { useCreateAutomation, useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
 import { warnToast } from '@/lib/notify'
 import { convertBooleansToHex, isInvalidAmount } from '@/lib/utils'
 
@@ -52,7 +52,7 @@ const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registra
 function NavigationBottom({ currentStep, onNext }) {
   const t = useTranslations()
   const { createData } = useSelector(state => state.veTHEAutomationContract, shallowEqual)
-  const minimumBalance = useGetMaxPaymentForGas(
+  const minimumBalance = useGetMinimumFunds(
     createData.veTHEId,
     convertBooleansToHex(
       createData.votes.isAutoVote,

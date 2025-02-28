@@ -197,9 +197,5 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x92de6efe30ff59a7ee4380a7b8ba363bfd1e6878',
     [CHAIN_ID.TEST_BSC]: '0x31eDab9BAf224f368a39C607f29E2381cC269cE7',
   },
-  keeperRegistry: {
-    [CHAIN_ID.BSC]: '0xDc21E279934fF6721CaDfDD112DAfb3261f09A2C',
-    [CHAIN_ID.TEST_BSC]: '0x96bb60aAAec09A0FceB4527b81bbF3Cc0c171393',
-  },
 }
 export default Contracts

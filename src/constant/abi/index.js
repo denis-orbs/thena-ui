@@ -15,7 +15,6 @@ import gammaZapAbi from './gammaZap.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
 import incentiveMakerAbi from './incentiveMaker.json'
-import keeperRegistryAbi from './keeperRegistryAbi.json'
 import linkTokenAbi from './linkToken.json'
 import arabicAbi from './mint/arabicNumeral.json'
 import characterSetAbi from './mint/characterSet.json'
@@ -74,7 +73,6 @@ export {
   globalFactoryAbi,
   hindiNumeralAbi,
   incentiveMakerAbi,
-  keeperRegistryAbi,
   linkTokenAbi,
   minterAbi,
   multiCallAbi,

@@ -220,21 +220,25 @@ export default function LockPage() {
       {account ? (
         <div className='flex flex-col'>
           <article className='my-4 flex flex-col gap-4 lg:flex-row'>
-            <Info className='justify-between lg:p-8'>
-              <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
-              <p>{t('Lock THE Desciption')}</p>
+            <Info className='flex-col justify-between sm:flex-row lg:p-8'>
+              <div className='flex items-center gap-4'>
+                <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+                <p>{t('Lock THE Desciption')}</p>
+              </div>
               <TertiaryButton
-                className='min-w-fit'
+                className='max-sm:w-full sm:min-w-fit'
                 onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe')}
               >
                 {t('Learn More')}
               </TertiaryButton>
             </Info>
 
-            <Info className={cn('justify-between lg:p-8', !isNearlyExpired && 'hidden')}>
-              <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
-              <p>{t('Warning THE claim rebase fee')}</p>
-              <PrimaryButton className='min-w-fit' onClick={() => push('/dashboard/rewards')}>
+            <Info className={cn('flex-col justify-between sm:flex-row lg:p-8', !isNearlyExpired && 'hidden')}>
+              <div className='flex items-center gap-4'>
+                <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+                <p>{t('Warning THE claim rebase fee')}</p>
+              </div>
+              <PrimaryButton className='max-sm:w-full sm:min-w-fit' onClick={() => push('/dashboard/rewards')}>
                 {t('Rewards')}
               </PrimaryButton>
             </Info>

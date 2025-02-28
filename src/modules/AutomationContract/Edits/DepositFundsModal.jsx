@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import TokenInput from '@/components/input/TokenInput'
+import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAutomationContractDetail, useDepositFunds } from '@/hooks/automationContract/useAutomationContract'
@@ -27,6 +27,12 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
 
   const chainLINKData = useChainLINKData()
 
+  useEffect(() => {
+    if (!chainLINK && chainLINKData.length > 0) {
+      setChainLINK(chainLINKData[0])
+    }
+  }, [chainLINK, chainLINKData])
+
   return (
     <Modal
       isOpen={popup}
@@ -46,14 +52,15 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
             <div className='flex flex-row justify-between'>
               <TextHeading>{t('Add Funds')}</TextHeading>
             </div>
-            <TokenInput
-              asset={chainLINK}
-              setAsset={setChainLINK}
+            <TokenAmountInput
+              type='number'
               amount={amount}
-              setAmount={setAmount}
+              setAsset={setChainLINK}
+              asset={chainLINK}
               autoFocus
-              assetData={chainLINKData}
-              assetNull
+              onAmountChange={setAmount}
+              showPercent={false}
+              assetsSelect={chainLINKData}
             />
           </div>
         </div>

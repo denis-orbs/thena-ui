@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react'
 
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
+import { useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
 import useChainLINKData from '@/hooks/useChainLINKData'
 import { convertBooleansToHex, formatAmount } from '@/lib/utils'
 
@@ -21,7 +21,7 @@ function RegisterAutomation({
   setMinFunds = () => {},
   updateRegistration = () => {},
 }) {
-  const minFunds = useGetMaxPaymentForGas(
+  const minFunds = useGetMinimumFunds(
     contractData?.veTHEId,
     convertBooleansToHex(
       contractData?.votes?.isAutoVote,

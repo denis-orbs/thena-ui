@@ -3,9 +3,10 @@ import { Paragraph } from '@/components/typography'
 import WeightedPoolLogo from './WeightedPoolLogo'
 
 export function TokenPercentage({ tokens }) {
+  const { length } = tokens || []
   return (
     <div className='flex items-center gap-[6px]'>
-      <WeightedPoolLogo width={24} height={24} tokens={tokens} />
+      <WeightedPoolLogo width={length === 2 ? 32 : 24} height={length === 2 ? 32 : 24} tokens={tokens} />
       <div className='flex flex-col gap-1'>
         <div>
           {tokens.map((token, index) => (
