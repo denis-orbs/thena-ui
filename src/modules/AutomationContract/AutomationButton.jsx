@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { TertiaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
+import ConfirmModal from '@/components/modal/ConfirmModal'
 import Skeleton from '@/components/skeleton'
 import { ACTION_AUTOMATION_TYPE, AUTOMATION_STATUS } from '@/constant'
 import { useAutomationContractDetail, useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
@@ -36,6 +37,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
   const [withdrawFundsPopup, setWithdrawFundsPopup] = useState(false)
   const [maxGasPricePopup, setMaxGasPricePopup] = useState(false)
   const [executionTimePopup, setExecutionTimePopup] = useState(false)
+  const [warnClaimReward, setWarnClaimReward] = useState(false)
 
   const nowInSeconds = Math.floor(Date.now() / 1000)
 
@@ -138,6 +140,10 @@ function AutomationButton({ veTHE, isDetail = false }) {
 
   const onClickAddAutomation = useCallback(() => {
     if (veTHE) {
+      if (veTHE?.rebase_amount.gt(0)) {
+        setWarnClaimReward(true)
+        return
+      }
       push(`/dashboard/lock/automation/${veTHE.id}/create`)
     }
   }, [push, veTHE])
@@ -210,7 +216,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
           {status === AUTOMATION_STATUS.NO || (status === AUTOMATION_STATUS.CANCELED && contractData.balance === 0) ? (
             <TertiaryButton
               disabled={nowInSeconds >= lockedEnd}
-              className='w-full py-3 lg:px-1'
+              className='w-full min-w-fit py-3 lg:px-1'
               onClick={onClickAddAutomation}
             >
               {t('Add Automation')}
@@ -228,6 +234,21 @@ function AutomationButton({ veTHE, isDetail = false }) {
             />
           )}
         </>
+      )}
+      {warnClaimReward && (
+        <ConfirmModal
+          setPopup={setWarnClaimReward}
+          bgIcon='bg-error-600'
+          popup={warnClaimReward}
+          cancelButton={t('Cancel')}
+          confirmButton={t('OK')}
+          title={t('Warning')}
+          desc={t('You need to claim your rebase first')}
+          onConfirm={() => {
+            push('/dashboard/rewards')
+            setWarnClaimReward(false)
+          }}
+        />
       )}
       {showModal && (
         <ConfirmAutomationModal

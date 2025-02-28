@@ -155,10 +155,10 @@ export default function LockPage() {
         automation: <AutomationStatus veTHEId={veTHE.id} />,
         action: (
           <div className='flex w-full flex-row gap-3'>
-            <div className='w-1/2'>
+            <div className='w-1/2 min-w-fit'>
               <AutomationButton veTHE={veTHE} />
             </div>
-            <div className='w-1/2'>
+            <div className='w-1/2 min-w-fit'>
               {veTHE.voting_amount.isZero() ? (
                 <SecondaryButton
                   disabled={pending}
