@@ -215,8 +215,8 @@ export function FarmingPosition({ position }) {
 
     dispatch(updateStrategy({ strategy: newStrategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}`)
-  }, [dispatch, poolInfo, push, version])
+    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}&pid=${tokenId}`)
+  }, [dispatch, poolInfo, push, version, tokenId])
 
   return (
     <Box className='flex flex-col gap-4'>
@@ -310,11 +310,9 @@ export function FarmingPosition({ position }) {
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
             <TextSubHeading className='text-xs'>{t('Min Price')}</TextSubHeading>
             <TextHeading>
-              {formatAmountLP(
-                reversePrice
-                  ? 1 / formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER)
-                  : formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER),
-              )}
+              {reversePrice
+                ? formatAmountLP(1 / formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))
+                : formatAmountLP(formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))}
             </TextHeading>
             <Paragraph className='text-[10px]'>
               {t('[symbolA] per [symbolB]', {
@@ -326,11 +324,9 @@ export function FarmingPosition({ position }) {
           <div className='flex flex-col items-center gap-1.5 rounded-xl border border-neutral-700 px-3 py-2'>
             <TextSubHeading className='text-xs'>{t('Max Price')}</TextSubHeading>
             <TextHeading>
-              {formatAmountLP(
-                reversePrice
-                  ? 1 / formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER)
-                  : formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER),
-              )}
+              {reversePrice
+                ? formatAmountLP(1 / formatTickPrice(_position?.token0PriceLower, tickAtLimit, Bound.LOWER))
+                : formatAmountLP(formatTickPrice(_position?.token0PriceUpper, tickAtLimit, Bound.UPPER))}
             </TextHeading>
             <Paragraph className='text-[10px]'>
               {t('[symbolA] per [symbolB]', {

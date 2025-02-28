@@ -177,17 +177,21 @@ export const useEstimateAPR = ({
   }
 
   const farmRatio = BigNumber(position.liquidity).div(BigNumber(farmLiquidity).plus(position.liquidity))
-  const farmApr = rewardPerSecond
-    .times(farmRatio)
-    .times(86400 * 365)
-    .div(tvl)
-    .times(100)
+  const farmApr = tvl
+    ? rewardPerSecond
+        .times(farmRatio)
+        .times(86400 * 365)
+        .div(tvl)
+        .times(100)
+    : BigNumber(0)
 
   const feeRatio = BigNumber(position.liquidity).div(BigNumber(pool.liquidity).plus(position.liquidity))
-  const feeAPR = BigNumber(feeRatio)
-    .times(avgPoolFees)
-    .div(tvl)
-    .times(earnPercent * 100)
+  const feeAPR = tvl
+    ? BigNumber(feeRatio)
+        .times(avgPoolFees)
+        .div(tvl)
+        .times(earnPercent * 100)
+    : BigNumber(0)
 
   return farmApr.plus(feeAPR)
 }
@@ -241,17 +245,21 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl = 1
   if (!tickLower || !tickUpper || !position) return BigNumber(0)
 
   const farmRatio = BigNumber(position.liquidity).div(farmLiquidity)
-  const farmApr = rewardPerSecond
-    .times(farmRatio)
-    .times(86400 * 365)
-    .div(tvl)
-    .times(100)
+  const farmApr = tvl
+    ? rewardPerSecond
+        .times(farmRatio)
+        .times(86400 * 365)
+        .div(tvl)
+        .times(100)
+    : new BigNumber(0)
 
   const feeRatio = BigNumber(liquidity).div(totalLiquidity)
-  const feeAPR = BigNumber(feeRatio)
-    .times(avgPoolFees)
-    .div(tvl)
-    .times(earnPercent * 100)
+  const feeAPR = tvl
+    ? BigNumber(feeRatio)
+        .times(avgPoolFees)
+        .div(tvl)
+        .times(earnPercent * 100)
+    : new BigNumber(0)
 
   return farmApr.plus(feeAPR)
 }

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
@@ -192,5 +193,13 @@ export const usePairInfo = ({
       currentTick: Number(fusionPool?.globalState.tick || 0),
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fusionPairs?.length, pairs?.length, poolAddress, token0Address, token1Address, type, v2Pairs?.length])
+  }, [
+    JSON.stringify(fusionPairs),
+    JSON.stringify(pairs),
+    poolAddress,
+    token0Address,
+    token1Address,
+    type,
+    JSON.stringify(v2Pairs),
+  ])
 }
