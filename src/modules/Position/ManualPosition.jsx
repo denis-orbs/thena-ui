@@ -131,7 +131,7 @@ export default function ManualPosition({ position }) {
     position,
     poolAddress,
     totalLiquidity: _fusion?.liquidity,
-    tvl: poolInfo?.tvl ?? 1,
+    tvl: poolInfo?.tvl ?? 0,
   })
 
   const { reward0, reward1 } = useMemo(
@@ -197,8 +197,8 @@ export default function ManualPosition({ position }) {
 
     dispatch(updateStrategy({ strategy: newStrategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo?.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo?.basePool}`)
-  }, [dispatch, poolInfo, push, version])
+    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo?.basePool}&pid=${tokenId}`)
+  }, [dispatch, poolInfo, push, version, tokenId])
 
   return (
     <Box className='flex flex-col gap-4'>

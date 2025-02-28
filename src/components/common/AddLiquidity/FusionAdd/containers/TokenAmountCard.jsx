@@ -24,6 +24,7 @@ export function TokenAmountCard({
   liquidityRangeType = FusionRangeType.MANUAL_RANGE,
   title,
   showPercent = true,
+  showOutsideWarning = true,
 }) {
   const { networkId } = useChainSettings()
   const bnb = useCurrency('BNB')
@@ -87,13 +88,15 @@ export function TokenAmountCard({
   return (
     <div className='w-full'>
       {locked ? (
-        <div className='flex flex-col items-center gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
-          <Highlight>
-            <LockIcon className='h-4 w-4' />
-          </Highlight>
-          <Paragraph>{t('The market price is outside')}</Paragraph>
-          <Paragraph>{t('Single-asset deposit only')}</Paragraph>
-        </div>
+        showOutsideWarning && (
+          <div className='flex flex-col items-center gap-3 self-stretch rounded-xl border border-neutral-700 p-4'>
+            <Highlight>
+              <LockIcon className='h-4 w-4' />
+            </Highlight>
+            <Paragraph>{t('The market price is outside')}</Paragraph>
+            <Paragraph>{t('Single-asset deposit only')}</Paragraph>
+          </div>
+        )
       ) : (
         <div className='flex flex-col gap-2'>
           <div className='flex items-center justify-between'>
@@ -102,8 +105,9 @@ export function TokenAmountCard({
           </div>
           <div
             className={cn(
-              'flex cursor-text flex-col gap-3 self-stretch rounded-xl p-4',
-              'border border-neutral-700 focus-within:border-neutral-500 hover:bg-neutral-700',
+              'flex flex-col gap-3 self-stretch rounded-xl p-4',
+              'border border-neutral-700 hover:bg-neutral-700',
+              'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
             )}
             onClick={onfocusInput}
           >
