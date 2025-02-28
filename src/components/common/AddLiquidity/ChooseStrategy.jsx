@@ -11,7 +11,7 @@ import { zeroAddress } from 'viem'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Selection from '@/components/selection'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { callMulti } from '@/lib/contractActions'
@@ -360,18 +360,18 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
 
   if (position) {
     return (
-      <TextHeading className='font-archia text-3xl font-semibold text-neutral-50'>
+      <NewTextSubHeading className='text-lg font-semibold text-neutral-50'>
         {t('Concentrated Liquidity')}
-      </TextHeading>
+      </NewTextSubHeading>
     )
   }
 
   return (
     <article>
       <div className='flex flex-col items-center gap-2 lg:flex-row lg:justify-between'>
-        <TextHeading className='hidden font-archia text-3xl font-semibold text-neutral-50 lg:block'>
+        <NewTextSubHeading className='hidden font-semibold text-neutral-50 lg:block'>
           {isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}
-        </TextHeading>
+        </NewTextSubHeading>
 
         <div className={cn('flex gap-2 max-lg:w-full', strategyCount === 0 && 'hidden')}>
           <Selection
@@ -393,7 +393,7 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
 
       <div className={cn('mt-2 overflow-hidden rounded-lg bg-neutral-800 p-4', show ? 'block' : 'hidden')}>
         <Paragraph className='mb-4 block'>
-          Depending on the Assets you chose, you will get diffrent Strategys to chose on.
+          Depending on the Assets you chose, you will get different Strategies to chose on.
         </Paragraph>
 
         <TextHeading className='mb-2 block'>Manual Strategy</TextHeading>

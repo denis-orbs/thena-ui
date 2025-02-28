@@ -13,22 +13,23 @@ import { Bound, Field } from '@/state/fusion/actions'
 
 import { useCurrency } from './fusion/Tokens'
 import { useCurrencyBalances } from './fusion/useCurrencyBalances'
+import { useCalculateAPR } from './fusion/useEstimateAPR'
 import { useFusionState } from './fusion/useFusions'
 import usePrevious from './usePrevious'
 
-export const usePositionInfo = ({ tokenId, address }) => {
+export const usePositionInfo = ({ tokenId, poolAddress }) => {
   const { pairs } = usePairs()
   const manuals = useManuals()
   const [independentField, setIndependentField] = useState(Field.CURRENCY_A)
   const [typedValue, setTypedValue] = useState('')
 
   const pair = useMemo(() => {
-    const lowerAddress = address?.toLowerCase()
+    const lowerAddress = poolAddress?.toLowerCase()
     return pairs.find(
-      ({ address: addr, addressPoolFee }) =>
-        addr.toLowerCase() === lowerAddress || addressPoolFee?.toLowerCase() === lowerAddress,
+      ({ address, addressPoolFee }) =>
+        address.toLowerCase() === lowerAddress || addressPoolFee?.toLowerCase() === lowerAddress,
     )
-  }, [address, pairs])
+  }, [poolAddress, pairs])
 
   const userPools = useMemo(() => {
     if (!pair) return []
@@ -60,6 +61,7 @@ export const usePositionInfo = ({ tokenId, address }) => {
         [token0Address, token1Address].includes(manualToken1.toLowerCase()),
     )
   }, [manuals, pair])
+  console.log(userPools)
 
   const userPositions = useMemo(() => [...userPools, ...userManuals].filter(Boolean), [userManuals, userPools])
 
@@ -301,12 +303,24 @@ export const usePositionInfo = ({ tokenId, address }) => {
     return null
   }, [parsedAmounts, currencyBalances, currencies])
 
+  const firstPercent = useMemo(
+    () => (amount0InUsd.div(amount0InUsd.plus(amount1InUsd).toNumber()) * 100).toFixed(2),
+    [amount0InUsd, amount1InUsd],
+  )
+
+  const apr = useCalculateAPR({
+    pool,
+    poolAddress: pool?.address,
+    totalLiquidity: _fusion?.liquidity,
+    tvl: Number(depositInUSD ?? 0),
+  })
+
   return position
     ? {
         dependentField: independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A,
         currencies,
         pool,
-        poolAddress: address,
+        poolAddress: pool.address,
         currencyBalances,
         parsedAmounts,
         pricesAtTicks,
@@ -329,6 +343,8 @@ export const usePositionInfo = ({ tokenId, address }) => {
         quoteCurrency: currencyB,
         formattedAmounts,
         maxAmounts,
+        apr,
+        firstPercent,
         tokenId,
         pos,
         onFieldAInput,

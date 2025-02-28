@@ -192,7 +192,7 @@ function SelectToken({
               'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
               'bg-neutral-900 hover:bg-neutral-700 pl-14 lg:pl-[72px]',
               open && 'bg-neutral-700',
-              isDisabled && 'cursor-not-allowed',
+              isDisabled && 'cursor-not-allowed bg-neutral-900 hover:bg-neutral-900',
               className,
             ),
             trailingIcon: 'right-7',

@@ -35,7 +35,7 @@ function AddLiquidityClPool({ pool }) {
   const secondAddress = searchParams.get('secondAddress') || pool?.token1?.address
   const pid = searchParams.get('pid')
 
-  const position = usePositionInfo({ tokenId: pid, address: strategy?.address })
+  const position = usePositionInfo({ tokenId: pid, poolAddress })
   const firstAsset = useGetAsset(firstAddress)
   const secondAsset = useGetAsset(secondAddress)
 

@@ -167,7 +167,7 @@ function ManualStrategy({
 
   return (
     <>
-      <div className='space-y-4'>
+      <div className={!position ? 'space-y-4' : '!mt-16'}>
         {!position && (
           <article className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
             <SelectToken
@@ -250,7 +250,9 @@ function ManualStrategy({
               <div className='flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
                   <Paragraph className='text-neutral-500'>{t('TVL')}:</Paragraph>
-                  <TextHeading className='text-neutral-400'>${formatAmount(strategy?.tvl)}</TextHeading>
+                  <TextHeading className='text-neutral-400'>
+                    ${formatAmount(position ? position.pool.tvl : strategy?.tvl)}
+                  </TextHeading>
                 </div>
               </div>
             </div>
@@ -280,17 +282,13 @@ function ManualStrategy({
             </div>
           </article>
         ) : (
-          <div className={cn('mt-16 flex gap-4 rounded-lg border border-error-800 bg-error-950 p-8')}>
+          <div className={cn('flex gap-4 rounded-lg border border-error-800 bg-error-950 p-8')}>
             <div className='size-8 min-w-8'>
               <WarningTriangleIcon className='size-full' />
             </div>
             <div className='flex flex-col gap-2'>
-              <NewTextHeading className='!text-xl font-medium text-error-100'>OUT OF RANGE APR 0%</NewTextHeading>
-              <Paragraph className='text-base text-error-100'>
-                Your position will not earn fees or be used in trades until the market price moves into your range. To
-                adjust your position, either remove your current liquidity and create a new range, or deposit a single
-                token to rebalance.
-              </Paragraph>
+              <NewTextHeading className='!text-xl font-medium text-error-100'>{t('OUT OF RANGE')}</NewTextHeading>
+              <Paragraph className='text-base text-error-100'>{t('OUT OF RANGE description')}</Paragraph>
             </div>
           </div>
         )}
