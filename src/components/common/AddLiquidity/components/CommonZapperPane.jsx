@@ -222,7 +222,14 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess 
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >
-          <EmphasisButton onClick={() => handleAddLiquidity({ isStake: false })} className='w-full'>
+          <EmphasisButton
+            onClick={() => handleAddLiquidity({ isStake: false })}
+            className={cn(
+              'w-full',
+              (!gauge || gauge?.address === zeroAddress || strategy.version === 2) &&
+                'bg-primary-600 text-primary-100 hover:bg-primary-700 hover:text-primary-200 active:bg-primary-600 active:text-primary-100',
+            )}
+          >
             {t('Deposit')}
           </EmphasisButton>
 

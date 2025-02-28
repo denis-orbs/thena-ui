@@ -78,16 +78,16 @@ export default function Step1() {
   )
 
   return (
-    <div className='lg:space-y-18 space-y-10'>
+    <div className='space-y-8'>
       <h4 className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
         <PoolGroupIcon className='h-5 lg:h-12 2xl:h-16' />
         <NewTextHeading>{t('Choose Liquidity Type')}</NewTextHeading>
       </h4>
 
-      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
-        <div className='flex flex-col gap-3'>
+      <div className='grid lg:grid-cols-add-liquidity-layout'>
+        <div className='flex flex-col gap-2'>
           <NewTextSubHeading>{t('Liquidity Pool Type')}</NewTextSubHeading>
-          <SelectorGrid data={poolTypesData} isGrid={false} classNames={{ item: 'bg-transparent' }} />
+          <SelectorGrid data={poolTypesData} isGrid={false} className='gap-2' classNames={{ item: 'bg-transparent' }} />
         </div>
       </div>
 

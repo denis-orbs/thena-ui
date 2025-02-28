@@ -229,31 +229,43 @@ function AutomationButton({ veTHE, isDetail = false }) {
           )}
         </>
       )}
-      <ConfirmAutomationModal
-        actionType={actionConfirm?.type}
-        address={contractData.address}
-        mutateAutomationData={() => {
-          mutateAutomationData()
-          refetchAutomations()
-        }}
-        showModal={showModal}
-        setShowModal={setShowModal}
-      />
-      <ChainlinkModal
-        tokenId={veTHEId}
-        address={contractData.address}
-        mutateAutomationData={() => {
-          mutateAutomationData()
-          refetchAutomations()
-        }}
-        popup={chainLINKPopup}
-        setPopup={setChainLINKPopup}
-      />
-      <EditGasLimitModal contract={contractData} popup={gasLimitPopup} setPopup={setGasLimitPopup} />
-      <DepositFundsModal contract={contractData} popup={depositFundsPopup} setPopup={setDepositFundsPopup} />
-      <WithdrawFundsModal contract={contractData} popup={withdrawFundsPopup} setPopup={setWithdrawFundsPopup} />
-      <EditMaxGasPriceModal contract={contractData} popup={maxGasPricePopup} setPopup={setMaxGasPricePopup} />
-      <EditExecutionTimeModal contract={contractData} popup={executionTimePopup} setPopup={setExecutionTimePopup} />
+      {showModal && (
+        <ConfirmAutomationModal
+          actionType={actionConfirm?.type}
+          address={contractData.address}
+          mutateAutomationData={() => {
+            mutateAutomationData()
+            refetchAutomations()
+          }}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
+      )}
+      {chainLINKPopup && (
+        <ChainlinkModal
+          tokenId={veTHEId}
+          address={contractData.address}
+          mutateAutomationData={() => {
+            mutateAutomationData()
+            refetchAutomations()
+          }}
+          popup={chainLINKPopup}
+          setPopup={setChainLINKPopup}
+        />
+      )}
+      {gasLimitPopup && <EditGasLimitModal contract={contractData} popup={gasLimitPopup} setPopup={setGasLimitPopup} />}
+      {depositFundsPopup && (
+        <DepositFundsModal contract={contractData} popup={depositFundsPopup} setPopup={setDepositFundsPopup} />
+      )}
+      {withdrawFundsPopup && (
+        <WithdrawFundsModal contract={contractData} popup={withdrawFundsPopup} setPopup={setWithdrawFundsPopup} />
+      )}
+      {maxGasPricePopup && (
+        <EditMaxGasPriceModal contract={contractData} popup={maxGasPricePopup} setPopup={setMaxGasPricePopup} />
+      )}
+      {executionTimePopup && (
+        <EditExecutionTimeModal contract={contractData} popup={executionTimePopup} setPopup={setExecutionTimePopup} />
+      )}
     </>
   )
 }

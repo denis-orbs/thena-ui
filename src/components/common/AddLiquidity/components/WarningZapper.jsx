@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Box from '@/components/box'
 import { TextSubHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
-import { ChevronUpIcon, InfoIcon } from '@/svgs'
+import { ChevronUpIcon, InfoIcon, LinkExternalPrimaryIcon } from '@/svgs'
 
 function WarningZapper() {
   const warningTextRef = useRef(null)
@@ -36,15 +36,17 @@ function WarningZapper() {
             <br />
             If you are zapping a considerable amount of funds, please ensure to use protection against sandwich attacks
             to safeguard your investment. This precaution helps protecting your transaction from potential front-running
-            and other malicious activities.{' '}
+            and other malicious activities.
+            <br />
             <Link
               target='_blank'
-              className='underline'
+              className='flex items-center gap-1 text-primary-600'
               href='https://www.bnbchain.org/en/blog/protecting-users-from-sandwich-attacks-bnb-chain-introduces-mev-protection-with-several-wallets'
               rel='noreferrer'
             >
-              Learn more about protection from sandwich attacks here.
-            </Link>{' '}
+              Learn more about protection from sandwich attacks here
+              <LinkExternalPrimaryIcon className='inline-block h-6 w-6 !stroke-primary-600' />
+            </Link>
           </TextSubHeading>
         </div>
       </div>

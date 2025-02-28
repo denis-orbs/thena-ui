@@ -2,12 +2,11 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 
-import Box from '@/components/box'
+import { Info } from '@/components/alert'
 import { PrimaryButton } from '@/components/buttons/Button'
-import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
 import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
-import { InfoIcon } from '@/svgs'
+import { InfoCirclePrimary } from '@/svgs'
 
 import DepositFundsModal from './Edits/DepositFundsModal'
 import ChainlinkModal from './head/ChainlinkModal'
@@ -17,29 +16,31 @@ function WarningRegisterItem({ data, mutateStatusAndBalanceMultiple = () => {} }
   const [chainLINKPopup, setChainLINKPopup] = useState(false)
   return (
     <>
-      <Box className='flex w-full flex-row items-center justify-between gap-3 border border-primary-800 bg-primary-950'>
-        <div className='flex items-center gap-3'>
-          <InfoIcon className='h-5 w-5 !stroke-primary-600' />
-          <TextHeading className='text-neutral-100'>
+      <article className='my-4'>
+        <Info className='lg:p-8'>
+          <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+          <p>
             {t(
               'You need to register the automation for your [veTheId] lock and grant the necessary veTHE approvals for it to function properly',
               { veTheId: data.id },
             )}
-          </TextHeading>
-        </div>
-        <PrimaryButton onClick={() => setChainLINKPopup(true)} className='w-fit'>
-          {t('Register Automation')}
-        </PrimaryButton>
-      </Box>
-      <ChainlinkModal
-        tokenId={data.id}
-        address={data.contractAddress}
-        mutateAutomationData={() => {
-          mutateStatusAndBalanceMultiple()
-        }}
-        popup={chainLINKPopup}
-        setPopup={setChainLINKPopup}
-      />
+          </p>
+          <PrimaryButton onClick={() => setChainLINKPopup(true)} className='ml-auto w-fit min-w-[142px] justify-end'>
+            {t('Register Automation')}
+          </PrimaryButton>
+        </Info>
+      </article>
+      {chainLINKPopup && (
+        <ChainlinkModal
+          tokenId={data.id}
+          address={data.contractAddress}
+          mutateAutomationData={() => {
+            mutateStatusAndBalanceMultiple()
+          }}
+          popup={chainLINKPopup}
+          setPopup={setChainLINKPopup}
+        />
+      )}
     </>
   )
 }
@@ -49,10 +50,10 @@ function WarningUnderfundedItem({ data, mutateStatusAndBalanceMultiple = () => {
   const [depositFundsPopup, setDepositFundsPopup] = useState(false)
   return (
     <>
-      <Box className='flex w-full flex-row items-center justify-between gap-3 border border-primary-800 bg-primary-950'>
-        <div className='flex items-center gap-3'>
-          <InfoIcon className='h-5 w-5 !stroke-primary-600' />
-          <TextHeading className='text-neutral-100'>
+      <article className='my-4'>
+        <Info className='lg:p-8'>
+          <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+          <p>
             {t('Warning underfunded Automation [veTheId]', { veTheId: data.id })}{' '}
             <Link
               className='text-primary-600'
@@ -61,18 +62,20 @@ function WarningUnderfundedItem({ data, mutateStatusAndBalanceMultiple = () => {
             >
               {t('Learn more')}
             </Link>
-          </TextHeading>
-        </div>
-        <PrimaryButton onClick={() => setDepositFundsPopup(true)} className='w-fit'>
-          {t('Fund Contract')}
-        </PrimaryButton>
-      </Box>
-      <DepositFundsModal
-        contract={{ veTHEId: data.id, address: data.contractAddress }}
-        popup={depositFundsPopup}
-        setPopup={setDepositFundsPopup}
-        onSuccess={mutateStatusAndBalanceMultiple}
-      />
+          </p>
+          <PrimaryButton onClick={() => setDepositFundsPopup(true)} className='mn-w-[189px] ml-auto w-fit justify-end'>
+            {t('Fund Contract')}
+          </PrimaryButton>
+        </Info>
+      </article>
+      {depositFundsPopup && (
+        <DepositFundsModal
+          contract={{ veTHEId: data.id, address: data.contractAddress }}
+          popup={depositFundsPopup}
+          setPopup={setDepositFundsPopup}
+          onSuccess={mutateStatusAndBalanceMultiple}
+        />
+      )}
     </>
   )
 }

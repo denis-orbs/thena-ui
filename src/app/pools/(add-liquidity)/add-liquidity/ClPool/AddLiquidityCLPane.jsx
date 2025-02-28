@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
@@ -48,6 +48,12 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
   const onShowModalSuccess = useCallback(() => {
     setShowModalSuccess(true)
   }, [setShowModalSuccess])
+
+  useEffect(() => {
+    if (!strategy?.isFarming) {
+      setIsZapper(false)
+    }
+  }, [strategy?.isFarming])
 
   if (!strategy) return <div />
 

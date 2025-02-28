@@ -7,7 +7,8 @@ import { shallowEqual, useSelector } from 'react-redux'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SuccessModal from '@/components/modal/SuccessModal'
 import { useCreateAutomation, useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
-import { convertBooleansToHex } from '@/lib/utils'
+import { warnToast } from '@/lib/notify'
+import { convertBooleansToHex, isInvalidAmount } from '@/lib/utils'
 
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
 
@@ -95,10 +96,18 @@ function NavigationBottom({ currentStep, onNext }) {
             disabled={pendingCreate || isDisabled}
             className='w-full'
             onClick={
-              () =>
+              () => {
+                if (
+                  isInvalidAmount(createData?.registration?.chainlinkAmount) ||
+                  createData?.registration?.chainlink?.balance < createData?.registration?.chainlinkAmount
+                ) {
+                  warnToast(t('Invalid Amount'))
+                  return
+                }
                 onCreateAutomation(createData, () => {
                   setIsSuccess(true)
                 })
+              }
               // eslint-disable-next-line react/jsx-curly-newline
             }
           >

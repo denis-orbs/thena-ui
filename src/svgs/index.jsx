@@ -69,6 +69,7 @@ import InstagramColorIcon from '~/svgs/instagram-color.svg'
 import InstagramNoColorIcon from '~/svgs/instagram-no-color.svg'
 import LangIcon from '~/svgs/lang.svg'
 import LinkExternalIcon from '~/svgs/link-external.svg'
+import LinkExternalPrimaryIcon from '~/svgs/link-primary.svg'
 import LockIcon from '~/svgs/lock.svg'
 import Lock2Icon from '~/svgs/lock-2.svg'
 import LogoTextIcon from '~/svgs/logo.svg'
@@ -207,6 +208,7 @@ export {
   InstagramNoColorIcon,
   LangIcon,
   LinkExternalIcon,
+  LinkExternalPrimaryIcon,
   Lock2Icon,
   LockIcon,
   LogoFooterIcon,

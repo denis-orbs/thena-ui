@@ -1,16 +1,12 @@
 import { useTranslations } from 'next-intl'
-import React, { useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 
-import CircleImage from '@/components/image/CircleImage'
-import Input from '@/components/input'
+import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { UNKNOWN_LOGO } from '@/constant'
 import { useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
 import useChainLINKData from '@/hooks/useChainLINKData'
-import { cn, convertBooleansToHex, formatAmount } from '@/lib/utils'
-import { ChevronDownIcon } from '@/svgs'
+import { convertBooleansToHex, formatAmount } from '@/lib/utils'
 
-import SelectTokenFromList from '../SelectTokenModal/SelectTokenFromList'
 import { ErrorMessage } from '../WeightedPool/ChooseTokenAndWeights'
 
 const UPDATE_REGISTRATION = {
@@ -18,9 +14,14 @@ const UPDATE_REGISTRATION = {
   CHAINLINK_AMOUNT: 'chainlinkAmount',
 }
 
-function RegisterAutomation({ chainLINK, chainLINKAmount, contractData, updateRegistration = () => {} }) {
-  const [popup, setPopup] = useState(false)
-  const maxPaymentForGas = useGetMaxPaymentForGas(
+function RegisterAutomation({
+  chainLINK,
+  chainLINKAmount,
+  contractData,
+  setMinFunds = () => {},
+  updateRegistration = () => {},
+}) {
+  const minFunds = useGetMaxPaymentForGas(
     contractData?.veTHEId,
     convertBooleansToHex(
       contractData?.votes?.isAutoVote,
@@ -30,53 +31,52 @@ function RegisterAutomation({ chainLINK, chainLINKAmount, contractData, updateRe
     (contractData?.votes?.pairs || []).filter(item => Boolean(item.pair)).length,
   )
 
+  const minRef = useRef(null)
+
+  useEffect(() => {
+    if (!minRef.current || !minRef.current.eq(minFunds)) {
+      setMinFunds(minFunds)
+      minRef.current = minFunds
+    }
+  }, [minFunds, setMinFunds])
+
   const t = useTranslations()
   const chainLinkData = useChainLINKData()
+
+  useEffect(() => {
+    if (!chainLINK && chainLinkData.length > 0) {
+      updateRegistration(
+        { ...chainLinkData[0], balance: chainLinkData[0].balance.toNumber() },
+        UPDATE_REGISTRATION.CHAINLINK,
+      )
+    }
+  }, [chainLINK, chainLinkData, updateRegistration])
+
   return (
     <div className='space-y-3'>
       <Paragraph className='text-base'>{t('Starting Balance')}</Paragraph>
-      <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
-        <div
-          className='flex cursor-pointer items-center justify-between rounded-[8px] bg-neutral-700 px-4 py-3'
-          onClick={() => setPopup(true)}
-        >
-          {chainLINK ? (
-            <div className='flex items-center gap-3'>
-              <CircleImage className='h-6 w-6' alt='Logo' src={chainLINK?.logoURI || UNKNOWN_LOGO} />
-              <div className='flex items-end gap-2'>
-                <TextHeading>{chainLINK.symbol}</TextHeading>
-              </div>
-            </div>
-          ) : (
-            <p className='text-neutral-400'>{t('Select ChainLINK')}</p>
-          )}
-          <ChevronDownIcon
-            className={cn('transfrom h-5 w-5 transition-all duration-150 ease-out', popup ? 'rotate-180' : 'rotate-0')}
-          />
+      <div className='flex flex-col gap-[11px]'>
+        <div className='flex flex-row justify-between'>
+          <TextHeading>{t('Add Funds')}</TextHeading>
         </div>
-        <Input
-          val={chainLINKAmount}
-          placeholder='LINK Amount'
-          onChange={e => updateRegistration(Number(e.target.value), UPDATE_REGISTRATION.CHAINLINK_AMOUNT)}
-          suffix={`$${chainLINK ? formatAmount((chainLINKAmount || 0) * (chainLINK.price || 0)) : 0}`}
+        <TokenAmountInput
+          type='number'
+          amount={chainLINKAmount}
+          setAsset={
+            data => updateRegistration({ ...data, balance: data.balance.toNumber() }, UPDATE_REGISTRATION.CHAINLINK)
+            // eslint-disable-next-line react/jsx-curly-newline
+          }
+          asset={chainLINK}
+          autoFocus
+          onAmountChange={value => updateRegistration(value, UPDATE_REGISTRATION.CHAINLINK_AMOUNT)}
+          showPercent={false}
+          assetsSelect={chainLinkData}
         />
       </div>
-      {maxPaymentForGas.gt(chainLINKAmount) && (
-        <ErrorMessage
-          message={t('LINK Amount should be larger than [value]', { value: formatAmount(maxPaymentForGas) })}
-        />
+      {minFunds.gt(chainLINKAmount) && (
+        <ErrorMessage message={t('LINK Amount should be larger than [value]', { value: formatAmount(minFunds) })} />
       )}
       <ErrorMessage message={t('Registration automation contract description')} />
-      <SelectTokenFromList
-        allowSearch={false}
-        isOpen={popup}
-        selectedAsset={chainLINK}
-        setIsOpen={setPopup}
-        setToken={data => {
-          updateRegistration({ ...data, balance: data.balance.toNumber() }, UPDATE_REGISTRATION.CHAINLINK)
-        }}
-        tokens={chainLinkData}
-      />
     </div>
   )
 }

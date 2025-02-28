@@ -2,9 +2,9 @@ import React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function SelectorGrid({ data, classNames, isGrid = true }) {
+function SelectorGrid({ data, classNames, className, isGrid = true }) {
   return (
-    <div className={cn('grid grid-cols-1 gap-4 xl:grid-cols-2', !isGrid && 'xl:grid-cols-1')}>
+    <div className={cn('grid grid-cols-1 gap-4 xl:grid-cols-2', !isGrid && 'xl:grid-cols-1', className)}>
       {data.map((ele, idx) => (
         <div
           className={cn(

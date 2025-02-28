@@ -7,6 +7,8 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useAutomationContractDetail, useDepositFunds } from '@/hooks/automationContract/useAutomationContract'
 import useChainLINKData from '@/hooks/useChainLINKData'
+import { warnToast } from '@/lib/notify'
+import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 
 function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) {
   const { veTHEId } = contract
@@ -64,6 +66,17 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
           className='w-full'
           disabled={pending}
           onClick={() => {
+            if (!chainLINK) {
+              warnToast(t('Please select token'))
+              return
+            }
+            if (
+              isInvalidAmount(amount) ||
+              fromWei(toWei(amount, chainLINK?.decimals), chainLINK?.decimals).gt(chainLINK?.balance)
+            ) {
+              warnToast(t('Invalid Amount'))
+              return
+            }
             onDepositFunds(contract.address, chainLINK.address, amount, () => {
               mutateAutomationData()
               onSuccess()

@@ -24,7 +24,6 @@ import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals, un
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import PieChart from '@/modules/WeightedPool/PieChart'
 import WeightedPoolLogo from '@/modules/WeightedPool/WeightedPoolLogo'
-import { ZapperIcon } from '@/svgs'
 
 import InputTokenMemo from '../../InputTokenMemo'
 import { PairBasicInfo } from '../../PairBasicInfo'
@@ -54,12 +53,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
         onClick: () => setDepositType(DEPOSIT_TYPE.ALL),
       },
       {
-        title: (
-          <div className='flex items-center justify-center gap-1'>
-            <ZapperIcon className='size-5' />
-            <span>{t('Zapper Deposit')}</span>
-          </div>
-        ),
+        title: t('Single Token Deposit'),
         isActive: depositType === DEPOSIT_TYPE.SINGLE,
         isLink: false,
         onClick: () => setDepositType(DEPOSIT_TYPE.SINGLE),
