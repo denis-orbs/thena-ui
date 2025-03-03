@@ -15,10 +15,9 @@ import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typograp
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { callMulti } from '@/lib/contractActions'
-import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, wrappedAddress } from '@/lib/utils'
-import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
+import { updateIsReverse, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
-import { usePairInfo } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite } from '@/svgs'
 
@@ -122,7 +121,7 @@ const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   return preset
 }
 
-export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isModal, mintInfo, position }) {
+export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo, position }) {
   const t = useTranslations()
   const dispatch = useDispatch()
   const searchParams = useSearchParams()
@@ -136,12 +135,6 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
   const [isLoadingManual, setIsLoadingManual] = useState(false)
 
   const poolAddress = searchParams.get('poolAddress')
-  const pair = usePairInfo({
-    token0Address: wrappedAddress(firstAsset),
-    token1Address: wrappedAddress(secondAsset),
-    poolAddress,
-    type: pairType,
-  })
 
   const sortedSubPools = useMemo(() => {
     const priority = { CL_Farming: 1, CL_SwapFee: 2 }
@@ -180,6 +173,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
     strategyInfo => {
       onLeftRangeInput('')
       onRightRangeInput('')
+      dispatch(updateIsReverse({ isReverse: false }))
       dispatch(updateStrategy({ strategy: strategyInfo }))
       onChangeLiquidityRangeType(getLiquidityRangeType(strategyInfo?.title))
     },
@@ -311,7 +305,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
   }, [sortedSubPools, t, strategy?.address, handleChooseStrategy])
 
   return (
-    <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
+    <div className={cn('inline-flex w-full flex-col gap-5')}>
       <div className='flex-[6] space-y-8'>
         <StrategyTitle
           strategyCount={strategyAutoData.length}

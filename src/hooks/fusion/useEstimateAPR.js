@@ -168,7 +168,7 @@ export const useEstimateAPR = ({
           currency1?.decimals ?? 18,
         )
 
-  // if (new BigNumber(amountToken0)?.isZero() || new BigNumber(amountToken1)?.isZero()) return {}
+  if (new BigNumber(amountToken0)?.isZero() || new BigNumber(amountToken1)?.isZero()) return {}
 
   if (token0 && token1) {
     position = Position.fromAmounts({

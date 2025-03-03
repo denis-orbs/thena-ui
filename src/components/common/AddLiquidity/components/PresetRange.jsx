@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import Selection from '@/components/selection'
@@ -15,6 +16,7 @@ const PresetProfits = {
 export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection }) {
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
   const { estimateAPR } = mintInfo
+  const t = useTranslations()
 
   const ranges = useMemo(() => {
     if (isStablecoinPair) {
@@ -69,22 +71,15 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
   const rangeSelections = useMemo(
     () =>
       ranges.map(range => ({
-        label: `${range.title} (${formatAmount(estimateAPR[range.type])}%)`,
+        label: `${t(range.title)} (${formatAmount(estimateAPR[range.type])}%)`,
         active: activePreset === range.type,
         onClickHandler: () => {
           handlePresetRangeSelection(range)
           onChangePresetRange(range)
         },
       })),
-    [ranges, estimateAPR, activePreset, handlePresetRangeSelection, onChangePresetRange],
+    [ranges, estimateAPR, t, activePreset, handlePresetRangeSelection, onChangePresetRange],
   )
 
-  return (
-    <div className='flex flex-col gap-3'>
-      {/* <div className='flex items-center justify-between'> */}
-      {/*   <TextHeading>{t('Range Type')}</TextHeading> */}
-      {/* </div> */}
-      <Selection data={rangeSelections} isFull />
-    </div>
-  )
+  return <Selection data={rangeSelections} isFull isTranslation={false} />
 }

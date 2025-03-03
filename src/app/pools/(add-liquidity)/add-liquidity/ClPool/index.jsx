@@ -63,11 +63,10 @@ function AddLiquidityClPool({ pool }) {
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
-  // console.log(priceLower?.toSignificant(6), priceUpper?.toSignificant(6))
 
   const chartDomain = useMemo(() => {
-    const leftPrice = isReverse ? priceLower?.invert() : priceUpper
-    const rightPrice = isReverse ? priceUpper?.invert() : priceLower
+    const leftPrice = isReverse ? priceUpper?.invert() : priceLower
+    const rightPrice = isReverse ? priceLower?.invert() : priceUpper
 
     return leftPrice && rightPrice
       ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
@@ -135,10 +134,8 @@ function AddLiquidityClPool({ pool }) {
       <section className='mt-10 flex w-full flex-col gap-5 lg:flex-row'>
         <div id='LEFT-BLOCK' className='flex w-full flex-[6] flex-col gap-4 lg:gap-6'>
           <ChooseStrategy
-            pairType={PAIR_TYPES.LSD}
             firstAsset={firstAsset}
             secondAsset={secondAsset}
-            isReverse={isReverse}
             mintInfo={mintInfo}
             pair={pair}
             position={position}

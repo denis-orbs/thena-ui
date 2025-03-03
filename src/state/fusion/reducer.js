@@ -47,7 +47,7 @@ const initialState = {
   },
   liquidityRangeType: FusionRangeType.MANUAL_RANGE,
   presetRange: undefined,
-  isReverse: true,
+  isReverse: false,
 }
 
 export default createReducer(initialState, builder =>
