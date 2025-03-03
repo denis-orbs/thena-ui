@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { OutlineIconButton } from '@/components/buttons/IconButton'
 import { Paragraph, TextSubHeading } from '@/components/typography'
-import { useGetAsset } from '@/hooks/fusion/Tokens'
+import { formatDelta } from '@/lib/helper'
 import { unwrappedSymbol } from '@/lib/utils'
 import { Bound, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useInitialTokenPrice, useV3MintActionHandlers } from '@/state/fusion/hooks'
@@ -27,6 +27,7 @@ function RangePart({
   onUserInput,
   disabled,
   title,
+  description,
 }) {
   const [localTokenValue, setLocalTokenValue] = useState('')
   const t = useTranslations()
@@ -34,7 +35,6 @@ function RangePart({
   const dispatch = useDispatch()
 
   const initialTokenPrice = useInitialTokenPrice()
-  const baseToken = useGetAsset(tokenA?.address)
 
   const enforcer = nextUserInput => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
@@ -69,7 +69,7 @@ function RangePart({
 
   useEffect(() => {
     if (activePreset === Presets.FULL) {
-      setLocalTokenValue(title === 'Min Price' ? 0 : Infinity)
+      setLocalTokenValue(title === 'Min' ? 0 : Infinity)
     }
   }, [activePreset, title, value])
 
@@ -96,10 +96,9 @@ function RangePart({
             onBlur={handleOnBlur}
             min={0}
             disabled={disabled || locked}
+            onFocus={e => e.target.select()}
           />
-          <Paragraph className='text-[10px]'>
-            1 {baseToken?.symbol} = ${baseToken?.price}
-          </Paragraph>
+          <Paragraph className='text-[10px] text-neutral-300'>{description}</Paragraph>
         </div>
         <div className='flex flex-col gap-2'>
           <OutlineIconButton
@@ -123,6 +122,7 @@ function RangePart({
 }
 
 export function RangeSelector({
+  price,
   priceLower,
   priceUpper,
   onLeftRangeInput,
@@ -166,6 +166,20 @@ export function RangeSelector({
     onFieldBInput('')
   }
 
+  const brushLabelValue = useCallback(
+    (d, x) => {
+      if (!price) return ''
+
+      if (d === 'w' && mintInfo?.ticksAtLimit?.[isSorted ? Bound.LOWER : Bound.UPPER]) return '0'
+      if (d === 'e' && mintInfo?.ticksAtLimit?.[isSorted ? Bound.UPPER : Bound.LOWER]) return '∞'
+
+      const percent = (x < price ? -1 : 1) * ((Math.max(x, price) - Math.min(x, price)) / price) * 100
+
+      return price ? `${(Math.sign(percent) < 0 ? '-' : '+') + formatDelta(percent)}` : ''
+    },
+    [isSorted, price, mintInfo?.ticksAtLimit],
+  )
+
   return (
     <div className='flex items-center gap-3'>
       <RangePart
@@ -180,6 +194,7 @@ export function RangeSelector({
         tokenB={currencyB}
         disabled={disabled}
         title='Min'
+        description={brushLabelValue('w', leftPrice?.toSignificant(5))}
       />
 
       <button
@@ -212,6 +227,7 @@ export function RangeSelector({
         initialPrice={mintInfo?.price}
         disabled={disabled}
         title='Max'
+        description={brushLabelValue('e', rightPrice?.toSignificant(5))}
       />
     </div>
   )

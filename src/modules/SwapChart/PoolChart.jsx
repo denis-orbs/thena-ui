@@ -103,7 +103,7 @@ function PoolChart({ data, timeWindow, current, upper, lower }) {
     if (lower) {
       newSeries.createPriceLine({
         price: lower,
-        color: '#580055',
+        color: '#84007F',
         lineWidth: 1,
         lineStyle: 1,
         axisLabelVisible: true,
@@ -114,7 +114,7 @@ function PoolChart({ data, timeWindow, current, upper, lower }) {
     if (current) {
       newSeries.createPriceLine({
         price: current,
-        color: '#F199EE',
+        color: '#F8CCF6',
         lineWidth: 1,
         lineStyle: 1,
         axisLabelVisible: true,

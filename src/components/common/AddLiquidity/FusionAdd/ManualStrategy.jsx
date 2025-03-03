@@ -251,13 +251,13 @@ function ManualStrategy({
             )}
           >
             <div className='flex flex-col gap-1'>
-              <Paragraph className='text-neutral-500'>
+              <Paragraph className='text-neutral-400'>
                 {(position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee' ? 'Earn Fees' : 'Earn THE'}
               </Paragraph>
               <div className='flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
-                  <Paragraph className='text-neutral-500'>{t('TVL')}:</Paragraph>
-                  <TextHeading className='text-neutral-400'>
+                  <Paragraph className='text-neutral-400'>{t('TVL')}:</Paragraph>
+                  <TextHeading className='text-neutral-300'>
                     ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
                   </TextHeading>
                 </div>
@@ -266,7 +266,7 @@ function ManualStrategy({
 
             <div className='flex flex-wrap justify-end gap-2'>
               <TextHeading className='text-center font-archia'>
-                <Paragraph className='text-neutral-500'>Estimate APR</Paragraph>
+                <Paragraph className='text-neutral-400'>Estimate APR</Paragraph>
                 <p className='text-xl font-semibold text-primary-600'>
                   {formatAmount(position ? position.apr : mintInfo.estimateAPR)}%
                 </p>
@@ -347,6 +347,7 @@ function ManualStrategy({
 
           {!position && (
             <RangeSelector
+              price={price ? parseFloat(price) : undefined}
               priceLower={priceLower}
               priceUpper={priceUpper}
               getDecrementLower={getDecrementLower}

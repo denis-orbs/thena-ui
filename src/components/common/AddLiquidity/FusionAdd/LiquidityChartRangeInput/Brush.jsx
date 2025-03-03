@@ -67,7 +67,7 @@ export const Brush = ({
   )
 
   // keep local and external brush extent in sync
-  // i.e. snap to ticks on bruhs end
+  // i.e. snap to ticks on brush end
   useEffect(() => {
     setLocalBrushExtent(brushExtent)
   }, [brushExtent])
@@ -181,7 +181,7 @@ export const Brush = ({
                   )}
                   transform={`translate(50,0), scale(${flipWestHandle ? '1' : '-1'}, 1)`}
                 >
-                  <rect fill='#82147e' y='0' x='-30' height='30' width='60' rx='8' />
+                  <rect fill='#580055' y='0' x='-30' height='30' width='60' rx='8' />
                   <text
                     className='text-xs'
                     fill='#FCE6FB'
@@ -221,7 +221,7 @@ export const Brush = ({
                   )}
                   transform={`translate(50,0), scale(${flipEastHandle ? '-1' : '1'}, 1)`}
                 >
-                  <rect fill='#82147e' y='0' x='-30' height='30' width='60' rx='8' />
+                  <rect fill='#E333DD' y='0' x='-30' height='30' width='60' rx='8' />
                   <text className='text-xs' fill='#FCE6FB' x='-20' y='15' dominantBaseline='middle'>
                     {brushLabelValue('e', localBrushExtent[1])}
                   </text>

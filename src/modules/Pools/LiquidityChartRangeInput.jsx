@@ -130,7 +130,7 @@ export default function LiquidityChartRangeInput({
               },
               brush: {
                 handle: {
-                  west: '#580055',
+                  west: '#84007F',
                   east: '#E333DD',
                 },
               },

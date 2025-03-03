@@ -24,3 +24,15 @@ export const getTokenInfo = ({ tokenAddress, assets, customAssets }) => {
   }
   return token
 }
+
+export const formatDelta = (delta, locale = 'en-US') => {
+  if (delta === null || delta === undefined || delta === Infinity || isNaN(delta)) {
+    return '-'
+  }
+
+  return `${Number(Math.abs(delta).toFixed(2)).toLocaleString(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: false,
+  })}%`
+}
