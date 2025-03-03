@@ -268,7 +268,7 @@ function ManualStrategy({
               <TextHeading className='text-center font-archia'>
                 <Paragraph className='text-neutral-400'>Estimate APR</Paragraph>
                 <p className='text-xl font-semibold text-primary-600'>
-                  {formatAmount(position ? position.apr : mintInfo.estimateAPR)}%
+                  {formatAmount(position ? position.apr : mintInfo?.estimateAPR?.current)}%
                 </p>
               </TextHeading>
 

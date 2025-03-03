@@ -582,7 +582,7 @@ export const useV3DerivedMintInfo = (
 
   const invalidPool = poolState === PoolState.INVALID
 
-  let estimateAPR = useEstimateAPR({
+  const estimateAPR = useEstimateAPR({
     pool,
     poolAddress: poolAddress?.toLowerCase(),
     tickLower: ticks[Bound.LOWER],
@@ -595,7 +595,7 @@ export const useV3DerivedMintInfo = (
     tvl: strategy?.tvl,
   })
 
-  if (!currencyAAmount?.quotient && !currencyAAmount?.quotient) estimateAPR = strategy?.apr ?? 0
+  // if (!currencyAAmount?.quotient && !currencyAAmount?.quotient) estimateAPR = { current: strategy?.apr ?? 0 }
 
   return {
     dependentField,

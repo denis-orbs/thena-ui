@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 
 import Selection from '@/components/selection'
+import { formatAmount } from '@/lib/utils'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 
@@ -13,6 +14,7 @@ const PresetProfits = {
 
 export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection }) {
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const { estimateAPR } = mintInfo
 
   const ranges = useMemo(() => {
     if (isStablecoinPair) {
@@ -67,19 +69,14 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
   const rangeSelections = useMemo(
     () =>
       ranges.map(range => ({
-        label: range.title,
+        label: `${range.title} (${formatAmount(estimateAPR[range.type])}%)`,
         active: activePreset === range.type,
         onClickHandler: () => {
-          // if (activePreset === range.type) {
-          //   handlePresetRangeSelection(null)
-          // } else {
-          //   handlePresetRangeSelection(range)
-          // }
           handlePresetRangeSelection(range)
           onChangePresetRange(range)
         },
       })),
-    [ranges, activePreset, handlePresetRangeSelection, onChangePresetRange],
+    [ranges, estimateAPR, activePreset, handlePresetRangeSelection, onChangePresetRange],
   )
 
   return (

@@ -3,13 +3,14 @@ import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
 import moment from 'moment'
-import { Position } from 'thena-fusion-sdk'
+import { nearestUsableTick, Position, TickMath } from 'thena-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei } from '@/lib/utils'
+import { Presets } from '@/state/fusion/reducer'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { useGetAsset } from './Tokens'
@@ -66,6 +67,23 @@ const getFusionFarmingData = async ({ chainId, pool }) => {
   } catch (error) {
     console.error(`[${chainId}] fusion fees data fetch error: ${JSON.stringify(error)}`)
   }
+}
+
+const calAPR = ({ positionLiquidity, poolLiquidity, reward, tvl, earnPercent, isFarming }) => {
+  const ratio = BigNumber(positionLiquidity).div(BigNumber(poolLiquidity))
+
+  if (isFarming) {
+    return reward
+      .times(ratio)
+      .times(86400 * 365)
+      .times(100)
+      .div(tvl)
+  }
+
+  return reward
+    .times(ratio)
+    .times(earnPercent * 100)
+    .div(tvl)
 }
 
 export const useEstimateAPR = ({
@@ -128,25 +146,29 @@ export const useEstimateAPR = ({
 
   const earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
-  if (!tickLower || !tickUpper || !pool) return BigNumber(0)
+  if (!tickLower || !tickUpper || !pool) return {}
 
   let position = null
   const amountToken0 =
     typeof amount0 === 'object'
-      ? amount0
+      ? BigNumber(amount0)
       : toWei(
-          new BigNumber(amount0).decimalPlaces(currency0?.decimals ?? 18, BigNumber.ROUND_DOWN).toString(),
+          BigNumber(amount0)
+            .decimalPlaces(currency0?.decimals ?? 18, BigNumber.ROUND_DOWN)
+            .toString(),
           currency0?.decimals ?? 18,
         )
   const amountToken1 =
     typeof amount1 === 'object'
-      ? amount1
+      ? BigNumber(amount1)
       : toWei(
-          new BigNumber(amount1).decimalPlaces(currency0?.decimals ?? 18, BigNumber.ROUND_DOWN).toString(),
+          BigNumber(amount1)
+            .decimalPlaces(currency0?.decimals ?? 18, BigNumber.ROUND_DOWN)
+            .toString(),
           currency1?.decimals ?? 18,
         )
 
-  if (new BigNumber(amountToken0)?.isZero() || new BigNumber(amountToken1)?.isZero()) return new BigNumber(0)
+  // if (new BigNumber(amountToken0)?.isZero() || new BigNumber(amountToken1)?.isZero()) return {}
 
   if (token0 && token1) {
     position = Position.fromAmounts({
@@ -173,28 +195,70 @@ export const useEstimateAPR = ({
       amount1: amountToken1,
       useFullPrecision: true,
     })
-  } else {
-    return BigNumber(0)
   }
 
-  const farmRatio = BigNumber(position.liquidity).div(BigNumber(farmLiquidity).plus(position.liquidity))
-  const farmApr = tvl
-    ? rewardPerSecond
-        .times(farmRatio)
-        .times(86400 * 365)
-        .div(tvl)
-        .times(100)
-    : BigNumber(0)
+  const presetPositions = [
+    {
+      min: 0,
+      max: Infinity,
+      title: Presets.FULL,
+    },
+    {
+      min: 0.8,
+      max: 1.2,
+      title: Presets.SAFE,
+    },
+    {
+      min: 0.9,
+      max: 1.1,
+      title: Presets.NORMAL,
+    },
+    {
+      min: 0.95,
+      max: 1.05,
+      title: Presets.RISK,
+    },
+  ].map(({ min, max, title }) => ({
+    title,
+    position: Position.fromAmounts({
+      pool,
+      tickLower:
+        title === Presets.FULL
+          ? nearestUsableTick(TickMath.MIN_TICK, pool.tickSpacing)
+          : nearestUsableTick(Math.round(pool.tickCurrent * (pool.tickCurrent < 0 ? max : min)), pool.tickSpacing),
+      tickUpper:
+        title === Presets.FULL
+          ? nearestUsableTick(TickMath.MAX_TICK, pool.tickSpacing)
+          : nearestUsableTick(Math.round(pool.tickCurrent * (pool.tickCurrent < 0 ? min : max)), pool.tickSpacing),
+      amount0: amountToken0.eq(0) ? toWei(1, currency0?.decimals ?? 18) : amountToken0,
+      amount1: amountToken1.eq(0) ? toWei(1, currency1?.decimals ?? 18) : amountToken1,
+    }),
+  }))
 
-  const feeRatio = BigNumber(position.liquidity).div(BigNumber(pool.liquidity).plus(position.liquidity))
-  const feeAPR = tvl
-    ? BigNumber(feeRatio)
-        .times(annualPoolFees)
-        .div(tvl)
-        .times(earnPercent * 100)
-    : BigNumber(0)
+  const reward = isFarming ? rewardPerSecond : BigNumber(annualPoolFees)
+  const poolLiquidity = isFarming ? BigNumber(farmLiquidity) : BigNumber(pool.liquidity)
 
-  return farmApr.plus(feeAPR)
+  return {
+    current: calAPR({
+      reward,
+      tvl,
+      poolLiquidity: BigNumber(poolLiquidity).plus(position.liquidity),
+      positionLiquidity: position.liquidity,
+      isFarming,
+      earnPercent,
+    }),
+    ...presetPositions.reduce((acc, { title, position: p }) => {
+      acc[title] = calAPR({
+        reward,
+        tvl,
+        poolLiquidity: BigNumber(poolLiquidity).plus(p.liquidity),
+        positionLiquidity: p.liquidity,
+        isFarming,
+        earnPercent,
+      })
+      return acc
+    }, {}),
+  }
 }
 
 export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) => {
