@@ -74,7 +74,7 @@ function RangePart({
   }, [activePreset, title, value])
 
   return (
-    <div className='mt-5 w-full space-y-2'>
+    <div className='w-full space-y-2'>
       <TextSubHeading className='text-xs'>
         {t(title === 'Min' ? 'Min [symbol0] per [symbol1] price' : 'Max [symbol0] per [symbol1] price', {
           symbol0: unwrappedSymbol(tokenB),

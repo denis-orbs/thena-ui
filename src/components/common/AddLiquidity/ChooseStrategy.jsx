@@ -143,6 +143,11 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
     type: pairType,
   })
 
+  const sortedSubPools = useMemo(() => {
+    const priority = { CL_Farming: 1, CL_SwapFee: 2 }
+    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3))
+  }, [pair?.subpools])
+
   const { data: preset } = useSWR(
     strategy && pair && ['strategy/info', strategy.address],
     () => fetchStrategyInfo(networkId, strategy, pair.currentTick),
@@ -224,22 +229,22 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
     if (!poolAddress && (!firstAsset || !secondAsset)) return
     if (strategy && strategy.isDefault) return
 
-    if (!pair?.subpools && !strategy) {
+    if (!sortedSubPools.length && !strategy) {
       handleChooseStrategy(defaultSwapFees)
       return
     }
 
-    if (pair?.subpools && (!strategy || !strategy.isDefault)) {
+    if (sortedSubPools.length && (!strategy || !strategy.isDefault)) {
       const priority = { CL_Farming: 1, CL_SwapFee: 2 }
-      let _strategy = pair.subpools.sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3)).at(0)
-      if (!_strategy) _strategy = pair.subpools.find(item => !MANUAL_TYPES.includes(item.title))
+      let _strategy = sortedSubPools.sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3)).at(0)
+      if (!_strategy) _strategy = sortedSubPools.find(item => !MANUAL_TYPES.includes(item.title))
       handleChooseStrategy(_strategy ?? defaultSwapFees)
     }
-  }, [firstAsset, handleChooseStrategy, pair?.subpools, poolAddress, secondAsset, strategy])
+  }, [firstAsset, handleChooseStrategy, poolAddress, secondAsset, sortedSubPools, strategy])
 
   const toggleStrategyType = useCallback(
     enable => {
-      const _strategy = pair?.subpools.find(item => {
+      const _strategy = sortedSubPools.find(item => {
         if (enable) return !MANUAL_TYPES.includes(item.title)
         return MANUAL_TYPES.includes(item.title)
       })
@@ -247,7 +252,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
       setIsAutomatic(enable)
       setIsLoadingManual(false)
     },
-    [handleChooseStrategy, pair?.subpools],
+    [handleChooseStrategy, sortedSubPools],
   )
 
   useEffect(() => {
@@ -256,7 +261,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
   }, [])
 
   const strategyAutoData = useMemo(() => {
-    const autoStrategy = (pair?.subpools ?? [])
+    const autoStrategy = sortedSubPools
       .filter(item => !MANUAL_TYPES.includes(item.title))
       .map(sub => ({
         content: (
@@ -303,7 +308,7 @@ export default function ChooseStrategy({ pairType, firstAsset, secondAsset, isMo
       }))
 
     return autoStrategy
-  }, [pair?.subpools, t, strategy?.address, handleChooseStrategy])
+  }, [sortedSubPools, t, strategy?.address, handleChooseStrategy])
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>

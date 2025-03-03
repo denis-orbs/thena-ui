@@ -297,9 +297,11 @@ function ManualStrategy({
       </div>
 
       {strategy && (
-        <div className='flex flex-col gap-4'>
+        <div className={cn('flex flex-col gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div className='flex items-center justify-between'>
-            <NewTextHeading className='!text-xl font-semibold'>Liquidity Range</NewTextHeading>
+            <NewTextHeading className='!text-xl font-semibold'>
+              {mintInfo.noLiquidity ? 'Price Range' : 'Liquidity Range'}
+            </NewTextHeading>
           </div>
 
           {activePreset === Presets.FULL && fullRangeWarningShown && (
@@ -320,7 +322,7 @@ function ManualStrategy({
           )}
 
           {!mintInfo.noLiquidity && (
-            <div className='mt-0'>
+            <div className='mb-5 mt-0'>
               <LiquidityChartRangeInput
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}

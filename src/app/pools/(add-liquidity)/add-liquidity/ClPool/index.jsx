@@ -27,7 +27,7 @@ function AddLiquidityClPool({ pool }) {
   const t = useTranslations()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
   const { isReverse } = useSelector(state => state.fusion)
-  const { strategy } = useV3MintState()
+  const { strategy, startPriceTypedValue } = useV3MintState()
 
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
@@ -187,10 +187,8 @@ function AddLiquidityClPool({ pool }) {
             <div
               className={cn(
                 'hidden',
-                !strategy?.isAutomatic &&
-                  (position?.minPrice ?? priceLower) &&
-                  (position?.maxPrice ?? priceUpper) &&
-                  'block',
+                !strategy?.isAutomatic && 'block',
+                mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl',
               )}
             >
               <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>

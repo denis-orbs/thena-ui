@@ -11,6 +11,7 @@ import { warnToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { Field } from '@/state/fusion/actions'
+import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 
 import { EnterAmounts } from './containers/EnterAmounts'
@@ -31,6 +32,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, onSho
     [mintInfo.parsedAmounts, position],
   )
 
+  const { startPriceTypedValue } = useV3MintState()
   const { onAlgebraAdd, pending } = useAlgebraAdd()
   const { onAlgebraIncrease, pending: isPendingIncrease } = useAlgebraIncrease(position?.version ?? 3)
   const { deadline } = useSettings()
@@ -79,7 +81,7 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, onSho
 
   return (
     <section className='space-y-8'>
-      <div className='space-y-4'>
+      <div className={cn('space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} position={position} />
       </div>
