@@ -1174,6 +1174,7 @@
   "Migrate Your Conc Liquidity Positions description": "We are have upgraded our gauge system to v3. All users are required to migrate their liquidity positions as soon as possible. The migration process will automatically claim any accrued rewards, withdraw existing deposits, and deposit them into the new V3 gauges. Similarly, all staked positions will be unstaked and restaked in the corresponding new gauge. Thank you.",
   "Starting Price needed": "Starting Price needed",
   "Start Price": "Start Price",
+  "Initialization Price": "Initialization Price",
   "Your Conc Liquidity Positions": "Your Conc. Liquidity Positions",
   "Migration": "Migration",
   "Migration description": "This will safely migrate your old V2 gauge to a new one. The process is completely trustless.",

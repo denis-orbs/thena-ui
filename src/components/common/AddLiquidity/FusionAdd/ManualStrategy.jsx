@@ -6,13 +6,12 @@ import { Info, Warning } from '@/components/alert'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
-import NextImage from '@/components/image/NextImage'
 import Input from '@/components/input'
 import Spinner from '@/components/spinner'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { FusionRangeType } from '@/constant'
+import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
@@ -203,33 +202,47 @@ function ManualStrategy({
               </div>
             </Info>
 
-            <div className='flex items-center gap-2'>
-              <TextHeading className='text-xl font-semibold'>{t('Start Price')}</TextHeading>
-              <Input
-                classNames={{
-                  input: 'w-32 pr-[44px] text-right leading-5',
-                }}
-                val={startPriceTypedValue}
-                min={0}
-                onChange={e => onStartPriceInput(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === '-' || e.key === '+') {
-                    e.preventDefault()
-                    return false
-                  }
-                }}
-                suffix={<NextImage src={quoteCurrency?.logoURI} alt='' className='h-5 w-5' />}
-              />
-              <EmphasisIconButton
-                Icon={TransferIcon}
-                onClick={() => dispatch(updateIsReverse({ isReverse: !isReverse }))}
-              />
-              <TextHeading className='text-xl font-semibold'>
-                {t('[symbolA] per [symbolB]', {
-                  symbolA: quoteCurrency?.symbol,
-                  symbolB: baseCurrency?.symbol,
-                })}
-              </TextHeading>
+            <div className='flex items-end gap-6 md:gap-8'>
+              <div className='flex w-full max-w-72 flex-col gap-2'>
+                <div className='flex items-end justify-between'>
+                  <Paragraph className='text-xs font-medium text-neutral-50 md:text-base'>
+                    {t('Initialization Price')}
+                  </Paragraph>
+                  <Paragraph className='text-xs font-normal text-neutral-300 md:text-base'>
+                    {t('[symbolA] per [symbolB]', {
+                      symbolA: quoteCurrency?.symbol,
+                      symbolB: baseCurrency?.symbol,
+                    })}
+                  </Paragraph>
+                </div>
+                <Input
+                  classNames={{
+                    input: 'text-right leading-5',
+                  }}
+                  val={startPriceTypedValue}
+                  min={0}
+                  onChange={e => onStartPriceInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === '-' || e.key === '+') {
+                      e.preventDefault()
+                      return false
+                    }
+                  }}
+                />
+              </div>
+
+              <div className='flex h-[46px] items-center gap-2'>
+                <CircleImage
+                  className='size-8 md:size-9'
+                  src={quoteCurrency.logoURI ?? UNKNOWN_LOGO}
+                  alt='quote token'
+                />
+                <EmphasisIconButton
+                  Icon={TransferIcon}
+                  onClick={() => dispatch(updateIsReverse({ isReverse: !isReverse }))}
+                />
+                <CircleImage className='size-8 md:size-9' src={baseCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
+              </div>
             </div>
           </div>
         )}
