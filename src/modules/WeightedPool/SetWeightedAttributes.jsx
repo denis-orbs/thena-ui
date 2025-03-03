@@ -9,7 +9,7 @@ import { InfoIcon } from '@/svgs'
 
 import SetInitialLiquidity from './SetInitialLiquidity'
 import SetPoolFees from './SetPoolFees'
-import WeightedPoolLogo from './WeightedPoolLogo'
+import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 
 function SetWeightedAttributes({
   tokensAndWeights,
@@ -63,7 +63,7 @@ function SetWeightedAttributes({
             {t('Set Pool Name')}
           </TextHeading>
           <div className='flex items-center gap-4'>
-            <WeightedPoolLogo
+            <GroupIconTokens
               tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
               width={tokensAndWeights.length <= 4 ? 32 : 24}
               height={tokensAndWeights.length <= 4 ? 32 : 24}

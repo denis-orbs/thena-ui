@@ -1474,5 +1474,6 @@
   "Initial funds": "Initial funds",
   "Warning THE claim rebase fee": "要领取您的 rebase，请访问奖励页面并在锁定期结束前领取。锁定期结束后，rebase 将不再可供领取。",
   "Communities": "社区",
-  "Please select token": "Please select token"
+  "Please select token": "Please select token",
+  "Single Token Deposit": "Single Token Deposit"
 }

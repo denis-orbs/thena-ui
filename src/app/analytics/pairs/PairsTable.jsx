@@ -4,11 +4,11 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import IconGroup from '@/components/icongroup'
+import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import Table from '@/components/table'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 
 const sortOptions = [
@@ -94,23 +94,26 @@ export default function PairsTable({ data, hidePagination = false }) {
       sortedData.map(item => ({
         name: (
           <div className='flex items-center gap-3'>
-            {item.type === PAIR_TYPES.WEIGHTED ? (
-              <ListTokenPercantage listToken={item.tokens} />
-            ) : (
+            {item.type !== PAIR_TYPES.WEIGHTED ? (
               <>
-                <IconGroup
-                  className='-space-x-2'
+                <GroupIconTokens
                   classNames={{
-                    image: 'outline-2 w-7 h-7',
+                    image: cn('outline-2 w-7 h-7', 'w-7 h-7'),
+                    rows: '-space-x-2',
+                    toolTip: 'hidden',
                   }}
-                  logo1={item.token0.logoURI}
-                  logo2={item.token1.logoURI}
+                  width={32}
+                  height={32}
+                  tokens={[item.token0, item.token1]}
+                  showToolTip={false}
                 />
                 <div className='flex flex-col'>
                   <TextHeading>{item.symbol}</TextHeading>
                   <Paragraph className='text-sm'>{t(item.type)}</Paragraph>
                 </div>
               </>
+            ) : (
+              <ListTokenPercantage listToken={item.tokens} poolAddress={item?.address} />
             )}
           </div>
         ),

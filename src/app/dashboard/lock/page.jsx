@@ -63,13 +63,13 @@ const sortOptions = [
   {
     label: 'Automation',
     value: 'automation',
-    width: 'lg:w-[12%]',
+    width: 'lg:w-[calc(37%-320px)]',
     disabled: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'lg:w-[25%] max-[1536px]:!w-[43%] max-lg:!w-full',
+    width: 'lg:w-[320px]',
     disabled: true,
   },
 ]
@@ -155,8 +155,8 @@ export default function LockPage() {
         automation: <AutomationStatus veTHEId={veTHE.id} />,
         action: (
           <div className='flex w-full flex-row gap-3'>
-            <div className='w-1/2 min-w-fit'>
-              <AutomationButton veTHE={veTHE} />
+            <div className=''>
+              <AutomationButton veTHE={veTHE} className='w-[160px]' />
             </div>
             <div className='w-1/2 min-w-fit'>
               {veTHE.voting_amount.isZero() ? (

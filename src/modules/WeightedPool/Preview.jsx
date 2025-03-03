@@ -13,7 +13,7 @@ import { CoinsHandIcon } from '@/svgs'
 
 import PieChart from './PieChart'
 import PoolOverviewTable from './PoolOverviewTable'
-import WeightedPoolLogo from './WeightedPoolLogo'
+import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 
 export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolName }) {
   const t = useTranslations()
@@ -58,7 +58,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
         <div className='flex items-center gap-4'>
           <div className='flex flex-[4] gap-4'>
             <div className='space-y-2'>
-              <WeightedPoolLogo
+              <GroupIconTokens
                 height={tokens?.length === 2 ? 32 : 24}
                 width={tokens?.length === 2 ? 32 : 24}
                 tokens={tokens}

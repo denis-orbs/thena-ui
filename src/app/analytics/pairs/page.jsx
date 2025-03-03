@@ -20,7 +20,7 @@ export default function AnalyticsPairsPage() {
   const t = useTranslations()
 
   const filteredPairs = useMemo(
-    () => (pairs ? pairs.filter(pair => pair.symbol.toLowerCase().includes(searchText.toLowerCase())) : []),
+    () => (pairs ? pairs.filter(pair => (pair.symbol || '').toLowerCase().includes(searchText.toLowerCase())) : []),
     [pairs, searchText],
   )
   if (isLoading || !pairs) {

@@ -10,6 +10,7 @@ import MenuTab from '@/app/arena/MenuTab'
 import Loading from '@/app/loading'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Skeleton from '@/components/skeleton'
 import CustomTooltip from '@/components/tooltip'
@@ -23,7 +24,6 @@ import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, fromWei, isInvalidAmount, roundIfMoreThanDecimals, unwrappedSymbol } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import PieChart from '@/modules/WeightedPool/PieChart'
-import WeightedPoolLogo from '@/modules/WeightedPool/WeightedPoolLogo'
 
 import InputTokenMemo from '../../InputTokenMemo'
 import { PairBasicInfo } from '../../PairBasicInfo'
@@ -242,7 +242,7 @@ function AddLiquidityWeightedPoolPage({ params }) {
     <div className='space-y-8'>
       <div className='flex flex-col gap-1 lg:gap-2'>
         <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
-          <WeightedPoolLogo
+          <GroupIconTokens
             height={60}
             width={60}
             tokens={poolSelected?.tokens || []}

@@ -1473,5 +1473,6 @@
   "Initial funds": "Initial funds",
   "Warning THE claim rebase fee": "To receive your rebase, please visit the Rewards page and claim it before your lock period ends. After the lock period expires, the rebase will no longer be available for claiming.",
   "Communities": "Communities",
-  "Please select token": "Please select token"
+  "Please select token": "Please select token",
+  "Single Token Deposit": "Single Token Deposit"
 }

@@ -9,6 +9,7 @@ import Skeleton from '@/components/skeleton'
 import { ACTION_AUTOMATION_TYPE, AUTOMATION_STATUS } from '@/constant'
 import { useAutomationContractDetail, useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import useWallet from '@/hooks/useWallet'
+import { cn } from '@/lib/utils'
 
 import ConfirmAutomationModal from './ConfirmAutomationModal'
 import DepositFundsModal from './Edits/DepositFundsModal'
@@ -18,7 +19,7 @@ import EditMaxGasPriceModal from './Edits/EditMaxGasPriceModal'
 import ChainlinkModal from './head/ChainlinkModal'
 import WithdrawFundsModal from './WithdrawFundsModal'
 
-function AutomationButton({ veTHE, isDetail = false }) {
+function AutomationButton({ veTHE, isDetail = false, className }) {
   const { id: veTHEId, lockedEnd } = veTHE
 
   const { data: veTHEs, isLoading, refetch: refetchAutomations } = useVeTheAutomations()
@@ -210,13 +211,13 @@ function AutomationButton({ veTHE, isDetail = false }) {
   return (
     <>
       {isLoading ? (
-        <Skeleton className='h-11 w-full rounded-xl' />
+        <Skeleton className={('h-11 w-full rounded-xl', className)} />
       ) : (
         <>
           {status === AUTOMATION_STATUS.NO || (status === AUTOMATION_STATUS.CANCELED && contractData.balance === 0) ? (
             <TertiaryButton
               disabled={nowInSeconds >= lockedEnd}
-              className='w-full min-w-fit py-3 lg:px-1'
+              className={cn('w-full min-w-fit py-3 lg:px-1', className)}
               onClick={onClickAddAutomation}
             >
               {t('Add Automation')}
@@ -224,7 +225,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
           ) : (
             <Dropdown
               placeHolder={t('Automation')}
-              className='h-11 w-full'
+              className={cn('h-11 w-full', className)}
               data={actions || []}
               setSelected={data => {
                 setAction(data)

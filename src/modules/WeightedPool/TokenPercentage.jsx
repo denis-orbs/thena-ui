@@ -1,16 +1,26 @@
-import { Paragraph } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
+import { cn } from '@/lib/utils'
 
-import WeightedPoolLogo from './WeightedPoolLogo'
+import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 
-export function TokenPercentage({ tokens }) {
+export function TokenPercentage({ tokens, poolAddress }) {
   const { length } = tokens || []
   return (
-    <div className='flex items-center gap-[6px]'>
-      <WeightedPoolLogo width={length === 2 ? 32 : 24} height={length === 2 ? 32 : 24} tokens={tokens} />
+    <>
+      <GroupIconTokens
+        classNames={{
+          image: cn('outline-2 w-7 h-7', length <= 4 ? 'w-7 h-7' : 'w-6 h-6'),
+          rows: length > 2 ? '-space-x-3' : '-space-x-2',
+        }}
+        width={length <= 4 ? 32 : 24}
+        height={length <= 4 ? 32 : 24}
+        tokens={tokens}
+        poolAddress={poolAddress}
+      />
       <div className='flex flex-col gap-1'>
         <div>
           {tokens.map((token, index) => (
-            <Paragraph key={token.address}>{`${token?.symbol}${index !== tokens.length - 1 ? '/' : ''}`}</Paragraph>
+            <TextHeading key={token.address}>{`${token?.symbol}${index !== tokens.length - 1 ? '/' : ''}`}</TextHeading>
           ))}
         </div>
         <div>
@@ -19,14 +29,10 @@ export function TokenPercentage({ tokens }) {
           ))}
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
-export function ListTokenPercantage({ listToken }) {
-  return (
-    <div className='flex flex-wrap items-center gap-[14px]'>
-      <TokenPercentage tokens={listToken} />
-    </div>
-  )
+export function ListTokenPercantage({ listToken, poolAddress }) {
+  return <TokenPercentage tokens={listToken} poolAddress={poolAddress} />
 }

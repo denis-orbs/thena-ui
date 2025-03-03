@@ -5,7 +5,7 @@ import React, { useMemo, useState } from 'react'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import { Collapse } from '@/components/collapse'
-import IconGroup from '@/components/icongroup'
+import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import NextImage from '@/components/image/NextImage'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
@@ -98,13 +98,16 @@ function NewListings({
         <div className='flex items-center gap-3'>
           {pool.type !== PAIR_TYPES.WEIGHTED ? (
             <>
-              <IconGroup
-                className='-space-x-2'
+              <GroupIconTokens
                 classNames={{
-                  image: 'outline-2 w-7 h-7',
+                  image: cn('outline-2 w-7 h-7', 'w-7 h-7'),
+                  rows: '-space-x-2',
+                  toolTip: 'hidden',
                 }}
-                logo1={pool.token0.logoURI}
-                logo2={pool.token1.logoURI}
+                width={32}
+                height={32}
+                tokens={[pool.token0, pool.token1]}
+                showToolTip={false}
               />
               <div className='flex flex-col'>
                 <TextHeading>{pool.symbol}</TextHeading>
@@ -112,7 +115,7 @@ function NewListings({
               </div>
             </>
           ) : (
-            <ListTokenPercantage listToken={pool.tokens} />
+            <ListTokenPercantage listToken={pool.tokens} poolAddress={pool?.address} />
           )}
 
           {/* BEGIN Special pools */}
