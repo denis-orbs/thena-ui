@@ -32,20 +32,28 @@ function WarningZapper() {
           ref={warningTextRef}
         >
           <TextSubHeading className='text-base text-primary-100'>
-            <span>This feature is incompatible with tokens that have tax implications.</span>
+            <span className='text-base text-primary-100'>
+              This feature is incompatible with tokens that have tax implications.
+            </span>
             <br />
-            If you are zapping a considerable amount of funds, please ensure to use protection against sandwich attacks
-            to safeguard your investment. This precaution helps protecting your transaction from potential front-running
-            and other malicious activities.
+            <span>
+              If you are zapping a considerable amount of funds, please ensure to use protection against sandwich
+              attacks to safeguard your investment.
+            </span>
+            <br />
+            <span className='text-base text-primary-100'>
+              This precaution helps protecting your transaction from potential front-running and other malicious
+              activities.
+            </span>
             <br />
             <Link
               target='_blank'
-              className='flex items-center gap-1 text-primary-600'
+              className='flex items-center gap-2 text-primary-600'
               href='https://www.bnbchain.org/en/blog/protecting-users-from-sandwich-attacks-bnb-chain-introduces-mev-protection-with-several-wallets'
               rel='noreferrer'
             >
               Learn more about protection from sandwich attacks here
-              <LinkExternalPrimaryIcon className='inline-block h-6 w-6 !stroke-primary-600' />
+              <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
             </Link>
           </TextSubHeading>
         </div>

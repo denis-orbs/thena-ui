@@ -82,7 +82,7 @@ function NavigationBottom({ currentStep, onNext }) {
   )
 
   return (
-    <div className='mt-4 space-y-4'>
+    <div className='space-y-4'>
       {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
       <>
         {currentStep < 3 && (

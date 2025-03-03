@@ -18,7 +18,7 @@ const useChainLINKData = () => {
     [assets, chainId],
   )
 
-  const { data: balanceOfChainLINKs } = useReadContracts({
+  const { data: balanceOfChainLINKs, isLoading } = useReadContracts({
     contracts: CHAINLINK_TOKEN[chainId].map(token => ({
       abi: ERC20Abi,
       address: token.address,
@@ -32,15 +32,17 @@ const useChainLINKData = () => {
 
   const chainLinkData = useMemo(
     () =>
-      CHAINLINK_TOKEN[chainId].map((token, index) => ({
-        ...token,
-        balance: fromWei(balanceOfChainLINKs?.[index]?.result || 0n, token.decimals),
-        logoURI: chainLinkAsset?.logoURI,
-        price: chainLinkAsset?.price,
-      })),
+      CHAINLINK_TOKEN[chainId]
+        .map((token, index) => ({
+          ...token,
+          balance: fromWei(balanceOfChainLINKs?.[index]?.result || 0n, token.decimals),
+          logoURI: chainLinkAsset?.logoURI,
+          price: chainLinkAsset?.price,
+        }))
+        .sort((a, b) => Number(b.balance) - Number(a.balance)),
     [chainId, balanceOfChainLINKs, chainLinkAsset],
   )
-  return chainLinkData
+  return { chainLinkData: isLoading ? [] : chainLinkData }
 }
 
 export default useChainLINKData

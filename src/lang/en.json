@@ -1381,7 +1381,6 @@
   "LINK Amount": "LINK Amount",
   "Create Contract": "Create Contract",
   "Starting Balance": "Starting Balance",
-  "Registration automation contract description": "Deposit LINK to your contract. Select an amount that will satisfy multiple performances to start, then fund the contract directly once it's operational.",
   "Active Automation Contract": "Active Automation Contract",
   "Register Upkeep": "Register Upkeep",
   "Enter ChainLINK Amount": "Enter ChainLINK Amount",
@@ -1474,5 +1473,13 @@
   "Warning THE claim rebase fee": "To receive your rebase, please visit the Rewards page and claim it before your lock period ends. After the lock period expires, the rebase will no longer be available for claiming.",
   "Communities": "Communities",
   "Please select token": "Please select token",
-  "Single Token Deposit": "Single Token Deposit"
+  "Single Token Deposit": "Single Token Deposit",
+  "What you need to create an Automation": "What you need to create an Automation",
+  "To create an automation, the following prerequisites must be met": "To create an automation, the following prerequisites must be met",
+  "An existing veTHE position": "An existing veTHE position.",
+  "Approximately $150-$200 USD worth of $LINK in your wallet": "Approximately $150-$200 USD worth of $LINK in your wallet.",
+  "Why do you need LINK": "Why do you need LINK",
+  "Why do you need LINK Answer": "You need LINK to run automations. The more automations you use, the more LINK you need. LINK pays for them – each time they run, some LINK is used. LINK is swapped to BNB to cover gas fees. If the LINK price drops, you might need more LINK sooner to keep the automations running. If you don’t have enough LINK, the automations stop. We’ll let you know when you’re running low on LINK.",
+  "[amount] LINK will aproximated last": "{amount} LINK will aproximated last",
+  "You have [balance] LINK in your Wallet": "You have {balance} LINK in your Wallet"
 }

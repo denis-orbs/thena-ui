@@ -4,13 +4,13 @@ import React, { useMemo } from 'react'
 import { zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
-import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, SCAN_URLS } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES, PAIR_TYPES, SCAN_URLS } from '@/constant'
 import { algebraPoolV3Abi, basePluginAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import { useGetAdministrator } from '@/hooks/fusion/usePoolAlgebraInfo'
 import { cn, formatAddress, formatAmount, goScan } from '@/lib/utils'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { LinkExternalIcon } from '@/svgs'
+import { LinkExternalPrimaryIcon } from '@/svgs'
 
 export function PoolAttributesCL({ strategy, pool }) {
   const isAutomatic = !MANUAL_TYPES.includes(strategy.title)
@@ -86,7 +86,7 @@ export function PoolAttributesCL({ strategy, pool }) {
         {/* Pool Name */}
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-300'>{t('Name')}:</div>
-          <div className='col-span-4 text-neutral-50'>{pool.symbol ?? strategy?.symbol}</div>
+          <div className='col-span-4 text-neutral-50'>{`Conc. Liquidity ${pool.symbol ?? strategy?.symbol}`}</div>
         </div>
 
         {/* Pool Symbol */}
@@ -106,7 +106,7 @@ export function PoolAttributesCL({ strategy, pool }) {
             >
               {t('Type attribute CL pool')}
               <div className='item-center flex cursor-pointer gap-1'>
-                <LinkExternalIcon className='inline-block h-4 w-4' />
+                <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
               </div>
             </Link>
           </div>
@@ -129,7 +129,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                       : 'Unknown'}
                 </span>
                 <div className='item-center flex cursor-pointer gap-1'>
-                  <LinkExternalIcon className='inline-block h-4 w-4' />
+                  <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
                 </div>
               </Link>
             </div>
@@ -150,7 +150,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                       : 'Unknown'}
                 </span>
                 <div className='item-center flex cursor-pointer gap-1'>
-                  <LinkExternalIcon className='inline-block h-4 w-4' />
+                  <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
                 </div>
               </Link>
             </div>
@@ -166,7 +166,7 @@ export function PoolAttributesCL({ strategy, pool }) {
               className='item-center flex cursor-pointer gap-1 text-primary-500'
             >
               <span>{formatAddress(poolDeployer)}</span>
-              <LinkExternalIcon className='inline-block h-4 w-4' />
+              <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
             </div>
           </div>
         </div>
@@ -180,7 +180,7 @@ export function PoolAttributesCL({ strategy, pool }) {
               className='item-center flex cursor-pointer gap-1 text-primary-500'
             >
               <span>{formatAddress(strategy.address)}</span>
-              <LinkExternalIcon className='inline-block h-4 w-4' />
+              <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                 className='item-center flex cursor-pointer gap-1'
               >
                 <span>{pool.plugInAddress}</span>
-                <LinkExternalIcon className='inline-block h-4 w-4' />
+                <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
               </div>
             </div>
           </div>
@@ -240,7 +240,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                       target='_blank'
                     >
                       {formatAddress(addr)}
-                      <LinkExternalIcon className='inline-block h-4 w-4' />
+                      <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
                     </Link>
                   </li>
                 </div>
@@ -258,7 +258,7 @@ export function PoolAttributesCL({ strategy, pool }) {
                       target='_blank'
                     >
                       {formatAddress(addr)}
-                      <LinkExternalIcon className='inline-block h-4 w-4' />
+                      <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
                     </Link>
                   </li>
                 </div>
@@ -309,7 +309,13 @@ export function NormalPoolAttributes({ pool }) {
         {/* Pool name */}
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-300'>{t('Name')}:</div>
-          <div className='col-span-4 text-neutral-50'>{pool?.symbol}</div>
+          <div className='col-span-4 text-neutral-50'>
+            {pool.type === PAIR_TYPES.WEIGHTED
+              ? pool?.name ?? pool?.symbol
+              : pool.type === PAIR_TYPES.STABLE
+                ? `sAMM ${pool?.symbol}`
+                : `vAMM ${pool?.symbol}`}
+          </div>
         </div>
 
         {/* Pool Symbol */}
@@ -339,9 +345,12 @@ export function NormalPoolAttributes({ pool }) {
           <div className='grid grid-cols-7'>
             <div className='col-span-3 text-neutral-300'>{t('Pool Owner')}:</div>
             <div className='col-span-4 text-neutral-50'>
-              <div onClick={() => goScan(networkId, pool?.owner)} className='item-center flex cursor-pointer gap-1'>
+              <div
+                onClick={() => goScan(networkId, pool?.owner)}
+                className='item-center flex cursor-pointer gap-1 text-primary-500'
+              >
                 <span>{formatAddress(pool?.owner)}</span>
-                <LinkExternalIcon className='inline-block h-4 w-4' />
+                <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
               </div>
             </div>
           </div>
@@ -376,7 +385,7 @@ export function NormalPoolAttributes({ pool }) {
           <div className='col-span-4 text-primary-500'>
             <div onClick={() => goScan(networkId, pool?.address)} className='item-center flex cursor-pointer gap-1'>
               <span>{formatAddress(pool?.address)}</span>
-              <LinkExternalIcon className='inline-block h-4 w-4' />
+              <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
             </div>
           </div>
         </div>

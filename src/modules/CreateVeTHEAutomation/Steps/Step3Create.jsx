@@ -45,7 +45,7 @@ function Step3Create() {
       </div>
 
       {/* Settings */}
-      <div className='flex flex-col gap-3 pt-5'>
+      <div className='flex flex-col gap-3 pt-4'>
         <TextHeading>{t('Settings')}</TextHeading>
         <div className='flex flex-row justify-between'>
           <Paragraph>{t('Claim rebase rewards every week')}</Paragraph>
@@ -62,7 +62,7 @@ function Step3Create() {
       </div>
 
       {/* Voting Pairs and Weights */}
-      <div className='flex flex-col gap-3 pt-5'>
+      <div className='flex flex-col gap-3 pt-4'>
         <TextHeading>{t('Voting Pairs and Weights')}</TextHeading>
         <div className='flex flex-row justify-between'>
           <Paragraph>{t('Automatically vote each epoch')}</Paragraph>
@@ -95,7 +95,7 @@ function Step3Create() {
       </div>
 
       {/* Registration */}
-      <div className='flex flex-col gap-3 pt-5'>
+      <div className='flex flex-col gap-3 pt-4'>
         <TextHeading className='text-[18px]'>{t('Registration')}</TextHeading>
         <RegisterAutomation
           chainLINK={createData?.registration?.chainlink}
