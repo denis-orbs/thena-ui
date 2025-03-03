@@ -210,7 +210,14 @@ function ManualStrategy({
                   input: 'w-32 pr-[44px] text-right leading-5',
                 }}
                 val={startPriceTypedValue}
+                min={0}
                 onChange={e => onStartPriceInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === '-' || e.key === '+') {
+                    e.preventDefault()
+                    return false
+                  }
+                }}
                 suffix={<NextImage src={quoteCurrency?.logoURI} alt='' className='h-5 w-5' />}
               />
               <EmphasisIconButton

@@ -27,7 +27,7 @@ function AddLiquidityClPool({ pool }) {
   const t = useTranslations()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
   const { isReverse } = useSelector(state => state.fusion)
-  const { strategy, startPriceTypedValue } = useV3MintState()
+  const { strategy } = useV3MintState()
 
   const searchParams = useSearchParams()
   const type = searchParams.get('type')
@@ -63,6 +63,7 @@ function AddLiquidityClPool({ pool }) {
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, 3000, baseCurrency, undefined)
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  // console.log(priceLower?.toSignificant(6), priceUpper?.toSignificant(6))
 
   const chartDomain = useMemo(() => {
     const leftPrice = isReverse ? priceLower?.invert() : priceUpper
@@ -119,8 +120,8 @@ function AddLiquidityClPool({ pool }) {
     isLoading,
     error,
   } = useFetchPairPrices({
-    token0Address: quoteCurrency?.address,
-    token1Address: baseCurrency?.address,
+    token0Address: wrappedAddress(quoteCurrency),
+    token1Address: wrappedAddress(baseCurrency),
     timeWindow,
   })
 
@@ -145,8 +146,8 @@ function AddLiquidityClPool({ pool }) {
 
           <AddLiquidityCLPane
             pool={pair}
-            quoteCurrency={quoteCurrency}
             baseCurrency={baseCurrency}
+            quoteCurrency={quoteCurrency}
             mintInfo={mintInfo}
             position={position}
           />
@@ -184,13 +185,7 @@ function AddLiquidityClPool({ pool }) {
               </div>
             )}
 
-            <div
-              className={cn(
-                'hidden',
-                !strategy?.isAutomatic && 'block',
-                mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl',
-              )}
-            >
+            <div className={cn('hidden', !strategy?.isAutomatic && 'block')}>
               <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
                 <NewTextHeading className='!text-xl font-semibold'>Price History</NewTextHeading>
                 <Tabs data={periods} />
