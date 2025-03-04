@@ -1,10 +1,11 @@
+import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
 import { useEffect, useMemo, useRef } from 'react'
 
 import Skeleton from '@/components/skeleton'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount, shortenNumber } from '@/lib/utils'
 
 import { PairDataTimeWindow } from './fetch'
 
@@ -42,6 +43,7 @@ function PoolChart({ data, timeWindow, current, upper, lower }) {
         borderVisible: false,
         mode: 1,
         autoScale: true, // Disable auto-scaling
+        priceFormatter: price => `$${price.toFixed(2)} USD`, // Custom text
       },
       timeScale: {
         visible: true,
@@ -76,7 +78,8 @@ function PoolChart({ data, timeWindow, current, upper, lower }) {
 
     chart.applyOptions({
       localization: {
-        priceFormatter: priceValue => `${formatAmount(priceValue, true, 5)}`,
+        priceFormatter: priceValue =>
+          `${new BigNumber(priceValue).gte(1e13) ? shortenNumber(priceValue) : formatAmount(priceValue, true, 5)}`,
       },
     })
 
