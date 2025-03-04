@@ -163,7 +163,7 @@ export function TokenAmountInput({
                 'inline-flex items-center justify-center gap-2',
                 'rounded-lg bg-[#29292980] text-sm text-neutral-200',
                 'py-1.5 pl-1.5 pr-2',
-                'cursor-pointer',
+                'cursor-default',
               )}
             >
               {maxBalance ? (

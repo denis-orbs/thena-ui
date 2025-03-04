@@ -260,7 +260,7 @@ function ManualStrategy({
           />
         )}
 
-        {position && !position.outOfRange ? (
+        {position && position.outOfRange ? (
           <div className={cn('flex gap-4 rounded-lg border border-error-800 bg-error-950 p-8')}>
             <div className='size-8 min-w-8'>
               <WarningTriangleIcon className='size-full' />
