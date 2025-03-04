@@ -16,7 +16,7 @@ import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
-import { updateIsReverse, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
+import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
 import { InfoCircleWhite } from '@/svgs'
@@ -173,7 +173,6 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
     strategyInfo => {
       onLeftRangeInput('')
       onRightRangeInput('')
-      dispatch(updateIsReverse({ isReverse: false }))
       dispatch(updateStrategy({ strategy: strategyInfo }))
       onChangeLiquidityRangeType(getLiquidityRangeType(strategyInfo?.title))
     },

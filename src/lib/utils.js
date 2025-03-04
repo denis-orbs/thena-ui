@@ -344,6 +344,6 @@ export const shortenNumber = num => {
   if (!num) return 0
   const exponent = Math.floor(Math.log10(num))
   const base = num / 10 ** exponent
-  const roundedBase = parseFloat(base.toFixed(4))
+  const roundedBase = parseFloat(base.toFixed(1))
   return roundedBase * 10 ** exponent
 }

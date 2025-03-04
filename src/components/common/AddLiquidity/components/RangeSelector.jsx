@@ -57,7 +57,6 @@ function RangePart({
   }, [increment, onUserInput])
 
   const activePreset = useActivePreset()
-  // console.log({ activePreset })
 
   useEffect(() => {
     if (value) {
@@ -149,19 +148,15 @@ export function RangeSelector({
 
   const handleRevert = () => {
     if (isReverse) {
-      dispatch(updateIsReverse({ isReverse: false }))
       if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
         onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
         onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
       }
-    } else {
-      dispatch(updateIsReverse({ isReverse: true }))
-      if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
-        onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
-        onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
-      }
+    } else if (!mintInfo?.ticksAtLimit[Bound.LOWER] && !mintInfo?.ticksAtLimit[Bound.UPPER]) {
+      onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? '')
+      onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? '')
     }
-
+    dispatch(updateIsReverse({ isReverse: !isReverse }))
     onFieldAInput('')
     onFieldBInput('')
   }

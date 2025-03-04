@@ -9,8 +9,8 @@ import { Chart } from './Chart'
 import { useDensityChartData } from './hooks'
 
 const ZOOM_LEVEL = {
-  initialMin: 0.9,
-  initialMax: 1.1,
+  initialMin: 0.8,
+  initialMax: 1.2,
   min: 0.00001,
   max: 20,
 }

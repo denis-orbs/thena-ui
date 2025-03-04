@@ -5,7 +5,7 @@ import { darken } from 'polished'
 import { useEffect, useMemo, useRef } from 'react'
 
 import Skeleton from '@/components/skeleton'
-import { formatAmount, shortenNumber } from '@/lib/utils'
+import { formatAmount } from '@/lib/utils'
 
 import { PairDataTimeWindow } from './fetch'
 
@@ -78,8 +78,7 @@ function PoolChart({ data, timeWindow, current, upper, lower }) {
 
     chart.applyOptions({
       localization: {
-        priceFormatter: priceValue =>
-          `${new BigNumber(priceValue).gte(1e13) ? shortenNumber(priceValue) : formatAmount(priceValue, true, 5)}`,
+        priceFormatter: priceValue => `${new BigNumber(priceValue).gte(1e13) ? '' : formatAmount(priceValue, true, 5)}`,
       },
     })
 
