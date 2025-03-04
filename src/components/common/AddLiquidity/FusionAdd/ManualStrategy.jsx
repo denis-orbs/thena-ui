@@ -15,6 +15,7 @@ import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
+import { useAprStore } from '@/state/APR/store'
 import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import {
   useActivePreset,
@@ -62,6 +63,7 @@ function ManualStrategy({
     [currencyA, currencyB, isReverse, position],
   )
 
+  const { APRs } = useAprStore()
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
@@ -298,7 +300,7 @@ function ManualStrategy({
                 <TextHeading className='text-center font-archia'>
                   <Paragraph className='text-neutral-400'>Estimate APR</Paragraph>
                   <p className='text-xl font-semibold text-primary-600'>
-                    {formatAmount(position ? position.apr : mintInfo?.estimateAPR?.current)}%
+                    {formatAmount(APRs?.current ? APRs.current : position?.apr)}%
                   </p>
                 </TextHeading>
 

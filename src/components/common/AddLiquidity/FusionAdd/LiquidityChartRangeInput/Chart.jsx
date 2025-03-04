@@ -121,6 +121,14 @@ export function Chart({
 
             <Line value={current} xScale={xScale} innerHeight={innerHeight} />
 
+            {/* Add triangle marker */}
+            <path
+              d={`M ${xScale(current) - 6} ${innerHeight + 12} L ${xScale(current) + 6} ${innerHeight + 12} L ${xScale(
+                current,
+              )} ${innerHeight} Z`}
+              fill='#F8CCF6'
+            />
+
             <AxisBottom xScale={xScale} innerHeight={innerHeight} />
           </g>
 

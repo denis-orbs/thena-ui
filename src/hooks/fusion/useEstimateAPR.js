@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { gql } from 'graphql-request'
 import moment from 'moment'
-import { nearestUsableTick, Position, TickMath } from 'thena-fusion-sdk'
+import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
@@ -11,6 +11,7 @@ import { eternalVirtualPoolAbi, newPoolAbi } from '@/constant/abi/fusion'
 import { fusionClient, fusionFarmingClient } from '@/lib/graphql'
 import { fromWei, toWei } from '@/lib/utils'
 import { Presets } from '@/state/fusion/reducer'
+import { tryParseTick } from '@/state/fusion/utils'
 import { useChainSettings } from '@/state/settings/hooks'
 
 import { useGetAsset } from './Tokens'
@@ -96,11 +97,10 @@ export const useEstimateAPR = ({
   token1,
   amount1 = 0,
   isFarming = true,
-  tvl = 1,
 }) => {
   const { networkId: chainId } = useChainSettings()
-  const currency0 = useGetAsset(pool?.token0?.address)
-  const currency1 = useGetAsset(pool?.token1?.address)
+  const currency0 = useGetAsset(token0?.address)
+  const currency1 = useGetAsset(token1?.address)
 
   // pool fees in USD
   const { data: annualPoolFees = 0 } = useQuery({
@@ -143,13 +143,11 @@ export const useEstimateAPR = ({
   })
   const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
   const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
-
   const earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
   if (!tickLower || !tickUpper || !pool) return {}
 
-  let position = null
-  const amountToken0 =
+  let _amount0 =
     typeof amount0 === 'object'
       ? BigNumber(amount0)
       : toWei(
@@ -158,44 +156,28 @@ export const useEstimateAPR = ({
             .toString(),
           currency0?.decimals ?? 18,
         )
-  const amountToken1 =
+  let _amount1 =
     typeof amount1 === 'object'
       ? BigNumber(amount1)
       : toWei(
           BigNumber(amount1)
-            .decimalPlaces(currency0?.decimals ?? 18, BigNumber.ROUND_DOWN)
+            .decimalPlaces(currency1?.decimals ?? 18, BigNumber.ROUND_DOWN)
             .toString(),
           currency1?.decimals ?? 18,
         )
 
-  if (new BigNumber(amountToken0)?.isZero() || new BigNumber(amountToken1)?.isZero()) return {}
-
-  if (token0 && token1) {
-    position = Position.fromAmounts({
-      pool,
-      tickLower,
-      tickUpper,
-      amount0: amountToken0,
-      amount1: amountToken1,
-      useFullPrecision: true,
-    })
-  } else if (token0 && !token1) {
-    position = Position.fromAmount0({
-      pool,
-      tickLower,
-      tickUpper,
-      amount0: amountToken0,
-      useFullPrecision: true,
-    })
-  } else if (!token0 && token1) {
-    position = Position.fromAmount1({
-      pool,
-      tickLower,
-      tickUpper,
-      amount1: amountToken1,
-      useFullPrecision: true,
-    })
+  if (_amount0?.isZero() && _amount1?.isZero() && token0 && token1) {
+    _amount0 = currency0?.price ? toWei(100 / currency0.price, currency0.decimals) : BigNumber(0)
+    _amount1 = currency1?.price ? toWei(100 / currency1.price, currency1.decimals) : BigNumber(0)
+  } else if (_amount0?.isZero() && token0 && !token1) {
+    _amount0 = currency0?.price ? toWei(200 / currency0.price, currency0.decimals) : BigNumber(0)
+  } else if (_amount1?.isZero() && token1 && !token0) {
+    _amount1 = currency1?.price ? toWei(200 / currency1.price, currency1.decimals) : BigNumber(0)
   }
+
+  const poolPrice = pool?._token0Price.toSignificant(5)
+  const _token0 = pool.token0
+  const _token1 = pool.token1
 
   const presetPositions = [
     {
@@ -218,47 +200,74 @@ export const useEstimateAPR = ({
       max: 1.05,
       title: Presets.RISK,
     },
-  ].map(({ min, max, title }) => ({
-    title,
-    position: Position.fromAmounts({
-      pool,
-      tickLower:
-        title === Presets.FULL
-          ? nearestUsableTick(TickMath.MIN_TICK, pool.tickSpacing)
-          : nearestUsableTick(Math.round(pool.tickCurrent * (pool.tickCurrent < 0 ? max : min)), pool.tickSpacing),
-      tickUpper:
-        title === Presets.FULL
-          ? nearestUsableTick(TickMath.MAX_TICK, pool.tickSpacing)
-          : nearestUsableTick(Math.round(pool.tickCurrent * (pool.tickCurrent < 0 ? min : max)), pool.tickSpacing),
-      amount0: amountToken0.eq(0) ? toWei(1, currency0?.decimals ?? 18) : amountToken0,
-      amount1: amountToken1.eq(0) ? toWei(1, currency1?.decimals ?? 18) : amountToken1,
-    }),
-  }))
+    {
+      title: 'current',
+    },
+  ].map(({ min, max, title }) => {
+    const _tickLower =
+      title === 'current'
+        ? tickLower
+        : title === Presets.FULL
+          ? nearestUsableTick(TickMath.MIN_TICK, TICK_SPACING)
+          : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * min).toString())
+
+    const _tickUpper =
+      title === 'current'
+        ? tickUpper
+        : title === Presets.FULL
+          ? nearestUsableTick(TickMath.MAX_TICK, TICK_SPACING)
+          : tryParseTick(_token0, _token1, 3000, (Number(poolPrice) * max).toString())
+
+    let _position = null
+    if (token0 && token1) {
+      _position = Position.fromAmounts({
+        pool,
+        tickLower: _tickLower,
+        tickUpper: _tickUpper,
+        amount0: _token0 === currency0.address ? _amount0 : _amount1,
+        amount1: _token1 === currency1.address ? _amount1 : _amount0,
+        useFullPrecision: true,
+      })
+    } else if (token0 && !token1) {
+      _position = Position.fromAmount0({
+        pool,
+        tickLower: _tickLower,
+        tickUpper: _tickUpper,
+        amount0: _amount0,
+        useFullPrecision: true,
+      })
+    } else if (!token0 && token1) {
+      _position = Position.fromAmount1({
+        pool,
+        tickLower: _tickLower,
+        tickUpper: _tickUpper,
+        amount1: _amount1,
+        useFullPrecision: true,
+      })
+    }
+    return {
+      title,
+      position: _position,
+    }
+  })
 
   const reward = isFarming ? rewardPerSecond : BigNumber(annualPoolFees)
   const poolLiquidity = isFarming ? BigNumber(farmLiquidity) : BigNumber(pool.liquidity)
+  const tvl = fromWei(_amount0, currency0?.decimals ?? 18)
+    .times(currency0?.price ?? 0)
+    .plus(fromWei(_amount1, currency1?.decimals ?? 18).times(currency1?.price ?? 0))
 
-  return {
-    current: calAPR({
+  return presetPositions.reduce((acc, { title, position: p }) => {
+    acc[title] = calAPR({
       reward,
       tvl,
-      poolLiquidity: BigNumber(poolLiquidity).plus(position.liquidity),
-      positionLiquidity: position.liquidity,
+      poolLiquidity: BigNumber(poolLiquidity).plus(p.liquidity),
+      positionLiquidity: p.liquidity,
       isFarming,
       earnPercent,
-    }),
-    ...presetPositions.reduce((acc, { title, position: p }) => {
-      acc[title] = calAPR({
-        reward,
-        tvl,
-        poolLiquidity: BigNumber(poolLiquidity).plus(p.liquidity),
-        positionLiquidity: p.liquidity,
-        isFarming,
-        earnPercent,
-      })
-      return acc
-    }, {}),
-  }
+    })
+    return acc
+  }, {})
 }
 
 export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) => {
@@ -303,29 +312,24 @@ export const useCalculateAPR = ({ position, poolAddress, totalLiquidity, tvl }) 
       enabled: Boolean(poolAddress),
     },
   })
-  const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 0n)
-  const farmLiquidity = BigNumber(farmInfo?.[1]?.result ?? 1n)
+  const communityFee = BigNumber(farmInfo?.[0]?.result?.[4] || 200n)
+  const totalLiquidityInFarm = BigNumber(farmInfo?.[1]?.result ?? 1n)
 
-  const earnPercent = BigNumber(1).minus(communityFee.div(1000))
+  const earnPercent = BigNumber(1).minus(communityFee.div(1000)).times(100)
 
   if (!tickLower || !tickUpper || !position) return BigNumber(0)
 
-  const farmRatio = BigNumber(position?.liquidity ?? 0).div(farmLiquidity)
+  const farmRatio = BigNumber(position?.liquidity ?? 0).div(totalLiquidityInFarm)
   const farmApr = tvl
     ? rewardPerSecond
         .times(farmRatio)
         .times(86400 * 365)
         .div(tvl)
         .times(100)
-    : new BigNumber(0)
+    : BigNumber(0)
 
-  const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : new BigNumber(0)
-  const feeAPR = tvl
-    ? feeRatio
-        .times(annualPoolFees)
-        .div(tvl)
-        .times(earnPercent * 100)
-    : new BigNumber(0)
+  const feeRatio = totalLiquidity ? BigNumber(liquidity).div(totalLiquidity) : BigNumber(0)
+  const feeAPR = tvl ? feeRatio.times(annualPoolFees).div(tvl).times(earnPercent) : BigNumber(0)
 
   return farmApr.plus(feeAPR)
 }

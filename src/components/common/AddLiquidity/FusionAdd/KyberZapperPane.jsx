@@ -1,10 +1,12 @@
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
+import { MANUAL_TYPES } from '@/constant'
 import { useGetAsset } from '@/hooks/fusion/Tokens'
+import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
@@ -12,12 +14,14 @@ import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZappe
 import { warnToast } from '@/lib/notify'
 import { cn, fromWei, isInvalidAmount, toWei, wrappedAddress } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
+import { useAprStore } from '@/state/APR/store'
 import { Bound } from '@/state/fusion/actions'
 
 import WarningZapper from '../components/WarningZapper'
 
 function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, strategy, onShowModalSuccess }) {
   const t = useTranslations()
+  const { setAPRs } = useAprStore()
 
   const [token0, token1] = useMemo(() => {
     const [wrappedTokenA, wrappedTokenB] = [baseCurrency?.wrapped, quoteCurrency?.wrapped]
@@ -41,6 +45,23 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
   const { poolAddress, customPoolAddress } = usePoolAlgebraInfo(asset0.address, asset1.address)
 
   const [slippage, setSlippage] = useState(0.5)
+
+  const estimateAPR = useEstimateAPR({
+    pool: mintInfo.pool,
+    poolAddress: mintInfo.poolAddress,
+    tickUpper,
+    tickLower,
+    token0: tokenDeposit.address === asset0.address ? asset0 : null,
+    token1: tokenDeposit.address === asset1.address ? asset1 : null,
+    amount0: amountIn,
+    amount1: amountIn,
+    isFarming: strategy?.title === MANUAL_TYPES[0],
+  })
+
+  useEffect(() => {
+    setAPRs(estimateAPR)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amountIn, tokenDeposit.address, tickUpper, tickLower])
 
   const { data, isFetching } = useGetZapInRoute({
     tickLower,

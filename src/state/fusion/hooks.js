@@ -14,10 +14,9 @@ import {
 import { CurrencyAmount, JSBI, Price, Rounding, WBNB } from 'thena-sdk-core'
 import { formatUnits, parseUnits } from 'viem'
 
-import { FusionRangeType, MANUAL_TYPES } from '@/constant'
+import { FusionRangeType } from '@/constant'
 import { useCurrency } from '@/hooks/fusion/Tokens'
 import { useCurrencyBalance, useCurrencyBalances } from '@/hooks/fusion/useCurrencyBalances'
-import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { callMulti } from '@/lib/contractActions'
 import { getGammaUNIProxyContract } from '@/lib/contracts'
@@ -582,21 +581,6 @@ export const useV3DerivedMintInfo = (
 
   const invalidPool = poolState === PoolState.INVALID
 
-  const estimateAPR = useEstimateAPR({
-    pool,
-    poolAddress: poolAddress?.toLowerCase(),
-    tickLower: ticks[Bound.LOWER],
-    tickUpper: ticks[Bound.UPPER],
-    token0: currencyA,
-    amount0: currencyAAmount?.quotient,
-    token1: currencyB,
-    amount1: currencyBAmount?.quotient,
-    isFarming: strategy?.title === MANUAL_TYPES[0],
-    tvl: strategy?.tvl,
-  })
-
-  // if (!currencyAAmount?.quotient && !currencyAAmount?.quotient) estimateAPR = { current: strategy?.apr ?? 0 }
-
   return {
     dependentField,
     currencies,
@@ -625,7 +609,6 @@ export const useV3DerivedMintInfo = (
     liquidityRangeType,
     presetRange,
     strategy,
-    estimateAPR,
   }
 }
 

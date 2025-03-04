@@ -335,48 +335,39 @@ export function NormalPoolAttributes({ pool }) {
           <div className='col-span-3 text-neutral-300'>{t('Swap fees')}:</div>
           <div className='col-span-4 text-neutral-50'>
             <span className='mr-1'>{pool?.fee}%</span>
-            {/* TODO: Need condition to check - ask Prome */}
-            <span className={cn(pool.plugInAddress && 'hidden')}>({t('editable by governance')})</span>
+            <span>({t('editable by governance')})</span>
           </div>
         </div>
 
         {/* Pool Owner */}
-        {pool?.owner ? (
+        {Boolean(pool?.owner) && (
           <div className='grid grid-cols-7'>
             <div className='col-span-3 text-neutral-300'>{t('Pool Owner')}:</div>
             <div className='col-span-4 text-neutral-50'>
               <div
-                onClick={() => goScan(networkId, pool?.owner)}
+                onClick={() => goScan(networkId, pool.owner)}
                 className='item-center flex cursor-pointer gap-1 text-primary-500'
               >
-                <span>{formatAddress(pool?.owner)}</span>
+                <span>{formatAddress(pool.owner)}</span>
                 <LinkExternalPrimaryIcon className='inline-block h-4 w-4 !stroke-primary-600' />
               </div>
             </div>
           </div>
-        ) : (
-          <></>
         )}
 
-        {/* Attribute immutability */}
-        {/* <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Attribute immutability')}:</div>
-          <div className='col-span-4 text-neutral-50'>{t('Immutable')}</div>
-        </div> */}
-
-        {pool?.createdAt ? (
+        {Boolean(pool?.createdAt) && (
           <div className='grid grid-cols-7'>
             <div className='col-span-3 text-neutral-300'>{t('Creation date')}:</div>
             <div className='col-span-4 text-neutral-50'>{createdAt}</div>
           </div>
-        ) : (
-          <></>
         )}
 
         {/* LP token price */}
         <div className='grid grid-cols-7'>
           <div className='col-span-3 text-neutral-300'>{t('LP token price')}:</div>
-          <div className='col-span-4 text-neutral-50'>${formatAmount(pool?.lpPrice || 0)}</div>
+          <div className='col-span-4 text-neutral-50'>
+            ${formatAmount(pool?.lpPrice ?? pool?.subpools?.[0]?.lpPrice ?? 0)}
+          </div>
         </div>
 
         {/* Pool address */}

@@ -1,16 +1,19 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
+import { MANUAL_TYPES } from '@/constant'
 import { useAlgebraAdd, useAlgebraIncrease } from '@/hooks/fusion/useAlgebra'
+import { useEstimateAPR } from '@/hooks/fusion/useEstimateAPR'
 import useWallet from '@/hooks/useWallet'
 import { warnToast } from '@/lib/notify'
 import { cn } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
-import { Field } from '@/state/fusion/actions'
+import { useAprStore } from '@/state/APR/store'
+import { Bound, Field } from '@/state/fusion/actions'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 
@@ -18,6 +21,7 @@ import { EnterAmounts } from './containers/EnterAmounts'
 
 export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, onShowModalSuccess, position }) {
   const { account } = useWallet()
+  const { setAPRs } = useAprStore()
 
   const errorMessage = useMemo(
     () => (position ? position.errorMessage : mintInfo.errorMessage),
@@ -39,6 +43,26 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, onSho
   const t = useTranslations()
 
   const [slippage, setSlippage] = useState(0.5)
+
+  const { strategy, ticks, pool, poolAddress, parsedAmounts } = mintInfo
+  const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts
+
+  const estimateAPR = useEstimateAPR({
+    pool,
+    poolAddress: poolAddress?.toLowerCase(),
+    tickLower: ticks[Bound.LOWER],
+    tickUpper: ticks[Bound.UPPER],
+    token0: baseCurrency,
+    amount0: currencyAAmount?.quotient,
+    token1: quoteCurrency,
+    amount1: currencyBAmount?.quotient,
+    isFarming: strategy?.title === MANUAL_TYPES[0],
+  })
+
+  useEffect(() => {
+    setAPRs(estimateAPR)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currencyAAmount?.quotient, currencyBAmount?.quotient, ticks[Bound.LOWER], ticks[Bound.UPPER]])
 
   const onAddLiquidity = useCallback(() => {
     if (errorMessage) {
