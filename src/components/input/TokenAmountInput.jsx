@@ -114,7 +114,8 @@ export function TokenAmountInput({
       <div
         className={cn(
           'flex cursor-text flex-col gap-3 self-stretch rounded-xl p-4',
-          'border border-neutral-700 focus-within:border-neutral-500 hover:bg-neutral-700 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
+          'border border-neutral-700 hover:bg-neutral-700 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
+          'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
           classNames?.input,
         )}
         onClick={onfocusInput}

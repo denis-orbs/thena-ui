@@ -199,8 +199,8 @@ function AddLiquidityClPool({ pool }) {
                       data={pairPrices}
                       timeWindow={timeWindow}
                       current={Number(currentPrice)}
-                      upper={Number(position?.maxPrice ?? chartDomain[0] ?? 0)}
-                      lower={Number(position?.minPrice ?? chartDomain[1] ?? 0)}
+                      lower={Number(position?.minPrice ?? chartDomain[0] ?? 0)}
+                      upper={Number(position?.maxPrice ?? chartDomain[1] ?? 0)}
                     />
                   )}
                 </div>

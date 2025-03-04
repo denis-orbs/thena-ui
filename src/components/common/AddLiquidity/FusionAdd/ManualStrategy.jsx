@@ -231,17 +231,21 @@ function ManualStrategy({
                 />
               </div>
 
-              <div className='flex h-[46px] items-center gap-2'>
+              <div className='flex h-[46px] items-center gap-4'>
                 <CircleImage
-                  className='size-8 md:size-9'
-                  src={quoteCurrency.logoURI ?? UNKNOWN_LOGO}
+                  className='size-8 outline outline-[#1C2027] md:size-9'
+                  src={quoteCurrency?.logoURI ?? UNKNOWN_LOGO}
                   alt='quote token'
                 />
                 <EmphasisIconButton
                   Icon={TransferIcon}
                   onClick={() => dispatch(updateIsReverse({ isReverse: !isReverse }))}
                 />
-                <CircleImage className='size-8 md:size-9' src={baseCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
+                <CircleImage
+                  className='size-8 outline outline-[#1C2027] md:size-9'
+                  src={baseCurrency?.logoURI ?? UNKNOWN_LOGO}
+                  alt='base token'
+                />
               </div>
             </div>
           </div>
@@ -256,54 +260,7 @@ function ManualStrategy({
           />
         )}
 
-        {!position?.outOfRange ? (
-          <article
-            className={cn(
-              'flex items-center justify-between rounded-xl bg-primary-950 p-6 font-medium',
-              showToggle ? '' : 'hidden',
-            )}
-          >
-            <div className='flex flex-col gap-1'>
-              <Paragraph className='text-neutral-400'>
-                {(position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee' ? 'Earn Fees' : 'Earn THE'}
-              </Paragraph>
-              <div className='flex flex-wrap gap-2'>
-                <div className='flex items-center gap-1'>
-                  <Paragraph className='text-neutral-400'>{t('TVL')}:</Paragraph>
-                  <TextHeading className='text-neutral-300'>
-                    ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
-                  </TextHeading>
-                </div>
-              </div>
-            </div>
-
-            <div className='flex flex-wrap justify-end gap-2'>
-              <TextHeading className='text-center font-archia'>
-                <Paragraph className='text-neutral-400'>Estimate APR</Paragraph>
-                <p className='text-xl font-semibold text-primary-600'>
-                  {formatAmount(position ? position.apr : mintInfo?.estimateAPR?.current)}%
-                </p>
-              </TextHeading>
-
-              {strategy?.title === 'CL_SwapFee' ? (
-                <IconGroup
-                  className='-space-x-2'
-                  classNames={{
-                    image: 'outline-2 w-7 h-7',
-                  }}
-                  logo1={firstAsset?.logoURI}
-                  logo2={secondAsset?.logoURI}
-                />
-              ) : (
-                <CircleImage
-                  className={cn('size-7')}
-                  src='https://cdn.thena.fi/assets/THE.png'
-                  alt='THENA First Logo'
-                />
-              )}
-            </div>
-          </article>
-        ) : (
+        {position && !position.outOfRange ? (
           <div className={cn('flex gap-4 rounded-lg border border-error-800 bg-error-950 p-8')}>
             <div className='size-8 min-w-8'>
               <WarningTriangleIcon className='size-full' />
@@ -313,6 +270,57 @@ function ManualStrategy({
               <Paragraph className='text-base text-error-100'>{t('OUT OF RANGE description')}</Paragraph>
             </div>
           </div>
+        ) : (
+          !mintInfo.noLiquidity && (
+            <article
+              className={cn(
+                'flex items-center justify-between rounded-xl bg-primary-950 p-6 font-medium',
+                showToggle ? '' : 'hidden',
+              )}
+            >
+              <div className='flex flex-col gap-1'>
+                <Paragraph className='text-neutral-400'>
+                  {(position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee'
+                    ? 'Earn Fees'
+                    : 'Earn THE'}
+                </Paragraph>
+                <div className='flex flex-wrap gap-2'>
+                  <div className='flex items-center gap-1'>
+                    <Paragraph className='text-neutral-400'>{t('TVL')}:</Paragraph>
+                    <TextHeading className='text-neutral-300'>
+                      ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
+                    </TextHeading>
+                  </div>
+                </div>
+              </div>
+
+              <div className='flex flex-wrap justify-end gap-2'>
+                <TextHeading className='text-center font-archia'>
+                  <Paragraph className='text-neutral-400'>Estimate APR</Paragraph>
+                  <p className='text-xl font-semibold text-primary-600'>
+                    {formatAmount(position ? position.apr : mintInfo?.estimateAPR?.current)}%
+                  </p>
+                </TextHeading>
+
+                {strategy?.title === 'CL_SwapFee' ? (
+                  <IconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'outline-2 w-7 h-7',
+                    }}
+                    logo1={firstAsset?.logoURI}
+                    logo2={secondAsset?.logoURI}
+                  />
+                ) : (
+                  <CircleImage
+                    className={cn('size-7')}
+                    src='https://cdn.thena.fi/assets/THE.png'
+                    alt='THENA First Logo'
+                  />
+                )}
+              </div>
+            </article>
+          )
         )}
       </div>
 

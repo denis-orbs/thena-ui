@@ -175,7 +175,7 @@ export function RangeSelector({
 
       const percent = (x < price ? -1 : 1) * ((Math.max(x, price) - Math.min(x, price)) / price) * 100
 
-      return price ? `${(Math.sign(percent) < 0 ? '-' : '+') + formatDelta(percent)}` : ''
+      return price && !isNaN(percent) ? `${(Math.sign(percent) < 0 ? '-' : '+') + formatDelta(percent)}` : '-'
     },
     [isSorted, price, mintInfo?.ticksAtLimit],
   )
