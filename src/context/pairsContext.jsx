@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react'
 import useSWR, { mutate } from 'swr'
 
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { fetchTopPairs, fetchWeightedPools } from '@/lib/api'
 import { getTokenInfo } from '@/lib/helper'
@@ -88,6 +88,7 @@ const usePairs = () => {
               ...token,
               ...tokenDetail,
               symbol,
+              weight: Number(token.weight),
             }
           })
 
@@ -109,29 +110,7 @@ const usePairs = () => {
           return value
         }
 
-        const asset0 = getTokenInfo({ tokenAddress: ele.token0, assets, customAssets })
-        const asset1 = getTokenInfo({ tokenAddress: ele.token1, assets, customAssets })
-        const symbol0 = asset0?.symbol === 'WBNB' ? 'BNB' : asset0?.symbol || 'UNKNOWN'
-        const symbol1 = asset1?.symbol === 'WBNB' ? 'BNB' : asset1?.symbol || 'UNKNOWN'
-        return {
-          ...ele,
-          type: ele.isFusion ? PAIR_TYPES.LSD : ele.isStable ? PAIR_TYPES.STABLE : PAIR_TYPES.CLASSIC,
-          symbol: `${symbol0}/${symbol1}`,
-          token0: {
-            address: ele.token0,
-            symbol: symbol0,
-            derived: ele.token0Derived,
-            logoURI: asset0?.logoURI || UNKNOWN_LOGO,
-            isWarning: Boolean(asset0?.isWarning),
-          },
-          token1: {
-            address: ele.token1,
-            symbol: symbol1,
-            derived: ele.token1Derived,
-            logoURI: asset1?.logoURI || UNKNOWN_LOGO,
-            isWarning: Boolean(asset1?.isWarning),
-          },
-        }
+        return ele
       })
       .map(pair => {
         if (pair.type === PAIR_TYPES.WEIGHTED) {
