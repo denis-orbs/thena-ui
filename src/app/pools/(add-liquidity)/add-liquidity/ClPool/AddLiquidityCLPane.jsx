@@ -61,7 +61,7 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
   if (!strategy) return <div />
 
   return (
-    <div className='flex w-full flex-col gap-6 lg:flex-row lg:gap-8'>
+    <div className='mt-8 flex w-full flex-col gap-6 lg:flex-row lg:gap-8'>
       <div className='w-full flex-[6] flex-col bg-transparent'>
         {strategy?.isAutomatic ? (
           <FusionAdd strategy={strategy} onShowModalSuccess={onShowModalSuccess} />

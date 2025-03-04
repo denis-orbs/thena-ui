@@ -131,8 +131,8 @@ function AddLiquidityClPool({ pool }) {
         <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
       </h4>
 
-      <section className='mt-10 flex w-full flex-col gap-5 lg:flex-row'>
-        <div id='LEFT-BLOCK' className='flex w-full flex-[6] flex-col gap-4 lg:gap-6'>
+      <section className='mt-10 grid w-full grid-cols-1 gap-4 lg:grid-cols-3'>
+        <div id='LEFT-BLOCK' className='col-span-2 w-full gap-4 lg:gap-6'>
           <ChooseStrategy
             firstAsset={firstAsset}
             secondAsset={secondAsset}
@@ -150,8 +150,8 @@ function AddLiquidityClPool({ pool }) {
           />
         </div>
 
-        <div id='RIGHT-BLOCK' className={cn('hidden flex-[4]', firstAddress && secondAddress && 'block')}>
-          <div className='hidden flex-[4] flex-col gap-5 lg:flex'>
+        <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block')}>
+          <div className='hidden h-full flex-[4] flex-col gap-5 lg:flex'>
             {pair ? (
               <div className={cn({ 'mt-[101px]': !!position })}>
                 <PoolAttributesSection strategy={strategy} pair={pair} />
@@ -182,7 +182,7 @@ function AddLiquidityClPool({ pool }) {
               </div>
             )}
 
-            <div className={cn('hidden', !strategy?.isAutomatic && 'block')}>
+            <div className={cn('sticky top-48 hidden', !strategy?.isAutomatic && 'block')}>
               <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
                 <NewTextHeading className='!text-xl font-semibold'>Price History</NewTextHeading>
                 <Tabs data={periods} />

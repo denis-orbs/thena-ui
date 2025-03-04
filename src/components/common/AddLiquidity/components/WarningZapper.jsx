@@ -32,20 +32,12 @@ function WarningZapper() {
           ref={warningTextRef}
         >
           <TextSubHeading className='text-base text-primary-100'>
-            <span className='text-base text-primary-100'>
-              This feature is incompatible with tokens that have tax implications.
-            </span>
-            <br />
-            <span>
+            <p className='mb-1'>This feature is incompatible with tokens that have tax implications.</p>
+            <p className='mb-1.5'>
               If you are zapping a considerable amount of funds, please ensure to use protection against sandwich
-              attacks to safeguard your investment.
-            </span>
-            <br />
-            <span className='text-base text-primary-100'>
-              This precaution helps protecting your transaction from potential front-running and other malicious
-              activities.
-            </span>
-            <br />
+              attacks to safeguard your investment. This precaution helps protecting your transaction from potential
+              front-running and other malicious activities.
+            </p>
             <Link
               target='_blank'
               className='flex items-center gap-2 text-primary-600'

@@ -1482,5 +1482,6 @@
   "LINK Token in your wallet": "LINK Token in your wallet",
   "Why do you need LINK": "Why do you need LINK",
   "Why do you need LINK Answer": "You need LINK to run automations. The more automations you use, the more LINK you need. LINK pays for them – each time they run, some LINK is used. LINK is swapped to BNB to cover gas fees. If the LINK price drops, you might need more LINK sooner to keep the automations running. If you don’t have enough LINK, the automations stop. We’ll let you know when you’re running low on LINK.",
-  "[amount] LINK will aproximated last": "{amount} LINK will aproximated last"
+  "[amount] LINK will aproximated last": "{amount} LINK will aproximated last",
+  "V2 Rewards": "V2 Rewards"
 }

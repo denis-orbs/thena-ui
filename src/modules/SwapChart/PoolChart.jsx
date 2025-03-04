@@ -76,7 +76,7 @@ function PoolChart({ data, timeWindow, current, upper, lower }) {
 
     chart.applyOptions({
       localization: {
-        priceFormatter: priceValue => `${formatAmount(priceValue, false, 4)}`,
+        priceFormatter: priceValue => `${formatAmount(priceValue, true, 5)}`,
       },
     })
 
