@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useRef } from 'react'
 import { WBNB } from 'thena-sdk-core'
 
+import AssetDropdown from '@/components/dropdown/AssetDropdown'
 import Highlight from '@/components/highlight'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
@@ -17,6 +18,8 @@ import { LockIcon } from '@/svgs'
 
 export function TokenAmountCard({
   currency,
+  setCurrency,
+  assetsSelect,
   value,
   maxAmount,
   handleInput,
@@ -41,7 +44,7 @@ export function TokenAmountCard({
         liquidityRangeType,
       ) &&
       networkId &&
-      currency?.wrapped.address.toLowerCase() === WBNB[networkId].address.toLowerCase(),
+      currency?.wrapped?.address?.toLowerCase() === WBNB[networkId].address.toLowerCase(),
     [liquidityRangeType, currency, networkId],
   )
 
@@ -125,28 +128,37 @@ export function TokenAmountCard({
                 min={0}
                 lang='en'
               />
-              <div
-                className={cn(
-                  'inline-flex items-center justify-center gap-2',
-                  'rounded-lg bg-[#29292980] text-sm text-neutral-200',
-                  'py-1.5 pl-1.5 pr-2',
-                  'cursor-default',
-                )}
-              >
-                {isDouble ? (
-                  <IconGroup
-                    className='-space-x-2'
-                    classNames={{
-                      image: 'outline-2 w-6 h-6',
-                    }}
-                    logo1='https://cdn.thena.fi/assets/BSC.png'
-                    logo2='https://cdn.thena.fi/assets/BNB.png'
-                  />
-                ) : (
-                  <CircleImage alt='' className='h-6 w-6' src={logoURI} />
-                )}
-                <span className='text-nowrap'>{isDouble ? 'BNB + WBNB' : currency?.symbol}</span>
-              </div>
+              {setCurrency && Array.isArray(assetsSelect) ? (
+                <AssetDropdown
+                  className='hover-dont-change-bg hover:rounded-lg hover:bg-neutral-700 [&>#info]:!rounded-lg [&>#info]:!bg-[#292929] [&>#info]:!bg-opacity-50'
+                  selected={currency}
+                  setCurrency={setCurrency}
+                  data={assetsSelect}
+                />
+              ) : (
+                <div
+                  className={cn(
+                    'inline-flex items-center justify-center gap-2',
+                    'rounded-lg bg-[#29292980] text-sm text-neutral-200',
+                    'py-1.5 pl-1.5 pr-2',
+                    'cursor-default',
+                  )}
+                >
+                  {isDouble ? (
+                    <IconGroup
+                      className='-space-x-2'
+                      classNames={{
+                        image: 'outline-2 w-6 h-6',
+                      }}
+                      logo1='https://cdn.thena.fi/assets/BSC.png'
+                      logo2='https://cdn.thena.fi/assets/BNB.png'
+                    />
+                  ) : (
+                    <CircleImage alt='' className='h-6 w-6' src={logoURI} />
+                  )}
+                  <span className='text-nowrap'>{isDouble ? 'BNB + WBNB' : currency?.symbol}</span>
+                </div>
+              )}
             </div>
             <div className='flex items-center justify-between gap-2'>
               <TextSubHeading>${formatAmount(value * price)}</TextSubHeading>

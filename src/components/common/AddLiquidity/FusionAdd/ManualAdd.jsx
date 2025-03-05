@@ -19,7 +19,15 @@ import { useSettings } from '@/state/settings/hooks'
 
 import { EnterAmounts } from './containers/EnterAmounts'
 
-export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, onShowModalSuccess, position }) {
+export default function ManualAdd({
+  baseCurrency,
+  quoteCurrency,
+  setBaseCurrency,
+  setQuoteCurrency,
+  mintInfo,
+  onShowModalSuccess,
+  position,
+}) {
   const { account } = useWallet()
   const { setAPRs } = useAprStore()
 
@@ -107,7 +115,14 @@ export default function ManualAdd({ baseCurrency, quoteCurrency, mintInfo, onSho
     <section className='space-y-8'>
       <div className={cn('space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
-        <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} position={position} />
+        <EnterAmounts
+          currencyA={baseCurrency}
+          currencyB={quoteCurrency}
+          setCurrencyA={setBaseCurrency}
+          setCurrencyB={setQuoteCurrency}
+          mintInfo={mintInfo}
+          position={position}
+        />
       </div>
 
       <div className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>

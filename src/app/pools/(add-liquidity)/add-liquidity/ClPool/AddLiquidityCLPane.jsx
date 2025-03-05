@@ -15,7 +15,14 @@ import { cn, formatAmount } from '@/lib/utils'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { CoinUSDIcon, ZapperIcon } from '@/svgs'
 
-export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurrency, position }) {
+export default function AddLiquidityCLPane({
+  mintInfo,
+  baseCurrency,
+  quoteCurrency,
+  setBaseCurrency,
+  setQuoteCurrency,
+  position,
+}) {
   const { strategy } = useV3MintState()
   const t = useTranslations()
   const { push } = useRouter()
@@ -173,6 +180,8 @@ export default function AddLiquidityCLPane({ mintInfo, baseCurrency, quoteCurren
               <ManualAdd
                 baseCurrency={baseCurrency}
                 quoteCurrency={quoteCurrency}
+                setBaseCurrency={setBaseCurrency}
+                setQuoteCurrency={setQuoteCurrency}
                 mintInfo={mintInfo}
                 strategy={strategy}
                 onShowModalSuccess={onShowModalSuccess}

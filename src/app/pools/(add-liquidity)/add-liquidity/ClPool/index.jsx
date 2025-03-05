@@ -1,7 +1,8 @@
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { WBNB } from 'thena-sdk-core'
 
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
@@ -19,12 +20,14 @@ import PoolChart from '@/modules/SwapChart/PoolChart'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { usePairInfo } from '@/state/pools/hooks'
+import { useChainSettings } from '@/state/settings/hooks'
 
 import AddLiquidityCLPane from './AddLiquidityCLPane'
 import { PoolAttributesSection } from '../PoolAttributesSection'
 
 function AddLiquidityClPool({ pool }) {
   const t = useTranslations()
+  const { networkId } = useChainSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy } = useV3MintState()
@@ -43,7 +46,7 @@ function AddLiquidityClPool({ pool }) {
   const currencyA = useCurrency(firstAddress)
   const currencyB = useCurrency(secondAddress)
 
-  const [baseCurrency, quoteCurrency] = useMemo(
+  const [firstCurrency, secondCurrency] = useMemo(
     () =>
       position
         ? [position.baseCurrency, position.quoteCurrency]
@@ -51,6 +54,25 @@ function AddLiquidityClPool({ pool }) {
           ? [currencyB, currencyA]
           : [currencyA, currencyB],
     [position, isReverse, currencyB, currencyA],
+  )
+
+  const [baseCurrency, setBaseCurrency] = useState(firstCurrency)
+  const [quoteCurrency, setQuoteCurrency] = useState(secondCurrency)
+
+  useEffect(() => {
+    setBaseCurrency(firstCurrency)
+    setQuoteCurrency(secondCurrency)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReverse])
+
+  const isBaseBNB = useMemo(
+    () => baseCurrency?.wrapped?.address?.toLowerCase() === WBNB[networkId].address.toLowerCase(),
+    [baseCurrency?.wrapped?.address, networkId],
+  )
+
+  const isQuoteBNB = useMemo(
+    () => quoteCurrency?.wrapped?.address?.toLowerCase() === WBNB[networkId].address.toLowerCase(),
+    [networkId, quoteCurrency?.wrapped.address],
   )
 
   const pair = usePairInfo({
@@ -145,6 +167,8 @@ function AddLiquidityClPool({ pool }) {
             pool={pair}
             baseCurrency={baseCurrency}
             quoteCurrency={quoteCurrency}
+            setBaseCurrency={isBaseBNB ? setBaseCurrency : null}
+            setQuoteCurrency={isQuoteBNB ? setQuoteCurrency : null}
             mintInfo={mintInfo}
             position={position}
           />

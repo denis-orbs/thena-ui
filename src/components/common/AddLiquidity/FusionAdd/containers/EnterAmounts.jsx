@@ -1,13 +1,19 @@
 import React, { useMemo } from 'react'
+import { BNB, Token, WBNB } from 'thena-sdk-core'
 
+import { UNKNOWN_LOGO } from '@/constant'
+import { useAssets } from '@/context/assetsContext'
 import { maxAmountSpend } from '@/lib/fusion'
 import { cn } from '@/lib/utils'
 import { Field } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
+import { useChainSettings } from '@/state/settings/hooks'
 
 import { TokenAmountCard } from './TokenAmountCard'
 
-export function EnterAmounts({ currencyA, currencyB, mintInfo, position }) {
+export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB, mintInfo, position }) {
+  const { networkId } = useChainSettings()
+  const assets = useAssets()
   const { independentField, typedValue, liquidityRangeType } = useV3MintState()
   const actions = useV3MintActionHandlers(mintInfo.noLiquidity)
 
@@ -58,6 +64,25 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo, position }) {
     [mintInfo.depositBDisabled, position],
   )
 
+  const assetsSelect = useMemo(
+    () =>
+      assets
+        .filter(item => item.address === 'BNB' || item.address === WBNB[item.chainId]?.address?.toLowerCase())
+        .map(item => {
+          if (item.address === 'BNB') {
+            const currency = BNB.onChain(networkId)
+            currency.logoURI = 'https://cdn.thena.fi/assets/WBNB.png'
+            currency.address = 'BNB'
+            return currency
+          }
+
+          const token = new Token(networkId, item.address, item.decimals, item.symbol, item.name)
+          token.logoURI = item.logoURI ?? UNKNOWN_LOGO
+          return token
+        }),
+    [assets, networkId],
+  )
+
   return (
     <div
       className={cn('flex flex-col gap-2', {
@@ -66,6 +91,8 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo, position }) {
     >
       <TokenAmountCard
         currency={currencyA}
+        setCurrency={setCurrencyA}
+        assetsSelect={assetsSelect}
         value={formattedAmounts[Field.CURRENCY_A]}
         handleInput={onFieldAInput}
         maxAmount={maxAmounts[Field.CURRENCY_A]}
@@ -76,6 +103,8 @@ export function EnterAmounts({ currencyA, currencyB, mintInfo, position }) {
       />
       <TokenAmountCard
         currency={currencyB}
+        setCurrency={setCurrencyB}
+        assetsSelect={assetsSelect}
         value={formattedAmounts[Field.CURRENCY_B]}
         handleInput={onFieldBInput}
         maxAmount={maxAmounts[Field.CURRENCY_B]}

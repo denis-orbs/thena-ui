@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 import TokenBadge from '../badges/TokenBadge'
 
-function AssetDropdown({ className, data, selected, setSelected }) {
+function AssetDropdown({ className, data, selected, setSelected, setCurrency }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
 
@@ -41,7 +41,11 @@ function AssetDropdown({ className, data, selected, setSelected }) {
             )}
             key={`dropdown-${idx}`}
             onClick={() => {
-              setSelected(item.address)
+              if (setCurrency) {
+                setCurrency(item)
+              } else {
+                setSelected(item.address)
+              }
               setOpen(false)
             }}
           >
