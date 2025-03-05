@@ -463,7 +463,7 @@ function Table({
         )}
       </div>
       {((!loading && pageCount > 1 && !hidePagination) || showNumberOfPage) && (
-        <div className='flex flex-col justify-end gap-1 md:flex-row'>
+        <div className='flex flex-col justify-end gap-1 border-t border-neutral-700 px-3 pt-4 md:flex-row lg:px-5'>
           {showNumberOfPage && (
             <Dropdown
               className='w-full md:max-w-[200px]'

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { ChainId } from 'thena-sdk-core'
 
@@ -22,7 +22,7 @@ import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, SPECIAL_POOLS } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES, SPECIAL_POOLS } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
 import { useVaults } from '@/context/vaultsContext'
@@ -94,6 +94,30 @@ export default function PoolsPage() {
   const { networkId } = useChainSettings()
   const t = useTranslations()
   const dispatch = useDispatch()
+
+  const getDisplayedTitleAndSubTitle = useCallback(sub => {
+    const title = sub?.title
+
+    if (title) {
+      if (GAMMA_TYPES.includes(title)) {
+        return ['Gamma', title.replace('_', ' ')]
+      }
+
+      if (ICHI_TYPES.includes(title)) {
+        return ['ICHI Farming', sub.allowed.symbol]
+      }
+
+      if (MANUAL_TYPES.includes(title)) {
+        if (title === 'CL_Farming') {
+          return ['CL: Earn $THE', '']
+        }
+
+        return ['CL: Earn Fees', '']
+      }
+    }
+
+    return [title, '']
+  }, [])
 
   const filteredPools = useMemo(() => {
     let final
@@ -358,11 +382,13 @@ export default function PoolsPage() {
           </div>
         ),
         apr: (
-          <div className='inline-flex w-fit items-center gap-1'>
-            <Paragraph>{pool.apr}</Paragraph>
-            {pool.subpools.length > 0 && (
-              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`pair-${pool.address}`} />
-            )}
+          <div>
+            <div className='flex items-center gap-1'>
+              <Paragraph>{pool.apr}</Paragraph>
+              {pool.subpools.length > 0 && (
+                <InfoIcon className='h-4 w-4 min-w-4 stroke-neutral-400' data-tooltip-id={`pair-${pool.address}`} />
+              )}
+            </div>
             <CustomTooltip className='min-w-[130px]' id={`pair-${pool.address}`}>
               <div className='flex flex-col gap-1'>
                 <TextHeading className='text-sm'>APR</TextHeading>
@@ -372,13 +398,8 @@ export default function PoolsPage() {
                     .map((sub, idx) => (
                       <div className='flex justify-between gap-2' key={`pair-${idx}`}>
                         <div className='flex gap-1'>
-                          <TextHeading className='text-xs'>
-                            {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
-                          </TextHeading>
-                          {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
-                          {ICHI_TYPES.includes(sub.title) && (
-                            <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
-                          )}
+                          <TextHeading className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[0]}</TextHeading>
+                          <Paragraph className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[1]}</Paragraph>
                         </div>
                         <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
                       </div>
@@ -441,6 +462,7 @@ export default function PoolsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(sortedData), push, t],
   )
+
   const strategySelections = useMemo(
     () =>
       Object.values(STRATEGIES).map(ele => ({

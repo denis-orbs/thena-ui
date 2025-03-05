@@ -25,7 +25,7 @@ export function TokenPercentage({ tokens, poolAddress }) {
         </div>
         <div>
           {tokens.map((token, index) => (
-            <Paragraph key={token.address}>{`${token?.weight}%${index !== tokens.length - 1 ? ',' : ''}`}</Paragraph>
+            <Paragraph key={token.address}>{`${token?.weight}%${index !== tokens.length - 1 ? ', ' : ''}`}</Paragraph>
           ))}
         </div>
       </div>
