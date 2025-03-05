@@ -10,14 +10,14 @@ import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
 import { useVaults } from '@/context/vaultsContext'
 import { useGammaMigration, useGammaWithdraw } from '@/hooks/fusion/useGamma'
 import { useIchiWithdraw, useMigrationIchi } from '@/hooks/fusion/useIchi'
 import { useV1Migrate } from '@/hooks/useV1Liquidity'
 import { formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { GaugeItem } from '@/modules/Pools/Migration'
-import { useGetAutoPoolMigration, usePools } from '@/state/pools/hooks'
+import { useGetAutoPoolMigration, usePairInfo, usePools } from '@/state/pools/hooks'
 import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
 import NavigateToAddLiquidityModal from './NavigateToAddLiquidityModal'
@@ -42,6 +42,12 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
       return userPools.find(ele => ele?.address.toLowerCase() === address.toLowerCase() && ele.version === 2)
     }
   }, [address, userPools])
+
+  const pairV3 = usePairInfo({
+    token0Address: positionV2?.token0?.address,
+    token1Address: positionV2?.token1?.address,
+    type: PAIR_TYPES.LSD,
+  })
 
   const strategyType = useMemo(() => {
     if (ICHI_TYPES.includes(positionV2?.title)) {
@@ -101,7 +107,9 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
               </div>
             </div>
 
-            {strategyType !== 'V1' && <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>}
+            {strategyType !== 'V1' && (
+              <NeutralBadge>{isFarming ? POSITION_EARNED_TYPES.EARN_THE : POSITION_EARNED_TYPES.EARN_FEE}</NeutralBadge>
+            )}
           </div>
         ),
         strategy: strategyInfo,
@@ -144,18 +152,23 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
   }, [migrateGamma, migrateIchi, migrateV1, strategyType, positionV2, push, strategy])
 
   const handleWithdraw = useCallback(() => {
+    const callbackLink = pairV3
+      ? `/pools/add-liquidity?step=3&poolAddress=${pairV3?.address}`
+      : `/pools/add-liquidity?step=3&pairType=Conc+Liquidity&firstAddress=${positionV2?.token0?.address}` +
+        `&secondAddress=${positionV2?.token1?.address}`
+
     if (ICHI_TYPES.includes(positionV2?.title)) {
       withdrawIchi({
         positionV2,
-        callback: () => setPopup(true),
+        callback: () => push(callbackLink),
       })
     } else {
       withdrawGamma({
         positionV2,
-        callback: () => setPopup(true),
+        callback: () => push(callbackLink),
       })
     }
-  }, [positionV2, withdrawGamma, withdrawIchi])
+  }, [pairV3, positionV2, push, withdrawGamma, withdrawIchi])
 
   if (!positionV2) {
     return <Loading />

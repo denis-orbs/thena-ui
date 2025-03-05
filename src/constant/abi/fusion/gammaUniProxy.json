@@ -67,6 +67,11 @@
         "internalType": "uint256[4]",
         "name": "minIn",
         "type": "uint256[4]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxSlippage",
+        "type": "uint256"
       }
     ],
     "name": "deposit",
@@ -106,6 +111,11 @@
         "internalType": "uint256[4]",
         "name": "minIn",
         "type": "uint256[4]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxSlippage",
+        "type": "uint256"
       }
     ],
     "name": "depositAndStake",
@@ -145,6 +155,11 @@
         "internalType": "uint256[4]",
         "name": "minIn",
         "type": "uint256[4]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxSlippage",
+        "type": "uint256"
       }
     ],
     "name": "depositETH",
@@ -184,6 +199,11 @@
         "internalType": "uint256[4]",
         "name": "minIn",
         "type": "uint256[4]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxSlippage",
+        "type": "uint256"
       }
     ],
     "name": "depositETHAndStake",

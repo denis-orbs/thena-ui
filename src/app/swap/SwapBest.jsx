@@ -29,6 +29,7 @@ import { InfoIcon, RefreshIcon, SwitchVerticalIcon } from '@/svgs'
 import { SWAP_TYPES } from '@/constant'
 import Selection from '@/components/selection'
 import WarningModal from './WarningModal'
+import { useThenaQuote } from '@/hooks/fusion/useThenaQuote'
 
 const Twap = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Twap), {
   ssr: false,
@@ -71,7 +72,24 @@ export default function SwapBest({
   const setFromAddress = useCallback(address => updateSearchParams({ inputCurrency: address }), [updateSearchParams])
   const setToAddress = useCallback(address => updateSearchParams({ outputCurrency: address }), [updateSearchParams])
 
-  // const isThenaQuoteAndSwap = useMemo(() => false, [])
+  const isThenaQuoteAndSwap = useMemo(
+    () =>
+      // if (
+      //   ['WBNB', 'BNB', 'USDT'].includes(fromAsset?.symbol) &&
+      //   toAsset?.address === '0x36f5675029e129b5fcabb29ec750ed268520acf7' // BAD AI Token
+      // ) {
+      //   return true
+      // }
+      // if (
+      //   ['WBNB', 'BNB', 'USDT'].includes(toAsset?.symbol) &&
+      //   fromAsset?.address === '0x36f5675029e129b5fcabb29ec750ed268520acf7'
+      // ) {
+      //   return true
+      // }
+
+      false,
+    [],
+  )
 
   const {
     data: bestTrade,
@@ -95,23 +113,17 @@ export default function SwapBest({
   const quotePending = isLHToken ? lhQuotePending : bestTradePending
 
   // const { data: thenaQuoteData, isLoading: isLoadingThenaQuote } = useThenaQuote(
-  //   fromAsset,
-  //   toAsset,
-  //   fromAmount,
-  //   networkId,
-  //   isThenaQuoteAndSwap,
-  // )
+  const { data: thenaQuoteData } = useThenaQuote(fromAsset, toAsset, fromAmount, networkId, isThenaQuoteAndSwap)
+  // NOTE: For the above function, please check if the token pool is CL or Classic
 
-  const outAmount = useMemo(
-    () =>
-      // if (isThenaQuoteAndSwap) {
-      //   const outAmountThenaQuote = thenaQuoteData ? Number(thenaQuoteData?.result[0]) : ''
-      //   return outAmountThenaQuote
-      // }
+  const outAmount = useMemo(() => {
+    if (isThenaQuoteAndSwap) {
+      const outAmountThenaQuote = thenaQuoteData ? Number(thenaQuoteData?.result[0]) : ''
+      return outAmountThenaQuote
+    }
 
-      isLHToken ? lhQuote?.referencePrice : bestTrade?.outAmounts[0] || '',
-    [bestTrade?.outAmounts, lhQuote?.referencePrice, isLHToken],
-  )
+    return isLHToken ? lhQuote?.referencePrice : bestTrade?.outAmounts[0] || ''
+  }, [isThenaQuoteAndSwap, isLHToken, lhQuote?.referencePrice, bestTrade?.outAmounts, thenaQuoteData])
 
   const toAmount = useMemo(() => {
     if (outAmount && Number(outAmount) > 0 && toAsset) {
@@ -220,22 +232,22 @@ export default function SwapBest({
       })
     }
   }, [
-    lhQuote,
-    bestTrade,
-    deadline,
-    fromAmount,
     fromAsset,
-    getBetterPrice,
-    handleTaxTokenSwap,
+    toAsset,
     isLHToken,
+    getBetterPrice,
+    bestTrade,
+    skipLiquidityHub,
+    handleTaxTokenSwap,
+    fromAmount,
+    slippage,
+    deadline,
     mutateAssets,
     onLHSwap,
-    onOdosSwap,
-    skipLiquidityHub,
-    slippage,
-    toAmount,
-    toAsset,
     refetchLHQuote,
+    lhQuote,
+    onOdosSwap,
+    toAmount,
   ])
 
   const btnMsg = useMemo(() => {

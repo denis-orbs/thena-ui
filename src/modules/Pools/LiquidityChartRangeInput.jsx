@@ -84,13 +84,13 @@ export default function LiquidityChartRangeInput({
   interactive = interactive && Boolean(formattedData?.length)
 
   const brushDomain = useMemo(() => {
-    const leftPrice = isSorted ? priceLower : priceUpper?.invert()
-    const rightPrice = isSorted ? priceUpper : priceLower?.invert()
+    const leftPrice = priceLower
+    const rightPrice = priceUpper
 
     return leftPrice && rightPrice
       ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
       : undefined
-  }, [isSorted, priceLower, priceUpper])
+  }, [priceLower, priceUpper])
 
   const brushLabelValue = useCallback(
     (d, x) => {
@@ -119,19 +119,19 @@ export default function LiquidityChartRangeInput({
       ) : !formattedData || formattedData.length === 0 || !price ? (
         <TextHeading>There is no liquidity data.</TextHeading>
       ) : (
-        <div className='relative h-[200px] w-full content-center justify-center'>
+        <div className='relative h-[285px] w-full content-center justify-center'>
           <Chart
             data={{ series: formattedData, current: price }}
             dimensions={{ width: 560, height: 200 }}
             margins={{ top: 10, right: 2, bottom: 20, left: 0 }}
             styles={{
               area: {
-                selection: '#EA66E5',
+                selection: '#C672D8',
               },
               brush: {
                 handle: {
-                  west: '#DC00D4',
-                  east: '#DC00D4',
+                  west: '#84007F',
+                  east: '#E333DD',
                 },
               },
             }}

@@ -11,16 +11,20 @@
     "type": "constructor"
   },
   { "inputs": [], "name": "AlreadyRegistered", "type": "error" },
+  { "inputs": [], "name": "CancellationDelayNotPassed", "type": "error" },
   { "inputs": [], "name": "DiffLength", "type": "error" },
+  { "inputs": [], "name": "InsufficientGasLimit", "type": "error" },
   { "inputs": [], "name": "NoOperations", "type": "error" },
   { "inputs": [], "name": "NoUpkeepNeeded", "type": "error" },
   { "inputs": [], "name": "NotApproved", "type": "error" },
   { "inputs": [], "name": "NotBillingToken", "type": "error" },
+  { "inputs": [], "name": "NotCanceled", "type": "error" },
   { "inputs": [], "name": "NotForwarder", "type": "error" },
   { "inputs": [], "name": "NotOwnerNorApproved", "type": "error" },
   { "inputs": [], "name": "NotRegistered", "type": "error" },
   { "inputs": [], "name": "OnlySimulatedBackend", "type": "error" },
   { "inputs": [], "name": "PastTime", "type": "error" },
+  { "inputs": [], "name": "PegSwapFailed", "type": "error" },
   { "inputs": [], "name": "ReentrancyGuardReentrantCall", "type": "error" },
   { "inputs": [], "name": "RegistrationFailed", "type": "error" },
   {
@@ -40,6 +44,12 @@
       { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "DepositFunds",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "uint256", "name": "executionTime", "type": "uint256" }],
+    "name": "ExecutionTimeUpdated",
     "type": "event"
   },
   {
@@ -80,17 +90,12 @@
   },
   {
     "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "uint256", "name": "runTimestamp", "type": "uint256" }],
-    "name": "RunTimestampUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [
       { "indexed": true, "internalType": "address", "name": "automation", "type": "address" },
       { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
       { "indexed": true, "internalType": "uint256", "name": "upkeepId", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256" }
+      { "indexed": false, "internalType": "uint256", "name": "timestamp", "type": "uint256" },
+      { "indexed": false, "internalType": "uint32", "name": "withdrawableBlocknumber", "type": "uint32" }
     ],
     "name": "UpkeepCanceled",
     "type": "event"
@@ -161,6 +166,13 @@
   },
   {
     "inputs": [],
+    "name": "CANCELLATION_DELAY",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "INTERVAL",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
@@ -218,15 +230,15 @@
   },
   {
     "inputs": [],
-    "name": "getCancellationDelay",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "getMinBalance",
+    "outputs": [{ "internalType": "uint96", "name": "", "type": "uint96" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "getMinBalance",
-    "outputs": [{ "internalType": "uint96", "name": "", "type": "uint96" }],
+    "name": "getMinimumGasLimit",
+    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -237,6 +249,13 @@
       { "internalType": "address[]", "name": "", "type": "address[]" },
       { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lastExecutionTime",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -294,10 +313,10 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "runTimestamp",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
+    "inputs": [{ "internalType": "uint256", "name": "_executionTime", "type": "uint256" }],
+    "name": "setExecutionTime",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -321,13 +340,6 @@
       { "internalType": "uint256[]", "name": "_weights", "type": "uint256[]" }
     ],
     "name": "setOperations",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "_runTimestamp", "type": "uint256" }],
-    "name": "setRunTimestamp",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -387,6 +399,13 @@
     "name": "withdrawFunds",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawableBlocknumber",
+    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

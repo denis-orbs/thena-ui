@@ -15,7 +15,7 @@ import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { MANUAL_TYPES } from '@/constant'
+import { MANUAL_TYPES, POSITION_EARNED_TYPES } from '@/constant'
 import { newPoolAbi, poolAbi } from '@/constant/abi/fusion'
 import { CHAIN_ID } from '@/constant/contracts'
 import { useAssets } from '@/context/assetsContext'
@@ -110,7 +110,7 @@ export function ManualMigrationPage({ tokenId }) {
                 </div>
               </div>
 
-              <NeutralBadge>{isFarming ? 'Farm Strategy' : 'Fee Strategy'}</NeutralBadge>
+              <NeutralBadge>{isFarming ? POSITION_EARNED_TYPES.EARN_THE : POSITION_EARNED_TYPES.EARN_FEE}</NeutralBadge>
             </div>
           ),
           strategy: strategyInfo,

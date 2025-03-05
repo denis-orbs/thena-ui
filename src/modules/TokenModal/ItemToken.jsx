@@ -20,6 +20,7 @@ export function ItemToken({
   setSelectedAsset,
   otherAsset,
   setOtherAsset,
+  className,
   onAssetSelect = () => {},
 }) {
   const t = useTranslations()
@@ -41,7 +42,10 @@ export function ItemToken({
   return (
     <>
       <div
-        className='flex cursor-pointer items-center justify-between rounded-lg px-6 py-3 hover:bg-neutral-800'
+        className={cn(
+          'flex cursor-pointer items-center justify-between rounded-lg px-6 py-3 hover:bg-neutral-800',
+          className,
+        )}
         key={token.address}
         onClick={() => {
           if (token.isCustom) return

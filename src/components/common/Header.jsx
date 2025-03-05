@@ -23,6 +23,7 @@ import { useTHEStory } from '@/context/THEStoryContext'
 import usePrices from '@/hooks/usePrices'
 import { useSignWallet } from '@/hooks/useSignWallet'
 import useWallet from '@/hooks/useWallet'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
 import { LiquidityHubSeekingBetterPriceModal } from '@/modules/LiquidityHub/components'
 import TxnModal from '@/modules/TxnModal'
@@ -280,6 +281,7 @@ function Header() {
   const { connect } = useConnect()
   const { connectionStatus } = useParticleConnect()
   const { disconnect } = useDisconnect()
+  const { width } = useWindowSize()
 
   useEffect(() => {
     if (connectionStatus === 'connected' && isSocialAuthType(getLatestAuthType())) {
@@ -708,49 +710,11 @@ function Header() {
           <div className='relative inline-flex items-center gap-6 xl:gap-12 2xl:gap-24'>
             <Logo className='h-6 w-[106px] cursor-pointer' onClick={() => onLogoClick()} />
             <div className='relative hidden items-center justify-center gap-1 lg:inline-flex'>
-              {menus.map((item, idx) => (
-                <div key={`tab-${idx}`}>
-                  <div
-                    className='flex items-center justify-center py-3'
-                    onMouseEnter={() => {
-                      setOpenMenu(item.label)
-                    }}
-                    onMouseLeave={() => {
-                      setOpenMenu(null)
-                    }}
-                  >
+              {!pathname.includes('/add-liquidity') ? (
+                menus.map((item, idx) => (
+                  <div key={`tab-${idx}`}>
                     <div
-                      className={cn(
-                        item.isHighlight
-                          ? 'animated-border-box after:bg-[rgba(18,9,22,1)] hover:after:bg-neutral-800 '
-                          : '',
-                        item.active && 'after:bg-neutral-800',
-                        item.disabled && 'disabled:cursor-not-allowed disabled:outline-transparent',
-                        openMenu === item.label && 'after:bg-neutral-800',
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          'flex h-11 cursor-pointer items-center justify-center',
-                          'rounded-lg px-4 py-2.5 font-medium text-neutral-200 lg:px-2 xl:px-4',
-                          'outline outline-2 outline-offset-4 outline-transparent',
-                          'transition-all duration-150 ease-out',
-                          !item.isHighlight && 'hover:bg-neutral-800',
-                          !item.isHighlight && item.active && 'bg-neutral-800',
-                          !item.isHighlight &&
-                            item.disabled &&
-                            'disabled:cursor-not-allowed disabled:outline-transparent',
-                          !item.isHighlight && openMenu === item.label && 'bg-neutral-800',
-                        )}
-                        onClick={() => item.onClickHandler && item.onClickHandler()}
-                      >
-                        {item.label}
-                      </span>
-                    </div>
-                  </div>
-                  {item.sub && (
-                    <div
-                      className='relative'
+                      className='flex items-center justify-center py-3'
                       onMouseEnter={() => {
                         setOpenMenu(item.label)
                       }}
@@ -760,54 +724,111 @@ function Header() {
                     >
                       <div
                         className={cn(
-                          'visible absolute w-[344px] flex-col items-start justify-start gap-1',
-                          'rounded-xl border border-neutral-600 bg-neutral-800 p-3 opacity-100 shadow',
-                          'transition-all duration-150 ease-out',
-                          openMenu !== item.label && 'invisible opacity-0',
+                          item.isHighlight
+                            ? 'animated-border-box after:bg-[rgba(18,9,22,1)] hover:after:bg-neutral-800 '
+                            : '',
+                          item.active && 'after:bg-neutral-800',
+                          item.disabled && 'disabled:cursor-not-allowed disabled:outline-transparent',
+                          openMenu === item.label && 'after:bg-neutral-800',
                         )}
                       >
-                        {item.sub.map((subitem, subidx) => (
-                          <div
-                            className={cn(
-                              'inline-flex h-[68px] w-full cursor-pointer flex-col items-start justify-center gap-1',
-                              'rounded-lg p-3 transition-all duration-150 ease-out hover:bg-neutral-700',
-                            )}
-                            key={`sub-${subidx}`}
-                            onClick={() => {
-                              if (subitem.onClickHandler) {
-                                subitem.onClickHandler()
-                                setOpenMenu(false)
-                              }
-                            }}
-                          >
-                            <TextHeading>{subitem.heading}</TextHeading>
-                            <TextSubHeading>{subitem.subheading}</TextSubHeading>
-                          </div>
-                        ))}
+                        <span
+                          className={cn(
+                            'flex h-11 cursor-pointer items-center justify-center',
+                            'rounded-lg px-4 py-2.5 font-medium text-neutral-200 lg:px-2 xl:px-4',
+                            'outline outline-2 outline-offset-4 outline-transparent',
+                            'transition-all duration-150 ease-out',
+                            !item.isHighlight && 'hover:bg-neutral-800',
+                            !item.isHighlight && item.active && 'bg-neutral-800',
+                            !item.isHighlight &&
+                              item.disabled &&
+                              'disabled:cursor-not-allowed disabled:outline-transparent',
+                            !item.isHighlight && openMenu === item.label && 'bg-neutral-800',
+                          )}
+                          onClick={() => item.onClickHandler && item.onClickHandler()}
+                        >
+                          {item.label}
+                        </span>
                       </div>
                     </div>
-                  )}
-                </div>
-              ))}
+                    {item.sub && (
+                      <div
+                        className='relative'
+                        onMouseEnter={() => {
+                          setOpenMenu(item.label)
+                        }}
+                        onMouseLeave={() => {
+                          setOpenMenu(null)
+                        }}
+                      >
+                        <div
+                          className={cn(
+                            'visible absolute w-[344px] flex-col items-start justify-start gap-1',
+                            'rounded-xl border border-neutral-600 bg-neutral-800 p-3 opacity-100 shadow',
+                            'transition-all duration-150 ease-out',
+                            openMenu !== item.label && 'invisible opacity-0',
+                          )}
+                        >
+                          {item.sub.map((subitem, subidx) => (
+                            <div
+                              className={cn(
+                                'inline-flex h-[68px] w-full cursor-pointer flex-col items-start justify-center gap-1',
+                                'rounded-lg p-3 transition-all duration-150 ease-out hover:bg-neutral-700',
+                              )}
+                              key={`sub-${subidx}`}
+                              onClick={() => {
+                                if (subitem.onClickHandler) {
+                                  subitem.onClickHandler()
+                                  setOpenMenu(false)
+                                }
+                              }}
+                            >
+                              <TextHeading>{subitem.heading}</TextHeading>
+                              <TextSubHeading>{subitem.subheading}</TextSubHeading>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <></>
+              )}
             </div>
           </div>
           <div className='inline-flex items-center gap-2'>
-            <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
-              <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
-              {prices.THE > 0 ? (
-                <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
-              ) : (
-                <Skeleton className='h-5 w-10' />
-              )}
-            </div>
-            <ChainSelect t={t} />
-            <LanguageSelect />
-            <OutlinedButton className='hidden 2xl:flex' onClick={() => window.open('https://alpha.thena.fi', '_blank')}>
-              {t('Enter ALPHA')}
-            </OutlinedButton>
+            {!pathname.includes('/add-liquidity') ? (
+              <>
+                <div className='flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-700 p-2 lg:py-2.5 xl:px-3'>
+                  <CircleImage src='https://cdn.thena.fi/assets/THE.png' alt='' className='h-4 w-4 lg:h-5 lg:w-5' />
+                  {prices.THE > 0 ? (
+                    <Paragraph className='text-xs font-medium lg:text-base'>${formatAmount(prices.THE)}</Paragraph>
+                  ) : (
+                    <Skeleton className='h-5 w-10' />
+                  )}
+                </div>
+                <ChainSelect t={t} />
+                <LanguageSelect />
+                <OutlinedButton
+                  className='hidden 2xl:flex'
+                  onClick={() => window.open('https://alpha.thena.fi', '_blank')}
+                >
+                  {t('Enter ALPHA')}
+                </OutlinedButton>
+              </>
+            ) : (
+              <></>
+            )}
             {!isSmallScreen() && <ConnectButton className='flex' />}
-            <Notification />
-            <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
+            {!pathname.includes('/add-liquidity') || width < 1024 ? (
+              <>
+                {!pathname.includes('/add-liquidity') && <Notification />}
+                <TextIconButton className='lg:hidden' Icon={HamburgerIcon} onClick={() => setIsOpen(true)} />
+              </>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         <Modal

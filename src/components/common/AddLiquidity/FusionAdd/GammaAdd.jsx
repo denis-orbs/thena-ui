@@ -9,7 +9,6 @@ import { JSBI, WBNB } from 'thena-sdk-core'
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Selection from '@/components/selection'
-import { Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType } from '@/constant'
 import { gammaHypervisorAbi } from '@/constant/abi/fusion'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
@@ -17,14 +16,16 @@ import { useCurrencyBalance } from '@/hooks/fusion/useCurrencyBalances'
 import { useAddGamma } from '@/hooks/fusion/useGamma'
 import useWallet from '@/hooks/useWallet'
 import { callMulti } from '@/lib/contractActions'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { Field, updateSelectedPreset } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
+import { ZapperIcon } from '@/svgs'
 
 import { EnterAmounts } from './containers/EnterAmounts'
-import { TheZapperPane } from '../V1Add/ZapperPane'
+import { CommonZapperPane } from '../components/CommonZapperPane'
 
 const feeAmount = 3000
 
@@ -63,8 +64,11 @@ export const fetchGammaInfo = async (chainId, strategy) => {
   }
 }
 
-export default function GammaAdd({ strategy, isModal, isAdd }) {
+export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess }) {
+  const t = useTranslations()
+
   const [isZapper, setIsZapper] = useState(false)
+
   const baseCurrency = useCurrency(strategy?.token0?.address)
   const quoteCurrency = useCurrency(strategy?.token1?.address)
 
@@ -74,41 +78,56 @@ export default function GammaAdd({ strategy, isModal, isAdd }) {
   const addSelections = useMemo(
     () => [
       {
-        label: 'Default',
+        label: t('Pool Token Deposit'),
         active: !isZapper,
         onClickHandler: () => {
           setIsZapper(false)
         },
       },
       {
-        label: 'Zapper',
+        label: (
+          <div className='flex items-center justify-center gap-1'>
+            <ZapperIcon className='size-5' />
+            <span>{t('Zapper Deposit')}</span>
+          </div>
+        ),
         active: isZapper,
         onClickHandler: () => {
           setIsZapper(true)
         },
       },
     ],
-    [isZapper],
+    [isZapper, t],
   )
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
       <div className='flex flex-col gap-5'>
         {isAdd && strategy && <PoolTitle strategy={strategy} />}
-        <Selection data={addSelections} isFull />
-
+        <Selection data={addSelections} isFull isTranslation={false} />
         {isZapper ? (
-          <TheZapperPane asset0={asset0} asset1={asset1} strategy={strategy} />
+          <CommonZapperPane
+            asset0={asset0}
+            asset1={asset1}
+            strategy={strategy}
+            onShowModalSuccess={onShowModalSuccess}
+          />
         ) : (
-          <ManualPane baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} strategy={strategy} />
+          <ManualPane
+            baseCurrency={baseCurrency}
+            quoteCurrency={quoteCurrency}
+            strategy={strategy}
+            onShowModalSuccess={onShowModalSuccess}
+          />
         )}
       </div>
     </div>
   )
 }
 
-function ManualPane({ baseCurrency, quoteCurrency, strategy }) {
+function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess }) {
   const t = useTranslations()
+  const [slippage, setSlippage] = useState(0.5)
   const { account } = useWallet()
   const { networkId } = useChainSettings()
   const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, undefined)
@@ -166,15 +185,16 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy }) {
   }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType, price])
 
   const onAddLiquidity = useCallback(() => {
-    handleAddGamma(amountA, amountB, amountToWrap, strategy)
-  }, [amountA, amountB, amountToWrap, handleAddGamma, strategy])
+    handleAddGamma({ amountA, amountB, amountToWrap, gammaPair: strategy, slippage }, onShowModalSuccess)
+  }, [amountA, amountB, amountToWrap, handleAddGamma, onShowModalSuccess, slippage, strategy])
 
   return (
     <div>
+      <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-4' />
       <div className='flex flex-col'>
         <EnterAmounts currencyA={baseCurrency} currencyB={quoteCurrency} mintInfo={mintInfo} />
 
-        <div className='mt-5 flex flex-col gap-4'>
+        {/* <div className='mt-5 flex flex-col gap-4'>
           <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
           <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between'>
@@ -203,20 +223,14 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy }) {
               <Paragraph>{formatAmount(strategy?.account?.gaugeBalance)} LP</Paragraph>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
-      <div className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
+      <div className={cn('mt-8 flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
         {account ? (
           <>
-            <PrimaryButton
-              disabled={pending}
-              onClick={() => {
-                onAddLiquidity()
-              }}
-              className='w-full'
-            >
-              {t('Add Liquidity')}
+            <PrimaryButton disabled={pending} onClick={onAddLiquidity} className='w-full'>
+              {t('Deposit')}
             </PrimaryButton>
           </>
         ) : (

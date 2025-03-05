@@ -70,7 +70,7 @@ export default {
           950: '#312D00',
         },
         error: {
-          100: '#312D00',
+          100: '#FEE8E6',
           200: '#FDD2CC',
           300: '#FBA499',
           400: '#F97766',
@@ -108,7 +108,10 @@ export default {
       backgroundImage: {
         'custom-gradient': 'linear-gradient(90deg, #B386FF 0%, #FF86FA 100%)',
       },
+      gridTemplateColumns: {
+        'add-liquidity-layout': 'minmax(650px, 3fr) 2fr',
+      },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [require('@tailwindcss/forms'), require('tailwind-scrollbar')],
 }

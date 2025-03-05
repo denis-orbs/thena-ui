@@ -259,7 +259,7 @@ export default function WeightedTransactionTable({ pair }) {
           </div>
         ),
         total: <Paragraph>${formatAmount(item.amountUSD, true)}</Paragraph>,
-        ...item.tokens.reduce((acc, token) => {
+        ...(item.tokens || []).reduce((acc, token) => {
           acc[token.symbol] = (
             <Paragraph>
               {formatAmount(token.amount)} {token.symbol}

@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import IconGroup from '@/components/icongroup'
+import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import SearchInput from '@/components/input/SearchInput'
 import Modal from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -52,16 +52,19 @@ function PairModal({ popup, setPopup, setSelected, pools }) {
             >
               <div className='flex items-center gap-3'>
                 {pool.type === PAIR_TYPES.WEIGHTED ? (
-                  <ListTokenPercantage listToken={pool.tokens} />
+                  <ListTokenPercantage listToken={pool.tokens} poolAddress={pool?.address} />
                 ) : (
                   <>
-                    <IconGroup
-                      className='-space-x-2'
+                    <GroupIconTokens
                       classNames={{
-                        image: 'outline-2 w-8 h-8',
+                        image: 'outline-2 w-7 h-7',
+                        rows: '-space-x-2',
+                        toolTip: 'hidden',
                       }}
-                      logo1={pool.token0.logoURI}
-                      logo2={pool.token1.logoURI}
+                      width={32}
+                      height={32}
+                      tokens={[pool.token0, pool.token1]}
+                      showToolTip={false}
                     />
                     <div className='flex flex-col'>
                       <TextHeading>{pool.symbol}</TextHeading>

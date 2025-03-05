@@ -54,7 +54,7 @@ export default function TokenBadge({
           ) : (
             <CircleImage src={asset.logoURI || UNKNOWN_LOGO} alt='token logo' width={24} height={24} />
           )}
-          {isDouble ? 'BNB + WBNB' : asset.symbol}
+          <span className='text-nowrap'>{isDouble ? 'BNB + WBNB' : asset.symbol}</span>
         </>
       ) : (
         <Skeleton className='h-6 w-6 rounded-full' />

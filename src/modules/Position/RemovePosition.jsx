@@ -17,7 +17,7 @@ import { warnToast } from '@/lib/notify'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
-import SettingSlippageModal from './SettingSlippageModal'
+import SettingSlippageDropDown from './SettingSlippageDropDown'
 import PoolTitle from '../PoolTitle'
 
 export default function RemovePosition({ setPopup, strategy, isManage = false }) {
@@ -98,7 +98,7 @@ export default function RemovePosition({ setPopup, strategy, isManage = false })
       <ModalBody>
         {!isManage && <PoolTitle strategy={strategy} />}
         <div className='flex justify-end'>
-          <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
+          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
         </div>
         <DoubleInput
           title='Amount'

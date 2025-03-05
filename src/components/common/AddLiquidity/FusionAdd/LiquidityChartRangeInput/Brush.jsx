@@ -67,7 +67,7 @@ export const Brush = ({
   )
 
   // keep local and external brush extent in sync
-  // i.e. snap to ticks on bruhs end
+  // i.e. snap to ticks on brush end
   useEffect(() => {
     setLocalBrushExtent(brushExtent)
   }, [brushExtent])
@@ -97,6 +97,11 @@ export const Brush = ({
       .attr('stroke', 'none')
       .attr('fill-opacity', '0.1')
       .attr('fill', `url(#${id}-gradient-selection)`)
+      .attr('cursor', interactive ? 'move' : 'default')
+
+    select(brushRef.current)
+      .selectAll('.handle')
+      .attr('cursor', interactive ? 'ew-resize' : 'default')
   }, [brushExtent, brushed, id, innerHeight, innerWidth, interactive, previousBrushExtent, xScale])
 
   // respond to xScale changes only
@@ -161,11 +166,15 @@ export const Brush = ({
               >
                 <g>
                   <path
-                    className={cn('pointer-events-none cursor-ew-resize fill-[#DC00D4] stroke-[#DC00D4] stroke-[3px]')}
+                    style={{ fill: eastHandleColor, stroke: eastHandleColor }}
+                    className={cn('pointer-events-none cursor-ew-resize stroke-[3px]')}
                     d={brushHandlePath(innerHeight)}
                   />
                   <path
-                    className={cn('pointer-events-none cursor-ew-resize stroke-[#F199EE] stroke-[1.5px]')}
+                    className={cn(
+                      'pointer-events-none cursor-ew-resize stroke-[1.5px]',
+                      interactive ? 'stroke-[#F199EE]' : 'stroke-[#685770]',
+                    )}
                     d={brushHandleAccentPath()}
                   />
                 </g>
@@ -177,7 +186,7 @@ export const Brush = ({
                   )}
                   transform={`translate(50,0), scale(${flipWestHandle ? '1' : '-1'}, 1)`}
                 >
-                  <rect fill='#82147e' y='0' x='-30' height='30' width='60' rx='8' />
+                  <rect fill={interactive ? '#580055' : '#422D4C'} y='0' x='-30' height='30' width='60' rx='8' />
                   <text
                     className='text-xs'
                     fill='#FCE6FB'
@@ -197,11 +206,15 @@ export const Brush = ({
               <g transform={`translate(${xScale(localBrushExtent[1])}, 0), scale(${flipEastHandle ? '-1' : '1'}, 1)`}>
                 <g>
                   <path
-                    className={cn('pointer-events-none cursor-ew-resize fill-[#DC00D4] stroke-[#DC00D4] stroke-[3px]')}
+                    style={{ fill: westHandleColor, stroke: westHandleColor }}
+                    className={cn('pointer-events-none cursor-ew-resize stroke-[3px]')}
                     d={brushHandlePath(innerHeight)}
                   />
                   <path
-                    className={cn('pointer-events-none cursor-ew-resize stroke-[#F199EE] stroke-2')}
+                    className={cn(
+                      'pointer-events-none cursor-ew-resize stroke-[1.5px]',
+                      interactive ? 'stroke-[#F199EE]' : 'stroke-[#685770]',
+                    )}
                     d={brushHandleAccentPath()}
                   />
                 </g>
@@ -213,7 +226,7 @@ export const Brush = ({
                   )}
                   transform={`translate(50,0), scale(${flipEastHandle ? '-1' : '1'}, 1)`}
                 >
-                  <rect fill='#82147e' y='0' x='-30' height='30' width='60' rx='8' />
+                  <rect fill={interactive ? '#E333DD' : '#422D4C'} y='0' x='-30' height='30' width='60' rx='8' />
                   <text className='text-xs' fill='#FCE6FB' x='-20' y='15' dominantBaseline='middle'>
                     {brushLabelValue('e', localBrushExtent[1])}
                   </text>
@@ -242,6 +255,7 @@ export const Brush = ({
       id,
       innerHeight,
       innerWidth,
+      interactive,
       localBrushExtent,
       showEastArrow,
       showLabels,

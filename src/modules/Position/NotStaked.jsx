@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 import { isAddress } from 'viem'
@@ -10,7 +11,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/butt
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
@@ -20,7 +21,6 @@ import { formatAmount, fromWei, getDisplayedStrategy, ZERO_VALUE } from '@/lib/u
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
-import AddPositionModal from './AddPositionModal'
 import GaugeManageModal from './GaugeManageModal'
 import ManagePositionModal from './ManagePositionModal'
 import MigrateWarningModal from './MigrateWarningModal'
@@ -28,9 +28,9 @@ import RemovePositionModal from './RemovePositionModal'
 
 export default function NotStaked({ pool }) {
   const t = useTranslations()
+  const { push } = useRouter()
 
   const [popup, setPopup] = useState(false)
-  const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const [managePopup, setManagePopup] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGuageStake()
@@ -127,7 +127,7 @@ export default function NotStaked({ pool }) {
           </div>
         </div>
         <div className='flex items-center gap-2'>
-          {pool?.title?.includes('Farming') && <GreenBadge>Farm Strategy</GreenBadge>}
+          {pool?.title?.includes('Farming') && <GreenBadge>{POSITION_EARNED_TYPES.EARN_THE}</GreenBadge>}
           <PrimaryBadge>{t('Not Staked')}</PrimaryBadge>
         </div>
       </div>
@@ -199,7 +199,10 @@ export default function NotStaked({ pool }) {
               {t('Remove')}
             </OutlinedButton>
             {version === 3 ? (
-              <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
+              <EmphasisButton
+                className='w-full'
+                onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${pool.address}`)}
+              >
                 {t('Add')}
               </EmphasisButton>
             ) : migrationOptions && migrationOptions.length > 0 ? (
@@ -235,7 +238,6 @@ export default function NotStaked({ pool }) {
         onGaugeManage={handleStake}
         pending={stakePending || stakeIchiPending || stakeV1Pending || stakeGammaPending}
       />
-      <AddPositionModal popup={addPopup} setPopup={setAddPopup} strategy={pool} />
       <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={pool} />
       <ManagePositionModal popup={managePopup} setPopup={setManagePopup} strategy={pool} />
     </Box>

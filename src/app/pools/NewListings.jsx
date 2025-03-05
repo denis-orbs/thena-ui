@@ -3,26 +3,35 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
+import { TextIconButton } from '@/components/buttons/IconButton'
 import { Collapse } from '@/components/collapse'
-import IconGroup from '@/components/icongroup'
+import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import NextImage from '@/components/image/NextImage'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { InfoIcon } from '@/svgs'
+import { AnalyticsIcon, InfoIcon } from '@/svgs'
 
-function Title({ title, length }) {
+function Title({ title, length, className }) {
   return (
-    <div className='flex min-h-[76px] w-full items-center justify-between gap-4 p-4'>
+    <div className={cn('flex min-h-[76px] w-full items-center justify-between gap-4 p-4', className)}>
       {title} ({length})
     </div>
   )
 }
 
-function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
+function NewListings({
+  pools,
+  classNames,
+  sortOptions,
+  listPoolAddressSpecial,
+  title,
+  defaultShow = false,
+  isCollapse = true,
+}) {
   const t = useTranslations()
   const [sort, setSort] = useState(sortOptions[1])
   const newSortOptions = useMemo(() => [...sortOptions], [sortOptions])
@@ -80,6 +89,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
     const ynBNBxPoolAddress = '0xcdedb4bad9978e1d0a82ad2061d0345f48014bc4' // ynBNBx/BNB
     const BTCBynBTCkPoolAddress = '0x94b3c0050e9111e955e3f3a48543bbf30ba44bbc' // BTCB/ynBTCk
     const BNBLpBNBPoolAdress = '0x47600bc3ae9b5b97ef92a55e550066944fe17670'
+    const BNBSlpBNBPoolAdress = '0xda5bc174e3c122058eb42465b78c7e1f639820a9'
     const BTCBmBTCAddress = '0x01e4a13b64a35ec29c490374c0ac6a585ff7ce79' // BTCB/mBTC
     const uniBTCFBTC = '0xe2bb11d6b6a39e55762f5e14d632f0981198b3a7' // uniBTC/FBTC
 
@@ -88,13 +98,16 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
         <div className='flex items-center gap-3'>
           {pool.type !== PAIR_TYPES.WEIGHTED ? (
             <>
-              <IconGroup
-                className='-space-x-2'
+              <GroupIconTokens
                 classNames={{
-                  image: 'outline-2 w-7 h-7',
+                  image: cn('outline-2 w-7 h-7', 'w-7 h-7'),
+                  rows: '-space-x-2',
+                  toolTip: 'hidden',
                 }}
-                logo1={pool.token0.logoURI}
-                logo2={pool.token1.logoURI}
+                width={32}
+                height={32}
+                tokens={[pool.token0, pool.token1]}
+                showToolTip={false}
               />
               <div className='flex flex-col'>
                 <TextHeading>{pool.symbol}</TextHeading>
@@ -102,7 +115,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
               </div>
             </>
           ) : (
-            <ListTokenPercantage listToken={pool.tokens} />
+            <ListTokenPercantage listToken={pool.tokens} poolAddress={pool?.address} />
           )}
 
           {/* BEGIN Special pools */}
@@ -132,7 +145,7 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
               </CustomTooltip>
             </div>
           )}
-          {listPoolAddressSpecial.includes(pool.address) && (
+          {(listPoolAddressSpecial || []).includes(pool.address) && (
             <div className='flex items-center gap-2'>
               <div className='size-6' data-tooltip-id={`pool-special-${pool.address}`}>
                 <NextImage
@@ -167,22 +180,23 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
               </CustomTooltip>
             </div>
           )}
-          {pool.address === BNBLpBNBPoolAdress && (
-            <>
-              <div className='flex items-center gap-2'>
-                <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
-                  <NextImage
-                    className='h-full w-full rounded-full object-cover'
-                    alt='Quaaloop'
-                    src='/images/quaaloop.png'
-                  />
+          {pool.address === BNBLpBNBPoolAdress ||
+            (pool.address === BNBSlpBNBPoolAdress && (
+              <>
+                <div className='flex items-center gap-2'>
+                  <div className='size-6' data-tooltip-id={`pool-special-${pool.address}-tooltip1`}>
+                    <NextImage
+                      className='h-full w-full rounded-full object-cover'
+                      alt='Quaaloop'
+                      src='/images/quaaloop.png'
+                    />
+                  </div>
+                  <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
+                    <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
+                  </CustomTooltip>
                 </div>
-                <CustomTooltip id={`pool-special-${pool.address}-tooltip1`} className='rounded-md !py-2' place='top'>
-                  <TextHeading className='text-xs'>{t('Quaaloops Boost')}</TextHeading>
-                </CustomTooltip>
-              </div>
-            </>
-          )}
+              </>
+            ))}
           {pool.address === BTCBmBTCAddress && (
             <>
               <div className='flex items-center gap-2'>
@@ -247,20 +261,22 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
             <div className='flex flex-col gap-1'>
               <TextHeading className='text-sm'>APR</TextHeading>
               <div className='flex flex-col gap-1'>
-                {pool.subpools.map((sub, idx) => (
-                  <div className='flex justify-between gap-2' key={`pair-${idx}`}>
-                    <div className='flex gap-1'>
-                      <TextHeading className='text-xs'>
-                        {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
-                      </TextHeading>
-                      {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
-                      {ICHI_TYPES.includes(sub.title) && (
-                        <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
-                      )}
+                {pool.subpools
+                  .filter(item => item.version === 3)
+                  .map((sub, idx) => (
+                    <div className='flex justify-between gap-2' key={`pair-${idx}`}>
+                      <div className='flex gap-1'>
+                        <TextHeading className='text-xs'>
+                          {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
+                        </TextHeading>
+                        {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
+                        {ICHI_TYPES.includes(sub.title) && (
+                          <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
+                        )}
+                      </div>
+                      <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
                     </div>
-                    <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           </CustomTooltip>
@@ -291,28 +307,63 @@ function NewListings({ pools, sortOptions, listPoolAddressSpecial, title }) {
       volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,
       fee: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayFees)}</Paragraph>,
       action: (
-        <EmphasisButton className='w-full lg:w-fit' onClick={() => push(`/pools/${pool.address}`)}>
-          {t('Manage')}
-        </EmphasisButton>
+        <div className='flex gap-2.5'>
+          <TextIconButton
+            className='!size-10 border-[1px] border-neutral-600'
+            Icon={AnalyticsIcon}
+            onClick={() => push(`/analytics/pairs/${pool?.address}`)}
+            data-tooltip-id='analytics-tooltip'
+          />
+          <EmphasisButton
+            className='w-full p-2 text-sm lg:w-fit'
+            onClick={() => {
+              push(
+                pool.type === PAIR_TYPES.WEIGHTED
+                  ? `/pools/add-liquidity/weighted/${pool.address}`
+                  : `/pools/add-liquidity?step=3&poolAddress=${pool.address}`,
+              )
+            }}
+          >
+            {t('Deposit')}
+          </EmphasisButton>
+        </div>
       ),
     }))
   }, [listPoolAddressSpecial, push, sortedData, t])
   return (
-    <Collapse
-      className='min-h-[76px] rounded-xl bg-neutral-900'
-      classNames={{ chevron: 'mr-6', content: '-mt-7' }}
-      defaultShow={false}
-      title={<Title length={pools.length} title={title} />}
-    >
-      <Table
-        sortOptions={newSortOptions}
-        data={finalPools}
-        sort={sort}
-        setSort={setSort}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
-    </Collapse>
+    <>
+      {isCollapse ? (
+        <Collapse
+          className='min-h-[76px] rounded-xl bg-neutral-900'
+          classNames={{ chevron: 'mr-6', content: '-mt-7', divider: classNames?.divider }}
+          defaultShow={defaultShow}
+          title={<Title length={pools.length} title={title} className={classNames?.title} />}
+        >
+          <Table
+            sortOptions={newSortOptions}
+            data={finalPools}
+            sort={sort}
+            setSort={setSort}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            classNames={{
+              header: classNames?.header,
+              cellItem: classNames?.cellItem,
+              tableContainer: classNames?.tableContainer,
+            }}
+          />
+        </Collapse>
+      ) : (
+        <Table
+          sortOptions={newSortOptions}
+          data={finalPools}
+          sort={sort}
+          setSort={setSort}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
+    </>
   )
 }
 

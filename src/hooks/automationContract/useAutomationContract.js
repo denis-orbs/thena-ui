@@ -1,15 +1,15 @@
+import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
-import useSWR from 'swr'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeEventLog, maxUint256, zeroAddress } from 'viem'
+import { decodeEventLog, maxUint256 } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 
 import { AUTOMATION_STATUS, PAIR_TYPES, TXN_STATUS } from '@/constant'
+import { useVeTHEsContext } from '@/context/veTHEsContext'
 import { callMulti, readCall } from '@/lib/contractActions'
 import {
-  getKeeperRegistryContract,
   getLinkTokenContract,
   getVeTheAutomationContract,
   getVeTheAutomationFactoryContract,
@@ -21,102 +21,24 @@ import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
 
-export const useGetGasLimit = vetTHEId => {
+export const useGetMinimumFunds = (veTHEId, operations, poolLength) => {
   const { chainId } = useWallet()
   const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-  const { data: address } = useReadContract({
+
+  // Get minimum fund chainLINK
+  const { data: minimumFunds } = useReadContract({
     ...veTheAutomationFactoryContract,
-    functionName: 'tokenIdToAutomation',
-    args: [vetTHEId],
-    enabled: Boolean(vetTHEId) && Boolean(chainId),
-  })
-
-  const veTheAutomationContract = getVeTheAutomationContract(address, chainId)
-
-  const { data: gasLimit } = useReadContract({
-    ...veTheAutomationContract,
-    functionName: 'upkeepGasLimit',
-    enabled: Boolean(vetTHEId) && Boolean(address) && address !== zeroAddress && Boolean(chainId),
-  })
-
-  if (address === zeroAddress) {
-    return null
-  }
-
-  return gasLimit
-}
-
-export const useGetMaxPaymentForGas = veTHEId => {
-  const { chainId } = useWallet()
-  const gasLimit = useGetGasLimit(veTHEId)
-  const registryContract = getKeeperRegistryContract(chainId)
-  const { data: maxPayment } = useReadContract({
-    ...registryContract,
-    functionName: 'getMaxPaymentForGas',
-    args: [0, gasLimit ?? 1000000],
-    enabled: Boolean(chainId),
+    functionName: 'getMinimumFunds',
+    args: [operations, poolLength],
+    enabled: Boolean(veTHEId) && Boolean(chainId),
   })
 
   // Add null check and provide default value
-  if (!maxPayment) {
+  if (!minimumFunds) {
     return new BigNumber(0)
   }
 
-  return fromWei(maxPayment)
-}
-
-export const useGetMaxPaymentForGasMultiple = veTHEs => {
-  const { chainId } = useWallet()
-  const fetchMaxPaymentForGas = useCallback(async () => {
-    const automationAddress = await callMulti(
-      veTHEs.map(veTHE => ({
-        ...getVeTheAutomationFactoryContract(chainId),
-        functionName: 'tokenIdToAutomation',
-        args: [veTHE.id],
-        chainId,
-        enabled: Boolean(veTHE.id) && Boolean(chainId),
-      })),
-    )
-    // get upkeepGasLimit multiple per veTHE
-    // return null if address is zeroAddress
-    const gasLimits = await callMulti(
-      automationAddress.map(address => ({
-        ...getVeTheAutomationContract(address, chainId),
-        functionName: 'upkeepGasLimit',
-        enabled: Boolean(address) && address !== zeroAddress,
-      })),
-    )
-
-    // getMaxPaymentForGas multiple per veTHE
-    const registryContract = getKeeperRegistryContract(chainId)
-    const maxPayments = await callMulti(
-      gasLimits.map(gasLimit => ({
-        ...registryContract,
-        functionName: 'getMaxPaymentForGas',
-        args: [0, gasLimit ?? 1000000],
-        enabled: Boolean(chainId),
-      })),
-    )
-
-    return veTHEs.map((veTHE, index) => {
-      const maxPayment = maxPayments[index]
-      return {
-        ...veTHE,
-        maxPaymentForGas: maxPayment ? fromWei(maxPayment) : new BigNumber(0),
-      }
-    })
-  }, [chainId, veTHEs])
-
-  // useSWR to fetch multiple veTHEs
-  const { data, isLoading, mutate } = useSWR(
-    ['fetchMaxPaymentForGas', chainId, veTHEs.length],
-    () => fetchMaxPaymentForGas(),
-    {
-      refreshInterval: 0,
-    },
-  )
-
-  return { data, isLoading, mutate }
+  return fromWei(minimumFunds)
 }
 
 export const useCreateAutomation = () => {
@@ -168,9 +90,9 @@ export const useCreateAutomation = () => {
         // Save UTC
         const startTimestamp = settings.executionTime - new Date().getTimezoneOffset() * 60 * 1000
         const operations = convertBooleansToHex(votes.isAutoVote, settings.isClaimEveryWeek, settings.isRelockEveryWeek)
-        const pools = pairs.map(pair => pair.pair.address)
-        const weights = pairs.map(pair => pair.weight)
-
+        const pools = pairs.filter(item => Boolean(item.pair)).map(pair => pair?.pair?.address)
+        const weights = pairs.filter(item => Boolean(item.pair)).map(pair => pair.weight)
+        console.log({ pools, weights, operations, startTimestamp })
         const theContract = getVeTHEContract(chainId)
         setPending(true)
 
@@ -286,81 +208,14 @@ export const getAutomationStatusString = status => {
   }
 }
 
-export const useAutomationAddress = tokenId => {
+export const useVeTheAutomations = () => {
   const { chainId } = useWallet()
-  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-  const { data: automationAddress } = useReadContract({
-    ...veTheAutomationFactoryContract,
-    functionName: 'tokenIdToAutomation',
-    args: [tokenId],
-    enabled: Boolean(tokenId) && Boolean(chainId),
-  })
+  const { veTHEs } = useVeTHEsContext()
 
-  return automationAddress
-}
-
-export const useOperationsAutomation = id => {
-  const { chainId } = useWallet()
-  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-  const { data: automationAddress, isLoading } = useReadContract({
-    ...veTheAutomationFactoryContract,
-    functionName: 'tokenIdToAutomation',
-    args: [id],
-    enabled: Boolean(id) && Boolean(chainId),
-  })
-
-  const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
-  const { data: operationData, isLoading1 } = useReadContract({
-    ...veTheAutomationContract,
-    functionName: 'operations',
-    enabled: Boolean(automationAddress) && Boolean(chainId),
-  })
-
-  const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(operationData) || [[], [], []]
-
-  return { isAutoVote, isClaimEveryWeek, isRelockEveryWeek, isLoading: isLoading || isLoading1 }
-}
-
-export const useAutomationStatus = vetTHEId => {
-  const { chainId } = useWallet()
-  const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-  const {
-    data: automationAddress,
-    refetch: mutateData1,
-    isLoading: isLoading1,
-  } = useReadContract({
-    ...veTheAutomationFactoryContract,
-    functionName: 'tokenIdToAutomation',
-    args: [vetTHEId],
-    enabled: Boolean(vetTHEId) && Boolean(chainId),
-  })
-
-  const veTheAutomationContract = getVeTheAutomationContract(automationAddress, chainId)
-
-  const {
-    data: status,
-    isLoading: isLoading2,
-    refetch: mutateData2,
-  } = useReadContract({
-    ...veTheAutomationContract,
-    functionName: 'status',
-    enabled: Boolean(vetTHEId) && Boolean(automationAddress) && automationAddress !== zeroAddress && Boolean(chainId),
-  })
-
-  const statusString = useMemo(() => getAutomationStatusString(status), [status])
-
-  if (automationAddress === zeroAddress) {
-    return { status: AUTOMATION_STATUS.NO, isLoading: isLoading1, mutateData: mutateData1 }
-  }
-
-  return { status: statusString, isLoading: isLoading2, mutateData: mutateData2 }
-}
-
-export const useStatusAndBalanceMultiple = veTHEs => {
-  const { chainId } = useWallet()
-  const fetchContractsStatusAndBalance = useCallback(async () => {
+  const fetchAutomationContracts = useCallback(async () => {
     const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
-    const contractsAddress = await callMulti(
+
+    const contractAddresses = await callMulti(
       veTHEs.map(veTHE => ({
         ...veTheAutomationFactoryContract,
         functionName: 'tokenIdToAutomation',
@@ -369,41 +224,62 @@ export const useStatusAndBalanceMultiple = veTHEs => {
       })),
     )
 
-    const contractsStatus = await callMulti(
-      contractsAddress.map(address => ({
+    const contractsStatuses = await callMulti(
+      contractAddresses.map(address => ({
         ...getVeTheAutomationContract(address, chainId),
         functionName: 'status',
       })),
     )
 
+    // Min balance for the automation to run
+    const contractsMinBalance = await callMulti(
+      contractAddresses.map(address => ({
+        ...getVeTheAutomationContract(address, chainId),
+        functionName: 'getMinBalance',
+      })),
+    )
+
+    // LINK balance of the automation
     const contractsBalance = await callMulti(
-      contractsAddress.map(address => ({
+      contractAddresses.map(address => ({
         ...getVeTheAutomationContract(address, chainId),
         functionName: 'getBalance',
       })),
     )
 
+    // Automation operations
+    const contractsOperationsHex = await callMulti(
+      contractAddresses.map(address => ({
+        ...getVeTheAutomationContract(address, chainId),
+        functionName: 'operations',
+      })),
+    )
+
     return veTHEs.map((veTHE, index) => {
-      const status = contractsStatus[index] ?? null
+      const status = contractsStatuses[index] ?? null
+      const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(contractsOperationsHex[index])
+
       return {
         ...veTHE,
-        contractAddress: contractsAddress[index],
+        contractAddress: contractAddresses[index],
         status,
         statusString: getAutomationStatusString(status),
-        balanceAuto: contractsBalance[index] ?? null,
+        minBalanceAuto: fromWei(contractsMinBalance[index]) ?? new BigNumber(0),
+        balanceAuto: fromWei(contractsBalance[index]) ?? new BigNumber(0),
+        operations: { isAutoVote, isClaimEveryWeek, isRelockEveryWeek },
       }
     })
   }, [chainId, veTHEs])
 
-  const { data, isLoading, mutate } = useSWR(
-    ['fetchContractsStatus', chainId, veTHEs.length],
-    () => fetchContractsStatusAndBalance(),
-    {
-      refreshInterval: 0,
-    },
-  )
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['fetchVeTheAutomations', chainId, veTHEs.length],
+    queryFn: () => fetchAutomationContracts(),
+    enabled: Boolean(chainId),
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+  })
 
-  return { data, isLoading, mutate }
+  return { data, isLoading, refetch }
 }
 
 export const useAutomationContractDetail = tokenId => {
@@ -429,10 +305,11 @@ export const useAutomationContractDetail = tokenId => {
       { ...veTheAutomationContract, functionName: 'getBalance' },
       { ...veTheAutomationContract, functionName: 'getPoolsAndWeights' },
       { ...veTheAutomationContract, functionName: 'operations' },
-      { ...veTheAutomationContract, functionName: 'runTimestamp' },
+      { ...veTheAutomationContract, functionName: 'lastExecutionTime' },
       { ...veTheAutomationContract, functionName: 'status' },
       { ...veTheAutomationContract, functionName: 'upkeepGasLimit' },
       { ...veTheAutomationContract, functionName: 'forwarder' },
+      { ...veTheAutomationContract, functionName: 'getMinBalance' },
     ],
     query: {
       enabled: Boolean(tokenId),
@@ -445,10 +322,11 @@ export const useAutomationContractDetail = tokenId => {
 
   const operations = contractInfo?.[2]?.result
   const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(operations) || [[], [], []]
-  const { result: runTimestamp } = contractInfo?.[3] || {}
+  const { result: lastExecutionTime } = contractInfo?.[3] || {}
   const { result: status } = contractInfo?.[4] || {}
   const gasLimit = contractInfo?.[5]?.result || 0
   const forwarder = contractInfo?.[6]?.result || null
+  const minBalance = contractInfo?.[7]?.result || 0
 
   const pairs = poolsAddress.map((address, index) => {
     const result = pools.find(pool => pool.address.toLowerCase() === address.toLowerCase())
@@ -503,7 +381,7 @@ export const useAutomationContractDetail = tokenId => {
     settings: {
       isClaimEveryWeek,
       isRelockEveryWeek,
-      executionTime: Number(runTimestamp) * 1000 + new Date().getTimezoneOffset() * 60 * 1000,
+      executionTime: Number(lastExecutionTime) * 1000 + new Date().getTimezoneOffset() * 60 * 1000,
     },
     votes: {
       isAutoVote,
@@ -513,6 +391,7 @@ export const useAutomationContractDetail = tokenId => {
     balance: Number(balance?.toString() || '0'),
     gasLimit,
     forwarder,
+    minBalance: Number(minBalance?.toString() || '0'),
   }
 
   const mutateAutomationData = useCallback(() => {

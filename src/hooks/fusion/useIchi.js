@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeEventLog, erc20Abi } from 'viem'
+import { decodeEventLog, erc20Abi, maxUint256 } from 'viem'
 
 import { HASH, ICHI_TYPES, TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
@@ -80,7 +80,7 @@ export const useIchiManage = () => {
         },
       })
       if (amountToApprove.gt(0)) {
-        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [depositGuardAddress, amountToApprove]))) {
+        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [depositGuardAddress, maxUint256]))) {
           setPending(false)
           return
         }
@@ -131,7 +131,7 @@ export const useIchiManage = () => {
   )
 
   const onIchiAddAndStake = useCallback(
-    async (vault, amount, amountToWrap, slippage) => {
+    async ({ vault, amount, amountToWrap, slippage }, callback) => {
       const vaultContract = getIchiVaultContract(vault.address, networkId)
       const { token0, token1 } = vault
       if (token0.address === vault.allowed.address) {
@@ -209,7 +209,7 @@ export const useIchiManage = () => {
 
       // Approve deposit token
       if (amountToApprove.gt(0)) {
-        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [depositGuardAddress, amountToApprove]))) {
+        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [depositGuardAddress, maxUint256]))) {
           setPending(false)
           return
         }
@@ -258,7 +258,7 @@ export const useIchiManage = () => {
       const amountToApproveLP = BigNumber(lpBalance).minus(lpAllowance)
 
       if (amountToApproveLP.gt(0)) {
-        if (!(await writeTxn(key, approveLpId, vaultContract, 'approve', [vault.gauge.address, amountToApproveLP]))) {
+        if (!(await writeTxn(key, approveLpId, vaultContract, 'approve', [vault.gauge.address, maxUint256]))) {
           setPending(false)
           return
         }
@@ -278,6 +278,7 @@ export const useIchiManage = () => {
         final: 'Liquidity Added and Staked',
       })
       setPending(false)
+      if (callback) callback()
     },
     [networkId, account, startTxn, t, writeTxn, endTxn, closeTxn, updateTxn],
   )
@@ -351,7 +352,7 @@ export const useIchiManageV3 = () => {
   const t = useTranslations()
 
   const addIchiPool = useCallback(
-    async (vault, amount, amountToWrap, slippage) => {
+    async ({ vault, amount, amountToWrap, slippage }, callback) => {
       const { token0, token1, address: vaultAddress, isFarming = false } = vault
       const vaultContract = getIchiVaultContract(vaultAddress, networkId, 3)
 
@@ -434,7 +435,7 @@ export const useIchiManageV3 = () => {
 
       // Approve deposit token
       if (amountToApprove.gt(0)) {
-        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [depositContract.address, amountToApprove]))) {
+        if (!(await writeTxn(key, approveuuid, tokenContract, 'approve', [depositContract.address, maxUint256]))) {
           setPending(false)
           return
         }
@@ -484,7 +485,7 @@ export const useIchiManageV3 = () => {
         const liquidityToApprove = BigNumber(lpBalance).minus(allowance1)
 
         if (liquidityToApprove.gt(0)) {
-          if (!(await writeTxn(key, approve1uuid, vaultContract, 'approve', [farmingAddress, liquidityToApprove]))) {
+          if (!(await writeTxn(key, approve1uuid, vaultContract, 'approve', [farmingAddress, maxUint256]))) {
             setPending(false)
             return
           }
@@ -502,6 +503,7 @@ export const useIchiManageV3 = () => {
 
       endTxn({ key, final: 'Liquidity Added' })
       setPending(false)
+      if (callback) callback()
     },
     [networkId, account, startTxn, t, writeTxn, endTxn, closeTxn, updateTxn],
   )
@@ -541,7 +543,7 @@ export const useIchiManageV3 = () => {
       }
 
       if (!amountToApprove.gt(0)) {
-        if (!(await writeTxn(key, approveId, vaultContract, 'approve', [farmingAddress, amountToApprove]))) {
+        if (!(await writeTxn(key, approveId, vaultContract, 'approve', [farmingAddress, maxUint256]))) {
           setPending(false)
           return
         }
@@ -698,10 +700,7 @@ export const useMigrationIchi = () => {
       // MARK: APPROVE + SWAP BY ODOS
       const amountApprovedToSwap = BigNumber(transferAmounts[swapToken.address]).gte(allowanceSwap, swapToken.decimals)
       if (amountApprovedToSwap.gt(0)) {
-        const tx = await writeTxn(key, approveSwapId, swapTokenContract, 'approve', [
-          routerAddress,
-          amountApprovedToSwap,
-        ])
+        const tx = await writeTxn(key, approveSwapId, swapTokenContract, 'approve', [routerAddress, maxUint256])
         if (!tx) {
           setPending(false)
           return
@@ -751,12 +750,7 @@ export const useMigrationIchi = () => {
       const amountStakeToApprove = BigNumber(depositAmount).gte(allowance)
 
       if (amountStakeToApprove.gt(0)) {
-        if (
-          !(await writeTxn(key, approveId, tokenContract, 'approve', [
-            depositGuardContract.address,
-            amountStakeToApprove,
-          ]))
-        ) {
+        if (!(await writeTxn(key, approveId, tokenContract, 'approve', [depositGuardContract.address, maxUint256]))) {
           setPending(false)
           return
         }
@@ -807,9 +801,7 @@ export const useMigrationIchi = () => {
         const amountLiquidityToApprove = toWei(lpBalance).minus(allowance1)
 
         if (amountLiquidityToApprove.gt(0)) {
-          if (
-            !(await writeTxn(key, approveLPId, vaultContractV3, 'approve', [farmingAddress, amountLiquidityToApprove]))
-          ) {
+          if (!(await writeTxn(key, approveLPId, vaultContractV3, 'approve', [farmingAddress, maxUint256]))) {
             setPending(false)
             return
           }

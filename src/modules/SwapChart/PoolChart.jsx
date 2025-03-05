@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
@@ -8,7 +9,7 @@ import { formatAmount } from '@/lib/utils'
 
 import { PairDataTimeWindow } from './fetch'
 
-function PoolChart({ data, timeWindow, upper, lower }) {
+function PoolChart({ data, timeWindow, current, upper, lower }) {
   const chartRef = useRef(null)
   const chartCreated = useRef(null)
 
@@ -42,6 +43,7 @@ function PoolChart({ data, timeWindow, upper, lower }) {
         borderVisible: false,
         mode: 1,
         autoScale: true, // Disable auto-scaling
+        priceFormatter: price => `$${price.toFixed(2)} USD`, // Custom text
       },
       timeScale: {
         visible: true,
@@ -76,7 +78,7 @@ function PoolChart({ data, timeWindow, upper, lower }) {
 
     chart.applyOptions({
       localization: {
-        priceFormatter: priceValue => `${formatAmount(priceValue, false, 4)}`,
+        priceFormatter: priceValue => `${new BigNumber(priceValue).gte(1e13) ? '' : formatAmount(priceValue, true, 5)}`,
       },
     })
 
@@ -91,6 +93,8 @@ function PoolChart({ data, timeWindow, upper, lower }) {
         minMove: 0.0001,
       },
       priceScaleId: 'right',
+      priceLineVisible: false,
+      lastValueVisible: false,
     })
     chartCreated.current = chart
     newSeries.setData(transformedData)
@@ -98,36 +102,37 @@ function PoolChart({ data, timeWindow, upper, lower }) {
       chart.timeScale().fitContent()
     }
     // Add custom price lines for upper, current, and lower levels
-    if (upper) {
-      newSeries.createPriceLine({
-        price: upper,
-        color: 'green',
-        lineWidth: 1,
-        lineStyle: 1,
-        axisLabelVisible: true,
-        title: 'upper',
-      })
-    }
-
-    // if (current) {
-    //   newSeries.createPriceLine({
-    //     price: current,
-    //     color: 'pink',
-    //     lineWidth: 1,
-    //     lineStyle: 1,
-    //     axisLabelVisible: true,
-    //     title: 'current',
-    //   })
-    // }
-
     if (lower) {
       newSeries.createPriceLine({
         price: lower,
-        color: 'red',
+        color: '#84007F',
         lineWidth: 1,
         lineStyle: 1,
         axisLabelVisible: true,
         title: 'lower',
+      })
+    }
+
+    if (current) {
+      newSeries.createPriceLine({
+        price: current,
+        color: '#F8CCF6',
+        lineWidth: 1,
+        lineStyle: 1,
+        axisLabelVisible: true,
+        title: 'current',
+      })
+    }
+
+    if (upper) {
+      newSeries.createPriceLine({
+        price: upper,
+        color: '#E333DD',
+        axisLabelTextColor: '#000000',
+        lineWidth: 1,
+        lineStyle: 1,
+        axisLabelVisible: true,
+        title: 'upper',
       })
     }
 

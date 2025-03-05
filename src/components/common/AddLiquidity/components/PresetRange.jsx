@@ -1,8 +1,10 @@
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
+import { NeutralBadge } from '@/components/badges/Badge'
 import Selection from '@/components/selection'
-import { TextHeading } from '@/components/typography'
+import { formatAmount } from '@/lib/utils'
+import { useAprStore } from '@/state/APR/store'
 import { useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
 
@@ -14,8 +16,8 @@ const PresetProfits = {
 }
 
 export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handlePresetRangeSelection }) {
-  // const [init, setInit] = useState(false)
   const { onChangePresetRange } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const { APRs } = useAprStore()
   const t = useTranslations()
 
   const ranges = useMemo(() => {
@@ -71,27 +73,20 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
   const rangeSelections = useMemo(
     () =>
       ranges.map(range => ({
-        label: range.title,
+        label: (
+          <div className='flex flex-wrap items-center justify-center gap-3 2xl:gap-4'>
+            {t(range.title)}{' '}
+            <NeutralBadge className='whitespace-nowrap lg:text-xs'>{formatAmount(APRs?.[range.type])} %</NeutralBadge>
+          </div>
+        ),
         active: activePreset === range.type,
         onClickHandler: () => {
-          // if (activePreset === range.type) {
-          //   handlePresetRangeSelection(null)
-          // } else {
-          //   handlePresetRangeSelection(range)
-          // }
           handlePresetRangeSelection(range)
           onChangePresetRange(range)
         },
       })),
-    [ranges, activePreset, handlePresetRangeSelection, onChangePresetRange],
+    [ranges, APRs, t, activePreset, handlePresetRangeSelection, onChangePresetRange],
   )
 
-  return (
-    <div className='flex flex-col gap-3'>
-      <div className='flex items-center justify-between'>
-        <TextHeading>{t('Range Type')}</TextHeading>
-      </div>
-      <Selection data={rangeSelections} isFull />
-    </div>
-  )
+  return <Selection data={rangeSelections} isFull isTranslation={false} />
 }

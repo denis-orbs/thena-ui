@@ -13,16 +13,7 @@ import useWallet from '@/hooks/useWallet'
 import { getBribeContract } from '@/lib/contracts'
 import { ItemToken } from '@/modules/TokenModal/ItemToken'
 
-export function TokenModal({
-  popup,
-  setPopup,
-  pair,
-  selectedAsset,
-  setSelectedAsset,
-  otherAsset,
-  setOtherAsset,
-  onAssetSelect = () => {},
-}) {
+export function TokenModal({ popup, setPopup, pair, selectedAsset, setSelectedAsset, otherAsset, setOtherAsset }) {
   const t = useTranslations()
   const { chainId } = useWallet()
 
@@ -102,7 +93,6 @@ export function TokenModal({
               setSelectedAsset={setSelectedAsset}
               otherAsset={otherAsset}
               setOtherAsset={setOtherAsset}
-              onAssetSelect={onAssetSelect}
             />
           ))}
         </div>

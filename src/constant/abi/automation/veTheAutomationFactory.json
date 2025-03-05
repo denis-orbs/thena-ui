@@ -114,6 +114,16 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "bytes1", "name": "operations", "type": "bytes1" },
+      { "internalType": "uint256", "name": "poolLength", "type": "uint256" }
+    ],
+    "name": "getMinimumFunds",
+    "outputs": [{ "internalType": "uint96", "name": "", "type": "uint96" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [{ "internalType": "bytes32", "name": "role", "type": "bytes32" }],
     "name": "getRoleAdmin",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],

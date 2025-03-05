@@ -1,8 +1,8 @@
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { zeroAddress } from 'viem'
 
-import AddLiquidityWeightedModal from '@/app/pools/AddLiquidityWeightedModal'
 import RemoveWeightedModal from '@/app/pools/RemoveWeightedModal'
 import { GreenBadge, PrimaryBadge } from '@/components/badges/Badge'
 import { EmphasisButton, OutlinedButton, TextButton } from '@/components/buttons/Button'
@@ -28,11 +28,12 @@ export function WeightedPoolPosition({ pool, isStake }) {
   const t = useTranslations()
   const [isOpenRemove, setIsOpenRemove] = useState(false)
   const [managePopup, setManagePopup] = useState(false)
-  const [isOpenAdd, setIsOpenAdd] = useState(false)
   const { onGaugeStake, pending: stakePending } = useGaugeStakeWeighted()
   const { gaugeBalance } = useGaugeBalance(pool.gauge.address)
   const { onGaugeUnstake, pending: unstakePending } = useGaugeUnstakeWeighted(gaugeBalance)
   const [popupStake, setPopupStake] = useState(false)
+
+  const { push } = useRouter()
 
   const { onClaimFees, pending: pendingClaimFees } = useClaimWeightedPoolFees()
 
@@ -188,7 +189,7 @@ export function WeightedPoolPosition({ pool, isStake }) {
           >
             {t('Harvest')}
           </OutlinedButton>
-          <EmphasisButton className='w-full' onClick={() => setIsOpenAdd(true)}>
+          <EmphasisButton className='w-full' onClick={() => push(`/pools/add-liquidity/weighted/${pool.address}`)}>
             {t('Add')}
           </EmphasisButton>
         </div>
@@ -223,7 +224,6 @@ export function WeightedPoolPosition({ pool, isStake }) {
       )}
 
       <RemoveWeightedModal isOpen={isOpenRemove} pool={pool} setIsOpen={setIsOpenRemove} />
-      <AddLiquidityWeightedModal isOpen={isOpenAdd} pool={pool} setIsOpen={setIsOpenAdd} isStake={isStake} />
       <ManageWeightedPositionModal popup={managePopup} setPopup={setManagePopup} pool={pool} />
       <GaugeWeightedManageModal
         title={!isStake ? 'Stake LP' : 'Unstake LP'}

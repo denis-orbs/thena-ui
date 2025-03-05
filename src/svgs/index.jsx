@@ -27,10 +27,15 @@ import CheckCircleIcon from '~/svgs/checkCircle.svg'
 import CheckGradientIcon from '~/svgs/checkGradient.svg'
 import ChevronDownIcon from '~/svgs/chevron-down.svg'
 import ChevronRightIcon from '~/svgs/chevron-right.svg'
+import ChevronUpIcon from '~/svgs/chevron-up.svg'
+import CLPoolIcon from '~/svgs/cl-pool-icon.svg'
+import ClassicPoolIcon from '~/svgs/classic-pool-icon.svg'
 import Clock from '~/svgs/clock.svg'
 import CloseIcon from '~/svgs/close.svg'
 import CoinHand from '~/svgs/coin-hand.svg'
+import CoinsHandIcon from '~/svgs/coins-hand.svg'
 import CoinsStackedIcon from '~/svgs/coins-stacked.svg'
+import CoinUSDIcon from '~/svgs/coins-usd.svg'
 import CollapseUpIcon from '~/svgs/collapse-up.svg'
 import CopyIcon from '~/svgs/copy.svg'
 import CopyArenaIcon from '~/svgs/copy-arena.svg'
@@ -65,6 +70,7 @@ import InstagramColorIcon from '~/svgs/instagram-color.svg'
 import InstagramNoColorIcon from '~/svgs/instagram-no-color.svg'
 import LangIcon from '~/svgs/lang.svg'
 import LinkExternalIcon from '~/svgs/link-external.svg'
+import LinkExternalPrimaryIcon from '~/svgs/link-primary.svg'
 import LockIcon from '~/svgs/lock.svg'
 import Lock2Icon from '~/svgs/lock-2.svg'
 import LogoTextIcon from '~/svgs/logo.svg'
@@ -78,6 +84,8 @@ import PiggyIcon from '~/svgs/piggy-bank.svg'
 import PiggySecondIcon from '~/svgs/piggy-second.svg'
 import PlusIcon from '~/svgs/plus.svg'
 import PlusCircleIcon from '~/svgs/plus-circle.svg'
+import PoolCoinsIcon from '~/svgs/pool-coins.svg'
+import PoolGroupIcon from '~/svgs/pool-group.svg'
 import PowerIcon from '~/svgs/power.svg'
 import PublicIcon from '~/svgs/public.svg'
 import RandomDice from '~/svgs/random-dice.svg'
@@ -86,9 +94,12 @@ import RefreshIcon from '~/svgs/refresh.svg'
 import RegisterIcon from '~/svgs/register.svg'
 import RightInIcon from '~/svgs/right-in.svg'
 import RightOutIcon from '~/svgs/right-out.svg'
+import ScalesPrimaryIcon from '~/svgs/scale-primary.svg'
+import ScalesIcon from '~/svgs/scales.svg'
 import SearchIcon from '~/svgs/search.svg'
 import SecondPrizeIcon from '~/svgs/second-prize.svg'
 import SendIcon from '~/svgs/send.svg'
+import SettingPrimaryIcon from '~/svgs/setting-primary.svg'
 import SettingsIcon from '~/svgs/settings.svg'
 import ShadowIcon from '~/svgs/shadow.svg'
 import ShareIcon from '~/svgs/share.svg'
@@ -96,6 +107,7 @@ import ShareProfileIcon from '~/svgs/share-icon.svg'
 import SoundOffIcon from '~/svgs/sound-off.svg'
 import SoundOnIcon from '~/svgs/sound-on.svg'
 import SplitIcon from '~/svgs/split.svg'
+import StablePoolIcon from '~/svgs/stable-pool-icon.svg'
 import StackCoinIcon from '~/svgs/stack-coin.svg'
 import StarLineLargeIcon from '~/svgs/star-line-large.svg'
 import StarLineSmallIcon from '~/svgs/star-line-small.svg'
@@ -120,7 +132,10 @@ import User from '~/svgs/user.svg'
 import UserIcon from '~/svgs/user-icon.svg'
 import Verified from '~/svgs/verified-tick.svg'
 import WalletIcon from '~/svgs/wallet.svg'
+import WarningTriangleIcon from '~/svgs/warning-triangle.svg'
+import WeightedPoolIcon from '~/svgs/weighted-pool-icon.svg'
 import XIcon from '~/svgs/x-close.svg'
+import ZapperIcon from '~/svgs/zapper.svg'
 import ZoomInIcon from '~/svgs/zoom-in.svg'
 import ZoomOutIcon from '~/svgs/zoom-out.svg'
 
@@ -153,10 +168,15 @@ export {
   CheckPurpleLargeIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
+  ClassicPoolIcon,
   Clock,
   CloseIcon,
+  CLPoolIcon,
   CoinHand,
+  CoinsHandIcon,
   CoinsStackedIcon,
+  CoinUSDIcon,
   CollapseUpIcon,
   CopyArenaIcon,
   CopyIcon,
@@ -190,6 +210,7 @@ export {
   InstagramNoColorIcon,
   LangIcon,
   LinkExternalIcon,
+  LinkExternalPrimaryIcon,
   Lock2Icon,
   LockIcon,
   LogoFooterIcon,
@@ -204,6 +225,8 @@ export {
   PiggySecondIcon,
   PlusCircleIcon,
   PlusIcon,
+  PoolCoinsIcon,
+  PoolGroupIcon,
   PowerIcon,
   PriceCupIcon as PriceCup,
   PublicIcon,
@@ -214,9 +237,12 @@ export {
   RightInIcon,
   RightOutIcon,
   RoundedTHETokenIcon,
+  ScalesIcon,
+  ScalesPrimaryIcon,
   SearchIcon,
   SecondPrizeIcon,
   SendIcon,
+  SettingPrimaryIcon,
   SettingsIcon,
   ShadowIcon,
   ShareIcon,
@@ -224,6 +250,7 @@ export {
   SoundOffIcon,
   SoundOnIcon,
   SplitIcon,
+  StablePoolIcon,
   StackCoinIcon as StackCoin,
   StarLineLargeIcon,
   StarLineSmallIcon,
@@ -247,7 +274,10 @@ export {
   UserIcon,
   Verified,
   WalletIcon,
+  WarningTriangleIcon,
+  WeightedPoolIcon,
   XIcon,
+  ZapperIcon,
   ZoomInIcon,
   ZoomOutIcon,
 }

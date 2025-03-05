@@ -19,8 +19,8 @@ import useWallet from '@/hooks/useWallet'
 import { cn, formatAmount, goToDoc } from '@/lib/utils'
 import AutomationButton from '@/modules/AutomationContract/AutomationButton'
 import AutomationStatus from '@/modules/AutomationContract/AutomationStatus'
+import AutomationsWarning from '@/modules/AutomationContract/AutomationsWarning'
 import LockExpire from '@/modules/AutomationContract/LockExpire'
-import WarningsWithActions from '@/modules/AutomationContract/WarningsWithActions'
 import { HowItWorksItem } from '@/modules/Story/HowItWorksItem'
 import { useChainSettings } from '@/state/settings/hooks'
 import { GiftIcon, InfoCirclePrimary, InfoCircleWhite, LockIcon, RefreshIcon } from '@/svgs'
@@ -63,13 +63,13 @@ const sortOptions = [
   {
     label: 'Automation',
     value: 'automation',
-    width: 'lg:w-[12%]',
+    width: 'lg:w-[calc(37%-320px)]',
     disabled: true,
   },
   {
     label: '',
     value: 'action',
-    width: 'lg:w-[25%] max-[1536px]:!w-[43%] max-lg:!w-full',
+    width: 'lg:w-[320px]',
     disabled: true,
   },
 ]
@@ -146,7 +146,7 @@ export default function LockPage() {
             <TextSubHeading>${formatAmount(veTHE.amount.times(theAsset?.price ?? 0))}</TextSubHeading>
           </div>
         ),
-        expire: <LockExpire veTHE={veTHE} />,
+        expire: <LockExpire veTHEId={veTHE.id} />,
         used: (
           <Paragraph className={veTHE.votedCurrentEpoch ? 'text-success-600' : 'text-error-600'}>
             {veTHE.votedCurrentEpoch ? t('Yes') : t('No')}
@@ -155,10 +155,10 @@ export default function LockPage() {
         automation: <AutomationStatus veTHEId={veTHE.id} />,
         action: (
           <div className='flex w-full flex-row gap-3'>
-            <div className='w-1/2'>
-              <AutomationButton veTHE={veTHE} />
+            <div className=''>
+              <AutomationButton veTHE={veTHE} className='w-[160px]' />
             </div>
-            <div className='w-1/2'>
+            <div className='w-1/2 min-w-fit'>
               {veTHE.voting_amount.isZero() ? (
                 <SecondaryButton
                   disabled={pending}
@@ -220,26 +220,30 @@ export default function LockPage() {
       {account ? (
         <div className='flex flex-col'>
           <article className='my-4 flex flex-col gap-4 lg:flex-row'>
-            <Info className='justify-between lg:p-8'>
-              <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
-              <p>{t('Lock THE Desciption')}</p>
+            <Info className='flex-col justify-between sm:flex-row lg:p-8'>
+              <div className='flex items-center gap-4'>
+                <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+                <p>{t('Lock THE Desciption')}</p>
+              </div>
               <TertiaryButton
-                className='min-w-fit'
+                className='max-sm:w-full sm:min-w-fit'
                 onClick={() => goToDoc('https://docs.thena.fi/thena/the-tokenomics/vethe')}
               >
                 {t('Learn More')}
               </TertiaryButton>
             </Info>
 
-            <Info className={cn('justify-between lg:p-8', !isNearlyExpired && 'hidden')}>
-              <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
-              <p>{t('Warning THE claim rebase fee')}</p>
-              <PrimaryButton className='min-w-fit' onClick={() => push('/dashboard/rewards')}>
+            <Info className={cn('flex-col justify-between sm:flex-row lg:p-8', !isNearlyExpired && 'hidden')}>
+              <div className='flex items-center gap-4'>
+                <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+                <p>{t('Warning THE claim rebase fee')}</p>
+              </div>
+              <PrimaryButton className='max-sm:w-full sm:min-w-fit' onClick={() => push('/dashboard/rewards')}>
                 {t('Rewards')}
               </PrimaryButton>
             </Info>
           </article>
-          <WarningsWithActions veTHEs={veTHEs} />
+          <AutomationsWarning />
           <div className='mb-4 mt-10 flex items-center justify-between'>
             <TextHeading className='text-xl'>{t('Locked Positions')}</TextHeading>
             {veTHEs.length > 0 && <PrimaryButton onClick={openModal}>{t('Create Lock')}</PrimaryButton>}

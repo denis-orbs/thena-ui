@@ -19,7 +19,7 @@ function WithdrawFundsModal({ contract, popup, setPopup }) {
 
   const t = useTranslations()
 
-  const chainLinkData = useChainLINKData()
+  const { chainLinkData } = useChainLINKData()
 
   const [tokenPopup, setTokenPopup] = useState()
   const [chainLINK, setChainLINK] = useState()

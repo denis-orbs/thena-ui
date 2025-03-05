@@ -2,17 +2,15 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-import InputTokenMemo from '@/app/pools/add-liquidity/InputTokenMemo'
-import Box from '@/components/box'
-import { PrimaryButton, TextButton } from '@/components/buttons/Button'
-import Toggle from '@/components/toggle'
-import { Paragraph, TextHeading } from '@/components/typography'
+import InputTokenMemo from '@/app/pools/(add-liquidity)/add-liquidity/InputTokenMemo'
+import { TertiaryButton } from '@/components/buttons/Button'
+import { TextHeading } from '@/components/typography'
 import { useTokenBalanceFn } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { formatAmount, roundIfMoreThanDecimals } from '@/lib/utils'
-import { ArrowLeftIcon, InfoCirCleDisableIcon } from '@/svgs'
+import { ScalesPrimaryIcon, WarningTriangleIcon } from '@/svgs'
 
-export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
+export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, checkError }) {
   const t = useTranslations()
   // const [lastIndexChange, setLastIndexChange] = useState(0)
   const [isAutoOptimize, setIsAutoOptimize] = useState(true)
@@ -48,15 +46,6 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     () => tokensAndWeights.reduce((sum, curr) => sum + getValueTokenAmountToUSD(curr.token.address, curr.amount), 0),
     [getValueTokenAmountToUSD, tokensAndWeights],
   )
-
-  const onClearAmount = useCallback(() => {
-    setTokenAndWeights(prev =>
-      prev.map(item => ({
-        ...item,
-        amount: '',
-      })),
-    )
-  }, [setTokenAndWeights])
 
   const handleMaxTotal = useCallback(() => {
     setIsAutoOptimize(false)
@@ -161,77 +150,57 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAutoOptimize])
 
-  const isDisable = useMemo(
-    () => (tokensAndWeights || []).some(item => item.isError || !item?.amount),
-    [tokensAndWeights],
-  )
-
   return (
-    <Box className='flex flex-col gap-3'>
-      <div className='flex h-11 flex-row items-center'>
-        <TextButton onClick={() => setCurrentStep(prev => prev - 1)} LeadingIcon={ArrowLeftIcon} />
-        <TextHeading className='font-archia text-xl xl:text-3xl'>{t('Set Initial Liquidity')}</TextHeading>
-      </div>
+    <div className='flex flex-col gap-3'>
       <div className='flex flex-col gap-3'>
         <>
-          {!isDisable && (
-            <div>
-              <Paragraph className='text-base'>{t('Optimized amounts have been pre-filled')}</Paragraph>{' '}
-              <span className='cursor-pointer text-primary-600' onClick={onClearAmount}>
-                {t('Clear All')}
-              </span>
-            </div>
-          )}
           {(tokensAndWeights || []).map((item, index) => (
-            <InputTokenMemo
-              key={`${item?.token?.address}_${index}`}
-              token={item.token}
-              autoFocus={index === 0}
-              amount={item.amount}
-              onAmountChange={value => handleAmountChange(value, item.token)}
-              alowDouble
-              weight={item.weight}
-            />
+            <div className='space-y-2' key={item.token.address}>
+              <InputTokenMemo
+                key={`${item?.token?.address}_${index}`}
+                token={item.token}
+                isError={item.isError && checkError}
+                autoFocus={index === 0}
+                amount={item.amount}
+                onAmountChange={value => handleAmountChange(value, item.token)}
+                alowDouble
+                weight={item.weight}
+              />
+              {item.isError && checkError && (
+                <p className='mb-2 mt-1 flex gap-1 text-error-500'>
+                  <WarningTriangleIcon className='h-5 w-5' />
+                  <span>{t('Insufficient [Asset] Balance', { symbol: item?.symbol })}</span>
+                </p>
+              )}
+            </div>
           ))}
         </>
       </div>
-      <div className='flex flex-row items-center gap-2'>
-        <Toggle checked={isAutoOptimize} onChange={() => setIsAutoOptimize(prev => !prev)} />
-        <label className='text-sm lg:text-base'>{t('Auto optimize liquidity')}</label>{' '}
-        <InfoCirCleDisableIcon className='h-4 w-4' />
-      </div>
-      <div className='flex flex-col gap-2 rounded-xl bg-neutral-800 p-4'>
+      <div className='flex flex-col gap-2 rounded-xl border border-primary-800 bg-primary-950 p-4'>
         <div className='flex flex-row justify-between'>
-          <span>{t('Total')}</span>
-          <span>${formatAmount(total)}</span>
-        </div>
-        <div className='flex flex-row justify-between'>
-          <span>
-            {t('Available')}: ${formatAmount(available)}{' '}
-            {available === total ? (
-              <span onClick={handleMaxTotal}>{t('Maxed')}</span>
-            ) : (
-              <span className='cursor-pointer text-primary-400' onClick={handleMaxTotal}>
-                {t('Max')}
+          <div className='flex gap-4'>
+            <ScalesPrimaryIcon className='h8 w-8' />
+            <div className='flex flex-col gap-2'>
+              <TextHeading>{t('Auto optimize liquidity')}</TextHeading>
+              <span>
+                {t('Available')}: ${formatAmount(available)}{' '}
+                {available === total ? (
+                  <span onClick={handleMaxTotal}>{t('Maxed')}</span>
+                ) : (
+                  <span className='cursor-pointer text-primary-600 hover:text-primary-500' onClick={handleMaxTotal}>
+                    {t('Max')}
+                  </span>
+                )}
               </span>
-            )}
-          </span>
+            </div>
+          </div>
           {totalWhenOptimize !== total && (
-            <span className='cursor-pointer text-primary-400' onClick={handleOptimizeTotal}>
+            <TertiaryButton className='cursor-pointer text-primary-600' onClick={handleOptimizeTotal}>
               {t('Optimize')}
-            </span>
+            </TertiaryButton>
           )}
         </div>
       </div>
-      <PrimaryButton
-        disabled={isDisable}
-        onClick={() => {
-          setCurrentStep(prev => prev + 1)
-        }}
-        className='w-full'
-      >
-        {t('Preview')}
-      </PrimaryButton>
-    </Box>
+    </div>
   )
 }

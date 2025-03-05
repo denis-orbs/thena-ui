@@ -1,93 +1,85 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
+import { EmphasisButton } from '@/components/buttons/Button'
+import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
-import { cn, wrappedAddress } from '@/lib/utils'
-import PoolTitle from '@/modules/PoolTitle'
-import SettingSlippageModal from '@/modules/Position/SettingSlippageModal'
-import { usePools } from '@/state/pools/hooks'
+import { cn } from '@/lib/utils'
+import { ZapperIcon } from '@/svgs'
 
-import { ManualPaneV1 } from './ManualPane'
-import { TheZapperPane } from './ZapperPane'
+import { ManualPaneV1 } from './ManualPaneV1'
+import { CommonZapperPane } from '../components/CommonZapperPane'
 
-export default function V1Add({
-  pairType,
-  isModal,
-  isAdd,
-  firstAsset,
-  setFirstAddress,
-  secondAsset,
-  setSecondAddress,
-  setFirstAmountValue,
-  setSecondAmountValue,
-  slippage,
-  setSlippage,
-}) {
+export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirstAddress, setSecondAddress }) {
   const [isZapper, setIsZapper] = useState(false)
-  const pools = usePools()
-
-  const pool = useMemo(() => {
-    const mappedPool = pools.reduce((acc, p) => {
-      if (
-        [p.token0?.address, p.token1?.address].includes(wrappedAddress(firstAsset)) &&
-        [p.token0?.address, p.token1?.address].includes(wrappedAddress(secondAsset)) &&
-        pairType === p.type
-      ) {
-        acc[p.version] = p
-      }
-      return acc
-    }, {})
-
-    return mappedPool[3] || mappedPool[2]
-  }, [pools, firstAsset, secondAsset, pairType])
+  const [showModalSuccess, setShowModalSuccess] = useState(false)
+  const { push } = useRouter()
+  const t = useTranslations()
 
   const addSelections = useMemo(
     () => [
       {
-        label: 'Default',
+        label: t('Pool Token Deposit'),
         active: !isZapper,
         onClickHandler: () => {
           setIsZapper(false)
         },
       },
       {
-        label: 'Zapper',
+        label: (
+          <div className='flex items-center justify-center gap-1'>
+            <ZapperIcon className='size-5' />
+            <span>{t('Zapper Deposit')}</span>
+          </div>
+        ),
         active: isZapper,
         onClickHandler: () => {
           setIsZapper(true)
         },
       },
     ],
-    [isZapper],
+    [isZapper, t],
   )
 
   return (
-    <div className={cn('inline-flex w-full flex-col gap-5', isModal && 'p-3 lg:px-6')}>
-      {isAdd && pool && <PoolTitle strategy={pool} />}
-      <Selection data={addSelections} isFull isTranslation={false} />
-
-      <div className='flex justify-end'>
-        <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
-      </div>
-
+    <div className={cn('inline-flex w-full flex-col gap-4')}>
+      {Boolean(pool) && <Selection data={addSelections} isFull isTranslation={false} />}
       {isZapper ? (
-        <TheZapperPane asset0={firstAsset} asset1={secondAsset} slippage={slippage} strategy={pool} />
+        <CommonZapperPane
+          asset0={firstAsset}
+          asset1={secondAsset}
+          strategy={pool}
+          onShowModalSuccess={() => setShowModalSuccess(true)}
+        />
       ) : (
         <ManualPaneV1
-          isModal
           strategy={pool}
           pairType={pairType}
           firstAsset={firstAsset}
-          setFirstAddress={setFirstAddress}
           secondAsset={secondAsset}
+          setFirstAddress={setFirstAddress}
           setSecondAddress={setSecondAddress}
-          setFirstAmountValue={setFirstAmountValue}
-          setSecondAmountValue={setSecondAmountValue}
-          slippage={slippage}
-          setSlippage={setSlippage}
         />
       )}
+      <SuccessModal
+        isOpen={showModalSuccess}
+        onClose={() => setShowModalSuccess(false)}
+        heading={t('Deposit Successful')}
+        message={t('You have successfully deposited and staked')}
+        buttonAction={
+          <div className='flex gap-4'>
+            <EmphasisButton className='w-1/2' onClick={() => push('/pools')}>
+              {t('View Pool')}
+            </EmphasisButton>
+            <EmphasisButton className='w-1/2' onClick={() => push('/dashboard')}>
+              {t('View Dashboard')}
+            </EmphasisButton>
+          </div>
+        }
+      />
     </div>
   )
 }

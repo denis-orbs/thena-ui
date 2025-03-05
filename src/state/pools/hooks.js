@@ -1,10 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useQuery } from '@tanstack/react-query'
 import BigNumber from 'bignumber.js'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { zeroAddress } from 'viem'
 
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { useFusionPairs } from '@/context/fusionsContext'
+import { usePairs } from '@/context/pairsContext'
 import { useWeightedPools } from '@/hooks/weightedPool/useWeigtedPool'
+import { fetchV2SolidlyPairs } from '@/lib/api'
 import { ZERO_VALUE } from '@/lib/utils'
 
 import { useChainSettings } from '../settings/hooks'
@@ -129,4 +134,72 @@ export const useGetAutoPoolMigration = ({ token0Address, token1Address, type, ve
       (pool.token0.address === token0Address && pool.token1.address === token1Address) ||
       (pool.token0.address === token1Address && pool.token1.address === token0Address),
   )
+}
+
+export const useGetV2SolidlyPairs = pairType => {
+  const { networkId } = useChainSettings()
+  const pools = usePools()
+
+  const { data: v2PairsRes = [] } = useQuery({
+    queryKey: ['v2-solidly-pairs'],
+    queryFn: () => fetchV2SolidlyPairs({ networkId }),
+    enabled: [PAIR_TYPES.CLASSIC, PAIR_TYPES.STABLE].includes(pairType),
+    retry: 3,
+    retryDelay: 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  })
+
+  const v2Pairs = useMemo(
+    () =>
+      v2PairsRes.map(pair => ({
+        ...pair,
+        apr: '0%',
+        subpools: pools.filter(pool => pool.basePool.toLowerCase() === pair.address.toLowerCase()),
+      })),
+    [pools, v2PairsRes],
+  )
+
+  return { v2Pairs }
+}
+
+export const usePairInfo = ({
+  token0Address = '',
+  token1Address = '',
+  type = PAIR_TYPES.CLASSIC,
+  poolAddress = '',
+}) => {
+  const { pairs } = usePairs()
+  const fusionPairs = useFusionPairs()
+  const { v2Pairs } = useGetV2SolidlyPairs(type || PAIR_TYPES.CLASSIC)
+
+  return useMemo(() => {
+    if (type === PAIR_TYPES.WEIGHTED) {
+      return
+    }
+    const found = [...pairs, ...v2Pairs].find(
+      pair =>
+        pair.address === poolAddress ||
+        (((pair.token0?.address === token0Address && pair.token1?.address === token1Address) ||
+          (pair.token0?.address === token1Address && pair.token1?.address === token0Address)) &&
+          pair.type === type),
+    )
+    if (!found) return
+
+    const fusionPool = (fusionPairs ?? []).find(ele => found?.address?.toLowerCase() === ele.address)
+    return {
+      ...found,
+      currentTick: Number(fusionPool?.globalState.tick || 0),
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    JSON.stringify(fusionPairs),
+    JSON.stringify(pairs),
+    poolAddress,
+    token0Address,
+    token1Address,
+    type,
+    JSON.stringify(v2Pairs),
+  ])
 }

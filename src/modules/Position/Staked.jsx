@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -9,7 +10,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useGammaClaim } from '@/hooks/fusion/useGamma'
 import { useIchiClaim } from '@/hooks/fusion/useIchi'
 import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
@@ -19,7 +20,6 @@ import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions
 import { getStrategy, useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
-import AddPositionModal from './AddPositionModal'
 import GaugeManageModal from './GaugeManageModal'
 import MigrateWarningModal from './MigrateWarningModal'
 import RemovePositionModal from './RemovePositionModal'
@@ -27,7 +27,6 @@ import RemovePositionModal from './RemovePositionModal'
 export default function Staked({ pool }) {
   const [removePopup, setRemovePopup] = useState(false)
   const [popup, setPopup] = useState(false)
-  const [addPopup, setAddPopup] = useState(false)
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
 
   const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
@@ -35,6 +34,7 @@ export default function Staked({ pool }) {
   const { onIchiClaim } = useIchiClaim()
   const { onGaugeHarvest } = useGaugeHarvest()
   const { addReward } = useFarmRewards()
+  const { push } = useRouter()
 
   useEffect(() => {
     if (!pool || pool.version === 2) return
@@ -102,6 +102,41 @@ export default function Staked({ pool }) {
     }
   }, [onGammaClaim, onGaugeHarvest, onIchiClaim, pool])
 
+  const handleAdd = useCallback(() => {
+    const newStrategy = {
+      title: pool?.title,
+      tvl: pool?.tvl?.toNumber() ?? 0,
+      apr: pool?.apr?.toNumber() ?? 0,
+      account: {
+        totalLp: pool?.account?.totalLp?.toNumber(),
+        gaugeBalance: pool?.account?.gaugeBalance?.toNumber(),
+      },
+      allowed: pool?.allowed,
+      token0: {
+        ...pool?.token0,
+        reserve: pool?.token0?.reserve?.toNumber(),
+        balance: pool?.token0?.balance?.toNumber(),
+        totalValue: pool?.token0?.totalValue,
+      },
+      token1: {
+        ...pool?.token1,
+        reserve: pool?.token1?.reserve?.toNumber(),
+        balance: pool?.token1?.balance?.toNumber(),
+        totalValue: pool?.token1?.totalValue,
+      },
+      address: pool?.address,
+      isFarming: pool?.title?.includes('Farming'),
+      isAutomatic: !MANUAL_TYPES.includes(pool?.title) && pool?.type === PAIR_TYPES.LSD,
+      isDefault: true,
+      version,
+      fee: pool?.fee,
+    }
+
+    dispatch(updateStrategy({ strategy: newStrategy }))
+    dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
+    push(`/pools/add-liquidity?step=3&poolAddress=${pool.basePool}`)
+  }, [dispatch, pool, push, version])
+
   return (
     <Box className='flex flex-col gap-4'>
       <div className='flex items-start justify-between'>
@@ -117,13 +152,7 @@ export default function Staked({ pool }) {
             <Paragraph className='text-xs'>{getDisplayedStrategy(pool.title)}</Paragraph>
           </div>
         </div>
-        <GreenBadge>
-          {pool?.title?.includes('_Farming')
-            ? 'Farm Strategy'
-            : pool?.title?.includes('_SwapFee')
-              ? 'Fee Strategy'
-              : t('Staked')}
-        </GreenBadge>
+        <GreenBadge>{t('Staked')}</GreenBadge>
       </div>
       <div className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
@@ -223,36 +252,7 @@ export default function Staked({ pool }) {
               {t('Harvest')}
             </OutlinedButton>
 
-            <EmphasisButton
-              className={cn('w-full')}
-              onClick={() => {
-                dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
-                dispatch(
-                  updateStrategy({
-                    strategy: {
-                      title: pool?.title,
-                      token0: {
-                        ...pool?.token0,
-                        reserve: pool?.token0?.reserve?.toNumber(),
-                        balance: pool?.token0?.balance?.toNumber(),
-                        totalValue: pool?.token0?.totalValue,
-                      },
-                      token1: {
-                        ...pool?.token1,
-                        reserve: pool?.token1?.reserve?.toNumber(),
-                        balance: pool?.token1?.balance?.toNumber(),
-                        totalValue: pool?.token1?.totalValue,
-                      },
-                      tvl: pool?.tvl?.toNumber(),
-                      isAutomatic: true,
-                      isFarming: pool.title.includes('Farming'),
-                      version,
-                    },
-                  }),
-                )
-                setAddPopup(true)
-              }}
-            >
+            <EmphasisButton className={cn('w-full')} onClick={handleAdd}>
               {t('Add')}
             </EmphasisButton>
           </>
@@ -282,8 +282,6 @@ export default function Staked({ pool }) {
       />
 
       <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={pool} />
-
-      <AddPositionModal popup={addPopup} setPopup={setAddPopup} strategy={pool} />
     </Box>
   )
 }

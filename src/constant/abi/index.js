@@ -11,10 +11,10 @@ import ERC20Abi from './erc20.json'
 import extraRewarderAbi from './extraRewarder.json'
 import farmCenterAbi from './farmCenter.json'
 import algebraPoolV3Abi from './fusion/AlgebraPoolV3.json'
+import gammaZapAbi from './gammaZap.json'
 import gaugeAbi from './gauge.json'
 import globalFactoryAbi from './globalFactory.json'
 import incentiveMakerAbi from './incentiveMaker.json'
-import keeperRegistryAbi from './keeperRegistryAbi.json'
 import linkTokenAbi from './linkToken.json'
 import arabicAbi from './mint/arabicNumeral.json'
 import characterSetAbi from './mint/characterSet.json'
@@ -68,11 +68,11 @@ export {
   ERC20Abi,
   extraRewarderAbi,
   farmCenterAbi,
+  gammaZapAbi,
   gaugeAbi,
   globalFactoryAbi,
   hindiNumeralAbi,
   incentiveMakerAbi,
-  keeperRegistryAbi,
   linkTokenAbi,
   minterAbi,
   multiCallAbi,

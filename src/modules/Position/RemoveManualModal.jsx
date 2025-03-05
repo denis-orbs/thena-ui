@@ -17,7 +17,7 @@ import { warnToast } from '@/lib/notify'
 import { formatAmount, unwrappedSymbol } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 
-import SettingSlippageModal from './SettingSlippageModal'
+import SettingSlippageDropDown from './SettingSlippageDropDown'
 
 export default function RemoveManualModal({
   popup,
@@ -115,7 +115,7 @@ export default function RemoveManualModal({
           {outOfRange ? <PrimaryBadge>Out of Range</PrimaryBadge> : <GreenBadge>In Range</GreenBadge>}
         </div>
         <div className='flex justify-end'>
-          <SettingSlippageModal slippage={slippage} updateSlippage={setSlippage} />
+          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} />
         </div>
         <div className='flex flex-col gap-4'>
           <CustomSlider percent={percent} onPercentChange={setPercent} />

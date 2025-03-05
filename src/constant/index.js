@@ -148,7 +148,7 @@ export const V1_ROUTE_ASSETS = {
   ],
 }
 
-export const UNKNOWN_LOGO = 'https://cdn.thena.fi/assets/UKNOWN.png'
+export const UNKNOWN_LOGO = 'https://cdn.thena.fi/assets/UNKNOWN_TOKEN.png'
 
 export const NEXT_EPOCH_TIMESTAMP = 1696464000
 
@@ -168,11 +168,6 @@ export const WEIGHTED_MULTI_CHAIN_START_TIME = {
   [CHAIN_ID.BSC]: 1681862400,
   [CHAIN_ID.OPBNB]: 1702339200,
   [CHAIN_ID.TEST_BSC]: 1681862400,
-}
-
-export const NEW_POOLS = {
-  [CHAIN_ID.BSC]: ['0xdc6f26e5f8a7ea128a8a06ce07681b3cde5280f2', '0x01dd2d28eeb95d740acb5344b1e2c99b61cc3e64'],
-  [CHAIN_ID.OPBNB]: [],
 }
 
 export const STABLE_TOKENS = {
@@ -240,6 +235,13 @@ export const PAIR_TYPES = {
   STABLE: 'Stable',
   CLASSIC: 'Classic',
   WEIGHTED: 'Weighted',
+}
+
+export const POSITION_EARNED_TYPES = {
+  EARN_THE: 'Earn $THE',
+  EARN_FEE: 'Earn Fees',
+  STAKED: 'Staked',
+  NOT_STAKED: 'Not Staked',
 }
 
 export const AUTOMATION_STATUS = {

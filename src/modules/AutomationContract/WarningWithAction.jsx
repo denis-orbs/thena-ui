@@ -2,12 +2,13 @@ import Link from 'next/link'
 import React, { useMemo, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
-import Box from '@/components/box'
+import { Info } from '@/components/alert'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading } from '@/components/typography'
 import { AUTOMATION_STATUS } from '@/constant'
-import { useAutomationStatus, useGetMaxPaymentForGas } from '@/hooks/automationContract/useAutomationContract'
-import { InfoIcon } from '@/svgs'
+import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
+import { fromWei } from '@/lib/utils'
+import { InfoCirclePrimary } from '@/svgs'
 
 import DepositFundsModal from './Edits/DepositFundsModal'
 import ChainlinkModal from './head/ChainlinkModal'
@@ -15,9 +16,10 @@ import ChainlinkModal from './head/ChainlinkModal'
 function WarningWithAction({ mutateAutomationData, contractData }) {
   const [chainLINKPopup, setChainLINKPopup] = useState(false)
   const [depositFundsPopup, setDepositFundsPopup] = useState(false)
-  const maxPaymentForGas = useGetMaxPaymentForGas(contractData.veTHEId)
 
-  const { status, mutateData: mutateDataStatus } = useAutomationStatus(contractData.veTHEId)
+  const { data: veTHEs, refetch: refetchAutomations } = useVeTheAutomations()
+  const veTHE = veTHEs?.find(item => item.id === contractData.veTHEId)
+  const status = veTHE?.statusString || AUTOMATION_STATUS.NO
 
   const t = useTranslations()
 
@@ -30,7 +32,7 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
       }
     }
 
-    if (maxPaymentForGas.gt(contractData.balance)) {
+    if (fromWei(contractData.minBalance).gt(fromWei(contractData.balance))) {
       return {
         message: (
           <>
@@ -45,30 +47,32 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
           </>
         ),
         btnText: t('Fund Contract'),
-        onClick: () => setChainLINKPopup(true),
+        onClick: () => setDepositFundsPopup(true),
       }
     }
     return undefined
-  }, [contractData.balance, maxPaymentForGas, status, t])
+  }, [contractData.balance, contractData.minBalance, status, t])
 
   if (!data) return <></>
   return (
     <>
-      <Box className='flex w-full flex-row items-center justify-between  gap-3 border border-primary-800 bg-primary-950'>
-        <div className='flex items-center gap-3'>
-          <InfoIcon className='h-5 w-5 !stroke-primary-600' />
-          <TextHeading className='text-neutral-100'>{data?.message}</TextHeading>
-        </div>
-        <PrimaryButton onClick={data.onClick} className='w-fit'>
-          {data?.btnText}
-        </PrimaryButton>
-      </Box>
+      <article className='my-4'>
+        <Info className='flex-col sm:flex-row lg:p-8'>
+          <div className='flex items-center gap-4'>
+            <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
+            <TextHeading className='text-neutral-100'>{data?.message}</TextHeading>
+          </div>
+          <PrimaryButton onClick={data.onClick} className='ml-auto max-sm:w-full sm:min-w-fit sm:justify-end'>
+            {data?.btnText}
+          </PrimaryButton>
+        </Info>
+      </article>
       <ChainlinkModal
         tokenId={contractData.veTHEId}
         address={contractData.address}
         mutateAutomationData={() => {
           mutateAutomationData()
-          mutateDataStatus()
+          refetchAutomations()
         }}
         popup={chainLINKPopup}
         setPopup={setChainLINKPopup}

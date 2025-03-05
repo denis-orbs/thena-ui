@@ -5,20 +5,14 @@ import { useCallback, useState } from 'react'
 import useSWR from 'swr'
 import { ChainId, WBNB } from 'thena-sdk-core'
 import { v4 as uuidv4 } from 'uuid'
-import { decodeEventLog, decodeFunctionData, encodePacked, erc20Abi, getAddress, maxUint256, zeroAddress } from 'viem'
+import { decodeFunctionData, encodePacked, getAddress, maxUint256, zeroAddress } from 'viem'
 
-import { HASH, TXN_STATUS } from '@/constant'
+import { TXN_STATUS } from '@/constant'
 import Contracts from '@/constant/contracts'
 import { oneInchApiKey } from '@/constant/env'
 import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
-import {
-  getERC20Contract,
-  getFusionRouterContract,
-  getRouterContract,
-  getTcSpotContract,
-  getWBNBContract,
-} from '@/lib/contracts'
+import { getERC20Contract, getRouterContract, getTcSpotContract, getWBNBContract } from '@/lib/contracts'
 import { errorToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
@@ -213,8 +207,8 @@ export const useTaxTokenSwap = (autoClose = false) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const swapuuid = uuidv4()
-      const thenaRouter = getRouterContract(chainId)
-      const routerAddress = thenaRouter?.address
+      const thenaRouterV2 = getRouterContract(chainId)
+      const routerAddress = thenaRouterV2?.address
       let isApproved = true
       let tokenContract
 
@@ -261,7 +255,7 @@ export const useTaxTokenSwap = (autoClose = false) => {
         fromAsset.decimals,
       )
 
-      let [minAmountOut = 0n] = await readCall(thenaRouter, 'getAmountOut', [amountIn, token0Address, token1Address])
+      let [minAmountOut = 0n] = await readCall(thenaRouterV2, 'getAmountOut', [amountIn, token0Address, token1Address])
 
       minAmountOut = Math.floor(Number(minAmountOut) * ((100 - slippage) / 100))
 
@@ -269,7 +263,7 @@ export const useTaxTokenSwap = (autoClose = false) => {
         await writeTxn(
           key,
           swapuuid,
-          thenaRouter,
+          thenaRouterV2,
           'swapExactETHForTokensSupportingFeeOnTransferTokens',
           [
             minAmountOut,
@@ -280,7 +274,7 @@ export const useTaxTokenSwap = (autoClose = false) => {
           amountIn,
         )
       } else if (toAsset.address === 'BNB') {
-        await writeTxn(key, swapuuid, thenaRouter, 'swapExactTokensForETHSupportingFeeOnTransferTokens', [
+        await writeTxn(key, swapuuid, thenaRouterV2, 'swapExactTokensForETHSupportingFeeOnTransferTokens', [
           amountIn,
           minAmountOut,
           [[token0Address, token1Address, false]],
@@ -288,7 +282,7 @@ export const useTaxTokenSwap = (autoClose = false) => {
           currentTimestamp + deadline * 60,
         ])
       } else {
-        await writeTxn(key, swapuuid, thenaRouter, 'swapExactTokensForTokensSupportingFeeOnTransferTokens', [
+        await writeTxn(key, swapuuid, thenaRouterV2, 'swapExactTokensForTokensSupportingFeeOnTransferTokens', [
           amountIn,
           minAmountOut,
           [[token0Address, token1Address, false]],
@@ -322,9 +316,9 @@ export const useThenaFusionSwap = (autoClose = false) => {
       const key = uuidv4()
       const approveuuid = uuidv4()
       const swapuuid = uuidv4()
-      const unwrapId = uuidv4()
-      const fusionRouter = getFusionRouterContract(chainId)
-      const routerAddress = fusionRouter?.address
+      // NOTE: If token use Fusion pool => Fusion router, Classic pool => SwapRouterV2
+      const thenaRouterV2 = getRouterContract(chainId)
+      const routerAddress = thenaRouterV2?.address
       let isApproved = true
       let tokenContract
 
@@ -347,18 +341,10 @@ export const useThenaFusionSwap = (autoClose = false) => {
       transactions[swapuuid] = {
         desc: t('Swap [symbolA] for [symbolB]', {
           symbolA: fromAsset.symbol,
-          symbolB: toAsset.symbol === 'BNB' ? 'WBNB' : toAsset.symbol,
+          symbolB: toAsset.symbol,
         }),
         status: TXN_STATUS.START,
         hash: null,
-      }
-
-      if (toAsset.address === 'BNB') {
-        transactions[unwrapId] = {
-          desc: t('Unwrap'),
-          status: TXN_STATUS.START,
-          hash: null,
-        }
       }
 
       startTxn({
@@ -384,39 +370,50 @@ export const useThenaFusionSwap = (autoClose = false) => {
       )
       const minAmountOut = Math.floor(Number(outAmount) * ((100 - slippage) / 100))
 
-      // from BNB  set from token is WBNB and send value = amount in
-      // from WBNB set from token is WBNB and send value = 0n
-      const txnReceipt = await writeTxn2(
-        key,
-        swapuuid,
-        fusionRouter,
-        'exactInputSingle',
-        [[token0Address, token1Address, account, currentTimestamp + deadline * 60, amountIn, minAmountOut, 0n]],
-        fromAsset.address === 'BNB' ? amountIn : 0n,
-      )
+      // case USDT <-> Token
+      let txnReceipt = null
+      if (fromAsset.symbol === 'USDT' || toAsset.symbol === 'USDT') {
+        txnReceipt = await writeTxn2(key, swapuuid, thenaRouterV2, 'swapExactTokensForTokens', [
+          amountIn,
+          minAmountOut,
+          [
+            [token0Address, WBNB[chainId].address, false],
+            [WBNB[chainId].address, token1Address, false],
+          ],
+          account,
+          currentTimestamp + deadline * 60,
+        ])
+      } else {
+        const swapFuncionName =
+          fromAsset.address === 'BNB'
+            ? 'swapExactETHForTokens'
+            : toAsset.address === 'BNB'
+              ? 'swapExactTokensForETH'
+              : 'swapExactTokensForTokens'
+        const swapParams = [
+          amountIn,
+          minAmountOut,
+          [[token0Address, token1Address, false]],
+          account,
+          currentTimestamp + deadline * 60,
+        ]
+        if (fromAsset.address === 'BNB') {
+          swapParams.shift(amountIn)
+        }
+
+        txnReceipt = await writeTxn2(
+          key,
+          swapuuid,
+          thenaRouterV2,
+          swapFuncionName,
+          swapParams,
+          fromAsset.address === 'BNB' ? amountIn : 0n,
+        )
+      }
+
       if (!txnReceipt) {
         setPending(false)
         return
-      }
-
-      if (toAsset.address === 'BNB') {
-        const events = txnReceipt.logs
-        const transferEvent = events.find(
-          e => getAddress(e.address) === getAddress(WBNB[chainId].address) && e.topics[0] === HASH.TRANSFER,
-        )
-
-        const decodeData = decodeEventLog({
-          abi: erc20Abi,
-          data: transferEvent.data,
-          topics: transferEvent.topics,
-        })
-
-        const amount = decodeData?.args?.value ?? 0
-        const wbnbContract = getWBNBContract(chainId)
-        if (!(await writeTxn2(key, unwrapId, wbnbContract, 'withdraw', [amount]))) {
-          setPending(false)
-          return
-        }
       }
 
       endTxn({ key, final: 'Swap Successful' })
@@ -922,7 +919,7 @@ export const useGetOdosTxSwap = (account, quote) => {
       }
       return undefined
     },
-    refetchInterval: 10000,
+    refetchInterval: 20000,
     enabled: Boolean(quote),
     gcTime: 0,
   })

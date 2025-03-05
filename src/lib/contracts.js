@@ -12,7 +12,6 @@ import {
   gaugeAbi,
   globalFactoryAbi,
   incentiveMakerAbi,
-  keeperRegistryAbi,
   linkTokenAbi,
   minterAbi,
   multiCallAbi,
@@ -296,6 +295,3 @@ export const getVeTheAutomationFactoryContract = chainId =>
 export const getVeTheAutomationContract = (address, chainId) => getContract(veTheAutomationAbi, address, chainId)
 
 export const getLinkTokenContract = (address, chainId) => getContract(linkTokenAbi, address, chainId)
-
-export const getKeeperRegistryContract = chainId =>
-  getContract(keeperRegistryAbi, Contracts.keeperRegistry[chainId], chainId)

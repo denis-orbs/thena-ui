@@ -19,7 +19,7 @@ function SuccessModal({ isOpen, onClose, heading, message, ref, buttonAction }) 
     >
       <ModalBody>
         <div className='flex w-full flex-col items-center justify-center gap-4 px-6'>
-          <Highlight className='bg-primary-600'>
+          <Highlight className='bg-success-600'>
             <CheckGradientIcon className='h-4 w-4' />
           </Highlight>
           <div className='flex flex-col items-center gap-3'>

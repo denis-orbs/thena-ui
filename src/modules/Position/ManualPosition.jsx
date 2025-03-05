@@ -1,7 +1,9 @@
 import BigNumber from 'bignumber.js'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { nearestUsableTick, Position, TICK_SPACING, TickMath } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
@@ -13,6 +15,7 @@ import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/com
 import IconGroup from '@/components/icongroup'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { MANUAL_TYPES, PAIR_TYPES, POSITION_EARNED_TYPES } from '@/constant'
 import { ManualsContext } from '@/context/manualsContext'
 import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
 import { useAlgebraBurn } from '@/hooks/fusion/useAlgebra'
@@ -23,12 +26,11 @@ import useWallet from '@/hooks/useWallet'
 import { simulateCall } from '@/lib/contractActions'
 import { getPositionManagerContract } from '@/lib/contracts'
 import { formatTickPrice } from '@/lib/fusion/formatTickPrice'
-import { cn, formatAmount, formatAmountLP, fromWei, unwrappedSymbol } from '@/lib/utils'
-import { Bound } from '@/state/fusion/actions'
+import { cn, formatAmount, formatAmountLP, fromWei, getLiquidityRangeType, unwrappedSymbol } from '@/lib/utils'
+import { Bound, updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { usePools } from '@/state/pools/hooks'
 import { InfoIcon, RefreshIcon } from '@/svgs'
 
-import AddManualModal from './AddManualModal'
 import ClaimModal from './ClaimModal'
 import RemoveManualModal from './RemoveManualModal'
 
@@ -52,13 +54,14 @@ export const fetchManualInfo = async (account, tokenId, chainId, version) => {
 
 export default function ManualPosition({ position }) {
   const t = useTranslations()
+  const dispatch = useDispatch()
+  const { push } = useRouter()
   const { mutateManual } = useContext(ManualsContext)
   const { account, chainId } = useWallet()
   const pools = usePools()
   const { asset0, asset1, liquidity, tickLower, tickUpper, tokenId, version } = position
 
   const [claimPopup, setClaimPopup] = useState(false)
-  const [addPopup, setAddPopup] = useState(false)
   const [removePopup, setRemovePopup] = useState(false)
   const [reversePrice, setReversePrice] = useState(false)
 
@@ -113,22 +116,23 @@ export default function ManualPosition({ position }) {
 
   const amount0 = useMemo(() => (_position ? _position.amount0.toExact() : 0), [_position])
   const amount1 = useMemo(() => (_position ? _position.amount1.toExact() : 0), [_position])
-  const amount0InUsd = useMemo(() => BigNumber(amount0) * asset0.price, [amount0, asset0])
-  const amount1InUsd = useMemo(() => BigNumber(amount1) * asset1.price, [amount1, asset1])
+  const amount0InUsd = useMemo(() => BigNumber(amount0).times(asset0.price).toNumber(), [amount0, asset0])
+  const amount1InUsd = useMemo(() => BigNumber(amount1).times(asset1.price).toNumber(), [amount1, asset1])
 
   const token0 = useToken(asset0.address)
   const token1 = useToken(asset1.address)
 
   const poolInfo = useMemo(
     () =>
-      pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_Farming'),
+      pools.find(item => item?.address?.toLowerCase() === poolAddress?.toLowerCase() && item.title === 'CL_SwapFee'),
     [poolAddress, pools],
   )
+
   const apr = useCalculateAPR({
     position,
     poolAddress,
     totalLiquidity: _fusion?.liquidity,
-    tvl: poolInfo?.tvl ?? 1,
+    tvl: amount0InUsd + amount1InUsd,
   })
 
   const { reward0, reward1 } = useMemo(
@@ -162,6 +166,41 @@ export default function ManualPosition({ position }) {
 
   const outOfRange = _fusion ? _fusion.tickCurrent < tickLower || _fusion.tickCurrent >= tickUpper : false
 
+  const handleAdd = useCallback(() => {
+    const newStrategy = {
+      title: poolInfo?.title,
+      tvl: poolInfo?.tvl?.toNumber() ?? 0,
+      apr: poolInfo?.apr?.toNumber() ?? 0,
+      account: {
+        totalLp: poolInfo?.account?.totalLp?.toNumber(),
+        gaugeBalance: poolInfo?.account?.gaugeBalance?.toNumber(),
+      },
+      allowed: poolInfo?.allowed,
+      token0: {
+        ...poolInfo?.token0,
+        reserve: poolInfo?.token0?.reserve?.toNumber(),
+        balance: poolInfo?.token0?.balance?.toNumber(),
+        totalValue: poolInfo?.token0?.totalValue,
+      },
+      token1: {
+        ...poolInfo?.token1,
+        reserve: poolInfo?.token1?.reserve?.toNumber(),
+        balance: poolInfo?.token1?.balance?.toNumber(),
+        totalValue: poolInfo?.token1?.totalValue,
+      },
+      address: poolInfo?.address,
+      isFarming: poolInfo?.title?.includes('Farming'),
+      isAutomatic: !MANUAL_TYPES.includes(poolInfo?.title) && poolInfo?.type === PAIR_TYPES.LSD,
+      isDefault: true,
+      version,
+      fee: poolInfo?.fee,
+    }
+
+    dispatch(updateStrategy({ strategy: newStrategy }))
+    dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo?.title) }))
+    push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo?.basePool}&pid=${tokenId}&type=${poolInfo?.title}`)
+  }, [dispatch, poolInfo, push, version, tokenId])
+
   return (
     <Box className='flex flex-col gap-4'>
       <div className='flex items-start justify-between'>
@@ -183,7 +222,7 @@ export default function ManualPosition({ position }) {
         </div>
 
         <div className='flex flex-wrap justify-end gap-2'>
-          <GreenBadge>Fee Strategy</GreenBadge>
+          <GreenBadge>{POSITION_EARNED_TYPES.EARN_FEE}</GreenBadge>
 
           {!Number(liquidity) ? (
             <YellowBadge>{t('Closed')}</YellowBadge>
@@ -198,7 +237,7 @@ export default function ManualPosition({ position }) {
       <div className='flex flex-col gap-3'>
         <div className={cn('flex items-center justify-between', position?.version === 2 && 'hidden')}>
           <span className='text-sm text-neutral-300'>{t('APR')}</span>
-          <span>{apr.toFixed(2)}%</span>
+          <span>{formatAmount(apr.toNumber())}%</span>
         </div>
         <div className='flex items-center justify-between'>
           <Paragraph className='text-sm'>{t('Deposit Value in USD')}</Paragraph>
@@ -322,7 +361,7 @@ export default function ManualPosition({ position }) {
         )}
 
         {version === 3 && (
-          <EmphasisButton className='w-full' onClick={() => setAddPopup(true)}>
+          <EmphasisButton className='w-full' onClick={handleAdd}>
             {t('Add')}
           </EmphasisButton>
         )}
@@ -354,16 +393,6 @@ export default function ManualPosition({ position }) {
         mutateManual={mutateManual}
         outOfRange={outOfRange}
         fee={_fusion?.fee || 0}
-      />
-      <AddManualModal
-        popup={addPopup}
-        setPopup={setAddPopup}
-        pool={position}
-        position={_position}
-        mutateManual={mutateManual}
-        outOfRange={outOfRange}
-        _fusion={_fusion}
-        tickAtLimit={tickAtLimit}
       />
     </Box>
   )

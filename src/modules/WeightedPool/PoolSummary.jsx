@@ -1,135 +1,75 @@
-'use client'
-
-import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
-import { useTranslations } from 'next-intl'
-import React, { useMemo } from 'react'
-import { Doughnut } from 'react-chartjs-2'
+import React from 'react'
+import { useTranslations } from 'use-intl'
 
 import Box from '@/components/box'
-import { TextHeading } from '@/components/typography'
-import { cn } from '@/lib/utils'
+import CircleImage from '@/components/image/CircleImage'
+import { Paragraph, TextHeading } from '@/components/typography'
+import { formatAmount } from '@/lib/utils'
+import { CoinsHandIcon } from '@/svgs'
 
-const colors = ['#32002F', '#84007F', '#B000AA', '#580055', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE']
-
-function calculatePadding(ctx) {
-  const { chart } = ctx
-  let padding = 0
-  chart.data.datasets.forEach(el => {
-    const hOffset = el.hoverOffset || 0
-    padding = Math.max(hOffset / 2 + 5, padding)
-  })
-  return padding
-}
-
-ChartJS.register(ArcElement, Tooltip, Legend)
-export default function PoolSummary({ tokensAndWeights }) {
-  // const [centerLogo, setCenterLogo] = useState(null)
-
-  const data = useMemo(
-    () =>
-      tokensAndWeights.length > 0
-        ? tokensAndWeights.map((item, index) => ({
-            data: item.token,
-            value: item.weight,
-            color: colors[index % colors.length],
-            cutout: '50%',
-          }))
-        : [
-            {
-              data: {},
-              value: 100,
-              color: '#8E8194',
-              cutout: '50%',
-            },
-          ],
-    [tokensAndWeights],
-  )
-
-  const options = {
-    plugins: {
-      responsive: true,
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: false,
-      },
-      centerLabel: {
-        display: true,
-      },
-    },
-    layout: {
-      padding: {
-        top(ctx) {
-          return calculatePadding(ctx)
-        },
-        bottom(ctx) {
-          return calculatePadding(ctx)
-        },
-        left(ctx) {
-          return calculatePadding(ctx)
-        },
-        right(ctx) {
-          return calculatePadding(ctx)
-        },
-      },
-    },
-    // onHover: (event, chartElement) => {
-    //   if (chartElement.length) {
-    //     const { index } = chartElement[0]
-    //     setCenterLogo(data[index]?.data?.logoURI)
-    //   } else {
-    //     setCenterLogo(null)
-    //   }
-    // },
-    cutout: data.map(item => item.cutout),
-  }
-
-  const finalData = {
-    labels: data.map(item => item.label),
-    datasets: [
-      {
-        data: data.map(item => Math.round(item.value)),
-        backgroundColor: data.map(item => item.color),
-        borderColor: data.map(item => item.color),
-        borderWidth: 1,
-        borderRadius: data.length === 1 ? 0 : 4,
-        spacing: data.length === 1 ? 0 : 2,
-        hoverOffset: 15,
-        dataVisibility: new Array(data.length).fill(true),
-      },
-    ],
-  }
-
+function PoolSummary({ tokens, fees }) {
   const t = useTranslations()
   return (
-    <Box className='flex flex-col space-y-6'>
-      <TextHeading className='font-archia text-2xl font-semibold'>{t('Pool Summary')}</TextHeading>
-      <div className='flex items-center justify-center'>
-        <div className='relative h-[230px] w-[230px] overflow-visible'>
-          <Doughnut height={200} width={200} data={finalData} options={options} className='z-20' />
-          {/* <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-lg font-bold text-gray-800'>
-            {centerLogo && <Image src={centerLogo} width={60} height={60} alt='logo' />}
-          </div> */}
+    <Box>
+      <TextHeading className='font-archia text-3xl font-semibold text-neutral-50'>{t('Pool Attributes')}</TextHeading>
+      <div className='flex items-center justify-between border-b-[2px] border-neutral-700 p-4'>
+        <div className='flex gap-3'>
+          <CoinsHandIcon className='h-5 w-5' />
+          <Paragraph>{t('Pool Fees')}</Paragraph>
         </div>
+        <Paragraph>{`${fees} %`}</Paragraph>
       </div>
-      {/* ['#32002F', '#580055', '#84007F', '#B000AA', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE'] */}
-      <div className='hidden bg-[#EA66E5]' />
-      <div className='hidden bg-[#32002F]' />
-      <div className='hidden bg-[#84007F]' />
-      <div className='hidden bg-[#DC00D4]' />
-      <div className='hidden bg-[#580055]' />
-      <div className='hidden bg-[#B000AA]' />
-      <div className='hidden bg-[#E333DD]' />
-      <div className='hidden bg-[#F199EE]' />
-      <div className='grid grid-cols-4 justify-between'>
-        {data.map((item, idx) => (
-          <div key={`${item?.data?.address}_${idx}`} className='flex flex-row items-center gap-[6px]'>
-            <div className={cn('h-3 w-3 rounded-full', `bg-[${item?.color}]`)} />
-            <TextHeading>{item?.data?.symbol}</TextHeading>
+      <div className='mx-auto mt-4 w-full'>
+        <div className='w-full text-left'>
+          {/* Header */}
+          <div className='flex py-5'>
+            <div className='flex-1 pb-2 font-archia text-xl font-semibold text-neutral-50'>USD Value</div>
+            <div className='flex-1 pb-2 text-center font-archia text-xl font-semibold text-neutral-50'>Pool</div>
+            <div className='flex-1 pb-2 text-right font-archia text-xl font-semibold text-neutral-50'>Token</div>
           </div>
-        ))}
+
+          {/* Body */}
+          <div>
+            {(tokens || []).map(token => (
+              <div className='flex' key={token.symbol}>
+                <div className='flex flex-1 items-center gap-2 py-2'>
+                  <div className='flex items-center gap-3'>
+                    <CircleImage className='h-8 w-8' src={token.logoURI} alt={`${token.symbol} logo`} />
+                    <TextHeading className='text-neutral-50'>{token.symbol}</TextHeading>
+                  </div>
+                </div>
+                <div className='flex flex-1 justify-center py-2'>
+                  <Paragraph className='text-neutral-50'>
+                    $ {formatAmount(token.price * (Number(token.amount) || 0))}
+                  </Paragraph>
+                </div>
+                <div className='flex flex-1 justify-end py-2'>
+                  <Paragraph className='text-neutral-50'>{token.weight} %</Paragraph>
+                </div>
+              </div>
+            ))}
+
+            {/* Total Row */}
+            <div className='mt-6 flex'>
+              <div className='flex flex-1 items-center gap-2'>
+                <Paragraph className='font-archia text-xl font-semibold text-neutral-50'>{t('Total')}</Paragraph>
+              </div>
+              <div className='flex flex-1 justify-center'>
+                <Paragraph className='font-archia text-xl font-semibold text-neutral-50'>
+                  $ {formatAmount(tokens.reduce((curr, token) => curr + Number(token.amount || 0) * token.price, 0))}
+                </Paragraph>
+              </div>
+              <div className='flex flex-1 justify-end'>
+                <Paragraph className='font-archia text-xl font-semibold text-neutral-50'>
+                  {tokens.reduce((curr, token) => curr + Number(token.weight), 0)} %
+                </Paragraph>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </Box>
   )
 }
+
+export default PoolSummary

@@ -1,10 +1,13 @@
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { useActiveAutomation } from '@/hooks/automationContract/useAutomationContract'
+import { useActiveAutomation, useAutomationContractDetail } from '@/hooks/automationContract/useAutomationContract'
+import { warnToast } from '@/lib/notify'
+import { isInvalidAmount } from '@/lib/utils'
 import RegisterAutomation from '@/modules/CreateVeTHEAutomation/RegisterAutomation'
 
 const UPDATE_REGISTRATION = {
@@ -12,16 +15,16 @@ const UPDATE_REGISTRATION = {
   CHAINLINK_AMOUNT: 'chainlinkAmount',
 }
 
-function ChainlinkModal({ tokenId, address, mutateAutomationData, popup, setPopup }) {
-  const [chainlinkAmount, setChainlinkAmount] = useState()
+function ChainlinkModal({ address, tokenId, mutateAutomationData, popup, setPopup }) {
+  const [chainlinkAmount, setChainlinkAmount] = useState('')
   const [chainlink, setChainlink] = useState()
-
+  const { contractData } = useAutomationContractDetail(tokenId)
+  const [minFunds, setMinFunds] = useState(new BigNumber(0))
   const t = useTranslations()
 
   const { onActive, pending } = useActiveAutomation()
 
   const updateRegistration = useCallback((data, type) => {
-    if (!data) return
     if (type === UPDATE_REGISTRATION.CHAINLINK) {
       setChainlink(data)
     }
@@ -50,7 +53,8 @@ function ChainlinkModal({ tokenId, address, mutateAutomationData, popup, setPopu
             chainLINK={chainlink}
             chainLINKAmount={chainlinkAmount}
             updateRegistration={updateRegistration}
-            veTHEId={tokenId}
+            contractData={contractData}
+            setMinFunds={setMinFunds}
           />
         </div>
       </ModalBody>
@@ -60,9 +64,17 @@ function ChainlinkModal({ tokenId, address, mutateAutomationData, popup, setPopu
           {t('Cancel')}
         </EmphasisButton>
         <PrimaryButton
-          disabled={!chainlink || !chainlinkAmount || pending}
+          disabled={!chainlink || !chainlinkAmount || minFunds.gt(new BigNumber(chainlinkAmount)) || pending}
           className='w-full'
           onClick={() => {
+            if (minFunds.gt(new BigNumber(chainlinkAmount))) {
+              return
+            }
+
+            if (chainlinkAmount > chainlink.balance || isInvalidAmount(chainlinkAmount)) {
+              warnToast(t('Invalid Amount'))
+              return
+            }
             onActive(address, tokenId, chainlink, chainlinkAmount, () => {
               mutateAutomationData()
               setPopup(false)

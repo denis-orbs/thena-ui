@@ -4,10 +4,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { TertiaryButton } from '@/components/buttons/Button'
 import Dropdown from '@/components/dropdown'
+import ConfirmModal from '@/components/modal/ConfirmModal'
 import Skeleton from '@/components/skeleton'
 import { ACTION_AUTOMATION_TYPE, AUTOMATION_STATUS } from '@/constant'
-import { useAutomationContractDetail, useAutomationStatus } from '@/hooks/automationContract/useAutomationContract'
+import { useAutomationContractDetail, useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import useWallet from '@/hooks/useWallet'
+import { cn } from '@/lib/utils'
 
 import ConfirmAutomationModal from './ConfirmAutomationModal'
 import DepositFundsModal from './Edits/DepositFundsModal'
@@ -17,10 +19,12 @@ import EditMaxGasPriceModal from './Edits/EditMaxGasPriceModal'
 import ChainlinkModal from './head/ChainlinkModal'
 import WithdrawFundsModal from './WithdrawFundsModal'
 
-function AutomationButton({ veTHE, isDetail = false }) {
+function AutomationButton({ veTHE, isDetail = false, className }) {
   const { id: veTHEId, lockedEnd } = veTHE
 
-  const { isLoading, status, mutateData: mutateDataStatus } = useAutomationStatus(veTHEId)
+  const { data: veTHEs, isLoading, refetch: refetchAutomations } = useVeTheAutomations()
+  const found = veTHEs?.find(item => item.id === veTHEId)
+  const status = found?.statusString || AUTOMATION_STATUS.NO
   const { contractData, mutateAutomationData } = useAutomationContractDetail(veTHEId)
 
   const t = useTranslations()
@@ -34,6 +38,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
   const [withdrawFundsPopup, setWithdrawFundsPopup] = useState(false)
   const [maxGasPricePopup, setMaxGasPricePopup] = useState(false)
   const [executionTimePopup, setExecutionTimePopup] = useState(false)
+  const [warnClaimReward, setWarnClaimReward] = useState(false)
 
   const nowInSeconds = Math.floor(Date.now() / 1000)
 
@@ -136,6 +141,10 @@ function AutomationButton({ veTHE, isDetail = false }) {
 
   const onClickAddAutomation = useCallback(() => {
     if (veTHE) {
+      if (veTHE?.rebase_amount.gt(0)) {
+        setWarnClaimReward(true)
+        return
+      }
       push(`/dashboard/lock/automation/${veTHE.id}/create`)
     }
   }, [push, veTHE])
@@ -202,13 +211,13 @@ function AutomationButton({ veTHE, isDetail = false }) {
   return (
     <>
       {isLoading ? (
-        <Skeleton className='h-11 w-full rounded-xl' />
+        <Skeleton className={('h-11 w-full rounded-xl', className)} />
       ) : (
         <>
           {status === AUTOMATION_STATUS.NO || (status === AUTOMATION_STATUS.CANCELED && contractData.balance === 0) ? (
             <TertiaryButton
               disabled={nowInSeconds >= lockedEnd}
-              className='w-full py-3 lg:px-1'
+              className={cn('w-full min-w-fit py-3 lg:px-1', className)}
               onClick={onClickAddAutomation}
             >
               {t('Add Automation')}
@@ -216,7 +225,7 @@ function AutomationButton({ veTHE, isDetail = false }) {
           ) : (
             <Dropdown
               placeHolder={t('Automation')}
-              className='h-11 w-full'
+              className={cn('h-11 w-full', className)}
               data={actions || []}
               setSelected={data => {
                 setAction(data)
@@ -227,31 +236,58 @@ function AutomationButton({ veTHE, isDetail = false }) {
           )}
         </>
       )}
-      <ConfirmAutomationModal
-        actionType={actionConfirm?.type}
-        address={contractData.address}
-        mutateAutomationData={() => {
-          mutateAutomationData()
-          mutateDataStatus()
-        }}
-        showModal={showModal}
-        setShowModal={setShowModal}
-      />
-      <ChainlinkModal
-        tokenId={veTHEId}
-        address={contractData.address}
-        mutateAutomationData={() => {
-          mutateAutomationData()
-          mutateDataStatus()
-        }}
-        popup={chainLINKPopup}
-        setPopup={setChainLINKPopup}
-      />
-      <EditGasLimitModal contract={contractData} popup={gasLimitPopup} setPopup={setGasLimitPopup} />
-      <DepositFundsModal contract={contractData} popup={depositFundsPopup} setPopup={setDepositFundsPopup} />
-      <WithdrawFundsModal contract={contractData} popup={withdrawFundsPopup} setPopup={setWithdrawFundsPopup} />
-      <EditMaxGasPriceModal contract={contractData} popup={maxGasPricePopup} setPopup={setMaxGasPricePopup} />
-      <EditExecutionTimeModal contract={contractData} popup={executionTimePopup} setPopup={setExecutionTimePopup} />
+      {warnClaimReward && (
+        <ConfirmModal
+          setPopup={setWarnClaimReward}
+          bgIcon='bg-error-600'
+          popup={warnClaimReward}
+          cancelButton={t('Cancel')}
+          confirmButton={t('OK')}
+          title={t('Warning')}
+          desc={t('You need to claim your rebase first')}
+          onConfirm={() => {
+            push('/dashboard/rewards')
+            setWarnClaimReward(false)
+          }}
+        />
+      )}
+      {showModal && (
+        <ConfirmAutomationModal
+          actionType={actionConfirm?.type}
+          address={contractData.address}
+          mutateAutomationData={() => {
+            mutateAutomationData()
+            refetchAutomations()
+          }}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
+      )}
+      {chainLINKPopup && (
+        <ChainlinkModal
+          tokenId={veTHEId}
+          address={contractData.address}
+          mutateAutomationData={() => {
+            mutateAutomationData()
+            refetchAutomations()
+          }}
+          popup={chainLINKPopup}
+          setPopup={setChainLINKPopup}
+        />
+      )}
+      {gasLimitPopup && <EditGasLimitModal contract={contractData} popup={gasLimitPopup} setPopup={setGasLimitPopup} />}
+      {depositFundsPopup && (
+        <DepositFundsModal contract={contractData} popup={depositFundsPopup} setPopup={setDepositFundsPopup} />
+      )}
+      {withdrawFundsPopup && (
+        <WithdrawFundsModal contract={contractData} popup={withdrawFundsPopup} setPopup={setWithdrawFundsPopup} />
+      )}
+      {maxGasPricePopup && (
+        <EditMaxGasPriceModal contract={contractData} popup={maxGasPricePopup} setPopup={setMaxGasPricePopup} />
+      )}
+      {executionTimePopup && (
+        <EditExecutionTimeModal contract={contractData} popup={executionTimePopup} setPopup={setExecutionTimePopup} />
+      )}
     </>
   )
 }

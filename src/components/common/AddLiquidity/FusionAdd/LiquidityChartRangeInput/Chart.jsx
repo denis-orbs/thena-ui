@@ -1,7 +1,9 @@
 import { max, scaleLinear } from 'd3'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { Bound } from '@/state/fusion/actions'
+import { Presets } from '@/state/fusion/reducer'
 
 import { Area } from './Area'
 import { AxisBottom } from './AxisBottom'
@@ -29,6 +31,9 @@ export function Chart({
   const zoomRef = useRef(null)
 
   const [zoom, setZoom] = useState(null)
+  const { preset } = useSelector(state => state.fusion)
+
+  const isFullRange = useMemo(() => preset === Presets.FULL, [preset])
 
   const [innerHeight, innerWidth] = useMemo(
     () => [height - margins.top - margins.bottom, width - margins.left - margins.right],
@@ -38,7 +43,10 @@ export function Chart({
   const { xScale, yScale } = useMemo(() => {
     const scales = {
       xScale: scaleLinear()
-        .domain([current * zoomLevels.initialMin, current * zoomLevels.initialMax])
+        .domain([
+          current * (isFullRange ? 0.2 : zoomLevels.initialMin),
+          current * (isFullRange ? 1.6 : zoomLevels.initialMax),
+        ])
         .range([0, innerWidth]),
       yScale: scaleLinear()
         .domain([0, max(series, yAccessor)])
@@ -51,7 +59,7 @@ export function Chart({
     }
 
     return scales
-  }, [current, zoomLevels.initialMin, zoomLevels.initialMax, innerWidth, series, innerHeight, zoom])
+  }, [current, isFullRange, zoomLevels.initialMin, zoomLevels.initialMax, innerWidth, series, innerHeight, zoom])
 
   useEffect(() => {
     // reset zoom as necessary
@@ -121,11 +129,19 @@ export function Chart({
 
             <Line value={current} xScale={xScale} innerHeight={innerHeight} />
 
+            {/* Add triangle marker */}
+            <path
+              d={`M ${xScale(current) - 6} ${innerHeight + 12} L ${xScale(current) + 6} ${innerHeight + 12} L ${xScale(
+                current,
+              )} ${innerHeight} Z`}
+              fill='#F8CCF6'
+            />
+
             <AxisBottom xScale={xScale} innerHeight={innerHeight} />
           </g>
 
           <rect
-            className='cursor-grab fill-transparent active:cursor-grabbing'
+            className='size-full cursor-grab fill-transparent active:cursor-grabbing'
             width={innerWidth}
             height={height}
             ref={zoomRef}
@@ -140,8 +156,8 @@ export function Chart({
               innerWidth={innerWidth}
               innerHeight={innerHeight}
               setBrushExtent={onBrushDomainChange}
-              westHandleColor={styles.brush.handle.west}
-              eastHandleColor={styles.brush.handle.east}
+              westHandleColor={interactive ? styles.brush.handle.west : '#685770'}
+              eastHandleColor={interactive ? styles.brush.handle.east : '#685770'}
             />
           )}
         </g>

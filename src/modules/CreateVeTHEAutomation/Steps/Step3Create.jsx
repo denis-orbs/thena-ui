@@ -45,7 +45,7 @@ function Step3Create() {
       </div>
 
       {/* Settings */}
-      <div className='flex flex-col gap-3 pt-5'>
+      <div className='flex flex-col gap-3 pt-4'>
         <TextHeading>{t('Settings')}</TextHeading>
         <div className='flex flex-row justify-between'>
           <Paragraph>{t('Claim rebase rewards every week')}</Paragraph>
@@ -62,45 +62,46 @@ function Step3Create() {
       </div>
 
       {/* Voting Pairs and Weights */}
-      <div className='flex flex-col gap-3 pt-5'>
+      <div className='flex flex-col gap-3 pt-4'>
         <TextHeading>{t('Voting Pairs and Weights')}</TextHeading>
         <div className='flex flex-row justify-between'>
           <Paragraph>{t('Automatically vote each epoch')}</Paragraph>
           <TextHeading>{createData?.votes?.isAutoVote ? 'Yes' : 'No'}</TextHeading>
         </div>
-        {(createData?.votes?.pairs || []).map((pair, index) => (
-          <div key={`${pair.pair.address}_${index}`} className='flex flex-row items-center justify-between'>
-            {pair.pair?.type !== PAIR_TYPES.WEIGHTED ? (
-              <div className='flex flex-row gap-3'>
-                <IconGroup
-                  className='-space-x-2'
-                  classNames={{
-                    image: 'outline-2 w-7 h-7',
-                  }}
-                  logo1={pair.pair.token0.logoURI}
-                  logo2={pair.pair.token1.logoURI}
-                />
-                <div className='flex flex-row gap-[6px]'>
-                  <TextHeading className='text-sm'>{pair.pair.symbol}</TextHeading>
-                  <Paragraph className='text-sm'>{pair.pair.type}</Paragraph>
+        {createData?.votes?.isAutoVote &&
+          (createData?.votes?.pairs || []).map((pair, index) => (
+            <div key={`${pair.pair.address}_${index}`} className='flex flex-row items-center justify-between'>
+              {pair.pair?.type !== PAIR_TYPES.WEIGHTED ? (
+                <div className='flex flex-row gap-3'>
+                  <IconGroup
+                    className='-space-x-2'
+                    classNames={{
+                      image: 'outline-2 w-7 h-7',
+                    }}
+                    logo1={pair.pair.token0.logoURI}
+                    logo2={pair.pair.token1.logoURI}
+                  />
+                  <div className='flex flex-row gap-[6px]'>
+                    <TextHeading className='text-sm'>{pair.pair.symbol}</TextHeading>
+                    <Paragraph className='text-sm'>{pair.pair.type}</Paragraph>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <ListTokenPercantage listToken={pair.pair.tokens} />
-            )}
-            <TextHeading>{pair.weight}%</TextHeading>
-          </div>
-        ))}
+              ) : (
+                <ListTokenPercantage listToken={pair.pair.tokens} />
+              )}
+              <TextHeading>{pair.weight}%</TextHeading>
+            </div>
+          ))}
       </div>
 
       {/* Registration */}
-      <div className='flex flex-col gap-3 pt-5'>
+      <div className='flex flex-col gap-3 pt-4'>
         <TextHeading className='text-[18px]'>{t('Registration')}</TextHeading>
         <RegisterAutomation
           chainLINK={createData?.registration?.chainlink}
           chainLINKAmount={createData?.registration?.chainlinkAmount}
           updateRegistration={updateRegistration}
-          veTHEId={createData?.veTHEId}
+          contractData={createData}
         />
       </div>
     </div>

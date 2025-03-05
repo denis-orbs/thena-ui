@@ -9,7 +9,7 @@ import Box from '@/components/box'
 import { PrimaryButton, SecondaryButton, TextButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
-import { ThreeIconGroup } from '@/components/icongroup/ThreeIconGroup'
+import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CircleImage from '@/components/image/CircleImage'
 import Spinner from '@/components/spinner'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -52,14 +52,14 @@ export default function PairDetailPage({ params }) {
           <div className='flex flex-col items-start  justify-between gap-4 lg:flex-row lg:items-end'>
             <div className='flex w-full items-center gap-4'>
               {pair.type === PAIR_TYPES.WEIGHTED ? (
-                <ThreeIconGroup
-                  className='-space-x-1'
+                <GroupIconTokens
                   classNames={{
                     image: 'w-8 h-8 text-xl font-medium leading-5 text-[#1C2027]',
+                    rows: '-space-x-2',
                   }}
-                  logo1={pair?.tokens?.[0].logoURI ?? UNKNOWN_LOGO}
-                  logo2={pair?.tokens?.[1].logoURI ?? UNKNOWN_LOGO}
-                  extendNumber={(pair?.tokens?.length || 2) - 2}
+                  width={40}
+                  height={40}
+                  tokens={pair.tokens}
                 />
               ) : (
                 <IconGroup
@@ -103,7 +103,10 @@ export default function PairDetailPage({ params }) {
               />
               <SecondaryButton
                 onClick={() => {
-                  push(`/pools/${pair.address}`)
+                  push(
+                    // eslint-disable-next-line max-len
+                    `/pools/add-liquidity/?firstAddress=${pair.token0.address}&secondAddress=${pair.token1.address}&pairType=${pair.type}&step=2`,
+                  )
                 }}
               >
                 {t('Add Liquidity')}

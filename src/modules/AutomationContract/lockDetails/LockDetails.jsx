@@ -5,7 +5,7 @@ import Box from '@/components/box'
 import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { useGetMaxPaymentForGas, useOperationsAutomation } from '@/hooks/automationContract/useAutomationContract'
+import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { useCountdown } from '@/hooks/useCountdown'
 import usePrices from '@/hooks/usePrices'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
@@ -16,9 +16,9 @@ import AutomationStatus from '../AutomationStatus'
 function LockDetails({ contractData, veTHE }) {
   const t = useTranslations()
   const prices = usePrices()
+  const { data: veTHEs, isLoading } = useVeTheAutomations()
+  const found = veTHEs?.find(item => item.id === veTHE.id)
   const { text } = useCountdown(EVENT_TYPES.LIVE, contractData.settings.executionTime / 1000, true)
-  const maxPaymentForGas = useGetMaxPaymentForGas(veTHE.id)
-  const { isRelockEveryWeek, isLoading } = useOperationsAutomation(veTHE.id)
 
   return (
     <div className='space-y-4'>
@@ -28,13 +28,13 @@ function LockDetails({ contractData, veTHE }) {
         <Box className='flex w-full flex-col gap-2'>
           <div className='flex items-center gap-4'>
             {new Date().getTime() <= contractData.settings.executionTime && <TextHeading>{text}</TextHeading>}
-            <AutomationStatus veTHEId={contractData?.veTHEId} />
+            <AutomationStatus veTHEId={veTHE.id} />
           </div>
           <Paragraph className='text-sm'>{t('Automation Status')}</Paragraph>
         </Box>
         <Box className='flex w-full flex-col gap-2'>
-          {contractData?.veTHEId ? (
-            <TextHeading className='text-xl lg:text-2xl'>{contractData?.veTHEId}</TextHeading>
+          {veTHE.id ? (
+            <TextHeading className='text-xl lg:text-2xl'>{veTHE.id}</TextHeading>
           ) : (
             <Skeleton className='h-8 w-14' />
           )}
@@ -62,13 +62,13 @@ function LockDetails({ contractData, veTHE }) {
         </Box>
         <Box className='flex w-full flex-col gap-2'>
           <div className='flex items-center gap-1'>
-            <TextHeading className='text-2xl'>{formatAmount(fromWei(contractData.balance))}</TextHeading>
+            <TextHeading className='text-2xl'>{formatAmount(fromWei(found?.balanceAuto))}</TextHeading>
           </div>
           <Paragraph className='text-sm'>{t('Current LINK balance')}</Paragraph>
         </Box>
         <Box className='flex w-full flex-col gap-2'>
           <div className='flex items-center gap-1'>
-            <TextHeading className='text-2xl'>{formatAmount(maxPaymentForGas)}</TextHeading>
+            <TextHeading className='text-2xl'>{formatAmount(found?.minBalanceAuto)}</TextHeading>
           </div>
           <Paragraph className='text-sm'>{t('Minimum LINK balance required')}</Paragraph>
         </Box>
@@ -78,7 +78,7 @@ function LockDetails({ contractData, veTHE }) {
               <Skeleton className='h-8 w-20' />
             ) : (
               <TextHeading className='text-2xl'>
-                {isRelockEveryWeek
+                {found?.operations?.isRelockEveryWeek
                   ? t('Automated')
                   : veTHE.expire > 0
                     ? t('Expires in [x] days', { x: veTHE.expire })

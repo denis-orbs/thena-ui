@@ -106,13 +106,13 @@ const Contracts = {
     [CHAIN_ID.BSC]: '0x8b0f96e4dd9a9a30846dee60e11da312fde2dfcb',
   },
   gammaZap: {
-    [CHAIN_ID.BSC]: '0x8f48940905b47b14d0d3e7a4808d71c5b9b5e62b',
+    [CHAIN_ID.BSC]: '0x0f32300807f24c00d6a15886b0944cd934cf7f5e',
   },
   gammaUniProxy: {
     [CHAIN_ID.BSC]: '0xF75c017E3b023a593505e281b565ED35Cc120efa',
   },
   gammaUniProxyFarmV3: {
-    [CHAIN_ID.BSC]: '0x21639f16CC05ca16F88A8edC359ccF6bf5bFB528',
+    [CHAIN_ID.BSC]: '0x4a84b788960DF168703062c262969510E83DCa36',
     [CHAIN_ID.TEST_BSC]: '0x57C41F96d20F23d2De73421462fA9BE00e38Af85',
   },
   gammaUniProxyFeeV3: {
@@ -194,12 +194,8 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
   veTheAutomationFactory: {
-    [CHAIN_ID.BSC]: '0x7cb6aAc8df6BC7fEDccbA0262E4F9e397B1485F9',
-    [CHAIN_ID.TEST_BSC]: '0xc84f8b2ddbcd2bc862b80b432c86c0af121504c7',
-  },
-  keeperRegistry: {
-    [CHAIN_ID.BSC]: '0xDc21E279934fF6721CaDfDD112DAfb3261f09A2C',
-    [CHAIN_ID.TEST_BSC]: '0x96bb60aAAec09A0FceB4527b81bbF3Cc0c171393',
+    [CHAIN_ID.BSC]: '0x92de6efe30ff59a7ee4380a7b8ba363bfd1e6878',
+    [CHAIN_ID.TEST_BSC]: '0x31eDab9BAf224f368a39C607f29E2381cC269cE7',
   },
 }
 export default Contracts
