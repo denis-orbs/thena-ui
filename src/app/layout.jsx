@@ -52,7 +52,7 @@ export const revalidate = 30
 
 const metaCrmConfig = {
   'data-entity-id': '64df0a122effea1f2889adcc',
-  integrity: 'sha384-abtJSu2I6v/7Yq+kl3TZURy/e4iD1KtD7Nv3TzeWQrtMb0S/oJ/mRFgvrHClQzb',
+  integrity: 'sha384-abtJSu2I6v/7Yq+kl3TZURy/e4iD1KtD7Nv3TzeWQrtMb0S/oJ/mRFgvrHClQzb/',
   apikey: 'n4crf9vaq9',
   ecosystem: 'EVM',
 }

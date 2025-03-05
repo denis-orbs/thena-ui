@@ -94,7 +94,7 @@ function Updates() {
             grabCursor
             className='updates-swiper !w-full !pb-10 md:pb-0'
           >
-            {blogData.slice(0, 3).map((item, idx) => (
+            {blogData.map((item, idx) => (
               <SwiperSlide key={idx}>
                 <div className='group relative z-10 overflow-hidden rounded-xl  bg-transparent p-px transition-opacity after:absolute after:left-0 after:top-0 after:h-full  after:w-full after:bg-gradient-to-b after:from-[#BE01B7] after:to-transparent after:opacity-0 after:transition-opacity after:duration-300 after:ease-linear after:content-[""] hover:after:opacity-100'>
                   <div
