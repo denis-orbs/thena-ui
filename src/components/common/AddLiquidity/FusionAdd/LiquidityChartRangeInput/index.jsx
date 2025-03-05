@@ -42,7 +42,10 @@ export default function LiquidityChartRangeInput({
   interactive,
   handleShow = true,
 }) {
-  const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
+  const isSorted = useMemo(
+    () => currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped),
+    [currencyA, currencyB],
+  )
 
   const { isLoading, error, formattedData } = useDensityChartData({
     currencyA,

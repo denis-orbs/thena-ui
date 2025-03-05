@@ -97,6 +97,11 @@ export const Brush = ({
       .attr('stroke', 'none')
       .attr('fill-opacity', '0.1')
       .attr('fill', `url(#${id}-gradient-selection)`)
+      .attr('cursor', interactive ? 'move' : 'default')
+
+    select(brushRef.current)
+      .selectAll('.handle')
+      .attr('cursor', interactive ? 'ew-resize' : 'default')
   }, [brushExtent, brushed, id, innerHeight, innerWidth, interactive, previousBrushExtent, xScale])
 
   // respond to xScale changes only
@@ -167,7 +172,7 @@ export const Brush = ({
                   />
                   <path
                     className={cn(
-                      'pointer-events-none cursor-ew-resize  stroke-[1.5px]',
+                      'pointer-events-none cursor-ew-resize stroke-[1.5px]',
                       interactive ? 'stroke-[#F199EE]' : 'stroke-[#685770]',
                     )}
                     d={brushHandleAccentPath()}
@@ -181,7 +186,7 @@ export const Brush = ({
                   )}
                   transform={`translate(50,0), scale(${flipWestHandle ? '1' : '-1'}, 1)`}
                 >
-                  <rect fill='#580055' y='0' x='-30' height='30' width='60' rx='8' />
+                  <rect fill={interactive ? '#580055' : '#422D4C'} y='0' x='-30' height='30' width='60' rx='8' />
                   <text
                     className='text-xs'
                     fill='#FCE6FB'
@@ -221,7 +226,7 @@ export const Brush = ({
                   )}
                   transform={`translate(50,0), scale(${flipEastHandle ? '-1' : '1'}, 1)`}
                 >
-                  <rect fill='#E333DD' y='0' x='-30' height='30' width='60' rx='8' />
+                  <rect fill={interactive ? '#E333DD' : '#422D4C'} y='0' x='-30' height='30' width='60' rx='8' />
                   <text className='text-xs' fill='#FCE6FB' x='-20' y='15' dominantBaseline='middle'>
                     {brushLabelValue('e', localBrushExtent[1])}
                   </text>

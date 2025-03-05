@@ -158,10 +158,13 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
     if (!price) return
 
     dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
-    onLeftRangeInput(preset ? String(+price * preset.min) : '')
-    onRightRangeInput(preset ? String(+price * preset.max) : '')
     onChangePresetRange(preset)
-  }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, price])
+
+    if (!MANUAL_TYPES.includes(strategy?.title)) {
+      onLeftRangeInput(preset ? String(+price * preset.min) : '')
+      onRightRangeInput(preset ? String(+price * preset.max) : '')
+    }
+  }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, price, strategy?.title])
 
   useEffect(() => {
     defaultSwapFees.token0 = firstAsset
