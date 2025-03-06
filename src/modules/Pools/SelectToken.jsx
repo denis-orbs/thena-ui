@@ -67,14 +67,27 @@ function SelectToken({
   const filteredAssets = useMemo(() => {
     const tokenList = [...localTokens, ...assets, ...customAssets]
 
-    const result = search
-      ? tokenList.filter(
-          asset =>
-            !hiddenTokens.includes(asset.address) &&
-            (asset?.symbol?.toLowerCase().includes(search.toLowerCase()) ||
-              asset?.address?.toLowerCase().includes(search.toLowerCase())),
-        )
-      : tokenList.filter(asset => !hiddenTokens.includes(asset.address))
+    if (!search) {
+      return tokenList.filter(asset => !hiddenTokens.includes(asset.address))
+    }
+
+    const searchLower = search.toLowerCase()
+    const partialMatches = []
+    const notMatches = []
+
+    tokenList.forEach(asset => {
+      if (hiddenTokens.includes(asset.address)) return
+
+      const symbol = asset?.symbol?.toLowerCase() || ''
+      const address = asset?.address?.toLowerCase() || ''
+      if (symbol.includes(searchLower) || address.includes(searchLower)) {
+        partialMatches.push(asset)
+      } else {
+        notMatches.push(asset)
+      }
+    })
+
+    const result = [...partialMatches, ...notMatches]
 
     if (result.length === 0 && customToken) {
       result.push(customToken)
