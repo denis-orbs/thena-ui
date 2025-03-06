@@ -1484,5 +1484,6 @@
   "[amount] LINK will aproximated last": "{amount} LINK will aproximated last",
   "You have [balance] LINK in your Wallet": "You have {balance} LINK in your Wallet",
   "V2 Rewards": "V2 Rewards",
-  "This is the estimated total deposit based on your current contract settings": "This is the estimated total deposit based on your current contract settings."
+  "This is the estimated total deposit based on your current contract settings": "This is the estimated total deposit based on your current contract settings.",
+  "Minimum deposit": "Minimum deposit is $5. Please increase your amount."
 }

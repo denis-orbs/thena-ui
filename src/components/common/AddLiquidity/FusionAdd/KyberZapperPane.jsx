@@ -121,7 +121,7 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
             }
 
             if (BigNumber(amountIn).times(tokenDeposit.price).lte(5)) {
-              warnToast('Minimum deposit is $5. Please increase your amount.')
+              warnToast('Minimum deposit')
               return false
             }
 

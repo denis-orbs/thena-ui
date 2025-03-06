@@ -244,6 +244,8 @@ export const useEstimateAPR = ({
         amount1: _amount1,
         useFullPrecision: true,
       })
+    } else {
+      _position = null
     }
     return {
       title,
@@ -258,14 +260,18 @@ export const useEstimateAPR = ({
     .plus(fromWei(_amount1, currency1?.decimals ?? 18).times(currency1?.price ?? 0))
 
   return presetPositions.reduce((acc, { title, position: p }) => {
-    acc[title] = calAPR({
-      reward,
-      tvl,
-      poolLiquidity: BigNumber(poolLiquidity).plus(p.liquidity),
-      positionLiquidity: p.liquidity,
-      isFarming,
-      earnPercent,
-    })
+    if (!p) {
+      acc[title] = BigNumber(0)
+    } else {
+      acc[title] = calAPR({
+        reward,
+        tvl,
+        poolLiquidity: BigNumber(poolLiquidity).plus(p.liquidity),
+        positionLiquidity: p.liquidity,
+        isFarming,
+        earnPercent,
+      })
+    }
     return acc
   }, {})
 }
