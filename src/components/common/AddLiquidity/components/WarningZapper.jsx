@@ -25,15 +25,15 @@ function WarningZapper() {
     >
       <InfoIcon className='my-1 w-5 min-w-5 stroke-primary-600 md:my-2 md:w-8 md:min-w-8' />
       <div>
-        <p className='text-xl font-medium text-primary-100'>Important Information about Zapper</p>
+        <p className='mb-2 text-xl font-medium text-primary-100'>Important Information about Zapper</p>
         <div
           className='overflow-hidden transition-all duration-300 ease-in-out'
           style={{ height: warningTextHeight }}
           ref={warningTextRef}
         >
           <TextSubHeading className='text-base text-primary-100'>
-            <p className='mb-1'>This feature is incompatible with tokens that have tax implications.</p>
-            <p className='mb-1.5'>
+            <p>This feature is incompatible with tokens that have tax implications.</p>
+            <p className='mb-2'>
               If you are zapping a considerable amount of funds, please ensure to use protection against sandwich
               attacks to safeguard your investment. This precaution helps protecting your transaction from potential
               front-running and other malicious activities.

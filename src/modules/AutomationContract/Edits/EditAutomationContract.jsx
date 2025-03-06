@@ -1,9 +1,10 @@
 import { isEmpty } from 'lodash'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import Toggle from '@/components/toggle'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useEditAutomation } from '@/hooks/automationContract/useAutomationContract'
@@ -19,6 +20,7 @@ const SETTINGS_TYPE = {
 
 function EditAutomationContract({ data }) {
   const t = useTranslations()
+  const router = useRouter()
   const [dataEdit, setDataEdit] = useState({ ...data })
 
   const { onEditAutomation, pending: pendingEdit } = useEditAutomation()
@@ -131,6 +133,10 @@ function EditAutomationContract({ data }) {
     setError()
   }, [dataEdit?.votes?.pairs, t])
 
+  const handleBack = useCallback(() => {
+    router.back()
+  }, [router])
+
   return (
     <Box>
       <div className='divide-y divide-neutral-700'>
@@ -174,13 +180,16 @@ function EditAutomationContract({ data }) {
             <div className='w-full space-y-11'>
               <SelectVotingPairsAndWeights data={dataEdit} handleVotingPairs={handleVotingPairs} />
               {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
-              <PrimaryButton
-                disabled={pendingEdit || isDisabled}
-                className='w-full lg:w-fit'
-                onClick={() => onEditAutomation(dataEdit)}
-              >
-                {t('Save Changes')}
-              </PrimaryButton>
+              <div className='flex flex-row gap-3'>
+                <EmphasisButton onClick={handleBack}>{t('Back')}</EmphasisButton>
+                <PrimaryButton
+                  disabled={pendingEdit || isDisabled}
+                  className='w-full lg:w-fit'
+                  onClick={() => onEditAutomation(dataEdit)}
+                >
+                  {t('Save Changes')}
+                </PrimaryButton>
+              </div>
             </div>
           </div>
         </div>
