@@ -74,7 +74,7 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
     () =>
       ranges.map(range => ({
         label: (
-          <div className='flex flex-col items-center justify-center gap-3 2xl:flex-row 2xl:gap-4'>
+          <div className='flex flex-row items-center justify-center gap-3 2xl:gap-4'>
             {t(range.title)}{' '}
             <NeutralBadge className='whitespace-nowrap lg:text-xs'>{formatAmount(APRs?.[range.type])} %</NeutralBadge>
           </div>
@@ -88,5 +88,5 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
     [ranges, APRs, t, activePreset, handlePresetRangeSelection, onChangePresetRange],
   )
 
-  return <Selection data={rangeSelections} isFull isTranslation={false} />
+  return <Selection className='grid grid-cols-2 lg:grid-cols-4' data={rangeSelections} isFull isTranslation={false} />
 }

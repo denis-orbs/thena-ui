@@ -85,7 +85,7 @@ export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB,
 
   return (
     <div
-      className={cn('flex flex-col gap-2', {
+      className={cn('flex flex-col gap-2 md:gap-4', {
         'lg:flex-row': !depositADisabled && !depositBDisabled,
       })}
     >

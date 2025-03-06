@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { zeroAddress } from 'viem'
 
+import { PoolAttributesSection } from '@/app/pools/(add-liquidity)/add-liquidity/PoolAttributesSection'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Selection from '@/components/selection'
@@ -95,7 +96,6 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
     useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const [isAutomatic, setIsAutomatic] = useState(strategy?.isAutomatic ?? false)
-  const [isLoadingManual, setIsLoadingManual] = useState(false)
 
   const poolAddress = searchParams.get('poolAddress')
 
@@ -195,15 +195,9 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
       })
       handleChooseStrategy(_strategy ?? defaultSwapFees)
       setIsAutomatic(enable)
-      setIsLoadingManual(false)
     },
     [handleChooseStrategy, sortedSubPools],
   )
-
-  useEffect(() => {
-    setIsLoadingManual(true)
-    setTimeout(() => setIsLoadingManual(false), 1500)
-  }, [])
 
   const strategyAutoData = useMemo(() => {
     const autoStrategy = sortedSubPools
@@ -257,13 +251,17 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
-      <div className='flex-[6] space-y-8'>
+      <div className='flex-[6] space-y-4'>
         <StrategyTitle
           strategyCount={strategyAutoData.length}
           isAutomatic={isAutomatic}
           toggleStrategyType={toggleStrategyType}
           position={position}
         />
+
+        <div className={cn('!mt-2 hidden max-lg:block', { '!mt-24': !!position })}>
+          <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
+        </div>
 
         {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
@@ -276,8 +274,6 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
             pair={pair}
             handleChooseStrategy={handleChooseStrategy}
             defaultSwapFees={defaultSwapFees}
-            isLoadingManual={isLoadingManual}
-            setIsLoadingManual={setIsLoadingManual}
           />
         )}
       </div>
@@ -325,18 +321,19 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
 
         <div className={cn('flex gap-2 max-lg:w-full', strategyCount === 0 && 'hidden')}>
           <Selection
-            className='w-full max-lg:grid max-lg:grid-cols-2 lg:w-fit'
+            className='w-full max-lg:grid max-lg:grid-cols-2 lg:w-fit [&>button]:h-full'
             data={strategyType}
             isTranslation={false}
           />
           <i
             onClick={() => setShow(!show)}
             className={cn(
-              'flex size-12 cursor-pointer items-center justify-center rounded-lg ',
+              'flex cursor-pointer items-center justify-center rounded-lg',
+              'size-8 min-w-8 md:size-12 md:min-w-12',
               show ? 'bg-neutral-700' : 'bg-neutral-800',
             )}
           >
-            <InfoCircleWhite className='size-5 stroke-neutral-400' />
+            <InfoCircleWhite className='size-4 stroke-neutral-400 md:size-5' />
           </i>
         </div>
       </div>

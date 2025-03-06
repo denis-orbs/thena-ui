@@ -7,7 +7,6 @@ import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
-import Spinner from '@/components/spinner'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -33,17 +32,7 @@ import { RangeSelector } from '../components/RangeSelector'
 
 const feeAmount = 3000
 
-function ManualStrategy({
-  firstAsset,
-  secondAsset,
-  strategy,
-  pair,
-  defaultSwapFees,
-  handleChooseStrategy,
-  position,
-  isLoadingManual,
-  setIsLoadingManual,
-}) {
+function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFees, handleChooseStrategy, position }) {
   const t = useTranslations()
 
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
@@ -148,28 +137,18 @@ function ManualStrategy({
   }, [dispatch, onStartPriceInput, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType])
 
   const handleChangeManualType = useCallback(() => {
-    setIsLoadingManual(true)
     if (strategy) {
       const _strategy = pair?.subpools.find(item =>
         strategy.isFarming ? item.title === 'CL_SwapFee' : item.title === 'CL_Farming',
       )
       handleChooseStrategy(_strategy ?? defaultSwapFees)
     }
-    setTimeout(() => setIsLoadingManual(false), 1500)
-  }, [defaultSwapFees, handleChooseStrategy, pair?.subpools, setIsLoadingManual, strategy])
+  }, [defaultSwapFees, handleChooseStrategy, pair?.subpools, strategy])
 
   useEffect(() => {
     resetState()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  if (isLoadingManual) {
-    return (
-      <div className='w-full py-4'>
-        <Spinner className='m-auto h-8 w-8' />
-      </div>
-    )
-  }
 
   return (
     <>
@@ -197,15 +176,17 @@ function ManualStrategy({
 
         {mintInfo.noLiquidity && (
           <div className='!mt-8 flex flex-col gap-4'>
-            <Info className='items-start p-8 text-sm'>
-              <div className='h-8 w-8'>
-                <InfoIcon className='h-8 w-8 stroke-primary-600' />
+            <Info className='items-start p-4 px-5 md:p-6 lg:p-8'>
+              <div className='flex'>
+                <InfoIcon className='size-5 !stroke-primary-600 md:size-8' />
               </div>
               <div className='flex flex-col gap-2'>
-                <div>
-                  <TextHeading className='text-xl text-neutral-100'>{t('Starting Price needed')}</TextHeading>
-                </div>
-                <TextSubHeading className='text-base text-primary-100'>{t('Initialize warning')}</TextSubHeading>
+                <Paragraph className='text-base font-medium text-neutral-100 md:text-xl'>
+                  {t('Starting Price needed')}
+                </Paragraph>
+                <TextSubHeading className='text-sm leading-5 text-primary-100 md:text-base'>
+                  {t('Initialize warning')}
+                </TextSubHeading>
               </div>
             </Info>
 
@@ -281,7 +262,7 @@ function ManualStrategy({
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'flex items-center justify-between rounded-xl bg-primary-950 bg-opacity-50 p-5 font-medium',
+                'flex items-center justify-between rounded-xl bg-primary-950 bg-opacity-50 p-4 font-medium md:p-5',
                 showToggle ? '' : 'hidden',
               )}
             >
@@ -290,26 +271,26 @@ function ManualStrategy({
                   <IconGroup
                     className='-space-x-2'
                     classNames={{
-                      image: 'outline-2 size-8',
+                      image: 'outline-2 size-7 md:size-8',
                     }}
                     logo1={firstAsset?.logoURI}
                     logo2={secondAsset?.logoURI}
                   />
                 ) : (
                   <CircleImage
-                    className={cn('size-8')}
+                    className='size-7 md:size-8'
                     src='https://cdn.thena.fi/assets/THE.png'
                     alt='THENA First Logo'
                   />
                 )}
 
-                <NewTextSubHeading className='text-neutral-50'>
-                  {isEarnFees ? 'Earn Fees' : 'Earn THE'}
+                <NewTextSubHeading className='text-lg text-neutral-50 md:text-xl'>
+                  {isEarnFees ? 'Earn Fees' : 'Earn $THE'}
                 </NewTextSubHeading>
               </div>
 
               <div className='flex flex-col'>
-                <NewTextSubHeading className='text-neutral-50'>
+                <NewTextSubHeading className='text-lg text-neutral-50 md:text-xl'>
                   ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
                 </NewTextSubHeading>
                 <Paragraph className='text-sm font-normal leading-5 text-neutral-300 lg:text-base'>
@@ -318,7 +299,7 @@ function ManualStrategy({
               </div>
 
               <div className='flex flex-col justify-end'>
-                <NewTextSubHeading className='text-primary-600'>
+                <NewTextSubHeading className='text-lg text-primary-600 md:text-xl'>
                   {formatAmount(APRs?.current ? APRs.current : position?.apr)}%
                 </NewTextSubHeading>
                 <Paragraph className='text-sm font-normal leading-5 text-neutral-400 lg:text-base'>

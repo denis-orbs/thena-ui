@@ -196,7 +196,7 @@ export default function ChooseTokensSection({ pairType }) {
             <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} setFoundedPool={setFoundedPair} />
           </>
         )}
-        <div className='mt-5 flex gap-4 lg:mt-8'>
+        <div className='mt-5 flex flex-col gap-4 md:flex-row lg:mt-8'>
           <EmphasisButton onClick={() => updateSearchParams({ step: 1, firstAddress: null, secondAddress: null })}>
             {t('Back')}
           </EmphasisButton>

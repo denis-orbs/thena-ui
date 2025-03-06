@@ -68,6 +68,10 @@ function useAllV3Ticks({ poolAddress, version = 2 }) {
   })
 
   useEffect(() => {
+    setSubgraphTickData([])
+  }, [poolAddress])
+
+  useEffect(() => {
     if (data?.ticks?.length) {
       setSubgraphTickData(tickData => [...tickData, ...data.ticks])
       if (data.ticks.length === MAX_THE_GRAPH_TICK_FETCH_VALUE) {
@@ -95,7 +99,7 @@ export function usePoolActiveLiquidity(currencyA, currencyB, feeAmount) {
 
   // Find nearest valid tick for pool in case tick is not initialized.
   const activeTick = useMemo(() => getActiveTick(pool?.tickCurrent, feeAmount), [pool, feeAmount])
-  const { isLoading, error, ticks } = useAllV3Ticks({ poolAddress, version })
+  const { isLoading, error, ticks } = useAllV3Ticks({ poolAddress, version, isFarming })
 
   return useMemo(() => {
     if (
