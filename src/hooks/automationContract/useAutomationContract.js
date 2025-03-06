@@ -806,7 +806,7 @@ export const useSetRunTimestamp = () => {
         })
 
         if (
-          !(await writeTxn(key, setRunTimesuuid, veTheAutomationContract, 'setRunTimestamp', [
+          !(await writeTxn(key, setRunTimesuuid, veTheAutomationContract, 'setExecutionTime', [
             Math.floor(startTimestamp / 1000),
           ]))
         ) {

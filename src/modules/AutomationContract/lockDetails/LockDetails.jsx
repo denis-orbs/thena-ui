@@ -9,7 +9,7 @@ import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationCon
 import { useCountdown } from '@/hooks/useCountdown'
 import usePrices from '@/hooks/usePrices'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
-import { formatAmount, fromWei } from '@/lib/utils'
+import { formatAmount } from '@/lib/utils'
 
 import AutomationStatus from '../AutomationStatus'
 
@@ -62,7 +62,7 @@ function LockDetails({ contractData, veTHE }) {
         </Box>
         <Box className='flex w-full flex-col gap-2'>
           <div className='flex items-center gap-1'>
-            <TextHeading className='text-2xl'>{formatAmount(fromWei(found?.balanceAuto))}</TextHeading>
+            <TextHeading className='text-2xl'>{formatAmount(found?.balanceAuto)}</TextHeading>
           </div>
           <Paragraph className='text-sm'>{t('Current LINK balance')}</Paragraph>
         </Box>
