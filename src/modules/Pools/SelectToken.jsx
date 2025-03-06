@@ -72,22 +72,22 @@ function SelectToken({
     }
 
     const searchLower = search.toLowerCase()
+    const exactMatches = []
     const partialMatches = []
-    const notMatches = []
 
     tokenList.forEach(asset => {
       if (hiddenTokens.includes(asset.address)) return
 
       const symbol = asset?.symbol?.toLowerCase() || ''
       const address = asset?.address?.toLowerCase() || ''
-      if (symbol.includes(searchLower) || address.includes(searchLower)) {
+      if (symbol === searchLower || address === searchLower) {
+        exactMatches.push(asset)
+      } else if (symbol.includes(searchLower) || address.includes(searchLower)) {
         partialMatches.push(asset)
-      } else {
-        notMatches.push(asset)
       }
     })
 
-    const result = [...partialMatches, ...notMatches]
+    const result = [...exactMatches, ...partialMatches]
 
     if (result.length === 0 && customToken) {
       result.push(customToken)
