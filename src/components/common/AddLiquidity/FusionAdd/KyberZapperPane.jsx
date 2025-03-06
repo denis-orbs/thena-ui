@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
@@ -12,7 +13,7 @@ import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
-import { cn, fromWei, isInvalidAmount, toWei, wrappedAddress } from '@/lib/utils'
+import { cn, isInvalidAmount, wrappedAddress } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useAprStore } from '@/state/APR/store'
 import { Bound } from '@/state/fusion/actions'
@@ -110,10 +111,7 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
         <PrimaryButton
           disabled={isFetching || !data?.route}
           onClick={() => {
-            if (
-              fromWei(toWei(amountIn, tokenDeposit?.decimals), tokenDeposit?.decimals).gt(tokenDeposit?.balance) ||
-              isInvalidAmount(amountIn)
-            ) {
+            if (isInvalidAmount(amountIn) || BigNumber(amountIn).gt(tokenDeposit?.balance)) {
               warnToast('Invalid Amount')
               return false
             }
