@@ -10,7 +10,7 @@ import Input from '@/components/input'
 import Spinner from '@/components/spinner'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
-import { NewTextHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
@@ -132,6 +132,11 @@ function ManualStrategy({
     }
     return `${_price}`
   }, [position, mintInfo.price, mintInfo.invertPrice])
+
+  const isEarnFees = useMemo(
+    () => (position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee',
+    [position, strategy?.title],
+  )
 
   const resetState = useCallback(() => {
     dispatch(updateSelectedPreset({ preset: null }))
@@ -276,50 +281,49 @@ function ManualStrategy({
           !mintInfo.noLiquidity && (
             <article
               className={cn(
-                'flex items-center justify-between rounded-xl bg-primary-950 p-6 font-medium',
+                'flex items-center justify-between rounded-xl bg-primary-950 bg-opacity-50 p-5 font-medium',
                 showToggle ? '' : 'hidden',
               )}
             >
-              <div className='flex flex-col gap-1'>
-                <Paragraph className='text-neutral-400'>
-                  {(position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee'
-                    ? 'Earn Fees'
-                    : 'Earn THE'}
-                </Paragraph>
-                <div className='flex flex-wrap gap-2'>
-                  <div className='flex items-center gap-1'>
-                    <Paragraph className='text-neutral-400'>{t('TVL')}:</Paragraph>
-                    <TextHeading className='text-neutral-300'>
-                      ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
-                    </TextHeading>
-                  </div>
-                </div>
-              </div>
-
-              <div className='flex flex-wrap justify-end gap-2'>
-                <TextHeading className='text-center font-archia'>
-                  <Paragraph className='text-neutral-400'>Estimate APR</Paragraph>
-                  <p className='text-xl font-semibold text-primary-600'>
-                    {formatAmount(APRs?.current ? APRs.current : position?.apr)}%
-                  </p>
-                </TextHeading>
-
-                {strategy?.title === 'CL_SwapFee' ? (
+              <div className='flex items-center gap-3'>
+                {isEarnFees ? (
                   <IconGroup
                     className='-space-x-2'
                     classNames={{
-                      image: 'outline-2 w-7 h-7',
+                      image: 'outline-2 size-8',
                     }}
                     logo1={firstAsset?.logoURI}
                     logo2={secondAsset?.logoURI}
                   />
                 ) : (
                   <CircleImage
-                    className={cn('size-7')}
+                    className={cn('size-8')}
                     src='https://cdn.thena.fi/assets/THE.png'
                     alt='THENA First Logo'
                   />
                 )}
+
+                <NewTextSubHeading className='text-neutral-50'>
+                  {isEarnFees ? 'Earn Fees' : 'Earn THE'}
+                </NewTextSubHeading>
+              </div>
+
+              <div className='flex flex-col'>
+                <NewTextSubHeading className='text-neutral-50'>
+                  ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
+                </NewTextSubHeading>
+                <Paragraph className='text-sm font-normal leading-5 text-neutral-300 lg:text-base'>
+                  {t('TVL')}
+                </Paragraph>
+              </div>
+
+              <div className='flex flex-col justify-end'>
+                <NewTextSubHeading className='text-primary-600'>
+                  {formatAmount(APRs?.current ? APRs.current : position?.apr)}%
+                </NewTextSubHeading>
+                <Paragraph className='text-sm font-normal leading-5 text-neutral-400 lg:text-base'>
+                  Estimate APR
+                </Paragraph>
               </div>
             </article>
           )
