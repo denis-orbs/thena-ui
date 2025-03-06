@@ -51,7 +51,7 @@ function RegisterAutomation({
   const { chainLinkData } = useChainLINKData()
 
   useEffect(() => {
-    if (!chainLINK && chainLinkData.length > 0) {
+    if (!chainLINK && (chainLinkData || []).length > 0) {
       updateRegistration(
         { ...chainLinkData[0], balance: chainLinkData[0].balance.toNumber() },
         UPDATE_REGISTRATION.CHAINLINK,

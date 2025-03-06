@@ -28,7 +28,7 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
   const { chainLINKData } = useChainLINKData()
 
   useEffect(() => {
-    if (!chainLINK && chainLINKData.length > 0) {
+    if (!chainLINK && (chainLINKData || []).length > 0) {
       setChainLINK(chainLINKData[0])
     }
   }, [chainLINK, chainLINKData])

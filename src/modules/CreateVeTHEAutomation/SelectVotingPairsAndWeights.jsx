@@ -2,21 +2,20 @@ import React, { useEffect, useState } from 'react'
 import { useTranslations } from 'use-intl'
 
 import { OutlinedButton } from '@/components/buttons/Button'
+import Divider from '@/components/divider'
 import Toggle from '@/components/toggle'
-import { TextHeading } from '@/components/typography'
-import { PlusIcon } from '@/svgs'
+import CustomTooltip from '@/components/tooltip'
+import { Paragraph, TextHeading } from '@/components/typography'
+import usePrices from '@/hooks/usePrices'
+import { formatAmount } from '@/lib/utils'
+import { InfoIcon, PlusIcon } from '@/svgs'
 
 import VotingPairItem from './Steps/votingPairs/VotingPairItem'
 
-// const UPDATE_TYPE = {
-//   AUTO: 'isAutoVote',
-//   PAIRS: 'pairs',
-// }
-
-function SelectVotingPairsAndWeights({ data, handleVotingPairs }) {
+function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds }) {
   const t = useTranslations()
   const [totalWeight, setTotalWeight] = useState(0)
-
+  const prices = usePrices()
   useEffect(() => {
     const tokens = [...data.votes.pairs].filter(item => item.pair !== undefined)
     setTotalWeight(tokens.reduce((sum, curr) => sum + curr.weight, 0))
@@ -67,6 +66,24 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs }) {
                 }}
                 className='block h-full rounded-md bg-gradient-to-r from-[#B386FF] to-[#FF86FA]'
               />
+            </div>
+          </div>
+        </>
+      )}
+      {minFunds && (
+        <>
+          <Divider />
+          <div className='flex flex-row items-center justify-between'>
+            <div className='flex flex-row items-center gap-1'>
+              <TextHeading className='text-lg'>{t('Total Deposit Estimate')}</TextHeading>
+              <InfoIcon data-tooltip-id='setting-mind-funds' className='h-4 w-4 stroke-neutral-400' />
+              <CustomTooltip className='z-40' id='setting-mind-funds' place='bottom'>
+                {t('This is the estimated total deposit based on your current contract settings')}
+              </CustomTooltip>
+            </div>
+            <div className='flex flex-row items-center gap-1'>
+              <Paragraph>${`${formatAmount(minFunds * prices.CHAINLINK)}`}</Paragraph>
+              <TextHeading>{`${formatAmount(minFunds)} LINK`}</TextHeading>
             </div>
           </div>
         </>

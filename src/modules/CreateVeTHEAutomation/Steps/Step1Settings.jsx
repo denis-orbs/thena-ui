@@ -2,8 +2,12 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import Divider from '@/components/divider'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
+import { Paragraph, TextHeading } from '@/components/typography'
+import usePrices from '@/hooks/usePrices'
+import { formatAmount } from '@/lib/utils'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
 import { InfoIcon } from '@/svgs'
 
@@ -15,8 +19,10 @@ const SETTINGS_TYPE = {
   EXECUTION_TIME: 'execution',
 }
 
-function Step1Settings() {
+function Step1Settings({ minFunds }) {
   const t = useTranslations()
+
+  const prices = usePrices()
 
   const { createData } = useSelector(state => state.veTHEAutomationContract)
   const dispatch = useDispatch()
@@ -96,6 +102,20 @@ function Step1Settings() {
         executionTime={createData?.settings?.executionTime}
         updateData={date => updateSetting(SETTINGS_TYPE.EXECUTION_TIME, date)}
       />
+      <Divider />
+      <div className='flex flex-row items-center justify-between'>
+        <div className='flex flex-row items-center gap-1'>
+          <TextHeading className='text-lg'>{t('Total Deposit Estimate')}</TextHeading>
+          <InfoIcon data-tooltip-id='setting-mind-funds' className='h-4 w-4 stroke-neutral-400' />
+          <CustomTooltip className='z-40' id='setting-mind-funds' place='bottom'>
+            {t('This is the estimated total deposit based on your current contract settings')}
+          </CustomTooltip>
+        </div>
+        <div className='flex flex-row items-center gap-1'>
+          <Paragraph>${`${formatAmount(minFunds * prices.CHAINLINK)}`}</Paragraph>
+          <TextHeading>{`${formatAmount(minFunds)} LINK`}</TextHeading>
+        </div>
+      </div>
     </div>
   )
 }

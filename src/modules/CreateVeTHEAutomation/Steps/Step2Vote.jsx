@@ -44,10 +44,15 @@ export const updateWeight = pairs => {
   })
 }
 
-function Step2Vote() {
+function Step2Vote({ setStep2Active, minFunds }) {
   const { createData } = useSelector(state => state.veTHEAutomationContract)
   const dispatch = useDispatch()
   const [data, setData] = useState({ ...createData })
+
+  useEffect(() => {
+    setStep2Active(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     dispatch(
@@ -103,7 +108,7 @@ function Step2Vote() {
     })
   }, [])
 
-  return <SelectVotingPairsAndWeights data={data} handleVotingPairs={handleVotingPairs} />
+  return <SelectVotingPairsAndWeights data={data} handleVotingPairs={handleVotingPairs} minFunds={minFunds} />
 }
 
 export default Step2Vote
