@@ -2,6 +2,8 @@ import { createReducer } from '@reduxjs/toolkit'
 
 import { createVeTHEAutomationContract, setSelectedVeTHE } from './action'
 
+const SECONDS_IN_DAY = 86400 * 1000
+const SECONDS_IN_TEN_MINUTES = 600 * 1000
 export const initialState = {
   veTHESelected: undefined,
   createData: {
@@ -10,10 +12,10 @@ export const initialState = {
     settings: {
       isClaimEveryWeek: true,
       isRelockEveryWeek: true,
-      executionTime: new Date().getTime(),
+      executionTime: Date.now() + SECONDS_IN_TEN_MINUTES + SECONDS_IN_DAY,
     },
     votes: {
-      isAutoVote: true,
+      isAutoVote: false,
       pairs: [
         {
           lock: false,

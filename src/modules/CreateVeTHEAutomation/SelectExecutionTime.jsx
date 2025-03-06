@@ -8,6 +8,8 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { InfoIcon } from '@/svgs'
 
 const week = 86400 * 7 * 1000
+const SECONDS_IN_DAY = 86400 * 1000
+const SECONDS_IN_TEN_MINUTES = 600 * 1000
 
 function SelectExecutionTime({ executionTime, updateData }) {
   const t = useTranslations()
@@ -29,14 +31,18 @@ function SelectExecutionTime({ executionTime, updateData }) {
         <div className='w-full'>
           <DateTimePickerCustom
             title='Automation Execution Time'
-            selectedDate={new Date(executionTime || Date.now())}
+            selectedDate={new Date(executionTime || Date.now() + SECONDS_IN_TEN_MINUTES + SECONDS_IN_DAY)}
             onChange={date => {
               const newDate = new Date(date).getTime()
               updateData(newDate)
             }}
             dateFormat='MMM D, YYYY [at] HH:mm [UTC]'
             disablePast={false}
-            minDate={new Date(Date.now() + new Date().getTimezoneOffset() * 60 * 1000)}
+            minDate={
+              new Date(
+                Date.now() + (new Date().getTimezoneOffset() * 60 * 1000 + SECONDS_IN_TEN_MINUTES + SECONDS_IN_DAY),
+              )
+            }
           />
         </div>
       </div>

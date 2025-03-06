@@ -52,7 +52,7 @@ const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registra
 function NavigationBottom({ currentStep, onNext }) {
   const t = useTranslations()
   const { createData } = useSelector(state => state.veTHEAutomationContract, shallowEqual)
-  const minimumBalance = useGetMinimumFunds(
+  const { minimumFunds: minimumBalance } = useGetMinimumFunds(
     createData.veTHEId,
     convertBooleansToHex(
       createData.votes.isAutoVote,

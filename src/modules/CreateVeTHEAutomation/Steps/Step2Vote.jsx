@@ -44,7 +44,7 @@ export const updateWeight = pairs => {
   })
 }
 
-function Step2Vote({ setStep2Active, minFunds }) {
+function Step2Vote({ setStep2Active, minFunds, isLoadingMinFunds }) {
   const { createData } = useSelector(state => state.veTHEAutomationContract)
   const dispatch = useDispatch()
   const [data, setData] = useState({ ...createData })
@@ -108,7 +108,14 @@ function Step2Vote({ setStep2Active, minFunds }) {
     })
   }, [])
 
-  return <SelectVotingPairsAndWeights data={data} handleVotingPairs={handleVotingPairs} minFunds={minFunds} />
+  return (
+    <SelectVotingPairsAndWeights
+      data={data}
+      handleVotingPairs={handleVotingPairs}
+      minFunds={minFunds}
+      isLoadingMinFunds={isLoadingMinFunds}
+    />
+  )
 }
 
 export default Step2Vote

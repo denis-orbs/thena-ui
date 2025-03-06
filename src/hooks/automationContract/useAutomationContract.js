@@ -26,7 +26,7 @@ export const useGetMinimumFunds = (veTHEId, operations, poolLength) => {
   const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
 
   // Get minimum fund chainLINK
-  const { data: minimumFunds } = useReadContract({
+  const { data: minimumFunds, isLoading } = useReadContract({
     ...veTheAutomationFactoryContract,
     functionName: 'getMinimumFunds',
     args: [operations, poolLength],
@@ -38,7 +38,7 @@ export const useGetMinimumFunds = (veTHEId, operations, poolLength) => {
     return new BigNumber(0)
   }
 
-  return fromWei(minimumFunds)
+  return { minimumFunds: fromWei(minimumFunds), isLoading }
 }
 
 export const useCreateAutomation = () => {

@@ -26,7 +26,7 @@ function RegisterAutomation({
   setMinFunds = () => {},
   updateRegistration = () => {},
 }) {
-  const minFunds = useGetMinimumFunds(
+  const { minimumFunds: minFunds } = useGetMinimumFunds(
     contractData?.veTHEId,
     convertBooleansToHex(
       contractData?.votes?.isAutoVote,

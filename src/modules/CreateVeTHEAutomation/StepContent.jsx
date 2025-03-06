@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { useGetMinimumFunds } from '@/hooks/automationContract/useAutomationContract'
@@ -12,20 +12,32 @@ function StepContent({ currentStep }) {
   const [step2Active, setStep2Active] = useState(false)
   const { createData } = useSelector(state => state.veTHEAutomationContract)
 
-  const minFunds = useGetMinimumFunds(
+  const pairLength = useMemo(
+    () => (step2Active ? (createData?.votes?.pairs || []).filter(item => Boolean(item.pair)).length : 0),
+    [createData?.votes?.pairs, step2Active],
+  )
+
+  const { minimumFunds: minFunds, isLoading: isLoadingMinFunds } = useGetMinimumFunds(
     createData?.veTHEId,
     convertBooleansToHex(
-      step2Active ? createData?.votes?.isAutoVote : false,
+      step2Active && pairLength > 0 ? createData?.votes?.isAutoVote : false,
       createData?.settings?.isClaimEveryWeek,
       createData?.settings?.isRelockEveryWeek,
     ),
-    step2Active ? (createData?.votes?.pairs || []).filter(item => Boolean(item.pair)).length : 0,
+    pairLength,
   )
   switch (currentStep) {
     case 1:
-      return <Step1Settings step2Active={step2Active} minFunds={minFunds} />
+      return <Step1Settings step2Active={step2Active} minFunds={minFunds} isLoadingMinFunds={isLoadingMinFunds} />
     case 2:
-      return <Step2Vote step2Active={step2Active} setStep2Active={setStep2Active} minFunds={minFunds} />
+      return (
+        <Step2Vote
+          step2Active={step2Active}
+          setStep2Active={setStep2Active}
+          minFunds={minFunds}
+          isLoadingMinFunds={isLoadingMinFunds}
+        />
+      )
     case 3:
       return <Step3Create />
     default:

@@ -3,6 +3,7 @@ import React, { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Divider from '@/components/divider'
+import Skeleton from '@/components/skeleton'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -19,7 +20,7 @@ const SETTINGS_TYPE = {
   EXECUTION_TIME: 'execution',
 }
 
-function Step1Settings({ minFunds }) {
+function Step1Settings({ minFunds, isLoadingMinFunds }) {
   const t = useTranslations()
 
   const prices = usePrices()
@@ -112,8 +113,17 @@ function Step1Settings({ minFunds }) {
           </CustomTooltip>
         </div>
         <div className='flex flex-row items-center gap-1'>
-          <Paragraph>${`${formatAmount(minFunds * prices.CHAINLINK)}`}</Paragraph>
-          <TextHeading>{`${formatAmount(minFunds)} LINK`}</TextHeading>
+          {isLoadingMinFunds ? (
+            <>
+              <Skeleton className='h-6 w-24' />
+              <Skeleton className='h-6 w-24' />
+            </>
+          ) : (
+            <>
+              <Paragraph>${`${formatAmount(minFunds * prices.CHAINLINK)}`}</Paragraph>
+              <TextHeading>{`${formatAmount(minFunds)} LINK`}</TextHeading>
+            </>
+          )}
         </div>
       </div>
     </div>

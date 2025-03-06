@@ -3,6 +3,7 @@ import { useTranslations } from 'use-intl'
 
 import { OutlinedButton } from '@/components/buttons/Button'
 import Divider from '@/components/divider'
+import Skeleton from '@/components/skeleton'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
@@ -12,7 +13,7 @@ import { InfoIcon, PlusIcon } from '@/svgs'
 
 import VotingPairItem from './Steps/votingPairs/VotingPairItem'
 
-function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds }) {
+function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds, isLoadingMinFunds }) {
   const t = useTranslations()
   const [totalWeight, setTotalWeight] = useState(0)
   const prices = usePrices()
@@ -82,8 +83,17 @@ function SelectVotingPairsAndWeights({ data, handleVotingPairs, minFunds }) {
               </CustomTooltip>
             </div>
             <div className='flex flex-row items-center gap-1'>
-              <Paragraph>${`${formatAmount(minFunds * prices.CHAINLINK)}`}</Paragraph>
-              <TextHeading>{`${formatAmount(minFunds)} LINK`}</TextHeading>
+              {isLoadingMinFunds ? (
+                <>
+                  <Skeleton className='h-6 w-24' />
+                  <Skeleton className='h-6 w-24' />
+                </>
+              ) : (
+                <>
+                  <Paragraph>${`${formatAmount(minFunds * prices.CHAINLINK)}`}</Paragraph>
+                  <TextHeading>{`${formatAmount(minFunds)} LINK`}</TextHeading>
+                </>
+              )}
             </div>
           </div>
         </>
