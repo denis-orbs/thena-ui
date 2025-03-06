@@ -7,13 +7,50 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
+import { ichiVaultAbi } from '@/constant/abi/fusion'
 import { useAssets } from '@/context/assetsContext'
 import { useIchiManage, useIchiManageV3 } from '@/hooks/fusion/useIchi'
 import useWallet from '@/hooks/useWallet'
+import { callMulti } from '@/lib/contractActions'
 import { warnToast } from '@/lib/notify'
 import { cn, isInvalidAmount } from '@/lib/utils'
 import PoolTitle from '@/modules/PoolTitle'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
+
+export const fetchIchiInfo = async (chainId, strategy) => {
+  const values = await callMulti([
+    {
+      address: strategy.address,
+      abi: ichiVaultAbi,
+      functionName: 'baseLower',
+      args: [],
+      chainId,
+    },
+    {
+      address: strategy.address,
+      abi: ichiVaultAbi,
+      functionName: 'baseUpper',
+      args: [],
+      chainId,
+    },
+    {
+      address: strategy.address,
+      abi: ichiVaultAbi,
+      functionName: 'currentTick',
+      args: [],
+      chainId,
+    },
+  ])
+  const lowerValue = 1.0001 ** Number(values[0] - values[2])
+  const upperValue = 1.0001 ** Number(values[1] - values[2])
+  return {
+    type: strategy.title,
+    title: strategy.title,
+    address: strategy.address,
+    min: lowerValue,
+    max: upperValue,
+  }
+}
 
 export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess }) {
   const [amount, setAmount] = useState('')

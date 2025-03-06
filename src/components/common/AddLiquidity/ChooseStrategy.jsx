@@ -13,8 +13,6 @@ import CircleImage from '@/components/image/CircleImage'
 import Selection from '@/components/selection'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
-import { ichiVaultAbi } from '@/constant/abi/fusion'
-import { callMulti } from '@/lib/contractActions'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
@@ -24,6 +22,7 @@ import { InfoCircleWhite } from '@/svgs'
 import AutomaticStrategy from './FusionAdd/AutomaticStrategy'
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
 import { fetchGammaInfo } from './FusionAdd/GammaAdd'
+import { fetchIchiInfo } from './FusionAdd/IchiAdd'
 import ManualStrategy from './FusionAdd/ManualStrategy'
 
 const defaultSwapFees = {
@@ -73,42 +72,6 @@ const defaultSwapFees = {
     totalUsd: new BigNumber(0),
   },
 }
-
-const fetchIchiInfo = async (chainId, strategy) => {
-  const values = await callMulti([
-    {
-      address: strategy.address,
-      abi: ichiVaultAbi,
-      functionName: 'baseLower',
-      args: [],
-      chainId,
-    },
-    {
-      address: strategy.address,
-      abi: ichiVaultAbi,
-      functionName: 'baseUpper',
-      args: [],
-      chainId,
-    },
-    {
-      address: strategy.address,
-      abi: ichiVaultAbi,
-      functionName: 'currentTick',
-      args: [],
-      chainId,
-    },
-  ])
-  const lowerValue = 1.0001 ** Number(values[0] - values[2])
-  const upperValue = 1.0001 ** Number(values[1] - values[2])
-  return {
-    type: strategy.title,
-    title: strategy.title,
-    address: strategy.address,
-    min: lowerValue,
-    max: upperValue,
-  }
-}
-
 const fetchStrategyInfo = async (chainId, strategy, currentTick) => {
   let preset
   if (GAMMA_TYPES.includes(strategy.title)) {
@@ -125,11 +88,11 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
   const t = useTranslations()
   const dispatch = useDispatch()
   const searchParams = useSearchParams()
+  const { networkId } = useChainSettings()
 
   const { strategy } = useV3MintState()
   const { onChangePresetRange, onLeftRangeInput, onRightRangeInput, onChangeLiquidityRangeType } =
     useV3MintActionHandlers(mintInfo.noLiquidity)
-  const { networkId } = useChainSettings()
 
   const [isAutomatic, setIsAutomatic] = useState(strategy?.isAutomatic ?? false)
   const [isLoadingManual, setIsLoadingManual] = useState(false)
@@ -144,27 +107,13 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
   const { data: preset } = useSWR(
     strategy && pair && ['strategy/info', strategy.address],
     () => fetchStrategyInfo(networkId, strategy, pair.currentTick),
-    {
-      refreshInterval: 0,
-    },
+    { refreshInterval: 0 },
   )
 
-  const price = useMemo(() => {
-    if (!mintInfo.price) return
-    return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
-  }, [mintInfo])
-
   useEffect(() => {
-    if (!price) return
-
     dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
     onChangePresetRange(preset)
-
-    if (!MANUAL_TYPES.includes(strategy?.title)) {
-      onLeftRangeInput(preset ? String(+price * preset.min) : '')
-      onRightRangeInput(preset ? String(+price * preset.max) : '')
-    }
-  }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput, price, strategy?.title])
+  }, [preset, dispatch, onChangePresetRange, onLeftRangeInput, onRightRangeInput])
 
   useEffect(() => {
     defaultSwapFees.token0 = firstAsset
@@ -300,7 +249,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
           </div>
         ),
         active: strategy?.address === sub.address,
-        onClickHandler: () => handleChooseStrategy(sub),
+        onClickHandler: () => strategy?.address !== sub.address && handleChooseStrategy(sub),
       }))
 
     return autoStrategy

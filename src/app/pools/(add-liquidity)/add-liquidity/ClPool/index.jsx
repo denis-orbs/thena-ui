@@ -13,7 +13,7 @@ import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
 import { cn, wrappedAddress } from '@/lib/utils'
-import LiquidityChartRangeInput from '@/modules/Pools/LiquidityChartRangeInput'
+import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import PoolChart from '@/modules/SwapChart/PoolChart'
@@ -190,17 +190,14 @@ function AddLiquidityClPool({ pool }) {
             {strategy?.isAutomatic && (
               <div className='pt-8'>
                 <NewTextHeading className='!text-xl font-semibold'>Liquidity Range</NewTextHeading>
-                <LiquidityChartRangeInput
-                  currencyA={baseCurrency ?? undefined}
-                  currencyB={quoteCurrency ?? undefined}
-                  feeAmount={mintInfo.dynamicFee}
-                  ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                  price={currentPrice}
-                  priceLower={position ? position.priceLower : priceLower}
-                  priceUpper={position ? position.priceUpper : priceUpper}
+                <AutomaticLiquidityChart
+                  currencyA={currencyA ?? undefined}
+                  currencyB={currencyB ?? undefined}
                   onLeftRangeInput={onLeftRangeInput}
                   onRightRangeInput={onRightRangeInput}
-                  interactive={false}
+                  strategy={strategy}
+                  position={position}
+                  pair={pair}
                   handleShow={!!strategy}
                 />
               </div>

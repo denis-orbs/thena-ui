@@ -84,13 +84,13 @@ export default function LiquidityChartRangeInput({
   interactive = interactive && Boolean(formattedData?.length)
 
   const brushDomain = useMemo(() => {
-    const leftPrice = priceLower
-    const rightPrice = priceUpper
+    const leftPrice = isSorted ? priceLower : priceUpper?.invert()
+    const rightPrice = isSorted ? priceUpper : priceLower?.invert()
 
     return leftPrice && rightPrice
       ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
       : undefined
-  }, [priceLower, priceUpper])
+  }, [isSorted, priceLower, priceUpper])
 
   const brushLabelValue = useCallback(
     (d, x) => {
