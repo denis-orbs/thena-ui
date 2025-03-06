@@ -33,6 +33,10 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
 
   const asset0 = useGetAsset(token0.address)
   const asset1 = useGetAsset(token1.address)
+  const BNB = useGetAsset('BNB')
+
+  const isToken0Wbnb = useMemo(() => asset0?.symbol === 'WBNB', [asset0])
+  const isToken1Wbnb = useMemo(() => asset1?.symbol === 'WBNB', [asset1])
 
   const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => mintInfo.ticks, [mintInfo])
 
@@ -52,8 +56,8 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
     poolAddress: mintInfo.poolAddress,
     tickUpper,
     tickLower,
-    token0: tokenDeposit.address === asset0.address ? asset0 : null,
-    token1: tokenDeposit.address === asset1.address ? asset1 : null,
+    token0: (tokenDeposit.address === 'BNB' && isToken0Wbnb) || tokenDeposit.address === asset0.address ? asset0 : null,
+    token1: (tokenDeposit.address === 'BNB' && isToken1Wbnb) || tokenDeposit.address === asset1.address ? asset1 : null,
     amount0: amountIn,
     amount1: amountIn,
     isFarming: strategy?.title === MANUAL_TYPES[0],
@@ -87,7 +91,7 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
             autoFocus
             onAmountChange={setAmount}
             showPercent={false}
-            assetsSelect={[asset0, asset1]}
+            assetsSelect={[asset0, asset1, (isToken0Wbnb || isToken1Wbnb) && BNB]}
           />
           <div className={cn('rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8')}>
             <p className='mb-1 text-xl font-medium'>Zapper Route</p>
@@ -115,6 +119,12 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
               warnToast('Invalid Amount')
               return false
             }
+
+            if (BigNumber(amountIn).times(tokenDeposit.price).lte(5)) {
+              warnToast('Minimum deposit is $5. Please increase your amount.')
+              return false
+            }
+
             handleAddLiquidity(
               {
                 route: data?.route,

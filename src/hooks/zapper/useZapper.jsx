@@ -20,7 +20,7 @@ import {
   getWBNBContract,
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
-import { fromWei, toWei } from '@/lib/utils'
+import { fromWei, toWei, wrappedAddress } from '@/lib/utils'
 import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
@@ -45,13 +45,12 @@ export const useGetZapInRoute = ({ tickLower, tickUpper, poolId, tokenIn, amount
         tokenIn.decimals,
       )
 
-      // TODO: replace with pool address
       const params = {
         dex: 'DEX_THENAALGEBRAINTEGRAL',
         'pool.id': getAddress(poolId),
         'position.tickLower': tickLower,
         'position.tickUpper': tickUpper,
-        tokenIn: getAddress(tokenIn.address),
+        tokenIn: getAddress(wrappedAddress(tokenIn)),
         amountIn: amount,
         slippage,
       }
@@ -74,11 +73,18 @@ export const useZapperAddLiquidity = () => {
   const handleAddLiquidity = useCallback(
     async ({ token, amount, mintInfo, route, deadline = 1800000000, isFarming = false }, callback) => {
       try {
-        if (!account) {
-          throw new Error('Please connect your wallet')
-        }
+        if (!account) throw new Error('Please connect your wallet')
+
+        const isBNB = token.address === 'BNB'
+        if (isBNB) token = WBNB[chainId]
+
+        const amountIn = toWei(
+          new BigNumber(amount).decimalPlaces(token.decimals, BigNumber.ROUND_DOWN).toString(),
+          token.decimals,
+        )
 
         const key = uuidv4()
+        const wrapId = uuidv4()
         const approveId = uuidv4()
         const addLiquidityId = uuidv4()
         const approveNft = uuidv4()
@@ -113,14 +119,19 @@ export const useZapperAddLiquidity = () => {
           return
         }
 
-        let isApproved = false
         const tokenContract = getERC20Contract(token.address, chainId)
-        if (token.address !== 'BNB') {
-          const allowance = await readCall(tokenContract, 'allowance', [account, buildData.routerAddress])
-          isApproved = fromWei(allowance, token.decimals).gte(amount)
+        const allowance = await readCall(tokenContract, 'allowance', [account, buildData.routerAddress])
+        const isApproved = fromWei(allowance, token.decimals).gte(amount)
+
+        if (isBNB) {
+          transactions[wrapId] = {
+            desc: 'Wrap BNB',
+            status: TXN_STATUS.START,
+            hash: null,
+          }
         }
 
-        if (token.address !== 'BNB' && !isApproved) {
+        if (!isApproved) {
           transactions[approveId] = {
             desc: 'Approving token',
             status: TXN_STATUS.START,
@@ -151,10 +162,18 @@ export const useZapperAddLiquidity = () => {
         startTxn({ key, transactions, title: t('Add Liquidity') })
         setPending(true)
 
+        if (isBNB) {
+          const wbnb = getWBNBContract(chainId)
+          if (!(await writeTxn(key, wrapId, wbnb, 'deposit', [], amountIn))) {
+            setPending(false)
+            return
+          }
+        }
+
         // MARK: APPROVE TOKENS
         setPending(true)
         if (!isApproved) {
-          if (!(await writeTxn(key, approveId, tokenContract, 'approve', [buildData.routerAddress, maxUint256]))) {
+          if (!(await writeTxn(key, approveId, tokenContract, 'approve', [buildData.routerAddress, amountIn]))) {
             setPending(false)
             return
           }
