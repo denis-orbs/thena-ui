@@ -339,7 +339,7 @@ export default function VotePage() {
         ),
         action: (
           <Input
-            className='w-full'
+            className='w-full min-w-44'
             min={0}
             step={1}
             val={percent[pool.address] || ''}
@@ -356,20 +356,22 @@ export default function VotePage() {
             }}
             placeholder='Enter vote'
             TrailingButton={
-              // eslint-disable-next-line react/jsx-wrap-multilines
-              <EmphasisButton
-                className='p-2'
-                onClick={() => {
-                  const val = isNaN(Number(percent[pool.address])) ? 0 : Number(percent[pool.address])
-                  const maxValue = 100 - totalPercent + val
-                  setPercent({
-                    ...percent,
-                    [pool.address]: maxValue === 0 ? '' : maxValue,
-                  })
-                }}
-              >
-                {t('Max')}
-              </EmphasisButton>
+              <div className='flex items-center gap-1'>
+                <Paragraph>%</Paragraph>
+                <EmphasisButton
+                  className='p-2'
+                  onClick={() => {
+                    const val = isNaN(Number(percent[pool.address])) ? 0 : Number(percent[pool.address])
+                    const maxValue = 100 - totalPercent + val
+                    setPercent({
+                      ...percent,
+                      [pool.address]: maxValue === 0 ? '' : maxValue,
+                    })
+                  }}
+                >
+                  {t('Max')}
+                </EmphasisButton>
+              </div>
             }
           />
         ),
