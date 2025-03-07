@@ -6,14 +6,12 @@ import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { useSetRunTimestamp } from '@/hooks/automationContract/useAutomationContract'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import SelectExecutionTime from '@/modules/CreateVeTHEAutomation/SelectExecutionTime'
-
-const SECONDS_IN_DAY = 86400 * 1000
-const SECONDS_IN_TEN_MINUTES = 600 * 1000
+import { getDefaultExecutionTime } from '@/state/veTHEAutomationContract/reducer'
 
 function EditExecutionTimeModal({ popup, setPopup, contract }) {
   const t = useTranslations()
   const { onSetRunTimestamp, pending } = useSetRunTimestamp()
-  const [executionTime, setExecutionTime] = useState(new Date().getTime() + (SECONDS_IN_TEN_MINUTES + SECONDS_IN_DAY))
+  const [executionTime, setExecutionTime] = useState(getDefaultExecutionTime())
   const windowSize = useWindowSize()
   return (
     <Modal

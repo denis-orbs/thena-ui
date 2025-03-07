@@ -2,8 +2,15 @@ import { createReducer } from '@reduxjs/toolkit'
 
 import { createVeTHEAutomationContract, setSelectedVeTHE } from './action'
 
-const SECONDS_IN_DAY = 86400 * 1000
-const SECONDS_IN_TEN_MINUTES = 600 * 1000
+const HOUR = 3600 * 1000
+const DAY = 86400 * 1000
+
+export const getDefaultExecutionTime = () => {
+  const tomorrow = new Date(Date.now() + HOUR + DAY)
+  tomorrow.setHours(0, 0, 0, 0)
+  return tomorrow.getTime()
+}
+
 export const initialState = {
   veTHESelected: undefined,
   createData: {
@@ -12,7 +19,7 @@ export const initialState = {
     settings: {
       isClaimEveryWeek: true,
       isRelockEveryWeek: true,
-      executionTime: Date.now() + SECONDS_IN_TEN_MINUTES + SECONDS_IN_DAY,
+      executionTime: getDefaultExecutionTime(),
     },
     votes: {
       isAutoVote: false,
@@ -39,6 +46,12 @@ export default createReducer(initialState, builder =>
     }))
     .addCase(createVeTHEAutomationContract, (state, { payload: { createData } }) => ({
       ...state,
-      createData,
+      createData: {
+        ...createData,
+        settings: {
+          ...createData.settings,
+          executionTime: createData.settings?.executionTime || getDefaultExecutionTime(),
+        },
+      },
     })),
 )
