@@ -74,7 +74,7 @@ export function FutureOfTrading() {
   const t = useTranslations()
 
   return (
-    <div className='mx-auto flex max-w-[1171px] flex-col items-center justify-center xl:flex-row xl:items-start xl:space-x-[151px]'>
+    <div className='mx-auto my-12 flex max-w-[1171px] flex-col items-center justify-center lg:my-[150px] xl:flex-row xl:items-start xl:space-x-[151px]'>
       <div className='mt-24 flex w-full max-w-[313px] flex-col items-center justify-center lg:mt-[100px] lg:max-w-[368px] xl:items-start xl:justify-start '>
         <Heading
           heading={t('Collaborative Liquidity Layer')}

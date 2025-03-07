@@ -13,9 +13,9 @@ function Home() {
       <Hero />
       <Stats />
       <Ecosystem />
+      <Updates />
       <Scenes />
       {/* <Build /> */}
-      <Updates />
       <Community />
     </>
   )

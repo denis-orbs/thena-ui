@@ -5,7 +5,6 @@ import React, { useMemo, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
-import { FutureOfTrading } from './FutureOfTrading'
 import { Grid } from './Grid'
 import { GridLinesAnimation } from './GridLinesAnimation'
 import { Heading } from '../Common/Heading'
@@ -121,7 +120,6 @@ function Ecosystem() {
           </div>
         </div>
       </div>
-      <FutureOfTrading />
     </div>
   )
 }
