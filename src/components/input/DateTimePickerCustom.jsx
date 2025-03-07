@@ -286,7 +286,6 @@ export function DateTimePickerCustom({
   const [isOpenModal, setIsOpenModal] = useState(false)
 
   const onOpenModal = useCallback(() => setIsOpenModal(true), [])
-
   return (
     <>
       <div className='relative flex items-center'>

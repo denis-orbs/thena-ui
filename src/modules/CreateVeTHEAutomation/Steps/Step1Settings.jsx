@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Divider from '@/components/divider'
@@ -10,6 +10,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import usePrices from '@/hooks/usePrices'
 import { formatAmount } from '@/lib/utils'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
+import { getDefaultExecutionTime } from '@/state/veTHEAutomationContract/reducer'
 import { InfoIcon } from '@/svgs'
 
 import SelectExecutionTime from '../SelectExecutionTime'
@@ -27,6 +28,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
 
   const { createData } = useSelector(state => state.veTHEAutomationContract)
   const dispatch = useDispatch()
+  const [executionTime, setExecutionTime] = useState(createData?.settings?.executionTime || getDefaultExecutionTime())
   const updateSetting = useCallback(
     (type, value) => {
       const currentSettings = createData?.settings || {}
@@ -43,6 +45,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
               isRelockEveryWeek: !currentSettings.isRelockEveryWeek,
             }
           case SETTINGS_TYPE.EXECUTION_TIME: {
+            if (!value) return currentSettings
             return {
               ...currentSettings,
               executionTime: value,
@@ -54,11 +57,15 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
       })()
 
       if (JSON.stringify(currentSettings) !== JSON.stringify(updatedSettings)) {
+        console.log('updatedSettings', updatedSettings)
         dispatch(
           createVeTHEAutomationContract({
             createData: {
               ...createData,
-              settings: updatedSettings,
+              settings: {
+                ...updatedSettings,
+                executionTime: updatedSettings.executionTime,
+              },
             },
           }),
         )
@@ -66,6 +73,10 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
     },
     [createData, dispatch],
   )
+
+  useEffect(() => {
+    updateSetting(SETTINGS_TYPE.EXECUTION_TIME, executionTime)
+  }, [executionTime, updateSetting])
 
   return (
     <div className='space-y-6'>
@@ -99,10 +110,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
           {t('Automatically increase your veTHE lock timestamp by one week every week')}
         </CustomTooltip>
       </div>
-      <SelectExecutionTime
-        executionTime={createData?.settings?.executionTime}
-        updateData={date => updateSetting(SETTINGS_TYPE.EXECUTION_TIME, date)}
-      />
+      <SelectExecutionTime executionTime={executionTime} updateData={setExecutionTime} />
       <Divider />
       <div className='flex flex-row items-center justify-between'>
         <div className='flex flex-row items-center gap-1'>

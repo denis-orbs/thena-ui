@@ -28,7 +28,7 @@ function StepContent({ currentStep }) {
   )
   switch (currentStep) {
     case 1:
-      return <Step1Settings step2Active={step2Active} minFunds={minFunds} isLoadingMinFunds={isLoadingMinFunds} />
+      return <Step1Settings minFunds={minFunds} isLoadingMinFunds={isLoadingMinFunds} />
     case 2:
       return (
         <Step2Vote

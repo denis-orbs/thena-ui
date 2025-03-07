@@ -6,7 +6,7 @@ import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 export function TokenPercentage({ tokens, poolAddress }) {
   const { length } = tokens || []
   return (
-    <>
+    <div className='flex flex-row items-center gap-2'>
       <GroupIconTokens
         classNames={{
           image: cn('outline-2 w-7 h-7', length <= 4 ? 'w-7 h-7' : 'w-6 h-6'),
@@ -29,7 +29,7 @@ export function TokenPercentage({ tokens, poolAddress }) {
           ))}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

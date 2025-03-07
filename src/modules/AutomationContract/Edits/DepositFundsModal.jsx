@@ -25,13 +25,13 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
     }
   }, [mutateAutomationData, veTHEId])
 
-  const { chainLINKData } = useChainLINKData()
+  const { chainLinkData } = useChainLINKData()
 
   useEffect(() => {
-    if (!chainLINK && (chainLINKData || []).length > 0) {
-      setChainLINK(chainLINKData[0])
+    if (!chainLINK && (chainLinkData || []).length > 0) {
+      setChainLINK(chainLinkData[0])
     }
-  }, [chainLINK, chainLINKData])
+  }, [chainLINK, chainLinkData])
 
   return (
     <Modal
@@ -60,7 +60,7 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
               autoFocus
               onAmountChange={setAmount}
               showPercent={false}
-              assetsSelect={chainLINKData}
+              assetsSelect={chainLinkData}
             />
           </div>
         </div>
