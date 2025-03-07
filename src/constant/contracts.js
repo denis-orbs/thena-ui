@@ -100,13 +100,13 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0x723E22B19528B86a94C3933b7d6096B145a85Df2',
   },
   classicZap: {
-    [CHAIN_ID.BSC]: '0xf6D36E4A3E788ef46633BEE0b6EC901968faE713',
+    [CHAIN_ID.BSC]: '0x7d57b83acd3e5b0560d2a9a52fcdd708e2daac72',
   },
   stableZap: {
-    [CHAIN_ID.BSC]: '0x8b0f96e4dd9a9a30846dee60e11da312fde2dfcb',
+    [CHAIN_ID.BSC]: '0x25c1b34d6f2647485f6e348c2152d076fcb4f51e',
   },
   gammaZap: {
-    [CHAIN_ID.BSC]: '0x0f32300807f24c00d6a15886b0944cd934cf7f5e',
+    [CHAIN_ID.BSC]: '0x6d391cf13c4c36ce1dade405f4eb667b93d7f991',
   },
   gammaUniProxy: {
     [CHAIN_ID.BSC]: '0xF75c017E3b023a593505e281b565ED35Cc120efa',

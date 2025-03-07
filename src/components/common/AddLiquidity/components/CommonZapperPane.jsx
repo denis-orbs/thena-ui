@@ -2,19 +2,23 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
+import { useReadContracts } from 'wagmi'
 
 import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
+import IconGroup from '@/components/icongroup'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import Spinner from '@/components/spinner'
+import { TextSubHeading } from '@/components/typography'
 import { GAMMA_TYPES, PAIR_TYPES } from '@/constant'
+import { vammZapAbi } from '@/constant/abi'
 import Contracts from '@/constant/contracts'
 import useDebounce from '@/hooks/useDebounce'
 import { useGetOdosTxSwap, useOdosQuoteSwapTradeTC } from '@/hooks/useSwap'
 import useWallet from '@/hooks/useWallet'
 import { useGammaZapper, useV1Zapper } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
-import { cn, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import { cn, formatAmount, fromWei, isInvalidAmount, toWei } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 
 import WarningZapper from './WarningZapper'
@@ -93,6 +97,38 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess 
       tokenIn: asset1,
     }
   }, [assemble0, assemble1, asset0, asset1])
+
+  const tokenInRecieveAmount = formatAmount(fromWei(bestQuote?.[0].outputMin ?? 0n, tokenIn?.decimals))
+  const theOther = (isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol) === asset0.symbol ? asset1 : asset0
+  const args = isUseTokenInPair
+    ? [tokenDeposit.address, toWei(amountIn, tokenDeposit?.decimals), strategy.address]
+    : [tokenIn?.address, toWei(tokenInRecieveAmount, tokenIn?.decimals), strategy.address]
+
+  const { data } = useReadContracts({
+    contracts: [
+      {
+        abi: vammZapAbi,
+        address: zapAddress,
+        functionName: 'getSwapAmount',
+        args,
+      },
+      {
+        abi: vammZapAbi,
+        address: zapAddress,
+        functionName: 'getEstimatedZapIn',
+        args,
+      },
+    ],
+    query: {
+      enabled: isUseTokenInPair
+        ? Boolean(tokenDeposit.address && amountIn && strategy.address)
+        : Boolean(tokenIn && tokenInRecieveAmount && strategy.address),
+    },
+  })
+
+  const amountToSwap = formatAmount(fromWei(data?.[0]?.result?.[0] ?? 0n))
+  const amountToReceive = formatAmount(fromWei(data?.[0]?.result?.[1] ?? 0n))
+  const liquidityAdded = formatAmount(fromWei(data?.[1]?.result ?? 0n))
 
   const handleAddLiquidity = useCallback(
     ({ isStake = true }) => {
@@ -173,32 +209,67 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess 
           />
           <div
             className={cn(
-              'rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8',
+              'flex gap-3 rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8',
               !isUseTokenInPair && !tokenIn && 'hidden',
+              Number(amountIn) <= 0 && 'hidden',
             )}
           >
-            <p className='mb-1 text-xl font-medium'>Zapper Route</p>
-            <ol className='list-inside list-decimal text-sm'>
-              {!isUseTokenInPair && (
-                <li>
-                  Swap {tokenDeposit.symbol} to {tokenIn?.symbol}.
-                </li>
-              )}
-              <li>
-                Swap a portion of {isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol} to{' '}
-                {(isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol) === asset0.symbol
-                  ? asset1.symbol
-                  : asset0.symbol}{' '}
-                to match the pool ratio.
-              </li>
-              <li>
-                Deposit the remaining {isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol} and swapped{' '}
-                {(isUseTokenInPair ? tokenDeposit.symbol : tokenIn?.symbol) === asset0.symbol
-                  ? asset1.symbol
-                  : asset0.symbol}{' '}
-                into the pool to receive LP tokens.
-              </li>
-            </ol>
+            <article className='flex flex-col gap-2'>
+              <div className='flex items-center justify-center gap-1 rounded-md bg-[#29292980] p-[6px]'>
+                <IconGroup
+                  className='-space-x-2'
+                  classNames={{
+                    image: 'outline-2 w-7 h-7',
+                  }}
+                  logo1={asset0.logoURI}
+                  logo2={asset1.logoURI}
+                />
+                <p className='hidden text-sm text-neutral-200 md:block'>
+                  {asset0.symbol}/{asset1.symbol}
+                </p>
+              </div>
+              <p className='space-x-2'>
+                <span>{liquidityAdded}</span>
+                <TextSubHeading className='text-sm'>LP</TextSubHeading>
+              </p>
+            </article>
+
+            <article>
+              <p className='mb-1 text-xl font-medium'>Zapper Route</p>
+              <ol className='list-inside list-decimal text-sm'>
+                {isUseTokenInPair ? (
+                  <>
+                    <li>
+                      Swap {amountToSwap} {tokenDeposit.symbol} to {amountToReceive} {theOther.symbol}.
+                    </li>
+                    <li>
+                      Build LP using {formatAmount(Number(amountIn) - Number(amountToSwap))} {tokenDeposit.symbol} and{' '}
+                      {amountToReceive} {theOther.symbol} on THENA
+                    </li>
+                    <li>
+                      Deposit estimated {liquidityAdded} {asset0.symbol}/{asset1.symbol} LP
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      Swap {Number(amountIn)} {tokenDeposit.symbol} to {tokenInRecieveAmount} {tokenIn?.symbol} via
+                      ODOS.
+                    </li>
+                    <li>
+                      Swap {amountToSwap} {tokenIn?.symbol} to {amountToReceive} {theOther.symbol}.
+                    </li>
+                    <li>
+                      Build LP using {formatAmount(Number(tokenInRecieveAmount) - Number(amountToSwap))}{' '}
+                      {tokenIn?.symbol} and {amountToReceive} {theOther.symbol} on THENA
+                    </li>
+                    <li>
+                      Deposit estimated {liquidityAdded} {asset0.symbol}/{asset1.symbol} LP
+                    </li>
+                  </>
+                )}
+              </ol>
+            </article>
           </div>
         </div>
       </div>

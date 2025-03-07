@@ -48,6 +48,42 @@
     "type": "event"
   },
   {
+    "inputs": [
+      { "internalType": "address", "name": "tokenIn", "type": "address" },
+      { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+      { "internalType": "address", "name": "pair", "type": "address" }
+    ],
+    "name": "getEstimatedZapIn",
+    "outputs": [{ "internalType": "uint256", "name": "liquidityAdded", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "pair", "type": "address" },
+      { "internalType": "uint256", "name": "lpAmount", "type": "uint256" },
+      { "internalType": "address", "name": "tokenOut", "type": "address" }
+    ],
+    "name": "getEstimatedZapOut",
+    "outputs": [{ "internalType": "uint256", "name": "tokenOutReceived", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "tokenIn", "type": "address" },
+      { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
+      { "internalType": "address", "name": "pair", "type": "address" }
+    ],
+    "name": "getSwapAmount",
+    "outputs": [
+      { "internalType": "uint256", "name": "tokenInToSwap", "type": "uint256" },
+      { "internalType": "uint256", "name": "estimatedTokenOut", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "odosRouter",
     "outputs": [{ "internalType": "contract IOdosRouter", "name": "", "type": "address" }],
