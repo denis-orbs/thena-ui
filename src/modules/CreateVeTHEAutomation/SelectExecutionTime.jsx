@@ -35,8 +35,8 @@ function SelectExecutionTime({ executionTime, updateData }) {
               updateData(newDate)
             }}
             dateFormat='MMM D, YYYY [at] HH:mm [UTC]'
-            disablePast
-            minDate={Date.now() + HOUR}
+            disablePast={false}
+            minDate={Date.now() + HOUR + new Date().getTimezoneOffset() * 60 * 1000}
           />
         </div>
       </div>

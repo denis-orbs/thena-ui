@@ -13,7 +13,7 @@ import useDebounce from '@/hooks/useDebounce'
 import useWallet from '@/hooks/useWallet'
 import { useGetZapInRoute, useZapperAddLiquidity } from '@/hooks/zapper/useZapper'
 import { warnToast } from '@/lib/notify'
-import { cn, isInvalidAmount, wrappedAddress } from '@/lib/utils'
+import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useAprStore } from '@/state/APR/store'
 import { Bound } from '@/state/fusion/actions'
@@ -58,8 +58,8 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
     tickLower,
     token0: (tokenDeposit.address === 'BNB' && isToken0Wbnb) || tokenDeposit.address === asset0.address ? asset0 : null,
     token1: (tokenDeposit.address === 'BNB' && isToken1Wbnb) || tokenDeposit.address === asset1.address ? asset1 : null,
-    amount0: amountIn,
-    amount1: amountIn,
+    amount0: Number(amountIn),
+    amount1: Number(amountIn),
     isFarming: strategy?.title === MANUAL_TYPES[0],
   })
 
@@ -77,6 +77,19 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
     slippage: slippage * 100,
   })
 
+  const tokens = {
+    [asset0.address]: asset0,
+    [asset1.address]: asset1,
+  }
+  const swaps = data?.zapDetails?.actions
+    .filter(action => action.type.includes('SWAP'))
+    .flatMap(entry => entry.aggregatorSwap?.swaps || entry.poolSwap?.swaps || [])
+
+  const liquidityAdded = data?.positionDetails?.addedLiquidity
+  const addLiquidityAction = data?.zapDetails?.actions.find(action => action.type.includes('ADD_LIQUIDITY'))
+  const _token0 = tokens[addLiquidityAction?.addLiquidity?.token0?.address?.toLowerCase()]
+  const _token1 = tokens[addLiquidityAction?.addLiquidity?.token1?.address?.toLowerCase()]
+
   return (
     <div className='flex flex-col gap-8'>
       <div className='space-y-4'>
@@ -93,18 +106,36 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
             showPercent={false}
             assetsSelect={[asset0, asset1, (isToken0Wbnb || isToken1Wbnb) && BNB]}
           />
-          <div className={cn('rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8')}>
+
+          <div
+            className={cn(
+              'rounded-xl border border-neutral-600 bg-neutral-900 p-4 text-neutral-50 md:p-6 2xl:p-8',
+              !data && 'hidden',
+            )}
+          >
             <p className='mb-1 text-xl font-medium'>Zapper Route</p>
             <ol className='list-inside list-decimal text-sm'>
+              {swaps?.map((a, index) => {
+                const tokenIn = tokens[a.tokenIn.address.toLowerCase()]
+                const tokenOut = tokens[a.tokenOut.address.toLowerCase()]
+
+                return (
+                  <li key={index}>
+                    Swap {formatAmount(fromWei(a.tokenIn.amount, tokenIn?.decimals))} {tokenIn?.symbol} to{' '}
+                    {formatAmount(fromWei(a.tokenOut.amount, tokenOut?.decimals))} {tokenOut?.symbol}
+                  </li>
+                )
+              })}
+
               <li>
-                Swap a portion of {tokenDeposit.symbol} to{' '}
-                {wrappedAddress(tokenDeposit) === wrappedAddress(token0) ? token1.symbol : token0.symbol} to match the
-                pool ratio.
+                Build LP using{' '}
+                {formatAmount(fromWei(addLiquidityAction?.addLiquidity?.token0?.amount, _token0?.decimals))}{' '}
+                {_token0?.symbol} and{' '}
+                {formatAmount(fromWei(addLiquidityAction?.addLiquidity?.token1?.amount, _token1?.decimals))}{' '}
+                {_token1?.symbol} on THENA
               </li>
               <li>
-                Deposit the remaining {tokenDeposit.symbol} and swapped{' '}
-                {wrappedAddress(tokenDeposit) === wrappedAddress(token0) ? token1.symbol : token0.symbol} into the pool
-                to receive LP tokens.
+                Deposit estimated {formatAmount(fromWei(liquidityAdded))} {asset0.symbol}/{asset1.symbol} LP
               </li>
             </ol>
           </div>
