@@ -153,50 +153,52 @@ export default function ChooseTokensSection({ pairType }) {
 
   return (
     <>
-      <div className='flex flex-col gap-5 lg:gap-8'>
-        {pairType === PAIR_TYPES.WEIGHTED ? (
-          <ChoosePoolTokens setTokensSelect={updateTokensSelected} isShowError={isShowError} />
-        ) : (
-          <div className='flex flex-col gap-3 md:gap-4'>
-            <NewTextSubHeading>{t('Choose Tokens')}</NewTextSubHeading>
-            <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
-              <SelectToken
-                otherAsset={secondAsset}
-                setSelectedAsset={asset => {
-                  setFirstAsset(asset)
-                  updateSearchParams({ firstAddress: asset?.address })
-                }}
-                placeHolder={t('Select Token')}
-                selectedAsset={firstAsset}
-                dropdownAlign='left'
-                optionWidth={optionWidth}
-                isError={isShowError && secondAddress}
-                errorMessage={!firstAddress ? t('Select token') : t('You can not select the same token twice')}
-              />
-              <SelectToken
-                otherAsset={firstAsset}
-                setSelectedAsset={asset => {
-                  setSecondAsset(asset)
-                  updateSearchParams({ secondAddress: asset?.address })
-                }}
-                placeHolder={t('Select Token')}
-                selectedAsset={secondAsset}
-                dropdownAlign='right'
-                optionWidth={optionWidth}
-                isError={isShowError && firstAddress}
-                errorMessage={!secondAddress ? t('Select token') : t('You can not select the same token twice')}
-              />
+      <div className='flex h-full flex-col gap-5 lg:gap-8'>
+        <div className='flex-grow'>
+          {pairType === PAIR_TYPES.WEIGHTED ? (
+            <ChoosePoolTokens setTokensSelect={updateTokensSelected} isShowError={isShowError} />
+          ) : (
+            <div className='flex flex-col gap-3 md:gap-4'>
+              <NewTextSubHeading>{t('Choose Tokens')}</NewTextSubHeading>
+              <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
+                <SelectToken
+                  otherAsset={secondAsset}
+                  setSelectedAsset={asset => {
+                    setFirstAsset(asset)
+                    updateSearchParams({ firstAddress: asset?.address })
+                  }}
+                  placeHolder={t('Select Token')}
+                  selectedAsset={firstAsset}
+                  dropdownAlign='left'
+                  optionWidth={optionWidth}
+                  isError={isShowError && secondAddress}
+                  errorMessage={!firstAddress ? t('Select token') : t('You can not select the same token twice')}
+                />
+                <SelectToken
+                  otherAsset={firstAsset}
+                  setSelectedAsset={asset => {
+                    setSecondAsset(asset)
+                    updateSearchParams({ secondAddress: asset?.address })
+                  }}
+                  placeHolder={t('Select Token')}
+                  selectedAsset={secondAsset}
+                  dropdownAlign='right'
+                  optionWidth={optionWidth}
+                  isError={isShowError && firstAddress}
+                  errorMessage={!secondAddress ? t('Select token') : t('You can not select the same token twice')}
+                />
+              </div>
             </div>
-          </div>
-        )}
-        {firstAsset && secondAsset && (
-          <>
-            <Divider />
+          )}
+          {firstAsset && secondAsset && (
+            <>
+              <Divider />
 
-            <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} setFoundedPool={setFoundedPair} />
-          </>
-        )}
-        <div className='mt-5 flex flex-col gap-4 md:flex-row lg:mt-8'>
+              <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} setFoundedPool={setFoundedPair} />
+            </>
+          )}
+        </div>
+        <div className='mt-5 flex flex-col gap-4 sm:mt-auto md:flex-row lg:mt-8'>
           <EmphasisButton onClick={() => updateSearchParams({ step: 1, firstAddress: null, secondAddress: null })}>
             {t('Back')}
           </EmphasisButton>

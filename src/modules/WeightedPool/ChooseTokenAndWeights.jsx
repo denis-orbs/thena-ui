@@ -9,10 +9,10 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { cn } from '@/lib/utils'
-import { InfoIcon, LockIcon, UnlockIcon } from '@/svgs'
+import { InfoIcon, LockIcon, UnlockIcon, WarningTriangleIcon } from '@/svgs'
 
 const updateWeight = tokens => {
   const weightLocked = tokens.filter(item => item.lock).reduce((sum, cur) => sum + cur.weight, 0)
@@ -125,12 +125,13 @@ export function ErrorMessage({ message, type = 'error', className, showIcon = tr
   )
 }
 
-export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWeights, setCurrentStep, setCheckError }) {
+export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWeights, setCurrentStep }) {
   const t = useTranslations()
   const [totalWeight, setTotalWeight] = useState(0)
   const [totalWeightLock, setTotalWeightLock] = useState(0)
   const [tokenSelected, setTokenSelected] = useState(tokensAndWeights)
   const { push } = useRouter()
+  const [checkError, setCheckError] = useState(false)
 
   useEffect(() => {
     const tokens = tokenSelected.filter(item => item.token !== null)
@@ -154,9 +155,36 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
     [checkAllWeightingHigherThanZero, tokenSelected.length, tokensAndWeights.length, totalWeight],
   )
 
+  const renderMessages = useCallback(() => {
+    const errorMessages = []
+    if (!checkAllWeightingHigherThanZero) {
+      errorMessages.push({ title: t('All tokens in a pool must have a weighting higher than zero') })
+    }
+
+    if (totalWeight !== 100) {
+      errorMessages.push({
+        title: t('Total Weights do not match 100%'),
+        desc: t('The total weighting of all tokens must equal exactly 100% before you continue'),
+      })
+    }
+
+    return errorMessages.map((data, index) => (
+      <div className='flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 px-4 py-5' key={index}>
+        <WarningTriangleIcon className='h-5 w-5' />
+        <div className='flex flex-col gap-1'>
+          {data.title && <TextHeading className='text-xl text-rose'>{data.title}</TextHeading>}
+          {data.desc && <TextSubHeading className='text-base text-rose'>{data.desc}</TextSubHeading>}
+        </div>
+      </div>
+    ))
+  }, [checkAllWeightingHigherThanZero, t, totalWeight])
+
   return (
     <div className='flex h-full flex-col gap-3'>
-      <TextHeading className='font-archia text-2xl xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
+      <div className='flex flex-col-reverse gap-4 lg:flex-row'>
+        <TextHeading className='flex-2 text-2xl lg:flex-1 xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
+        <div className='flex flex-1 flex-col gap-2 lg:flex-2'>{checkError && renderMessages()}</div>
+      </div>
       <div
         className={cn(
           'mb-16 grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3',

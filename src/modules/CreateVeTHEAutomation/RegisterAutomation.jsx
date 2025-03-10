@@ -83,7 +83,7 @@ function RegisterAutomation({
           assetsSelect={chainLinkData}
         />
       </div>
-      {minFunds.gt(chainLINKAmount) && (
+      {minFunds?.gt(chainLINKAmount) && (
         <ErrorMessage message={t('LINK Amount should be larger than [value]', { value: formatAmount(minFunds) })} />
       )}
     </div>

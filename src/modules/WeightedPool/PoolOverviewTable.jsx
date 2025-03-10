@@ -21,16 +21,16 @@ function PoolOverviewTable({ tokens, colors }) {
         <thead>
           <tr>
             <th className='py-2'>
-              <Paragraph className='text-lg font-medium text-neutral-50'>Token</Paragraph>
+              <Paragraph className='text-base font-medium text-neutral-50 lg:text-lg'>Token</Paragraph>
             </th>
             <th className='py-2'>
-              <Paragraph className='text-lg font-medium text-neutral-50'>Pool Weight</Paragraph>
+              <Paragraph className='text-base font-medium text-neutral-50 lg:text-lg'>Pool Weight</Paragraph>
             </th>
             <th className='py-2'>
-              <Paragraph className='text-lg font-medium text-neutral-50'>Value in $</Paragraph>
+              <Paragraph className='text-base font-medium text-neutral-50 lg:text-lg'>Value in $</Paragraph>
             </th>
             <th className='py-2'>
-              <Paragraph className='text-lg font-medium text-neutral-50'>Token Amount</Paragraph>
+              <Paragraph className='text-base font-medium text-neutral-50 lg:text-lg'>Token Amount</Paragraph>
             </th>
           </tr>
         </thead>

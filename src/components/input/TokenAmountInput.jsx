@@ -107,13 +107,13 @@ export function TokenAmountInput({
     <div className='flex flex-col gap-2'>
       {(typeof title === 'string' || showPercent) && (
         <div className='flex items-center justify-between'>
-          <p className={cn('font-medium text-white', classNames?.title)}>{title}</p>
+          {title && <p className={cn('font-medium text-white', classNames?.title)}>{title}</p>}
           {showPercent && <Tabs data={percents} />}
         </div>
       )}
       <div
         className={cn(
-          'flex cursor-text flex-col gap-3 self-stretch rounded-xl p-4',
+          'flex cursor-text flex-col gap-1 self-stretch rounded-xl px-4 py-3 lg:gap-3 lg:py-4',
           'border border-neutral-700 hover:bg-neutral-700 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
           'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
           classNames?.input,
@@ -140,7 +140,7 @@ export function TokenAmountInput({
                   className={cn(
                     'inline-flex items-center justify-center gap-2',
                     'rounded-lg bg-[#29292980] text-sm text-neutral-200 hover:bg-neutral-700',
-                    'py-1.5 pl-1.5 pr-2',
+                    'py-0.5 pl-1 pr-1.5 lg:py-1.5 lg:pl-1.5 lg:pr-2',
                     'hover-dont-change-bg cursor-pointer',
                     Boolean(maxBalance) && 'w-[220px]',
                   )}

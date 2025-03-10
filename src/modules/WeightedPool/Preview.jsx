@@ -83,7 +83,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
             </TextHeading>
           </div>
         </div>
-        <div className='flex gap-4'>
+        <div className='flex flex-col gap-4 lg:flex-row'>
           <div className='flex-[4]'>
             <PieChart tokens={tokens} colors={colors} showTotalPercent={false} />
           </div>
