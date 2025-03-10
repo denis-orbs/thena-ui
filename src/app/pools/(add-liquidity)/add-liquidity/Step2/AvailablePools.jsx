@@ -36,13 +36,13 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
       {
         label: 'Pair',
         value: 'pair',
-        width: 'w-[45%] md:w-[35%]',
+        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[45%] md:w-[35%]' : 'w-[42%] md:w-[35%]',
         isDesc: true,
       },
       {
         label: 'APR',
         value: 'apr',
-        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[calc(45%-100px)] md:w-[15%]' : 'w-[calc(55%-100px)] md:w-[15%]',
+        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[calc(45%-100px)] md:w-[15%]' : 'w-[calc(58%-100px)] md:w-[15%]',
         isDesc: true,
       },
     ]

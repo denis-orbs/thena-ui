@@ -40,7 +40,7 @@ export default function Step2() {
   const PoolDescriptionSection = useMemo(() => {
     const renderDescription = (title, description) => (
       <div className='flex h-max flex-col gap-2 rounded-md bg-neutral-900 p-4'>
-        <NewTextSubHeading className='hidden !text-xl md:block'>{t(title)}</NewTextSubHeading>
+        <NewTextSubHeading className='hidden !text-xl lg:block'>{t(title)}</NewTextSubHeading>
         <Paragraph className='text-sm text-neutral-300 md:text-base'>{t(description)}</Paragraph>
       </div>
     )
@@ -65,11 +65,11 @@ export default function Step2() {
       {PageTitleSection}
 
       <div className='grid gap-4 max-md:!mt-2 lg:grid-cols-add-liquidity-layout'>
-        <div className='order-2 md:order-1'>
+        <div className='order-2 lg:order-1'>
           <ChooseTokensSection pairType={pairType} />
         </div>
 
-        <div className='order-1 md:order-2'>{PoolDescriptionSection}</div>
+        <div className='order-1 lg:order-2'>{PoolDescriptionSection}</div>
       </div>
     </div>
   )
