@@ -9,6 +9,7 @@ import { useAutomationContractDetail, useDepositFunds } from '@/hooks/automation
 import useChainLINKData from '@/hooks/useChainLINKData'
 import { warnToast } from '@/lib/notify'
 import { fromWei, isInvalidAmount, toWei } from '@/lib/utils'
+import WarningLINKBalance from '@/modules/CreateVeTHEAutomation/WarningLINKBalance'
 
 function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) {
   const { veTHEId } = contract
@@ -52,6 +53,7 @@ function DepositFundsModal({ contract, popup, setPopup, onSuccess = () => {} }) 
             <div className='flex flex-row justify-between'>
               <TextHeading>{t('Add Funds')}</TextHeading>
             </div>
+            <WarningLINKBalance contract={contract} chainLINK={chainLINK} />
             <TokenAmountInput
               type='number'
               amount={amount}
