@@ -1,6 +1,7 @@
 'use client'
 
 import BigNumber from 'bignumber.js'
+import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -338,25 +339,32 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
         </div>
       </div>
 
-      <div className={cn('mt-2 overflow-hidden rounded-lg bg-neutral-800 p-4', show ? 'block' : 'hidden')}>
-        <Paragraph className='mb-4 block'>
-          Depending on the Assets you chose, you will get different Strategies to chose on.
-        </Paragraph>
+      <motion.div
+        initial={{ opacity: 0, y: 0, height: 0 }}
+        animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className='overflow-hidden'
+      >
+        <div className={cn('mt-2 rounded-lg bg-neutral-800 p-4')}>
+          <Paragraph className='mb-4 block'>
+            Depending on the Assets you chose, you will get different Strategies to chose on.
+          </Paragraph>
 
-        <TextHeading className='mb-2 block'>Manual Strategy</TextHeading>
-        <Paragraph>
-          Only use if you are experienced in providing concentrated liquidity. You can determine a custom price range
-          and will earn swap fees as long as the price of the assets stays in that range. If out of range, you will not
-          earn any reward until you re-adjust your position accordingly.
-        </Paragraph>
+          <TextHeading className='mb-2 block'>Manual Strategy</TextHeading>
+          <Paragraph>
+            Only use if you are experienced in providing concentrated liquidity. You can determine a custom price range
+            and will earn swap fees as long as the price of the assets stays in that range. If out of range, you will
+            not earn any reward until you re-adjust your position accordingly.
+          </Paragraph>
 
-        <TextHeading className='mb-2 mt-4 block'>Automatic Strategy</TextHeading>
-        <Paragraph>
-          If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated Market
-          Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you provide
-          liquidity, you will begin earning emissions.
-        </Paragraph>
-      </div>
+          <TextHeading className='mb-2 mt-4 block'>Automatic Strategy</TextHeading>
+          <Paragraph>
+            If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated
+            Market Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you
+            provide liquidity, you will begin earning emissions.
+          </Paragraph>
+        </div>
+      </motion.div>
     </article>
   )
 }

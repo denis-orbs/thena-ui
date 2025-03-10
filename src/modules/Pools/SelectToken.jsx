@@ -195,7 +195,7 @@ function SelectToken({
   return (
     <div>
       <div
-        className={cn('relative h-14 lg:h-20', isError && 'rounded-lg border border-error-500', className)}
+        className={cn('relative h-12 md:h-14 lg:h-20', isError && 'rounded-lg border border-error-500', className)}
         ref={wrapperRef}
       >
         <Input
@@ -203,7 +203,8 @@ function SelectToken({
           classNames={{
             input: cn(
               'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
-              'bg-neutral-900 hover:bg-neutral-700 pl-14 lg:pl-[72px]',
+              'bg-neutral-900 hover:bg-neutral-700 pl-12 md:pl-14 lg:pl-[72px]',
+              'text-base md:text-lg',
               open && 'bg-neutral-700',
               isDisabled && 'cursor-not-allowed bg-neutral-900 hover:bg-neutral-900',
               className,
@@ -233,7 +234,11 @@ function SelectToken({
             )
           }
           prefix={
-            <CircleImage alt='Token' className='size-8 lg:size-12' src={selectedAsset?.logoURI ?? UNKNOWN_LOGO} />
+            <CircleImage
+              alt='Token'
+              className='size-5 md:size-8 lg:size-12'
+              src={selectedAsset?.logoURI ?? UNKNOWN_LOGO}
+            />
           }
           prefixClass={prefixClass}
           readOnly

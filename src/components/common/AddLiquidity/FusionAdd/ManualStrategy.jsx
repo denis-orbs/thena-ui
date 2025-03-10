@@ -266,44 +266,44 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 showToggle ? '' : 'hidden',
               )}
             >
-              <div className='flex items-center gap-3'>
+              <div className='flex items-center gap-1 md:gap-3'>
                 {isEarnFees ? (
                   <IconGroup
                     className='-space-x-2'
                     classNames={{
-                      image: 'outline-2 size-7 md:size-8',
+                      image: 'outline-2 size-4 md:size-8',
                     }}
                     logo1={firstAsset?.logoURI}
                     logo2={secondAsset?.logoURI}
                   />
                 ) : (
                   <CircleImage
-                    className='size-7 md:size-8'
+                    className='size-4 md:size-8'
                     src='https://cdn.thena.fi/assets/THE.png'
                     alt='THENA First Logo'
                   />
                 )}
 
-                <NewTextSubHeading className='text-lg text-neutral-50 md:text-xl'>
+                <NewTextSubHeading className='text-xs text-neutral-50 md:text-xl'>
                   {isEarnFees ? 'Earn Fees' : 'Earn $THE'}
                 </NewTextSubHeading>
               </div>
 
               <div className='flex flex-col'>
-                <NewTextSubHeading className='text-lg text-neutral-50 md:text-xl'>
+                <NewTextSubHeading className='text-xs text-neutral-50 md:text-xl'>
                   ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
                 </NewTextSubHeading>
-                <Paragraph className='text-sm font-normal leading-5 text-neutral-300 lg:text-base'>
+                <Paragraph className='text-xs font-normal leading-5 text-neutral-300 md:text-base'>
                   {t('TVL')}
                 </Paragraph>
               </div>
 
               <div className='flex flex-col justify-end'>
-                <NewTextSubHeading className='text-lg text-primary-600 md:text-xl'>
+                <NewTextSubHeading className='text-xs text-primary-600 md:text-xl'>
                   {formatAmount(APRs?.current ? APRs.current : position?.apr)}%
                 </NewTextSubHeading>
-                <Paragraph className='text-sm font-normal leading-5 text-neutral-400 lg:text-base'>
-                  Estimate APR
+                <Paragraph className='text-xs font-normal leading-5 text-neutral-400 md:text-base'>
+                  Estimated APR
                 </Paragraph>
               </div>
             </article>
@@ -314,9 +314,9 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
       {strategy && (
         <div className={cn('flex flex-col gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div className='flex items-center justify-between'>
-            <NewTextHeading className='!text-xl font-semibold'>
+            <NewTextSubHeading className='text-sm font-semibold lg:text-xl'>
               {mintInfo.noLiquidity ? 'Price Range' : 'Liquidity Range'}
-            </NewTextHeading>
+            </NewTextSubHeading>
           </div>
 
           {activePreset === Presets.FULL && fullRangeWarningShown && (
@@ -324,32 +324,32 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
           )}
           {mintInfo.outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
           {mintInfo.invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
-          {!mintInfo.noLiquidity && (
-            <div className='-mb-2 flex items-center justify-center'>
-              <TextHeading className='text-sm'>
-                {t('Current Price: [price] [symbolA] [symbolB]', {
-                  price: currentPrice,
-                  symbolA: unwrappedSymbol(quoteCurrency),
-                  symbolB: unwrappedSymbol(baseCurrency),
-                })}
-              </TextHeading>
-            </div>
-          )}
 
           {!mintInfo.noLiquidity && (
-            <div className='mb-5 mt-0'>
-              <LiquidityChartRangeInput
-                currencyA={baseCurrency ?? undefined}
-                currencyB={quoteCurrency ?? undefined}
-                feeAmount={mintInfo.dynamicFee}
-                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                price={price ? parseFloat(price) : undefined}
-                priceLower={position?.priceLower ?? priceLower}
-                priceUpper={position?.priceUpper ?? priceUpper}
-                onLeftRangeInput={onLeftRangeInput}
-                onRightRangeInput={onRightRangeInput}
-                interactive={!position}
-              />
+            <div>
+              <div className='mt-0'>
+                <LiquidityChartRangeInput
+                  currencyA={baseCurrency ?? undefined}
+                  currencyB={quoteCurrency ?? undefined}
+                  feeAmount={mintInfo.dynamicFee}
+                  ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+                  price={price ? parseFloat(price) : undefined}
+                  priceLower={position?.priceLower ?? priceLower}
+                  priceUpper={position?.priceUpper ?? priceUpper}
+                  onLeftRangeInput={onLeftRangeInput}
+                  onRightRangeInput={onRightRangeInput}
+                  interactive={!position}
+                />
+              </div>
+              <div className='-mt-3 flex items-center justify-center md:mt-3'>
+                <TextHeading className='text-sm'>
+                  {t('Current Price: [price] [symbolA] [symbolB]', {
+                    price: currentPrice,
+                    symbolA: unwrappedSymbol(quoteCurrency),
+                    symbolB: unwrappedSymbol(baseCurrency),
+                  })}
+                </TextHeading>
+              </div>
             </div>
           )}
 

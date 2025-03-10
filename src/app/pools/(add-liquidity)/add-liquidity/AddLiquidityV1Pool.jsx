@@ -14,7 +14,7 @@ import { ClassicPoolIcon, StablePoolIcon } from '@/svgs'
 import { PairBasicInfo } from './PairBasicInfo'
 import { PoolAttributesSection } from './PoolAttributesSection'
 
-function AddLiquidityV1Pool({ pair }) {
+function AddLiquidityV1Pool({ pair, handleBack }) {
   const t = useTranslations()
   const searchParams = useSearchParams()
 
@@ -79,6 +79,12 @@ function AddLiquidityV1Pool({ pair }) {
 
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         {/* Left side */}
+        {pool && (
+          <div className='block lg:hidden'>
+            <PoolAttributesSection pair={pair} />
+          </div>
+        )}
+
         <div className='flex flex-col gap-4 lg:gap-8'>
           {pair ? (
             <PairBasicInfo pair={pair} />
@@ -111,18 +117,21 @@ function AddLiquidityV1Pool({ pair }) {
             secondAsset={secondAsset}
             setFirstAddress={setFirstAddress}
             setSecondAddress={setSecondAddress}
+            handleBack={handleBack}
           />
         </div>
 
         {/* Right side */}
         {pool ? (
           <div className='flex flex-col gap-4 lg:gap-8'>
-            <PoolAttributesSection pair={pair} />
+            <div className='hidden lg:block'>
+              <PoolAttributesSection pair={pair} />
+            </div>
 
             <div className='flex flex-col gap-4 rounded-md bg-neutral-800 p-4'>
               <div className='flex flex-col gap-4'>
-                <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-                <div className='flex flex-col gap-3'>
+                <TextHeading className='text-base md:text-lg'>{t('Reserve Info')}</TextHeading>
+                <div className='flex flex-col gap-3 text-sm md:text-base'>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>
                       {unwrappedSymbol(pool.token0)} {t('Amount')}
@@ -139,8 +148,8 @@ function AddLiquidityV1Pool({ pair }) {
               </div>
               <Divider />
               <div className='flex flex-col gap-4'>
-                <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-                <div className='flex flex-col gap-3'>
+                <TextHeading className='text-base md:text-lg'>{t('My Info')}</TextHeading>
+                <div className='flex flex-col gap-3 text-sm md:text-base'>
                   <div className='flex items-center justify-between'>
                     <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
                     <Paragraph>{formatAmount(pool.account.totalLp)} LP</Paragraph>

@@ -29,7 +29,7 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
 
   return (
     <div className={cn('mb-4 flex items-center justify-end', className)}>
-      <div className={cn('flex flex-col', show && 'gap-3')} ref={dropdownRef}>
+      <div className={cn('flex flex-col')} ref={dropdownRef}>
         <div className='flex justify-end'>
           <div
             className='flex cursor-pointer items-center justify-end gap-2'
@@ -39,23 +39,27 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
           >
             <Paragraph
               className={cn(
-                'font-medium text-neutral-400 hover:text-primary-600 hover:underline',
+                'text-sm font-medium text-neutral-400 hover:text-primary-600 hover:underline md:text-base',
                 isHovered && 'text-primary-600 underline',
               )}
             >
               {t('Slippage')}
             </Paragraph>
-            {!isHovered ? <SettingsIcon className='h-6 w-6' /> : <SettingPrimaryIcon className='h-6 w-6' />}
+            {!isHovered ? (
+              <SettingsIcon className='size-5 md:size-6' />
+            ) : (
+              <SettingPrimaryIcon className='size-5 md:size-6' />
+            )}
           </div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: -10, height: 0 }}
-          animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+          initial={{ opacity: 0, y: 0, height: 0 }}
+          animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className='overflow-hidden'
         >
-          <div className='right-0 top-full z-10 flex w-fit gap-3 rounded-lg'>
+          <div className='z-10 mt-3 flex w-fit gap-3 rounded-lg'>
             <Selection data={selections} className='bg-transparent !text-neutral-200' />
             <Input
               classNames={{

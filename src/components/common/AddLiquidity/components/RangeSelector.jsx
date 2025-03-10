@@ -9,7 +9,7 @@ import { unwrappedSymbol } from '@/lib/utils'
 import { Bound, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import { useActivePreset, useInitialTokenPrice, useV3MintActionHandlers } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { MinusIcon, PlusIcon } from '@/svgs'
+import { MinusIcon, PlusIcon, ReverseIcon } from '@/svgs'
 
 const inputRegex = /^\d*(?:\\[.])?\d*$/ // match escaped "." characters via in a non-capturing group
 
@@ -85,7 +85,7 @@ function RangePart({
         <div className='flex flex-col gap-1.5'>
           <input
             type={activePreset === Presets.FULL ? 'text' : 'number'}
-            className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+            className='w-full border-0 bg-transparent p-0 text-sm text-neutral-50 placeholder-neutral-400 md:text-xl'
             placeholder='0.0'
             value={localTokenValue}
             onChange={e => {
@@ -176,7 +176,7 @@ export function RangeSelector({
   )
 
   return (
-    <div className='flex items-center gap-3'>
+    <div className='flex flex-col items-center gap-2 md:flex-row md:gap-3'>
       <RangePart
         value={mintInfo?.ticksAtLimit[Bound.LOWER] ? '0' : leftPrice?.toSignificant(5) ?? ''}
         onUserInput={onLeftRangeInput}
@@ -193,20 +193,12 @@ export function RangeSelector({
       />
 
       <button
-        className='flex h-20 items-center self-end rounded-lg bg-neutral-600 p-1 text-neutral-400'
+        className='flex h-fit w-full items-center justify-center self-end rounded-lg bg-neutral-600 p-1 text-neutral-400 md:h-20 md:w-fit'
         aria-label='Swap price range bounds'
         type='button'
         onClick={handleRevert}
       >
-        <svg width='16' height='17' viewBox='0 0 16 17' fill='none' xmlns='http://www.w3.org/2000/svg'>
-          <path
-            d='M2.66797 11.515L13.3346 11.515M13.3346 11.515L10.668 8.84831M13.3346 11.515L10.668 14.1816M13.3346 4.84831L2.66797 4.84831M2.66797 4.84831L5.33464 2.18164M2.66797 4.84831L5.33464 7.51497'
-            stroke='#B3ABB7'
-            strokeWidth='1.33'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-          />
-        </svg>
+        <ReverseIcon className='size-4 rotate-90 md:rotate-0' />
       </button>
 
       <RangePart

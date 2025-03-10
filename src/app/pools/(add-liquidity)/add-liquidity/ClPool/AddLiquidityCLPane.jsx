@@ -6,14 +6,12 @@ import { EmphasisButton } from '@/components/buttons/Button'
 import FusionAdd from '@/components/common/AddLiquidity/FusionAdd'
 import KyberZapperPane from '@/components/common/AddLiquidity/FusionAdd/KyberZapperPane'
 import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
-import CircleImage from '@/components/image/CircleImage'
+import ManualPositionInfo from '@/components/common/AddLiquidity/FusionAdd/ManualPositionInfo'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
-import { Paragraph, TextHeading } from '@/components/typography'
-import { UNKNOWN_LOGO } from '@/constant'
-import { cn, formatAmount } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useV3MintState } from '@/state/fusion/hooks'
-import { CoinUSDIcon, ZapperIcon } from '@/svgs'
+import { ZapperIcon } from '@/svgs'
 
 export default function AddLiquidityCLPane({
   mintInfo,
@@ -22,6 +20,7 @@ export default function AddLiquidityCLPane({
   setBaseCurrency,
   setQuoteCurrency,
   position,
+  handleBack,
 }) {
   const { strategy } = useV3MintState()
   const t = useTranslations()
@@ -68,10 +67,10 @@ export default function AddLiquidityCLPane({
   if (!strategy) return <div />
 
   return (
-    <div className='mt-8 flex w-full flex-col gap-6 lg:flex-row lg:gap-8'>
+    <div className='mt-4 flex w-full flex-col gap-6 md:mt-8 lg:flex-row lg:gap-8'>
       <div className='w-full flex-[6] flex-col bg-transparent'>
         {strategy?.isAutomatic ? (
-          <FusionAdd strategy={strategy} onShowModalSuccess={onShowModalSuccess} />
+          <FusionAdd strategy={strategy} onShowModalSuccess={onShowModalSuccess} handleBack={handleBack} />
         ) : (
           <div className='space-y-4'>
             {!mintInfo?.noLiquidity && !position && (
@@ -79,93 +78,7 @@ export default function AddLiquidityCLPane({
             )}
 
             {position && (
-              <div className='mt-8'>
-                <article
-                  className={cn(
-                    'gird-cols-6 grid items-center gap-4 rounded-lg bg-neutral-900 p-4 font-medium md:grid-cols-3',
-                  )}
-                >
-                  <div className='flex items-center justify-center gap-6 md:gap-2 lg:justify-start'>
-                    <div className='size-12 min-w-12 2xl:size-16 2xl:min-w-16'>
-                      <CoinUSDIcon className='size-full' />
-                    </div>
-                    <div className='flex min-w-40 flex-col gap-2 md:min-w-0'>
-                      <Paragraph className='text-base text-primary-100 2xl:text-xl'>${position.depositInUSD}</Paragraph>
-                      <Paragraph className='text-sm text-primary-100 2xl:text-base'>
-                        {t('Deposit Value in USD')}
-                      </Paragraph>
-                    </div>
-                  </div>
-
-                  <div className='flex items-center justify-center gap-6 md:gap-2 lg:justify-start'>
-                    <CircleImage
-                      className='size-12 2xl:size-16'
-                      src={baseCurrency.logoURI ?? UNKNOWN_LOGO}
-                      alt='base token'
-                    />
-                    <div className='flex min-w-40 flex-col gap-2 md:min-w-0'>
-                      <Paragraph className='text-base text-primary-100 2xl:text-xl'>
-                        {formatAmount(position.amountAsset0)}
-                      </Paragraph>
-                      <Paragraph className='text-sm text-primary-100 2xl:text-base'>
-                        {t('[symbol] deposit [percent]', {
-                          symbol: baseCurrency.symbol,
-                          percent: formatAmount(position.firstPercent),
-                        })}
-                      </Paragraph>
-                    </div>
-                  </div>
-
-                  <div className='flex items-center justify-center gap-6 md:gap-2 lg:justify-start'>
-                    <CircleImage
-                      className='size-12 2xl:size-16'
-                      src={quoteCurrency.logoURI ?? UNKNOWN_LOGO}
-                      alt='base token'
-                    />
-                    <div className='flex min-w-40 flex-col gap-2 md:min-w-0'>
-                      <Paragraph className='text-base text-primary-100 2xl:text-xl'>
-                        {formatAmount(position.amountAsset1)}
-                      </Paragraph>
-                      <Paragraph className='text-sm text-primary-100 2xl:text-base'>
-                        {t('[symbol] deposit [percent]', {
-                          symbol: quoteCurrency.symbol,
-                          percent: formatAmount(100 - position.firstPercent),
-                        })}
-                      </Paragraph>
-                    </div>
-                  </div>
-                </article>
-
-                <div className='mt-8 flex flex-col gap-2 lg:flex-row'>
-                  <div className='flex w-full flex-col gap-2'>
-                    <Paragraph className='text-xs text-neutral-500'>
-                      {t('Min [symbolA] per [symbolB] price', {
-                        symbolA: baseCurrency.symbol,
-                        symbolB: quoteCurrency.symbol,
-                      })}
-                    </Paragraph>
-                    <div
-                      className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3 text-neutral-400')}
-                    >
-                      <TextHeading>{position.minPrice}</TextHeading>
-                    </div>
-                  </div>
-
-                  <div className='flex w-full flex-col gap-2'>
-                    <Paragraph className='text-xs text-neutral-500'>
-                      {t('Max [symbolA] per [symbolB] price', {
-                        symbolA: baseCurrency.symbol,
-                        symbolB: quoteCurrency.symbol,
-                      })}
-                    </Paragraph>
-                    <div
-                      className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3 text-neutral-400')}
-                    >
-                      <TextHeading>{position.maxPrice}</TextHeading>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ManualPositionInfo baseCurrency={baseCurrency} quoteCurrency={quoteCurrency} position={position} />
             )}
 
             {isZapper ? (
@@ -175,6 +88,7 @@ export default function AddLiquidityCLPane({
                 mintInfo={mintInfo}
                 strategy={strategy}
                 onShowModalSuccess={onShowModalSuccess}
+                handleBack={handleBack}
               />
             ) : (
               <ManualAdd
@@ -186,6 +100,7 @@ export default function AddLiquidityCLPane({
                 strategy={strategy}
                 onShowModalSuccess={onShowModalSuccess}
                 position={position}
+                handleBack={handleBack}
               />
             )}
           </div>

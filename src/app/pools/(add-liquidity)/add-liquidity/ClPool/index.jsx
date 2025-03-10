@@ -25,7 +25,7 @@ import { useChainSettings } from '@/state/settings/hooks'
 import AddLiquidityCLPane from './AddLiquidityCLPane'
 import { PoolAttributesSection } from '../PoolAttributesSection'
 
-function AddLiquidityClPool({ pool }) {
+function AddLiquidityClPool({ pool, handleBack }) {
   const t = useTranslations()
   const { networkId } = useChainSettings()
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
@@ -171,6 +171,7 @@ function AddLiquidityClPool({ pool }) {
             setQuoteCurrency={isQuoteBNB ? setQuoteCurrency : null}
             mintInfo={mintInfo}
             position={position}
+            handleBack={handleBack}
           />
         </div>
 

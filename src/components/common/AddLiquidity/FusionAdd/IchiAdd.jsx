@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { ichiVaultAbi } from '@/constant/abi/fusion'
@@ -52,7 +52,7 @@ export const fetchIchiInfo = async (chainId, strategy) => {
   }
 }
 
-export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess }) {
+export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess, handleBack }) {
   const [amount, setAmount] = useState('')
   const { onIchiAddAndStake: addIchiPoolV2, pending: pendingV2 } = useIchiManage()
   const { addIchiPool: addIchiPoolV3, pending: pendingV3 } = useIchiManageV3()
@@ -120,9 +120,10 @@ export default function IchiAdd({ strategy, isAdd, isModal, onShowModalSuccess }
         </div>
       </div>
 
-      <div
-        className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row', isModal && 'px-3 lg:px-6')}
-      >
+      <div className={cn('mt-auto flex w-full flex-col items-center gap-2 lg:flex-row', isModal && 'px-3 lg:px-6')}>
+        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+          {t('Back')}
+        </EmphasisButton>
         {account ? (
           <PrimaryButton
             disabled={pendingV2 || pendingV3}

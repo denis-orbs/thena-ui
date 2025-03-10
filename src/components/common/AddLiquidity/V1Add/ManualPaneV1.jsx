@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
-import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import SuccessModal from '@/components/modal/SuccessModal'
@@ -16,7 +16,15 @@ import { isInvalidAmount, wrappedAddress } from '@/lib/utils'
 import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
 
-export function ManualPaneV1({ strategy, firstAsset, secondAsset, setFirstAddress, setSecondAddress, pairType }) {
+export function ManualPaneV1({
+  strategy,
+  firstAsset,
+  secondAsset,
+  setFirstAddress,
+  setSecondAddress,
+  pairType,
+  handleBack,
+}) {
   const t = useTranslations()
   const { push } = useRouter()
 
@@ -173,7 +181,10 @@ export function ManualPaneV1({ strategy, firstAsset, secondAsset, setFirstAddres
         </div>
       </div>
 
-      <div className='mt-8 flex gap-4'>
+      <div className='mt-8 flex flex-col gap-2 md:flex-row'>
+        <OutlinedButton className='block w-full md:hidden' onClick={handleBack}>
+          {t('Back')}
+        </OutlinedButton>
         {account ? (
           <>
             {strategy && strategy.gauge.address !== zeroAddress && strategy.version === 3 ? (

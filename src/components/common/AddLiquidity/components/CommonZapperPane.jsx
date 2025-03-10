@@ -4,7 +4,7 @@ import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import IconGroup from '@/components/icongroup'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
@@ -29,7 +29,7 @@ const getZapAddress = (strategy, chainId) => {
   if (strategy.type === PAIR_TYPES.STABLE) return { address: Contracts.stableZap[chainId], isV1: true }
 }
 
-export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess }) {
+export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess, handleBack }) {
   const t = useTranslations()
   const { address: pairAddress, gauge } = strategy
   const [slippage, setSlippage] = useState(0.5)
@@ -289,10 +289,14 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess 
       {account ? (
         <div
           className={cn(
-            'mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row',
+            'mt-auto flex w-full flex-col items-center gap-2 lg:flex-row',
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >
+          <OutlinedButton className='block w-full md:hidden' onClick={handleBack}>
+            {t('Back')}
+          </OutlinedButton>
+
           <EmphasisButton
             onClick={() => handleAddLiquidity({ isStake: false })}
             className={cn(

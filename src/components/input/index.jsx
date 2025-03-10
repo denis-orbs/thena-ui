@@ -40,7 +40,7 @@ function Input({
         <span
           onClick={rest?.onClick}
           className={cn(
-            'absolute bottom-0 left-3 top-0 my-auto h-fit text-neutral-400',
+            'absolute bottom-0 left-4 top-0 my-auto h-fit text-neutral-400',
             rest?.onClick ? 'cursor-pointer' : '',
           )}
         >

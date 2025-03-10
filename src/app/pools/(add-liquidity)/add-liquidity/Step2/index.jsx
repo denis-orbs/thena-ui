@@ -2,7 +2,7 @@ import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
-import { NewTextHeading, NewTextSubHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { ClassicPoolIcon, CLPoolIcon, ScalesIcon, StablePoolIcon } from '@/svgs'
 
@@ -39,9 +39,9 @@ export default function Step2() {
 
   const PoolDescriptionSection = useMemo(() => {
     const renderDescription = (title, description) => (
-      <div className='flex h-max flex-col gap-2 rounded-md bg-neutral-900 p-3 lg:p-4'>
-        <NewTextSubHeading className='!text-xl'>{t(title)}</NewTextSubHeading>
-        <p className='text-neutral-400'>{t(description)}</p>
+      <div className='flex h-max flex-col gap-2 rounded-md bg-neutral-900 p-4'>
+        <NewTextSubHeading className='hidden !text-xl md:block'>{t(title)}</NewTextSubHeading>
+        <Paragraph className='text-sm text-neutral-300 md:text-base'>{t(description)}</Paragraph>
       </div>
     )
 
@@ -64,10 +64,12 @@ export default function Step2() {
     <div className='space-y-6 lg:space-y-12 2xl:space-y-16'>
       {PageTitleSection}
 
-      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
-        <ChooseTokensSection pairType={pairType} />
+      <div className='grid gap-4 max-md:!mt-2 lg:grid-cols-add-liquidity-layout'>
+        <div className='order-2 md:order-1'>
+          <ChooseTokensSection pairType={pairType} />
+        </div>
 
-        {PoolDescriptionSection}
+        <div className='order-1 md:order-2'>{PoolDescriptionSection}</div>
       </div>
     </div>
   )

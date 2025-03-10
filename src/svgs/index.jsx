@@ -12,6 +12,7 @@ import ArrowRightIcon from '~/svgs/arrow-right.svg'
 import ArrowsDownIcon from '~/svgs/arrows-down.svg'
 import AwardIcon from '~/svgs/award.svg'
 import BankIcon from '~/svgs/bank.svg'
+import BarChartIcon from '~/svgs/bar-chart.svg'
 import BellIcon from '~/svgs/bell.svg'
 import CalendarIcon from '~/svgs/calendar.svg'
 import CalendarWhiteIcon from '~/svgs/calendar-white.svg'
@@ -92,6 +93,7 @@ import RandomDice from '~/svgs/random-dice.svg'
 import RedditIcon from '~/svgs/reddit.svg'
 import RefreshIcon from '~/svgs/refresh.svg'
 import RegisterIcon from '~/svgs/register.svg'
+import ReverseIcon from '~/svgs/reverse.svg'
 import RightInIcon from '~/svgs/right-in.svg'
 import RightOutIcon from '~/svgs/right-out.svg'
 import ScalesPrimaryIcon from '~/svgs/scale-primary.svg'
@@ -153,6 +155,7 @@ export {
   ArrowsDownIcon,
   AwardIcon,
   BankIcon,
+  BarChartIcon,
   BellIcon,
   CalendarIcon,
   CalendarWhiteIcon,
@@ -234,6 +237,7 @@ export {
   RedditIcon,
   RefreshIcon,
   RegisterIcon,
+  ReverseIcon,
   RightInIcon,
   RightOutIcon,
   RoundedTHETokenIcon,

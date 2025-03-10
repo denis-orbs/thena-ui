@@ -5,46 +5,15 @@ import NewListings from '@/app/pools/NewListings'
 import { Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { wrappedAddress } from '@/lib/utils'
 import { usePairInfo } from '@/state/pools/hooks'
 import { InfoIcon, PoolCoinsIcon } from '@/svgs'
 
-const sortOptions = [
-  {
-    label: 'Pair',
-    value: 'pair',
-    width: 'lg:w-[35%]',
-    isDesc: true,
-  },
-  {
-    label: 'APR',
-    value: 'apr',
-    width: 'lg:w-[15%]',
-    isDesc: true,
-  },
-  {
-    label: 'TVL',
-    value: 'tvl',
-    width: 'lg:w-[15%]',
-    isDesc: true,
-  },
-  {
-    label: 'Fees (24h)',
-    value: 'fee',
-    width: 'lg:w-[calc(30%-100px)]',
-    isDesc: true,
-  },
-  {
-    label: '',
-    value: 'action',
-    width: 'w-[100px]',
-    disabled: true,
-  },
-]
-
 function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
   const { weightedPools } = usePairs()
   const t = useTranslations()
+  const { isMdDown } = useMediaQuery()
 
   const foundedPair = usePairInfo({
     token0Address: wrappedAddress(tokens[0]),
@@ -61,6 +30,57 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
 
     return []
   }, [pairType, weightedPools, tokens])
+
+  const sortOptions = useMemo(() => {
+    const options = [
+      {
+        label: 'Pair',
+        value: 'pair',
+        width: 'w-[45%] md:w-[35%]',
+        isDesc: true,
+      },
+      {
+        label: 'APR',
+        value: 'apr',
+        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[calc(45%-100px)] md:w-[15%]' : 'w-[calc(55%-100px)] md:w-[15%]',
+        isDesc: true,
+      },
+    ]
+
+    if (isMdDown) {
+      return [
+        ...options,
+        {
+          label: '',
+          value: 'action',
+          width: 'w-[100px]',
+          disabled: true,
+        },
+      ]
+    }
+
+    return [
+      ...options,
+      {
+        label: 'TVL',
+        value: 'tvl',
+        width: 'w-[15%]',
+        isDesc: true,
+      },
+      {
+        label: 'Fees (24h)',
+        value: 'fee',
+        width: 'w-[calc(30%-100px)]',
+        isDesc: true,
+      },
+      {
+        label: '',
+        value: 'action',
+        width: 'w-[100px]',
+        disabled: true,
+      },
+    ]
+  }, [isMdDown, pairType])
 
   useEffect(() => {
     if (foundedPair) {
@@ -86,8 +106,9 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
             classNames={{
               title: 'flex flex-row justify-normal gap-2',
               divider: 'block',
-              header: 'border-none border-transparent',
+              header: 'border-none border-transparent flex',
               cellItem: 'p-2 lg:p-2',
+              cellItemLabel: 'hidden',
               tableContainer: 'space-y-4',
             }}
             sortOptions={sortOptions}

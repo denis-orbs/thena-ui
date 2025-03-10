@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { MANUAL_TYPES } from '@/constant'
 import { useAlgebraAdd, useAlgebraIncrease } from '@/hooks/fusion/useAlgebra'
@@ -27,6 +27,7 @@ export default function ManualAdd({
   mintInfo,
   onShowModalSuccess,
   position,
+  handleBack,
 }) {
   const { account } = useWallet()
   const { setAPRs } = useAprStore()
@@ -125,11 +126,16 @@ export default function ManualAdd({
         />
       </div>
 
-      <div className={cn('mt-auto flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
+      <div className={cn('mt-auto flex w-full flex-col items-center gap-2 lg:flex-row')}>
         {account ? (
-          <PrimaryButton disabled={pending || isPendingIncrease} onClick={onAddLiquidity} className='w-full'>
-            {t('Deposit')}
-          </PrimaryButton>
+          <>
+            <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+              {t('Back')}
+            </EmphasisButton>
+            <PrimaryButton disabled={pending || isPendingIncrease} onClick={onAddLiquidity} className='w-full'>
+              {t('Deposit')}
+            </PrimaryButton>
+          </>
         ) : (
           <ConnectButton className='w-full' />
         )}

@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
-import { TextIconButton } from '@/components/buttons/IconButton'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { Collapse } from '@/components/collapse'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import NextImage from '@/components/image/NextImage'
@@ -13,7 +13,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { AnalyticsIcon, InfoIcon } from '@/svgs'
+import { BarChartIcon, InfoIcon } from '@/svgs'
 
 function Title({ title, length, className }) {
   return (
@@ -95,23 +95,23 @@ function NewListings({
 
     return data.map(pool => ({
       pair: (
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-2 md:gap-3'>
           {pool.type !== PAIR_TYPES.WEIGHTED ? (
             <>
               <GroupIconTokens
                 classNames={{
-                  image: cn('outline-2 w-7 h-7', 'w-7 h-7'),
+                  image: cn('outline-2', 'size-7'),
                   rows: '-space-x-2',
                   toolTip: 'hidden',
                 }}
-                width={32}
-                height={32}
+                width={28}
+                height={28}
                 tokens={[pool.token0, pool.token1]}
                 showToolTip={false}
               />
               <div className='flex flex-col'>
-                <TextHeading>{pool.symbol}</TextHeading>
-                <Paragraph className='text-sm'>{t(pool.type)}</Paragraph>
+                <TextHeading className='text-sm md:text-base'>{pool.symbol}</TextHeading>
+                <Paragraph className='text-[10px] md:text-xs'>{t(pool.type)}</Paragraph>
               </div>
             </>
           ) : (
@@ -253,7 +253,7 @@ function NewListings({
       ),
       apr: (
         <div className='flex items-center gap-1'>
-          <Paragraph>{pool.apr}</Paragraph>
+          <Paragraph className='text-sm md:text-base'>{pool.apr}</Paragraph>
           {pool.subpools.length > 0 && (
             <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`pair-${pool.address}`} />
           )}
@@ -284,7 +284,7 @@ function NewListings({
       ),
       tvl: (
         <div className='flex items-center gap-1'>
-          <Paragraph className='min-w-0 flex-1 truncate'>${formatAmount(pool.tvlUSD)}</Paragraph>
+          <Paragraph className='min-w-0 flex-1 truncate text-sm md:text-base'>${formatAmount(pool.tvlUSD)}</Paragraph>
           <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
           {pool.type === PAIR_TYPES.WEIGHTED ? (
             <CustomTooltip id={`tvl-${pool.address}`}>
@@ -304,18 +304,22 @@ function NewListings({
           )}
         </div>
       ),
-      volume: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayVolume)}</Paragraph>,
-      fee: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayFees)}</Paragraph>,
+      volume: (
+        <Paragraph className='w-full min-w-0 truncate text-sm md:text-base'>${formatAmount(pool.dayVolume)}</Paragraph>
+      ),
+      fee: (
+        <Paragraph className='w-full min-w-0 truncate text-sm md:text-base'>${formatAmount(pool.dayFees)}</Paragraph>
+      ),
       action: (
         <div className='flex gap-2.5'>
-          <TextIconButton
-            className='!size-10 border-[1px] border-neutral-600'
-            Icon={AnalyticsIcon}
+          <EmphasisIconButton
+            className='!size-8 min-w-8 border-[1px] border-neutral-600 p-2'
+            Icon={BarChartIcon}
             onClick={() => push(`/analytics/pairs/${pool?.address}`)}
             data-tooltip-id='analytics-tooltip'
           />
           <EmphasisButton
-            className='w-full p-2 text-sm lg:w-fit'
+            className={cn('hidden w-full p-2 text-xs md:block lg:w-fit', pool.type === PAIR_TYPES.WEIGHTED && 'block')}
             onClick={() => {
               push(
                 pool.type === PAIR_TYPES.WEIGHTED
@@ -328,6 +332,7 @@ function NewListings({
           </EmphasisButton>
         </div>
       ),
+      className: 'items-center',
     }))
   }, [listPoolAddressSpecial, push, sortedData, t])
   return (
@@ -349,6 +354,7 @@ function NewListings({
             classNames={{
               header: classNames?.header,
               cellItem: classNames?.cellItem,
+              cellItemLabel: classNames?.cellItemLabel,
               tableContainer: classNames?.tableContainer,
             }}
           />

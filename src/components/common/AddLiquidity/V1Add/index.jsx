@@ -13,7 +13,15 @@ import { ZapperIcon } from '@/svgs'
 import { ManualPaneV1 } from './ManualPaneV1'
 import { CommonZapperPane } from '../components/CommonZapperPane'
 
-export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirstAddress, setSecondAddress }) {
+export default function V1Add({
+  pool,
+  pairType,
+  firstAsset,
+  secondAsset,
+  setFirstAddress,
+  setSecondAddress,
+  handleBack,
+}) {
   const [isZapper, setIsZapper] = useState(false)
   const [showModalSuccess, setShowModalSuccess] = useState(false)
   const { push } = useRouter()
@@ -53,6 +61,7 @@ export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirs
           asset1={secondAsset}
           strategy={pool}
           onShowModalSuccess={() => setShowModalSuccess(true)}
+          handleBack={handleBack}
         />
       ) : (
         <ManualPaneV1
@@ -62,6 +71,7 @@ export default function V1Add({ pool, pairType, firstAsset, secondAsset, setFirs
           secondAsset={secondAsset}
           setFirstAddress={setFirstAddress}
           setSecondAddress={setSecondAddress}
+          handleBack={handleBack}
         />
       )}
       <SuccessModal

@@ -53,11 +53,13 @@ export default function Step3({ setStep }) {
         <AddLiquidityWeightedPool pool={pair} showSidebar setCurrentStep={setStep} />
       )}
 
-      {pairType === PAIR_TYPES.LSD && <AddLiquidityClPool pool={pair} setCurrentStep={setStep} />}
+      {pairType === PAIR_TYPES.LSD && <AddLiquidityClPool pool={pair} handleBack={handleBack} />}
 
-      {(pairType === PAIR_TYPES.CLASSIC || pairType === PAIR_TYPES.STABLE) && <AddLiquidityV1Pool pair={pair} />}
+      {(pairType === PAIR_TYPES.CLASSIC || pairType === PAIR_TYPES.STABLE) && (
+        <AddLiquidityV1Pool pair={pair} handleBack={handleBack} />
+      )}
 
-      <div className='mt-16 flex gap-4'>
+      <div className='mt-16 hidden gap-4 md:flex'>
         <EmphasisButton onClick={handleBack}>Back</EmphasisButton>
         <TextButton onClick={() => router.push('/pools')}>Cancel</TextButton>
       </div>

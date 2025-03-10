@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux'
 import useSWR from 'swr'
 import { JSBI, WBNB } from 'thena-sdk-core'
 
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import Selection from '@/components/selection'
 import { FusionRangeType } from '@/constant'
@@ -64,7 +64,7 @@ export const fetchGammaInfo = async (chainId, strategy) => {
   }
 }
 
-export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess }) {
+export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess, handleBack }) {
   const t = useTranslations()
 
   const [isZapper, setIsZapper] = useState(false)
@@ -111,6 +111,7 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess 
             asset1={asset1}
             strategy={strategy}
             onShowModalSuccess={onShowModalSuccess}
+            handleBack={handleBack}
           />
         ) : (
           <ManualPane
@@ -118,6 +119,7 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess 
             quoteCurrency={quoteCurrency}
             strategy={strategy}
             onShowModalSuccess={onShowModalSuccess}
+            handleBack={handleBack}
           />
         )}
       </div>
@@ -125,7 +127,7 @@ export default function GammaAdd({ strategy, isModal, isAdd, onShowModalSuccess 
   )
 }
 
-function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess }) {
+function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess, handleBack }) {
   const t = useTranslations()
   const [slippage, setSlippage] = useState(0.5)
   const { account } = useWallet()
@@ -226,7 +228,10 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess 
         </div> */}
       </div>
 
-      <div className={cn('mt-8 flex w-full flex-col items-center gap-4 pt-5 lg:flex-row')}>
+      <div className={cn('mt-8 flex w-full flex-col items-center gap-2 lg:flex-row')}>
+        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+          {t('Back')}
+        </EmphasisButton>
         {account ? (
           <>
             <PrimaryButton disabled={pending} onClick={onAddLiquidity} className='w-full'>

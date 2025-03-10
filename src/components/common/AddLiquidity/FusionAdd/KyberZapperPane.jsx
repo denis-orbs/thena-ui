@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import { MANUAL_TYPES } from '@/constant'
@@ -20,7 +20,15 @@ import { Bound } from '@/state/fusion/actions'
 
 import WarningZapper from '../components/WarningZapper'
 
-function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, strategy, onShowModalSuccess }) {
+function KyberZapperPane({
+  baseCurrency,
+  quoteCurrency,
+  deadline,
+  mintInfo,
+  strategy,
+  onShowModalSuccess,
+  handleBack,
+}) {
   const t = useTranslations()
   const { setAPRs } = useAprStore()
 
@@ -142,39 +150,44 @@ function KyberZapperPane({ baseCurrency, quoteCurrency, deadline, mintInfo, stra
         </div>
       </div>
 
-      {account ? (
-        <PrimaryButton
-          disabled={isFetching || !data?.route}
-          onClick={() => {
-            if (isInvalidAmount(amountIn) || BigNumber(amountIn).gt(tokenDeposit?.balance)) {
-              warnToast('Invalid Amount')
-              return false
-            }
+      <div className='mt-auto flex w-full flex-col items-center gap-2 lg:flex-row'>
+        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+          {t('Back')}
+        </EmphasisButton>
+        {account ? (
+          <PrimaryButton
+            disabled={isFetching || !data?.route}
+            onClick={() => {
+              if (isInvalidAmount(amountIn) || BigNumber(amountIn).gt(tokenDeposit?.balance)) {
+                warnToast('Invalid Amount')
+                return false
+              }
 
-            if (BigNumber(amountIn).times(tokenDeposit.price).lte(5)) {
-              warnToast('Minimum deposit')
-              return false
-            }
+              if (BigNumber(amountIn).times(tokenDeposit.price).lte(5)) {
+                warnToast('Minimum deposit')
+                return false
+              }
 
-            handleAddLiquidity(
-              {
-                route: data?.route,
-                mintInfo,
-                deadline,
-                amount: amountIn,
-                token: tokenDeposit,
-                isFarming: Boolean(strategy?.isFarming),
-              },
-              onShowModalSuccess,
-            )
-          }}
-          className='w-full'
-        >
-          {t('Add Liquidity')}
-        </PrimaryButton>
-      ) : (
-        <ConnectButton className='w-full' />
-      )}
+              handleAddLiquidity(
+                {
+                  route: data?.route,
+                  mintInfo,
+                  deadline,
+                  amount: amountIn,
+                  token: tokenDeposit,
+                  isFarming: Boolean(strategy?.isFarming),
+                },
+                onShowModalSuccess,
+              )
+            }}
+            className='w-full'
+          >
+            {t('Add Liquidity')}
+          </PrimaryButton>
+        ) : (
+          <ConnectButton className='w-full' />
+        )}
+      </div>
     </div>
   )
 }

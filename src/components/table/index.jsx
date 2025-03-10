@@ -443,7 +443,9 @@ function Table({
                         )}
                         key={`${cell.value}-${cellIdx}`}
                       >
-                        <TextHeading className='lg:hidden'>{t(cell.label)}</TextHeading>
+                        <TextHeading className={cn('lg:hidden', classNames?.cellItemLabel)}>
+                          {t(cell.label)}
+                        </TextHeading>
                         {ele[cell.value]}
                       </TableCell>
                     ))}

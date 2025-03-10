@@ -16,7 +16,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
   return (
     <div className='flex w-full flex-col'>
       <div className='flex gap-2'>
-        <Box className={cn('w-full rounded-lg bg-neutral-900 py-4 lg:p-4', className)}>
+        <Box className={cn('w-full rounded-lg bg-neutral-900 py-2 lg:p-4', className)}>
           <NewTextSubHeading className='flex items-center justify-between'>
             <h3 className='text-xs md:text-lg'>{t('Pool Attributes')}</h3>
             <div className='hidden items-center lg:flex'>
