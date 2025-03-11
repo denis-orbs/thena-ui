@@ -1,37 +1,53 @@
+import { useTranslations } from 'next-intl'
+
 import { Paragraph } from '@/components/typography'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/lib/utils'
 
 import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 
 export function TokenPercentage({ tokens, poolAddress }) {
+  const t = useTranslations()
   const { length } = tokens || []
   const weights = tokens.map(token => token.weight).filter(w => typeof w === 'number')
 
   const minWeight = Math.min(...weights)
   const maxWeight = Math.max(...weights)
+  const windowSize = useWindowSize()
+  const isSmall = windowSize.width < 1440
+  const isMobile = windowSize.width < 768
   return (
     <div className='flex flex-row items-center gap-2'>
       <GroupIconTokens
         classNames={{
           image: cn('outline-2 w-7 h-7', length <= 4 ? 'w-7 h-7' : 'w-6 h-6'),
-          rows: length > 2 ? '-space-x-3' : '-space-x-2',
+          rows: length > 2 ? (isMobile ? '-space-x-2' : '-space-x-3') : '-space-x-2',
         }}
-        width={length <= 4 ? 32 : 24}
-        height={length <= 4 ? 32 : 24}
+        width={isMobile ? 20 : length <= 4 ? (isSmall ? 28 : 32) : 24}
+        height={isMobile ? 20 : length <= 4 ? (isSmall ? 28 : 32) : 24}
         tokens={tokens}
         poolAddress={poolAddress}
       />
       <div className='flex flex-col gap-1'>
         <div>
-          {tokens.map((token, index) => (
+          {tokens.slice(0, isSmall ? 2 : 3).map((token, index) => (
             <Paragraph className='text-[10px] leading-4 md:text-base' key={token.address}>
-              {`${token?.symbol}${index !== tokens.length - 1 ? '/' : ''}`}
+              {`${token?.symbol}${index !== Math.min(2, tokens.slice(0, isSmall ? 2 : 3).length - 1) ? '/' : ''}`}
             </Paragraph>
           ))}
+          <Paragraph className='inline-block text-[10px] leading-4 md:text-base xl:hidden'>
+            <span>&nbsp;</span>
+            {weights.length > 0 ? `${minWeight}-${maxWeight}%` : ''}
+          </Paragraph>
+          {tokens.length > (isSmall ? 2 : 3) && (
+            <Paragraph className='hidden text-[10px] leading-4 md:text-base xl:inline-block'>...</Paragraph>
+          )}
         </div>
         <div>
-          <Paragraph className='text-[10px] leading-4 md:text-base'>
-            {weights.length > 0 ? `${minWeight}% - ${maxWeight}%` : ''}
+          <Paragraph className='text-[10px] leading-4 md:text-base'>{t('Weighted Pool')}</Paragraph>
+          <Paragraph className='hidden text-[10px] leading-4 md:text-base xl:inline-block'>
+            <span>&nbsp;</span>
+            {weights.length > 0 ? `${minWeight}-${maxWeight}%` : ''}
           </Paragraph>
         </div>
       </div>

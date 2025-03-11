@@ -123,7 +123,15 @@ export function TokenAmountCard({
                 value={value}
                 disabled={locked}
                 onChange={e => {
-                  handleInput(Number(e.target.value) < 0 ? '' : e.target.value)
+                  let { value: inputValue } = e.target
+                  if (inputValue === '') {
+                    handleInput('')
+                    return
+                  }
+                  if (!isNaN(Number(inputValue))) {
+                    inputValue = inputValue.replace(/^0+(?=\d)/, '')
+                  }
+                  handleInput(inputValue)
                 }}
                 min={0}
                 lang='en'

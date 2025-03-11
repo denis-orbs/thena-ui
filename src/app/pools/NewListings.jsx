@@ -13,7 +13,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { BarChartIcon, InfoIcon } from '@/svgs'
+import { BarChartIcon, CoinsStackedIcon, InfoIcon } from '@/svgs'
 
 function Title({ title, length, className }) {
   return (
@@ -328,7 +328,8 @@ function NewListings({
               )
             }}
           >
-            {t('Deposit')}
+            <Paragraph className='hidden text-xs md:inline-block'>{t('Deposit')}</Paragraph>
+            <CoinsStackedIcon className='size-4 md:hidden' />
           </EmphasisButton>
         </div>
       ),

@@ -128,7 +128,15 @@ export function TokenAmountInput({
             placeholder='0.0'
             value={amount ?? ''}
             onChange={e => {
-              onAmountChange(Number(e.target.value) < 0 ? '' : e.target.value)
+              let { value } = e.target
+              if (value === '') {
+                onAmountChange('')
+                return
+              }
+              if (!isNaN(Number(value))) {
+                value = value.replace(/^0+(?=\d)/, '')
+              }
+              onAmountChange(value)
             }}
             min={0}
             autoFocus={autoFocus}

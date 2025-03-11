@@ -218,7 +218,7 @@ function AddLiquidityWeighted({ pool }) {
   const [showLiquidityInfo, setShowLiquidityInfo] = useState(false)
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-4 lg:space-y-8'>
       <div className='flex flex-col gap-1 lg:gap-2'>
         <div className='flex flex-row items-center gap-3.5 lg:gap-4 2xl:gap-8'>
           <GroupIconTokens
@@ -231,26 +231,29 @@ function AddLiquidityWeighted({ pool }) {
               images: 'size-6 lg:size-10 2xl:size-[86px]',
             }}
           />
+          <NewTextSubHeading>{pool?.symbol}</NewTextSubHeading>
         </div>
         <div className='flex flex-col gap-4'>
           <div className='flex flex-row justify-between'>
             <NewTextSubHeading className='text-xl lg:text-2xl 2xl:text-3xl'>{t('Weighted')}</NewTextSubHeading>
-            <EmphasisButton className='h-8 w-8 p-2' onClick={() => setShowLiquidityInfo(prev => !prev)}>
+            <EmphasisButton className='h-8 w-8 p-2 lg:hidden' onClick={() => setShowLiquidityInfo(prev => !prev)}>
               <InfoNeutralIcon className='size-4' />
             </EmphasisButton>
           </div>
-          <motion.div
-            initial={{ opacity: 0, y: -10, height: 0 }}
-            animate={showLiquidityInfo ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className='w-full overflow-hidden bg-neutral-900 lg:hidden'
-          >
-            <LiquidityPoolInfo pool={pool} colors={colors} isMobile />
-          </motion.div>
+          {showLiquidityInfo && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, height: 0 }}
+              animate={showLiquidityInfo ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className='w-full overflow-hidden bg-neutral-900 lg:hidden'
+            >
+              <LiquidityPoolInfo pool={pool} colors={colors} isMobile />
+            </motion.div>
+          )}
         </div>
       </div>
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
-        <div className='w-full space-y-8 lg:flex-[6]'>
+        <div className='w-full space-y-4 lg:flex-[6] lg:space-y-8'>
           <PairBasicInfo pair={pool} isMobile />
           <div className='block lg:hidden'>
             <PoolAttributesSection pair={pool} />
@@ -294,7 +297,7 @@ function AddLiquidityWeighted({ pool }) {
               </div>
             )}
           </div>
-          <div className='space-y-16'>
+          <div className='space-y-8 lg:space-y-16'>
             <div className='grid gap-4 md:grid-cols-2'>
               <EmphasisButton
                 onClick={() => {
