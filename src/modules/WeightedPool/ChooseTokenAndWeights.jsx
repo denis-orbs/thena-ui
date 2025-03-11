@@ -57,8 +57,6 @@ const updateWeight = tokens => {
     })
   }
 
-  console.log('newData', tokens)
-
   // Merge the updated weights back into the original token list
   return tokens.map(item => {
     if (item.lock) return item
@@ -87,13 +85,12 @@ function TokenItem({ token, index, setTokenSelected, max }) {
     if (value < 0) value = 0
     if (value > max) value = max
     if (value > 100) value = 100
-    console.log('value', value)
 
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
       updatedTokens[index] = {
         ...updatedTokens[index],
-        lock: !!updatedTokens[index].token,
+        lock: true,
         weight: value,
       }
       return updateWeight(updatedTokens)

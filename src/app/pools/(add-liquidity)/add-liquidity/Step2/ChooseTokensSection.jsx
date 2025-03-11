@@ -106,14 +106,14 @@ export default function ChooseTokensSection({ pairType }) {
   }, [tokensPool])
 
   useEffect(() => {
-    if (firstAddress && secondAddress && firstAddress !== secondAddress) {
+    if (firstAddress && secondAddress && wrappedAddress(firstAsset) !== wrappedAddress(secondAsset)) {
       setShowError(false)
     }
-  }, [firstAddress, secondAddress])
+  }, [firstAddress, secondAddress, firstAsset, secondAsset])
 
   const handleAddPool = useCallback(() => {
     if (pairType !== PAIR_TYPES.WEIGHTED) {
-      if (!firstAddress || !secondAddress || firstAddress === secondAddress) {
+      if (!firstAddress || !secondAddress || wrappedAddress(firstAsset) === wrappedAddress(secondAsset)) {
         setShowError(true)
         return
       }
@@ -143,10 +143,12 @@ export default function ChooseTokensSection({ pairType }) {
   }, [
     duplicateAddresses.length,
     firstAddress,
+    firstAsset,
     foundedPair,
     pairType,
     push,
     secondAddress,
+    secondAsset,
     tokensPool,
     updateSearchParams,
   ])
