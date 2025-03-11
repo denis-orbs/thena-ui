@@ -146,6 +146,7 @@ export const useEstimateAPR = ({
   const earnPercent = BigNumber(1).minus(communityFee.div(1000))
 
   if (!tickLower || !tickUpper || !pool) return {}
+  if (tickUpper <= tickLower) return {}
 
   let _amount0 =
     typeof amount0 === 'object'
