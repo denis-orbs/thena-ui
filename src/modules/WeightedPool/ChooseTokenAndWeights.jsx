@@ -76,7 +76,7 @@ function TokenItem({ token, index, setTokenSelected, max }) {
         ...updatedTokens[index],
         lock: !updatedTokens[index].lock,
       }
-      return updateWeight(updatedTokens)
+      return updatedTokens
     })
   }, [index, setTokenSelected])
 
