@@ -31,7 +31,7 @@ export default function TotalAllocated({ tokensAndWeights }) {
   const t = useTranslations()
   return (
     <div className='space-y-4'>
-      <TextHeading className='font-archia text-2xl font-semibold'>{t('Total Allocated')}</TextHeading>
+      <TextHeading className='text-lg lg:font-archia lg:text-2xl lg:font-semibold'>{t('Total Allocated')}</TextHeading>
       <Box>
         <PieChart
           tokens={tokensAndWeights.map(token => ({

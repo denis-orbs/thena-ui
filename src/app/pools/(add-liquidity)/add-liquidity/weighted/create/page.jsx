@@ -129,7 +129,7 @@ export default function CreateWeightedPoolPage() {
       <div
         className={cn(
           'flex flex-col-reverse gap-4 lg:flex-row',
-          currentStep === 3 ? 'w-full' : 'lg:grid lg:grid-cols-add-liquidity-layout',
+          currentStep === 3 ? 'w-full xl:w-[80%] 2xl:w-[70%]' : 'lg:grid lg:grid-cols-add-liquidity-layout',
         )}
       >
         <div className='w-full flex-2 lg:flex-1'>
@@ -146,9 +146,11 @@ export default function CreateWeightedPoolPage() {
             setPoolName={setPoolName}
           />
         </div>
-        <div className={cn('flex flex-1 flex-col gap-8 lg:flex-[4]', currentStep === 3 && 'hidden')}>
-          <SideBarCreateWeighted fees={fees} step={currentStep} tokensAndWeights={tokensAndWeights} />
-        </div>
+        {currentStep !== 3 && (
+          <div className={cn('hidden flex-1 flex-col gap-8 lg:flex lg:flex-[4]', currentStep === 1 && 'block')}>
+            <SideBarCreateWeighted fees={fees} step={currentStep} tokensAndWeights={tokensAndWeights} />
+          </div>
+        )}
       </div>
     </div>
   )

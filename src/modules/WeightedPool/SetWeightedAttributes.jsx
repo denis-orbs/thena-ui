@@ -58,7 +58,7 @@ function SetWeightedAttributes({
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex flex-col gap-4 sm:flex-row'>
+      <div className='flex flex-col gap-4 lg:flex-row'>
         <div className='flex min-h-full flex-[7] flex-col justify-between gap-4'>
           <TextHeading className='font-archia text-xl font-semibold sm:text-2xl lg:text-3xl'>
             {t('Set Pool Name')}
@@ -84,16 +84,21 @@ function SetWeightedAttributes({
         <div className='min-h-full flex-[3]'>
           <SetPoolFees fees={fees} setFees={setFees} />
         </div>
+        <PoolSummary
+          fees={fees}
+          tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
+          isMobile
+        />
       </div>
-      <div className='space-y-16'>
+      <div className='space-y-4 md:space-y-8 lg:space-y-16'>
         <div className='space-y-4'>
           <div className='flex flex-col-reverse gap-4'>
-            <TextHeading className='flex-2 text-lg lg:flex-1 lg:font-archia lg:text-3xl lg:font-semibold'>
+            <TextHeading className='flex-2 text-lg md:text-xl lg:flex-1 lg:font-archia lg:text-3xl lg:font-semibold'>
               {t('Set Initial Liquidity')}
             </TextHeading>
             {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (
-              <div className='flex flex-1 items-center gap-4 rounded-lg border border-warn-950 bg-warn-950 px-4 py-5 lg:flex-2'>
-                <InfoIcon className='h-5 w-5 !stroke-warn-600' />
+              <div className='flex flex-1 items-center gap-4 rounded-lg border border-warn-900 bg-warn-950 px-4 py-5 lg:flex-2'>
+                <InfoIcon className='h-5 min-h-5 w-5 min-w-5 !stroke-warn-600 lg:h-8 lg:w-8' />
                 <div className='flex flex-col gap-1'>
                   <TextHeading className='text-xl text-rose'>{t('Initial funds')}</TextHeading>
                   <TextSubHeading className='text-base text-rose'>
@@ -111,11 +116,6 @@ function SetWeightedAttributes({
             tokensAndWeights={tokensAndWeights}
           />
         </div>
-        <PoolSummary
-          fees={fees}
-          tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
-          isMobile
-        />
         <div className='flex flex-col gap-4 lg:flex-row'>
           <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(prev => prev - 1)}>
             {t('Back')}

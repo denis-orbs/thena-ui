@@ -21,29 +21,37 @@ function PoolOverviewTable({ tokens, colors }) {
         <thead>
           <tr>
             <th className='py-2'>
-              <Paragraph className='text-base font-medium text-neutral-50 lg:text-lg'>Token</Paragraph>
+              <Paragraph className='text-sm font-medium text-neutral-50 md:text-base lg:text-lg'>Token</Paragraph>
             </th>
             <th className='py-2'>
-              <Paragraph className='text-base font-medium text-neutral-50 lg:text-lg'>Pool Weight</Paragraph>
+              <Paragraph className='text-sm font-medium text-neutral-50 md:text-base lg:text-lg'>
+                <span className='hidden md:inline'>Pool</span> Weight
+              </Paragraph>
             </th>
             <th className='py-2'>
-              <Paragraph className='text-base font-medium text-neutral-50 lg:text-lg'>Value in $</Paragraph>
+              <Paragraph className='text-sm font-medium text-neutral-50 md:text-base lg:text-lg'>Value in $</Paragraph>
             </th>
             <th className='py-2'>
-              <Paragraph className='text-base font-medium text-neutral-50 lg:text-lg'>Token Amount</Paragraph>
+              <Paragraph className='text-sm font-medium text-neutral-50 md:text-base lg:text-lg'>
+                <span>
+                  <span className='hidden md:inline'>Token</span> Amount
+                </span>
+              </Paragraph>
             </th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
             <tr key={index}>
-              <td className='flex items-center gap-2 py-2'>
-                <span className='h-3 w-3 rounded-full' style={{ backgroundColor: colors?.[index] }} />
-                {item.symbol}
+              <td className='py-2'>
+                <div className='flex items-center gap-2'>
+                  <div className='h-3 w-3 rounded-full' style={{ backgroundColor: colors?.[index] }} />
+                  <Paragraph className='text-sm md:text-base lg:text-lg'>{item.symbol}</Paragraph>
+                </div>
               </td>
-              <td className='py-2'>{item.weight} %</td>
-              <td className='py-2'>$ {formatAmount(item.valueUsd)}</td>
-              <td className='py-2'>{`${formatAmount(item.amount)} ${item.symbol}`}</td>
+              <td className='py-2 text-sm md:text-base lg:text-lg'>{item.weight} %</td>
+              <td className='py-2 text-sm md:text-base lg:text-lg'>$ {formatAmount(item.valueUsd)}</td>
+              <td className='py-2 text-sm md:text-base lg:text-lg'>{`${formatAmount(item.amount)} ${item.symbol}`}</td>
             </tr>
           ))}
         </tbody>

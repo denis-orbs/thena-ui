@@ -1192,7 +1192,7 @@
   "Pool Fees": "Pool Fees",
   "Initial Liquidity": "Initial Liquidity",
   "Confirm": "Confirm",
-  "Total Allocated": "Total Allocated:",
+  "Total Allocated": "Total Allocated",
   "Add Token": "Add Token",
   "Choose Tokens Weights": "Choose Tokens Weights",
   "THENA Weighted Pool": "THENA Weighted Pool",
@@ -1490,5 +1490,6 @@
   "Get LINK": "获取 LINK",
   "Minimum LINK balance required desc": "The minimum LINK balance required for the automation to run. This is calculated based on the number of pairs and the gas limit.",
   "Minimum Link Balance needed": "最低 LINK 余额需求",
-  "Liquidity Range": "Liquidity Range"
+  "Liquidity Range": "Liquidity Range",
+  "Min [value] required": "最小 {value}% 要求"
 }

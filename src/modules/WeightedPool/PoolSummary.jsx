@@ -85,7 +85,7 @@ function PoolSummary({ tokens, fees, isMobile = false }) {
       <div className={cn(show ? 'max-lg:space-y-2' : '', isMobile ? 'block lg:hidden' : 'hidden')}>
         <div className='flex flex-row items-center justify-between gap-2'>
           <div className='w-full rounded-lg bg-neutral-900 px-4 py-1'>
-            <TextHeading className='font-archia text-xl font-semibold text-neutral-50 lg:text-3xl'>
+            <TextHeading className='font-archia text-xl font-semibold text-neutral-50 md:text-2xl lg:text-3xl'>
               {t('Pool Attributes')}
             </TextHeading>
           </div>

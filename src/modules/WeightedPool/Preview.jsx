@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
-import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SuccessModal from '@/components/modal/SuccessModal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useTokenColor } from '@/hooks/useTokenColor'
@@ -53,21 +53,24 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
 
   return (
     <div className='space-y-4'>
-      <TextHeading className='font-archia text-3xl font-semibold'>{t('Overview')}</TextHeading>
-      <Box className='space-y-8'>
+      <TextHeading className='font-archia text-xl font-semibold md:text-3xl'>{t('Overview')}</TextHeading>
+      <Box className='space-y-8 px-4 py-4'>
         <div className='flex items-center gap-4'>
-          <div className='flex flex-[4] gap-4'>
-            <div className='space-y-2'>
+          <div className='flex w-full flex-col gap-4 md:flex-[4] md:flex-row'>
+            <div className='flex flex-row items-center gap-4 md:flex-col md:gap-2'>
               <GroupIconTokens
                 height={tokens?.length === 2 ? 32 : 24}
                 width={tokens?.length === 2 ? 32 : 24}
                 tokens={tokens}
               />
-              <Paragraph className='text-xs'>{t('Weighted Pool')}</Paragraph>
+              <Paragraph className='hidden text-xs md:block'>{t('Weighted Pool')}</Paragraph>
+              <TextHeading className='flex-wrap font-archia text-xl font-semibold md:hidden md:text-[40px] md:leading-[48px]'>
+                {poolName}
+              </TextHeading>
             </div>
-            <div className='space-y-2'>
+            <div className='flex flex-row justify-between max-md:w-full md:flex-col md:gap-2'>
               <div>
-                <TextHeading>
+                <TextHeading className='font-archia text-xl font-semibold md:text-2xl lg:text-3xl'>
                   $ {formatAmount((tokens || []).reduce((sum, token) => sum + Number(token.amount) * token.price, 0))}
                 </TextHeading>
               </div>
@@ -77,13 +80,13 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
               </div>
             </div>
           </div>
-          <div className='flex-[6]'>
-            <TextHeading className='font-archia text-3xl font-semibold lg:text-[40px] lg:leading-[48px]'>
+          <div className='hidden flex-[6] md:block'>
+            <TextHeading className='font-archia text-3xl font-semibold md:text-[40px] md:leading-[48px]'>
               {poolName}
             </TextHeading>
           </div>
         </div>
-        <div className='flex flex-col gap-4 lg:flex-row'>
+        <div className='flex flex-col gap-4 md:flex-row'>
           <div className='flex-[4]'>
             <PieChart tokens={tokens} colors={colors} showTotalPercent={false} />
           </div>
@@ -92,18 +95,13 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
           </div>
         </div>
       </Box>
-      <div className='space-y-16'>
+      <div className='space-y-2'>
+        <EmphasisButton className='block w-full' onClick={() => setCurrentStep(prev => prev - 1)}>
+          {t('Back')}
+        </EmphasisButton>
         <PrimaryButton disabled={pending} onClick={onCreate} className='w-full'>
           {t('Deposit')}
         </PrimaryButton>
-        <div className='flex flex-col gap-4 lg:flex-row'>
-          <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(prev => prev - 1)}>
-            {t('Back')}
-          </EmphasisButton>
-          <TextButton className='w-full lg:w-fit' onClick={() => push('/pools')}>
-            {t('Cancel')}
-          </TextButton>
-        </div>
       </div>
       <SuccessModal
         isOpen={showModalSuccess && Boolean(poolAddress)}

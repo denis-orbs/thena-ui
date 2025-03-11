@@ -40,7 +40,7 @@ export default function SetPoolFees({ fees, setFees }) {
     <div className='space-y-4'>
       <div className={show ? 'space-y-2' : ''}>
         <div className='flex flex-row items-center justify-between'>
-          <TextHeading className='sm:text-2xl lg:font-archia lg:text-3xl lg:font-semibold'>
+          <TextHeading className='text-xl md:text-2xl lg:font-archia lg:text-3xl lg:font-semibold'>
             {t('Set Pool Fees')}
           </TextHeading>
           <EmphasisButton

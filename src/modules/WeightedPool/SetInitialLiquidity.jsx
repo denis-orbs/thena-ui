@@ -195,7 +195,10 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
             </div>
           </div>
           {totalWhenOptimize !== total && (
-            <TertiaryButton className='cursor-pointer text-primary-600' onClick={handleOptimizeTotal}>
+            <TertiaryButton
+              className='h-8 max-w-fit cursor-pointer text-xs text-primary-600 md:h-11 md:text-base'
+              onClick={handleOptimizeTotal}
+            >
               {t('Optimize')}
             </TertiaryButton>
           )}

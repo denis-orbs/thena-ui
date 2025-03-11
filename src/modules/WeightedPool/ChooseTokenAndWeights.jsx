@@ -1,5 +1,6 @@
 'use client'
 
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -15,14 +16,22 @@ import { cn } from '@/lib/utils'
 import { InfoIcon, LockIcon, UnlockIcon, WarningTriangleIcon } from '@/svgs'
 
 const updateWeight = tokens => {
+  // Calculate the total weight of locked tokens
   const weightLocked = tokens.filter(item => item.lock).reduce((sum, cur) => sum + cur.weight, 0)
+
+  // Filter out unlocked tokens that have a valid token property
   const tokenUnlock = tokens.filter(item => !item.lock && item.token != null)
+
+  // If there are no unlocked tokens, return the original list
   if (tokenUnlock.length === 0) return tokens
 
+  // Calculate the new weight for each unlocked token
   let newWeight = (100 - weightLocked) / tokenUnlock.length
   newWeight = Math.round(newWeight * 100) / 100
 
   let totalWeight = 0
+
+  // Assign the new weight to each unlocked token
   const newData = tokenUnlock.map(i => {
     const roundedWeight = Math.round(newWeight * 100) / 100
     totalWeight += roundedWeight
@@ -32,12 +41,15 @@ const updateWeight = tokens => {
     }
   })
 
+  // Calculate any remaining difference due to rounding
   let difference = Math.round((100 - weightLocked - totalWeight) * 100) / 100
 
+  // Adjust the weight to ensure the total is exactly 100
   if (difference !== 0) {
     newData.forEach((item, index) => {
       if (difference === 0) return
 
+      // Adjust by 0.01 in the appropriate direction
       const adjustment = difference > 0 ? 0.01 : -0.01
       newData[index].weight = Math.round((item.weight + adjustment) * 100) / 100
       difference -= adjustment
@@ -45,14 +57,20 @@ const updateWeight = tokens => {
     })
   }
 
+  console.log('newData', tokens)
+
+  // Merge the updated weights back into the original token list
   return tokens.map(item => {
+    if (item.lock) return item
     if (!item.lock && item.token != null) {
       return newData.find(i => i.token.address === item.token.address) || item
     }
     return item
   })
 }
+
 function TokenItem({ token, index, setTokenSelected, max }) {
+  const t = useTranslations()
   const handleLockToken = useCallback(() => {
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
@@ -69,6 +87,7 @@ function TokenItem({ token, index, setTokenSelected, max }) {
     if (value < 0) value = 0
     if (value > max) value = max
     if (value > 100) value = 100
+    console.log('value', value)
 
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
@@ -82,26 +101,43 @@ function TokenItem({ token, index, setTokenSelected, max }) {
   }
 
   return (
-    <div className='flex h-11 items-center gap-2'>
-      <div className='fex-row flex w-full items-center rounded-lg border border-neutral-700 p-1 hover:bg-neutral-800'>
-        <div className='flex items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
-          <CircleImage alt='token logo' width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
-          <Paragraph className='text-sm text-neutral-200'>{token.token.symbol}</Paragraph>
+    <div className='flex w-full flex-col gap-2'>
+      <div className='flex w-full flex-row items-center gap-2'>
+        <div
+          className={cn(
+            'fex-row flex min-h-11 w-[calc(100%-52px)] items-center rounded-lg border border-neutral-700 hover:bg-neutral-800',
+            typeof token.weight === 'number' && token.weight < 0.01 && 'border-error-600',
+          )}
+        >
+          <div className='ml-1 flex items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
+            <CircleImage alt='token logo' width={24} height={24} src={token.token.logoURI || UNKNOWN_LOGO} />
+            <Paragraph className='text-sm text-neutral-200'>{token.token.symbol}</Paragraph>
+          </div>
+          <Input
+            className='h-11 w-full border-none bg-transparent'
+            classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7 h-11' }}
+            type='number'
+            max={max}
+            val={token.weight ?? ''}
+            onChange={handleUpdateWeightToken}
+            placeholder=''
+            suffix='%'
+          />
         </div>
-        <Input
-          className='w-full border-none bg-transparent'
-          classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7' }}
-          type='number'
-          min={0}
-          max={max}
-          step={1}
-          val={token.weight || ''}
-          onChange={handleUpdateWeightToken}
-          placeholder=''
-          suffix='%'
-        />
+        <EmphasisIconButton className='h-11 w-11' Icon={token.lock ? LockIcon : UnlockIcon} onClick={handleLockToken} />
       </div>
-      <EmphasisIconButton className='h-11 w-11' Icon={token.lock ? LockIcon : UnlockIcon} onClick={handleLockToken} />
+      {Boolean(typeof token.weight === 'number' && token.weight < 0.01) && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className='flex items-center gap-2'
+        >
+          <WarningTriangleIcon className='h-4 w-4' />
+          <Paragraph className='text-sm text-error-600'>{t('Min [value] required', { value: 0.01 })}</Paragraph>
+        </motion.div>
+      )}
     </div>
   )
 }
@@ -170,7 +206,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
 
     return errorMessages.map((data, index) => (
       <div className='flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 px-4 py-5' key={index}>
-        <WarningTriangleIcon className='h-5 w-5' />
+        <WarningTriangleIcon className='h-5 min-w-4 lg:min-w-5' />
         <div className='flex flex-col gap-1'>
           {data.title && <TextHeading className='text-xl text-rose'>{data.title}</TextHeading>}
           {data.desc && <TextSubHeading className='text-base text-rose'>{data.desc}</TextSubHeading>}
@@ -181,9 +217,11 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
 
   return (
     <div className='flex h-full flex-col gap-3'>
-      <div className='flex flex-col-reverse gap-4 lg:flex-row'>
-        <TextHeading className='flex-2 text-2xl lg:flex-1 xl:text-3xl'>{t('Choose Tokens Weights')}</TextHeading>
-        <div className='flex flex-1 flex-col gap-2 lg:flex-2'>{checkError && renderMessages()}</div>
+      <div className='flex flex-col-reverse gap-4'>
+        <TextHeading className='flex-2 text-lg md:text-xl lg:flex-1 xl:text-3xl'>
+          {t('Choose Tokens Weights')}
+        </TextHeading>
+        {checkError && <div className='flex flex-1 flex-col gap-2 lg:flex-2'>{checkError && renderMessages()}</div>}
       </div>
       <div
         className={cn(

@@ -1,10 +1,14 @@
-import { Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph } from '@/components/typography'
 import { cn } from '@/lib/utils'
 
 import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 
 export function TokenPercentage({ tokens, poolAddress }) {
   const { length } = tokens || []
+  const weights = tokens.map(token => token.weight).filter(w => typeof w === 'number')
+
+  const minWeight = Math.min(...weights)
+  const maxWeight = Math.max(...weights)
   return (
     <div className='flex flex-row items-center gap-2'>
       <GroupIconTokens
@@ -20,13 +24,15 @@ export function TokenPercentage({ tokens, poolAddress }) {
       <div className='flex flex-col gap-1'>
         <div>
           {tokens.map((token, index) => (
-            <TextHeading key={token.address}>{`${token?.symbol}${index !== tokens.length - 1 ? '/' : ''}`}</TextHeading>
+            <Paragraph className='text-[10px] leading-4 md:text-base' key={token.address}>
+              {`${token?.symbol}${index !== tokens.length - 1 ? '/' : ''}`}
+            </Paragraph>
           ))}
         </div>
         <div>
-          {tokens.map((token, index) => (
-            <Paragraph key={token.address}>{`${token?.weight}%${index !== tokens.length - 1 ? ', ' : ''}`}</Paragraph>
-          ))}
+          <Paragraph className='text-[10px] leading-4 md:text-base'>
+            {weights.length > 0 ? `${minWeight}% - ${maxWeight}%` : ''}
+          </Paragraph>
         </div>
       </div>
     </div>
