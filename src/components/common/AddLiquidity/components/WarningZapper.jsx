@@ -36,7 +36,7 @@ function WarningZapper() {
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className={cn('overflow-hidden', showWarning && 'mt-2 md:mt-4')}
         >
-          <TextSubHeading className='flex flex-col text-sm md:text-base'>
+          <TextSubHeading className='flex flex-col gap-2 text-sm md:gap-4 md:text-base'>
             <Paragraph className='text-primary-100'>
               This feature is incompatible with tokens that have tax implications.
             </Paragraph>
@@ -47,7 +47,7 @@ function WarningZapper() {
             </Paragraph>
             <Link
               target='_blank'
-              className='mt-2 flex items-start gap-2 text-primary-600 md:mt-4 md:items-center'
+              className='flex items-start gap-2 text-primary-600 md:items-center'
               href='https://www.bnbchain.org/en/blog/protecting-users-from-sandwich-attacks-bnb-chain-introduces-mev-protection-with-several-wallets'
               rel='noreferrer'
             >
