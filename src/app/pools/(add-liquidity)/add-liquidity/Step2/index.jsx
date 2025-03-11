@@ -90,7 +90,7 @@ export default function Step2() {
     <div className='space-y-6 lg:space-y-12 2xl:space-y-16'>
       {PageTitleSection}
 
-      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
+      <div className='!mt-4 grid gap-4 lg:!mt-16 lg:grid-cols-add-liquidity-layout'>
         <ChooseTokensSection pairType={pairType} />
 
         {PoolDescriptionSection}

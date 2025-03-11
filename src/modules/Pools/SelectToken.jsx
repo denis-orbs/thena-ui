@@ -203,8 +203,8 @@ function SelectToken({
           classNames={{
             input: cn(
               'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
-              'bg-neutral-900 hover:bg-neutral-700 pl-12 md:pl-14 lg:pl-[72px]',
-              'text-base md:text-lg',
+              'bg-neutral-900 hover:bg-neutral-700 pl-[52px] lg:pl-[80px]',
+              'text-sm lg:text-lg',
               open && 'bg-neutral-700',
               isDisabled && 'cursor-not-allowed bg-neutral-900 hover:bg-neutral-900',
               className,
@@ -234,11 +234,7 @@ function SelectToken({
             )
           }
           prefix={
-            <CircleImage
-              alt='Token'
-              className='size-5 md:size-8 lg:size-12'
-              src={selectedAsset?.logoURI ?? UNKNOWN_LOGO}
-            />
+            <CircleImage alt='Token' className='size-7 lg:size-12' src={selectedAsset?.logoURI ?? UNKNOWN_LOGO} />
           }
           prefixClass={prefixClass}
           readOnly

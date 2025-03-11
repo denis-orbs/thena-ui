@@ -27,6 +27,7 @@ import { Presets } from '@/state/fusion/reducer'
 import { InfoIcon, TransferIcon, WarningTriangleIcon } from '@/svgs'
 
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
+import PriceHistoryChart from './PriceHistoryChart'
 import { PresetRanges } from '../components/PresetRange'
 import { RangeSelector } from '../components/RangeSelector'
 
@@ -126,6 +127,15 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
     () => (position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee',
     [position, strategy?.title],
   )
+
+  const chartDomain = useMemo(() => {
+    const leftPrice = isReverse ? priceUpper?.invert() : priceLower
+    const rightPrice = isReverse ? priceLower?.invert() : priceUpper
+
+    return leftPrice && rightPrice
+      ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
+      : []
+  }, [isReverse, priceLower, priceUpper])
 
   const resetState = useCallback(() => {
     dispatch(updateSelectedPreset({ preset: null }))
@@ -314,9 +324,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
       {strategy && (
         <div className={cn('flex flex-col gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div className='flex items-center justify-between'>
-            <NewTextSubHeading className='text-sm font-semibold lg:text-xl'>
-              {mintInfo.noLiquidity ? 'Price Range' : 'Liquidity Range'}
-            </NewTextSubHeading>
+            <NewTextSubHeading className='text-sm font-semibold lg:text-xl'>{t('Liquidity Range')}</NewTextSubHeading>
           </div>
 
           {activePreset === Presets.FULL && fullRangeWarningShown && (
@@ -325,33 +333,41 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
           {mintInfo.outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
           {mintInfo.invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
 
-          {!mintInfo.noLiquidity && (
-            <div>
-              <div className='mt-0'>
-                <LiquidityChartRangeInput
-                  currencyA={baseCurrency ?? undefined}
-                  currencyB={quoteCurrency ?? undefined}
-                  feeAmount={mintInfo.dynamicFee}
-                  ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                  price={price ? parseFloat(price) : undefined}
-                  priceLower={position?.priceLower ?? priceLower}
-                  priceUpper={position?.priceUpper ?? priceUpper}
-                  onLeftRangeInput={onLeftRangeInput}
-                  onRightRangeInput={onRightRangeInput}
-                  interactive={!position}
-                />
-              </div>
-              <div className='-mt-3 flex items-center justify-center md:mt-3'>
-                <TextHeading className='text-sm'>
-                  {t('Current Price: [price] [symbolA] [symbolB]', {
-                    price: currentPrice,
-                    symbolA: unwrappedSymbol(quoteCurrency),
-                    symbolB: unwrappedSymbol(baseCurrency),
-                  })}
-                </TextHeading>
-              </div>
+          <div>
+            <div className='mt-0'>
+              <LiquidityChartRangeInput
+                currencyA={baseCurrency ?? undefined}
+                currencyB={quoteCurrency ?? undefined}
+                feeAmount={mintInfo.dynamicFee}
+                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+                price={price ? parseFloat(price) : undefined}
+                priceLower={position?.priceLower ?? priceLower}
+                priceUpper={position?.priceUpper ?? priceUpper}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                interactive={!position}
+              />
             </div>
-          )}
+            <div className='mt-2 flex items-center justify-center'>
+              <TextHeading className='text-xs md:text-sm'>
+                {t('Current Price: [price] [symbolA] [symbolB]', {
+                  price: currentPrice,
+                  symbolA: unwrappedSymbol(quoteCurrency),
+                  symbolB: unwrappedSymbol(baseCurrency),
+                })}
+              </TextHeading>
+            </div>
+          </div>
+
+          <div className='block lg:hidden'>
+            <PriceHistoryChart
+              baseCurrency={baseCurrency}
+              quoteCurrency={quoteCurrency}
+              currentPrice={price}
+              position={position}
+              chartDomain={chartDomain}
+            />
+          </div>
 
           {!position && (
             <RangeSelector

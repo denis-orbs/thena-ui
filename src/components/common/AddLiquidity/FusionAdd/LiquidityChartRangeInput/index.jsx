@@ -115,13 +115,13 @@ export default function LiquidityChartRangeInput({
   return (
     <div className='flex min-h-[200px] w-full items-center justify-center'>
       {isUninitialized ? (
-        <TextHeading>Your position will appear here.</TextHeading>
+        <TextHeading className='text-sm lg:text-base'>Your position will appear here.</TextHeading>
       ) : isLoading ? (
         <Spinner />
       ) : error ? (
-        <TextHeading>Liquidity data not available.</TextHeading>
+        <TextHeading className='text-sm lg:text-base'>Liquidity data not available.</TextHeading>
       ) : !formattedData || formattedData.length === 0 || !price ? (
-        <TextHeading>There is no liquidity data.</TextHeading>
+        <TextHeading className='text-sm lg:text-base'>There is no liquidity data.</TextHeading>
       ) : (
         <div className='relative h-[200px] w-full content-center justify-center'>
           <Chart
