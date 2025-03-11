@@ -164,7 +164,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
     <>
       <div className={!position ? 'space-y-4' : '!mt-16'}>
         {!position && (
-          <article className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+          <article className='hidden gap-4 lg:grid lg:grid-cols-2'>
             <SelectToken
               selectedAsset={firstAsset}
               otherAsset={secondAsset}
@@ -294,25 +294,25 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                   />
                 )}
 
-                <NewTextSubHeading className='text-xs text-neutral-50 md:text-xl'>
+                <NewTextSubHeading className='text-xs font-bold text-neutral-50 md:text-xl'>
                   {isEarnFees ? 'Earn Fees' : 'Earn $THE'}
                 </NewTextSubHeading>
               </div>
 
               <div className='flex flex-col'>
-                <NewTextSubHeading className='text-xs text-neutral-50 md:text-xl'>
+                <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
                   ${formatAmount(position ? position.pool?.tvl : strategy?.tvl)}
                 </NewTextSubHeading>
-                <Paragraph className='text-xs font-normal leading-5 text-neutral-300 md:text-base'>
+                <Paragraph className='text-xs font-medium leading-5 text-neutral-300 md:text-base'>
                   {t('TVL')}
                 </Paragraph>
               </div>
 
               <div className='flex flex-col justify-end'>
-                <NewTextSubHeading className='text-xs text-primary-600 md:text-xl'>
+                <NewTextSubHeading className='text-xs font-bold text-primary-600 md:text-xl'>
                   {formatAmount(APRs?.current ? APRs.current : position?.apr)}%
                 </NewTextSubHeading>
-                <Paragraph className='text-xs font-normal leading-5 text-neutral-400 md:text-base'>
+                <Paragraph className='text-xs font-medium leading-5 text-neutral-300 md:text-base'>
                   Estimated APR
                 </Paragraph>
               </div>

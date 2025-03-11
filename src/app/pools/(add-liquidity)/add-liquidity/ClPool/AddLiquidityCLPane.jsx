@@ -9,7 +9,6 @@ import ManualAdd from '@/components/common/AddLiquidity/FusionAdd/ManualAdd'
 import ManualPositionInfo from '@/components/common/AddLiquidity/FusionAdd/ManualPositionInfo'
 import SuccessModal from '@/components/modal/SuccessModal'
 import Selection from '@/components/selection'
-import { cn } from '@/lib/utils'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { ZapperIcon } from '@/svgs'
 
@@ -74,7 +73,7 @@ export default function AddLiquidityCLPane({
         ) : (
           <div className='space-y-4'>
             {!mintInfo?.noLiquidity && !position && (
-              <Selection className={cn('w-full')} data={addSelections} isFull isTranslation={false} />
+              <Selection className='w-full items-stretch' data={addSelections} isFull isTranslation={false} />
             )}
 
             {position && (

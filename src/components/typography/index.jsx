@@ -26,7 +26,7 @@ export function NewTextHeading({ children, className, ...props }) {
   return (
     <span
       className={cn(
-        'font-archia text-2xl font-semibold text-neutral-50 md:text-3xl lg:text-5xl 2xl:text-8xl',
+        'text-2xl font-semibold text-neutral-50 md:font-archia md:text-3xl lg:text-5xl 2xl:text-8xl',
         className,
       )}
       {...props}
@@ -38,7 +38,7 @@ export function NewTextHeading({ children, className, ...props }) {
 
 export function NewTextSubHeading({ children, className, ...props }) {
   return (
-    <span className={cn('font-archia text-xl font-semibold text-neutral-50 lg:text-3xl', className)} {...props}>
+    <span className={cn('text-xl font-semibold text-neutral-50 md:font-archia lg:text-3xl', className)} {...props}>
       {children}
     </span>
   )

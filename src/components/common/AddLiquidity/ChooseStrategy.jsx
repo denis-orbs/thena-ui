@@ -322,7 +322,7 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
 
         <div className={cn('flex gap-2 max-lg:w-full', strategyCount === 0 && 'hidden')}>
           <Selection
-            className='w-full max-lg:grid max-lg:grid-cols-2 lg:w-fit [&>button]:h-full'
+            className='w-full max-lg:grid max-lg:grid-cols-2 lg:w-fit [&>button]:h-full [&>button]:font-medium'
             data={strategyType}
             isTranslation={false}
           />
@@ -330,11 +330,11 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
             onClick={() => setShow(!show)}
             className={cn(
               'flex cursor-pointer items-center justify-center rounded-lg',
-              'size-8 min-w-8 md:size-12 md:min-w-12',
+              'size-8 min-w-8 md:size-11 md:min-w-11',
               show ? 'bg-neutral-700' : 'bg-neutral-800',
             )}
           >
-            <InfoCircleWhite className='size-4 stroke-neutral-400 md:size-5' />
+            <InfoCircleWhite className='size-5 stroke-neutral-400' />
           </i>
         </div>
       </div>
