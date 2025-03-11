@@ -5,18 +5,14 @@ import { useSelector } from 'react-redux'
 import { WBNB } from 'thena-sdk-core'
 
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
+import PriceHistoryChart from '@/components/common/AddLiquidity/FusionAdd/PriceHistoryChart'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
-import Skeleton from '@/components/skeleton'
-import Tabs from '@/components/tabs'
 import { NewTextHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
 import { cn, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
-import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
-import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
-import PoolChart from '@/modules/SwapChart/PoolChart'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { usePairInfo } from '@/state/pools/hooks'
@@ -28,7 +24,6 @@ import { PoolAttributesSection } from '../PoolAttributesSection'
 function AddLiquidityClPool({ pool, handleBack }) {
   const t = useTranslations()
   const { networkId } = useChainSettings()
-  const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.WEEK)
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy } = useV3MintState()
 
@@ -102,50 +97,6 @@ function AddLiquidityClPool({ pool, handleBack }) {
     if (price) return parseFloat(price)
   }, [mintInfo.invertPrice, mintInfo.price, position])
 
-  const periods = useMemo(
-    () => [
-      {
-        label: '24H',
-        active: timeWindow === PairDataTimeWindow.DAY,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.DAY)
-        },
-      },
-      {
-        label: '1W',
-        active: timeWindow === PairDataTimeWindow.WEEK,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.WEEK)
-        },
-      },
-      {
-        label: '1M',
-        active: timeWindow === PairDataTimeWindow.MONTH,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.MONTH)
-        },
-      },
-      {
-        label: '1Y',
-        active: timeWindow === PairDataTimeWindow.YEAR,
-        onClickHandler: () => {
-          setTimeWindow(PairDataTimeWindow.YEAR)
-        },
-      },
-    ],
-    [timeWindow],
-  )
-
-  const {
-    data: pairPrices = [],
-    isLoading,
-    error,
-  } = useFetchPairPrices({
-    token0Address: wrappedAddress(quoteCurrency),
-    token1Address: wrappedAddress(baseCurrency),
-    timeWindow,
-  })
-
   return (
     <>
       <h4 className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
@@ -153,7 +104,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
         <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
       </h4>
 
-      <section className='mt-10 grid w-full grid-cols-1 gap-4 lg:grid-cols-3'>
+      <section className='!mt-4 grid w-full grid-cols-1 gap-4 lg:grid-cols-3'>
         <div id='LEFT-BLOCK' className='col-span-2 w-full gap-4 lg:gap-6'>
           <ChooseStrategy
             firstAsset={firstAsset}
@@ -205,28 +156,13 @@ function AddLiquidityClPool({ pool, handleBack }) {
             )}
 
             <div className={cn('sticky top-48 hidden', !strategy?.isAutomatic && 'block')}>
-              <div className='flex flex-col items-start gap-2 lg:flex-row lg:justify-between'>
-                <NewTextHeading className='!text-xl font-semibold'>Price History</NewTextHeading>
-                <Tabs data={periods} />
-              </div>
-
-              {isLoading ? (
-                <Skeleton className='mt-2 flex h-[300px] items-center justify-center' />
-              ) : (
-                <div className='mt-2 flex h-[300px] items-center justify-center'>
-                  {error ? (
-                    <Paragraph>Failed to load price chart for this pair</Paragraph>
-                  ) : (
-                    <PoolChart
-                      data={pairPrices}
-                      timeWindow={timeWindow}
-                      current={Number(currentPrice)}
-                      lower={Number(position?.minPrice ?? chartDomain[0] ?? 0)}
-                      upper={Number(position?.maxPrice ?? chartDomain[1] ?? 0)}
-                    />
-                  )}
-                </div>
-              )}
+              <PriceHistoryChart
+                baseCurrency={baseCurrency}
+                quoteCurrency={quoteCurrency}
+                chartDomain={chartDomain}
+                currentPrice={currentPrice}
+                position={position}
+              />
             </div>
           </div>
         </div>

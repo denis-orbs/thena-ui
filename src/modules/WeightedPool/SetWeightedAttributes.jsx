@@ -7,6 +7,7 @@ import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
+import PoolSummary from './PoolSummary'
 import SetInitialLiquidity from './SetInitialLiquidity'
 import SetPoolFees from './SetPoolFees'
 import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
@@ -76,6 +77,8 @@ function SetWeightedAttributes({
             onChange={e => setPoolName(e.target.value)}
             onFocus={e => e.target.select()}
             placeholder='Enter Name for Pool'
+            className='h-11'
+            classNames={{ input: 'h-11' }}
           />
         </div>
         <div className='min-h-full flex-[3]'>
@@ -84,26 +87,35 @@ function SetWeightedAttributes({
       </div>
       <div className='space-y-16'>
         <div className='space-y-4'>
-          <TextHeading className='font-archia text-3xl font-semibold'>{t('Set Initial Liquidity')}</TextHeading>
-          {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (
-            <div className='flex items-center gap-4 rounded-lg border border-warn-950 bg-warn-950 px-4 py-5'>
-              <InfoIcon className='h-5 w-5 !stroke-warn-600' />
-              <div className='flex flex-col gap-1'>
-                <TextHeading className='text-xl text-rose'>{t('Initial funds')}</TextHeading>
-                <TextSubHeading className='text-base text-rose'>
-                  {t('We recommend you to provide new pools')}
-                </TextSubHeading>
+          <div className='flex flex-col-reverse gap-4'>
+            <TextHeading className='flex-2 text-lg lg:flex-1 lg:font-archia lg:text-3xl lg:font-semibold'>
+              {t('Set Initial Liquidity')}
+            </TextHeading>
+            {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (
+              <div className='flex flex-1 items-center gap-4 rounded-lg border border-warn-950 bg-warn-950 px-4 py-5 lg:flex-2'>
+                <InfoIcon className='h-5 w-5 !stroke-warn-600' />
+                <div className='flex flex-col gap-1'>
+                  <TextHeading className='text-xl text-rose'>{t('Initial funds')}</TextHeading>
+                  <TextSubHeading className='text-base text-rose'>
+                    {t('We recommend you to provide new pools')}
+                  </TextSubHeading>
+                </div>
               </div>
-            </div>
-          ) : (
-            <></>
-          )}
+            ) : (
+              <></>
+            )}
+          </div>
           <SetInitialLiquidity
             checkError={checkError}
             setTokenAndWeights={setTokenAndWeights}
             tokensAndWeights={tokensAndWeights}
           />
         </div>
+        <PoolSummary
+          fees={fees}
+          tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
+          isMobile
+        />
         <div className='flex flex-col gap-4 lg:flex-row'>
           <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(prev => prev - 1)}>
             {t('Back')}

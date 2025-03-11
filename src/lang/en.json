@@ -1486,5 +1486,9 @@
   "V2 Rewards": "V2 Rewards",
   "This is the estimated total deposit based on your current contract settings": "This is the estimated total deposit based on your current contract settings.",
   "Minimum deposit": "Minimum deposit is $5. Please increase your amount.",
-  "Total Deposit Estimate": "Total Deposit Estimate"
+  "Total Deposit Estimate": "Total Deposit Estimate",
+  "Get LINK": "Get LINK",
+  "Minimum LINK balance required desc": "The minimum LINK balance required for the automation to run. This is calculated based on the number of pairs and the gas limit.",
+  "Minimum Link Balance needed": "Minimum Link Balance needed",
+  "Liquidity Range": "Liquidity Range"
 }

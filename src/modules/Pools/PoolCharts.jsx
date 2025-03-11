@@ -37,7 +37,7 @@ export function PoolChart({ address }) {
   const { isReverse } = useSelector(state => state.fusion)
 
   const pair = useMemo(
-    () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
+    () => (pairs ? pairs.find(ele => ele.address.includes(address?.toLowerCase())) : undefined),
     [pairs, address],
   )
   const { data: chartData } = useSWR(pair && ['pool/chart', pair.address], () => fetchPairChartData(networkId, pair), {

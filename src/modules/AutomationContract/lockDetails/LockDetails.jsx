@@ -4,12 +4,14 @@ import React from 'react'
 import Box from '@/components/box'
 import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
+import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useVeTheAutomations } from '@/hooks/automationContract/useAutomationContract'
 import { useCountdown } from '@/hooks/useCountdown'
 import usePrices from '@/hooks/usePrices'
 import { EVENT_TYPES } from '@/lib/tradingCompetition/utils'
 import { formatAmount } from '@/lib/utils'
+import { InfoNeutralIcon } from '@/svgs'
 
 import AutomationStatus from '../AutomationStatus'
 
@@ -67,9 +69,17 @@ function LockDetails({ contractData, veTHE }) {
           <Paragraph className='text-sm'>{t('Current LINK balance')}</Paragraph>
         </Box>
         <Box className='flex w-full flex-col gap-2'>
-          <div className='flex items-center gap-1'>
-            <TextHeading className='text-2xl'>{formatAmount(found?.minBalanceAuto)}</TextHeading>
-          </div>
+          {found?.minBalanceAuto ? (
+            <div className='flex items-center gap-1'>
+              <TextHeading className='text-2xl'>{formatAmount(found?.minBalanceAuto)}</TextHeading>
+              <InfoNeutralIcon className='h-4 w-4' data-tooltip-id='minimum-link-balance-required' />
+              <CustomTooltip id='minimum-link-balance-required' className='max-w-[350px]'>
+                {t('Minimum LINK balance required desc')}
+              </CustomTooltip>
+            </div>
+          ) : (
+            <Skeleton className='h-8 w-20' />
+          )}
           <Paragraph className='text-sm'>{t('Minimum LINK balance required')}</Paragraph>
         </Box>
         <Box className='col-span-2 flex w-full flex-col gap-2 lg:col-span-1'>

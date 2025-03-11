@@ -207,7 +207,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
         content: (
           <div className='flex flex-1 items-center justify-between'>
             <div>
-              <TextHeading>{getDisplayedStrategy(sub.title)}</TextHeading>
+              <TextHeading className='text-sm lg:text-base'>{getDisplayedStrategy(sub.title)}</TextHeading>
               <div className='mt-1 flex flex-wrap gap-2'>
                 <div className='flex items-center gap-1'>
                   <TextHeading className='text-sm'>{t('TVL')}:</TextHeading>
@@ -315,8 +315,8 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
 
   return (
     <article>
-      <div className='flex flex-col items-center gap-2 lg:flex-row lg:justify-between'>
-        <NewTextSubHeading className='hidden font-semibold text-neutral-50 lg:block'>
+      <div className='flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:justify-between'>
+        <NewTextSubHeading className='font-semibold text-neutral-50'>
           {isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}
         </NewTextSubHeading>
 
@@ -345,20 +345,20 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >
-        <div className={cn('mt-2 rounded-lg bg-neutral-800 p-4')}>
-          <Paragraph className='mb-4 block'>
+        <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4')}>
+          <Paragraph className='mb-4 block text-sm lg:text-base'>
             Depending on the Assets you chose, you will get different Strategies to chose on.
           </Paragraph>
 
-          <TextHeading className='mb-2 block'>Manual Strategy</TextHeading>
-          <Paragraph>
+          <NewTextSubHeading className='mb-2 block text-base lg:text-xl'>Manual Strategy</NewTextSubHeading>
+          <Paragraph className='text-sm lg:text-base'>
             Only use if you are experienced in providing concentrated liquidity. You can determine a custom price range
             and will earn swap fees as long as the price of the assets stays in that range. If out of range, you will
             not earn any reward until you re-adjust your position accordingly.
           </Paragraph>
 
-          <TextHeading className='mb-2 mt-4 block'>Automatic Strategy</TextHeading>
-          <Paragraph>
+          <NewTextSubHeading className='mb-2 mt-4 block text-base lg:text-xl'>Automatic Strategy</NewTextSubHeading>
+          <Paragraph className='text-sm lg:text-base'>
             If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated
             Market Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you
             provide liquidity, you will begin earning emissions.
