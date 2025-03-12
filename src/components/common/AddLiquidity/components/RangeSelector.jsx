@@ -101,15 +101,13 @@ function RangePart({
         </div>
         <div className='flex gap-4 md:flex-col md:gap-2'>
           <OutlineIconButton
-            className='rounded-xs order-2 size-6 md:order-1'
-            classNames='size-4'
+            className='rounded-xs order-2 !size-6 md:order-1'
             Icon={PlusIcon}
             onClick={handleIncrement}
             disabled={incrementDisabled || disabled}
           />
           <OutlineIconButton
-            className='rounded-xs order-1 size-6 md:order-2'
-            classNames='size-4'
+            className='rounded-xs order-1 !size-6 md:order-2'
             Icon={MinusIcon}
             onClick={handleDecrement}
             disabled={decrementDisabled || disabled}

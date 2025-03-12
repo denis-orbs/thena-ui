@@ -306,7 +306,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                   {formatAmount(APRs?.current ? APRs.current : position?.apr)}%
                 </NewTextSubHeading>
                 <Paragraph className='text-xs font-medium leading-5 text-neutral-300 md:text-base'>
-                  Estimated APR
+                  {t('Estimated APR')}
                 </Paragraph>
               </div>
             </article>

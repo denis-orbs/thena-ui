@@ -18,7 +18,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
       <div className='flex gap-2'>
         <Box className={cn('w-full rounded-lg bg-neutral-900 py-2 lg:p-4', className)}>
           <NewTextSubHeading className='flex items-center justify-between'>
-            <h3 className='text-xs font-medium md:text-lg xl:text-2xl'>{t('Pool Attributes')}</h3>
+            <h3 className='text-xs font-semibold md:text-lg lg:text-3xl'>{t('Pool Attributes')}</h3>
             <div className='hidden items-center lg:flex'>
               <i
                 onClick={() => setShow(!show)}

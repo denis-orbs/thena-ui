@@ -94,7 +94,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
     <div className='flex flex-col gap-4'>
       {PageTitleSection}
 
-      <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
+      <div className='grid lg:grid-cols-add-liquidity-layout lg:gap-4'>
         {/* Left side */}
         <div className='order-2 flex flex-col gap-4 lg:order-1 lg:gap-8'>
           {pair ? (
@@ -135,7 +135,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         {/* Right side */}
         {pool ? (
           <div className='order-1 flex flex-col gap-0 lg:order-2 lg:gap-8'>
-            <div className='order-2 lg:order-1'>
+            <div className='hidden lg:block'>
               <PoolAttributesSection pair={pair} />
             </div>
 
