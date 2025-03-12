@@ -219,7 +219,7 @@ export default function LockPage() {
       </div>
       {account ? (
         <div className='flex flex-col'>
-          <article className='my-4 flex flex-col gap-4 lg:flex-row'>
+          <article className={cn('my-4 flex flex-col gap-4 lg:flex-row', veTHEs.length > 0 && 'hidden lg:flex')}>
             <Info className='flex-col justify-between sm:flex-row lg:p-8'>
               <div className='flex items-center gap-4'>
                 <InfoCirclePrimary className='h-4 w-4 min-w-4 lg:h-8 lg:w-8 lg:min-w-8' />
