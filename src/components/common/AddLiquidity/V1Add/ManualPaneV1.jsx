@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
-import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import SuccessModal from '@/components/modal/SuccessModal'
@@ -163,7 +163,7 @@ export function ManualPaneV1({
     <section>
       <div className='flex flex-col gap-4'>
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
-        <div className='mb-5 grid gap-2 xl:grid-cols-2'>
+        <div className='mb-5 grid grid-cols-1 gap-4 xl:grid-cols-2'>
           <TokenAmountInput
             asset={firstAsset}
             setAsset={isFromBNB ? setFirstAddress : null}
@@ -182,9 +182,9 @@ export function ManualPaneV1({
       </div>
 
       <div className='mt-8 flex flex-col gap-2 md:flex-row'>
-        <OutlinedButton className='block w-full md:hidden' onClick={handleBack}>
+        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
           {t('Back')}
-        </OutlinedButton>
+        </EmphasisButton>
         {account ? (
           <>
             {strategy && strategy.gauge.address !== zeroAddress && strategy.version === 3 ? (

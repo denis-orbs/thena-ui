@@ -114,7 +114,7 @@ export function TokenAmountInput({
       <div
         className={cn(
           'flex cursor-text flex-col gap-1 self-stretch rounded-xl px-4 py-3 lg:gap-3 lg:py-4',
-          'border border-neutral-700 hover:bg-neutral-700 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
+          'border border-neutral-700 hover:bg-neutral-900 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
           'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
           classNames?.input,
         )}
@@ -198,7 +198,7 @@ export function TokenAmountInput({
           <TextSubHeading className='truncate text-neutral-500'>
             ${formatAmount(amount * (asset?.price || 0))}
           </TextSubHeading>
-          <TextSubHeading className='space-x-2 text-nowrap text-neutral-500'>
+          <TextSubHeading className='space-x-4 text-nowrap text-neutral-500'>
             <span>
               {t('Balance')}: {formatAmount(max)}
             </span>

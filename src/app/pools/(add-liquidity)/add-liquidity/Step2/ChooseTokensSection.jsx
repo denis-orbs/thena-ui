@@ -199,7 +199,7 @@ export default function ChooseTokensSection({ pairType }) {
             </>
           )}
         </div>
-        <div className='mt-auto flex flex-col gap-4 md:flex-row lg:mt-16'>
+        <div className='mt-auto flex flex-col gap-2 md:flex-row md:gap-4 lg:mt-16'>
           <EmphasisButton onClick={() => updateSearchParams({ step: 1, firstAddress: null, secondAddress: null })}>
             {t('Back')}
           </EmphasisButton>

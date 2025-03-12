@@ -1,18 +1,19 @@
+import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import V1Add from '@/components/common/AddLiquidity/V1Add'
-import Divider from '@/components/divider'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useGetAsset } from '@/hooks/fusion/Tokens'
-import { formatAmount, unwrappedSymbol } from '@/lib/utils'
-import { ClassicPoolIcon, StablePoolIcon } from '@/svgs'
+import { cn } from '@/lib/utils'
+import { ClassicPoolIcon, InfoIcon, StablePoolIcon } from '@/svgs'
 
 import { PairBasicInfo } from './PairBasicInfo'
 import { PoolAttributesSection } from './PoolAttributesSection'
+import { PoolReserveSection } from './PoolReserveSection'
 
 function AddLiquidityV1Pool({ pair, handleBack }) {
   const t = useTranslations()
@@ -22,6 +23,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
   const [firstAddress, setFirstAddress] = useState(pair?.token0?.address)
   const [secondAddress, setSecondAddress] = useState(pair?.token1?.address)
+  const [showReserve, setShowReserve] = useState(true)
 
   useEffect(() => {
     setFirstAddress(pair?.token0?.address ?? searchParams.get('firstAddress'))
@@ -41,7 +43,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
     const renderTitle = (Icon, text) => (
       <>
         {pair ? (
-          <div className='flex flex-col gap-1 lg:gap-2'>
+          <div className='flex flex-col gap-4 lg:gap-16'>
             <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
               <NewIconGroup
                 logo1={pair?.token0?.logoURI ?? UNKNOWN_LOGO}
@@ -53,7 +55,22 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                 }`}
               </NewTextHeading>
             </div>
-            <NewTextSubHeading className='lg:text-2xl 2xl:text-3xl'>{t(text.split(' ')[0])}</NewTextSubHeading>
+
+            <div className='flex items-center justify-between'>
+              <NewTextSubHeading className='lg:text-2xl 2xl:text-3xl'>{t(text.split(' ')[0])}</NewTextSubHeading>
+              <div className='flex items-center lg:hidden'>
+                <i
+                  onClick={() => setShowReserve(show => !show)}
+                  className={cn(
+                    'flex cursor-pointer items-center justify-center rounded-lg',
+                    'size-8 min-w-8 md:size-11 md:min-w-11',
+                    showReserve ? 'bg-neutral-600' : 'bg-neutral-800',
+                  )}
+                >
+                  <InfoIcon className='size-5 stroke-neutral-400' />
+                </i>
+              </div>
+            </div>
           </div>
         ) : (
           <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
@@ -71,21 +88,15 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
       default:
         return renderTitle(ClassicPoolIcon, 'Classic Pool')
     }
-  }, [pairType, pair, t])
+  }, [pairType, pair, t, showReserve])
 
   return (
-    <div className='flex flex-col gap-8 lg:gap-10 2xl:gap-16'>
+    <div className='flex flex-col gap-4'>
       {PageTitleSection}
 
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         {/* Left side */}
-        {pool && (
-          <div className='block lg:hidden'>
-            <PoolAttributesSection pair={pair} />
-          </div>
-        )}
-
-        <div className='flex flex-col gap-4 lg:gap-8'>
+        <div className='order-2 flex flex-col gap-4 lg:order-1 lg:gap-8'>
           {pair ? (
             <PairBasicInfo pair={pair} />
           ) : (
@@ -123,47 +134,26 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
         {/* Right side */}
         {pool ? (
-          <div className='flex flex-col gap-4 lg:gap-8'>
-            <div className='hidden lg:block'>
+          <div className='order-1 flex flex-col gap-0 lg:order-2 lg:gap-8'>
+            <div className='order-2 lg:order-1'>
               <PoolAttributesSection pair={pair} />
             </div>
 
-            <div className='flex flex-col gap-4 rounded-md bg-neutral-800 p-4'>
-              <div className='flex flex-col gap-4'>
-                <TextHeading className='text-base md:text-lg'>{t('Reserve Info')}</TextHeading>
-                <div className='flex flex-col gap-3 text-sm md:text-base'>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>
-                      {unwrappedSymbol(pool.token0)} {t('Amount')}
-                    </Paragraph>
-                    <Paragraph>{formatAmount(pool.token0.reserve)}</Paragraph>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>
-                      {unwrappedSymbol(pool.token1)} {t('Amount')}
-                    </Paragraph>
-                    <Paragraph>{formatAmount(pool.token1.reserve)}</Paragraph>
-                  </div>
-                </div>
-              </div>
-              <Divider />
-              <div className='flex flex-col gap-4'>
-                <TextHeading className='text-base md:text-lg'>{t('My Info')}</TextHeading>
-                <div className='flex flex-col gap-3 text-sm md:text-base'>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
-                    <Paragraph>{formatAmount(pool.account.totalLp)} LP</Paragraph>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <Paragraph className='font-medium'>{t('Staked Liquidity')}</Paragraph>
-                    <Paragraph>{formatAmount(pool.account.gaugeBalance)} LP</Paragraph>
-                  </div>
-                </div>
-              </div>
+            <div className='order-1 lg:order-2'>
+              <PoolReserveSection pool={pool} className='hidden lg:block' />
+
+              <motion.div
+                initial={{ opacity: 0, y: -10, height: 0 }}
+                animate={showReserve ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className='block overflow-hidden lg:hidden'
+              >
+                <PoolReserveSection pool={pool} className='mb-4' />
+              </motion.div>
             </div>
           </div>
         ) : (
-          <div className='flex h-max flex-col gap-3 rounded-md bg-neutral-800 p-4'>
+          <div className='order-1 flex  h-max flex-col gap-3 rounded-md bg-neutral-800 p-4 lg:order-2'>
             <TextHeading className='text-xl'>{t('New Deposit')}</TextHeading>
             <Paragraph>{t('New Deposit description')}</Paragraph>
           </div>

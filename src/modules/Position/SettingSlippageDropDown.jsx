@@ -45,13 +45,12 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
             >
               {t('Slippage')}
             </Paragraph>
-            <div className='hidden md:block'>
-              {!isHovered ? (
-                <SettingsIcon className='size-5 md:size-6' />
-              ) : (
-                <SettingPrimaryIcon className='size-5 md:size-6' />
-              )}
-            </div>
+
+            {!isHovered ? (
+              <SettingsIcon className='size-5 md:size-6' />
+            ) : (
+              <SettingPrimaryIcon className='size-5 md:size-6' />
+            )}
           </div>
         </div>
 

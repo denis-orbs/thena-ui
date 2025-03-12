@@ -203,8 +203,8 @@ function SelectToken({
           classNames={{
             input: cn(
               'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
-              'bg-neutral-900 hover:bg-neutral-700 pl-[52px] lg:pl-[80px]',
-              'text-sm lg:text-lg',
+              'bg-neutral-900 hover:bg-neutral-700 pl-[52px] lg:pl-[80px] py-4',
+              'text-sm lg:text-lg leading-5',
               open && 'bg-neutral-700',
               isDisabled && 'cursor-not-allowed bg-neutral-900 hover:bg-neutral-900',
               className,

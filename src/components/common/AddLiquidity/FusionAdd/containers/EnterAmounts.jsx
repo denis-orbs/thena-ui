@@ -85,8 +85,8 @@ export function EnterAmounts({ currencyA, currencyB, setCurrencyA, setCurrencyB,
 
   return (
     <div
-      className={cn('flex flex-col', {
-        'gap-4 lg:flex-row': !depositADisabled && !depositBDisabled,
+      className={cn('grid grid-cols-1', {
+        'gap-4 xl:grid-cols-2': !depositADisabled && !depositBDisabled,
       })}
     >
       <TokenAmountCard

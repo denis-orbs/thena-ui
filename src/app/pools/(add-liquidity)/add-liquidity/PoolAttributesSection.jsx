@@ -55,7 +55,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
             className={cn(
               'flex cursor-pointer items-center justify-center rounded-lg',
               'size-8 min-w-8 md:size-11 md:min-w-11',
-              show ? 'bg-neutral-700' : 'bg-neutral-800',
+              show ? 'bg-neutral-600' : 'bg-neutral-800',
             )}
           >
             <InfoIcon className='size-5 stroke-neutral-400' />

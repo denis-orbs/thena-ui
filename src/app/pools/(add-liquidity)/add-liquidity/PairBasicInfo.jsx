@@ -19,11 +19,11 @@ export function PairBasicInfo({ pair }) {
       <Box className='grid w-full grid-cols-2 flex-wrap justify-between gap-4 md:flex'>
         <div className='flex flex-col gap-2'>
           <NewTextSubHeading className='text-gradient-primary'>{pair?.apr ?? '0%'}</NewTextSubHeading>
-          <Paragraph>{t('APR')}</Paragraph>
+          <Paragraph className='text-neutral-500'>{t('Estimated APR')}</Paragraph>
         </div>
         <div className='flex flex-col gap-2'>
           <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.dayVolume)}</NewTextSubHeading>
-          <Paragraph>{t('Volume (24h)')}</Paragraph>
+          <Paragraph className='text-neutral-500'>{t('Volume (24h)')}</Paragraph>
         </div>
         {isMobile && (
           <motion.div
@@ -34,26 +34,26 @@ export function PairBasicInfo({ pair }) {
           >
             <div className='flex flex-col gap-2'>
               <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.dayFees)}</NewTextSubHeading>
-              <Paragraph>{t('Fees (24h)')}</Paragraph>
+              <Paragraph className='text-neutral-500'>{t('Fees (24h)')}</Paragraph>
             </div>
             <div className='flex flex-col gap-2'>
               <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.tvlUSD)}</NewTextSubHeading>
-              <Paragraph>{t('TVL')}</Paragraph>
+              <Paragraph className='text-neutral-500'>{t('TVL')}</Paragraph>
             </div>
           </motion.div>
         )}
         <div className='flex flex-col gap-2 max-md:hidden'>
           <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.dayFees)}</NewTextSubHeading>
-          <Paragraph>{t('Fees (24h)')}</Paragraph>
+          <Paragraph className='text-neutral-500'>{t('Fees (24h)')}</Paragraph>
         </div>
         <div className='flex flex-col gap-2 max-md:hidden'>
           <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.tvlUSD)}</NewTextSubHeading>
-          <Paragraph>{t('TVL')}</Paragraph>
+          <Paragraph className='text-neutral-500'>{t('TVL')}</Paragraph>
         </div>
       </Box>
       {isMobile && (
-        <EmphasisButton className='h-8 w-8 p-2 md:hidden' onClick={() => setIsExpanded(prev => !prev)}>
-          <ChevronRightIcon className={cn('size-4', isExpanded && 'rotate-90')} />
+        <EmphasisButton className='size-8 !bg-neutral-800 p-2 md:hidden' onClick={() => setIsExpanded(prev => !prev)}>
+          <ChevronRightIcon className={cn('size-4 [&>path]:stroke-neutral-400', isExpanded && 'rotate-90')} />
         </EmphasisButton>
       )}
     </div>

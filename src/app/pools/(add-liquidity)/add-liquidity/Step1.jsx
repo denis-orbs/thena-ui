@@ -91,7 +91,7 @@ export default function Step1() {
         </div>
       </div>
 
-      <div className='flex flex-col gap-4 md:flex-row'>
+      <div className='flex flex-col gap-2 md:flex-row md:gap-4'>
         <EmphasisButton onClick={() => push('/pools')}>{t('Cancel')}</EmphasisButton>
         <PrimaryButton
           onClick={() => {
