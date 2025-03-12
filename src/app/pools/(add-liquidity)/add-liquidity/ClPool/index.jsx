@@ -99,7 +99,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   return (
     <>
-      <h4 className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
+      <h4 className='flex flex-row items-center gap-4 2xl:gap-8'>
         <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
         <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
       </h4>

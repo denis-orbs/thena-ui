@@ -82,10 +82,10 @@ function RangePart({
       </TextSubHeading>
 
       <div className='flex items-center justify-between rounded-xl border border-neutral-700 px-4 py-3'>
-        <div className='flex flex-col gap-1.5'>
+        <div className='flex flex-col gap-1 md:gap-1.5'>
           <input
             type={activePreset === Presets.FULL ? 'text' : 'number'}
-            className='w-full border-0 bg-transparent p-0 text-sm text-neutral-50 placeholder-neutral-400 md:text-xl'
+            className='w-full border-0 bg-transparent p-0 text-sm leading-7 text-neutral-50 placeholder-neutral-400 md:text-xl'
             placeholder='0.0'
             value={localTokenValue}
             onChange={e => {
@@ -99,17 +99,17 @@ function RangePart({
           />
           <Paragraph className='text-[10px] text-neutral-300'>{description}</Paragraph>
         </div>
-        <div className='flex flex-col gap-2'>
+        <div className='flex gap-4 md:flex-col md:gap-2'>
           <OutlineIconButton
-            className='h-6 w-6 lg:h-6 lg:w-6'
-            classNames='h-4 w-4 lg:h-4 lg:w-4'
+            className='rounded-xs order-2 size-6 md:order-1'
+            classNames='size-4'
             Icon={PlusIcon}
             onClick={handleIncrement}
             disabled={incrementDisabled || disabled}
           />
           <OutlineIconButton
-            className='h-6 w-6 lg:h-6 lg:w-6'
-            classNames='h-4 w-4 lg:h-4 lg:w-4'
+            className='rounded-xs order-1 size-6 md:order-2'
+            classNames='size-4'
             Icon={MinusIcon}
             onClick={handleDecrement}
             disabled={decrementDisabled || disabled}
@@ -193,7 +193,7 @@ export function RangeSelector({
       />
 
       <button
-        className='flex h-fit w-full items-center justify-center self-end rounded-lg bg-neutral-600 p-1 text-neutral-400 md:h-20 md:w-fit'
+        className='flex h-fit w-full items-center justify-center self-end rounded-lg bg-neutral-600 p-1.5 text-neutral-400 md:h-20 md:w-fit'
         aria-label='Swap price range bounds'
         type='button'
         onClick={handleRevert}

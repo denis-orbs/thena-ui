@@ -36,21 +36,9 @@ export default function Zoom({ svg, xScale, setZoom, width, height, zoomLevels }
   }, [zoomInitial, zoomLevels])
 
   return (
-    <div className='absolute -top-[20px] right-0 grid grid-cols-2 gap-1'>
-      <OutlineIconButton
-        className='lg:h-6 lg:w-6'
-        classNames='lg:h-4 lg:w-4'
-        Icon={ZoomInIcon}
-        onClick={zoomIn}
-        disabled={false}
-      />
-      <OutlineIconButton
-        className='lg:h-6 lg:w-6'
-        classNames='lg:h-4 lg:w-4'
-        Icon={ZoomOutIcon}
-        onClick={zoomOut}
-        disabled={false}
-      />
+    <div className='absolute -top-2 right-0 grid grid-cols-2 gap-1 md:-top-5'>
+      <OutlineIconButton className='size-6' classNames='size-4' Icon={ZoomInIcon} onClick={zoomIn} disabled={false} />
+      <OutlineIconButton className='size-6' classNames='size-4' Icon={ZoomOutIcon} onClick={zoomOut} disabled={false} />
     </div>
   )
 }

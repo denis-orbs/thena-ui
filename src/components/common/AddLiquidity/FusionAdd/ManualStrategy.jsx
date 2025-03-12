@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Info, Warning } from '@/components/alert'
+import { Warning } from '@/components/alert'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
@@ -24,12 +24,13 @@ import {
   useV3MintState,
 } from '@/state/fusion/hooks'
 import { Presets } from '@/state/fusion/reducer'
-import { InfoIcon, TransferIcon, WarningTriangleIcon } from '@/svgs'
+import { TransferIcon, WarningTriangleIcon } from '@/svgs'
 
 import LiquidityChartRangeInput from './LiquidityChartRangeInput'
 import PriceHistoryChart from './PriceHistoryChart'
 import { PresetRanges } from '../components/PresetRange'
 import { RangeSelector } from '../components/RangeSelector'
+import WarningStartingPrice from '../components/WarningStartingPrice'
 
 const feeAmount = 3000
 
@@ -162,7 +163,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
 
   return (
     <>
-      <div className={!position ? 'space-y-4' : '!mt-16'}>
+      <div className='space-y-4'>
         {!position && (
           <article className='hidden gap-4 lg:grid lg:grid-cols-2'>
             <SelectToken
@@ -185,28 +186,16 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
         )}
 
         {mintInfo.noLiquidity && (
-          <div className='!mt-8 flex flex-col gap-4'>
-            <Info className='items-start p-4 px-5 md:p-6 lg:p-8'>
-              <div className='flex'>
-                <InfoIcon className='size-5 !stroke-primary-600 md:size-8' />
-              </div>
-              <div className='flex flex-col gap-2'>
-                <Paragraph className='text-base font-medium text-neutral-100 md:text-xl'>
-                  {t('Starting Price needed')}
-                </Paragraph>
-                <TextSubHeading className='text-sm leading-5 text-primary-100 md:text-base'>
-                  {t('Initialize warning')}
-                </TextSubHeading>
-              </div>
-            </Info>
+          <div className='!mt-4 flex flex-col gap-4 md:!mt-8'>
+            <WarningStartingPrice />
 
-            <div className='flex items-end gap-6 md:gap-8'>
-              <div className='flex w-full max-w-72 flex-col gap-2'>
-                <div className='flex items-end justify-between'>
+            <div className='flex items-end gap-2 md:gap-8'>
+              <div className='flex w-full max-w-72 flex-col gap-1'>
+                <div className='flex items-center justify-between'>
                   <Paragraph className='text-xs font-medium text-neutral-50 md:text-base'>
                     {t('Initialization Price')}
                   </Paragraph>
-                  <Paragraph className='text-xs font-normal text-neutral-300 md:text-base'>
+                  <Paragraph className='text-base font-normal text-neutral-300'>
                     {t('[symbolA] per [symbolB]', {
                       symbolA: quoteCurrency?.symbol,
                       symbolB: baseCurrency?.symbol,
@@ -215,7 +204,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 </div>
                 <Input
                   classNames={{
-                    input: 'text-right leading-5',
+                    input: 'leading-5',
                   }}
                   val={startPriceTypedValue}
                   min={0}
@@ -231,16 +220,17 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
 
               <div className='flex h-[46px] items-center gap-4'>
                 <CircleImage
-                  className='size-8 outline outline-[#1C2027] md:size-9'
+                  className='size-6 outline outline-[#1C2027] md:size-9'
                   src={quoteCurrency?.logoURI ?? UNKNOWN_LOGO}
                   alt='quote token'
                 />
                 <EmphasisIconButton
+                  className='size-6 rounded-[4px] md:size-11 md:rounded-lg'
                   Icon={TransferIcon}
                   onClick={() => dispatch(updateIsReverse({ isReverse: !isReverse }))}
                 />
                 <CircleImage
-                  className='size-8 outline outline-[#1C2027] md:size-9'
+                  className='size-6 outline outline-[#1C2027] md:size-9'
                   src={baseCurrency?.logoURI ?? UNKNOWN_LOGO}
                   alt='base token'
                 />
@@ -259,8 +249,8 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
         )}
 
         {position && position.outOfRange ? (
-          <div className={cn('flex gap-4 rounded-lg border border-error-800 bg-error-950 p-8')}>
-            <div className='size-8 min-w-8'>
+          <div className={cn('flex gap-4 rounded-lg border border-error-800 bg-error-950 p-4 md:p-8')}>
+            <div className='size-5 min-w-5 md:size-8 md:min-w-8'>
               <WarningTriangleIcon className='size-full' />
             </div>
             <div className='flex flex-col gap-2'>
@@ -294,7 +284,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                   />
                 )}
 
-                <NewTextSubHeading className='text-xs font-bold text-neutral-50 md:text-xl'>
+                <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
                   {isEarnFees ? 'Earn Fees' : 'Earn $THE'}
                 </NewTextSubHeading>
               </div>
@@ -348,14 +338,14 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 interactive={!position}
               />
             </div>
-            <div className='mt-2 flex items-center justify-center'>
-              <TextHeading className='text-xs md:text-sm'>
+            <div className='-mt-4 flex items-center justify-center sm:mt-3'>
+              <TextSubHeading className='leading-5'>
                 {t('Current Price: [price] [symbolA] [symbolB]', {
                   price: currentPrice,
                   symbolA: unwrappedSymbol(quoteCurrency),
                   symbolB: unwrappedSymbol(baseCurrency),
                 })}
-              </TextHeading>
+              </TextSubHeading>
             </div>
           </div>
 

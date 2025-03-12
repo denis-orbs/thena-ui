@@ -99,10 +99,10 @@ function KyberZapperPane({
   const _token1 = tokens[addLiquidityAction?.addLiquidity?.token1?.address?.toLowerCase()]
 
   return (
-    <div className='flex flex-col gap-8'>
+    <div className='!mt-4 flex flex-col gap-8'>
       <div className='space-y-4'>
         <WarningZapper />
-        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
+        <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='!mt-8 mb-0' />
         <div className='relative flex w-full flex-col gap-2'>
           <TokenAmountInput
             type='number'
@@ -150,7 +150,7 @@ function KyberZapperPane({
         </div>
       </div>
 
-      <div className='mt-auto flex w-full flex-col items-center gap-2 lg:flex-row'>
+      <div className='!mt-8 flex w-full flex-col items-center gap-2 lg:flex-row'>
         <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
           {t('Back')}
         </EmphasisButton>

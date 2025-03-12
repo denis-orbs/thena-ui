@@ -601,6 +601,10 @@ input[type='radio']:checked:after {
   border-radius: 0.75rem;
 }
 
+.rounded-xs {
+  border-radius: 4px;
+}
+
 @keyframes rotate {
   100% {
     transform: translate(-50%, -50%) rotate(1turn);

@@ -10,27 +10,27 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
   const t = useTranslations()
 
   return (
-    <div className='mt-8'>
+    <div className='mt-4 md:mt-0'>
       <article
-        className={cn('gird-cols-6 grid items-center gap-4 rounded-lg bg-neutral-900 p-4 font-medium md:grid-cols-3')}
+        className={cn(
+          'gird-cols-2 grid items-center gap-4 rounded-lg bg-neutral-900 p-2 font-medium md:grid-cols-3 md:p-4',
+        )}
       >
-        <div className='flex items-center justify-center gap-6 md:gap-2 lg:justify-start'>
-          <div className='size-12 min-w-12 2xl:size-16 2xl:min-w-16'>
+        <div className='col-span-2 flex items-center gap-2 md:col-span-1 lg:justify-start'>
+          <div className='size-6 min-w-6 md:size-16 md:min-w-16'>
             <CoinUSDIcon className='size-full' />
           </div>
-          <div className='flex min-w-40 flex-col gap-2 md:min-w-0'>
-            <Paragraph className='text-base text-primary-100 2xl:text-xl'>${position.depositInUSD}</Paragraph>
-            <Paragraph className='text-sm text-primary-100 2xl:text-base'>{t('Deposit Value in USD')}</Paragraph>
+          <div className='flex flex-col gap-2'>
+            <Paragraph className='text-xs text-primary-100 md:text-xl'>${position.depositInUSD}</Paragraph>
+            <Paragraph className='text-xs text-primary-100 md:text-base'>{t('Deposit Value in USD')}</Paragraph>
           </div>
         </div>
 
-        <div className='flex items-center justify-center gap-6 md:gap-2 lg:justify-start'>
-          <CircleImage className='size-12 2xl:size-16' src={baseCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
-          <div className='flex min-w-40 flex-col gap-2 md:min-w-0'>
-            <Paragraph className='text-base text-primary-100 2xl:text-xl'>
-              {formatAmount(position.amountAsset0)}
-            </Paragraph>
-            <Paragraph className='text-sm text-primary-100 2xl:text-base'>
+        <div className='flex items-center gap-2 lg:justify-start'>
+          <CircleImage className='size-6 md:size-16' src={baseCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
+          <div className='flex flex-col gap-2'>
+            <Paragraph className='text-xs text-primary-100 md:text-xl'>{formatAmount(position.amountAsset0)}</Paragraph>
+            <Paragraph className='text-xs text-primary-100 md:text-base'>
               {t('[symbol] deposit [percent]', {
                 symbol: baseCurrency.symbol,
                 percent: formatAmount(position.firstPercent),
@@ -39,13 +39,11 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
           </div>
         </div>
 
-        <div className='flex items-center justify-center gap-6 md:gap-2 lg:justify-start'>
-          <CircleImage className='size-12 2xl:size-16' src={quoteCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
-          <div className='flex min-w-40 flex-col gap-2 md:min-w-0'>
-            <Paragraph className='text-base text-primary-100 2xl:text-xl'>
-              {formatAmount(position.amountAsset1)}
-            </Paragraph>
-            <Paragraph className='text-sm text-primary-100 2xl:text-base'>
+        <div className='flex items-center gap-2 lg:justify-start'>
+          <CircleImage className='size-6 md:size-16' src={quoteCurrency.logoURI ?? UNKNOWN_LOGO} alt='base token' />
+          <div className='flex flex-col gap-2'>
+            <Paragraph className='text-xs text-primary-100 md:text-xl'>{formatAmount(position.amountAsset1)}</Paragraph>
+            <Paragraph className='text-xs text-primary-100 md:text-base'>
               {t('[symbol] deposit [percent]', {
                 symbol: quoteCurrency.symbol,
                 percent: formatAmount(100 - position.firstPercent),
@@ -63,8 +61,8 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
               symbolB: quoteCurrency.symbol,
             })}
           </Paragraph>
-          <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3 text-neutral-400')}>
-            <TextHeading>{position.minPrice}</TextHeading>
+          <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3')}>
+            <TextHeading className='text-xl leading-7 text-neutral-400'>{position.minPrice}</TextHeading>
           </div>
         </div>
 
@@ -75,8 +73,8 @@ export default function ManualPositionInfo({ baseCurrency, quoteCurrency, positi
               symbolB: quoteCurrency.symbol,
             })}
           </Paragraph>
-          <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3 text-neutral-400')}>
-            <TextHeading>{position.maxPrice}</TextHeading>
+          <div className={cn('flex flex-col rounded-xl border border-neutral-700 px-4 py-3')}>
+            <TextHeading className='text-xl leading-7 text-neutral-400'>{position.maxPrice}</TextHeading>
           </div>
         </div>
       </div>

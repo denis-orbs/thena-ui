@@ -101,7 +101,7 @@ export function TokenAmountCard({
           </div>
         )
       ) : (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col'>
           <div className='flex items-center justify-between'>
             <p className='font-medium text-white'>{title}</p>
             {showPercent && <Tabs data={percents} />}
@@ -109,7 +109,7 @@ export function TokenAmountCard({
           <div
             className={cn(
               'flex flex-col gap-3 self-stretch rounded-xl p-4',
-              'border border-neutral-700 hover:bg-neutral-700',
+              'border border-neutral-700 hover:bg-neutral-900',
               'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
             )}
             onClick={onfocusInput}
@@ -147,7 +147,7 @@ export function TokenAmountCard({
                 <div
                   className={cn(
                     'inline-flex items-center justify-center gap-2',
-                    'rounded-lg bg-[#29292980] text-sm text-neutral-200',
+                    'rounded-lg bg-[#292929] bg-opacity-50 text-sm text-neutral-200',
                     'py-1.5 pl-1.5 pr-2',
                     'cursor-default',
                   )}
@@ -169,8 +169,8 @@ export function TokenAmountCard({
               )}
             </div>
             <div className='flex items-center justify-between gap-2'>
-              <TextSubHeading>${formatAmount(value * price)}</TextSubHeading>
-              <TextSubHeading className='space-x-2'>
+              <TextSubHeading className='text-neutral-500'>${formatAmount(value * price)}</TextSubHeading>
+              <TextSubHeading className='space-x-4 text-neutral-500'>
                 <span>
                   {t('Balance')}: {balanceString}
                 </span>

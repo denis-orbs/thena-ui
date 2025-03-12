@@ -113,8 +113,8 @@ export default function ManualAdd({
   ])
 
   return (
-    <section className='space-y-8'>
-      <div className={cn('space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+    <section className='space-y-2 md:space-y-8'>
+      <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <EnterAmounts
           currencyA={baseCurrency}
@@ -126,16 +126,14 @@ export default function ManualAdd({
         />
       </div>
 
-      <div className={cn('mt-auto flex w-full flex-col items-center gap-2 lg:flex-row')}>
+      <div className={cn('!mt-8 flex w-full flex-col items-center gap-2 lg:flex-row')}>
+        <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+          {t('Back')}
+        </EmphasisButton>
         {account ? (
-          <>
-            <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
-              {t('Back')}
-            </EmphasisButton>
-            <PrimaryButton disabled={pending || isPendingIncrease} onClick={onAddLiquidity} className='w-full'>
-              {t('Deposit')}
-            </PrimaryButton>
-          </>
+          <PrimaryButton disabled={pending || isPendingIncrease} onClick={onAddLiquidity} className='w-full'>
+            {t('Deposit')}
+          </PrimaryButton>
         ) : (
           <ConnectButton className='w-full' />
         )}

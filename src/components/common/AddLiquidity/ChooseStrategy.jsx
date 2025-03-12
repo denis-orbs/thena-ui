@@ -19,7 +19,7 @@ import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite } from '@/svgs'
+import { InfoIcon } from '@/svgs'
 
 import AutomaticStrategy from './FusionAdd/AutomaticStrategy'
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
@@ -260,7 +260,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
           position={position}
         />
 
-        <div className={cn('!mt-2 hidden max-lg:block', { '!mt-24': !!position })}>
+        <div className={cn('!mt-2 hidden max-lg:block')}>
           <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
         </div>
 
@@ -334,7 +334,7 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
               show ? 'bg-neutral-700' : 'bg-neutral-800',
             )}
           >
-            <InfoCircleWhite className='size-5 stroke-neutral-400' />
+            <InfoIcon className='size-5 stroke-neutral-400' />
           </i>
         </div>
       </div>
@@ -346,19 +346,19 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
         className='overflow-hidden'
       >
         <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4')}>
-          <Paragraph className='mb-4 block text-sm lg:text-base'>
+          <Paragraph className='mb-4 block text-base'>
             Depending on the Assets you chose, you will get different Strategies to chose on.
           </Paragraph>
 
-          <NewTextSubHeading className='mb-2 block text-base lg:text-xl'>Manual Strategy</NewTextSubHeading>
-          <Paragraph className='text-sm lg:text-base'>
+          <NewTextSubHeading className='mb-2 block text-xl'>Manual Strategy</NewTextSubHeading>
+          <Paragraph className='text-base'>
             Only use if you are experienced in providing concentrated liquidity. You can determine a custom price range
             and will earn swap fees as long as the price of the assets stays in that range. If out of range, you will
             not earn any reward until you re-adjust your position accordingly.
           </Paragraph>
 
-          <NewTextSubHeading className='mb-2 mt-4 block text-base lg:text-xl'>Automatic Strategy</NewTextSubHeading>
-          <Paragraph className='text-sm lg:text-base'>
+          <NewTextSubHeading className='mb-2 mt-4 block text-xl'>Automatic Strategy</NewTextSubHeading>
+          <Paragraph className='text-base'>
             If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated
             Market Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you
             provide liquidity, you will begin earning emissions.

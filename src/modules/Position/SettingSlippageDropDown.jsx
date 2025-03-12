@@ -39,17 +39,19 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
           >
             <Paragraph
               className={cn(
-                'text-sm font-medium text-neutral-400 hover:text-primary-600 hover:underline md:text-base',
+                'text-base font-medium text-neutral-400 hover:text-primary-600 hover:underline',
                 isHovered && 'text-primary-600 underline',
               )}
             >
               {t('Slippage')}
             </Paragraph>
-            {!isHovered ? (
-              <SettingsIcon className='size-5 md:size-6' />
-            ) : (
-              <SettingPrimaryIcon className='size-5 md:size-6' />
-            )}
+            <div className='hidden md:block'>
+              {!isHovered ? (
+                <SettingsIcon className='size-5 md:size-6' />
+              ) : (
+                <SettingPrimaryIcon className='size-5 md:size-6' />
+              )}
+            </div>
           </div>
         </div>
 

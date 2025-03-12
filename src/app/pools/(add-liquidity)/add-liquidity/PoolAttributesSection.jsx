@@ -7,7 +7,7 @@ import { NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { cn } from '@/lib/utils'
 import { NormalPoolAttributes, PoolAttributesCL } from '@/modules/Pools/PoolAttributes'
-import { InfoCircleWhite } from '@/svgs'
+import { InfoIcon } from '@/svgs'
 
 export function PoolAttributesSection({ strategy, pair, className }) {
   const t = useTranslations()
@@ -28,7 +28,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
                   show ? 'bg-neutral-600' : 'bg-neutral-700',
                 )}
               >
-                <InfoCircleWhite className='h-5 w-5 stroke-neutral-400' />
+                <InfoIcon className='size-5 stroke-neutral-400' />
               </i>
             </div>
           </NewTextSubHeading>
@@ -58,7 +58,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
               show ? 'bg-neutral-700' : 'bg-neutral-800',
             )}
           >
-            <InfoCircleWhite className='size-5 stroke-neutral-400' />
+            <InfoIcon className='size-5 stroke-neutral-400' />
           </i>
         </div>
       </div>
