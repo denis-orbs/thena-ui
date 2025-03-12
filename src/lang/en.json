@@ -1491,5 +1491,6 @@
   "Minimum LINK balance required desc": "The minimum LINK balance required for the automation to run. This is calculated based on the number of pairs and the gas limit.",
   "Minimum Link Balance needed": "Minimum Link Balance needed",
   "Liquidity Range": "Liquidity Range",
-  "Min [value] required": "Min. {value}% required"
+  "Min [value] required": "Min. {value}% required",
+  "Enter weight": "Enter weight"
 }

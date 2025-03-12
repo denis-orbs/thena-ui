@@ -26,16 +26,18 @@ function TitleSection({ Icon, text, description }) {
           <InfoNeutralIcon className='h-4 w-4' />
         </EmphasisButton>
       </h4>
-      <motion.div
-        initial={{ opacity: 0, y: -10, height: 0 }}
-        animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className='w-full overflow-hidden lg:hidden'
-      >
-        <div className='z-10 flex gap-3 rounded-lg bg-neutral-900 p-4'>
-          <p className='text-sm text-neutral-300'>{t(description)}</p>
-        </div>
-      </motion.div>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, height: 0 }}
+          animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className='w-full overflow-hidden lg:hidden'
+        >
+          <div className='z-10 flex gap-3 rounded-lg bg-neutral-900 p-4'>
+            <p className='text-sm text-neutral-300'>{t(description)}</p>
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }

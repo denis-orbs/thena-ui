@@ -66,8 +66,8 @@ function SetWeightedAttributes({
           <div className='flex items-center gap-4'>
             <GroupIconTokens
               tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
-              width={tokensAndWeights.length <= 4 ? 32 : 24}
-              height={tokensAndWeights.length <= 4 ? 32 : 24}
+              width={16}
+              height={16}
             />
             <Paragraph className='text-neutral-200'>{t('Weighted Pool')}</Paragraph>
           </div>
@@ -86,7 +86,7 @@ function SetWeightedAttributes({
         </div>
         <PoolSummary
           fees={fees}
-          tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
+          tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount }))}
           isMobile
         />
       </div>
@@ -116,7 +116,7 @@ function SetWeightedAttributes({
             tokensAndWeights={tokensAndWeights}
           />
         </div>
-        <div className='flex flex-col gap-4 lg:flex-row'>
+        <div className='flex flex-col gap-2 lg:flex-row lg:gap-4'>
           <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(prev => prev - 1)}>
             {t('Back')}
           </EmphasisButton>

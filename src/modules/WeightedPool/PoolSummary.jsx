@@ -15,17 +15,17 @@ function Attributes({ tokens, fees, isMobile }) {
     <div className={cn(isMobile && 'rounded-lg bg-neutral-900 px-5 py-3')}>
       <div className='flex items-center justify-between border-b-[2px] border-neutral-700 p-4'>
         <div className='flex gap-3'>
-          <CoinsHandIcon className='h-5 w-5' />
-          <Paragraph>{t('Pool Fees')}</Paragraph>
+          <CoinsHandIcon className='h-6 w-6 lg:h-9 lg:w-9' />
+          <Paragraph className='text-sm lg:text-base'>{t('Pool Fees')}</Paragraph>
         </div>
-        <Paragraph>{`${fees} %`}</Paragraph>
+        <Paragraph className='text-sm lg:text-base'>{`${fees} %`}</Paragraph>
       </div>
       <div className='mx-auto mt-4 w-full'>
         <div className='w-full text-left'>
           {/* Header */}
           <div className='flex py-5'>
             <div className='flex-1 pb-2 text-left text-sm text-neutral-50 lg:text-base'>Token</div>
-            <div className='flex-1 pb-2 text-center text-sm text-neutral-50 lg:text-base'>USD Value</div>
+            <div className='flex-1 pb-2 text-left text-sm text-neutral-50 lg:text-base'>USD Value</div>
             <div className='flex-1 pb-2 text-right text-sm text-neutral-50 lg:text-base'>Pool</div>
           </div>
 
@@ -35,12 +35,12 @@ function Attributes({ tokens, fees, isMobile }) {
               <div className='flex' key={token.symbol}>
                 <div className='flex flex-1 items-center gap-2 py-2'>
                   <div className='flex items-center gap-3'>
-                    <CircleImage className='h-8 w-8' src={token.logoURI} alt={`${token.symbol} logo`} />
+                    <CircleImage className='h-6 w-6 lg:h-8 lg:w-8' src={token.logoURI} alt={`${token.symbol} logo`} />
                     <TextHeading className='text-sm text-neutral-50 lg:text-base'>{token.symbol}</TextHeading>
                   </div>
                 </div>
                 <div className='flex flex-1 justify-center py-2'>
-                  <Paragraph className='text-center text-sm text-neutral-50 lg:text-base'>
+                  <Paragraph className='max-w-[100px] truncate text-left text-sm text-neutral-50 lg:max-w-[150px] lg:text-base'>
                     $ {formatAmount(token.price * (Number(token.amount) || 0))}
                   </Paragraph>
                 </div>
@@ -57,7 +57,7 @@ function Attributes({ tokens, fees, isMobile }) {
                 <Paragraph className='text-sm text-neutral-50 lg:text-base'>{t('Total')}</Paragraph>
               </div>
               <div className='flex flex-1 justify-center'>
-                <Paragraph className='text-sm text-neutral-50 lg:text-base'>
+                <Paragraph className='max-w-[100px] truncate text-sm text-neutral-50 lg:max-w-[150px] lg:text-base'>
                   $ {formatAmount(tokens.reduce((curr, token) => curr + Number(token.amount || 0) * token.price, 0))}
                 </Paragraph>
               </div>
@@ -84,13 +84,13 @@ function PoolSummary({ tokens, fees, isMobile = false }) {
       </TextHeading>
       <div className={cn(show ? 'max-lg:space-y-2' : '', isMobile ? 'block lg:hidden' : 'hidden')}>
         <div className='flex flex-row items-center justify-between gap-2'>
-          <div className='w-full rounded-lg bg-neutral-900 px-4 py-1'>
-            <TextHeading className='font-archia text-xl font-semibold text-neutral-50 md:text-2xl lg:text-3xl'>
+          <div className='h-8 w-full rounded-lg bg-neutral-900 px-4 py-1'>
+            <TextHeading className='font-archia text-xs font-semibold text-neutral-50 md:text-2xl lg:text-3xl'>
               {t('Pool Attributes')}
             </TextHeading>
           </div>
           <EmphasisButton
-            className='ml-auto block w-fit bg-neutral-600 p-2 lg:hidden'
+            className={cn('ml-auto block w-fit p-2 lg:hidden', show && 'bg-neutral-800')}
             onClick={() => setShow(prev => !prev)}
           >
             <InfoNeutralIcon className='h-4 w-4' />

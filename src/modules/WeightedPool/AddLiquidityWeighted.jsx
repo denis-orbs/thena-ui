@@ -225,9 +225,7 @@ function AddLiquidityWeighted({ pool }) {
             height={60}
             width={60}
             tokens={pool?.tokens || []}
-            className={cn('-space-y-5', (pool?.tokens || []).length <= 4 && '-space-y-0')}
             classNames={{
-              rows: cn('xl:-space-x-4 2xl:-space-x-5 -space-x-2'),
               images: 'size-6 lg:size-10 2xl:size-[86px]',
             }}
           />
@@ -259,7 +257,7 @@ function AddLiquidityWeighted({ pool }) {
             <PoolAttributesSection pair={pool} />
           </div>
           <div className='space-y-4'>
-            <MenuTab className='grid w-full grid-cols-2' menuData={toggleDepositType} />
+            <MenuTab className='grid h-8 w-full grid-cols-2 lg:h-11' menuData={toggleDepositType} />
             <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} className='mb-0' />
             {depositType === DEPOSIT_TYPE.ALL && (
               <div

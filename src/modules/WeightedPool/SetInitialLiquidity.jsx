@@ -12,7 +12,6 @@ import { ScalesPrimaryIcon, WarningTriangleIcon } from '@/svgs'
 
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, checkError }) {
   const t = useTranslations()
-  // const [lastIndexChange, setLastIndexChange] = useState(0)
   const [isAutoOptimize, setIsAutoOptimize] = useState(true)
 
   const [totalWhenOptimize, setTotalWhenOptimize] = useState(null)
@@ -149,7 +148,6 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     handleAmountChange(tokensAndWeights[0]?.amount, tokensAndWeights?.[0]?.token)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAutoOptimize])
-
   return (
     <div className='flex flex-col gap-3'>
       <div className='flex flex-col gap-3'>
@@ -160,7 +158,6 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
                 key={`${item?.token?.address}_${index}`}
                 token={item.token}
                 isError={item.isError && checkError}
-                autoFocus={index === 0}
                 amount={item.amount}
                 onAmountChange={value => handleAmountChange(value, item.token)}
                 alowDouble
@@ -176,10 +173,10 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
           ))}
         </>
       </div>
-      <div className='flex flex-col gap-2 rounded-xl border border-primary-800 bg-primary-950 p-4'>
-        <div className='flex flex-row justify-between'>
-          <div className='flex gap-4'>
-            <ScalesPrimaryIcon className='h8 w-8' />
+      <div className='flex flex-col gap-2 rounded-xl border border-primary-800 bg-primary-950 py-2 pl-3 pr-2 lg:p-4'>
+        <div className='flex flex-row items-center justify-between'>
+          <div className='flex items-center gap-4'>
+            <ScalesPrimaryIcon className='lg:h8 h-4 w-4 lg:w-8' />
             <div className='flex flex-col gap-2'>
               <TextHeading>{t('Auto optimize liquidity')}</TextHeading>
               <span>

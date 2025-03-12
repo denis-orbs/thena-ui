@@ -26,7 +26,7 @@ export default function SetPoolFees({ fees, setFees }) {
         onClickHandler: () => setFees(0.3),
       },
       {
-        label: '1,00%',
+        label: '1%',
         active: fees === 1.0,
         onClickHandler: () => setFees(1.0),
       },
@@ -73,7 +73,12 @@ export default function SetPoolFees({ fees, setFees }) {
       <div className='flex flex-col gap-2'>
         <div className='flex flex-row items-center justify-between'>
           <Paragraph className='hidden lg:block'>{t('Fees')}</Paragraph>
-          <Selection className='!h-11 bg-transparent' data={poolRange} isTranslation={false} />
+          <Selection
+            className='h-8 bg-transparent lg:!h-11'
+            data={poolRange}
+            isTranslation={false}
+            classNames={{ items: 'max-lg:h-8 max-lg:w-[70px] !text-base' }}
+          />
         </div>
         <Input
           onChange={e => {

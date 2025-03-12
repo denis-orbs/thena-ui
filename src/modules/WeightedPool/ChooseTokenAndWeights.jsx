@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { isEmpty } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -80,18 +81,17 @@ function TokenItem({ token, index, setTokenSelected, max }) {
     })
   }, [index, setTokenSelected])
 
-  const handleUpdateWeightToken = e => {
-    let value = Number(e.target.value)
+  const handleUpdateWeightToken = val => {
+    let value = Number(val)
     if (value < 0) value = 0
     if (value > max) value = max
     if (value > 100) value = 100
-
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
       updatedTokens[index] = {
         ...updatedTokens[index],
         lock: true,
-        weight: value,
+        weight: isEmpty(val) ? null : value,
       }
       return updateWeight(updatedTokens)
     })
@@ -115,9 +115,19 @@ function TokenItem({ token, index, setTokenSelected, max }) {
             classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7 h-11' }}
             type='number'
             max={max}
-            val={token.weight ?? ''}
-            onChange={handleUpdateWeightToken}
-            placeholder=''
+            val={`${token.weight}`.replace(/^0+(?=\d)/, '')}
+            onChange={e => {
+              let { value } = e.target
+              if (value === '') {
+                handleUpdateWeightToken('')
+                return
+              }
+              if (!isNaN(Number(value))) {
+                value = value.replace(/^0+(?=\d)/, '')
+              }
+              handleUpdateWeightToken(value)
+            }}
+            placeholder='Enter weight'
             suffix='%'
           />
         </div>
@@ -222,8 +232,9 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
       </div>
       <div
         className={cn(
-          'mb-16 grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3',
+          'grid grid-cols-1 gap-4 md:grid-cols-2 lg:mb-16 2xl:grid-cols-3',
           tokenSelected.length === 2 && '2xl:grid-cols-2',
+          'pb-4 max-lg:border-b max-lg:border-neutral-700',
         )}
       >
         {tokenSelected.map((token, index) => (

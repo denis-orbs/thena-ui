@@ -333,9 +333,9 @@ function NewListings({
           </EmphasisButton>
         </div>
       ),
-      className: 'items-center',
+      className: cn('items-center', classNames?.rowItem),
     }))
-  }, [listPoolAddressSpecial, push, sortedData, t])
+  }, [classNames?.rowItem, listPoolAddressSpecial, push, sortedData, t])
   return (
     <>
       {isCollapse ? (
