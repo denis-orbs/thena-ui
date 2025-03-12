@@ -118,7 +118,7 @@ export function TokenAmountCard({
               <input
                 ref={inputRefer}
                 type='number'
-                className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+                className='w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
                 placeholder='0.0'
                 value={value}
                 disabled={locked}
@@ -169,8 +169,8 @@ export function TokenAmountCard({
               )}
             </div>
             <div className='flex items-center justify-between gap-2'>
-              <TextSubHeading className='text-neutral-500'>${formatAmount(value * price)}</TextSubHeading>
-              <TextSubHeading className='space-x-4 text-neutral-500'>
+              <TextSubHeading className='truncate text-neutral-500'>${formatAmount(value * price)}</TextSubHeading>
+              <TextSubHeading className='space-x-4 text-nowrap text-neutral-500'>
                 <span>
                   {t('Balance')}: {balanceString}
                 </span>
