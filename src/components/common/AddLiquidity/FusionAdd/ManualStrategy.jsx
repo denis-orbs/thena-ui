@@ -12,6 +12,7 @@ import CustomTooltip from '@/components/tooltip'
 import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 import SelectToken from '@/modules/Pools/SelectToken'
 import { useAprStore } from '@/state/APR/store'
@@ -36,6 +37,8 @@ const feeAmount = 3000
 
 function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFees, handleChooseStrategy, position }) {
   const t = useTranslations()
+  const { isViewDown } = useMediaQuery('down', 640)
+  const { isViewUp } = useMediaQuery('up', 460)
 
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
@@ -338,7 +341,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 interactive={!position}
               />
             </div>
-            <div className='-mt-4 flex items-center justify-center sm:mt-3'>
+            <div className={cn('-mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
               <TextSubHeading className='leading-5'>
                 {t('Current Price: [price] [symbolA] [symbolB]', {
                   price: currentPrice,
