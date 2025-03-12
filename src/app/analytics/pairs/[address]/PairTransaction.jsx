@@ -483,12 +483,12 @@ export default function TransactionTable({ pairs, isFusion }) {
         total: <Paragraph>${formatAmount(item.amountUSD, true)}</Paragraph>,
         token0: (
           <Paragraph>
-            {formatAmount(item.token0Amount)} {item.token0Symbol}
+            {formatAmount(item.token0Amount < 0 ? item.token0Amount * -1 : item.token0Amount)} {item.token0Symbol}
           </Paragraph>
         ),
         token1: (
           <Paragraph>
-            {formatAmount(item.token1Amount)} {item.token1Symbol}
+            {formatAmount(item.token1Amount < 0 ? item.token1Amount * -1 : item.token1Amount)} {item.token1Symbol}
           </Paragraph>
         ),
         account: (
