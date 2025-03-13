@@ -182,7 +182,7 @@ const fetchGlobalChartData = async chainId => {
     fetchChartData(getWeightedOverviewChartData, [chainId], true),
   ])
 
-  console.log({ v1data, fusiondata2, fusiondata3, weightedData })
+  // console.log({ v1data, fusiondata2, fusiondata3, weightedData })
 
   return v1data.map(ele => {
     const foundV2 = fusiondata2.find(fusion => fusion.date === ele.date)

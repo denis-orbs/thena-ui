@@ -4,23 +4,17 @@ import { useState } from 'react'
 
 import { Info } from '@/components/alert'
 import { Paragraph } from '@/components/typography'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
-import { ChevronUpIcon, Info2Icon, InfoIcon } from '@/svgs'
+import { ChevronUpIcon, InfoIcon } from '@/svgs'
 
 function WarningStartingPrice() {
   const t = useTranslations()
-  const { isMdDown } = useMediaQuery()
   const [showWarning, setShowWarning] = useState(true)
 
   return (
-    <Info className={cn('flex-col items-start gap-0 px-3 py-2 md:p-8', showWarning && 'gap-2 md:gap-4')}>
+    <Info className={cn('flex-col items-start gap-0 px-3 py-2 md:p-8')}>
       <div className='flex w-full items-center gap-2 md:gap-4'>
-        {isMdDown ? (
-          <Info2Icon className='size-4 !stroke-primary-600' />
-        ) : (
-          <InfoIcon className='size-8 !stroke-primary-600' />
-        )}
+        <InfoIcon className='size-4 !stroke-primary-600 md:size-8' />
 
         <div className='flex w-full items-start justify-between md:items-center'>
           <Paragraph className='text-xl font-semibold text-primary-100'>{t('Starting Price needed')}</Paragraph>
@@ -38,9 +32,11 @@ function WarningStartingPrice() {
         initial={{ opacity: 0, y: 0, height: 0 }}
         animate={showWarning ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className={cn('overflow-hidden pl-6 md:pl-12')}
+        className={cn('overflow-hidden')}
       >
-        <Paragraph className='text-base leading-5 text-primary-100'>{t('Initialize warning')}</Paragraph>
+        <div className='!mt-2 pl-6 text-base leading-5 text-primary-100 md:!mt-4 md:pl-12'>
+          {t('Initialize warning')}
+        </div>
       </motion.div>
     </Info>
   )

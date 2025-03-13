@@ -64,10 +64,10 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                   className={cn(
                     'flex cursor-pointer items-center justify-center rounded-lg',
                     'size-8 min-w-8 md:size-11 md:min-w-11',
-                    showReserve ? 'bg-neutral-600' : 'bg-neutral-800',
+                    showReserve ? 'bg-neutral-600' : 'bg-neutral-900',
                   )}
                 >
-                  <InfoIcon className='size-5 stroke-neutral-400' />
+                  <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
                 </i>
               </div>
             </div>

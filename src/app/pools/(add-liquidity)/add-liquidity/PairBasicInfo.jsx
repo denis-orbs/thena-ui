@@ -61,8 +61,11 @@ export function PairBasicInfo({ pair }) {
           </div>
         </Box>
 
-        <EmphasisButton className='size-8 !bg-neutral-800 p-2 md:hidden' onClick={() => setIsExpanded(prev => !prev)}>
-          <ChevronRightIcon className={cn('size-4 [&>path]:stroke-neutral-400', isExpanded && 'rotate-90')} />
+        <EmphasisButton
+          className='size-8 !bg-neutral-900 p-2 outline-0 md:hidden'
+          onClick={() => setIsExpanded(prev => !prev)}
+        >
+          <ChevronRightIcon className={cn('size-4 [&>path]:stroke-neutral-400', isExpanded && '-rotate-90')} />
         </EmphasisButton>
       </div>
 

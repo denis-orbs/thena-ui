@@ -104,7 +104,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
         <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
       </h4>
 
-      <section className='mt-8 grid w-full grid-cols-1 gap-4 lg:mt-16 lg:grid-cols-3'>
+      <section className='mt-8 grid w-full grid-cols-1 gap-4 lg:!mt-16 lg:grid-cols-3'>
         <div id='LEFT-BLOCK' className='col-span-2 w-full gap-4 lg:gap-6'>
           <ChooseStrategy
             firstAsset={firstAsset}

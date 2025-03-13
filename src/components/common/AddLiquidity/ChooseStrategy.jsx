@@ -260,9 +260,11 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
           position={position}
         />
 
-        <div className={cn('!mt-2 hidden max-lg:block')}>
-          <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
-        </div>
+        {pair && (
+          <div className={cn('!mt-2 hidden max-lg:block')}>
+            <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
+          </div>
+        )}
 
         {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
@@ -331,10 +333,10 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
             className={cn(
               'flex cursor-pointer items-center justify-center rounded-lg',
               'size-8 min-w-8 md:size-11 md:min-w-11',
-              show ? 'bg-neutral-700' : 'bg-neutral-800',
+              show ? 'bg-neutral-600' : 'bg-neutral-900',
             )}
           >
-            <InfoIcon className='size-5 stroke-neutral-400' />
+            <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
           </i>
         </div>
       </div>

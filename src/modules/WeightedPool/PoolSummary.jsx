@@ -90,10 +90,13 @@ function PoolSummary({ tokens, fees, isMobile = false }) {
             </TextHeading>
           </div>
           <EmphasisButton
-            className={cn('ml-auto block w-fit p-2 lg:hidden', show && 'bg-neutral-800')}
+            className={cn(
+              'ml-auto block w-fit p-2 outline-0 hover:bg-neutral-900 lg:hidden',
+              show ? 'bg-neutral-600' : 'bg-neutral-900',
+            )}
             onClick={() => setShow(prev => !prev)}
           >
-            <InfoNeutralIcon className='h-4 w-4' />
+            <InfoNeutralIcon className='size-4' />
           </EmphasisButton>
         </div>
         <motion.div

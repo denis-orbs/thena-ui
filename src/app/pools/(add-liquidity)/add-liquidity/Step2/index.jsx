@@ -3,10 +3,10 @@ import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo, useState } from 'react'
 
-import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
-import { ClassicPoolIcon, CLPoolIcon, InfoNeutralIcon, ScalesIcon, StablePoolIcon } from '@/svgs'
+import { cn } from '@/lib/utils'
+import { ClassicPoolIcon, CLPoolIcon, InfoIcon, ScalesIcon, StablePoolIcon } from '@/svgs'
 
 import ChooseTokensSection from './ChooseTokensSection'
 
@@ -16,15 +16,22 @@ function TitleSection({ Icon, text, description }) {
 
   return (
     <div className='flex flex-col'>
-      <h4 className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
-        <Icon className='hidden size-5 md:block lg:size-12 2xl:size-16' />
+      <h4 className='flex flex-row items-center gap-2 md:gap-5 xl:gap-8'>
+        <Icon className='hidden size-8 md:block lg:size-12 2xl:size-16' />
         <NewTextHeading className='text-2xl'>{t(text)}</NewTextHeading>
-        <EmphasisButton
-          className='ml-auto block w-fit bg-neutral-600 p-2 outline-0 lg:hidden'
-          onClick={() => setShow(prev => !prev)}
-        >
-          <InfoNeutralIcon className='h-4 w-4' />
-        </EmphasisButton>
+
+        <div className='ml-auto hidden max-lg:block'>
+          <i
+            onClick={() => setShow(prev => !prev)}
+            className={cn(
+              'flex cursor-pointer items-center justify-center rounded-lg',
+              'size-8 min-w-8 md:size-11 md:min-w-11',
+              show ? 'bg-neutral-600' : 'bg-neutral-900',
+            )}
+          >
+            <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
+          </i>
+        </div>
       </h4>
 
       <motion.div

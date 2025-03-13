@@ -231,31 +231,36 @@ function AddLiquidityWeighted({ pool }) {
           />
           <NewTextSubHeading>{pool?.symbol}</NewTextSubHeading>
         </div>
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col'>
           <div className='flex flex-row justify-between'>
             <NewTextSubHeading className='text-xl lg:text-2xl 2xl:text-3xl'>{t('Weighted')}</NewTextSubHeading>
-            <EmphasisButton className='h-8 w-8 p-2 lg:hidden' onClick={() => setShowLiquidityInfo(prev => !prev)}>
+            <EmphasisButton
+              className={cn(
+                'h-8 w-8 p-2 outline-0 hover:bg-neutral-900 lg:hidden',
+                showLiquidityInfo ? '!bg-neutral-600' : 'bg-neutral-900',
+              )}
+              onClick={() => setShowLiquidityInfo(prev => !prev)}
+            >
               <InfoNeutralIcon className='size-4' />
             </EmphasisButton>
           </div>
-          {showLiquidityInfo && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, height: 0 }}
-              animate={showLiquidityInfo ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className='w-full overflow-hidden bg-neutral-900 lg:hidden'
-            >
+
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={showLiquidityInfo ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className='overflow-hidden'
+          >
+            <div className='mt-4 block w-full bg-neutral-900 lg:hidden'>
               <LiquidityPoolInfo pool={pool} colors={colors} isMobile />
-            </motion.div>
-          )}
+            </div>
+          </motion.div>
         </div>
       </div>
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>
         <div className='w-full space-y-4 lg:flex-[6] lg:space-y-8'>
           <PairBasicInfo pair={pool} isMobile />
-          <div className='block lg:hidden'>
-            <PoolAttributesSection pair={pool} />
-          </div>
+
           <div className='space-y-4'>
             <MenuTab className='grid h-8 w-full grid-cols-2 lg:h-11' menuData={toggleDepositType} />
             <SettingSlippageDropDown updateSlippage={setSlippage} slippage={slippage} className='mb-0' />
