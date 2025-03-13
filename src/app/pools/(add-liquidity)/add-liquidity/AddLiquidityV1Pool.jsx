@@ -44,7 +44,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
       <>
         {pair ? (
           <div className='flex flex-col gap-4 lg:gap-16'>
-            <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
+            <div className='flex flex-row items-center gap-4 lg:gap-8'>
               <NewIconGroup
                 logo1={pair?.token0?.logoURI ?? UNKNOWN_LOGO}
                 logo2={pair?.token1?.logoURI ?? UNKNOWN_LOGO}
@@ -146,9 +146,9 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                 initial={{ opacity: 0, y: -10, height: 0 }}
                 animate={showReserve ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className='block overflow-hidden lg:hidden'
+                className='overflow-hidden'
               >
-                <PoolReserveSection pool={pool} className='mb-4' />
+                <PoolReserveSection pool={pool} className='mb-6 block lg:hidden' />
               </motion.div>
             </div>
           </div>

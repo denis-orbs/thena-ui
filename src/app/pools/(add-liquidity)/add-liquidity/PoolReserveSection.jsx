@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 
 import Divider from '@/components/divider'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
 
 export function PoolReserveSection({ pool, className }) {
@@ -9,9 +9,9 @@ export function PoolReserveSection({ pool, className }) {
 
   return (
     <div className={cn('flex flex-col gap-4 rounded-md bg-neutral-900 p-4', className)}>
-      <div className='flex flex-col gap-4'>
-        <TextHeading className='text-lg'>{t('Reserve Info')}</TextHeading>
-        <div className='flex flex-col gap-3 text-base'>
+      <div className='flex flex-col gap-2 lg:gap-4'>
+        <NewTextSubHeading className='!text-xl'>{t('Reserve Info')}</NewTextSubHeading>
+        <div className='flex flex-col gap-2 text-base lg:gap-3'>
           <div className='flex items-center justify-between'>
             <Paragraph className='font-medium'>
               {unwrappedSymbol(pool.token0)} {t('Amount')}
@@ -26,10 +26,12 @@ export function PoolReserveSection({ pool, className }) {
           </div>
         </div>
       </div>
-      <Divider />
-      <div className='flex flex-col gap-4'>
-        <TextHeading className='text-lg'>{t('My Info')}</TextHeading>
-        <div className='flex flex-col gap-3 text-base'>
+
+      <Divider className='my-4' />
+
+      <div className='flex flex-col gap-2 lg:gap-4'>
+        <NewTextSubHeading className='!text-xl'>{t('My Info')}</NewTextSubHeading>
+        <div className='flex flex-col gap-2 text-base lg:gap-3'>
           <div className='flex items-center justify-between'>
             <Paragraph className='font-medium'>{t('Pooled Liquidity')}</Paragraph>
             <Paragraph>{formatAmount(pool.account.totalLp)} LP</Paragraph>
