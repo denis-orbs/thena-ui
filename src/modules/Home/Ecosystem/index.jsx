@@ -5,7 +5,6 @@ import React, { useMemo, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
-import { FutureOfTrading } from './FutureOfTrading'
 import { Grid } from './Grid'
 import { GridLinesAnimation } from './GridLinesAnimation'
 import { Heading } from '../Common/Heading'
@@ -76,12 +75,12 @@ function Ecosystem() {
   }, [ecosystem])
 
   return (
-    <div className='relative w-full pb-20 lg:pb-36'>
+    <div className='relative w-full'>
       <div className='relative'>
         <Grid />
         {!isSafari && <GridLinesAnimation />}
       </div>
-      <div className='relative z-10 flex flex-col items-center justify-center px-11 py-16 lg:pb-[204px] lg:pt-[217px] xl:px-0'>
+      <div className='relative z-10 flex flex-col items-center justify-center px-11 py-16 lg:pb-[150px] lg:pt-[217px] xl:px-0'>
         <div className='mx-auto w-full  max-w-[700px]'>
           <Heading heading={t('THE Ecosystem')} title={t('Backed by the best')} wrapperStyles='items-center' />
           <div className='mt-6 flex items-center justify-center space-x-3.5 lg:mt-8'>
@@ -121,7 +120,6 @@ function Ecosystem() {
           </div>
         </div>
       </div>
-      <FutureOfTrading />
     </div>
   )
 }

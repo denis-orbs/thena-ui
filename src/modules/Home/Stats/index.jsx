@@ -92,7 +92,7 @@ function Stats() {
         src='/images/home/stats/wave.png'
         className='absolute -mt-6 w-full backdrop-blur-[20px] lg:-mt-[180px]'
       />
-      <div className='relative z-40 mx-auto max-w-[1152px] px-10 pt-[150px] xl:px-0 xl:pt-[422px]'>
+      <div className='relative z-40 mx-auto max-w-[1152px] px-10 pt-[150px] xl:px-0 xl:pt-[260px]'>
         <Heading heading={t('THENA in Numbers')} wrapperStyles='items-center' />
         <div className='flex flex-col justify-center space-y-10 pb-20 pt-12 lg:flex-row lg:items-center lg:space-x-[136px] lg:space-y-0 lg:py-14'>
           {statsData.map((item, idx) => (

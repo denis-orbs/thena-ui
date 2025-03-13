@@ -1,6 +1,5 @@
 import React from 'react'
 
-import Build from './Build'
 import Community from './Community'
 import Ecosystem from './Ecosystem'
 import Hero from './Hero'
@@ -14,9 +13,9 @@ function Home() {
       <Hero />
       <Stats />
       <Ecosystem />
-      <Scenes />
-      <Build />
       <Updates />
+      <Scenes />
+      {/* <Build /> */}
       <Community />
     </>
   )
