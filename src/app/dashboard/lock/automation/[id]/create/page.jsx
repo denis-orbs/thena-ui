@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import CreateVeTHEAutomation from '@/modules/CreateVeTHEAutomation'
 import { createVeTHEAutomationContract, setSelectedVeTHE } from '@/state/veTHEAutomationContract/action'
+import { getDefaultExecutionTime } from '@/state/veTHEAutomationContract/reducer'
 
 function CreateAutomationPage({ params }) {
   const { id } = params
@@ -35,10 +36,10 @@ function CreateAutomationPage({ params }) {
               settings: {
                 isClaimEveryWeek: true,
                 isRelockEveryWeek: true,
-                executionTime: new Date().getTime(),
+                executionTime: getDefaultExecutionTime(),
               },
               votes: {
-                isAutoVote: true,
+                isAutoVote: false,
                 pairs: [
                   {
                     lock: false,
