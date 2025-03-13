@@ -34,8 +34,8 @@ export function PoolAttributesSection({ strategy, pair, className }) {
           </NewTextSubHeading>
 
           <motion.div
-            initial={{ opacity: 0, y: -10, height: 0 }}
-            animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+            initial={{ opacity: 0, y: 0, height: 0 }}
+            animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className='overflow-hidden'
           >
@@ -64,8 +64,8 @@ export function PoolAttributesSection({ strategy, pair, className }) {
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: -10, height: 0 }}
-        animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+        initial={{ opacity: 0, y: 0, height: 0 }}
+        animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >

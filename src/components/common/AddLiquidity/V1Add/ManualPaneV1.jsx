@@ -181,7 +181,7 @@ export function ManualPaneV1({
         </div>
       </div>
 
-      <div className='mt-8 flex flex-col gap-2 md:flex-row'>
+      <div className='mt-8 flex flex-col gap-2'>
         <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
           {t('Back')}
         </EmphasisButton>
@@ -190,35 +190,17 @@ export function ManualPaneV1({
             {strategy && strategy.gauge.address !== zeroAddress && strategy.version === 3 ? (
               // Has gauge => Can deposit/stake
               <>
-                <EmphasisButton
-                  disabled={pending}
-                  onClick={() => {
-                    onAddLiquidity()
-                  }}
-                  className='flex-1'
-                >
+                <EmphasisButton disabled={pending} onClick={() => onAddLiquidity()}>
                   {t('Deposit')}
                 </EmphasisButton>
 
-                <PrimaryButton
-                  disabled={stakePending}
-                  onClick={() => {
-                    onAddAndStake()
-                  }}
-                  className='flex-1'
-                >
+                <PrimaryButton disabled={stakePending} onClick={() => onAddAndStake()}>
                   {t('Deposit & Stake')}
                 </PrimaryButton>
               </>
             ) : (
               // No gauge => Can only deposit
-              <PrimaryButton
-                disabled={pending}
-                onClick={() => {
-                  onAddLiquidity()
-                }}
-                className='flex-1'
-              >
+              <PrimaryButton disabled={pending} onClick={() => onAddLiquidity()} className='flex-1'>
                 {t('Deposit')}
               </PrimaryButton>
             )}

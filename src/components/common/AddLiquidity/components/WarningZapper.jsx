@@ -11,12 +11,7 @@ function WarningZapper() {
   const [showWarning, setShowWarning] = useState(true)
 
   return (
-    <Box
-      className={cn(
-        'flex flex-col items-start border border-primary-800 bg-primary-950 p-4 lg:p-8',
-        showWarning && 'gap-2 md:gap-4',
-      )}
-    >
+    <Box className={cn('flex flex-col items-start border border-primary-800 bg-primary-950 p-4 lg:p-8')}>
       <div className='flex w-full gap-2 md:gap-4'>
         <InfoIcon className='size-6 min-w-6 stroke-primary-600 md:size-8 md:min-w-8' />
         <div className='flex w-full items-start justify-between md:items-center'>
@@ -38,9 +33,9 @@ function WarningZapper() {
         initial={{ opacity: 0, y: 0, height: 0 }}
         animate={showWarning ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className={cn('overflow-hidden pl-8 md:pl-12')}
+        className={cn('overflow-hidden')}
       >
-        <TextSubHeading className='flex flex-col gap-2 text-sm md:gap-4 md:text-base'>
+        <TextSubHeading className='mt-2 flex flex-col gap-2 pl-8 text-sm md:mt-4 md:gap-4 md:pl-12 md:text-base'>
           <Paragraph className='text-primary-100'>
             This feature is incompatible with tokens that have tax implications.
           </Paragraph>

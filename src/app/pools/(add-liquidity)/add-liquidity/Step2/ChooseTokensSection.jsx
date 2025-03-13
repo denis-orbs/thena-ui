@@ -161,7 +161,7 @@ export default function ChooseTokensSection({ pairType }) {
             <ChoosePoolTokens setTokensSelect={updateTokensSelected} isShowError={isShowError} />
           ) : (
             <div className='flex flex-col gap-3 md:gap-4'>
-              <NewTextSubHeading>{t('Choose Tokens')}</NewTextSubHeading>
+              <NewTextSubHeading className='text-lg'>{t('Choose Tokens')}</NewTextSubHeading>
               <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
                 <SelectToken
                   otherAsset={secondAsset}
