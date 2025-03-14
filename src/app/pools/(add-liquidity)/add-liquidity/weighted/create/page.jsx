@@ -125,9 +125,9 @@ export default function CreateWeightedPoolPage() {
   }
 
   return (
-    <div className='flex flex-col gap-4 sm:gap-6 md:gap-8 lg:gap-16'>
+    <div className='flex flex-col gap-4 sm:gap-6 md:gap-8 lg:gap-12'>
       <div className='flex items-center gap-8'>
-        <ScalesIcon className='hidden size-16 lg:block' />
+        <ScalesIcon className='hidden size-14 lg:block' />
         <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
       </div>
       <div

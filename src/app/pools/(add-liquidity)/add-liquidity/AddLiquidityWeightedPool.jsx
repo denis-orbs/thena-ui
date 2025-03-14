@@ -26,9 +26,9 @@ function AddLiquidityWeightedPool({ setCurrentStep }) {
   )
 
   return (
-    <div className='space-y-16'>
+    <div className='space-y-12'>
       <div className='flex items-center gap-8'>
-        <ScalesIcon className='size-16' />
+        <ScalesIcon className='size-14' />
         <NewTextHeading>{t('Add to Weighted Pool')}</NewTextHeading>
       </div>
       <div className='flex flex-col gap-4 lg:flex-row'>

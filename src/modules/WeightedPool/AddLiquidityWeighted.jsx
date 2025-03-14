@@ -19,6 +19,7 @@ import { NewTextSubHeading } from '@/components/typography'
 import { useTokenBalance } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
 import { useTokenColor } from '@/hooks/useTokenColor'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPool, useWeightPoolData } from '@/hooks/weightedPool/useWeigtedPool'
 import { warnToast } from '@/lib/notify'
 import { cn, fromWei, isInvalidAmount, roundIfMoreThanDecimals } from '@/lib/utils'
@@ -217,13 +218,16 @@ function AddLiquidityWeighted({ pool }) {
 
   const [showLiquidityInfo, setShowLiquidityInfo] = useState(false)
 
+  const windowSize = useWindowSize()
+  const isLaptop = windowSize.width > 1024
+
   return (
-    <div className='space-y-4 lg:space-y-8'>
-      <div className='flex flex-col gap-1 lg:gap-2'>
+    <div className='space-y-4 lg:space-y-12'>
+      <div className='flex flex-col gap-4'>
         <div className='flex flex-row items-center gap-3.5 lg:gap-4 2xl:gap-8'>
           <GroupIconTokens
-            height={60}
-            width={60}
+            height={!isLaptop ? ((pool?.tokens || []).length > 3 ? 16 : 24) : 64}
+            width={!isLaptop ? ((pool?.tokens || []).length > 3 ? 16 : 24) : 64}
             tokens={pool?.tokens || []}
             classNames={{
               images: 'size-6 lg:size-10 2xl:size-[86px]',
