@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
-import { isNil, sample } from 'lodash'
+import { isNil } from 'lodash'
 import { twMerge } from 'tailwind-merge'
 import { WBNB } from 'thena-sdk-core'
 
-import { RPC_PROVIDERS, SCAN_URLS } from '@/constant'
+import { SCAN_URLS } from '@/constant'
 
 BigNumber.config({
   EXPONENTIAL_AT: 1000,
@@ -54,9 +54,9 @@ export function formatAddress(string) {
   return `${string?.slice(0, 4)}...${string?.slice(-4)}`
 }
 
-export function getRpcUrl(chainId) {
-  return sample(RPC_PROVIDERS[chainId])
-}
+// export function getRpcUrl(chainId) {
+//   return sample(RPC_PROVIDERS[chainId])
+// }
 
 export const formatAmount = (amount = null, shorted = false, fixed = 3, hideNegative = true) => {
   if (!amount || new BigNumber(amount).isZero()) return '0'

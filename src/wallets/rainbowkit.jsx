@@ -13,11 +13,9 @@ import {
 } from '@rainbow-me/rainbowkit/wallets'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import merge from 'lodash/merge'
-import { ChainId } from 'thena-sdk-core'
-import { createConfig, http, WagmiProvider } from 'wagmi'
+import { createConfig, fallback, http, unstable_connector, WagmiProvider } from 'wagmi'
 import { bsc, opBNB } from 'wagmi/chains'
-
-import { getRpcUrl } from '@/lib/utils'
+import { injected } from 'wagmi/connectors'
 
 import { particleAppleWallet, particleGoogleWallet, particleTwitterWallet, particleWallet } from './particleWallet'
 
@@ -51,8 +49,13 @@ export const wagmiConfig = createConfig({
   connectors,
   chains: [bsc, opBNB],
   transports: {
-    [bsc.id]: http(getRpcUrl(ChainId.BSC)),
-    [opBNB.id]: http(getRpcUrl(ChainId.OPBNB)),
+    [bsc.id]: fallback([
+      unstable_connector(injected),
+      http('https://bsc-dataseed2.ninicoin.io'),
+      http('https://bsc.blockrazor.xyz'),
+      http('https://binance.llamarpc.com'),
+    ]),
+    [opBNB.id]: fallback([unstable_connector(injected), http('https://opbnb-mainnet-rpc.bnbchain.org')]),
   },
   ssr: true,
 })
