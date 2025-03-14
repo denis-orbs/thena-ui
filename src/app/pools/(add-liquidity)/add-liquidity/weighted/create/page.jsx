@@ -1,7 +1,7 @@
 'use client'
 
 import { isEmpty } from 'lodash'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -10,6 +10,7 @@ import Loading from '@/app/loading'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import { NewTextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { cn } from '@/lib/utils'
 import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import Preview from '@/modules/WeightedPool/Preview'
@@ -82,6 +83,16 @@ export default function CreateWeightedPoolPage() {
   const { push } = useRouter()
 
   const { tokens: tokensSelected } = useSelector(state => state.weightedPool)
+
+  const searchParams = useSearchParams()
+  const updateSearchParams = useUpdateSearchParams()
+  const currentStep = Number(searchParams.get('step'))
+  console.log('currentStep', currentStep)
+  useEffect(() => {
+    if (!currentStep) {
+      updateSearchParams({ step: 1 })
+    }
+  }, [currentStep, updateSearchParams])
   const assets = useAssets()
   const [fees, setFees] = useState(0.3)
   const [tokensAndWeights, setTokenAndWeights] = useState([])
@@ -110,7 +121,6 @@ export default function CreateWeightedPoolPage() {
     )
   }, [tokensSelected])
 
-  const [currentStep, setCurrentStep] = useState(1)
   const initialPoolSymbol = useMemo(() => {
     const result = tokensAndWeights.reduce(
       (str, curr, index) =>
@@ -142,7 +152,7 @@ export default function CreateWeightedPoolPage() {
           <div className='w-full flex-2 lg:flex-1'>
             <PoolWithStep
               currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
+              setCurrentStep={step => updateSearchParams({ step }, true)}
               setTokenAndWeights={setTokenAndWeights}
               tokensAndWeights={tokensAndWeights}
               initialPoolSymbol={initialPoolSymbol}

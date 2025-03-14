@@ -68,7 +68,7 @@ const updateWeight = tokens => {
   })
 }
 
-function TokenItem({ token, index, setTokenSelected, max }) {
+function TokenItem({ token, index, setTokenSelected, max, checkError }) {
   const t = useTranslations()
   const handleLockToken = useCallback(() => {
     setTokenSelected(prev => {
@@ -103,7 +103,8 @@ function TokenItem({ token, index, setTokenSelected, max }) {
         <div
           className={cn(
             'fex-row flex min-h-11 w-[calc(100%-52px)] items-center rounded-lg border border-neutral-700 hover:bg-neutral-800',
-            typeof token.weight === 'number' && token.weight < 0.01 && 'border-error-600',
+            'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
+            checkError && token.weight < 0.01 && 'border-error-600',
           )}
         >
           <div className='ml-1 flex items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
@@ -133,7 +134,7 @@ function TokenItem({ token, index, setTokenSelected, max }) {
         </div>
         <EmphasisIconButton className='h-11 w-11' Icon={token.lock ? LockIcon : UnlockIcon} onClick={handleLockToken} />
       </div>
-      {Boolean(typeof token.weight === 'number' && token.weight < 0.01) && (
+      {Boolean(checkError && token.weight < 0.01) && (
         <motion.div
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
@@ -202,8 +203,8 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
     const errorMessages = []
     if (!checkAllWeightingHigherThanZero) {
       errorMessages.push({
-        title: 'Total Weights do not higher than zero',
-        desc: t('All tokens in a pool must have a weighting higher than zero'),
+        title: 'Total Weights do not higher than 0.01',
+        desc: t('All tokens in a pool must have a weighting higher than 0.01'),
       })
     }
 
@@ -229,7 +230,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   }, [checkAllWeightingHigherThanZero, t, totalWeight])
 
   return (
-    <div className='flex h-full flex-col gap-4'>
+    <div className='relative flex h-full flex-col gap-4'>
       <div className='flex flex-col-reverse gap-4'>
         <NewTextSubHeading className='flex-2 lg:flex-1'>{t('Choose Tokens Weights')}</NewTextSubHeading>
         {checkError && <div className='flex flex-1 flex-col gap-2 lg:flex-2'>{checkError && renderMessages()}</div>}
@@ -247,13 +248,14 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
             index={index}
             setTokenSelected={setTokenSelected}
             token={token}
+            checkError={checkError}
             tokenSelected={tokenSelected}
             max={100 - (totalWeightLock - token.weight)}
             length={tokenSelected.length}
           />
         ))}
       </div>
-      <div className='mt-auto flex flex-col gap-2 lg:flex-row lg:gap-4'>
+      <div className='mt-auto flex flex-col gap-2 lg:absolute lg:-bottom-[92px] lg:flex-row lg:gap-4'>
         <EmphasisButton
           onClick={() => push('/pools/add-liquidity?step=2&pairType=Weighted')}
           className='w-full lg:w-fit'
@@ -267,7 +269,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
               setCheckError(true)
               return
             }
-            setCurrentStep(prev => prev + 1)
+            setCurrentStep(2)
           }}
         >
           {t('Next')}

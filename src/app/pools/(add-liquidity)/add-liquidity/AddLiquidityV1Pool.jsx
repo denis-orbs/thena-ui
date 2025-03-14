@@ -141,8 +141,8 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
         {/* Right side */}
         {pool && (
-          <div className='order-1 mt-4 flex flex-col gap-0 lg:order-2 lg:gap-6'>
-            <div className='hidden lg:block'>
+          <div className='order-1 flex flex-col gap-0 lg:order-2 lg:gap-6'>
+            <div className='mt-4 hidden lg:block'>
               <PoolAttributesSection pair={pair} />
             </div>
 

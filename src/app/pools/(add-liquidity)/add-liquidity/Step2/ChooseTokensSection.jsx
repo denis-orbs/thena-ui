@@ -138,7 +138,7 @@ export default function ChooseTokensSection({ pairType }) {
         setShowError(true)
         return
       }
-      push('/pools/add-liquidity/weighted/create')
+      push('/pools/add-liquidity/weighted/create?step=1')
     }
   }, [
     duplicateAddresses.length,

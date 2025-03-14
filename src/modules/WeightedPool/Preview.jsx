@@ -97,7 +97,7 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
         </div>
       </Box>
       <div className='space-y-2'>
-        <EmphasisButton className='block w-full' onClick={() => setCurrentStep(prev => prev - 1)}>
+        <EmphasisButton className='block w-full' onClick={() => setCurrentStep(2)}>
           {t('Back')}
         </EmphasisButton>
         <PrimaryButton disabled={pending} onClick={onCreate} className='w-full'>
