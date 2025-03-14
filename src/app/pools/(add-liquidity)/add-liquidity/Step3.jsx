@@ -2,7 +2,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useEffect, useMemo } from 'react'
 
 import Loading from '@/app/loading'
-import { EmphasisButton, TextButton } from '@/components/buttons/Button'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
@@ -59,10 +58,10 @@ export default function Step3({ setStep }) {
         <AddLiquidityV1Pool pair={pair} handleBack={handleBack} />
       )}
 
-      <div className='mt-16 hidden gap-4 md:flex'>
+      {/* <div className='mt-16 hidden gap-4 md:flex'>
         <EmphasisButton onClick={handleBack}>Back</EmphasisButton>
         <TextButton onClick={() => router.push('/pools')}>Cancel</TextButton>
-      </div>
+      </div> */}
     </div>
   )
 }

@@ -11,7 +11,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { cn } from '@/lib/utils'
 import { InfoIcon, LockIcon, UnlockIcon, WarningTriangleIcon } from '@/svgs'
@@ -112,7 +112,7 @@ function TokenItem({ token, index, setTokenSelected, max }) {
           </div>
           <Input
             className='h-11 w-full border-none bg-transparent'
-            classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7 h-11' }}
+            classNames={{ input: 'bg-transparent p-0 border-none text-right pr-8 h-11' }}
             type='number'
             max={max}
             val={`${token.weight}`.replace(/^0+(?=\d)/, '')}
@@ -201,7 +201,10 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   const renderMessages = useCallback(() => {
     const errorMessages = []
     if (!checkAllWeightingHigherThanZero) {
-      errorMessages.push({ title: t('All tokens in a pool must have a weighting higher than zero') })
+      errorMessages.push({
+        title: 'Total Weights do not higher than zero',
+        desc: t('All tokens in a pool must have a weighting higher than zero'),
+      })
     }
 
     if (totalWeight !== 100) {
@@ -212,8 +215,11 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
     }
 
     return errorMessages.map((data, index) => (
-      <div className='flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 px-4 py-5' key={index}>
-        <WarningTriangleIcon className='h-5 min-w-4 lg:min-w-5' />
+      <div
+        className='flex items-center gap-2 rounded-lg border border-error-800 bg-error-950 px-4 py-5 lg:gap-4'
+        key={index}
+      >
+        <WarningTriangleIcon className='w-4 min-w-4 lg:w-5 lg:min-w-5' />
         <div className='flex flex-col gap-1'>
           {data.title && <TextHeading className='text-xl text-rose'>{data.title}</TextHeading>}
           {data.desc && <TextSubHeading className='text-base text-rose'>{data.desc}</TextSubHeading>}
@@ -223,11 +229,9 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   }, [checkAllWeightingHigherThanZero, t, totalWeight])
 
   return (
-    <div className='flex h-full flex-col gap-3'>
+    <div className='flex h-full flex-col gap-4'>
       <div className='flex flex-col-reverse gap-4'>
-        <TextHeading className='flex-2 text-lg md:text-xl lg:flex-1 xl:text-3xl'>
-          {t('Choose Tokens Weights')}
-        </TextHeading>
+        <NewTextSubHeading className='flex-2 lg:flex-1'>{t('Choose Tokens Weights')}</NewTextSubHeading>
         {checkError && <div className='flex flex-1 flex-col gap-2 lg:flex-2'>{checkError && renderMessages()}</div>}
       </div>
       <div
@@ -249,7 +253,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
           />
         ))}
       </div>
-      <div className='mt-auto flex flex-col gap-4 lg:flex-row'>
+      <div className='mt-auto flex flex-col gap-2 lg:flex-row lg:gap-4'>
         <EmphasisButton
           onClick={() => push('/pools/add-liquidity?step=2&pairType=Weighted')}
           className='w-full lg:w-fit'

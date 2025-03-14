@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import Loading from '@/app/loading'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import { NewTextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
 import { cn } from '@/lib/utils'
@@ -77,6 +78,9 @@ function PoolWithStep({
 }
 
 export default function CreateWeightedPoolPage() {
+  const t = useTranslations()
+  const { push } = useRouter()
+
   const { tokens: tokensSelected } = useSelector(state => state.weightedPool)
   const assets = useAssets()
   const [fees, setFees] = useState(0.3)
@@ -89,8 +93,6 @@ export default function CreateWeightedPoolPage() {
         .join(' | '),
     [tokensAndWeights],
   )
-  const t = useTranslations()
-  const { push } = useRouter()
 
   useEffect(() => {
     if (!tokensSelected || tokensSelected.length <= 1) {
@@ -125,36 +127,38 @@ export default function CreateWeightedPoolPage() {
   }
 
   return (
-    <div className='flex flex-col gap-4 sm:gap-6 md:gap-8 lg:gap-12'>
-      <div className='flex items-center gap-8'>
-        <ScalesIcon className='hidden size-14 lg:block' />
-        <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
-      </div>
-      <div
-        className={cn(
-          'flex flex-col-reverse gap-4 lg:flex-row',
-          currentStep === 3 ? 'w-full xl:w-[80%] 2xl:w-[70%]' : 'lg:grid lg:grid-cols-add-liquidity-layout',
-        )}
-      >
-        <div className='w-full flex-2 lg:flex-1'>
-          <PoolWithStep
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
-            setTokenAndWeights={setTokenAndWeights}
-            tokensAndWeights={tokensAndWeights}
-            initialPoolSymbol={initialPoolSymbol}
-            fees={fees}
-            setFees={setFees}
-            assets={assets}
-            poolName={poolName}
-          />
+    <LayoutWithBackButton>
+      <div className='flex flex-col gap-4 sm:gap-6 md:gap-8 lg:gap-12'>
+        <div className='flex items-center gap-8'>
+          <ScalesIcon className='hidden size-14 lg:block' />
+          <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
         </div>
-        {currentStep !== 3 && (
-          <div className={cn('hidden flex-1 flex-col gap-8 lg:flex lg:flex-[4]', currentStep === 1 && 'block')}>
-            <SideBarCreateWeighted fees={fees} step={currentStep} tokensAndWeights={tokensAndWeights} />
+        <div
+          className={cn(
+            'flex flex-col-reverse gap-4 lg:flex-row',
+            currentStep === 3 ? 'w-full xl:w-[80%] 2xl:w-[70%]' : 'lg:grid lg:grid-cols-add-liquidity-layout',
+          )}
+        >
+          <div className='w-full flex-2 lg:flex-1'>
+            <PoolWithStep
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              setTokenAndWeights={setTokenAndWeights}
+              tokensAndWeights={tokensAndWeights}
+              initialPoolSymbol={initialPoolSymbol}
+              fees={fees}
+              setFees={setFees}
+              assets={assets}
+              poolName={poolName}
+            />
           </div>
-        )}
+          {currentStep !== 3 && (
+            <div className={cn('hidden flex-1 flex-col gap-8 lg:flex lg:flex-[4]', currentStep === 1 && 'block')}>
+              <SideBarCreateWeighted fees={fees} step={currentStep} tokensAndWeights={tokensAndWeights} />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </LayoutWithBackButton>
   )
 }

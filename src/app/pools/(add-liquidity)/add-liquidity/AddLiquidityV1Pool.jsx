@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 
 import V1Add from '@/components/common/AddLiquidity/V1Add'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
-import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useGetAsset } from '@/hooks/fusion/Tokens'
 import { cn } from '@/lib/utils'
@@ -23,7 +23,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
 
   const [firstAddress, setFirstAddress] = useState(pair?.token0?.address)
   const [secondAddress, setSecondAddress] = useState(pair?.token1?.address)
-  const [showReserve, setShowReserve] = useState(true)
+  const [showReserve, setShowReserve] = useState(false)
 
   useEffect(() => {
     setFirstAddress(pair?.token0?.address ?? searchParams.get('firstAddress'))
@@ -43,13 +43,13 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
     const renderTitle = (Icon, text) => (
       <>
         {pair ? (
-          <div className='flex flex-col gap-4 lg:gap-16'>
-            <div className='flex flex-row items-center gap-4 lg:gap-8'>
+          <div className='flex flex-col gap-8 lg:gap-16'>
+            <div className='flex flex-row items-center gap-2 lg:gap-8'>
               <NewIconGroup
                 logo1={pair?.token0?.logoURI ?? UNKNOWN_LOGO}
                 logo2={pair?.token1?.logoURI ?? UNKNOWN_LOGO}
               />
-              <NewTextHeading>
+              <NewTextHeading className='text-xl'>
                 {`${pair.token0.symbol === 'WBNB' ? 'BNB' : pair.token0.symbol}/${
                   pair.token1.symbol === 'WBNB' ? 'BNB' : pair.token1.symbol
                 }`}
@@ -74,7 +74,7 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
           </div>
         ) : (
           <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
-            <Icon className='size-5 lg:size-12 2xl:size-16' />
+            <Icon className='size-6 lg:size-12 2xl:size-14' />
             <NewTextHeading>{t(text)}</NewTextHeading>
           </div>
         )}
@@ -91,17 +91,22 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
   }, [pairType, pair, t, showReserve])
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex flex-col'>
       {PageTitleSection}
 
       <div className='grid lg:grid-cols-add-liquidity-layout lg:gap-4'>
         {/* Left side */}
-        <div className='order-2 flex flex-col gap-4 lg:order-1 lg:gap-8'>
+        <div className='order-2 flex flex-col gap-4 lg:order-1'>
           {pair ? (
-            <PairBasicInfo pair={pair} />
+            <div className='mt-4 flex flex-col gap-6'>
+              <PairBasicInfo pair={pair} />
+              <div className='hidden max-lg:block'>
+                <PoolAttributesSection pair={pair} />
+              </div>
+            </div>
           ) : (
-            <div className='flex flex-col gap-1 lg:gap-2'>
-              <div className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
+            <div className='mt-8 flex flex-col gap-4 lg:mt-12'>
+              <div className='flex flex-row items-center gap-2 py-2.5 lg:gap-4 2xl:gap-8'>
                 <NewIconGroup
                   classNames={{
                     image: '2xl:size-12',
@@ -115,9 +120,11 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                   }`}
                 </NewTextHeading>
               </div>
-              <NewTextSubHeading className='lg:text-2xl 2xl:text-3xl'>
-                {pairType === PAIR_TYPES.STABLE ? t('Stable') : t('Classic')}
-              </NewTextSubHeading>
+
+              <div className='flex h-max flex-col gap-2 rounded-md bg-neutral-800 p-4'>
+                <NewTextSubHeading className='!text-xl'>{t('New Deposit')}</NewTextSubHeading>
+                <Paragraph>{t('New Deposit description')}</Paragraph>
+              </div>
             </div>
           )}
 
@@ -133,8 +140,8 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
         </div>
 
         {/* Right side */}
-        {pool ? (
-          <div className='order-1 flex flex-col gap-0 lg:order-2 lg:gap-8'>
+        {pool && (
+          <div className='order-1 mt-4 flex flex-col gap-0 lg:order-2 lg:gap-6'>
             <div className='hidden lg:block'>
               <PoolAttributesSection pair={pair} />
             </div>
@@ -148,14 +155,9 @@ function AddLiquidityV1Pool({ pair, handleBack }) {
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className='overflow-hidden'
               >
-                <PoolReserveSection pool={pool} className='mb-6 block lg:hidden' />
+                <PoolReserveSection pool={pool} className='mt-4 block lg:hidden' />
               </motion.div>
             </div>
-          </div>
-        ) : (
-          <div className='order-1 flex  h-max flex-col gap-3 rounded-md bg-neutral-800 p-4 lg:order-2'>
-            <TextHeading className='text-xl'>{t('New Deposit')}</TextHeading>
-            <Paragraph>{t('New Deposit description')}</Paragraph>
           </div>
         )}
       </div>

@@ -78,28 +78,24 @@ export default function Step1() {
   )
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-4 lg:space-y-12'>
       <h4 className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
         <PoolGroupIcon className='h-7 lg:h-12 2xl:h-16' />
         <NewTextHeading className='text-xl'>{t('Choose Liquidity Type')}</NewTextHeading>
       </h4>
 
-      <div className='mt-4 grid md:mt-8 lg:grid-cols-add-liquidity-layout'>
-        <div className='flex flex-col gap-2'>
-          <NewTextSubHeading className='hidden md:block'>{t('Liquidity Pool Type')}</NewTextSubHeading>
+      <div className='grid lg:grid-cols-add-liquidity-layout'>
+        <div className='flex flex-col'>
+          <NewTextSubHeading className='mb-4 hidden lg:block'>{t('Liquidity Pool Type')}</NewTextSubHeading>
           <SelectorGrid data={poolTypesData} isGrid={false} classNames={{ item: 'bg-transparent' }} />
-        </div>
-      </div>
 
-      <div className='flex flex-col gap-2 md:flex-row md:gap-4'>
-        <EmphasisButton onClick={() => push('/pools')}>{t('Cancel')}</EmphasisButton>
-        <PrimaryButton
-          onClick={() => {
-            updateSearchParams({ step: 2 }, true)
-          }}
-        >
-          {t('Next')}
-        </PrimaryButton>
+          <div className='mt-8 flex flex-col gap-2 lg:mt-12'>
+            <EmphasisButton className='lg:hidden' onClick={() => push('/pools')}>
+              {t('Cancel')}
+            </EmphasisButton>
+            <PrimaryButton onClick={() => updateSearchParams({ step: 2 }, true)}>{t('Next')}</PrimaryButton>
+          </div>
+        </div>
       </div>
     </div>
   )

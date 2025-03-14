@@ -9,8 +9,6 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
 import { ChevronRightIcon } from '@/svgs'
 
-import { PoolAttributesSection } from './PoolAttributesSection'
-
 export function PairBasicInfo({ pair }) {
   const t = useTranslations()
   const [isExpanded, setIsExpanded] = useState(false)
@@ -67,10 +65,6 @@ export function PairBasicInfo({ pair }) {
         >
           <ChevronRightIcon className={cn('size-4 [&>path]:stroke-neutral-400', isExpanded && '-rotate-90')} />
         </EmphasisButton>
-      </div>
-
-      <div className='block lg:hidden'>
-        <PoolAttributesSection pair={pair} />
       </div>
     </div>
   )
