@@ -28,7 +28,7 @@ const usePrices = () => {
       )
 
       const chainLinkPrice = assets.find(
-        asset => asset.address.toLowerCase() === CHAINLINK_TOKEN[networkId][0].address.toLowerCase(),
+        asset => asset.address.toLowerCase() === CHAINLINK_TOKEN[networkId]?.[0]?.address?.toLowerCase(),
       )
       setPrices({
         THE: theAsset?.price || 0,

@@ -217,7 +217,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
             </div>
 
             <TextHeading className='font-archia text-xl font-semibold text-primary-600'>
-              {formatAmount(sub.gauge.apr)}%
+              {formatAmount(sub.gauge.apr, true)}%
             </TextHeading>
 
             <div className='flex flex-wrap justify-end gap-2'>
