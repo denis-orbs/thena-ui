@@ -77,10 +77,11 @@ export default function SetPoolFees({ fees, setFees }) {
         <div className='flex flex-row items-center justify-between'>
           <Paragraph className='hidden lg:block'>{t('Fees')}</Paragraph>
           <Selection
-            className='h-8 bg-transparent lg:!h-11'
+            className='h-8 bg-transparent'
+            isSmall
             data={poolRange}
             isTranslation={false}
-            classNames={{ items: 'max-lg:h-8 max-lg:w-[70px] !text-base' }}
+            classNames={{ items: 'h-8 max-lg:w-[53px] !text-base ' }}
           />
         </div>
         <Input

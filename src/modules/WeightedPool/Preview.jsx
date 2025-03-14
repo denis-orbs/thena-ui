@@ -7,6 +7,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SuccessModal from '@/components/modal/SuccessModal'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { useTokenColor } from '@/hooks/useTokenColor'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAmount, toWei } from '@/lib/utils'
 import { CoinsHandIcon } from '@/svgs'
@@ -51,24 +52,24 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokens.length, renderBackgroundColors])
 
+  const windowSize = useWindowSize()
+  const isMobile = windowSize.width < 768
   return (
     <div className='space-y-4'>
       <TextHeading className='font-archia text-xl font-semibold md:text-3xl'>{t('Overview')}</TextHeading>
-      <Box className='space-y-8 px-4 py-4'>
+      <Box className='space-y-4 px-4 py-4 max-md:rounded-none md:space-y-8'>
         <div className='flex items-center gap-4'>
-          <div className='flex w-full flex-col gap-4 md:flex-[4] md:flex-row'>
+          <div className='flex w-full flex-col justify-between gap-4 md:flex-[4] md:flex-row'>
             <div className='flex flex-row items-center gap-4 md:flex-col md:gap-2'>
               <GroupIconTokens
-                height={tokens?.length === 2 ? 32 : 24}
-                width={tokens?.length === 2 ? 32 : 24}
+                height={tokens?.length > 4 ? (isMobile ? 16 : 24) : 24}
+                width={tokens?.length > 4 ? (isMobile ? 16 : 24) : 24}
                 tokens={tokens}
               />
               <Paragraph className='hidden text-xs md:block'>{t('Weighted Pool')}</Paragraph>
-              <TextHeading className='flex-wrap font-archia text-xl font-semibold md:hidden md:text-[40px] md:leading-[48px]'>
-                {poolName}
-              </TextHeading>
+              <TextHeading className='flex-wrap font-archia text-xl font-semibold md:hidden'>{poolName}</TextHeading>
             </div>
-            <div className='flex flex-row justify-between max-md:w-full md:flex-col md:gap-2'>
+            <div className='flex flex-row justify-between max-md:w-full md:flex-col md:gap-2 lg:px-4'>
               <div>
                 <TextHeading className='font-archia text-xl font-semibold md:text-2xl lg:text-3xl'>
                   $ {formatAmount((tokens || []).reduce((sum, token) => sum + Number(token.amount) * token.price, 0))}

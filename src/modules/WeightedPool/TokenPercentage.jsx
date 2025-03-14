@@ -23,12 +23,12 @@ export function TokenPercentage({ tokens, poolAddress }) {
           image: cn('outline-2 w-7 h-7', length <= 4 ? 'w-7 h-7' : 'w-6 h-6'),
           rows: length > 2 ? (isMobile ? '-space-x-2' : '-space-x-3') : '-space-x-2',
         }}
-        width={isMobile ? 20 : length <= 4 ? (isSmall ? 28 : 32) : 24}
-        height={isMobile ? 20 : length <= 4 ? (isSmall ? 28 : 32) : 24}
+        width={isMobile ? 16 : length <= 4 ? (isSmall ? 28 : 32) : 24}
+        height={isMobile ? 16 : length <= 4 ? (isSmall ? 28 : 32) : 24}
         tokens={tokens}
         poolAddress={poolAddress}
       />
-      <div className='flex flex-col gap-1'>
+      <div className='flex flex-col gap-0 md:gap-1'>
         <div>
           {tokens.slice(0, isSmall ? 2 : 3).map((token, index) => (
             <Paragraph className='text-[10px] leading-4 md:text-base' key={token.address}>

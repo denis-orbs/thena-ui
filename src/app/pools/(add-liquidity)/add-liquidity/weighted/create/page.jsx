@@ -25,7 +25,6 @@ function PoolWithStep({
   setFees,
   initialPoolSymbol,
   poolName,
-  setPoolName,
   setCheckError,
 }) {
   switch (currentStep) {
@@ -49,7 +48,6 @@ function PoolWithStep({
           fees={fees}
           setFees={setFees}
           poolName={poolName}
-          setPoolName={setPoolName}
         />
       )
     }
@@ -63,7 +61,6 @@ function PoolWithStep({
           setFees={setFees}
           initialPoolSymbol={initialPoolSymbol}
           poolName={poolName}
-          setPoolName={setPoolName}
         />
       )
     }
@@ -83,8 +80,15 @@ export default function CreateWeightedPoolPage() {
   const { tokens: tokensSelected } = useSelector(state => state.weightedPool)
   const assets = useAssets()
   const [fees, setFees] = useState(0.3)
-  const [poolName, setPoolName] = useState('')
   const [tokensAndWeights, setTokenAndWeights] = useState([])
+  const poolName = useMemo(
+    () =>
+      ([...tokensAndWeights] || [])
+        .sort((a, b) => b.weight - a.weight)
+        .map(token => token.token.symbol)
+        .join(' | '),
+    [tokensAndWeights],
+  )
   const t = useTranslations()
   const { push } = useRouter()
 
@@ -143,7 +147,6 @@ export default function CreateWeightedPoolPage() {
             setFees={setFees}
             assets={assets}
             poolName={poolName}
-            setPoolName={setPoolName}
           />
         </div>
         {currentStep !== 3 && (

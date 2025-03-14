@@ -20,10 +20,10 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
   const [firstRow, secondRow] = splitTokens(tokens)
   return (
     <div className='h-fit'>
-      <div className={cn(className)} style={{ height: secondRow.length > 0 ? height * 1.6 : height }}>
+      <div className={cn(className)} style={{ height: secondRow.length > 0 ? height * 1.75 : height }}>
         <div
           className='relative mx-auto flex w-fit items-center'
-          style={{ width: width + (firstRow.length - 1) * (width * 0.6), height }}
+          style={{ width: width + (firstRow.length - 1) * (width * 0.75), height }}
         >
           {firstRow.map((token, index) => (
             <React.Fragment key={`${token.address}-${index}`}>
@@ -31,8 +31,10 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
                 key={`${token.address}-${index}`}
                 src={token.logoURI || UNKNOWN_LOGO}
                 alt={`token-${index}`}
-                className='border-1 absolute rounded-full border-[#1C2027] object-cover'
-                style={{ left: index * (width * 0.6) }}
+                className={cn(
+                  'absolute rounded-full border-[#1C2027] bg-neutral-50 object-cover shadow-[0_0_0_calc(0.09_*_var(--size))_#1C2027]',
+                )}
+                style={{ left: index * (width * 0.75), '--size': `${width}px` }}
                 width={width}
                 height={height}
                 data-tooltip-id={showToolTip ? `tooltip-token-${token.address}-${index}-${poolAddress}` : null}
@@ -53,8 +55,8 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
           <div
             className='relative mx-auto flex w-fit items-center'
             style={{
-              width: width + (secondRow.length - 1) * (width * 0.6),
-              top: -height * 0.4,
+              width: width + (secondRow.length - 1) * (width * 0.75),
+              top: -height * 0.25,
               height,
             }}
           >
@@ -64,8 +66,10 @@ function GroupIconTokens({ tokens, width, height, poolAddress, className, showTo
                   key={`${token.address}-${index}`}
                   src={token.logoURI || UNKNOWN_LOGO}
                   alt={`token-${index}`}
-                  className='border-1 absolute rounded-full border-[#1C2027] object-cover'
-                  style={{ left: index * (width * 0.6) }}
+                  className={cn(
+                    'absolute rounded-full border-[#1C2027] bg-neutral-50 object-cover shadow-[0_0_0_calc(0.09_*_var(--size))_#1C2027]',
+                  )}
+                  style={{ left: index * (width * 0.75), '--size': `${width}px` }}
                   width={width}
                   height={height}
                   data-tooltip-id={showToolTip ? `tooltip-token-${token.address}-${index}-${poolAddress}` : null}
