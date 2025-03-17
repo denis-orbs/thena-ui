@@ -294,7 +294,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
           )}
         >
           <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
-            {t('Back')}
+            {t('Cancel')}
           </EmphasisButton>
 
           <EmphasisButton

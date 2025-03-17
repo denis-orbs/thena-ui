@@ -7,9 +7,10 @@ import { WBNB } from 'thena-sdk-core'
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import PriceHistoryChart from '@/components/common/AddLiquidity/FusionAdd/PriceHistoryChart'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
-import { NewTextHeading, Paragraph } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
 import { cn, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
@@ -23,6 +24,7 @@ import { PoolAttributesSection } from '../PoolAttributesSection'
 
 function AddLiquidityClPool({ pool, handleBack }) {
   const t = useTranslations()
+  const { isLgDown } = useMediaQuery()
   const { networkId } = useChainSettings()
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy } = useV3MintState()
@@ -114,6 +116,22 @@ function AddLiquidityClPool({ pool, handleBack }) {
             position={position}
           />
 
+          {strategy?.isAutomatic && isLgDown && (
+            <div className='mt-4'>
+              <NewTextSubHeading className='text-sm'>{t('Liquidity Range')}</NewTextSubHeading>
+              <AutomaticLiquidityChart
+                currencyA={currencyA ?? undefined}
+                currencyB={currencyB ?? undefined}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                strategy={strategy}
+                position={position}
+                pair={pair}
+                handleShow={!!strategy}
+              />
+            </div>
+          )}
+
           <AddLiquidityCLPane
             pool={pair}
             baseCurrency={baseCurrency}
@@ -129,7 +147,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
         <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block')}>
           <div className='hidden h-full flex-[4] flex-col gap-5 lg:flex'>
             {pair ? (
-              <div className={cn({ 'mt-[101px]': !!position })}>
+              <div className={cn('mt-0', { 'mt-[101px]': !!position })}>
                 <PoolAttributesSection strategy={strategy} pair={pair} />
               </div>
             ) : (
@@ -141,7 +159,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
             {strategy?.isAutomatic && (
               <div className='pt-8'>
-                <NewTextHeading className='!text-xl font-semibold'>Liquidity Range</NewTextHeading>
+                <NewTextSubHeading className='lg:text-xl'>{t('Liquidity Range')}</NewTextSubHeading>
                 <AutomaticLiquidityChart
                   currencyA={currencyA ?? undefined}
                   currencyB={currencyB ?? undefined}

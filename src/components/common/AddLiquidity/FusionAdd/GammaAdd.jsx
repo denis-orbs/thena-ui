@@ -230,7 +230,7 @@ function ManualPane({ baseCurrency, quoteCurrency, strategy, onShowModalSuccess,
 
       <div className={cn('mt-8 flex w-full flex-col items-center gap-2 lg:flex-row')}>
         <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
-          {t('Back')}
+          {t('Cancel')}
         </EmphasisButton>
         {account ? (
           <>

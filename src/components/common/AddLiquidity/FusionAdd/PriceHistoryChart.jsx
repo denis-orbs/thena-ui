@@ -61,7 +61,7 @@ function PriceHistoryChart({ baseCurrency, quoteCurrency, currentPrice, position
         <NewTextSubHeading className='hidden text-sm font-semibold lg:block lg:text-xl'>
           Price History
         </NewTextSubHeading>
-        <Tabs data={periods} />
+        <Tabs itemClassName='text-[8px] sm:text-xs' data={periods} />
       </div>
       {isLoading ? (
         <Skeleton className='mt-2 flex h-[200px] items-center justify-center lg:h-[300px]' />

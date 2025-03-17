@@ -18,23 +18,20 @@ export default function Step3({ setStep }) {
 
   const poolAddress = searchParams.get('poolAddress')
   const pairTypeFromParams = searchParams.get('pairType')
+  const backParams = searchParams.get('back')
 
   const { isLoading: isLoadingPairs } = usePairs()
   const pair = usePairInfo({ poolAddress, type: pairTypeFromParams })
   const pairType = useMemo(() => pair?.type ?? pairTypeFromParams, [pair, pairTypeFromParams])
 
   const handleBack = useCallback(() => {
-    const routeHistoryLength = window?.history?.length ?? 0
-    if (routeHistoryLength <= 1) {
-      updateSearchParams({
-        step: 2,
-        firstAddress: pair?.token0?.address ?? null,
-        secondAddress: pair?.token1?.address ?? null,
-      })
-    } else {
+    if (Number(backParams) === 1) {
       router.back()
+      return
     }
-  }, [pair, router, updateSearchParams])
+
+    router.push('/pools')
+  }, [backParams, router])
 
   useEffect(() => {
     if (poolAddress) {

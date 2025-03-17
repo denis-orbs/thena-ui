@@ -317,7 +317,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
       {strategy && (
         <div className={cn('flex flex-col gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div className='flex items-center justify-between'>
-            <NewTextSubHeading className='text-sm font-semibold lg:text-xl'>{t('Liquidity Range')}</NewTextSubHeading>
+            <NewTextSubHeading className='text-sm lg:text-xl'>{t('Liquidity Range')}</NewTextSubHeading>
           </div>
 
           {activePreset === Presets.FULL && fullRangeWarningShown && (
