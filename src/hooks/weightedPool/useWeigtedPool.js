@@ -197,18 +197,20 @@ export const useWeightedPool = () => {
         setPending(true)
 
         const wBNB = (tokens || []).find(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
-        const index = (tokens || []).findIndex(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
         let amountToWrap
-        const wBNBBalance = BigNumber.isBigNumber(wBNB.balance) ? wBNB.balance : new BigNumber(wBNB.balance)
-        if (wBNB && wBNBBalance.lt(fromWei(amountsWei?.[index]))) {
-          amountToWrap = fromWei(amountsWei?.[index]).minus(wBNBBalance)
-        }
+        if (wBNB) {
+          const index = (tokens || []).findIndex(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
+          const wBNBBalance = BigNumber.isBigNumber(wBNB?.balance) ? wBNB.balance : new BigNumber(wBNB.balance)
+          if (wBNB && wBNBBalance.lt(fromWei(amountsWei?.[index]))) {
+            amountToWrap = fromWei(amountsWei?.[index]).minus(wBNBBalance)
+          }
 
-        if (amountToWrap) {
-          transactions[wrapuuid] = {
-            desc: t('Wrap'),
-            status: TXN_STATUS.START,
-            hash: null,
+          if (amountToWrap) {
+            transactions[wrapuuid] = {
+              desc: t('Wrap'),
+              status: TXN_STATUS.START,
+              hash: null,
+            }
           }
         }
 
