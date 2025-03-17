@@ -19,7 +19,7 @@ function LayoutWithBackButton({ children }) {
         </TextButton>
       </div>
 
-      <section className={cn('layout !mt-0 pb-8 max-lg:pt-0', isViewUp && '!mt-[92px]')}>{children}</section>
+      <section className={cn('layout !mt-0 pb-[180px] max-lg:pt-0', isViewUp && '!mt-[92px]')}>{children}</section>
     </div>
   )
 }

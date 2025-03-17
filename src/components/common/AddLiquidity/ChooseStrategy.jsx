@@ -27,7 +27,7 @@ import { fetchGammaInfo } from './FusionAdd/GammaAdd'
 import { fetchIchiInfo } from './FusionAdd/IchiAdd'
 import ManualStrategy from './FusionAdd/ManualStrategy'
 
-const defaultSwapFees = {
+export const defaultSwapFees = {
   isDefault: false,
   address: zeroAddress,
   tvl: new BigNumber(0),
@@ -39,9 +39,9 @@ const defaultSwapFees = {
     projectedApr: new BigNumber(0),
     voteApr: new BigNumber(0),
     totalSupply: 0,
-    address: '0x0000000000000000000000000000000000000000',
-    fee: '0x0000000000000000000000000000000000000000',
-    bribe: '0x0000000000000000000000000000000000000000',
+    address: zeroAddress,
+    fee: zeroAddress,
+    bribe: zeroAddress,
     weight: new BigNumber(0),
     weightPercent: new BigNumber(0),
     bribes: {
@@ -101,8 +101,8 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
   const poolAddress = searchParams.get('poolAddress')
 
   const sortedSubPools = useMemo(() => {
-    const priority = { CL_Farming: 1, CL_SwapFee: 2 }
-    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3))
+    const priority = { CL_Farming: 1, CL_SwapFee: 2, ICHI_Farming: 3, Narrow_Farming: 4, Wide_Farming: 5 }
+    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
   }, [pair?.subpools])
 
   const { data: preset } = useSWR(
@@ -181,9 +181,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
     }
 
     if (sortedSubPools.length && (!strategy || !strategy.isDefault)) {
-      const priority = { CL_Farming: 1, CL_SwapFee: 2 }
-      let _strategy = sortedSubPools.sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3)).at(0)
-      if (!_strategy) _strategy = sortedSubPools.find(item => !MANUAL_TYPES.includes(item.title))
+      const _strategy = sortedSubPools.at(0)
       handleChooseStrategy(_strategy ?? defaultSwapFees)
     }
   }, [firstAsset, handleChooseStrategy, poolAddress, secondAsset, sortedSubPools, strategy])

@@ -9,7 +9,7 @@ import BarChart from '@/components/charts/BarChart'
 import HoverableChart from '@/components/charts/HoverableChart'
 import LineChart from '@/components/charts/LineChart'
 import Selection from '@/components/selection'
-import { TextHeading } from '@/components/typography'
+import { NewTextSubHeading } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useAssets } from '@/context/assetsContext'
 import { usePairs } from '@/context/pairsContext'
@@ -21,7 +21,7 @@ const ChartType = {
   TVL: 'TVL',
   Volume: 'Volume',
   Fees: 'Fees',
-  Liquidity: 'Liquidity',
+  // Liquidity: 'Liquidity',
 }
 
 export function PoolChart({ address }) {
@@ -73,6 +73,7 @@ export function PoolChart({ address }) {
             valueProperty='tvlUSD'
             title='TVL'
             ChartComponent={LineChart}
+            className='!p-0'
           />
         )
       }
@@ -84,6 +85,7 @@ export function PoolChart({ address }) {
             valueProperty='dayVolume'
             title='Volume (24h)'
             ChartComponent={BarChart}
+            className='!p-0'
           />
         )
       }
@@ -95,6 +97,7 @@ export function PoolChart({ address }) {
             valueProperty='dayFees'
             title='Fees (24h)'
             ChartComponent={BarChart}
+            className='!p-0'
           />
         )
       }
@@ -124,10 +127,15 @@ export function PoolChart({ address }) {
   return (
     <div className='flex w-full flex-col gap-4'>
       <div className='w-full items-center justify-between lg:flex'>
-        <TextHeading className='font-archia text-[30px] font-semibold leading-[34px]'>{t('Analytics')}</TextHeading>
-        <Selection isFull data={chartTypeSelection} className='mt-3 w-full lg:mt-0 lg:w-auto' isTranslation={false} />
+        <NewTextSubHeading>{t('Analytics')}</NewTextSubHeading>
+        <Selection
+          isFull
+          data={chartTypeSelection}
+          className='mt-3 w-full lg:mt-0 lg:w-[565px]'
+          isTranslation={false}
+        />
       </div>
-      <div className='rounded-lg bg-neutral-900 lg:px-6 lg:py-4'>{renderChart}</div>
+      <div className='rounded-lg bg-neutral-900 px-4 py-6'>{renderChart}</div>
     </div>
   )
 }
