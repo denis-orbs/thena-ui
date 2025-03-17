@@ -8,7 +8,7 @@ import useSWR from 'swr'
 
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { SizeTypes } from '@/constant/type'
 import { fusionClient, v1Client } from '@/lib/graphql'
@@ -515,7 +515,7 @@ export default function TransactionTable({ pair }) {
   return (
     <div className='flex flex-col gap-6'>
       <div className='flex flex-col gap-4'>
-        <TextHeading className='text-xl'>{t('Transactions')}</TextHeading>
+        <NewTextSubHeading className='text-xl'>{t('Transactions')}</NewTextSubHeading>
         <Tabs data={filters} size={SizeTypes.Medium} className='w-fit' />
       </div>
       <Table
