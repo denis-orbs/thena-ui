@@ -10,9 +10,7 @@ export const metadata = {
 export default function AnalyticsLayout({ children }) {
   return (
     <main className='desktop-bg flex min-h-screen flex-col'>
-      <section className='layout'>
-        <Suspense fallback={<Loading />}>{children}</Suspense>
-      </section>
+      <Suspense fallback={<Loading />}>{children}</Suspense>
     </main>
   )
 }
