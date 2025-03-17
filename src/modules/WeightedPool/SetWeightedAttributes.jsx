@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { isInvalidAmount } from '@/lib/utils'
+import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 import PoolSummary from './PoolSummary'
@@ -13,7 +13,6 @@ import SetPoolFees from './SetPoolFees'
 import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 
 function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWeights, poolName, setCurrentStep }) {
-  console.log('check')
   const isDisable = useMemo(
     () => (tokensAndWeights || []).some(item => item.isError || isInvalidAmount(item?.amount)),
     [tokensAndWeights],
@@ -41,6 +40,18 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
       }, 0),
     [tokensAndWeights],
   )
+
+  const maxDeposit = useMemo(() => {
+    const max = tokensAndWeights.reduce((sum, curr) => {
+      const { balance, price } = curr.token
+      if (balance) {
+        return sum + Number(balance || 0) * price
+      }
+      return sum
+    }, 0)
+    return max
+  }, [tokensAndWeights])
+
   const windowSize = useWindowSize()
   const isMobile = windowSize.width < 768
 
@@ -77,12 +88,14 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
             {t('Set Initial Liquidity')}
           </TextHeading>
           {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (
-            <div className='flex flex-1 items-center gap-4 rounded-lg border border-warn-900 bg-warn-950 px-4 py-5 lg:flex-2'>
+            <div className='flex flex-1 gap-4 rounded-lg border border-warn-900 bg-warn-950 px-4 py-5 lg:flex-2 lg:items-center'>
               <InfoIcon className='h-5 min-h-5 w-5 min-w-5 !stroke-warn-600 lg:h-8 lg:w-8' />
               <div className='flex flex-col gap-1'>
                 <TextHeading className='text-xl text-rose'>{t('Initial funds')}</TextHeading>
                 <TextSubHeading className='text-base text-rose'>
-                  {t('We recommend you to provide new pools')}
+                  {t('We recommend you to provide new pools [maxDeposit]', {
+                    maxDeposit: formatAmount(maxDeposit),
+                  })}
                 </TextSubHeading>
               </div>
             </div>

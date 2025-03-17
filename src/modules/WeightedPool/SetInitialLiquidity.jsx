@@ -173,10 +173,10 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
           ))}
         </>
       </div>
-      <div className='flex flex-col gap-2 rounded-xl border border-primary-800 bg-primary-950 py-2 pl-3 pr-2 lg:p-4'>
+      <div className='flex flex-col gap-2 rounded-xl border border-primary-800 bg-primary-950 py-2 pl-3 pr-2 lg:p-8'>
         <div className='flex flex-row items-center justify-between'>
-          <div className='flex items-center gap-4'>
-            <ScalesPrimaryIcon className='lg:h8 h-4 w-4 lg:w-8' />
+          <div className='flex items-center gap-2 lg:gap-4'>
+            <ScalesPrimaryIcon className='size-4 lg:size-8' />
             <div className='flex flex-col gap-2'>
               <TextHeading>{t('Auto optimize liquidity')}</TextHeading>
               <span>

@@ -87,7 +87,6 @@ export default function CreateWeightedPoolPage() {
   const searchParams = useSearchParams()
   const updateSearchParams = useUpdateSearchParams()
   const currentStep = Number(searchParams.get('step'))
-  console.log('currentStep', currentStep)
   useEffect(() => {
     if (!currentStep) {
       updateSearchParams({ step: 1 })
