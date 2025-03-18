@@ -137,17 +137,12 @@ export default function CreateWeightedPoolPage() {
 
   return (
     <LayoutWithBackButton>
-      <div className='flex flex-col gap-4 sm:gap-6 md:gap-8 lg:gap-12'>
+      <div className='flex flex-col gap-4 md:gap-8 lg:gap-12'>
         <div className='flex items-center gap-8'>
           <ScalesIcon className='hidden size-14 lg:block' />
           <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
         </div>
-        <div
-          className={cn(
-            'flex flex-col-reverse gap-4 lg:flex-row',
-            currentStep === 3 ? 'w-full xl:w-[80%] 2xl:w-[70%]' : 'lg:grid lg:grid-cols-add-liquidity-layout',
-          )}
-        >
+        <div className={cn('flex flex-col-reverse gap-4 lg:grid lg:grid-cols-add-liquidity-layout')}>
           <div className='w-full flex-2 lg:flex-1'>
             <PoolWithStep
               currentStep={currentStep}

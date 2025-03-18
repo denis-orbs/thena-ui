@@ -46,20 +46,8 @@ export function PairBasicInfo({ pair }) {
               <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
             </div>
             <div className='flex flex-col gap-2 md:gap-3'>
-              <NewTextSubHeading className='text-gradient-primary'>{formatAmount(pair?.reserve0)}</NewTextSubHeading>
-              <Paragraph className='text-sm text-neutral-500'>
-                {t('Total [symbol] Locked', {
-                  symbol: pair?.token0?.symbol,
-                })}
-              </Paragraph>
-            </div>
-            <div className='flex flex-col gap-2 md:gap-3'>
-              <NewTextSubHeading className='text-gradient-primary'>{formatAmount(pair?.reserve1)}</NewTextSubHeading>
-              <Paragraph className='text-sm text-neutral-500'>
-                {t('Total [symbol] Locked', {
-                  symbol: pair?.token1?.symbol,
-                })}
-              </Paragraph>
+              <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.tvlUSD)}</NewTextSubHeading>
+              <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
             </div>
           </div>
         </motion.div>
@@ -70,21 +58,8 @@ export function PairBasicInfo({ pair }) {
         </div>
 
         <div className='flex flex-col gap-2 max-md:hidden md:gap-3'>
-          <NewTextSubHeading className='text-gradient-primary'>{formatAmount(pair?.reserve0)}</NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>
-            {t('Total [symbol] Locked', {
-              symbol: pair?.token0?.symbol,
-            })}
-          </Paragraph>
-        </div>
-
-        <div className='flex flex-col gap-2 max-md:hidden md:gap-3'>
-          <NewTextSubHeading className='text-gradient-primary'>{formatAmount(pair?.reserve1)}</NewTextSubHeading>
-          <Paragraph className='text-sm text-neutral-500'>
-            {t('Total [symbol] Locked', {
-              symbol: pair?.token1?.symbol,
-            })}
-          </Paragraph>
+          <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.tvlUSD)}</NewTextSubHeading>
+          <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
         </div>
       </Box>
 

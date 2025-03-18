@@ -190,7 +190,7 @@ function PairStrategy({ pair }) {
         strategyType === 'manual' ? MANUAL_TYPES.includes(item.title) : !MANUAL_TYPES.includes(item.title),
       )
       handleChooseStrategy(_strategy ?? defaultSwapFees)
-      push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}`)
+      push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}&back=1`)
     },
     [handleChooseStrategy, pair.address, push, sortedSubPools],
   )
@@ -219,7 +219,7 @@ function PairStrategy({ pair }) {
 
           <EmphasisIconButton
             Icon={ArrowRightIcon}
-            className='size-11 bg-neutral-700 [&>svg>path]:stroke-neutral-400 [&>svg]:size-5'
+            className='size-8 bg-neutral-700 lg:size-11 [&>svg>path]:stroke-neutral-400 [&>svg]:size-4 lg:[&>svg]:size-5'
             onClick={() => handleAddLiquidity('automatic')}
           />
         </div>
@@ -235,14 +235,16 @@ function PairStrategy({ pair }) {
       </div>
 
       <div className='flex w-full flex-col gap-8'>
-        <div className={cn('flex items-center justify-between rounded-xl bg-primary-950 bg-opacity-50 p-4 lg:px-6')}>
+        <div
+          className={cn('flex items-center justify-between gap-2 rounded-xl bg-primary-950 bg-opacity-50 p-4  lg:px-6')}
+        >
           <div className='flex items-center gap-4 lg:gap-8'>
             <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
               Manual Strategy
             </NewTextSubHeading>
             <EmphasisIconButton
               Icon={ArrowRightIcon}
-              className='size-11 bg-neutral-700 [&>svg>path]:stroke-neutral-400 [&>svg]:size-5'
+              className='size-8 bg-neutral-700 lg:size-11 [&>svg>path]:stroke-neutral-400 [&>svg]:size-4 lg:[&>svg]:size-5'
               onClick={() => handleAddLiquidity('manual')}
             />
           </div>

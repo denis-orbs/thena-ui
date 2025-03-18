@@ -319,7 +319,10 @@ function NewListings({
             data-tooltip-id='analytics-tooltip'
           />
           <EmphasisButton
-            className={cn('hidden w-full p-2 text-xs md:block lg:w-fit', pool.type === PAIR_TYPES.WEIGHTED && 'block')}
+            className={cn(
+              'hidden w-full p-2 text-xs md:block lg:w-fit [&>span]:lg:text-xs',
+              pool.type === PAIR_TYPES.WEIGHTED && 'block',
+            )}
             onClick={() => {
               push(
                 pool.type === PAIR_TYPES.WEIGHTED

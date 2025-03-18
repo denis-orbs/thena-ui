@@ -18,7 +18,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
       <div className='flex gap-2'>
         <Box className={cn('w-full rounded-lg bg-neutral-900 py-2 lg:p-4', className)}>
           <NewTextSubHeading className='flex items-center justify-between gap-1'>
-            <h3 className='text-xs font-semibold md:text-lg lg:text-3xl'>{t('Pool Attributes')}</h3>
+            <h3 className='text-xs font-semibold lg:text-3xl'>{t('Pool Attributes')}</h3>
             <div className='hidden items-center lg:flex'>
               <i
                 onClick={() => setShow(!show)}
@@ -54,11 +54,11 @@ export function PoolAttributesSection({ strategy, pair, className }) {
             onClick={() => setShow(!show)}
             className={cn(
               'flex cursor-pointer items-center justify-center rounded-lg',
-              'size-8 min-w-8 md:size-11 md:min-w-11',
+              'size-8 min-w-8 lg:size-11 lg:min-w-11',
               show ? 'bg-neutral-600' : 'bg-neutral-900',
             )}
           >
-            <InfoIcon className='size-4 stroke-neutral-400' />
+            <InfoIcon className='size-4 stroke-neutral-400 lg:size-5' />
           </i>
         </div>
       </div>

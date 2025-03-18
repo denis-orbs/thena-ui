@@ -256,11 +256,8 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
         ))}
       </div>
       <div className='mt-auto flex flex-col gap-2 lg:absolute lg:-bottom-[92px] lg:flex-row lg:gap-4'>
-        <EmphasisButton
-          onClick={() => push('/pools/add-liquidity?step=2&pairType=Weighted')}
-          className='w-full lg:w-fit'
-        >
-          {t('Back')}
+        <EmphasisButton onClick={() => push('/pools')} className='w-full lg:w-fit'>
+          {t('Cancel')}
         </EmphasisButton>
         <PrimaryButton
           className='w-full lg:w-fit'

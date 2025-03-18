@@ -1,8 +1,10 @@
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { TextHeading, TextSubHeading } from '@/components/typography'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
@@ -13,11 +15,14 @@ import SetPoolFees from './SetPoolFees'
 import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 
 function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWeights, poolName, setCurrentStep }) {
+  const router = useRouter()
+  const t = useTranslations()
+  const { isLgDown } = useMediaQuery()
+
   const isDisable = useMemo(
     () => (tokensAndWeights || []).some(item => item.isError || isInvalidAmount(item?.amount)),
     [tokensAndWeights],
   )
-  const t = useTranslations()
 
   const [checkError, setCheckError] = useState(false)
   const handleNextStep = useCallback(() => {
@@ -57,7 +62,7 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
 
   return (
     <div className='flex h-full flex-col gap-4 lg:relative'>
-      <div className='flex flex-col gap-4 xl:flex-row 2xl:gap-8'>
+      <div className='flex flex-col justify-between gap-4 xl:flex-row 2xl:gap-8'>
         <div className='flex flex-[7] flex-col gap-4 lg:gap-[14px] xl:min-h-full'>
           <TextHeading className='font-archia text-xl font-semibold md:text-2xl lg:text-3xl'>
             {t('Weighted Pool')}
@@ -76,11 +81,13 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
         <div className='min-h-full flex-[3]'>
           <SetPoolFees fees={fees} setFees={setFees} />
         </div>
-        <PoolSummary
-          fees={fees}
-          tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount }))}
-          isMobile
-        />
+        {isLgDown && (
+          <PoolSummary
+            fees={fees}
+            tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount }))}
+            isMobile
+          />
+        )}
       </div>
       <div className='space-y-4'>
         <div className='flex flex-col-reverse gap-4'>
@@ -88,8 +95,8 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
             {t('Set Initial Liquidity')}
           </TextHeading>
           {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (
-            <div className='flex flex-1 gap-4 rounded-lg border border-warn-900 bg-warn-950 px-4 py-5 lg:flex-2 lg:items-center'>
-              <InfoIcon className='h-5 min-h-5 w-5 min-w-5 !stroke-warn-600 lg:h-8 lg:w-8' />
+            <div className='flex flex-1 gap-4 rounded-lg border border-warn-900 bg-warn-950 px-4 py-5 lg:flex-2 lg:items-center lg:p-8'>
+              <InfoIcon className='size-5 min-h-5 min-w-5 !stroke-warn-600 lg:size-8 lg:min-w-8' />
               <div className='flex flex-col gap-1'>
                 <TextHeading className='text-xl text-rose'>{t('Initial funds')}</TextHeading>
                 <TextSubHeading className='text-base text-rose'>
@@ -109,11 +116,11 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
           tokensAndWeights={tokensAndWeights}
         />
       </div>
-      <div className='flex flex-col gap-2 lg:absolute lg:-bottom-[92px] lg:flex-row lg:gap-4'>
-        <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(1)}>
-          {t('Back')}
+      <div className='flex flex-col gap-2 lg:mt-4'>
+        <EmphasisButton className='hidden w-full max-lg:block' onClick={() => router.push('/pools')}>
+          {t('Cancel')}
         </EmphasisButton>
-        <PrimaryButton className='w-full lg:w-fit' onClick={handleNextStep}>
+        <PrimaryButton className='w-full' onClick={handleNextStep}>
           {t('Next')}
         </PrimaryButton>
       </div>

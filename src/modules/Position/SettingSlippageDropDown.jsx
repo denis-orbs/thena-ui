@@ -47,9 +47,9 @@ function SettingSlippageDropDown({ slippage, updateSlippage, className }) {
             </Paragraph>
 
             {!isHovered ? (
-              <SettingsIcon className='size-5 md:size-6' />
+              <SettingsIcon className='size-5 lg:size-6' />
             ) : (
-              <SettingPrimaryIcon className='size-5 md:size-6' />
+              <SettingPrimaryIcon className='size-5 lg:size-6' />
             )}
           </div>
         </div>

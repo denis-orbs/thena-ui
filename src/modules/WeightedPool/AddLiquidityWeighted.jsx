@@ -15,7 +15,6 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
-import CustomTooltip from '@/components/tooltip'
 import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { useTokenBalance } from '@/hooks/fusion/Tokens'
 import { useTokenUSDValue } from '@/hooks/usePrices'
@@ -238,18 +237,6 @@ function AddLiquidityWeighted({ pool }) {
             </TextHeading>
           </div>
           <div className='flex flex-col'>
-            <div className='flex flex-row justify-between'>
-              <NewTextSubHeading className='text-xl lg:text-3xl'>{t('Weighted')}</NewTextSubHeading>
-              <EmphasisButton
-                className={cn(
-                  'h-8 w-8 p-2 outline-0 hover:bg-neutral-900 lg:hidden',
-                  showLiquidityInfo ? '!bg-neutral-600' : 'bg-neutral-900',
-                )}
-                onClick={() => setShowLiquidityInfo(prev => !prev)}
-              >
-                <InfoNeutralIcon className='size-4' />
-              </EmphasisButton>
-            </div>
             <div className='flex flex-col'>
               <div className='flex flex-row justify-between'>
                 <NewTextSubHeading className='text-xl lg:text-2xl 2xl:text-3xl'>{t('Weighted')}</NewTextSubHeading>
@@ -322,9 +309,14 @@ function AddLiquidityWeighted({ pool }) {
                   </div>
                 )}
               </div>
-              <div className='space-y-8 lg:space-y-16'>
-                <div className='grid gap-4 md:grid-cols-2'>
-                  <EmphasisButton
+
+              <div className='flex flex-col gap-2'>
+                <EmphasisButton className='hidden w-full max-lg:block' onClick={() => router.push('/pools')}>
+                  {t('Cancel')}
+                </EmphasisButton>
+                {pool?.gauge?.address === zeroAddress ? (
+                  <PrimaryButton
+                    className='w-full'
                     onClick={() => {
                       if (isDisable) {
                         warnToast('Invalid Amount')
@@ -334,8 +326,10 @@ function AddLiquidityWeighted({ pool }) {
                     }}
                   >
                     {t('Deposit')}
-                  </EmphasisButton>
+                  </PrimaryButton>
+                ) : (
                   <PrimaryButton
+                    className='w-full'
                     disabled={pool?.gauge?.address === zeroAddress}
                     onClick={() => {
                       if (isDisable) {
@@ -344,19 +338,10 @@ function AddLiquidityWeighted({ pool }) {
                       }
                       onAddLiquidity(true)
                     }}
-                    data-tooltip-id={`add-liquidity-stake-${pool?.address}`}
                   >
                     {t('Deposit & Stake')}
                   </PrimaryButton>
-                  {pool?.gauge?.address === zeroAddress && (
-                    <CustomTooltip id={`add-liquidity-stake-${pool?.address}`} className='max-w-[500px]'>
-                      {t('This pool has no Gauge')}
-                    </CustomTooltip>
-                  )}
-                </div>
-                <EmphasisButton onClick={() => router.back()} className='w-full lg:w-fit'>
-                  {t('Back')}
-                </EmphasisButton>
+                )}
               </div>
             </div>
             <div className='hidden w-full space-y-4 lg:block lg:flex-[4]'>
