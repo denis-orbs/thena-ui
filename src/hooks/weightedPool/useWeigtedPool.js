@@ -437,7 +437,7 @@ export const useWeightedPool = () => {
       if (!isApprovedFee) {
         const isSuccess = await writeTxn(key, approveFeeuuid, tokenContract, 'approve', [
           Contracts.weightedPoolRouter[chainId],
-          maxUint256,
+          toWei(amountDeposit, token?.decimals),
         ])
         if (!isSuccess) {
           setPending(false)
@@ -591,7 +591,7 @@ export const useWeightedPool = () => {
           const tokenContract = getERC20Contract(tokenItem.address, chainId)
           const isSuccess = await writeTxn(key, tokenItem.id, tokenContract, 'approve', [
             Contracts.weightedPoolRouter[chainId],
-            maxUint256,
+            toWei(tokenItem.amount, tokenItem.decimals),
           ])
 
           if (!isSuccess) {
