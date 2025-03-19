@@ -114,7 +114,7 @@ export function TokenAmountInput({
       <div
         className={cn(
           'flex cursor-text flex-col gap-1 self-stretch rounded-xl px-4 py-3 lg:gap-3 lg:py-4',
-          'border border-neutral-700 hover:bg-neutral-700 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
+          'border border-neutral-700 hover:bg-neutral-900 [&:has(.hover-dont-change-bg:hover)]:bg-transparent',
           'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
           classNames?.input,
         )}
@@ -124,11 +124,19 @@ export function TokenAmountInput({
           <input
             ref={inputRefer}
             type='number'
-            className='w-full border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
+            className='w-full truncate border-0 bg-transparent p-0 text-xl text-neutral-50 placeholder-neutral-400'
             placeholder='0.0'
             value={amount ?? ''}
             onChange={e => {
-              onAmountChange(Number(e.target.value) < 0 ? '' : e.target.value)
+              let { value } = e.target
+              if (value === '') {
+                onAmountChange('')
+                return
+              }
+              if (!isNaN(Number(value))) {
+                value = value.replace(/^0+(?=\d)/, '')
+              }
+              onAmountChange(value)
             }}
             min={0}
             autoFocus={autoFocus}
@@ -139,7 +147,7 @@ export function TokenAmountInput({
                 <TokenBadge
                   className={cn(
                     'inline-flex items-center justify-center gap-2',
-                    'rounded-lg bg-[#29292980] text-sm text-neutral-200 hover:bg-neutral-700',
+                    'rounded-lg bg-[#29292980] text-xs text-neutral-200 hover:bg-neutral-700 md:text-sm',
                     'py-0.5 pl-1 pr-1.5 lg:py-1.5 lg:pl-1.5 lg:pr-2',
                     'hover-dont-change-bg cursor-pointer',
                     Boolean(maxBalance) && 'w-[220px]',
@@ -161,7 +169,7 @@ export function TokenAmountInput({
             <div
               className={cn(
                 'inline-flex items-center justify-center gap-2',
-                'rounded-lg bg-[#29292980] text-sm text-neutral-200',
+                'rounded-lg bg-[#29292980] text-xs text-neutral-200 md:text-sm',
                 'py-1.5 pl-1.5 pr-2',
                 'cursor-default',
               )}
@@ -170,15 +178,15 @@ export function TokenAmountInput({
                 <IconGroup
                   className='-space-x-2'
                   classNames={{
-                    image: 'outline-2 w-6 h-6',
+                    image: 'outline-2 md:w-6 md:h-6 h-4 w-4',
                   }}
                   logo1='https://cdn.thena.fi/assets/BSC.png'
                   logo2='https://cdn.thena.fi/assets/BNB.png'
                 />
               ) : (
-                <CircleImage alt='thena' className='h-6 w-6' src={asset.logoURI ?? ''} />
+                <CircleImage alt='thena' className='h-4 w-4 md:h-6 md:w-6' src={asset.logoURI ?? ''} />
               )}
-              <span className='text-nowrap'>
+              <span className='text-nowrap text-xs md:text-sm'>
                 {`${maxBalance ? 'BNB + WBNB' : asset.symbol} ${weight ? `(${weight}%)` : ''}`}
               </span>
             </div>
@@ -187,8 +195,10 @@ export function TokenAmountInput({
           )}
         </div>
         <div className='flex items-center justify-between gap-2'>
-          <TextSubHeading>${formatAmount(amount * (asset?.price || 0))}</TextSubHeading>
-          <TextSubHeading className='space-x-2'>
+          <TextSubHeading className='truncate text-neutral-500'>
+            ${formatAmount(amount * (asset?.price || 0))}
+          </TextSubHeading>
+          <TextSubHeading className='space-x-4 text-nowrap text-neutral-500'>
             <span>
               {t('Balance')}: {formatAmount(max)}
             </span>

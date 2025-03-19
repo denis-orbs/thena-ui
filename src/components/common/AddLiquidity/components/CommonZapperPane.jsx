@@ -4,7 +4,7 @@ import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-import { EmphasisButton, OutlinedButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton, SecondaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import IconGroup from '@/components/icongroup'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
@@ -293,9 +293,9 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >
-          <OutlinedButton className='block w-full md:hidden' onClick={handleBack}>
-            {t('Back')}
-          </OutlinedButton>
+          <EmphasisButton className='block w-full md:hidden' onClick={handleBack}>
+            {t('Cancel')}
+          </EmphasisButton>
 
           <EmphasisButton
             onClick={() => handleAddLiquidity({ isStake: false })}

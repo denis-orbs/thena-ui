@@ -17,9 +17,9 @@ function SelectionItem({ className, item, isFull, isSmall, isTranslation = true 
         'hover:bg-neutral-700 active:outline-focus',
         item.active && 'bg-neutral-700 font-medium text-neutral-200',
         item.disabled && 'cursor-not-allowed outline-transparent',
-        className,
         isFull && 'flex-1',
         !isSmall && 'lg:px-3 lg:py-2 lg:text-sm',
+        className,
       )}
       onClick={item.onClickHandler}
     >
@@ -28,7 +28,7 @@ function SelectionItem({ className, item, isFull, isSmall, isTranslation = true 
   )
 }
 
-function Selection({ className, data, isFull = false, isSmall = false, isTranslation = true }) {
+function Selection({ className, classNames, data, isFull = false, isSmall = false, isTranslation = true }) {
   return (
     <div className={cn('inline-flex items-center justify-center gap-0.5 rounded-lg bg-neutral-800 p-1', className)}>
       {data.map((item, idx) => (
@@ -38,6 +38,7 @@ function Selection({ className, data, isFull = false, isSmall = false, isTransla
           isFull={isFull}
           isSmall={isSmall}
           isTranslation={isTranslation}
+          className={classNames?.items}
         />
       ))}
     </div>

@@ -57,9 +57,11 @@ function PriceHistoryChart({ baseCurrency, quoteCurrency, currentPrice, position
 
   return (
     <>
-      <div className='flex flex-row items-center justify-between gap-2'>
-        <NewTextSubHeading className='text-sm font-semibold lg:text-xl'>Price History</NewTextSubHeading>
-        <Tabs data={periods} />
+      <div className='flex flex-row items-center justify-end gap-2 lg:justify-between'>
+        <NewTextSubHeading className='hidden text-sm font-semibold lg:block lg:text-xl'>
+          Price History
+        </NewTextSubHeading>
+        <Tabs itemClassName='text-[8px] sm:text-xs' data={periods} />
       </div>
       {isLoading ? (
         <Skeleton className='mt-2 flex h-[200px] items-center justify-center lg:h-[300px]' />

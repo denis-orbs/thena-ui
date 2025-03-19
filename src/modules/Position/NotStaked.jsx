@@ -201,7 +201,7 @@ export default function NotStaked({ pool }) {
             {version === 3 ? (
               <EmphasisButton
                 className='w-full'
-                onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${pool.address}`)}
+                onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${pool.address}&back=1`)}
               >
                 {t('Add')}
               </EmphasisButton>

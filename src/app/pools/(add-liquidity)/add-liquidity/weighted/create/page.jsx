@@ -1,14 +1,16 @@
 'use client'
 
 import { isEmpty } from 'lodash'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import Loading from '@/app/loading'
+import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import { NewTextHeading } from '@/components/typography'
 import { useAssets } from '@/context/assetsContext'
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
 import { cn } from '@/lib/utils'
 import ChooseTokenAndWeights from '@/modules/WeightedPool/ChooseTokenAndWeights'
 import Preview from '@/modules/WeightedPool/Preview'
@@ -25,7 +27,6 @@ function PoolWithStep({
   setFees,
   initialPoolSymbol,
   poolName,
-  setPoolName,
   setCheckError,
 }) {
   switch (currentStep) {
@@ -49,7 +50,6 @@ function PoolWithStep({
           fees={fees}
           setFees={setFees}
           poolName={poolName}
-          setPoolName={setPoolName}
         />
       )
     }
@@ -63,7 +63,6 @@ function PoolWithStep({
           setFees={setFees}
           initialPoolSymbol={initialPoolSymbol}
           poolName={poolName}
-          setPoolName={setPoolName}
         />
       )
     }
@@ -80,13 +79,30 @@ function PoolWithStep({
 }
 
 export default function CreateWeightedPoolPage() {
-  const { tokens: tokensSelected } = useSelector(state => state.weightedPool)
-  const assets = useAssets()
-  const [fees, setFees] = useState(0.3)
-  const [poolName, setPoolName] = useState('')
-  const [tokensAndWeights, setTokenAndWeights] = useState([])
   const t = useTranslations()
   const { push } = useRouter()
+
+  const { tokens: tokensSelected } = useSelector(state => state.weightedPool)
+
+  const searchParams = useSearchParams()
+  const updateSearchParams = useUpdateSearchParams()
+  const currentStep = Number(searchParams.get('step'))
+  useEffect(() => {
+    if (!currentStep) {
+      updateSearchParams({ step: 1 })
+    }
+  }, [currentStep, updateSearchParams])
+  const assets = useAssets()
+  const [fees, setFees] = useState(0.3)
+  const [tokensAndWeights, setTokenAndWeights] = useState([])
+  const poolName = useMemo(
+    () =>
+      ([...tokensAndWeights] || [])
+        .sort((a, b) => b.weight - a.weight)
+        .map(token => token.token.symbol)
+        .join(' | '),
+    [tokensAndWeights],
+  )
 
   useEffect(() => {
     if (!tokensSelected || tokensSelected.length <= 1) {
@@ -104,7 +120,6 @@ export default function CreateWeightedPoolPage() {
     )
   }, [tokensSelected])
 
-  const [currentStep, setCurrentStep] = useState(1)
   const initialPoolSymbol = useMemo(() => {
     const result = tokensAndWeights.reduce(
       (str, curr, index) =>
@@ -121,37 +136,33 @@ export default function CreateWeightedPoolPage() {
   }
 
   return (
-    <div className='flex flex-col gap-4 sm:gap-6 md:gap-8 lg:gap-16'>
-      <div className='flex items-center gap-8'>
-        <ScalesIcon className='hidden size-16 lg:block' />
-        <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
-      </div>
-      <div
-        className={cn(
-          'flex flex-col-reverse gap-4 lg:flex-row',
-          currentStep === 3 ? 'w-full xl:w-[80%] 2xl:w-[70%]' : 'lg:grid lg:grid-cols-add-liquidity-layout',
-        )}
-      >
-        <div className='w-full flex-2 lg:flex-1'>
-          <PoolWithStep
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
-            setTokenAndWeights={setTokenAndWeights}
-            tokensAndWeights={tokensAndWeights}
-            initialPoolSymbol={initialPoolSymbol}
-            fees={fees}
-            setFees={setFees}
-            assets={assets}
-            poolName={poolName}
-            setPoolName={setPoolName}
-          />
+    <LayoutWithBackButton>
+      <div className='flex flex-col gap-4 md:gap-8 lg:gap-12'>
+        <div className='flex items-center gap-8'>
+          <ScalesIcon className='hidden size-14 lg:block' />
+          <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
         </div>
-        {currentStep !== 3 && (
-          <div className={cn('hidden flex-1 flex-col gap-8 lg:flex lg:flex-[4]', currentStep === 1 && 'block')}>
-            <SideBarCreateWeighted fees={fees} step={currentStep} tokensAndWeights={tokensAndWeights} />
+        <div className={cn('flex flex-col-reverse gap-4 lg:grid lg:grid-cols-add-liquidity-layout')}>
+          <div className='w-full flex-2 lg:flex-1'>
+            <PoolWithStep
+              currentStep={currentStep}
+              setCurrentStep={step => updateSearchParams({ step }, true)}
+              setTokenAndWeights={setTokenAndWeights}
+              tokensAndWeights={tokensAndWeights}
+              initialPoolSymbol={initialPoolSymbol}
+              fees={fees}
+              setFees={setFees}
+              assets={assets}
+              poolName={poolName}
+            />
           </div>
-        )}
+          {currentStep !== 3 && (
+            <div className={cn('hidden flex-1 flex-col gap-8 lg:flex lg:flex-[4]', currentStep === 1 && 'block')}>
+              <SideBarCreateWeighted fees={fees} step={currentStep} tokensAndWeights={tokensAndWeights} />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </LayoutWithBackButton>
   )
 }

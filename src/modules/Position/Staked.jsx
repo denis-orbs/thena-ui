@@ -134,7 +134,7 @@ export default function Staked({ pool }) {
 
     dispatch(updateStrategy({ strategy: newStrategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(pool.title) }))
-    push(`/pools/add-liquidity?step=3&poolAddress=${pool.basePool}`)
+    push(`/pools/add-liquidity?step=3&poolAddress=${pool.basePool}&back=1`)
   }, [dispatch, pool, push, version])
 
   return (

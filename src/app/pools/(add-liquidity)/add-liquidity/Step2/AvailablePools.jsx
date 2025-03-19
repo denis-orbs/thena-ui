@@ -36,13 +36,13 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
       {
         label: 'Pair',
         value: 'pair',
-        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[45%] md:w-[35%]' : 'w-[42%] md:w-[35%]',
+        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[50%] md:w-[42%]' : 'w-[42%] md:w-[35%]',
         isDesc: true,
       },
       {
         label: 'APR',
         value: 'apr',
-        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[calc(45%-100px)] md:w-[15%]' : 'w-[calc(58%-100px)] md:w-[15%]',
+        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[calc(50%-90px)] md:w-[15%]' : 'w-[calc(58%-50px)] md:w-[15%]',
         isDesc: true,
       },
     ]
@@ -53,7 +53,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
         {
           label: '',
           value: 'action',
-          width: 'w-[100px]',
+          width: pairType === PAIR_TYPES.WEIGHTED ? 'lg:w-[100px] w-[90px]' : 'lg:w-[100px] w-[50px]',
           disabled: true,
         },
       ]
@@ -70,7 +70,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
       {
         label: 'Fees (24h)',
         value: 'fee',
-        width: 'w-[calc(30%-100px)]',
+        width: pairType === PAIR_TYPES.WEIGHTED ? 'w-[calc(23%-100px)]' : 'w-[calc(30%-100px)]',
         isDesc: true,
       },
       {
@@ -109,7 +109,8 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
               header: 'border-none border-transparent flex',
               cellItem: 'p-2 lg:p-2',
               cellItemLabel: 'hidden',
-              tableContainer: 'space-y-4',
+              tableContainer: 'lg:space-y-4 space-y-2',
+              rowItem: 'border-none',
             }}
             sortOptions={sortOptions}
           />

@@ -231,7 +231,7 @@ function Scenes() {
   const t = useTranslations()
 
   return (
-    <div className='relative w-full lg:pb-[130px]'>
+    <div className='relative w-full lg:pb-24'>
       <HomeImage alt='background' src='/images/home/scenes/bg.png' className='absolute top-0 w-full' />
       <div className='container relative z-20 mx-auto flex flex-col items-center justify-center pb-8 lg:pb-20'>
         <HomeImage className='mb-6 w-fit' alt='scenes' src='/images/home/scenes/1.png' />

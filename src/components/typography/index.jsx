@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 export function Paragraph({ children, className, title = undefined }) {
   return (
-    <span className={cn('text-neutral-300', className)} title={title}>
+    <span className={cn('text-sm text-neutral-300 lg:text-base', className)} title={title}>
       {children}
     </span>
   )
@@ -26,7 +26,7 @@ export function NewTextHeading({ children, className, ...props }) {
   return (
     <span
       className={cn(
-        'font-archia text-2xl font-semibold text-neutral-50 md:text-3xl lg:text-5xl 2xl:text-8xl',
+        'font-archia text-2xl font-semibold text-neutral-50 md:text-3xl lg:text-5xl 2xl:text-6xl',
         className,
       )}
       {...props}

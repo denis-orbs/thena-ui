@@ -2,7 +2,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useEffect, useMemo } from 'react'
 
 import Loading from '@/app/loading'
-import { EmphasisButton, TextButton } from '@/components/buttons/Button'
 import { PAIR_TYPES } from '@/constant'
 import { usePairs } from '@/context/pairsContext'
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams'
@@ -19,23 +18,20 @@ export default function Step3({ setStep }) {
 
   const poolAddress = searchParams.get('poolAddress')
   const pairTypeFromParams = searchParams.get('pairType')
+  const backParams = searchParams.get('back')
 
   const { isLoading: isLoadingPairs } = usePairs()
   const pair = usePairInfo({ poolAddress, type: pairTypeFromParams })
   const pairType = useMemo(() => pair?.type ?? pairTypeFromParams, [pair, pairTypeFromParams])
 
   const handleBack = useCallback(() => {
-    const routeHistoryLength = window?.history?.length ?? 0
-    if (routeHistoryLength <= 1) {
-      updateSearchParams({
-        step: 2,
-        firstAddress: pair?.token0?.address ?? null,
-        secondAddress: pair?.token1?.address ?? null,
-      })
-    } else {
+    if (Number(backParams) === 1) {
       router.back()
+      return
     }
-  }, [pair, router, updateSearchParams])
+
+    router.push('/pools')
+  }, [backParams, router])
 
   useEffect(() => {
     if (poolAddress) {
@@ -59,10 +55,10 @@ export default function Step3({ setStep }) {
         <AddLiquidityV1Pool pair={pair} handleBack={handleBack} />
       )}
 
-      <div className='mt-16 hidden gap-4 md:flex'>
+      {/* <div className='mt-16 hidden gap-4 md:flex'>
         <EmphasisButton onClick={handleBack}>Back</EmphasisButton>
         <TextButton onClick={() => router.push('/pools')}>Cancel</TextButton>
-      </div>
+      </div> */}
     </div>
   )
 }

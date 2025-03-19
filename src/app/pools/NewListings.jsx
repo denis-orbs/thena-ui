@@ -13,7 +13,7 @@ import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
 import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
-import { BarChartIcon, InfoIcon } from '@/svgs'
+import { BarChartIcon, CoinsStackedIcon, InfoIcon } from '@/svgs'
 
 function Title({ title, length, className }) {
   return (
@@ -319,7 +319,10 @@ function NewListings({
             data-tooltip-id='analytics-tooltip'
           />
           <EmphasisButton
-            className={cn('hidden w-full p-2 text-xs md:block lg:w-fit', pool.type === PAIR_TYPES.WEIGHTED && 'block')}
+            className={cn(
+              'hidden w-full p-2 text-xs md:block lg:w-fit [&>span]:lg:text-xs',
+              pool.type === PAIR_TYPES.WEIGHTED && 'block',
+            )}
             onClick={() => {
               push(
                 pool.type === PAIR_TYPES.WEIGHTED
@@ -328,13 +331,14 @@ function NewListings({
               )
             }}
           >
-            {t('Deposit')}
+            <Paragraph className='hidden text-xs md:inline-block'>{t('Deposit')}</Paragraph>
+            <CoinsStackedIcon className='size-4 md:hidden' />
           </EmphasisButton>
         </div>
       ),
-      className: 'items-center',
+      className: cn('items-center', classNames?.rowItem),
     }))
-  }, [listPoolAddressSpecial, push, sortedData, t])
+  }, [classNames?.rowItem, listPoolAddressSpecial, push, sortedData, t])
   return (
     <>
       {isCollapse ? (

@@ -57,7 +57,6 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
       })()
 
       if (JSON.stringify(currentSettings) !== JSON.stringify(updatedSettings)) {
-        console.log('updatedSettings', updatedSettings)
         dispatch(
           createVeTHEAutomationContract({
             createData: {

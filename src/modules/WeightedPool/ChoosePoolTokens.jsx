@@ -36,7 +36,6 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
   }, [wrapperSelectRef?.current])
 
   const finalListTokens = useMemo(() => (tokens.slice(0, length) || []).filter(item => Boolean(item)), [tokens, length])
-
   const duplicateAddresses = useMemo(() => {
     const addressMap = new Map()
     const duplicates = new Set()
@@ -87,9 +86,9 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
 
   return (
     <div className='w-full space-y-8'>
-      <div className='space-y-4'>
+      <div className='space-y-2 lg:space-y-4'>
         <NewTextSubHeading>{t('Choose Pool Tokens')}</NewTextSubHeading>
-        <div className='grid grid-cols-7 rounded-lg bg-neutral-800 p-1'>
+        <div className='grid h-9 grid-cols-7 rounded-lg bg-neutral-800 p-1 lg:h-11'>
           {[2, 3, 4, 5, 6, 7, 8].map(value => (
             <div
               key={value}
@@ -97,18 +96,24 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
                 setLength(value)
               }}
               className={cn(
-                'cursor-pointer rounded-md px-3 py-2 hover:bg-neutral-600 max-sm:px-1',
+                'h-7 cursor-pointer rounded-md px-2 py-1 hover:bg-neutral-600 lg:h-9 lg:px-3 lg:py-2',
                 length === value && 'bg-neutral-700',
               )}
             >
-              <div className='mx-auto flex w-fit items-center gap-2 max-sm:gap-1'>
-                <TextHeading className='text-neutral-300'>{value}</TextHeading>
+              <div className='mx-auto flex w-fit items-center gap-[2px] lg:gap-2'>
+                <TextHeading className='text-xs text-neutral-300 lg:text-sm'>{value}</TextHeading>
                 <PoolCoinsIcon className='h-5 w-5 stroke-neutral-300' />
               </div>
             </div>
           ))}
         </div>
-        <div ref={wrapperSelectRef} className='grid grid-cols-1 gap-4 border-b border-neutral-700 pb-8 lg:grid-cols-2'>
+        <div
+          ref={wrapperSelectRef}
+          className={cn(
+            'grid grid-cols-1 gap-4 pb-8 lg:grid-cols-2',
+            finalListTokens.length >= 2 && 'border-b border-neutral-700',
+          )}
+        >
           {tokensList}
         </div>
       </div>

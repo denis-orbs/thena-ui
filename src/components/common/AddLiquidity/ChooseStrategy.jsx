@@ -19,7 +19,7 @@ import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@
 import { updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import { useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
-import { InfoCircleWhite } from '@/svgs'
+import { InfoIcon } from '@/svgs'
 
 import AutomaticStrategy from './FusionAdd/AutomaticStrategy'
 import { fetchDefiedgeInfo } from './FusionAdd/DefiedgeAdd'
@@ -27,7 +27,7 @@ import { fetchGammaInfo } from './FusionAdd/GammaAdd'
 import { fetchIchiInfo } from './FusionAdd/IchiAdd'
 import ManualStrategy from './FusionAdd/ManualStrategy'
 
-const defaultSwapFees = {
+export const defaultSwapFees = {
   isDefault: false,
   address: zeroAddress,
   tvl: new BigNumber(0),
@@ -39,9 +39,9 @@ const defaultSwapFees = {
     projectedApr: new BigNumber(0),
     voteApr: new BigNumber(0),
     totalSupply: 0,
-    address: '0x0000000000000000000000000000000000000000',
-    fee: '0x0000000000000000000000000000000000000000',
-    bribe: '0x0000000000000000000000000000000000000000',
+    address: zeroAddress,
+    fee: zeroAddress,
+    bribe: zeroAddress,
     weight: new BigNumber(0),
     weightPercent: new BigNumber(0),
     bribes: {
@@ -101,8 +101,8 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
   const poolAddress = searchParams.get('poolAddress')
 
   const sortedSubPools = useMemo(() => {
-    const priority = { CL_Farming: 1, CL_SwapFee: 2 }
-    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3))
+    const priority = { CL_Farming: 1, CL_SwapFee: 2, ICHI_Farming: 3, Narrow_Farming: 4, Wide_Farming: 5 }
+    return (pair?.subpools || []).sort((a, b) => (priority[a.title] || 6) - (priority[b.title] || 6))
   }, [pair?.subpools])
 
   const { data: preset } = useSWR(
@@ -181,9 +181,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
     }
 
     if (sortedSubPools.length && (!strategy || !strategy.isDefault)) {
-      const priority = { CL_Farming: 1, CL_SwapFee: 2 }
-      let _strategy = sortedSubPools.sort((a, b) => (priority[a.title] || 3) - (priority[b.title] || 3)).at(0)
-      if (!_strategy) _strategy = sortedSubPools.find(item => !MANUAL_TYPES.includes(item.title))
+      const _strategy = sortedSubPools.at(0)
       handleChooseStrategy(_strategy ?? defaultSwapFees)
     }
   }, [firstAsset, handleChooseStrategy, poolAddress, secondAsset, sortedSubPools, strategy])
@@ -217,7 +215,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
             </div>
 
             <TextHeading className='font-archia text-xl font-semibold text-primary-600'>
-              {formatAmount(sub.gauge.apr)}%
+              {formatAmount(sub.gauge.apr, true)}%
             </TextHeading>
 
             <div className='flex flex-wrap justify-end gap-2'>
@@ -260,9 +258,11 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
           position={position}
         />
 
-        <div className={cn('!mt-2 hidden max-lg:block', { '!mt-24': !!position })}>
-          <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
-        </div>
+        {pair && (
+          <div className={cn('!mt-2 hidden max-lg:block')}>
+            <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
+          </div>
+        )}
 
         {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
@@ -322,7 +322,7 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
 
         <div className={cn('flex gap-2 max-lg:w-full', strategyCount === 0 && 'hidden')}>
           <Selection
-            className='w-full max-lg:grid max-lg:grid-cols-2 lg:w-fit [&>button]:h-full'
+            className='w-full max-lg:grid max-lg:grid-cols-2 lg:w-fit [&>button]:h-full [&>button]:font-medium'
             data={strategyType}
             isTranslation={false}
           />
@@ -330,11 +330,11 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
             onClick={() => setShow(!show)}
             className={cn(
               'flex cursor-pointer items-center justify-center rounded-lg',
-              'size-8 min-w-8 md:size-12 md:min-w-12',
-              show ? 'bg-neutral-700' : 'bg-neutral-800',
+              'size-8 min-w-8 md:size-11 md:min-w-11',
+              show ? 'bg-neutral-600' : 'bg-neutral-900',
             )}
           >
-            <InfoCircleWhite className='size-4 stroke-neutral-400 md:size-5' />
+            <InfoIcon className='size-4 stroke-neutral-400 md:size-5' />
           </i>
         </div>
       </div>
@@ -346,19 +346,19 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
         className='overflow-hidden'
       >
         <div className={cn('mt-2 rounded-lg bg-neutral-900 p-4')}>
-          <Paragraph className='mb-4 block text-sm lg:text-base'>
+          <Paragraph className='mb-4 block text-base'>
             Depending on the Assets you chose, you will get different Strategies to chose on.
           </Paragraph>
 
-          <NewTextSubHeading className='mb-2 block text-base lg:text-xl'>Manual Strategy</NewTextSubHeading>
-          <Paragraph className='text-sm lg:text-base'>
+          <NewTextSubHeading className='mb-2 block text-xl'>Manual Strategy</NewTextSubHeading>
+          <Paragraph className='text-base'>
             Only use if you are experienced in providing concentrated liquidity. You can determine a custom price range
             and will earn swap fees as long as the price of the assets stays in that range. If out of range, you will
             not earn any reward until you re-adjust your position accordingly.
           </Paragraph>
 
-          <NewTextSubHeading className='mb-2 mt-4 block text-base lg:text-xl'>Automatic Strategy</NewTextSubHeading>
-          <Paragraph className='text-sm lg:text-base'>
+          <NewTextSubHeading className='mb-2 mt-4 block text-xl'>Automatic Strategy</NewTextSubHeading>
+          <Paragraph className='text-base'>
             If you are new to concentrated liquidity, select one of the available Concentrated Liquidity Automated
             Market Maker (CLAMM) options where your liquidity is managed automatically to stay in range. When you
             provide liquidity, you will begin earning emissions.

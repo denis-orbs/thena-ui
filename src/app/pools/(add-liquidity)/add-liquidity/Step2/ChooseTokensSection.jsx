@@ -138,7 +138,7 @@ export default function ChooseTokensSection({ pairType }) {
         setShowError(true)
         return
       }
-      push('/pools/add-liquidity/weighted/create')
+      push('/pools/add-liquidity/weighted/create?step=1')
     }
   }, [
     duplicateAddresses.length,
@@ -154,60 +154,57 @@ export default function ChooseTokensSection({ pairType }) {
   ])
 
   return (
-    <>
-      <div className='flex h-full flex-col gap-5 lg:gap-8'>
-        <div className='flex-grow'>
-          {pairType === PAIR_TYPES.WEIGHTED ? (
-            <ChoosePoolTokens setTokensSelect={updateTokensSelected} isShowError={isShowError} />
-          ) : (
-            <div className='flex flex-col gap-3 md:gap-4'>
-              <NewTextSubHeading>{t('Choose Tokens')}</NewTextSubHeading>
-              <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
-                <SelectToken
-                  otherAsset={secondAsset}
-                  setSelectedAsset={asset => {
-                    setFirstAsset(asset)
-                    updateSearchParams({ firstAddress: asset?.address })
-                  }}
-                  placeHolder={t('Select Token')}
-                  selectedAsset={firstAsset}
-                  dropdownAlign='left'
-                  optionWidth={optionWidth}
-                  isError={isShowError && secondAddress}
-                  errorMessage={!firstAddress ? t('Select token') : t('You can not select the same token twice')}
-                />
-                <SelectToken
-                  otherAsset={firstAsset}
-                  setSelectedAsset={asset => {
-                    setSecondAsset(asset)
-                    updateSearchParams({ secondAddress: asset?.address })
-                  }}
-                  placeHolder={t('Select Token')}
-                  selectedAsset={secondAsset}
-                  dropdownAlign='right'
-                  optionWidth={optionWidth}
-                  isError={isShowError && firstAddress}
-                  errorMessage={!secondAddress ? t('Select token') : t('You can not select the same token twice')}
-                />
-              </div>
+    <div className='flex h-full flex-col gap-8 lg:gap-16'>
+      <div className='flex-grow'>
+        {pairType === PAIR_TYPES.WEIGHTED ? (
+          <ChoosePoolTokens setTokensSelect={updateTokensSelected} isShowError={isShowError} />
+        ) : (
+          <div className='flex flex-col gap-3 md:gap-4'>
+            <NewTextSubHeading className='text-lg'>{t('Choose Tokens')}</NewTextSubHeading>
+            <div className='grid gap-3 md:grid-cols-2' ref={wrapperSelectRef}>
+              <SelectToken
+                otherAsset={secondAsset}
+                setSelectedAsset={asset => {
+                  setFirstAsset(asset)
+                  updateSearchParams({ firstAddress: asset?.address })
+                }}
+                placeHolder={t('Select Token')}
+                selectedAsset={firstAsset}
+                dropdownAlign='left'
+                optionWidth={optionWidth}
+                isError={isShowError && secondAddress}
+                errorMessage={!firstAddress ? t('Select token') : t('You can not select the same token twice')}
+              />
+              <SelectToken
+                otherAsset={firstAsset}
+                setSelectedAsset={asset => {
+                  setSecondAsset(asset)
+                  updateSearchParams({ secondAddress: asset?.address })
+                }}
+                placeHolder={t('Select Token')}
+                selectedAsset={secondAsset}
+                dropdownAlign='right'
+                optionWidth={optionWidth}
+                isError={isShowError && firstAddress}
+                errorMessage={!secondAddress ? t('Select token') : t('You can not select the same token twice')}
+              />
             </div>
-          )}
-          {firstAsset && secondAsset && (
-            <>
-              <Divider className='my-4 lg:my-8' />
-              <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} setFoundedPool={setFoundedPair} />
-            </>
-          )}
-        </div>
-        <div className='mt-auto flex flex-col gap-4 md:flex-row lg:mt-16'>
-          <EmphasisButton onClick={() => updateSearchParams({ step: 1, firstAddress: null, secondAddress: null })}>
-            {t('Back')}
-          </EmphasisButton>
-          <PrimaryButton onClick={handleAddPool}>
-            {pairType !== PAIR_TYPES.WEIGHTED && foundedPair ? t('Add to Pool') : t('Create New Pool')}
-          </PrimaryButton>
-        </div>
+          </div>
+        )}
+        {firstAsset && secondAsset && (
+          <>
+            <Divider className='my-4 lg:my-8' />
+            <AvailablePools tokens={[firstAsset, secondAsset]} pairType={pairType} setFoundedPool={setFoundedPair} />
+          </>
+        )}
       </div>
-    </>
+
+      <div className='flex flex-col gap-2 lg:flex-row lg:gap-4'>
+        <EmphasisButton onClick={() => push('/pools')}>{t('Cancel')}</EmphasisButton>
+        <PrimaryButton onClick={handleAddPool}>
+          {pairType !== PAIR_TYPES.WEIGHTED && foundedPair ? t('Add to Pool') : t('Create New Pool')}
+        </PrimaryButton>
+      </div>
+    </div>
   )
 }

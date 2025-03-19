@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { isEmpty } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -10,7 +11,7 @@ import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { UNKNOWN_LOGO } from '@/constant'
 import { cn } from '@/lib/utils'
 import { InfoIcon, LockIcon, UnlockIcon, WarningTriangleIcon } from '@/svgs'
@@ -67,7 +68,7 @@ const updateWeight = tokens => {
   })
 }
 
-function TokenItem({ token, index, setTokenSelected, max }) {
+function TokenItem({ token, index, setTokenSelected, max, checkError }) {
   const t = useTranslations()
   const handleLockToken = useCallback(() => {
     setTokenSelected(prev => {
@@ -80,18 +81,17 @@ function TokenItem({ token, index, setTokenSelected, max }) {
     })
   }, [index, setTokenSelected])
 
-  const handleUpdateWeightToken = e => {
-    let value = Number(e.target.value)
+  const handleUpdateWeightToken = val => {
+    let value = Number(val)
     if (value < 0) value = 0
     if (value > max) value = max
     if (value > 100) value = 100
-
     setTokenSelected(prev => {
       const updatedTokens = [...prev]
       updatedTokens[index] = {
         ...updatedTokens[index],
         lock: true,
-        weight: value,
+        weight: isEmpty(val) ? null : value,
       }
       return updateWeight(updatedTokens)
     })
@@ -103,7 +103,8 @@ function TokenItem({ token, index, setTokenSelected, max }) {
         <div
           className={cn(
             'fex-row flex min-h-11 w-[calc(100%-52px)] items-center rounded-lg border border-neutral-700 hover:bg-neutral-800',
-            typeof token.weight === 'number' && token.weight < 0.01 && 'border-error-600',
+            'focus-within:border-neutral-500 focus-within:hover:!bg-transparent',
+            checkError && token.weight < 0.01 && 'border-error-600',
           )}
         >
           <div className='ml-1 flex items-center gap-1 rounded-lg bg-[#29292980] bg-opacity-50 py-[6px] pl-[6px] pr-2'>
@@ -112,18 +113,28 @@ function TokenItem({ token, index, setTokenSelected, max }) {
           </div>
           <Input
             className='h-11 w-full border-none bg-transparent'
-            classNames={{ input: 'bg-transparent p-0 border-none text-right pr-7 h-11' }}
+            classNames={{ input: 'bg-transparent p-0 border-none text-right pr-8 h-11' }}
             type='number'
             max={max}
-            val={token.weight ?? ''}
-            onChange={handleUpdateWeightToken}
-            placeholder=''
+            val={`${token.weight}`.replace(/^0+(?=\d)/, '')}
+            onChange={e => {
+              let { value } = e.target
+              if (value === '') {
+                handleUpdateWeightToken('')
+                return
+              }
+              if (!isNaN(Number(value))) {
+                value = value.replace(/^0+(?=\d)/, '')
+              }
+              handleUpdateWeightToken(value)
+            }}
+            placeholder='Enter weight'
             suffix='%'
           />
         </div>
         <EmphasisIconButton className='h-11 w-11' Icon={token.lock ? LockIcon : UnlockIcon} onClick={handleLockToken} />
       </div>
-      {Boolean(typeof token.weight === 'number' && token.weight < 0.01) && (
+      {Boolean(checkError && token.weight < 0.01) && (
         <motion.div
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
@@ -191,7 +202,10 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   const renderMessages = useCallback(() => {
     const errorMessages = []
     if (!checkAllWeightingHigherThanZero) {
-      errorMessages.push({ title: t('All tokens in a pool must have a weighting higher than zero') })
+      errorMessages.push({
+        title: 'Total Weights do not higher than 0.01',
+        desc: t('All tokens in a pool must have a weighting higher than 0.01'),
+      })
     }
 
     if (totalWeight !== 100) {
@@ -202,8 +216,11 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
     }
 
     return errorMessages.map((data, index) => (
-      <div className='flex items-center gap-4 rounded-lg border border-error-800 bg-error-950 px-4 py-5' key={index}>
-        <WarningTriangleIcon className='h-5 min-w-4 lg:min-w-5' />
+      <div
+        className='flex items-center gap-2 rounded-lg border border-error-800 bg-error-950 px-4 py-5 lg:gap-4'
+        key={index}
+      >
+        <WarningTriangleIcon className='w-4 min-w-4 lg:w-5 lg:min-w-5' />
         <div className='flex flex-col gap-1'>
           {data.title && <TextHeading className='text-xl text-rose'>{data.title}</TextHeading>}
           {data.desc && <TextSubHeading className='text-base text-rose'>{data.desc}</TextSubHeading>}
@@ -213,17 +230,16 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   }, [checkAllWeightingHigherThanZero, t, totalWeight])
 
   return (
-    <div className='flex h-full flex-col gap-3'>
+    <div className='relative flex h-full flex-col gap-4'>
       <div className='flex flex-col-reverse gap-4'>
-        <TextHeading className='flex-2 text-lg md:text-xl lg:flex-1 xl:text-3xl'>
-          {t('Choose Tokens Weights')}
-        </TextHeading>
+        <NewTextSubHeading className='flex-2 lg:flex-1'>{t('Choose Tokens Weights')}</NewTextSubHeading>
         {checkError && <div className='flex flex-1 flex-col gap-2 lg:flex-2'>{checkError && renderMessages()}</div>}
       </div>
       <div
         className={cn(
-          'mb-16 grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3',
+          'grid grid-cols-1 gap-4 md:grid-cols-2 lg:mb-16 2xl:grid-cols-3',
           tokenSelected.length === 2 && '2xl:grid-cols-2',
+          'pb-4 max-lg:border-b max-lg:border-neutral-700',
         )}
       >
         {tokenSelected.map((token, index) => (
@@ -232,18 +248,16 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
             index={index}
             setTokenSelected={setTokenSelected}
             token={token}
+            checkError={checkError}
             tokenSelected={tokenSelected}
             max={100 - (totalWeightLock - token.weight)}
             length={tokenSelected.length}
           />
         ))}
       </div>
-      <div className='mt-auto flex flex-col gap-4 lg:flex-row'>
-        <EmphasisButton
-          onClick={() => push('/pools/add-liquidity?step=2&pairType=Weighted')}
-          className='w-full lg:w-fit'
-        >
-          {t('Back')}
+      <div className='mt-auto flex flex-col gap-2 lg:absolute lg:-bottom-[92px] lg:flex-row lg:gap-4'>
+        <EmphasisButton onClick={() => push('/pools')} className='w-full lg:w-fit'>
+          {t('Cancel')}
         </EmphasisButton>
         <PrimaryButton
           className='w-full lg:w-fit'
@@ -252,7 +266,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
               setCheckError(true)
               return
             }
-            setCurrentStep(prev => prev + 1)
+            setCurrentStep(2)
           }}
         >
           {t('Next')}

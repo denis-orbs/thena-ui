@@ -88,5 +88,12 @@ export function PresetRanges({ mintInfo, isStablecoinPair, activePreset, handleP
     [ranges, APRs, t, activePreset, handlePresetRangeSelection, onChangePresetRange],
   )
 
-  return <Selection className='grid grid-cols-2 lg:grid-cols-4' data={rangeSelections} isFull isTranslation={false} />
+  return (
+    <Selection
+      className='grid grid-cols-2 items-stretch gap-x-0.5 gap-y-2 lg:grid-cols-4 lg:items-center lg:gap-0.5 [&>button]:py-2 [&>button]:text-sm'
+      data={rangeSelections}
+      isFull
+      isTranslation={false}
+    />
+  )
 }

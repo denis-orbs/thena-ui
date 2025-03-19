@@ -219,14 +219,24 @@ export const useV1AddAndStake = () => {
 
       setPending(true)
       if (!isFirstApproved) {
-        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [routerAddress, maxUint256]))) {
+        if (
+          !(await writeTxn(key, approve1uuid, firstContract, 'approve', [
+            routerAddress,
+            toWei(firstAmount, firstAsset.decimals),
+          ]))
+        ) {
           setPending(false)
           return
         }
       }
 
       if (!isSecondApproved) {
-        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [routerAddress, maxUint256]))) {
+        if (
+          !(await writeTxn(key, approve2uuid, secondContract, 'approve', [
+            routerAddress,
+            toWei(secondAmount, secondAsset.decimals),
+          ]))
+        ) {
           setPending(false)
           return
         }

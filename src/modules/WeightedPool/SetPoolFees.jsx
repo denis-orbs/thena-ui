@@ -6,7 +6,7 @@ import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import Input from '@/components/input'
 import Selection from '@/components/selection'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { cn } from '@/lib/utils'
 import { InfoNeutralIcon } from '@/svgs'
 
@@ -26,7 +26,7 @@ export default function SetPoolFees({ fees, setFees }) {
         onClickHandler: () => setFees(0.3),
       },
       {
-        label: '1,00%',
+        label: '1%',
         active: fees === 1.0,
         onClickHandler: () => setFees(1.0),
       },
@@ -38,25 +38,27 @@ export default function SetPoolFees({ fees, setFees }) {
 
   return (
     <div className='space-y-4'>
-      <div className={show ? 'space-y-2' : ''}>
+      <div>
         <div className='flex flex-row items-center justify-between'>
-          <TextHeading className='text-xl md:text-2xl lg:font-archia lg:text-3xl lg:font-semibold'>
-            {t('Set Pool Fees')}
-          </TextHeading>
+          <NewTextSubHeading>{t('Set Pool Fees')}</NewTextSubHeading>
           <EmphasisButton
-            className='ml-auto block w-fit bg-neutral-600 p-2 lg:hidden'
+            className={cn(
+              'ml-auto block w-fit p-2 outline-0 hover:bg-neutral-900 lg:hidden',
+              show ? 'bg-neutral-600' : 'bg-neutral-900',
+            )}
             onClick={() => setShow(prev => !prev)}
           >
             <InfoNeutralIcon className='h-4 w-4' />
           </EmphasisButton>
         </div>
+
         <motion.div
-          initial={{ opacity: 0, y: -10, height: 0 }}
-          animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+          initial={{ opacity: 0, y: 0, height: 0 }}
+          animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className='overflow-hidden lg:hidden'
         >
-          <Box className='flex flex-col gap-2 p-4'>
+          <Box className='mt-2 flex flex-col gap-2 p-4'>
             <div className='flex flex-col gap-2'>
               <TextHeading className='text-lg'>{t('Pool Fees')}</TextHeading>
               <Paragraph className='text-sm text-neutral-400'>
@@ -70,10 +72,17 @@ export default function SetPoolFees({ fees, setFees }) {
           </Box>
         </motion.div>
       </div>
+
       <div className='flex flex-col gap-2'>
         <div className='flex flex-row items-center justify-between'>
           <Paragraph className='hidden lg:block'>{t('Fees')}</Paragraph>
-          <Selection className='!h-11 bg-transparent' data={poolRange} isTranslation={false} />
+          <Selection
+            className='h-8 bg-transparent'
+            isSmall
+            data={poolRange}
+            isTranslation={false}
+            classNames={{ items: 'h-8 !text-base px-4' }}
+          />
         </div>
         <Input
           onChange={e => {

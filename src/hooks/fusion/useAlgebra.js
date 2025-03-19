@@ -17,7 +17,7 @@ import {
 } from '@/lib/contracts'
 import { NonfungiblePositionManager } from '@/lib/fusion/entities/nonfungiblePositionManager'
 import { errorToast } from '@/lib/notify'
-import { fromWei } from '@/lib/utils'
+import { fromWei, toWei } from '@/lib/utils'
 import { useV3MintState } from '@/state/fusion/hooks'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
@@ -119,14 +119,24 @@ export const useAlgebraAdd = () => {
 
         // MARK: APPROVE TOKENS
         if (!isFirstApproved) {
-          if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [positionManger.address, maxUint256]))) {
+          if (
+            !(await writeTxn(key, approve1uuid, firstContract, 'approve', [
+              positionManger.address,
+              toWei(amountA.toExact(), baseCurrency.decimals),
+            ]))
+          ) {
             setPending(false)
             return
           }
         }
 
         if (!isSecondApproved) {
-          if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [positionManger.address, maxUint256]))) {
+          if (
+            !(await writeTxn(key, approve2uuid, secondContract, 'approve', [
+              positionManger.address,
+              toWei(amountB.toExact(), quoteCurrency.decimals),
+            ]))
+          ) {
             setPending(false)
             return
           }
@@ -581,14 +591,24 @@ export const useAlgebraIncrease = (version = 3) => {
       })
       setPending(true)
       if (!isFirstApproved) {
-        if (!(await writeTxn(key, approve1uuid, firstContract, 'approve', [algebraAddress, maxUint256]))) {
+        if (
+          !(await writeTxn(key, approve1uuid, firstContract, 'approve', [
+            algebraAddress,
+            toWei(amountA.toExact(), baseCurrency.decimals),
+          ]))
+        ) {
           setPending(false)
           return
         }
       }
 
       if (!isSecondApproved) {
-        if (!(await writeTxn(key, approve2uuid, secondContract, 'approve', [algebraAddress, maxUint256]))) {
+        if (
+          !(await writeTxn(key, approve2uuid, secondContract, 'approve', [
+            algebraAddress,
+            toWei(amountB.toExact(), quoteCurrency.decimals),
+          ]))
+        ) {
           setPending(false)
           return
         }

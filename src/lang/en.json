@@ -1197,7 +1197,7 @@
   "Choose Tokens Weights": "Choose Tokens Weights",
   "THENA Weighted Pool": "THENA Weighted Pool",
   "You must add two tokens at least to create a weighted pool": "You must add two tokens at least to create a weighted pool.",
-  "We recommend you to provide new pools with at least": "We recommend you to provide new pools with at least $20,000 in initial funds. Based on your wallet balances for these tokens, the maximum amount you can fund this pool is $10,000.",
+  "We recommend you to provide new pools [maxDeposit]": "We recommend you to provide new pools with at least $20,000 in initial funds. Based on your wallet balances for these tokens, the maximum amount you can fund this pool is {maxDeposit}.",
   "All tokens in a pool must have a weighting higher than zero": "All tokens in a pool must have a weighting higher than zero. Either remove or replace or set it above 0.01%.",
   "Set Pool Fees": "Set Pool Fees",
   "Set Pool Fees description": "0.30% is best for most weighted pools with established tokens. Go higher for more exotic tokens.",
@@ -1282,6 +1282,7 @@
   "My Rewards": "My Rewards",
   "Vote Time": "Vote Time",
   "Pool Info": "Pool Info",
+  "Pool Information": "Pool Information",
   "Select Pool Strategy": "Select Pool Strategy",
   "You have to select the pool strategy first to see it's [symbol]": "You have to select the pool strategy first to see it's {text}",
   "Total Rewards": "Total Rewards",
@@ -1458,6 +1459,7 @@
   "Weighted Pool": "Weighted Pool",
   "Slippage": "Slippage",
   "Estimated APR": "Estimated APR",
+  "Estimated APR Range": "Estimated APR Range",
   "Zapper Deposit": "Zapper Deposit",
   "Pool Token Deposit": "Pool Token Deposit",
   "Add to Pool": "Add to Pool",
@@ -1491,5 +1493,6 @@
   "Minimum LINK balance required desc": "The minimum LINK balance required for the automation to run. This is calculated based on the number of pairs and the gas limit.",
   "Minimum Link Balance needed": "Minimum Link Balance needed",
   "Liquidity Range": "Liquidity Range",
-  "Min [value] required": "Min. {value}% required"
+  "Min [value] required": "Min. {value}% required",
+  "Enter weight": "Enter weight"
 }

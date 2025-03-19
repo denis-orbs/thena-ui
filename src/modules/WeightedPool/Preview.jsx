@@ -5,8 +5,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import SuccessModal from '@/components/modal/SuccessModal'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { useTokenColor } from '@/hooks/useTokenColor'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPool } from '@/hooks/weightedPool/useWeigtedPool'
 import { formatAmount, toWei } from '@/lib/utils'
 import { CoinsHandIcon } from '@/svgs'
@@ -51,24 +52,29 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokens.length, renderBackgroundColors])
 
+  const windowSize = useWindowSize()
+  const isMobile = windowSize.width < 768
+
   return (
-    <div className='space-y-4'>
-      <TextHeading className='font-archia text-xl font-semibold md:text-3xl'>{t('Overview')}</TextHeading>
-      <Box className='space-y-8 px-4 py-4'>
-        <div className='flex items-center gap-4'>
-          <div className='flex w-full flex-col gap-4 md:flex-[4] md:flex-row'>
+    <div className='space-y-4 lg:space-y-8'>
+      <NewTextSubHeading>{t('Overview')}</NewTextSubHeading>
+
+      <Box className='space-y-4 !p-4 max-md:rounded-none md:space-y-8'>
+        <div className='flex gap-4'>
+          <div className='flex w-full flex-col gap-4 max-md:w-full md:max-w-[264px] md:flex-row'>
             <div className='flex flex-row items-center gap-4 md:flex-col md:gap-2'>
               <GroupIconTokens
-                height={tokens?.length === 2 ? 32 : 24}
-                width={tokens?.length === 2 ? 32 : 24}
+                height={tokens?.length > 4 ? (isMobile ? 16 : 24) : 24}
+                width={tokens?.length > 4 ? (isMobile ? 16 : 24) : 24}
                 tokens={tokens}
               />
-              <Paragraph className='hidden text-xs md:block'>{t('Weighted Pool')}</Paragraph>
-              <TextHeading className='flex-wrap font-archia text-xl font-semibold md:hidden md:text-[40px] md:leading-[48px]'>
-                {poolName}
-              </TextHeading>
+              <Paragraph className='hidden w-fit text-xs font-medium md:block lg:text-sm xl:text-base'>
+                {t('Weighted Pool')}
+              </Paragraph>
+              <TextHeading className='flex-wrap font-archia text-xl font-semibold md:hidden'>{poolName}</TextHeading>
             </div>
-            <div className='flex flex-row justify-between max-md:w-full md:flex-col md:gap-2'>
+
+            <div className='flex flex-row items-center max-md:w-full max-md:justify-between md:flex-col md:gap-2 md:pl-4'>
               <div>
                 <TextHeading className='font-archia text-xl font-semibold md:text-2xl lg:text-3xl'>
                   $ {formatAmount((tokens || []).reduce((sum, token) => sum + Number(token.amount) * token.price, 0))}
@@ -76,33 +82,37 @@ export default function Preview({ tokensAndWeights, setCurrentStep, fees, poolNa
               </div>
               <div className='flex gap-3'>
                 <CoinsHandIcon className='h-5 w-5' />
-                <Paragraph>{`Fees ${fees} %`}</Paragraph>
+                <Paragraph className='text-base'>{`Fees ${fees} %`}</Paragraph>
               </div>
             </div>
           </div>
-          <div className='hidden flex-[6] md:block'>
-            <TextHeading className='font-archia text-3xl font-semibold md:text-[40px] md:leading-[48px]'>
+
+          <div className='hidden md:block'>
+            <NewTextSubHeading className='font-archia text-3xl font-semibold md:text-[40px] md:leading-[48px]'>
               {poolName}
-            </TextHeading>
+            </NewTextSubHeading>
           </div>
         </div>
+
         <div className='flex flex-col gap-4 md:flex-row'>
-          <div className='flex-[4]'>
+          <div className='w-full md:max-w-[264px]'>
             <PieChart tokens={tokens} colors={colors} showTotalPercent={false} />
           </div>
-          <div className='flex-[6]'>
+          <div className='w-full'>
             <PoolOverviewTable tokens={tokens} colors={colors} />
           </div>
         </div>
       </Box>
-      <div className='space-y-2'>
-        <EmphasisButton className='block w-full' onClick={() => setCurrentStep(prev => prev - 1)}>
-          {t('Back')}
+
+      <div className='flex flex-col gap-2'>
+        <EmphasisButton className='hidden w-full max-lg:block' onClick={() => setCurrentStep(2)}>
+          {t('Cancel')}
         </EmphasisButton>
         <PrimaryButton disabled={pending} onClick={onCreate} className='w-full'>
           {t('Deposit')}
         </PrimaryButton>
       </div>
+
       <SuccessModal
         isOpen={showModalSuccess && Boolean(poolAddress)}
         onClose={() => setShowModalSuccess(false)}

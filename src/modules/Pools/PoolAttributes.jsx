@@ -82,22 +82,22 @@ export function PoolAttributesCL({ strategy, pool }) {
 
   return (
     <div className='rounded-lg border border-dashed border-primary-500'>
-      <div className='space-y-4 rounded-lg bg-primary-950 p-6 text-[14px] font-normal leading-5'>
+      <div className='space-y-4 rounded-lg bg-primary-950 p-4 text-[14px] font-normal leading-5'>
         {/* Pool Name */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Name')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Name')}:</div>
           <div className='col-span-4 text-neutral-50'>{`Conc. Liquidity ${pool.symbol ?? strategy?.symbol}`}</div>
         </div>
 
         {/* Pool Symbol */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Symbol')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Symbol')}:</div>
           <div className='col-span-4 text-neutral-50'>{pool.symbol ?? strategy?.symbol}</div>
         </div>
 
         {/* Pool Type */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Type')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Type')}:</div>
           <div className='col-span-4 flex items-center gap-1 text-neutral-50'>
             <Link
               className='flex items-center gap-1 text-primary-500'
@@ -115,7 +115,7 @@ export function PoolAttributesCL({ strategy, pool }) {
           <>
             {/* Strategy Provider */}
             <div className='grid grid-cols-7'>
-              <div className='col-span-3 text-neutral-300'>{t('Strategy Provider')}:</div>
+              <div className='col-span-3 text-neutral-50'>{t('Strategy Provider')}:</div>
               <Link
                 target='_blank'
                 href={linkDocsStrategy[0]}
@@ -136,7 +136,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
             {/* Strategy Type */}
             <div className='grid grid-cols-7'>
-              <div className='col-span-3 text-neutral-300'>{t('Strategy Type')}:</div>
+              <div className='col-span-3 text-neutral-50'>{t('Strategy Type')}:</div>
               <Link
                 target='_blank'
                 href={linkDocsStrategy[1]}
@@ -159,7 +159,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
         {/* Pool Deployer */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Pool Deployer')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Pool Deployer')}:</div>
           <div className='col-span-4 text-neutral-50'>
             <div
               onClick={() => goScan(networkId, poolDeployer)}
@@ -173,7 +173,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
         {/* Pool Address */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Pool Address')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Pool Address')}:</div>
           <div className='col-span-4 text-neutral-50'>
             <div
               onClick={() => goScan(networkId, strategy.address)}
@@ -188,7 +188,7 @@ export function PoolAttributesCL({ strategy, pool }) {
         {/* Pool Plugin */}
         {Boolean(pool.plugInAddress) && (
           <div className='grid grid-cols-7'>
-            <div className='col-span-3 text-neutral-300'>{t('Pool Plugin')}:</div>
+            <div className='col-span-3 text-neutral-50'>{t('Pool Plugin')}:</div>
             <div className='col-span-4 text-neutral-50'>
               <div
                 onClick={() => goScan(networkId, pool.plugInAddress)}
@@ -203,7 +203,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
         {/* Swap fees */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Swap fees')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Swap fees')}:</div>
           <div className='col-span-4 text-neutral-50'>
             <span className='mr-1'>{strategy.title === 'CL_SwapFee' ? strategy?.fee : pool?.fee}%</span>
             <span className={cn(plugInAddress && 'hidden')}>({t('editable by governance')})</span>
@@ -227,7 +227,7 @@ export function PoolAttributesCL({ strategy, pool }) {
 
         {/* Pool Access Control Roles */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Pool Access Control Roles')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Pool Access Control Roles')}:</div>
           <div className='col-span-4 text-neutral-50'>
             <ul className='flex flex-col gap-1'>
               <li>Pool Administrator:</li>
@@ -270,7 +270,7 @@ export function PoolAttributesCL({ strategy, pool }) {
         {/* Creation date */}
         {createdAt ? (
           <div className='grid grid-cols-7'>
-            <div className='col-span-3 text-neutral-300'>{t('Creation date')}:</div>
+            <div className='col-span-3 text-neutral-50'>{t('Creation date')}:</div>
             <div className='col-span-4 text-neutral-50'>{createdAt}</div>
           </div>
         ) : (
@@ -305,10 +305,10 @@ export function NormalPoolAttributes({ pool }) {
 
   return (
     <div>
-      <div className='flex flex-col gap-4 rounded-lg border border-dashed border-primary-600 bg-primary-950 p-6 text-[14px] font-normal leading-5'>
+      <div className='flex flex-col gap-2 rounded-lg border border-dashed border-primary-600 bg-primary-950 p-4 text-xs lg:text-sm'>
         {/* Pool name */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Name')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Name')}:</div>
           <div className='col-span-4 text-neutral-50'>
             {pool.type === PAIR_TYPES.WEIGHTED
               ? pool?.name ?? pool?.symbol
@@ -320,19 +320,19 @@ export function NormalPoolAttributes({ pool }) {
 
         {/* Pool Symbol */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Symbol')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Symbol')}:</div>
           <div className='col-span-4 text-neutral-50'>{pool?.symbol}</div>
         </div>
 
         {/* Pool type */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Type')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Type')}:</div>
           <div className='col-span-4 text-neutral-50'>{pool?.type}</div>
         </div>
 
         {/* Swap fees */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Swap fees')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Swap fees')}:</div>
           <div className='col-span-4 text-neutral-50'>
             <span className='mr-1'>{pool?.fee}%</span>
             <span>({t('editable by governance')})</span>
@@ -342,7 +342,7 @@ export function NormalPoolAttributes({ pool }) {
         {/* Pool Owner */}
         {Boolean(pool?.owner) && (
           <div className='grid grid-cols-7'>
-            <div className='col-span-3 text-neutral-300'>{t('Pool Owner')}:</div>
+            <div className='col-span-3 text-neutral-50'>{t('Pool Owner')}:</div>
             <div className='col-span-4 text-neutral-50'>
               <div
                 onClick={() => goScan(networkId, pool.owner)}
@@ -357,14 +357,14 @@ export function NormalPoolAttributes({ pool }) {
 
         {Boolean(pool?.createdAt) && (
           <div className='grid grid-cols-7'>
-            <div className='col-span-3 text-neutral-300'>{t('Creation date')}:</div>
+            <div className='col-span-3 text-neutral-50'>{t('Creation date')}:</div>
             <div className='col-span-4 text-neutral-50'>{createdAt}</div>
           </div>
         )}
 
         {/* LP token price */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('LP token price')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('LP token price')}:</div>
           <div className='col-span-4 text-neutral-50'>
             ${formatAmount(pool?.lpPrice ?? pool?.subpools?.[0]?.lpPrice ?? 0)}
           </div>
@@ -372,7 +372,7 @@ export function NormalPoolAttributes({ pool }) {
 
         {/* Pool address */}
         <div className='grid grid-cols-7'>
-          <div className='col-span-3 text-neutral-300'>{t('Pool Address')}:</div>
+          <div className='col-span-3 text-neutral-50'>{t('Pool Address')}:</div>
           <div className='col-span-4 text-primary-500'>
             <div onClick={() => goScan(networkId, pool?.address)} className='item-center flex cursor-pointer gap-1'>
               <span>{formatAddress(pool?.address)}</span>

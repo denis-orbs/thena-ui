@@ -1,10 +1,12 @@
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import Input from '@/components/input'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { isInvalidAmount } from '@/lib/utils'
+import { TextHeading, TextSubHeading } from '@/components/typography'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useWindowSize } from '@/hooks/useWindowSize'
+import { formatAmount, isInvalidAmount } from '@/lib/utils'
 import { InfoIcon } from '@/svgs'
 
 import PoolSummary from './PoolSummary'
@@ -12,21 +14,15 @@ import SetInitialLiquidity from './SetInitialLiquidity'
 import SetPoolFees from './SetPoolFees'
 import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 
-function SetWeightedAttributes({
-  tokensAndWeights,
-  fees,
-  setFees,
-  poolName,
-  setPoolName,
-  setTokenAndWeights,
-  setCurrentStep,
-}) {
+function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWeights, poolName, setCurrentStep }) {
+  const router = useRouter()
+  const t = useTranslations()
+  const { isLgDown } = useMediaQuery()
+
   const isDisable = useMemo(
     () => (tokensAndWeights || []).some(item => item.isError || isInvalidAmount(item?.amount)),
     [tokensAndWeights],
   )
-  const defaultName = useMemo(() => tokensAndWeights.map(token => token.token.symbol).join('/'), [tokensAndWeights])
-  const t = useTranslations()
 
   const [checkError, setCheckError] = useState(false)
   const handleNextStep = useCallback(() => {
@@ -35,14 +31,8 @@ function SetWeightedAttributes({
       return
     }
 
-    if (poolName === '') setPoolName(defaultName)
-    setCurrentStep(prev => prev + 1)
-  }, [defaultName, isDisable, poolName, setCurrentStep, setPoolName])
-
-  useEffect(() => {
-    if (poolName === '') setPoolName(defaultName)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    setCurrentStep(3)
+  }, [isDisable, setCurrentStep])
 
   const totalValueInUsd = useMemo(
     () =>
@@ -56,74 +46,83 @@ function SetWeightedAttributes({
     [tokensAndWeights],
   )
 
+  const maxDeposit = useMemo(() => {
+    const max = tokensAndWeights.reduce((sum, curr) => {
+      const { balance, price } = curr.token
+      if (balance) {
+        return sum + Number(balance || 0) * price
+      }
+      return sum
+    }, 0)
+    return max
+  }, [tokensAndWeights])
+
+  const windowSize = useWindowSize()
+  const isMobile = windowSize.width < 768
+
   return (
-    <div className='flex flex-col gap-4'>
-      <div className='flex flex-col gap-4 lg:flex-row'>
-        <div className='flex min-h-full flex-[7] flex-col justify-between gap-4'>
-          <TextHeading className='font-archia text-xl font-semibold sm:text-2xl lg:text-3xl'>
-            {t('Set Pool Name')}
+    <div className='flex h-full flex-col gap-4 lg:relative'>
+      <div className='flex flex-col justify-between gap-4 xl:flex-row 2xl:gap-8'>
+        <div className='flex flex-[7] flex-col gap-4 lg:gap-[14px] xl:min-h-full'>
+          <TextHeading className='font-archia text-xl font-semibold md:text-2xl lg:text-3xl'>
+            {t('Weighted Pool')}
           </TextHeading>
-          <div className='flex items-center gap-4'>
+          <div className='flex gap-4'>
             <GroupIconTokens
               tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
-              width={tokensAndWeights.length <= 4 ? 32 : 24}
-              height={tokensAndWeights.length <= 4 ? 32 : 24}
+              width={tokensAndWeights.length > 4 ? (isMobile ? 16 : 40) : 40}
+              height={tokensAndWeights.length > 4 ? (isMobile ? 16 : 40) : 40}
             />
-            <Paragraph className='text-neutral-200'>{t('Weighted Pool')}</Paragraph>
+            <TextHeading className='text-wrap text-base text-neutral-200 md:text-2xl lg:font-archia lg:text-3xl lg:font-semibold'>
+              {poolName}
+            </TextHeading>
           </div>
-          <Input
-            type='text'
-            val={poolName}
-            onChange={e => setPoolName(e.target.value)}
-            onFocus={e => e.target.select()}
-            placeholder='Enter Name for Pool'
-            className='h-11'
-            classNames={{ input: 'h-11' }}
-          />
         </div>
         <div className='min-h-full flex-[3]'>
           <SetPoolFees fees={fees} setFees={setFees} />
         </div>
-        <PoolSummary
-          fees={fees}
-          tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight }))}
-          isMobile
+        {isLgDown && (
+          <PoolSummary
+            fees={fees}
+            tokens={tokensAndWeights.map(token => ({ ...token.token, weight: token.weight, amount: token.amount }))}
+            isMobile
+          />
+        )}
+      </div>
+      <div className='space-y-4'>
+        <div className='flex flex-col-reverse gap-4'>
+          <TextHeading className='flex-2 text-lg md:text-xl lg:flex-1 lg:font-archia lg:text-3xl lg:font-semibold'>
+            {t('Set Initial Liquidity')}
+          </TextHeading>
+          {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (
+            <div className='flex flex-1 gap-4 rounded-lg border border-warn-900 bg-warn-950 px-4 py-5 lg:flex-2 lg:items-center lg:p-8'>
+              <InfoIcon className='size-5 min-h-5 min-w-5 !stroke-warn-600 lg:size-8 lg:min-w-8' />
+              <div className='flex flex-col gap-1'>
+                <TextHeading className='text-xl text-rose'>{t('Initial funds')}</TextHeading>
+                <TextSubHeading className='text-base text-rose'>
+                  {t('We recommend you to provide new pools [maxDeposit]', {
+                    maxDeposit: formatAmount(maxDeposit),
+                  })}
+                </TextSubHeading>
+              </div>
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
+        <SetInitialLiquidity
+          checkError={checkError}
+          setTokenAndWeights={setTokenAndWeights}
+          tokensAndWeights={tokensAndWeights}
         />
       </div>
-      <div className='space-y-4 md:space-y-8 lg:space-y-16'>
-        <div className='space-y-4'>
-          <div className='flex flex-col-reverse gap-4'>
-            <TextHeading className='flex-2 text-lg md:text-xl lg:flex-1 lg:font-archia lg:text-3xl lg:font-semibold'>
-              {t('Set Initial Liquidity')}
-            </TextHeading>
-            {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (
-              <div className='flex flex-1 items-center gap-4 rounded-lg border border-warn-900 bg-warn-950 px-4 py-5 lg:flex-2'>
-                <InfoIcon className='h-5 min-h-5 w-5 min-w-5 !stroke-warn-600 lg:h-8 lg:w-8' />
-                <div className='flex flex-col gap-1'>
-                  <TextHeading className='text-xl text-rose'>{t('Initial funds')}</TextHeading>
-                  <TextSubHeading className='text-base text-rose'>
-                    {t('We recommend you to provide new pools')}
-                  </TextSubHeading>
-                </div>
-              </div>
-            ) : (
-              <></>
-            )}
-          </div>
-          <SetInitialLiquidity
-            checkError={checkError}
-            setTokenAndWeights={setTokenAndWeights}
-            tokensAndWeights={tokensAndWeights}
-          />
-        </div>
-        <div className='flex flex-col gap-4 lg:flex-row'>
-          <EmphasisButton className='w-full lg:w-fit' onClick={() => setCurrentStep(prev => prev - 1)}>
-            {t('Back')}
-          </EmphasisButton>
-          <PrimaryButton className='w-full lg:w-fit' onClick={handleNextStep}>
-            {t('Next')}
-          </PrimaryButton>
-        </div>
+      <div className='flex flex-col gap-2 lg:mt-4'>
+        <EmphasisButton className='hidden w-full max-lg:block' onClick={() => router.push('/pools')}>
+          {t('Cancel')}
+        </EmphasisButton>
+        <PrimaryButton className='w-full' onClick={handleNextStep}>
+          {t('Next')}
+        </PrimaryButton>
       </div>
     </div>
   )

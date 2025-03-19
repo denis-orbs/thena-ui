@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 
-import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
 import ConnectButton from '@/components/buttons/ConnectButton'
 import { TokenAmountInput } from '@/components/input/TokenAmountInput'
 import SuccessModal from '@/components/modal/SuccessModal'
@@ -160,10 +160,10 @@ export function ManualPaneV1({
   ])
 
   return (
-    <section>
+    <>
       <div className='flex flex-col gap-4'>
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
-        <div className='mb-5 grid gap-2 xl:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-4 xl:grid-cols-2'>
           <TokenAmountInput
             asset={firstAsset}
             setAsset={isFromBNB ? setFirstAddress : null}
@@ -181,44 +181,20 @@ export function ManualPaneV1({
         </div>
       </div>
 
-      <div className='mt-8 flex flex-col gap-2 md:flex-row'>
-        <OutlinedButton className='block w-full md:hidden' onClick={handleBack}>
-          {t('Back')}
-        </OutlinedButton>
+      <div className='flex flex-col gap-2'>
+        <EmphasisButton className='block w-full lg:hidden' onClick={handleBack}>
+          {t('Cancel')}
+        </EmphasisButton>
         {account ? (
           <>
             {strategy && strategy.gauge.address !== zeroAddress && strategy.version === 3 ? (
               // Has gauge => Can deposit/stake
-              <>
-                <EmphasisButton
-                  disabled={pending}
-                  onClick={() => {
-                    onAddLiquidity()
-                  }}
-                  className='flex-1'
-                >
-                  {t('Deposit')}
-                </EmphasisButton>
-
-                <PrimaryButton
-                  disabled={stakePending}
-                  onClick={() => {
-                    onAddAndStake()
-                  }}
-                  className='flex-1'
-                >
-                  {t('Deposit & Stake')}
-                </PrimaryButton>
-              </>
+              <PrimaryButton disabled={stakePending} onClick={() => onAddAndStake()}>
+                {t('Deposit & Stake')}
+              </PrimaryButton>
             ) : (
               // No gauge => Can only deposit
-              <PrimaryButton
-                disabled={pending}
-                onClick={() => {
-                  onAddLiquidity()
-                }}
-                className='flex-1'
-              >
+              <PrimaryButton disabled={pending} onClick={() => onAddLiquidity()} className='flex-1'>
                 {t('Deposit')}
               </PrimaryButton>
             )}
@@ -244,6 +220,6 @@ export function ManualPaneV1({
           </div>
         }
       />
-    </section>
+    </>
   )
 }

@@ -12,7 +12,6 @@ import { ScalesPrimaryIcon, WarningTriangleIcon } from '@/svgs'
 
 export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeights, checkError }) {
   const t = useTranslations()
-  // const [lastIndexChange, setLastIndexChange] = useState(0)
   const [isAutoOptimize, setIsAutoOptimize] = useState(true)
 
   const [totalWhenOptimize, setTotalWhenOptimize] = useState(null)
@@ -149,40 +148,36 @@ export default function SetInitialLiquidity({ setTokenAndWeights, tokensAndWeigh
     handleAmountChange(tokensAndWeights[0]?.amount, tokensAndWeights?.[0]?.token)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAutoOptimize])
-
   return (
-    <div className='flex flex-col gap-3'>
-      <div className='flex flex-col gap-3'>
-        <>
-          {(tokensAndWeights || []).map((item, index) => (
-            <div className='space-y-2' key={item.token.address}>
-              <InputTokenMemo
-                key={`${item?.token?.address}_${index}`}
-                token={item.token}
-                isError={item.isError && checkError}
-                autoFocus={index === 0}
-                amount={item.amount}
-                onAmountChange={value => handleAmountChange(value, item.token)}
-                alowDouble
-                weight={item.weight}
-              />
-              {item.isError && checkError && (
-                <p className='mb-2 mt-1 flex gap-1 text-error-500'>
-                  <WarningTriangleIcon className='h-5 w-5' />
-                  <span>{t('Insufficient [Asset] Balance', { symbol: item?.symbol })}</span>
-                </p>
-              )}
-            </div>
-          ))}
-        </>
+    <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-4'>
+        {(tokensAndWeights || []).map((item, index) => (
+          <div className='space-y-2' key={item.token.address}>
+            <InputTokenMemo
+              key={`${item?.token?.address}_${index}`}
+              token={item.token}
+              isError={item.isError && checkError}
+              amount={item.amount}
+              onAmountChange={value => handleAmountChange(value, item.token)}
+              alowDouble
+              weight={item.weight}
+            />
+            {item.isError && checkError && (
+              <p className='mb-2 mt-1 flex gap-1 text-error-500'>
+                <WarningTriangleIcon className='h-5 w-5' />
+                <span>{t('Insufficient [Asset] Balance', { symbol: item?.symbol })}</span>
+              </p>
+            )}
+          </div>
+        ))}
       </div>
-      <div className='flex flex-col gap-2 rounded-xl border border-primary-800 bg-primary-950 p-4'>
-        <div className='flex flex-row justify-between'>
-          <div className='flex gap-4'>
-            <ScalesPrimaryIcon className='h8 w-8' />
+      <div className='flex flex-col gap-2 rounded-xl border border-primary-800 bg-primary-950 py-2 pl-3 pr-2 lg:p-8'>
+        <div className='flex flex-row items-center justify-between'>
+          <div className='flex items-center gap-2 lg:gap-4'>
+            <ScalesPrimaryIcon className='size-4 lg:size-8' />
             <div className='flex flex-col gap-2'>
-              <TextHeading>{t('Auto optimize liquidity')}</TextHeading>
-              <span>
+              <TextHeading className='max-lg:font-normal'>{t('Auto optimize liquidity')}</TextHeading>
+              <span className='max-lg:font-normal'>
                 {t('Available')}: ${formatAmount(available)}{' '}
                 {available === total ? (
                   <span onClick={handleMaxTotal}>{t('Maxed')}</span>

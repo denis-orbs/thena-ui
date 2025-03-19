@@ -401,7 +401,7 @@ export default function PoolsPage() {
                           <TextHeading className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[0]}</TextHeading>
                           <Paragraph className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[1]}</Paragraph>
                         </div>
-                        <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
+                        <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr, true)}%</Paragraph>
                       </div>
                     ))}
                 </div>

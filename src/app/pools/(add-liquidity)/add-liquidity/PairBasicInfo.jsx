@@ -5,57 +5,70 @@ import { useState } from 'react'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { NewTextSubHeading, Paragraph } from '@/components/typography'
-import { useWindowSize } from '@/hooks/useWindowSize'
+import { PAIR_TYPES } from '@/constant'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
 import { ChevronRightIcon } from '@/svgs'
 
 export function PairBasicInfo({ pair }) {
   const t = useTranslations()
   const [isExpanded, setIsExpanded] = useState(false)
-  const width = useWindowSize()
-  const isMobile = width.width < 768
+  const { isMdDown } = useMediaQuery()
+
   return (
     <div className='flex justify-between gap-2'>
-      <Box className='grid w-full grid-cols-2 flex-wrap justify-between gap-4 md:flex'>
-        <div className='flex flex-col gap-2'>
-          <NewTextSubHeading className='text-gradient-primary'>{pair?.apr ?? '0%'}</NewTextSubHeading>
-          <Paragraph>{t('APR')}</Paragraph>
-        </div>
-        <div className='flex flex-col gap-2'>
-          <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.dayVolume)}</NewTextSubHeading>
-          <Paragraph>{t('Volume (24h)')}</Paragraph>
-        </div>
-        {isMobile && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, height: 0 }}
-            animate={isExpanded || !isMobile ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className='col-span-2 grid w-full grid-cols-2 justify-between gap-4 overflow-hidden bg-neutral-900 md:hidden'
-          >
-            <div className='flex flex-col gap-2'>
-              <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.dayFees)}</NewTextSubHeading>
-              <Paragraph>{t('Fees (24h)')}</Paragraph>
-            </div>
-            <div className='flex flex-col gap-2'>
-              <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.tvlUSD)}</NewTextSubHeading>
-              <Paragraph>{t('TVL')}</Paragraph>
-            </div>
-          </motion.div>
+      <Box
+        className={cn(
+          'w-full justify-between gap-x-4 !py-3 px-4 max-md:grid max-md:grid-cols-2 md:flex',
+          !isMdDown && 'gap-y-4',
         )}
-        <div className='flex flex-col gap-2 max-md:hidden'>
-          <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.dayFees)}</NewTextSubHeading>
-          <Paragraph>{t('Fees (24h)')}</Paragraph>
+      >
+        <div className='flex flex-col gap-2 md:gap-3'>
+          <NewTextSubHeading className='text-gradient-primary text-lg'>{pair?.apr ?? '0%'}</NewTextSubHeading>
+          <Paragraph className='text-sm text-neutral-500'>
+            {pair?.type === PAIR_TYPES.LSD ? t('Estimated APR Range') : t('Estimated APR')}
+          </Paragraph>
         </div>
-        <div className='flex flex-col gap-2 max-md:hidden'>
+        <div className='flex flex-col gap-2 md:gap-3'>
+          <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.dayVolume)}</NewTextSubHeading>
+          <Paragraph className='text-sm text-neutral-500'>{t('Volume (24h)')}</Paragraph>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 0, height: 0 }}
+          animate={isExpanded ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className='col-span-2 overflow-hidden bg-neutral-900 md:hidden'
+        >
+          <div className={cn('mt-4 grid grid-cols-2 gap-4')}>
+            <div className='flex flex-col gap-2 md:gap-3'>
+              <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.dayFees)}</NewTextSubHeading>
+              <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+            </div>
+            <div className='flex flex-col gap-2 md:gap-3'>
+              <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.tvlUSD)}</NewTextSubHeading>
+              <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className='flex flex-col gap-2 max-md:hidden md:gap-3'>
+          <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.dayFees)}</NewTextSubHeading>
+          <Paragraph className='text-sm text-neutral-500'>{t('Fees (24h)')}</Paragraph>
+        </div>
+
+        <div className='flex flex-col gap-2 max-md:hidden md:gap-3'>
           <NewTextSubHeading className='text-gradient-primary'>${formatAmount(pair?.tvlUSD)}</NewTextSubHeading>
-          <Paragraph>{t('TVL')}</Paragraph>
+          <Paragraph className='text-sm text-neutral-500'>{t('TVL')}</Paragraph>
         </div>
       </Box>
-      {isMobile && (
-        <EmphasisButton className='h-8 w-8 p-2 md:hidden' onClick={() => setIsExpanded(prev => !prev)}>
-          <ChevronRightIcon className={cn('size-4', isExpanded && 'rotate-90')} />
-        </EmphasisButton>
-      )}
+
+      <EmphasisButton
+        className='size-8 !bg-neutral-900 p-2 outline-0 md:hidden'
+        onClick={() => setIsExpanded(prev => !prev)}
+      >
+        <ChevronRightIcon className={cn('size-4 [&>path]:stroke-neutral-400', isExpanded && '-rotate-90')} />
+      </EmphasisButton>
     </div>
   )
 }
