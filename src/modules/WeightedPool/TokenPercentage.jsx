@@ -29,7 +29,7 @@ export function TokenPercentage({ tokens, poolAddress }) {
         poolAddress={poolAddress}
       />
       <div className='flex flex-col gap-0 md:gap-1'>
-        <div>
+        <div className='text-[10px] leading-4 md:text-base'>
           {tokens.slice(0, isSmall ? 2 : 3).map((token, index) => (
             <Paragraph className='text-[10px] leading-4 md:text-base' key={token.address}>
               {`${token?.symbol}${index !== Math.min(2, tokens.slice(0, isSmall ? 2 : 3).length - 1) ? '/' : ''}`}
@@ -43,7 +43,7 @@ export function TokenPercentage({ tokens, poolAddress }) {
             <Paragraph className='hidden text-[10px] leading-4 md:text-base xl:inline-block'>...</Paragraph>
           )}
         </div>
-        <div>
+        <div className='text-[10px] leading-4 md:text-base'>
           <Paragraph className='text-[10px] leading-4 md:text-base'>{t('Weighted Pool')}</Paragraph>
           <Paragraph className='hidden text-[10px] leading-4 md:text-base xl:inline-block'>
             <span>&nbsp;</span>
