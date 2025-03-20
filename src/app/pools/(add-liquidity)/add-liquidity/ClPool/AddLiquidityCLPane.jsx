@@ -71,7 +71,7 @@ export default function AddLiquidityCLPane({
         {strategy?.isAutomatic ? (
           <FusionAdd strategy={strategy} onShowModalSuccess={onShowModalSuccess} handleBack={handleBack} />
         ) : (
-          <div className='space-y-4 md:space-y-8'>
+          <div className='space-y-4'>
             {!mintInfo?.noLiquidity && !position && (
               <Selection className='w-full items-stretch' data={addSelections} isFull isTranslation={false} />
             )}
