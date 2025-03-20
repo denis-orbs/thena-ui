@@ -17,12 +17,15 @@ import { useIchiWithdraw, useMigrationIchi } from '@/hooks/fusion/useIchi'
 import { useV1Migrate } from '@/hooks/useV1Liquidity'
 import { formatAmount, getDisplayedStrategy } from '@/lib/utils'
 import { GaugeItem } from '@/modules/Pools/Migration'
+import SettingSlippageDropDown from '@/modules/Position/SettingSlippageDropDown'
 import { useGetAutoPoolMigration, usePairInfo, usePools } from '@/state/pools/hooks'
 import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
 import NavigateToAddLiquidityModal from './NavigateToAddLiquidityModal'
 
 export function AutoMigrationPage({ address, staked, withdraw }) {
+  const [slippage, setSlippage] = useState(1)
+
   const t = useTranslations()
   const { push } = useRouter()
   const [strategy, setStrategy] = useState()
@@ -140,6 +143,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
       migrateGamma({
         positionV2,
         strategy,
+        slippage,
         callback: () => push('/dashboard'),
       })
     } else {
@@ -149,7 +153,7 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
         callback: () => push('/dashboard'),
       })
     }
-  }, [migrateGamma, migrateIchi, migrateV1, strategyType, positionV2, push, strategy])
+  }, [strategyType, migrateIchi, positionV2, strategy, push, migrateGamma, slippage, migrateV1])
 
   const handleWithdraw = useCallback(() => {
     const callbackLink = pairV3
@@ -189,6 +193,10 @@ export function AutoMigrationPage({ address, staked, withdraw }) {
             <TextSubHeading className='text-base text-neutral-300'>{t('Migration description')}</TextSubHeading>
           )}
         </div>
+
+        {strategyType === 'Gamma' && (
+          <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-4' />
+        )}
 
         <div className='mt-4 grid items-stretch gap-4 lg:grid-cols-[48%_2%_48%]'>
           <article className='flex h-full w-full flex-col'>

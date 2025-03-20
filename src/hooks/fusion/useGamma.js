@@ -310,7 +310,7 @@ export const useGammaMigration = () => {
   const { startTxn, endTxn, writeTxn, sendTxn, updateTxn } = useTxn()
 
   const migrateGamma = useCallback(
-    async ({ positionV2, strategy, callback }) => {
+    async ({ positionV2, strategy, slippage = 0.5, callback }) => {
       const isStaked = positionV2.account.gaugeBalance > 0
       const amount = positionV2.account.totalLp
 
@@ -433,33 +433,37 @@ export const useGammaMigration = () => {
 
       const [min, max] = rangeAmountOfToken1
       const targetToken1 = BigNumber(min).plus(max).div(2)
+      const targetRatio = BigNumber(targetToken1).div(transferAmounts[token0.address])
+      console.log({ targetRatio })
 
       let swapFromAmount = BigNumber(0)
       let fromToken = null
       let toToken = null
+
       if (transferAmounts[token1.address].lt(min)) {
         console.log('Token 1 is insufficient')
-        console.log('swap token 0 to token1')
+        console.log('swap token 0 to token 1')
 
         fromToken = token0
         toToken = token1
         const priceRatio = BigNumber(token0.price).div(token1.price)
-        const swapToAmount = BigNumber(targetToken1).minus(transferAmounts[token1.address])
-        swapFromAmount = swapToAmount.div(priceRatio).dp(0)
+        const initAmount = BigNumber(targetToken1).minus(transferAmounts[token1.address])
+        swapFromAmount = initAmount.div(targetRatio.times(priceRatio).plus(1)).dp(0)
       } else if (transferAmounts[token1.address].gt(max)) {
         console.log('Token 1 is excess')
         console.log('swap token 1 to token 0')
         fromToken = token1
         toToken = token0
         const priceRatio = BigNumber(token1.price).div(token0.price)
-        const swapToAmount = BigNumber(transferAmounts[token1.address]).minus(targetToken1)
-        swapFromAmount = swapToAmount.div(priceRatio).dp(0)
+        const initAmount = BigNumber(transferAmounts[token1.address]).minus(targetToken1)
+        swapFromAmount = initAmount.div(targetRatio.times(priceRatio).plus(1)).dp(0)
       }
 
       const swapAmount = {
         [fromToken.address]: BigNumber(-swapFromAmount), // have to negative number
         [toToken.address]: BigNumber(0),
       }
+
       if (swapFromAmount.gt(0) && fromToken && toToken) {
         const routerAddress = Contracts.odos[networkId]
         // MARK: APPROVE + SWAP BY ODOS
@@ -498,7 +502,7 @@ export const useGammaMigration = () => {
 
         const swapReceipt = await waitCall(swapTx)
         const swapEvent = swapReceipt.logs.filter(
-          e => e.topics[0] === HASH.TRANSFER && e.address.toLowerCase() === fromToken.address.toLowerCase(),
+          e => e.topics[0] === HASH.TRANSFER && e.address.toLowerCase() === toToken.address.toLowerCase(),
         )
         const swapedAmount = swapEvent.reduce((sum, e) => {
           const decodeData = decodeEventLog({
@@ -506,7 +510,9 @@ export const useGammaMigration = () => {
             data: e.data,
             topics: e.topics,
           })
-          sum += decodeData.args.value
+          if (decodeData?.args?.to?.toLowerCase() === account.toLowerCase()) {
+            sum += decodeData.args.value
+          }
           return sum
         }, 0n)
 
@@ -548,6 +554,7 @@ export const useGammaMigration = () => {
           account,
           gammaAddressV3,
           [0, 0, 0, 0],
+          Math.floor(slippage * 100),
         ]))
       ) {
         setPending(false)
