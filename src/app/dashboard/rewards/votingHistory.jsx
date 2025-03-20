@@ -306,31 +306,31 @@ function TitleEpoch({ epoch, open }) {
 
   return (
     <div className='flex w-full flex-col justify-between gap-4 px-4 py-5 lg:flex-row lg:px-6'>
-      <div className='flex flex-[10] flex-row justify-between lg:flex-[2.5]'>
+      <div className='flex flex-[10] flex-row items-center justify-between lg:flex-[2.5]'>
         <div className='flex flex-row gap-1'>
-          <TextHeading className='text-xl'>{t('Epoch')}</TextHeading>
-          <Paragraph className='text-xl'>{formatAmount(epochNumber)}</Paragraph>
+          <TextHeading className='text-xl font-normal'>{t('Epoch')}</TextHeading>
+          <TextHeading className='text-xl'>{formatAmount(epochNumber)}</TextHeading>
         </div>
         <div className={cn('h-4 w-5 lg:hidden', open ? 'rotate-180' : 'rotate-0')}>
           <ChevronDownIcon />
         </div>
       </div>
       <div className='grid w-full grid-cols-2 gap-y-4 lg:flex-[7.5] lg:grid-cols-4'>
-        <div className='flex flex-col'>
+        <div className='flex flex-col gap-1'>
           <TextHeading>{t('Time Period')}</TextHeading>
           <Paragraph className='hidden sm:block'>{`${timePeriod[0]} - ${timePeriod[1]}`}</Paragraph>
           <Paragraph className='hidden max-sm:block'>{timePeriod[0]}</Paragraph>
           <Paragraph className='hidden max-sm:block'>- {timePeriod[1]}</Paragraph>
         </div>
-        <div className='flex flex-col lg:items-end'>
+        <div className='flex flex-col gap-1 lg:items-end'>
           <TextHeading>{t('My Votes')}</TextHeading>
           <Paragraph>{formatAmount(epoch?.totalVetheBalance)}</Paragraph>
         </div>
-        <div className='flex flex-col lg:items-end'>
+        <div className='flex flex-col gap-1  lg:items-end'>
           <TextHeading>{t('Total Votes')}</TextHeading>
           <Paragraph>{formatAmount(epoch?.totalVotesEpoch)}</Paragraph>
         </div>
-        <div className='flex flex-col lg:items-end'>
+        <div className='flex flex-col gap-1 lg:items-end'>
           <TextHeading>{t('Total Rewards')}</TextHeading>
           <div className='flex flex-row items-center gap-1'>
             <Paragraph>${formatAmount(finalData.rewardUsd)}</Paragraph>
@@ -464,7 +464,7 @@ function VotingHistory({ veTHEId }) {
           classNames={{ chevron: 'mr-6 max-lg:hidden' }}
         >
           <div className='border-t border-t-neutral-700 bg-neutral-950 p-3 lg:p-6'>
-            {isOpenArray[index] && <VotingHistoryTable userVotes={epoch} />}
+            <VotingHistoryTable userVotes={epoch} />
           </div>
         </Collapse>
       ))}
