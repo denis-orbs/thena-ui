@@ -113,6 +113,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
               rowItem: 'border-none',
             }}
             sortOptions={sortOptions}
+            size='small'
           />
         </div>
       ) : (

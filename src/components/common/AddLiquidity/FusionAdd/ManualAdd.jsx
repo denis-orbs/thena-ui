@@ -71,7 +71,7 @@ export default function ManualAdd({
   useEffect(() => {
     setAPRs(estimateAPR)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencyAAmount?.quotient, currencyBAmount?.quotient, ticks[Bound.LOWER], ticks[Bound.UPPER]])
+  }, [JSON.stringify(estimateAPR), setAPRs])
 
   const onAddLiquidity = useCallback(() => {
     if (errorMessage) {
