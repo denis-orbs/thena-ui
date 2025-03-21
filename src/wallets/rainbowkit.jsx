@@ -50,12 +50,12 @@ export const wagmiConfig = createConfig({
   chains: [bsc, opBNB],
   transports: {
     [bsc.id]: fallback([
-      unstable_connector(injected),
       http('https://bsc-dataseed2.ninicoin.io'),
       http('https://bsc.blockrazor.xyz'),
       http('https://binance.llamarpc.com'),
+      unstable_connector(injected),
     ]),
-    [opBNB.id]: fallback([unstable_connector(injected), http('https://opbnb-mainnet-rpc.bnbchain.org')]),
+    [opBNB.id]: fallback([http('https://opbnb-mainnet-rpc.bnbchain.org'), unstable_connector(injected)]),
   },
   ssr: true,
 })
