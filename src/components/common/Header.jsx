@@ -150,13 +150,13 @@ function ChainSelect({ t }) {
       >
         {chains.map((item, idx) => {
           const element = getElement(item, idx)
-          if (item.label === 'Bridge') {
-            return (
-              <div key={`chain-${idx}`} onClick={() => setShowBridgePopup(true)}>
-                {element}
-              </div>
-            )
-          }
+          // if (item.label === 'Bridge') {
+          //   return (
+          //     <div key={`chain-${idx}`} onClick={() => setShowBridgePopup(true)}>
+          //       {element}
+          //     </div>
+          //   )
+          // }
           if (item.url) {
             return (
               <Link href={item.url} target='_blank' key={`chain-${idx}`}>
