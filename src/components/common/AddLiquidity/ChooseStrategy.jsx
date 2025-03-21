@@ -250,7 +250,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
-      <div className='flex-[6] space-y-4'>
+      <div className='flex-[6] space-y-4 lg:space-y-8'>
         <StrategyTitle
           strategyCount={strategyAutoData.length}
           isAutomatic={isAutomatic}

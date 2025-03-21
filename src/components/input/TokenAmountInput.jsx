@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { WBNB } from 'thena-sdk-core'
 import { useBalance, useReadContract } from 'wagmi'
 
@@ -7,14 +7,16 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Tabs from '@/components/tabs'
 import { TextSubHeading } from '@/components/typography'
+import { SELECT_TOKEN_STYLE } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import useWallet from '@/hooks/useWallet'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn, formatAmount, fromWei } from '@/lib/utils'
+import SelectToken from '@/modules/Pools/SelectToken'
 import SelectTokenFromList from '@/modules/SelectTokenModal/SelectTokenFromList'
 import TokenModal from '@/modules/TokenModal'
 
-import TokenBadge from '../badges/TokenBadge'
 import AssetDropdown from '../dropdown/AssetDropdown'
 import Skeleton from '../skeleton'
 
@@ -103,6 +105,17 @@ export function TokenAmountInput({
     [assetsSelect],
   )
 
+  const windowSize = useWindowSize()
+  const [optionWidth, setOptionWidth] = useState()
+  const wrapperSelectRef = useRef(null)
+  useEffect(() => {
+    if (wrapperSelectRef?.current) {
+      const { width } = wrapperSelectRef.current.getBoundingClientRect()
+      setOptionWidth(width - 32)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wrapperSelectRef?.current, windowSize])
+
   return (
     <div className='flex flex-col gap-2'>
       {(typeof title === 'string' || showPercent) && (
@@ -119,6 +132,7 @@ export function TokenAmountInput({
           classNames?.input,
         )}
         onClick={onfocusInput}
+        ref={wrapperSelectRef}
       >
         <div className='flex items-center justify-between gap-2'>
           <input
@@ -144,17 +158,27 @@ export function TokenAmountInput({
           {setAsset ? (
             <>
               {Array.isArray(assetsSelect) ? (
-                <TokenBadge
-                  className={cn(
-                    'inline-flex items-center justify-center gap-2',
-                    'rounded-lg bg-[#29292980] text-xs text-neutral-200 hover:bg-neutral-700 md:text-sm',
-                    'py-0.5 pl-1 pr-1.5 lg:py-1.5 lg:pl-1.5 lg:pr-2',
-                    'hover-dont-change-bg cursor-pointer',
-                    Boolean(maxBalance) && 'w-[220px]',
-                  )}
-                  asset={asset}
-                  onClick={() => setTokenPopup(true)}
-                  isDouble={Boolean(maxBalance)}
+                // <TokenBadge
+                //   className={cn(
+                //     'inline-flex items-center justify-center gap-2',
+                //     'rounded-lg bg-[#29292980] text-xs text-neutral-200 hover:bg-neutral-700 md:text-sm',
+                //     'py-0.5 pl-1 pr-1.5 lg:py-1.5 lg:pl-1.5 lg:pr-2',
+                //     'hover-dont-change-bg cursor-pointer',
+                //     Boolean(maxBalance) && 'w-[220px]',
+                //   )}
+                //   asset={asset}
+                //   onClick={() => setTokenPopup(true)}
+                //   isDouble={Boolean(maxBalance)}
+                // />
+                <SelectToken
+                  setSelectedAsset={setAsset}
+                  placeHolder={t('Select Token')}
+                  selectedAsset={asset}
+                  dropdownAlign='right'
+                  optionWidth={optionWidth}
+                  style={SELECT_TOKEN_STYLE.BADGE}
+                  allowDouble={Boolean(maxBalance)}
+                  assetOptions={assetsSelect}
                 />
               ) : (
                 <AssetDropdown

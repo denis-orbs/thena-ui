@@ -267,6 +267,11 @@ export const ACTION_AUTOMATION_TYPE = {
   DEPOSIT_FUNDS: 'depositFunds',
 }
 
+export const SELECT_TOKEN_STYLE = {
+  LARGE: 'large',
+  BADGE: 'bage',
+}
+
 export const CHAINLINK_TOKEN = {
   [CHAIN_ID.BSC]: [
     {

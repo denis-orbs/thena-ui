@@ -1,11 +1,13 @@
+import { isEmpty } from 'lodash'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { formatUnits, getAddress, isAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
 
+import TokenBadge from '@/components/badges/TokenBadge'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import SearchInput from '@/components/input/SearchInput'
-import { UNKNOWN_LOGO } from '@/constant'
+import { SELECT_TOKEN_STYLE, UNKNOWN_LOGO } from '@/constant'
 import { ERC20Abi } from '@/constant/abi'
 import { useAssets } from '@/context/assetsContext'
 import { useCustomAssets } from '@/context/customAssetsContext'
@@ -30,13 +32,16 @@ function SelectToken({
   optionWidth = null,
   isDisabled = false,
   isError,
+  // if it's not an empty array, this will give the option for the user to select from assetOptions
+  assetOptions = [],
   errorMessage,
+  allowDouble = false,
+  style = SELECT_TOKEN_STYLE.LARGE,
 }) {
   const { account, chainId } = useWallet()
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
   const dropdownRef = useRef(null)
-  const rootRef = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -65,7 +70,7 @@ function SelectToken({
   const { localTokens } = useLocalTokens()
 
   const filteredAssets = useMemo(() => {
-    const tokenList = [...localTokens, ...assets, ...customAssets]
+    const tokenList = !isEmpty(assetOptions) ? assetOptions : [...localTokens, ...assets, ...customAssets]
 
     if (!search) {
       return tokenList.filter(asset => !hiddenTokens.includes(asset.address))
@@ -94,7 +99,7 @@ function SelectToken({
     }
 
     return result
-  }, [assets, customAssets, customToken, hiddenTokens, localTokens, search])
+  }, [assetOptions, assets, customAssets, customToken, hiddenTokens, localTokens, search])
 
   const { data: newToken, isSuccess } = useReadContracts({
     contracts: [
@@ -195,50 +200,76 @@ function SelectToken({
   return (
     <div>
       <div
-        className={cn('relative h-[60px] lg:h-20', isError && 'rounded-lg border border-error-500', className)}
+        className={cn(
+          'relative h-[60px] lg:h-20',
+          isError && 'rounded-lg border border-error-500',
+          style === SELECT_TOKEN_STYLE.BADGE && 'h-9 w-fit lg:h-9',
+          className,
+        )}
         ref={wrapperRef}
       >
-        <Input
-          className='h-full'
-          classNames={{
-            input: cn(
-              'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
-              'bg-neutral-900 hover:bg-neutral-700 pl-[52px] lg:pl-[80px]',
-              'text-sm lg:text-lg leading-5',
-              open && 'bg-neutral-700 border-neutral-500',
-              isDisabled && 'cursor-not-allowed bg-neutral-900 hover:bg-neutral-900',
-              className,
-            ),
-            trailingIcon: 'right-7',
-          }}
-          type='text'
-          val={selectedAsset?.symbol ?? ''}
-          onMouseDown={e => {
-            e.preventDefault()
-            setOpen(!open)
-          }}
-          placeholder={placeHolder}
-          isLocale={false}
-          TrailingIcon={
-            !isDisabled && (
-              <ChevronDownIcon
-                className={cn(
-                  'transform cursor-pointer transition-all duration-150 ease-out',
-                  open ? 'rotate-180' : 'rotate-0',
-                )}
-                onMouseDown={e => {
-                  e.preventDefault()
-                  setOpen(!open)
-                }}
+        {style === SELECT_TOKEN_STYLE.LARGE && (
+          <Input
+            className='h-full'
+            classNames={{
+              input: cn(
+                'cursor-pointer caret-transparent h-full placeholder:text-neutral-400',
+                'bg-neutral-900 hover:bg-neutral-700 pl-[52px] lg:pl-[80px]',
+                'text-sm lg:text-lg leading-5',
+                open && 'bg-neutral-700 border-neutral-500',
+                isDisabled && 'cursor-not-allowed bg-neutral-900 hover:bg-neutral-900',
+                style === SELECT_TOKEN_STYLE.BADGE && 'w-fit lg:text-sm lg:pl-[34px] pl-[34px] py-1.5',
+                className,
+              ),
+              trailingIcon: cn('right-7', style === SELECT_TOKEN_STYLE.BADGE && 'right-2'),
+              prefix: style === SELECT_TOKEN_STYLE.BADGE && 'left-1.5',
+            }}
+            type='text'
+            val={selectedAsset?.symbol ?? ''}
+            onMouseDown={e => {
+              e.preventDefault()
+              setOpen(!open)
+            }}
+            placeholder={placeHolder}
+            isLocale={false}
+            TrailingIcon={
+              !isDisabled && (
+                <ChevronDownIcon
+                  className={cn(
+                    'transform cursor-pointer transition-all duration-150 ease-out',
+                    open ? 'rotate-180' : 'rotate-0',
+                  )}
+                  onMouseDown={e => {
+                    e.preventDefault()
+                    setOpen(!open)
+                  }}
+                />
+              )
+            }
+            prefix={
+              <CircleImage
+                alt='Token'
+                className={cn('size-7 lg:size-12', style === SELECT_TOKEN_STYLE.BADGE && 'size-6 lg:size-6')}
+                src={selectedAsset?.logoURI ?? UNKNOWN_LOGO}
               />
-            )
-          }
-          prefix={
-            <CircleImage alt='Token' className='size-7 lg:size-12' src={selectedAsset?.logoURI ?? UNKNOWN_LOGO} />
-          }
-          prefixClass={prefixClass}
-          readOnly
-        />
+            }
+            prefixClass={prefixClass}
+            readOnly
+          />
+        )}
+        {style === SELECT_TOKEN_STYLE.BADGE && (
+          <TokenBadge
+            className={cn(
+              'inline-flex h-full items-center justify-center gap-2',
+              'rounded-lg bg-[#29292980] text-xs text-neutral-200 hover:bg-neutral-700 md:text-sm',
+              'py-0.5 pl-1 pr-1.5 lg:py-1.5 lg:pl-1.5 lg:pr-2',
+              'hover-dont-change-bg cursor-pointer',
+            )}
+            asset={selectedAsset}
+            onClick={() => setOpen(prev => !prev)}
+            isDouble={allowDouble}
+          />
+        )}
         {/* Dropdown */}
         {!isDisabled && open && (
           <div
@@ -254,10 +285,21 @@ function SelectToken({
               width: optionWidth ? `${optionWidth}px` : '100%',
             }}
           >
-            <SearchInput setVal={setSearchText} val={searchText} className='mb-3 mr-2 2xl:mr-3' />
+            <SearchInput
+              onClick={e => {
+                e.preventDefault()
+                e.stopPropagation()
+                e.target.focus()
+              }}
+              setVal={setSearchText}
+              val={searchText}
+              className='mb-3 mr-2 2xl:mr-3'
+            />
             <div
-              className='grid max-h-[400px] gap-3 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-neutral-800 scrollbar-thumb-neutral-500 hover:scrollbar-thumb-neutral-400 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-4 2xl:pr-3'
-              ref={rootRef}
+              className={cn(
+                'scrollbar-thin scrollbar-track-neutral-800 scrollbar-thumb-neutral-500 hover:scrollbar-thumb-neutral-400',
+                'grid max-h-[400px] gap-3 overflow-y-auto pr-2 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 2xl:gap-4 2xl:pr-3',
+              )}
             >
               {displayedAssets?.map((item, index) => (
                 <div key={item.address} ref={index === displayedAssets.length - 1 ? setLastItemRef : null}>

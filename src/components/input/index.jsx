@@ -42,6 +42,7 @@ function Input({
           className={cn(
             'absolute bottom-0 left-4 top-0 my-auto h-fit text-neutral-400',
             rest?.onClick ? 'cursor-pointer' : '',
+            classNames?.prefix,
           )}
         >
           {prefix}
