@@ -194,8 +194,8 @@ const Contracts = {
     [CHAIN_ID.TEST_BSC]: '0xd73ad1ab5f6b71f811dfc0adcdb7b457fd03fdc5',
   },
   veTheAutomationFactory: {
-    [CHAIN_ID.BSC]: '0x92de6efe30ff59a7ee4380a7b8ba363bfd1e6878',
-    [CHAIN_ID.TEST_BSC]: '0x31eDab9BAf224f368a39C607f29E2381cC269cE7',
+    [CHAIN_ID.BSC]: '0xe228fc0359b754658c99f8d6b7874dede5b485b1',
+    [CHAIN_ID.TEST_BSC]: '0x2beE534A1b7C8e790F0bB56af4a5a6460B643079',
   },
 }
 export default Contracts

@@ -21,6 +21,8 @@ import { useTxn } from '@/state/transactions/hooks'
 
 import useWallet from '../useWallet'
 
+const DEFAULT_LINK_REQUIRE = 0.5
+
 export const useGetMinimumFunds = (veTHEId, operations, poolLength) => {
   const { chainId } = useWallet()
   const veTheAutomationFactoryContract = getVeTheAutomationFactoryContract(chainId)
@@ -38,7 +40,7 @@ export const useGetMinimumFunds = (veTHEId, operations, poolLength) => {
     return new BigNumber(0)
   }
 
-  return { minimumFunds: fromWei(minimumFunds), isLoading }
+  return { minimumFunds: fromWei(minimumFunds).plus(DEFAULT_LINK_REQUIRE), isLoading }
 }
 
 export const useCreateAutomation = () => {
