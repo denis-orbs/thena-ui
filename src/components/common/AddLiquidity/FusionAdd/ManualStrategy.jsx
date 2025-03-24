@@ -327,7 +327,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
           {mintInfo.invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
 
           <div>
-            <div className='mt-0'>
+            <div className='mt-0 flex flex-col'>
               <LiquidityChartRangeInput
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}

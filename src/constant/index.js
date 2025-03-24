@@ -237,6 +237,12 @@ export const PAIR_TYPES = {
   WEIGHTED: 'Weighted',
 }
 
+export const DataQuality = {
+  VALID: 'valid',
+  INVALID: 'invalid',
+  STALE: 'stale',
+}
+
 export const POSITION_EARNED_TYPES = {
   EARN_THE: 'Earn $THE',
   EARN_FEE: 'Earn Fees',
