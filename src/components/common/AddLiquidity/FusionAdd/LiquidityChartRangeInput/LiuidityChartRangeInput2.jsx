@@ -53,20 +53,6 @@ function formatDelta(delta, locale = DEFAULT_LOCALE) {
   })}%`
 }
 
-// <LiquidityChartRangeInput2
-//   currencyA={baseCurrency ?? undefined}
-//   currencyB={quoteCurrency ?? undefined}
-//   feeAmount={mintInfo.dynamicFee}
-//   ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-//   price={price ? parseFloat(price) : undefined}
-//   priceLower={position?.priceLower ?? priceLower}
-//   priceUpper={position?.priceUpper ?? priceUpper}
-//   onLeftRangeInput={onLeftRangeInput}
-//   onRightRangeInput={onRightRangeInput}
-//   interactive={!position}
-//   handleShow
-// />
-
 export default function LiquidityChartRangeInput2({
   currencyA,
   currencyB,
@@ -115,6 +101,16 @@ export default function LiquidityChartRangeInput2({
   })
 
   const [zoomFactor, setZoomFactor] = useState(1)
+
+  const brushDomain = useMemo(() => {
+    const leftPrice = isSorted ? priceLower : priceUpper?.invert()
+    const rightPrice = isSorted ? priceUpper : priceLower?.invert()
+
+    return leftPrice && rightPrice
+      ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
+      : undefined
+  }, [isSorted, priceLower, priceUpper])
+
   const { dataMin, dataMax } = useMemo(() => {
     const minValue = pairPrices.reduce((min, curr) => (curr.value < min.value ? curr : min), pairPrices[0])
     const maxValue = pairPrices.reduce((max, curr) => (curr.value > max.value ? curr : max), pairPrices[0])
@@ -257,15 +253,6 @@ export default function LiquidityChartRangeInput2({
   // eslint-disable-next-line unused-imports/no-unused-vars
   interactive = interactive && Boolean(formattedData?.length)
 
-  const brushDomain = useMemo(() => {
-    const leftPrice = isSorted ? priceLower : priceUpper?.invert()
-    const rightPrice = isSorted ? priceUpper : priceLower?.invert()
-
-    return leftPrice && rightPrice
-      ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
-      : undefined
-  }, [isSorted, priceLower, priceUpper])
-
   const brushLabelValue = useCallback(
     (d, x) => {
       if (!price) return ''
@@ -403,7 +390,7 @@ export default function LiquidityChartRangeInput2({
                       }}
                       dimensions={{
                         width: chartSize?.chartContainerWidth,
-                        height: (chartSize?.chartContainerHeight || 300) - 76,
+                        height: (chartSize?.chartContainerHeight || 300) - 88,
                         contentWidth: chartSize?.chartContainerWidth,
                         axisLabelPaneWidth: desktopSizes.rightAxisWidth,
                       }}

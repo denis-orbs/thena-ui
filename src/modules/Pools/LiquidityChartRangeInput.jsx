@@ -40,6 +40,7 @@ export default function LiquidityChartRangeInput({
   onRightRangeInput,
   interactive,
   handleShow = true,
+  showZoom = true,
 }) {
   const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
 
@@ -109,7 +110,7 @@ export default function LiquidityChartRangeInput({
   const isUninitialized = !currencyA || !currencyB || (formattedData === undefined && !isLoading)
 
   return (
-    <div className='flex min-h-[200px] w-full items-center justify-center'>
+    <div className='flex min-h-[200px] w-full items-center justify-center overflow-hidden'>
       {isUninitialized ? (
         <TextHeading className='text-sm lg:text-base'>Your position will appear here.</TextHeading>
       ) : isLoading ? (
@@ -142,6 +143,7 @@ export default function LiquidityChartRangeInput({
             zoomLevels={ZOOM_LEVEL}
             ticksAtLimit={ticksAtLimit}
             handleShow={handleShow}
+            showZoom={showZoom}
           />
         </div>
       )}

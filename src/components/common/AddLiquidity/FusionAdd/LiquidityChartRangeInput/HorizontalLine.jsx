@@ -10,9 +10,9 @@ export function HorizontalLine({ value, yScale, width, containerWidth, lineStyle
   return (
     <line
       className='fill-none stroke-[#F8CCF6] stroke-1 opacity-50'
-      y1={yScale(value)}
+      y1={yScale(value) - 1}
       x1={lineStart}
-      y2={yScale(value)}
+      y2={yScale(value) - 1}
       x2={lineStart + width}
       strokeDasharray={strokeDasharray}
     />

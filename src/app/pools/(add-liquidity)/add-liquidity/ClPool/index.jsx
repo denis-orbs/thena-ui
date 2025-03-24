@@ -5,15 +5,15 @@ import { useSelector } from 'react-redux'
 import { WBNB } from 'thena-sdk-core'
 
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
-import PriceHistoryChart from '@/components/common/AddLiquidity/FusionAdd/PriceHistoryChart'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
-import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
 import { cn, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
+import LiquidityChartRangeInput from '@/modules/Pools/LiquidityChartRangeInput'
 import { Bound } from '@/state/fusion/actions'
 import { useV3DerivedMintInfo, useV3MintActionHandlers, useV3MintState } from '@/state/fusion/hooks'
 import { usePairInfo } from '@/state/pools/hooks'
@@ -83,14 +83,14 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
 
-  const chartDomain = useMemo(() => {
-    const leftPrice = isReverse ? priceUpper?.invert() : priceLower
-    const rightPrice = isReverse ? priceLower?.invert() : priceUpper
+  // const chartDomain = useMemo(() => {
+  //   const leftPrice = isReverse ? priceUpper?.invert() : priceLower
+  //   const rightPrice = isReverse ? priceLower?.invert() : priceUpper
 
-    return leftPrice && rightPrice
-      ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
-      : []
-  }, [isReverse, priceLower, priceUpper])
+  //   return leftPrice && rightPrice
+  //     ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
+  //     : []
+  // }, [isReverse, priceLower, priceUpper])
 
   const currentPrice = useMemo(() => {
     if (position) return position.currentPrice
@@ -174,12 +174,19 @@ function AddLiquidityClPool({ pool, handleBack }) {
             )}
 
             <div className={cn('sticky top-48 hidden pl-4', !strategy?.isAutomatic && 'block')}>
-              <PriceHistoryChart
-                baseCurrency={baseCurrency}
-                quoteCurrency={quoteCurrency}
-                chartDomain={chartDomain}
-                currentPrice={currentPrice}
-                position={position}
+              <TextHeading className='text-xl'>{t('Liquidity Distribution')}</TextHeading>
+              <LiquidityChartRangeInput
+                currencyA={baseCurrency ?? undefined}
+                currencyB={quoteCurrency ?? undefined}
+                feeAmount={mintInfo.dynamicFee}
+                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+                price={currentPrice ? parseFloat(currentPrice) : undefined}
+                priceLower={position?.priceLower ?? priceLower}
+                priceUpper={position?.priceUpper ?? priceUpper}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                interactive={false}
+                showZoom={false}
               />
             </div>
           </div>

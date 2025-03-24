@@ -11,7 +11,6 @@ import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisiblePrice }) {
   const chartRef = useRef(null)
   const chartCreated = useRef(null)
-  console.log({ minVisiblePrice, maxVisiblePrice })
 
   const transformedData = useMemo(() => {
     if (data) {
@@ -41,13 +40,10 @@ function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisib
       handleScale: false,
       handleScroll: false,
       rightPriceScale: {
-        scaleMargins: {
-          top: 0.1,
-          bottom: 0.1,
-        },
         visible: false,
         borderVisible: false,
-        mode: 1,
+        mode: 0,
+        autoScale: false,
         priceFormatter: price => `$${price.toFixed(2)} USD`,
       },
       timeScale: {
@@ -115,8 +111,6 @@ function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisib
           bottom: 0.1,
         },
         autoScale: false,
-        minValue,
-        maxValue,
       })
 
       newSeries.applyOptions({
