@@ -652,6 +652,7 @@ export const useAlgebraMigration = () => {
 
   const onAlgebraMigrate = useCallback(
     async ({
+      existingPosition,
       currencyA,
       amountA,
       currencyB,
@@ -754,7 +755,7 @@ export const useAlgebraMigration = () => {
       // MARK: REMOVE FROM V2 (INCLUDE CLAIM REWARD)
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const { calldata: removeCallData, value: removeValue } = NonfungiblePositionManager.removeCallParameters(
-        position,
+        existingPosition,
         {
           tokenId,
           liquidityPercentage: new Percent(100, 100),
@@ -805,12 +806,12 @@ export const useAlgebraMigration = () => {
       }
 
       // MARK: ADD LIQUIDITY TO V3
-      const useNative = currencyA.isNative ? currencyA : currencyB.isNative ? currencyB : undefined
+      // const useNative = currencyA.isNative ? currencyA : currencyB.isNative ? currencyB : undefined
       const { calldata: addCallData, value: addValue } = NonfungiblePositionManager.addCallParameters(position, {
         slippageTolerance: allowedSlippage,
         recipient: account,
         deadline: timestamp.toString(),
-        useNative,
+        useNative: undefined,
         createPool: !isPoolExist,
         version: 3,
         isFarming,

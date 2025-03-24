@@ -134,7 +134,7 @@ export function RangeSelector({
   mintInfo,
 }) {
   const dispatch = useDispatch()
-  const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
+  const { onFieldAInput, onFieldBInput } = useV3MintActionHandlers(mintInfo?.noLiquidity)
   const { isReverse } = useSelector(state => state.fusion)
 
   const tokenA = (currencyA ?? undefined)?.wrapped

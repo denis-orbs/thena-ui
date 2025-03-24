@@ -1,17 +1,16 @@
 import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 
-import { Warning } from '@/components/alert'
+import { Info, Warning } from '@/components/alert'
 import { EmphasisButton } from '@/components/buttons/Button'
 import { PresetRanges } from '@/components/common/AddLiquidity/components/PresetRange'
 import { RangeSelector } from '@/components/common/AddLiquidity/components/RangeSelector'
 import LiquidityChartRangeInput from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput'
+import Input from '@/components/input'
 import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import Selection from '@/components/selection'
-import Spinner from '@/components/spinner'
 import { TextHeading } from '@/components/typography'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
-import { PoolState } from '@/hooks/fusion/useFusions'
 import { cn, unwrappedSymbol } from '@/lib/utils'
 import { Bound } from '@/state/fusion/actions'
 import {
@@ -30,7 +29,7 @@ export function AdjustNewPositionModal({
   firstAddress,
   secondAddress,
   feeAmount,
-  existingPosition,
+  // existingPosition,
   onAdjustRange,
 }) {
   const t = useTranslations()
@@ -46,7 +45,7 @@ export function AdjustNewPositionModal({
   const quoteCurrency = useMemo(() => (isReverse ? currencyA : currencyB), [currencyA, currencyB, isReverse])
 
   const { leftRangeTypedValue, rightRangeTypedValue } = useV3MintState()
-  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency, existingPosition, 2)
+  const mintInfo = useV3DerivedMintInfo(baseCurrency, quoteCurrency, feeAmount, baseCurrency)
 
   const { ticksAtLimit, invertPrice, dynamicFee, pool } = mintInfo
 
@@ -56,9 +55,9 @@ export function AdjustNewPositionModal({
   const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper, getSetFullRange } =
     useRangeHopCallbacks(baseCurrency ?? undefined, quoteCurrency ?? undefined, dynamicFee, tickLower, tickUpper, pool)
 
-  const { onFieldAInput, onFieldBInput, onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(
-    mintInfo.noLiquidity,
-  )
+  const { startPriceTypedValue } = useV3MintState()
+  const { onFieldAInput, onFieldBInput, onStartPriceInput, onLeftRangeInput, onRightRangeInput } =
+    useV3MintActionHandlers(mintInfo.noLiquidity)
 
   const activePreset = useActivePreset()
 
@@ -69,19 +68,18 @@ export function AdjustNewPositionModal({
 
   const price = useMemo(() => {
     if (!mintInfo?.price) return
-
     return mintInfo?.invertPrice ? mintInfo?.price.invert().toSignificant(5) : mintInfo?.price.toSignificant(5)
   }, [mintInfo])
 
-  const leftPrice = useMemo(
-    () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceLower : priceUpper?.invert()),
-    [baseCurrency, quoteCurrency, priceLower, priceUpper],
-  )
+  // const leftPrice = useMemo(
+  //   () => (baseCurrency?.wrapped.sortsBefore(quoteCurrency?.wrapped) ? priceLower : priceUpper?.invert()),
+  //   [baseCurrency, quoteCurrency, priceLower, priceUpper],
+  // )
 
-  const rightPrice = useMemo(
-    () => (baseCurrency?.wrapped?.sortsBefore(quoteCurrency.wrapped) ? priceUpper : priceLower?.invert()),
-    [baseCurrency, quoteCurrency, priceLower, priceUpper],
-  )
+  // const rightPrice = useMemo(
+  //   () => (baseCurrency?.wrapped?.sortsBefore(quoteCurrency.wrapped) ? priceUpper : priceLower?.invert()),
+  //   [baseCurrency, quoteCurrency, priceLower, priceUpper],
+  // )
 
   const currentPrice = useMemo(() => {
     if (!mintInfo.price) return
@@ -96,60 +94,11 @@ export function AdjustNewPositionModal({
     return `${_price}`
   }, [mintInfo.price, mintInfo.invertPrice])
 
-  const feeString = useMemo(() => {
-    if (mintInfo.poolState === PoolState.INVALID || mintInfo.poolState === PoolState.LOADING) return <Spinner />
-
-    if (mintInfo.noLiquidity) return '0.3%'
-
-    return `${mintInfo.dynamicFee / 10000}%`
-  }, [mintInfo])
-
-  const risk = useMemo(() => {
-    const upPrice = rightPrice?.toSignificant(5)
-    const downPrice = leftPrice?.toSignificant(5)
-    if (!upPrice || !downPrice || !price) return
-
-    const upperPercent = 100 - (+price / +upPrice) * 100
-    const lowerPercent = Math.abs(100 - (+price / +downPrice) * 100)
-
-    const rangePercent = +downPrice > +price && +upPrice > 0 ? upperPercent - lowerPercent : upperPercent + lowerPercent
-
-    if (rangePercent < 7.5) {
-      return 5
-    }
-    if (rangePercent < 15) {
-      return (15 - rangePercent) / 7.5 + 4
-    }
-    if (rangePercent < 30) {
-      return (30 - rangePercent) / 15 + 3
-    }
-    if (rangePercent < 60) {
-      return (60 - rangePercent) / 30 + 2
-    }
-    if (rangePercent < 120) {
-      return (120 - rangePercent) / 60 + 1
-    }
-    return 1
-  }, [price, rightPrice, leftPrice])
-
-  const _risk = useMemo(() => {
-    const res = []
-    const split = risk?.toString().split('.')
-
-    if (!split) return
-
-    for (let i = 0; i < 10; i++) {
-      if (i < +split[0]) {
-        res.push(100)
-      } else if (i === +split[0]) {
-        res.push(parseFloat(`0.${split[1]}`) * 100)
-      } else {
-        res.push(0)
-      }
-    }
-
-    return res
-  }, [risk])
+  // const feeString = useMemo(() => {
+  //   if (mintInfo.poolState === PoolState.INVALID || mintInfo.poolState === PoolState.LOADING) return <Spinner />
+  //   if (mintInfo.noLiquidity) return '0.3%'
+  //   return `${mintInfo.dynamicFee / 10000}%`
+  // }, [mintInfo])
 
   const priceRangData = useMemo(
     () => [
@@ -238,6 +187,28 @@ export function AdjustNewPositionModal({
           />
         </div>
 
+        {mintInfo.noLiquidity && (
+          <div className='flex flex-col gap-3'>
+            <Info className='text-sm'>{t('Initialize warning')}</Info>
+            <div className='flex items-center justify-between'>
+              <TextHeading className='w-1/2'>
+                {t('Starting [symbol] Price:', { symbol: baseCurrency?.symbol })}
+              </TextHeading>
+              <Input
+                classNames={{
+                  input: 'w-full pr-[150px]',
+                }}
+                val={startPriceTypedValue}
+                onChange={e => onStartPriceInput(e.target.value)}
+                suffix={t('[symbolA] per [symbolB]', {
+                  symbolA: quoteCurrency?.symbol,
+                  symbolB: baseCurrency?.symbol,
+                })}
+              />
+            </div>
+          </div>
+        )}
+
         {/* PRICE RANGE */}
         <div className='flex flex-col gap-3'>
           <div className='flex flex-row items-center justify-between'>
@@ -293,57 +264,6 @@ export function AdjustNewPositionModal({
           onLeftRangeInput={onLeftRangeInput}
           onRightRangeInput={onRightRangeInput}
         />
-
-        {/* FEE - RISK - PROFIT */}
-        <div className='grid grid-cols-2 gap-4'>
-          <div className='flex flex-col justify-center gap-1.5 rounded-md bg-neutral-800 px-4 py-3'>
-            <TextHeading className='text-sm'>{t(mintInfo.noLiquidity ? 'New pool' : 'Current Pool')}</TextHeading>
-
-            <div className='w-fit rounded-md bg-neutral-700 p-2'>
-              <TextHeading className='text-sm'>
-                {feeString} {t('Fee')}
-              </TextHeading>
-            </div>
-          </div>
-
-          <div className='flex flex-col gap-3'>
-            <div className='flex items-center justify-between rounded-md bg-neutral-800 px-4 py-2'>
-              <TextHeading className='text-sm'>{t('Risk')}</TextHeading>
-              {_risk && (
-                <div className='flex items-center gap-2'>
-                  {[1, 2, 3, 4, 5].map((_, i) => (
-                    <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'>
-                      <div
-                        key={`risk-${i}`}
-                        className='relative h-2 bg-error-600'
-                        style={{ left: `calc(-100% + ${_risk[i]}%)` }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className='flex flex-col gap-1.5 rounded-md bg-neutral-800 px-4 py-2'>
-              <div className='mt-1 flex items-center justify-between'>
-                <TextHeading className='text-sm'>{t('Profit')}</TextHeading>
-                {_risk && (
-                  <div className='flex items-center gap-2'>
-                    {[1, 2, 3, 4, 5].map((_, i) => (
-                      <div key={i} className='h-2 w-2 overflow-hidden rounded-full bg-neutral-700'>
-                        <div
-                          key={`risk-${i}`}
-                          className='relative h-2 bg-success-600'
-                          style={{ left: `calc(-100% + ${_risk[i]}%)` }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
       </ModalBody>
 
       <ModalFooter>

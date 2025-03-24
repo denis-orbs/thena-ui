@@ -3,7 +3,7 @@
 import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Pool, Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { maxUint128, zeroAddress } from 'viem'
@@ -29,7 +29,6 @@ import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import { getPositionManagerContract } from '@/lib/contracts'
-import { unwrappedToken } from '@/lib/fusion'
 import { getTokenInfo } from '@/lib/helper'
 import { warnToast } from '@/lib/notify'
 import { cn, formatAmount, getDisplayedStrategy } from '@/lib/utils'
@@ -200,40 +199,72 @@ export function ManualMigrationPage({ tokenId }) {
   const token1 = useToken(asset1?.address)
   const feeValue0 = useMemo(() => {
     if (token0 && fees) {
-      return CurrencyAmount.fromRawAmount(unwrappedToken(token0), new BigNumber(fees?.result?.[0] ?? 0).toString(10))
+      return CurrencyAmount.fromRawAmount(token0, new BigNumber(fees?.result?.[0] ?? 0).toString(10))
     }
   }, [token0, fees])
   const feeValue1 = useMemo(() => {
     if (token1 && fees) {
-      return CurrencyAmount.fromRawAmount(unwrappedToken(token1), new BigNumber(fees?.result?.[1] ?? 0).toString(10))
+      return CurrencyAmount.fromRawAmount(token1, new BigNumber(fees?.result?.[1] ?? 0).toString(10))
     }
   }, [token1, fees])
 
   const tickCurrent = positionV2?.pool?.tickCurrent
   const outOfRange = tickCurrent < tickLower || tickCurrent >= tickUpper
 
-  const handleMigrate = (position = positionV2) => {
-    onAlgebraMigrate({
-      currencyA,
+  const handleMigrate = useCallback(
+    (position = positionV2) => {
+      const existedPosition = new Position({
+        pool: new Pool(currencyA, currencyB, fee, price, poolLiquidity, tick),
+        liquidity: new BigNumber(posLiquidity).toString(10),
+        tickLower: existingPosition?.tickLower,
+        tickUpper: existingPosition?.tickUpper,
+      })
+
+      onAlgebraMigrate({
+        existingPosition: existedPosition,
+        currencyA,
+        amountA,
+        currencyB,
+        amountB,
+        mintInfo: {
+          position,
+          isPoolExist: Boolean(fusionStateV3 === PoolState.EXISTS),
+        },
+        feeValue0,
+        feeValue1,
+        tokenId: existingPosition?.tokenId,
+        isFarming: strategy?.isFarming,
+        callback: () => {
+          mutateManual()
+          push('/dashboard')
+        },
+      })
+    },
+    [
       amountA,
-      currencyB,
       amountB,
-      mintInfo: {
-        position,
-        isPoolExist: Boolean(fusionStateV3 === PoolState.EXISTS),
-      },
+      currencyA,
+      currencyB,
+      existingPosition?.tickLower,
+      existingPosition?.tickUpper,
+      existingPosition?.tokenId,
+      fee,
       feeValue0,
       feeValue1,
-      tokenId: existingPosition?.tokenId,
-      isFarming: strategy?.isFarming,
-      callback: () => {
-        mutateManual()
-        push('/dashboard')
-      },
-    })
-  }
+      fusionStateV3,
+      mutateManual,
+      onAlgebraMigrate,
+      poolLiquidity,
+      posLiquidity,
+      positionV2,
+      price,
+      push,
+      strategy?.isFarming,
+      tick,
+    ],
+  )
 
-  const onSubmit = () => {
+  const onSubmit = useCallback(() => {
     if (!existingPosition?.tokenId) {
       warnToast('you not own this position')
     }
@@ -241,10 +272,9 @@ export function ManualMigrationPage({ tokenId }) {
     if (outOfRange) {
       setIsOpenAdjust(true)
     } else {
-      // setIsOpenAdjust(true)
       handleMigrate()
     }
-  }
+  }, [existingPosition?.tokenId, handleMigrate, outOfRange])
 
   if (!existingPosition) {
     return <Loading />
@@ -271,7 +301,7 @@ export function ManualMigrationPage({ tokenId }) {
           </div>
 
           <div className='flex items-center justify-center'>
-            <ArrowRightIcon className='mx-auto h-5 w-5 max-lg:rotate-90' />
+            <ArrowRightIcon className='mx-auto h-5 w-5 rotate-90 md:rotate-0' />
           </div>
 
           <div className='flex h-full w-full flex-col'>
