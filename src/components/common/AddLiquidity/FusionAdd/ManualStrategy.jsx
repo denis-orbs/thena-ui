@@ -14,7 +14,6 @@ import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
-import SelectToken from '@/modules/Pools/SelectToken'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import {
@@ -167,27 +166,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
   return (
     <>
       <div className='space-y-4'>
-        {!position && (
-          <article className='hidden gap-4 lg:grid lg:grid-cols-2'>
-            <SelectToken
-              selectedAsset={firstAsset}
-              otherAsset={secondAsset}
-              hiddenTokens={[secondAsset?.address]}
-              placeHolder={t('Select Token')}
-              dropdownAlign='left'
-              isDisabled
-            />
-            <SelectToken
-              selectedAsset={secondAsset}
-              otherAsset={firstAsset}
-              hiddenTokens={[firstAsset?.address]}
-              placeHolder={t('Select Token')}
-              dropdownAlign='right'
-              isDisabled
-            />
-          </article>
-        )}
-
         {mintInfo.noLiquidity && (
           <div className='!mt-4 flex flex-col gap-4 md:!mt-8'>
             <WarningStartingPrice />
@@ -317,7 +295,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
       {strategy && (
         <div className={cn('flex flex-col gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div className='flex items-center justify-between'>
-            <NewTextSubHeading className='text-sm lg:text-xl'>{t('Liquidity Range')}</NewTextSubHeading>
+            <NewTextSubHeading>{t('Liquidity Range')}</NewTextSubHeading>
           </div>
 
           {activePreset === Presets.FULL && fullRangeWarningShown && (

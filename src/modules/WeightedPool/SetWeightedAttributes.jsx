@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextSubHeading, TextHeading, TextSubHeading } from '@/components/typography'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { formatAmount, isInvalidAmount } from '@/lib/utils'
@@ -62,7 +62,7 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
 
   return (
     <div className='flex h-full flex-col gap-4 lg:relative'>
-      <div className='flex flex-col justify-between gap-4 xl:flex-row 2xl:gap-8'>
+      <div className='flex flex-col justify-between gap-4 md:gap-8 xl:flex-row'>
         <div className='flex flex-[7] flex-col gap-4 lg:gap-[14px] xl:min-h-full'>
           <TextHeading className='font-archia text-xl font-semibold md:text-2xl lg:text-3xl'>
             {t('Weighted Pool')}
@@ -89,11 +89,9 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
           />
         )}
       </div>
-      <div className='space-y-4'>
+      <div className='space-y-2 md:space-y-4'>
         <div className='flex flex-col-reverse gap-4'>
-          <TextHeading className='flex-2 text-lg md:text-xl lg:flex-1 lg:font-archia lg:text-3xl lg:font-semibold'>
-            {t('Set Initial Liquidity')}
-          </TextHeading>
+          <NewTextSubHeading>{t('Set Initial Liquidity')}</NewTextSubHeading>
           {tokensAndWeights.length > 0 && totalValueInUsd < 20000 ? (
             <div className='flex flex-1 gap-4 rounded-lg border border-warn-900 bg-warn-950 px-4 py-5 lg:flex-2 lg:items-center lg:p-8'>
               <InfoIcon className='size-5 min-h-5 min-w-5 !stroke-warn-600 lg:size-8 lg:min-w-8' />
@@ -116,7 +114,7 @@ function SetWeightedAttributes({ tokensAndWeights, fees, setFees, setTokenAndWei
           tokensAndWeights={tokensAndWeights}
         />
       </div>
-      <div className='flex flex-col gap-2 lg:mt-4'>
+      <div className='mt-8 flex flex-col gap-2 md:mt-4'>
         <EmphasisButton className='hidden w-full max-lg:block' onClick={() => router.push('/pools')}>
           {t('Cancel')}
         </EmphasisButton>

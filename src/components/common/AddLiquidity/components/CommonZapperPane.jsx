@@ -193,7 +193,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
 
   return (
     <div className='flex flex-col gap-8'>
-      <div className='relative flex w-full flex-col gap-4'>
+      <div className='relative flex w-full flex-col gap-2 md:gap-4'>
         <WarningZapper />
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <div className='space-y-2'>
@@ -289,7 +289,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
       {account ? (
         <div
           className={cn(
-            'mt-auto flex w-full flex-col items-center gap-2 lg:flex-row',
+            'mt-auto flex w-full flex-col items-center gap-2 max-md:!mt-8 lg:flex-row',
             !isUseTokenInPair && (isLoading1 || isLoading0) && 'hidden',
           )}
         >
@@ -321,7 +321,7 @@ export function CommonZapperPane({ asset0, asset1, strategy, onShowModalSuccess,
           </PrimaryButton>
         </div>
       ) : (
-        <ConnectButton className='w-full' />
+        <ConnectButton className='w-full max-md:!mt-8' />
       )}
     </div>
   )

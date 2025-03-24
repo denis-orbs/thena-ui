@@ -230,7 +230,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
   }, [checkAllWeightingHigherThanZero, t, totalWeight])
 
   return (
-    <div className='relative flex h-full flex-col gap-4'>
+    <div className='relative flex h-full flex-col gap-2 md:gap-4'>
       <div className='flex flex-col-reverse gap-4'>
         <NewTextSubHeading className='flex-2 lg:flex-1'>{t('Choose Tokens Weights')}</NewTextSubHeading>
         {checkError && <div className='flex flex-1 flex-col gap-2 lg:flex-2'>{checkError && renderMessages()}</div>}
@@ -239,7 +239,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
         className={cn(
           'grid grid-cols-1 gap-4 md:grid-cols-2 lg:mb-16 2xl:grid-cols-3',
           tokenSelected.length === 2 && '2xl:grid-cols-2',
-          'pb-4 max-lg:border-b max-lg:border-neutral-700',
+          'max-lg:border-b max-lg:border-neutral-700 md:pb-4',
         )}
       >
         {tokenSelected.map((token, index) => (
@@ -255,7 +255,7 @@ export default function ChooseTokenAndWeights({ setTokenAndWeights, tokensAndWei
           />
         ))}
       </div>
-      <div className='mt-auto flex flex-col gap-2 lg:absolute lg:-bottom-[92px] lg:flex-row lg:gap-4'>
+      <div className='!mt-8 flex flex-col gap-2 md:mt-auto lg:absolute lg:-bottom-[92px] lg:flex-row lg:gap-4'>
         <EmphasisButton onClick={() => push('/pools')} className='w-full lg:w-fit'>
           {t('Cancel')}
         </EmphasisButton>

@@ -159,7 +159,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
             {strategy?.isAutomatic && (
               <div className='pt-8'>
-                <NewTextSubHeading className='md:text-2xl'>{t('Liquidity Range')}</NewTextSubHeading>
+                <NewTextSubHeading>{t('Liquidity Range')}</NewTextSubHeading>
                 <AutomaticLiquidityChart
                   currencyA={currencyA ?? undefined}
                   currencyB={currencyB ?? undefined}

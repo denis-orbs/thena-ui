@@ -260,7 +260,7 @@ function PairStrategy({ pair }) {
         </div>
 
         <div className='flex flex-col gap-4'>
-          <NewTextSubHeading className='text-sm lg:text-xl'>{t('Liquidity Range')}</NewTextSubHeading>
+          <NewTextSubHeading>{t('Liquidity Range')}</NewTextSubHeading>
 
           <div className='flex flex-col gap-2 lg:gap-8'>
             <LiquidityChartRangeInput

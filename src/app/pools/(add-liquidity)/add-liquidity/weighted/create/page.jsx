@@ -137,7 +137,7 @@ export default function CreateWeightedPoolPage() {
 
   return (
     <LayoutWithBackButton>
-      <div className='flex flex-col gap-4 md:gap-8 lg:gap-12'>
+      <div className='flex flex-col gap-4 md:gap-8'>
         <div className='flex items-center gap-8'>
           <ScalesIcon className='hidden size-14 lg:block' />
           <NewTextHeading>{t('Create Weighted Pool')}</NewTextHeading>
@@ -157,7 +157,7 @@ export default function CreateWeightedPoolPage() {
             />
           </div>
           {currentStep !== 3 && (
-            <div className={cn('hidden flex-1 flex-col gap-8 lg:flex lg:flex-[4]', currentStep === 1 && 'block')}>
+            <div className={cn('hidden flex-1 flex-col gap-2 lg:flex lg:flex-[4]', currentStep === 1 && 'block')}>
               <SideBarCreateWeighted fees={fees} step={currentStep} tokensAndWeights={tokensAndWeights} />
             </div>
           )}
