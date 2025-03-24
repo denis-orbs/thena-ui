@@ -1,6 +1,7 @@
 import { max as getMax, scaleLinear } from 'd3'
 import { useEffect, useMemo, useRef } from 'react'
 
+import { AxisRight } from './AxisRight'
 import { Brush2 } from './Brush2'
 import { HorizontalArea } from './HorizontalArea'
 import { HorizontalLine } from './HorizontalLine'
@@ -13,7 +14,7 @@ export default function ActiveLiquidityChart({
   data: { series, current, min, max },
   styles,
   dimensions: { width, height, contentWidth, axisLabelPaneWidth },
-  margins,
+  // margins,
   interactive = true,
   brushDomain,
   brushLabels,
@@ -23,28 +24,6 @@ export default function ActiveLiquidityChart({
   disableBrush = false,
 }) {
   const svgRef = useRef(null)
-  // const [hoverY, setHoverY] = useState()
-
-  // const { xScale, yScale } = useMemo(() => {
-  //   const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
-  //   const scales = {
-  //     yScale: scaleLinear().domain([min, max]).range([height, 0]),
-  //     xScale: scaleLinear()
-  //       .domain([0, getMax(activeEntries, xAccessor)])
-  //       .range([width - axisLabelPaneWidth, width - axisLabelPaneWidth - contentWidth]),
-  //   }
-
-  //   return scales
-  // }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth])
-  // const { preset } = useSelector(state => state.fusion)
-
-  // const isFullRange = useMemo(() => preset === Presets.FULL, [preset])
-
-  const [innerWidth] = useMemo(
-    () => [height - margins.top - margins.bottom, width - margins.left - margins.right],
-    [width, height, margins],
-  )
-  // console.log({series})
   const { xScale, yScale } = useMemo(() => {
     const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
     const scales = {
@@ -74,7 +53,7 @@ export default function ActiveLiquidityChart({
       <svg
         width='100%'
         height='100%'
-        viewBox={`0 0 ${width} ${height}`}
+        viewBox={`0 14 ${width} ${height}`}
         ref={svgRef}
         // onMouseMove={event => {
         //   if (!svgRef.current) {
@@ -93,7 +72,7 @@ export default function ActiveLiquidityChart({
       >
         <defs>
           <clipPath id={`${id}-chart-clip`}>
-            <rect x='0' y='0' width={innerWidth} height={height} />
+            <rect x='0' y='0' width={width} height={height} />
           </clipPath>
 
           {brushDomain && (
@@ -135,14 +114,7 @@ export default function ActiveLiquidityChart({
             )}
           </g>
 
-          {/* <AxisRight
-            yScale={yScale}
-            min={min}
-            current={current}
-            max={max}
-            offset={width - contentWidth}
-            height={height}
-          /> */}
+          <AxisRight yScale={yScale} offset={width - axisLabelPaneWidth} />
 
           {/* <rect
             className='size-full cursor-grab fill-transparent active:cursor-grabbing'

@@ -3,10 +3,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import usePrevious from '@/hooks/usePrevious'
 
-import { brushHandleAccentPathV2, brushHandlePathV2, OffScreenHandleV2 } from './svg'
+import { brushHandlePathV2, OffScreenHandleV2 } from './svg'
 
 // flips the handles draggers when close to the container edges
-const FLIP_HANDLE_THRESHOLD_PX = 20
+// const FLIP_HANDLE_THRESHOLD_PX = 20
 
 // margin to prevent tick snapping from putting the brush off screen
 const BRUSH_EXTENT_MARGIN_PX = 2
@@ -35,6 +35,7 @@ export const Brush2 = ({
   interactive,
   brushExtent,
   setBrushExtent,
+  brushLabelValue,
   width,
   height,
   northHandleColor,
@@ -142,8 +143,8 @@ export const Brush2 = ({
 
   const normalizedBrushExtent = normalizeExtent(localBrushExtent ?? brushExtent)
 
-  const flipNorthHandle = yScale(normalizedBrushExtent[1]) < FLIP_HANDLE_THRESHOLD_PX
-  const flipSouthHandle = yScale(normalizedBrushExtent[0]) > height - FLIP_HANDLE_THRESHOLD_PX
+  // const flipNorthHandle = yScale(normalizedBrushExtent[1]) < FLIP_HANDLE_THRESHOLD_PX
+  // const flipSouthHandle = yScale(normalizedBrushExtent[0]) > height - FLIP_HANDLE_THRESHOLD_PX
 
   const showNorthArrow =
     normalizedBrushExtent && (yScale(normalizedBrushExtent[0]) < 0 || yScale(normalizedBrushExtent[1]) < 0)
@@ -177,42 +178,77 @@ export const Brush2 = ({
           <>
             {northHandleInView ? (
               <g
-                transform={`translate(0, ${Math.max(0, yScale(normalizedBrushExtent[1]))}), scale(1, ${
-                  flipNorthHandle ? '1' : '-1'
-                })`}
+                transform={`translate(0, ${Math.max(0, yScale(normalizedBrushExtent[1]))}), scale(1, ${'1'})`}
                 cursor={interactive ? 'ns-resize' : 'default'}
                 pointerEvents='none'
               >
                 <g>
-                  <path color={southHandleColor} stroke={southHandleColor} opacity={0.6} d={brushHandlePathV2(width)} />
                   <path
                     color={southHandleColor}
                     stroke={southHandleColor}
-                    strokeWidth={4}
-                    strokeLinecap='round'
-                    d={brushHandleAccentPathV2(width)}
+                    strokeWidth={2}
+                    opacity={0.6}
+                    d={brushHandlePathV2(width)}
                   />
+                  <rect x='0' y='-18' width='110' height='36' rx='10' fill='#B000AA' />
+                  <g transform='translate(16, 0)'>
+                    <path
+                      d='M-5 -2l5-5 5 5'
+                      stroke='#F3F2F4'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M-5 2l5 5 5-5'
+                      stroke='#F3F2F4'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </g>
+                  <text x='64' y='5' fill='#FCE6FB' fontSize='14' textAnchor='middle'>
+                    {brushLabelValue('w', localBrushExtent[1])}
+                  </text>
                 </g>
               </g>
             ) : null}
 
             {southHandleInView ? (
               <g
-                transform={`translate(0, ${yScale(normalizedBrushExtent[0])}), scale(1, ${
-                  flipSouthHandle ? '-1' : '1'
-                })`}
+                transform={`translate(0, ${yScale(normalizedBrushExtent[0])}), scale(1, ${'1'})`}
                 cursor={interactive ? 'ns-resize' : 'default'}
                 pointerEvents='none'
               >
                 <g>
-                  <path color={southHandleColor} stroke={southHandleColor} opacity={0.6} d={brushHandlePathV2(width)} />
                   <path
                     color={southHandleColor}
                     stroke={southHandleColor}
-                    strokeWidth={4}
-                    strokeLinecap='round'
-                    d={brushHandleAccentPathV2(width)}
+                    strokeWidth={2}
+                    opacity={0.6}
+                    d={brushHandlePathV2(width)}
+                    id='south-line-handle-path'
                   />
+                  <rect x='0' y='-18' width='110' height='36' rx='10' fill='#B000AA' />
+                  <g transform='translate(16, 0)'>
+                    <path
+                      d='M-5 -2l5-5 5 5'
+                      stroke='#F3F2F4'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                    <path
+                      d='M-5 2l5 5 5-5'
+                      stroke='#F3F2F4'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </g>
+                  <text x='64' y='5' fill='#FCE6FB' fontSize='14' textAnchor='middle'>
+                    {brushLabelValue('w', localBrushExtent[0])}
+                  </text>
                 </g>
               </g>
             ) : null}
@@ -249,16 +285,16 @@ export const Brush2 = ({
     [
       id,
       northHandleColor,
-      southHandleColor,
       width,
       height,
       normalizedBrushExtent,
       northHandleInView,
       yScale,
-      flipNorthHandle,
       interactive,
+      southHandleColor,
+      brushLabelValue,
+      localBrushExtent,
       southHandleInView,
-      flipSouthHandle,
       showNorthArrow,
       showSouthArrow,
     ],

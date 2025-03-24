@@ -1,9 +1,7 @@
 import { axisRight, select } from 'd3'
-import React, { useMemo } from 'react'
+import React from 'react'
 
 import './style.css'
-
-import { formatAmount } from '@/lib/utils'
 
 function Axis({ axisGenerator }) {
   const axisRef = axis => {
@@ -17,32 +15,12 @@ function Axis({ axisGenerator }) {
   return <g ref={axisRef} />
 }
 
-const TEXT_Y_OFFSET = 5
+// const TEXT_Y_OFFSET = 5
 
-export function AxisRight({ yScale, offset = 0, min, current, max, height }) {
-  console.log({ yScale: yScale(min), offset, min, current, max, height })
-  const tickValues = useMemo(() => {
-    const minCoordinate = min ? yScale(min) : undefined
-    const maxCoordinate = max ? yScale(max) : undefined
-    const currentCoordinate = current ? yScale(current) : undefined
-    if (minCoordinate && currentCoordinate && Math.abs(minCoordinate - currentCoordinate) < TEXT_Y_OFFSET) {
-      return [min, max].filter(Boolean)
-    }
-    if (maxCoordinate && currentCoordinate && Math.abs(maxCoordinate - currentCoordinate) < TEXT_Y_OFFSET) {
-      return [min, max].filter(Boolean)
-    }
-    return [min, current, max].filter(Boolean)
-  }, [current, max, min, yScale])
-
+export function AxisRight({ yScale, offset = 0 }) {
   return (
-    <g className='axis-bottom' transform={`translate(${offset}, 0)`}>
-      <Axis
-        axisGenerator={axisRight(yScale)
-          .tickValues(tickValues)
-          .tickFormat(d => formatAmount(d))}
-        height={height}
-        yScale={yScale}
-      />
+    <g className='axis-bottom khanhnt' transform={`translate(${offset}, 0)`}>
+      <Axis axisGenerator={axisRight(yScale).ticks(6)} yScale={yScale} />
     </g>
   )
 }

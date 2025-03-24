@@ -48,12 +48,12 @@ export const brushHandleAccentPath = () =>
     'z',
   ].join(' ')
 
-export const brushHandleAccentPathV2 = width => {
-  const lineStart = width / 2 - 15
+export const brushHandleAccentPathV2 = () => {
+  const lineStart = 25
   return [
     'M 0 0', // move to origin
-    `m ${lineStart} 8`, // move to start of accent line
-    'h 30', // horizontal line
+    `m ${lineStart} 18`, // move to start of accent line
+    'h 104', // horizontal line
   ].join(' ')
 }
 

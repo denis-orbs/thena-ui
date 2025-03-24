@@ -2,16 +2,16 @@ import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 
-function Chart2({ data, timeWindow, current, upper, lower, setBoundaryPrices }) {
+function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisiblePrice }) {
   const chartRef = useRef(null)
   const chartCreated = useRef(null)
-  const [chartBoundaries, setChartBoundaries] = useState({ min: null, max: null })
+  console.log({ minVisiblePrice, maxVisiblePrice })
 
   const transformedData = useMemo(() => {
     if (data) {
@@ -21,17 +21,13 @@ function Chart2({ data, timeWindow, current, upper, lower, setBoundaryPrices }) 
       }))
 
       if (baseData.length > 0 && setBoundaryPrices) {
-        const values = baseData.map(item => item.value)
-        const minPrice = Math.min(...values)
-        const maxPrice = Math.max(...values)
-        setChartBoundaries({ min: minPrice, max: maxPrice })
-        setBoundaryPrices([minPrice, maxPrice])
+        setBoundaryPrices([minVisiblePrice, maxVisiblePrice])
       }
 
       return baseData
     }
     return []
-  }, [data, setBoundaryPrices])
+  }, [data, maxVisiblePrice, minVisiblePrice, setBoundaryPrices])
 
   useEffect(() => {
     if (!chartRef?.current) return
@@ -49,12 +45,13 @@ function Chart2({ data, timeWindow, current, upper, lower, setBoundaryPrices }) 
           top: 0.1,
           bottom: 0.1,
         },
+        visible: false,
         borderVisible: false,
         mode: 1,
         priceFormatter: price => `$${price.toFixed(2)} USD`,
       },
       timeScale: {
-        visible: false,
+        visible: true,
         borderVisible: false,
         secondsVisible: false,
         tickMarkFormatter: unixTime =>
@@ -106,60 +103,38 @@ function Chart2({ data, timeWindow, current, upper, lower, setBoundaryPrices }) 
 
     if (transformedData.length > 0) {
       const values = transformedData.map(item => item.value)
-      const minValue = Math.min(...values)
-      const maxValue = Math.max(...values)
+      const minValueFromData = Math.min(...values)
+      const maxValueFromData = Math.max(...values)
+
+      const minValue = minVisiblePrice !== undefined ? minVisiblePrice : minValueFromData
+      const maxValue = maxVisiblePrice !== undefined ? maxVisiblePrice : maxValueFromData
 
       chart.priceScale('right').applyOptions({
         scaleMargins: {
-          top: 0, // TODO: adjust top and bottom margin.
-          bottom: 0,
+          top: 0.1,
+          bottom: 0.1,
         },
         autoScale: false,
         minValue,
         maxValue,
       })
 
+      newSeries.applyOptions({
+        autoscaleInfoProvider: () => ({
+          priceRange: {
+            minValue,
+            maxValue,
+          },
+        }),
+      })
+
       chart.timeScale().fitContent()
-    }
-
-    // Thêm các price lines
-    if (lower) {
-      newSeries.createPriceLine({
-        price: chartBoundaries?.[0],
-        color: '#84007F',
-        lineWidth: 1,
-        lineStyle: 1,
-        axisLabelVisible: true,
-        title: 'lower',
-      })
-    }
-
-    if (current) {
-      newSeries.createPriceLine({
-        price: current,
-        color: '#F8CCF6',
-        lineWidth: 1,
-        lineStyle: 1,
-        axisLabelVisible: true,
-        title: 'current',
-      })
-    }
-
-    if (upper) {
-      newSeries.createPriceLine({
-        price: chartBoundaries?.[1],
-        color: '#E333DD',
-        lineWidth: 1,
-        lineStyle: 1,
-        axisLabelVisible: true,
-        title: 'upper',
-      })
     }
 
     return () => {
       chart.remove()
     }
-  }, [timeWindow, upper, lower, transformedData, chartBoundaries, current])
+  }, [timeWindow, transformedData, minVisiblePrice, maxVisiblePrice])
 
   return (
     <div className='flex h-full w-full flex-1'>
