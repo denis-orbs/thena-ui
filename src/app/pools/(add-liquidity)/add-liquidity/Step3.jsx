@@ -44,7 +44,7 @@ export default function Step3({ setStep }) {
   }
 
   return (
-    <div className='space-y-10'>
+    <div>
       {pairType === PAIR_TYPES.WEIGHTED && (
         <AddLiquidityWeightedPool pool={pair} showSidebar setCurrentStep={setStep} />
       )}

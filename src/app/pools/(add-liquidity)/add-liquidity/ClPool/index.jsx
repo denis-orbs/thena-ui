@@ -101,12 +101,12 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
   return (
     <>
-      <h4 className='flex flex-row items-center gap-4 2xl:gap-8'>
+      <div className='flex flex-row items-center gap-4 md:gap-8'>
         <NewIconGroup logo1={firstAsset?.logoURI ?? UNKNOWN_LOGO} logo2={secondAsset?.logoURI ?? UNKNOWN_LOGO} />
         <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
-      </h4>
+      </div>
 
-      <section className='!mt-4 grid w-full grid-cols-1 gap-4 lg:!mt-12 lg:grid-cols-3'>
+      <section className='mt-4 grid w-full grid-cols-1 gap-4 md:!mt-8 lg:grid-cols-3'>
         <div id='LEFT-BLOCK' className='col-span-2 w-full gap-4 lg:gap-6'>
           <ChooseStrategy
             firstAsset={firstAsset}
@@ -145,7 +145,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
         </div>
 
         <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block')}>
-          <div className='hidden h-full flex-[4] flex-col gap-5 lg:flex'>
+          <div className='hidden h-full flex-[4] flex-col gap-2 lg:flex'>
             {pair ? (
               <div className={cn('mt-0', { 'mt-[101px]': !!position })}>
                 <PoolAttributesSection strategy={strategy} pair={pair} />
@@ -159,7 +159,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
 
             {strategy?.isAutomatic && (
               <div className='pt-8'>
-                <NewTextSubHeading className='lg:text-xl'>{t('Liquidity Range')}</NewTextSubHeading>
+                <NewTextSubHeading className='md:text-2xl'>{t('Liquidity Range')}</NewTextSubHeading>
                 <AutomaticLiquidityChart
                   currencyA={currencyA ?? undefined}
                   currencyB={currencyB ?? undefined}
@@ -173,7 +173,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
               </div>
             )}
 
-            <div className={cn('sticky top-48 hidden', !strategy?.isAutomatic && 'block')}>
+            <div className={cn('sticky top-48 hidden pl-4', !strategy?.isAutomatic && 'block')}>
               <PriceHistoryChart
                 baseCurrency={baseCurrency}
                 quoteCurrency={quoteCurrency}

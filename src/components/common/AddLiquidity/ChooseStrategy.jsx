@@ -250,7 +250,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
-      <div className='flex-[6] space-y-4 lg:space-y-8'>
+      <div className='flex-[6] space-y-4 md:space-y-8'>
         <StrategyTitle
           strategyCount={strategyAutoData.length}
           isAutomatic={isAutomatic}
@@ -259,7 +259,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
         />
 
         {pair && (
-          <div className={cn('!mt-2 hidden max-lg:block')}>
+          <div className={cn('!mt-2 hidden max-lg:block md:!mt-4')}>
             <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
           </div>
         )}
@@ -315,16 +315,19 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
 
   return (
     <article>
-      <div className='flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:justify-between'>
+      <div className='flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between lg:py-1'>
         <NewTextSubHeading className='font-semibold text-neutral-50'>
           {isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}
         </NewTextSubHeading>
 
-        <div className={cn('flex gap-2 max-lg:w-full', strategyCount === 0 && 'hidden')}>
+        <div className={cn('flex gap-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
           <Selection
-            className='w-full max-lg:grid max-lg:grid-cols-2 lg:w-fit [&>button]:h-full [&>button]:font-medium'
+            className='w-full max-md:grid max-md:grid-cols-2 md:w-fit md:min-w-[260px] [&>button]:h-full [&>button]:font-medium'
             data={strategyType}
             isTranslation={false}
+            classNames={{
+              items: 'md:w-1/2',
+            }}
           />
           <i
             onClick={() => setShow(!show)}

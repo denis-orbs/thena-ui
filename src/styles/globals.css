@@ -85,6 +85,9 @@
   .layout {
     @apply mx-4 mt-[64px] max-w-[1464px] pb-[150px] pt-6 lg:mx-[40px] lg:mt-[92px] lg:pb-20 lg:pt-16 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1464px];
   }
+  .layout-addliquidity {
+    @apply mx-4 mb-16 mt-4 max-w-[1464px] md:mx-8 md:mb-12 md:mt-8 lg:mx-12 lg:mb-[180px] lg:mt-16 xl:mx-[120px] 2xl:mx-auto 2xl:w-[1464px];
+  }
 
   .layout-top {
     @apply mt-[64px] lg:mt-[92px];

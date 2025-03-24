@@ -80,8 +80,8 @@ export default function Step1() {
   return (
     <div className='space-y-4 lg:space-y-12'>
       <h4 className='flex flex-row items-center gap-2 lg:gap-4 2xl:gap-8'>
-        <PoolGroupIcon className='h-7 lg:h-12 2xl:h-16' />
-        <NewTextHeading className='text-xl'>{t('Choose Liquidity Type')}</NewTextHeading>
+        <PoolGroupIcon className='h-7 w-10 md:h-12 md:w-20' />
+        <NewTextHeading>{t('Choose Liquidity Type')}</NewTextHeading>
       </h4>
 
       <div className='grid lg:grid-cols-add-liquidity-layout'>
@@ -89,8 +89,8 @@ export default function Step1() {
           <NewTextSubHeading className='mb-4 hidden lg:block'>{t('Liquidity Pool Type')}</NewTextSubHeading>
           <SelectorGrid data={poolTypesData} isGrid={false} classNames={{ item: 'bg-transparent' }} />
 
-          <div className='mt-8 flex flex-col gap-2 lg:mt-12'>
-            <EmphasisButton className='lg:hidden' onClick={() => push('/pools')}>
+          <div className='mt-8 flex flex-col gap-2 md:mt-12'>
+            <EmphasisButton className='md:hidden' onClick={() => push('/pools')}>
               {t('Cancel')}
             </EmphasisButton>
             <PrimaryButton onClick={() => updateSearchParams({ step: 2 }, true)}>{t('Next')}</PrimaryButton>

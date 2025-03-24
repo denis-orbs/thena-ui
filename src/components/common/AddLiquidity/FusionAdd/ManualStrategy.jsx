@@ -363,21 +363,23 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
           </div>
 
           {!position && (
-            <RangeSelector
-              price={price ? parseFloat(price) : undefined}
-              priceLower={priceLower}
-              priceUpper={priceUpper}
-              getDecrementLower={getDecrementLower}
-              getIncrementLower={getIncrementLower}
-              getDecrementUpper={getDecrementUpper}
-              getIncrementUpper={getIncrementUpper}
-              onLeftRangeInput={onLeftRangeInput}
-              onRightRangeInput={onRightRangeInput}
-              currencyA={baseCurrency}
-              currencyB={quoteCurrency}
-              mintInfo={mintInfo}
-              disabled={!startPriceTypedValue && !mintInfo.price}
-            />
+            <div className='max-md:mt-4'>
+              <RangeSelector
+                price={price ? parseFloat(price) : undefined}
+                priceLower={priceLower}
+                priceUpper={priceUpper}
+                getDecrementLower={getDecrementLower}
+                getIncrementLower={getIncrementLower}
+                getDecrementUpper={getDecrementUpper}
+                getIncrementUpper={getIncrementUpper}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                currencyA={baseCurrency}
+                currencyB={quoteCurrency}
+                mintInfo={mintInfo}
+                disabled={!startPriceTypedValue && !mintInfo.price}
+              />
+            </div>
           )}
 
           {!position && (
