@@ -27,7 +27,7 @@ import {
 import { Presets } from '@/state/fusion/reducer'
 import { TransferIcon, WarningTriangleIcon } from '@/svgs'
 
-import LiquidityChartRangeInput from './LiquidityChartRangeInput'
+import LiquidityChartRangeInput2 from './LiquidityChartRangeInput/LiuidityChartRangeInput2'
 import PriceHistoryChart from './PriceHistoryChart'
 import { PresetRanges } from '../components/PresetRange'
 import { RangeSelector } from '../components/RangeSelector'
@@ -328,7 +328,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
 
           <div>
             <div className='mt-0'>
-              <LiquidityChartRangeInput
+              {/* <LiquidityChartRangeInput
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}
                 feeAmount={mintInfo.dynamicFee}
@@ -339,6 +339,19 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 onLeftRangeInput={onLeftRangeInput}
                 onRightRangeInput={onRightRangeInput}
                 interactive={!position}
+              /> */}
+              <LiquidityChartRangeInput2
+                currencyA={baseCurrency ?? undefined}
+                currencyB={quoteCurrency ?? undefined}
+                feeAmount={mintInfo.dynamicFee}
+                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+                price={price ? parseFloat(price) : undefined}
+                priceLower={position?.priceLower ?? priceLower}
+                priceUpper={position?.priceUpper ?? priceUpper}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                interactive={!position}
+                handleShow
               />
             </div>
             <div className={cn('-mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>

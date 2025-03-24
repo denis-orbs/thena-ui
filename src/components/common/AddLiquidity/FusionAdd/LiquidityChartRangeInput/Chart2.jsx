@@ -2,15 +2,16 @@ import BigNumber from 'bignumber.js'
 import dayjs from 'dayjs'
 import { createChart } from 'lightweight-charts'
 import { darken } from 'polished'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 
-function Chart2({ data, timeWindow, current, upper, lower }) {
+function Chart2({ data, timeWindow, current, upper, lower, setBoundaryPrices }) {
   const chartRef = useRef(null)
   const chartCreated = useRef(null)
+  const [chartBoundaries, setChartBoundaries] = useState({ min: null, max: null })
 
   const transformedData = useMemo(() => {
     if (data) {
@@ -18,10 +19,19 @@ function Chart2({ data, timeWindow, current, upper, lower }) {
         time: time.getTime(),
         value,
       }))
+
+      if (baseData.length > 0 && setBoundaryPrices) {
+        const values = baseData.map(item => item.value)
+        const minPrice = Math.min(...values)
+        const maxPrice = Math.max(...values)
+        setChartBoundaries({ min: minPrice, max: maxPrice })
+        setBoundaryPrices([minPrice, maxPrice])
+      }
+
       return baseData
     }
     return []
-  }, [data])
+  }, [data, setBoundaryPrices])
 
   useEffect(() => {
     if (!chartRef?.current) return
@@ -41,23 +51,18 @@ function Chart2({ data, timeWindow, current, upper, lower }) {
         },
         borderVisible: false,
         mode: 1,
-        autoScale: true, // Disable auto-scaling
-        priceFormatter: price => `$${price.toFixed(2)} USD`, // Custom text
+        priceFormatter: price => `$${price.toFixed(2)} USD`,
       },
       timeScale: {
-        visible: true,
+        visible: false,
         borderVisible: false,
         secondsVisible: false,
         tickMarkFormatter: unixTime =>
           timeWindow === PairDataTimeWindow.DAY ? dayjs(unixTime).format('HH:mm') : dayjs(unixTime).format('MMM D'),
       },
       grid: {
-        horzLines: {
-          visible: false,
-        },
-        vertLines: {
-          visible: false,
-        },
+        horzLines: { visible: false },
+        vertLines: { visible: false },
       },
       crosshair: {
         horzLine: {
@@ -95,15 +100,32 @@ function Chart2({ data, timeWindow, current, upper, lower }) {
       priceLineVisible: false,
       lastValueVisible: false,
     })
+
     chartCreated.current = chart
     newSeries.setData(transformedData)
-    if (chartCreated.current) {
+
+    if (transformedData.length > 0) {
+      const values = transformedData.map(item => item.value)
+      const minValue = Math.min(...values)
+      const maxValue = Math.max(...values)
+
+      chart.priceScale('right').applyOptions({
+        scaleMargins: {
+          top: 0, // TODO: adjust top and bottom margin.
+          bottom: 0,
+        },
+        autoScale: false,
+        minValue,
+        maxValue,
+      })
+
       chart.timeScale().fitContent()
     }
-    // Add custom price lines for upper, current, and lower levels
+
+    // Thêm các price lines
     if (lower) {
       newSeries.createPriceLine({
-        price: lower,
+        price: chartBoundaries?.[0],
         color: '#84007F',
         lineWidth: 1,
         lineStyle: 1,
@@ -125,9 +147,8 @@ function Chart2({ data, timeWindow, current, upper, lower }) {
 
     if (upper) {
       newSeries.createPriceLine({
-        price: upper,
+        price: chartBoundaries?.[1],
         color: '#E333DD',
-        axisLabelTextColor: '#000000',
         lineWidth: 1,
         lineStyle: 1,
         axisLabelVisible: true,
@@ -138,8 +159,7 @@ function Chart2({ data, timeWindow, current, upper, lower }) {
     return () => {
       chart.remove()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeWindow, upper, lower, transformedData, chartCreated?.current])
+  }, [timeWindow, upper, lower, transformedData, chartBoundaries, current])
 
   return (
     <div className='flex h-full w-full flex-1'>

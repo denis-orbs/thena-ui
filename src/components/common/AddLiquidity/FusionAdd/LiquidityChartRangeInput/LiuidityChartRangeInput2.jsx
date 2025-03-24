@@ -65,7 +65,7 @@ export default function LiquidityChartRangeInput2({
   handleShow = true,
 }) {
   const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
-
+  const [boundaryPrices, setBoundaryPrices] = useState()
   const { isLoading, error, formattedData } = useDensityChartData({
     currencyA,
     currencyB,
@@ -133,12 +133,23 @@ export default function LiquidityChartRangeInput2({
     timeWindow,
   })
 
+  console.log({ formattedData, pairPrices })
+
   console.log({ isLoadingPairPrices, errorPairPrices })
 
   const [showDiffIndicators, setShowDiffIndicators] = useState(false)
 
   const containerRef = useRef(null)
-  const sortedFormattedData = useMemo(() => formattedData?.sort((a, b) => a.price0 - b.price0), [formattedData])
+  const sortedFormattedData = useMemo(
+    () =>
+      pairPrices
+        ?.sort((a, b) => a.price0 - b.price0)
+        .map(item => ({
+          ...item,
+          activeLiquidity: item.time.getTime(),
+        })),
+    [pairPrices],
+  )
 
   const onBrushDomainChangeEnded = useCallback(
     (domain, mode) => {
@@ -200,13 +211,26 @@ export default function LiquidityChartRangeInput2({
     [isSorted, price, ticksAtLimit],
   )
 
+  const [chartSize, setChartSize] = useState({})
+
+  useEffect(() => {
+    if (containerRef?.current) {
+      console.log({ width: containerRef?.current?.offsetWidth, height: containerRef?.current?.offsetHeight })
+      setChartSize({
+        chartContainerWidth: containerRef?.current?.offsetWidth,
+        chartContainerHeight: containerRef?.current?.offsetHeight,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerRef?.current])
+
   const isUninitialized = !currencyA || !currencyB || (formattedData === undefined && !isLoading)
 
   return (
     <div className='flex flex-col gap-4'>
       <Tabs data={periods} />
 
-      <div className='relative flex min-h-[200px] w-full items-center justify-center'>
+      <div className='relative flex min-h-[300px] w-full items-center justify-center'>
         {isUninitialized ? (
           <TextHeading>Your position will appear here.</TextHeading>
         ) : isLoading ? (
@@ -226,12 +250,12 @@ export default function LiquidityChartRangeInput2({
               setShowDiffIndicators(false)
             }}
           >
-            <div className='h-full w-full'>
+            <div className='h-full w-full overflow-y-auto'>
               <div
-                className='relative h-full w-full'
+                className='relative h-full w-full overflow-y-auto'
                 style={{
-                  width: desktopSizes.chartContainerWidth,
-                  height: desktopSizes.chartHeight,
+                  width: chartSize?.chartContainerWidth,
+                  height: chartSize?.chartContainerHeight || 300,
                 }}
               >
                 <div className='absolute inset-0 z-0'>
@@ -239,8 +263,7 @@ export default function LiquidityChartRangeInput2({
                     data={pairPrices}
                     timeWindow={timeWindow}
                     current={Number(price)}
-                    lower={Number(priceLower)}
-                    upper={Number(priceUpper)}
+                    setBoundaryPrices={setBoundaryPrices}
                   />
                 </div>
                 <div className='absolute inset-0 z-10'>
@@ -248,12 +271,12 @@ export default function LiquidityChartRangeInput2({
                     data={{
                       series: sortedFormattedData,
                       current: price,
-                      min: Number(priceLower),
-                      max: Number(priceUpper),
+                      min: boundaryPrices?.[0],
+                      max: boundaryPrices?.[1],
                     }}
                     dimensions={{
-                      width: desktopSizes.chartContainerWidth,
-                      height: desktopSizes.chartHeight,
+                      width: chartSize?.chartContainerWidth,
+                      height: chartSize?.chartContainerHeight || 300,
                       contentWidth: desktopSizes.liquidityChartWidth,
                       axisLabelPaneWidth: desktopSizes.rightAxisWidth,
                     }}

@@ -3,6 +3,8 @@ import React, { useMemo } from 'react'
 
 import './style.css'
 
+import { formatAmount } from '@/lib/utils'
+
 function Axis({ axisGenerator }) {
   const axisRef = axis => {
     // eslint-disable-next-line no-unused-expressions
@@ -15,12 +17,32 @@ function Axis({ axisGenerator }) {
   return <g ref={axisRef} />
 }
 
-export const AxisRight = ({ yScale }) =>
-  useMemo(
-    () => (
-      <g className='axis-bottom' transform='translate(0, 0)'>
-        <Axis axisGenerator={axisRight(yScale).ticks(6)} />
-      </g>
-    ),
-    [yScale],
+const TEXT_Y_OFFSET = 5
+
+export function AxisRight({ yScale, offset = 0, min, current, max, height }) {
+  console.log({ yScale: yScale(min), offset, min, current, max, height })
+  const tickValues = useMemo(() => {
+    const minCoordinate = min ? yScale(min) : undefined
+    const maxCoordinate = max ? yScale(max) : undefined
+    const currentCoordinate = current ? yScale(current) : undefined
+    if (minCoordinate && currentCoordinate && Math.abs(minCoordinate - currentCoordinate) < TEXT_Y_OFFSET) {
+      return [min, max].filter(Boolean)
+    }
+    if (maxCoordinate && currentCoordinate && Math.abs(maxCoordinate - currentCoordinate) < TEXT_Y_OFFSET) {
+      return [min, max].filter(Boolean)
+    }
+    return [min, current, max].filter(Boolean)
+  }, [current, max, min, yScale])
+
+  return (
+    <g className='axis-bottom' transform={`translate(${offset}, 0)`}>
+      <Axis
+        axisGenerator={axisRight(yScale)
+          .tickValues(tickValues)
+          .tickFormat(d => formatAmount(d))}
+        height={height}
+        yScale={yScale}
+      />
+    </g>
   )
+}

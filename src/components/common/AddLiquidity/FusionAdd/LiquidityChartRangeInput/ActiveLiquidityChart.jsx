@@ -1,20 +1,16 @@
-import { max, scaleLinear } from 'd3'
+import { max as getMax, scaleLinear } from 'd3'
 import { useEffect, useMemo, useRef } from 'react'
-import { useSelector } from 'react-redux'
 
-import { Presets } from '@/state/fusion/reducer'
-
-import { AxisRight } from './AxisRight'
 import { Brush2 } from './Brush2'
 import { HorizontalArea } from './HorizontalArea'
 import { HorizontalLine } from './HorizontalLine'
 
-const xAccessor = d => d.price0
-const yAccessor = d => d.activeLiquidity
+const xAccessor = d => d.activeLiquidity
+const yAccessor = d => d.price0
 
 export default function ActiveLiquidityChart({
   id = 'liquidityChartRangeInput',
-  data: { series, current },
+  data: { series, current, min, max },
   styles,
   dimensions: { width, height, contentWidth, axisLabelPaneWidth },
   margins,
@@ -22,36 +18,44 @@ export default function ActiveLiquidityChart({
   brushDomain,
   brushLabels,
   onBrushDomainChange,
-  zoomLevels,
   handleShow,
+  // zoomLevels,
   disableBrush = false,
 }) {
   const svgRef = useRef(null)
   // const [hoverY, setHoverY] = useState()
-  const { preset } = useSelector(state => state.fusion)
 
-  const isFullRange = useMemo(() => preset === Presets.FULL, [preset])
+  // const { xScale, yScale } = useMemo(() => {
+  //   const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
+  //   const scales = {
+  //     yScale: scaleLinear().domain([min, max]).range([height, 0]),
+  //     xScale: scaleLinear()
+  //       .domain([0, getMax(activeEntries, xAccessor)])
+  //       .range([width - axisLabelPaneWidth, width - axisLabelPaneWidth - contentWidth]),
+  //   }
+
+  //   return scales
+  // }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth])
+  // const { preset } = useSelector(state => state.fusion)
+
+  // const isFullRange = useMemo(() => preset === Presets.FULL, [preset])
 
   const [innerWidth] = useMemo(
     () => [height - margins.top - margins.bottom, width - margins.left - margins.right],
     [width, height, margins],
   )
-
+  // console.log({series})
   const { xScale, yScale } = useMemo(() => {
+    const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
     const scales = {
+      yScale: scaleLinear().domain([min, max]).range([height, 0]),
       xScale: scaleLinear()
-        .domain([0, max(series, xAccessor)])
-        .range([0, width]),
-      yScale: scaleLinear()
-        .domain([
-          current * (isFullRange ? 0.2 : zoomLevels.initialMin),
-          current * (isFullRange ? 1.6 : zoomLevels.initialMax),
-        ])
-        .range([height, 0]),
+        .domain([0, getMax(activeEntries, xAccessor)])
+        .range([width - axisLabelPaneWidth, width - axisLabelPaneWidth - contentWidth]),
     }
 
     return scales
-  }, [series, width, current, isFullRange, zoomLevels.initialMin, zoomLevels.initialMax, height])
+  }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth])
 
   useEffect(() => {
     if (!brushDomain) {
@@ -129,16 +133,16 @@ export default function ActiveLiquidityChart({
                 containerWidth={width - axisLabelPaneWidth}
               />
             )}
-
-            <AxisRight
-              yScale={yScale}
-              min={brushDomain?.[0]}
-              current={current}
-              max={brushDomain?.[1]}
-              width={0}
-              offset={0}
-            />
           </g>
+
+          {/* <AxisRight
+            yScale={yScale}
+            min={min}
+            current={current}
+            max={max}
+            offset={width - contentWidth}
+            height={height}
+          /> */}
 
           {/* <rect
             className='size-full cursor-grab fill-transparent active:cursor-grabbing'

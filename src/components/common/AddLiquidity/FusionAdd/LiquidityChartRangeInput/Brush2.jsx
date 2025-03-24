@@ -1,5 +1,4 @@
 import { brushY, select } from 'd3'
-import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import usePrevious from '@/hooks/usePrevious'
@@ -41,7 +40,6 @@ export const Brush2 = ({
   northHandleColor,
   southHandleColor,
 }) => {
-  const t = useTranslations()
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
 
@@ -60,11 +58,11 @@ export const Brush2 = ({
     setLocalBrushExtent(brushExtent)
   }, [brushExtent, brushInProgress])
 
-  // keep local and external brush extent in sync
-  // i.e. snap to ticks on brush end
-  useEffect(() => {
-    setLocalBrushExtent(brushExtent)
-  }, [brushExtent])
+  // // keep local and external brush extent in sync
+  // // i.e. snap to ticks on brush end
+  // useEffect(() => {
+  //   setLocalBrushExtent(brushExtent)
+  // }, [brushExtent])
 
   useEffect(() => {
     if (!brushRef.current || brushInProgress) {
@@ -230,7 +228,7 @@ export const Brush2 = ({
                   alignmentBaseline='middle'
                   transform='scale(1,-1)'
                 >
-                  {t('range.outOfView')}
+                  range.outOfView
                 </text>
               </g>
             )}
@@ -239,7 +237,7 @@ export const Brush2 = ({
                 <OffScreenHandleV2 color={northHandleColor} />
                 {!showNorthArrow && (
                   <text x={14} y={5} fill={northHandleColor} fontSize={10} alignmentBaseline='middle'>
-                    {t('range.outOfView')}
+                    range.outOfView
                   </text>
                 )}
               </g>
@@ -262,7 +260,6 @@ export const Brush2 = ({
       southHandleInView,
       flipSouthHandle,
       showNorthArrow,
-      t,
       showSouthArrow,
     ],
   )
