@@ -13,9 +13,9 @@ import { ChainId } from 'thena-sdk-core'
 import { useConnect, useDisconnect } from 'wagmi'
 
 import DiscoverModal from '@/app/arena/DiscoverModal'
-import { OutlinedButton } from '@/components/buttons/Button'
+import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
 import { TextIconButton } from '@/components/buttons/IconButton'
-import Modal, { ModalFooter } from '@/components/modal'
+import Modal, { ModalBody, ModalFooter } from '@/components/modal'
 import { LOCALES, NotShowDiscoverArenaModal, ThenaAuthToken } from '@/constant'
 import { CHAIN_ID } from '@/constant/contracts'
 import { SizeTypes } from '@/constant/type'
@@ -28,13 +28,14 @@ import { cn, formatAmount, goToDoc, isSmallScreen } from '@/lib/utils'
 import { LiquidityHubSeekingBetterPriceModal } from '@/modules/LiquidityHub/components'
 import TxnModal from '@/modules/TxnModal'
 import { useChainSettings, useLocaleSettings } from '@/state/settings/hooks'
-import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon } from '@/svgs'
+import { ArrowRightIcon, ChevronDownIcon, HamburgerIcon, InfoNeutralIcon } from '@/svgs'
 import { particleWagmiWallet } from '@/wallets/particleWallet/particleWagmiWallet'
 
 import Logo from '~/logo.svg'
 
 import { Notification } from './Notification'
 import ConnectButton from '../buttons/ConnectButton'
+import Highlight from '../highlight'
 import CircleImage from '../image/CircleImage'
 import Skeleton from '../skeleton'
 import Tabs from '../tabs'
@@ -53,10 +54,44 @@ const langs = [
   { img: '/images/zh.png', lang: LOCALES.zh, label: '中文' },
 ]
 
+function BridgeMaintainModal({ show, onClose }) {
+  const windowSize = useWindowSize()
+
+  return (
+    <Modal width={windowSize.width >= 1024 ? 520 : '80%'} isOpen={show} closeModal={onClose}>
+      <ModalBody className='pt-0'>
+        <div className='flex w-full flex-col items-center justify-center gap-4 px-4'>
+          <Highlight className='bg-primary-600'>
+            <InfoNeutralIcon className='size-5 [&>path]:stroke-neutral-100' />
+          </Highlight>
+          <Paragraph className='mt-3 text-neutral-50'>
+            Bridge service will be entering maintenance mode on{' '}
+            <span className='font-bold text-primary-600'>March 19, 2025 at 10:00 AM UTC</span> to align with the BNB
+            Chain's Pascal Hard Fork upgrade. It is best advised not to use the bridge until the update is completed.
+            Thank you for your patience and understanding.
+          </Paragraph>
+        </div>
+      </ModalBody>
+      <ModalFooter className='mt-2 flex items-center justify-center gap-2 py-4'>
+        <PrimaryButton className='w-32' onClick={onClose}>
+          OK
+        </PrimaryButton>
+        <Link href='https://thena.zkbridge.com/' target='_blank'>
+          <EmphasisButton className='w-full text-neutral-100' onClick={onClose}>
+            Proceed Anyway
+          </EmphasisButton>
+        </Link>
+      </ModalFooter>
+    </Modal>
+  )
+}
+
 function ChainSelect({ t }) {
-  const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
   const { networkId, updateNetwork } = useChainSettings()
+
+  const [open, setOpen] = useState(false)
+  const [showBridgePopup, setShowBridgePopup] = useState(false)
 
   const selected = useMemo(
     () => chains[networkId === ChainId.BSC ? 0 : networkId === ChainId.OPBNB ? 1 : 2],
@@ -120,6 +155,13 @@ function ChainSelect({ t }) {
       >
         {chains.map((item, idx) => {
           const element = getElement(item, idx)
+          // if (item.label === 'Bridge') {
+          //   return (
+          //     <div key={`chain-${idx}`} onClick={() => setShowBridgePopup(true)}>
+          //       {element}
+          //     </div>
+          //   )
+          // }
           if (item.url) {
             return (
               <Link href={item.url} target='_blank' key={`chain-${idx}`}>
@@ -130,6 +172,8 @@ function ChainSelect({ t }) {
           return element
         })}
       </div>
+
+      {showBridgePopup && <BridgeMaintainModal show={showBridgePopup} onClose={() => setShowBridgePopup(false)} />}
     </div>
   )
 }
