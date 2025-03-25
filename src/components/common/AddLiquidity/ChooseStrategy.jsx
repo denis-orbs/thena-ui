@@ -250,19 +250,20 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
 
   return (
     <div className={cn('inline-flex w-full flex-col gap-5')}>
-      <div className='flex-[6] space-y-4 md:space-y-8'>
-        <StrategyTitle
-          strategyCount={strategyAutoData.length}
-          isAutomatic={isAutomatic}
-          toggleStrategyType={toggleStrategyType}
-          position={position}
-        />
-
-        {pair && (
-          <div className={cn('!mt-2 hidden max-lg:block md:!mt-4')}>
-            <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
-          </div>
-        )}
+      <div className='flex-[6] space-y-4 2xl:space-y-8'>
+        <div className='space-y-2 md:space-y-4'>
+          <StrategyTitle
+            strategyCount={strategyAutoData.length}
+            isAutomatic={isAutomatic}
+            toggleStrategyType={toggleStrategyType}
+            position={position}
+          />
+          {pair && (
+            <div className={cn('!mt-2 hidden max-lg:block md:!mt-4')}>
+              <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
+            </div>
+          )}
+        </div>
 
         {strategyAutoData && isAutomatic && <AutomaticStrategy strategyAutoData={strategyAutoData} isGrid />}
 
@@ -306,19 +307,13 @@ function StrategyTitle({ isAutomatic, strategyCount, toggleStrategyType, positio
   )
 
   if (position) {
-    return (
-      <NewTextSubHeading className='text-lg font-semibold text-neutral-50'>
-        {t('Concentrated Liquidity')}
-      </NewTextSubHeading>
-    )
+    return <NewTextSubHeading>{t('Concentrated Liquidity')}</NewTextSubHeading>
   }
 
   return (
     <article>
-      <div className='flex flex-col items-start gap-2 md:flex-row md:items-center md:justify-between lg:py-1'>
-        <NewTextSubHeading className='font-semibold text-neutral-50'>
-          {isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}
-        </NewTextSubHeading>
+      <div className='flex flex-col items-start gap-2.5 md:flex-row md:items-center md:justify-between lg:py-1'>
+        <NewTextSubHeading>{isAutomatic ? t('Automated Strategies') : t('Concentrated Liquidity')}</NewTextSubHeading>
 
         <div className={cn('flex gap-2 max-md:w-full', strategyCount === 0 && 'hidden')}>
           <Selection

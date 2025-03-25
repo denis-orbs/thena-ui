@@ -106,8 +106,8 @@ function AddLiquidityClPool({ pool, handleBack }) {
         <NewTextHeading> {t('Add Liquidity')}</NewTextHeading>
       </div>
 
-      <section className='mt-4 grid w-full grid-cols-1 gap-4 md:!mt-8 lg:grid-cols-3'>
-        <div id='LEFT-BLOCK' className='col-span-2 w-full gap-4 lg:gap-6'>
+      <section className='mt-4 grid w-full grid-cols-1 gap-4 md:!mt-8 2xl:grid-cols-3'>
+        <div id='LEFT-BLOCK' className='col-span-2 w-full'>
           <ChooseStrategy
             firstAsset={firstAsset}
             secondAsset={secondAsset}
@@ -145,9 +145,9 @@ function AddLiquidityClPool({ pool, handleBack }) {
         </div>
 
         <div id='RIGHT-BLOCK' className={cn('hidden', firstAddress && secondAddress && 'block')}>
-          <div className='hidden h-full flex-[4] flex-col gap-2 lg:flex'>
+          <div className='hidden h-full flex-[4] flex-col gap-2 2xl:flex'>
             {pair ? (
-              <div className={cn('mt-0', { 'mt-[101px]': !!position })}>
+              <div className={cn('mt-0')}>
                 <PoolAttributesSection strategy={strategy} pair={pair} />
               </div>
             ) : (

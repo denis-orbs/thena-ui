@@ -15,41 +15,42 @@ export function PoolAttributesSection({ strategy, pair, className }) {
 
   return (
     <div className='flex w-full flex-col'>
-      <div className='flex items-center gap-2'>
-        <Box className={cn('w-full rounded-lg bg-neutral-900 py-1.5 md:pl-4 lg:p-1 lg:pl-4', className)}>
-          <NewTextSubHeading className={cn('flex items-center justify-between gap-1')}>
-            <h3 className='text-xs font-semibold md:text-2xl'>{t('Pool Attributes')}</h3>
-            <div className='hidden items-center lg:flex'>
-              <i
-                onClick={() => setShow(!show)}
-                className={cn(
-                  'flex cursor-pointer items-center justify-center rounded-lg',
-                  'size-11 min-w-11',
-                  show ? 'bg-neutral-600' : 'bg-neutral-700',
-                )}
-              >
-                <InfoIcon className='size-5 stroke-neutral-400' />
-              </i>
-            </div>
-          </NewTextSubHeading>
+      <div className='flex flex-col items-center'>
+        <div className='flex w-full items-center justify-between gap-2'>
+          <Box className={cn('flex w-full rounded-lg bg-neutral-900 !py-1.5 !pl-4', className)}>
+            <NewTextSubHeading>{t('Pool Attributes')}</NewTextSubHeading>
+          </Box>
 
-          <motion.div
-            initial={{ opacity: 0, y: 0, height: 0 }}
-            animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className='overflow-hidden'
-          >
-            <div className='mt-5 hidden lg:block'>
-              {pair?.type === PAIR_TYPES.LSD ? (
-                <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
-              ) : (
-                <>{pair && <NormalPoolAttributes pool={pair} />}</>
+          <div className='hidden items-center 2xl:flex'>
+            <i
+              onClick={() => setShow(!show)}
+              className={cn(
+                'flex cursor-pointer items-center justify-center rounded-lg',
+                'size-11 min-w-11',
+                show ? 'bg-neutral-600' : 'bg-neutral-900',
               )}
-            </div>
-          </motion.div>
-        </Box>
+            >
+              <InfoIcon className='size-5 stroke-neutral-400' />
+            </i>
+          </div>
+        </div>
 
-        <div className='hidden max-lg:block'>
+        <motion.div
+          initial={{ opacity: 0, y: 0, height: 0 }}
+          animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className='overflow-hidden'
+        >
+          <div className='mt-2 hidden 2xl:block'>
+            {pair?.type === PAIR_TYPES.LSD ? (
+              <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
+            ) : (
+              <>{pair && <NormalPoolAttributes pool={pair} />}</>
+            )}
+          </div>
+        </motion.div>
+
+        <div className='hidden max-2xl:block'>
           <i
             onClick={() => setShow(!show)}
             className={cn(

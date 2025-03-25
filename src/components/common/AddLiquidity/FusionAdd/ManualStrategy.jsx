@@ -215,7 +215,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
             checked={!strategy?.isFarming}
             onChange={handleChangeManualType}
             label='Earn Fees'
-            className={cn(showToggle ? '' : 'hidden')}
+            className={cn('[&>span]:text-base', showToggle ? '' : 'hidden')}
           />
         )}
 
@@ -283,7 +283,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
       </div>
 
       {strategy && (
-        <div className={cn('flex flex-col gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+        <div className={cn('space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div className='flex items-center justify-between'>
             <NewTextSubHeading>{t('Liquidity Range')}</NewTextSubHeading>
           </div>
@@ -296,18 +296,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
 
           <div>
             <div className='mt-0 flex flex-col'>
-              {/* <LiquidityChartRangeInput
-                currencyA={baseCurrency ?? undefined}
-                currencyB={quoteCurrency ?? undefined}
-                feeAmount={mintInfo.dynamicFee}
-                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                price={price ? parseFloat(price) : undefined}
-                priceLower={position?.priceLower ?? priceLower}
-                priceUpper={position?.priceUpper ?? priceUpper}
-                onLeftRangeInput={onLeftRangeInput}
-                onRightRangeInput={onRightRangeInput}
-                interactive={!position}
-              /> */}
               <ChartPriceRangeInput
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}
@@ -333,34 +321,38 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
             </div>
           </div>
 
-          {/* <div className='block lg:hidden'>
-            <PriceHistoryChart
-              baseCurrency={baseCurrency}
-              quoteCurrency={quoteCurrency}
-              currentPrice={price}
-              position={position}
-              chartDomain={chartDomain}
+          {/* <div className='block 2xl:hidden'>
+            <LiquidityChartRangeInput
+              currencyA={baseCurrency ?? undefined}
+              currencyB={quoteCurrency ?? undefined}
+              feeAmount={mintInfo.dynamicFee}
+              ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+              price={price ? parseFloat(price) : undefined}
+              priceLower={position?.priceLower ?? priceLower}
+              priceUpper={position?.priceUpper ?? priceUpper}
+              onLeftRangeInput={onLeftRangeInput}
+              onRightRangeInput={onRightRangeInput}
+              interactive={false}
+              showZoom={false}
             />
           </div> */}
 
           {!position && (
-            <div className='max-md:mt-4'>
-              <RangeSelector
-                price={price ? parseFloat(price) : undefined}
-                priceLower={priceLower}
-                priceUpper={priceUpper}
-                getDecrementLower={getDecrementLower}
-                getIncrementLower={getIncrementLower}
-                getDecrementUpper={getDecrementUpper}
-                getIncrementUpper={getIncrementUpper}
-                onLeftRangeInput={onLeftRangeInput}
-                onRightRangeInput={onRightRangeInput}
-                currencyA={baseCurrency}
-                currencyB={quoteCurrency}
-                mintInfo={mintInfo}
-                disabled={!startPriceTypedValue && !mintInfo.price}
-              />
-            </div>
+            <RangeSelector
+              price={price ? parseFloat(price) : undefined}
+              priceLower={priceLower}
+              priceUpper={priceUpper}
+              getDecrementLower={getDecrementLower}
+              getIncrementLower={getIncrementLower}
+              getDecrementUpper={getDecrementUpper}
+              getIncrementUpper={getIncrementUpper}
+              onLeftRangeInput={onLeftRangeInput}
+              onRightRangeInput={onRightRangeInput}
+              currencyA={baseCurrency}
+              currencyB={quoteCurrency}
+              mintInfo={mintInfo}
+              disabled={!startPriceTypedValue && !mintInfo.price}
+            />
           )}
 
           {!position && (
