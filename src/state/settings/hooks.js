@@ -5,7 +5,15 @@ import { useAccount, useSwitchChain } from 'wagmi'
 
 import { LOCALES } from '@/constant'
 
-import { closeWallet, openWallet, switchNetwork, updateDeadline, updateLocale, updateSlippage } from './actions'
+import {
+  closeWallet,
+  openWallet,
+  switchNetwork,
+  updateDeadline,
+  updateLiquidityHubEnabled,
+  updateLocale,
+  updateSlippage,
+} from './actions'
 
 export const useWalletModal = () => {
   const { isWalletOpen } = useSelector(state => state.settings)
@@ -23,7 +31,7 @@ export const useWalletModal = () => {
 }
 
 export const useSettings = () => {
-  const { slippage, deadline } = useSelector(state => state.settings)
+  const { slippage, deadline, liquidityHubEnabled } = useSelector(state => state.settings)
   const dispatch = useDispatch()
 
   const _updateSlippage = useCallback(
@@ -40,7 +48,18 @@ export const useSettings = () => {
     [dispatch],
   )
 
-  return { slippage, deadline, updateSlippage: _updateSlippage, updateDeadline: _updateDeadline }
+  const _updateLiquidityHubEnabled = useCallback(() => {
+    dispatch(updateLiquidityHubEnabled())
+  }, [dispatch])
+
+  return {
+    slippage,
+    deadline,
+    liquidityHubEnabled,
+    updateSlippage: _updateSlippage,
+    updateDeadline: _updateDeadline,
+    updateLiquidityHubEnabled: _updateLiquidityHubEnabled,
+  }
 }
 
 export const useChainSettings = () => {

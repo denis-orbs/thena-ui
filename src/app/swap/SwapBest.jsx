@@ -21,7 +21,6 @@ import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap } from '@/hooks/useSwap'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/hooks/useWallet'
 import { liquidityHub } from '@/modules/LiquidityHub'
-import { LiquidityHubRouting } from '@/modules/LiquidityHub/components'
 import TxnSettings from '@/modules/SettingsModal'
 import SwapChart from '@/modules/SwapChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
@@ -30,6 +29,7 @@ import { SWAP_TYPES } from '@/constant'
 import Selection from '@/components/selection'
 import WarningModal from './WarningModal'
 import { useThenaQuote } from '@/hooks/fusion/useThenaQuote'
+import Spinner from '@/components/spinner'
 
 const Twap = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Twap), {
   ssr: false,
@@ -41,6 +41,7 @@ const Orders = dynamic(() => import('@/modules/TwapAndLimit').then(it => it.Orde
   loading: () => <Skeleton className='h-64' />,
 })
 
+const MAX_PRICE_IMPACT = 20
 const SWAP_TYPES_ITEMS = [
   { key: SWAP_TYPES.SWAP, label: 'Swap' },
   { key: SWAP_TYPES.TWAP, label: 'TWAP' },
@@ -62,8 +63,7 @@ export default function SwapBest({
   const t = useTranslations()
   const [fromAmount, setFromAmount] = useState('')
   const [isWarning, setIsWarning] = useState(false)
-  const [isLhTrade, setIsLhTrade] = useState(false)
-  const [skipLiquidityHub, setSkipLiquidityHub] = useState(false)
+  const [liquidityHubFailed, setLiquidityHubFailed] = useState(false)
   const { account } = useWallet()
   const { slippage, deadline } = useSettings()
   const { networkId } = useChainSettings()
@@ -96,21 +96,50 @@ export default function SwapBest({
     isLoading: bestTradePending,
     mutate,
   } = useOdosQuoteSwap(account, fromAsset, toAsset, debouncedAmount, slippage, networkId)
-
-  const isLHToken = fromAsset?.extended || toAsset?.extended
-
   const mutateAssets = useMutateAssets()
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { handleTaxTokenSwap, pending: taxTokenSwapPending } = useTaxTokenSwap()
   // const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
-  const { mutate: onLHSwap, isLoading: LHSwapPending } = liquidityHub.useSwap()
+  const { mutateAsync: onSwapLH, isLoading: swapLoadingLH } = liquidityHub.useSwap(
+    fromAsset,
+    toAsset,
+    fromAmount,
+    bestTrade,
+  )
+
+  const isFallbackLH = useMemo(() => {
+    if (!bestTrade && !bestTradePending) {
+      return true
+    }
+
+    if (bestTrade && Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT) {
+      return true
+    }
+    return false
+  }, [bestTrade, bestTradePending])
+
   const {
-    data: lhQuote,
-    isLoading: lhQuotePending,
-    refetch: refetchLHQuote,
-  } = liquidityHub.useQuoteQuery({ fromAsset, toAsset, fromAmount, bestTrade })
-  const getBetterPrice = liquidityHub.useGetBetterPrice(refetchLHQuote)
-  const quotePending = isLHToken ? lhQuotePending : bestTradePending
+    data: tradeLH,
+    isLoading: quotePendingLH,
+    refetch: refetchTradeLH,
+  } = liquidityHub.useTrade(fromAsset, toAsset, debouncedAmount, isFallbackLH)
+
+  const { isLoading: comparingTrade, callback: compareWithLHCallback } = liquidityHub.useCompareTrade(
+    fromAsset,
+    toAsset,
+    fromAmount,
+    bestTrade,
+    liquidityHubFailed,
+  )
+  const quotePending = quotePendingLH || bestTradePending
+
+  const onRefreshQuotes = useCallback(() => {
+    if (isFallbackLH) {
+      refetchTradeLH()
+    } else {
+      mutate()
+    }
+  }, [refetchTradeLH, mutate, isFallbackLH])
 
   // const { data: thenaQuoteData, isLoading: isLoadingThenaQuote } = useThenaQuote(
   const { data: thenaQuoteData } = useThenaQuote(fromAsset, toAsset, fromAmount, networkId, isThenaQuoteAndSwap)
@@ -122,8 +151,8 @@ export default function SwapBest({
       return outAmountThenaQuote
     }
 
-    return isLHToken ? lhQuote?.referencePrice : bestTrade?.outAmounts[0] || ''
-  }, [isThenaQuoteAndSwap, isLHToken, lhQuote?.referencePrice, bestTrade?.outAmounts, thenaQuoteData])
+    return isFallbackLH ? tradeLH?.outAmount : bestTrade?.outAmounts[0] || ''
+  }, [isThenaQuoteAndSwap, tradeLH?.outAmount, bestTrade?.outAmounts, thenaQuoteData, isFallbackLH])
 
   const toAmount = useMemo(() => {
     if (outAmount && Number(outAmount) > 0 && toAsset) {
@@ -134,18 +163,18 @@ export default function SwapBest({
 
   const minimumReceived = useMemo(() => {
     if (!toAsset || !outAmount) return ''
-    if (isLHToken) {
-      return `${formatAmount(fromWei(lhQuote?.minAmountOut || '', toAsset.decimals))} ${toAsset.symbol}`
+    if (isFallbackLH && tradeLH?.minAmountOut) {
+      return `${formatAmount(fromWei(tradeLH.minAmountOut, toAsset.decimals))} ${toAsset.symbol}`
     }
     if (slippage && Boolean(Number(slippage))) {
       return `${formatAmount(fromWei(outAmount * (1 - slippage / 100), toAsset.decimals))} ${toAsset.symbol}`
     }
     return `${formatAmount(fromWei(outAmount, toAsset.decimals))} ${toAsset.symbol}`
-  }, [toAsset, outAmount, isLHToken, slippage, lhQuote?.minAmountOut])
+  }, [toAsset, outAmount, slippage, tradeLH?.minAmountOut, isFallbackLH])
 
   const priceImpact = useMemo(() => {
     if (quotePending) return 0
-    if (!isLHToken && bestTrade) {
+    if (!isFallbackLH && bestTrade) {
       return Math.abs(bestTrade.priceImpact)
     }
     if (fromAsset && toAsset && fromAmount && toAmount) {
@@ -154,7 +183,7 @@ export default function SwapBest({
       return new BigNumber(((fromInUsd - toInUsd) / fromInUsd) * 100).toNumber()
     }
     return 0
-  }, [isLHToken, bestTrade, fromAsset, toAsset, fromAmount, toAmount, quotePending])
+  }, [bestTrade, fromAsset, toAsset, fromAmount, toAmount, quotePending, isFallbackLH])
 
   const percents = useMemo(
     () => [
@@ -196,35 +225,26 @@ export default function SwapBest({
     //   })
     // }
 
-    const swapWithLh = quote => {
-      onLHSwap({
-        getBestTrade: () => bestTrade,
-        fromAsset,
-        toAsset,
+    const swapWithLH = async quote => {
+      await onSwapLH({
         quote,
-        fromAmount,
-        refetchLHQuote,
-        onFailure: () => {
-          if (!isLHToken) {
-            setSkipLiquidityHub(true)
-          }
-        },
         onSuccess: () => {
           setFromAmount('')
           mutateAssets()
         },
+        onError: () => {
+          setLiquidityHubFailed(true)
+        },
       })
     }
-    // if one of the tokens is extended (lh token), skip the check and go directly via liquidity hub
-    if (isLHToken) {
-      swapWithLh(lhQuote)
-      setIsLhTrade(true)
+
+    if (isFallbackLH && tradeLH.quote) {
+      swapWithLH(tradeLH.quote)
       return
     }
-    const quote = await getBetterPrice(bestTrade?.outAmounts[0], skipLiquidityHub)
-    setIsLhTrade(!!quote)
-    if (quote) {
-      swapWithLh(quote)
+    const result = await compareWithLHCallback()
+    if (result && result.isLH) {
+      swapWithLH(result.quote)
     } else {
       onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => {
         setFromAmount('')
@@ -234,23 +254,27 @@ export default function SwapBest({
   }, [
     fromAsset,
     toAsset,
-    isLHToken,
-    getBetterPrice,
     bestTrade,
-    skipLiquidityHub,
     handleTaxTokenSwap,
     fromAmount,
     slippage,
     deadline,
     mutateAssets,
-    onLHSwap,
-    refetchLHQuote,
-    lhQuote,
     onOdosSwap,
     toAmount,
+    compareWithLHCallback,
+    onSwapLH,
+    isFallbackLH,
+    tradeLH,
   ])
 
   const btnMsg = useMemo(() => {
+    if (comparingTrade) {
+      return {
+        isError: false,
+        label: t('Fetching best price'),
+      }
+    }
     if (!fromAsset || !toAsset) {
       return {
         isError: true,
@@ -304,7 +328,7 @@ export default function SwapBest({
       isError: false,
       label: t('Swap'),
     }
-  }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap, quotePending, t])
+  }, [fromAsset, toAsset, fromAmount, toAmount, isWrap, isUnwrap, quotePending, t, comparingTrade])
 
   const title = useMemo(() => {
     switch (swapType) {
@@ -348,7 +372,7 @@ export default function SwapBest({
               toAsset={toAsset}
               setFromAddress={setFromAddress}
               setToAddress={setToAddress}
-              outAmount={bestTrade?.outAmounts[0] || lhQuote?.outAmount}
+              outAmount={tradeLH.outAmount || bestTrade?.outAmounts[0]}
               fromAmount={fromAmount}
               limit={swapType === SWAP_TYPES.LIMIT}
             />
@@ -421,7 +445,8 @@ export default function SwapBest({
                     quotePending ||
                     swapPending ||
                     taxTokenSwapPending ||
-                    LHSwapPending ||
+                    swapLoadingLH ||
+                    comparingTrade ||
                     wrapPending ||
                     // thenaSwapPending ||
                     // isLoadingThenaQuote ||
@@ -439,7 +464,7 @@ export default function SwapBest({
                     }
                   }}
                 >
-                  {btnMsg.label}
+                  {btnMsg.label} {comparingTrade && <Spinner />}
                 </EmphasisButton>
               ) : (
                 <ConnectButton className='mt-3 w-full' />
@@ -461,7 +486,7 @@ export default function SwapBest({
               <TextButton
                 className='text-xs'
                 iconClassName='lg:h-4 lg:w-4'
-                onClick={() => mutate()}
+                onClick={onRefreshQuotes}
                 LeadingIcon={RefreshIcon}
               >
                 {t('Refresh Quote')}
@@ -485,12 +510,12 @@ export default function SwapBest({
                     <NextImage src={toAsset?.logoURI} alt='' className='h-5 w-5' />
                   </div>
                 </div>
-                {!isLhTrade && (
+                {!isFallbackLH && (
                   <div className={cn('-mx-4 lg:-mx-6', bestTrade && '-mb-[100px]')}>
                     {bestTrade && <NextImage className='w-full' src={bestTrade.pathVizImage} alt='best route' />}
                   </div>
                 )}
-                {!!lhQuote?.outAmount && Number(lhQuote?.outAmount) > 0 && isLhTrade && <LiquidityHubRouting />}
+                {isFallbackLH && tradeLH && Number(tradeLH.outAmount) > 0 && <LiquidityHubRouting />}
               </div>
             )}
           </Box>
@@ -498,5 +523,26 @@ export default function SwapBest({
       </div>
       <WarningModal popup={isWarning} setPopup={setIsWarning} priceImpact={priceImpact} handleSwap={handleSwap} />
     </>
+  )
+}
+
+export function LiquidityHubRouting() {
+  return (
+    <div className='mt-5 flex justify-center gap-[5px]'>
+      Via LiquidityHub powered by{' '}
+      <a
+        style={{ display: 'flex', alignItems: 'center', gap: 5 }}
+        href='https://www.orbs.com/'
+        target='_blank'
+        rel='noreferrer'
+      >
+        Orbs{' '}
+        <NextImage
+          className='inline h-5 w-5 object-contain'
+          alt='Orbs logo'
+          src='https://www.orbs.com/assets/img/common/logo.svg'
+        />
+      </a>
+    </div>
   )
 }
