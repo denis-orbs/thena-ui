@@ -4,7 +4,15 @@ import { ChainId } from 'thena-sdk-core'
 
 import { LOCALES } from '@/constant'
 
-import { closeWallet, openWallet, switchNetwork, updateDeadline, updateLocale, updateSlippage } from './actions'
+import {
+  closeWallet,
+  openWallet,
+  switchNetwork,
+  updateDeadline,
+  updateLiquidityHubEnabled,
+  updateLocale,
+  updateSlippage,
+} from './actions'
 
 export const initialState = {
   networkId: ChainId.BSC,
@@ -12,6 +20,7 @@ export const initialState = {
   slippage: 0.5,
   deadline: 20,
   locale: LOCALES.en,
+  liquidityHubEnabled: true,
 }
 
 export default createReducer(initialState, builder =>
@@ -39,5 +48,9 @@ export default createReducer(initialState, builder =>
     .addCase(updateLocale, (state, { payload }) => ({
       ...state,
       locale: payload,
+    }))
+    .addCase(updateLiquidityHubEnabled, state => ({
+      ...state,
+      liquidityHubEnabled: !state.liquidityHubEnabled,
     })),
 )

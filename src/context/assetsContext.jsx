@@ -8,8 +8,7 @@ import { ERC20Abi } from '@/constant/abi'
 import useWallet from '@/hooks/useWallet'
 import { fetchAssets } from '@/lib/api'
 import { callMulti } from '@/lib/contractActions'
-import { liquidityHub } from '@/modules/LiquidityHub'
-import { useChainSettings } from '@/state/settings/hooks'
+import { useChainSettings, useSettings } from '@/state/settings/hooks'
 import { wagmiConfig } from '@/wallets/rainbowkit'
 
 const initialState = {
@@ -55,7 +54,7 @@ const AssetsContext = createContext(initialState)
 function AssetsContextProvider({ children }) {
   const { account } = useWallet()
   const { networkId } = useChainSettings()
-  const { liquidityHubEnabled } = liquidityHub.useLiquidtyHubSettings()
+  const { liquidityHubEnabled } = useSettings()
 
   const { data: assets = [] } = useSWRImmutable(
     ['assets/total', networkId, liquidityHubEnabled],
