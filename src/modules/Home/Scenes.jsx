@@ -238,7 +238,7 @@ function Scenes() {
         <Heading heading={t('Behind THE Scenes')} wrapperStyles='items-center' title={t('FOUNDERS')} />
       </div>
       {/*  */}
-      <div className='3xl:max-w-[2000px] relative ml-auto w-full max-w-[1320px] pl-10 xl:px-0 2xl:max-w-[1520px]'>
+      <div className='relative ml-auto w-full max-w-[1320px] pl-10 xl:px-0 2xl:max-w-[1520px] 3xl:max-w-[2000px]'>
         <Swiper
           breakpoints={{
             320: {
