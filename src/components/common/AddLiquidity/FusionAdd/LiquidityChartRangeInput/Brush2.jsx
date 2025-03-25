@@ -300,5 +300,3 @@ export const Brush2 = ({
     ],
   )
 }
-// northHandleColor,
-// southHandleColor,

@@ -19,7 +19,7 @@ function Axis({ axisGenerator }) {
 
 export function AxisRight({ yScale, offset = 0 }) {
   return (
-    <g className='axis-bottom khanhnt' transform={`translate(${offset}, 0)`}>
+    <g className='axis-bottom' transform={`translate(${offset}, -5)`}>
       <Axis axisGenerator={axisRight(yScale).ticks(6)} yScale={yScale} />
     </g>
   )

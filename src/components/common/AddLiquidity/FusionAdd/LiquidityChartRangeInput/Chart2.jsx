@@ -82,8 +82,8 @@ function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisib
     const newSeries = chart.addAreaSeries({
       lineWidth: 2,
       lineColor: '#F199EE',
-      topColor: darken(0.01, '#F199EE'),
-      bottomColor: '#F199EE00',
+      topColor: darken(0.01, 'transparent'),
+      bottomColor: 'transparent',
       priceFormat: {
         type: 'price',
         precision: 4,

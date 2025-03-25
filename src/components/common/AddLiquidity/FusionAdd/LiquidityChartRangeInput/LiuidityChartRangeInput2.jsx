@@ -66,6 +66,7 @@ export default function LiquidityChartRangeInput2({
   interactive,
   handleShow = true,
   showPeriod = false,
+  ableScroll = false,
 }) {
   const zoomRef = useRef(null)
 
@@ -280,6 +281,7 @@ export default function LiquidityChartRangeInput2({
   }, [containerRef?.current])
 
   useEffect(() => {
+    if (!ableScroll) return
     const container = zoomRef.current
     if (container) {
       let lastCall = 0
@@ -309,7 +311,7 @@ export default function LiquidityChartRangeInput2({
       }
     }
     return undefined
-  }, [midPrice, minVisiblePrice, scrollIncrement])
+  }, [ableScroll, midPrice, minVisiblePrice, scrollIncrement])
 
   const isUninitialized = !currencyA || !currencyB || (formattedData === undefined && !isLoading)
 
