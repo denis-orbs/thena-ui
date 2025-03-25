@@ -27,6 +27,7 @@ export function Chart({
   onBrushDomainChange,
   zoomLevels,
   handleShow,
+  showZoom = true,
 }) {
   const zoomRef = useRef(null)
 
@@ -74,21 +75,23 @@ export function Chart({
 
   return (
     <>
-      <Zoom
-        svg={zoomRef.current}
-        xScale={xScale}
-        setZoom={setZoom}
-        width={innerWidth}
-        height={
-          // allow zooming inside the x-axis
-          height
-        }
-        resetBrush={() => {
-          onBrushDomainChange([current * zoomLevels.initialMin, current * zoomLevels.initialMax], 'reset')
-        }}
-        showResetButton={Boolean(ticksAtLimit[Bound.LOWER] || ticksAtLimit[Bound.UPPER])}
-        zoomLevels={zoomLevels}
-      />
+      {showZoom && (
+        <Zoom
+          svg={zoomRef.current}
+          xScale={xScale}
+          setZoom={setZoom}
+          width={innerWidth}
+          height={
+            // allow zooming inside the x-axis
+            height
+          }
+          resetBrush={() => {
+            onBrushDomainChange([current * zoomLevels.initialMin, current * zoomLevels.initialMax], 'reset')
+          }}
+          showResetButton={Boolean(ticksAtLimit[Bound.LOWER] || ticksAtLimit[Bound.UPPER])}
+          zoomLevels={zoomLevels}
+        />
+      )}
       <svg width='100%' height='100%' viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
         <defs>
           <clipPath id={`${id}-chart-clip`}>

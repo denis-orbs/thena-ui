@@ -71,7 +71,7 @@ export default function ManualAdd({
   useEffect(() => {
     setAPRs(estimateAPR)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currencyAAmount?.quotient, currencyBAmount?.quotient, ticks[Bound.LOWER], ticks[Bound.UPPER]])
+  }, [JSON.stringify(estimateAPR), setAPRs])
 
   const onAddLiquidity = useCallback(() => {
     if (errorMessage) {
@@ -113,7 +113,7 @@ export default function ManualAdd({
   ])
 
   return (
-    <section className='space-y-2 md:space-y-8'>
+    <section className='space-y-2 md:space-y-4 lg:space-y-8'>
       <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
         <SettingSlippageDropDown slippage={slippage} updateSlippage={setSlippage} className='mb-0' />
         <EnterAmounts

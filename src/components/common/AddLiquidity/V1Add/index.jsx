@@ -53,7 +53,7 @@ export default function V1Add({
   )
 
   return (
-    <div className={cn('inline-flex w-full flex-col gap-4')}>
+    <div className={cn('inline-flex w-full flex-col gap-2 md:gap-4')}>
       {Boolean(pool) && <Selection className='items-stretch' data={addSelections} isFull isTranslation={false} />}
       {isZapper ? (
         <CommonZapperPane

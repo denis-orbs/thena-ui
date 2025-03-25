@@ -1,0 +1,124 @@
+import { max as getMax, scaleLinear } from 'd3'
+import { useEffect, useMemo, useRef } from 'react'
+
+import { AxisRight } from './AxisRight'
+import { Brush2 } from './Brush2'
+import { HorizontalArea } from './HorizontalArea'
+import { HorizontalLine } from './HorizontalLine'
+
+const xAccessor = d => d.activeLiquidity
+const yAccessor = d => d.price0
+
+export default function ActivePriceRangeChart({
+  id = 'activeChartRangeInput',
+  data: { series, current, min, max },
+  styles,
+  dimensions: { width, height, contentWidth, axisLabelPaneWidth },
+  interactive = true,
+  brushDomain,
+  brushLabels,
+  onBrushDomainChange,
+  handleShow,
+  disableBrush = false,
+}) {
+  const svgRef = useRef(null)
+  const { xScale, yScale } = useMemo(() => {
+    const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
+    const scales = {
+      yScale: scaleLinear().domain([min, max]).range([height, 0]),
+      xScale: scaleLinear()
+        .domain([0, getMax(activeEntries, xAccessor)])
+        .range([width - axisLabelPaneWidth, width - axisLabelPaneWidth - contentWidth]),
+    }
+
+    return scales
+  }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth])
+
+  useEffect(() => {
+    if (!brushDomain) {
+      const [minValue, maxValue] = yScale.domain()
+      const lowerBound = minValue + (maxValue - minValue) * 0.2
+      const upperBound = minValue + (maxValue - minValue) * 0.8
+      onBrushDomainChange([lowerBound, upperBound], undefined)
+    }
+  }, [brushDomain, onBrushDomainChange, yScale])
+
+  return (
+    <>
+      <svg width='100%' height='100%' viewBox={`0 14 ${width} ${height}`} ref={svgRef}>
+        <defs>
+          <clipPath id={`${id}-chart-clip`}>
+            <rect x='0' y='0' width={width} height={height} />
+          </clipPath>
+
+          <linearGradient id='gradient-brush-area' x1='0%' y1='0%' x2='100%' y2='0%'>
+            <stop offset='6.2%' stopColor='rgba(189, 96, 186, 0.5)' />
+            <stop offset='100%' stopColor='rgba(131, 0, 126, 0)' />
+          </linearGradient>
+
+          {brushDomain && (
+            // mask to highlight selected area
+            <mask id={`${id}-chart-area-mask`}>
+              <rect
+                fill='white'
+                y={yScale(brushDomain[1])}
+                x={width - axisLabelPaneWidth - contentWidth - 1}
+                height={yScale(brushDomain[0]) - yScale(brushDomain[1])}
+                width={contentWidth + 2}
+              />
+            </mask>
+          )}
+        </defs>
+
+        <g>
+          <g clipPath={`url(#${id}-chart-clip)`}>
+            <HorizontalArea
+              series={series}
+              xScale={xScale}
+              yScale={yScale}
+              xValue={xAccessor}
+              yValue={yAccessor}
+              brushDomain={brushDomain}
+              fill='url(#gradient-brush-area)'
+              selectedFill='url(#gradient-brush-area)'
+              containerHeight={height}
+              containerWidth={width - axisLabelPaneWidth}
+            />
+            {!disableBrush && (
+              <HorizontalLine
+                value={current}
+                yScale={yScale}
+                width={contentWidth + 12}
+                containerWidth={width - axisLabelPaneWidth}
+                lineStyle='dashed'
+              />
+            )}
+          </g>
+
+          <AxisRight
+            yScale={yScale}
+            offset={width - axisLabelPaneWidth}
+            current={current}
+            min={brushDomain?.[0]}
+            max={brushDomain?.[1]}
+          />
+          {handleShow && (
+            <Brush2
+              id={id}
+              yScale={yScale}
+              interactive={interactive}
+              brushLabelValue={brushLabels}
+              brushExtent={brushDomain ?? yScale.domain()}
+              hideHandles={!brushDomain}
+              width={width - axisLabelPaneWidth}
+              height={height}
+              setBrushExtent={onBrushDomainChange}
+              northHandleColor={styles.brush.handle.north}
+              southHandleColor={styles.brush.handle.south}
+            />
+          )}
+        </g>
+      </svg>
+    </>
+  )
+}

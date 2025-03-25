@@ -2,8 +2,21 @@
   display: none;
 }
 
+.axis-right-ref line {
+  display: none;
+}
+
+.axis-right-ref text {
+  color: #685770;
+  font-size: 12px;
+}
+
 .axis-bottom text {
   color: #685770;
   transform: translateY(5px);
   font-size: 12px;
+}
+
+.current-label-container {
+  z-index: 9999;
 }

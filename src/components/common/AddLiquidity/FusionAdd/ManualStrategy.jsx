@@ -14,7 +14,6 @@ import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
-import SelectToken from '@/modules/Pools/SelectToken'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import {
@@ -27,8 +26,7 @@ import {
 import { Presets } from '@/state/fusion/reducer'
 import { TransferIcon, WarningTriangleIcon } from '@/svgs'
 
-import LiquidityChartRangeInput from './LiquidityChartRangeInput'
-import PriceHistoryChart from './PriceHistoryChart'
+import ChartPriceRangeInput from './LiquidityChartRangeInput/ChartPriceRangeInput'
 import { PresetRanges } from '../components/PresetRange'
 import { RangeSelector } from '../components/RangeSelector'
 import WarningStartingPrice from '../components/WarningStartingPrice'
@@ -98,7 +96,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
   const handlePresetRangeSelection = useCallback(
     preset => {
       if (!price) return
-
+      console.log('preset', preset)
       dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
 
       if (preset && preset.type === Presets.FULL) {
@@ -132,15 +130,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
     [position, strategy?.title],
   )
 
-  const chartDomain = useMemo(() => {
-    const leftPrice = isReverse ? priceUpper?.invert() : priceLower
-    const rightPrice = isReverse ? priceLower?.invert() : priceUpper
-
-    return leftPrice && rightPrice
-      ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
-      : []
-  }, [isReverse, priceLower, priceUpper])
-
   const resetState = useCallback(() => {
     dispatch(updateSelectedPreset({ preset: null }))
     dispatch(setInitialTokenPrice({ typedValue: '' }))
@@ -167,27 +156,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
   return (
     <>
       <div className='space-y-4'>
-        {!position && (
-          <article className='hidden gap-4 lg:grid lg:grid-cols-2'>
-            <SelectToken
-              selectedAsset={firstAsset}
-              otherAsset={secondAsset}
-              hiddenTokens={[secondAsset?.address]}
-              placeHolder={t('Select Token')}
-              dropdownAlign='left'
-              isDisabled
-            />
-            <SelectToken
-              selectedAsset={secondAsset}
-              otherAsset={firstAsset}
-              hiddenTokens={[firstAsset?.address]}
-              placeHolder={t('Select Token')}
-              dropdownAlign='right'
-              isDisabled
-            />
-          </article>
-        )}
-
         {mintInfo.noLiquidity && (
           <div className='!mt-4 flex flex-col gap-4 md:!mt-8'>
             <WarningStartingPrice />
@@ -247,7 +215,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
             checked={!strategy?.isFarming}
             onChange={handleChangeManualType}
             label='Earn Fees'
-            className={cn(showToggle ? '' : 'hidden')}
+            className={cn('[&>span]:text-base', showToggle ? '' : 'hidden')}
           />
         )}
 
@@ -315,9 +283,9 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
       </div>
 
       {strategy && (
-        <div className={cn('flex flex-col gap-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+        <div className={cn('space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div className='flex items-center justify-between'>
-            <NewTextSubHeading className='text-sm lg:text-xl'>{t('Liquidity Range')}</NewTextSubHeading>
+            <NewTextSubHeading>{t('Liquidity Range')}</NewTextSubHeading>
           </div>
 
           {activePreset === Presets.FULL && fullRangeWarningShown && (
@@ -327,8 +295,8 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
           {mintInfo.invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
 
           <div>
-            <div className='mt-0'>
-              <LiquidityChartRangeInput
+            <div className='mt-0 flex flex-col'>
+              <ChartPriceRangeInput
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}
                 feeAmount={mintInfo.dynamicFee}
@@ -339,9 +307,10 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 onLeftRangeInput={onLeftRangeInput}
                 onRightRangeInput={onRightRangeInput}
                 interactive={!position}
+                handleShow
               />
             </div>
-            <div className={cn('-mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
+            <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
               <TextSubHeading className='leading-5'>
                 {t('Current Price: [price] [symbolA] [symbolB]', {
                   price: currentPrice,
@@ -352,15 +321,21 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
             </div>
           </div>
 
-          <div className='block lg:hidden'>
-            <PriceHistoryChart
-              baseCurrency={baseCurrency}
-              quoteCurrency={quoteCurrency}
-              currentPrice={price}
-              position={position}
-              chartDomain={chartDomain}
+          {/* <div className='block 2xl:hidden'>
+            <LiquidityChartRangeInput
+              currencyA={baseCurrency ?? undefined}
+              currencyB={quoteCurrency ?? undefined}
+              feeAmount={mintInfo.dynamicFee}
+              ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+              price={price ? parseFloat(price) : undefined}
+              priceLower={position?.priceLower ?? priceLower}
+              priceUpper={position?.priceUpper ?? priceUpper}
+              onLeftRangeInput={onLeftRangeInput}
+              onRightRangeInput={onRightRangeInput}
+              interactive={false}
+              showZoom={false}
             />
-          </div>
+          </div> */}
 
           {!position && (
             <RangeSelector

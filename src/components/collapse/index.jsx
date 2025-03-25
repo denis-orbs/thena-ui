@@ -1,5 +1,6 @@
 import cn from 'classnames'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { ChevronDownIcon } from '@/svgs'
 
@@ -7,8 +8,6 @@ import Divider from '../divider'
 
 export function Collapse({ children, title, defaultShow = true, onToggle, isOpen, classNames, ...props }) {
   const [show, setShow] = useState(defaultShow)
-  const contentRef = useRef(null)
-  const [maxHeight, setMaxHeight] = useState('0px')
 
   const onShow = useCallback(() => {
     setShow(prev => !prev)
@@ -22,12 +21,6 @@ export function Collapse({ children, title, defaultShow = true, onToggle, isOpen
       setShow(isOpen)
     }
   }, [isOpen])
-
-  useEffect(() => {
-    if (contentRef.current) {
-      setMaxHeight(show ? `${contentRef.current.scrollHeight}px` : '0px')
-    }
-  }, [show, children])
 
   useEffect(() => {
     if (typeof isOpen !== 'undefined') {
@@ -54,16 +47,17 @@ export function Collapse({ children, title, defaultShow = true, onToggle, isOpen
       </div>
 
       {/* Content Section */}
-      <div
-        ref={contentRef}
-        className={cn('overflow-hidden transition-[max-height] duration-300 ease-in-out', classNames?.content)}
-        style={{
-          maxHeight,
-        }}
+      <motion.div
+        initial={{ opacity: 0, y: 0, height: 0 }}
+        animate={show ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: 0, height: 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className='overflow-hidden'
       >
-        <Divider className={cn('mx-4 mt-4', classNames?.divider ? classNames.divider : 'hidden')} />
-        {children}
-      </div>
+        <div className={cn(classNames?.content)}>
+          <Divider className={cn('mx-4 mt-4', classNames?.divider ? classNames.divider : 'hidden')} />
+          {children}
+        </div>
+      </motion.div>
     </div>
   )
 }

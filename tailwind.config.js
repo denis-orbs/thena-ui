@@ -111,6 +111,14 @@ export default {
       gridTemplateColumns: {
         'add-liquidity-layout': 'minmax(650px, 3fr) 2fr',
       },
+      screens: {
+        sm: '640px',
+        md: '834px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1440px',
+        '3xl': '1920px',
+      },
     },
   },
   plugins: [require('@tailwindcss/forms'), require('tailwind-scrollbar')],

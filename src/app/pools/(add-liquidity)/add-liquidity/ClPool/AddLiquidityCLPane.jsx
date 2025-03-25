@@ -66,14 +66,22 @@ export default function AddLiquidityCLPane({
   if (!strategy) return <div />
 
   return (
-    <div className='mt-4 flex w-full flex-col gap-6 md:mt-8 lg:flex-row lg:gap-8'>
+    <div className='mt-4 flex w-full flex-col gap-6 lg:flex-row lg:gap-8 2xl:mt-8'>
       <div className='w-full flex-[6] flex-col bg-transparent'>
         {strategy?.isAutomatic ? (
           <FusionAdd strategy={strategy} onShowModalSuccess={onShowModalSuccess} handleBack={handleBack} />
         ) : (
-          <div className='space-y-4'>
+          <div className='space-y-2 md:space-y-4'>
             {!mintInfo?.noLiquidity && !position && (
-              <Selection className='w-full items-stretch' data={addSelections} isFull isTranslation={false} />
+              <Selection
+                className='w-full items-stretch md:h-11'
+                classNames={{
+                  items: 'md:text-sm text-xs',
+                }}
+                data={addSelections}
+                isFull
+                isTranslation={false}
+              />
             )}
 
             {position && (

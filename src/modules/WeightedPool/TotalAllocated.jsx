@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import React, { useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
-import { TextHeading } from '@/components/typography'
+import { NewTextSubHeading, TextHeading } from '@/components/typography'
 import { useTokenColor } from '@/hooks/useTokenColor'
 import { cn } from '@/lib/utils'
 
@@ -30,8 +30,8 @@ export default function TotalAllocated({ tokensAndWeights }) {
 
   const t = useTranslations()
   return (
-    <div className='space-y-4'>
-      <TextHeading className='text-lg lg:font-archia lg:text-2xl lg:font-semibold'>{t('Total Allocated')}</TextHeading>
+    <div className='space-y-2'>
+      <NewTextSubHeading>{t('Total Allocated')}</NewTextSubHeading>
       <Box>
         <PieChart
           tokens={tokensAndWeights.map(token => ({

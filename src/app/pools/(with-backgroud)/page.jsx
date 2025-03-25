@@ -10,7 +10,7 @@ import { ChainId } from 'thena-sdk-core'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
-import { TextIconButton } from '@/components/buttons/IconButton'
+import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import Dropdown from '@/components/dropdown'
 import IconGroup from '@/components/icongroup'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
@@ -30,7 +30,7 @@ import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { updateStrategy } from '@/state/fusion/actions'
 import { useChainSettings } from '@/state/settings/hooks'
-import { AnalyticsIcon, InfoIcon } from '@/svgs'
+import { BarChartIcon, InfoIcon } from '@/svgs'
 
 import NewListings from '../NewListings'
 
@@ -436,9 +436,10 @@ export default function PoolsPage() {
         fee: <Paragraph className='w-full min-w-0 truncate'>${formatAmount(pool.dayFees)}</Paragraph>,
         action: (
           <div className='flex gap-2.5'>
-            <TextIconButton
-              className='!size-10 border-[1px] border-neutral-600'
-              Icon={AnalyticsIcon}
+            <EmphasisIconButton
+              className='!size-8 !min-w-8 p-2'
+              classNames='[&>path]:group-hover:stroke-neutral-100'
+              Icon={BarChartIcon}
               onClick={() => push(`/analytics/pairs/${pool?.address}`)}
               data-tooltip-id='analytics-tooltip'
             />

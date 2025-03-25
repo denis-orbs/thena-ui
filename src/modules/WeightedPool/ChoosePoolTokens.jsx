@@ -110,7 +110,7 @@ function ChoosePoolTokens({ setTokensSelect, isShowError }) {
         <div
           ref={wrapperSelectRef}
           className={cn(
-            'grid grid-cols-1 gap-4 pb-8 lg:grid-cols-2',
+            'grid grid-cols-1 gap-2 md:gap-4 lg:grid-cols-2',
             finalListTokens.length >= 2 && 'border-b border-neutral-700',
           )}
         >

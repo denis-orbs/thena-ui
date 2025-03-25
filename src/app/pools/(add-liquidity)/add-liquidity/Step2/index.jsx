@@ -18,7 +18,7 @@ function TitleSection({ Icon, text, description }) {
     <div className='flex flex-col'>
       <h4 className='flex flex-row items-center gap-2 md:gap-5 xl:gap-8'>
         <Icon className='hidden size-6 md:block lg:size-12 2xl:size-14' />
-        <NewTextHeading className='text-2xl'>{t(text)}</NewTextHeading>
+        <NewTextHeading>{t(text)}</NewTextHeading>
 
         <div className='ml-auto hidden max-lg:block'>
           <i
@@ -95,7 +95,7 @@ export default function Step2() {
   }, [pairType, t])
 
   return (
-    <div className='space-y-8 lg:space-y-16'>
+    <div className='space-y-4 md:space-y-8'>
       {PageTitleSection}
 
       <div className='grid gap-4 lg:grid-cols-add-liquidity-layout'>

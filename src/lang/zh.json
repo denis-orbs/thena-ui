@@ -156,6 +156,7 @@
   "THE Single Sided Vaults": "THE 单币质押金库",
   "Classic": "经典",
   "Conc Liquidity": "集中流动性",
+  "Concentrated": "Concentrated",
   "Stable": "稳定",
   "Fee": "费用",
   "APR": "APR",
@@ -1493,5 +1494,6 @@
   "Minimum Link Balance needed": "最低 LINK 余额需求",
   "Liquidity Range": "Liquidity Range",
   "Min [value] required": "最小 {value}% 要求",
-  "Enter weight": "Enter weight"
+  "Enter weight": "Enter weight",
+  "Liquidity Distribution": "Liquidity Distribution"
 }

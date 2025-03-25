@@ -11,6 +11,7 @@ import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
 import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { BarChartIcon, CoinsStackedIcon, InfoIcon } from '@/svgs'
@@ -31,12 +32,15 @@ function NewListings({
   title,
   defaultShow = false,
   isCollapse = true,
+  size = 'default',
 }) {
   const t = useTranslations()
-  const [sort, setSort] = useState(sortOptions[1])
-  const newSortOptions = useMemo(() => [...sortOptions], [sortOptions])
-  const [currentPage, setCurrentPage] = useState(1)
   const { push } = useRouter()
+  const { isMdDown } = useMediaQuery()
+
+  const [sort, setSort] = useState(sortOptions[1])
+  const [currentPage, setCurrentPage] = useState(1)
+  const newSortOptions = useMemo(() => [...sortOptions], [sortOptions])
 
   const sortedData = useMemo(
     () =>
@@ -111,7 +115,9 @@ function NewListings({
               />
               <div className='flex flex-col'>
                 <TextHeading className='text-sm md:text-base'>{pool.symbol}</TextHeading>
-                <Paragraph className='text-[10px] md:text-xs'>{t(pool.type)}</Paragraph>
+                <Paragraph className='text-[10px] md:text-xs'>
+                  {t(pool.type === PAIR_TYPES.LSD && isMdDown ? 'Concentrated' : pool.type)}
+                </Paragraph>
               </div>
             </>
           ) : (
@@ -253,9 +259,12 @@ function NewListings({
       ),
       apr: (
         <div className='flex items-center gap-1'>
-          <Paragraph className='text-sm md:text-base'>{pool.apr}</Paragraph>
+          <Paragraph className='text-sm font-medium md:text-base'>{pool.apr}</Paragraph>
           {pool.subpools.length > 0 && (
-            <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id={`pair-${pool.address}`} />
+            <InfoIcon
+              className='size-4 min-w-4 stroke-neutral-400 max-md:hidden'
+              data-tooltip-id={`pair-${pool.address}`}
+            />
           )}
           <CustomTooltip className='min-w-[130px]' id={`pair-${pool.address}`}>
             <div className='flex flex-col gap-1'>
@@ -313,15 +322,16 @@ function NewListings({
       action: (
         <div className='flex gap-2.5'>
           <EmphasisIconButton
-            className='!size-8 min-w-8 border-[1px] border-neutral-600 p-2'
+            className={cn('!size-8 p-2', size !== 'small' && 'lg:!size-9')}
+            classNames='[&>path]:group-hover:stroke-neutral-100 !size-4'
             Icon={BarChartIcon}
             onClick={() => push(`/analytics/pairs/${pool?.address}`)}
             data-tooltip-id='analytics-tooltip'
           />
           <EmphasisButton
             className={cn(
-              'hidden w-full p-2 text-xs md:block lg:w-fit [&>span]:lg:text-xs',
-              pool.type === PAIR_TYPES.WEIGHTED && 'block',
+              'h-8 w-full p-2 text-xs lg:h-9 lg:w-fit lg:text-sm',
+              size === 'small' && pool.type !== PAIR_TYPES.WEIGHTED && 'max-md:hidden',
             )}
             onClick={() => {
               push(
@@ -331,20 +341,27 @@ function NewListings({
               )
             }}
           >
-            <Paragraph className='hidden text-xs md:inline-block'>{t('Deposit')}</Paragraph>
-            <CoinsStackedIcon className='size-4 md:hidden' />
+            <Paragraph
+              className={cn('block !text-sm text-neutral-100', size === 'small' && 'hidden !text-xs md:block')}
+            >
+              {t('Deposit')}
+            </Paragraph>
+            <CoinsStackedIcon
+              className={cn('hidden size-4', size === 'small' && pool.type === PAIR_TYPES.WEIGHTED && 'max-md:block')}
+            />
           </EmphasisButton>
         </div>
       ),
       className: cn('items-center', classNames?.rowItem),
     }))
-  }, [classNames?.rowItem, listPoolAddressSpecial, push, sortedData, t])
+  }, [classNames?.rowItem, isMdDown, listPoolAddressSpecial, push, size, sortedData, t])
+
   return (
     <>
       {isCollapse ? (
         <Collapse
           className='min-h-[76px] rounded-xl bg-neutral-900'
-          classNames={{ chevron: 'mr-6', content: '-mt-7', divider: classNames?.divider }}
+          classNames={{ chevron: 'mr-6', divider: classNames?.divider }}
           defaultShow={defaultShow}
           title={<Title length={pools.length} title={title} className={classNames?.title} />}
         >

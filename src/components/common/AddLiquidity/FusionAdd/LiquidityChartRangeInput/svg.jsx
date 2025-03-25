@@ -31,6 +31,13 @@ export const brushHandlePath = height =>
     'z', // close path
   ].join(' ')
 
+// Handle - straight horizontal line only
+export const brushHandlePathV2 = width =>
+  [
+    'M 0 0', // move to origin
+    `h ${width}`, // horizontal line with specified width
+  ].join(' ')
+
 export const brushHandleAccentPath = () =>
   [
     'm 5 7', // move to first accent
@@ -41,11 +48,37 @@ export const brushHandleAccentPath = () =>
     'z',
   ].join(' ')
 
+export const brushHandleAccentPathV2 = () => {
+  const lineStart = 25
+  return [
+    'M 0 0', // move to origin
+    `m ${lineStart} 18`, // move to start of accent line
+    'h 104', // horizontal line
+  ].join(' ')
+}
+
 export function OffScreenHandle({ color, size = 10, margin = 10 }) {
   return (
     <polygon
       points={`0 0, ${size} ${size}, 0 ${size}`}
       transform={` translate(${size + margin}, ${margin}) rotate(45) `}
+      fill={color}
+      stroke={color}
+      strokeWidth='4'
+      strokeLinejoin='round'
+    />
+  )
+}
+
+/**
+  Points down by default
+*/
+export function OffScreenHandleV2({ color, size = 6 }) {
+  const center = size / 3
+  return (
+    <polygon
+      points={`0 0, ${size} ${size}, 0 ${size}`}
+      transform={`translate(${center}, ${center}) rotate(-45) translate(-${center}, -${center})`}
       fill={color}
       stroke={color}
       strokeWidth='4'
