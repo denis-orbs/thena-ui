@@ -190,24 +190,31 @@ export const Brush2 = ({
                     opacity={0.6}
                     d={brushHandlePathV2(width)}
                   />
-                  <rect x='0' y='-18' width='110' height='36' rx='10' fill='#B000AA' />
+                  <rect x='0' y='-18' width='128' height='36' rx='10' fill='#F199EE' />
                   <g transform='translate(16, 0)'>
                     <path
                       d='M-5 -2l5-5 5 5'
-                      stroke='#F3F2F4'
+                      stroke='#2C002A'
                       strokeWidth='2'
                       strokeLinecap='round'
                       strokeLinejoin='round'
                     />
                     <path
                       d='M-5 2l5 5 5-5'
-                      stroke='#F3F2F4'
+                      stroke='#2C002A'
                       strokeWidth='2'
                       strokeLinecap='round'
                       strokeLinejoin='round'
                     />
                   </g>
-                  <text x='64' y='5' fill='#FCE6FB' fontSize='14' textAnchor='middle'>
+                  <text
+                    className='font-archia font-semibold'
+                    x='80'
+                    y='5'
+                    fill='#2C002A'
+                    fontSize='20'
+                    textAnchor='middle'
+                  >
                     {brushLabelValue('w', localBrushExtent[1])}
                   </text>
                 </g>
@@ -229,24 +236,31 @@ export const Brush2 = ({
                     d={brushHandlePathV2(width)}
                     id='south-line-handle-path'
                   />
-                  <rect x='0' y='-18' width='110' height='36' rx='10' fill='#B000AA' />
+                  <rect x='0' y='-18' width='128' height='36' rx='10' fill='#F199EE' />
                   <g transform='translate(16, 0)'>
                     <path
                       d='M-5 -2l5-5 5 5'
-                      stroke='#F3F2F4'
+                      stroke='#2C002A'
                       strokeWidth='2'
                       strokeLinecap='round'
                       strokeLinejoin='round'
                     />
                     <path
                       d='M-5 2l5 5 5-5'
-                      stroke='#F3F2F4'
+                      stroke='#2C002A'
                       strokeWidth='2'
                       strokeLinecap='round'
                       strokeLinejoin='round'
                     />
                   </g>
-                  <text x='64' y='5' fill='#FCE6FB' fontSize='14' textAnchor='middle'>
+                  <text
+                    className='font-archia font-semibold'
+                    x='80'
+                    y='5'
+                    fill='#2C002A'
+                    fontSize='20'
+                    textAnchor='middle'
+                  >
                     {brushLabelValue('w', localBrushExtent[0])}
                   </text>
                 </g>

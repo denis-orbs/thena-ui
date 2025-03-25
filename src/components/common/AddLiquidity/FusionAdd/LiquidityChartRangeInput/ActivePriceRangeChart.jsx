@@ -9,18 +9,16 @@ import { HorizontalLine } from './HorizontalLine'
 const xAccessor = d => d.activeLiquidity
 const yAccessor = d => d.price0
 
-export default function ActiveLiquidityChart({
-  id = 'liquidityChartRangeInput',
+export default function ActivePriceRangeChart({
+  id = 'activeChartRangeInput',
   data: { series, current, min, max },
   styles,
   dimensions: { width, height, contentWidth, axisLabelPaneWidth },
-  // margins,
   interactive = true,
   brushDomain,
   brushLabels,
   onBrushDomainChange,
   handleShow,
-  // zoomLevels,
   disableBrush = false,
 }) {
   const svgRef = useRef(null)
@@ -45,35 +43,18 @@ export default function ActiveLiquidityChart({
     }
   }, [brushDomain, onBrushDomainChange, yScale])
 
-  // const southHandleInView = brushDomain && yScale(brushDomain[0]) >= 0 && yScale(brushDomain[0]) <= height
-  // const northHandleInView = brushDomain && yScale(brushDomain[1]) >= 0 && yScale(brushDomain[1]) <= height
-
   return (
     <>
-      <svg
-        width='100%'
-        height='100%'
-        viewBox={`0 14 ${width} ${height}`}
-        ref={svgRef}
-        // onMouseMove={event => {
-        //   if (!svgRef.current) {
-        //     return
-        //   }
-        //   const rect = svgRef.current?.getBoundingClientRect()
-        //   // const y = event.clientY - rect.top
-        //   const x = event.clientX - rect.left
-        //   if (x > width - axisLabelPaneWidth - contentWidth) {
-        //     // setHoverY(y)
-        //   } else {
-        //     // setHoverY(undefined)
-        //   }
-        // }}
-        // onMouseLeave={() => setHoverY(undefined)}
-      >
+      <svg width='100%' height='100%' viewBox={`0 14 ${width} ${height}`} ref={svgRef}>
         <defs>
           <clipPath id={`${id}-chart-clip`}>
             <rect x='0' y='0' width={width} height={height} />
           </clipPath>
+
+          <linearGradient id='gradient-brush-area' x1='0%' y1='0%' x2='100%' y2='0%'>
+            <stop offset='6.2%' stopColor='rgba(189, 96, 186, 0.5)' />
+            <stop offset='100%' stopColor='rgba(131, 0, 126, 0)' />
+          </linearGradient>
 
           {brushDomain && (
             // mask to highlight selected area
@@ -91,7 +72,6 @@ export default function ActiveLiquidityChart({
 
         <g>
           <g clipPath={`url(#${id}-chart-clip)`}>
-            {/* <Area series={series} xScale={xScale} yScale={yScale} xValue={xAccessor} yValue={yAccessor} /> */}
             <HorizontalArea
               series={series}
               xScale={xScale}
@@ -99,8 +79,8 @@ export default function ActiveLiquidityChart({
               xValue={xAccessor}
               yValue={yAccessor}
               brushDomain={brushDomain}
-              // fill={opacify(100, brushDomain ? colors.neutral1.val : barColor ?? colors.accent1.val)}
-              // selectedFill={opacify(isMobile ? 10 : 100, barColor ?? colors.accent1.val)}
+              fill='url(#gradient-brush-area)'
+              selectedFill='url(#gradient-brush-area)'
               containerHeight={height}
               containerWidth={width - axisLabelPaneWidth}
             />
@@ -110,18 +90,18 @@ export default function ActiveLiquidityChart({
                 yScale={yScale}
                 width={contentWidth + 12}
                 containerWidth={width - axisLabelPaneWidth}
+                lineStyle='dashed'
               />
             )}
           </g>
 
-          <AxisRight yScale={yScale} offset={width - axisLabelPaneWidth} />
-
-          {/* <rect
-            className='size-full cursor-grab fill-transparent active:cursor-grabbing'
-            width={innerWidth}
-            height={height}
-            ref={zoomRef}
-          /> */}
+          <AxisRight
+            yScale={yScale}
+            offset={width - axisLabelPaneWidth}
+            current={current}
+            min={brushDomain?.[0]}
+            max={brushDomain?.[1]}
+          />
           {handleShow && (
             <Brush2
               id={id}

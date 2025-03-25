@@ -26,8 +26,7 @@ import {
 import { Presets } from '@/state/fusion/reducer'
 import { TransferIcon, WarningTriangleIcon } from '@/svgs'
 
-import LiquidityChartRangeInput2 from './LiquidityChartRangeInput/LiuidityChartRangeInput2'
-import PriceHistoryChart from './PriceHistoryChart'
+import ChartPriceRangeInput from './LiquidityChartRangeInput/ChartPriceRangeInput'
 import { PresetRanges } from '../components/PresetRange'
 import { RangeSelector } from '../components/RangeSelector'
 import WarningStartingPrice from '../components/WarningStartingPrice'
@@ -97,7 +96,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
   const handlePresetRangeSelection = useCallback(
     preset => {
       if (!price) return
-
+      console.log('preset', preset)
       dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
 
       if (preset && preset.type === Presets.FULL) {
@@ -130,15 +129,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
     () => (position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee',
     [position, strategy?.title],
   )
-
-  const chartDomain = useMemo(() => {
-    const leftPrice = isReverse ? priceUpper?.invert() : priceLower
-    const rightPrice = isReverse ? priceLower?.invert() : priceUpper
-
-    return leftPrice && rightPrice
-      ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
-      : []
-  }, [isReverse, priceLower, priceUpper])
 
   const resetState = useCallback(() => {
     dispatch(updateSelectedPreset({ preset: null }))
@@ -318,7 +308,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 onRightRangeInput={onRightRangeInput}
                 interactive={!position}
               /> */}
-              <LiquidityChartRangeInput2
+              <ChartPriceRangeInput
                 currencyA={baseCurrency ?? undefined}
                 currencyB={quoteCurrency ?? undefined}
                 feeAmount={mintInfo.dynamicFee}
@@ -332,7 +322,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 handleShow
               />
             </div>
-            <div className={cn('-mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
+            <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
               <TextSubHeading className='leading-5'>
                 {t('Current Price: [price] [symbolA] [symbolB]', {
                   price: currentPrice,
@@ -343,7 +333,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
             </div>
           </div>
 
-          <div className='block lg:hidden'>
+          {/* <div className='block lg:hidden'>
             <PriceHistoryChart
               baseCurrency={baseCurrency}
               quoteCurrency={quoteCurrency}
@@ -351,7 +341,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
               position={position}
               chartDomain={chartDomain}
             />
-          </div>
+          </div> */}
 
           {!position && (
             <div className='max-md:mt-4'>

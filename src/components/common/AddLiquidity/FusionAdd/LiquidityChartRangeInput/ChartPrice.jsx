@@ -8,7 +8,7 @@ import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 
-function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisiblePrice }) {
+function ChartPrice({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisiblePrice, isMobile = false }) {
   const chartRef = useRef(null)
   const chartCreated = useRef(null)
 
@@ -50,6 +50,7 @@ function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisib
         visible: true,
         borderVisible: false,
         secondsVisible: false,
+        rightOffset: isMobile ? 10 : 0,
         tickMarkFormatter: unixTime =>
           timeWindow === PairDataTimeWindow.DAY ? dayjs(unixTime).format('HH:mm') : dayjs(unixTime).format('MMM D'),
       },
@@ -80,7 +81,7 @@ function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisib
     })
 
     const newSeries = chart.addAreaSeries({
-      lineWidth: 2,
+      lineWidth: 3,
       lineColor: '#F199EE',
       topColor: darken(0.01, 'transparent'),
       bottomColor: 'transparent',
@@ -98,6 +99,17 @@ function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisib
     newSeries.setData(transformedData)
 
     if (transformedData.length > 0) {
+      const lastDataPoint = transformedData[transformedData.length - 1]
+      newSeries.setMarkers([
+        {
+          time: lastDataPoint.time,
+          position: 'inBar',
+          color: '#F8CCF6',
+          shape: 'circle',
+          size: 1,
+        },
+      ])
+
       const values = transformedData.map(item => item.value)
       const minValueFromData = Math.min(...values)
       const maxValueFromData = Math.max(...values)
@@ -128,7 +140,7 @@ function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisib
     return () => {
       chart.remove()
     }
-  }, [timeWindow, transformedData, minVisiblePrice, maxVisiblePrice])
+  }, [timeWindow, isMobile, transformedData, minVisiblePrice, maxVisiblePrice])
 
   return (
     <div className='flex h-full w-full flex-1'>
@@ -138,4 +150,4 @@ function Chart2({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisib
   )
 }
 
-export default Chart2
+export default ChartPrice

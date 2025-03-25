@@ -1494,5 +1494,6 @@
   "Minimum Link Balance needed": "最低 LINK 余额需求",
   "Liquidity Range": "Liquidity Range",
   "Min [value] required": "最小 {value}% 要求",
-  "Enter weight": "Enter weight"
+  "Enter weight": "Enter weight",
+  "Liquidity Distribution": "Liquidity Distribution"
 }

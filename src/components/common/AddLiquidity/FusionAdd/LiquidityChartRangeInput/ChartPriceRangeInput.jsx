@@ -2,24 +2,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { batch, useSelector } from 'react-redux'
 
 import { OutlineIconButton } from '@/components/buttons/IconButton'
-import { useDensityChartData } from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/hooks'
 import Spinner from '@/components/spinner'
 import Tabs from '@/components/tabs'
 import { TextHeading } from '@/components/typography'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import { Bound } from '@/state/fusion/actions'
 import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
-import ActiveLiquidityChart from './ActiveLiquidityChart'
-import Chart2 from './Chart2'
-
-const ZOOM_LEVEL = {
-  initialMin: 0.9,
-  initialMax: 1.1,
-  min: 0.00001,
-  max: 20,
-}
+import ActivePriceRangeChart from './ActivePriceRangeChart'
+import ChartPrice from './ChartPrice'
 
 const RIGHT_AXIS_WIDTH = 64
 const CHART_CONTAINER_WIDTH = 452 + RIGHT_AXIS_WIDTH
@@ -53,10 +46,9 @@ function formatDelta(delta, locale = DEFAULT_LOCALE) {
   })}%`
 }
 
-export default function LiquidityChartRangeInput2({
+export default function ChartPriceRangeInput({
   currencyA,
   currencyB,
-  feeAmount,
   ticksAtLimit,
   price,
   priceLower,
@@ -66,17 +58,12 @@ export default function LiquidityChartRangeInput2({
   interactive,
   handleShow = true,
   showPeriod = false,
-  ableScroll = false,
+  enableScroll = false,
 }) {
   const zoomRef = useRef(null)
 
   const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
   const [boundaryPrices, setBoundaryPrices] = useState()
-  const { isLoading, error, formattedData } = useDensityChartData({
-    currencyA,
-    currencyB,
-    feeAmount,
-  })
 
   const [timeWindow, setTimeWindow] = useState(PairDataTimeWindow.YEAR)
   const { isReverse } = useSelector(state => state.fusion)
@@ -95,13 +82,17 @@ export default function LiquidityChartRangeInput2({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReverse])
 
-  const { data: pairPrices = [] } = useFetchPairPrices({
+  const {
+    data: pairPrices = [],
+    isLoading,
+    error,
+  } = useFetchPairPrices({
     token0Address: baseCurrency.wrapped.address,
     token1Address: quoteCurrency.wrapped.address,
     timeWindow,
   })
 
-  const [zoomFactor, setZoomFactor] = useState(1)
+  const [zoomFactor, setZoomFactor] = useState(0.95)
 
   const brushDomain = useMemo(() => {
     const leftPrice = isSorted ? priceLower : priceUpper?.invert()
@@ -120,7 +111,6 @@ export default function LiquidityChartRangeInput2({
   }, [pairPrices])
 
   const [midPrice, setMidPrice] = useState()
-  const [showDiffIndicators, setShowDiffIndicators] = useState(false)
 
   useEffect(() => {
     if (pairPrices.length > 0) {
@@ -252,7 +242,7 @@ export default function LiquidityChartRangeInput2({
   )
 
   // eslint-disable-next-line unused-imports/no-unused-vars
-  interactive = interactive && Boolean(formattedData?.length)
+  interactive = interactive && Boolean(pairPrices?.length)
 
   const brushLabelValue = useCallback(
     (d, x) => {
@@ -270,6 +260,8 @@ export default function LiquidityChartRangeInput2({
 
   const [chartSize, setChartSize] = useState({})
 
+  const windowSize = useWindowSize()
+
   useEffect(() => {
     if (containerRef?.current) {
       setChartSize({
@@ -278,10 +270,10 @@ export default function LiquidityChartRangeInput2({
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerRef?.current])
+  }, [containerRef?.current, windowSize])
 
   useEffect(() => {
-    if (!ableScroll) return
+    if (!enableScroll) return
     const container = zoomRef.current
     if (container) {
       let lastCall = 0
@@ -311,9 +303,9 @@ export default function LiquidityChartRangeInput2({
       }
     }
     return undefined
-  }, [ableScroll, midPrice, minVisiblePrice, scrollIncrement])
+  }, [enableScroll, midPrice, minVisiblePrice, scrollIncrement])
 
-  const isUninitialized = !currencyA || !currencyB || (formattedData === undefined && !isLoading)
+  const isUninitialized = !currencyA || !currencyB || isLoading
 
   return (
     <div className='flex flex-col gap-4'>
@@ -326,8 +318,6 @@ export default function LiquidityChartRangeInput2({
           <Spinner />
         ) : error ? (
           <TextHeading>Liquidity data not available.</TextHeading>
-        ) : !formattedData || formattedData.length === 0 || !price ? (
-          <TextHeading>There is no liquidity data.</TextHeading>
         ) : (
           <>
             <div className='absolute -top-2 right-0 grid grid-cols-2 gap-1 md:-top-5'>
@@ -350,16 +340,7 @@ export default function LiquidityChartRangeInput2({
                 disabled={false}
               />
             </div>
-            <div
-              className='flex h-full w-full flex-col gap-8 overflow-hidden'
-              ref={containerRef}
-              onMouseEnter={() => {
-                setShowDiffIndicators(true)
-              }}
-              onMouseLeave={() => {
-                setShowDiffIndicators(false)
-              }}
-            >
+            <div className='flex h-full w-full flex-col gap-8 overflow-hidden' ref={containerRef}>
               <div ref={zoomRef} className='h-full w-full overflow-y-auto'>
                 <div
                   className='relative h-full w-full overflow-y-auto'
@@ -371,19 +352,23 @@ export default function LiquidityChartRangeInput2({
                   <div
                     className='absolute inset-0 z-0 mx-auto h-full'
                     style={{
-                      width: (chartSize?.chartContainerWidth || 0) - desktopSizes.rightAxisWidth - 220,
+                      width:
+                        (chartSize?.chartContainerWidth || 0) -
+                        desktopSizes.rightAxisWidth -
+                        (chartSize?.chartContainerWidth <= 450 ? 5 : (chartSize?.chartContainerWidth || 0) * 0.2),
                     }}
                   >
-                    <Chart2
+                    <ChartPrice
                       data={pairPrices}
                       timeWindow={timeWindow}
                       setBoundaryPrices={setBoundaryPrices}
                       minVisiblePrice={minVisiblePrice}
                       maxVisiblePrice={maxVisiblePrice}
+                      isMobile={chartSize?.chartContainerWidth <= 450}
                     />
                   </div>
                   <div className='absolute inset-0 z-10'>
-                    <ActiveLiquidityChart
+                    <ActivePriceRangeChart
                       data={{
                         series: sortedFormattedData,
                         current: price,
@@ -392,19 +377,20 @@ export default function LiquidityChartRangeInput2({
                       }}
                       dimensions={{
                         width: chartSize?.chartContainerWidth,
-                        height: (chartSize?.chartContainerHeight || 300) - 88,
+                        height:
+                          (chartSize?.chartContainerHeight || 300) -
+                          ((chartSize?.chartContainerHeight || 300) * 0.2 + 28),
                         contentWidth: chartSize?.chartContainerWidth,
                         axisLabelPaneWidth: desktopSizes.rightAxisWidth,
                       }}
-                      showDiffIndicators={showDiffIndicators}
                       styles={{
                         area: {
-                          selection: '#C672D8',
+                          selection: '#BD60BA80',
                         },
                         brush: {
                           handle: {
-                            south: '#84007F',
-                            north: '#E333DD',
+                            south: '#F199EE',
+                            north: '#F199EE',
                           },
                         },
                       }}
@@ -412,8 +398,6 @@ export default function LiquidityChartRangeInput2({
                       brushLabels={brushLabelValue}
                       brushDomain={brushDomain}
                       onBrushDomainChange={onBrushDomainChangeEnded}
-                      zoomLevels={ZOOM_LEVEL}
-                      ticksAtLimit={ticksAtLimit}
                       handleShow={handleShow}
                     />
                   </div>

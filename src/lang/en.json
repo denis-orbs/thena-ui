@@ -1495,5 +1495,6 @@
   "Minimum Link Balance needed": "Minimum Link Balance needed",
   "Liquidity Range": "Liquidity Range",
   "Min [value] required": "Min. {value}% required",
-  "Enter weight": "Enter weight"
+  "Enter weight": "Enter weight",
+  "Liquidity Distribution": "Liquidity Distribution"
 }
