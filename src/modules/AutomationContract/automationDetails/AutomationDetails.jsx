@@ -5,7 +5,7 @@ import React from 'react'
 import Box from '@/components/box'
 import IconGroup from '@/components/icongroup'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
+import { AUTOMATION_STATUS, PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCopyText } from '@/hooks/useCopyText'
 import useWallet from '@/hooks/useWallet'
 import { calculateNextWeek, formatAddress, formatAmount } from '@/lib/utils'
@@ -16,6 +16,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
   const t = useTranslations()
   const { onCopy, copied } = useCopyText()
   const { account } = useWallet()
+  console.log({ contractData })
   return (
     <div className='space-y-4'>
       <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Automation Details')}</TextHeading>
@@ -103,43 +104,60 @@ function AutomationDetails({ contractData, transactionHash, date }) {
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Owner address')}</Paragraph>
               <TextHeading className='flex flex-row gap-1'>
-                {formatAddress(account)}
-                <div
-                  onClick={e => onCopy(e, account, 'ownerAddress')}
-                  className='h-5 w-5 cursor-pointer stroke-neutral-200'
-                >
-                  {copied === 'ownerAddress' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
-                </div>
+                {account && contractData.status !== AUTOMATION_STATUS.PENDING ? (
+                  <>
+                    {formatAddress(account)}
+                    <div
+                      onClick={e => onCopy(e, account, 'ownerAddress')}
+                      className='h-5 w-5 cursor-pointer stroke-neutral-200'
+                    >
+                      {copied === 'ownerAddress' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+                    </div>
+                  </>
+                ) : (
+                  <>-</>
+                )}
               </TextHeading>
             </div>
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Date')}</Paragraph>
-              {date && <TextHeading>{dayjs.unix(date).format('MMM D, YYYY [at] HH:mm [UTC]')}</TextHeading>}
+              {date ? <TextHeading>{dayjs.unix(date).format('MMM D, YYYY [at] HH:mm [UTC]')}</TextHeading> : <>-</>}
             </div>
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Transaction Hash')}</Paragraph>
-              {transactionHash && (
-                <TextHeading className='flex flex-row gap-1'>
-                  {formatAddress(transactionHash)}
-                  <div
-                    onClick={e => onCopy(e, transactionHash, 'transactionHash')}
-                    className='h-5 w-5 cursor-pointer stroke-neutral-200'
-                  >
-                    {copied === 'transactionHash' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
-                  </div>
-                </TextHeading>
-              )}
+
+              <TextHeading className='flex flex-row gap-1'>
+                {contractData.status !== AUTOMATION_STATUS.PENDING && transactionHash ? (
+                  <>
+                    {formatAddress(transactionHash)}
+                    <div
+                      onClick={e => onCopy(e, transactionHash, 'transactionHash')}
+                      className='h-5 w-5 cursor-pointer stroke-neutral-200'
+                    >
+                      {copied === 'transactionHash' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+                    </div>
+                  </>
+                ) : (
+                  <>-</>
+                )}
+              </TextHeading>
             </div>
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Forwarder address')}</Paragraph>
               <TextHeading className='flex flex-row items-center gap-1'>
-                {formatAddress(contractData.forwarder)}
-                <div
-                  onClick={e => onCopy(e, contractData.forwarder, 'forwarderAddress')}
-                  className='h-5 w-5 cursor-pointer stroke-neutral-200'
-                >
-                  {copied === 'forwarderAddress' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
-                </div>
+                {contractData.status !== AUTOMATION_STATUS.PENDING ? (
+                  <>
+                    {formatAddress(contractData.forwarder)}
+                    <div
+                      onClick={e => onCopy(e, contractData.forwarder, 'forwarderAddress')}
+                      className='h-5 w-5 cursor-pointer stroke-neutral-200'
+                    >
+                      {copied === 'forwarderAddress' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+                    </div>
+                  </>
+                ) : (
+                  <>-</>
+                )}
               </TextHeading>
             </div>
           </div>
@@ -152,18 +170,31 @@ function AutomationDetails({ contractData, transactionHash, date }) {
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Contract address')}</Paragraph>
               <TextHeading className='flex flex-row items-center gap-1'>
-                {formatAddress(contractData.address)}
-                <div
-                  onClick={e => onCopy(e, contractData.address, 'contractAddress')}
-                  className='h-5 w-5 cursor-pointer stroke-neutral-200'
-                >
-                  {copied === 'contractAddress' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
-                </div>
+                {contractData.status !== AUTOMATION_STATUS.PENDING ? (
+                  <>
+                    {formatAddress(contractData.address)}
+                    <div
+                      onClick={e => onCopy(e, contractData.address, 'contractAddress')}
+                      className='h-5 w-5 cursor-pointer stroke-neutral-200'
+                    >
+                      {copied === 'contractAddress' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+                    </div>
+                  </>
+                ) : (
+                  <>-</>
+                )}
               </TextHeading>
             </div>
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Gas limit')}</Paragraph>
-              <TextHeading className='flex flex-row gap-1'>{formatAmount(contractData.gasLimit)}</TextHeading>
+              <TextHeading className='flex flex-row gap-1'>
+                {' '}
+                {contractData.status !== AUTOMATION_STATUS.PENDING ? (
+                  <>{formatAmount(contractData.gasLimit)}</>
+                ) : (
+                  <>-</>
+                )}
+              </TextHeading>
             </div>
           </div>
         </Box>
@@ -175,13 +206,25 @@ function AutomationDetails({ contractData, transactionHash, date }) {
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Automation execution time')}</Paragraph>
               <TextHeading>
-                {dayjs(contractData?.settings?.executionTime).format('MMM D, YYYY [at] HH:mm [UTC]')}
+                {contractData.status !== AUTOMATION_STATUS.PENDING ? (
+                  <>{dayjs(contractData?.settings?.executionTime).format('MMM D, YYYY [at] HH:mm [UTC]')}</>
+                ) : (
+                  <>-</>
+                )}
               </TextHeading>
             </div>
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Next execution')}</Paragraph>
               <TextHeading>
-                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
+                {contractData.status !== AUTOMATION_STATUS.PENDING ? (
+                  <>
+                    {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format(
+                      'MMM D, YYYY [at] HH:mm [UTC]',
+                    )}
+                  </>
+                ) : (
+                  <>-</>
+                )}
               </TextHeading>
             </div>
           </div>
