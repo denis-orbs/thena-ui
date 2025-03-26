@@ -238,7 +238,7 @@ export default function SwapBest({
       })
     }
 
-    if (isFallbackLH && tradeLH.quote) {
+    if (isFallbackLH && tradeLH?.quote) {
       swapWithLH(tradeLH.quote)
       return
     }
@@ -372,7 +372,7 @@ export default function SwapBest({
               toAsset={toAsset}
               setFromAddress={setFromAddress}
               setToAddress={setToAddress}
-              outAmount={tradeLH.outAmount || bestTrade?.outAmounts[0]}
+              outAmount={isFallbackLH ? tradeLH?.outAmount : bestTrade?.outAmounts[0]}
               fromAmount={fromAmount}
               limit={swapType === SWAP_TYPES.LIMIT}
             />
