@@ -18,11 +18,9 @@ function WarningWithAction({ mutateAutomationData, contractData }) {
   const [depositFundsPopup, setDepositFundsPopup] = useState(false)
 
   const { data: veTHEs, refetch: refetchAutomations } = useVeTheAutomations()
-  const veTHE = veTHEs?.find(item => item.id === contractData.veTHEId)
+  const veTHE = veTHEs?.find(item => `${item.id}` === `${contractData.veTHEId}`)
   const status = veTHE?.statusString || AUTOMATION_STATUS.NO
-
   const t = useTranslations()
-
   const data = useMemo(() => {
     if (status === AUTOMATION_STATUS.PENDING) {
       return {

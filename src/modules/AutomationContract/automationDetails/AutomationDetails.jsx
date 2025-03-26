@@ -114,19 +114,21 @@ function AutomationDetails({ contractData, transactionHash, date }) {
             </div>
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Date')}</Paragraph>
-              <TextHeading>{dayjs.unix(date).format('MMM D, YYYY [at] HH:mm [UTC]')}</TextHeading>
+              {date && <TextHeading>{dayjs.unix(date).format('MMM D, YYYY [at] HH:mm [UTC]')}</TextHeading>}
             </div>
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Transaction Hash')}</Paragraph>
-              <TextHeading className='flex flex-row gap-1'>
-                {formatAddress(transactionHash)}
-                <div
-                  onClick={e => onCopy(e, transactionHash, 'transactionHash')}
-                  className='h-5 w-5 cursor-pointer stroke-neutral-200'
-                >
-                  {copied === 'transactionHash' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
-                </div>
-              </TextHeading>
+              {transactionHash && (
+                <TextHeading className='flex flex-row gap-1'>
+                  {formatAddress(transactionHash)}
+                  <div
+                    onClick={e => onCopy(e, transactionHash, 'transactionHash')}
+                    className='h-5 w-5 cursor-pointer stroke-neutral-200'
+                  >
+                    {copied === 'transactionHash' ? <CheckIcon className='stroke-success-500' /> : <CopyArenaIcon />}
+                  </div>
+                </TextHeading>
+              )}
             </div>
             <div className='flex flex-row justify-between gap-1.5'>
               <Paragraph>{t('Forwarder address')}</Paragraph>
