@@ -107,7 +107,7 @@ export default function PoolsPage() {
       }
 
       if (ICHI_TYPES.includes(title)) {
-        return ['ICHI Farming', sub.allowed.symbol]
+        return [`ICHI ${sub.allowed.symbol}`, '']
       }
 
       if (MANUAL_TYPES.includes(title)) {

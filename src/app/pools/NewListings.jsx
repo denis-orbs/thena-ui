@@ -87,7 +87,7 @@ function NewListings({
       }
 
       if (ICHI_TYPES.includes(titleSub)) {
-        return ['ICHI Farming', sub.allowed.symbol]
+        return [`ICHI ${sub.allowed.symbol}`, '']
       }
 
       if (MANUAL_TYPES.includes(titleSub)) {
