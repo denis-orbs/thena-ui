@@ -9,13 +9,13 @@ import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import { defaultSwapFees } from '@/components/common/AddLiquidity/ChooseStrategy'
 import { PresetRanges } from '@/components/common/AddLiquidity/components/PresetRange'
 import AutomaticStrategy from '@/components/common/AddLiquidity/FusionAdd/AutomaticStrategy'
+import ChartPriceRangeInput from '@/components/common/AddLiquidity/FusionAdd/LiquidityChartRangeInput/ChartPriceRangeInput'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import { NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { ICHI_TYPES, MANUAL_TYPES, NARROW_TYPES } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
 import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType } from '@/lib/utils'
-import LiquidityChartRangeInput from '@/modules/Pools/LiquidityChartRangeInput'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, updateSelectedPreset, updateStrategy } from '@/state/fusion/actions'
 import {
@@ -263,7 +263,7 @@ function PairStrategy({ pair }) {
           <NewTextSubHeading>{t('Liquidity Range')}</NewTextSubHeading>
 
           <div className='flex flex-col gap-2 lg:gap-8'>
-            <LiquidityChartRangeInput
+            <ChartPriceRangeInput
               currencyA={baseCurrency ?? undefined}
               currencyB={quoteCurrency ?? undefined}
               feeAmount={mintInfo.dynamicFee}
@@ -274,6 +274,7 @@ function PairStrategy({ pair }) {
               onLeftRangeInput={onLeftRangeInput}
               onRightRangeInput={onRightRangeInput}
               interactive={false}
+              handleShow
             />
 
             <div className='mt-2.5'>

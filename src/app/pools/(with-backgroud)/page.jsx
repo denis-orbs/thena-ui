@@ -100,11 +100,14 @@ export default function PoolsPage() {
 
     if (title) {
       if (GAMMA_TYPES.includes(title)) {
-        return ['Gamma', title.replace('_', ' ')]
+        if (title === 'Narrow_Farming') {
+          return ['Gamma Narrow', '']
+        }
+        return ['Gamma Narrow', title.replace('_', ' ')]
       }
 
       if (ICHI_TYPES.includes(title)) {
-        return ['ICHI Farming', sub.allowed.symbol]
+        return [`ICHI ${sub.allowed.symbol}`, '']
       }
 
       if (MANUAL_TYPES.includes(title)) {

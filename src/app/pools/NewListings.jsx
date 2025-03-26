@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useId, useMemo, useState } from 'react'
+import React, { useCallback, useId, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
@@ -10,7 +10,7 @@ import NextImage from '@/components/image/NextImage'
 import Table from '@/components/table'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
@@ -75,6 +75,32 @@ function NewListings({
       }),
     [pools, sort],
   )
+  const getDisplayedTitleAndSubTitle = useCallback(sub => {
+    const titleSub = sub?.title
+
+    if (titleSub) {
+      if (GAMMA_TYPES.includes(titleSub)) {
+        if (titleSub === 'Narrow_Farming') {
+          return ['Gamma Narrow', '']
+        }
+        return ['Gamma Narrow', titleSub.replace('_', ' ')]
+      }
+
+      if (ICHI_TYPES.includes(titleSub)) {
+        return [`ICHI ${sub.allowed.symbol}`, '']
+      }
+
+      if (MANUAL_TYPES.includes(titleSub)) {
+        if (titleSub === 'CL_Farming') {
+          return ['CL: Earn $THE', '']
+        }
+
+        return ['CL: Earn Fees', '']
+      }
+    }
+
+    return [titleSub, '']
+  }, [])
 
   const finalPools = useMemo(() => {
     let data = []
@@ -276,15 +302,10 @@ function NewListings({
                   .map((sub, idx) => (
                     <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
                       <div className='flex items-center gap-1'>
-                        <TextHeading className='text-xs'>
-                          {GAMMA_TYPES.includes(sub.title) ? 'Gamma' : sub.title}
-                        </TextHeading>
-                        {GAMMA_TYPES.includes(sub.title) && <Paragraph className='text-xs'>{sub.title}</Paragraph>}
-                        {ICHI_TYPES.includes(sub.title) && (
-                          <Paragraph className='text-xs'>{sub.allowed.symbol}</Paragraph>
-                        )}
+                        <TextHeading className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[0]}</TextHeading>
+                        <Paragraph className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[1]}</Paragraph>
                       </div>
-                      <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr)}%</Paragraph>
+                      <Paragraph className='text-xs'>{formatAmount(sub.gauge.apr, true)}%</Paragraph>
                     </div>
                   ))}
               </div>
@@ -355,7 +376,17 @@ function NewListings({
       ),
       className: cn('items-center', classNames?.rowItem),
     }))
-  }, [classNames?.rowItem, id, isMdDown, listPoolAddressSpecial, push, size, sortedData, t])
+  }, [
+    classNames?.rowItem,
+    getDisplayedTitleAndSubTitle,
+    id,
+    isMdDown,
+    listPoolAddressSpecial,
+    push,
+    size,
+    sortedData,
+    t,
+  ])
 
   return (
     <>
