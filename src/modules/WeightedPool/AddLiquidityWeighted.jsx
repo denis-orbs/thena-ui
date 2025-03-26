@@ -96,8 +96,8 @@ function AddLiquidityWeighted({ pool }) {
       }
     } else {
       const wBNB = (tokensData || []).find(token => token.symbol === 'BNB' || token.symbol === 'WBNB')
-      if (wBNB && wBNB.balance.lt(wBNB.amountDeposit)) {
-        final = new BigNumber(wBNB.amountDeposit).minus(wBNB.balance)
+      if (wBNB && wBNB.balance.lt(wBNB.amount)) {
+        final = new BigNumber(wBNB.amount).minus(wBNB.balance)
       }
     }
     return final
