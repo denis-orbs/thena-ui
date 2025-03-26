@@ -433,8 +433,6 @@ export const useGammaMigration = () => {
 
       const [min, max] = rangeAmountOfToken1
       const targetToken1 = BigNumber(min).plus(max).div(2)
-      const targetRatio = BigNumber(targetToken1).div(transferAmounts[token0.address])
-      console.log({ targetRatio })
 
       let swapFromAmount = BigNumber(0)
       let fromToken = null
@@ -447,7 +445,10 @@ export const useGammaMigration = () => {
         fromToken = token0
         toToken = token1
         const priceRatio = BigNumber(token0.price).div(token1.price)
-        const initAmount = BigNumber(targetToken1).minus(transferAmounts[token1.address])
+        const targetRatio = BigNumber(transferAmounts[token0.address]).div(targetToken1)
+        const initAmount = BigNumber(transferAmounts[token0.address]).minus(
+          targetRatio.times(transferAmounts[token1.address]),
+        )
         swapFromAmount = initAmount.div(targetRatio.times(priceRatio).plus(1)).dp(0)
       } else if (transferAmounts[token1.address].gt(max)) {
         console.log('Token 1 is excess')
@@ -455,6 +456,7 @@ export const useGammaMigration = () => {
         fromToken = token1
         toToken = token0
         const priceRatio = BigNumber(token1.price).div(token0.price)
+        const targetRatio = BigNumber(targetToken1).div(transferAmounts[token0.address])
         const initAmount = BigNumber(transferAmounts[token1.address]).minus(targetToken1)
         swapFromAmount = initAmount.div(targetRatio.times(priceRatio).plus(1)).dp(0)
       }
@@ -488,7 +490,7 @@ export const useGammaMigration = () => {
           outputToken: toToken.address,
           networkId,
           account,
-          slippage: 0.5,
+          slippage,
         })
 
         const { to, data, value } = await simulateOdosSwap(account, quote.pathId, () => {
