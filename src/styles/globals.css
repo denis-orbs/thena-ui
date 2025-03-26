@@ -89,7 +89,7 @@
   .layout-addliquidity {
     @apply mx-6 mb-12 mt-8 max-w-[1464px] max-2xl:mx-12 md:mx-8 md:mb-12 2xl:mx-auto 2xl:mb-[180px] 2xl:mt-16 2xl:w-[1352px] 3xl:w-[1490px];
   }
-  1 .layout-top {
+  .layout-top {
     @apply mt-[64px] lg:mt-[92px];
   }
 
