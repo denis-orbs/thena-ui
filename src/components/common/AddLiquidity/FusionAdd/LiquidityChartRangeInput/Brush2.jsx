@@ -155,6 +155,7 @@ export const Brush2 = ({
     normalizedBrushExtent && yScale(normalizedBrushExtent[0]) >= 0 && yScale(normalizedBrushExtent[0]) <= height
   const northHandleInView =
     normalizedBrushExtent && yScale(normalizedBrushExtent[1]) >= 0 && yScale(normalizedBrushExtent[1]) <= height
+
   return useMemo(
     () => (
       <>
@@ -182,35 +183,32 @@ export const Brush2 = ({
                 cursor={interactive ? 'ns-resize' : 'default'}
                 pointerEvents='none'
               >
+                <path
+                  color={southHandleColor}
+                  stroke={southHandleColor}
+                  strokeWidth={2}
+                  opacity={0.6}
+                  d={brushHandlePathV2(width)}
+                />
                 <g>
-                  <path
-                    color={southHandleColor}
-                    stroke={southHandleColor}
-                    strokeWidth={2}
-                    opacity={0.6}
-                    d={brushHandlePathV2(width)}
-                  />
-                  <rect x='0' y='-18' width='128' height='36' rx='10' fill='#F199EE' />
-                  <g transform='translate(16, 0)'>
-                    <path
-                      d='M-5 -2l5-5 5 5'
-                      stroke='#2C002A'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                    <path
-                      d='M-5 2l5 5 5-5'
-                      stroke='#2C002A'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
+                  <rect x='0' y='-36' width='128' height='36' rx='10' fill='#F199EE' />
+                  <rect x='0' y='-18' width='128' height='18' fill='#F199EE' />
+
+                  <g transform='translate(16, -26)'>
+                    <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path
+                        d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
+                        stroke='#2C002A'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
                   </g>
                   <text
                     className='font-archia font-semibold'
                     x='80'
-                    y='5'
+                    y='-12'
                     fill='#2C002A'
                     fontSize='20'
                     textAnchor='middle'
@@ -236,27 +234,23 @@ export const Brush2 = ({
                     d={brushHandlePathV2(width)}
                     id='south-line-handle-path'
                   />
-                  <rect x='0' y='-18' width='128' height='36' rx='10' fill='#F199EE' />
-                  <g transform='translate(16, 0)'>
-                    <path
-                      d='M-5 -2l5-5 5 5'
-                      stroke='#2C002A'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                    <path
-                      d='M-5 2l5 5 5-5'
-                      stroke='#2C002A'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
+                  <rect x='0' y='0' width='128' height='36' rx='10' fill='#F199EE' />
+                  <rect x='0' y='0' width='128' height='18' fill='#F199EE' />
+                  <g transform='translate(16, 9)'>
+                    <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path
+                        d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
+                        stroke='#2C002A'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
                   </g>
                   <text
                     className='font-archia font-semibold'
                     x='80'
-                    y='5'
+                    y='23'
                     fill='#2C002A'
                     fontSize='20'
                     textAnchor='middle'
@@ -278,7 +272,7 @@ export const Brush2 = ({
                   alignmentBaseline='middle'
                   transform='scale(1,-1)'
                 >
-                  range.outOfView
+                  Range out of view
                 </text>
               </g>
             )}
@@ -287,7 +281,7 @@ export const Brush2 = ({
                 <OffScreenHandleV2 color={northHandleColor} />
                 {!showNorthArrow && (
                   <text x={14} y={5} fill={northHandleColor} fontSize={10} alignmentBaseline='middle'>
-                    range.outOfView
+                    Range out of view
                   </text>
                 )}
               </g>
