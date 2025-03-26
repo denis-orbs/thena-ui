@@ -340,10 +340,10 @@ export default function ChartPriceRangeInput({
                 disabled={false}
               />
             </div>
-            <div className='flex h-full w-full flex-col gap-8 overflow-hidden' ref={containerRef}>
-              <div ref={zoomRef} className='h-full w-full overflow-y-auto'>
+            <div className='flex h-full w-full flex-col gap-8' ref={containerRef}>
+              <div ref={zoomRef} className='h-full w-full'>
                 <div
-                  className='relative h-full w-full overflow-y-auto'
+                  className='relative h-full w-full'
                   style={{
                     width: chartSize?.chartContainerWidth,
                     height: chartSize?.chartContainerHeight || 300,

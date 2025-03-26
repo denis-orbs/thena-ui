@@ -18,7 +18,7 @@ function Axis({ axisGenerator }) {
 }
 
 export function AxisRight({ yScale, offset = 0, min, current, max }) {
-  const tickFormat = d => `$ ${formatAmount(d)}`
+  const tickFormat = d => `$ ${formatAmount(d, false, 4)}`
 
   const axisGenerator = useMemo(() => {
     const tickValues = yScale.ticks(4)
@@ -27,7 +27,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
   const minY = min !== undefined ? yScale(min) : null
   const maxY = max !== undefined ? yScale(max) : null
   const currentY = current !== undefined ? yScale(current) : null
-  const currentLabel = current !== undefined ? `$ ${current.toFixed(2)}` : ''
+  const currentLabel = current !== undefined ? `$ ${current.toFixed(4)}` : ''
   const labelWidth = 55
   const labelHeight = 28
   const paddingY = 6
@@ -59,7 +59,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
       </defs>
       {minY !== null && (
         <line
-          x1={35}
+          x1={40}
           x2={5}
           y1={minY}
           y2={minY}
@@ -71,7 +71,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
       )}
       {maxY !== null && (
         <line
-          x1={35}
+          x1={40}
           x2={5}
           y1={maxY}
           y2={maxY}
@@ -83,7 +83,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
       )}
       <Axis axisGenerator={axisGenerator} yScale={yScale} />
       {currentY !== null && (
-        <g className='current-label-container'>
+        <g className='current-label-container' style={{ padding: '6px' }}>
           <rect
             x={2}
             y={currentY - labelHeight / 2}
