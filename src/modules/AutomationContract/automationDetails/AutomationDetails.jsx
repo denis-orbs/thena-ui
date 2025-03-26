@@ -16,6 +16,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
   const t = useTranslations()
   const { onCopy, copied } = useCopyText()
   const { account } = useWallet()
+  console.log({ contractData })
   return (
     <div className='space-y-4'>
       <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Automation Details')}</TextHeading>
