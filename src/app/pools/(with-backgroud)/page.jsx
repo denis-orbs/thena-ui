@@ -396,8 +396,8 @@ export default function PoolsPage() {
                   {pool.subpools
                     .filter(item => item.version === 3)
                     .map((sub, idx) => (
-                      <div className='flex justify-between gap-2' key={`pair-${idx}`}>
-                        <div className='flex gap-1'>
+                      <div className='flex items-center justify-between gap-2' key={`pair-${idx}`}>
+                        <div className='flex items-center gap-1'>
                           <TextHeading className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[0]}</TextHeading>
                           <Paragraph className='text-xs'>{getDisplayedTitleAndSubTitle(sub)[1]}</Paragraph>
                         </div>
