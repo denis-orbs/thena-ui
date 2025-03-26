@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useId, useMemo, useState } from 'react'
 
 import { EmphasisButton } from '@/components/buttons/Button'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
@@ -37,6 +37,7 @@ function NewListings({
   const t = useTranslations()
   const { push } = useRouter()
   const { isMdDown } = useMediaQuery()
+  const id = useId()
 
   const [sort, setSort] = useState(sortOptions[1])
   const [currentPage, setCurrentPage] = useState(1)
@@ -263,10 +264,10 @@ function NewListings({
           {pool.subpools.length > 0 && (
             <InfoIcon
               className='size-4 min-w-4 stroke-neutral-400 max-md:hidden'
-              data-tooltip-id={`pair-${pool.address}`}
+              data-tooltip-id={`pair-${pool.address}-${id}`}
             />
           )}
-          <CustomTooltip className='min-w-[130px]' id={`pair-${pool.address}`}>
+          <CustomTooltip className='min-w-[130px]' id={`pair-${pool.address}-${id}`}>
             <div className='flex flex-col gap-1'>
               <TextHeading className='text-sm'>APR</TextHeading>
               <div className='flex flex-col gap-1'>
@@ -294,9 +295,9 @@ function NewListings({
       tvl: (
         <div className='flex items-center gap-1'>
           <Paragraph className='min-w-0 flex-1 truncate text-sm md:text-base'>${formatAmount(pool.tvlUSD)}</Paragraph>
-          <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}`} />
+          <InfoIcon className='size-4 stroke-neutral-400' data-tooltip-id={`tvl-${pool.address}-${id}`} />
           {pool.type === PAIR_TYPES.WEIGHTED ? (
-            <CustomTooltip id={`tvl-${pool.address}`}>
+            <CustomTooltip id={`tvl-${pool.address}-${id}`}>
               <div className='flex flex-col gap-1'>
                 {(pool.tokens || []).map(token => (
                   <p key={token.address}>{`${formatAmount(token.reserve)} ${token.symbol}`}</p>
@@ -304,7 +305,7 @@ function NewListings({
               </div>
             </CustomTooltip>
           ) : (
-            <CustomTooltip id={`tvl-${pool.address}`}>
+            <CustomTooltip id={`tvl-${pool.address}-${id}`}>
               <div className='flex flex-col gap-1'>
                 <p>{`${formatAmount(pool.reserve0)} ${pool.token0.symbol}`}</p>
                 <p>{`${formatAmount(pool.reserve1)} ${pool.token1.symbol}`}</p>
@@ -354,7 +355,7 @@ function NewListings({
       ),
       className: cn('items-center', classNames?.rowItem),
     }))
-  }, [classNames?.rowItem, isMdDown, listPoolAddressSpecial, push, size, sortedData, t])
+  }, [classNames?.rowItem, id, isMdDown, listPoolAddressSpecial, push, size, sortedData, t])
 
   return (
     <>
