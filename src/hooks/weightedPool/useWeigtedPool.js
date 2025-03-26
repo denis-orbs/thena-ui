@@ -355,9 +355,21 @@ export const useWeightedPool = () => {
       setPending(true)
       const tokenContract = getERC20Contract(token.address, chainId)
 
+      const handleInsufficientBalance = tokenSymbol => {
+        warnToast('Insufficient [Asset] Balance', { symbol: tokenSymbol })
+      }
+      const wrapTokens = new Set(['BNB', 'WBNB'])
+
       if (fromWei(toWei(amountDeposit, token?.decimals), token?.decimals).gt(token?.balance)) {
-        warnToast('Insufficient [Asset] Balance', { symbol: token?.symbol })
-        return false
+        if (wrapTokens.has(token.symbol)) {
+          if (!amountToWrap) {
+            handleInsufficientBalance(token?.symbol)
+            return false
+          }
+        } else {
+          handleInsufficientBalance(token?.symbol)
+          return false
+        }
       }
 
       const key = uuidv4()
@@ -490,10 +502,25 @@ export const useWeightedPool = () => {
   const onAddLiquidityAllToken = useCallback(
     async (pool, tokensData, minBPTAmountOut, slippage, amountToWrap, withStake, onSuccess) => {
       let isOutOfBalance = false
+      const handleInsufficientBalance = tokenSymbol => {
+        warnToast('Insufficient [Asset] Balance', { symbol: tokenSymbol })
+        isOutOfBalance = true
+      }
+      const wrapTokens = new Set(['BNB', 'WBNB'])
+
       for (const token of tokensData) {
-        if (fromWei(toWei(token.amount, token?.decimals), token?.decimals).gt(token?.balance)) {
-          warnToast('Insufficient [Asset] Balance', { symbol: token?.symbol })
-          isOutOfBalance = true
+        // Convert amount and check if it exceeds the balance
+        const convertedAmount = fromWei(toWei(token.amount, token?.decimals), token?.decimals)
+
+        if (convertedAmount.gt(token?.balance)) {
+          // Check if the token is one that can be wrapped (e.g., BNB, WBNB)
+          if (wrapTokens.has(token.symbol)) {
+            if (!amountToWrap) {
+              handleInsufficientBalance(token?.symbol) // BNB/WBNB specific warning
+            }
+          } else {
+            handleInsufficientBalance(token?.symbol) // General token warning
+          }
         }
       }
 
