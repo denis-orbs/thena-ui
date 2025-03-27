@@ -23,7 +23,7 @@ const rewardsContext = React.createContext({
 
 const V3_GET_USER_REWARDS = gql`
   query V3_GET_USER_REWARDS($user: Bytes = "") {
-    userRewards(where: { user: $user }) {
+    userRewards(where: { user: $user, votingIncentive_: { isActive: true } }) {
       id
       lastUpdate
       pool {
