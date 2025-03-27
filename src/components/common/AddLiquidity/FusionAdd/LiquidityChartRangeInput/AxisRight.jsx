@@ -18,7 +18,7 @@ function Axis({ axisGenerator }) {
 }
 
 export function AxisRight({ yScale, offset = 0, min, current, max }) {
-  const tickFormat = d => `$ ${formatAmount(d, false, 4)}`
+  const tickFormat = d => `${formatAmount(d, true, 4, false)}`
 
   const axisGenerator = useMemo(() => {
     const tickValues = yScale.ticks(4)
@@ -27,7 +27,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
   const minY = min !== undefined ? yScale(min) : null
   const maxY = max !== undefined ? yScale(max) : null
   const currentY = current !== undefined ? yScale(current) : null
-  const currentLabel = current !== undefined ? `$ ${current.toFixed(4)}` : ''
+  const currentLabel = current !== undefined ? `${formatAmount(current, true, 4, false)}` : ''
   const labelWidth = 55
   const labelHeight = 28
   const paddingY = 6

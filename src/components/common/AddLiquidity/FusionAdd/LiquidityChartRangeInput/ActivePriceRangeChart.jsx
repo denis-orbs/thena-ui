@@ -51,9 +51,9 @@ export default function ActivePriceRangeChart({
             <rect x='0' y='0' width={width} height={height} />
           </clipPath>
 
-          <linearGradient id='gradient-brush-area' x1='0%' y1='0%' x2='100%' y2='0%'>
-            <stop offset='6.2%' stopColor='rgba(189, 96, 186, 0.5)' />
-            <stop offset='100%' stopColor='rgba(131, 0, 126, 0)' />
+          <linearGradient id='gradient-brush-area' x2='100%' y1='0%' x1='0%' y2='0%'>
+            <stop offset='6.2%' stopColor='#BD60BA' />
+            <stop offset='100%' stopColor='#83007E' />
           </linearGradient>
 
           {brushDomain && (

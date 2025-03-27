@@ -87,12 +87,12 @@ export default function ChartPriceRangeInput({
     isLoading,
     error,
   } = useFetchPairPrices({
-    token0Address: baseCurrency.wrapped.address,
-    token1Address: quoteCurrency.wrapped.address,
+    token0Address: isReverse ? baseCurrency.wrapped.address : quoteCurrency.wrapped.address,
+    token1Address: isReverse ? quoteCurrency.wrapped.address : baseCurrency.wrapped.address,
     timeWindow,
   })
 
-  const [zoomFactor, setZoomFactor] = useState(0.95)
+  const [zoomFactor, setZoomFactor] = useState(1 / 1.2)
 
   const brushDomain = useMemo(() => {
     const leftPrice = isSorted ? priceLower : priceUpper?.invert()
@@ -148,7 +148,7 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.DAY,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.DAY)
-          setZoomFactor(1)
+          setZoomFactor(1 / 1.2)
           setBoundaryPrices(undefined)
         },
       },
@@ -157,7 +157,7 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.WEEK,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.WEEK)
-          setZoomFactor(1)
+          setZoomFactor(1 / 1.2)
           setBoundaryPrices(undefined)
         },
       },
@@ -166,7 +166,7 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.MONTH,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.MONTH)
-          setZoomFactor(1)
+          setZoomFactor(1 / 1.2)
           setBoundaryPrices(undefined)
         },
       },
@@ -175,7 +175,7 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.YEAR,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.YEAR)
-          setZoomFactor(1)
+          setZoomFactor(1 / 1.2)
           setBoundaryPrices(undefined)
         },
       },

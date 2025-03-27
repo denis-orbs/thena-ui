@@ -80,7 +80,7 @@ export const Brush2 = ({
         // x1, y1 (bottom right)
         [width, height - BRUSH_EXTENT_MARGIN_PX],
       ])
-      .handleSize(30)
+      .handleSize(50)
       .filter(() => interactive)
       .filter(event => {
         // Allow interactions only if the event target is part of the brush selection or handles
@@ -90,7 +90,7 @@ export const Brush2 = ({
       .on('brush', event => {
         const { selection } = event
         setBrushInProgress(true)
-
+        select(brushRef.current).selectAll('.handle').attr('cursor', 'ns-resize')
         if (!selection) {
           setLocalBrushExtent(null)
           return
@@ -115,7 +115,9 @@ export const Brush2 = ({
         }
         setLocalBrushExtent(priceExtent)
         setBrushInProgress(false)
+        select(brushRef.current).selectAll('.handle').style('cursor', 'pointer')
       })
+    select(brushRef.current).selectAll('.handle').attr('cursor', 'pointer')
 
     brushBehavior.current(select(brushRef.current))
 
@@ -124,12 +126,11 @@ export const Brush2 = ({
     }
 
     select(brushRef.current).selectAll('.overlay').attr('cursor', 'default')
-
     // brush linear gradient
     select(brushRef.current)
       .selectAll('.selection')
       .attr('stroke', 'none')
-      .attr('fill-opacity', '0.1')
+      .attr('fill-opacity', '0.2')
       .attr('fill', `url(#${id}-gradient-selection)`)
       .attr('cursor', 'grab')
   }, [brushExtent, id, height, interactive, previousBrushExtent, yScale, width, setBrushExtent, brushInProgress])
@@ -160,9 +161,9 @@ export const Brush2 = ({
     () => (
       <>
         <defs>
-          <linearGradient id={`${id}-gradient-selection`} x1='0%' y1='100%' x2='100%' y2='100%'>
-            <stop stopColor={northHandleColor} />
-            <stop stopColor={northHandleColor} offset='1' />
+          <linearGradient id={`${id}-gradient-selection`} x2='100%' y1='0%' x1='0%' y2='0%'>
+            <stop offset='6.2%' stopColor='#BD60BA' />
+            <stop offset='100%' stopColor='#83007E' />
           </linearGradient>
 
           {/* clips at exactly the svg area */}
@@ -190,7 +191,7 @@ export const Brush2 = ({
                   opacity={0.6}
                   d={brushHandlePathV2(width)}
                 />
-                <g>
+                <g pointerEvents='none'>
                   <rect x='0' y='-36' width='128' height='36' rx='10' fill='#F199EE' />
                   <rect x='0' y='-18' width='128' height='18' fill='#F199EE' />
 
@@ -213,7 +214,7 @@ export const Brush2 = ({
                     fontSize='20'
                     textAnchor='middle'
                   >
-                    {brushLabelValue('w', localBrushExtent[1])}
+                    {brushLabelValue('w', localBrushExtent?.[1])}
                   </text>
                 </g>
               </g>
@@ -236,7 +237,7 @@ export const Brush2 = ({
                   />
                   <rect x='0' y='0' width='128' height='36' rx='10' fill='#F199EE' />
                   <rect x='0' y='0' width='128' height='18' fill='#F199EE' />
-                  <g transform='translate(16, 9)'>
+                  <g transform='translate(16, 9)' pointerEvents='none'>
                     <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path
                         d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
@@ -255,7 +256,7 @@ export const Brush2 = ({
                     fontSize='20'
                     textAnchor='middle'
                   >
-                    {brushLabelValue('w', localBrushExtent[0])}
+                    {brushLabelValue('w', localBrushExtent?.[0])}
                   </text>
                 </g>
               </g>
