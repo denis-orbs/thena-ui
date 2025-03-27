@@ -330,7 +330,10 @@ export const convertHexToBooleans = hexValue => {
 }
 
 export const calculateNextWeek = startTime => {
-  const now = Date.now()
+  const now = Date.now() + new Date().getTimezoneOffset() * 60 * 1000
+  if (startTime > now) {
+    return startTime
+  }
   const oneWeekInMs = 86400 * 7 * 1000
 
   const weeksElapsed = Math.floor((now - startTime) / oneWeekInMs)
