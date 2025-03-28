@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { batch, useSelector } from 'react-redux'
 
@@ -59,7 +60,9 @@ export default function ChartPriceRangeInput({
   handleShow = true,
   showPeriod = false,
   enableScroll = false,
+  classNames,
 }) {
+  const t = useTranslations()
   const zoomRef = useRef(null)
 
   const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
@@ -258,7 +261,7 @@ export default function ChartPriceRangeInput({
     [isSorted, price, ticksAtLimit],
   )
 
-  const [chartSize, setChartSize] = useState({})
+  const [chartSize, setChartSize] = useState()
 
   const windowSize = useWindowSize()
 
@@ -309,7 +312,7 @@ export default function ChartPriceRangeInput({
 
   return (
     <div className='flex flex-col gap-4'>
-      {showPeriod && <Tabs data={periods} />}
+      {showPeriod && <Tabs data={periods} className={classNames?.periods} />}
 
       <div className='relative flex min-h-[300px] w-full items-center justify-center'>
         {isUninitialized ? (
@@ -319,8 +322,8 @@ export default function ChartPriceRangeInput({
         ) : error ? (
           <TextHeading>Liquidity data not available.</TextHeading>
         ) : (
-          <>
-            <div className='absolute -top-2 right-0 grid grid-cols-2 gap-1 md:-top-5'>
+          <div className='flex h-full w-full flex-col' ref={containerRef}>
+            <div className='flex justify-end justify-items-end gap-1'>
               <OutlineIconButton
                 className='!size-6'
                 classNames='!size-4'
@@ -358,53 +361,64 @@ export default function ChartPriceRangeInput({
                         (chartSize?.chartContainerWidth <= 450 ? 5 : (chartSize?.chartContainerWidth || 0) * 0.2),
                     }}
                   >
-                    <ChartPrice
-                      data={pairPrices}
-                      timeWindow={timeWindow}
-                      setBoundaryPrices={setBoundaryPrices}
-                      minVisiblePrice={minVisiblePrice}
-                      maxVisiblePrice={maxVisiblePrice}
-                      isMobile={chartSize?.chartContainerWidth <= 450}
-                    />
+                    {pairPrices.length > 0 && !isLoading && (
+                      <ChartPrice
+                        data={pairPrices}
+                        timeWindow={timeWindow}
+                        setBoundaryPrices={setBoundaryPrices}
+                        minVisiblePrice={minVisiblePrice}
+                        maxVisiblePrice={maxVisiblePrice}
+                        isMobile={chartSize?.chartContainerWidth <= 450}
+                      />
+                    )}
                   </div>
                   <div className='absolute inset-0 z-10'>
-                    <ActivePriceRangeChart
-                      data={{
-                        series: sortedFormattedData,
-                        current: price,
-                        min: boundaryPrices?.[0],
-                        max: boundaryPrices?.[1],
-                      }}
-                      dimensions={{
-                        width: chartSize?.chartContainerWidth,
-                        height:
-                          (chartSize?.chartContainerHeight || 300) -
-                          ((chartSize?.chartContainerHeight || 300) * 0.2 + 28),
-                        contentWidth: chartSize?.chartContainerWidth,
-                        axisLabelPaneWidth: desktopSizes.rightAxisWidth,
-                      }}
-                      styles={{
-                        area: {
-                          selection: '#BD60BA80',
-                        },
-                        brush: {
-                          handle: {
-                            south: '#F199EE',
-                            north: '#F199EE',
+                    {!brushDomain ? (
+                      <TextHeading className='mx-auto block text-center text-sm lg:text-base'>
+                        {t('Your Range will appear here')}
+                      </TextHeading>
+                    ) : (
+                      <></>
+                    )}
+                    {chartSize && (
+                      <ActivePriceRangeChart
+                        data={{
+                          series: sortedFormattedData,
+                          current: price,
+                          min: boundaryPrices?.[0],
+                          max: boundaryPrices?.[1],
+                        }}
+                        dimensions={{
+                          width: chartSize?.chartContainerWidth,
+                          height:
+                            (chartSize?.chartContainerHeight || 300) -
+                              ((chartSize?.chartContainerHeight || 300) * 0.2 + 28) ?? 300 * 0.2 + 28, // margin and time scale
+                          contentWidth: chartSize?.chartContainerWidth,
+                          axisLabelPaneWidth: desktopSizes.rightAxisWidth,
+                        }}
+                        styles={{
+                          area: {
+                            selection: '#BD60BA80',
                           },
-                        },
-                      }}
-                      interactive
-                      brushLabels={brushLabelValue}
-                      brushDomain={brushDomain}
-                      onBrushDomainChange={onBrushDomainChangeEnded}
-                      handleShow={handleShow}
-                    />
+                          brush: {
+                            handle: {
+                              south: '#F199EE',
+                              north: '#F199EE',
+                            },
+                          },
+                        }}
+                        interactive
+                        brushLabels={brushLabelValue}
+                        brushDomain={brushDomain}
+                        onBrushDomainChange={onBrushDomainChangeEnded}
+                        handleShow={handleShow && brushDomain}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

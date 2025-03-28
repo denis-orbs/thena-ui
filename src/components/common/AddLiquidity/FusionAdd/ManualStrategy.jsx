@@ -96,7 +96,6 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
   const handlePresetRangeSelection = useCallback(
     preset => {
       if (!price) return
-      console.log('preset', preset)
       dispatch(updateSelectedPreset({ preset: preset ? preset.type : null }))
 
       if (preset && preset.type === Presets.FULL) {
@@ -285,7 +284,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
       {strategy && (
         <div className={cn('space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div className='flex items-center justify-between'>
-            <NewTextSubHeading>{t('Liquidity Range')}</NewTextSubHeading>
+            <NewTextSubHeading>{t('Your Range against the Price')}</NewTextSubHeading>
           </div>
 
           {activePreset === Presets.FULL && fullRangeWarningShown && (
@@ -307,7 +306,11 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 onLeftRangeInput={onLeftRangeInput}
                 onRightRangeInput={onRightRangeInput}
                 interactive={!position}
+                showPeriod
                 handleShow
+                classNames={{
+                  periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%]',
+                }}
               />
             </div>
             <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>

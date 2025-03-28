@@ -51,12 +51,12 @@ export default function ActivePriceRangeChart({
             <rect x='0' y='0' width={width} height={height} />
           </clipPath>
 
-          <linearGradient id='gradient-brush-area' x2='100%' y1='0%' x1='0%' y2='0%'>
-            <stop offset='6.2%' stopColor='#BD60BA' />
-            <stop offset='100%' stopColor='#83007E' />
+          <linearGradient id='gradient-brush-area' x1='0%' x2='100%' y1='0%' y2='0%'>
+            <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
+            <stop offset='100%' stopColor='#83007E' stopOpacity={0} />
           </linearGradient>
 
-          {brushDomain && (
+          {brushDomain && yScale && (
             // mask to highlight selected area
             <mask id={`${id}-chart-area-mask`}>
               <rect
@@ -84,7 +84,7 @@ export default function ActivePriceRangeChart({
               containerHeight={height}
               containerWidth={width - axisLabelPaneWidth}
             />
-            {!disableBrush && (
+            {!disableBrush && yScale && current && (
               <HorizontalLine
                 value={current}
                 yScale={yScale}
@@ -95,13 +95,15 @@ export default function ActivePriceRangeChart({
             )}
           </g>
 
-          <AxisRight
-            yScale={yScale}
-            offset={width - axisLabelPaneWidth}
-            current={current}
-            min={brushDomain?.[0]}
-            max={brushDomain?.[1]}
-          />
+          {brushDomain && yScale && current && (
+            <AxisRight
+              yScale={yScale}
+              offset={width - axisLabelPaneWidth}
+              current={current}
+              min={brushDomain?.[0]}
+              max={brushDomain?.[1]}
+            />
+          )}
           {handleShow && (
             <Brush2
               id={id}

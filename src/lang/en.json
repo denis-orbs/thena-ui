@@ -1496,5 +1496,7 @@
   "Liquidity Range": "Liquidity Range",
   "Min [value] required": "Min. {value}% required",
   "Enter weight": "Enter weight",
-  "Liquidity Distribution": "Liquidity Distribution"
+  "Liquidity Distribution": "Liquidity Distribution",
+  "Your Range against the Price": "Your Range against the Price",
+  "Your Range will appear here": "Your Range will appear here"
 }

@@ -130,7 +130,7 @@ export const Brush2 = ({
     select(brushRef.current)
       .selectAll('.selection')
       .attr('stroke', 'none')
-      .attr('fill-opacity', '0.2')
+      .attr('fill-opacity', '1')
       .attr('fill', `url(#${id}-gradient-selection)`)
       .attr('cursor', 'grab')
   }, [brushExtent, id, height, interactive, previousBrushExtent, yScale, width, setBrushExtent, brushInProgress])
@@ -161,9 +161,9 @@ export const Brush2 = ({
     () => (
       <>
         <defs>
-          <linearGradient id={`${id}-gradient-selection`} x2='100%' y1='0%' x1='0%' y2='0%'>
-            <stop offset='6.2%' stopColor='#BD60BA' />
-            <stop offset='100%' stopColor='#83007E' />
+          <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
+            <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
+            <stop offset='100%' stopColor='#83007E' stopOpacity={0} />
           </linearGradient>
 
           {/* clips at exactly the svg area */}
