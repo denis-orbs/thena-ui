@@ -15,7 +15,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
 
   return (
     <div className='flex w-full flex-col'>
-      <div className='flex flex-col items-center'>
+      <div className='flex items-center gap-1 2xl:flex-col 2xl:gap-0'>
         <div className='flex w-full items-center justify-between gap-2'>
           <Box className={cn('flex w-full rounded-lg bg-neutral-900 !py-1.5 !pl-4', className)}>
             <NewTextSubHeading>{t('Pool Attributes')}</NewTextSubHeading>
@@ -70,7 +70,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >
-        <div className='mt-2 block lg:hidden'>
+        <div className='mt-2 block 2xl:hidden'>
           {pair?.type === PAIR_TYPES.LSD ? (
             <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
           ) : (
