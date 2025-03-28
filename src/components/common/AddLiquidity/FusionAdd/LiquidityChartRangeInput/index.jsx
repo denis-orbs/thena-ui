@@ -113,7 +113,7 @@ export default function LiquidityChartRangeInput({
   const isUninitialized = !currencyA || !currencyB || (formattedData === undefined && !isLoading)
 
   return (
-    <div className='flex min-h-[200px] w-full items-center justify-center'>
+    <div className='flex min-h-[280px] w-full items-center justify-center'>
       {isUninitialized ? (
         <TextHeading className='text-sm lg:text-base'>Your position will appear here.</TextHeading>
       ) : isLoading ? (
@@ -123,7 +123,7 @@ export default function LiquidityChartRangeInput({
       ) : !formattedData || formattedData.length === 0 || !price ? (
         <TextHeading className='text-sm lg:text-base'>There is no liquidity data.</TextHeading>
       ) : (
-        <div className='relative h-[200px] w-full content-center justify-center'>
+        <div className='relative w-full'>
           <Chart
             data={{ series: formattedData, current: price }}
             dimensions={{ width: 560, height: 200 }}
