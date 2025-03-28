@@ -2,11 +2,13 @@ import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { batch, useSelector } from 'react-redux'
 
+import { Warning } from '@/components/alert'
 import { OutlineIconButton } from '@/components/buttons/IconButton'
-import Spinner from '@/components/spinner'
+import Skeleton from '@/components/skeleton'
 import Tabs from '@/components/tabs'
 import { TextHeading } from '@/components/typography'
 import { useWindowSize } from '@/hooks/useWindowSize'
+import { cn } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import { Bound } from '@/state/fusion/actions'
@@ -60,6 +62,9 @@ export default function ChartPriceRangeInput({
   handleShow = true,
   showPeriod = false,
   enableScroll = false,
+  outOfRange = false,
+  invalidRange = false,
+  isFullRange = false,
   classNames,
 }) {
   const t = useTranslations()
@@ -79,6 +84,8 @@ export default function ChartPriceRangeInput({
   const [baseCurrency, setBaseCurrency] = useState(firstCurrency)
   const [quoteCurrency, setQuoteCurrency] = useState(secondCurrency)
 
+  const [chartPriceFinishedRender, setChartPriceFinishedRender] = useState(false)
+
   useEffect(() => {
     setBaseCurrency(firstCurrency)
     setQuoteCurrency(secondCurrency)
@@ -95,7 +102,7 @@ export default function ChartPriceRangeInput({
     timeWindow,
   })
 
-  const [zoomFactor, setZoomFactor] = useState(1 / 1.2)
+  const [zoomFactor, setZoomFactor] = useState(1)
 
   const brushDomain = useMemo(() => {
     const leftPrice = isSorted ? priceLower : priceUpper?.invert()
@@ -151,7 +158,7 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.DAY,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.DAY)
-          setZoomFactor(1 / 1.2)
+          setZoomFactor(1)
           setBoundaryPrices(undefined)
         },
       },
@@ -160,7 +167,7 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.WEEK,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.WEEK)
-          setZoomFactor(1 / 1.2)
+          setZoomFactor(1)
           setBoundaryPrices(undefined)
         },
       },
@@ -169,7 +176,7 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.MONTH,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.MONTH)
-          setZoomFactor(1 / 1.2)
+          setZoomFactor(1)
           setBoundaryPrices(undefined)
         },
       },
@@ -178,7 +185,7 @@ export default function ChartPriceRangeInput({
         active: timeWindow === PairDataTimeWindow.YEAR,
         onClickHandler: () => {
           setTimeWindow(PairDataTimeWindow.YEAR)
-          setZoomFactor(1 / 1.2)
+          setZoomFactor(1)
           setBoundaryPrices(undefined)
         },
       },
@@ -276,6 +283,12 @@ export default function ChartPriceRangeInput({
   }, [containerRef?.current, windowSize])
 
   useEffect(() => {
+    if (chartPriceFinishedRender) {
+      setBoundaryPrices([minVisiblePrice, maxVisiblePrice])
+    }
+  }, [chartPriceFinishedRender, maxVisiblePrice, minVisiblePrice])
+
+  useEffect(() => {
     if (!enableScroll) return
     const container = zoomRef.current
     if (container) {
@@ -308,118 +321,129 @@ export default function ChartPriceRangeInput({
     return undefined
   }, [enableScroll, midPrice, minVisiblePrice, scrollIncrement])
 
-  const isUninitialized = !currencyA || !currencyB || isLoading
+  const isUninitialized = !currencyA || !currencyB
 
   return (
-    <div className='flex flex-col gap-4'>
-      {showPeriod && <Tabs data={periods} className={classNames?.periods} />}
+    <div className='flex flex-col'>
+      {showPeriod && <Tabs data={periods} className={cn('max-md:hidden', classNames?.periods)} />}
 
-      <div className='relative flex min-h-[300px] w-full items-center justify-center'>
-        {isUninitialized ? (
-          <TextHeading>Your position will appear here.</TextHeading>
-        ) : isLoading ? (
-          <Spinner />
-        ) : error ? (
-          <TextHeading>Liquidity data not available.</TextHeading>
-        ) : (
-          <div className='flex h-full w-full flex-col' ref={containerRef}>
-            <div className='flex justify-end justify-items-end gap-1'>
-              <OutlineIconButton
-                className='!size-6'
-                classNames='!size-4'
-                Icon={ZoomInIcon}
-                onClick={() => {
-                  setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
-                }}
-                disabled={false}
-              />
-              <OutlineIconButton
-                className='!size-6'
-                classNames='!size-4'
-                Icon={ZoomOutIcon}
-                onClick={() => {
-                  setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
-                }}
-                disabled={false}
-              />
-            </div>
-            <div className='flex h-full w-full flex-col gap-8' ref={containerRef}>
-              <div ref={zoomRef} className='h-full w-full'>
-                <div
-                  className='relative h-full w-full'
-                  style={{
-                    width: chartSize?.chartContainerWidth,
-                    height: chartSize?.chartContainerHeight || 300,
-                  }}
-                >
+      <div className='flex flex-col gap-2 md:gap-4'>
+        {isFullRange && <Warning className='text-sm'>{t('Full range position')}</Warning>}
+        {outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
+        {invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
+        <div className='relative flex h-[300px] w-full items-center justify-center'>
+          {isUninitialized ? (
+            <TextHeading>Your position will appear here.</TextHeading>
+          ) : isLoading ? (
+            <Skeleton className='absolute h-[300px] w-full' />
+          ) : error ? (
+            <TextHeading>Liquidity data not available.</TextHeading>
+          ) : (
+            <div className='flex h-full max-h-[300px] w-full flex-col' ref={containerRef}>
+              <div className='flex justify-end justify-items-end max-md:mb-4 max-md:justify-between'>
+                {showPeriod && <Tabs data={periods} className={cn('md:hidden')} />}
+                <div className='flex gap-1'>
+                  <OutlineIconButton
+                    className='!size-6'
+                    classNames='!size-4'
+                    Icon={ZoomInIcon}
+                    onClick={() => {
+                      setZoomFactor(prevZoomFactor => prevZoomFactor * 1.2)
+                    }}
+                    disabled={false}
+                  />
+                  <OutlineIconButton
+                    className='!size-6'
+                    classNames='!size-4'
+                    Icon={ZoomOutIcon}
+                    onClick={() => {
+                      setZoomFactor(prevZoomFactor => prevZoomFactor / 1.2)
+                    }}
+                    disabled={false}
+                  />
+                </div>
+              </div>
+              <div className='flex h-full w-full flex-col gap-8'>
+                <div ref={zoomRef} className='h-full w-full'>
                   <div
-                    className='absolute inset-0 z-0 mx-auto h-full'
+                    className='relative h-full w-full'
                     style={{
-                      width:
-                        (chartSize?.chartContainerWidth || 0) -
-                        desktopSizes.rightAxisWidth -
-                        (chartSize?.chartContainerWidth <= 450 ? 5 : (chartSize?.chartContainerWidth || 0) * 0.2),
+                      width: chartSize?.chartContainerWidth,
+                      height: chartSize?.chartContainerHeight || 300,
                     }}
                   >
-                    {pairPrices.length > 0 && !isLoading && (
-                      <ChartPrice
-                        data={pairPrices}
-                        timeWindow={timeWindow}
-                        setBoundaryPrices={setBoundaryPrices}
-                        minVisiblePrice={minVisiblePrice}
-                        maxVisiblePrice={maxVisiblePrice}
-                        isMobile={chartSize?.chartContainerWidth <= 450}
-                      />
-                    )}
-                  </div>
-                  <div className='absolute inset-0 z-10'>
-                    {!brushDomain ? (
-                      <TextHeading className='mx-auto block text-center text-sm lg:text-base'>
-                        {t('Your Range will appear here')}
-                      </TextHeading>
-                    ) : (
-                      <></>
-                    )}
-                    {chartSize && (
-                      <ActivePriceRangeChart
-                        data={{
-                          series: sortedFormattedData,
-                          current: price,
-                          min: boundaryPrices?.[0],
-                          max: boundaryPrices?.[1],
-                        }}
-                        dimensions={{
-                          width: chartSize?.chartContainerWidth,
-                          height:
-                            (chartSize?.chartContainerHeight || 300) -
-                              ((chartSize?.chartContainerHeight || 300) * 0.2 + 28) ?? 300 * 0.2 + 28, // margin and time scale
-                          contentWidth: chartSize?.chartContainerWidth,
-                          axisLabelPaneWidth: desktopSizes.rightAxisWidth,
-                        }}
-                        styles={{
-                          area: {
-                            selection: '#BD60BA80',
-                          },
-                          brush: {
-                            handle: {
-                              south: '#F199EE',
-                              north: '#F199EE',
+                    <div
+                      className='absolute inset-0 z-0 mx-auto h-full'
+                      style={{
+                        width:
+                          (chartSize?.chartContainerWidth || 0) -
+                          desktopSizes.rightAxisWidth -
+                          (chartSize?.chartContainerWidth <= 450 ? 5 : (chartSize?.chartContainerWidth || 0) * 0.2),
+                      }}
+                    >
+                      {pairPrices.length > 0 && !isLoading && (
+                        <ChartPrice
+                          data={pairPrices}
+                          timeWindow={timeWindow}
+                          setBoundaryPrices={setBoundaryPrices}
+                          minVisiblePrice={minVisiblePrice}
+                          maxVisiblePrice={maxVisiblePrice}
+                          isMobile={chartSize?.chartContainerWidth <= 450}
+                          setFinishedRender={setChartPriceFinishedRender}
+                        />
+                      )}
+                    </div>
+                    <div className='absolute inset-0 z-10'>
+                      {!brushDomain ? (
+                        <TextHeading className='mx-auto block text-center text-sm lg:text-base'>
+                          {t('Your Range will appear here')}
+                        </TextHeading>
+                      ) : (
+                        <></>
+                      )}
+                      {chartSize ? (
+                        <ActivePriceRangeChart
+                          data={{
+                            series: sortedFormattedData,
+                            current: price,
+                            min: boundaryPrices?.[0],
+                            max: boundaryPrices?.[1],
+                          }}
+                          dimensions={{
+                            width: chartSize?.chartContainerWidth,
+                            height:
+                              (chartSize?.chartContainerHeight || 300) -
+                                ((chartSize?.chartContainerHeight || 300) * 0.2 + 28) ?? 300 - (300 * 0.2 + 28), // margin and time scale
+                            contentWidth: chartSize?.chartContainerWidth,
+                            axisLabelPaneWidth: desktopSizes.rightAxisWidth,
+                          }}
+                          styles={{
+                            area: {
+                              selection: '#BD60BA80',
                             },
-                          },
-                        }}
-                        interactive
-                        brushLabels={brushLabelValue}
-                        brushDomain={brushDomain}
-                        onBrushDomainChange={onBrushDomainChangeEnded}
-                        handleShow={handleShow && brushDomain}
-                      />
-                    )}
+                            brush: {
+                              handle: {
+                                south: '#F199EE',
+                                north: '#F199EE',
+                              },
+                            },
+                          }}
+                          interactive
+                          brushLabels={brushLabelValue}
+                          brushDomain={brushDomain}
+                          onBrushDomainChange={onBrushDomainChangeEnded}
+                          handleShow={handleShow && brushDomain && chartPriceFinishedRender}
+                        />
+                      ) : (
+                        <Skeleton className='h-full w-full' />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )

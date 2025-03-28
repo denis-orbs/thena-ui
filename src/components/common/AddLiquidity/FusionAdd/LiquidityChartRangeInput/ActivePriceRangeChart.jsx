@@ -25,14 +25,16 @@ export default function ActivePriceRangeChart({
   const { xScale, yScale } = useMemo(() => {
     const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
     const scales = {
-      yScale: scaleLinear().domain([min, max]).range([height, 0]),
+      yScale: scaleLinear()
+        .domain([min, max])
+        .range([height - (!brushDomain ? 48 : 0), 0]),
       xScale: scaleLinear()
         .domain([0, getMax(activeEntries, xAccessor)])
         .range([width - axisLabelPaneWidth, width - axisLabelPaneWidth - contentWidth]),
     }
 
     return scales
-  }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth])
+  }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth, brushDomain])
 
   useEffect(() => {
     if (!brushDomain) {
@@ -56,7 +58,7 @@ export default function ActivePriceRangeChart({
             <stop offset='100%' stopColor='#83007E' stopOpacity={0} />
           </linearGradient>
 
-          {brushDomain && yScale && (
+          {brushDomain && yScale && yScale(brushDomain[0]) && yScale(brushDomain[1]) && (
             // mask to highlight selected area
             <mask id={`${id}-chart-area-mask`}>
               <rect
@@ -84,7 +86,7 @@ export default function ActivePriceRangeChart({
               containerHeight={height}
               containerWidth={width - axisLabelPaneWidth}
             />
-            {!disableBrush && yScale && current && (
+            {!disableBrush && (
               <HorizontalLine
                 value={current}
                 yScale={yScale}
@@ -95,15 +97,13 @@ export default function ActivePriceRangeChart({
             )}
           </g>
 
-          {brushDomain && yScale && current && (
-            <AxisRight
-              yScale={yScale}
-              offset={width - axisLabelPaneWidth}
-              current={current}
-              min={brushDomain?.[0]}
-              max={brushDomain?.[1]}
-            />
-          )}
+          <AxisRight
+            yScale={yScale}
+            offset={width - axisLabelPaneWidth}
+            current={current}
+            min={brushDomain?.[0]}
+            max={brushDomain?.[1]}
+          />
           {handleShow && (
             <Brush2
               id={id}

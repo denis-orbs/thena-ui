@@ -2,18 +2,16 @@ import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Warning } from '@/components/alert'
 import { EmphasisIconButton } from '@/components/buttons/IconButton'
 import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
-import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
 import { FusionRangeType, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useStableTokens } from '@/hooks/fusion/Tokens'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { cn, formatAmount, unwrappedSymbol } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { useAprStore } from '@/state/APR/store'
 import { Bound, setInitialTokenPrice, updateIsReverse, updateSelectedPreset } from '@/state/fusion/actions'
 import {
@@ -35,8 +33,8 @@ const feeAmount = 3000
 
 function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFees, handleChooseStrategy, position }) {
   const t = useTranslations()
-  const { isViewDown } = useMediaQuery('down', 640)
-  const { isViewUp } = useMediaQuery('up', 460)
+  // const { isViewDown } = useMediaQuery('down', 640)
+  // const { isViewUp } = useMediaQuery('up', 460)
 
   const [fullRangeWarningShown, setFullRangeWarningShown] = useState(true)
 
@@ -110,19 +108,19 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
     [dispatch, getSetFullRange, onLeftRangeInput, onRightRangeInput, price],
   )
 
-  const currentPrice = useMemo(() => {
-    if (position) return position.currentPrice
-    if (!mintInfo.price) return
+  // const currentPrice = useMemo(() => {
+  //   if (position) return position.currentPrice
+  //   if (!mintInfo.price) return
 
-    const _price = mintInfo.invertPrice
-      ? parseFloat(mintInfo.price.invert().toSignificant(5))
-      : parseFloat(mintInfo.price.toSignificant(5))
+  //   const _price = mintInfo.invertPrice
+  //     ? parseFloat(mintInfo.price.invert().toSignificant(5))
+  //     : parseFloat(mintInfo.price.toSignificant(5))
 
-    if (Number(_price) <= 0.0001) {
-      return '< 0.0001'
-    }
-    return `${_price}`
-  }, [position, mintInfo.price, mintInfo.invertPrice])
+  //   if (Number(_price) <= 0.0001) {
+  //     return '< 0.0001'
+  //   }
+  //   return `${_price}`
+  // }, [position, mintInfo.price, mintInfo.invertPrice])
 
   const isEarnFees = useMemo(
     () => (position && !position.pool?.isFarming) || strategy?.title === 'CL_SwapFee',
@@ -282,18 +280,11 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
       </div>
 
       {strategy && (
-        <div className={cn('space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
+        <div className={cn('space-y-2 md:space-y-4', mintInfo.noLiquidity && !startPriceTypedValue && 'blur-xl')}>
           <div className='flex items-center justify-between'>
             <NewTextSubHeading>{t('Your Range against the Price')}</NewTextSubHeading>
           </div>
-
-          {activePreset === Presets.FULL && fullRangeWarningShown && (
-            <Warning className='text-sm'>{t('Full range position')}</Warning>
-          )}
-          {mintInfo.outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
-          {mintInfo.invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
-
-          <div>
+          <div className='!mb-9 md:!mb-11'>
             <div className='mt-0 flex flex-col'>
               <ChartPriceRangeInput
                 currencyA={baseCurrency ?? undefined}
@@ -309,11 +300,14 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 showPeriod
                 handleShow
                 classNames={{
-                  periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%]',
+                  periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
                 }}
+                outOfRange={mintInfo.outOfRange}
+                invalidRange={mintInfo.invalidRange}
+                isfullRange={activePreset === Presets.FULL && fullRangeWarningShown}
               />
             </div>
-            <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
+            {/* <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>
               <TextSubHeading className='leading-5'>
                 {t('Current Price: [price] [symbolA] [symbolB]', {
                   price: currentPrice,
@@ -321,7 +315,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                   symbolB: unwrappedSymbol(baseCurrency),
                 })}
               </TextSubHeading>
-            </div>
+            </div> */}
           </div>
 
           {/* <div className='block 2xl:hidden'>

@@ -8,7 +8,14 @@ import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 
-function ChartPrice({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisiblePrice, isMobile = false }) {
+function ChartPrice({
+  data,
+  timeWindow,
+  minVisiblePrice,
+  maxVisiblePrice,
+  isMobile = false,
+  setFinishedRender = () => {},
+}) {
   const chartRef = useRef(null)
   const chartCreated = useRef(null)
 
@@ -19,14 +26,10 @@ function ChartPrice({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxV
         value,
       }))
 
-      if (baseData.length > 0 && setBoundaryPrices) {
-        setBoundaryPrices([minVisiblePrice, maxVisiblePrice])
-      }
-
       return baseData
     }
     return []
-  }, [data, maxVisiblePrice, minVisiblePrice, setBoundaryPrices])
+  }, [data])
 
   useEffect(() => {
     if (!chartRef?.current) return
@@ -138,9 +141,10 @@ function ChartPrice({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxV
     }
 
     return () => {
+      setFinishedRender(true)
       chart.remove()
     }
-  }, [timeWindow, isMobile, transformedData, minVisiblePrice, maxVisiblePrice])
+  }, [timeWindow, isMobile, transformedData, minVisiblePrice, maxVisiblePrice, setFinishedRender])
 
   return (
     <div className='flex h-full w-full flex-1'>

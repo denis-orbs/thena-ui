@@ -2,7 +2,7 @@ import React from 'react'
 
 export function HorizontalLine({ value, yScale, width, containerWidth, lineStyle = 'dashed' }) {
   const lineStart = containerWidth - width
-  if (isNaN(lineStart)) {
+  if (isNaN(lineStart) || isNaN(yScale(value))) {
     return null
   }
 

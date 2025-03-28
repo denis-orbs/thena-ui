@@ -121,7 +121,12 @@ export const Brush2 = ({
 
     brushBehavior.current(select(brushRef.current))
 
-    if (previousBrushExtent && compare(normalizedExtent, normalizeExtent(previousBrushExtent), yScale)) {
+    if (
+      previousBrushExtent &&
+      compare(normalizedExtent, normalizeExtent(previousBrushExtent), yScale) &&
+      !isNaN(scaledExtent[0]) &&
+      !isNaN(scaledExtent[1])
+    ) {
       select(brushRef.current).transition().call(brushBehavior.current.move, scaledExtent)
     }
 
@@ -138,6 +143,9 @@ export const Brush2 = ({
   // respond to yScale changes only
   useEffect(() => {
     if (!brushRef.current || !brushBehavior.current) return
+
+    const extent = toYScale(brushExtent, yScale)
+    if (isNaN(extent[0]) || isNaN(extent[1])) return
 
     brushBehavior.current.move(select(brushRef.current), normalizeExtent(toYScale(brushExtent, yScale)))
   }, [brushExtent, yScale])

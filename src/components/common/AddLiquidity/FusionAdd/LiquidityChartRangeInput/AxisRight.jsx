@@ -57,7 +57,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
           <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />
         </marker>
       </defs>
-      {minY !== null && (
+      {!isNaN(minY) && (
         <line
           x1={40}
           x2={5}
@@ -69,7 +69,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
           markerStart='url(#arrow-min)'
         />
       )}
-      {maxY !== null && (
+      {!isNaN(maxY) && (
         <line
           x1={40}
           x2={5}
@@ -81,8 +81,8 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
           markerStart='url(#arrow-min)'
         />
       )}
-      <Axis axisGenerator={axisGenerator} yScale={yScale} />
-      {currentY !== null && (
+      <Axis axisGenerator={axisGenerator} />
+      {!isNaN(currentY) && (
         <g className='current-label-container' style={{ padding: '6px' }}>
           <rect
             x={2}
