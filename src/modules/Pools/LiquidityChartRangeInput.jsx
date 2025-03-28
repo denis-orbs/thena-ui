@@ -123,8 +123,8 @@ export default function LiquidityChartRangeInput({
         <div className='relative h-[285px] w-full content-center justify-center'>
           <Chart
             data={{ series: formattedData, current: price }}
-            dimensions={{ width: 560, height: 200 }}
-            margins={{ top: 10, right: 2, bottom: 20, left: 0 }}
+            dimensions={{ width: 560, height: showZoom ? 200 : 285 }}
+            margins={{ top: showZoom ? 10 : 0, right: 2, bottom: showZoom ? 20 : 30, left: 0 }}
             styles={{
               area: {
                 selection: '#C672D8',
