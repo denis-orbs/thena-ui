@@ -280,8 +280,11 @@ export default function ChartPriceRangeInput({
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerRef?.current, windowSize])
+  }, [containerRef?.current, windowSize, setZoomFactor])
 
+  useEffect(() => {
+    setZoomFactor(prevZoomFactor => (prevZoomFactor < 1 ? 1 : prevZoomFactor / 1.2))
+  }, [windowSize.width])
   useEffect(() => {
     if (chartPriceFinishedRender) {
       setBoundaryPrices([minVisiblePrice, maxVisiblePrice])

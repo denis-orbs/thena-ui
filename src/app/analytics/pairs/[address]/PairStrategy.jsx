@@ -210,8 +210,8 @@ function PairStrategy({ pair }) {
   }, [handleChooseStrategy, sortedSubPools, strategy, pathname])
 
   return (
-    <div className='flex gap-8 max-xl:flex-col max-xl:gap-4'>
-      <div className='w-full xl:w-[25%]'>
+    <div className='flex gap-8 max-2xl:flex-col max-2xl:gap-4'>
+      <div className='w-full 2xl:w-[25%]'>
         <div className={cn('flex items-center justify-between py-4 lg:h-[92px]')}>
           <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
             Automatic Strategy
@@ -234,7 +234,7 @@ function PairStrategy({ pair }) {
         )}
       </div>
 
-      <div className='flex w-full flex-col gap-8 xl:w-[75%]'>
+      <div className='flex w-full flex-col gap-8 2xl:w-[75%]'>
         <div
           className={cn('flex items-center justify-between gap-2 rounded-xl bg-primary-950 bg-opacity-50 p-4  lg:px-6')}
         >

@@ -41,7 +41,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className='overflow-hidden'
         >
-          <div className='mt-2 hidden 2xl:block'>
+          <div className='mt-2 hidden w-full 2xl:block'>
             {pair?.type === PAIR_TYPES.LSD ? (
               <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
             ) : (
@@ -70,7 +70,7 @@ export function PoolAttributesSection({ strategy, pair, className }) {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className='overflow-hidden'
       >
-        <div className='mt-2 block 2xl:hidden'>
+        <div className='mt-2 block w-full 2xl:hidden'>
           {pair?.type === PAIR_TYPES.LSD ? (
             <>{strategy && pair && <PoolAttributesCL strategy={strategy} pool={pair} />}</>
           ) : (
