@@ -113,7 +113,9 @@ function EditAutomationContract({ data }) {
   const isDisabled = useMemo(() => {
     const pairs = dataEdit?.votes?.pairs || []
 
-    if (isEmpty(pairs)) return true
+    if (isEmpty(pairs) && dataEdit?.votes?.isAutoVote) return true
+
+    if (isEmpty(pairs)) return false
 
     const checkInvalidPair = pairs.some(pair => !pair.pair)
     if (checkInvalidPair) return true
@@ -131,7 +133,7 @@ function EditAutomationContract({ data }) {
       return true
     }
     setError()
-  }, [dataEdit?.votes?.pairs, t])
+  }, [dataEdit?.votes?.isAutoVote, dataEdit?.votes?.pairs, t])
 
   const handleBack = useCallback(() => {
     router.back()
