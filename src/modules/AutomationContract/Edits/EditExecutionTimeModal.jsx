@@ -22,7 +22,7 @@ function EditExecutionTimeModal({ popup, setPopup, contract }) {
       title='Edit Automation Execution Time'
     >
       <ModalBody>
-        <SelectExecutionTime executionTime={executionTime} updateData={date => setExecutionTime(date)} />
+        <SelectExecutionTime isModal executionTime={executionTime} updateData={date => setExecutionTime(date)} />
       </ModalBody>
       <ModalFooter className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
         <EmphasisButton className='w-full' onClick={() => setPopup()}>

@@ -1331,11 +1331,11 @@
   "Contract Name": "Contract Name",
   "Lock Page": "Lock Page",
   "Your veTHE ID": "Your veTHE ID",
-  "Selected veTHE ID": "Selected veTHE ID",
+  "Selected veTHE [ID]": "Selected veTHE {id}",
   "Create Automation Contract": "Create Automation Contract",
   "Claim rebase rewards every week": "Claim rebase rewards every week",
   "Relock veTHE every 1 Week": "Relock veTHE every 1 Week",
-  "Next 5 Scheduled Dates": "Next 5 Scheduled Dates",
+  "Next [number] Scheduled Dates": "Next {number} Scheduled Dates",
   "Select Voting Pairs and Weights": "Select Voting Pairs and Weights",
   "Voting Pairs and Weights": "Voting Pairs and Weights",
   "Add Pair": "Add Pair",
@@ -1488,7 +1488,6 @@
   "V2 Rewards": "V2 Rewards",
   "This is the estimated total deposit based on your current contract settings": "This is the estimated total deposit based on your current contract settings.",
   "Minimum deposit": "最低存款额为 5 美元。请增加您的金额。",
-  "Total Deposit Estimate": "Total Deposit Estimate",
   "Get LINK": "获取 LINK",
   "Minimum LINK balance required desc": "The minimum LINK balance required for the automation to run. This is calculated based on the number of pairs and the gas limit.",
   "Minimum Link Balance needed": "最低 LINK 余额需求",
@@ -1497,5 +1496,7 @@
   "Enter weight": "Enter weight",
   "Liquidity Distribution": "Liquidity Distribution",
   "Your Range against the Price": "Your Range against the Price",
-  "Your Range will appear here": "Your Range will appear here"
+  "Your Range will appear here": "Your Range will appear here",
+  "To create an automation you need": "To create an automation you need",
+  "Lock Exprire": "Lock Exprire"
 }

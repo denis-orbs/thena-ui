@@ -49,7 +49,7 @@ const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registra
   return { isDisabled: false, message }
 }
 
-function NavigationBottom({ currentStep, onNext }) {
+function NavigationBottom({ currentStep, onNext, onPrev }) {
   const t = useTranslations()
   const { createData } = useSelector(state => state.veTHEAutomationContract, shallowEqual)
   const { minimumFunds: minimumBalance } = useGetMinimumFunds(
@@ -113,6 +113,11 @@ function NavigationBottom({ currentStep, onNext }) {
           >
             {t('Create Automation')}
           </PrimaryButton>
+        )}
+        {currentStep > 1 && (
+          <EmphasisButton className='w-full lg:hidden' onClick={onPrev}>
+            {t('Back')}
+          </EmphasisButton>
         )}
       </>
       <SuccessModal
