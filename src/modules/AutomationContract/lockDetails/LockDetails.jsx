@@ -92,7 +92,7 @@ function LockDetails({ contractData, veTHE }) {
                   ? t('Automated')
                   : veTHE.expire > 0
                     ? t('Expires in [x] days', { x: veTHE.expire })
-                    : `Expired ${veTHE.expire * -1} days ago`}
+                    : `Expired ${(veTHE.expire || 0) * -1} days ago`}
               </TextHeading>
             )}
           </div>

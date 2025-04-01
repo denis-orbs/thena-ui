@@ -305,6 +305,7 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 outOfRange={mintInfo.outOfRange}
                 invalidRange={mintInfo.invalidRange}
                 isfullRange={activePreset === Presets.FULL && fullRangeWarningShown}
+                isCreate={mintInfo.noLiquidity}
               />
             </div>
             {/* <div className={cn('mt-4 flex items-center justify-center sm:mt-3', isViewDown && isViewUp && '!mt-3')}>

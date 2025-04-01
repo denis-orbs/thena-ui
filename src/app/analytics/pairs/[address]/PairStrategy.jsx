@@ -279,6 +279,7 @@ function PairStrategy({ pair }) {
                 periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
               }}
               handleShow
+              isCreate={false}
             />
 
             <div className='mt-11 md:mt-4'>

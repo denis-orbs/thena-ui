@@ -37,7 +37,9 @@ function ChartPrice({
     const chart = createChart(chartRef?.current, {
       layout: {
         background: { color: 'transparent' },
-        textColor: '#747778',
+        textColor: '#685770',
+        fontFamily: 'Inter',
+        fontSize: 12,
       },
       autoSize: true,
       handleScale: false,
@@ -109,7 +111,7 @@ function ChartPrice({
           position: 'inBar',
           color: '#F8CCF6',
           shape: 'circle',
-          size: 1,
+          size: 0.5,
         },
       ])
 
@@ -149,7 +151,7 @@ function ChartPrice({
   return (
     <div className='flex h-full w-full flex-1'>
       {(!chartCreated.current || !transformedData.length) && <Skeleton />}
-      <div className='w-full flex-1' ref={chartRef} />
+      <div className='price-chart-container w-full flex-1' ref={chartRef} />
     </div>
   )
 }

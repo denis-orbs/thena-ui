@@ -20,6 +20,7 @@ export default function ActivePriceRangeChart({
   onBrushDomainChange,
   handleShow,
   disableBrush = false,
+  setIsOutOfView,
 }) {
   const svgRef = useRef(null)
   const { xScale, yScale } = useMemo(() => {
@@ -117,6 +118,7 @@ export default function ActivePriceRangeChart({
               setBrushExtent={onBrushDomainChange}
               northHandleColor={styles.brush.handle.north}
               southHandleColor={styles.brush.handle.south}
+              setIsOutOfView={setIsOutOfView}
             />
           )}
         </g>

@@ -6,10 +6,10 @@ import usePrevious from '@/hooks/usePrevious'
 import { brushHandlePathV2, OffScreenHandleV2 } from './svg'
 
 // flips the handles draggers when close to the container edges
-// const FLIP_HANDLE_THRESHOLD_PX = 20
+const FLIP_HANDLE_THRESHOLD_PX = 36
 
 // margin to prevent tick snapping from putting the brush off screen
-const BRUSH_EXTENT_MARGIN_PX = 2
+const BRUSH_EXTENT_MARGIN_PX = 8
 
 /**
  * Returns true if every element in `a` maps to the
@@ -40,6 +40,7 @@ export const Brush2 = ({
   height,
   northHandleColor,
   southHandleColor,
+  setIsOutOfView,
 }) => {
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
@@ -152,8 +153,8 @@ export const Brush2 = ({
 
   const normalizedBrushExtent = normalizeExtent(localBrushExtent ?? brushExtent)
 
-  // const flipNorthHandle = yScale(normalizedBrushExtent[1]) < FLIP_HANDLE_THRESHOLD_PX
-  // const flipSouthHandle = yScale(normalizedBrushExtent[0]) > height - FLIP_HANDLE_THRESHOLD_PX
+  const flipNorthHandle = yScale(normalizedBrushExtent[1]) < FLIP_HANDLE_THRESHOLD_PX
+  const flipSouthHandle = yScale(normalizedBrushExtent[0]) > height - FLIP_HANDLE_THRESHOLD_PX
 
   const showNorthArrow =
     normalizedBrushExtent && (yScale(normalizedBrushExtent[0]) < 0 || yScale(normalizedBrushExtent[1]) < 0)
@@ -164,6 +165,23 @@ export const Brush2 = ({
     normalizedBrushExtent && yScale(normalizedBrushExtent[0]) >= 0 && yScale(normalizedBrushExtent[0]) <= height
   const northHandleInView =
     normalizedBrushExtent && yScale(normalizedBrushExtent[1]) >= 0 && yScale(normalizedBrushExtent[1]) <= height
+
+  useEffect(() => {
+    select(brushRef.current)
+      .selectAll('.handle--n')
+      .attr('transform', `translate(0, ${flipNorthHandle ? 10 : -10})`)
+    select(brushRef.current)
+      .selectAll('.handle--s')
+      .attr('transform', `translate(0, ${flipSouthHandle ? -10 : 10})`)
+  }, [flipNorthHandle, flipSouthHandle, setIsOutOfView])
+
+  useEffect(() => {
+    if (showNorthArrow || showSouthArrow) {
+      setIsOutOfView(true)
+    } else {
+      setIsOutOfView(false)
+    }
+  }, [setIsOutOfView, showNorthArrow, showSouthArrow])
 
   return useMemo(
     () => (
@@ -188,7 +206,9 @@ export const Brush2 = ({
           <>
             {northHandleInView ? (
               <g
-                transform={`translate(0, ${Math.max(0, yScale(normalizedBrushExtent[1]))}), scale(1, ${'1'})`}
+                transform={`translate(0, ${Math.max(0, yScale(normalizedBrushExtent[1]))}), scale(1, ${
+                  flipNorthHandle ? -1 : 1
+                })`}
                 cursor={interactive ? 'ns-resize' : 'default'}
                 pointerEvents='none'
               >
@@ -196,14 +216,14 @@ export const Brush2 = ({
                   color={southHandleColor}
                   stroke={southHandleColor}
                   strokeWidth={2}
-                  opacity={0.6}
+                  opacity={1}
                   d={brushHandlePathV2(width)}
                 />
-                <g pointerEvents='none'>
+                <g pointerEvents='none' opacity={0.85}>
                   <rect x='0' y='-36' width='128' height='36' rx='10' fill='#F199EE' />
                   <rect x='0' y='-18' width='128' height='18' fill='#F199EE' />
 
-                  <g transform='translate(16, -26)'>
+                  <g transform='translate(16, -26)' pointerEvents='none'>
                     <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path
                         d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
@@ -221,6 +241,10 @@ export const Brush2 = ({
                     fill='#2C002A'
                     fontSize='20'
                     textAnchor='middle'
+                    pointerEvents='none'
+                    transform={`translate(80, ${flipNorthHandle ? -18 : -12}) rotate(${
+                      flipNorthHandle ? 180 : 0
+                    }) scale(${flipNorthHandle ? -1 : 1},1) translate(-80, ${flipNorthHandle ? 18 : 12})`}
                   >
                     {brushLabelValue('w', localBrushExtent?.[1])}
                   </text>
@@ -230,7 +254,7 @@ export const Brush2 = ({
 
             {southHandleInView ? (
               <g
-                transform={`translate(0, ${yScale(normalizedBrushExtent[0])}), scale(1, ${'1'})`}
+                transform={`translate(0, ${yScale(normalizedBrushExtent[0])}), scale(1, ${flipSouthHandle ? -1 : 1})`}
                 cursor={interactive ? 'ns-resize' : 'default'}
                 pointerEvents='none'
               >
@@ -239,33 +263,39 @@ export const Brush2 = ({
                     color={southHandleColor}
                     stroke={southHandleColor}
                     strokeWidth={2}
-                    opacity={0.6}
+                    opacity={1}
                     d={brushHandlePathV2(width)}
                     id='south-line-handle-path'
                   />
-                  <rect x='0' y='0' width='128' height='36' rx='10' fill='#F199EE' />
-                  <rect x='0' y='0' width='128' height='18' fill='#F199EE' />
-                  <g transform='translate(16, 9)' pointerEvents='none'>
-                    <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <path
-                        d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
-                        stroke='#2C002A'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                    </svg>
+                  <g pointerEvents='none' opacity={0.85}>
+                    <rect x='0' y='0' width='128' height='36' rx='10' fill='#F199EE' />
+                    <rect x='0' y='0' width='128' height='18' fill='#F199EE' />
+                    <g transform='translate(16, 9)' pointerEvents='none'>
+                      <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                        <path
+                          d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
+                          stroke='#2C002A'
+                          strokeWidth='2'
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                        />
+                      </svg>
+                    </g>
+                    <text
+                      className='font-archia font-semibold'
+                      x='80'
+                      y='23'
+                      fill='#2C002A'
+                      fontSize='20'
+                      textAnchor='middle'
+                      pointerEvents='none'
+                      transform={`translate(80, ${flipSouthHandle ? 16 : 23}) rotate(${
+                        flipSouthHandle ? 180 : 0
+                      }) scale(${flipSouthHandle ? -1 : 1},1) translate(-80, ${flipSouthHandle ? -16 : -23})`}
+                    >
+                      {brushLabelValue('w', localBrushExtent?.[0])}
+                    </text>
                   </g>
-                  <text
-                    className='font-archia font-semibold'
-                    x='80'
-                    y='23'
-                    fill='#2C002A'
-                    fontSize='20'
-                    textAnchor='middle'
-                  >
-                    {brushLabelValue('w', localBrushExtent?.[0])}
-                  </text>
                 </g>
               </g>
             ) : null}
@@ -301,18 +331,20 @@ export const Brush2 = ({
     ),
     [
       id,
-      northHandleColor,
       width,
       height,
       normalizedBrushExtent,
       northHandleInView,
       yScale,
+      flipNorthHandle,
       interactive,
       southHandleColor,
       brushLabelValue,
       localBrushExtent,
       southHandleInView,
+      flipSouthHandle,
       showNorthArrow,
+      northHandleColor,
       showSouthArrow,
     ],
   )

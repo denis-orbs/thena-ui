@@ -66,6 +66,7 @@ export default function ChartPriceRangeInput({
   invalidRange = false,
   isFullRange = false,
   classNames,
+  isCreate = false,
 }) {
   const t = useTranslations()
   const zoomRef = useRef(null)
@@ -124,12 +125,15 @@ export default function ChartPriceRangeInput({
 
   useEffect(() => {
     if (pairPrices.length > 0) {
-      setMidPrice(pairPrices[pairPrices.length - 1]?.value)
+      setMidPrice(
+        isCreate ? pairPrices[pairPrices.length - 1]?.value : price ?? pairPrices[pairPrices.length - 1]?.value,
+      )
     }
-  }, [pairPrices])
+  }, [isCreate, pairPrices, price])
 
   const scrollIncrement = (dataMax - dataMin) / 10
 
+  const [range, setRange] = useState(2)
   // Sets the min/max prices of the price axis manually, which is used to center the current price and zoom in/out.
   const { minVisiblePrice, maxVisiblePrice } = useMemo(() => {
     if (!midPrice) {
@@ -138,18 +142,35 @@ export default function ChartPriceRangeInput({
         maxVisiblePrice: dataMax,
       }
     }
-    const mostRecentPrice = pairPrices[pairPrices.length - 1]?.value
+    const mostRecentPrice = isCreate
+      ? pairPrices[pairPrices.length - 1]?.value
+      : price ?? pairPrices[pairPrices.length - 1]?.value
     // Calculate the default range based on the current price.
     const maxSpread = Math.max(mostRecentPrice - dataMin, dataMax - mostRecentPrice)
     // Initial unscaled range to fit all values with the current price centered
-    const initialRange = 2 * maxSpread
+    const initialRange = range * maxSpread
     const newRange = initialRange / zoomFactor
 
     return {
       minVisiblePrice: midPrice - newRange / 2,
       maxVisiblePrice: midPrice + newRange / 2,
     }
-  }, [dataMax, dataMin, midPrice, pairPrices, zoomFactor])
+  }, [dataMax, dataMin, isCreate, midPrice, pairPrices, price, range, zoomFactor])
+
+  const [isOutOfView, setIsOutOfView] = useState(false)
+
+  useEffect(() => {
+    if (isOutOfView && zoomFactor === 1) {
+      const interval = setInterval(() => {
+        setRange(prev => {
+          const newRange = prev * 1.2
+          return newRange
+        })
+      }, 50)
+
+      return () => clearInterval(interval)
+    }
+  }, [isOutOfView, zoomFactor])
 
   const periods = useMemo(
     () => [
@@ -160,6 +181,7 @@ export default function ChartPriceRangeInput({
           setTimeWindow(PairDataTimeWindow.DAY)
           setZoomFactor(1)
           setBoundaryPrices(undefined)
+          setRange(2)
         },
       },
       {
@@ -169,6 +191,7 @@ export default function ChartPriceRangeInput({
           setTimeWindow(PairDataTimeWindow.WEEK)
           setZoomFactor(1)
           setBoundaryPrices(undefined)
+          setRange(2)
         },
       },
       {
@@ -178,6 +201,7 @@ export default function ChartPriceRangeInput({
           setTimeWindow(PairDataTimeWindow.MONTH)
           setZoomFactor(1)
           setBoundaryPrices(undefined)
+          setRange(2)
         },
       },
       {
@@ -187,6 +211,7 @@ export default function ChartPriceRangeInput({
           setTimeWindow(PairDataTimeWindow.YEAR)
           setZoomFactor(1)
           setBoundaryPrices(undefined)
+          setRange(2)
         },
       },
     ],
@@ -404,11 +429,13 @@ export default function ChartPriceRangeInput({
                       ) : (
                         <></>
                       )}
-                      {chartSize ? (
+                      {chartSize && sortedFormattedData.length > 0 ? (
                         <ActivePriceRangeChart
                           data={{
                             series: sortedFormattedData,
-                            current: price,
+                            current: !isCreate
+                              ? pairPrices[pairPrices.length - 1]?.value
+                              : price ?? pairPrices[pairPrices.length - 1]?.value,
                             min: boundaryPrices?.[0],
                             max: boundaryPrices?.[1],
                           }}
@@ -436,6 +463,7 @@ export default function ChartPriceRangeInput({
                           brushDomain={brushDomain}
                           onBrushDomainChange={onBrushDomainChangeEnded}
                           handleShow={handleShow && brushDomain && chartPriceFinishedRender}
+                          setIsOutOfView={setIsOutOfView}
                         />
                       ) : (
                         <Skeleton className='h-full w-full' />
