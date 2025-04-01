@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 import GroupIconTokens from '../../components/icongroup/GroupIconTokens'
 
-export function TokenPercentage({ tokens, poolAddress }) {
+export function TokenPercentage({ tokens, poolAddress, small = false }) {
   const t = useTranslations()
   const { length } = tokens || []
   const weights = tokens.map(token => token.weight).filter(w => typeof w === 'number')
@@ -23,8 +23,8 @@ export function TokenPercentage({ tokens, poolAddress }) {
           image: cn('outline-2 w-7 h-7', length <= 4 ? 'w-7 h-7' : 'w-6 h-6'),
           rows: length > 2 ? (isMobile ? '-space-x-2' : '-space-x-3') : '-space-x-2',
         }}
-        width={isMobile ? 16 : length <= 4 ? (isSmall ? 28 : 32) : 24}
-        height={isMobile ? 16 : length <= 4 ? (isSmall ? 28 : 32) : 24}
+        width={isMobile && small ? 16 : length <= 4 ? (isSmall && small ? 28 : 32) : 24}
+        height={isMobile && small ? 16 : length <= 4 ? (isSmall && small ? 28 : 32) : 24}
         tokens={tokens}
         poolAddress={poolAddress}
       />
@@ -55,6 +55,6 @@ export function TokenPercentage({ tokens, poolAddress }) {
   )
 }
 
-export function ListTokenPercantage({ listToken, poolAddress }) {
-  return <TokenPercentage tokens={listToken} poolAddress={poolAddress} />
+export function ListTokenPercantage({ listToken, poolAddress, small }) {
+  return <TokenPercentage tokens={listToken} poolAddress={poolAddress} small={small} />
 }
