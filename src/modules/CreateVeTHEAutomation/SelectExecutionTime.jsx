@@ -35,7 +35,8 @@ function SelectExecutionTime({ executionTime, updateData, isModal = false }) {
       <div>
         <div className='flex flex-col gap-2'>
           <TextHeading>{t('Automation Execution Time')}</TextHeading>
-          <Paragraph className='z-40'>{t('Scheduled timestamp for automation execution')}</Paragraph>
+          <Paragraph>{t('Scheduled timestamp for automation execution1')}</Paragraph>
+          <Paragraph>{t('Scheduled timestamp for automation execution2')}</Paragraph>
         </div>
         <div className='mt-2 w-full lg:mt-3'>
           <DateTimePickerCustom
@@ -52,8 +53,12 @@ function SelectExecutionTime({ executionTime, updateData, isModal = false }) {
         </div>
       </div>
       <div className='mt-2 lg:mt-3'>
-        <div className='mt-2 flex items-center justify-between lg:mt-3'>
-          <TextHeading>{t('Next [number] Scheduled Dates', { number: isModal ? 3 : 5 })}</TextHeading>
+        <div className='mt-2 flex items-center justify-between gap-2 lg:mt-3'>
+          <div className='max-lg:w-[calc(100% - 40px)] w-full max-lg:rounded-lg max-lg:bg-neutral-900 max-lg:px-4 max-lg:py-1.5'>
+            <TextHeading className='text-xs lg:text-base'>
+              {t('Next [number] Scheduled Dates', { number: isModal ? 3 : 5 })}
+            </TextHeading>
+          </div>
 
           <div className='flex items-center lg:hidden'>
             <i
