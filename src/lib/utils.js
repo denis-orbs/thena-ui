@@ -309,10 +309,17 @@ export const getDisplayedStrategy = strategy => {
   return str
 }
 
+/**
+ *
+ * @param {vote} bit0
+ * @param {relock} bit1
+ * @param {rebase} bit2
+ * @returns
+ */
 export const convertBooleansToHex = (bit0, bit1, bit2) => {
-  const bitA = bit0 ? 1 : 0
-  const bitB = bit1 ? 1 : 0
-  const bitC = bit2 ? 1 : 0
+  const bitA = bit0 ? 1 : 0 // vote
+  const bitB = bit1 ? 1 : 0 // relock
+  const bitC = bit2 ? 1 : 0 // rebase
 
   const binaryString = `${bitA}${bitB}${bitC}`
 

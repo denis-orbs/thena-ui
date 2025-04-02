@@ -28,8 +28,8 @@ function RegisterAutomation({
     contractData?.veTHEId,
     convertBooleansToHex(
       contractData?.votes?.isAutoVote,
-      contractData?.settings?.isClaimEveryWeek,
       contractData?.settings?.isRelockEveryWeek,
+      contractData?.settings?.isClaimEveryWeek,
     ),
     (contractData?.votes?.pairs || []).filter(item => Boolean(item.pair)).length,
   )

@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { shallowEqual, useSelector } from 'react-redux'
 
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
@@ -20,10 +20,10 @@ const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registra
   }
 
   if (currentStep === 2 && isAutoVote) {
-    if (isEmpty(pairs)) return { isDisabled: true, message }
+    if (isEmpty(pairs)) return { isDisabled: true, message: 'Please select Pair' }
 
-    if (pairs.some(pair => !pair.pair)) {
-      return { isDisabled: true, message }
+    if (pairs.some(pair => !pair.pair) && isAutoVote) {
+      return { isDisabled: true, message: 'Please select Pair' }
     }
 
     if (pairs.some(pair => pair.weight <= 0 || !pair.weight)) {
@@ -50,14 +50,15 @@ const checkDisabledState = ({ currentStep, settings, isAutoVote, pairs, registra
 }
 
 function NavigationBottom({ currentStep, onNext, onPrev }) {
+  const [isActive, setIsActive] = useState(false)
   const t = useTranslations()
   const { createData } = useSelector(state => state.veTHEAutomationContract, shallowEqual)
   const { minimumFunds: minimumBalance } = useGetMinimumFunds(
     createData.veTHEId,
     convertBooleansToHex(
       createData.votes.isAutoVote,
-      createData.settings.isClaimEveryWeek,
       createData.settings.isRelockEveryWeek,
+      createData.settings.isClaimEveryWeek,
     ),
     (createData?.votes?.pairs || []).length,
   )
@@ -67,9 +68,33 @@ function NavigationBottom({ currentStep, onNext, onPrev }) {
 
   const [isSuccess, setIsSuccess] = useState(false)
 
-  const { isDisabled, message: error } = useMemo(
-    () =>
-      checkDisabledState({
+  const [error, setError] = useState(null)
+  const handleValidate = useCallback(() => {
+    setIsActive(true)
+    const { isDisabled: disabledState, message } = checkDisabledState({
+      currentStep,
+      settings: createData?.settings,
+      isAutoVote: createData?.votes?.isAutoVote,
+      pairs: createData?.votes?.pairs || [],
+      registration: createData?.registration,
+      minimumBalance,
+      t,
+    })
+    setError(message)
+    if (!disabledState && currentStep < 3) {
+      setIsActive(false)
+      onNext()
+    }
+    if (!disabledState && currentStep === 3) {
+      onCreateAutomation(createData, () => {
+        setIsSuccess(true)
+      })
+    }
+  }, [createData, currentStep, minimumBalance, onCreateAutomation, onNext, t])
+
+  useEffect(() => {
+    if (isActive) {
+      const { message } = checkDisabledState({
         currentStep,
         settings: createData?.settings,
         isAutoVote: createData?.votes?.isAutoVote,
@@ -77,23 +102,33 @@ function NavigationBottom({ currentStep, onNext, onPrev }) {
         registration: createData?.registration,
         minimumBalance,
         t,
-      }),
-    [createData, currentStep, minimumBalance, t],
-  )
+      })
+      setError(message)
+    }
+  }, [
+    createData?.registration,
+    createData?.settings,
+    createData?.votes?.isAutoVote,
+    createData?.votes?.pairs,
+    currentStep,
+    isActive,
+    minimumBalance,
+    t,
+  ])
 
   return (
     <div className='space-y-4'>
       {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
       <>
         {currentStep < 3 && (
-          <PrimaryButton className='w-full' onClick={onNext} disabled={isDisabled}>
+          <PrimaryButton className='w-full' onClick={() => handleValidate()}>
             {t('Next')}
           </PrimaryButton>
         )}
 
         {currentStep === 3 && (
           <PrimaryButton
-            disabled={pendingCreate || isDisabled}
+            disabled={pendingCreate}
             className='w-full'
             onClick={
               () => {
@@ -104,9 +139,7 @@ function NavigationBottom({ currentStep, onNext, onPrev }) {
                   warnToast(t('Invalid Amount'))
                   return
                 }
-                onCreateAutomation(createData, () => {
-                  setIsSuccess(true)
-                })
+                handleValidate()
               }
               // eslint-disable-next-line react/jsx-curly-newline
             }
