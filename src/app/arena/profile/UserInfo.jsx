@@ -44,7 +44,7 @@ export function UserInfo({ userInfo, following, followers }) {
 
   const followersCount = useMemo(() => followers?.length ?? '-', [followers?.length])
 
-  const { spaceIdName } = useSpaceIdBNB(account)
+  const { spaceIdName } = useSpaceIdBNB(userInfo.id)
 
   const handleClickThenaButton = useCallback(
     (tab = 'get') => {
