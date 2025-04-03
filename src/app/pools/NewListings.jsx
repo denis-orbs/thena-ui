@@ -375,6 +375,9 @@ function NewListings({
         </div>
       ),
       className: cn('items-center', classNames?.rowItem),
+      onRowClick: () => {
+        push(`/analytics/pairs/${pool.address}`)
+      },
     }))
   }, [
     classNames?.rowItem,

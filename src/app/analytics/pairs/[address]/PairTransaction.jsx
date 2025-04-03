@@ -515,7 +515,7 @@ export default function TransactionTable({ pair }) {
   return (
     <div className='flex flex-col gap-6'>
       <div className='flex flex-col gap-4'>
-        <NewTextSubHeading className='text-xl'>{t('Transactions')}</NewTextSubHeading>
+        <NewTextSubHeading>{t('Transactions')}</NewTextSubHeading>
         <Tabs data={filters} size={SizeTypes.Medium} className='w-fit' />
       </div>
       <Table

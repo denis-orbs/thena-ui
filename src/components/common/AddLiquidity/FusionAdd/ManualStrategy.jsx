@@ -304,7 +304,8 @@ function ManualStrategy({ firstAsset, secondAsset, strategy, pair, defaultSwapFe
                 }}
                 outOfRange={mintInfo.outOfRange}
                 invalidRange={mintInfo.invalidRange}
-                isfullRange={activePreset === Presets.FULL && fullRangeWarningShown}
+                isfullRange={activePreset === Presets.FULL}
+                fullRangeWarningShown={fullRangeWarningShown}
                 isCreate={mintInfo.noLiquidity}
               />
             </div>

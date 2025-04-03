@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 
 import { TextHeading } from '@/components/typography'
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 
 const colorsDefault = ['#32002F', '#84007F', '#B000AA', '#580055', '#DC00D4', '#E333DD', '#EA66E5', '#F199EE']
 
@@ -19,7 +19,7 @@ function calculatePadding(ctx) {
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
-function PieChart({ tokens, colors, showTotalPercent = true }) {
+function PieChart({ tokens, colors, showTotalPercent = true, className }) {
   const allZero = tokens.every(item => Number(item.weight) === 0)
 
   const data = useMemo(
@@ -99,7 +99,7 @@ function PieChart({ tokens, colors, showTotalPercent = true }) {
 
   const totalWeight = useMemo(() => tokens.reduce((sum, curr) => sum + curr.weight, 0), [tokens])
   return (
-    <div className='flex items-center justify-center'>
+    <div className={cn('flex items-center justify-center', className)}>
       <div className='relative h-[230px] w-[230px] overflow-visible'>
         <Doughnut height={200} width={200} data={finalData} options={options} className='z-20' />
         {showTotalPercent && (
