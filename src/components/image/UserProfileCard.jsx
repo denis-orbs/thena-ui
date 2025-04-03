@@ -4,6 +4,7 @@ import Avatar from 'public/images/home/stats/socials/social-1.png'
 import React, { useCallback, useMemo, useState } from 'react'
 
 import { useUserInfo } from '@/context/userInfoContext'
+import { useSpaceIdBNB } from '@/hooks/useSpaceIdBNB'
 import { useCurrentUserFollow, useFollow } from '@/hooks/useUserFollow'
 import useWallet from '@/hooks/useWallet'
 import { cn, sliceAddress } from '@/lib/utils'
@@ -29,10 +30,13 @@ export function UserProfileCard({
   const { userInfo } = useUserInfo()
   const { account } = useWallet()
   const { followUser } = useFollow(id, username)
-  const isOwnProfile = useMemo(() => id.toLowerCase() === account?.toLowerCase(), [account, id])
+  const isOwnProfile = useMemo(() => Boolean(id) && id?.toLowerCase() === account?.toLowerCase(), [account, id])
 
   const { following } = useCurrentUserFollow()
-  const isFollowed = useMemo(() => following?.find(follow => follow?.user?.id === id.toLowerCase()), [following, id])
+  const isFollowed = useMemo(
+    () => following?.find(follow => Boolean(id) && follow?.user?.id === id?.toLowerCase()),
+    [following, id],
+  )
   const [loading, setLoading] = useState(false)
   const LinkComponent = useCallback(
     ({ children }) => {
@@ -40,7 +44,7 @@ export function UserProfileCard({
       return (
         <Link
           className='flex cursor-pointer items-center justify-center gap-2'
-          href={`/arena/profile/${username ? encodeURIComponent(username.toLowerCase()) : id.toLowerCase()}`}
+          href={`/arena/profile/${username ? encodeURIComponent(username.toLowerCase()) : id?.toLowerCase()}`}
         >
           {children}
         </Link>
@@ -48,6 +52,7 @@ export function UserProfileCard({
     },
     [disableLink, id, username],
   )
+  const { spaceIdName } = useSpaceIdBNB(id)
 
   const onFollow = useCallback(async () => {
     setLoading(true)
@@ -75,7 +80,7 @@ export function UserProfileCard({
                 color: nameColor ? (String(nameColor).startsWith('#') ? nameColor : '') : '',
               }}
             >
-              {username || (id === userInfo?.id && userInfo?.spaceIdName ? userInfo?.spaceIdName : sliceAddress(id))}
+              {username || spaceIdName || sliceAddress(id)}
             </span>
           </TextHeading>
         </div>
