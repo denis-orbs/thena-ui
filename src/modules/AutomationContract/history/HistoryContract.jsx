@@ -52,11 +52,16 @@ function HistoryContract({ histories }) {
   const { onCopy, copied } = useCopyText()
   const [sort, setSort] = useState({})
   const [currentPage, setCurrentPage] = useState(1)
-
   const finalData = useMemo(
     () =>
       (histories || []).map(transaction => ({
-        date: <Paragraph>{dayjs.unix(transaction.timestamp).format('MMM D, YYYY [at] HH:mm [UTC]')}</Paragraph>,
+        date: (
+          <Paragraph>
+            {dayjs
+              .unix(parseInt(transaction.timestamp, 10) + new Date().getTimezoneOffset() * 60)
+              .format('MMM D, YYYY [at] HH:mm [UTC]')}
+          </Paragraph>
+        ),
         hash: (
           <TextHeading className='flex flex-row gap-1'>
             {formatAddress(transaction.transactionHash)}
