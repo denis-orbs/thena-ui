@@ -1,10 +1,12 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useMemo } from 'react'
 
 import Loading from '@/app/loading'
 import { PairBasicInfo } from '@/app/pools/(add-liquidity)/add-liquidity/PairBasicInfo'
+import { PrimaryButton } from '@/components/buttons/Button'
 import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import IconGroup from '@/components/icongroup'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
@@ -15,6 +17,7 @@ import { PoolChart } from '@/modules/Pools/PoolCharts'
 
 import PairStrategy from './PairStrategy'
 import TransactionTable from './PairTransaction'
+import PoolAttributesAnalytic from './PoolAttributesAnalytic'
 import WeightedTransactionTable from './WeightedPairTransaction'
 
 export default function PairDetailPage({ params }) {
@@ -26,6 +29,8 @@ export default function PairDetailPage({ params }) {
     () => (pairs ? pairs.find(ele => ele.address.includes(address.toLowerCase())) : undefined),
     [pairs, address],
   )
+
+  const { push } = useRouter()
 
   if (isLoading || !pairs || !pair) {
     return <Loading />
@@ -58,7 +63,7 @@ export default function PairDetailPage({ params }) {
                 />
               )}
 
-              <NewTextHeading className='2xl:text-8xl'>{pair.symbol}</NewTextHeading>
+              <NewTextHeading>{pair.symbol}</NewTextHeading>
             </div>
           </div>
 
@@ -70,12 +75,24 @@ export default function PairDetailPage({ params }) {
         <div className='flex w-full flex-col gap-4'>
           <NewTextSubHeading>{t('Pool Information')}</NewTextSubHeading>
           <PairBasicInfo pair={pair} />
+          <PrimaryButton
+            className='w-full md:w-fit'
+            onClick={() => {
+              if (pair.type !== PAIR_TYPES.WEIGHTED) {
+                push(`/pools/add-liquidity?step=3&poolAddress=${pair.address}`)
+              } else {
+                push(`/pools/add-liquidity/weighted/${pair.address}`)
+              }
+            }}
+          >
+            {t('Add Liquidity')}
+          </PrimaryButton>
         </div>
 
         <PoolChart address={pair.address} />
 
         {pair.type === PAIR_TYPES.LSD && <PairStrategy pair={pair} />}
-
+        {pair.type === PAIR_TYPES.WEIGHTED && <PoolAttributesAnalytic pair={pair} />}
         {pair.type === PAIR_TYPES.WEIGHTED ? (
           <WeightedTransactionTable pair={pair} />
         ) : (

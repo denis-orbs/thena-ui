@@ -8,7 +8,7 @@ import useSWR from 'swr'
 
 import Table from '@/components/table'
 import Tabs from '@/components/tabs'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { SizeTypes } from '@/constant/type'
 import { weightedClient } from '@/lib/graphql'
 import { formatAmount, goScan } from '@/lib/utils'
@@ -171,6 +171,7 @@ export default function WeightedTransactionTable({ pair }) {
         label: t.symbol,
         value: t.symbol,
         width: 'lg:w-[16%]',
+        notTranslate: true,
         isDesc: true,
       })),
       {
@@ -285,7 +286,7 @@ export default function WeightedTransactionTable({ pair }) {
   return (
     <div className='flex flex-col gap-6'>
       <div className='flex flex-col gap-4'>
-        <TextHeading className='text-xl'>{t('Transactions')}</TextHeading>
+        <NewTextSubHeading>{t('Transactions')}</NewTextSubHeading>
         <Tabs data={filters} size={SizeTypes.Medium} className='w-fit' />
       </div>
       <Table

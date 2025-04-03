@@ -214,7 +214,6 @@ function Table({
       }
     }
   }, [hightLightIndex, searchParams])
-
   return (
     <div className={cn('relative flex flex-col gap-3 rounded-xl bg-neutral-900 px-2 py-3 lg:p-4', className)}>
       <div className={cn('overflow-x-auto', classNames?.tableContainer ?? '')}>
@@ -393,7 +392,9 @@ function Table({
                   }}
                 >
                   <TextHeading className='text-sm'>
-                    {option.label && typeof option.label === 'string' ? t(option.label) : option.label}
+                    {option.label && typeof option.label === 'string' && option.notTranslate !== true
+                      ? t(option.label)
+                      : option.label}
                   </TextHeading>
                   {sort.value === option.value && (
                     <ArrowDownIcon
@@ -444,7 +445,7 @@ function Table({
                         key={`${cell.value}-${cellIdx}`}
                       >
                         <TextHeading className={cn('lg:hidden', classNames?.cellItemLabel)}>
-                          {t(cell.label)}
+                          {cell.notTranslate !== true ? t(cell.label) : cell.label}
                         </TextHeading>
                         {ele[cell.value]}
                       </TableCell>

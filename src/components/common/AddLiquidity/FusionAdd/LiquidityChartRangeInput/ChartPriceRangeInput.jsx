@@ -12,6 +12,8 @@ import { cn } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 import { useFetchPairPrices } from '@/modules/SwapChart/hooks'
 import { Bound } from '@/state/fusion/actions'
+import { useActivePreset } from '@/state/fusion/hooks'
+import { Presets } from '@/state/fusion/reducer'
 import { ZoomInIcon, ZoomOutIcon } from '@/svgs'
 
 import ActivePriceRangeChart from './ActivePriceRangeChart'
@@ -64,10 +66,12 @@ export default function ChartPriceRangeInput({
   enableScroll = false,
   outOfRange = false,
   invalidRange = false,
-  isFullRange = false,
+  fullRangeWarningShown = false,
   classNames,
   isCreate = false,
 }) {
+  const activePreset = useActivePreset()
+  const isFullRange = activePreset === Presets.FULL
   const t = useTranslations()
   const zoomRef = useRef(null)
 
@@ -101,6 +105,7 @@ export default function ChartPriceRangeInput({
     token0Address: isReverse ? baseCurrency.wrapped.address : quoteCurrency.wrapped.address,
     token1Address: isReverse ? quoteCurrency.wrapped.address : baseCurrency.wrapped.address,
     timeWindow,
+    currentSwapPrice: { [isReverse ? baseCurrency.wrapped.address : quoteCurrency.wrapped.address]: price },
   })
 
   const [zoomFactor, setZoomFactor] = useState(1)
@@ -126,7 +131,7 @@ export default function ChartPriceRangeInput({
   useEffect(() => {
     if (pairPrices.length > 0) {
       setMidPrice(
-        isCreate ? pairPrices[pairPrices.length - 1]?.value : price ?? pairPrices[pairPrices.length - 1]?.value,
+        !isCreate ? pairPrices[pairPrices.length - 1]?.value : price ?? pairPrices[pairPrices.length - 1]?.value,
       )
     }
   }, [isCreate, pairPrices, price])
@@ -142,7 +147,7 @@ export default function ChartPriceRangeInput({
         maxVisiblePrice: dataMax,
       }
     }
-    const mostRecentPrice = isCreate
+    const mostRecentPrice = !isCreate
       ? pairPrices[pairPrices.length - 1]?.value
       : price ?? pairPrices[pairPrices.length - 1]?.value
     // Calculate the default range based on the current price.
@@ -160,7 +165,7 @@ export default function ChartPriceRangeInput({
   const [isOutOfView, setIsOutOfView] = useState(false)
 
   useEffect(() => {
-    if (isOutOfView && zoomFactor === 1) {
+    if (isOutOfView && zoomFactor === 1 && !isFullRange) {
       const interval = setInterval(() => {
         setRange(prev => {
           const newRange = prev * 1.2
@@ -170,7 +175,10 @@ export default function ChartPriceRangeInput({
 
       return () => clearInterval(interval)
     }
-  }, [isOutOfView, zoomFactor])
+    if (isFullRange) {
+      setRange(2)
+    }
+  }, [isOutOfView, zoomFactor, isFullRange])
 
   const periods = useMemo(
     () => [
@@ -356,7 +364,7 @@ export default function ChartPriceRangeInput({
       {showPeriod && <Tabs data={periods} className={cn('max-md:hidden', classNames?.periods)} />}
 
       <div className='flex flex-col gap-2 md:gap-4'>
-        {isFullRange && <Warning className='text-sm'>{t('Full range position')}</Warning>}
+        {isFullRange && fullRangeWarningShown && <Warning className='text-sm'>{t('Full range position')}</Warning>}
         {outOfRange && <Warning className='text-sm'>{t('Out range warning')}</Warning>}
         {invalidRange && <Warning className='text-sm'>{t('Invalid range warning')}</Warning>}
         <div className='relative flex h-[300px] w-full items-center justify-center'>
