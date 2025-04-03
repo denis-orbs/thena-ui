@@ -18,7 +18,7 @@ function Axis({ axisGenerator }) {
 }
 
 export function AxisRight({ yScale, offset = 0, min, current, max }) {
-  const tickFormat = d => `$ ${formatAmount(d, false, 4)}`
+  const tickFormat = d => `${formatAmount(d, true, 4, false)}`
 
   const axisGenerator = useMemo(() => {
     const tickValues = yScale.ticks(4)
@@ -27,7 +27,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
   const minY = min !== undefined ? yScale(min) : null
   const maxY = max !== undefined ? yScale(max) : null
   const currentY = current !== undefined ? yScale(current) : null
-  const currentLabel = current !== undefined ? `$ ${current.toFixed(4)}` : ''
+  const currentLabel = current !== undefined ? `${formatAmount(current, true, 4, false)}` : ''
   const labelWidth = 55
   const labelHeight = 28
   const paddingY = 6
@@ -57,7 +57,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
           <path d='M0,0 L0,5 L5,2.5 z' fill='#F199EE' />
         </marker>
       </defs>
-      {minY !== null && (
+      {!isNaN(minY) && (
         <line
           x1={40}
           x2={5}
@@ -69,7 +69,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
           markerStart='url(#arrow-min)'
         />
       )}
-      {maxY !== null && (
+      {!isNaN(maxY) && (
         <line
           x1={40}
           x2={5}
@@ -81,8 +81,8 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
           markerStart='url(#arrow-min)'
         />
       )}
-      <Axis axisGenerator={axisGenerator} yScale={yScale} />
-      {currentY !== null && (
+      <Axis axisGenerator={axisGenerator} />
+      {!isNaN(currentY) && (
         <g className='current-label-container' style={{ padding: '6px' }}>
           <rect
             x={2}

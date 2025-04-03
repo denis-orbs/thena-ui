@@ -36,7 +36,7 @@ export default function Zoom({ svg, xScale, setZoom, width, height, zoomLevels }
   }, [zoomInitial, zoomLevels])
 
   return (
-    <div className='absolute -top-2 right-0 grid grid-cols-2 gap-1 md:-top-5'>
+    <div className='right-0 flex justify-end gap-1 md:-top-5'>
       <OutlineIconButton className='!size-6' classNames='!size-4' Icon={ZoomInIcon} onClick={zoomIn} disabled={false} />
       <OutlineIconButton
         className='!size-6'

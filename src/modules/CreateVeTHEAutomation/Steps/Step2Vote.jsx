@@ -62,6 +62,20 @@ function Step2Vote({ setStep2Active, minFunds, isLoadingMinFunds }) {
     )
   }, [dispatch, data])
 
+  useEffect(() => {
+    if (!data?.votes?.isAutoVote) {
+      const pairFilter = [...(data?.votes?.pairs || [])].filter(item => Boolean(item.pair))
+      if (pairFilter.length === data?.votes?.pairs?.length) return
+      setData(prev => ({
+        ...prev,
+        votes: {
+          ...prev.votes,
+          pairs: pairFilter,
+        },
+      }))
+    }
+  }, [data?.votes?.isAutoVote, data.votes.pairs])
+
   const handleVotingPairs = useCallback((action, payload) => {
     setData(prev => {
       if (!prev?.votes) return prev

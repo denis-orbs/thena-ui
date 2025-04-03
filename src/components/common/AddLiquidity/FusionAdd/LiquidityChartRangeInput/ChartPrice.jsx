@@ -8,7 +8,14 @@ import Skeleton from '@/components/skeleton'
 import { formatAmount } from '@/lib/utils'
 import { PairDataTimeWindow } from '@/modules/SwapChart/fetch'
 
-function ChartPrice({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxVisiblePrice, isMobile = false }) {
+function ChartPrice({
+  data,
+  timeWindow,
+  minVisiblePrice,
+  maxVisiblePrice,
+  isMobile = false,
+  setFinishedRender = () => {},
+}) {
   const chartRef = useRef(null)
   const chartCreated = useRef(null)
 
@@ -19,14 +26,10 @@ function ChartPrice({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxV
         value,
       }))
 
-      if (baseData.length > 0 && setBoundaryPrices) {
-        setBoundaryPrices([minVisiblePrice, maxVisiblePrice])
-      }
-
       return baseData
     }
     return []
-  }, [data, maxVisiblePrice, minVisiblePrice, setBoundaryPrices])
+  }, [data])
 
   useEffect(() => {
     if (!chartRef?.current) return
@@ -34,7 +37,9 @@ function ChartPrice({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxV
     const chart = createChart(chartRef?.current, {
       layout: {
         background: { color: 'transparent' },
-        textColor: '#747778',
+        textColor: '#685770',
+        fontFamily: 'Inter',
+        fontSize: 12,
       },
       autoSize: true,
       handleScale: false,
@@ -106,7 +111,7 @@ function ChartPrice({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxV
           position: 'inBar',
           color: '#F8CCF6',
           shape: 'circle',
-          size: 1,
+          size: 0.5,
         },
       ])
 
@@ -138,14 +143,15 @@ function ChartPrice({ data, timeWindow, setBoundaryPrices, minVisiblePrice, maxV
     }
 
     return () => {
+      setFinishedRender(true)
       chart.remove()
     }
-  }, [timeWindow, isMobile, transformedData, minVisiblePrice, maxVisiblePrice])
+  }, [timeWindow, isMobile, transformedData, minVisiblePrice, maxVisiblePrice, setFinishedRender])
 
   return (
     <div className='flex h-full w-full flex-1'>
       {(!chartCreated.current || !transformedData.length) && <Skeleton />}
-      <div className='w-full flex-1' ref={chartRef} />
+      <div className='price-chart-container w-full flex-1' ref={chartRef} />
     </div>
   )
 }

@@ -10,6 +10,8 @@ function Axis({ axisGenerator }) {
       select(axis)
         .call(axisGenerator)
         .call(g => g.select('.domain').remove())
+        .selectAll('.tick text')
+        .style('font-size', '16px')
   }
 
   return <g ref={axisRef} />

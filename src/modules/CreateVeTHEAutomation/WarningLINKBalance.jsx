@@ -14,8 +14,8 @@ function WarningLINKBalance({ contract, chainLINK }) {
     contract?.veTHEId,
     convertBooleansToHex(
       contract?.votes?.isAutoVote,
-      contract?.settings?.isClaimEveryWeek,
       contract?.settings?.isRelockEveryWeek,
+      contract?.settings?.isClaimEveryWeek,
     ),
     (contract?.votes?.pairs || []).filter(item => Boolean(item.pair)).length,
   )

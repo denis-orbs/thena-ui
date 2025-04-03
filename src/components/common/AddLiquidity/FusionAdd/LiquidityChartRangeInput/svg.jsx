@@ -36,6 +36,7 @@ export const brushHandlePathV2 = width =>
   [
     'M 0 0', // move to origin
     `h ${width}`, // horizontal line with specified width
+    'z',
   ].join(' ')
 
 export const brushHandleAccentPath = () =>

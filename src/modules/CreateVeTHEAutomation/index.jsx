@@ -7,7 +7,8 @@ import { useSelector } from 'react-redux'
 
 import Box from '@/components/box'
 import { TextButton } from '@/components/buttons/Button'
-import { Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
+import { CHAINLINK_ADDRESS } from '@/constant'
 import { ArrowLeftIcon, InfoNeutralIcon } from '@/svgs'
 
 import NavigationBottom from './NavigationBottom'
@@ -39,18 +40,16 @@ function CreateVeTHEAutomation() {
   return (
     <div className='space-y-8'>
       <div>
-        <div className='mb-4 h-11 w-[140px]'>
+        <div className='mb-4 h-11 w-[140px] max-lg:hidden'>
           <TextButton onClick={() => push('/dashboard/lock')} LeadingIcon={ArrowLeftIcon}>
             {t('Lock Page')}
           </TextButton>
         </div>
-        <TextHeading className='font-archia text-3xl font-semibold text-neutral-50 lg:text-[40px]'>
-          {t('Create Automation Contract')}
-        </TextHeading>
+        <NewTextHeading>{t('Create Automation')}</NewTextHeading>
       </div>
       <div className='space-y-3'>
         {currentStep === 1 && (
-          <div className='flex gap-4 rounded-xl border border-neutral-600 bg-neutral-900 p-4 md:p-6 lg:p-8'>
+          <div className='hidden gap-4 rounded-xl border border-neutral-600 bg-neutral-900 p-4 md:p-6 lg:flex lg:p-8'>
             <InfoNeutralIcon className='h-8 w-8' />
             <div className='flex flex-col gap-2'>
               <TextHeading className='text-xl'>{t('What you need to create an Automation')}</TextHeading>
@@ -73,13 +72,7 @@ function CreateVeTHEAutomation() {
                     Approximately $150-$200 USD worth of{' '}
                     <TextHeading
                       className='cursor-pointer text-primary-500 hover:underline'
-                      onClick={
-                        () =>
-                          push(
-                            '/swap?inputCurrency=BNB&outputCurrency=0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd&swapType=1',
-                          )
-                        // eslint-disable-next-line react/jsx-curly-newline
-                      }
+                      onClick={() => push(`/swap?inputCurrency=BNB&outputCurrency=${CHAINLINK_ADDRESS}bd&swapType=1`)}
                     >
                       $LINK
                     </TextHeading>{' '}
@@ -90,31 +83,48 @@ function CreateVeTHEAutomation() {
             </div>
           </div>
         )}
-        <div className='flex flex-col gap-5 lg:flex-row xl:gap-8'>
+        <div className='flex flex-col gap-4 lg:flex-row xl:gap-8'>
           {/* Stepper */}
-          <div className='max-lg:hidden lg:min-w-[200px] xl:min-w-[320px]'>
+          <div className='order-1 max-lg:hidden lg:min-w-[200px] lg:flex-[2.5] xl:min-w-[320px]'>
             <Stepper steps={steps} currentStep={currentStep} setCurrentStep={setCurrentStep} />
           </div>
 
           {/* Main Content */}
-          <Box className='grid flex-1 grid-rows-[auto,1fr,auto] space-y-4 p-4 lg:p-4 xl:min-w-[480px]'>
+          <div className='order-3 grid grid-rows-[auto,1fr,auto] space-y-4 bg-transparent lg:order-2 lg:min-w-[480px] lg:flex-[5] lg:rounded-xl lg:bg-neutral-900 lg:p-4 xl:min-w-[480px]'>
             <NavigationTop
               steps={stepsTitle}
               currentStep={currentStep}
               onPrev={() => handleNavigation(NAVIGATION_TYPE.PREV)}
             />
             <StepContent currentStep={currentStep} />
-            <NavigationBottom currentStep={currentStep} onNext={() => handleNavigation(NAVIGATION_TYPE.NEXT)} />
-          </Box>
+            <NavigationBottom
+              currentStep={currentStep}
+              onNext={() => handleNavigation(NAVIGATION_TYPE.NEXT)}
+              onPrev={() => handleNavigation(NAVIGATION_TYPE.PREV)}
+            />
+          </div>
 
           {/* Selected veTHE ID */}
-          <div className='space-y-4 xl:w-[380px] xl:min-w-[300px]'>
+          <div className='order-2 lg:order-3 lg:flex-[2.5] xl:w-[380px] xl:min-w-[300px]'>
             <SelectedVeTHEID veTHESelected={veTHESelected} />
             {currentStep > 1 && (
-              <Box className='flex w-fit flex-col gap-2 p-4'>
+              <Box className='mt-4 flex w-fit flex-col gap-2 p-4 max-lg:hidden'>
                 <TextHeading className='font-archia text-xl font-semibold'>{t('Why do you need LINK')}?</TextHeading>
                 <Paragraph>{t('Why do you need LINK Answer')}</Paragraph>
               </Box>
+            )}
+            {currentStep === 1 && (
+              <div className='mt-4 flex gap-4 rounded-xl border border-neutral-600 bg-neutral-900 p-4 lg:mt-0 lg:hidden lg:p-8'>
+                <InfoNeutralIcon className='size-6' />
+                <div className='flex flex-col'>
+                  <div className='flex flex-col'>
+                    <TextHeading className='text-xs'>{t('To create an automation you need')}</TextHeading>
+                    <TextHeading className='text-xs'>
+                      Approximately $150-$200 USD worth of $Link in your wallet.
+                    </TextHeading>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>

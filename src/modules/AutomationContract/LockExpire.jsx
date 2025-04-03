@@ -40,7 +40,7 @@ function LockExpire({ veTHEId }) {
       <TextSubHeading>
         {veTHE?.expire > 0
           ? t('Expires in [x] days', { x: veTHE?.expire })
-          : `Expired ${veTHE?.expire || 0 * -1} days ago`}
+          : `Expired ${(veTHE?.expire || 0) * -1} days ago`}
       </TextSubHeading>
     </div>
   )

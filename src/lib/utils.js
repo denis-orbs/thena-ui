@@ -309,10 +309,17 @@ export const getDisplayedStrategy = strategy => {
   return str
 }
 
+/**
+ *
+ * @param {vote} bit0
+ * @param {relock} bit1
+ * @param {rebase} bit2
+ * @returns
+ */
 export const convertBooleansToHex = (bit0, bit1, bit2) => {
-  const bitA = bit0 ? 1 : 0
-  const bitB = bit1 ? 1 : 0
-  const bitC = bit2 ? 1 : 0
+  const bitA = bit0 ? 1 : 0 // vote
+  const bitB = bit1 ? 1 : 0 // relock
+  const bitC = bit2 ? 1 : 0 // rebase
 
   const binaryString = `${bitA}${bitB}${bitC}`
 
@@ -330,7 +337,10 @@ export const convertHexToBooleans = hexValue => {
 }
 
 export const calculateNextWeek = startTime => {
-  const now = Date.now()
+  const now = Date.now() + new Date().getTimezoneOffset() * 60 * 1000
+  if (startTime > now) {
+    return startTime
+  }
   const oneWeekInMs = 86400 * 7 * 1000
 
   const weeksElapsed = Math.floor((now - startTime) / oneWeekInMs)

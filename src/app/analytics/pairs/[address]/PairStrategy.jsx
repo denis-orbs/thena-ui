@@ -210,8 +210,8 @@ function PairStrategy({ pair }) {
   }, [handleChooseStrategy, sortedSubPools, strategy, pathname])
 
   return (
-    <div className='flex gap-8 max-lg:flex-col max-lg:gap-4'>
-      <div className='w-full lg:max-w-[393px]'>
+    <div className='flex gap-8 max-2xl:flex-col max-2xl:gap-4'>
+      <div className='w-full 2xl:w-[25%]'>
         <div className={cn('flex items-center justify-between py-4 lg:h-[92px]')}>
           <NewTextSubHeading className='text-xs font-bold text-primary-100 md:text-xl'>
             Automatic Strategy
@@ -234,7 +234,7 @@ function PairStrategy({ pair }) {
         )}
       </div>
 
-      <div className='flex w-full flex-col gap-8'>
+      <div className='flex w-full flex-col gap-8 2xl:w-[75%]'>
         <div
           className={cn('flex items-center justify-between gap-2 rounded-xl bg-primary-950 bg-opacity-50 p-4  lg:px-6')}
         >
@@ -274,10 +274,15 @@ function PairStrategy({ pair }) {
               onLeftRangeInput={onLeftRangeInput}
               onRightRangeInput={onRightRangeInput}
               interactive={false}
+              showPeriod
+              classNames={{
+                periods: 'md:justify-end justify-start md:-mt-12 -mb-11 md:mb-4 max-md:max-w-[70%] z-40',
+              }}
               handleShow
+              isCreate={false}
             />
 
-            <div className='mt-2.5'>
+            <div className='mt-11 md:mt-4'>
               <PresetRanges
                 mintInfo={mintInfo}
                 isStablecoinPair={isStablecoinPair}

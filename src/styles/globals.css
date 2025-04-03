@@ -613,3 +613,7 @@ input[type='radio']:checked:after {
     transform: translate(-50%, -50%) rotate(1turn);
   }
 }
+
+.price-chart-container .tv-lightweight-charts table tr:first-child {
+  border-bottom: 2px solid #281b2e;
+}

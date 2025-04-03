@@ -92,79 +92,83 @@ export function Chart({
           zoomLevels={zoomLevels}
         />
       )}
-      <svg width='100%' height='100%' viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
-        <defs>
-          <clipPath id={`${id}-chart-clip`}>
-            <rect x='0' y='0' width={innerWidth} height={height} />
-          </clipPath>
 
-          {brushDomain && (
-            // mask to highlight selected area
-            <mask id={`${id}-chart-area-mask`}>
-              <rect
-                fill='white'
-                x={xScale(brushDomain[0])}
-                y='0'
-                width={xScale(brushDomain[1]) - xScale(brushDomain[0])}
-                height={innerHeight}
-              />
-            </mask>
-          )}
-        </defs>
-
-        <g transform={`translate(${margins.left},${margins.top})`}>
-          <g clipPath={`url(#${id}-chart-clip)`}>
-            <Area series={series} xScale={xScale} yScale={yScale} xValue={xAccessor} yValue={yAccessor} />
+      <div className='h-[280px] content-center justify-center'>
+        <svg width='100%' height='100%' viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
+          <defs>
+            <clipPath id={`${id}-chart-clip`}>
+              <rect x='0' y='0' width={innerWidth} height={height} />
+            </clipPath>
 
             {brushDomain && (
-              // duplicate area chart with mask for selected area
-              <g mask={`url(#${id}-chart-area-mask)`}>
-                <Area
-                  series={series}
-                  xScale={xScale}
-                  yScale={yScale}
-                  xValue={xAccessor}
-                  yValue={yAccessor}
-                  fill={styles.area.selection}
+              // mask to highlight selected area
+              <mask id={`${id}-chart-area-mask`}>
+                <rect
+                  fill='white'
+                  x={xScale(brushDomain[0])}
+                  y='0'
+                  width={xScale(brushDomain[1]) - xScale(brushDomain[0])}
+                  height={innerHeight}
                 />
-              </g>
+              </mask>
             )}
+          </defs>
 
-            <Line value={current} xScale={xScale} innerHeight={innerHeight} />
+          <g transform={`translate(${margins.left},0)`}>
+            <g clipPath={`url(#${id}-chart-clip)`}>
+              <Area series={series} xScale={xScale} yScale={yScale} xValue={xAccessor} yValue={yAccessor} />
 
-            {/* Add triangle marker */}
-            <path
-              d={`M ${xScale(current) - 6} ${innerHeight + 12} L ${xScale(current) + 6} ${innerHeight + 12} L ${xScale(
-                current,
-              )} ${innerHeight} Z`}
-              fill='#F8CCF6'
+              {brushDomain && (
+                // duplicate area chart with mask for selected area
+                <g mask={`url(#${id}-chart-area-mask)`}>
+                  <Area
+                    series={series}
+                    xScale={xScale}
+                    yScale={yScale}
+                    xValue={xAccessor}
+                    yValue={yAccessor}
+                    fill={styles.area.selection}
+                  />
+                </g>
+              )}
+
+              <Line value={current} xScale={xScale} innerHeight={innerHeight} />
+
+              {/* Add triangle marker */}
+              <path
+                d={`M ${xScale(current) - 6} ${innerHeight + 12} L ${xScale(current) + 6} ${
+                  innerHeight + 12
+                } L ${xScale(current)} ${innerHeight} Z`}
+                fill='#F8CCF6'
+              />
+
+              <AxisBottom xScale={xScale} innerHeight={innerHeight} />
+            </g>
+
+            <rect
+              className='size-full cursor-grab fill-transparent active:cursor-grabbing'
+              width={innerWidth}
+              height={height}
+              ref={zoomRef}
             />
 
-            <AxisBottom xScale={xScale} innerHeight={innerHeight} />
+            {handleShow && (
+              <Brush
+                id={id}
+                xScale={xScale}
+                interactive={interactive}
+                brushLabelValue={brushLabels}
+                brushExtent={brushDomain ?? xScale.domain()}
+                innerWidth={innerWidth}
+                innerHeight={innerHeight}
+                setBrushExtent={onBrushDomainChange}
+                westHandleColor={interactive ? styles.brush.handle.west : '#685770'}
+                eastHandleColor={interactive ? styles.brush.handle.east : '#685770'}
+              />
+            )}
           </g>
-
-          <rect
-            className='size-full cursor-grab fill-transparent active:cursor-grabbing'
-            width={innerWidth}
-            height={height}
-            ref={zoomRef}
-          />
-          {handleShow && (
-            <Brush
-              id={id}
-              xScale={xScale}
-              interactive={interactive}
-              brushLabelValue={brushLabels}
-              brushExtent={brushDomain ?? xScale.domain()}
-              innerWidth={innerWidth}
-              innerHeight={innerHeight}
-              setBrushExtent={onBrushDomainChange}
-              westHandleColor={interactive ? styles.brush.handle.west : '#685770'}
-              eastHandleColor={interactive ? styles.brush.handle.east : '#685770'}
-            />
-          )}
-        </g>
-      </svg>
+        </svg>
+      </div>
     </>
   )
 }

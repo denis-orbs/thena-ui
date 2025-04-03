@@ -13,7 +13,7 @@ import { InfoIcon, PoolCoinsIcon } from '@/svgs'
 function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
   const { weightedPools } = usePairs()
   const t = useTranslations()
-  const { isMdDown } = useMediaQuery()
+  const { isLgDown } = useMediaQuery()
 
   const foundedPair = usePairInfo({
     token0Address: wrappedAddress(tokens[0]),
@@ -47,7 +47,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
       },
     ]
 
-    if (isMdDown) {
+    if (isLgDown) {
       return [
         ...options,
         {
@@ -80,7 +80,7 @@ function AvailablePools({ tokens = [], pairType, setFoundedPool = () => {} }) {
         disabled: true,
       },
     ]
-  }, [isMdDown, pairType])
+  }, [isLgDown, pairType])
 
   useEffect(() => {
     if (foundedPair) {

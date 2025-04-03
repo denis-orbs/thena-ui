@@ -21,8 +21,8 @@ function StepContent({ currentStep }) {
     createData?.veTHEId,
     convertBooleansToHex(
       step2Active && pairLength > 0 ? createData?.votes?.isAutoVote : false,
-      createData?.settings?.isClaimEveryWeek,
       createData?.settings?.isRelockEveryWeek,
+      createData?.settings?.isClaimEveryWeek,
     ),
     pairLength,
   )

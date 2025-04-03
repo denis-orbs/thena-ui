@@ -1,0 +1,36 @@
+import { useTranslations } from 'next-intl'
+
+import { NewTextSubHeading, Paragraph } from '@/components/typography'
+import { PAIR_TYPES } from '@/constant'
+
+const descriptionSections = {
+  [PAIR_TYPES.STABLE]: {
+    text: 'Stable',
+    description: 'Stable Desc',
+  },
+  [PAIR_TYPES.CLASSIC]: {
+    text: 'Classic',
+    description: 'Classic Desc',
+  },
+  [PAIR_TYPES.WEIGHTED]: {
+    text: 'Weighted',
+    description: 'Weighted Desc',
+  },
+  [PAIR_TYPES.LSD]: {
+    text: 'Conc Liquidity',
+    description: 'Conc Desc',
+  },
+}
+
+export default function PoolDescriptionSection({ pairType }) {
+  const t = useTranslations()
+
+  const { text, description } = descriptionSections[pairType] ?? descriptionSections[PAIR_TYPES.LSD]
+
+  return (
+    <div className='hidden h-max flex-col gap-2 rounded-md bg-neutral-900 p-4 lg:flex'>
+      <NewTextSubHeading className='hidden !text-xl md:block'>{t(text)}</NewTextSubHeading>
+      <Paragraph className='text-sm text-neutral-300 md:text-base'>{t(description)}</Paragraph>
+    </div>
+  )
+}

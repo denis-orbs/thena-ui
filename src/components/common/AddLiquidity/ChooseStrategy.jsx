@@ -259,7 +259,7 @@ export default function ChooseStrategy({ firstAsset, secondAsset, pair, mintInfo
             position={position}
           />
           {pair && (
-            <div className={cn('!mt-2 hidden max-lg:block md:!mt-4')}>
+            <div className={cn('!mt-2 hidden max-2xl:block md:!mt-4')}>
               <PoolAttributesSection className='px-4 py-2' strategy={strategy} pair={pair} />
             </div>
           )}

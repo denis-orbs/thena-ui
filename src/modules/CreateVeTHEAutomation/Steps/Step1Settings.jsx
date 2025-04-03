@@ -3,10 +3,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Divider from '@/components/divider'
+import CircleImage from '@/components/image/CircleImage'
 import Skeleton from '@/components/skeleton'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading } from '@/components/typography'
+import { chainLINKLogo } from '@/constant'
 import usePrices from '@/hooks/usePrices'
 import { formatAmount } from '@/lib/utils'
 import { createVeTHEAutomationContract } from '@/state/veTHEAutomationContract/action'
@@ -78,7 +80,7 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
   }, [executionTime, updateSetting])
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-4 lg:space-y-6'>
       <div className='flex flex-row items-center gap-1'>
         <Toggle
           checked={createData?.settings?.isClaimEveryWeek}
@@ -110,11 +112,12 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
         </CustomTooltip>
       </div>
       <SelectExecutionTime executionTime={executionTime} updateData={setExecutionTime} />
-      <Divider />
+      <Divider className='max-lg:hidden' />
       <div className='flex flex-row items-center justify-between'>
         <div className='flex flex-row items-center gap-1'>
-          <TextHeading className='text-lg'>{t('Total Deposit Estimate')}</TextHeading>
-          <InfoIcon data-tooltip-id='setting-mind-funds' className='h-4 w-4 stroke-neutral-400' />
+          <TextHeading className='text-base lg:text-lg'>{t('Minimum Link Balance needed')}</TextHeading>
+
+          <InfoIcon data-tooltip-id='setting-mind-funds' className='h-4 w-4 stroke-neutral-400 max-lg:hidden' />
           <CustomTooltip className='z-40' id='setting-mind-funds' place='bottom'>
             {t('This is the estimated total deposit based on your current contract settings')}
           </CustomTooltip>
@@ -127,8 +130,9 @@ function Step1Settings({ minFunds, isLoadingMinFunds }) {
             </>
           ) : (
             <>
-              <Paragraph>${`${formatAmount(minFunds * prices.CHAINLINK)}`}</Paragraph>
-              <TextHeading>{`${formatAmount(minFunds)} LINK`}</TextHeading>
+              <Paragraph className='max-lg:hidden'>${`${formatAmount(minFunds * prices.CHAINLINK)}`}</Paragraph>
+              <TextHeading>{`${formatAmount(minFunds)}`}</TextHeading>
+              <CircleImage alt='CHAIN LINK logo' className='size-4' src={chainLINKLogo} />
             </>
           )}
         </div>

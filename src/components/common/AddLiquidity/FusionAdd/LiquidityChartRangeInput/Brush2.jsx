@@ -6,10 +6,10 @@ import usePrevious from '@/hooks/usePrevious'
 import { brushHandlePathV2, OffScreenHandleV2 } from './svg'
 
 // flips the handles draggers when close to the container edges
-// const FLIP_HANDLE_THRESHOLD_PX = 20
+const FLIP_HANDLE_THRESHOLD_PX = 36
 
 // margin to prevent tick snapping from putting the brush off screen
-const BRUSH_EXTENT_MARGIN_PX = 2
+const BRUSH_EXTENT_MARGIN_PX = 8
 
 /**
  * Returns true if every element in `a` maps to the
@@ -40,6 +40,7 @@ export const Brush2 = ({
   height,
   northHandleColor,
   southHandleColor,
+  setIsOutOfView,
 }) => {
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
@@ -80,7 +81,7 @@ export const Brush2 = ({
         // x1, y1 (bottom right)
         [width, height - BRUSH_EXTENT_MARGIN_PX],
       ])
-      .handleSize(30)
+      .handleSize(50)
       .filter(() => interactive)
       .filter(event => {
         // Allow interactions only if the event target is part of the brush selection or handles
@@ -90,7 +91,7 @@ export const Brush2 = ({
       .on('brush', event => {
         const { selection } = event
         setBrushInProgress(true)
-
+        select(brushRef.current).selectAll('.handle').attr('cursor', 'ns-resize')
         if (!selection) {
           setLocalBrushExtent(null)
           return
@@ -115,21 +116,27 @@ export const Brush2 = ({
         }
         setLocalBrushExtent(priceExtent)
         setBrushInProgress(false)
+        select(brushRef.current).selectAll('.handle').style('cursor', 'pointer')
       })
+    select(brushRef.current).selectAll('.handle').attr('cursor', 'pointer')
 
     brushBehavior.current(select(brushRef.current))
 
-    if (previousBrushExtent && compare(normalizedExtent, normalizeExtent(previousBrushExtent), yScale)) {
+    if (
+      previousBrushExtent &&
+      compare(normalizedExtent, normalizeExtent(previousBrushExtent), yScale) &&
+      !isNaN(scaledExtent[0]) &&
+      !isNaN(scaledExtent[1])
+    ) {
       select(brushRef.current).transition().call(brushBehavior.current.move, scaledExtent)
     }
 
     select(brushRef.current).selectAll('.overlay').attr('cursor', 'default')
-
     // brush linear gradient
     select(brushRef.current)
       .selectAll('.selection')
       .attr('stroke', 'none')
-      .attr('fill-opacity', '0.1')
+      .attr('fill-opacity', '1')
       .attr('fill', `url(#${id}-gradient-selection)`)
       .attr('cursor', 'grab')
   }, [brushExtent, id, height, interactive, previousBrushExtent, yScale, width, setBrushExtent, brushInProgress])
@@ -138,13 +145,16 @@ export const Brush2 = ({
   useEffect(() => {
     if (!brushRef.current || !brushBehavior.current) return
 
+    const extent = toYScale(brushExtent, yScale)
+    if (isNaN(extent[0]) || isNaN(extent[1])) return
+
     brushBehavior.current.move(select(brushRef.current), normalizeExtent(toYScale(brushExtent, yScale)))
   }, [brushExtent, yScale])
 
   const normalizedBrushExtent = normalizeExtent(localBrushExtent ?? brushExtent)
 
-  // const flipNorthHandle = yScale(normalizedBrushExtent[1]) < FLIP_HANDLE_THRESHOLD_PX
-  // const flipSouthHandle = yScale(normalizedBrushExtent[0]) > height - FLIP_HANDLE_THRESHOLD_PX
+  const flipNorthHandle = yScale(normalizedBrushExtent[1]) < FLIP_HANDLE_THRESHOLD_PX
+  const flipSouthHandle = yScale(normalizedBrushExtent[0]) > height - FLIP_HANDLE_THRESHOLD_PX
 
   const showNorthArrow =
     normalizedBrushExtent && (yScale(normalizedBrushExtent[0]) < 0 || yScale(normalizedBrushExtent[1]) < 0)
@@ -156,13 +166,30 @@ export const Brush2 = ({
   const northHandleInView =
     normalizedBrushExtent && yScale(normalizedBrushExtent[1]) >= 0 && yScale(normalizedBrushExtent[1]) <= height
 
+  useEffect(() => {
+    select(brushRef.current)
+      .selectAll('.handle--n')
+      .attr('transform', `translate(0, ${flipNorthHandle ? 10 : -10})`)
+    select(brushRef.current)
+      .selectAll('.handle--s')
+      .attr('transform', `translate(0, ${flipSouthHandle ? -10 : 10})`)
+  }, [flipNorthHandle, flipSouthHandle, setIsOutOfView])
+
+  useEffect(() => {
+    if (showNorthArrow || showSouthArrow) {
+      setIsOutOfView(true)
+    } else {
+      setIsOutOfView(false)
+    }
+  }, [setIsOutOfView, showNorthArrow, showSouthArrow])
+
   return useMemo(
     () => (
       <>
         <defs>
-          <linearGradient id={`${id}-gradient-selection`} x1='0%' y1='100%' x2='100%' y2='100%'>
-            <stop stopColor={northHandleColor} />
-            <stop stopColor={northHandleColor} offset='1' />
+          <linearGradient id={`${id}-gradient-selection`} x1='0%' x2='100%' y1='0%' y2='0%'>
+            <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
+            <stop offset='100%' stopColor='#83007E' stopOpacity={0} />
           </linearGradient>
 
           {/* clips at exactly the svg area */}
@@ -179,7 +206,9 @@ export const Brush2 = ({
           <>
             {northHandleInView ? (
               <g
-                transform={`translate(0, ${Math.max(0, yScale(normalizedBrushExtent[1]))}), scale(1, ${'1'})`}
+                transform={`translate(0, ${Math.max(0, yScale(normalizedBrushExtent[1]))}), scale(1, ${
+                  flipNorthHandle ? -1 : 1
+                })`}
                 cursor={interactive ? 'ns-resize' : 'default'}
                 pointerEvents='none'
               >
@@ -187,14 +216,14 @@ export const Brush2 = ({
                   color={southHandleColor}
                   stroke={southHandleColor}
                   strokeWidth={2}
-                  opacity={0.6}
+                  opacity={1}
                   d={brushHandlePathV2(width)}
                 />
-                <g>
+                <g pointerEvents='none' opacity={0.85}>
                   <rect x='0' y='-36' width='128' height='36' rx='10' fill='#F199EE' />
                   <rect x='0' y='-18' width='128' height='18' fill='#F199EE' />
 
-                  <g transform='translate(16, -26)'>
+                  <g transform='translate(16, -26)' pointerEvents='none'>
                     <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path
                         d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
@@ -212,8 +241,12 @@ export const Brush2 = ({
                     fill='#2C002A'
                     fontSize='20'
                     textAnchor='middle'
+                    pointerEvents='none'
+                    transform={`translate(80, ${flipNorthHandle ? -18 : -12}) rotate(${
+                      flipNorthHandle ? 180 : 0
+                    }) scale(${flipNorthHandle ? -1 : 1},1) translate(-80, ${flipNorthHandle ? 18 : 12})`}
                   >
-                    {brushLabelValue('w', localBrushExtent[1])}
+                    {brushLabelValue('w', localBrushExtent?.[1])}
                   </text>
                 </g>
               </g>
@@ -221,7 +254,7 @@ export const Brush2 = ({
 
             {southHandleInView ? (
               <g
-                transform={`translate(0, ${yScale(normalizedBrushExtent[0])}), scale(1, ${'1'})`}
+                transform={`translate(0, ${yScale(normalizedBrushExtent[0])}), scale(1, ${flipSouthHandle ? -1 : 1})`}
                 cursor={interactive ? 'ns-resize' : 'default'}
                 pointerEvents='none'
               >
@@ -230,33 +263,39 @@ export const Brush2 = ({
                     color={southHandleColor}
                     stroke={southHandleColor}
                     strokeWidth={2}
-                    opacity={0.6}
+                    opacity={1}
                     d={brushHandlePathV2(width)}
                     id='south-line-handle-path'
                   />
-                  <rect x='0' y='0' width='128' height='36' rx='10' fill='#F199EE' />
-                  <rect x='0' y='0' width='128' height='18' fill='#F199EE' />
-                  <g transform='translate(16, 9)'>
-                    <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <path
-                        d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
-                        stroke='#2C002A'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                    </svg>
+                  <g pointerEvents='none' opacity={0.85}>
+                    <rect x='0' y='0' width='128' height='36' rx='10' fill='#F199EE' />
+                    <rect x='0' y='0' width='128' height='18' fill='#F199EE' />
+                    <g transform='translate(16, 9)' pointerEvents='none'>
+                      <svg width='12' height='16' viewBox='0 0 12 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                        <path
+                          d='M1.83331 10.5001L5.99998 14.6668L10.1666 10.5001M1.83331 5.50009L5.99998 1.33342L10.1666 5.50009'
+                          stroke='#2C002A'
+                          strokeWidth='2'
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                        />
+                      </svg>
+                    </g>
+                    <text
+                      className='font-archia font-semibold'
+                      x='80'
+                      y='23'
+                      fill='#2C002A'
+                      fontSize='20'
+                      textAnchor='middle'
+                      pointerEvents='none'
+                      transform={`translate(80, ${flipSouthHandle ? 16 : 23}) rotate(${
+                        flipSouthHandle ? 180 : 0
+                      }) scale(${flipSouthHandle ? -1 : 1},1) translate(-80, ${flipSouthHandle ? -16 : -23})`}
+                    >
+                      {brushLabelValue('w', localBrushExtent?.[0])}
+                    </text>
                   </g>
-                  <text
-                    className='font-archia font-semibold'
-                    x='80'
-                    y='23'
-                    fill='#2C002A'
-                    fontSize='20'
-                    textAnchor='middle'
-                  >
-                    {brushLabelValue('w', localBrushExtent[0])}
-                  </text>
                 </g>
               </g>
             ) : null}
@@ -292,18 +331,20 @@ export const Brush2 = ({
     ),
     [
       id,
-      northHandleColor,
       width,
       height,
       normalizedBrushExtent,
       northHandleInView,
       yScale,
+      flipNorthHandle,
       interactive,
       southHandleColor,
       brushLabelValue,
       localBrushExtent,
       southHandleInView,
+      flipSouthHandle,
       showNorthArrow,
+      northHandleColor,
       showSouthArrow,
     ],
   )

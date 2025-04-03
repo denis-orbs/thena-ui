@@ -91,7 +91,7 @@ export const useCreateAutomation = () => {
         const tokenId = contract.veTHEId
         // Save UTC
         const startTimestamp = settings.executionTime - new Date().getTimezoneOffset() * 60 * 1000
-        const operations = convertBooleansToHex(votes.isAutoVote, settings.isClaimEveryWeek, settings.isRelockEveryWeek)
+        const operations = convertBooleansToHex(votes.isAutoVote, settings.isRelockEveryWeek, settings.isClaimEveryWeek)
         const pools = pairs.filter(item => Boolean(item.pair)).map(pair => pair?.pair?.address)
         const weights = pairs.filter(item => Boolean(item.pair)).map(pair => pair.weight)
         console.log({ pools, weights, operations, startTimestamp })
@@ -259,7 +259,7 @@ export const useVeTheAutomations = () => {
 
     return veTHEs.map((veTHE, index) => {
       const status = contractsStatuses[index] ?? null
-      const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(contractsOperationsHex[index])
+      const [isAutoVote, isRelockEveryWeek, isClaimEveryWeek] = convertHexToBooleans(contractsOperationsHex[index])
 
       return {
         ...veTHE,
@@ -323,7 +323,7 @@ export const useAutomationContractDetail = tokenId => {
   const [poolsAddress = [], weights = []] = contractInfo?.[1]?.result || [[], []]
 
   const operations = contractInfo?.[2]?.result
-  const [isAutoVote, isClaimEveryWeek, isRelockEveryWeek] = convertHexToBooleans(operations) || [[], [], []]
+  const [isAutoVote, isRelockEveryWeek, isClaimEveryWeek] = convertHexToBooleans(operations) || [[], [], []]
   const { result: lastExecutionTime } = contractInfo?.[3] || {}
   const { result: status } = contractInfo?.[4] || {}
   const gasLimit = contractInfo?.[5]?.result || 0
@@ -531,7 +531,7 @@ export const useEditAutomation = () => {
   const { startTxn, endTxn, writeTxn } = useTxn()
 
   const onEditAutomation = useCallback(
-    async (contract, onSuccess) => {
+    async (contract, onSuccess = () => {}) => {
       const key = uuidv4()
       const operationsuuid = uuidv4()
       const veTheAutomationContract = getVeTheAutomationContract(contract.address, chainId)
@@ -540,7 +540,7 @@ export const useEditAutomation = () => {
 
       const { pairs } = votes
 
-      const operations = convertBooleansToHex(votes.isAutoVote, settings.isClaimEveryWeek, settings.isRelockEveryWeek)
+      const operations = convertBooleansToHex(votes.isAutoVote, settings.isRelockEveryWeek, settings.isClaimEveryWeek)
       const pools = pairs.map(pair => pair.pair.address)
       const weights = pairs.map(pair => pair.weight)
 

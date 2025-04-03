@@ -148,7 +148,7 @@ function NewListings({
               </div>
             </>
           ) : (
-            <ListTokenPercantage listToken={pool.tokens} poolAddress={pool?.address} />
+            <ListTokenPercantage listToken={pool.tokens} poolAddress={pool?.address} small={size === 'small'} />
           )}
 
           {/* BEGIN Special pools */}

@@ -20,19 +20,22 @@ export default function ActivePriceRangeChart({
   onBrushDomainChange,
   handleShow,
   disableBrush = false,
+  setIsOutOfView,
 }) {
   const svgRef = useRef(null)
   const { xScale, yScale } = useMemo(() => {
     const activeEntries = min && max ? series.filter(d => d.price0 >= min && d.price0 <= max) : series
     const scales = {
-      yScale: scaleLinear().domain([min, max]).range([height, 0]),
+      yScale: scaleLinear()
+        .domain([min, max])
+        .range([height - (!brushDomain ? 48 : 0), 0]),
       xScale: scaleLinear()
         .domain([0, getMax(activeEntries, xAccessor)])
         .range([width - axisLabelPaneWidth, width - axisLabelPaneWidth - contentWidth]),
     }
 
     return scales
-  }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth])
+  }, [min, max, series, height, width, axisLabelPaneWidth, contentWidth, brushDomain])
 
   useEffect(() => {
     if (!brushDomain) {
@@ -51,12 +54,12 @@ export default function ActivePriceRangeChart({
             <rect x='0' y='0' width={width} height={height} />
           </clipPath>
 
-          <linearGradient id='gradient-brush-area' x1='0%' y1='0%' x2='100%' y2='0%'>
-            <stop offset='6.2%' stopColor='rgba(189, 96, 186, 0.5)' />
-            <stop offset='100%' stopColor='rgba(131, 0, 126, 0)' />
+          <linearGradient id='gradient-brush-area' x1='0%' x2='100%' y1='0%' y2='0%'>
+            <stop offset='6.2%' stopColor='#BD60BA' stopOpacity={0.5} />
+            <stop offset='100%' stopColor='#83007E' stopOpacity={0} />
           </linearGradient>
 
-          {brushDomain && (
+          {brushDomain && yScale && yScale(brushDomain[0]) && yScale(brushDomain[1]) && (
             // mask to highlight selected area
             <mask id={`${id}-chart-area-mask`}>
               <rect
@@ -115,6 +118,7 @@ export default function ActivePriceRangeChart({
               setBrushExtent={onBrushDomainChange}
               northHandleColor={styles.brush.handle.north}
               southHandleColor={styles.brush.handle.south}
+              setIsOutOfView={setIsOutOfView}
             />
           )}
         </g>

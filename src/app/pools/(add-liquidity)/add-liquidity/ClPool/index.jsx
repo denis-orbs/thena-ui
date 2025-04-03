@@ -6,10 +6,9 @@ import { WBNB } from 'thena-sdk-core'
 
 import ChooseStrategy from '@/components/common/AddLiquidity/ChooseStrategy'
 import NewIconGroup from '@/components/icongroup/NewIconGroup'
-import { NewTextHeading, NewTextSubHeading, Paragraph, TextHeading } from '@/components/typography'
+import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
 import { cn, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
@@ -21,10 +20,10 @@ import { useChainSettings } from '@/state/settings/hooks'
 
 import AddLiquidityCLPane from './AddLiquidityCLPane'
 import { PoolAttributesSection } from '../PoolAttributesSection'
+import PoolDescriptionSection from '../PoolTitleDescription'
 
 function AddLiquidityClPool({ pool, handleBack }) {
   const t = useTranslations()
-  const { isLgDown } = useMediaQuery()
   const { networkId } = useChainSettings()
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy } = useV3MintState()
@@ -83,15 +82,6 @@ function AddLiquidityClPool({ pool, handleBack }) {
   const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => mintInfo.pricesAtTicks, [mintInfo])
   const { onLeftRangeInput, onRightRangeInput } = useV3MintActionHandlers(mintInfo.noLiquidity)
 
-  // const chartDomain = useMemo(() => {
-  //   const leftPrice = isReverse ? priceUpper?.invert() : priceLower
-  //   const rightPrice = isReverse ? priceLower?.invert() : priceUpper
-
-  //   return leftPrice && rightPrice
-  //     ? [parseFloat(leftPrice?.toSignificant(6)), parseFloat(rightPrice?.toSignificant(6))]
-  //     : []
-  // }, [isReverse, priceLower, priceUpper])
-
   const currentPrice = useMemo(() => {
     if (position) return position.currentPrice
     if (!mintInfo.price) return
@@ -116,9 +106,9 @@ function AddLiquidityClPool({ pool, handleBack }) {
             position={position}
           />
 
-          {strategy?.isAutomatic && isLgDown && (
-            <div className='mt-4'>
-              <NewTextSubHeading className='text-sm'>{t('Liquidity Range')}</NewTextSubHeading>
+          {strategy?.isAutomatic && (
+            <div className='mt-4 hidden space-y-4 max-2xl:block'>
+              <NewTextSubHeading className='text-neutral-500'>{t('Liquidity Range')}</NewTextSubHeading>
               <AutomaticLiquidityChart
                 currencyA={currencyA ?? undefined}
                 currencyB={currencyB ?? undefined}
@@ -157,9 +147,11 @@ function AddLiquidityClPool({ pool, handleBack }) {
               </div>
             )}
 
+            <PoolDescriptionSection pairType={strategy?.title} />
+
             {strategy?.isAutomatic && (
-              <div className='pt-8'>
-                <NewTextSubHeading>{t('Liquidity Range')}</NewTextSubHeading>
+              <div className='space-y-4 px-8'>
+                <NewTextSubHeading className='text-neutral-500'>{t('Liquidity Range')}</NewTextSubHeading>
                 <AutomaticLiquidityChart
                   currencyA={currencyA ?? undefined}
                   currencyB={currencyB ?? undefined}
@@ -173,22 +165,23 @@ function AddLiquidityClPool({ pool, handleBack }) {
               </div>
             )}
 
-            <div className={cn('sticky top-48 hidden pl-4', !strategy?.isAutomatic && 'block')}>
-              <TextHeading className='text-xl'>{t('Liquidity Distribution')}</TextHeading>
-              <LiquidityChartRangeInput
-                currencyA={baseCurrency ?? undefined}
-                currencyB={quoteCurrency ?? undefined}
-                feeAmount={mintInfo.dynamicFee}
-                ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
-                price={currentPrice ? parseFloat(currentPrice) : undefined}
-                priceLower={position?.priceLower ?? priceLower}
-                priceUpper={position?.priceUpper ?? priceUpper}
-                onLeftRangeInput={onLeftRangeInput}
-                onRightRangeInput={onRightRangeInput}
-                interactive={false}
-                showZoom={false}
-              />
-            </div>
+            {!strategy?.isAutomatic && (
+              <div className={cn('sticky top-72 space-y-4 px-4')}>
+                <NewTextSubHeading className='text-neutral-500'>{t('Liquidity Distribution')}</NewTextSubHeading>
+                <LiquidityChartRangeInput
+                  currencyA={baseCurrency ?? undefined}
+                  currencyB={quoteCurrency ?? undefined}
+                  feeAmount={mintInfo.dynamicFee}
+                  ticksAtLimit={position?.ticksAtLimit ?? mintInfo.ticksAtLimit}
+                  price={currentPrice ? parseFloat(currentPrice) : undefined}
+                  priceLower={position?.priceLower ?? priceLower}
+                  priceUpper={position?.priceUpper ?? priceUpper}
+                  onLeftRangeInput={onLeftRangeInput}
+                  onRightRangeInput={onRightRangeInput}
+                  interactive={false}
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>

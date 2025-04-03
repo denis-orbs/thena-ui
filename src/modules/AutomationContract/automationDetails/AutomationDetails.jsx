@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Box from '@/components/box'
 import IconGroup from '@/components/icongroup'
@@ -16,7 +16,23 @@ function AutomationDetails({ contractData, transactionHash, date }) {
   const t = useTranslations()
   const { onCopy, copied } = useCopyText()
   const { account } = useWallet()
-  console.log({ contractData })
+
+  const [nextTime, setNextTime] = useState('')
+
+  useEffect(() => {
+    const updateNextTime = () => {
+      setNextTime(
+        dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]'),
+      )
+    }
+
+    updateNextTime()
+
+    const interval = setInterval(updateNextTime, 60000)
+
+    return () => clearInterval(interval)
+  }, [contractData.settings.executionTime])
+
   return (
     <div className='space-y-4'>
       <TextHeading className='font-archia text-2xl lg:text-3xl'>{t('Automation Details')}</TextHeading>
@@ -31,9 +47,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
             </div>
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Next rebase claim')}</Paragraph>
-              <TextHeading>
-                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
-              </TextHeading>
+              <TextHeading>{nextTime}</TextHeading>
             </div>
           </div>
         </Box>
@@ -48,9 +62,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
             </div>
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Next relock')}</Paragraph>
-              <TextHeading>
-                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
-              </TextHeading>
+              <TextHeading>{nextTime}</TextHeading>
             </div>
           </div>
         </Box>
@@ -65,9 +77,7 @@ function AutomationDetails({ contractData, transactionHash, date }) {
             </div>
             <div className='flex flex-row justify-between'>
               <Paragraph>{t('Next vote')}</Paragraph>
-              <TextHeading>
-                {dayjs(calculateNextWeek(contractData?.settings?.executionTime)).format('MMM D, YYYY [at] HH:mm [UTC]')}
-              </TextHeading>
+              <TextHeading>{nextTime}</TextHeading>
             </div>
             <div className='flex max-h-[120px] flex-col gap-3 overflow-y-auto'>
               {(contractData?.votes?.pairs || []).map((pair, index) => (

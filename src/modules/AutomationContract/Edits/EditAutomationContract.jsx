@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { EmphasisButton, PrimaryButton } from '@/components/buttons/Button'
@@ -61,6 +61,20 @@ function EditAutomationContract({ data }) {
     [dataEdit],
   )
 
+  useEffect(() => {
+    if (!dataEdit?.votes?.isAutoVote) {
+      const pairFilter = [...(dataEdit?.votes?.pairs || [])].filter(item => Boolean(item.pair))
+      if (pairFilter.length === dataEdit?.votes?.pairs?.length) return
+      setDataEdit(prev => ({
+        ...prev,
+        votes: {
+          ...prev.votes,
+          pairs: pairFilter,
+        },
+      }))
+    }
+  }, [dataEdit?.votes?.pairs, dataEdit?.votes?.isAutoVote])
+
   const handleVotingPairs = useCallback((action, payload) => {
     setDataEdit(prev => {
       if (!prev?.votes) return prev
@@ -113,10 +127,21 @@ function EditAutomationContract({ data }) {
   const isDisabled = useMemo(() => {
     const pairs = dataEdit?.votes?.pairs || []
 
-    if (isEmpty(pairs)) return true
+    if (isEmpty(pairs) && dataEdit?.votes?.isAutoVote) {
+      setError('Please select Pair')
+      return true
+    }
+
+    if (isEmpty(pairs)) {
+      setError(null)
+      return false
+    }
 
     const checkInvalidPair = pairs.some(pair => !pair.pair)
-    if (checkInvalidPair) return true
+    if (checkInvalidPair) {
+      setError('Please select Pair')
+      return true
+    }
 
     const checkInvalidWeight = pairs.some(pair => pair.weight <= 0 || !pair.weight)
     if (checkInvalidWeight) {
@@ -131,11 +156,17 @@ function EditAutomationContract({ data }) {
       return true
     }
     setError()
-  }, [dataEdit?.votes?.pairs, t])
+  }, [dataEdit?.votes?.isAutoVote, dataEdit?.votes?.pairs, t])
 
   const handleBack = useCallback(() => {
     router.back()
   }, [router])
+
+  const handleSave = useCallback(() => {
+    if (!isDisabled) {
+      onEditAutomation(dataEdit)
+    }
+  }, [dataEdit, isDisabled, onEditAutomation])
 
   return (
     <Box>
@@ -182,11 +213,7 @@ function EditAutomationContract({ data }) {
               {Boolean(error) && <ErrorMessage className='lg:p-4' message={error} />}
               <div className='flex flex-row gap-3'>
                 <EmphasisButton onClick={handleBack}>{t('Back')}</EmphasisButton>
-                <PrimaryButton
-                  disabled={pendingEdit || isDisabled}
-                  className='w-full lg:w-fit'
-                  onClick={() => onEditAutomation(dataEdit)}
-                >
+                <PrimaryButton disabled={pendingEdit} className='w-full lg:w-fit' onClick={handleSave}>
                   {t('Save Changes')}
                 </PrimaryButton>
               </div>
