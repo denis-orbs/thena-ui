@@ -443,12 +443,18 @@ export default function PoolsPage() {
               className='!size-8 !min-w-8 p-2'
               classNames='[&>path]:group-hover:stroke-neutral-100'
               Icon={BarChartIcon}
-              onClick={() => push(`/analytics/pairs/${pool?.address}`)}
+              onClick={e => {
+                e.stopPropagation()
+                e.preventDefault()
+                push(`/analytics/pairs/${pool?.address}`)
+              }}
               data-tooltip-id='analytics-tooltip'
             />
             <EmphasisButton
               className='w-full p-2 text-sm lg:w-fit'
-              onClick={() => {
+              onClick={e => {
+                e.stopPropagation()
+                e.preventDefault()
                 dispatch(updateStrategy({ strategy: null }))
                 push(
                   pool.type === PAIR_TYPES.WEIGHTED
@@ -461,6 +467,9 @@ export default function PoolsPage() {
             </EmphasisButton>
           </div>
         ),
+        onRowClick: () => {
+          push(`/analytics/pairs/${pool.address}`)
+        },
       }))
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
