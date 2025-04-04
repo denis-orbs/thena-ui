@@ -63,12 +63,12 @@ const fetchUserFusionsV3 = async (account, chainId) => {
     return {
       version: 3,
       address: pair_address,
-      walletBalance: account_lp_balance,
-      gaugeBalance: account_gauge_balance,
-      totalLp: BigNumber(account_lp_balance).plus(account_gauge_balance),
-      gaugeEarned: account_gauge_earned,
-      token0claimable: claimable0,
-      token1claimable: claimable1,
+      walletBalance: new BigNumber(account_lp_balance),
+      gaugeBalance: new BigNumber(account_gauge_balance),
+      totalLp: new BigNumber(account_lp_balance).plus(account_gauge_balance),
+      gaugeEarned: new BigNumber(account_gauge_earned),
+      token0claimable: new BigNumber(claimable0),
+      token1claimable: new BigNumber(claimable1),
     }
   })
 }
