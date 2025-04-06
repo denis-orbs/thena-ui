@@ -3507,10 +3507,10 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.9.6.tgz#2a880a24eb19b4f8b25adc2a5095f2aa27f39677"
   integrity sha512-xSmezSupL+y9VkHZJGDoCBpmnB2ogM13ccaYDWqJTfS3dbuHkgjuwDFUmaFauBCboQMGB/S5UqUl2y54X99BmA==
 
-"@orbs-network/liquidity-hub-sdk@^1.0.58":
-  version "1.0.58"
-  resolved "https://registry.yarnpkg.com/@orbs-network/liquidity-hub-sdk/-/liquidity-hub-sdk-1.0.58.tgz#9bb13d2c16bac6a4dc3d0cd25f903f3c6661b3c9"
-  integrity sha512-gAqoZskrAebKwqe9EttdPVWGe9vA1khZ/AwU1n308/SIh6LfJUaXm1Z+rhNh5HdzZQiz8GbF8wQHZgz5h0J+mw==
+"@orbs-network/liquidity-hub-sdk@^1.0.74":
+  version "1.0.74"
+  resolved "https://registry.yarnpkg.com/@orbs-network/liquidity-hub-sdk/-/liquidity-hub-sdk-1.0.74.tgz#39253dc39e2eba96f5192bdfc9a1c5a6fb1bf67e"
+  integrity sha512-lKX8uIJ6N70TjPfa7TliznLCU6iAKwq21SG4V7Pj6qa0OA0uuG8rgVdc7Fv0kdr4ZLIDPbFzAF5rLnkPPLNOQQ==
 
 "@orbs-network/twap-ui-thena@^0.10.26":
   version "0.10.26"

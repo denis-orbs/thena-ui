@@ -15,7 +15,7 @@ import useWallet from '@/hooks/useWallet'
 import { readCall, signCall } from '@/lib/contractActions'
 import { getERC20Contract, getWBNBContract } from '@/lib/contracts'
 import { errorToast, successToast } from '@/lib/notify'
-import { toWei } from '@/lib/utils'
+import { fromWei, toWei } from '@/lib/utils'
 import { useSettings } from '@/state/settings/hooks'
 import { useTxn } from '@/state/transactions/hooks'
 
@@ -32,7 +32,7 @@ const TX_UPDATER_KEYS = {
   swap: uuidv4(),
 }
 
-const subtractSlippage = (allowedSlippage, outAmount) => {
+export const subtractSlippage = (allowedSlippage, outAmount) => {
   if (!outAmount) return undefined
 
   return BN(outAmount)
@@ -106,6 +106,42 @@ const useGetQuoteCallback = () => {
 
     [sdk, wrappedNativeContract, account, slippage],
   )
+}
+
+const useOnTradeSuccess = (fromAsset, toAsset, isFallbackLH) => {
+  const sdk = useSDK()
+  const { slippage } = useSettings()
+
+  const { mutate } = useMutation({
+    mutationFn: async ({ quote, bestTrade, isTradeLH, fromAmount }) => {
+      const outAmountDex = bestTrade?.outAmounts?.[0] || '0'
+      const outAmountLH = quote?.outAmountWS || '0'
+      const minAmountOutLH = quote?.userMinOutAmountWithGas || '0'
+      const minAmountOutDex = subtractSlippage(slippage, outAmountDex) || '0'
+      const outAmount = isTradeLH ? outAmountLH : outAmountDex
+      const inAmountUsd = fromAmount * (fromAsset?.price || 0)
+      const outAmountUsd = fromWei(outAmount, toAsset?.decimals) * (toAsset?.price || 0)
+      sdk.analytics.onTradeSuccess({
+        outAmountLH,
+        outAmountDex,
+        minAmountOutLH,
+        minAmountOutDex,
+        outAmountLhUI: fromWei(outAmountLH, toAsset?.decimals),
+        outAmountDexUI: fromWei(outAmountDex, toAsset?.decimals),
+        minAmountOutLhUI: fromWei(minAmountOutLH, toAsset?.decimals),
+        minAmountOutDexUI: fromWei(minAmountOutDex, toAsset?.decimals),
+        inAmountUsd,
+        outAmountUsd,
+        executor: isTradeLH ? 'lh' : 'dex',
+        isFallbackLH,
+      })
+    },
+    onError: error => {
+      console.error(error)
+    },
+  })
+
+  return mutate
 }
 
 const useTrade = (fromAsset, toAsset, fromAmountUI, enabled) => {
@@ -262,7 +298,7 @@ const useSignEip712Callback = () => {
   })
 }
 
-const useSwap = (fromAsset, toAsset, fromAmountUI, bestTrade) => {
+const useSwap = (fromAsset, toAsset, fromAmountUI, bestTrade, isFallbackLH) => {
   const { account, chainId } = useWallet()
   const { mutateAsync: submitTx } = useSubmitTransaction(bestTrade)
   const initStartTxn = useInitSwap(fromAsset, toAsset)
@@ -299,9 +335,9 @@ const useSwap = (fromAsset, toAsset, fromAmountUI, bestTrade) => {
       })
 
       let quote = currentQuote
-      if (isNativeIn || !isApproved) {
+      if (!quote || isNativeIn || !isApproved) {
         try {
-          quote = await getQuoteCallback(fromAsset, toAsset, fromAmountUI, bestTrade)
+          quote = await getQuoteCallback(fromAsset, toAsset, fromAmountUI, isFallbackLH ? undefined : bestTrade)
         } catch (error) {
           console.error('Failed to refetch quote', error)
         }
@@ -387,4 +423,5 @@ export const liquidityHub = {
   useTrade,
   useSwap,
   useCompareTrade,
+  useOnTradeSuccess,
 }

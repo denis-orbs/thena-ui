@@ -20,7 +20,7 @@ import useDebounce from '@/hooks/useDebounce'
 import { useOdosQuoteSwap, useOdosSwap, useTaxTokenSwap } from '@/hooks/useSwap'
 import { cn, formatAmount, fromWei, isInvalidAmount } from '@/lib/utils'
 import useWallet from '@/hooks/useWallet'
-import { liquidityHub } from '@/modules/LiquidityHub'
+import { liquidityHub, subtractSlippage } from '@/modules/LiquidityHub'
 import TxnSettings from '@/modules/SettingsModal'
 import SwapChart from '@/modules/SwapChart'
 import { useChainSettings, useSettings } from '@/state/settings/hooks'
@@ -100,29 +100,33 @@ export default function SwapBest({
   const { onOdosSwap, swapPending } = useOdosSwap()
   const { handleTaxTokenSwap, pending: taxTokenSwapPending } = useTaxTokenSwap()
   // const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
-  const { mutateAsync: onSwapLH, isLoading: swapLoadingLH } = liquidityHub.useSwap(
-    fromAsset,
-    toAsset,
-    fromAmount,
-    bestTrade,
-  )
 
-  const isFallbackLH = useMemo(() => {
-    if (!bestTrade && !bestTradePending) {
-      return true
-    }
-
-    if (bestTrade && Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT) {
-      return true
-    }
+  const isEnabledTradeLH = useMemo(() => {
+    if (!fromAmount) return false
+    if (!bestTrade && !bestTradePending) return true
+    if (bestTrade && Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT) return true
     return false
-  }, [bestTrade, bestTradePending])
+  }, [bestTrade, bestTradePending, fromAmount])
 
   const {
     data: tradeLH,
     isLoading: quotePendingLH,
     refetch: refetchTradeLH,
-  } = liquidityHub.useTrade(fromAsset, toAsset, debouncedAmount, isFallbackLH)
+  } = liquidityHub.useTrade(fromAsset, toAsset, debouncedAmount, isEnabledTradeLH)
+
+  const isFallbackLH = useMemo(() => {
+    if (!tradeLH) return false
+    const dexMinAmountOut = subtractSlippage(slippage, bestTrade?.outAmounts[0]) || '0'
+    return new BigNumber(tradeLH.minAmountOut || 0).gt(dexMinAmountOut)
+  }, [tradeLH, slippage, bestTrade])
+
+  const { mutateAsync: onSwapLH, isLoading: swapLoadingLH } = liquidityHub.useSwap(
+    fromAsset,
+    toAsset,
+    fromAmount,
+    bestTrade,
+    isFallbackLH,
+  )
 
   const { isLoading: comparingTrade, callback: compareWithLHCallback } = liquidityHub.useCompareTrade(
     fromAsset,
@@ -131,7 +135,11 @@ export default function SwapBest({
     bestTrade,
     liquidityHubFailed,
   )
-  const quotePending = quotePendingLH || bestTradePending
+  const quotePending = isFallbackLH
+    ? quotePendingLH
+    : isEnabledTradeLH
+      ? quotePendingLH || bestTradePending
+      : bestTradePending
 
   const onRefreshQuotes = useCallback(() => {
     if (isFallbackLH) {
@@ -207,6 +215,8 @@ export default function SwapBest({
     [fromAsset, setFromAmount],
   )
 
+  const onTradeSuccess = liquidityHub.useOnTradeSuccess(fromAsset, toAsset, isFallbackLH)
+
   const handleSwap = useCallback(async () => {
     if (
       (fromAsset.symbol === 'fBOMB' && ['WBNB', 'BNB'].includes(toAsset.symbol)) ||
@@ -225,31 +235,30 @@ export default function SwapBest({
     //   })
     // }
 
-    const swapWithLH = async quote => {
-      await onSwapLH({
+    const onSuccess = (quote, isTradeLH) => {
+      onTradeSuccess({ quote, bestTrade, isTradeLH, fromAmount })
+      setFromAmount('')
+      mutateAssets()
+    }
+
+    const swapWithLH = async quote =>
+      onSwapLH({
         quote,
-        onSuccess: () => {
-          setFromAmount('')
-          mutateAssets()
-        },
+        onSuccess: () => onSuccess(quote, true),
         onError: () => {
           setLiquidityHubFailed(true)
         },
       })
-    }
 
     if (isFallbackLH && tradeLH?.quote) {
       swapWithLH(tradeLH.quote)
       return
     }
     const result = await compareWithLHCallback()
-    if (result && result.isLH) {
-      swapWithLH(result.quote)
+    if (result?.isLH) {
+      await swapWithLH(result?.quote)
     } else {
-      onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => {
-        setFromAmount('')
-        mutateAssets()
-      })
+      await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(result?.quote, false))
     }
   }, [
     fromAsset,
@@ -266,6 +275,7 @@ export default function SwapBest({
     onSwapLH,
     isFallbackLH,
     tradeLH,
+    onTradeSuccess,
   ])
 
   const btnMsg = useMemo(() => {
