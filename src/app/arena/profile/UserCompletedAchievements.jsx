@@ -33,7 +33,7 @@ const V4_USER_ACHIEVEMENT_COMPLETED = gql`
     }
   }
 `
-const fetchAchievements = async userId => {
+export const fetchAchievements = async userId => {
   try {
     const { userAchievements } = await v4Client.request(V4_USER_ACHIEVEMENT_COMPLETED, { userId })
     return userAchievements

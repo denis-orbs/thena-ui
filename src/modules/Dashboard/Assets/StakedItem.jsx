@@ -1,0 +1,273 @@
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
+
+import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
+import CustomTooltip from '@/components/tooltip'
+import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
+import { useGammaClaim } from '@/hooks/fusion/useGamma'
+import { useIchiClaim } from '@/hooks/fusion/useIchi'
+import { useGaugeHarvest, useGuageUnstake } from '@/hooks/useGauge'
+import { cn, formatAmount, getDisplayedStrategy, getLiquidityRangeType, ZERO_VALUE } from '@/lib/utils'
+import GaugeManageModal from '@/modules/Position/GaugeManageModal'
+import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
+import RemovePositionModal from '@/modules/Position/RemovePositionModal'
+import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
+import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
+import { getStrategy, useGetAutoPoolMigration } from '@/state/pools/hooks'
+import { InfoIcon } from '@/svgs'
+
+function StakedItem({ position }) {
+  console.log({ position })
+  const [removePopup, setRemovePopup] = useState(false)
+  const [popup, setPopup] = useState(false)
+  const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
+
+  const { onGaugeUnstake, pending: unstakePending } = useGuageUnstake()
+  const { onGammaClaim, pending: claimPending } = useGammaClaim()
+  const { onIchiClaim } = useIchiClaim()
+  const { onGaugeHarvest } = useGaugeHarvest()
+  const { addReward } = useFarmRewards()
+  const { push } = useRouter()
+
+  useEffect(() => {
+    if (!position || position.version === 2) return
+
+    const type = getStrategy(position.title)
+    let args = null
+    let amount = ZERO_VALUE
+    if (type === 'classic' || type === 'stable') {
+      args = position.gauge.address
+      amount = position.account.gaugeEarned
+    } else if (type === 'gamma' || type === 'ichi') {
+      args = position.address
+      amount = position.account.gaugeEarned
+    }
+
+    if (amount.isZero()) return
+    addReward({
+      type,
+      args,
+      amount,
+      version: position.version,
+      key: getKeyFromTokenAddress(type, [position.token0.address, position.token1.address]),
+    })
+  }, [addReward, position])
+
+  const migrationOptions = useGetAutoPoolMigration({
+    token0Address: position.token0.address,
+    token1Address: position.token1.address,
+    type: position.title,
+    version: position.account.version,
+  })
+  const isSwapFee = position?.title.includes('SwapFee')
+  const migrationLink = `/pools/migration?address=${position.address}&staked=true`
+
+  const dispatch = useDispatch()
+  const t = useTranslations()
+
+  const version = position?.account?.version ?? 2
+  const depositValueUSD = useMemo(
+    () => (isSwapFee ? position?.account.totalUsd : position.account.stakedUsd),
+    [isSwapFee, position.account.stakedUsd, position.account.totalUsd],
+  )
+
+  // const token0Percent = useMemo(() => {
+  //   const token0InUsd = position.account.staked0.times(position.token0.price)
+  //   return token0InUsd.div(depositValueUSD).times(100).toFixed(2)
+  // }, [depositValueUSD, position.account.staked0, position.token0.price])
+
+  const handleUnstake = useCallback(
+    amount => {
+      onGaugeUnstake(position, amount, () => {
+        setPopup(false)
+      })
+    },
+    [onGaugeUnstake, position],
+  )
+
+  const handleHavest = useCallback(() => {
+    if (GAMMA_TYPES.includes(position.title)) {
+      onGammaClaim(position)
+    } else if (ICHI_TYPES.includes(position.title)) {
+      onIchiClaim(position)
+    } else {
+      onGaugeHarvest(position)
+    }
+  }, [onGammaClaim, onGaugeHarvest, onIchiClaim, position])
+
+  const handleAdd = useCallback(() => {
+    const newStrategy = {
+      title: position?.title,
+      tvl: position?.tvl?.toNumber() ?? 0,
+      apr: position?.apr?.toNumber() ?? 0,
+      account: {
+        totalLp: position?.account?.totalLp?.toNumber(),
+        gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
+      },
+      allowed: position?.allowed,
+      token0: {
+        ...position?.token0,
+        reserve: position?.token0?.reserve?.toNumber(),
+        balance: position?.token0?.balance?.toNumber(),
+        totalValue: position?.token0?.totalValue,
+      },
+      token1: {
+        ...position?.token1,
+        reserve: position?.token1?.reserve?.toNumber(),
+        balance: position?.token1?.balance?.toNumber(),
+        totalValue: position?.token1?.totalValue,
+      },
+      address: position?.address,
+      isFarming: position?.title?.includes('Farming'),
+      isAutomatic: !MANUAL_TYPES.includes(position?.title) && position?.type === PAIR_TYPES.LSD,
+      isDefault: true,
+      version,
+      fee: position?.fee,
+    }
+
+    dispatch(updateStrategy({ strategy: newStrategy }))
+    dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
+    push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=1`)
+  }, [dispatch, position, push, version])
+  return (
+    <div className='flex flex-col items-center justify-between gap-4 md:flex-row'>
+      <div className='flex w-full items-center gap-2 md:w-1/6'>
+        <GroupIconTokens
+          classNames={{
+            image: 'outline-2 w-7 h-7',
+            rows: '-space-x-2',
+            toolTip: 'hidden',
+          }}
+          width={32}
+          height={32}
+          tokens={[position.token0, position.token1]}
+        />
+        <div className='flex flex-row justify-between max-md:w-full max-md:items-center md:flex-col'>
+          <TextHeading>{position.symbol}</TextHeading>
+          <Paragraph className='text-xs'>{getDisplayedStrategy(position.title)}</Paragraph>
+        </div>
+      </div>
+      <div className='w-full text-center md:w-1/6'>Stake</div>
+      <div className='flex w-full gap-4 md:w-3/6'>
+        <div className='flex w-1/3 flex-col'>
+          <TextHeading>{formatAmount(position.gauge.apr)}%</TextHeading>
+          <TextSubHeading className=''>{t('APR')}</TextSubHeading>
+        </div>
+        <div className='flex w-1/3 flex-col'>
+          <TextHeading>${formatAmount(depositValueUSD)}</TextHeading>
+          <TextSubHeading className=''>{t('Value')}</TextSubHeading>
+        </div>
+        <div className='flex w-1/3 flex-col'>
+          {isSwapFee ? (
+            <div className='flex items-center gap-1'>
+              <TextHeading>Auto Compound</TextHeading>
+              <InfoIcon className='h-4 w-4 stroke-neutral-400' data-tooltip-id='AUTO_COMPOUND' />
+              <CustomTooltip className='max-w-[320px]' id='AUTO_COMPOUND'>
+                {t('Auto Compound tooltip')}
+              </CustomTooltip>
+            </div>
+          ) : (
+            <div className='flex items-center gap-1'>
+              <TextHeading>${formatAmount(position.account.earnedUsd)}</TextHeading>
+              <InfoIcon
+                className='h-4 w-4 stroke-neutral-400'
+                data-tooltip-id={`stake-${position.address}-${position.account.earnedUsd}`}
+              />
+
+              <CustomTooltip id={`stake-${position.address}-${position.account.earnedUsd}`}>
+                <div>
+                  {position.account.gaugeEarned && <p>{`${formatAmount(position.account.gaugeEarned)} THE`}</p>}
+                  {position.account.earned0 && (
+                    <p>{`${formatAmount(position.account.earned0)} ${position.token0.symbol}`}</p>
+                  )}
+                  {position.account.earned1 && (
+                    <p>{`${formatAmount(position.account.earned1)} ${position.token1.symbol}`}</p>
+                  )}
+                  {position.account.earned2 && (
+                    <p>{`${formatAmount(position.account.earned2)} ${position.reward.symbol}`}</p>
+                  )}
+                </div>
+              </CustomTooltip>
+            </div>
+          )}
+          <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
+        </div>
+      </div>
+      <div className='flex w-full justify-center gap-2 md:w-1/6'>
+        {version === 2 ? (
+          // Version 2 actions
+          <>
+            <TextButton className='w-full' onClick={() => setPopup(true)}>
+              {t('Unstake')}
+            </TextButton>
+
+            {migrationOptions && migrationOptions.length > 0 ? (
+              <Link href={migrationLink} className='w-full'>
+                <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
+              </Link>
+            ) : (
+              <PrimaryButton className='w-full' onClick={() => setMigrateWarningPopup(true)}>
+                {t('Migrate')}
+              </PrimaryButton>
+            )}
+          </>
+        ) : (
+          // Version 3 actions
+          <>
+            {position.type === PAIR_TYPES.LSD ? (
+              <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
+                {t('Remove')}
+              </OutlinedButton>
+            ) : (
+              <TextButton className='w-full' onClick={() => setPopup(true)}>
+                {t('Unstake')}
+              </TextButton>
+            )}
+
+            <OutlinedButton
+              className={cn('w-full', isSwapFee && 'hidden')}
+              onClick={handleHavest}
+              disabled={claimPending || position.account.earnedUsd.isZero()}
+            >
+              {t('Harvest')}
+            </OutlinedButton>
+
+            <EmphasisButton className={cn('w-full')} onClick={handleAdd}>
+              {t('Add')}
+            </EmphasisButton>
+          </>
+        )}
+      </div>
+      <MigrateWarningModal
+        popup={migrateWarningPopup}
+        setPopup={setMigrateWarningPopup}
+        strategy={position.type === PAIR_TYPES.LSD ? (ICHI_TYPES.includes(position.title) ? 'ICHI' : 'Gamma') : 'V1'}
+        link={migrationLink}
+        handleWithdrawV1={() => {
+          setMigrateWarningPopup(false)
+          setPopup(true)
+        }}
+      />
+
+      <GaugeManageModal
+        title='Unstake LP'
+        pair={position}
+        balance={position.account.gaugeBalance}
+        label='Unstake'
+        popup={popup}
+        setPopup={setPopup}
+        onGaugeManage={handleUnstake}
+        pending={unstakePending}
+      />
+
+      <RemovePositionModal popup={removePopup} setPopup={setRemovePopup} strategy={position} />
+    </div>
+  )
+}
+
+export default StakedItem
