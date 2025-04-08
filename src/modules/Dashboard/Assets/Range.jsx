@@ -3,6 +3,7 @@ import React, { useMemo } from 'react'
 
 import { TextSubHeading } from '@/components/typography'
 import { formatAmount } from '@/lib/utils'
+import { InfoIcon } from '@/svgs'
 
 function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
   const t = useTranslations()
@@ -24,6 +25,9 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
     return [0, 0]
   }, [currentPrice, maxPrice, minPrice])
 
+  // if (liquidity === 1) {
+  //   console.log({ currentPrice, maxPrice, minPrice, liquidity })
+  // }
   return (
     <>
       {!Number(liquidity) ? (
@@ -31,8 +35,9 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
           {t('Closed')}
         </div>
       ) : outOfRange ? (
-        <div className='relative flex h-8 items-center justify-center overflow-hidden rounded bg-yellow-800 px-2 py-1 text-xs text-yellow-400 md:h-11'>
-          Out of Range
+        <div className='relative flex h-8 items-center justify-center gap-2 overflow-hidden rounded border border-warn-800 bg-warn-950 px-2 py-1 text-base text-warn-400 md:h-11'>
+          <InfoIcon className='size-5 stroke-yellow-400' />
+          <span>Out of Range</span>
         </div>
       ) : (
         <div className='relative flex h-8 items-center justify-center overflow-hidden rounded-md border border-neutral-600 px-2 md:h-11'>
@@ -53,5 +58,7 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
     </>
   )
 }
+
+// background: bg-[linear-gradient(90deg, rgba(189, 96, 186, 0.1)_10.19%, rgba(189, 96, 186, 0.2)_50.11%, rgba(189, 96, 186, 0.1)_90.02%)];
 
 export default Range

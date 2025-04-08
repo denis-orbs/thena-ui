@@ -3,8 +3,10 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import useSWR from 'swr'
 
 import { EmphasisButton, OutlinedButton, PrimaryButton, TextButton } from '@/components/buttons/Button'
+import { fetchStrategyInfo } from '@/components/common/AddLiquidity/ChooseStrategy'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
@@ -19,9 +21,13 @@ import RemovePositionModal from '@/modules/Position/RemovePositionModal'
 import { getKeyFromTokenAddress, useFarmRewards } from '@/state/farmReward/store'
 import { updateLiquidityRangeType, updateStrategy } from '@/state/fusion/actions'
 import { getStrategy, useGetAutoPoolMigration } from '@/state/pools/hooks'
+import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
+import Range from './Range'
+
 function StakedItem({ position }) {
+  const { networkId } = useChainSettings()
   const [removePopup, setRemovePopup] = useState(false)
   const [popup, setPopup] = useState(false)
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)
@@ -75,11 +81,6 @@ function StakedItem({ position }) {
     [isSwapFee, position.account.stakedUsd, position.account.totalUsd],
   )
 
-  // const token0Percent = useMemo(() => {
-  //   const token0InUsd = position.account.staked0.times(position.token0.price)
-  //   return token0InUsd.div(depositValueUSD).times(100).toFixed(2)
-  // }, [depositValueUSD, position.account.staked0, position.token0.price])
-
   const handleUnstake = useCallback(
     amount => {
       onGaugeUnstake(position, amount, () => {
@@ -99,8 +100,8 @@ function StakedItem({ position }) {
     }
   }, [onGammaClaim, onGaugeHarvest, onIchiClaim, position])
 
-  const handleAdd = useCallback(() => {
-    const newStrategy = {
+  const strategy = useMemo(
+    () => ({
       title: position?.title,
       tvl: position?.tvl?.toNumber() ?? 0,
       apr: position?.apr?.toNumber() ?? 0,
@@ -127,12 +128,37 @@ function StakedItem({ position }) {
       isDefault: true,
       version,
       fee: position?.fee,
-    }
+    }),
+    [
+      position?.account?.gaugeBalance,
+      position?.account?.totalLp,
+      position?.address,
+      position?.allowed,
+      position?.apr,
+      position?.fee,
+      position?.title,
+      position?.token0,
+      position?.token1,
+      position?.tvl,
+      position?.type,
+      version,
+    ],
+  )
 
-    dispatch(updateStrategy({ strategy: newStrategy }))
+  const handleAdd = useCallback(() => {
+    dispatch(updateStrategy({ strategy }))
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(position.title) }))
     push(`/pools/add-liquidity?step=3&poolAddress=${position.basePool}&back=1`)
-  }, [dispatch, position, push, version])
+  }, [dispatch, position.basePool, position.title, push, strategy])
+
+  const { data: preset } = useSWR(
+    strategy.address &&
+      (GAMMA_TYPES.includes(strategy.title) || strategy.title === 'DefiEdge' || ICHI_TYPES.includes(strategy.title)) &&
+      position && ['strategy/info', strategy.address],
+    () => fetchStrategyInfo(networkId, strategy),
+    { refreshInterval: 0 },
+  )
+
   return (
     <div className='flex flex-col items-center justify-between gap-4 md:flex-row'>
       <div className='flex w-full items-center gap-2 md:w-1/6'>
@@ -151,7 +177,15 @@ function StakedItem({ position }) {
           <Paragraph className='text-xs'>{getDisplayedStrategy(position.title)}</Paragraph>
         </div>
       </div>
-      <div className='w-full text-center md:w-1/6'>Stake</div>
+      <div className='w-full text-center md:w-1/6'>
+        {position.type === PAIR_TYPES.LSD ? (
+          <Range currentPrice={position?.lpPrice} liquidity={1} maxPrice={preset?.max} minPrice={preset?.min} />
+        ) : (
+          <div className='bg-full-range relative flex h-8 items-center justify-center overflow-hidden rounded-md px-2 text-base text-neutral-300 md:h-11'>
+            {t('Full Range')}
+          </div>
+        )}
+      </div>
       <div className='flex w-full gap-4 md:w-3/6'>
         <div className='flex w-1/3 flex-col'>
           <TextHeading>{formatAmount(position.gauge.apr)}%</TextHeading>

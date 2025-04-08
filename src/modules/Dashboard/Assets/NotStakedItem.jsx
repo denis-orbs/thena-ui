@@ -2,14 +2,16 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useMemo, useState } from 'react'
+import useSWR from 'swr'
 import { isAddress } from 'viem'
 import { useSimulateContract } from 'wagmi'
 
 import { EmphasisButton, OutlinedButton, PrimaryButton } from '@/components/buttons/Button'
+import { fetchStrategyInfo } from '@/components/common/AddLiquidity/ChooseStrategy'
 import GroupIconTokens from '@/components/icongroup/GroupIconTokens'
 import CustomTooltip from '@/components/tooltip'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
-import { GAMMA_TYPES, ICHI_TYPES, PAIR_TYPES } from '@/constant'
+import { GAMMA_TYPES, ICHI_TYPES, MANUAL_TYPES, PAIR_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { useStakeGamma } from '@/hooks/fusion/useGamma'
 import { useIchiManageV3 } from '@/hooks/fusion/useIchi'
@@ -21,9 +23,13 @@ import ManagePositionModal from '@/modules/Position/ManagePositionModal'
 import MigrateWarningModal from '@/modules/Position/MigrateWarningModal'
 import RemovePositionModal from '@/modules/Position/RemovePositionModal'
 import { useGetAutoPoolMigration } from '@/state/pools/hooks'
+import { useChainSettings } from '@/state/settings/hooks'
 import { InfoIcon } from '@/svgs'
 
+import Range from './Range'
+
 function NotStakedItem({ position }) {
+  const { networkId } = useChainSettings()
   const t = useTranslations()
   const { push } = useRouter()
 
@@ -67,23 +73,6 @@ function NotStakedItem({ position }) {
     },
     [version, position, stakeGamma, onV1Stake, stakeIchiPool, onGaugeStake],
   )
-
-  // const walletUsd = useMemo(
-  //   () => position.account.totalUsd.minus(position.account.stakedUsd),
-  //   [position.account.stakedUsd, position.account.totalUsd],
-  // )
-  // const token0Amount = useMemo(
-  //   () => position.account.total0.minus(position.account.staked0),
-  //   [position.account.staked0, position.account.total0],
-  // )
-  // const token1Amount = useMemo(
-  //   () => position.account.total1.minus(position.account.staked1),
-  //   [position.account.staked1, position.account.total1],
-  // )
-  // const token0Percent = useMemo(() => {
-  //   const token0InUsd = token0Amount.times(position.token0.price)
-  //   return token0InUsd.div(walletUsd).times(100).toFixed(2)
-  // }, [token0Amount, position.token0.price, walletUsd])
 
   const isV1Pool = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(position.title), [position.title])
 
@@ -129,6 +118,60 @@ function NotStakedItem({ position }) {
     type: position.title,
     version: position.account.version,
   })
+
+  const strategy = useMemo(
+    () => ({
+      title: position?.title,
+      tvl: position?.tvl?.toNumber() ?? 0,
+      apr: position?.apr?.toNumber() ?? 0,
+      account: {
+        totalLp: position?.account?.totalLp?.toNumber(),
+        gaugeBalance: position?.account?.gaugeBalance?.toNumber(),
+      },
+      allowed: position?.allowed,
+      token0: {
+        ...position?.token0,
+        reserve: position?.token0?.reserve?.toNumber(),
+        balance: position?.token0?.balance?.toNumber(),
+        totalValue: position?.token0?.totalValue,
+      },
+      token1: {
+        ...position?.token1,
+        reserve: position?.token1?.reserve?.toNumber(),
+        balance: position?.token1?.balance?.toNumber(),
+        totalValue: position?.token1?.totalValue,
+      },
+      address: position?.address,
+      isFarming: position?.title?.includes('Farming'),
+      isAutomatic: !MANUAL_TYPES.includes(position?.title) && position?.type === PAIR_TYPES.LSD,
+      isDefault: true,
+      version,
+      fee: position?.fee,
+    }),
+    [
+      position?.account?.gaugeBalance,
+      position?.account?.totalLp,
+      position?.address,
+      position?.allowed,
+      position?.apr,
+      position?.fee,
+      position?.title,
+      position?.token0,
+      position?.token1,
+      position?.tvl,
+      position?.type,
+      version,
+    ],
+  )
+
+  const { data: preset } = useSWR(
+    strategy.address &&
+      (GAMMA_TYPES.includes(strategy.title) || strategy.title === 'DefiEdge' || ICHI_TYPES.includes(strategy.title)) &&
+      position && ['strategy/info', strategy.address],
+    () => fetchStrategyInfo(networkId, strategy),
+    { refreshInterval: 0 },
+  )
+
   return (
     <div className='flex flex-col items-center justify-between gap-4 md:flex-row'>
       <div className='flex w-full items-center gap-2 md:w-1/6'>
@@ -147,7 +190,15 @@ function NotStakedItem({ position }) {
           <Paragraph className='text-xs'>{getDisplayedStrategy(position.title)}</Paragraph>
         </div>
       </div>
-      <div className='w-full text-center md:w-1/6'>NotStake</div>
+      <div className='w-full text-center md:w-1/6'>
+        {position.type === PAIR_TYPES.LSD ? (
+          <Range currentPrice={position?.lpPrice} liquidity={1} maxPrice={preset?.max} minPrice={preset?.min} />
+        ) : (
+          <div className='bg-full-range relative flex h-8 items-center justify-center overflow-hidden rounded-md px-2 text-base text-neutral-300 md:h-11'>
+            {t('Full Range')}
+          </div>
+        )}
+      </div>
       <div className='flex w-full gap-4 md:w-3/6'>
         <div className='flex w-1/3 flex-col'>
           <TextHeading>{formatAmount(position.feeApr)}%</TextHeading>
