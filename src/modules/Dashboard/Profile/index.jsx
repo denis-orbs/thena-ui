@@ -20,7 +20,7 @@ import { formatAddress, sortAchievements } from '@/lib/utils'
 import AchievementBasicIcon from '@/modules/Achievements/AchievementBasicIcon'
 import { InfoCircleWhite } from '@/svgs'
 
-function DashBoardProfile() {
+function DashboardProfile() {
   const t = useTranslations()
   const { push } = useRouter()
   const { account } = useWallet()
@@ -28,12 +28,9 @@ function DashBoardProfile() {
     refreshInterval: 60000,
   })
 
-  const { data: userAchievementsCompleted, isLoading: loadingAchievements } = useSWR(
-    ['userAchievementsCompleted', account],
-    () => fetchAchievements(account.toLowerCase()),
+  const { data: userAchievementsCompleted } = useSWR(['userAchievementsCompleted', account], () =>
+    fetchAchievements(account.toLowerCase()),
   )
-
-  console.log({ loadingAchievements })
 
   const sortedData = useMemo(() => {
     if (Array.isArray(userAchievementsCompleted) && userAchievementsCompleted.length) {
@@ -144,4 +141,4 @@ function DashBoardProfile() {
   )
 }
 
-export default DashBoardProfile
+export default DashboardProfile

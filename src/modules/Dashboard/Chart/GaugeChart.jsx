@@ -13,7 +13,6 @@ function MultiGaugeChart({ segments, strokeWidth = 12, label = 'Total Voting Pow
 
   const describeArc = (radius, value, max, color) => {
     const percent = Math.min(value / max, 1)
-    console.log({ percent })
     const startAngle = -Math.PI
     const endAngle = startAngle + Math.PI * percent
 

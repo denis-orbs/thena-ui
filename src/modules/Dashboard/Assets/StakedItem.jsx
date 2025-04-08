@@ -22,7 +22,6 @@ import { getStrategy, useGetAutoPoolMigration } from '@/state/pools/hooks'
 import { InfoIcon } from '@/svgs'
 
 function StakedItem({ position }) {
-  console.log({ position })
   const [removePopup, setRemovePopup] = useState(false)
   const [popup, setPopup] = useState(false)
   const [migrateWarningPopup, setMigrateWarningPopup] = useState(false)

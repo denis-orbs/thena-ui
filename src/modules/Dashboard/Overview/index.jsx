@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ClaimAbleRewards from './ClaimAbleRewards'
+import ClaimableRewards from './ClaimableRewards'
 import Lock from './Lock'
 import Voting from './Voting'
 
@@ -11,7 +11,7 @@ function Overview() {
         <Voting />
       </div>
       <div className='order-1 md:order-2'>
-        <ClaimAbleRewards />
+        <ClaimableRewards />
       </div>
       <div className='order-3'>
         <Lock />

@@ -8,7 +8,7 @@ import { NewTextSubHeading } from '@/components/typography'
 import UserAssets from './Assets'
 import HeaderRewards from './HeaderRewards'
 import Overview from './Overview'
-import DashBoardProfile from './Profile'
+import DashboardProfile from './Profile'
 import TheNFT from './theNFT'
 
 function Dashboard() {
@@ -26,7 +26,7 @@ function Dashboard() {
           <TheNFT />
         </div>
         <div className='col-span-2'>
-          <DashBoardProfile />
+          <DashboardProfile />
         </div>
       </div>
     </div>
