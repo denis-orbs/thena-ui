@@ -107,6 +107,7 @@ export default {
       },
       backgroundImage: {
         'custom-gradient': 'linear-gradient(90deg, #B386FF 0%, #FF86FA 100%)',
+        'progress-gradient': 'linear-gradient(90deg, #83007EB0 0.49%, #BD60BA 100%)',
       },
       gridTemplateColumns: {
         'add-liquidity-layout': 'minmax(650px, 3fr) 2fr',

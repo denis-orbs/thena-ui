@@ -98,7 +98,7 @@ function Dropdown({
           <div
             ref={dropdownRef}
             className={cn(
-              'absolute flex-col items-start justify-start gap-1',
+              'absolute mt-2 flex-col items-start justify-start gap-1',
               'rounded-xl border border-neutral-600 bg-neutral-800 p-2 shadow-lg',
               'visible opacity-100',
               listClassNames,
