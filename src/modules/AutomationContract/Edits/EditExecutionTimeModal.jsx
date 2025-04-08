@@ -7,11 +7,25 @@ import { useSetRunTimestamp } from '@/hooks/automationContract/useAutomationCont
 import { useWindowSize } from '@/hooks/useWindowSize'
 import SelectExecutionTime from '@/modules/CreateVeTHEAutomation/SelectExecutionTime'
 
+const getExecutionTime = startTime => {
+  const nowUTC = Date.now()
+
+  let rawExecutionTime = startTime || 0
+
+  while (rawExecutionTime < nowUTC) {
+    rawExecutionTime += 7 * 24 * 60 * 60 * 1000
+  }
+  return rawExecutionTime
+}
+
 function EditExecutionTimeModal({ popup, setPopup, contract }) {
   const t = useTranslations()
   const { onSetRunTimestamp, pending } = useSetRunTimestamp()
-  const [executionTime, setExecutionTime] = useState(contract?.settings?.executionTime)
+
+  const [executionTime, setExecutionTime] = useState(getExecutionTime(contract?.settings?.executionTime))
+
   const windowSize = useWindowSize()
+
   return (
     <Modal
       isOpen={popup}
