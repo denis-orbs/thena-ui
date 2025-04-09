@@ -223,7 +223,7 @@ export const useGuageAllHarvset = () => {
     }
 
     setPending(true)
-    startTxn({ key, title: 'Harvest Rewards', transactions })
+    startTxn({ key, title: 'Harvest Farmed Rewards', transactions })
 
     if (newGauge.size > 0) {
       const params = []
