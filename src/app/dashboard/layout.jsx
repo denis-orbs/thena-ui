@@ -9,10 +9,8 @@ export const metadata = {
 
 export default function DashboardLayout({ children }) {
   return (
-    <main className='desktop-bg flex min-h-screen flex-col'>
-      <section className='layout-container mt-[128px] lg:mt-[176px]'>
-        <Suspense fallback={<Loading />}>{children}</Suspense>
-      </section>
+    <main className='flex min-h-screen flex-col bg-neutral-950'>
+      <Suspense fallback={<Loading />}>{children}</Suspense>
     </main>
   )
 }

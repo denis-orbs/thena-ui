@@ -215,6 +215,7 @@ function FarmingItem({ position }) {
     dispatch(updateLiquidityRangeType({ liquidityRangeType: getLiquidityRangeType(poolInfo.title) }))
     push(`/pools/add-liquidity?step=3&poolAddress=${poolInfo.basePool}&pid=${tokenId}&type=${poolInfo?.title}&back=1`)
   }, [dispatch, poolInfo, push, version, tokenId])
+
   return (
     <div className='flex flex-col items-center justify-between gap-4 md:flex-row'>
       <div className='flex w-full items-center gap-2 md:w-1/6'>

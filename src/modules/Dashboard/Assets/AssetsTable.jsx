@@ -1,13 +1,34 @@
 import React, { useState } from 'react'
 import { zeroAddress } from 'viem'
 
-import { EmphasisButton } from '@/components/buttons/Button'
+import { cn } from '@/lib/utils'
+import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
 import FarmingItem from './FarmingItem'
 import ManualItem from './ManualItem'
 import NotStakedItem from './NotStakedItem'
 import StakedItem from './StakedItem'
 import WeightedItem from './WeightedItem'
+
+function PaginateButton({ children, onClick, disabled, active, className }) {
+  return (
+    <div
+      onClick={() => onClick()}
+      disabled={disabled}
+      className={cn(
+        'flex h-8 w-fit min-w-8 items-center justify-center stroke-neutral-300 px-[2px] text-neutral-300',
+        'hover:bg-neutral-700 hover:stroke-neutral-200 hover:text-neutral-200',
+        'outline outline-2 outline-offset-4 outline-transparent',
+        'cursor-pointer rounded transition-all duration-150 ease-out',
+        'text-sm active:outline-focus',
+        active && 'bg-neutral-800',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  )
+}
 
 const ITEMS_PER_PAGE = 10
 function AssetsTable({ positions = [] }) {
@@ -28,7 +49,7 @@ function AssetsTable({ positions = [] }) {
         <span className='w-1/6' />
       </div>
 
-      <div className='space-y-8 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-no-repeat md:space-y-2 md:pt-8'>
+      <div className='space-y-8 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-fixed bg-no-repeat md:space-y-2 md:pt-8'>
         {paginatedPositions.map((item, index) => (
           <React.Fragment key={`${item.address}-${index}`}>
             {item.type === 'Manual' ? (
@@ -49,32 +70,102 @@ function AssetsTable({ positions = [] }) {
       </div>
 
       {totalPages > 1 && (
-        <div className='mt-6 flex justify-center gap-2'>
-          <EmphasisButton
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+        <div className='mt-6 flex justify-center gap-2 md:justify-end'>
+          <PaginateButton
+            onClick={() => setCurrentPage(prev => Math.min(prev - 1, 1))}
             disabled={currentPage === 1}
-            className='rounded-md border border-gray-600 px-3 py-1 text-sm text-white disabled:opacity-30'
+            className={cn(
+              currentPage === 1 && 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
+            )}
           >
-            Prev
-          </EmphasisButton>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <EmphasisButton
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`rounded-md px-3 py-1 text-sm ${
-                currentPage === i + 1 ? 'bg-primary-500 text-black' : 'border border-gray-600 text-white'
-              }`}
-            >
-              {i + 1}
-            </EmphasisButton>
-          ))}
-          <EmphasisButton
+            <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
+          </PaginateButton>
+          {totalPages < 6 &&
+            new Array(totalPages).fill(0).map((item, idx) => (
+              <PaginateButton
+                key={`paginate-${idx}`}
+                active={currentPage === idx + 1}
+                onClick={() => {
+                  setCurrentPage(idx + 1)
+                }}
+              >
+                {idx + 1}
+              </PaginateButton>
+            ))}
+          {totalPages >= 6 && (
+            <>
+              <PaginateButton
+                active={currentPage === 1}
+                onClick={() => {
+                  setCurrentPage(1)
+                }}
+              >
+                1
+              </PaginateButton>
+              <PaginateButton
+                active={currentPage === 2}
+                onClick={() => {
+                  setCurrentPage(2)
+                }}
+              >
+                2
+              </PaginateButton>
+              {currentPage > 3 && (
+                <PaginateButton
+                  onClick={() => {
+                    setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                  }}
+                >
+                  ...
+                </PaginateButton>
+              )}
+              {currentPage > 2 && currentPage < totalPages - 1 && (
+                <PaginateButton
+                  active
+                  onClick={() => {
+                    setCurrentPage(currentPage)
+                  }}
+                >
+                  {currentPage}
+                </PaginateButton>
+              )}
+              {currentPage < totalPages - 2 && (
+                <PaginateButton
+                  onClick={() => {
+                    setCurrentPage(currentPage > totalPages - 2 ? currentPage - 1 : currentPage + 1)
+                  }}
+                >
+                  ...
+                </PaginateButton>
+              )}
+              <PaginateButton
+                active={currentPage === totalPages - 1}
+                onClick={() => {
+                  setCurrentPage(totalPages - 1)
+                }}
+              >
+                {totalPages - 1}
+              </PaginateButton>
+              <PaginateButton
+                active={currentPage === totalPages}
+                onClick={() => {
+                  setCurrentPage(totalPages)
+                }}
+              >
+                {totalPages}
+              </PaginateButton>
+            </>
+          )}
+          <PaginateButton
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className='rounded-md border border-gray-600 px-3 py-1 text-sm text-white disabled:opacity-30'
+            className={cn(
+              currentPage === totalPages &&
+                'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
+            )}
           >
-            Next
-          </EmphasisButton>
+            <ArrowRightIcon className={`h-4 w-4${currentPage === totalPages ? ' stroke-gray-700' : ''}`} />
+          </PaginateButton>
         </div>
       )}
     </div>
