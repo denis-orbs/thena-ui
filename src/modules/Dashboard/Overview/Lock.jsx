@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { useTranslations } from 'use-intl'
@@ -5,21 +6,24 @@ import { useTranslations } from 'use-intl'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import Skeleton from '@/components/skeleton'
-import { TextHeading } from '@/components/typography'
+import { TextHeading, TextSubHeading } from '@/components/typography'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
+import { formatAmount } from '@/lib/utils'
 
-import MultiGaugeChart from '../Chart/GaugeChart'
+import VotingPowerChart from '../Chart/VotingPowerChart'
 
+const COLORS = ['#DC00D4', '#B000AA', '#84007F', '#580055', '#2C002A']
 function Lock() {
   const t = useTranslations()
   const { push } = useRouter()
 
   const { veTHEs, isLoading } = useVeTHEsContext()
+  const totalLock = veTHEs.reduce((sum, veTHE) => sum.plus(veTHE.amount), new BigNumber(0))
 
   return (
     <Box className='flex h-full flex-col gap-1.5'>
       <TextHeading className='font-archia text-xl font-semibold'>{t('Lock')}</TextHeading>
-      <div className='flex h-full flex-col justify-between'>
+      <div className='flex h-full flex-col justify-between gap-4'>
         {isLoading ? (
           <div className='flex flex-wrap gap-4'>
             <div className='flex items-center gap-2'>
@@ -33,26 +37,27 @@ function Lock() {
           </div>
         ) : (
           <div className='flex flex-wrap gap-4'>
-            {veTHEs.slice(0, 5).map(ve => (
+            {veTHEs.slice(0, 5).map((ve, index) => (
               <div className='flex items-center gap-2' key={ve.id}>
-                <div className='size-2 bg-primary-300' />
+                <div className='size-2' style={{ background: COLORS[index] }} />
                 <TextHeading>{`veTHE ${ve.id}`}</TextHeading>
               </div>
             ))}
+            {veTHEs.length > 5 && (
+              <div className='flex items-center gap-2'>
+                <div className='size-2' style={{ background: '#EA66E5' }} />
+                <TextHeading>Others</TextHeading>
+              </div>
+            )}
           </div>
         )}
-        <div className='min-h-[200px] w-full'>
-          {isLoading ? (
-            <Skeleton className='h-full w-full' />
-          ) : (
-            <MultiGaugeChart
-              segments={[
-                { value: 100000, max: 170000, color: '#ff66ff' },
-                { value: 60000, max: 170000, color: '#9000a0' },
-                { value: 50000, max: 170000, color: '#3f003f' },
-              ]}
-            />
-          )}
+        <div className='w-full gap-2'>
+          <div className='mx-auto flex h-fit w-full max-w-[300px]'>
+            {isLoading ? <Skeleton className='h-full w-full' /> : <VotingPowerChart data={veTHEs} />}
+          </div>
+          <div className='w-full text-center'>
+            <TextSubHeading className='text-sm'>{`${t('Max Lock Power')} ${formatAmount(totalLock)}`}</TextSubHeading>
+          </div>
         </div>
         <EmphasisButton className='w-full' onClick={() => push('/dashboard/lock')}>
           {t('Manage')}

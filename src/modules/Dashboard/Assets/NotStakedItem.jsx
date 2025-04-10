@@ -173,7 +173,7 @@ function NotStakedItem({ position }) {
   )
 
   return (
-    <div className='flex flex-col items-center justify-between gap-4 md:flex-row'>
+    <div className='flex flex-col items-center justify-between gap-4 py-1 md:flex-row md:py-2'>
       <div className='flex w-full items-center gap-2 md:w-1/6'>
         <GroupIconTokens
           classNames={{

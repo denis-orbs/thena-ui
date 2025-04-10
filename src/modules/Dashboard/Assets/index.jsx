@@ -35,7 +35,7 @@ function UserAssets() {
   )
 
   return (
-    <Box className='space-y-4 max-md:bg-transparent max-md:px-0'>
+    <Box className='space-y-4 max-md:bg-transparent max-md:px-0 md:space-y-10 md:!pt-11'>
       <AssetsOverview positionsValue={positionsValue} />
       <AssetsTable positions={positions} />
       <CaclculatorData positions={positions} onData={collectData} />

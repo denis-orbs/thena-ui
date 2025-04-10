@@ -49,7 +49,7 @@ function AssetsTable({ positions = [] }) {
         <span className='w-1/6' />
       </div>
 
-      <div className='space-y-8 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-fixed bg-no-repeat md:space-y-2 md:pt-8'>
+      <div className='bg-opacity-50 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-no-repeat md:px-4 md:pt-8'>
         {paginatedPositions.map((item, index) => (
           <React.Fragment key={`${item.address}-${index}`}>
             {item.type === 'Manual' ? (
