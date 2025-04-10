@@ -1,10 +1,9 @@
 'use client'
 
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
-import { useState } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 
-import { formatAmount } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -12,9 +11,7 @@ const COLORS = ['#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F']
 
 const DARK_COLOR = '#F8CCF6'
 
-function LiquidityAPRChart({ data = [] }) {
-  const [hoveredLabel, setHoveredLabel] = useState(null)
-
+function LiquidityAPRChart({ data = [], className }) {
   const totalLiquidity = data.reduce((acc, d) => acc + d.depositLiquidity, 0)
   const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)
   const avgApr = totalLiquidity ? (totalAprWeighted / data.length).toFixed(2) : '0.00'
@@ -36,10 +33,10 @@ function LiquidityAPRChart({ data = [] }) {
     const formatted = []
     let othersValue = 0
 
-    sorted.forEach((item, index) => {
+    sorted.forEach(item => {
       const percent = (item.value / totalValue) * 100
 
-      if (sorted.length > 5 && index >= 5 && percent < 5) {
+      if (sorted.length > 5 && percent < 5) {
         othersValue += item.value
       } else {
         formatted.push(item)
@@ -66,16 +63,16 @@ function LiquidityAPRChart({ data = [] }) {
           liquidityData[i].label === 'Others' ? DARK_COLOR : COLORS[i % COLORS.length],
         ),
         borderWidth: 0,
-        radius: '65%',
-        cutout: '45%',
+        radius: '85%',
+        cutout: '65%',
       },
       {
         label: 'APR',
         data: aprData.map(d => d.value),
         backgroundColor: aprData.map((d, i) => (d.label === 'Others' ? DARK_COLOR : COLORS[i % COLORS.length])),
         borderWidth: 0,
-        radius: '95%',
-        cutout: '75%',
+        radius: '100%',
+        cutout: '90%',
       },
     ],
   }
@@ -96,23 +93,26 @@ function LiquidityAPRChart({ data = [] }) {
         display: false,
       },
     },
-    onHover: (_, chartElements) => {
-      if (chartElements.length > 0) {
-        const { index } = chartElements[0]
-        const label = chartData.labels[index]
-        setHoveredLabel(label)
-      } else {
-        setHoveredLabel(null)
-      }
-    },
+    // onHover: (_, chartElements) => {
+    //   if (chartElements.length > 0) {
+    //     const { index } = chartElements[0]
+    //     const label = chartData.labels[index]
+    //     setHoveredLabel(label)
+    //   } else {
+    //     setHoveredLabel(null)
+    //   }
+    // },
   }
 
   return (
-    <div className='relative h-[300px] w-[300px]'>
-      <Doughnut data={chartData} options={options} />
-      <div className='pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center'>
-        <div className='text-sm text-gray-400'>{hoveredLabel ? 'LP' : 'Average APR'}</div>
-        <div className='text-xl font-semibold'>{hoveredLabel ?? `${formatAmount(avgApr)}%`}</div>
+    <div className={cn('relative h-[200px] w-[200px]', className)}>
+      <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center text-center'>
+        <div className='text-xl font-semibold text-primary-600 md:text-5xl'>${formatAmount(avgApr)}%</div>
+        <div className='text-xl uppercase text-primary-300 max-md:hidden'>Average APR</div>
+      </div>
+
+      <div className='relative z-10'>
+        <Doughnut data={chartData} options={options} />
       </div>
     </div>
   )

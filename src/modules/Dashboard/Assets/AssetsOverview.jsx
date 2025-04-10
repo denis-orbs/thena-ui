@@ -32,7 +32,7 @@ function AssetsOverview({ positionsValue }) {
           <PrimaryButton className='w-fit max-md:hidden'>{t('Claim All Rewards')}</PrimaryButton>
         </div>
         <div className='flex h-full items-center justify-center'>
-          <LiquidityAPRChart data={positionsValue} />
+          <LiquidityAPRChart data={positionsValue} className='h-[153px] w-[153px] md:h-[287px] md:w-[287px]' />
         </div>
       </div>
     </div>

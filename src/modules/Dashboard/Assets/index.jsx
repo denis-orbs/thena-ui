@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
 import { useManuals } from '@/context/manualsContext'
@@ -16,22 +16,29 @@ function UserAssets() {
   const userManuals = useManuals()
   const userPools = useMemo(() => [...pools, ...vaults].filter(item => item.account.totalLp.gt(0)), [pools, vaults])
   const weightedPositionList = useWeightedPositionList()
-  const positionsValueRef = useRef([])
-  const collectData = useCallback(data => {
-    const { position, apr, depositLiquidity, rewardUsd, index } = data
-    positionsValueRef.current[index] = { position, apr, depositLiquidity, rewardUsd }
-  }, [])
+  const [positionsValue, setPositionsValue] = useState([])
+  const positions = useMemo(
+    () => [...userPools, ...userManuals, ...weightedPositionList],
+    [userManuals, userPools, weightedPositionList],
+  )
+  const collectData = useCallback(
+    data => {
+      const { position, apr, depositLiquidity, rewardUsd, index } = data
+      setPositionsValue(prev => {
+        const dataUpdate = prev
+        dataUpdate[index] = { position, apr, depositLiquidity, rewardUsd }
+        return dataUpdate
+      })
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [positions],
+  )
+
   return (
     <Box className='space-y-4 max-md:bg-transparent max-md:px-0'>
-      <AssetsOverview
-        positionsValue={positionsValueRef.current}
-        positions={[...userPools, ...userManuals, ...weightedPositionList]}
-      />
-      <AssetsTable
-        positions={[...userPools, ...userManuals, ...weightedPositionList]}
-        positionsValueRef={positionsValueRef}
-      />
-      <CaclculatorData positions={[...userPools, ...userManuals, ...weightedPositionList]} onData={collectData} />
+      <AssetsOverview positionsValue={positionsValue} />
+      <AssetsTable positions={positions} />
+      <CaclculatorData positions={positions} onData={collectData} />
     </Box>
   )
 }
