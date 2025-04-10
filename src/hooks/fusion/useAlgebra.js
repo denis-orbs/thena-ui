@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useState } from 'react'
 import { JSBI, Percent } from 'thena-sdk-core'
@@ -652,7 +653,7 @@ export const useAlgebraMigration = () => {
 
   const onAlgebraMigrate = useCallback(
     async ({
-      existingPosition,
+      positionV2,
       currencyA,
       amountA,
       currencyB,
@@ -681,11 +682,11 @@ export const useAlgebraMigration = () => {
       const positionManger = getPositionManagerContract(chainId, 3)
 
       const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
-
-      const { position, isPoolExist } = mintInfo
+      const { positionV3, isPoolExist } = mintInfo
 
       const baseCurrencyAddress = currencyA.wrapped?.address.toLowerCase()
       const quoteCurrencyAddress = currencyB.wrapped?.address.toLowerCase()
+
       let isFirstApproved = true
       let isSecondApproved = true
       const firstContract = !currencyA.isNative ? getERC20Contract(baseCurrencyAddress, chainId) : null
@@ -755,7 +756,7 @@ export const useAlgebraMigration = () => {
       // MARK: REMOVE FROM V2 (INCLUDE CLAIM REWARD)
       const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
       const { calldata: removeCallData, value: removeValue } = NonfungiblePositionManager.removeCallParameters(
-        existingPosition,
+        positionV2,
         {
           tokenId,
           liquidityPercentage: new Percent(100, 100),
@@ -797,7 +798,7 @@ export const useAlgebraMigration = () => {
           createPoolId,
           { abi: pluginFactoryAbi, address: Contracts.pluginFactory[chainId] },
           'createCustomPoolAndInitialize',
-          [position.pool.sqrtRatioX96, position.pool.token0.address, position.pool.token1.address],
+          [positionV3.pool.sqrtRatioX96, positionV3.pool.token0.address, positionV3.pool.token1.address],
         )
         if (!txHash) {
           setPending(false)
@@ -807,7 +808,7 @@ export const useAlgebraMigration = () => {
 
       // MARK: ADD LIQUIDITY TO V3
       // const useNative = currencyA.isNative ? currencyA : currencyB.isNative ? currencyB : undefined
-      const { calldata: addCallData, value: addValue } = NonfungiblePositionManager.addCallParameters(position, {
+      const { calldata: addCallData, value: addValue } = NonfungiblePositionManager.addCallParameters(positionV3, {
         slippageTolerance: allowedSlippage,
         recipient: account,
         deadline: timestamp.toString(),
@@ -854,4 +855,80 @@ export const useAlgebraMigration = () => {
   )
 
   return { onAlgebraMigrate, pending }
+}
+
+export const useAlgebraRemoveAll = () => {
+  const t = useTranslations()
+
+  const [pending, setPending] = useState(false)
+  const { account, chainId } = useWallet()
+  const { startTxn, endTxn, sendTxn, updateTxn } = useTxn()
+  const { slippage, deadline } = useSettings()
+  const { push } = useRouter()
+
+  const onAlgebraRemoveAll = useCallback(
+    async ({ position, currencyA, currencyB, feeValue0, feeValue1, tokenId }) => {
+      const key = uuidv4()
+      const removeId = uuidv4()
+      const redirectId = uuidv4()
+
+      const nftPositionV2 = Contracts.nonfungiblePositionManagerV2[chainId]
+      const allowedSlippage = new Percent(JSBI.BigInt(slippage * 100), JSBI.BigInt(10000))
+
+      const transactions = {
+        [removeId]: {
+          desc: `${t('Remove Liquidity')} from V2`,
+          status: TXN_STATUS.START,
+          hash: null,
+        },
+        [redirectId]: {
+          desc: 'Redirect to Provide Liquidity',
+          status: TXN_STATUS.START,
+          hash: null,
+        },
+      }
+
+      startTxn({ key, title: `${t('Migrate')}`, transactions })
+      setPending(true)
+
+      // MARK: REMOVE FROM V2 (INCLUDE CLAIM REWARD)
+      const timestamp = Math.floor(new Date().getTime() / 1000) + deadline * 60
+      const { calldata: removeCallData, value: removeValue } = NonfungiblePositionManager.removeCallParameters(
+        position,
+        {
+          tokenId,
+          liquidityPercentage: new Percent(100, 100),
+          slippageTolerance: allowedSlippage,
+          deadline: timestamp.toString(),
+          burnToken: true,
+          collectOptions: {
+            expectedCurrencyOwed0: feeValue0,
+            expectedCurrencyOwed1: feeValue1,
+            recipient: account,
+          },
+        },
+      )
+
+      if (!(await sendTxn(key, removeId, nftPositionV2, removeCallData, removeValue))) {
+        setPending(false)
+        return
+      }
+
+      push(
+        // eslint-disable-next-line max-len
+        `add-liquidity?pairType=Conc+Liquidity&step=3&firstAddress=${currencyA.address.toLowerCase()}&secondAddress=${currencyB.address.toLowerCase()}`,
+      )
+      updateTxn({
+        key,
+        uuid: redirectId,
+        status: TXN_STATUS.SUCCESS,
+      })
+
+      endTxn({ key, final: 'Migrated' })
+      setPending(false)
+    },
+    [chainId, slippage, t, startTxn, deadline, account, sendTxn, push, updateTxn, endTxn],
+  )
+
+  return { onAlgebraRemoveAll, pending }
 }
