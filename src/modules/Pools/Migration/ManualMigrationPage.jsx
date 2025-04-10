@@ -4,10 +4,10 @@ import BigNumber from 'bignumber.js'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Pool, Position } from 'thena-fusion-sdk'
+import { Position } from 'thena-fusion-sdk'
 import { CurrencyAmount } from 'thena-sdk-core'
 import { maxUint128, zeroAddress } from 'viem'
-import { useReadContracts, useSimulateContract } from 'wagmi'
+import { useSimulateContract } from 'wagmi'
 
 import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
@@ -16,40 +16,33 @@ import { EmphasisButton, PrimaryButton, TextButton } from '@/components/buttons/
 import Selector from '@/components/selector'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { MANUAL_TYPES, POSITION_EARNED_TYPES } from '@/constant'
-import { newPoolAbi, poolAbi } from '@/constant/abi/fusion'
-import { CHAIN_ID } from '@/constant/contracts'
-import { useAssets } from '@/context/assetsContext'
-import { useCustomAssets } from '@/context/customAssetsContext'
 import { ManualsContext } from '@/context/manualsContext'
 import { usePairs } from '@/context/pairsContext'
-import { useCurrency, useToken } from '@/hooks/fusion/Tokens'
-import { useAlgebraMigration } from '@/hooks/fusion/useAlgebra'
+import { useCurrency, useGetAsset, useToken } from '@/hooks/fusion/Tokens'
+import { useAlgebraMigration, useAlgebraRemoveAll } from '@/hooks/fusion/useAlgebra'
 import { PoolState, useFusionState } from '@/hooks/fusion/useFusions'
 import { usePoolAlgebraInfo } from '@/hooks/fusion/usePoolAlgebraInfo'
 import usePrevious from '@/hooks/usePrevious'
 import useWallet from '@/hooks/useWallet'
 import { getPositionManagerContract } from '@/lib/contracts'
-import { getTokenInfo } from '@/lib/helper'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, getDisplayedStrategy } from '@/lib/utils'
-import { AdjustNewPositionModal, GaugeItemManual } from '@/modules/Pools/Migration'
+import { cn, formatAmount, getDisplayedStrategy, toWei } from '@/lib/utils'
+import { GaugeItemManual } from '@/modules/Pools/Migration'
 import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
 export function ManualMigrationPage({ tokenId }) {
   const t = useTranslations()
 
   // CALL APIs
-  const assets = useAssets()
-  const customAssets = useCustomAssets()
   const { mutateManual, positions } = useContext(ManualsContext)
   const { account, chainId = 56 } = useWallet()
 
   // GLOBAL STATE
   const { push } = useRouter()
   const { onAlgebraMigrate } = useAlgebraMigration()
+  const { onAlgebraRemoveAll } = useAlgebraRemoveAll()
 
   // LOCAL STATE
-  const [isOpenAdjust, setIsOpenAdjust] = useState(false)
   const [strategy, setStrategy] = useState()
 
   const existingPosition = useMemo(() => {
@@ -59,13 +52,8 @@ export function ManualMigrationPage({ tokenId }) {
   }, [tokenId, positions])
   const { asset0, asset1, liquidity: posLiquidity, tickLower, tickUpper } = existingPosition ?? {}
 
-  const [firstAsset, secondAsset] = useMemo(
-    () => [
-      getTokenInfo({ tokenAddress: asset0?.address, assets, customAssets }),
-      getTokenInfo({ tokenAddress: asset1?.address, assets, customAssets }),
-    ],
-    [asset0?.address, asset1?.address, assets, customAssets],
-  )
+  const firstAsset = useGetAsset(asset0?.address)
+  const secondAsset = useGetAsset(asset1?.address)
 
   const currencyA = useCurrency(firstAsset?.address)
   const currencyB = useCurrency(secondAsset?.address)
@@ -129,38 +117,22 @@ export function ManualMigrationPage({ tokenId }) {
     }
   }, [strategy, strategyData])
 
-  const [fusionStateV2, fusionV2, poolAddressV2] = useFusionState({ currencyA, currencyB, version: 2 })
-  const [fusionStateV3, fusionV3] = useFusionState({
+  const [fusionStateV2, poolV2] = useFusionState({ currencyA, currencyB, version: 2 })
+  const [fusionStateV3, poolV3] = useFusionState({
     currencyA,
     currencyB,
     version: 3,
     isFarmingPool: strategy?.isFarming,
   })
+  const isPoolV3Exist = Boolean(fusionStateV3 === PoolState.EXISTS)
 
-  const contractV2 = { address: poolAddressV2, abi: chainId === CHAIN_ID.TEST_BSC ? newPoolAbi : poolAbi }
-  const { data: poolInfoV2 } = useReadContracts({
-    contracts: [
-      { ...contractV2, functionName: 'liquidity' },
-      { ...contractV2, functionName: 'globalState' },
-    ],
-    query: {
-      enabled: !!poolAddressV2,
-    },
-  })
-
-  const poolLiquidity = new BigNumber(poolInfoV2?.[0]?.result).toString(10)
-  const globalStates = poolInfoV2?.[1]?.result
-  const price = new BigNumber(globalStates?.[0]).toString(10)
-  const tick = Number(globalStates?.[1])
-  const fee = Number(globalStates?.[2])
-
-  const [prevFusionState, prevFusion] = usePrevious([fusionStateV2, fusionV2]) || []
+  const [prevFusionState, prevFusion] = usePrevious([fusionStateV2, poolV2]) || []
   const [, _fusion] = useMemo(() => {
-    if (!fusionV2 && prevFusion && prevFusionState) {
+    if (!poolV2 && prevFusion && prevFusionState) {
       return [prevFusionState, prevFusion]
     }
-    return [fusionStateV2, fusionV2]
-  }, [fusionV2, fusionStateV2, prevFusion, prevFusionState])
+    return [fusionStateV2, poolV2]
+  }, [poolV2, fusionStateV2, prevFusion, prevFusionState])
 
   const positionV2 = useMemo(() => {
     if (_fusion) {
@@ -174,8 +146,34 @@ export function ManualMigrationPage({ tokenId }) {
     return undefined
   }, [_fusion, posLiquidity, tickLower, tickUpper])
 
-  const amountA = useMemo(() => positionV2?.amount0?.toExact() ?? 0, [positionV2])
-  const amountB = useMemo(() => positionV2?.amount1?.toExact() ?? 0, [positionV2])
+  const amountA = useMemo(() => positionV2?.amount0?.toExact() ?? '0', [positionV2])
+  const amountB = useMemo(() => positionV2?.amount1?.toExact() ?? '0', [positionV2])
+
+  const positionV3 = useMemo(() => {
+    if (poolV3 && tickUpper && tickLower) {
+      const amount0 = toWei(
+        BigNumber(amountA)
+          .decimalPlaces(currencyA?.decimals ?? 18, BigNumber.ROUND_DOWN)
+          .toString(),
+        currencyA?.decimals ?? 18,
+      )
+      const amount1 = toWei(
+        BigNumber(amountB)
+          .decimalPlaces(currencyB?.decimals ?? 18, BigNumber.ROUND_DOWN)
+          .toString(),
+        currencyB?.decimals ?? 18,
+      )
+
+      return Position.fromAmounts({
+        pool: poolV3,
+        tickLower,
+        tickUpper,
+        amount0,
+        amount1,
+      })
+    }
+    return undefined
+  }, [amountA, amountB, currencyA?.decimals, currencyB?.decimals, poolV3, tickLower, tickUpper])
 
   const algebraContract = getPositionManagerContract(chainId, 2)
   const { data: fees } = useSimulateContract({
@@ -211,70 +209,63 @@ export function ManualMigrationPage({ tokenId }) {
   const tickCurrent = positionV2?.pool?.tickCurrent
   const outOfRange = tickCurrent < tickLower || tickCurrent >= tickUpper
 
-  const handleMigrate = useCallback(
-    (position = positionV2) => {
-      const existedPosition = new Position({
-        pool: new Pool(currencyA, currencyB, fee, price, poolLiquidity, tick),
-        liquidity: new BigNumber(posLiquidity).toString(10),
-        tickLower: existingPosition?.tickLower,
-        tickUpper: existingPosition?.tickUpper,
-      })
-
-      onAlgebraMigrate({
-        existingPosition: existedPosition,
-        currencyA,
-        amountA,
-        currencyB,
-        amountB,
-        mintInfo: {
-          position,
-          isPoolExist: Boolean(fusionStateV3 === PoolState.EXISTS),
-        },
-        feeValue0,
-        feeValue1,
-        tokenId: existingPosition?.tokenId,
-        isFarming: strategy?.isFarming,
-        callback: () => {
-          mutateManual()
-          push('/dashboard')
-        },
-      })
-    },
-    [
-      amountA,
-      amountB,
-      currencyA,
-      currencyB,
-      existingPosition?.tickLower,
-      existingPosition?.tickUpper,
-      existingPosition?.tokenId,
-      fee,
-      feeValue0,
-      feeValue1,
-      fusionStateV3,
-      mutateManual,
-      onAlgebraMigrate,
-      poolLiquidity,
-      posLiquidity,
-      positionV2,
-      price,
-      push,
-      strategy?.isFarming,
-      tick,
-    ],
-  )
-
   const onSubmit = useCallback(() => {
     if (!existingPosition?.tokenId) {
       warnToast('you not own this position')
     }
 
-    if (outOfRange) {
-      setIsOpenAdjust(true)
-    } else {
-      handleMigrate()
+    // MARK: when out of range or not exist pool,
+    // Just remove liquidity from v2 and redirect to add liquidity page
+    if (outOfRange || !isPoolV3Exist) {
+      onAlgebraRemoveAll({
+        position: positionV2,
+        currencyA,
+        currencyB,
+        feeValue0,
+        feeValue1,
+        tokenId,
+      })
+      return
     }
-  }, [existingPosition?.tokenId, handleMigrate, outOfRange])
+
+    onAlgebraMigrate({
+      positionV2,
+      currencyA,
+      currencyB,
+      amountA,
+      amountB,
+      mintInfo: {
+        positionV3,
+        isPoolExist: isPoolV3Exist,
+      },
+      feeValue0,
+      feeValue1,
+      tokenId: existingPosition?.tokenId,
+      isFarming: strategy?.isFarming,
+      callback: () => {
+        push('/dashboard')
+        mutateManual()
+      },
+    })
+  }, [
+    amountA,
+    amountB,
+    currencyA,
+    currencyB,
+    existingPosition?.tokenId,
+    feeValue0,
+    feeValue1,
+    isPoolV3Exist,
+    mutateManual,
+    onAlgebraMigrate,
+    onAlgebraRemoveAll,
+    outOfRange,
+    positionV2,
+    positionV3,
+    push,
+    strategy?.isFarming,
+    tokenId,
+  ])
 
   if (!existingPosition) {
     return <Loading />
@@ -297,7 +288,7 @@ export function ManualMigrationPage({ tokenId }) {
         <div className='my-4 flex flex-col gap-4 md:flex-row'>
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your Current Gauge')}</TextHeading>
-            <GaugeItemManual existingPosition={existingPosition} position={positionV2} fusion={fusionV2} />
+            <GaugeItemManual existingPosition={existingPosition} position={positionV2} fusion={poolV2} />
           </div>
 
           <div className='flex items-center justify-center'>
@@ -306,7 +297,7 @@ export function ManualMigrationPage({ tokenId }) {
 
           <div className='flex h-full w-full flex-col'>
             <TextHeading className='mb-2'>{t('Your New V3 Gauge')}</TextHeading>
-            <GaugeItemManual existingPosition={existingPosition} position={positionV2} fusion={fusionV3} version={3} />
+            <GaugeItemManual existingPosition={existingPosition} position={positionV2} fusion={poolV3} version={3} />
           </div>
         </div>
 
@@ -323,31 +314,10 @@ export function ManualMigrationPage({ tokenId }) {
             {t('Cancel')}
           </EmphasisButton>
           <PrimaryButton className='w-full lg:w-[50%]' onClick={onSubmit}>
-            {fusionV3 ? t('Migrate Now') : t('Migrate & create Pool')}
+            {isPoolV3Exist ? t('Migrate Now') : t('Migrate & create Pool')}
           </PrimaryButton>
         </div>
       </Box>
-
-      <AdjustNewPositionModal
-        firstAddress={asset0?.address}
-        secondAddress={asset1?.address}
-        existingPosition={existingPosition}
-        feeAmount={fee}
-        isOpen={isOpenAdjust}
-        onClose={() => setIsOpenAdjust(false)}
-        onAdjustRange={(lower, upper) => {
-          if (asset0 && asset1 && fee && price && poolLiquidity && tick) {
-            const position = new Position({
-              pool: new Pool(currencyA, currencyB, fee, price, poolLiquidity, tick),
-              liquidity: new BigNumber(posLiquidity).toString(10),
-              tickLower: lower,
-              tickUpper: upper,
-            })
-
-            handleMigrate(position)
-          }
-        }}
-      />
     </div>
   )
 }
