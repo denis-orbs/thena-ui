@@ -11,23 +11,22 @@ import Loading from '@/app/loading'
 import { NeutralBadge } from '@/components/badges/Badge'
 import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
-import Highlight from '@/components/highlight'
 import NextImage from '@/components/image/NextImage'
-import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
+import { NewTextHeading } from '@/components/typography'
 import { fetchUserInfo } from '@/context/userInfoContext'
+import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useWallet from '@/hooks/useWallet'
-import { formatAddress, sortAchievements } from '@/lib/utils'
+import { cn, formatAddress, formatAmount, sortAchievements } from '@/lib/utils'
 import AchievementBasicIcon from '@/modules/Achievements/AchievementBasicIcon'
-import { InfoCircleWhite } from '@/svgs'
 
 function DashboardProfile() {
   const t = useTranslations()
   const { push } = useRouter()
   const { account } = useWallet()
+  const { veTHEs } = useVeTHEsContext()
   const { data: userInfo, isLoading } = useSWR(['user info', account], () => fetchUserInfo(account), {
     refreshInterval: 60000,
   })
-
   const { data: userAchievementsCompleted } = useSWR(['userAchievementsCompleted', account], () =>
     fetchAchievements(account.toLowerCase()),
   )
@@ -36,40 +35,52 @@ function DashboardProfile() {
     if (Array.isArray(userAchievementsCompleted) && userAchievementsCompleted.length) {
       return userAchievementsCompleted.sort(sortAchievements)
     }
-
     return []
   }, [userAchievementsCompleted])
+
+  const veTHEPower = useMemo(
+    () => veTHEs.reduce((power, veTHE) => power + Number(veTHE?.voting_amount ?? 0), 0),
+    [veTHEs],
+  )
 
   if (isLoading || !userInfo) {
     return <Loading />
   }
+
   return (
-    <Box className='flex h-full flex-col gap-1.5 max-md:mt-4 md:gap-6'>
-      <TextHeading className='font-archia text-xl font-semibold'>{t('My Profile')}</TextHeading>
+    <Box className='flex h-full flex-col gap-1.5 !p-4 max-md:mt-4 md:gap-6'>
+      <NewTextHeading className='text-xl md:text-xl'>{t('My Profile')}</NewTextHeading>
       <div className='hidden h-full flex-col justify-between md:flex'>
         <div className='flex gap-4'>
-          <Image
-            alt='avatar'
-            src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
-            className='rounded-[36px]'
-            width={145}
-            height={145}
-          />
-          <div className='flex flex-col gap-4'>
-            <TextSubHeading className='font-archia text-xl font-semibold'>
+          <div className='size-[145px]'>
+            <Image
+              alt='avatar'
+              src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
+              className='size-full rounded-[20px]'
+              width={0}
+              height={0}
+            />
+          </div>
+
+          <div className='flex flex-col gap-4 max-md:hidden'>
+            <NewTextHeading className='text-xl !leading-6 text-neutral-500 lg:text-xl'>
               {userInfo?.isVerified ? 'Verified' : 'Unverified'}
-            </TextSubHeading>
+            </NewTextHeading>
             {userInfo?.username && (
-              <TextSubHeading className='font-archia text-xl font-semibold'>
-                {t('Thena ID')}: <span className='text-warn-600'>{userInfo?.username}</span>
-              </TextSubHeading>
+              <NewTextHeading className='flex gap-2 text-xl !leading-6 lg:text-xl'>
+                <span className='text-neutral-500'>{t('Thena ID')}:</span>
+                <span className='text-warn-600'>{userInfo?.username}</span>
+              </NewTextHeading>
             )}
-            <TextSubHeading className='font-archia text-xl font-semibold'>
-              {`${t('Wallet')}: ${formatAddress(account)}`}
-            </TextSubHeading>
+            <NewTextHeading className='flex gap-2 text-xl !leading-6 lg:text-xl'>
+              <span className='text-neutral-500'>{t('Wallet')}:</span>
+              <span className='text-neutral-500'>{formatAddress(account)}</span>
+            </NewTextHeading>
             {userInfo?.xProfileUrl && (
-              <div className='flex gap-8'>
-                <TextSubHeading className='font-archia text-xl font-semibold'>{t('X profile')}: </TextSubHeading>
+              <div className='flex gap-2'>
+                <NewTextHeading className='text-xl !leading-6 text-neutral-500 lg:text-xl'>
+                  {t('Socials')}:{' '}
+                </NewTextHeading>
                 <Link href={`https://x.com/${userInfo?.xProfileUrl}`} rel='nofollow noopener' target='_blank'>
                   <NeutralBadge className='flex items-center lg:text-xs'>
                     <NextImage alt='svg' className='mr-2 w-fit' src='/images/footer/x.svg' />
@@ -80,62 +91,50 @@ function DashboardProfile() {
             )}
           </div>
         </div>
-        <div className='flex flex-wrap gap-8'>
-          <TextSubHeading className='font-archia text-xl font-semibold'>
-            {t('veTHE Power')}
-            <TextHeading className='ml-4'>TODO</TextHeading>
-          </TextSubHeading>
-          <TextSubHeading className='font-archia text-xl font-semibold'>
-            {t('Thena ID´s')}
-            <TextHeading className='ml-4'>{userInfo?.usernameNfts?.length || 0}</TextHeading>
-          </TextSubHeading>
-          <TextSubHeading className='font-archia text-xl font-semibold'>
-            {t('Rank')}
-            <TextHeading className='ml-4'>{userInfo?.rank}</TextHeading>
-          </TextSubHeading>
-        </div>
-        <div className='flex flex-wrap items-center gap-4'>
-          {Object.keys(sortedData).length ? (
-            <>
-              {sortedData.slice(0, 5).map(item => (
-                <AchievementBasicIcon item={item} key={item.achievement.id} className='gap-0 p-0' />
-              ))}
-              {sortedData.length > 5 && (
-                <div className='flex size-14 items-center justify-center rounded-full bg-primary-800 font-archia text-xl font-semibold text-primary-200'>
-                  +{sortedData.length - 5}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className='px-6'>
-              <div className='flex w-full flex-col items-center justify-center gap-4 '>
-                <Highlight>
-                  <InfoCircleWhite className='h-4 w-4' />
-                </Highlight>
-                <div className='flex w-72 flex-col items-center gap-3 lg:w-[416px]'>
-                  <h2>{t('No Achievement found')}</h2>
 
-                  <Paragraph className='mt-3 text-center'>{t('User Have Not Achievement Yet')}</Paragraph>
-                </div>
-              </div>
-            </div>
-          )}
+        <div className='mt-6 flex flex-wrap gap-8'>
+          <NewTextHeading className='text-xl lg:text-xl'>
+            <span className='text-neutral-500'>{t('veTHE Power')}</span>
+            <span className='ml-4'>{formatAmount(veTHEPower)}</span>
+          </NewTextHeading>
+          <NewTextHeading className='text-xl lg:text-xl'>
+            <span className='text-neutral-500'>{t('Thena ID´s')}</span>
+            <span className='ml-4'>{userInfo?.usernameNfts?.length || 0}</span>
+          </NewTextHeading>
+          <NewTextHeading className='text-xl lg:text-xl'>
+            <span className='text-neutral-500'>{t('Rank')}</span>
+            <span className='ml-4'>{userInfo?.rank}</span>
+          </NewTextHeading>
         </div>
-        <EmphasisButton className='w-full' onClick={() => push('/arena/profile')}>
+
+        {sortedData.length && (
+          <div className={cn('mt-10 flex flex-wrap items-center')}>
+            {sortedData.map(item => (
+              <AchievementBasicIcon item={item} key={item.achievement.id} className='gap-0 p-0' />
+            ))}
+          </div>
+        )}
+
+        <EmphasisButton className='mt-6 w-full' onClick={() => push('/arena/profile')}>
           {t('Manage')}
         </EmphasisButton>
       </div>
+
       <div className='flex flex-col gap-4 md:hidden'>
-        <TextSubHeading className='font-archia text-xl font-semibold'>
-          {userInfo?.username && <span className='text-warn-600'>{userInfo.username}</span>} {formatAddress(account)}
-        </TextSubHeading>
+        <NewTextHeading className='flex items-center gap-2 text-xl'>
+          {userInfo?.username && <span className='text-warn-600'>{userInfo.username}</span>}
+          <span className='text-neutral-500'>{formatAddress(account)}</span>
+        </NewTextHeading>
         <Image
           alt='avatar'
           src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}
-          className='mx-auto rounded-full'
+          className='mx-auto rounded-[20px]'
           width={124}
           height={124}
         />
+        <EmphasisButton className='w-full' onClick={() => push('/arena/profile')}>
+          {t('View')}
+        </EmphasisButton>
       </div>
     </Box>
   )

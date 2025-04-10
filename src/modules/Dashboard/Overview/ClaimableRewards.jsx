@@ -96,7 +96,9 @@ function ClaimableRewards() {
       <div className='space-y-2'>
         <div className='flex items-center gap-2'>
           <Paragraph
-            style={{ width: percentage.farmed ? `${percentage.farmed}%` : 'fit-content' }}
+            style={{
+              width: percentage.farmed ? `${percentage.farmed < 24 ? 24 : percentage.farmed}%` : 'fit-content',
+            }}
             className={cn(
               'rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
               percentage.farmed && 'bg-primary-400 text-primary-950',
@@ -109,7 +111,7 @@ function ClaimableRewards() {
 
         <div className='flex items-center gap-2'>
           <Paragraph
-            style={{ width: percentage.voting ? `${percentage.voting}%` : 'fit-content' }}
+            style={{ width: percentage.voting ? `${percentage.voting < 20 ? 20 : percentage.voting}%` : 'fit-content' }}
             className={cn(
               'rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
               percentage.voting && 'bg-primary-600 text-primary-950',
@@ -122,7 +124,9 @@ function ClaimableRewards() {
 
         <div className='flex items-center gap-2'>
           <Paragraph
-            style={{ width: percentage.theNft ? `${percentage.theNft}%` : 'fit-content' }}
+            style={{
+              width: percentage.theNft ? `${percentage.theNft < 25 ? 25 : percentage.theNft}%` : 'fit-content',
+            }}
             className={cn(
               'rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
               percentage.theNft && 'bg-primary-800 text-primary-950',

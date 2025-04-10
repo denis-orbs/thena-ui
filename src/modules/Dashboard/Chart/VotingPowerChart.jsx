@@ -80,7 +80,7 @@ function VotingPowerChart({ data, strokeWidth = 8, label = 'Total Voting Power' 
       </svg>
 
       <div className={cn('absolute bottom-0 left-0 right-0 text-center')}>
-        <div className='text-3xl font-bold text-primary-300'>{formatAmount(totalValue)}</div>
+        <div className='text-3xl font-bold text-primary-300'>{formatAmount(totalValue, true)}</div>
         <Paragraph className='text-sm text-neutral-50'>{label}</Paragraph>
       </div>
     </div>
