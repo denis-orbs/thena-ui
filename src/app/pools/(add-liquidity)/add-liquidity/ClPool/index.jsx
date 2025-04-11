@@ -9,6 +9,7 @@ import NewIconGroup from '@/components/icongroup/NewIconGroup'
 import { NewTextHeading, NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES, UNKNOWN_LOGO } from '@/constant'
 import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePositionInfo } from '@/hooks/usePositionInfo'
 import { cn, wrappedAddress } from '@/lib/utils'
 import AutomaticLiquidityChart from '@/modules/Pools/AutomaticLiquidityChart'
@@ -24,6 +25,7 @@ import PoolDescriptionSection from '../PoolTitleDescription'
 
 function AddLiquidityClPool({ pool, handleBack }) {
   const t = useTranslations()
+  const { isViewDown: is2XlDown } = useMediaQuery(1440)
   const { networkId } = useChainSettings()
   const { isReverse } = useSelector(state => state.fusion)
   const { strategy } = useV3MintState()
@@ -106,8 +108,8 @@ function AddLiquidityClPool({ pool, handleBack }) {
             position={position}
           />
 
-          {strategy?.isAutomatic && (
-            <div className='mt-4 hidden space-y-4 max-2xl:block'>
+          {strategy?.isAutomatic && is2XlDown && (
+            <div className='mt-4 space-y-4'>
               <NewTextSubHeading className='text-neutral-500'>{t('Liquidity Range')}</NewTextSubHeading>
               <AutomaticLiquidityChart
                 currencyA={currencyA ?? undefined}
