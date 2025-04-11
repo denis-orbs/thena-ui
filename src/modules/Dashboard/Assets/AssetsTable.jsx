@@ -50,23 +50,27 @@ function AssetsTable({ positions = [] }) {
       </div>
 
       <div className='bg-opacity-50 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-no-repeat md:px-4 md:pt-8'>
-        {paginatedPositions.map((item, index) => (
-          <React.Fragment key={`${item.address}-${index}`}>
-            {item.type === 'Manual' ? (
-              <>{item?.deployer === zeroAddress ? <FarmingItem position={item} /> : <ManualItem position={item} />}</>
-            ) : item.tokens && Array.isArray(item.tokens) ? (
-              <>
-                {item.notStaked && <WeightedItem position={item} isStake={false} />}
-                {item.staked && <WeightedItem position={item} isStake />}
-              </>
-            ) : (
-              <>
-                {item.account.gaugeBalance.gt(0) && <StakedItem position={item} />}
-                {item.account.walletBalance.gt(0) && <NotStakedItem position={item} />}
-              </>
-            )}
-          </React.Fragment>
-        ))}
+        {paginatedPositions.map((item, index) =>
+          item.type === 'Manual' ? (
+            <React.Fragment key={`${item.address}-${index}`}>
+              {item?.deployer === zeroAddress ? <FarmingItem position={item} /> : <ManualItem position={item} />}
+            </React.Fragment>
+          ) : (
+            <React.Fragment key={`${item.address}-${index}`}>
+              {item.tokens && Array.isArray(item.tokens) ? (
+                <>
+                  {item.notStaked && <WeightedItem position={item} isStake={false} />}
+                  {item.staked && <WeightedItem position={item} isStake />}
+                </>
+              ) : (
+                <>
+                  {item.account.gaugeBalance.gt(0) && <StakedItem position={item} />}
+                  {item.account.walletBalance.gt(0) && <NotStakedItem position={item} />}
+                </>
+              )}
+            </React.Fragment>
+          ),
+        )}
       </div>
 
       {totalPages > 1 && (

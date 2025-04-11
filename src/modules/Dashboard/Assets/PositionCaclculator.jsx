@@ -47,7 +47,10 @@ function PositionCaclculator({ position, isStaked, onData = () => {}, index }) {
   // Set value
   useEffect(() => {
     onData({
-      position,
+      position: {
+        ...position,
+        isStaked,
+      },
       apr: isStaked ? position.gauge.apr.toNumber() : position.feeApr,
       depositLiquidity: isStaked
         ? position?.title.includes('SwapFee')

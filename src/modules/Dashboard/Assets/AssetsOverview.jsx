@@ -3,6 +3,7 @@ import React, { useMemo } from 'react'
 
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewTextHeading, TextHeading } from '@/components/typography'
+import { useRewardPosition } from '@/hooks/useRewardPosition'
 import { formatAmount } from '@/lib/utils'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
@@ -15,6 +16,13 @@ function AssetsOverview({ positionsValue }) {
     return { totalProvided: providedValue, totalRewards: rewarsValue, totalPools: positionsValue.length }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [positionsValue, positionsValue.length])
+
+  const positionHaveRewards = useMemo(
+    () => positionsValue.filter(pos => pos.rewardUsd > 0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [positionsValue, totalRewards],
+  )
+  const { onClaimAllRewardPosition } = useRewardPosition()
   return (
     <div className='space-y-4'>
       <TextHeading className='font-archia max-md:hidden'>{t('Total Value Provided')}</TextHeading>
@@ -29,10 +37,12 @@ function AssetsOverview({ positionsValue }) {
           </TextHeading>
           <TextHeading className='font-archia text-4xl max-md:hidden'>{t('Generated Fees and Rewards')}</TextHeading>
           <NewTextHeading className='text-primary-600 max-md:hidden'>${formatAmount(totalRewards)}</NewTextHeading>
-          <PrimaryButton className='w-fit max-md:hidden'>{t('Claim All Rewards')}</PrimaryButton>
+          <PrimaryButton className='w-fit max-md:hidden' onClick={() => onClaimAllRewardPosition(positionHaveRewards)}>
+            {t('Claim All Rewards')}
+          </PrimaryButton>
         </div>
         <div className='flex h-full items-center justify-center'>
-          <LiquidityAPRChart data={positionsValue} className='h-[153px] w-[153px] md:h-[287px] md:w-[287px]' />
+          <LiquidityAPRChart data={positionsValue} className='h-[163px] w-[163px] md:h-[297px] md:w-[297px]' />
         </div>
       </div>
     </div>

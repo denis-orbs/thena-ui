@@ -2,11 +2,12 @@ import BigNumber from 'bignumber.js'
 import { useEffect, useMemo } from 'react'
 import useSWR from 'swr'
 import { Position } from 'thena-fusion-sdk'
+import { CurrencyAmount } from 'thena-sdk-core'
 import { zeroAddress } from 'viem'
 import { useReadContract, useSimulateContract } from 'wagmi'
 
 import Contracts from '@/constant/contracts'
-import { useCurrency, useGetAsset } from '@/hooks/fusion/Tokens'
+import { useCurrency, useGetAsset, useToken } from '@/hooks/fusion/Tokens'
 import { useCalculateAPR } from '@/hooks/fusion/useEstimateAPR'
 import { useFusionState } from '@/hooks/fusion/useFusions'
 import usePrevious from '@/hooks/usePrevious'
@@ -74,6 +75,9 @@ function ManualCaclculator({ position, onData = () => {}, index }) {
     tvl: amount0InUsd + amount1InUsd,
   })
 
+  const token0 = useToken(asset0.address)
+  const token1 = useToken(asset1.address)
+
   // Reward farming:
   const incentiveMaker = getIncentiveContract(chainId)
   const { data: poolKey } = useReadContract({
@@ -136,15 +140,33 @@ function ManualCaclculator({ position, onData = () => {}, index }) {
 
   const fiatValueOfLiquidity = useMemo(() => amount0InUsd + amount1InUsd, [amount0InUsd, amount1InUsd])
 
+  const { reward0, reward1 } = useMemo(
+    () => ({
+      reward0: {
+        token: isFarming ? THE : token0,
+        amount: CurrencyAmount.fromRawAmount(token0, BigNumber(fees?.[0] ?? 0n)),
+      },
+      reward1: {
+        token: isFarming ? WBNB : token1,
+        amount: CurrencyAmount.fromRawAmount(token1, BigNumber(fees?.[1] ?? 0n)),
+      },
+    }),
+    [isFarming, THE, token0, fees, WBNB, token1],
+  )
+
   useEffect(() => {
     onData({
-      position,
+      position: {
+        ...position,
+        key: isFarming ? poolKey : position.key,
+      },
       apr: apr.toNumber(),
       depositLiquidity: fiatValueOfLiquidity,
+      rewards: [reward0, reward1],
       rewardUsd: Number(feesInUsd),
       index,
     })
-  }, [apr, feesInUsd, fiatValueOfLiquidity, index, onData, position])
+  }, [apr, feesInUsd, fiatValueOfLiquidity, index, isFarming, onData, poolKey, position, reward0, reward1])
   return null
 }
 

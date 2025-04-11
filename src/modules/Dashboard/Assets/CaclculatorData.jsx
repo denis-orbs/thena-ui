@@ -8,7 +8,7 @@ function CaclculatorData({ positions = [], onData = () => {} }) {
   return (
     <div className='hidden'>
       {positions
-        .filter(item => item.version !== 2)
+        .filter(item => item.version !== 2 && item.version !== 1)
         .map((item, index) => (
           <React.Fragment key={`${item.address}-${index}`}>
             {item.type === 'Manual' ? (
