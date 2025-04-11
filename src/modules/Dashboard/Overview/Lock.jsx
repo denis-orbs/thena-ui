@@ -12,7 +12,7 @@ import { formatAmount } from '@/lib/utils'
 
 import VotingPowerChart from '../Chart/VotingPowerChart'
 
-const COLORS = ['#DC00D4', '#B000AA', '#84007F', '#580055', '#2C002A']
+const COLORS = ['#F199EE', '#EA66E5', '#DC00D4', '#84007F', '#2C002A']
 function Lock() {
   const t = useTranslations()
   const { push } = useRouter()
@@ -21,7 +21,7 @@ function Lock() {
   const totalLock = veTHEs.reduce((sum, veTHE) => sum.plus(veTHE.amount), new BigNumber(0))
 
   return (
-    <Box className='flex h-full flex-col gap-1.5'>
+    <Box className='flex h-full flex-col gap-1.5 !py-4'>
       <TextHeading className='font-archia text-xl font-semibold'>{t('Lock')}</TextHeading>
       <div className='flex h-full flex-col justify-between gap-4'>
         {isLoading ? (
@@ -45,7 +45,7 @@ function Lock() {
             ))}
             {veTHEs.length > 5 && (
               <div className='flex items-center gap-2'>
-                <div className='size-2' style={{ background: '#EA66E5' }} />
+                <div className='size-2' style={{ background: '#FCE6FB' }} />
                 <TextHeading>Others</TextHeading>
               </div>
             )}

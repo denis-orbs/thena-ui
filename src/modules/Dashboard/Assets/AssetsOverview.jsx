@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 import { PrimaryButton } from '@/components/buttons/Button'
 import { NewTextHeading, TextHeading } from '@/components/typography'
 import { useRewardPosition } from '@/hooks/useRewardPosition'
-import { formatAmount } from '@/lib/utils'
+import { formatAmount, isInvalidAmount } from '@/lib/utils'
 
 import LiquidityAPRChart from '../Chart/LiquidityAPRChart'
 
@@ -37,7 +37,11 @@ function AssetsOverview({ positionsValue }) {
           </TextHeading>
           <TextHeading className='font-archia text-4xl max-md:hidden'>{t('Generated Fees and Rewards')}</TextHeading>
           <NewTextHeading className='text-primary-600 max-md:hidden'>${formatAmount(totalRewards)}</NewTextHeading>
-          <PrimaryButton className='w-fit max-md:hidden' onClick={() => onClaimAllRewardPosition(positionHaveRewards)}>
+          <PrimaryButton
+            disabled={isInvalidAmount(totalRewards)}
+            className='w-fit max-md:hidden'
+            onClick={() => onClaimAllRewardPosition(positionHaveRewards)}
+          >
             {t('Claim All Rewards')}
           </PrimaryButton>
         </div>

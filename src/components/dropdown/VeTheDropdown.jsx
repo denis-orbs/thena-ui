@@ -19,6 +19,7 @@ function VeTheDropdown({
   setApprovedId,
   disabled = false,
   isLocale = true,
+  classNames,
 }) {
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef(null)
@@ -41,6 +42,7 @@ function VeTheDropdown({
       <Input
         classNames={{
           input: cn('cursor-pointer caret-transparent', className),
+          ...classNames,
         }}
         type='text'
         val={selected}

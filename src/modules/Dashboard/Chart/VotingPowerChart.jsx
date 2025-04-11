@@ -4,7 +4,7 @@ import React from 'react'
 import { Paragraph } from '@/components/typography'
 import { cn, formatAmount } from '@/lib/utils'
 
-const COLORS = ['#DC00D4', '#B000AA', '#84007F', '#580055', '#2C002A']
+const COLORS = ['#F199EE', '#EA66E5', '#DC00D4', '#84007F', '#2C002A']
 
 function VotingPowerChart({ data, strokeWidth = 8, label = 'Total Voting Power' }) {
   const baseRadius = 60
@@ -23,7 +23,7 @@ function VotingPowerChart({ data, strokeWidth = 8, label = 'Total Voting Power' 
       {
         value: now,
         max: latestLockedEnd,
-        color: '#EA66E5',
+        color: '#FCE6FB',
       },
     ]
   }
@@ -80,8 +80,10 @@ function VotingPowerChart({ data, strokeWidth = 8, label = 'Total Voting Power' 
       </svg>
 
       <div className={cn('absolute bottom-0 left-0 right-0 text-center')}>
-        <div className='text-3xl font-bold text-primary-300'>{formatAmount(totalValue, true)}</div>
-        <Paragraph className='text-sm text-neutral-50'>{label}</Paragraph>
+        <div className={cn('text-3xl font-bold text-primary-300', chartData.length > 2 && 'text-2xl')}>
+          {formatAmount(totalValue, true)}
+        </div>
+        <Paragraph className={cn('text-sm text-neutral-50', chartData.length > 2 && '!text-sm')}>{label}</Paragraph>
       </div>
     </div>
   )

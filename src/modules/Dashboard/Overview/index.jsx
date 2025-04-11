@@ -6,14 +6,14 @@ import Voting from './Voting'
 
 function Overview() {
   return (
-    <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
+    <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3'>
       <div className='order-2 md:order-1'>
         <Voting />
       </div>
       <div className='order-1 md:order-2'>
         <ClaimableRewards />
       </div>
-      <div className='order-3'>
+      <div className='order-3 md:col-span-2 xl:col-span-1'>
         <Lock />
       </div>
     </div>

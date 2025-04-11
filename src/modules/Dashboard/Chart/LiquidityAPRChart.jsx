@@ -9,12 +9,11 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 
 const COLORS = ['#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F']
 
-const DARK_COLOR = '#F8CCF6'
+const OTHER_COLOR = '#F8CCF6'
 
 function LiquidityAPRChart({ data = [], className }) {
-  const totalLiquidity = data.reduce((acc, d) => acc + d.depositLiquidity, 0)
   const totalAprWeighted = data.reduce((acc, d) => acc + (Number(d.apr) || 0), 0)
-  const avgApr = totalLiquidity ? (totalAprWeighted / data.length).toFixed(2) : '0.00'
+  const avgApr = totalAprWeighted ? (totalAprWeighted / data.length).toFixed(2) : '0.00'
 
   const formatData = key => {
     const items = data.map(d => {
@@ -54,25 +53,24 @@ function LiquidityAPRChart({ data = [], className }) {
   const aprData = formatData('apr')
 
   const chartData = {
-    labels: liquidityData.map(d => d.label),
     datasets: [
       {
         label: 'depositLiquidity',
         data: liquidityData.map(d => d.value),
         backgroundColor: liquidityData.map((_, i) =>
-          liquidityData[i].label === 'Others' ? DARK_COLOR : COLORS[i % COLORS.length],
+          liquidityData[i].label === 'Others' ? OTHER_COLOR : COLORS[i % COLORS.length],
         ),
         borderWidth: 0,
-        radius: '85%',
+        radius: '82%',
         cutout: '65%',
       },
       {
         label: 'APR',
         data: aprData.map(d => d.value),
-        backgroundColor: aprData.map((d, i) => (d.label === 'Others' ? DARK_COLOR : COLORS[i % COLORS.length])),
+        backgroundColor: aprData.map((d, i) => (d.label === 'Others' ? OTHER_COLOR : COLORS[i % COLORS.length])),
         borderWidth: 0,
         radius: '100%',
-        cutout: '90%',
+        cutout: '85%',
       },
     ],
   }
@@ -83,9 +81,13 @@ function LiquidityAPRChart({ data = [], className }) {
       tooltip: {
         callbacks: {
           label(context) {
-            const label = context.label || ''
-            const val = context.raw.toLocaleString(undefined, { maximumFractionDigits: 2 })
-            return `${label}: ${val}`
+            const { dataIndex } = context
+            const { datasetIndex } = context
+            const val = formatAmount(context.raw, true)
+            if (datasetIndex === 0) {
+              return `${liquidityData?.[dataIndex].label}: $${val}`
+            }
+            return `${aprData?.[dataIndex].label}: ${val}%`
           },
         },
       },
@@ -93,15 +95,6 @@ function LiquidityAPRChart({ data = [], className }) {
         display: false,
       },
     },
-    // onHover: (_, chartElements) => {
-    //   if (chartElements.length > 0) {
-    //     const { index } = chartElements[0]
-    //     const label = chartData.labels[index]
-    //     setHoveredLabel(label)
-    //   } else {
-    //     setHoveredLabel(null)
-    //   }
-    // },
   }
 
   return (
