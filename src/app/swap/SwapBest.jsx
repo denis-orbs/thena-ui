@@ -65,7 +65,7 @@ export default function SwapBest({
   const [isWarning, setIsWarning] = useState(false)
   const [liquidityHubFailed, setLiquidityHubFailed] = useState(false)
   const { account } = useWallet()
-  const { slippage, deadline } = useSettings()
+  const { slippage, deadline, liquidityHubEnabled } = useSettings()
   const { networkId } = useChainSettings()
   const debouncedAmount = useDebounce(fromAmount)
 
@@ -102,11 +102,12 @@ export default function SwapBest({
   // const { handleThenaFusionSwap, pending: thenaSwapPending } = useThenaFusionSwap()
 
   const isEnabledTradeLH = useMemo(() => {
+    if (!liquidityHubEnabled) return false
     if (!fromAmount) return false
     if (!bestTrade && !bestTradePending) return true
     if (bestTrade && Math.abs(bestTrade.priceImpact) > MAX_PRICE_IMPACT) return true
     return false
-  }, [bestTrade, bestTradePending, fromAmount])
+  }, [bestTrade, bestTradePending, fromAmount, liquidityHubEnabled])
 
   const {
     data: tradeLH,
@@ -254,8 +255,9 @@ export default function SwapBest({
       swapWithLH(tradeLH.quote)
       return
     }
+
     const result = await compareWithLHCallback()
-    if (result?.isLH) {
+    if (isFallbackLH && result?.isLH) {
       await swapWithLH(result?.quote)
     } else {
       await onOdosSwap(fromAsset, toAsset, fromAmount, toAmount, bestTrade, () => onSuccess(result?.quote, false))
