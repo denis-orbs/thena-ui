@@ -217,8 +217,8 @@ function FarmingItem({ position }) {
   }, [dispatch, poolInfo, push, version, tokenId])
 
   return (
-    <div className='flex flex-col items-center justify-between gap-4 py-1 md:flex-row md:py-2'>
-      <div className='flex w-full items-center gap-2 md:w-1/6'>
+    <div className='flex flex-col items-center justify-between gap-4 py-4 lg:flex-row lg:py-2'>
+      <div className='flex w-full items-center gap-2 lg:w-[20%] lg:min-w-[195px]'>
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
@@ -229,16 +229,16 @@ function FarmingItem({ position }) {
           height={32}
           tokens={[asset0, asset1]}
         />
-        <div className='flex flex-row justify-between max-md:w-full max-md:items-center md:flex-col'>
+        <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
           <TextHeading>
             {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
           </TextHeading>
-          <Paragraph className='text-xs'>
+          <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
           </Paragraph>
         </div>
       </div>
-      <div className='w-full text-center md:w-1/6'>
+      <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>
         {position.type === 'Manual' ? (
           <Range
             position={position}
@@ -261,7 +261,7 @@ function FarmingItem({ position }) {
           <></>
         )}
       </div>
-      <div className='flex w-full gap-4 md:w-3/6'>
+      <div className='flex w-full gap-4 lg:w-[39%]'>
         <div className='flex w-1/3 flex-col'>
           <TextHeading>{formatAmount(apr.toNumber())}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
@@ -286,9 +286,9 @@ function FarmingItem({ position }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div id='BUTTONS_GROUP' className='flex w-full gap-2 md:w-1/6'>
+      <div id='BUTTONS_GROUP' className='flex w-full max-w-[269px] gap-2 lg:w-[24%]'>
         <OutlinedButton
-          className={cn('block w-full', {
+          className={cn('block w-full flex-1', {
             hidden: Number(liquidity) <= 0,
           })}
           onClick={() => setRemovePopup(true)}
@@ -296,12 +296,12 @@ function FarmingItem({ position }) {
           {t('Remove')}
         </OutlinedButton>
 
-        <TextButton className={cn('w-full', feesInUsd.isZero() && 'hidden')} onClick={() => setClaimPopup(true)}>
+        <TextButton className={cn('w-full flex-1', feesInUsd.isZero() && 'hidden')} onClick={() => setClaimPopup(true)}>
           {t('Claim')}
         </TextButton>
 
         <PrimaryButton
-          className={cn('w-full', {
+          className={cn('w-full flex-1 text-nowrap', {
             hidden:
               position?.isFarming ||
               !incentiveAddress ||
@@ -316,7 +316,7 @@ function FarmingItem({ position }) {
         </PrimaryButton>
 
         <OutlinedButton
-          className={cn('block w-full', {
+          className={cn('block w-full flex-1', {
             hidden: position?.isFarming || Number(liquidity) > 0,
           })}
           onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
@@ -325,7 +325,7 @@ function FarmingItem({ position }) {
           {t('Burn')}
         </OutlinedButton>
 
-        <EmphasisButton className='w-full' onClick={handleAdd}>
+        <EmphasisButton className='w-full flex-1' onClick={handleAdd}>
           {t('Add')}
         </EmphasisButton>
       </div>

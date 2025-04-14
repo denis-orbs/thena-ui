@@ -69,8 +69,8 @@ function WeightedItem({ position, isStake }) {
     })
   }, [addReward, claimableFee?.total, isStake, position])
   return (
-    <div className='flex flex-col items-center justify-between gap-4 py-1 md:flex-row md:py-2'>
-      <div className='flex w-full items-center gap-2 md:w-1/6'>
+    <div className='flex flex-col items-center justify-between gap-4 py-4 lg:flex-row lg:py-2'>
+      <div className='flex w-full items-center gap-2 lg:w-[20%] lg:min-w-[195px]'>
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
@@ -81,13 +81,13 @@ function WeightedItem({ position, isStake }) {
           height={32}
           tokens={position.tokens}
         />
-        <div className='flex flex-row justify-between max-md:w-full max-md:items-center md:flex-col'>
+        <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
           <TextHeading>{position.symbol}</TextHeading>
-          <Paragraph className='text-xs'>Weighted</Paragraph>
+          <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>Weighted</Paragraph>
         </div>
       </div>
-      <div className='w-full text-center md:w-1/6'>{isStake ? 'Stake' : 'UnStake'}</div>
-      <div className='flex w-full gap-4 md:w-3/6'>
+      <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>{isStake ? 'Stake' : 'UnStake'}</div>
+      <div className='flex w-full gap-4 lg:w-[39%]'>
         <div className='flex w-1/3 flex-col'>
           <TextHeading>{position.apr}</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
@@ -131,7 +131,7 @@ function WeightedItem({ position, isStake }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div className='flex w-full justify-center gap-2 md:w-1/6'>
+      <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
         <EmphasisButton
           className='w-1/2'
           disabled={pendingClaimFees || isInvalidAmount(claimableFee.total)}

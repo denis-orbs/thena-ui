@@ -101,7 +101,7 @@ function LiquidityAPRChart({ data = [], className }) {
     <div className={cn('relative h-[200px] w-[200px]', className)}>
       <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 text-center'>
         <div className='text-xl font-semibold text-primary-600 md:text-4xl'>{formatAmount(avgApr, true)}%</div>
-        <div className='text-xl uppercase text-primary-300 max-md:hidden'>Average APR</div>
+        <div className='text-xl font-semibold uppercase text-primary-300 max-md:hidden'>Average APR</div>
       </div>
 
       <div className='relative z-10'>

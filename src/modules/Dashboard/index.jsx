@@ -13,6 +13,7 @@ import UserAssets from './Assets'
 import HeaderRewards from './HeaderRewards'
 import Overview from './Overview'
 import DashboardProfile from './Profile'
+import SpecialDivider from './SpecialDivider'
 import TheNFT from './theNFT'
 
 function Dashboard() {
@@ -38,12 +39,15 @@ function Dashboard() {
         <NewTextSubHeading className='max-md:hidden'>{t('My Assets')}</NewTextSubHeading>
         <UserAssets />
       </div>
+      <SpecialDivider />
       <Overview />
-      <div className='grid grid-cols-1 md:grid-cols-3 md:gap-4'>
+      <SpecialDivider />
+      <div className='flex flex-col xl:grid xl:grid-cols-3 xl:gap-4'>
         <div className='col-span-1'>
           <TheNFT />
         </div>
-        <div className='col-span-2'>
+        <SpecialDivider className='max-md:mt-4' />
+        <div className='col-span-2 md:mt-4 xl:mt-0'>
           <DashboardProfile />
         </div>
       </div>

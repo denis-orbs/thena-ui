@@ -160,8 +160,8 @@ function StakedItem({ position }) {
   )
 
   return (
-    <div className='flex flex-col items-center justify-between gap-4  py-1 md:flex-row md:py-2'>
-      <div className='flex w-full items-center gap-2 md:w-1/6'>
+    <div className='flex flex-col items-center justify-between gap-4  py-4 lg:flex-row lg:py-2'>
+      <div className='flex w-full items-center gap-2 lg:w-[20%] lg:min-w-[195px]'>
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
@@ -172,12 +172,14 @@ function StakedItem({ position }) {
           height={32}
           tokens={[position.token0, position.token1]}
         />
-        <div className='flex flex-row justify-between max-md:w-full max-md:items-center md:flex-col'>
+        <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
           <TextHeading>{position.symbol}</TextHeading>
-          <Paragraph className='text-xs'>{getDisplayedStrategy(position.title)}</Paragraph>
+          <Paragraph className='text-xl max-lg:font-archia max-md:font-semibold lg:text-xs'>
+            {getDisplayedStrategy(position.title)}
+          </Paragraph>
         </div>
       </div>
-      <div className='w-full text-center md:w-1/6'>
+      <div className='w-full min-w-[146px] text-center lg:w-[17%]'>
         {position.type === PAIR_TYPES.LSD ? (
           <Range currentPrice={position?.lpPrice} liquidity={1} maxPrice={preset?.max} minPrice={preset?.min} />
         ) : (
@@ -186,7 +188,7 @@ function StakedItem({ position }) {
           </div>
         )}
       </div>
-      <div className='flex w-full gap-4 md:w-3/6'>
+      <div className='flex w-full gap-4 lg:w-[39%]'>
         <div className='flex w-1/3 flex-col'>
           <TextHeading>{formatAmount(position.gauge.apr)}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
@@ -231,20 +233,20 @@ function StakedItem({ position }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div className='flex w-full justify-center gap-2 md:w-1/6'>
+      <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
         {version === 2 ? (
           // Version 2 actions
           <>
-            <TextButton className='w-full' onClick={() => setPopup(true)}>
+            <TextButton className='w-full flex-1' onClick={() => setPopup(true)}>
               {t('Unstake')}
             </TextButton>
 
             {migrationOptions && migrationOptions.length > 0 ? (
-              <Link href={migrationLink} className='w-full'>
+              <Link href={migrationLink} className='w-full flex-1'>
                 <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
               </Link>
             ) : (
-              <PrimaryButton className='w-full' onClick={() => setMigrateWarningPopup(true)}>
+              <PrimaryButton className='w-full flex-1' onClick={() => setMigrateWarningPopup(true)}>
                 {t('Migrate')}
               </PrimaryButton>
             )}
@@ -253,24 +255,24 @@ function StakedItem({ position }) {
           // Version 3 actions
           <>
             {position.type === PAIR_TYPES.LSD ? (
-              <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
+              <OutlinedButton className='w-full flex-1' onClick={() => setRemovePopup(true)}>
                 {t('Remove')}
               </OutlinedButton>
             ) : (
-              <TextButton className='w-full' onClick={() => setPopup(true)}>
+              <TextButton className='w-full flex-1' onClick={() => setPopup(true)}>
                 {t('Unstake')}
               </TextButton>
             )}
 
             <OutlinedButton
-              className={cn('w-full', isSwapFee && 'hidden')}
+              className={cn('w-full flex-1', isSwapFee && 'hidden')}
               onClick={handleHavest}
               disabled={claimPending || position.account.earnedUsd.isZero()}
             >
               {t('Harvest')}
             </OutlinedButton>
 
-            <EmphasisButton className={cn('w-full')} onClick={handleAdd}>
+            <EmphasisButton className={cn('w-full flex-1')} onClick={handleAdd}>
               {t('Add')}
             </EmphasisButton>
           </>

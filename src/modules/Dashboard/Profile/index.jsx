@@ -12,7 +12,7 @@ import Box from '@/components/box'
 import { EmphasisButton } from '@/components/buttons/Button'
 import NextImage from '@/components/image/NextImage'
 import Skeleton from '@/components/skeleton'
-import { NewTextHeading, Paragraph, TextHeading } from '@/components/typography'
+import { Paragraph, TextHeading } from '@/components/typography'
 import { fetchUserInfo } from '@/context/userInfoContext'
 import { useVeTHEsContext } from '@/context/veTHEsContext'
 import useWallet from '@/hooks/useWallet'
@@ -52,7 +52,7 @@ function DashboardProfile() {
     </Box>
   ) : (
     <Box className='flex h-full flex-col gap-1.5 !p-4 max-md:mt-4 md:gap-6'>
-      <NewTextHeading className='text-xl md:text-xl'>{t('My Profile')}</NewTextHeading>
+      <TextHeading className='font-archia text-xl font-semibold md:text-xl'>{t('My Profile')}</TextHeading>
       {isLoading ? (
         <Skeleton className='h-full w-full' />
       ) : (
@@ -70,24 +70,24 @@ function DashboardProfile() {
               </div>
 
               <div className='flex flex-col gap-4 max-md:hidden'>
-                <NewTextHeading className='text-xl !leading-6 text-neutral-500 lg:text-xl'>
+                <TextHeading className='font-archia text-xl font-semibold !leading-6 text-neutral-500 lg:text-xl'>
                   {userInfo?.isVerified ? 'Verified' : 'Unverified'}
-                </NewTextHeading>
+                </TextHeading>
                 {userInfo?.username && (
-                  <NewTextHeading className='flex gap-2 text-xl !leading-6 lg:text-xl'>
+                  <TextHeading className='flex gap-2 font-archia text-xl font-semibold !leading-6 lg:text-xl'>
                     <span className='text-neutral-500'>{t('Thena ID')}:</span>
                     <span className='text-warn-600'>{userInfo?.username}</span>
-                  </NewTextHeading>
+                  </TextHeading>
                 )}
-                <NewTextHeading className='flex gap-2 text-xl !leading-6 lg:text-xl'>
+                <TextHeading className='flex gap-2 font-archia text-xl font-semibold !leading-6 lg:text-xl'>
                   <span className='text-neutral-500'>{t('Wallet')}:</span>
                   <span className='text-neutral-500'>{formatAddress(account)}</span>
-                </NewTextHeading>
+                </TextHeading>
                 {userInfo?.xProfileUrl && (
                   <div className='flex gap-2'>
-                    <NewTextHeading className='text-xl !leading-6 text-neutral-500 lg:text-xl'>
+                    <TextHeading className='font-archia text-xl font-semibold !leading-6 text-neutral-500 lg:text-xl'>
                       {t('Socials')}:{' '}
-                    </NewTextHeading>
+                    </TextHeading>
                     <Link href={`https://x.com/${userInfo?.xProfileUrl}`} rel='nofollow noopener' target='_blank'>
                       <NeutralBadge className='flex items-center lg:text-xs'>
                         <NextImage alt='svg' className='mr-2 w-fit' src='/images/footer/x.svg' />
@@ -100,18 +100,18 @@ function DashboardProfile() {
             </div>
 
             <div className='mt-6 flex flex-wrap gap-8'>
-              <NewTextHeading className='text-xl lg:text-xl'>
+              <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
                 <span className='text-neutral-500'>{t('veTHE Power')}</span>
                 <span className='ml-4'>{formatAmount(veTHEPower)}</span>
-              </NewTextHeading>
-              <NewTextHeading className='text-xl lg:text-xl'>
+              </TextHeading>
+              <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
                 <span className='text-neutral-500'>{t('Thena ID´s')}</span>
                 <span className='ml-4'>{userInfo?.usernameNfts?.length || 0}</span>
-              </NewTextHeading>
-              <NewTextHeading className='text-xl lg:text-xl'>
+              </TextHeading>
+              <TextHeading className='font-archia text-xl font-semibold lg:text-xl'>
                 <span className='text-neutral-500'>{t('Rank')}</span>
                 <span className='ml-4'>{userInfo?.rank}</span>
-              </NewTextHeading>
+              </TextHeading>
             </div>
 
             {sortedData.length && (
@@ -128,10 +128,10 @@ function DashboardProfile() {
           </div>
 
           <div className='flex flex-col gap-4 md:hidden'>
-            <NewTextHeading className='flex items-center gap-2 text-xl'>
+            <TextHeading className='flex items-center gap-2 font-archia text-xl font-semibold'>
               {userInfo?.username && <span className='text-warn-600'>{userInfo.username}</span>}
               <span className='text-neutral-500'>{formatAddress(account)}</span>
-            </NewTextHeading>
+            </TextHeading>
             <Image
               alt='avatar'
               src={userInfo?.avatar?.replace('ipfs.io', 'w3s.link') ?? Avatar}

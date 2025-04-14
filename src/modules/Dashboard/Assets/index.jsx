@@ -1,13 +1,18 @@
 import BigNumber from 'bignumber.js'
-import React, { useCallback, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Box from '@/components/box'
+import { NewTextSubHeading, Paragraph } from '@/components/typography'
 import { PAIR_TYPES } from '@/constant'
 import { useManuals } from '@/context/manualsContext'
 import { useVaults } from '@/context/vaultsContext'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { useWeightedPositionList } from '@/hooks/weightedPool/useWeigtedPool'
-import { isInvalidAmount } from '@/lib/utils'
+import { cn, isInvalidAmount } from '@/lib/utils'
 import { usePools } from '@/state/pools/hooks'
+import { ChevronDownIcon } from '@/svgs'
 
 import AssetsOverview from './AssetsOverview'
 import AssetsTable from './AssetsTable'
@@ -47,6 +52,8 @@ function UserAssets() {
     [userManuals, userPools, weightedPositionList],
   )
 
+  const t = useTranslations()
+
   const filteredPositions = useMemo(() => updateWalletBalance(positions), [positions])
 
   const collectData = useCallback(
@@ -62,10 +69,38 @@ function UserAssets() {
     [positions],
   )
 
+  const windowSize = useWindowSize()
+
+  const [showTable, setShowTable] = useState(false)
+
+  useEffect(() => {
+    if (windowSize.width >= 834) {
+      setShowTable(true)
+    }
+  }, [windowSize.width])
+
   return (
     <Box className='space-y-4 max-md:bg-transparent max-md:px-0 md:space-y-10 md:!pt-11'>
       <AssetsOverview positionsValue={positionsValue} />
-      <AssetsTable positions={filteredPositions} />
+      <div className='flex justify-between lg:hidden'>
+        <NewTextSubHeading className='text-base font-medium'>{t('My Positions')}</NewTextSubHeading>
+        <div
+          className='flex cursor-pointer gap-2 rounded-md p-1 hover:bg-neutral-700'
+          onClick={() => setShowTable(prev => !prev)}
+        >
+          <Paragraph className='text-base font-medium'>{t(showTable ? 'Close' : 'Open')}</Paragraph>
+          <ChevronDownIcon className={cn('size-6', showTable && 'rotate-180')} />
+        </div>
+      </div>
+      <motion.div
+        initial={{ opacity: 0, y: -10, height: 0 }}
+        animate={showTable ? { opacity: 1, y: 0, height: 'auto' } : { opacity: 0, y: -10, height: 0 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className='overflow-hidden'
+      >
+        <AssetsTable positions={filteredPositions} />
+      </motion.div>
+      {/* <AssetsTable positions={filteredPositions} /> */}
       <CaclculatorData positions={filteredPositions} onData={collectData} />
     </Box>
   )

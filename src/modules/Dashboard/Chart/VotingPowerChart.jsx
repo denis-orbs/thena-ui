@@ -83,7 +83,7 @@ function VotingPowerChart({ data, strokeWidth = 8, label = 'Total Voting Power' 
         <div className={cn('text-3xl font-bold text-primary-300', chartData.length > 2 && 'text-2xl')}>
           {formatAmount(totalValue, true)}
         </div>
-        <Paragraph className={cn('text-sm text-neutral-50', chartData.length > 2 && '!text-sm')}>{label}</Paragraph>
+        <Paragraph className={cn('text-neutral-50 lg:text-sm')}>{label}</Paragraph>
       </div>
     </div>
   )

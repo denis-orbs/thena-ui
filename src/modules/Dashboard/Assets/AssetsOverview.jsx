@@ -31,12 +31,16 @@ function AssetsOverview({ positionsValue }) {
       </TextHeading>
       <div className='grid grid-cols-1 md:grid-cols-2'>
         <div className='flex flex-col gap-8 max-md:text-center'>
-          <TextHeading className='font-archia text-3xl max-md:text-primary-300 md:text-4xl'>
+          <TextHeading className='font-archia text-3xl font-semibold max-md:text-primary-300 md:text-4xl'>
             ${formatAmount(totalProvided)}{' '}
-            <span className='uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
+            <span className='font-semibold uppercase max-md:hidden'>{`${totalPools} ${t('Pools')}`}</span>
           </TextHeading>
-          <TextHeading className='font-archia text-4xl max-md:hidden'>{t('Generated Fees and Rewards')}</TextHeading>
-          <NewTextHeading className='text-primary-600 max-md:hidden'>${formatAmount(totalRewards)}</NewTextHeading>
+          <TextHeading className='font-archia text-4xl font-semibold max-md:hidden'>
+            {t('Generated Fees and Rewards')}
+          </TextHeading>
+          <NewTextHeading className='font-semibold text-primary-600 max-md:hidden'>
+            ${formatAmount(totalRewards)}
+          </NewTextHeading>
           <PrimaryButton
             disabled={isInvalidAmount(totalRewards)}
             className='w-fit max-md:hidden'

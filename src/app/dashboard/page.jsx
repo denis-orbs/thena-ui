@@ -6,7 +6,7 @@ import LayoutWithBackButton from '@/components/common/LayoutWithBackButton'
 import useWallet from '@/hooks/useWallet'
 import Dashboard from '@/modules/Dashboard'
 
-import NotConnected from '../NotConnected'
+import NotConnected from './NotConnected'
 
 function DashboardPage() {
   const { account } = useWallet()

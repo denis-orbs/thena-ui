@@ -31,12 +31,12 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
   return (
     <>
       {!Number(liquidity) ? (
-        <div className='relative flex h-8 items-center justify-center overflow-hidden rounded-md bg-warn-600 px-2 text-warn-100 md:h-11'>
+        <div className='relative flex h-8 items-center justify-center overflow-hidden rounded-md border border-warn-800 bg-warn-950 px-2 text-warn-700 md:h-11'>
           {t('Closed')}
         </div>
       ) : outOfRange ? (
-        <div className='relative flex h-8 items-center justify-center gap-2 overflow-hidden rounded border border-warn-800 bg-warn-950 px-2 py-1 text-base text-warn-400 md:h-11'>
-          <InfoIcon className='size-5 stroke-yellow-400' />
+        <div className='relative flex h-8 items-center justify-center gap-2 overflow-hidden rounded border border-warn-800 bg-warn-950 px-2 py-1 text-base text-warn-700 md:h-11'>
+          <InfoIcon className='size-5 stroke-warn-700' />
           <span>Out of Range</span>
         </div>
       ) : (

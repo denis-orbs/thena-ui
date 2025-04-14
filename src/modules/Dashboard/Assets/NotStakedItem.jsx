@@ -173,8 +173,8 @@ function NotStakedItem({ position }) {
   )
 
   return (
-    <div className='flex flex-col items-center justify-between gap-4 py-1 md:flex-row md:py-2'>
-      <div className='flex w-full items-center gap-2 md:w-1/6'>
+    <div className='flex flex-col items-center justify-between gap-4 py-4 lg:flex-row lg:py-2'>
+      <div className='flex w-full items-center gap-2 lg:w-[20%] lg:min-w-[195px]'>
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
@@ -185,12 +185,14 @@ function NotStakedItem({ position }) {
           height={32}
           tokens={[position.token0, position.token1]}
         />
-        <div className='flex flex-row justify-between max-md:w-full max-md:items-center md:flex-col'>
+        <div className='flex flex-row justify-between max-lg:w-full max-md:items-center lg:flex-col'>
           <TextHeading>{position.symbol}</TextHeading>
-          <Paragraph className='text-xs'>{getDisplayedStrategy(position.title)}</Paragraph>
+          <Paragraph className='text-xl max-lg:font-archia max-md:font-semibold lg:text-xs'>
+            {getDisplayedStrategy(position.title)}
+          </Paragraph>
         </div>
       </div>
-      <div className='w-full text-center md:w-1/6'>
+      <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>
         {position.type === PAIR_TYPES.LSD ? (
           <Range currentPrice={position?.lpPrice} liquidity={1} maxPrice={preset?.max} minPrice={preset?.min} />
         ) : (
@@ -199,7 +201,7 @@ function NotStakedItem({ position }) {
           </div>
         )}
       </div>
-      <div className='flex w-full gap-4 md:w-3/6'>
+      <div className='flex w-full gap-4 lg:w-[39%]'>
         <div className='flex w-1/3 flex-col'>
           <TextHeading>{formatAmount(position.feeApr)}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
@@ -222,9 +224,9 @@ function NotStakedItem({ position }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div className='flex w-full justify-center gap-2 md:w-1/6'>
+      <div className='flex w-full max-w-[269px] justify-center gap-2 lg:w-[24%]'>
         {!migrationOptions && (
-          <PrimaryButton className='w-full' onClick={() => setPopup(true)}>
+          <PrimaryButton className='w-full flex-1' onClick={() => setPopup(true)}>
             {t('Stake')}
           </PrimaryButton>
         )}
@@ -232,34 +234,34 @@ function NotStakedItem({ position }) {
         {isV1Pool ? (
           <>
             <OutlinedButton
-              className='w-full'
+              className='w-full flex-1'
               onClick={() => onClaimFees(position)}
               disabled={feesInUsd.isZero() || feesPending}
             >
               {t('Claim')}
             </OutlinedButton>
-            <EmphasisButton className='w-full' onClick={() => setManagePopup(true)}>
+            <EmphasisButton className='w-full flex-1' onClick={() => setManagePopup(true)}>
               {t('Manage')}
             </EmphasisButton>
           </>
         ) : (
           <>
-            <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
+            <OutlinedButton className='w-full flex-1' onClick={() => setRemovePopup(true)}>
               {t('Remove')}
             </OutlinedButton>
             {version === 3 ? (
               <EmphasisButton
-                className='w-full'
+                className='w-full flex-1'
                 onClick={() => push(`/pools/add-liquidity?step=3&poolAddress=${position.address}&back=1`)}
               >
                 {t('Add')}
               </EmphasisButton>
             ) : migrationOptions && migrationOptions.length > 0 ? (
-              <Link href={`/pools/migration?address=${position.address}`} className='w-full'>
+              <Link href={`/pools/migration?address=${position.address}`} className='w-full flex-1'>
                 <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
               </Link>
             ) : (
-              <PrimaryButton className='w-full' onClick={() => setMigrateWarningPopup(true)}>
+              <PrimaryButton className='w-full flex-1' onClick={() => setMigrateWarningPopup(true)}>
                 {t('Migrate')}
               </PrimaryButton>
             )}

@@ -201,8 +201,8 @@ function ManualItem({ position }) {
   }, [dispatch, poolInfo, push, version, tokenId])
 
   return (
-    <div className='flex flex-col items-center justify-between gap-4  py-1 md:flex-row md:py-2'>
-      <div className='flex w-full items-center gap-2 md:w-1/6'>
+    <div className='flex flex-col items-center justify-between gap-4  py-4 lg:flex-row lg:py-2'>
+      <div className='flex w-full items-center gap-2 lg:w-[20%] lg:min-w-[195px]'>
         <GroupIconTokens
           classNames={{
             image: 'outline-2 w-7 h-7',
@@ -213,16 +213,16 @@ function ManualItem({ position }) {
           height={32}
           tokens={[token0, token1]}
         />
-        <div className='flex flex-row justify-between max-md:w-full max-md:items-center md:flex-col'>
+        <div className='flex flex-row justify-between max-lg:w-full max-lg:items-center lg:flex-col'>
           <TextHeading>
             {unwrappedSymbol(asset0)}/{unwrappedSymbol(asset1)}
           </TextHeading>
-          <Paragraph className='text-xs'>
+          <Paragraph className='text-xl max-lg:font-archia max-lg:font-semibold lg:text-xs'>
             #{tokenId} / {(_fusion?.fee || 0) / 10000}% {t('Fee')}
           </Paragraph>
         </div>
       </div>
-      <div className='w-full text-center md:w-1/6'>
+      <div className='w-full  min-w-[146px] text-center lg:w-[17%]'>
         {position.type === 'Manual' ? (
           <Range
             position={position}
@@ -245,7 +245,7 @@ function ManualItem({ position }) {
           <></>
         )}
       </div>
-      <div className='flex w-full gap-4 md:w-3/6'>
+      <div className='flex w-full gap-4 lg:w-[39%]'>
         <div className='flex w-1/3 flex-col'>
           <TextHeading>{formatAmount(apr.toNumber())}%</TextHeading>
           <TextSubHeading className=''>{t('APR')}</TextSubHeading>
@@ -266,14 +266,14 @@ function ManualItem({ position }) {
           <TextSubHeading className=''>{t('Reward')}</TextSubHeading>
         </div>
       </div>
-      <div id='BUTTONS_GROUP' className='flex w-full gap-2 md:w-1/6'>
+      <div id='BUTTONS_GROUP' className='flex w-full max-w-[269px] gap-2 lg:w-[24%]'>
         {Number(liquidity) > 0 ? (
-          <OutlinedButton className='w-full' onClick={() => setRemovePopup(true)}>
+          <OutlinedButton className='flex-1' onClick={() => setRemovePopup(true)}>
             {t('Remove')}
           </OutlinedButton>
         ) : (
           <OutlinedButton
-            className='w-full'
+            className='flex-1'
             onClick={() => onAlgebraBurn(tokenId, () => mutateManual())}
             disabled={pending}
           >
@@ -283,7 +283,7 @@ function ManualItem({ position }) {
 
         {version === 3 && (
           <TextButton
-            className={cn('w-full', { hidden: feesInUsd.isZero() })}
+            className={cn('flex-1', { hidden: feesInUsd.isZero() })}
             disabled={feesInUsd.isZero()}
             onClick={() => setClaimPopup(true)}
           >
@@ -292,17 +292,18 @@ function ManualItem({ position }) {
         )}
 
         {version === 3 && (
-          <EmphasisButton className='w-full' onClick={handleAdd}>
+          <EmphasisButton className='flex-1' onClick={handleAdd}>
             {t('Add')}
           </EmphasisButton>
         )}
 
         {version === 2 && Number(liquidity) > 0 && (
-          <Link href={`/pools/migration?tokenId=${tokenId}`} className='w-full'>
+          <Link href={`/pools/migration?tokenId=${tokenId}`} className='flex-1'>
             <PrimaryButton className='w-full'>{t('Migrate')}</PrimaryButton>
           </Link>
         )}
       </div>
+
       <ClaimModal
         popup={claimPopup}
         setPopup={setClaimPopup}

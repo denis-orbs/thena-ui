@@ -40,16 +40,16 @@ function AssetsTable({ positions = [] }) {
   return (
     <div className='w-full rounded-lg max-md:px-0'>
       {/* Header */}
-      <div className='hidden items-center justify-between rounded-lg py-2 text-sm font-semibold md:flex md:bg-neutral-800 md:px-4'>
-        <span className='w-1/6'>Pair</span>
-        <span className='w-1/6'>Range</span>
-        <span className='w-1/6'>My APR</span>
-        <span className='w-1/6'>My Value</span>
-        <span className='w-1/6'>Rewards</span>
-        <span className='w-1/6' />
+      <div className='hidden items-center justify-between rounded-lg py-2 text-sm font-semibold md:bg-neutral-800 lg:flex lg:px-4'>
+        <span className='w-[20%] lg:min-w-[195px]'>Pair</span>
+        <span className='w-[17%] min-w-[145px]'>Range</span>
+        <span className='w-[13%]'>My APR</span>
+        <span className='w-[13%]'>My Value</span>
+        <span className='w-[13%]'>Rewards</span>
+        <span className='w-[24%]' />
       </div>
 
-      <div className='bg-opacity-50 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-no-repeat md:px-4 md:pt-8'>
+      <div className='bg-opacity-50 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-no-repeat max-lg:space-y-2 lg:px-4 lg:pt-8'>
         {paginatedPositions.map((item, index) =>
           item.type === 'Manual' ? (
             <React.Fragment key={`${item.address}-${index}`}>
