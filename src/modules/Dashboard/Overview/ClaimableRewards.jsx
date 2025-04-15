@@ -137,10 +137,10 @@ function ClaimableRewards() {
           <Paragraph className='text-neutral-50 lg:text-sm'>${formatAmount(theNftRewards)}</Paragraph>
         </div>
       </div>
-
-      <Paragraph className='text-neutral-500 max-md:text-center'>
+      {/* FIXME: show last 24 hours */}
+      {/* <Paragraph className='text-neutral-500 max-md:text-center'>
         {t('last 24 Hours')} <span className='text-primary-600'>+ ${formatAmount(32.48)}</span>
-      </Paragraph>
+      </Paragraph> */}
 
       <NewTextHeading className='text-neutral-500 max-md:text-center md:text-3xl'>
         {t('Total')} <span className='text-primary-300'>${formatAmount(totalRewards)}</span>
