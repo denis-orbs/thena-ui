@@ -320,11 +320,13 @@ const useSwap = (fromAsset, toAsset, fromAmountUI, bestTrade, isFallbackLH) => {
       initStartTxn(isNativeIn, isApproved)
 
       if (isNativeIn) {
-        await wrapCallback(fromAmount)
+        const isSuccess = await wrapCallback(fromAmount)
+        if (!isSuccess) throw new Error('user rejected the transaction')
       }
 
       if (!isApproved) {
-        await approveCallback(tokenContract)
+        const isSuccess = await approveCallback(tokenContract)
+        if (!isSuccess) throw new Error('user rejected the transaction')
       }
 
       // Refetch to get the latest quote
