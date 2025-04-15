@@ -24,7 +24,7 @@ import VotingChart from '../Chart/VotingChart'
 function Voting() {
   const { push } = useRouter()
   const t = useTranslations()
-  const { epochStart, epochEnd, epoch, days } = useEpochTimer()
+  const { epochStart, epochEnd, epoch, days, seconds } = useEpochTimer()
   const [veTHEId, setVeTHEId] = useState(null)
   const [approvedId, setApprovedId] = useState('')
 
@@ -56,7 +56,8 @@ function Voting() {
     const list = [...veTHEs]
     let result = veTHEId ? list.find(item => Number(item?.id) === Number(veTHEId)) : null
     if (!result) {
-      result = list.find(ve => ve.votedCurrentEpoch)
+      // veTHE with the most voting power
+      result = [...(list || [])].sort((a, b) => b.voting_amount - a.voting_amount).find(ve => ve.votedCurrentEpoch)
     }
     return result
   }, [veTHEs, veTHEId])
@@ -132,9 +133,15 @@ function Voting() {
           <VotingChart className='h-[260px] w-[260px]' data={userPools} />
         </div>
       </div>
-      <TextSubHeading className='font-archia text-xl font-semibold'>
-        {t('Epoch End in')} <span className='text-primary-700'>{days} Days</span>
-      </TextSubHeading>
+      {seconds <= 120 ? (
+        <TextHeading className='font-archia text-xl font-semibold text-error-600'>
+          {t('Epoch End in [seconds]', { seconds })}
+        </TextHeading>
+      ) : (
+        <TextSubHeading className='font-archia text-xl font-semibold'>
+          {t('Epoch End in')} <span className='text-primary-700'>{days} Days</span>
+        </TextSubHeading>
+      )}
       <EmphasisButton className='w-full' onClick={() => push('/dashboard/vote')}>
         {t('Vote')}
       </EmphasisButton>

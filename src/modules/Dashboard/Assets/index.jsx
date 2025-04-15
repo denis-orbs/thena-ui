@@ -16,7 +16,7 @@ import { ChevronDownIcon } from '@/svgs'
 
 import AssetsOverview from './AssetsOverview'
 import AssetsTable from './AssetsTable'
-import CaclculatorData from './CaclculatorData'
+import CalculatorData from './CalculatorData'
 
 const updateWalletBalance = positions => {
   const groupedPositions = positions.reduce((map, position) => {
@@ -101,7 +101,7 @@ function UserAssets() {
         <AssetsTable positions={filteredPositions} />
       </motion.div>
       {/* <AssetsTable positions={filteredPositions} /> */}
-      <CaclculatorData positions={filteredPositions} onData={collectData} />
+      <CalculatorData positions={filteredPositions} onData={collectData} />
     </Box>
   )
 }

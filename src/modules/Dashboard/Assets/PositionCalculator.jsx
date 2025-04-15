@@ -6,7 +6,7 @@ import { PAIR_TYPES } from '@/constant'
 import { pairAbi } from '@/constant/abi'
 import { fromWei, ZERO_VALUE } from '@/lib/utils'
 
-function PositionCaclculator({ position, isStaked, onData = () => {}, index }) {
+function PositionCalculator({ position, isStaked, onData = () => {}, index }) {
   // just for not stake
   const isV1Pool = useMemo(() => [PAIR_TYPES.STABLE, PAIR_TYPES.CLASSIC].includes(position.title), [position.title])
   const { data: fees } = useSimulateContract({
@@ -65,4 +65,4 @@ function PositionCaclculator({ position, isStaked, onData = () => {}, index }) {
   return null
 }
 
-export default PositionCaclculator
+export default PositionCalculator

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 import { usePositionData } from '@/hooks/weightedPool/useWeigtedPool'
 
-function WeightedCaclculator({ position, isStake, onData, index }) {
+function WeightedCalculator({ position, isStake, onData, index }) {
   const { claimableFee, depositValue } = usePositionData(position, isStake)
   useEffect(() => {
     onData({
@@ -16,4 +16,4 @@ function WeightedCaclculator({ position, isStake, onData, index }) {
   return null
 }
 
-export default WeightedCaclculator
+export default WeightedCalculator

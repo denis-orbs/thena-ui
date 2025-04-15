@@ -17,7 +17,7 @@ import { fromWei } from '@/lib/utils'
 
 import { fetchManualInfo } from './ManualItem'
 
-function ManualCaclculator({ position, onData = () => {}, index }) {
+function ManualCalculator({ position, onData = () => {}, index }) {
   const isFarming = useMemo(() => position?.deployer === zeroAddress, [position?.deployer])
   const { chainId, account } = useWallet()
   const { asset0, asset1, liquidity, tickLower, tickUpper, version, tokenId } = position
@@ -170,4 +170,4 @@ function ManualCaclculator({ position, onData = () => {}, index }) {
   return null
 }
 
-export default ManualCaclculator
+export default ManualCalculator

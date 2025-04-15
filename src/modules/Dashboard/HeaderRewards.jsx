@@ -15,7 +15,7 @@ function HeaderRewards({ totalUsd }) {
             ${formatAmount(totalUsd)}
           </NewTextHeading>
           <NewTextSubHeading className='font-archia text-sm font-bold uppercase max-md:text-primary-200 md:text-4xl md:font-semibold'>
-            {t('total rewads claimable')}
+            {t('total rewards claimable')}
           </NewTextSubHeading>
         </div>
       </div>

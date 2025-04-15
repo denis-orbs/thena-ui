@@ -13,14 +13,14 @@ import WeightedItem from './WeightedItem'
 function PaginateButton({ children, onClick, disabled, active, className }) {
   return (
     <div
-      onClick={() => onClick()}
+      onClick={() => !disabled && onClick()}
       disabled={disabled}
       className={cn(
         'flex h-8 w-fit min-w-8 items-center justify-center stroke-neutral-300 px-[2px] text-neutral-300',
         'hover:bg-neutral-700 hover:stroke-neutral-200 hover:text-neutral-200',
         'outline outline-2 outline-offset-4 outline-transparent',
         'cursor-pointer rounded transition-all duration-150 ease-out',
-        'text-sm active:outline-focus',
+        'text-sm',
         active && 'bg-neutral-800',
         className,
       )}
@@ -40,13 +40,16 @@ function AssetsTable({ positions = [] }) {
   return (
     <div className='w-full rounded-lg max-md:px-0'>
       {/* Header */}
-      <div className='hidden items-center justify-between rounded-lg py-2 text-sm font-semibold md:bg-neutral-800 lg:flex lg:px-4'>
-        <span className='w-[20%] lg:min-w-[195px]'>Pair</span>
-        <span className='w-[17%] min-w-[145px]'>Range</span>
-        <span className='w-[13%]'>My APR</span>
-        <span className='w-[13%]'>My Value</span>
-        <span className='w-[13%]'>Rewards</span>
-        <span className='w-[24%]' />
+      <div className='hidden rounded-lg md:bg-neutral-800 lg:flex lg:px-4'>
+        <div className='flex w-full flex-row items-center justify-between gap-4 rounded-lg py-2 text-sm font-semibold'>
+          {/* flex flex-col items-center justify-between gap-4 py-4 lg:flex-row lg:py-2 */}
+          <span className='w-[20%] px-4 lg:min-w-[195px]'>Pair</span>
+          <span className='min-w-[146px] px-4 lg:w-[17%]'>Range</span>
+          <span className='w-[13%] px-4'>My APR</span>
+          <span className='w-[13%] px-4'>My Value</span>
+          <span className='w-[13%] px-4'>Rewards</span>
+          <span className='w-[24%] max-w-[269px]' />
+        </div>
       </div>
 
       <div className='bg-opacity-50 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-no-repeat max-lg:space-y-2 lg:px-4 lg:pt-8'>
@@ -74,7 +77,7 @@ function AssetsTable({ positions = [] }) {
       </div>
 
       {totalPages > 1 && (
-        <div className='mt-6 flex justify-center gap-2 md:justify-end'>
+        <div className='mb-1 mt-6 flex justify-center gap-2 md:justify-end'>
           <PaginateButton
             onClick={() => setCurrentPage(prev => Math.min(prev - 1, 1))}
             disabled={currentPage === 1}
@@ -82,7 +85,7 @@ function AssetsTable({ positions = [] }) {
               currentPage === 1 && 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
             )}
           >
-            <ArrowLeftIcon className={`h-4 w-4${currentPage === 1 ? ' stroke-gray-700' : ''}`} />
+            <ArrowLeftIcon className='size-4' />
           </PaginateButton>
           {totalPages < 6 &&
             new Array(totalPages).fill(0).map((item, idx) => (
@@ -168,7 +171,7 @@ function AssetsTable({ positions = [] }) {
                 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
             )}
           >
-            <ArrowRightIcon className={`h-4 w-4${currentPage === totalPages ? ' stroke-gray-700' : ''}`} />
+            <ArrowRightIcon className='size-4' />
           </PaginateButton>
         </div>
       )}

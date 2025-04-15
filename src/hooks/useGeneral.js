@@ -92,6 +92,7 @@ export const useEpochTimer = () => {
     hours: 0,
     mins: 0,
     epoch: 0,
+    seconds: 0,
     epochStart: '',
     epochEnd: '',
   })
@@ -107,11 +108,13 @@ export const useEpochTimer = () => {
       const days = Math.floor((nextEpoch - curTime) / 86400)
       const hours = Math.floor((nextEpoch - curTime - days * 86400) / 3600)
       const mins = Math.floor((nextEpoch - curTime - days * 86400 - hours * 3600) / 60)
+      const seconds = Math.ceil(nextEpoch - curTime)
       setEpochInfo({
         days,
         hours: hours < 10 ? `0${hours}` : hours,
         mins: mins < 10 ? `0${mins}` : mins,
         epoch,
+        seconds,
         epochStart: format(new Date(epochStartTimestamp * 1000), 'dd.MM.yyyy'),
         epochEnd: format(new Date(epochEndTimestamp * 1000), 'dd.MM.yyyy'),
       })

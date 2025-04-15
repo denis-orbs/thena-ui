@@ -1505,12 +1505,11 @@
   "Generated Fees and Rewards": "Generated Fees and Rewards",
   "Claim All Rewards": "Claim ALL REWARDS",
   "Range": "Range",
-  "total rewards claimable": "total rewards claimable",
   "Voting for [value]": "Voting for ${value}",
   "Claimable Rewards": "Claimable Rewards",
   "Epoch End in": "Epoch End in",
   "Claimable Fees": "Claimable Fees",
-  "total rewads claimable": "total rewads claimable",
+  "total rewards claimable": "total rewards claimable",
   "Farmed": "Farmed",
   "Voting": "Voting",
   "TheNFT": "TheNFT",
@@ -1524,5 +1523,6 @@
   "Provided Liquidity": "Provided Liquidity",
   "Max Lock Power": "Max Lock Power",
   "Socials": "Socials",
-  "Open": "Open"
+  "Open": "Open",
+  "Epoch End in [seconds]": "Epoch End in {seconds} Seconds"
 }

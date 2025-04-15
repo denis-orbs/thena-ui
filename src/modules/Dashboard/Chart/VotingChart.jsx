@@ -43,8 +43,8 @@ function VotingChart({ data = [], className }) {
   )
 
   const { sinceLastEpoch, untilNextEpoch } = getSecondsRelativeToThursdayUTC()
-  const formatData = () =>
-    data.map(d => {
+  const formatData = () => {
+    const result = data.map(d => {
       const value = d.votes.weightPercent.toNumber()
       return {
         label: d.symbol,
@@ -52,10 +52,21 @@ function VotingChart({ data = [], className }) {
       }
     })
 
+    if (!result || result.length === 0) {
+      return [
+        {
+          label: 'Not vote',
+          value: 1000,
+        },
+      ]
+    }
+    return result
+  }
+
   const pools = formatData()
   const timeData = [
     {
-      value: sinceLastEpoch,
+      value: untilNextEpoch <= 120 ? 120 - untilNextEpoch : sinceLastEpoch,
     },
     {
       value: untilNextEpoch,
@@ -67,16 +78,18 @@ function VotingChart({ data = [], className }) {
       {
         label: 'vote',
         data: pools.map(d => d.value),
-        backgroundColor: pools.map((_, i) => COLORS[i % COLORS.length]),
+        backgroundColor: pools.map((pool, i) => (pool.label === 'Not vote' ? '#281B2E' : COLORS[i % COLORS.length])),
         borderWidth: 0,
-        spacing: 2,
+        spacing: pools.length === 1 && pools[0].label === 'Not vote' ? 0 : 2,
         radius: '72%',
         cutout: '62%',
       },
       {
         label: 'time',
         data: timeData.map(d => d.value),
-        backgroundColor: timeData.map((_, i) => (i === 0 ? '#580055' : '#281B2E')),
+        backgroundColor: timeData.map((_, i) =>
+          i === 0 ? (untilNextEpoch <= 120 ? '#F51C00' : '#580055') : '#281B2E',
+        ),
         borderWidth: 0,
         radius: '100%',
         cutout: '75%',
@@ -94,7 +107,7 @@ function VotingChart({ data = [], className }) {
             const { datasetIndex } = context
             const val = formatAmount(context.raw)
             if (datasetIndex === 0) {
-              return `${pools?.[dataIndex].label}: ${val}%`
+              return pools?.[dataIndex].label === 'Not vote' ? 'Not vote' : `${pools?.[dataIndex].label}: ${val}%`
             }
             return val
           },
@@ -109,8 +122,14 @@ function VotingChart({ data = [], className }) {
   return (
     <div className={cn('relative h-[200px] w-[200px]', className)}>
       <div className='pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-1 text-center'>
-        <div className='text-3xl font-semibold text-primary-300'>${formatAmount(expectedRewards, true)}</div>
-        <div className='text-sm text-neutral-500'>Expected Rewards</div>
+        {pools.length === 1 && pools[0].label === 'Not vote' ? (
+          <span className='font-bold uppercase text-error-600'>Not vote</span>
+        ) : (
+          <>
+            <div className='text-3xl font-semibold text-primary-300'>${formatAmount(expectedRewards, true)}</div>
+            <div className='text-sm text-neutral-500'>Expected Rewards</div>
+          </>
+        )}
       </div>
 
       <div className='relative z-10'>
