@@ -307,7 +307,7 @@ export const useNftFeesClaim = () => {
     const harvestuuid = uuidv4()
     startTxn({
       key,
-      title: 'Claim Fees',
+      title: 'Claim TheNFT Rewards',
       transactions: {
         [harvestuuid]: {
           desc: t('Claim Fees'),

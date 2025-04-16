@@ -617,3 +617,12 @@ input[type='radio']:checked:after {
 .price-chart-container .tv-lightweight-charts table tr:first-child {
   border-bottom: 2px solid #281b2e;
 }
+
+.bg-full-range {
+  background: linear-gradient(
+    90deg,
+    rgba(189, 96, 186, 0.1) 10.19%,
+    rgba(189, 96, 186, 0.2) 50.11%,
+    rgba(189, 96, 186, 0.1) 90.02%
+  );
+}
