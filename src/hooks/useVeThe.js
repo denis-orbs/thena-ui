@@ -796,7 +796,7 @@ export const useClaimAllV2 = () => {
 
         startTxn({
           key,
-          title: 'Claim All',
+          title: 'Claim Voting Rewards V2',
           transactions: {
             ...(bribeRewards.length > 0 && {
               [bribesuuid]: {
@@ -994,7 +994,7 @@ export const useClaimAll = () => {
         }
         startTxn({
           key,
-          title: 'Claim All',
+          title: 'Claim Voting Rewards V3',
           transactions,
         })
 

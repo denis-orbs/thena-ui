@@ -1,11 +1,12 @@
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 
+import { cn } from '@/lib/utils'
 import { ArrowLeftIcon } from '@/svgs'
 
 import { TextButton } from '../buttons/Button'
 
-function LayoutWithBackButton({ children }) {
+function LayoutWithBackButton({ children, className }) {
   const t = useTranslations()
   const { back } = useRouter()
 
@@ -21,7 +22,7 @@ function LayoutWithBackButton({ children }) {
         </TextButton>
       </div>
 
-      <section className='layout-addliquidity'>{children}</section>
+      <section className={cn('layout-addliquidity', className)}>{children}</section>
     </div>
   )
 }

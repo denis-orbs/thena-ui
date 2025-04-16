@@ -14,7 +14,6 @@ import IconGroup from '@/components/icongroup'
 import CircleImage from '@/components/image/CircleImage'
 import Input from '@/components/input'
 import SearchInput from '@/components/input/SearchInput'
-import { ProgressBar } from '@/components/progress-bar'
 import Table from '@/components/table'
 import Toggle from '@/components/toggle'
 import CustomTooltip from '@/components/tooltip'
@@ -30,7 +29,7 @@ import useWallet from '@/hooks/useWallet'
 import { readCall } from '@/lib/contractActions'
 import { getVeTHEContract } from '@/lib/contracts'
 import { warnToast } from '@/lib/notify'
-import { cn, formatAmount, fromWei } from '@/lib/utils'
+import { cn, formatAmount } from '@/lib/utils'
 import { ListTokenPercantage } from '@/modules/WeightedPool/TokenPercentage'
 import { useV3PoolsWithGauge } from '@/state/pools/hooks'
 import { useChainSettings } from '@/state/settings/hooks'
@@ -114,14 +113,6 @@ export default function VotePage() {
     {
       refreshInterval: 0,
     },
-  )
-  const { data: totalVotesSupply } = useSWR(
-    [ChainId.BSC, CHAIN_ID.TEST_BSC].includes(networkId) && ['vethe/totalSupply', networkId],
-    async () => {
-      const veTHEContract = getVeTHEContract(networkId)
-      return await readCall(veTHEContract, 'totalSupply', [], networkId)
-    },
-    { refreshInterval: 0 },
   )
 
   useEffect(() => {
@@ -238,12 +229,6 @@ export default function VotePage() {
       }),
     [filteredPools, sort],
   )
-
-  const voteCastedPercentage = useMemo(() => {
-    const totalVotes = sortedPools.reduce((prev, pool) => prev + Number(pool?.gauge?.weight ?? 0), 0)
-    const totalSupply = fromWei(totalVotesSupply, 18).toNumber()
-    return totalSupply ? (totalVotes / fromWei(totalVotesSupply, 18).toNumber()) * 100 : 0
-  }, [sortedPools, totalVotesSupply])
 
   const finalPools = useMemo(
     () =>
@@ -445,11 +430,8 @@ export default function VotePage() {
             <Paragraph className='text-sm'>{t('EPOCH [epoch] Ends in', { epoch })}</Paragraph>
           </Box>
         </div>
-
-        <ProgressBar progress={voteCastedPercentage} suffix={`${formatAmount(voteCastedPercentage)}% Votes Casted`} />
-
         <div className='flex flex-col gap-4'>
-          <div className='flex justify-between gap-4 max-lg:flex-col'>
+          <div className='flex flex-col justify-between gap-4'>
             <div className='flex w-full items-center justify-between lg:w-fit'>
               <TextHeading className='text-xl'>{t('Votes')}</TextHeading>
               <div className='flex gap-6'>
@@ -462,15 +444,8 @@ export default function VotePage() {
                 />
               </div>
             </div>
-            <div className='flex w-full justify-between gap-4 max-lg:flex-col-reverse lg:w-auto lg:gap-2'>
-              <div className='flex flex-col gap-4 md:flex-row'>
-                <Toggle
-                  className='hidden lg:flex'
-                  checked={isVoted}
-                  onChange={() => setIsVoted(!isVoted)}
-                  toggleId='active'
-                  label='Voted Only'
-                />
+            <div className='flex w-full flex-col-reverse justify-between gap-4 lg:w-auto lg:flex-row lg:gap-2'>
+              <div className='flex flex-col gap-4 md:flex-row lg:gap-2'>
                 <div className='flex items-center justify-between gap-2 lg:hidden'>
                   <Paragraph>Sort By</Paragraph>
                   <Dropdown
@@ -496,7 +471,14 @@ export default function VotePage() {
                   approvedId={approvedId}
                   setApprovedId={setApprovedId}
                 />
-                <SearchInput className='flex-1' val={searchText} setVal={setSearchText} />
+                <SearchInput className='w-full md:w-auto' val={searchText} setVal={setSearchText} />
+                <Toggle
+                  className='hidden lg:flex'
+                  checked={isVoted}
+                  onChange={() => setIsVoted(!isVoted)}
+                  toggleId='active'
+                  label='Voted Only'
+                />
               </div>
             </div>
           </div>

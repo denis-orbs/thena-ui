@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react'
 
-import Loading from '../loading'
+import Loading from '../../loading'
 
 export const metadata = {
   title: 'Dashboard',
@@ -9,8 +9,10 @@ export const metadata = {
 
 export default function DashboardLayout({ children }) {
   return (
-    <main className='flex min-h-screen flex-col bg-neutral-950'>
-      <Suspense fallback={<Loading />}>{children}</Suspense>
+    <main className='desktop-bg flex min-h-screen flex-col'>
+      <section className='layout'>
+        <Suspense fallback={<Loading />}>{children}</Suspense>
+      </section>
     </main>
   )
 }

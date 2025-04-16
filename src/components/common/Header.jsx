@@ -525,45 +525,45 @@ function Header() {
     [t, pathname, networkId, push],
   )
 
-  const submenus = useMemo(() => {
-    const subs = [
-      {
-        label: 'My Assets',
-        active: pathname === '/dashboard',
-        onClickHandler: () => {
-          push('/dashboard')
-        },
-      },
-      {
-        label: 'Lock',
-        active: pathname.includes('/dashboard/lock'),
-        onClickHandler: () => {
-          push('/dashboard/lock')
-        },
-      },
-      {
-        label: 'Vote',
-        active: pathname === '/dashboard/vote',
-        href: '/dashboard/vote',
-        isLink: true,
-      },
-      {
-        label: 'Rewards',
-        active: pathname === '/dashboard/rewards',
-        onClickHandler: () => {
-          push('/dashboard/rewards')
-        },
-      },
-      {
-        label: 'theNFT',
-        active: pathname === '/dashboard/thenft',
-        onClickHandler: () => {
-          push('/dashboard/thenft')
-        },
-      },
-    ]
-    return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
-  }, [pathname, networkId, push])
+  // const submenus = useMemo(() => {
+  //   const subs = [
+  //     {
+  //       label: 'My Assets',
+  //       active: pathname === '/dashboard',
+  //       onClickHandler: () => {
+  //         push('/dashboard')
+  //       },
+  //     },
+  //     {
+  //       label: 'Lock',
+  //       active: pathname.includes('/dashboard/lock'),
+  //       onClickHandler: () => {
+  //         push('/dashboard/lock')
+  //       },
+  //     },
+  //     {
+  //       label: 'Vote',
+  //       active: pathname === '/dashboard/vote',
+  //       href: '/dashboard/vote',
+  //       isLink: true,
+  //     },
+  //     {
+  //       label: 'Rewards',
+  //       active: pathname === '/dashboard/rewards',
+  //       onClickHandler: () => {
+  //         push('/dashboard/rewards')
+  //       },
+  //     },
+  //     {
+  //       label: 'theNFT',
+  //       active: pathname === '/dashboard/thenft',
+  //       onClickHandler: () => {
+  //         push('/dashboard/thenft')
+  //       },
+  //     },
+  //   ]
+  //   return networkId === ChainId.OPBNB ? subs.slice(0, 1) : subs
+  // }, [pathname, networkId, push])
 
   const arenaSubmenus = useMemo(
     () =>
@@ -949,11 +949,11 @@ function Header() {
         <TxnModal />
         <LiquidityHubSeekingBetterPriceModal />
       </header>
-      {pathname.startsWith('/dashboard') && (
+      {/* {pathname.startsWith('/dashboard') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 p-4 backdrop-blur-2xl lg:top-[92px] lg:flex lg:px-60 lg:py-5'>
           <Tabs data={submenus} size={SizeTypes.Medium} />
         </div>
-      )}
+      )} */}
       {pathname.includes('/arena') && (
         <div className='fixed top-[64px] z-[45] w-full bg-neutral-900 py-4 backdrop-blur-2xl lg:top-[92px] lg:py-5'>
           <div className='layout-menu-container flex flex-row items-center justify-between backdrop-blur-2xl'>

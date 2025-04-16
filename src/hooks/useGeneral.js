@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
 import { ChainId } from 'thena-sdk-core/dist'
 import { formatEther } from 'viem'
@@ -91,6 +92,9 @@ export const useEpochTimer = () => {
     hours: 0,
     mins: 0,
     epoch: 0,
+    seconds: 0,
+    epochStart: '',
+    epochEnd: '',
   })
 
   useEffect(() => {
@@ -98,15 +102,21 @@ export const useEpochTimer = () => {
       const curTime = new Date().getTime() / 1000
       const epoch5 = 1675900800
       const epoch = Math.floor((curTime - epoch5) / 604800) + 5
+      const epochStartTimestamp = epoch5 + (epoch - 5) * 604800
+      const epochEndTimestamp = epochStartTimestamp + 604800
       const nextEpoch = Math.ceil(curTime / (86400 * 7)) * (86400 * 7)
       const days = Math.floor((nextEpoch - curTime) / 86400)
       const hours = Math.floor((nextEpoch - curTime - days * 86400) / 3600)
       const mins = Math.floor((nextEpoch - curTime - days * 86400 - hours * 3600) / 60)
+      const seconds = Math.ceil(nextEpoch - curTime)
       setEpochInfo({
         days,
         hours: hours < 10 ? `0${hours}` : hours,
         mins: mins < 10 ? `0${mins}` : mins,
         epoch,
+        seconds,
+        epochStart: format(new Date(epochStartTimestamp * 1000), 'dd.MM.yyyy'),
+        epochEnd: format(new Date(epochEndTimestamp * 1000), 'dd.MM.yyyy'),
       })
     }
     const timer = setInterval(() => epochTimer(), 1000)

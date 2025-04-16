@@ -2,9 +2,9 @@ import React from 'react'
 
 import { cn } from '@/lib/utils'
 
-export function Paragraph({ children, className, title = undefined }) {
+export function Paragraph({ children, className, title = undefined, ...props }) {
   return (
-    <span className={cn('text-sm text-neutral-300 lg:text-base', className)} title={title}>
+    <span className={cn('text-sm text-neutral-300 lg:text-base', className)} title={title} {...props}>
       {children}
     </span>
   )
