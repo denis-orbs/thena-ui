@@ -41,6 +41,7 @@ export const Brush2 = ({
   northHandleColor,
   southHandleColor,
   setIsOutOfView,
+  isFullRange,
 }) => {
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
@@ -204,7 +205,7 @@ export const Brush2 = ({
         {/* custom brush handles */}
         {normalizedBrushExtent && (
           <>
-            {northHandleInView ? (
+            {northHandleInView && !isFullRange ? (
               <g
                 transform={`translate(0, ${Math.max(0, yScale(normalizedBrushExtent[1]))}), scale(1, ${
                   flipNorthHandle ? -1 : 1
@@ -252,7 +253,7 @@ export const Brush2 = ({
               </g>
             ) : null}
 
-            {southHandleInView ? (
+            {southHandleInView && !isFullRange ? (
               <g
                 transform={`translate(0, ${yScale(normalizedBrushExtent[0])}), scale(1, ${flipSouthHandle ? -1 : 1})`}
                 cursor={interactive ? 'ns-resize' : 'default'}
@@ -300,7 +301,7 @@ export const Brush2 = ({
               </g>
             ) : null}
 
-            {showNorthArrow && (
+            {(showNorthArrow || isFullRange) && (
               <g transform='translate(18, 16) scale(1,-1)'>
                 <OffScreenHandleV2 color={northHandleColor} />
                 <text
@@ -315,10 +316,10 @@ export const Brush2 = ({
                 </text>
               </g>
             )}
-            {showSouthArrow && (
+            {(showSouthArrow || isFullRange) && (
               <g transform={`translate(18, ${height - 16}) `}>
                 <OffScreenHandleV2 color={northHandleColor} />
-                {!showNorthArrow && (
+                {(!showNorthArrow || isFullRange) && (
                   <text x={14} y={5} fill={northHandleColor} fontSize={10} alignmentBaseline='middle'>
                     Range out of view
                   </text>
@@ -335,6 +336,7 @@ export const Brush2 = ({
       height,
       normalizedBrushExtent,
       northHandleInView,
+      isFullRange,
       yScale,
       flipNorthHandle,
       interactive,
