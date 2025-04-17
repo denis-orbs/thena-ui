@@ -34,7 +34,7 @@ export const v4SubGraphT2EUrl = 'https://api.studio.thegraph.com/query/70764/the
 export const codexGraphUrl = 'https://graph.codex.io/graphql'
 
 export const voterSubGrapUrl = {
-  [CHAIN_ID.BSC]: 'https://api.studio.thegraph.com/query/70764/thena-bsc-v3-voter/version/latest',
+  [CHAIN_ID.BSC]: `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_V1_API_KEY}/subgraphs/id/3DDdHEiqoSMLyu9BnrahCruKjK3ZHeE96vzCgUyPPDCa`,
   [CHAIN_ID.OPBNB]: '',
   [CHAIN_ID.TEST_BSC]: 'https://api.studio.thegraph.com/query/70764/thena-chapel-v3-voter/version/latest',
 }
@@ -46,7 +46,9 @@ export const v1Client = {
 
 export const fusionClient = {
   3: {
-    [CHAIN_ID.BSC]: new GraphQLClient('https://api.studio.thegraph.com/query/70764/thena-bsc-v3-fusion/version/latest'),
+    [CHAIN_ID.BSC]: new GraphQLClient(
+      `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/BoHp9H2rGzVFPiqc56PJ1Gw7EPDaiHMcupsUuksMGp2K`,
+    ),
     [CHAIN_ID.TEST_BSC]: new GraphQLClient(
       'https://api.studio.thegraph.com/query/70764/thena-chapel-v3-fusion/version/latest',
     ),
@@ -63,13 +65,15 @@ export const fusionClient = {
 }
 
 export const fusionFarmingClient = {
-  56: new GraphQLClient('https://api.studio.thegraph.com/query/70764/thena-bsc-v3-fusion-farming/version/latest'),
+  56: new GraphQLClient(
+    `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/eTT8C92PwJiquV8S7oCkAzXToG3XJkkZnm4pBFtrSmc`,
+  ),
   97: new GraphQLClient('https://api.studio.thegraph.com/query/70764/thena-chapel-v3-fusion-farming/version/latest'),
 }
 
 export const weightedClient = {
   [CHAIN_ID.BSC]: new GraphQLClient(
-    'https://api.studio.thegraph.com/query/70764/thena-bsc-weighted-pool/version/latest',
+    `https://gateway.thegraph.com/api/${process.env.NEXT_PUBLIC_FUSION_API_KEY}/subgraphs/id/8GmLk8ZRWiwYMqi9Sd3qS5vu8VmPwHp8NtW64YLwtwdE`,
   ),
   [CHAIN_ID.TEST_BSC]: new GraphQLClient(
     'https://api.studio.thegraph.com/query/70764/thena-chapel-weighted-pools/version/latest',
