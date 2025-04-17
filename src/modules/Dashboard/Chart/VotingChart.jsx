@@ -6,6 +6,21 @@ import { cn, formatAmount } from '@/lib/utils'
 
 const COLORS = ['#EA66E5', '#E333DD', '#DC00D4', '#B000AA', '#84007F']
 
+function formatDuration(seconds) {
+  const days = Math.floor(seconds / (3600 * 24))
+  const hours = Math.floor((seconds % (3600 * 24)) / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
+
+  const parts = []
+  if (days) parts.push(`${days}d`)
+  if (hours) parts.push(`${hours}h`)
+  if (minutes) parts.push(`${minutes}m`)
+  if (secs || parts.length === 0) parts.push(`${secs}s`)
+
+  return parts.join('')
+}
+
 function getSecondsRelativeToThursdayUTC() {
   const now = new Date()
   const dayOfWeek = now.getUTCDay()
@@ -109,7 +124,7 @@ function VotingChart({ data = [], className }) {
             if (datasetIndex === 0) {
               return pools?.[dataIndex].label === 'Not voted' ? 'Not voted' : `${pools?.[dataIndex].label}: ${val}%`
             }
-            return val
+            return formatDuration(Number(context.raw))
           },
         },
       },
