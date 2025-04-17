@@ -1,6 +1,8 @@
+import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 import { zeroAddress } from 'viem'
 
+import Dropdown from '@/components/dropdown'
 import { cn } from '@/lib/utils'
 import { ArrowLeftIcon, ArrowRightIcon } from '@/svgs'
 
@@ -32,11 +34,13 @@ function PaginateButton({ children, onClick, disabled, active, className }) {
 
 const ITEMS_PER_PAGE = 10
 function AssetsTable({ positions = [] }) {
+  const t = useTranslations()
+  const [itemPerPage, setItemPerPage] = useState(ITEMS_PER_PAGE)
   const [currentPage, setCurrentPage] = useState(1)
 
-  const totalPages = Math.ceil(positions.length / ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(positions.length / itemPerPage)
 
-  const paginatedPositions = positions.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+  const paginatedPositions = positions.slice((currentPage - 1) * itemPerPage, currentPage * itemPerPage)
   return (
     <div className='w-full rounded-lg max-md:px-0'>
       {/* Header */}
@@ -76,105 +80,118 @@ function AssetsTable({ positions = [] }) {
         )}
       </div>
 
-      {totalPages > 1 && (
-        <div className='mb-1 mt-6 flex justify-center gap-2 md:justify-end'>
-          <PaginateButton
-            onClick={() => setCurrentPage(prev => Math.min(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className={cn(
-              currentPage === 1 && 'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
+      <div className='flex flex-row items-center justify-between'>
+        <Dropdown
+          className='w-full md:max-w-[200px]'
+          listClassNames='z-40'
+          data={[{ label: 10 }, { label: 20 }, { label: 50 }, { label: 100 }]}
+          selected={itemPerPage}
+          setSelected={ele => setItemPerPage(ele.label)}
+          prefix={t('Pools per page')}
+          prefixClass='pl-[140px]'
+          isLocale={false}
+        />
+        {totalPages > 1 && (
+          <div className='mb-1 mt-6 flex justify-center gap-2 md:justify-end'>
+            <PaginateButton
+              onClick={() => setCurrentPage(prev => Math.min(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={cn(
+                currentPage === 1 &&
+                  'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
+              )}
+            >
+              <ArrowLeftIcon className='size-4' />
+            </PaginateButton>
+            {totalPages < 6 &&
+              new Array(totalPages).fill(0).map((item, idx) => (
+                <PaginateButton
+                  key={`paginate-${idx}`}
+                  active={currentPage === idx + 1}
+                  onClick={() => {
+                    setCurrentPage(idx + 1)
+                  }}
+                >
+                  {idx + 1}
+                </PaginateButton>
+              ))}
+            {totalPages >= 6 && (
+              <>
+                <PaginateButton
+                  active={currentPage === 1}
+                  onClick={() => {
+                    setCurrentPage(1)
+                  }}
+                >
+                  1
+                </PaginateButton>
+                <PaginateButton
+                  active={currentPage === 2}
+                  onClick={() => {
+                    setCurrentPage(2)
+                  }}
+                >
+                  2
+                </PaginateButton>
+                {currentPage > 3 && (
+                  <PaginateButton
+                    onClick={() => {
+                      setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
+                    }}
+                  >
+                    ...
+                  </PaginateButton>
+                )}
+                {currentPage > 2 && currentPage < totalPages - 1 && (
+                  <PaginateButton
+                    active
+                    onClick={() => {
+                      setCurrentPage(currentPage)
+                    }}
+                  >
+                    {currentPage}
+                  </PaginateButton>
+                )}
+                {currentPage < totalPages - 2 && (
+                  <PaginateButton
+                    onClick={() => {
+                      setCurrentPage(currentPage > totalPages - 2 ? currentPage - 1 : currentPage + 1)
+                    }}
+                  >
+                    ...
+                  </PaginateButton>
+                )}
+                <PaginateButton
+                  active={currentPage === totalPages - 1}
+                  onClick={() => {
+                    setCurrentPage(totalPages - 1)
+                  }}
+                >
+                  {totalPages - 1}
+                </PaginateButton>
+                <PaginateButton
+                  active={currentPage === totalPages}
+                  onClick={() => {
+                    setCurrentPage(totalPages)
+                  }}
+                >
+                  {totalPages}
+                </PaginateButton>
+              </>
             )}
-          >
-            <ArrowLeftIcon className='size-4' />
-          </PaginateButton>
-          {totalPages < 6 &&
-            new Array(totalPages).fill(0).map((item, idx) => (
-              <PaginateButton
-                key={`paginate-${idx}`}
-                active={currentPage === idx + 1}
-                onClick={() => {
-                  setCurrentPage(idx + 1)
-                }}
-              >
-                {idx + 1}
-              </PaginateButton>
-            ))}
-          {totalPages >= 6 && (
-            <>
-              <PaginateButton
-                active={currentPage === 1}
-                onClick={() => {
-                  setCurrentPage(1)
-                }}
-              >
-                1
-              </PaginateButton>
-              <PaginateButton
-                active={currentPage === 2}
-                onClick={() => {
-                  setCurrentPage(2)
-                }}
-              >
-                2
-              </PaginateButton>
-              {currentPage > 3 && (
-                <PaginateButton
-                  onClick={() => {
-                    setCurrentPage(currentPage > 3 ? currentPage - 1 : currentPage + 1)
-                  }}
-                >
-                  ...
-                </PaginateButton>
+            <PaginateButton
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className={cn(
+                currentPage === totalPages &&
+                  'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
               )}
-              {currentPage > 2 && currentPage < totalPages - 1 && (
-                <PaginateButton
-                  active
-                  onClick={() => {
-                    setCurrentPage(currentPage)
-                  }}
-                >
-                  {currentPage}
-                </PaginateButton>
-              )}
-              {currentPage < totalPages - 2 && (
-                <PaginateButton
-                  onClick={() => {
-                    setCurrentPage(currentPage > totalPages - 2 ? currentPage - 1 : currentPage + 1)
-                  }}
-                >
-                  ...
-                </PaginateButton>
-              )}
-              <PaginateButton
-                active={currentPage === totalPages - 1}
-                onClick={() => {
-                  setCurrentPage(totalPages - 1)
-                }}
-              >
-                {totalPages - 1}
-              </PaginateButton>
-              <PaginateButton
-                active={currentPage === totalPages}
-                onClick={() => {
-                  setCurrentPage(totalPages)
-                }}
-              >
-                {totalPages}
-              </PaginateButton>
-            </>
-          )}
-          <PaginateButton
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className={cn(
-              currentPage === totalPages &&
-                'cursor-not-allowed hover:bg-inherit active:outline-none active:outline-transparent',
-            )}
-          >
-            <ArrowRightIcon className='size-4' />
-          </PaginateButton>
-        </div>
-      )}
+            >
+              <ArrowRightIcon className='size-4' />
+            </PaginateButton>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
