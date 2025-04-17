@@ -43,16 +43,24 @@ function ClaimableRewards() {
     return total.times(prices.THE).toNumber()
   }, [prices.THE, rewards])
 
-  const votingRewards = useMemo(() => {
+  const totalVotingV2Rewards = useMemo(
+    () => currentRewardsV2?.reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE) ?? ZERO_VALUE,
+    [currentRewardsV2],
+  )
+
+  const totalVotingV3Rewards = useMemo(() => {
     const totalV3Rewards = veRewardsV3.reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE)
     const totalV3Rebase = filteredVeTHEs.reduce(
       (sum, curr) => sum.plus(curr?.rebase_amount?.times(prices.THE)),
       ZERO_VALUE,
     )
-    const totalV2Rewards = currentRewardsV2?.reduce((sum, curr) => sum.plus(curr.totalUsd), ZERO_VALUE) ?? ZERO_VALUE
+    return totalV3Rewards.plus(totalV3Rebase)
+  }, [filteredVeTHEs, prices.THE, veRewardsV3])
 
-    return totalV3Rewards.plus(totalV3Rebase).plus(totalV2Rewards).toNumber()
-  }, [veRewardsV3, filteredVeTHEs, currentRewardsV2, prices.THE])
+  const votingRewards = useMemo(
+    () => totalVotingV2Rewards.plus(totalVotingV3Rewards).toNumber(),
+    [totalVotingV2Rewards, totalVotingV3Rewards],
+  )
 
   const totalRewards = useMemo(
     () => farmedRewards + votingRewards + theNftRewards.toNumber(),
@@ -69,15 +77,29 @@ function ClaimableRewards() {
   )
 
   const onClaimAllRewards = useCallback(async () => {
-    if (!pending) await onGaugeAllHarvest(farmedPools)
-    if (!allPendingV2) await handleClaimAllV2(currentRewardsV2, [], () => refetchVetheRewardV2())
-    if (!allPendingV3) await handleClaimAll(veRewardsV3, filteredVeTHEs, () => refreshVetheRewardV3())
-    if (!pendingClaimNft) await onHarvestNft()
+    // Harvest pool rewards
+    if (!pending && farmedRewards > 0) {
+      await onGaugeAllHarvest(farmedPools)
+    }
+
+    // Harvest voting V2 rewards
+    if (!allPendingV2 && totalVotingV2Rewards.gt(0)) {
+      await handleClaimAllV2(currentRewardsV2, [], () => refetchVetheRewardV2())
+    }
+
+    // Harvest voting V3 rewards
+    if (!allPendingV3 && totalVotingV3Rewards.gt(0)) {
+      await handleClaimAll(veRewardsV3, filteredVeTHEs, () => refreshVetheRewardV3())
+    }
+
+    // Harvest theNft rewards
+    if (!pendingClaimNft && theNftRewards.gt(0)) await onHarvestNft()
   }, [
     allPendingV2,
     allPendingV3,
     currentRewardsV2,
     farmedPools,
+    farmedRewards,
     filteredVeTHEs,
     handleClaimAll,
     handleClaimAllV2,
@@ -87,6 +109,9 @@ function ClaimableRewards() {
     pendingClaimNft,
     refetchVetheRewardV2,
     refreshVetheRewardV3,
+    theNftRewards,
+    totalVotingV2Rewards,
+    totalVotingV3Rewards,
     veRewardsV3,
   ])
 
