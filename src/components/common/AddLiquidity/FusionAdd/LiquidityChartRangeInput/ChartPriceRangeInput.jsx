@@ -472,6 +472,7 @@ export default function ChartPriceRangeInput({
                           onBrushDomainChange={onBrushDomainChangeEnded}
                           handleShow={handleShow && brushDomain && chartPriceFinishedRender}
                           setIsOutOfView={setIsOutOfView}
+                          isFullRange={isFullRange}
                         />
                       ) : (
                         <Skeleton className='h-full w-full' />
