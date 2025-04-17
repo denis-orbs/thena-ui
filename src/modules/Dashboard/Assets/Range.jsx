@@ -25,11 +25,6 @@ function Range({ currentPrice, maxPrice, minPrice, liquidity }) {
     return [0, 0]
   }, [currentPrice, maxPrice, minPrice])
 
-  console.log({ tickLowerPercent })
-
-  // if (liquidity === 1) {
-  //   console.log({ currentPrice, maxPrice, minPrice, liquidity })
-  // }
   return (
     <>
       {!Number(liquidity) ? (
