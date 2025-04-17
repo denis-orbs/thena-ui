@@ -9,7 +9,7 @@ import Skeleton from '@/components/skeleton'
 import { Paragraph, TextHeading, TextSubHeading } from '@/components/typography'
 import { useNftFeesClaim, useTheNftAccountInfo, useTheNftInfo } from '@/hooks/useTheNft'
 import { fetchNfts } from '@/lib/api'
-import { formatAmount, isInvalidAmount } from '@/lib/utils'
+import { cn, formatAmount, isInvalidAmount } from '@/lib/utils'
 
 const fetchNftInfo = async (url, nftIds) => {
   if (!nftIds || nftIds.length === 0) return
@@ -44,9 +44,14 @@ function TheNFT() {
           <Skeleton className='h-[140px] w-full md:h-[170px]' />
         ) : (
           <div className='relative flex w-full justify-center overflow-hidden pb-4'>
-            <div className='-ml-[10%] flex w-[120%] gap-4 bg-neutral-800 py-2'>
+            <div
+              className={cn(
+                '-ml-[10%] flex w-[120%] gap-4 bg-neutral-800 py-2',
+                yourNfts.length < 3 && 'ml-0 w-[100%] justify-center',
+              )}
+            >
               {yourNfts.slice(0, 3).map((nft, idx) => (
-                <div key={`thenft-${idx}`} className='w-1/3 flex-shrink-0'>
+                <div key={`thenft-${nft.id}-${idx}`} className='w-1/3 flex-shrink-0'>
                   <NextImage className='h-auto w-full rounded-[36px] object-cover' src={nft.image} alt={nft.name} />
                 </div>
               ))}
