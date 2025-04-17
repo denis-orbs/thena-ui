@@ -355,7 +355,9 @@ function NewListings({
               'h-8 w-full p-2 text-xs lg:h-9 lg:w-fit lg:text-sm',
               size === 'small' && pool.type !== PAIR_TYPES.WEIGHTED && 'max-md:hidden',
             )}
-            onClick={() => {
+            onClick={e => {
+              e.stopPropagation()
+              e.preventDefault()
               push(
                 pool.type === PAIR_TYPES.WEIGHTED
                   ? `/pools/add-liquidity/weighted/${pool.address}`
