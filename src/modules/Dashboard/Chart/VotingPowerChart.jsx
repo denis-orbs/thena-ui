@@ -10,19 +10,20 @@ function VotingPowerChart({ data, strokeWidth = 8, label = 'Total Voting Power' 
   const baseRadius = 60
   const spacing = 2
   let chartData = []
-  const now = Math.floor(Date.now() / 1000)
   chartData = data.map((veTHE, index) => ({
-    value: now - veTHE.lockedAt,
-    max: veTHE.lockedEnd - veTHE.lockedAt,
+    value: veTHE.voting_amount.toNumber(),
+    max: veTHE.amount.toNumber(),
     color: COLORS[index],
   }))
   if (data.length > 5) {
-    const latestLockedEnd = Math.max(...data.slice(5).map(p => p.lockedEnd))
+    // const latestLockedEnd = Math.max(...data.slice(5).map(p => p.lockedEnd))
+    const totalValue = [...data.slice(5)].reduce((sum, veTHE) => sum.plus(veTHE.voting_amount), new BigNumber(0))
+    const totalMax = [...data.slice(5)].reduce((sum, veTHE) => sum.plus(veTHE.amount), new BigNumber(0))
     chartData = [
       ...chartData.slice(0, 5),
       {
-        value: now,
-        max: latestLockedEnd,
+        value: totalValue,
+        max: totalMax,
         color: '#FCE6FB',
       },
     ]
