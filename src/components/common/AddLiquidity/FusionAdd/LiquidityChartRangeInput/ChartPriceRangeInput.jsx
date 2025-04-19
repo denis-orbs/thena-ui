@@ -165,7 +165,14 @@ export default function ChartPriceRangeInput({
   const [isOutOfView, setIsOutOfView] = useState(false)
 
   useEffect(() => {
-    if (isOutOfView && zoomFactor === 1 && !isFullRange) {
+    if (
+      isOutOfView &&
+      zoomFactor === 1 &&
+      !isFullRange &&
+      // Full Range
+      Number(priceLower.toSignificant(6)) > 2.9543e-39 &&
+      Number(priceUpper.toSignificant(6)) < 3.3849e38
+    ) {
       const interval = setInterval(() => {
         setRange(prev => {
           const newRange = prev * 1.2
@@ -178,7 +185,7 @@ export default function ChartPriceRangeInput({
     if (isFullRange) {
       setRange(2)
     }
-  }, [isOutOfView, zoomFactor, isFullRange])
+  }, [isOutOfView, zoomFactor, isFullRange, priceLower, priceUpper])
 
   const periods = useMemo(
     () => [
