@@ -18,7 +18,14 @@ function Axis({ axisGenerator }) {
 }
 
 export function AxisRight({ yScale, offset = 0, min, current, max }) {
-  const tickFormat = d => `${formatAmount(d, true, 4, false)}`
+  const tickFormat = d => {
+    const str = d.toString()
+    let decimal = 1
+    if (str.includes('.')) {
+      decimal = Number(`0.${str.split('.')[1]}`)
+    }
+    return `${decimal <= 9e-5 ? d.toExponential(0) : formatAmount(d, true, 5, false)}`
+  }
 
   const axisGenerator = useMemo(() => {
     const tickValues = yScale.ticks(4)
@@ -27,7 +34,8 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
   const minY = min !== undefined ? yScale(min) : null
   const maxY = max !== undefined ? yScale(max) : null
   const currentY = current !== undefined ? yScale(current) : null
-  const currentLabel = current !== undefined ? `${formatAmount(current, true, 4, false)}` : ''
+  const currentLabel =
+    current !== undefined ? `${current <= 9e-5 ? current.toExponential(0) : formatAmount(current, true, 5, false)}` : ''
   const labelWidth = 55
   const labelHeight = 28
   const paddingY = 6

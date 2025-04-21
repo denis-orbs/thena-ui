@@ -3,6 +3,8 @@ import React, { useMemo } from 'react'
 
 import './style.css'
 
+import { formatAmount } from '@/lib/utils'
+
 function Axis({ axisGenerator }) {
   const axisRef = axis => {
     // eslint-disable-next-line no-unused-expressions
@@ -17,11 +19,20 @@ function Axis({ axisGenerator }) {
   return <g ref={axisRef} />
 }
 
+const tickFormat = d => {
+  const str = d.toString()
+  let decimal = 1
+  if (str.includes('.')) {
+    decimal = Number(`0.${str.split('.')[1]}`)
+  }
+  return `${decimal <= 9e-5 ? d.toExponential(0) : formatAmount(d, true, 5, false)}`
+}
+
 export const AxisBottom = ({ xScale, innerHeight, offset = 0 }) =>
   useMemo(
     () => (
       <g className='axis-bottom' transform={`translate(0, ${innerHeight + offset})`}>
-        <Axis axisGenerator={axisBottom(xScale).ticks(6)} />
+        <Axis axisGenerator={axisBottom(xScale).tickFormat(tickFormat)} />
       </g>
     ),
     [innerHeight, offset, xScale],
