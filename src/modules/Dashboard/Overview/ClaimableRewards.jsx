@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import React, { useCallback, useContext, useMemo } from 'react'
 
@@ -15,6 +16,7 @@ import { useFarmRewards } from '@/state/farmReward/store'
 import { usePools } from '@/state/pools/hooks'
 
 function ClaimableRewards() {
+  const router = useRouter()
   const t = useTranslations()
   const prices = usePrices()
   const pools = usePools()
@@ -136,7 +138,7 @@ function ClaimableRewards() {
 
         <div className='flex items-center gap-2'>
           <Paragraph
-            style={{ width: percentage.voting ? `${percentage.voting < 20 ? 20 : percentage.voting}%` : 'fit-content' }}
+            style={{ width: percentage.voting ? `${percentage.voting < 15 ? 15 : percentage.voting}%` : 'fit-content' }}
             className={cn(
               'rounded-e-[4px] px-1.5 py-2 text-neutral-50 lg:text-sm',
               percentage.voting && 'bg-primary-600 text-primary-950',
@@ -170,7 +172,11 @@ function ClaimableRewards() {
       <NewTextHeading className='text-neutral-500 max-md:text-center md:text-3xl'>
         {t('Total')} <span className='text-primary-300'>${formatAmount(totalRewards)}</span>
       </NewTextHeading>
-      <EmphasisButton onClick={onClaimAllRewards}>{t('Claim')}</EmphasisButton>
+
+      <div className='flex gap-2 [&>button]:flex-1'>
+        <EmphasisButton onClick={() => router.push('/dashboard/rewards')}>{t('Details')}</EmphasisButton>
+        <EmphasisButton onClick={onClaimAllRewards}>{t('Claim')}</EmphasisButton>
+      </div>
     </Box>
   )
 }
