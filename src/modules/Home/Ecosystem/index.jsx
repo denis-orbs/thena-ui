@@ -33,7 +33,7 @@ const auditLogos = [
 ]
 const grantLogos = [{ url: '/images/home/ecosystem/grants/bnbchain.svg' }]
 const communityLogos = [
-  { url: '/images/home/ecosystem/communities/THE-AI-Hub.svg', link: 'https://senq.theaihub.live' },
+  // { url: '/images/home/ecosystem/communities/THE-AI-Hub.svg', link: 'https://senq.theaihub.live' },
   { url: '/images/home/ecosystem/communities/CN.svg', link: 'https://x.com/ThenaCN' },
   { url: '/images/home/ecosystem/communities/ES.svg', link: 'https://x.com/ThenaESP' },
   { url: '/images/home/ecosystem/communities/CIS.svg', link: 'https://t.me/Thena_Fi_CIS' },
@@ -101,7 +101,12 @@ function Ecosystem() {
           </div>
         </div>
         <div className='mt-14 flex w-full flex-wrap items-center justify-center -space-x-14 space-y-6 px-[38px]'>
-          <div className='flex w-full flex-wrap items-center justify-center gap-6 lg:max-w-[1000px] lg:gap-14'>
+          <div
+            className={cn(
+              'flex w-full flex-wrap items-center justify-center lg:gap-14',
+              ecosystem === data[3] ? 'gap-8 lg:max-w-[800px]' : 'gap-6 lg:max-w-[1000px]',
+            )}
+          >
             {logos.map((logo, index) => (
               <HomeImage
                 className={cn(
