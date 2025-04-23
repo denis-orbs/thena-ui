@@ -103,7 +103,7 @@ function VotingChart({ data = [], className }) {
         label: 'time',
         data: timeData.map(d => d.value),
         backgroundColor: timeData.map((_, i) =>
-          i === 0 ? (untilNextEpoch <= 120 ? '#F51C00' : '#580055') : '#281B2E',
+          i === 0 ? (untilNextEpoch <= 120 ? '#F51C00' : '#281B2E') : '#580055',
         ),
         borderWidth: 0,
         radius: '100%',
