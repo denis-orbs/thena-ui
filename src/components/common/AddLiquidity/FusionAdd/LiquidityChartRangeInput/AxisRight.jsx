@@ -24,7 +24,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
     if (str.includes('.')) {
       decimal = Number(`0.${str.split('.')[1]}`)
     }
-    return `${decimal <= 9e-5 ? d.toExponential(0) : formatAmount(d, true, 5, false)}`
+    return `${decimal <= 1e-3 ? d.toExponential(0) : formatAmount(d, true, 5, false)}`
   }
 
   const axisGenerator = useMemo(() => {
@@ -35,7 +35,7 @@ export function AxisRight({ yScale, offset = 0, min, current, max }) {
   const maxY = max !== undefined ? yScale(max) : null
   const currentY = current !== undefined ? yScale(current) : null
   const currentLabel =
-    current !== undefined ? `${current <= 9e-5 ? current.toExponential(0) : formatAmount(current, true, 5, false)}` : ''
+    current !== undefined ? `${current <= 1e-3 ? current.toExponential(0) : formatAmount(current, true, 5, false)}` : ''
   const labelWidth = 55
   const labelHeight = 28
   const paddingY = 6

@@ -25,7 +25,7 @@ const tickFormat = d => {
   if (str.includes('.')) {
     decimal = Number(`0.${str.split('.')[1]}`)
   }
-  return `${decimal <= 9e-5 ? d.toExponential(0) : formatAmount(d, true, 5, false)}`
+  return `${decimal <= 1e-3 ? d.toExponential(0) : formatAmount(d, true, 5, false)}`
 }
 
 export const AxisBottom = ({ xScale, innerHeight, offset = 0 }) =>

@@ -164,6 +164,7 @@ export function Chart({
                 setBrushExtent={onBrushDomainChange}
                 westHandleColor={interactive ? styles.brush.handle.west : '#685770'}
                 eastHandleColor={interactive ? styles.brush.handle.east : '#685770'}
+                isFullRange={isFullRange}
               />
             )}
           </g>
