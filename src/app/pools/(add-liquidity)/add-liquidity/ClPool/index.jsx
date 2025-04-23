@@ -168,7 +168,7 @@ function AddLiquidityClPool({ pool, handleBack }) {
             )}
 
             {!strategy?.isAutomatic && (
-              <div className={cn('sticky top-72 space-y-4 px-4')}>
+              <div className={cn('space-y-4 px-4')}>
                 <NewTextSubHeading className='text-neutral-500'>{t('Liquidity Distribution')}</NewTextSubHeading>
                 <LiquidityChartRangeInput
                   currencyA={baseCurrency ?? undefined}

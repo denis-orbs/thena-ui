@@ -34,6 +34,7 @@ export const Brush = ({
   innerHeight,
   westHandleColor,
   eastHandleColor,
+  isFullRange,
 }) => {
   const brushRef = useRef(null)
   const brushBehavior = useRef(null)
@@ -122,12 +123,13 @@ export const Brush = ({
   const flipWestHandle = localBrushExtent && xScale(localBrushExtent[0]) > FLIP_HANDLE_THRESHOLD_PX
   const flipEastHandle = localBrushExtent && xScale(localBrushExtent[1]) > innerWidth - FLIP_HANDLE_THRESHOLD_PX
 
-  const showWestArrow = localBrushExtent && (xScale(localBrushExtent[0]) < 0 || xScale(localBrushExtent[1]) < 0)
+  const showWestArrow =
+    isFullRange || (localBrushExtent && (xScale(localBrushExtent[0]) < 0 || xScale(localBrushExtent[1]) < 0))
   const showEastArrow =
     localBrushExtent && (xScale(localBrushExtent[0]) > innerWidth || xScale(localBrushExtent[1]) > innerWidth)
 
   const westHandleInView =
-    localBrushExtent && xScale(localBrushExtent[0]) >= 0 && xScale(localBrushExtent[0]) <= innerWidth
+    !isFullRange && localBrushExtent && xScale(localBrushExtent[0]) >= 0 && xScale(localBrushExtent[0]) <= innerWidth
   const eastHandleInView =
     localBrushExtent && xScale(localBrushExtent[1]) >= 0 && xScale(localBrushExtent[1]) <= innerWidth
 

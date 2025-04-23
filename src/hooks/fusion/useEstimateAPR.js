@@ -166,7 +166,6 @@ export const useEstimateAPR = ({
             .toString(),
           currency1?.decimals ?? 18,
         )
-
   if (_amount0?.isZero() && _amount1?.isZero() && token0 && token1) {
     _amount0 = currency0?.price ? toWei(100 / currency0.price, currency0.decimals) : BigNumber(0)
     _amount1 = currency1?.price ? toWei(100 / currency1.price, currency1.decimals) : BigNumber(0)
@@ -225,8 +224,8 @@ export const useEstimateAPR = ({
         pool,
         tickLower: _tickLower,
         tickUpper: _tickUpper,
-        amount0: _token0 === currency0.address ? _amount0 : _amount1,
-        amount1: _token1 === currency1.address ? _amount1 : _amount0,
+        amount0: _token0 === currency0.address ? Math.round(_amount0.toNumber()) : Math.round(_amount1.toNumber()),
+        amount1: _token1 === currency1.address ? Math.round(_amount1.toNumber()) : Math.round(_amount0.toNumber()),
         useFullPrecision: true,
       })
     } else if (token0 && !token1) {
@@ -234,7 +233,7 @@ export const useEstimateAPR = ({
         pool,
         tickLower: _tickLower,
         tickUpper: _tickUpper,
-        amount0: _amount0,
+        amount0: Math.round(_amount0.toNumber()),
         useFullPrecision: true,
       })
     } else if (!token0 && token1) {
@@ -242,7 +241,7 @@ export const useEstimateAPR = ({
         pool,
         tickLower: _tickLower,
         tickUpper: _tickUpper,
-        amount1: _amount1,
+        amount1: Math.round(_amount1.toNumber()),
         useFullPrecision: true,
       })
     } else {

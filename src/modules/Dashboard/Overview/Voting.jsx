@@ -25,7 +25,7 @@ import VotingChart from '../Chart/VotingChart'
 function Voting() {
   const { push } = useRouter()
   const t = useTranslations()
-  const { epochStart, epochEnd, epoch, days, seconds } = useEpochTimer()
+  const { epochStart, epochEnd, epoch, days, seconds, mins, hours } = useEpochTimer()
   const [veTHEId, setVeTHEId] = useState(null)
   const [approvedId, setApprovedId] = useState('')
 
@@ -104,8 +104,8 @@ function Voting() {
   )
 
   const totalRewards = useMemo(
-    () => userPools.reduce((sum, pool) => sum.plus(pool.gauge.bribeUsd), new BigNumber(0)),
-    [userPools],
+    () => (v3PoolsWithGauge || []).reduce((sum, pool) => sum.plus(pool.gauge.bribeUsd), new BigNumber(0)),
+    [v3PoolsWithGauge],
   )
 
   return (
@@ -145,7 +145,10 @@ function Voting() {
         </TextHeading>
       ) : (
         <TextSubHeading className='font-archia text-xl font-semibold'>
-          {t('Epoch End in')} <span className='text-primary-700'>{days} Days</span>
+          {t('Epoch End in')}{' '}
+          <span className='text-primary-700'>
+            {days === 0 ? (hours === 0 ? `${mins} Mins` : `${hours} Hours ${mins} Mins`) : `${days} Days`}
+          </span>
         </TextSubHeading>
       )}
       <EmphasisButton className='w-full' onClick={() => push('/dashboard/vote')}>
