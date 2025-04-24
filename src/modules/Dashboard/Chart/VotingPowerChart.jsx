@@ -4,7 +4,7 @@ import React from 'react'
 import { Paragraph } from '@/components/typography'
 import { cn, formatAmount } from '@/lib/utils'
 
-const COLORS = ['#F199EE', '#EA66E5', '#DC00D4', '#84007F', '#2C002A']
+const COLORS = ['#F199EE', '#EA66E5', '#E333DD', '#84007F', '#B000AA']
 
 function VotingPowerChart({ data, strokeWidth = 8, label = 'Total Voting Power' }) {
   const baseRadius = 60

@@ -29,15 +29,15 @@ export default function ClaimModal({ popup, setPopup, pool, reward0, reward1, mu
             <IconGroup
               className='-space-x-2'
               classNames={{ image: 'w-8 h-8 outline-2' }}
-              logo1={pool.asset0.logoURI}
-              logo2={pool.asset1.logoURI}
+              logo1={pool?.asset0?.logoURI}
+              logo2={pool?.asset1?.logoURI}
             />
             <div className='flex flex-col gap-1'>
               <TextHeading>
-                {unwrappedSymbol(pool.asset0)}/{unwrappedSymbol(pool.asset1)}
+                {unwrappedSymbol(pool?.asset0)}/{unwrappedSymbol(pool?.asset1)}
               </TextHeading>
               <Paragraph className='text-xs'>
-                #{pool.tokenId} / {fee / 10000}% Fee
+                #{pool?.tokenId} / {fee / 10000}% Fee
               </Paragraph>
             </div>
           </div>

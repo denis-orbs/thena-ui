@@ -58,7 +58,9 @@ function AssetsTable({ positions = [] }) {
 
       <div className='bg-opacity-50 bg-[url(/images/rewards-claimable-bg.png)] bg-contain bg-no-repeat max-lg:space-y-2 lg:px-4 lg:pt-8'>
         {paginatedPositions.map((item, index) =>
-          item.type === 'Manual' ? (
+          !item ? (
+            <></>
+          ) : item.type === 'Manual' ? (
             <React.Fragment key={`${item.address}-${index}`}>
               {item?.deployer === zeroAddress ? <FarmingItem position={item} /> : <ManualItem position={item} />}
             </React.Fragment>
